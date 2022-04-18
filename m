@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF76EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244597AbiDROAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S245011AbiDROA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244085AbiDRNiz (ORCPT
+        with ESMTP id S244054AbiDRNiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:38:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8380286ED;
-        Mon, 18 Apr 2022 05:58:33 -0700 (PDT)
+        Mon, 18 Apr 2022 09:38:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E48727B3C;
+        Mon, 18 Apr 2022 05:58:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDCBD60FD9;
-        Mon, 18 Apr 2022 12:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB0DAC385A1;
-        Mon, 18 Apr 2022 12:58:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 807A9B80E4B;
+        Mon, 18 Apr 2022 12:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8F9C385A8;
+        Mon, 18 Apr 2022 12:58:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286712;
-        bh=OMEkBi2Yh78hs1KZHQ0dps6++JvaP+vknaTQMkvUoIk=;
+        s=korg; t=1650286709;
+        bh=u3oljpL6Q3BI7yOHYh2I9e9zUcg05CmiAXsiNFDCGks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Flef61+LDDj+kZV+O9VVJ3COzCPJu/JzKIgJk6WLT8P+U5wCffQ3xrBX2myWh3q26
-         VFfcGH3NegfKH9BaXNaI57U9oRybRfYNPwPumCRGtXXKswkTRQIaYBBVrZiR5BW2gd
-         bonuRX7L+3N7JwD507rkcINT1kmv1MvI0fWkTrZs=
+        b=XKJRMFznD+ThYvXId8hbZs/bbuXq8OW4FxTBeI67lP9B1SRpGz2GQO32WpA5HLora
+         uxgc0m6Z/NyYE18/0mclDesR8XVqufcXtsw343VzUPWNVgbr+x3DYxOzXdVd+gZab/
+         aEmEtnS5auu3FLiiaDFyOWEPD2qSBrHflajm3Lpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Lobakin <alobakin@pm.me>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org,
+        Colin Winegarden <colin.winegarden@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 222/284] MIPS: fix fortify panic when copying asm exception handlers
-Date:   Mon, 18 Apr 2022 14:13:23 +0200
-Message-Id: <20220418121218.024668063@linuxfoundation.org>
+Subject: [PATCH 4.14 221/284] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Mon, 18 Apr 2022 14:13:22 +0200
+Message-Id: <20220418121217.996780401@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,97 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
+[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
 
-With KCFLAGS="-O3", I was able to trigger a fortify-source
-memcpy() overflow panic on set_vi_srs_handler().
-Although O3 level is not supported in the mainline, under some
-conditions that may've happened with any optimization settings,
-it's just a matter of inlining luck. The panic itself is correct,
-more precisely, 50/50 false-positive and not at the same time.
->From the one side, no real overflow happens. Exception handler
-defined in asm just gets copied to some reserved places in the
-memory.
-But the reason behind is that C code refers to that exception
-handler declares it as `char`, i.e. something of 1 byte length.
-It's obvious that the asm function itself is way more than 1 byte,
-so fortify logics thought we are going to past the symbol declared.
-The standard way to refer to asm symbols from C code which is not
-supposed to be called from C is to declare them as
-`extern const u8[]`. This is fully correct from any point of view,
-as any code itself is just a bunch of bytes (including 0 as it is
-for syms like _stext/_etext/etc.), and the exact size is not known
-at the moment of compilation.
-Adjust the type of the except_vec_vi_*() and related variables.
-Make set_handler() take `const` as a second argument to avoid
-cast-away warnings and give a little more room for optimization.
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
+
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/setup.h |  2 +-
- arch/mips/kernel/traps.c      | 22 +++++++++++-----------
- 2 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
-index d49d247d48a1..d48a5f18a267 100644
---- a/arch/mips/include/asm/setup.h
-+++ b/arch/mips/include/asm/setup.h
-@@ -14,7 +14,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
- 	unsigned int reg_shift, unsigned int timeout) {}
- #endif
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index e3123cb0fb70..82e16b2d1f7a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1272,9 +1272,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
--extern void set_handler(unsigned long offset, void *addr, unsigned long len);
-+void set_handler(unsigned long offset, const void *addr, unsigned long len);
- extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
- 
- typedef void (*vi_handler_t)(void);
-diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
-index 4a23d89e251c..abbc64788008 100644
---- a/arch/mips/kernel/traps.c
-+++ b/arch/mips/kernel/traps.c
-@@ -2017,19 +2017,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
- 		 * If no shadow set is selected then use the default handler
- 		 * that does normal register saving and standard interrupt exit
- 		 */
--		extern char except_vec_vi, except_vec_vi_lui;
--		extern char except_vec_vi_ori, except_vec_vi_end;
--		extern char rollback_except_vec_vi;
--		char *vec_start = using_rollback_handler() ?
--			&rollback_except_vec_vi : &except_vec_vi;
-+		extern const u8 except_vec_vi[], except_vec_vi_lui[];
-+		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
-+		extern const u8 rollback_except_vec_vi[];
-+		const u8 *vec_start = using_rollback_handler() ?
-+				      rollback_except_vec_vi : except_vec_vi;
- #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
--		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
--		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
-+		const int lui_offset = except_vec_vi_lui - vec_start + 2;
-+		const int ori_offset = except_vec_vi_ori - vec_start + 2;
- #else
--		const int lui_offset = &except_vec_vi_lui - vec_start;
--		const int ori_offset = &except_vec_vi_ori - vec_start;
-+		const int lui_offset = except_vec_vi_lui - vec_start;
-+		const int ori_offset = except_vec_vi_ori - vec_start;
- #endif
--		const int handler_len = &except_vec_vi_end - vec_start;
-+		const int handler_len = except_vec_vi_end - vec_start;
- 
- 		if (handler_len > VECTORSPACING) {
- 			/*
-@@ -2249,7 +2249,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
- }
- 
- /* Install CPU exception handler */
--void set_handler(unsigned long offset, void *addr, unsigned long size)
-+void set_handler(unsigned long offset, const void *addr, unsigned long size)
- {
- #ifdef CONFIG_CPU_MICROMIPS
- 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
+ 	} else {
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
 -- 
 2.35.1
 
