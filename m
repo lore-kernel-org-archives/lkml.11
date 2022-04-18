@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76BFC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F95C47088
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243629AbiDRNeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
+        id S243918AbiDRNek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241290AbiDRNH2 (ORCPT
+        with ESMTP id S242046AbiDRNIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:07:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763CF2A738;
-        Mon, 18 Apr 2022 05:47:31 -0700 (PDT)
+        Mon, 18 Apr 2022 09:08:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FBB34652;
+        Mon, 18 Apr 2022 05:48:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E41F661253;
-        Mon, 18 Apr 2022 12:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3E3C385A8;
-        Mon, 18 Apr 2022 12:47:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A527B80E44;
+        Mon, 18 Apr 2022 12:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59B0BC385A1;
+        Mon, 18 Apr 2022 12:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286050;
-        bh=4bSNL2HCuVxfuFYn5tC2mBPJ2xyv9VI4fvWzI2d5KBE=;
+        s=korg; t=1650286094;
+        bh=5IqUjJTSOJ5iA71G3v7PMy802c6wfxcw7Yd0aVsWReA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QpE+Q7OSvEZmMfaySajf4qijKu0Avo5xLe52XCZ5dpvBUB7Zi00DUhx0XhWCGWT3+
-         Mw2zNRTbyEYplcxaptJvljm2QysOYXslQg1m1hiAZT6urIfXerICsVG7Bk8Rat9Q7o
-         Jt1KGmLr2FNdaa5Bm1xoXnFbVq0dXDp6wuSbTjJA=
+        b=0O+PPTbAPz2fj6asuXTJbr9UZ7kSkOQrudWDMDSOCG+SPSOkvjJBZ1dHoEAaCSpI0
+         Hgle6NLTbcC+bn4SqVn++YnUgnTdYjtWwjR4hdPb87OaN2dlHsPTPBTx9GYO56Gt4B
+         zpqpvEsvpRQYRe35nzQ49eqzBb4Nic2vhMh84Juw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: [PATCH 4.14 014/284] coresight: Fix TRCCONFIGR.QE sysfs interface
-Date:   Mon, 18 Apr 2022 14:09:55 +0200
-Message-Id: <20220418121211.103547244@linuxfoundation.org>
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.14 027/284] jffs2: fix memory leak in jffs2_do_mount_fs
+Date:   Mon, 18 Apr 2022 14:10:08 +0200
+Message-Id: <20220418121211.468896417@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,56 +48,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
+commit d051cef784de4d54835f6b6836d98a8f6935772c upstream.
 
-It's impossible to program a valid value for TRCCONFIGR.QE
-when TRCIDR0.QSUPP==0b10. In that case the following is true:
+If jffs2_build_filesystem() in jffs2_do_mount_fs() returns an error,
+we can observe the following kmemleak report:
 
-  Q element support is implemented, and only supports Q elements without
-  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
+--------------------------------------------
+unreferenced object 0xffff88811b25a640 (size 64):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa493be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffa5423a06>] jffs2_sum_init+0x86/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+unreferenced object 0xffff88812c760000 (size 65536):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+  backtrace:
+    [<ffffffffa493a449>] __kmalloc+0x6b9/0x910
+    [<ffffffffa5423a57>] jffs2_sum_init+0xd7/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+--------------------------------------------
 
-Currently the low bit of QSUPP is checked to see if the low bit of QE can
-be written to, but as you can see when QSUPP==0b10 the low bit is cleared
-making it impossible to ever write the only valid value of 0b11 to QE.
-0b10 would be written instead, which is a reserved QE value even for all
-values of QSUPP.
+This is because the resources allocated in jffs2_sum_init() are not
+released. Call jffs2_sum_exit() to release these resources to solve
+the problem.
 
-The fix is to allow writing the low bit of QE for any non zero value of
-QSUPP.
-
-This change also ensures that the low bit is always set, even when the
-user attempts to only set the high bit.
-
-Signed-off-by: James Clark <james.clark@arm.com>
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
-Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
+Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ fs/jffs2/build.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-@@ -379,8 +379,12 @@ static ssize_t mode_store(struct device
- 	mode = ETM_MODE_QELEM(config->mode);
- 	/* start by clearing QE bits */
- 	config->cfg &= ~(BIT(13) | BIT(14));
--	/* if supported, Q elements with instruction counts are enabled */
--	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
-+	/*
-+	 * if supported, Q elements with instruction counts are enabled.
-+	 * Always set the low bit for any requested mode. Valid combos are
-+	 * 0b00, 0b01 and 0b11.
-+	 */
-+	if (mode && drvdata->q_support)
- 		config->cfg |= BIT(13);
- 	/*
- 	 * if supported, Q elements with and without instruction
+--- a/fs/jffs2/build.c
++++ b/fs/jffs2/build.c
+@@ -415,13 +415,15 @@ int jffs2_do_mount_fs(struct jffs2_sb_in
+ 		jffs2_free_ino_caches(c);
+ 		jffs2_free_raw_node_refs(c);
+ 		ret = -EIO;
+-		goto out_free;
++		goto out_sum_exit;
+ 	}
+ 
+ 	jffs2_calc_trigger_levels(c);
+ 
+ 	return 0;
+ 
++ out_sum_exit:
++	jffs2_sum_exit(c);
+  out_free:
+ 	kvfree(c->blocks);
+ 
 
 
