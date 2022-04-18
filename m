@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0BCC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A21C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240215AbiDRMis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
+        id S240274AbiDRMiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239772AbiDRMdZ (ORCPT
+        with ESMTP id S239756AbiDRMdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9161A065;
-        Mon, 18 Apr 2022 05:25:53 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9B91E3EF;
+        Mon, 18 Apr 2022 05:25:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B111C60FB0;
-        Mon, 18 Apr 2022 12:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDF5C385A1;
-        Mon, 18 Apr 2022 12:25:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 22184CE1099;
+        Mon, 18 Apr 2022 12:25:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8465C385A1;
+        Mon, 18 Apr 2022 12:25:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284752;
-        bh=bGYkXoPOnvp4MwQT0EEyeTjnTv8wsS679jpaRsBAs/o=;
+        s=korg; t=1650284729;
+        bh=in+Tjq7u2HtEgipwNeDYze3KLACNyZ5YX46Zm/zoWb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QOqIqeDm07NmIhAdmPmzfB2C8vw/YUHQtRa53sgpBr2dUEm28O8H8vqHggta6zBEd
-         q9g9+PGeIlZsmRM9EGfcWo1cPnPZtF43yzA9yGSxLhQSj+FMnCMBPfQ0wHw2fClz6u
-         UmaPQyVz0IUYEYzPnlDCslWkIQg5aSe6fHYccuFg=
+        b=h4Sx3TV0D62WbFN67BEILoo9hpc9NAAEORmbb43kAHJMjfjpcxcGQjg92ObLcDYm/
+         f5mbcHlHiLMlLebn17KBqZCG7CC9b5yyM5BhadhBdGUjeAzvS7gB0UQOk2cxJBAGMf
+         GCrdEPD1PjO4aT8gB8Lklw12A82cADEdhu/zKPbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>
-Subject: [PATCH 5.17 214/219] timers: Fix warning condition in __run_timers()
-Date:   Mon, 18 Apr 2022 14:13:03 +0200
-Message-Id: <20220418121212.856664521@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.17 208/219] i2c: dev: check return value when calling dev_set_name()
+Date:   Mon, 18 Apr 2022 14:12:57 +0200
+Message-Id: <20220418121212.690559498@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,50 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anna-Maria Behnsen <anna-maria@linutronix.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit c54bc0fc84214b203f7a0ebfd1bd308ce2abe920 upstream.
+commit 993eb48fa199b5f476df8204e652eff63dd19361 upstream.
 
-When the timer base is empty, base::next_expiry is set to base::clk +
-NEXT_TIMER_MAX_DELTA and base::next_expiry_recalc is false. When no timer
-is queued until jiffies reaches base::next_expiry value, the warning for
-not finding any expired timer and base::next_expiry_recalc is false in
-__run_timers() triggers.
+If dev_set_name() fails, the dev_name() is null, check the return
+value of dev_set_name() to avoid the null-ptr-deref.
 
-To prevent triggering the warning in this valid scenario
-base::timers_pending needs to be added to the warning condition.
-
-Fixes: 31cd0e119d50 ("timers: Recalculate next timer interrupt only when necessary")
-Reported-by: Johannes Berg <johannes@sipsolutions.net>
-Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
-Link: https://lore.kernel.org/r/20220405191732.7438-3-anna-maria@linutronix.de
+Fixes: 1413ef638aba ("i2c: dev: Fix the race between the release of i2c_dev and cdev")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/timer.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/i2c/i2c-dev.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -1722,11 +1722,14 @@ static inline void __run_timers(struct t
- 	       time_after_eq(jiffies, base->next_expiry)) {
- 		levels = collect_expired_timers(base, heads);
- 		/*
--		 * The only possible reason for not finding any expired
--		 * timer at this clk is that all matching timers have been
--		 * dequeued.
-+		 * The two possible reasons for not finding any expired
-+		 * timer at this clk are that all matching timers have been
-+		 * dequeued or no timer has been queued since
-+		 * base::next_expiry was set to base::clk +
-+		 * NEXT_TIMER_MAX_DELTA.
- 		 */
--		WARN_ON_ONCE(!levels && !base->next_expiry_recalc);
-+		WARN_ON_ONCE(!levels && !base->next_expiry_recalc
-+			     && base->timers_pending);
- 		base->clk++;
- 		base->next_expiry = __next_timer_interrupt(base);
+--- a/drivers/i2c/i2c-dev.c
++++ b/drivers/i2c/i2c-dev.c
+@@ -668,16 +668,21 @@ static int i2cdev_attach_adapter(struct
+ 	i2c_dev->dev.class = i2c_dev_class;
+ 	i2c_dev->dev.parent = &adap->dev;
+ 	i2c_dev->dev.release = i2cdev_dev_release;
+-	dev_set_name(&i2c_dev->dev, "i2c-%d", adap->nr);
++
++	res = dev_set_name(&i2c_dev->dev, "i2c-%d", adap->nr);
++	if (res)
++		goto err_put_i2c_dev;
  
+ 	res = cdev_device_add(&i2c_dev->cdev, &i2c_dev->dev);
+-	if (res) {
+-		put_i2c_dev(i2c_dev, false);
+-		return res;
+-	}
++	if (res)
++		goto err_put_i2c_dev;
+ 
+ 	pr_debug("adapter [%s] registered as minor %d\n", adap->name, adap->nr);
+ 	return 0;
++
++err_put_i2c_dev:
++	put_i2c_dev(i2c_dev, false);
++	return res;
+ }
+ 
+ static int i2cdev_detach_adapter(struct device *dev, void *dummy)
 
 
