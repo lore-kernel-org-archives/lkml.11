@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE158C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239366AbiDRNm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
+        id S243615AbiDRNmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241689AbiDRNI3 (ORCPT
+        with ESMTP id S241517AbiDRNIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:08:29 -0400
+        Mon, 18 Apr 2022 09:08:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7599C2B27B;
-        Mon, 18 Apr 2022 05:47:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B792AE31;
+        Mon, 18 Apr 2022 05:47:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AF3CB80E4B;
-        Mon, 18 Apr 2022 12:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D422C385A7;
-        Mon, 18 Apr 2022 12:47:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0848DB80EC0;
+        Mon, 18 Apr 2022 12:47:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CF3FC385A1;
+        Mon, 18 Apr 2022 12:47:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286072;
-        bh=hSjoxYGD0LqCdflEGlp2q8yQwCPWJI2u6IK7aPgXHWA=;
+        s=korg; t=1650286059;
+        bh=lFCP5nzLeSmkOcqS5XILgFyL0/GQwVTVtYdNABHyz08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yJ/wv0bQ3n6SvaqqklvFdwF9JqaBmbyQUrGe6/3yDT3nDx38BVAXHwLtO8kPxtsaK
-         cdzYt/ZI/DHi0tJxL9oS8555NGBipXK6uG8oc67N3AjSQcbQp9zP+CkgpddMVw/HzP
-         C0h1GFcR+SWjfTOyE3qWEMIq/ti6KkJqEn4WdliA=
+        b=CEgSArJLZclO4u5KpkB0AtYDZpoeS8QKqsNaggox764VLWu6zHyClPU9KYdIo94PU
+         6jL+nBaNz0GnZtEMO3Y9M+6uk+OJ6AmEnqZfcG2pikYprSer5W2mu6JYzQ292p6QsK
+         KLEK4vqx1J+gzibU/Bsi+JG+VMqoUsMohe0rpxWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 4.14 020/284] Documentation: add link to stable release candidate tree
-Date:   Mon, 18 Apr 2022 14:10:01 +0200
-Message-Id: <20220418121211.271650450@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.14 017/284] iio: inkern: make a best effort on offset calculation
+Date:   Mon, 18 Apr 2022 14:09:58 +0200
+Message-Id: <20220418121211.187957179@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,42 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Liam Beguin <liambeguin@gmail.com>
 
-commit 587d39b260c4d090166314d64be70b1f6a26b0b5 upstream.
+commit ca85123354e1a65a22170286387b4791997fe864 upstream.
 
-There is also stable release candidate tree. Mention it, however with a
-warning that the tree is for testing purposes.
+iio_convert_raw_to_processed_unlocked() assumes the offset is an
+integer. Make a best effort to get a valid offset value for fractional
+cases without breaking implicit truncations.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220314113329.485372-5-bagasdotme@gmail.com
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-4-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/process/stable-kernel-rules.rst |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iio/inkern.c |   32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -173,6 +173,15 @@ Trees
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -591,13 +591,35 @@ EXPORT_SYMBOL_GPL(iio_read_channel_avera
+ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+ 	int raw, int *processed, unsigned int scale)
+ {
+-	int scale_type, scale_val, scale_val2, offset;
++	int scale_type, scale_val, scale_val2;
++	int offset_type, offset_val, offset_val2;
+ 	s64 raw64 = raw;
+-	int ret;
  
- 	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+-	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
+-	if (ret >= 0)
+-		raw64 += offset;
++	offset_type = iio_channel_read(chan, &offset_val, &offset_val2,
++				       IIO_CHAN_INFO_OFFSET);
++	if (offset_type >= 0) {
++		switch (offset_type) {
++		case IIO_VAL_INT:
++			break;
++		case IIO_VAL_INT_PLUS_MICRO:
++		case IIO_VAL_INT_PLUS_NANO:
++			/*
++			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
++			 * implicitely truncate the offset to it's integer form.
++			 */
++			break;
++		case IIO_VAL_FRACTIONAL:
++			offset_val /= offset_val2;
++			break;
++		case IIO_VAL_FRACTIONAL_LOG2:
++			offset_val >>= offset_val2;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		raw64 += offset_val;
++	}
  
-+ - The release candidate of all stable kernel versions can be found at:
-+
-+        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
-+
-+   .. warning::
-+      The -stable-rc tree is a snapshot in time of the stable-queue tree and
-+      will change frequently, hence will be rebased often. It should only be
-+      used for testing purposes (e.g. to be consumed by CI systems).
-+
- 
- Review committee
- ----------------
+ 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
+ 					IIO_CHAN_INFO_SCALE);
 
 
