@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A5B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240583AbiDRM5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        id S240506AbiDRM5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239259AbiDRMpy (ORCPT
+        with ESMTP id S239589AbiDRMpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:45:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF4229800;
-        Mon, 18 Apr 2022 05:32:56 -0700 (PDT)
+        Mon, 18 Apr 2022 08:45:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97EA28E38;
+        Mon, 18 Apr 2022 05:32:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 415AD60F0A;
-        Mon, 18 Apr 2022 12:32:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E62C385A1;
-        Mon, 18 Apr 2022 12:32:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0104FCE10A2;
+        Mon, 18 Apr 2022 12:32:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBEDFC385A7;
+        Mon, 18 Apr 2022 12:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285175;
-        bh=p7NdsMGXXKY2Y4BdmKFIYeZ2BS38rKxgfbm27drUnCI=;
+        s=korg; t=1650285172;
+        bh=h3/4h0H471UJtADRLo2a8XhpcTHhAAbQKbJpOEoncW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBi5/3VVT7bnUghf5ba5tEwTlE/B9oOHZmXu9LzcpO/2ai/eGercxnkxvpynNV4C3
-         9DpvuqtGazUJjuPOguJza+/R8/v/Blv5uE9iKrz2RYEpREMkOuw4JFraneyt1SCPae
-         7TM7kbcY491Mg6NwhD/aq/5VkGIrboCUkbjV18Uo=
+        b=QANXYxXPqftzPW/2TwIopWHM3r620oqxiDjf8sg9A1v3HwGOoAAj0QcDM0+YwkeL2
+         zPwU2nlENo3MFHleEzcVngzQ+BLXNWr7zGGxgazycP6LmzASdxoogJkOZSXOcX2lTy
+         rKfdxW7tPs2yEXod+uOdfPKbOIcw79h7IPBVmywo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org, Leo Ruan <tingquan.ruan@cn.bosch.com>,
+        Mark Jonas <mark.jonas@de.bosch.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 089/189] ALSA: mtpav: Dont call card private_free at probe error path
-Date:   Mon, 18 Apr 2022 14:11:49 +0200
-Message-Id: <20220418121203.033282830@linuxfoundation.org>
+Subject: [PATCH 5.15 124/189] gpu: ipu-v3: Fix dev_dbg frequency output
+Date:   Mon, 18 Apr 2022 14:12:24 +0200
+Message-Id: <20220418121204.388596778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,48 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Leo Ruan <tingquan.ruan@cn.bosch.com>
 
-[ Upstream commit 4fb27190879b82e48ce89a56e9d6c04437dbc065 ]
+[ Upstream commit 070a88fd4a03f921b73a2059e97d55faaa447dab ]
 
-The card destructor of nm256 driver does merely stopping the running
-timer, and it's superfluous for the probe error handling.  Moreover,
-calling this via the previous devres change would lead to another
-problem due to the reverse call order.
+This commit corrects the printing of the IPU clock error percentage if
+it is between -0.1% to -0.9%. For example, if the pixel clock requested
+is 27.2 MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
+But the fixed point math had a flaw and calculated error of 0.2%.
 
-This patch moves the setup of the private_free callback after the card
-registration, so that it can be used only after fully set up.
+Before:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error 0.2%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
 
-Fixes: aa92050f10f0 ("ALSA: mtpav: Allocate resources with device-managed APIs")
-Link: https://lore.kernel.org/r/20220412102636.16000-39-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+After:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error -0.8%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+
+Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
+Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220207151411.5009-1-mark.jonas@de.bosch.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/drivers/mtpav.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/drivers/mtpav.c b/sound/drivers/mtpav.c
-index 11235baaf6fa..f212f233ea61 100644
---- a/sound/drivers/mtpav.c
-+++ b/sound/drivers/mtpav.c
-@@ -693,8 +693,6 @@ static int snd_mtpav_probe(struct platform_device *dev)
- 	mtp_card->outmidihwport = 0xffffffff;
- 	timer_setup(&mtp_card->timer, snd_mtpav_output_timer, 0);
+diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c
+index 666223c6bec4..0a34e0ab4fe6 100644
+--- a/drivers/gpu/ipu-v3/ipu-di.c
++++ b/drivers/gpu/ipu-v3/ipu-di.c
+@@ -447,8 +447,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
  
--	card->private_free = snd_mtpav_free;
--
- 	err = snd_mtpav_get_RAWMIDI(mtp_card);
- 	if (err < 0)
- 		return err;
-@@ -716,6 +714,8 @@ static int snd_mtpav_probe(struct platform_device *dev)
- 	if (err < 0)
- 		return err;
+ 		error = rate / (sig->mode.pixelclock / 1000);
  
-+	card->private_free = snd_mtpav_free;
-+
- 	platform_set_drvdata(dev, card);
- 	printk(KERN_INFO "Motu MidiTimePiece on parallel port irq: %d ioport: 0x%lx\n", irq, port);
- 	return 0;
+-		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %d.%u%%\n",
+-			rate, div, (signed)(error - 1000) / 10, error % 10);
++		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %c%d.%d%%\n",
++			rate, div, error < 1000 ? '-' : '+',
++			abs(error - 1000) / 10, abs(error - 1000) % 10);
+ 
+ 		/* Allow a 1% error */
+ 		if (error < 1010 && error >= 990) {
 -- 
 2.35.1
 
