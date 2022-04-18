@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA53C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D4DC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245354AbiDROCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
+        id S245436AbiDROC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244194AbiDRNnd (ORCPT
+        with ESMTP id S244449AbiDRNo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:43:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6EB31215;
-        Mon, 18 Apr 2022 05:59:44 -0700 (PDT)
+        Mon, 18 Apr 2022 09:44:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAED3F33B;
+        Mon, 18 Apr 2022 05:59:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F24CD609FB;
-        Mon, 18 Apr 2022 12:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0836AC385A1;
-        Mon, 18 Apr 2022 12:59:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C3C2B80E44;
+        Mon, 18 Apr 2022 12:59:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D2B8C385A1;
+        Mon, 18 Apr 2022 12:59:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286783;
-        bh=vns65YgFNpk2RTJcX9xl/9i1ZG30HoLNtWa7xOgct1w=;
+        s=korg; t=1650286796;
+        bh=1m3xIrLcO5FIijhI2wj1F439x8Le5NCM2hWe+oEGa6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bnUaPY4CVZNF5GJ59q+Mp+HY0jUXmqRkFZtvV6aRXJ0fgnYTLFhbowPOIeMSXPHgj
-         YmZYxXRsB/28xikCOt/2oO64wmEtu1lnbW76IXF/7XO/5vov8JY6AX+OxJqbkEBzN/
-         uCci+V+Es9HQzFCxbg5NhomU0N9Fq82vKdvjLKkQ=
+        b=Fm20q065B9sfyYAMC2+g25FnrZ8yj0du2/kDTVdMh1cUMejUrLb57jdI2+GNgNOrk
+         hbtIpkF1Od2j8QRONCHSMgMdlmdIUvlSes7Irq6RBmUAVQto9K2300UN8YtSTTsxaI
+         KczD8ugvAOzpuqTK3yadkSfmlWUP15Q9mc3d+wZQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 243/284] drbd: Fix five use after free bugs in get_initial_state
-Date:   Mon, 18 Apr 2022 14:13:44 +0200
-Message-Id: <20220418121218.968741769@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 247/284] x86/pm: Save the MSR validity status at context setup
+Date:   Mon, 18 Apr 2022 14:13:48 +0200
+Message-Id: <20220418121219.177917828@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,341 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-[ Upstream commit aadb22ba2f656581b2f733deb3a467c48cc618f6 ]
+commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
 
-In get_initial_state, it calls notify_initial_state_done(skb,..) if
-cb->args[5]==1. If genlmsg_put() failed in notify_initial_state_done(),
-the skb will be freed by nlmsg_free(skb).
-Then get_initial_state will goto out and the freed skb will be used by
-return value skb->len, which is a uaf bug.
+The mechanism to save/restore MSRs during S3 suspend/resume checks for
+the MSR validity during suspend, and only restores the MSR if its a
+valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
+throw an exception for every suspend cycle.  The more invalid MSRs,
+higher the impact will be.
 
-What's worse, the same problem goes even further: skb can also be
-freed in the notify_*_state_change -> notify_*_state calls below.
-Thus 4 additional uaf bugs happened.
+Check and save the MSR validity at setup.  This ensures that only valid
+MSRs that are guaranteed to not throw an exception will be attempted
+during suspend.
 
-My patch lets the problem callee functions: notify_initial_state_done
-and notify_*_state_change return an error code if errors happen.
-So that the error codes could be propagated and the uaf bugs can be avoid.
-
-v2 reports a compilation warning. This v3 fixed this warning and built
-successfully in my local environment with no additional warnings.
-v2: https://lore.kernel.org/patchwork/patch/1435218/
-
-Fixes: a29728463b254 ("drbd: Backport the "events2" command")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/drbd/drbd_int.h          |  8 ++---
- drivers/block/drbd/drbd_nl.c           | 41 ++++++++++++++++----------
- drivers/block/drbd/drbd_state.c        | 18 +++++------
- drivers/block/drbd/drbd_state_change.h |  8 ++---
- 4 files changed, 42 insertions(+), 33 deletions(-)
+ arch/x86/power/cpu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_int.h b/drivers/block/drbd/drbd_int.h
-index 7e8589ce631c..204b4a84bdbb 100644
---- a/drivers/block/drbd/drbd_int.h
-+++ b/drivers/block/drbd/drbd_int.h
-@@ -1690,22 +1690,22 @@ struct sib_info {
- };
- void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib);
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -41,7 +41,8 @@ static void msr_save_context(struct save
+ 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
  
--extern void notify_resource_state(struct sk_buff *,
-+extern int notify_resource_state(struct sk_buff *,
- 				  unsigned int,
- 				  struct drbd_resource *,
- 				  struct resource_info *,
- 				  enum drbd_notification_type);
--extern void notify_device_state(struct sk_buff *,
-+extern int notify_device_state(struct sk_buff *,
- 				unsigned int,
- 				struct drbd_device *,
- 				struct device_info *,
- 				enum drbd_notification_type);
--extern void notify_connection_state(struct sk_buff *,
-+extern int notify_connection_state(struct sk_buff *,
- 				    unsigned int,
- 				    struct drbd_connection *,
- 				    struct connection_info *,
- 				    enum drbd_notification_type);
--extern void notify_peer_device_state(struct sk_buff *,
-+extern int notify_peer_device_state(struct sk_buff *,
- 				     unsigned int,
- 				     struct drbd_peer_device *,
- 				     struct peer_device_info *,
-diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
-index 31d7fe4480af..5543876ec0e2 100644
---- a/drivers/block/drbd/drbd_nl.c
-+++ b/drivers/block/drbd/drbd_nl.c
-@@ -4598,7 +4598,7 @@ static int nla_put_notification_header(struct sk_buff *msg,
- 	return drbd_notification_header_to_skb(msg, &nh, true);
- }
- 
--void notify_resource_state(struct sk_buff *skb,
-+int notify_resource_state(struct sk_buff *skb,
- 			   unsigned int seq,
- 			   struct drbd_resource *resource,
- 			   struct resource_info *resource_info,
-@@ -4640,16 +4640,17 @@ void notify_resource_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
+ 	while (msr < end) {
+-		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
++		if (msr->valid)
++			rdmsrl(msr->info.msr_no, msr->info.reg.q);
+ 		msr++;
  	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(resource, "Error %d while broadcasting event. Event seq:%u\n",
- 			err, seq);
-+	return err;
  }
- 
--void notify_device_state(struct sk_buff *skb,
-+int notify_device_state(struct sk_buff *skb,
- 			 unsigned int seq,
- 			 struct drbd_device *device,
- 			 struct device_info *device_info,
-@@ -4689,16 +4690,17 @@ void notify_device_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
+@@ -426,8 +427,10 @@ static int msr_build_context(const u32 *
  	}
--	return;
-+	return 0;
  
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(device, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
--void notify_connection_state(struct sk_buff *skb,
-+int notify_connection_state(struct sk_buff *skb,
- 			     unsigned int seq,
- 			     struct drbd_connection *connection,
- 			     struct connection_info *connection_info,
-@@ -4738,16 +4740,17 @@ void notify_connection_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
+ 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
++		u64 dummy;
++
+ 		msr_array[i].info.msr_no	= msr_id[j];
+-		msr_array[i].valid		= false;
++		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
+ 		msr_array[i].info.reg.q		= 0;
  	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(connection, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
--void notify_peer_device_state(struct sk_buff *skb,
-+int notify_peer_device_state(struct sk_buff *skb,
- 			      unsigned int seq,
- 			      struct drbd_peer_device *peer_device,
- 			      struct peer_device_info *peer_device_info,
-@@ -4788,13 +4791,14 @@ void notify_peer_device_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(peer_device, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
- void notify_helper(enum drbd_notification_type type,
-@@ -4845,7 +4849,7 @@ void notify_helper(enum drbd_notification_type type,
- 		 err, seq);
- }
- 
--static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
-+static int notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
- {
- 	struct drbd_genlmsghdr *dh;
- 	int err;
-@@ -4859,11 +4863,12 @@ static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
- 	if (nla_put_notification_header(skb, NOTIFY_EXISTS))
- 		goto nla_put_failure;
- 	genlmsg_end(skb, dh);
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- 	pr_err("Error %d sending event. Event seq:%u\n", err, seq);
-+	return err;
- }
- 
- static void free_state_changes(struct list_head *list)
-@@ -4890,6 +4895,7 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 	unsigned int seq = cb->args[2];
- 	unsigned int n;
- 	enum drbd_notification_type flags = 0;
-+	int err = 0;
- 
- 	/* There is no need for taking notification_mutex here: it doesn't
- 	   matter if the initial state events mix with later state chage
-@@ -4898,32 +4904,32 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 
- 	cb->args[5]--;
- 	if (cb->args[5] == 1) {
--		notify_initial_state_done(skb, seq);
-+		err = notify_initial_state_done(skb, seq);
- 		goto out;
- 	}
- 	n = cb->args[4]++;
- 	if (cb->args[4] < cb->args[3])
- 		flags |= NOTIFY_CONTINUES;
- 	if (n < 1) {
--		notify_resource_state_change(skb, seq, state_change->resource,
-+		err = notify_resource_state_change(skb, seq, state_change->resource,
- 					     NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n--;
- 	if (n < state_change->n_connections) {
--		notify_connection_state_change(skb, seq, &state_change->connections[n],
-+		err = notify_connection_state_change(skb, seq, &state_change->connections[n],
- 					       NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n -= state_change->n_connections;
- 	if (n < state_change->n_devices) {
--		notify_device_state_change(skb, seq, &state_change->devices[n],
-+		err = notify_device_state_change(skb, seq, &state_change->devices[n],
- 					   NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n -= state_change->n_devices;
- 	if (n < state_change->n_devices * state_change->n_connections) {
--		notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
-+		err = notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
- 						NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
-@@ -4938,7 +4944,10 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 		cb->args[4] = 0;
- 	}
- out:
--	return skb->len;
-+	if (err)
-+		return err;
-+	else
-+		return skb->len;
- }
- 
- int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
-diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
-index b452359b6aae..1474250f9440 100644
---- a/drivers/block/drbd/drbd_state.c
-+++ b/drivers/block/drbd/drbd_state.c
-@@ -1549,7 +1549,7 @@ int drbd_bitmap_io_from_worker(struct drbd_device *device,
- 	return rv;
- }
- 
--void notify_resource_state_change(struct sk_buff *skb,
-+int notify_resource_state_change(struct sk_buff *skb,
- 				  unsigned int seq,
- 				  struct drbd_resource_state_change *resource_state_change,
- 				  enum drbd_notification_type type)
-@@ -1562,10 +1562,10 @@ void notify_resource_state_change(struct sk_buff *skb,
- 		.res_susp_fen = resource_state_change->susp_fen[NEW],
- 	};
- 
--	notify_resource_state(skb, seq, resource, &resource_info, type);
-+	return notify_resource_state(skb, seq, resource, &resource_info, type);
- }
- 
--void notify_connection_state_change(struct sk_buff *skb,
-+int notify_connection_state_change(struct sk_buff *skb,
- 				    unsigned int seq,
- 				    struct drbd_connection_state_change *connection_state_change,
- 				    enum drbd_notification_type type)
-@@ -1576,10 +1576,10 @@ void notify_connection_state_change(struct sk_buff *skb,
- 		.conn_role = connection_state_change->peer_role[NEW],
- 	};
- 
--	notify_connection_state(skb, seq, connection, &connection_info, type);
-+	return notify_connection_state(skb, seq, connection, &connection_info, type);
- }
- 
--void notify_device_state_change(struct sk_buff *skb,
-+int notify_device_state_change(struct sk_buff *skb,
- 				unsigned int seq,
- 				struct drbd_device_state_change *device_state_change,
- 				enum drbd_notification_type type)
-@@ -1589,10 +1589,10 @@ void notify_device_state_change(struct sk_buff *skb,
- 		.dev_disk_state = device_state_change->disk_state[NEW],
- 	};
- 
--	notify_device_state(skb, seq, device, &device_info, type);
-+	return notify_device_state(skb, seq, device, &device_info, type);
- }
- 
--void notify_peer_device_state_change(struct sk_buff *skb,
-+int notify_peer_device_state_change(struct sk_buff *skb,
- 				     unsigned int seq,
- 				     struct drbd_peer_device_state_change *p,
- 				     enum drbd_notification_type type)
-@@ -1606,7 +1606,7 @@ void notify_peer_device_state_change(struct sk_buff *skb,
- 		.peer_resync_susp_dependency = p->resync_susp_dependency[NEW],
- 	};
- 
--	notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
-+	return notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
- }
- 
- static void broadcast_state_change(struct drbd_state_change *state_change)
-@@ -1614,7 +1614,7 @@ static void broadcast_state_change(struct drbd_state_change *state_change)
- 	struct drbd_resource_state_change *resource_state_change = &state_change->resource[0];
- 	bool resource_state_has_changed;
- 	unsigned int n_device, n_connection, n_peer_device, n_peer_devices;
--	void (*last_func)(struct sk_buff *, unsigned int, void *,
-+	int (*last_func)(struct sk_buff *, unsigned int, void *,
- 			  enum drbd_notification_type) = NULL;
- 	void *uninitialized_var(last_arg);
- 
-diff --git a/drivers/block/drbd/drbd_state_change.h b/drivers/block/drbd/drbd_state_change.h
-index ba80f612d6ab..d5b0479bc9a6 100644
---- a/drivers/block/drbd/drbd_state_change.h
-+++ b/drivers/block/drbd/drbd_state_change.h
-@@ -44,19 +44,19 @@ extern struct drbd_state_change *remember_old_state(struct drbd_resource *, gfp_
- extern void copy_old_to_new_state_change(struct drbd_state_change *);
- extern void forget_state_change(struct drbd_state_change *);
- 
--extern void notify_resource_state_change(struct sk_buff *,
-+extern int notify_resource_state_change(struct sk_buff *,
- 					 unsigned int,
- 					 struct drbd_resource_state_change *,
- 					 enum drbd_notification_type type);
--extern void notify_connection_state_change(struct sk_buff *,
-+extern int notify_connection_state_change(struct sk_buff *,
- 					   unsigned int,
- 					   struct drbd_connection_state_change *,
- 					   enum drbd_notification_type type);
--extern void notify_device_state_change(struct sk_buff *,
-+extern int notify_device_state_change(struct sk_buff *,
- 				       unsigned int,
- 				       struct drbd_device_state_change *,
- 				       enum drbd_notification_type type);
--extern void notify_peer_device_state_change(struct sk_buff *,
-+extern int notify_peer_device_state_change(struct sk_buff *,
- 					    unsigned int,
- 					    struct drbd_peer_device_state_change *,
- 					    enum drbd_notification_type type);
--- 
-2.35.1
-
+ 	saved_msrs->num   = total_num;
 
 
