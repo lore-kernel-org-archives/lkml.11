@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFC5C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B949C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241636AbiDRNDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        id S241425AbiDRNDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240240AbiDRMyr (ORCPT
+        with ESMTP id S240031AbiDRMyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:54:47 -0400
+        Mon, 18 Apr 2022 08:54:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF18B12ABA;
-        Mon, 18 Apr 2022 05:34:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A248DDEFB;
+        Mon, 18 Apr 2022 05:34:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF0D0611A9;
-        Mon, 18 Apr 2022 12:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7F49C385A7;
-        Mon, 18 Apr 2022 12:34:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2E4261033;
+        Mon, 18 Apr 2022 12:34:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA5CC385A7;
+        Mon, 18 Apr 2022 12:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285298;
-        bh=pJfrW3zZPhq6NUsLDJ0MlaigPRNzH9Yv9ppEgEo0WAQ=;
+        s=korg; t=1650285295;
+        bh=vvHpU+KgIweUqNvKAilXjclDlU910lIZwZVqcIdTsFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NQ7L2K/UhbGLjQlOxZDALj9E2dTGI0X9yTKq2F2wjsXf15EAv0BkJN4WIlj1DxojG
-         ndLjPqQOY3od9rD8680Ncxawm6EEdkIiOOtthJmeMb7CLOmNplQMC/ntsU9LIiYEZ9
-         OSyni5upGGqozEL+P/hVdlkBUVp5/Lonuwen/VVU=
+        b=d6uQY2eET8SDrpDXQBl+ihfhOVdynkdP+xCPman1wPWtHvec6MLMHBWDpySk2C2Oy
+         7JMSRPsQ542S/vMea7lA8hbRfmkyYdZIptZkgqwStjmLzMefz5CreZjfXdTeM7KOGl
+         9Mm+8yza+c/NoEC7kdLZu/EoSwGI+cT2bDQ+nv14=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Melissa Wen <mwen@igalia.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Simon Ser <contact@emersion.fr>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 163/189] drm/amd/display: dont ignore alpha property on pre-multiplied mode
-Date:   Mon, 18 Apr 2022 14:13:03 +0200
-Message-Id: <20220418121207.012373130@linuxfoundation.org>
+        stable@vger.kernel.org, kongweibin <kongweibin2@huawei.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 162/189] ipv6: fix panic when forwarding a pkt with no in6 dev
+Date:   Mon, 18 Apr 2022 14:13:02 +0200
+Message-Id: <20220418121206.952686849@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,97 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Melissa Wen <mwen@igalia.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-commit e4f1541caf60fcbe5a59e9d25805c0b5865e546a upstream.
+commit e3fa461d8b0e185b7da8a101fe94dfe6dd500ac0 upstream.
 
-"Pre-multiplied" is the default pixel blend mode for KMS/DRM, as
-documented in supported_modes of drm_plane_create_blend_mode_property():
-https://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/drm_blend.c
+kongweibin reported a kernel panic in ip6_forward() when input interface
+has no in6 dev associated.
 
-In this mode, both 'pixel alpha' and 'plane alpha' participate in the
-calculation, as described by the pixel blend mode formula in KMS/DRM
-documentation:
+The following tc commands were used to reproduce this panic:
+tc qdisc del dev vxlan100 root
+tc qdisc add dev vxlan100 root netem corrupt 5%
 
-out.rgb = plane_alpha * fg.rgb +
-          (1 - (plane_alpha * fg.alpha)) * bg.rgb
-
-Considering the blend config mechanisms we have in the driver so far,
-the alpha mode that better fits this blend mode is the
-_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN, where the value for global_gain
-is the plane alpha (global_alpha).
-
-With this change, alpha property stops to be ignored. It also addresses
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
-
-v2:
- * keep the 8-bit value for global_alpha_value (Nicholas)
- * correct the logical ordering for combined global gain (Nicholas)
- * apply to dcn10 too (Nicholas)
-
-Signed-off-by: Melissa Wen <mwen@igalia.com>
-Tested-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Tested-by: Simon Ser <contact@emersion.fr>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+CC: stable@vger.kernel.org
+Fixes: ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets")
+Reported-by: kongweibin <kongweibin2@huawei.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c |   14 +++++++++-----
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c        |   14 +++++++++-----
- 2 files changed, 18 insertions(+), 10 deletions(-)
+ net/ipv6/ip6_output.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-@@ -2460,14 +2460,18 @@ void dcn10_update_mpcc(struct dc *dc, st
- 	struct mpc *mpc = dc->res_pool->mpc;
- 	struct mpc_tree *mpc_tree_params = &(pipe_ctx->stream_res.opp->mpc_tree_params);
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
+ 		goto drop;
  
--	if (per_pixel_alpha)
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
--	else
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
--
- 	blnd_cfg.overlap_only = false;
- 	blnd_cfg.global_gain = 0xff;
- 
-+	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
-+		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
-+	} else if (per_pixel_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
-+	} else {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
-+	}
-+
- 	if (pipe_ctx->plane_state->global_alpha)
- 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
- 	else
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-@@ -2297,14 +2297,18 @@ void dcn20_update_mpcc(struct dc *dc, st
- 	struct mpc *mpc = dc->res_pool->mpc;
- 	struct mpc_tree *mpc_tree_params = &(pipe_ctx->stream_res.opp->mpc_tree_params);
- 
--	if (per_pixel_alpha)
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
--	else
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
--
- 	blnd_cfg.overlap_only = false;
- 	blnd_cfg.global_gain = 0xff;
- 
-+	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
-+		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
-+	} else if (per_pixel_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
-+	} else {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
-+	}
-+
- 	if (pipe_ctx->plane_state->global_alpha)
- 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
- 	else
+ 	if (!net->ipv6.devconf_all->disable_policy &&
+-	    !idev->cnf.disable_policy &&
++	    (!idev || !idev->cnf.disable_policy) &&
+ 	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
+ 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
+ 		goto drop;
 
 
