@@ -2,208 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31374C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C2B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238919AbiDRNBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
+        id S238925AbiDRNBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240631AbiDRMtq (ORCPT
+        with ESMTP id S240645AbiDRMtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32C62C643;
-        Mon, 18 Apr 2022 05:34:02 -0700 (PDT)
+        Mon, 18 Apr 2022 08:49:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4612C65C;
+        Mon, 18 Apr 2022 05:34:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AE08B80EE0;
-        Mon, 18 Apr 2022 12:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB27BC385A7;
-        Mon, 18 Apr 2022 12:33:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285240;
-        bh=tx3M+ArPFbUwJcPFk7XZAncevA4dr7YS6nCeHd62VYA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mBwVlKc5D0tCqetO5TsYdiPYXx4bmnC+qTXmVB4zZQfsxmDVgLE6q+VhlEA0UsWAx
-         4FJYIjbsATS7JsFHajUQ4Vjpxjbgj1mtM+XYh+IymU03u2XfnGD3Glv6l1Hurt8WNr
-         YFAoLKBUOcPI+ApqK3bzEoJVjINSF3iyFNVJME8E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Babrou <ivan@cloudflare.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Hildenbrand <david@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 146/189] mm: fix unexpected zeroed page mapping with zram swap
-Date:   Mon, 18 Apr 2022 14:12:46 +0200
-Message-Id: <20220418121205.846402350@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38FE2610F4;
+        Mon, 18 Apr 2022 12:34:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0766C385A1;
+        Mon, 18 Apr 2022 12:34:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650285243;
+        bh=L5R/v4sHI6rV04SHHUZi5wOoFWpDnT4xqKF6/3cKyl4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=u9bOvlRUZMy7+ggYsfFYV/4ulLBPFYISduMjTDTx0mtTvKrvcRIwf6iz5gWfzCMD/
+         Px6Q+BoHmUtcnNA0N18/6gGzqvAkP4FsWBvRMBnwiCJ8/kRKDsqF3EgWNmRDK8Tior
+         jRx1WLtN6tBQHGGnmk0rSK+hyIg9VDNluecSBtwaSWIV0Wi6AwkQzzNgU/zjJxHj+9
+         nCfu3t4xKSJrz3XbV/KsNCoBZkJQB+m5nW5YoZe0mJ2MWeXVRL03qXSjyo6kWq3O4K
+         81V92uuN6sxiVVhYe6LkBFhbD2Vph5+XJo+T4CvX7pH2EvNbxRJgfDHs67nlyALgOk
+         hz1vwedtdYVGw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1ngQZt-0050pH-7a; Mon, 18 Apr 2022 13:34:01 +0100
+Date:   Mon, 18 Apr 2022 13:34:00 +0100
+Message-ID: <87sfqaa7uv.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        PCI <linux-pci@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 2/4] PCI: dwc: rockchip: add legacy interrupt support
+In-Reply-To: <CAMdYzYo_+7rakc=GCTueEZvH_F4Co6+=eKAUztJaafiDXSKKXQ@mail.gmail.com>
+References: <20220416110507.642398-1-pgwipeout@gmail.com>
+        <20220416110507.642398-3-pgwipeout@gmail.com>
+        <308e9c47197d4f7ae5a31cfcb5a10886@kernel.org>
+        <CAMdYzYo+YeAgT92baMOoWpra230wro_WynRcajL-__9RNkeE9Q@mail.gmail.com>
+        <87zgkk9gtc.wl-maz@kernel.org>
+        <CAMdYzYo_+7rakc=GCTueEZvH_F4Co6+=eKAUztJaafiDXSKKXQ@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: pgwipeout@gmail.com, lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com, bhelgaas@google.com, heiko@sntech.de, linux-rockchip@lists.infradead.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minchan Kim <minchan@kernel.org>
+On Mon, 18 Apr 2022 12:37:00 +0100,
+Peter Geis <pgwipeout@gmail.com> wrote:
+> 
+> On Sun, Apr 17, 2022 at 5:53 AM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > On Sat, 16 Apr 2022 14:24:26 +0100,
+> > Peter Geis <pgwipeout@gmail.com> wrote:
+> > >
+> > > Okay, that makes sense. I'm hitting the entire block when it should be
+> > > the individual IRQ.
+> > > I also notice some drivers protect this with a spinlock while others
+> > > do not, how should this be handled?
+> >
+> > It obviously depends on how the HW. works. If this is a shared
+> > register using a RMW sequence, then you need some form of mutual
+> > exclusion in order to preserve the atomicity of the update.
+> >
+> > If the HW supports updating the masks using a set of hot bits (with
+> > separate clear/set registers), than there is no need for locking.  In
+> > your case PCIE_CLIENT_INTR_MASK_LEGACY seems to support this odd
+> > "write-enable" feature which can probably be used to implement a
+> > lockless access, something like:
+> >
+> >         void mask(struct irq_data *d)
+> >         {
+> >                 u32 val = BIT(d->hwirq + 16) | BIT(d->hwirq);
+> 
+> This is what HIWORD_UPDATE_BIT does, it's rather common in Rockchip code.
+> I believe I can safely drop the spinlock when enabling/disabling
+> individual interrupts.
 
-commit e914d8f00391520ecc4495dd0ca0124538ab7119 upstream.
+Yes.
 
-Two processes under CLONE_VM cloning, user process can be corrupted by
-seeing zeroed page unexpectedly.
+> 
+> >                 writel_relaxed(val, ...);
+> >         }
+> >
+> >         void mask(struct irq_data *d)
+> >         {
+> >                 u32 val = BIT(d->hwirq + 16);
+> >                 writel_relaxed(val, ...);
+> >         }
+> >
+> > Another thing is that it is completely unclear to me what initialises
+> > these interrupts the first place (INTR_MASK_LEGACY, INTR_EN_LEGACY).
+> > Are you relying on the firmware to do that for you?
+> 
+> There is no dedicated mask or enable/disable for the legacy interrupt
+> line (unless it's undocumented).
 
-      CPU A                        CPU B
+I'm talking about the INTR_MASK_LEGACY and INTR_EN_LEGACY registers,
+which control the INTx (although the latter seems to default to some
+reserved values). I don't see where you initialise them to a state
+where they are enabled and masked, which should be the initial state
+once this driver has probed. The output interrupt itself is obviously
+controlled by the GIC driver.
 
-  do_swap_page                do_swap_page
-  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
-  swap_readpage valid data
-    swap_slot_free_notify
-      delete zram entry
-                              swap_readpage zeroed(invalid) data
-                              pte_lock
-                              map the *zero data* to userspace
-                              pte_unlock
-  pte_lock
-  if (!pte_same)
-    goto out_nomap;
-  pte_unlock
-  return and next refault will
-  read zeroed data
+> It appears to be enabled via an "or" function with the emulated interrupts.
+> As far as I can tell this is common for dw-pcie, looking at the other drivers.
 
-The swap_slot_free_notify is bogus for CLONE_VM case since it doesn't
-increase the refcount of swap slot at copy_mm so it couldn't catch up
-whether it's safe or not to discard data from backing device.  In the
-case, only the lock it could rely on to synchronize swap slot freeing is
-page table lock.  Thus, this patch gets rid of the swap_slot_free_notify
-function.  With this patch, CPU A will see correct data.
+I think we're talking past each other. I'm solely concerned with the
+initialisation of the input control registers, for which I see no code
+in this patch.
 
-      CPU A                        CPU B
+	M.
 
-  do_swap_page                do_swap_page
-  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
-                              swap_readpage original data
-                              pte_lock
-                              map the original data
-                              swap_free
-                                swap_range_free
-                                  bd_disk->fops->swap_slot_free_notify
-  swap_readpage read zeroed data
-                              pte_unlock
-  pte_lock
-  if (!pte_same)
-    goto out_nomap;
-  pte_unlock
-  return
-  on next refault will see mapped data by CPU B
-
-The concern of the patch would increase memory consumption since it
-could keep wasted memory with compressed form in zram as well as
-uncompressed form in address space.  However, most of cases of zram uses
-no readahead and do_swap_page is followed by swap_free so it will free
-the compressed form from in zram quickly.
-
-Link: https://lkml.kernel.org/r/YjTVVxIAsnKAXjTd@google.com
-Fixes: 0bcac06f27d7 ("mm, swap: skip swapcache for swapin of synchronous device")
-Reported-by: Ivan Babrou <ivan@cloudflare.com>
-Tested-by: Ivan Babrou <ivan@cloudflare.com>
-Signed-off-by: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: <stable@vger.kernel.org>	[4.14+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/page_io.c |   54 ------------------------------------------------------
- 1 file changed, 54 deletions(-)
-
---- a/mm/page_io.c
-+++ b/mm/page_io.c
-@@ -50,54 +50,6 @@ void end_swap_bio_write(struct bio *bio)
- 	bio_put(bio);
- }
- 
--static void swap_slot_free_notify(struct page *page)
--{
--	struct swap_info_struct *sis;
--	struct gendisk *disk;
--	swp_entry_t entry;
--
--	/*
--	 * There is no guarantee that the page is in swap cache - the software
--	 * suspend code (at least) uses end_swap_bio_read() against a non-
--	 * swapcache page.  So we must check PG_swapcache before proceeding with
--	 * this optimization.
--	 */
--	if (unlikely(!PageSwapCache(page)))
--		return;
--
--	sis = page_swap_info(page);
--	if (data_race(!(sis->flags & SWP_BLKDEV)))
--		return;
--
--	/*
--	 * The swap subsystem performs lazy swap slot freeing,
--	 * expecting that the page will be swapped out again.
--	 * So we can avoid an unnecessary write if the page
--	 * isn't redirtied.
--	 * This is good for real swap storage because we can
--	 * reduce unnecessary I/O and enhance wear-leveling
--	 * if an SSD is used as the as swap device.
--	 * But if in-memory swap device (eg zram) is used,
--	 * this causes a duplicated copy between uncompressed
--	 * data in VM-owned memory and compressed data in
--	 * zram-owned memory.  So let's free zram-owned memory
--	 * and make the VM-owned decompressed page *dirty*,
--	 * so the page should be swapped out somewhere again if
--	 * we again wish to reclaim it.
--	 */
--	disk = sis->bdev->bd_disk;
--	entry.val = page_private(page);
--	if (disk->fops->swap_slot_free_notify && __swap_count(entry) == 1) {
--		unsigned long offset;
--
--		offset = swp_offset(entry);
--
--		SetPageDirty(page);
--		disk->fops->swap_slot_free_notify(sis->bdev,
--				offset);
--	}
--}
--
- static void end_swap_bio_read(struct bio *bio)
- {
- 	struct page *page = bio_first_page_all(bio);
-@@ -113,7 +65,6 @@ static void end_swap_bio_read(struct bio
- 	}
- 
- 	SetPageUptodate(page);
--	swap_slot_free_notify(page);
- out:
- 	unlock_page(page);
- 	WRITE_ONCE(bio->bi_private, NULL);
-@@ -392,11 +343,6 @@ int swap_readpage(struct page *page, boo
- 	if (sis->flags & SWP_SYNCHRONOUS_IO) {
- 		ret = bdev_read_page(sis->bdev, swap_page_sector(page), page);
- 		if (!ret) {
--			if (trylock_page(page)) {
--				swap_slot_free_notify(page);
--				unlock_page(page);
--			}
--
- 			count_vm_event(PSWPIN);
- 			goto out;
- 		}
-
-
+-- 
+Without deviation from the norm, progress is not possible.
