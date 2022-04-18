@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB4FC47086
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76BFC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243741AbiDRNeR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
+        id S243629AbiDRNeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241601AbiDRNIZ (ORCPT
+        with ESMTP id S241290AbiDRNH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:08:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A98421827;
-        Mon, 18 Apr 2022 05:47:47 -0700 (PDT)
+        Mon, 18 Apr 2022 09:07:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763CF2A738;
+        Mon, 18 Apr 2022 05:47:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 832FA6124A;
-        Mon, 18 Apr 2022 12:47:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76BDFC385A7;
-        Mon, 18 Apr 2022 12:47:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E41F661253;
+        Mon, 18 Apr 2022 12:47:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3E3C385A8;
+        Mon, 18 Apr 2022 12:47:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286065;
-        bh=0EpLQqBQHjcTpSODKHXy71hIZ4eq3bpxMs0J0sqKlmw=;
+        s=korg; t=1650286050;
+        bh=4bSNL2HCuVxfuFYn5tC2mBPJ2xyv9VI4fvWzI2d5KBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pxoe6HbxlLIdeEwGWUswFcDpFBqeuF9iOR5VSsujzqWCcM4QLtYzbBAeYtMFuoBZY
-         SUTgaFJZvsPXwGfv/6aowBrSLPVclJNsRdkpSfo9Fadb+LTf26zWR0zgQunypWGGhm
-         JH/Lqp2w/+LdpKPBxramBtrbMdx/A04elIqKzn84=
+        b=QpE+Q7OSvEZmMfaySajf4qijKu0Avo5xLe52XCZ5dpvBUB7Zi00DUhx0XhWCGWT3+
+         Mw2zNRTbyEYplcxaptJvljm2QysOYXslQg1m1hiAZT6urIfXerICsVG7Bk8Rat9Q7o
+         Jt1KGmLr2FNdaa5Bm1xoXnFbVq0dXDp6wuSbTjJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 4.14 019/284] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
-Date:   Mon, 18 Apr 2022 14:10:00 +0200
-Message-Id: <20220418121211.243931743@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [PATCH 4.14 014/284] coresight: Fix TRCCONFIGR.QE sysfs interface
+Date:   Mon, 18 Apr 2022 14:09:55 +0200
+Message-Id: <20220418121211.103547244@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,105 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: James Clark <james.clark@arm.com>
 
-commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
+commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
 
-Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
-operation because it allows the tracee to completely bypass all seccomp
-filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
-be settable by a process with global CAP_SYS_ADMIN, and only if that
-process is not subject to any seccomp filters at all.
+It's impossible to program a valid value for TRCCONFIGR.QE
+when TRCIDR0.QSUPP==0b10. In that case the following is true:
 
-However, while these permission checks were done on the PTRACE_SETOPTIONS
-path, they were missing on the PTRACE_SEIZE path, which also sets
-user-specified ptrace flags.
+  Q element support is implemented, and only supports Q elements without
+  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
 
-Move the permissions checks out into a helper function and let both
-ptrace_attach() and ptrace_setoptions() call it.
+Currently the low bit of QSUPP is checked to see if the low bit of QE can
+be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+making it impossible to ever write the only valid value of 0b11 to QE.
+0b10 would be written instead, which is a reserved QE value even for all
+values of QSUPP.
 
-Cc: stable@kernel.org
-Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+The fix is to allow writing the low bit of QE for any non zero value of
+QSUPP.
+
+This change also ensures that the low bit is always set, even when the
+user attempts to only set the high bit.
+
+Signed-off-by: James Clark <james.clark@arm.com>
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 15 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -370,6 +370,26 @@ bool ptrace_may_access(struct task_struc
- 	return !err;
- }
- 
-+static int check_ptrace_options(unsigned long data)
-+{
-+	if (data & ~(unsigned long)PTRACE_O_MASK)
-+		return -EINVAL;
-+
-+	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
-+		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
-+		    !IS_ENABLED(CONFIG_SECCOMP))
-+			return -EINVAL;
-+
-+		if (!capable(CAP_SYS_ADMIN))
-+			return -EPERM;
-+
-+		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
-+		    current->ptrace & PT_SUSPEND_SECCOMP)
-+			return -EPERM;
-+	}
-+	return 0;
-+}
-+
- static int ptrace_attach(struct task_struct *task, long request,
- 			 unsigned long addr,
- 			 unsigned long flags)
-@@ -381,8 +401,16 @@ static int ptrace_attach(struct task_str
- 	if (seize) {
- 		if (addr != 0)
- 			goto out;
-+		/*
-+		 * This duplicates the check in check_ptrace_options() because
-+		 * ptrace_attach() and ptrace_setoptions() have historically
-+		 * used different error codes for unknown ptrace options.
-+		 */
- 		if (flags & ~(unsigned long)PTRACE_O_MASK)
- 			goto out;
-+		retval = check_ptrace_options(flags);
-+		if (retval)
-+			return retval;
- 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
- 	} else {
- 		flags = PT_PTRACED;
-@@ -655,22 +683,11 @@ int ptrace_writedata(struct task_struct
- static int ptrace_setoptions(struct task_struct *child, unsigned long data)
- {
- 	unsigned flags;
-+	int ret;
- 
--	if (data & ~(unsigned long)PTRACE_O_MASK)
--		return -EINVAL;
--
--	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
--		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
--		    !IS_ENABLED(CONFIG_SECCOMP))
--			return -EINVAL;
--
--		if (!capable(CAP_SYS_ADMIN))
--			return -EPERM;
--
--		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
--		    current->ptrace & PT_SUSPEND_SECCOMP)
--			return -EPERM;
--	}
-+	ret = check_ptrace_options(data);
-+	if (ret)
-+		return ret;
- 
- 	/* Avoid intermediate state when all opts are cleared */
- 	flags = child->ptrace;
+--- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+@@ -379,8 +379,12 @@ static ssize_t mode_store(struct device
+ 	mode = ETM_MODE_QELEM(config->mode);
+ 	/* start by clearing QE bits */
+ 	config->cfg &= ~(BIT(13) | BIT(14));
+-	/* if supported, Q elements with instruction counts are enabled */
+-	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
++	/*
++	 * if supported, Q elements with instruction counts are enabled.
++	 * Always set the low bit for any requested mode. Valid combos are
++	 * 0b00, 0b01 and 0b11.
++	 */
++	if (mode && drvdata->q_support)
+ 		config->cfg |= BIT(13);
+ 	/*
+ 	 * if supported, Q elements with and without instruction
 
 
