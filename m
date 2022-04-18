@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239841AbiDRMxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
+        id S239846AbiDRMxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240976AbiDRMjw (ORCPT
+        with ESMTP id S237028AbiDRMkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0731C127;
-        Mon, 18 Apr 2022 05:31:39 -0700 (PDT)
+        Mon, 18 Apr 2022 08:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34491EC53;
+        Mon, 18 Apr 2022 05:31:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB0B60F0A;
-        Mon, 18 Apr 2022 12:31:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D174C385A1;
-        Mon, 18 Apr 2022 12:31:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89699B80ED6;
+        Mon, 18 Apr 2022 12:31:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8CFEC385A1;
+        Mon, 18 Apr 2022 12:31:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285098;
-        bh=x0SDuVbfp/A3GZCfabigrSCHaxXPPPOnUuX1gdTvEm4=;
+        s=korg; t=1650285110;
+        bh=ogGjmCDq5QrMaH3jBGzB1qxKHkMwVdOZIsCxhf3tPrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kIj/jrR2slrH+e/QPZZr3FzmbVuUD8ZcLZf4zA5pW0oQxzSkv7ilXGvq8NI5JBs4k
-         hQ7WjyICzf7PFBS5qv3ZdIJOr8D9IukgVIctQl16VJmDrNsJIAyKDZiqUBQdwe6JtK
-         yIC5BXmyGlAqxwcRIyLR2jb9k54MgC3hM7ZwWZis=
+        b=P+C3BQCtmfu4DZTinspYQW5HZpeHYTsxZre/XA30BgoB7sqwUjV9+xQhenYDOz1he
+         V9VQ1qWQo5vBkNk1DwLP558Z6wg7zmkfbvb1nAC38yeskhKV111npXFTS9MxhTi1lL
+         jvF7iL0Tb7Bxa2yQ3d/z/FzoaENsyx9v2eWr3BgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 103/189] net: bcmgenet: Revert "Use stronger register read/writes to assure ordering"
-Date:   Mon, 18 Apr 2022 14:12:03 +0200
-Message-Id: <20220418121203.426316292@linuxfoundation.org>
+Subject: [PATCH 5.15 106/189] btrfs: fix fallocate to use file_modified to update permissions consistently
+Date:   Mon, 18 Apr 2022 14:12:06 +0200
+Message-Id: <20220418121203.510546204@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,52 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+From: Darrick J. Wong <djwong@kernel.org>
 
-[ Upstream commit 2df3fc4a84e917a422935cc5bae18f43f9955d31 ]
+[ Upstream commit 05fd9564e9faf0f23b4676385e27d9405cef6637 ]
 
-It turns out after digging deeper into this bug, that it was being
-triggered by GCC12 failing to call the bcmgenet_enable_dma()
-routine. Given that a gcc12 fix has been merged [1] and the genet
-driver now works properly when built with gcc12, this commit should
-be reverted.
+Since the initial introduction of (posix) fallocate back at the turn of
+the century, it has been possible to use this syscall to change the
+user-visible contents of files.  This can happen by extending the file
+size during a preallocation, or through any of the newer modes (punch,
+zero range).  Because the call can be used to change file contents, we
+should treat it like we do any other modification to a file -- update
+the mtime, and drop set[ug]id privileges/capabilities.
 
-[1]
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
-https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=aabb9a261ef060cf24fd626713f1d7d9df81aa57
+The VFS function file_modified() does all this for us if pass it a
+locked inode, so let's make fallocate drop permissions correctly.
 
-Fixes: 8d3ea3d402db ("net: bcmgenet: Use stronger register read/writes to assure ordering")
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220412210420.1129430-1-jeremy.linton@arm.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/file.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 510e0cf64fa9..b4f99dd284e5 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		__raw_writel(value, offset);
- 	else
--		writel(value, offset);
-+		writel_relaxed(value, offset);
+diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
+index a1762363f61f..dc1e4d1b7291 100644
+--- a/fs/btrfs/file.c
++++ b/fs/btrfs/file.c
+@@ -2878,8 +2878,9 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
+ 	return ret;
  }
  
- static inline u32 bcmgenet_readl(void __iomem *offset)
-@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		return __raw_readl(offset);
- 	else
--		return readl(offset);
-+		return readl_relaxed(offset);
- }
+-static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
++static int btrfs_punch_hole(struct file *file, loff_t offset, loff_t len)
+ {
++	struct inode *inode = file_inode(file);
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
+ 	struct btrfs_root *root = BTRFS_I(inode)->root;
+ 	struct extent_state *cached_state = NULL;
+@@ -2911,6 +2912,10 @@ static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
+ 		goto out_only_mutex;
+ 	}
  
- static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
++	ret = file_modified(file);
++	if (ret)
++		goto out_only_mutex;
++
+ 	lockstart = round_up(offset, btrfs_inode_sectorsize(BTRFS_I(inode)));
+ 	lockend = round_down(offset + len,
+ 			     btrfs_inode_sectorsize(BTRFS_I(inode))) - 1;
+@@ -3351,7 +3356,7 @@ static long btrfs_fallocate(struct file *file, int mode,
+ 		return -EOPNOTSUPP;
+ 
+ 	if (mode & FALLOC_FL_PUNCH_HOLE)
+-		return btrfs_punch_hole(inode, offset, len);
++		return btrfs_punch_hole(file, offset, len);
+ 
+ 	/*
+ 	 * Only trigger disk allocation, don't trigger qgroup reserve
+@@ -3373,6 +3378,10 @@ static long btrfs_fallocate(struct file *file, int mode,
+ 			goto out;
+ 	}
+ 
++	ret = file_modified(file);
++	if (ret)
++		goto out;
++
+ 	/*
+ 	 * TODO: Move these two operations after we have checked
+ 	 * accurate reserved space, or fallocate can still fail but
 -- 
 2.35.1
 
