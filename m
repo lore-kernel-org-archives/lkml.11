@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D88C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F00C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346865AbiDRRPU (ORCPT
+        id S1346873AbiDRRPX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        Mon, 18 Apr 2022 13:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346818AbiDRRPI (ORCPT
+        with ESMTP id S1346820AbiDRRPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 13:15:08 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A29205E6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:26 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id j8-20020a17090a060800b001cd4fb60dccso14619423pjj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:26 -0700 (PDT)
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0CA21263
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:29 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id be5so12815211plb.13
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EczBgSrH2S/KZGWpRphduxUxnAnNXtm2R6frAPGuEZk=;
-        b=EUAqnJDbpIA/Y7va/xIASz/J56PcYmJzvt7wqzCFE6UI48jubb8e8HZNWni8jozFrZ
-         FbZjuEtRgfLi18erfhHPJZ+kR8jJ1n2rkX/cM6+r/rBV2DVNaWab0awGfMZ1JEE04BKT
-         17zEaIWmmA8/AQkB8XuzJ9QQEPCt+F0x4/h//nLVAWyBXql/1NwaU31FLS5y5NCa3eec
-         JEe+Zqwq/tvaJiYuwf1XPNWfN5sN5A4DW34AL5fmWofFIdKxkQ8gEYEzpUHGqv0J3B67
-         BcVNolgE3XBYItsTpt/MlzFsaRa9trTVlBlANZj5ZW2BgE6ZB5erqO+Siua8PiAgfV32
-         ue2w==
+        bh=zoZQxmtb8wh8rIrYIwJh8EMCnLpoLNcQ3bLBdyTYQ6w=;
+        b=oGePhJ4CL//kwxYgrL7T7zj0lNgwSohAJEPCTFN2QQEJnJn5Pp66ypPFowafWAlYDl
+         uLeT7zCb7k+aar64pu4/2c2306Ut4jcNmn34NZI3na7reYJKjwNdJTF1RgrWj8jYj2cu
+         kpHLzdpHj4gx5TJg44hXhNBfUnGai8YQlj8/Id+UbZCwx2oYkKqxjxfEOBVvfQPtgVu0
+         DviuhV5Tnf8/GwojjvmUAw8AGrCIjYUUa98K3dNB/qYpkQUOPAa6MR+//mnVw4YrTRQo
+         J+5gSqU1UwamONsNn/oBbkv1C+Pp56celep1KU5sWr20BJVJXeLFzXMWtAuGAdLxdFfH
+         yzDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EczBgSrH2S/KZGWpRphduxUxnAnNXtm2R6frAPGuEZk=;
-        b=0496U7wZl7Fr5sXus87XHhbRaUA0BC2RvKxe6mBcdp2KxsHFx4s3LJo3eauHIuy/gI
-         rfp4+k7Ea/6vX4RgNgb16BXcucxi7e85IpRf/eZG8s01hziXIJiA9UAr1d1w9WuutN6V
-         fD/cCdwF4Q+AfXoXniZcKDLoGeqiUfOIx0kcx9mQix8eivuByWWdzu9KOhG53bB8Mn1p
-         g2V1PJMOHx/JODWMW7H+83XUkPZBMehZ6JTTEPLFsgtb1otB4bAxLwiv6XzAlesn8cHJ
-         6MvXHlzhs7b7PE0z6XbjG9JHm4nhlsY4UNMaPFH94XuL4AqUU04YzkOJljknSwfCKgnt
-         GXZg==
-X-Gm-Message-State: AOAM5316uPsuNSYP3yeY5zIEtw/OwXGCasfa7IHBbjzKU01pPz6Rv7/i
-        8wTWa16W6KNNXCAxIedLU37XCS8zZhw=
-X-Google-Smtp-Source: ABdhPJzho3bEGmPO1L6ubBM5Kahyw7ugp862MrHda+qnPqa++tNNLj6M/co9uD3OUfPW4AhySLlKNw==
-X-Received: by 2002:a17:90b:4c45:b0:1d2:abcd:be49 with SMTP id np5-20020a17090b4c4500b001d2abcdbe49mr4298011pjb.193.1650301945715;
-        Mon, 18 Apr 2022 10:12:25 -0700 (PDT)
+        bh=zoZQxmtb8wh8rIrYIwJh8EMCnLpoLNcQ3bLBdyTYQ6w=;
+        b=16YL/5h7UEfsFXF0TrVcif8bGrCN5hVW792AwnpcEIUp9nrn/r1GUASrVpBcQhNppG
+         /BSO/ztNW1+1gMS52t4pO9tBoyQd9iO8eDS4QWXzN2Xv71ZkF1FajfWGAR9kUZf/HNIy
+         vKNYZjVWOLYFj8NiM2mqdDNRX83CDAyp4cEKhaIxiwYc/ODnOgpTImjKAgLC2vsXoyqR
+         gA+rTPEckQahCPsQYmwu7R3O4A073e30H+KpA4DRXeQWc6PWBjenTTH2cQqn1akSEpeo
+         0f4msouur4OnQ9WCHB82GsZO1oA0zVWN2G2fftsSCP7JNLudGZjgAG4j0ZLAFLOchj8/
+         Cc9A==
+X-Gm-Message-State: AOAM532tacV+XO81QNWLJTcDogdOKlHASzbMX70UqXdlQBuZNUpbkSLf
+        UXD5/7DBCYvCWExIOAeqcrc=
+X-Google-Smtp-Source: ABdhPJyYTfhMqf837S2fuUtQSWU6SysAvp5Z7RY2vZSt/y/eY/bblzWbZV44btEVv4w2YhKfxN4w1Q==
+X-Received: by 2002:a17:902:8c81:b0:156:7fee:643b with SMTP id t1-20020a1709028c8100b001567fee643bmr11866552plo.59.1650301948714;
+        Mon, 18 Apr 2022 10:12:28 -0700 (PDT)
 Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:3f09:380c:8f11:5a8a])
-        by smtp.gmail.com with ESMTPSA id e16-20020a63ee10000000b0039d1c7e80bcsm13637138pgi.75.2022.04.18.10.12.24
+        by smtp.gmail.com with ESMTPSA id e16-20020a63ee10000000b0039d1c7e80bcsm13637138pgi.75.2022.04.18.10.12.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 10:12:24 -0700 (PDT)
+        Mon, 18 Apr 2022 10:12:28 -0700 (PDT)
 From:   Max Filippov <jcmvbkbc@gmail.com>
 To:     linux-xtensa@linux-xtensa.org
 Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
         Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 1/5] xtensa: drop dead code from entry.S
-Date:   Mon, 18 Apr 2022 10:12:01 -0700
-Message-Id: <20220418171205.2413168-2-jcmvbkbc@gmail.com>
+Subject: [PATCH 3/5] xtensa: use abi_* register names in the kernel exit code
+Date:   Mon, 18 Apr 2022 10:12:03 -0700
+Message-Id: <20220418171205.2413168-4-jcmvbkbc@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220418171205.2413168-1-jcmvbkbc@gmail.com>
 References: <20220418171205.2413168-1-jcmvbkbc@gmail.com>
@@ -65,50 +65,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KERNEL_STACK_OVERFLOW_CHECK is incomplete and have never been enabled.
-Remove it.
+Using plain register names is prone to errors when code is changed and
+new calls are added between the register load and use. Change plain
+register names to abi_* names in the call-heavy part of the kernel exit
+code to clearly indicate what's supposed to be preserved and what's not.
+Re-align code while at it.
 
 Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 ---
- arch/xtensa/kernel/entry.S | 18 ------------------
- 1 file changed, 18 deletions(-)
+ arch/xtensa/kernel/entry.S | 82 +++++++++++++++++++-------------------
+ 1 file changed, 42 insertions(+), 40 deletions(-)
 
 diff --git a/arch/xtensa/kernel/entry.S b/arch/xtensa/kernel/entry.S
-index 6b6eff658795..3c0b1aac7aba 100644
+index c85597a734aa..d09f2c38ba84 100644
 --- a/arch/xtensa/kernel/entry.S
 +++ b/arch/xtensa/kernel/entry.S
-@@ -28,15 +28,6 @@
- #include <asm/tlbflush.h>
- #include <variant/tie-asm.h>
+@@ -462,11 +462,11 @@ KABI_W	or	a3, a3, a2
+ 	 * exception handler and call the exception handler.
+ 	 */
  
--/* Unimplemented features. */
--
--#undef KERNEL_STACK_OVERFLOW_CHECK
--
--/* Not well tested.
-- *
-- * - fast_coprocessor
-- */
--
- /*
-  * Macro to find first bit set in WINDOWBASE from the left + 1
-  *
-@@ -350,15 +341,6 @@ KABI_W	_bbsi.l	a2, 3, 1f
- 	l32i	a0, a1, PT_AREG0	# restore saved a0
- 	wsr	a0, depc
+-	l32i	abi_arg1, a1, PT_EXCCAUSE	# pass EXCCAUSE
+-	rsr	abi_tmp0, excsave1
+-	addx4	abi_tmp0, abi_arg1, abi_tmp0
+-	l32i	abi_tmp0, abi_tmp0, EXC_TABLE_DEFAULT	# load handler
+-	mov	abi_arg0, a1			# pass stack frame
++	l32i		abi_arg1, a1, PT_EXCCAUSE	# pass EXCCAUSE
++	rsr		abi_tmp0, excsave1
++	addx4		abi_tmp0, abi_arg1, abi_tmp0
++	l32i		abi_tmp0, abi_tmp0, EXC_TABLE_DEFAULT	# load handler
++	mov		abi_arg0, a1			# pass stack frame
  
--#ifdef KERNEL_STACK_OVERFLOW_CHECK
+ 	/* Call the second-level handler */
+ 
+@@ -477,23 +477,23 @@ KABI_W	or	a3, a3, a2
+ common_exception_return:
+ 
+ #if XTENSA_FAKE_NMI
+-	l32i	abi_tmp0, a1, PT_EXCCAUSE
+-	movi	abi_tmp1, EXCCAUSE_MAPPED_NMI
+-	l32i	abi_saved1, a1, PT_PS
+-	beq	abi_tmp0, abi_tmp1, .Lrestore_state
++	l32i		abi_tmp0, a1, PT_EXCCAUSE
++	movi		abi_tmp1, EXCCAUSE_MAPPED_NMI
++	l32i		abi_saved1, a1, PT_PS
++	beq		abi_tmp0, abi_tmp1, .Lrestore_state
+ #endif
+ .Ltif_loop:
+-	irq_save a2, a3
++	irq_save	abi_tmp0, abi_tmp1
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	abi_call	trace_hardirqs_off
+ #endif
+ 
+ 	/* Jump if we are returning from kernel exceptions. */
+ 
+-	l32i	abi_saved1, a1, PT_PS
+-	GET_THREAD_INFO(a2, a1)
+-	l32i	a4, a2, TI_FLAGS
+-	_bbci.l	abi_saved1, PS_UM_BIT, .Lexit_tif_loop_kernel
++	l32i		abi_saved1, a1, PT_PS
++	GET_THREAD_INFO(abi_tmp0, a1)
++	l32i		abi_saved0, abi_tmp0, TI_FLAGS
++	_bbci.l		abi_saved1, PS_UM_BIT, .Lexit_tif_loop_kernel
+ 
+ 	/* Specific to a user exception exit:
+ 	 * We need to check some flags for signal handling and rescheduling,
+@@ -502,75 +502,77 @@ common_exception_return:
+ 	 * Note that we don't disable interrupts here. 
+ 	 */
+ 
+-	_bbsi.l	a4, TIF_NEED_RESCHED, .Lresched
+-	movi	a2, _TIF_SIGPENDING | _TIF_NOTIFY_RESUME | _TIF_NOTIFY_SIGNAL
+-	bnone	a4, a2, .Lexit_tif_loop_user
++	_bbsi.l		abi_saved0, TIF_NEED_RESCHED, .Lresched
++	movi		abi_tmp0, _TIF_SIGPENDING | _TIF_NOTIFY_RESUME | _TIF_NOTIFY_SIGNAL
++	bnone		abi_saved0, abi_tmp0, .Lexit_tif_loop_user
+ 
+-	l32i	a4, a1, PT_DEPC
+-	bgeui	a4, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lrestore_state
++	l32i		abi_tmp0, a1, PT_DEPC
++	bgeui		abi_tmp0, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lrestore_state
+ 
+ 	/* Call do_signal() */
+ 
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	abi_call	trace_hardirqs_on
+ #endif
+-	rsil	a2, 0
+-	mov	abi_arg0, a1
++	rsil		abi_tmp0, 0
++	mov		abi_arg0, a1
+ 	abi_call	do_notify_resume	# int do_notify_resume(struct pt_regs*)
+-	j	.Ltif_loop
++	j		.Ltif_loop
+ 
+ .Lresched:
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	abi_call	trace_hardirqs_on
+ #endif
+-	rsil	a2, 0
++	rsil		abi_tmp0, 0
+ 	abi_call	schedule	# void schedule (void)
+-	j	.Ltif_loop
++	j		.Ltif_loop
+ 
+ .Lexit_tif_loop_kernel:
+ #ifdef CONFIG_PREEMPTION
+-	_bbci.l	a4, TIF_NEED_RESCHED, .Lrestore_state
++	_bbci.l		abi_saved0, TIF_NEED_RESCHED, .Lrestore_state
+ 
+ 	/* Check current_thread_info->preempt_count */
+ 
+-	l32i	a4, a2, TI_PRE_COUNT
+-	bnez	a4, .Lrestore_state
++	l32i		abi_tmp1, abi_tmp0, TI_PRE_COUNT
++	bnez		abi_tmp1, .Lrestore_state
+ 	abi_call	preempt_schedule_irq
+ #endif
+-	j	.Lrestore_state
++	j		.Lrestore_state
+ 
+ .Lexit_tif_loop_user:
+ #ifdef CONFIG_HAVE_HW_BREAKPOINT
+-	_bbci.l	a4, TIF_DB_DISABLED, 1f
++	_bbci.l		abi_saved0, TIF_DB_DISABLED, 1f
+ 	abi_call	restore_dbreak
+ 1:
+ #endif
+ #ifdef CONFIG_DEBUG_TLB_SANITY
+-	l32i	a4, a1, PT_DEPC
+-	bgeui	a4, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lrestore_state
++	l32i		abi_tmp0, a1, PT_DEPC
++	bgeui		abi_tmp0, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lrestore_state
+ 	abi_call	check_tlb_sanity
+ #endif
+ 
+ .Lrestore_state:
+ #ifdef CONFIG_TRACE_IRQFLAGS
+-	extui	a4, abi_saved1, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+-	bgei	a4, LOCKLEVEL, 1f
++	extui		abi_tmp0, abi_saved1, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
++	bgei		abi_tmp0, LOCKLEVEL, 1f
+ 	abi_call	trace_hardirqs_on
+ 1:
+ #endif
+-	/* Restore optional registers. */
++	/*
++	 * Restore optional registers.
++	 * abi_arg* are used as temporary registers here.
++	 */
+ 
+-	load_xtregs_opt a1 a2 a4 a5 a6 a7 PT_XTREGS_OPT
++	load_xtregs_opt a1 abi_tmp0 abi_arg0 abi_arg1 abi_arg2 abi_arg3 PT_XTREGS_OPT
+ 
+ 	/* Restore SCOMPARE1 */
+ 
+ #if XCHAL_HAVE_S32C1I
+-	l32i    a2, a1, PT_SCOMPARE1
+-	wsr     a2, scompare1
++	l32i		abi_tmp0, a1, PT_SCOMPARE1
++	wsr		abi_tmp0, scompare1
+ #endif
+-	wsr	abi_saved1, ps		/* disable interrupts */
 -
--	/*  Stack overflow check, for debugging  */
--	extui	a2, a1, TASK_SIZE_BITS,XX
--	movi	a3, SIZE??
--	_bge	a2, a3, out_of_stack_panic
--
--#endif
--
- /*
-  * This is the common exception handler.
-  * We get here from the user exception handler or simply by falling through
+-	_bbci.l	abi_saved1, PS_UM_BIT, kernel_exception_exit
++	wsr		abi_saved1, ps		/* disable interrupts */
++	_bbci.l		abi_saved1, PS_UM_BIT, kernel_exception_exit
+ 
+ user_exception_exit:
+ 
 -- 
 2.30.2
 
