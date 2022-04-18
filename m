@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0B9C352A8
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFDFC38162
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344855AbiDRO2d (ORCPT
+        id S1345134AbiDRO26 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
+        Mon, 18 Apr 2022 10:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344122AbiDRORg (ORCPT
+        with ESMTP id S1344294AbiDROR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:17:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40253A5DF;
-        Mon, 18 Apr 2022 06:13:39 -0700 (PDT)
+        Mon, 18 Apr 2022 10:17:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF6946650;
+        Mon, 18 Apr 2022 06:13:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55CD0B80EC0;
-        Mon, 18 Apr 2022 13:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787D8C385A7;
-        Mon, 18 Apr 2022 13:13:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FFE3B80EE2;
+        Mon, 18 Apr 2022 13:13:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DE7C385A7;
+        Mon, 18 Apr 2022 13:13:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287606;
-        bh=XkemU6srSed5kT5okOw/nsg4lM4iTBnCC1K6XNstH5k=;
+        s=korg; t=1650287587;
+        bh=btq5PtiLLaSG5Z1o+XKlEstXkapvQO9CjumUPjapG5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dh3+wppWPlStwgQhhLUnycK1l3TiZzSJc2inJjoe2zscT+Ymwo1H9s4I4ok9LMOpK
-         b1qRvjAL+tMAIIUXrRkf8eFrinVUj48JlNOA6FKb4bdVHTtFxo31b0EPQ570tZBO9p
-         oglDoM7Vnl2dD6A/tvrolZcVxtvBlms87/jJmLYE=
+        b=pA/Qp/98NG32q48ca9KqFMxx0sRGzk518U7kF4Wm8LKc+X0stqdxri1fnI08R4lDG
+         dz7z5OCJs81HBkrjoa7mxnRqWSamJeTsiqsDYjmUCuFuZwHlkY9kHbQzZrigt7EP1L
+         UxYnuNNwx5gLHBnQhlT/qNPnbUxDvVqF9f/olaCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 174/218] scsi: aha152x: Fix aha152x_setup() __setup handler return value
-Date:   Mon, 18 Apr 2022 14:14:00 +0200
-Message-Id: <20220418121205.622586004@linuxfoundation.org>
+Subject: [PATCH 4.9 206/218] drm/amdkfd: Check for potential null return of kmalloc_array()
+Date:   Mon, 18 Apr 2022 14:14:32 +0200
+Message-Id: <20220418121207.878933802@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -53,50 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: QintaoShen <unSimple1993@163.com>
 
-[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
+[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; doing so just pollutes init's
-environment with strings that are not init arguments/parameters).
+As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
+Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
 
-Return 1 from aha152x_setup() to indicate that the boot option has been
-handled.
-
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
-Cc: "Juergen E. Fischer" <fischer@norbit.de>
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: QintaoShen <unSimple1993@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/aha152x.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
-index f44d0487236e..bd850c5faf77 100644
---- a/drivers/scsi/aha152x.c
-+++ b/drivers/scsi/aha152x.c
-@@ -3381,13 +3381,11 @@ static int __init aha152x_setup(char *str)
- 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
- 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
- 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
--	if (ints[0] > 8) {                                                /*}*/
-+	if (ints[0] > 8)
- 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
- 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
--	} else {
-+	else
- 		setup_count++;
--		return 0;
--	}
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+index 6a3470f84998..732713ff3190 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+@@ -607,6 +607,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
+ 	event_waiters = kmalloc_array(num_events,
+ 					sizeof(struct kfd_event_waiter),
+ 					GFP_KERNEL);
++	if (!event_waiters)
++		return NULL;
  
- 	return 1;
- }
+ 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
+ 		INIT_LIST_HEAD(&event_waiters[i].waiters);
 -- 
 2.35.1
 
