@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B111C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239377AbiDRMg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53712 "EHLO
+        id S239390AbiDRMge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238894AbiDRMaS (ORCPT
+        with ESMTP id S240193AbiDRM3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:30:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA482458E;
-        Mon, 18 Apr 2022 05:23:31 -0700 (PDT)
+        Mon, 18 Apr 2022 08:29:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA8420BE1;
+        Mon, 18 Apr 2022 05:23:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B73DD60FB6;
-        Mon, 18 Apr 2022 12:23:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFFAC385A1;
-        Mon, 18 Apr 2022 12:23:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 526FB60FD8;
+        Mon, 18 Apr 2022 12:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B69FC385A1;
+        Mon, 18 Apr 2022 12:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284610;
-        bh=bjCjhv8haIP+MHw/BiUZCXR2FoFiviSuC5QqBleHCf0=;
+        s=korg; t=1650284603;
+        bh=dz4DyjCE1hkovpKUeU40FoIrDG+dduM3Lv3sZS9Qj9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p4pZX3nDQwv789XLOKKFXUBLfVoQGJdv7QFWKsxri31bPpHd6snxODgxVguTj1p/B
-         b58CM2ord8+TZiAkm6IFeMj5UDiFrSbXqb6th2WTIWX131Urvw9nauVGt95NnvoJ3g
-         W200j89S4H2INhYqlcICGayG8aqvBIM6kGzZCFxM=
+        b=gAyj7lmHPYoahm09cYMOSrEP/qFF4rCFGJdF+QEeIdkj9kT9RqT/DvVMuV/TIhueJ
+         Zn+JuQSkZM1bQiQmrl5ob78hBOLXnfqt2npBF/eN/ePwFDJxl+IBMg+/xdjsDhhjjP
+         /Q7MdqhKcairJMqMCwU4fEDe3dK+ofzskZan7KPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 133/219] drm/amdgpu: conduct a proper cleanup of PDB bo
-Date:   Mon, 18 Apr 2022 14:11:42 +0200
-Message-Id: <20220418121210.617946033@linuxfoundation.org>
+Subject: [PATCH 5.17 167/219] scsi: mpt3sas: Fail reset operation if config request timed out
+Date:   Mon, 18 Apr 2022 14:12:16 +0200
+Message-Id: <20220418121211.557252279@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,36 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guchun Chen <guchun.chen@amd.com>
+From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 
-[ Upstream commit 2d505453f38e18d42ba7d5428aaa17aaa7752c65 ]
+[ Upstream commit f61eb1216c959f93ffabd3b8781fa5b2b22f8907 ]
 
-Use amdgpu_bo_free_kernel instead of amdgpu_bo_unref to
-perform a proper cleanup of PDB bo.
+As part of controller reset operation the driver issues a config request
+command. If this command gets times out, then fail the controller reset
+operation instead of retrying it.
 
-v2: update subject to be more accurate
-
-Signed-off-by: Guchun Chen <guchun.chen@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://lore.kernel.org/r/20220405120637.20528-1-sreekanth.reddy@broadcom.com
+Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/mpt3sas/mpt3sas_config.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index 88c1eb9ad068..34ee75cf7954 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1684,7 +1684,7 @@ static int gmc_v9_0_sw_fini(void *handle)
- 	amdgpu_gem_force_release(adev);
- 	amdgpu_vm_manager_fini(adev);
- 	amdgpu_gart_table_vram_free(adev);
--	amdgpu_bo_unref(&adev->gmc.pdb0_bo);
-+	amdgpu_bo_free_kernel(&adev->gmc.pdb0_bo, NULL, &adev->gmc.ptr_pdb0);
- 	amdgpu_bo_fini(adev);
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_config.c b/drivers/scsi/mpt3sas/mpt3sas_config.c
+index 0563078227de..a8dd14c91efd 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_config.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_config.c
+@@ -394,10 +394,13 @@ _config_request(struct MPT3SAS_ADAPTER *ioc, Mpi2ConfigRequest_t
+ 		retry_count++;
+ 		if (ioc->config_cmds.smid == smid)
+ 			mpt3sas_base_free_smid(ioc, smid);
+-		if ((ioc->shost_recovery) || (ioc->config_cmds.status &
+-		    MPT3_CMD_RESET) || ioc->pci_error_recovery)
++		if (ioc->config_cmds.status & MPT3_CMD_RESET)
+ 			goto retry_config;
+-		issue_host_reset = 1;
++		if (ioc->shost_recovery || ioc->pci_error_recovery) {
++			issue_host_reset = 0;
++			r = -EFAULT;
++		} else
++			issue_host_reset = 1;
+ 		goto free_mem;
+ 	}
  
- 	return 0;
 -- 
 2.35.1
 
