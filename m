@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD85C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241612AbiDRNPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
+        id S241680AbiDRNPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241167AbiDRM60 (ORCPT
+        with ESMTP id S241439AbiDRM6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6591824F38;
-        Mon, 18 Apr 2022 05:38:44 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929ED1FA46;
+        Mon, 18 Apr 2022 05:39:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFCBBB80EDE;
-        Mon, 18 Apr 2022 12:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F886C385A7;
-        Mon, 18 Apr 2022 12:38:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB3186119B;
+        Mon, 18 Apr 2022 12:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE82EC385A1;
+        Mon, 18 Apr 2022 12:39:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285521;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
+        s=korg; t=1650285545;
+        bh=5fViKXH6yIfHBoQAnKXrMdVGEo8QWYU9eBsjCEJYbQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4FlZjJbZgcFdBn2/PUQwNgCwdnn2lScEjyzvfs3ZPUGf6noUFNz5R2rO+1RT3IAw
-         BPFqsN7XVo8cAl3JKbXU3xlwHvoCJiYIPkch7bkrMWXVX0OXbXWZqOZ4QwtnFpkOTd
-         MPgDye1cPpdagF81JjSFJLrha8imZ/6mEsYG4CWA=
+        b=VhAUN8HfCigBnaUwtmLWpQXRp3rsKq+OaU8xLlZm+wHPM8hBxryymZv8IFdr4Igwj
+         GrYYzBKkTllyGH0otPzim5fkMR5e3d7Bld/N0u+BQyi+qaP7nBdpNeUiwwrwQ+sNxb
+         H1W6whzYw3n2k8KoaDsBv/mUEjjgL4oqOo7zNmyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 042/105] drm/amd: Add USBC connector ID
-Date:   Mon, 18 Apr 2022 14:12:44 +0200
-Message-Id: <20220418121147.673400790@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Xu Jia <xujia39@huawei.com>
+Subject: [PATCH 5.10 002/105] hamradio: defer 6pack kfree after unregister_netdev
+Date:   Mon, 18 Apr 2022 14:12:04 +0200
+Message-Id: <20220418121145.301779931@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,35 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+commit 0b9111922b1f399aba6ed1e1b8f2079c3da1aed8 upstream.
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+There is a possible race condition (use-after-free) like below
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ (USE)                       |  (FREE)
+  dev_queue_xmit             |
+   __dev_queue_xmit          |
+    __dev_xmit_skb           |
+     sch_direct_xmit         | ...
+      xmit_one               |
+       netdev_start_xmit     | tty_ldisc_kill
+        __netdev_start_xmit  |  6pack_close
+         sp_xmit             |   kfree
+          sp_encaps          |
+                             |
+
+According to the patch "defer ax25 kfree after unregister_netdev", this
+patch reorder the kfree after the unregister_netdev to avoid the possible
+UAF as the unregister_netdev() is well synchronized and won't return if
+there is a running routine.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Xu Jia <xujia39@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/hamradio/6pack.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -679,9 +679,11 @@ static void sixpack_close(struct tty_str
+ 	del_timer_sync(&sp->tx_t);
+ 	del_timer_sync(&sp->resync_t);
  
- /* deleted */
+-	/* Free all 6pack frame buffers. */
++	/* Free all 6pack frame buffers after unreg. */
+ 	kfree(sp->rbuff);
+ 	kfree(sp->xbuff);
++
++	free_netdev(sp->dev);
+ }
  
--- 
-2.35.1
-
+ /* Perform I/O control on an active 6pack channel. */
 
 
