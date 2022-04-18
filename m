@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5333FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 667DBC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238301AbiDRM4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        id S240519AbiDRM4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240022AbiDRMnf (ORCPT
+        with ESMTP id S233251AbiDRMn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:43:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B3526561;
-        Mon, 18 Apr 2022 05:32:21 -0700 (PDT)
+        Mon, 18 Apr 2022 08:43:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122ED26AD8;
+        Mon, 18 Apr 2022 05:32:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C872861033;
-        Mon, 18 Apr 2022 12:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B03CAC385A7;
-        Mon, 18 Apr 2022 12:32:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1652B80EDC;
+        Mon, 18 Apr 2022 12:32:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209DCC385A8;
+        Mon, 18 Apr 2022 12:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285140;
-        bh=szVwhci6wEG2scB742G2j4/7NAzzTzIVcKJbFqCQBr4=;
+        s=korg; t=1650285146;
+        bh=udydudFpXI5RsOzbFPzo0ugZyhEPmUnyeJk9tXbSHNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f4oavORV4zCVGE/FT/yStBs6cLBuFiBYxeOJYLpdESaPgaJGo023+zI+DUx7KzPuA
-         Slq/3U8V9dgwRWCJ41CBK2CzrzIBEYa58bVGU7CNV9U3Y01xjVAGxRzAEKBeo3eMn6
-         bc1CWh27jUJkeMeo8uYtJEbx1Nqx5YQt2/eGd7c0=
+        b=FZRsV4N1TunqLWB86XYmvmcZqIbeJpmvZR9Zu41tHl7eTgYRL0ydkV6PQJHFcSwHv
+         LKp1s/ponMO60ORdHkYkwMix1aImNfqCsglfjes1o0hICR9onzvR13EwA5Ut3xZx3a
+         jcvWj74OZgTAUA7XjU5UwIq1X7IhY9Bm7CIjLvpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/189] ALSA: ad1889: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:48 +0200
-Message-Id: <20220418121203.005286638@linuxfoundation.org>
+        stable@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 116/189] Drivers: hv: vmbus: Deactivate sysctl_record_panic_msg by default in isolated guests
+Date:   Mon, 18 Apr 2022 14:12:16 +0200
+Message-Id: <20220418121203.790593859@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,55 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 
-[ Upstream commit a8e84a5da18e6d786540aa4ceb6f969d5f1a441d ]
+[ Upstream commit 9f8b577f7b43b2170628d6c537252785dcc2dcea ]
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+hv_panic_page might contain guest-sensitive information, do not dump it
+over to Hyper-V by default in isolated guests.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+While at it, update some comments in hyperv_{panic,die}_event().
 
-Fixes: 567f58754109 ("ALSA: ad1889: Allocate resources with device-managed APIs")
-Link: https://lore.kernel.org/r/20220412102636.16000-4-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reported-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Link: https://lore.kernel.org/r/20220301141135.2232-1-parri.andrea@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/ad1889.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/hv/vmbus_drv.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/sound/pci/ad1889.c b/sound/pci/ad1889.c
-index bba4dae8dcc7..50e30704bf6f 100644
---- a/sound/pci/ad1889.c
-+++ b/sound/pci/ad1889.c
-@@ -844,8 +844,8 @@ snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
- }
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index a939ca1a8d54..aea8125a4db8 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -76,8 +76,8 @@ static int hyperv_panic_event(struct notifier_block *nb, unsigned long val,
  
- static int
--snd_ad1889_probe(struct pci_dev *pci,
--		 const struct pci_device_id *pci_id)
-+__snd_ad1889_probe(struct pci_dev *pci,
-+		   const struct pci_device_id *pci_id)
- {
- 	int err;
- 	static int devno;
-@@ -904,6 +904,12 @@ snd_ad1889_probe(struct pci_dev *pci,
- 	return 0;
- }
+ 	/*
+ 	 * Hyper-V should be notified only once about a panic.  If we will be
+-	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
+-	 * the notification here.
++	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
++	 * here.
+ 	 */
+ 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE
+ 	    && hyperv_report_reg()) {
+@@ -99,8 +99,8 @@ static int hyperv_die_event(struct notifier_block *nb, unsigned long val,
  
-+static int snd_ad1889_probe(struct pci_dev *pci,
-+			    const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_ad1889_probe(pci, pci_id));
-+}
+ 	/*
+ 	 * Hyper-V should be notified only once about a panic.  If we will be
+-	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
+-	 * the notification here.
++	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
++	 * here.
+ 	 */
+ 	if (hyperv_report_reg())
+ 		hyperv_report_panic(regs, val, true);
+@@ -1545,14 +1545,20 @@ static int vmbus_bus_init(void)
+ 	if (ret)
+ 		goto err_connect;
+ 
++	if (hv_is_isolation_supported())
++		sysctl_record_panic_msg = 0;
 +
- static const struct pci_device_id snd_ad1889_ids[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_ANALOG_DEVICES, PCI_DEVICE_ID_AD1889JS) },
- 	{ 0, },
+ 	/*
+ 	 * Only register if the crash MSRs are available
+ 	 */
+ 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
+ 		u64 hyperv_crash_ctl;
+ 		/*
+-		 * Sysctl registration is not fatal, since by default
+-		 * reporting is enabled.
++		 * Panic message recording (sysctl_record_panic_msg)
++		 * is enabled by default in non-isolated guests and
++		 * disabled by default in isolated guests; the panic
++		 * message recording won't be available in isolated
++		 * guests should the following registration fail.
+ 		 */
+ 		hv_ctl_table_hdr = register_sysctl_table(hv_root_table);
+ 		if (!hv_ctl_table_hdr)
 -- 
 2.35.1
 
