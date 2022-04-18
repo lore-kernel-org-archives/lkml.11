@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A65C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDAF2C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344922AbiDROXu (ORCPT
+        id S1344981AbiDROYL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
+        Mon, 18 Apr 2022 10:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344620AbiDROKk (ORCPT
+        with ESMTP id S245495AbiDROLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:10:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CDF3702B;
-        Mon, 18 Apr 2022 06:10:54 -0700 (PDT)
+        Mon, 18 Apr 2022 10:11:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3021F377EF;
+        Mon, 18 Apr 2022 06:11:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61897B80EE2;
-        Mon, 18 Apr 2022 13:10:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CABEC385A1;
-        Mon, 18 Apr 2022 13:10:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 18A67CE1071;
+        Mon, 18 Apr 2022 13:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF21C385A8;
+        Mon, 18 Apr 2022 13:10:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287453;
-        bh=y0nY1AxcVH6qREXVvFRbjPUxs41iCOgXpjvkKiZmOZo=;
+        s=korg; t=1650287459;
+        bh=wlc9krJPz/uNcek6BqwFpw9AGZ/+lyiYea2593VrpEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NQr2jS5AX7bgf3+vQ3eSN9t1kgcFBs9RN1Bsjuqf5wmcDnqEe5dIj2cuU5uPtRKez
-         st5TGp+4mgshW2ILo2Y3EzS4dQDnpXYrlTloM5zIoUQ3innVKXTgVI+8oybLkC56rU
-         Ur/oma8rshOgs1pPgFguouJZlzz02fi7GKvXQJjQ=
+        b=Z0BJd5/DlpOvdgIqsKLx5dMUEvwkv/ps5oiZR9DFK9mxezs5xnsQREcGSjD6egMt/
+         4UuS4G5ZgS1j6aM/kr/VQYrvPQ0ycD10E0k9VIaDl3XFTCi4uts4HuCBhEyM0gXMJh
+         jmrZJY333FmHMJAZ3t2wDumzK5JWGLxZijy5AuSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Ben Dooks <ben-linux@fluff.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@armlinux.org.uk,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org,
+        Darren Hart <darren@os.amperecomputing.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 164/218] ARM: 9187/1: JIVE: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:13:50 +0200
-Message-Id: <20220418121204.963691045@linuxfoundation.org>
+Subject: [PATCH 4.9 128/218] ACPI/APEI: Limit printable size of BERT table data
+Date:   Mon, 18 Apr 2022 14:13:14 +0200
+Message-Id: <20220418121203.252748580@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -55,61 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Darren Hart <darren@os.amperecomputing.com>
 
-[ Upstream commit 8b2360c7157b462c4870d447d1e65d30ef31f9aa ]
+[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings. Also, error return codes don't mean anything to
-obsolete_checksetup() -- only non-zero (usually 1) or zero.
-So return 1 from jive_mtdset().
+Platforms with large BERT table data can trigger soft lockup errors
+while attempting to print the entire BERT table data to the console at
+boot:
 
-Fixes: 9db829f485c5 ("[ARM] JIVE: Initial machine support for Logitech Jive")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Ben Dooks <ben-linux@fluff.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Alim Akhtar <alim.akhtar@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-samsung-soc@vger.kernel.org
-Cc: patches@armlinux.org.uk
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
+
+Observed on Ampere Altra systems with a single BERT record of ~250KB.
+
+The original bert driver appears to have assumed relatively small table
+data. Since it is impractical to reassemble large table data from
+interwoven console messages, and the table data is available in
+
+  /sys/firmware/acpi/tables/data/BERT
+
+limit the size for tables printed to the console to 1024 (for no reason
+other than it seemed like a good place to kick off the discussion, would
+appreciate feedback from existing users in terms of what size would
+maintain their current usage model).
+
+Alternatively, we could make printing a CONFIG option, use the
+bert_disable boot arg (or something similar), or use a debug log level.
+However, all those solutions require extra steps or change the existing
+behavior for small table data. Limiting the size preserves existing
+behavior on existing platforms with small table data, and eliminates the
+soft lockups for platforms with large table data, while still making it
+available.
+
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-s3c24xx/mach-jive.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/acpi/apei/bert.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-s3c24xx/mach-jive.c b/arch/arm/mach-s3c24xx/mach-jive.c
-index 7d99fe8f6157..5d43733ee7d6 100644
---- a/arch/arm/mach-s3c24xx/mach-jive.c
-+++ b/arch/arm/mach-s3c24xx/mach-jive.c
-@@ -240,11 +240,11 @@ static int __init jive_mtdset(char *options)
- 	unsigned long set;
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index a05b5c0cf181..e22f3d89b84b 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -31,6 +31,7 @@
  
- 	if (options == NULL || options[0] == '\0')
--		return 0;
-+		return 1;
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++#define ACPI_BERT_PRINT_MAX_LEN 1024
  
- 	if (kstrtoul(options, 10, &set)) {
- 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
--		return 0;
-+		return 1;
- 	}
+ static int bert_disable;
  
- 	switch (set) {
-@@ -259,7 +259,7 @@ static int __init jive_mtdset(char *options)
- 		       "using default.", set);
- 	}
+@@ -59,8 +60,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		}
  
--	return 0;
-+	return 1;
- }
+ 		pr_info_once("Error records from previous boot:\n");
+-
+-		cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++			cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		else
++			pr_info_once("Max print length exceeded, table data is available at:\n"
++				     "/sys/firmware/acpi/tables/data/BERT");
  
- /* parse the mtdset= option given to the kernel command line */
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
 -- 
-2.35.1
+2.34.1
 
 
 
