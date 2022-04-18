@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32283C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbiDRMZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
+        id S238621AbiDRMZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238794AbiDRMWu (ORCPT
+        with ESMTP id S238500AbiDRMWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4E61EED0;
-        Mon, 18 Apr 2022 05:18:18 -0700 (PDT)
+        Mon, 18 Apr 2022 08:22:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43F61DA60;
+        Mon, 18 Apr 2022 05:17:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1657960F5F;
-        Mon, 18 Apr 2022 12:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 075D0C385A8;
-        Mon, 18 Apr 2022 12:18:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4143C60F01;
+        Mon, 18 Apr 2022 12:17:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C576C385A7;
+        Mon, 18 Apr 2022 12:17:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284297;
-        bh=VHz+JMItJlNxJ/mL/82Bz5jA5c3poz8XFUIXJ7SB86g=;
+        s=korg; t=1650284265;
+        bh=umFTfXUjPTfRuZWvVFLcMfF4nfy/Jnjf1wlhjM1N+Fw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAdOalXHXViu2WI0vnK13CQdFbLOV1EZ0z6Mr6kq2iYfuOob5ADTyirU0hObgBixL
-         yu0c5RQVl6WOioVJMBve/eAx6dQDKqn+F2MhOZzWgqWL3paK0bO4Yv3chAdbVxgzlZ
-         CLviTbdQXeRp4O5fUBYYUPb2TJ6o2pDHYSkVroIo=
+        b=EZgIiIjWX8IbD0O626ofbNZByvszfVs62hwh/a+1r60YBVZki4tEossx0WlMlF690
+         Tvmw2bZcA9RRZ44SWFUgzO2gqYnN25ydY2lLUVsM+sYXFvgtzY0DztErSDDlQL3k4m
+         bQ13Qcz+AStzgQ5LzUrWM9gRBjXxpWwUviOhtQzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 067/219] SUNRPC: Fix the svc_deferred_event trace class
-Date:   Mon, 18 Apr 2022 14:10:36 +0200
-Message-Id: <20220418121207.572204025@linuxfoundation.org>
+Subject: [PATCH 5.17 058/219] drm/msm: Add missing put_task_struct() in debugfs path
+Date:   Mon, 18 Apr 2022 14:10:27 +0200
+Message-Id: <20220418121206.991520017@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,69 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 4d5004451ab2218eab94a30e1841462c9316ba19 ]
+[ Upstream commit ac3e4f42d5ec459f701743debd9c1ad2f2247402 ]
 
-Fix a NULL deref crash that occurs when an svc_rqst is deferred
-while the sunrpc tracing subsystem is enabled. svc_revisit() sets
-dr->xprt to NULL, so it can't be relied upon in the tracepoint to
-provide the remote's address.
-
-Unfortunately we can't revert the "svc_deferred_class" hunk in
-commit ece200ddd54b ("sunrpc: Save remote presentation address in
-svc_xprt for trace events") because there is now a specific check
-of event format specifiers for unsafe dereferences. The warning
-that check emits is:
-
-  event svc_defer_recv has unsafe dereference of argument 1
-
-A "%pISpc" format specifier with a "struct sockaddr *" is indeed
-flagged by this check.
-
-Instead, take the brute-force approach used by the svcrdma_qp_error
-tracepoint. Convert the dr::addr field into a presentation address
-in the TP_fast_assign() arm of the trace event, and store that as
-a string. This fix can be backported to -stable kernels.
-
-In the meantime, commit c6ced22997ad ("tracing: Update print fmt
-check to handle new __get_sockaddr() macro") is now in v5.18, so
-this wonky fix can be replaced with __sockaddr() and friends
-properly during the v5.19 merge window.
-
-Fixes: ece200ddd54b ("sunrpc: Save remote presentation address in svc_xprt for trace events")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Fixes: 25faf2f2e065 ("drm/msm: Show process names in gem_describe")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220317184550.227991-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sunrpc.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/msm_gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 5be3faf88c1a..06fe47fb3686 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -1956,17 +1956,18 @@ DECLARE_EVENT_CLASS(svc_deferred_event,
- 	TP_STRUCT__entry(
- 		__field(const void *, dr)
- 		__field(u32, xid)
--		__string(addr, dr->xprt->xpt_remotebuf)
-+		__array(__u8, addr, INET6_ADDRSTRLEN + 10)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->dr = dr;
- 		__entry->xid = be32_to_cpu(*(__be32 *)(dr->args +
- 						       (dr->xprt_hlen>>2)));
--		__assign_str(addr, dr->xprt->xpt_remotebuf);
-+		snprintf(__entry->addr, sizeof(__entry->addr) - 1,
-+			 "%pISpc", (struct sockaddr *)&dr->addr);
- 	),
- 
--	TP_printk("addr=%s dr=%p xid=0x%08x", __get_str(addr), __entry->dr,
-+	TP_printk("addr=%s dr=%p xid=0x%08x", __entry->addr, __entry->dr,
- 		__entry->xid)
- );
- 
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index 02b9ae65a96a..a4f61972667b 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -926,6 +926,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m,
+ 					get_pid_task(aspace->pid, PIDTYPE_PID);
+ 				if (task) {
+ 					comm = kstrdup(task->comm, GFP_KERNEL);
++					put_task_struct(task);
+ 				} else {
+ 					comm = NULL;
+ 				}
 -- 
 2.35.1
 
