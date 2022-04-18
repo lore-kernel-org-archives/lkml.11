@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED531C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A86BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242945AbiDRNJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
+        id S240924AbiDRNK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240985AbiDRM6P (ORCPT
+        with ESMTP id S241837AbiDRM7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E83245BE;
-        Mon, 18 Apr 2022 05:38:28 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB102ED4A;
+        Mon, 18 Apr 2022 05:39:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A8096CE10A8;
-        Mon, 18 Apr 2022 12:38:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FDBC385A7;
-        Mon, 18 Apr 2022 12:38:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B1B1B80EDB;
+        Mon, 18 Apr 2022 12:39:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A465C385AB;
+        Mon, 18 Apr 2022 12:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285505;
-        bh=AirU343CxNtqZLncGkKyVI4Lv0hgeDUndqqP9Ap/MfI=;
+        s=korg; t=1650285579;
+        bh=Qn6auaIHQqy9g4NZVcZdSXXlNdVGB9qoFuf8cv48lK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WbiS8H2JxbQ9cnrD9JDM7Sjmk0Tng0MxJ/cxczTc6WGHqOYNHMMPccBGOnGZzd2mz
-         JDYvacU3qcG2d/RTgVYmL345w1cQWVObiGg+rlL49AmXQT8eJheV6pSIfyYh/68JQ7
-         eIHJTugEtC3GQXIkFpdD1jqaZXyse7USVohsxC6U=
+        b=2m/IOkZdVl6RliLHXGlZJruV6HdAS0lGBEvXDT/jNWbvLadBFDGFGUXnohnr4MFu3
+         hv3YQNySIKiBXgodkuaa7frIjSiZrZ8AJu0mpqS4vvdBgIDYv/+y9RQgA95QQWaOOu
+         mrgiYBBRIe3Ep/AZH2D/bJwNRa8gSuOHY84ai5rE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, George Shen <George.Shen@amd.com>,
+        Alex Hung <alex.hung@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 038/105] nfc: nci: add flush_workqueue to prevent uaf
-Date:   Mon, 18 Apr 2022 14:12:40 +0200
-Message-Id: <20220418121147.550992267@linuxfoundation.org>
+Subject: [PATCH 5.10 064/105] drm/amd/display: Revert FEC check in validation
+Date:   Mon, 18 Apr 2022 14:13:06 +0200
+Message-Id: <20220418121148.306443699@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,126 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Martin Leung <Martin.Leung@amd.com>
 
-[ Upstream commit ef27324e2cb7bb24542d6cb2571740eefe6b00dc ]
+[ Upstream commit b2075fce104b88b789c15ef1ed2b91dc94198e26 ]
 
-Our detector found a concurrent use-after-free bug when detaching an
-NCI device. The main reason for this bug is the unexpected scheduling
-between the used delayed mechanism (timer and workqueue).
+why and how:
+causes failure on install on certain machines
 
-The race can be demonstrated below:
-
-Thread-1                           Thread-2
-                                 | nci_dev_up()
-                                 |   nci_open_device()
-                                 |     __nci_request(nci_reset_req)
-                                 |       nci_send_cmd
-                                 |         queue_work(cmd_work)
-nci_unregister_device()          |
-  nci_close_device()             | ...
-    del_timer_sync(cmd_timer)[1] |
-...                              | Worker
-nci_free_device()                | nci_cmd_work()
-  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
-
-In short, the cleanup routine thought that the cmd_timer has already
-been detached by [1] but the mod_timer can re-attach the timer [2], even
-it is already released [3], resulting in UAF.
-
-This UAF is easy to trigger, crash trace by POC is like below
-
-[   66.703713] ==================================================================
-[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
-[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
-[   66.703974]
-[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
-[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
-[   66.703974] Call Trace:
-[   66.703974]  <TASK>
-[   66.703974]  dump_stack_lvl+0x57/0x7d
-[   66.703974]  print_report.cold+0x5e/0x5db
-[   66.703974]  ? enqueue_timer+0x448/0x490
-[   66.703974]  kasan_report+0xbe/0x1c0
-[   66.703974]  ? enqueue_timer+0x448/0x490
-[   66.703974]  enqueue_timer+0x448/0x490
-[   66.703974]  __mod_timer+0x5e6/0xb80
-[   66.703974]  ? mark_held_locks+0x9e/0xe0
-[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
-[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
-[   66.703974]  ? queue_work_on+0x61/0x80
-[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
-[   66.703974]  process_one_work+0x8bb/0x1510
-[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
-[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
-[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
-[   66.703974]  worker_thread+0x575/0x1190
-[   66.703974]  ? process_one_work+0x1510/0x1510
-[   66.703974]  kthread+0x2a0/0x340
-[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
-[   66.703974]  ret_from_fork+0x22/0x30
-[   66.703974]  </TASK>
-[   66.703974]
-[   66.703974] Allocated by task 267:
-[   66.703974]  kasan_save_stack+0x1e/0x40
-[   66.703974]  __kasan_kmalloc+0x81/0xa0
-[   66.703974]  nci_allocate_device+0xd3/0x390
-[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
-[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
-[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
-[   66.703974]  tty_ioctl+0x764/0x1310
-[   66.703974]  __x64_sys_ioctl+0x122/0x190
-[   66.703974]  do_syscall_64+0x3b/0x90
-[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   66.703974]
-[   66.703974] Freed by task 406:
-[   66.703974]  kasan_save_stack+0x1e/0x40
-[   66.703974]  kasan_set_track+0x21/0x30
-[   66.703974]  kasan_set_free_info+0x20/0x30
-[   66.703974]  __kasan_slab_free+0x108/0x170
-[   66.703974]  kfree+0xb0/0x330
-[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
-[   66.703974]  nci_uart_tty_close+0xdf/0x180
-[   66.703974]  tty_ldisc_kill+0x73/0x110
-[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
-[   66.703974]  __tty_hangup.part.0+0x431/0x890
-[   66.703974]  tty_release+0x3a8/0xc80
-[   66.703974]  __fput+0x1f0/0x8c0
-[   66.703974]  task_work_run+0xc9/0x170
-[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
-[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
-[   66.703974]  do_syscall_64+0x48/0x90
-[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-To fix the UAF, this patch adds flush_workqueue() to ensure the
-nci_cmd_work is finished before the following del_timer_sync.
-This combination will promise the timer is actually detached.
-
-Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: George Shen <George.Shen@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Martin Leung <Martin.Leung@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/nci/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index e38719e2ee58..2cfff70f70e0 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -548,6 +548,10 @@ static int nci_close_device(struct nci_dev *ndev)
- 	mutex_lock(&ndev->req_lock);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index ac5323596c65..93f5229c303e 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -1173,10 +1173,6 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
+ 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
+ 		return false;
  
- 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
-+		/* Need to flush the cmd wq in case
-+		 * there is a queued/running cmd_work
-+		 */
-+		flush_workqueue(ndev->cmd_wq);
- 		del_timer_sync(&ndev->cmd_timer);
- 		del_timer_sync(&ndev->data_timer);
- 		mutex_unlock(&ndev->req_lock);
+-	/* Check for FEC status*/
+-	if (link->link_enc->funcs->fec_is_active(link->link_enc))
+-		return false;
+-
+ 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
+ 
+ 	if (enc_inst == ENGINE_ID_UNKNOWN)
 -- 
 2.35.1
 
