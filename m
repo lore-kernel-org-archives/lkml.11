@@ -2,97 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA5BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47002C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354597AbiDSS00 (ORCPT
+        id S1356901AbiDSS0c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37228 "EHLO
+        Tue, 19 Apr 2022 14:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357111AbiDSSWp (ORCPT
+        with ESMTP id S1357104AbiDSSWp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 14:22:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA80419B3;
-        Tue, 19 Apr 2022 11:15:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20F44B81865;
-        Tue, 19 Apr 2022 18:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A1F2C385A9;
-        Tue, 19 Apr 2022 18:15:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392114;
-        bh=904Yeuvzqm23g7s+sAX4Ms24/YBBVjFmcCiyB/hFFGA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ivUYSTT4tVl6ADWH+h4QJVyTzDu1RZhd7ou/6GF32DJ82BPekfh7xHwQj0KlRQJ98
-         yhzPx/T6fXfS0bbk9zWY6sm3PfVSNl2aJEEx0HEfRNhX2oqoUO65By+vtaxXDANbSD
-         GhG1oM2NEDx6UP/dQOVxQZsKrLwD/O74z7rx4rXOcyj5GNWOp9c1t9KPWO+khbRDfR
-         +RV8VKWCQwAE2+JISnu9cetRTXJxTSPxspv9gAC7V7tqKjgig/YIcD7d85qyvgCX+v
-         yf/fTYj9I73q99aCgp693H0OIXwhgmvHzGLBJME8Tg/E1CeFIJly624pMlyhwA7FE3
-         HC7stT60J4fiw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
-        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
-        maxime@cerno.tech, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 10/14] drm/msm/mdp5: check the return of kzalloc()
-Date:   Tue, 19 Apr 2022 14:14:39 -0400
-Message-Id: <20220419181444.485959-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181444.485959-1-sashal@kernel.org>
-References: <20220419181444.485959-1-sashal@kernel.org>
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233F6419A9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:15:16 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 203so5821227pgb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:15:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zpBv9Q1tNkPDBxpwPbLdjbsmA3r5cT/nw1H2p8//7VQ=;
+        b=nZvZCFCBv0zvPnol4PONdYJwznuBCN/AxhcMZT3PpAg7N/VnQFuPRmc59dVJmZhUZX
+         ECMv/hjCGO+Yo9hPm0IPGeKJ0B6ktiAJyHTxXvVuF2aVbAVF8CuAQHgIJP1LNJMXn9tW
+         pewlp4W+kHkNI1zg56QFlr1V7Y7IC03EodUwq8bmU0cnToRJRtLyABVPCFbP3syCDchx
+         LDjvNXMhS7Xh2ngpvwPQ2GqpF+opYdpOjCsLq6UgJBnYaZhcq7SIJ1v5a7aSd1NogVh6
+         VSjMR54pFEhQe1/PiG/gXQU8g8fXg+WNaoH+BrDQzIaYm/mRG5gcSrOvz7wSwTEhHzhn
+         RLUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zpBv9Q1tNkPDBxpwPbLdjbsmA3r5cT/nw1H2p8//7VQ=;
+        b=IklZ+5x7iIJCvXUpc2iXlkEmu+NWPWxiJpAiRvC8FskIrnKi5dz3RJJEBLHUhtQnae
+         K649ZpIccwQblSiUnoY7Z0+oaemMsD3prErA2EH5uvkVtkggTSCSEg862aSdYwUWRyci
+         e/hxuX8yy1XPqoWV2FwvSQUOuuc7aei7cgvUeX9KJVTUaZOTUDLAQ1tCnudkgVtybKvS
+         X7cExcAOm+ucHMVPxlkWBEsXK2R4tCUe5Ck3VPz+RiBQF2qeVavu0VYa05QzSpMwSxgl
+         /Zf5TkHTOp/Gc+wyuCH4fxiyrXZXTftQ6QBOZ94uLCNSiyLGbMYJe+b/3s6m6NxCPHus
+         VshA==
+X-Gm-Message-State: AOAM5307mEjyGU35hXHcCLhCNcnoLcsaPcF+y8Kl13TlT/6BJBPHJp87
+        uWG3kq1mEFJs6IVf2jPYyHl78RRghDUK2aQY92zBkw==
+X-Google-Smtp-Source: ABdhPJw4oSURnCuFS/ZVGc9BlKI9iSwFoHzN3zK1GLk085q5yQt4OdaNxeK86wgd3BiiLXrJ0hkQRIeqzlpHZRTTfTo=
+X-Received: by 2002:a65:6e0e:0:b0:399:26d7:a224 with SMTP id
+ bd14-20020a656e0e000000b0039926d7a224mr15704175pgb.437.1650392116287; Tue, 19
+ Apr 2022 11:15:16 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220407191347.9681-1-jithu.joseph@intel.com> <20220419163859.2228874-1-tony.luck@intel.com>
+ <20220419163859.2228874-10-tony.luck@intel.com> <Yl7vdpJgKYRL1jeW@kroah.com>
+ <Yl7y1YDaNVxyDnKI@agluck-desk3.sc.intel.com> <Yl74MYW1+NgH4tOX@kroah.com>
+In-Reply-To: <Yl74MYW1+NgH4tOX@kroah.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 19 Apr 2022 11:15:05 -0700
+Message-ID: <CAPcyv4haH561eC_+oPj8PMdf2510BDq7==orHNLoHPm0d16k2w@mail.gmail.com>
+Subject: Re: [PATCH v3 09/11] platform/x86/intel/ifs: Add IFS sysfs interface
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Luck, Tony" <tony.luck@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>, markgross@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Tue, Apr 19, 2022 at 11:01 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Apr 19, 2022 at 10:35:17AM -0700, Luck, Tony wrote:
+> > On Tue, Apr 19, 2022 at 07:20:54PM +0200, Greg KH wrote:
+> > > > +/*
+> > > > + * Note there is no need for a ->remove() call back. There isn't an
+> > > > + * "unload" operation to remove the scan binary from the BIOS reserved
+> > > > + * area. Also ".dev_groups" removal order will guarantee that any in
+> > > > + * flight tests have completed.
+> > > > + */
+> > >
+> > > So you are ok with the warning the kernel gives you when you unload the
+> > > driver?  That feels wrong :(
+> >
+> > What warning?
+> >
+> > # dmesg | tail -5
+> > [   38.084165] virbr0: port 1(virbr0-nic) entered listening state
+> > [   38.149621] virbr0: port 1(virbr0-nic) entered disabled state
+> > [   38.582054] broken atomic modeset userspace detected, disabling atomic
+> > [   43.703321] igc 0000:01:00.0 enp1s0: NIC Link is Up 2500 Mbps Full Duplex, Flow Control: RX
+> > [   43.703470] IPv6: ADDRCONF(NETDEV_CHANGE): enp1s0: link becomes ready
+> > # modprobe intel_ifs
+> > # ls /sys/devices/platform/intel_ifs.0/
+> > details  driver_override  modalias  reload    status     uevent
+> > driver   image_version    power     run_test  subsystem
+> > # rmmod intel_ifs
+> > # dmesg | tail -5
+> > [   38.084165] virbr0: port 1(virbr0-nic) entered listening state
+> > [   38.149621] virbr0: port 1(virbr0-nic) entered disabled state
+> > [   38.582054] broken atomic modeset userspace detected, disabling atomic
+> > [   43.703321] igc 0000:01:00.0 enp1s0: NIC Link is Up 2500 Mbps Full Duplex, Flow Control: RX
+> > [   43.703470] IPv6: ADDRCONF(NETDEV_CHANGE): enp1s0: link becomes ready
+> > #
+>
+> If there's no warning when the device goes away, why the crazy comment
+> trying to justify the lack of a remove callback?
 
-[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
-
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
-
-Besides, since mdp5_plane_reset() is void type, so we should better
-set `plane-state` to NULL after releasing it.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/481055/
-Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-index 83423092de2f..da0799333970 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-@@ -179,7 +179,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
- 		drm_framebuffer_put(plane->state->fb);
- 
- 	kfree(to_mdp5_plane_state(plane->state));
-+	plane->state = NULL;
- 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
-+	if (!mdp5_state)
-+		return;
- 
- 	/* assign default blend parameters */
- 	mdp5_state->alpha = 255;
--- 
-2.35.1
-
+The comment clarifies the nuance that driver.dev_groups coordinates
+flushing access sysfs ops users before ->remove() is called. It can
+certainly be dropped.
