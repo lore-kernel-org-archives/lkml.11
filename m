@@ -2,112 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6644C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93658C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345610AbiDSOCw (ORCPT
+        id S1345930AbiDSOC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        Tue, 19 Apr 2022 10:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345080AbiDSOC1 (ORCPT
+        with ESMTP id S1351450AbiDSOCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:02:27 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D595039174;
-        Tue, 19 Apr 2022 06:59:43 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650376782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=mFWtlF0oHPGP6DlOf6E0rXJ/V6DYNXr//ANS9HvqQvw=;
-        b=aJtULM7iH7zTY3r4fHqFFgnk7UShgfYh7JBWbfvVijbe+NAZk7o5lf0cGTu4BrE8W68yHM
-        5o9hD6w59zxGhT62iGBdulTuLB1xhfCnA3e+QqpQXs6mueg80DkTVbXmdLZShHm+I/ZG/d
-        kwxrgWiHz7qYebXVBViiZxDA+YvydT8=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     cai.huoqing@linux.dev
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: [PATCH 0/2] drm/nvdla: Add driver support for NVDLA
-Date:   Tue, 19 Apr 2022 21:58:58 +0800
-Message-Id: <20220419135908.39606-1-cai.huoqing@linux.dev>
+        Tue, 19 Apr 2022 10:02:48 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D440812A8E;
+        Tue, 19 Apr 2022 07:00:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650376804; x=1681912804;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aTbcgLlOaDyWww67qnVCIOb5s5dgXZijpchtigKlbp4=;
+  b=L/fuIahuX1Xi1EqnKk1509+/8cbJIxsBCOut0t4COgxaBKIc/F+QOp+c
+   KNoxnzmE3Y3gp7O9/9XzXEjB3azCoIp335QCR7qKryjGekO382yLIVM4k
+   rsFtRx58o72ukt6MdCWq3kztqHu01mU9hSxmcB1Hm1rM3yeUIzCoc2nXu
+   12eBUwNyVW9tlQMdgyqNTSlsWrnkVMOfLD0SWkLDO5VwnGvQOduCDxe4o
+   eAreE9UuAWI3uggeWAIldY16i/l1fpmN5lzdAJL3XRpn+n9mYBfQPJtQu
+   vnSlrpIh+9cyeQyBfiy4zKy+Xr3BtlvxCQ9Wc8c6Rc4YK/bjbAhHVPgJX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="324212414"
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="324212414"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 07:00:04 -0700
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="554739523"
+Received: from chferrer-mobl.amr.corp.intel.com (HELO [10.209.37.31]) ([10.209.37.31])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 07:00:04 -0700
+Message-ID: <07ef65c4-708e-1bcf-9a7e-f804acefcc7c@linux.intel.com>
+Date:   Tue, 19 Apr 2022 07:00:03 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <bd83067542a3519ee4c91f9d50e9bd4fac27e4bb.camel@intel.com>
+ <0d532b0ce1155bf7778366b14c5d1311c45fef01.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <0d532b0ce1155bf7778366b14c5d1311c45fef01.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NVIDIA Deep Learning Accelerator (NVDLA) is an open source IP
-which is integrated into NVIDIA Jetson AGX Xavier,
-so add driver support for this accelerator.
-
-NVDLA introduce:
-http://nvdla.org/primer.html
-
-User mode driver:
-https://github.com/caihuoq/nvdla/tree/main/sw/umd
 
 
-Cai Huoqing (2):
-  MAINTAINERS: Add the driver info of the NVDLA
-  drm/nvdla: Add driver support for NVDLA
+On 4/19/22 1:16 AM, Kai Huang wrote:
+> In fact after slightly thinking more, I think you can split TDREPORT TDCALL
+> support with GetQuote/SetupEventNotifyInterrupt support.  The reason is as I
+> said, GetQuote isn't mandatory to support attestation.  TD attestation agent can
+> use i.e. vsock, tcp/ip, to communicate to QE directly.  Whether kernel needs to
+> support GetQuote is actually arguable.
 
- MAINTAINERS                             |    7 +
- drivers/gpu/drm/Kconfig                 |    2 +
- drivers/gpu/drm/Makefile                |    1 +
- drivers/gpu/drm/nvdla/Kconfig           |    8 +
- drivers/gpu/drm/nvdla/Makefile          |   19 +
- drivers/gpu/drm/nvdla/nvdla_bdma.c      |  200 +
- drivers/gpu/drm/nvdla/nvdla_cache.c     |  215 +
- drivers/gpu/drm/nvdla/nvdla_cdp.c       |  300 ++
- drivers/gpu/drm/nvdla/nvdla_common.c    |  295 ++
- drivers/gpu/drm/nvdla/nvdla_common.h    |  835 +++
- drivers/gpu/drm/nvdla/nvdla_conv.c      |  683 +++
- drivers/gpu/drm/nvdla/nvdla_drm.c       |  695 +++
- drivers/gpu/drm/nvdla/nvdla_drm.h       |  127 +
- drivers/gpu/drm/nvdla/nvdla_engine.c    |  233 +
- drivers/gpu/drm/nvdla/nvdla_engine.h    |  272 +
- drivers/gpu/drm/nvdla/nvdla_gem.c       |  393 ++
- drivers/gpu/drm/nvdla/nvdla_ioctl.h     |   99 +
- drivers/gpu/drm/nvdla/nvdla_pdp.c       |  446 ++
- drivers/gpu/drm/nvdla/nvdla_reg.h       | 6411 +++++++++++++++++++++++
- drivers/gpu/drm/nvdla/nvdla_rubik.c     |  217 +
- drivers/gpu/drm/nvdla/nvdla_sched.h     |   52 +
- drivers/gpu/drm/nvdla/nvdla_scheduler.c | 1005 ++++
- drivers/gpu/drm/nvdla/nvdla_sdp.c       |  728 +++
- 23 files changed, 13243 insertions(+)
- create mode 100644 drivers/gpu/drm/nvdla/Kconfig
- create mode 100644 drivers/gpu/drm/nvdla/Makefile
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_bdma.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_cache.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_cdp.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_common.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_common.h
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_conv.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_drm.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_drm.h
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_engine.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_engine.h
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_gem.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_ioctl.h
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_pdp.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_reg.h
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_rubik.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_sched.h
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_scheduler.c
- create mode 100644 drivers/gpu/drm/nvdla/nvdla_sdp.c
+IMO, we should not use a usage model to categorize "GetQuote" support
+as a mandatory or non-mandatory requirement.
+
+For customers who use VSOCK, they can get away without GetQuote
+TDVMCALL support. But for customers who do not want to use
+VSOCK model, this is a required support. AFAIK, our current customer
+requirement is to use TDVMCALL approach for attestation support.
+
+If your suggestion is to split GetQuote support as separate
+patch to make it easier for review, I am fine with such
+suggestion.
+
+Maintainers, any opinion? Would you prefer to split the
+driver into two patches?
+
+
+> 
+> So IMHO you can split this attestation driver into two parts:
+> 
+> 1) A "basic" driver which supports reporting TDREPORT to userspace
+> 2) Additional support of GetQuote/SetupEventNotifyInterrupt.
+> 
+> The 1) can even be in a single patch (I guess it won't be complicated).  It is
+> easy to review (and i.e. can be merged separately), and with it, you will
+> immediately have one way to support attestation.
+> 
+> 2) can be reviewed separately, perhaps with one additional Kconfig option (i.e.
+> CONFIG_INTEL_TDX_ATTESTATION_GET_QUOTE).  I think this part has most of the
+
+
+GetQuote IOCTL support is a very simple feature support, so, IMO, we
+don't need to complicate it with additional config.
+
+> complexity things in terms of review.
+
 
 -- 
-2.25.1
-
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
