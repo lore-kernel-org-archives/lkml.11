@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8682C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C64C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348080AbiDSDgF (ORCPT
+        id S1348087AbiDSDgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 23:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
+        Mon, 18 Apr 2022 23:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347585AbiDSDfg (ORCPT
+        with ESMTP id S1347661AbiDSDfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 23:35:36 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E762B264;
+        Mon, 18 Apr 2022 23:35:41 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A40C2BB09;
         Mon, 18 Apr 2022 20:32:55 -0700 (PDT)
-Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Wh1jbhzdZqH;
-        Tue, 19 Apr 2022 11:32:48 +0800 (CST)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Wg2DwFzhXw1;
+        Tue, 19 Apr 2022 11:32:47 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
+ kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:52 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:52 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 0/9] net: hns3: updates for -next
-Date:   Tue, 19 Apr 2022 11:27:00 +0800
-Message-ID: <20220419032709.15408-1-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 2/9] net: hns3: refactor hns3_set_ringparam()
+Date:   Tue, 19 Apr 2022 11:27:02 +0800
+Message-ID: <20220419032709.15408-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220419032709.15408-1-huangguangbin2@huawei.com>
+References: <20220419032709.15408-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -47,45 +49,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series includes some updates for the HNS3 ethernet driver.
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Change logs:
-V1 -> V2:
- - Fix failed to apply to net-next problem.
+Use struct hns3_ring_param to replace variable new/old_xxx and
+add hns3_is_ringparam_changed() to judge them if is changed to
+improve code readability.
 
-Hao Chen (3):
-  net: hns3: refactor hns3_set_ringparam()
-  net: hns3: add log for setting tx spare buf size
-  net: hns3: remove unnecessary line wrap for hns3_set_tunable
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 65 ++++++++++++-------
+ .../ethernet/hisilicon/hns3/hns3_ethtool.h    |  6 ++
+ 2 files changed, 49 insertions(+), 22 deletions(-)
 
-Jian Shen (1):
-  net: hns3: refine the definition for struct hclge_pf_to_vf_msg
-
-Jie Wang (1):
-  net: hns3: add failure logs in hclge_set_vport_mtu
-
-Peng Li (3):
-  net: hns3: update the comment of function hclgevf_get_mbx_resp
-  net: hns3: fix the wrong words in comments
-  net: hns3: replace magic value by HCLGE_RING_REG_OFFSET
-
-Yufeng Mo (1):
-  net: hns3: add ethtool parameter check for CQE/EQE mode
-
- .../net/ethernet/hisilicon/hns3/hclge_mbx.h   |  17 ++-
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   4 +
- .../hns3/hns3_common/hclge_comm_cmd.c         |   2 +
- .../hns3/hns3_common/hclge_comm_cmd.h         |   1 +
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |   5 +-
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 108 +++++++++++++-----
- .../ethernet/hisilicon/hns3/hns3_ethtool.h    |   6 +
- .../hisilicon/hns3/hns3pf/hclge_err.c         |   2 +-
- .../hisilicon/hns3/hns3pf/hclge_main.c        |   3 +
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         |   2 +-
- .../hisilicon/hns3/hns3vf/hclgevf_main.c      |   4 +-
- .../hisilicon/hns3/hns3vf/hclgevf_mbx.c       |   8 +-
- 12 files changed, 116 insertions(+), 46 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 8663ba5d41d8..e647751e9054 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1106,6 +1106,36 @@ static int hns3_check_ringparam(struct net_device *ndev,
+ 	return 0;
+ }
+ 
++static bool
++hns3_is_ringparam_changed(struct net_device *ndev,
++			  struct ethtool_ringparam *param,
++			  struct kernel_ethtool_ringparam *kernel_param,
++			  struct hns3_ring_param *old_ringparam,
++			  struct hns3_ring_param *new_ringparam)
++{
++	struct hns3_nic_priv *priv = netdev_priv(ndev);
++	struct hnae3_handle *h = priv->ae_handle;
++	u16 queue_num = h->kinfo.num_tqps;
++
++	new_ringparam->tx_desc_num = ALIGN(param->tx_pending,
++					   HNS3_RING_BD_MULTIPLE);
++	new_ringparam->rx_desc_num = ALIGN(param->rx_pending,
++					   HNS3_RING_BD_MULTIPLE);
++	old_ringparam->tx_desc_num = priv->ring[0].desc_num;
++	old_ringparam->rx_desc_num = priv->ring[queue_num].desc_num;
++	old_ringparam->rx_buf_len = priv->ring[queue_num].buf_size;
++	new_ringparam->rx_buf_len = kernel_param->rx_buf_len;
++
++	if (old_ringparam->tx_desc_num == new_ringparam->tx_desc_num &&
++	    old_ringparam->rx_desc_num == new_ringparam->rx_desc_num &&
++	    old_ringparam->rx_buf_len == new_ringparam->rx_buf_len) {
++		netdev_info(ndev, "ringparam not changed\n");
++		return false;
++	}
++
++	return true;
++}
++
+ static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
+ {
+ 	struct hns3_nic_priv *priv = netdev_priv(ndev);
+@@ -1151,14 +1181,11 @@ static int hns3_set_ringparam(struct net_device *ndev,
+ 			      struct kernel_ethtool_ringparam *kernel_param,
+ 			      struct netlink_ext_ack *extack)
+ {
++	struct hns3_ring_param old_ringparam, new_ringparam;
+ 	struct hns3_nic_priv *priv = netdev_priv(ndev);
+ 	struct hnae3_handle *h = priv->ae_handle;
+ 	struct hns3_enet_ring *tmp_rings;
+ 	bool if_running = netif_running(ndev);
+-	u32 old_tx_desc_num, new_tx_desc_num;
+-	u32 old_rx_desc_num, new_rx_desc_num;
+-	u16 queue_num = h->kinfo.num_tqps;
+-	u32 old_rx_buf_len;
+ 	int ret, i;
+ 
+ 	ret = hns3_check_ringparam(ndev, param, kernel_param);
+@@ -1169,15 +1196,8 @@ static int hns3_set_ringparam(struct net_device *ndev,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Hardware requires that its descriptors must be multiple of eight */
+-	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
+-	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
+-	old_tx_desc_num = priv->ring[0].desc_num;
+-	old_rx_desc_num = priv->ring[queue_num].desc_num;
+-	old_rx_buf_len = priv->ring[queue_num].buf_size;
+-	if (old_tx_desc_num == new_tx_desc_num &&
+-	    old_rx_desc_num == new_rx_desc_num &&
+-	    kernel_param->rx_buf_len == old_rx_buf_len)
++	if (!hns3_is_ringparam_changed(ndev, param, kernel_param,
++				       &old_ringparam, &new_ringparam))
+ 		return 0;
+ 
+ 	tmp_rings = hns3_backup_ringparam(priv);
+@@ -1188,24 +1208,25 @@ static int hns3_set_ringparam(struct net_device *ndev,
+ 	}
+ 
+ 	netdev_info(ndev,
+-		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len from %d to %d\n",
+-		    old_tx_desc_num, old_rx_desc_num,
+-		    new_tx_desc_num, new_rx_desc_num,
+-		    old_rx_buf_len, kernel_param->rx_buf_len);
++		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len from %u to %u\n",
++		    old_ringparam.tx_desc_num, old_ringparam.rx_desc_num,
++		    new_ringparam.tx_desc_num, new_ringparam.rx_desc_num,
++		    old_ringparam.rx_buf_len, new_ringparam.rx_buf_len);
+ 
+ 	if (if_running)
+ 		ndev->netdev_ops->ndo_stop(ndev);
+ 
+-	hns3_change_all_ring_bd_num(priv, new_tx_desc_num, new_rx_desc_num);
+-	hns3_change_rx_buf_len(ndev, kernel_param->rx_buf_len);
++	hns3_change_all_ring_bd_num(priv, new_ringparam.tx_desc_num,
++				    new_ringparam.rx_desc_num);
++	hns3_change_rx_buf_len(ndev, new_ringparam.rx_buf_len);
+ 	ret = hns3_init_all_ring(priv);
+ 	if (ret) {
+ 		netdev_err(ndev, "set ringparam fail, revert to old value(%d)\n",
+ 			   ret);
+ 
+-		hns3_change_rx_buf_len(ndev, old_rx_buf_len);
+-		hns3_change_all_ring_bd_num(priv, old_tx_desc_num,
+-					    old_rx_desc_num);
++		hns3_change_rx_buf_len(ndev, old_ringparam.rx_buf_len);
++		hns3_change_all_ring_bd_num(priv, old_ringparam.tx_desc_num,
++					    old_ringparam.rx_desc_num);
+ 		for (i = 0; i < h->kinfo.num_tqps * 2; i++)
+ 			memcpy(&priv->ring[i], &tmp_rings[i],
+ 			       sizeof(struct hns3_enet_ring));
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
+index 822d6fcbc73b..da207d1d9aa9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
+@@ -28,4 +28,10 @@ struct hns3_ethtool_link_ext_state_mapping {
+ 	u8 link_ext_substate;
+ };
+ 
++struct hns3_ring_param {
++	u32 tx_desc_num;
++	u32 rx_desc_num;
++	u32 rx_buf_len;
++};
++
+ #endif
 -- 
 2.33.0
 
