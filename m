@@ -2,137 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 232A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19912C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237752AbiDSAKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
+        id S237846AbiDSAK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237695AbiDSAKS (ORCPT
+        with ESMTP id S237756AbiDSAKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:10:18 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CDEFFA
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:07:36 -0700 (PDT)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220419000733epoutp02f3c4afd4fbff65ff527b9ebc4ccbe122~nI4d4kyG30753007530epoutp02w
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:07:33 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220419000733epoutp02f3c4afd4fbff65ff527b9ebc4ccbe122~nI4d4kyG30753007530epoutp02w
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1650326853;
-        bh=AChNfJQWMXjSwwKi12gVmv2Q77//iQk0dtbyPaoW1Ls=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=Kgxtor4qALYW5tJjrytsesasDEb6okogLTiBAPEqKcE/Zv/7zZ+FIAeywTCPq423j
-         Url6N7Qa3RFbNHAeWSfT0f+nc71Sbgsvd+XI2cppeNSLEq5+9Y8E1bhRTEj4cHfFDH
-         3x+m4TbI4O3xQvMqW+DaaE4YLBE+lkBJTKQDDtOE=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220419000732epcas2p1b9493d582a4b17b4ef6bdc5e24ef5ce3~nI4c_DA3O0349203492epcas2p1H;
-        Tue, 19 Apr 2022 00:07:32 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.68]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4Kj3yp6jvCz4x9Qb; Tue, 19 Apr
-        2022 00:07:30 +0000 (GMT)
-X-AuditID: b6c32a45-4fdff700000228cc-45-625dfd42be01
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        C6.47.10444.24DFD526; Tue, 19 Apr 2022 09:07:30 +0900 (KST)
-Mime-Version: 1.0
-Subject: Re: [PATCH 3/5] PCI: axis: Add ARTPEC-8 PCIe controller driver
-Reply-To: wangseok.lee@samsung.com
-Sender: Wangseok Lee <wangseok.lee@samsung.com>
-From:   Wangseok Lee <wangseok.lee@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        robh+dt <robh+dt@kernel.org>, krzk+dt <krzk+dt@kernel.org>,
-        kishon <kishon@ti.com>, vkoul <vkoul@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson" <jesper.nilsson@axis.com>,
-        "lars.persson" <lars.persson@axis.com>
-CC:     bhelgaas <bhelgaas@google.com>,
-        linux-phy <linux-phy@lists.infradead.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi" <lorenzo.pieralisi@arm.com>, kw <kw@linux.com>,
-        linux-arm-kernel <linux-arm-kernel@axis.com>,
-        kernel <kernel@axis.com>, Moon-Ki Jun <moonki.jun@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220419000730epcms2p77c94d5e55db13ebf2f88b25d16b6ef7a@epcms2p7>
-Date:   Tue, 19 Apr 2022 09:07:30 +0900
-X-CMS-MailID: 20220419000730epcms2p77c94d5e55db13ebf2f88b25d16b6ef7a
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLJsWRmVeSWpSXmKPExsWy7bCmma7T39gkgzdt8hZLmjIsXh7StJh/
-        5Byrxe4Zy5ksnh+axWzxqUXV4sLTHjaLl7PusVmcP7+B3aKh5zerxZE3H5kt9h9fyWRxedcc
-        Nouz846zWUxY9Y3F4s3vF+wW5xZnWrTuPcJusfPOCWYHYY8189YwelxfF+CxYFOpx6ZVnWwe
-        T65MZ/LYvKTeo2/LKkaP4ze2M3l83iQXwBmVbZORmpiSWqSQmpecn5KZl26r5B0c7xxvamZg
-        qGtoaWGupJCXmJtqq+TiE6DrlpkD9I+SQlliTilQKCCxuFhJ386mKL+0JFUhI7+4xFYptSAl
-        p8C8QK84Mbe4NC9dLy+1xMrQwMDIFKgwITvjePs51oLNYhWzX31iamB8IdrFyMkhIWAicXta
-        IzOILSSwg1Fi2R32LkYODl4BQYm/O4RBwsIC7hKTmqayQ5QoSexYM48ZIq4vcX1FNyuIzSag
-        K/Fv8Uu2LkYuDhGBBUwS9+fOYAJxmAX+M0m8ajzGBrGMV2JG+1MWCFtaYvvyrYwQtobEj2W9
-        zBC2qMTN1W/ZYez3x+ZD1YhItN47C1UjKPHg526ouJTEgieHWCHsaon9f38zQdgNjBL991NB
-        npEAunTHdWOQMK+Ar0TnsQ9gJSwCqhKnn8yBOsdF4tHBWWAjmQW0JZYtfM0M0sosoCmxfpc+
-        xBRliSO3WGAeadj4mx2dzSzAJ9Fx+C9cfMe8J1DHqEnMW7mTGWKMjMTWl/4TGJVmIcJ5FpK1
-        sxDWLmBkXsUollpQnJueWmxUYAiP2eT83E2M4HSt5bqDcfLbD3qHGJk4GA8xSnAwK4nw9iyJ
-        ThLiTUmsrEotyo8vKs1JLT7EaAr08ERmKdHkfGDGyCuJNzSxNDAxMzM0NzI1MFcS5/VK2ZAo
-        JJCeWJKanZpakFoE08fEwSnVwNTtV1KZ9vDXG4NcxbA5CYwhegJd6n/rn9mH+vlIrGVlXOx+
-        4qKPHpuEQ9rpJRe25eX/ySzJr557rmdKnQaP8uMd3dukl+UsWHa+a2b5vuXenUX6Xp9cWWZ3
-        +wlWlU+P+O2w/6rDu8kc/Gpf7LdUnb83h02oLorp8tQXUtoprDP9uqLWp8nVtBiJ8zDtuur/
-        9eqqffLf3vGsr5oZsbL54M0mgfsClkE7iqytLaakNsV9vpmsxGY/sZrP0egMW00By8zKi/lM
-        UvOOM95qWDLNw9fvmebSNwVb6qTFL73pWJv2Z3vuruDVn+a42DtI8UtYV+zr2NB7++ZRway6
-        fWxZiVnGAe9c41/x/WxOfsCgxFKckWioxVxUnAgAgmXUsGAEAAA=
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220419000730epcms2p77c94d5e55db13ebf2f88b25d16b6ef7a
-References: <CGME20220419000730epcms2p77c94d5e55db13ebf2f88b25d16b6ef7a@epcms2p7>
+        Mon, 18 Apr 2022 20:10:24 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9E03882;
+        Mon, 18 Apr 2022 17:07:44 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-e2442907a1so15843453fac.8;
+        Mon, 18 Apr 2022 17:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Di0BAlr8LlWx8Ci/Ew3/yaK9KDuVCJ1BCJlDq71lACE=;
+        b=n858Z8o0N5et79u0bdVMDmN/wGGIJzft8OyfhoNcrANE6042gdgi+BeNJwHnpk4CAH
+         F/bG1WOIlMMKvzsK7BLPPPwSO1F5eL9S1qs2QhSiW2J1bIUl4sA0CS13P9tvLSTpGyUb
+         drc2DCzR/BZnZdmNKbxv7DGaJkQ7fqPsZDbWUb+fPO9OX+vKZU4W6NRRo6EH+P2tm69k
+         eXNgeJpEHTqAa7Iqc8rP8qLijlDVsOmB1hrfgzX9GDv2kBM8jx5rFeEItwm2/MPEyHPW
+         FmXq7PtXfZigUVMXfiQafHO9thRMFoDrFDtHLZ3OSSNhjPi9NXg/+SLVxDnz7mSu3Tfk
+         EaOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=Di0BAlr8LlWx8Ci/Ew3/yaK9KDuVCJ1BCJlDq71lACE=;
+        b=urBNv2ZSsLyT/ffsvMqFw6ExdAr0dZCAw+PrQ22FchXn1wsxVwyysVYVzmr5A6TzQt
+         75xng+OjpUoNIr9HXw/TYqZlHkHg0uLtP4/mFI/rXAQ9kM2LzdDaZy9EJYYQqIsmc+HD
+         DNUWKjY+fTYZSbzsGiWpjjl0iOYJBi+UC2gCaGFCi1UPZMLylYPdnS3mNwmllj89vinr
+         30ED8t0P0FvNH4ZznFGCA4ZpTrFbjm52+15BzvpDTiOMXCwQFMd6F8zjZqXGtC+m3eAB
+         5IHIqWK7lbQhB2WWOUOR+FFcEIrLdi+bhdk7rcD7P4SaM4GoEiJNitQDbomhLA8gkHKI
+         n8EQ==
+X-Gm-Message-State: AOAM533ikwjvre+kawCBGv/mLF0I5W+PzyfS3kLMvq5alq9usBkS+i35
+        PAPuzvFW/dZdTBZAC+K3sAo=
+X-Google-Smtp-Source: ABdhPJyIpdPtYeP3zoSc36DgG1ek2d4Cacs/q+LcTG8f3DnzgxQjWIzdnVAF5M5LGqXovlT/8rfBVw==
+X-Received: by 2002:a05:6870:2498:b0:e5:9555:2546 with SMTP id s24-20020a056870249800b000e595552546mr5454982oaq.292.1650326863753;
+        Mon, 18 Apr 2022 17:07:43 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id e22-20020a056870239600b000e2f0c69849sm4586584oap.11.2022.04.18.17.07.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 17:07:43 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 18 Apr 2022 17:07:42 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.17 000/219] 5.17.4-rc1 review
+Message-ID: <20220419000742.GG1369577@roeck-us.net>
+References: <20220418121203.462784814@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On=C2=A028/03/2022=C2=A004:14,=C2=A0=EC=9D=B4=EC=99=95=EC=84=9D=C2=A0wrot=
-e:=0D=0A>>=C2=A0Add=C2=A0support=C2=A0Axis,=C2=A0ARTPEC-8=C2=A0SoC.=0D=0A>>=
-=C2=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=C2=A0platform=C2=A0of=C2=A0Axis=C2=
-=A0Communications.=0D=0A>>=C2=A0This=C2=A0is=C2=A0based=C2=A0on=C2=A0arm64=
-=C2=A0and=C2=A0support=C2=A0GEN4=C2=A0&=C2=A02lane.=0D=0A>>=C2=A0This=C2=A0=
-PCIe=C2=A0controller=C2=A0is=C2=A0based=C2=A0on=C2=A0DesignWare=C2=A0Hardwa=
-re=C2=A0core=0D=0A>>=C2=A0and=C2=A0uses=C2=A0DesignWare=C2=A0core=C2=A0func=
-tions=C2=A0to=C2=A0implement=C2=A0the=C2=A0driver.=0D=0A>>=C2=A0This=C2=A0i=
-s=C2=A0based=C2=A0on=C2=A0driver/pci/controller/dwc/pci-exynos.c=0D=0A>>=C2=
-=A0=0D=0A>>=C2=A0Signed-off-by:=C2=A0Wangseok=C2=A0Lee=C2=A0=0D=0A>>=20---=
-=0D=0A>>=20=20drivers/pci/controller/dwc/Kconfig=20=20=20=20=20=20=20=20=7C=
-=20=2031=20+=0D=0A>>=20=20drivers/pci/controller/dwc/Makefile=20=20=20=20=
-=20=20=20=7C=20=20=201=20+=0D=0A>>=20=20drivers/pci/controller/dwc/pcie-art=
-pec8.c=20=7C=20912=20++++++++++++++++++++++++++++++=0D=0A>>=20=203=20files=
-=20changed,=20944=20insertions(+)=0D=0A>>=20=20create=20mode=20100644=20dri=
-vers/pci/controller/dwc/pcie-artpec8.c=0D=0A>>=20=0D=0A>=20=0D=0A>=20I=20to=
-ok=20a=20look=20at=20the=20your=20driver=20and=20at=20existing=20PCIe=20Exy=
-nos=20driver.=0D=0A>=20Unfortunately=20PCIe=20Exynos=20driver=20is=20in=20p=
-oor=20shape,=20really=20poor.=20This=0D=0A>=20would=20explain=20that=20mayb=
-e=20it's=20better=20to=20have=20new=20driver=20instead=20of=0D=0A>=20mergin=
-g=20them,=20especially=20that=20hardware=20is=20different.=20Although=20I=
-=20am=20still=0D=0A>=20waiting=20for=20some=20description=20of=20these=20di=
-fferences...=0D=0A>=20=0D=0A>=20I=20said=20that=20Exynos=20PCIe=20looks=20p=
-oor...=20but=20what=20is=20worse,=20it=20looks=20like=0D=0A>=20you=20based=
-=20on=20it=20so=20you=20copied=20or=20some=20bad=20patterns=20it=20had.=0D=
-=0A>=20=0D=0A>=20Except=20this=20the=20driver=20has=20several=20coding=20st=
-yle=20issues,=20so=20please=20be=0D=0A>=20sure=20to=20run=20checkpatch,=20s=
-parse=20and=20smatch=20before=20sending=20it.=0D=0A>=20=0D=0A>=20Please=20w=
-ork=20on=20this=20driver=20to=20make=20it=20close=20to=20Linux=20coding=20s=
-tyle,=20so=0D=0A>=20there=20will=20be=20no=20need=20for=20us,=20reviewers,=
-=20focus=20on=20basic=20stuff.=0D=0A>=20=0D=0A>=20Optionally,=20send=20all=
-=20this=20to=20staging.=20:)=0D=0A>=20=0D=0A>=20Best=20regards,=0D=0A>=20Kr=
-zysztof=0D=0AHi,=0D=0A=0D=0AThank=20you=20for=20your=20kindness=20review.=
-=0D=0AI=20will=20re-work=20again=20close=20to=20the=20linux=20coding=20styl=
-e.=0D=0AAddiltionaly,=20If=20you=20tell=20me=20what=20=22bad=20patterns=22=
-=20you=20mentioned,=0D=0Ait=20will=20be=20very=20helpful=20for=20the=20work=
-.=0D=0ACould=20you=20please=20tell=20me=20that?=0D=0A=0D=0AThank=20you.
+On Mon, Apr 18, 2022 at 02:09:29PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.4 release.
+> There are 219 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
+> Anything received after that time might be too late.
+> 
+
+Build results:
+	total: 155 pass: 155 fail: 0
+Qemu test results:
+	total: 489 pass: 489 fail: 0
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
