@@ -2,149 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3091C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351322AbiDSLZa (ORCPT
+        id S1351308AbiDSL00 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
+        Tue, 19 Apr 2022 07:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351262AbiDSLYw (ORCPT
+        with ESMTP id S1351351AbiDSL0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:24:52 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60060.outbound.protection.outlook.com [40.107.6.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5372DA88;
-        Tue, 19 Apr 2022 04:21:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DlEfGWavIgcMG4J/74OLr3fTJsyH6DwMLCsmBOgGUpYBm4zOAY5s2vfiiWRHZJEmwPo4vT5wHerOMdQNylQk9Sa3nGPo8VMC2rnvtRVZuUSHvsDDNNVCYalqWEefyBV6RBnCZTbvZLWFYuFmDJwZV5DhR/UYEuAoKmi/XxZLRd/eb5NzP7Bi/pXzBfE6vzExKXumR6z5e1Lj/CSz+Hqo8VCt0g4lkznePjnJHKSKlvvidIFvEXB1p++fcvuLkRO3nK5iXwuUHt8IBItl0Zq3Mebqv7F7hs1/WBoO13jGrvSNpF+JR1U9fq6H5VENXizjXSWiirgAoV7GgPa64fP51A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3+18qStte9ANpkU+tGwk8EzdSrZUUEuecfGlwwZF+2Q=;
- b=e4XCybhg0B2GyimlFRU+um4MjO7dlvjqW3hnMpZa2EWJuZ47xCiR4enLchs0/gu1fncKZH7b2XLT6qcpn702vcfMmMqSEogRDHc/EppN2e2akJlVExJlKhtLSymB5W6RTGyQ5f+rVZ2Bar/YMRNu82VRLfqWTwju16efXoyZlPWHTduKRhk1ShQOMeh7/87rOqu0WKDSPAwWsd0jjd6UGsHhGEnYNSHCwaIoeXTygq5mIX6Wx5QXEDRsfTTHOlVNA0W+hglB/Kjhd2vt7DrqCd0D4NEfYPbwDQadfdGUic9QMDSE8CVnCE9JMi3VA00PIaIZCq851QytU076s01TJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3+18qStte9ANpkU+tGwk8EzdSrZUUEuecfGlwwZF+2Q=;
- b=gDzSQG1+U4SeSJhWocb13AfxuR38/DuBcqUdWeJFUFet4qEbhsFDLTQUzj3wC4+5FW9MtPu3nsWz3k2k/wCw96MF1VaO8FBnrq+h0hCMff+9xeauhDOFgzKEDtZgmjmIn2yM98IbxEv4j3KCv7fvpgpqBKtvnUwkQom51U0YPRk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by AM9PR04MB7538.eurprd04.prod.outlook.com (2603:10a6:20b:2d8::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Tue, 19 Apr
- 2022 11:21:26 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::a9d1:199:574b:502f]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::a9d1:199:574b:502f%6]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
- 11:21:26 +0000
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v7 10/13] dt-bindings: net: fec: Add i.MX8DXL compatible string
-Date:   Tue, 19 Apr 2022 14:20:53 +0300
-Message-Id: <20220419112056.1808009-11-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220419112056.1808009-1-abel.vesa@nxp.com>
-References: <20220419112056.1808009-1-abel.vesa@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0102CA0008.eurprd01.prod.exchangelabs.com
- (2603:10a6:802::21) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        Tue, 19 Apr 2022 07:26:16 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8008340D4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=U4rmiZ9oOL9Z5+8vJhg7eHo7h/LTKylpnoudlz3i/v8=; b=vr3vEspmdayYnTztFUuc/4B69X
+        /JCPUE3D7ARSeG/6sN4ohkY0EtXlrx/Sl70M1nLTqk1dcYqC8RaqM/dprRNtQxRPkUutu9s69BrOv
+        88VugPDrKUvbIngtM2KvNKjcx8i4HogEQmvJv3vL8yDBlxmlOfpfuhiIL426fLy93svX5WHPLku0l
+        b3PVZZKIhe0jIa9JYDpPmkOSMcthDudRAXoUqcRMl88Jpz9I+2+jG53uob2mJcxUNAhE7masGxhBW
+        +syfUxpNl9J4jPK2JtluVh9Kbca0xfgqm3JuygQtp09k6V0Sz7gQC5WMYl0wmJSy9uNknwGxCsNJs
+        XIo1KSwg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nglvq-00328P-26; Tue, 19 Apr 2022 11:22:06 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 20B28986195; Tue, 19 Apr 2022 13:22:04 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 13:22:04 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v2 17/25] objtool: Add CONFIG_OBJTOOL
+Message-ID: <20220419112204.GS2731@worktop.programming.kicks-ass.net>
+References: <cover.1650300597.git.jpoimboe@redhat.com>
+ <939bf3d85604b2a126412bf11af6e3bd3b872bcb.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cf19c051-b498-40df-cc9e-08da21f6be2d
-X-MS-TrafficTypeDiagnostic: AM9PR04MB7538:EE_
-X-Microsoft-Antispam-PRVS: <AM9PR04MB7538CFEEED231761FFF3DC72F6F29@AM9PR04MB7538.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FsAabkClBOPFFlkU71P2hJohu1Wiob5/z2KPvX0TX9L0dDd/CmI1wmw0GQ4VEcws2cG8enWvHooA1L6tn9mQBHLaVEXRTlzyip93AJJt24ceX4dmDX0OtKjuktl8Bcqa1u0XGnwmjv/dCdCbBjZ+I2IGS8NJOhqKw3dqcfKp8bZnNRyV3R5jJpkr0rrpdJ1ZlyvzigZmW1zg/GvU3dTdFlfX5NLo6OXJLP3dJ6V30KX87J9AR02l/ry1Iu7iUGxdCPoa54XOLInbW2XLLNjFIKmAkaRn1vQ45wLzDxBYgxOSdYu9THj2uiE6q9/rb6VCvzp/EJskO1G3eptCCzZZcVzsOsbIbkoarjgxMf1a7tF0YNFHjTruoQhpSAht88UV4w8MDDkFkgYhSLHHfMz6B8ATnI6pj8+U3TZLYYhiO2Ri4UqScnxEWD5eOtlXtWkdH7TwUQUuWV46EgIKjfKjcrzPVQu8xtJuW5YueIGFyoh5cNacKC/fBkkkrASp9Ur3HYNOuGhnHSHN8zErYHKRWODkDU4wx539VxLxhg8qbGSG43uSh6XjKPzYba6s570mNNP3MyDw1n4EtSDMAJl+OLeeZBpV/Tmji4LRGxGHgQN3RH31SmQfXlaDOSBaTaHmaTtFAdUfG0s6/v7UKyGwxoEwoBkxWISYM6dQknY2epxqdUiqyARkkh1fmio8K+KjnZhw3K60310iNoGJQzEq/A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(36756003)(66556008)(4326008)(8676002)(66476007)(66946007)(6486002)(1076003)(186003)(110136005)(4744005)(8936002)(7416002)(86362001)(38100700002)(54906003)(5660300002)(44832011)(38350700002)(2616005)(26005)(6506007)(6666004)(52116002)(6512007)(2906002)(508600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FtESsBtOUw+G9YsToPYABYriWXoQ2T4Vpk60NsW2JR4Gvi1kC4E064XzXbWu?=
- =?us-ascii?Q?9hVBc9kNh4bwq7xgnT5WguHejkxAOdysc/LUDm/+s/1LngYBLgx70LwwSN8S?=
- =?us-ascii?Q?hR2ymV4NzMXYgcXq/ujg4dedY+t4EkPty2oc5H256m4eeWynLOKIKEAZYciu?=
- =?us-ascii?Q?wFPMUUuubvO5gnyXyDxiqZe7jMBSKytAc3pUf+Y5551QahN5ZgmWs4BHVwQb?=
- =?us-ascii?Q?MDSmzl2R3bFTrepGEWK7kzVkjPSb08z3Q1Trpbf+PKaoTdVUrbbBHBGP9+uu?=
- =?us-ascii?Q?YqaWI4qHzI0I2z05aGmleA3kZOTkhf+1VlPrZCd8+Sa4844jRzaCeTetflyl?=
- =?us-ascii?Q?y7BiUwu0Ondqc8rmfq5mqRMW8h5YZYJlF4BRY7iOQLdwJPnBX1lz/LgVUnHC?=
- =?us-ascii?Q?d3f6mwT99gKCAuju0RNBD/kRcKHLTjZ3vjMteH4P3vVYELuvsdLEvWE+sqYA?=
- =?us-ascii?Q?yKDjGAc5K+JnK+3Z6pp7lE75GWmrn9gP1u7tSGKiOXT+bO9WJ0VodiTM/9Kn?=
- =?us-ascii?Q?fDc4ECfjDUeUKVBbkgbWObXLFsKKXGpyVfA++4/h21xDfBepVmyVzIElnGhS?=
- =?us-ascii?Q?YAxm4WZ2VfEnBcg7M7bf+jcWu5Ebo028XcofMKcGJovbwH4a5XplYkhOjTtx?=
- =?us-ascii?Q?7kN/dzwyWXEfn2o8H07msz5Tj5WWG84+6URRARpv95Uc39scRzH3zCAGBqAS?=
- =?us-ascii?Q?pBvfpxg7rFGzJxWcWNVJWw+okQqJ6hN0PySENRPb9DMbi2VsF7taSO4mmF/o?=
- =?us-ascii?Q?7iGnTL8WqTQtiH7GhLqv+cnF/K+tsAGxGMbQ+Q3yp2aYR+fTycoyGIWCNgrf?=
- =?us-ascii?Q?Z8fqiLHAYNZfXjbxuSlTUgz/NagrvOzGleizO8bUx0D2he+eaj5Hq1Zq9TBI?=
- =?us-ascii?Q?b0LXmc+Uclw4w6JQIyx/HVvu7bCM2PK5hbdrD4wZhNfCwPmefi/NaDrNj6WR?=
- =?us-ascii?Q?/uyPB+mTDfGF1WjxucHauf64TB5x8j2s8S4DbO1apChAV3IE7/NUFPrt493L?=
- =?us-ascii?Q?XL28EEbgEIqzkaoSiarVwQrLcvU/b1FULRvGNyGcDAqViXTOkTAUn6FLJNmH?=
- =?us-ascii?Q?UxEvFn824O0aQGbg+bJDNs8ib+7TOB+wbiZppSiia0SR8rC8HvUEJiBXZAhz?=
- =?us-ascii?Q?lJUS5eIjvyNrmypomQ8DFITMcw3zTHrRayXJeR3/zXLiaLNtHaXNj0cU8n8y?=
- =?us-ascii?Q?TlPeN9GCjyTNq2wxwPcb0v88y+GqxlOD1UymiuQRRpH56kfMRGi4gXfDy+LJ?=
- =?us-ascii?Q?SXy6I+19V6/LAXmt5j1Lbmo6/zT/gbUUOvPRkkkKQwAuDF4ObrMqf069c/I/?=
- =?us-ascii?Q?cVeO7rFAJTyUqchNTFAyGCi4R9T+oUbfcE3mZt7ahjV9pXERwpj7QG6XE7vw?=
- =?us-ascii?Q?g5xHgidvEg2ZxdqoGipPQphOZS1wsj1v/NdRTQ7n9OC05T0aWGC/ZXCnb99k?=
- =?us-ascii?Q?WhSmpzKm0pFhTtamQQVrw0YQ93JJiMxbQclPdqW3nMun6QvzeKdxJos7E9hZ?=
- =?us-ascii?Q?h/9ML1kFIR+Tk1EiNKhhvg1rN+Tdxj0BstKE3XybuG+Z2wlSUcrgwiiDW1mU?=
- =?us-ascii?Q?qjNRP/Bt5sZMXfWvj1/0zyXsjNAFhk3pz+ZK50EJf3HBaJVVIzbz755JUTqf?=
- =?us-ascii?Q?4nSU0DCUYDTwKXiwt70h2LOHGyoOxn/VkhIMUfE1/Y6GAWalmANO2iwIUZrP?=
- =?us-ascii?Q?s7WVH1o78bfimExZYbeszN4GpX1C/MnJR0J1kL0DYTmHl1gOResvYyWxyHWr?=
- =?us-ascii?Q?sDfbieYURw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf19c051-b498-40df-cc9e-08da21f6be2d
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2022 11:21:26.4252
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4TpmXWXn4s4VmOJbn5xN/zOP6zptdeo3hgmkI+pbcMKwFwfaI6XClvUwMEw4fKH8NyFOJwINpOe/p+0w7wQLXA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB7538
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <939bf3d85604b2a126412bf11af6e3bd3b872bcb.1650300597.git.jpoimboe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the i.MX8DXL compatible string for FEC. It also uses
-"fsl,imx8qm-fec".
+On Mon, Apr 18, 2022 at 09:50:36AM -0700, Josh Poimboeuf wrote:
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/net/fsl,fec.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+>  config X86_SMAP
+>  	def_bool y
+>  	prompt "Supervisor Mode Access Prevention" if EXPERT
+> +	select OBJTOOL if HAVE_OBJTOOL
+>  	help
+>  	  Supervisor Mode Access Prevention (SMAP) is a security
+>  	  feature in newer Intel processors.  There is a small
 
-diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-index daa2f79a294f..92654823f3dd 100644
---- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
-+++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-@@ -58,6 +58,10 @@ properties:
-               - fsl,imx8qxp-fec
-           - const: fsl,imx8qm-fec
-           - const: fsl,imx6sx-fec
-+      - items:
-+          - enum:
-+              - fsl,imx8dxl-fec
-+          - const: fsl,imx8qm-fec
+Runs into:
+
+
+commit dbae0a934f09208075ec3e73491bd0844e1397b3
+Author: Borislav Petkov <bp@suse.de>
+Date:   Thu Jan 27 12:56:23 2022 +0100
+
+    x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
+    
+    Those were added as part of the SMAP enablement but SMAP is currently
+    an integral part of kernel proper and there's no need to disable it
+    anymore.
+    
+    Rip out that functionality. Leave --uaccess default on for objtool as
+    this is what objtool should do by default anyway.
+    
+    If still needed - clearcpuid=smap.
+    
+    Signed-off-by: Borislav Petkov <bp@suse.de>
+    Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
+    Reviewed-by: Kees Cook <keescook@chromium.org>
+    Link: https://lore.kernel.org/r/20220127115626.14179-4-bp@alien8.de
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index a9f3d3158e77..e0bb710f0fa9 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3461,7 +3461,7 @@
+ 			noexec=on: enable non-executable mappings (default)
+ 			noexec=off: disable non-executable mappings
  
-   reg:
-     maxItems: 1
--- 
-2.34.1
-
+-	nosmap		[X86,PPC]
++	nosmap		[PPC]
+ 			Disable SMAP (Supervisor Mode Access Prevention)
+ 			even if it is supported by processor.
+ 
+diff --git a/Documentation/x86/cpuinfo.rst b/Documentation/x86/cpuinfo.rst
+index 5d54c39a063f..12fbe2b1e98a 100644
+--- a/Documentation/x86/cpuinfo.rst
++++ b/Documentation/x86/cpuinfo.rst
+@@ -140,9 +140,8 @@ from #define X86_FEATURE_UMIP (16*32 + 2).
+ 
+ In addition, there exists a variety of custom command-line parameters that
+ disable specific features. The list of parameters includes, but is not limited
+-to, nofsgsbase, nosmap, and nosmep. 5-level paging can also be disabled using
+-"no5lvl". SMAP and SMEP are disabled with the aforementioned parameters,
+-respectively.
++to, nofsgsbase, and nosmep. 5-level paging can also be disabled using
++"no5lvl". SMEP is disabled with the aforementioned parameter.
+ 
+ e: The feature was known to be non-functional.
+ ----------------------------------------------
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index b0142e01002e..5bc8bee64bb0 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1816,17 +1816,6 @@ config ARCH_RANDOM
+ 	  If supported, this is a high bandwidth, cryptographically
+ 	  secure hardware random number generator.
+ 
+-config X86_SMAP
+-	def_bool y
+-	prompt "Supervisor Mode Access Prevention" if EXPERT
+-	help
+-	  Supervisor Mode Access Prevention (SMAP) is a security
+-	  feature in newer Intel processors.  There is a small
+-	  performance cost if this enabled and turned on; there is
+-	  also a small increase in the kernel size if this is enabled.
+-
+-	  If unsure, say Y.
+-
+ config X86_UMIP
+ 	def_bool y
+ 	prompt "User Mode Instruction Prevention" if EXPERT
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
+index 1231d63f836d..1ae0fab7d902 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -10,12 +10,6 @@
+  * cpu_feature_enabled().
+  */
+ 
+-#ifdef CONFIG_X86_SMAP
+-# define DISABLE_SMAP	0
+-#else
+-# define DISABLE_SMAP	(1<<(X86_FEATURE_SMAP & 31))
+-#endif
+-
+ #ifdef CONFIG_X86_UMIP
+ # define DISABLE_UMIP	0
+ #else
+@@ -80,7 +74,7 @@
+ #define DISABLED_MASK6	0
+ #define DISABLED_MASK7	(DISABLE_PTI)
+ #define DISABLED_MASK8	0
+-#define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
++#define DISABLED_MASK9	(DISABLE_SGX)
+ #define DISABLED_MASK10	0
+ #define DISABLED_MASK11	0
+ #define DISABLED_MASK12	0
+diff --git a/arch/x86/include/asm/smap.h b/arch/x86/include/asm/smap.h
+index d17b39893b79..bab490379c65 100644
+--- a/arch/x86/include/asm/smap.h
++++ b/arch/x86/include/asm/smap.h
+@@ -19,25 +19,14 @@
+ 
+ #ifdef __ASSEMBLY__
+ 
+-#ifdef CONFIG_X86_SMAP
+-
+ #define ASM_CLAC \
+ 	ALTERNATIVE "", __ASM_CLAC, X86_FEATURE_SMAP
+ 
+ #define ASM_STAC \
+ 	ALTERNATIVE "", __ASM_STAC, X86_FEATURE_SMAP
+ 
+-#else /* CONFIG_X86_SMAP */
+-
+-#define ASM_CLAC
+-#define ASM_STAC
+-
+-#endif /* CONFIG_X86_SMAP */
+-
+ #else /* __ASSEMBLY__ */
+ 
+-#ifdef CONFIG_X86_SMAP
+-
+ static __always_inline void clac(void)
+ {
+ 	/* Note: a barrier is implicit in alternative() */
+@@ -76,19 +65,6 @@ static __always_inline void smap_restore(unsigned long flags)
+ #define ASM_STAC \
+ 	ALTERNATIVE("", __ASM_STAC, X86_FEATURE_SMAP)
+ 
+-#else /* CONFIG_X86_SMAP */
+-
+-static inline void clac(void) { }
+-static inline void stac(void) { }
+-
+-static inline unsigned long smap_save(void) { return 0; }
+-static inline void smap_restore(unsigned long flags) { }
+-
+-#define ASM_CLAC
+-#define ASM_STAC
+-
+-#endif /* CONFIG_X86_SMAP */
+-
+ #endif /* __ASSEMBLY__ */
+ 
+ #endif /* _ASM_X86_SMAP_H */
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index c71d1075db93..747df070fb5e 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -382,13 +382,6 @@ static __always_inline void setup_smep(struct cpuinfo_x86 *c)
+ 		cr4_set_bits(X86_CR4_SMEP);
+ }
+ 
+-static __init int setup_disable_smap(char *arg)
+-{
+-	setup_clear_cpu_cap(X86_FEATURE_SMAP);
+-	return 1;
+-}
+-__setup("nosmap", setup_disable_smap);
+-
+ static __always_inline void setup_smap(struct cpuinfo_x86 *c)
+ {
+ 	unsigned long eflags = native_save_fl();
+@@ -396,14 +389,8 @@ static __always_inline void setup_smap(struct cpuinfo_x86 *c)
+ 	/* This should have been cleared long ago */
+ 	BUG_ON(eflags & X86_EFLAGS_AC);
+ 
+-	if (cpu_has(c, X86_FEATURE_SMAP)) {
+-#ifdef CONFIG_X86_SMAP
++	if (cpu_has(c, X86_FEATURE_SMAP))
+ 		cr4_set_bits(X86_CR4_SMAP);
+-#else
+-		clear_cpu_cap(c, X86_FEATURE_SMAP);
+-		cr4_clear_bits(X86_CR4_SMAP);
+-#endif
+-	}
+ }
+ 
+ static __always_inline void setup_umip(struct cpuinfo_x86 *c)
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 9717e6f6fb31..7e7aa1d030a6 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -233,7 +233,7 @@ objtool_args =								\
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+ 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+-	$(if $(CONFIG_X86_SMAP), --uaccess)				\
++	--uaccess							\
+ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+ 	$(if $(CONFIG_SLS), --sls)
+ 
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 20f44504a644..3a2fffdf49d4 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -146,9 +146,9 @@ objtool_link()
+ 		if is_enabled CONFIG_RETPOLINE; then
+ 			objtoolopt="${objtoolopt} --retpoline"
+ 		fi
+-		if is_enabled CONFIG_X86_SMAP; then
+-			objtoolopt="${objtoolopt} --uaccess"
+-		fi
++
++		objtoolopt="${objtoolopt} --uaccess"
++
+ 		if is_enabled CONFIG_SLS; then
+ 			objtoolopt="${objtoolopt} --sls"
+ 		fi
+diff --git a/tools/arch/x86/include/asm/disabled-features.h b/tools/arch/x86/include/asm/disabled-features.h
+index 1231d63f836d..1ae0fab7d902 100644
+--- a/tools/arch/x86/include/asm/disabled-features.h
++++ b/tools/arch/x86/include/asm/disabled-features.h
+@@ -10,12 +10,6 @@
+  * cpu_feature_enabled().
+  */
+ 
+-#ifdef CONFIG_X86_SMAP
+-# define DISABLE_SMAP	0
+-#else
+-# define DISABLE_SMAP	(1<<(X86_FEATURE_SMAP & 31))
+-#endif
+-
+ #ifdef CONFIG_X86_UMIP
+ # define DISABLE_UMIP	0
+ #else
+@@ -80,7 +74,7 @@
+ #define DISABLED_MASK6	0
+ #define DISABLED_MASK7	(DISABLE_PTI)
+ #define DISABLED_MASK8	0
+-#define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
++#define DISABLED_MASK9	(DISABLE_SGX)
+ #define DISABLED_MASK10	0
+ #define DISABLED_MASK11	0
+ #define DISABLED_MASK12	0
