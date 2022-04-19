@@ -2,139 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C0DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E76C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346918AbiDSLiz (ORCPT
+        id S1351498AbiDSLi7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
+        Tue, 19 Apr 2022 07:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351505AbiDSLhs (ORCPT
+        with ESMTP id S1351541AbiDSLhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:37:48 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0051A835
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:05 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id k23so32263619ejd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=za2ChgFa2MAb73hYI38RRAcoAzGnc/qyPQX8xgHdvQM=;
-        b=zVkWhAv51DVC1p4aJpiAjPCoWQril/21gAKuMsm6z+0NXkTbr3mNaIqUaZFcjR39cY
-         v4OMQBXlR/2rhpUCTx0VbESTsmsehL0V/OOEUkWQRkkVnA5m6023KnbBO9lJSa8rsIY2
-         /tvt+ZeGz8iYq05ODrVkPfPZK8t74hDar82Awg+fciFFk2Qd2NRV/6z2dC+Ds9ob3PSI
-         mNw5Vt41Pgcg5nBS6798wd5iqS4jiUWHQ3/NMJ/nlbxPJyi3xKd5m7ZfgU/xleQBIUs/
-         ITljrACLgzODper1Rl5lTvuiSCAyj79YAn5Qn9t2W7PwalGl5eAtA378B8fj3iSS5XxU
-         x/Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=za2ChgFa2MAb73hYI38RRAcoAzGnc/qyPQX8xgHdvQM=;
-        b=y+deylfaqZYO2Q/fGiX3hQx3HyNB0NKK8BIXIwtHGZxT85mn5Rk+7UlHv2hsNCTllf
-         tBaSB4rWHFkKps2WUipZWt3hNJBUsWobY3BdyuBI42NVv+9hi+M0UIeLXgOWNeDvt+g6
-         RG8jqcFLI5JhfmIS5qbcWxB/7WxukqK0mz0uOg25MZT38wWDJrYT1c3a7WApI3pwvFZH
-         07AVledT+4MkRUxQV4GLtZ4nwY9z7aOLpvOeBtk7rzjMSBF/bdCUZ9CNtU1XiOj1ODTV
-         2IuEKYc9lfJbINVHOBHvMCyvJaZ+Iu7nRRTjfKns/zUvQhzk8Px+VciPL3t/TNWXxzSs
-         86Ow==
-X-Gm-Message-State: AOAM532dGccPze3zfTFMWg+b4ElJlC0x6FWUFOvqAiOvvAgTDsJsv7GY
-        p8M21jQFxjJp0WJq8WKc31ayJw==
-X-Google-Smtp-Source: ABdhPJykXBXYimpAeumTHTNdPOwvvfUNc2rfx1d0CpWSKysWkExiziY11QDQTp0Hk2gdb+t7K6B5eQ==
-X-Received: by 2002:a17:907:2d0f:b0:6e8:b710:a68 with SMTP id gs15-20020a1709072d0f00b006e8b7100a68mr12790234ejc.510.1650368103349;
-        Tue, 19 Apr 2022 04:35:03 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.35.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 04:35:02 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Stuart Yoder <stuyoder@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v7 10/12] slimbus: qcom-ngd: Fix kfree() of static memory on setting driver_override
-Date:   Tue, 19 Apr 2022 13:34:33 +0200
-Message-Id: <20220419113435.246203-11-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
-References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
+        Tue, 19 Apr 2022 07:37:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB932529B;
+        Tue, 19 Apr 2022 04:35:09 -0700 (PDT)
+Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KjM9K12jxzFqS9;
+        Tue, 19 Apr 2022 19:32:37 +0800 (CST)
+Received: from [127.0.0.1] (10.67.102.125) by kwepemi500011.china.huawei.com
+ (7.221.188.124) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Apr
+ 2022 19:35:06 +0800
+Message-ID: <625E9E69.2060008@hisilicon.com>
+Date:   Tue, 19 Apr 2022 19:35:05 +0800
+From:   Wei Xu <xuwei5@hisilicon.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:24.0) Gecko/20100101 Thunderbird/24.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Andy Gross <agross@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Jan Kotas <jank@cadence.com>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Li Wei <liwei213@huawei.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        <devicetree@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-samsung-soc@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: (subset) [PATCH v3 09/12] arm64: dts: hisilicon: align 'freq-table-hz'
+ with dtschema in UFS
+References: <20220306111125.116455-1-krzysztof.kozlowski@canonical.com> <20220306111125.116455-10-krzysztof.kozlowski@canonical.com> <165036314214.180327.9388318751451146287.b4-ty@linaro.org>
+In-Reply-To: <165036314214.180327.9388318751451146287.b4-ty@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.125]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500011.china.huawei.com (7.221.188.124)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver_override field from platform driver should not be initialized
-from static memory (string literal) because the core later kfree() it,
-for example when driver_override is set via sysfs.
+Hi Krzysztof,
 
-Use dedicated helper to set driver_override properly.
+On 2022/4/19 18:12, Krzysztof Kozlowski wrote:
+> On Sun, 6 Mar 2022 12:11:22 +0100, Krzysztof Kozlowski wrote:
+>> The DT schema expects 'freq-table-hz' property to be an uint32-matrix,
+>> which is also easier to read.
+>>
+>>
+> 
+> Applied, thanks!
+> 
+> [09/12] arm64: dts: hisilicon: align 'freq-table-hz' with dtschema in UFS
+>         commit: 65b96377bf9130617ced41f317f3ec387d3e0dc3
+> 
 
-Fixes: 917809e2280b ("slimbus: ngd: Add qcom SLIMBus NGD driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/slimbus/qcom-ngd-ctrl.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+Thanks!
 
-diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
-index 0f29a08b4c09..0aa8408464ad 100644
---- a/drivers/slimbus/qcom-ngd-ctrl.c
-+++ b/drivers/slimbus/qcom-ngd-ctrl.c
-@@ -1434,6 +1434,7 @@ static int of_qcom_slim_ngd_register(struct device *parent,
- 	const struct of_device_id *match;
- 	struct device_node *node;
- 	u32 id;
-+	int ret;
- 
- 	match = of_match_node(qcom_slim_ngd_dt_match, parent->of_node);
- 	data = match->data;
-@@ -1455,7 +1456,17 @@ static int of_qcom_slim_ngd_register(struct device *parent,
- 		}
- 		ngd->id = id;
- 		ngd->pdev->dev.parent = parent;
--		ngd->pdev->driver_override = QCOM_SLIM_NGD_DRV_NAME;
-+
-+		ret = driver_set_override(&ngd->pdev->dev,
-+					  &ngd->pdev->driver_override,
-+					  QCOM_SLIM_NGD_DRV_NAME,
-+					  strlen(QCOM_SLIM_NGD_DRV_NAME));
-+		if (ret) {
-+			platform_device_put(ngd->pdev);
-+			kfree(ngd);
-+			of_node_put(node);
-+			return ret;
-+		}
- 		ngd->pdev->dev.of_node = node;
- 		ctrl->ngd = ngd;
- 
--- 
-2.32.0
+Best Regards,
+Wei
+
+> Best regards,
+> 
 
