@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F57C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07791C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242325AbiDSAqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
+        id S233466AbiDSAqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241119AbiDSApO (ORCPT
+        with ESMTP id S241192AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:45:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF0F29C8F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C282B19F
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9C3061381
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035C6C385C6;
-        Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 508EF613F1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0775C385B6;
+        Tue, 19 Apr 2022 00:42:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650328948;
-        bh=iw7VZyIxYEox+Zw4JuU45s1lfP7xk4LgcftYhKIrPlA=;
+        s=k20201202; t=1650328947;
+        bh=DJezPgdQVx7Xqos2h9pBVVxFTllTTI0ZE3fr3CMglNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPItQFmbzPlA5jZo000s6d9Oiz4Wh7CUfuOkVaGnUD8VZNiNVGC+qnlgc4T2Tu0Xn
-         RYACcanQJCwNQOTg6wdqvMwZMzLVLm4ji/MQ4PZLMmkRi5q4r8Ls5BRUSkh8RwG3yp
-         o5SE+ha3ShtkPA4aZjyR/C3DlVtK/GhgapxQu+TGNIZ5Nomu+ZwoWF37T6FCZny6F6
-         OIuBs73WGEnTqLwaF/InhtehpTrFCatk2yebFoyFstutizE2pWM7eVm9b+iVwlADuv
-         7vhwYA7f/BkoZOr/mCZkl+stVTyeRkzbDRVsHs7XA8yYBcWAidkgUVWyRmTUg83ops
-         IyExhjAGz+7Jw==
+        b=LFzJFBcztbSWEXa+cV0rA0BSmvuyao8TeL1MTYPheMhGbwSKuQep+WaKwE2CcDubk
+         0ZReY0Ddvpul8TYBl4QCw4YEtgCWQLwbAvkrZ9bAAV9tnHi8tnDUXcGjuNeALsefSR
+         uwpYDkvtQKdVUq0+KVRaIDAxP418Dld0yyN0yAQ4zWqbw4uMVX34whXzb5RSKgOx6B
+         jWl8heY0DIaVgDW2FHyL/BVVuCf06Lc97TAhfQCNm8/xQ2Y/nkpDU+PjfnmXVrAzVl
+         BVVYMrqmA1AqV81vj6EhlaN730smO0qs7Ux5Odb0UhAGeGeucjuwaRyQBIezb9DyrG
+         4iqhc+dqrC3Kg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 23FD15C2DF5; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 1C73B5C1369; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 16/61] tools/nolibc/stdlib: add i64toa() and u64toa()
-Date:   Mon, 18 Apr 2022 17:41:40 -0700
-Message-Id: <20220419004225.3952530-16-paulmck@kernel.org>
+Subject: [PATCH nolibc 12/61] tools/nolibc/types: make FD_SETSIZE configurable
+Date:   Mon, 18 Apr 2022 17:41:36 -0700
+Message-Id: <20220419004225.3952530-12-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,101 +53,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-These are 64-bit variants of the itoa() and utoa() functions. They also
-support reentrant ones, and use the same itoa_buffer. The functions are
-a bit larger than the previous ones in 32-bit mode (86 and 98 bytes on
-x86_64 and armv7 respectively), which is why we continue to provide them
-as separate functions.
+The macro was hard-coded to 256 but it's common to see it redefined.
+Let's support this and make sure we always allocate enough entries for
+the cases where it wouldn't be multiple of 32.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/stdlib.h | 72 +++++++++++++++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+ tools/include/nolibc/types.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-index dbb45631c7ca..d972871bf2ba 100644
---- a/tools/include/nolibc/stdlib.h
-+++ b/tools/include/nolibc/stdlib.h
-@@ -144,6 +144,78 @@ char *utoa(unsigned long in)
- 	return itoa_buffer;
- }
+diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
+index a4dda0a22fc2..563dbbad0496 100644
+--- a/tools/include/nolibc/types.h
++++ b/tools/include/nolibc/types.h
+@@ -45,7 +45,9 @@
+ #define DT_SOCK        0xc
  
-+/* Converts the unsigned 64-bit integer <in> to its string representation into
-+ * buffer <buffer>, which must be long enough to store the number and the
-+ * trailing zero (21 bytes for 18446744073709551615). The buffer is filled from
-+ * the first byte, and the number of characters emitted (not counting the
-+ * trailing zero) is returned. The function is constructed in a way to optimize
-+ * the code size and avoid any divide that could add a dependency on large
-+ * external functions.
-+ */
-+static __attribute__((unused))
-+int u64toa_r(uint64_t in, char *buffer)
-+{
-+	unsigned long long lim;
-+	int digits = 0;
-+	int pos = 19; /* start with the highest possible digit */
-+	int dig;
-+
-+	do {
-+		for (dig = 0, lim = 1; dig < pos; dig++)
-+			lim *= 10;
-+
-+		if (digits || in >= lim || !pos) {
-+			for (dig = 0; in >= lim; dig++)
-+				in -= lim;
-+			buffer[digits++] = '0' + dig;
-+		}
-+	} while (pos--);
-+
-+	buffer[digits] = 0;
-+	return digits;
-+}
-+
-+/* Converts the signed 64-bit integer <in> to its string representation into
-+ * buffer <buffer>, which must be long enough to store the number and the
-+ * trailing zero (21 bytes for -9223372036854775808). The buffer is filled from
-+ * the first byte, and the number of characters emitted (not counting the
-+ * trailing zero) is returned.
-+ */
-+static __attribute__((unused))
-+int i64toa_r(int64_t in, char *buffer)
-+{
-+	char *ptr = buffer;
-+	int len = 0;
-+
-+	if (in < 0) {
-+		in = -in;
-+		*(ptr++) = '-';
-+		len++;
-+	}
-+	len += u64toa_r(in, ptr);
-+	return len;
-+}
-+
-+/* converts int64_t <in> to a string using the static itoa_buffer and returns
-+ * the pointer to that string.
-+ */
-+static inline __attribute__((unused))
-+char *i64toa(int64_t in)
-+{
-+	i64toa_r(in, itoa_buffer);
-+	return itoa_buffer;
-+}
-+
-+/* converts uint64_t <in> to a string using the static itoa_buffer and returns
-+ * the pointer to that string.
-+ */
-+static inline __attribute__((unused))
-+char *u64toa(uint64_t in)
-+{
-+	u64toa_r(in, itoa_buffer);
-+	return itoa_buffer;
-+}
-+
- static __attribute__((unused))
- int msleep(unsigned int msecs)
- {
+ /* commonly an fd_set represents 256 FDs */
++#ifndef FD_SETSIZE
+ #define FD_SETSIZE     256
++#endif
+ 
+ /* Special FD used by all the *at functions */
+ #ifndef AT_FDCWD
+@@ -72,7 +74,7 @@
+ 
+ /* for select() */
+ typedef struct {
+-	uint32_t fd32[FD_SETSIZE / 32];
++	uint32_t fd32[(FD_SETSIZE + 31) / 32];
+ } fd_set;
+ 
+ #define FD_CLR(fd, set) do {                                            \
+@@ -101,7 +103,7 @@ typedef struct {
+ #define FD_ZERO(set) do {                                               \
+ 		fd_set *__set = (set);                                  \
+ 		int __idx;                                              \
+-		for (__idx = 0; __idx < FD_SETSIZE / 32; __idx ++)      \
++		for (__idx = 0; __idx < (FD_SETSIZE+31) / 32; __idx ++) \
+ 			__set->fd32[__idx] = 0;                         \
+ 	} while (0)
+ 
 -- 
 2.31.1.189.g2e36527f23
 
