@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350281AbiDSRK0 (ORCPT
+        id S1355786AbiDSRKb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
+        Tue, 19 Apr 2022 13:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355588AbiDSRJr (ORCPT
+        with ESMTP id S1355552AbiDSRJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 13:09:47 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC6F38A6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:01 -0700 (PDT)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5C663FE
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388021; x=1681924021;
+  t=1650388024; x=1681924024;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GEA3SMd1Hyd9mgC2yPlyiFisBoFISvY6li4UoRH0Ugk=;
-  b=NaNWmAoQMJFIZN2rjybq7L2kKbA5r6jVpdTLSazqP6nYdu0G8IGPWvHU
-   ylc0j5tQM9aBPs+5xPrL+HMR7EpC2d3UBY0P7NnLTdTp+l5rcGqnznbCu
-   Cok/OvoLAFJtYwWhrlSm69McMAy6LmLYyqMpqxmDa7sMYY/u6RxszoR/g
-   /RSo7U9IRtXILiHbitqudpL9WZm+HU82ukGN1rjXG2WrNYZD+jGnGUqzg
-   1Y6QjYJLWHHVujt5VrrkrrAkbQDI+KyTQrE+DfJOai28s11znndm0uIp6
-   NO39/ddNax0Xw2GjwUcoqkm0MpF5ziDepQsPVcXdQzm2J4EqBDzO9v2pP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263280365"
+  bh=+5b3IZ2C5Hrv6G06EbPOOwQd6d5B5Nj2B016UVv3rJ8=;
+  b=XqY1aV5zQ9Ph/ZicmT9XrhToK0wx5AhoVazf08z8j32Igsb4ZiJKQT12
+   Gj6fxqmYtpjiyR3pnTV8Ezd6vgpXAOzWVcsIYSQPDOn73/Pd0mGx3RvJ+
+   Kph+NAN1y6LBRUvge1RpBbOv+nBH3Gh772MQvBmC0FU37oZymY8uAOA1C
+   MjkyeuZ6scrP2g9K5kEPkmJJKNyR0aqxJ8kvRKwchnGx5X89cks2xuvKc
+   6ED4DJ/XvCccENTu9EF531BfTNYBSnlmm37N6+pDgSq4flBJU7f2E1WcD
+   g6xdcQiM7ExxMHHZLZoOCK8GFxfrHiLy5WNHdCaMlwY0Ek2vBAQc9IU9L
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991827"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263280365"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:06:56 -0700
+   d="scan'208";a="263991827"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:03 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="614074980"
+   d="scan'208";a="861588314"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:06:56 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:02 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 07/44] x86/fault: Adjust WARN_ON for pkey fault
-Date:   Tue, 19 Apr 2022 10:06:12 -0700
-Message-Id: <20220419170649.1022246-8-ira.weiny@intel.com>
+Subject: [PATCH V10 15/44] mm/pkeys: Introduce pks_set_noaccess()
+Date:   Tue, 19 Apr 2022 10:06:20 -0700
+Message-Id: <20220419170649.1022246-16-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,47 +60,78 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Previously if a protection key fault occurred on a kernel address it
-indicated something wrong because user page mappings are not supposed to
-be in the kernel address space.
+After a valid access consumers will want to change PKS protections back
+to No Access for their pkey.
 
-With the addition of PKS, pkey faults may now happen on kernel mappings.
+Define pks_set_noaccess() to update the specified pkey.
 
-If PKS is enabled, avoid the warning in the fault path.  Simplify the
-comment.
+Add documentation.
 
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
+	Move to pks.h
+	Change pkey type to u8
+	From 0day
+		Fix documentation link
 	From Dave Hansen
-		Clarify the comment and commit message
----
- arch/x86/mm/fault.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+		use pkey
+		s/pks_mk*/pks_set*/
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index d0074c6ed31a..5599109d1124 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1148,11 +1148,11 @@ do_kern_addr_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 		   unsigned long address)
- {
- 	/*
--	 * Protection keys exceptions only happen on user pages.  We
--	 * have no user pages in the kernel portion of the address
--	 * space, so do not expect them here.
-+	 * PF_PF faults should only occur on kernel
-+	 * addresses when supervisor pkeys are enabled.
- 	 */
--	WARN_ON_ONCE(hw_error_code & X86_PF_PK);
-+	WARN_ON_ONCE(!cpu_feature_enabled(X86_FEATURE_PKS) &&
-+		     (hw_error_code & X86_PF_PK));
+Changes for V8
+	Make the call inline
+	Split this patch out from 'Add PKS kernel API'
+	Include documentation in this patch
+---
+ Documentation/core-api/protection-keys.rst |  2 +-
+ include/linux/pks.h                        | 13 +++++++++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
+index 3af92e1cbffd..78904d98519b 100644
+--- a/Documentation/core-api/protection-keys.rst
++++ b/Documentation/core-api/protection-keys.rst
+@@ -147,7 +147,7 @@ Changing permissions of individual keys
+ ---------------------------------------
  
- #ifdef CONFIG_X86_32
- 	/*
+ .. kernel-doc:: include/linux/pks.h
+-        :identifiers: pks_set_readwrite
++        :identifiers: pks_set_readwrite pks_set_noaccess
+ 
+ MSR details
+ ~~~~~~~~~~~
+diff --git a/include/linux/pks.h b/include/linux/pks.h
+index 8b705a937b19..9f18f8b4cbb1 100644
+--- a/include/linux/pks.h
++++ b/include/linux/pks.h
+@@ -10,6 +10,18 @@
+ 
+ void pks_update_protection(u8 pkey, u8 protection);
+ 
++/**
++ * pks_set_noaccess() - Disable all access to the domain
++ * @pkey: the pkey for which the access should change.
++ *
++ * Disable all access to the domain specified by pkey.  This is not a global
++ * update and only affects the current running thread.
++ */
++static inline void pks_set_noaccess(u8 pkey)
++{
++	pks_update_protection(pkey, PKEY_DISABLE_ACCESS);
++}
++
+ /**
+  * pks_set_readwrite() - Make the domain Read/Write
+  * @pkey: the pkey for which the access should change.
+@@ -24,6 +36,7 @@ static inline void pks_set_readwrite(u8 pkey)
+ 
+ #else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
+ 
++static inline void pks_set_noaccess(u8 pkey) {}
+ static inline void pks_set_readwrite(u8 pkey) {}
+ 
+ #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
 -- 
 2.35.1
 
