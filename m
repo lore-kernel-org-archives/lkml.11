@@ -2,169 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD55C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355409AbiDSQv5 (ORCPT
+        id S1355459AbiDSQwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55564 "EHLO
+        Tue, 19 Apr 2022 12:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243093AbiDSQqm (ORCPT
+        with ESMTP id S245327AbiDSQpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:46:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49ED3AA45;
-        Tue, 19 Apr 2022 09:43:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 19 Apr 2022 12:45:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5765339692
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:42:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650386578;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u4Y3eOaR2D2oLy5UgU4g9qvJhnkbfGO00HLFWR/cxQI=;
+        b=AJfPcBaXHq79NscCaFoQMMluQvHVQbW6FKHD7d1YORzczWjFCcdGIXXLEyVgWM5LwP4Cmo
+        7QNc7fduEt6ilf5OixTKQJ9HkcklVOU5DT/dKk1GPa/e7DJG7aBVdNJPdFvGJoFYcoCiLk
+        QXxPveEG+m+Ko5hrWx4iyZ69f7s/MDE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-428-najQBgyjPK2iJtuUqeAHRQ-1; Tue, 19 Apr 2022 12:42:57 -0400
+X-MC-Unique: najQBgyjPK2iJtuUqeAHRQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39FE4B81BEF;
-        Tue, 19 Apr 2022 16:43:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC2BC385A5;
-        Tue, 19 Apr 2022 16:43:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386637;
-        bh=qlaYFyobKEQjnzQZM9MNp5qNQqkRYezyfa1kDOn31O4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IfCx1sYsItrvvOhd62OVGq73m59nNboCQp/gH4IxEBVU5zCvpQPCNPA7TuLYFXC6C
-         LwaFif0SpZk4iKNSuUv5XERVH3Itoh7apK3zIBcowiSB/8aMiJR+86E55VqZMRViGM
-         vxBgMMnsawZno/joMpTCd+ep1ROboUpME3CMorprNKBdA5wmg9bbhuyypuFsCjLW8G
-         yE/u4h18EsDdKvT5ABnu1pHVnRKTIiK1fqnwH6cD1Nj0kuQJNcwzeZUE12odIw17Nr
-         I4FoURlNeI1+CxCMlSZX0Yt4E6U9SjEz7W8MiBWwtf7IWB7ooRCN+I7IGpKqWmgJa2
-         GROrW1/+TSmQA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Philipp Zabel <philipp.zabel@gmail.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Paul Parsons <lost.distance@yahoo.com>,
-        Tomas Cech <sleep_walker@suse.com>,
-        Sergey Lapin <slapin@ossfans.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
-        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        alsa-devel@alsa-project.org, Sebastian Reichel <sre@kernel.org>
-Subject: [PATCH 39/48] power: tosa: simplify probe function
-Date:   Tue, 19 Apr 2022 18:38:01 +0200
-Message-Id: <20220419163810.2118169-40-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
-References: <20220419163810.2118169-1-arnd@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0ED983C11C6D;
+        Tue, 19 Apr 2022 16:42:53 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B8FB0C5353B;
+        Tue, 19 Apr 2022 16:42:50 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <Yl7d++G25sNXIR+p@rabbit.intern.cm-ag>
+References: <Yl7d++G25sNXIR+p@rabbit.intern.cm-ag> <YlWWbpW5Foynjllo@rabbit.intern.cm-ag> <507518.1650383808@warthog.procyon.org.uk>
+To:     Max Kellermann <mk@cm4all.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: fscache corruption in Linux 5.17?
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <509960.1650386569.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 19 Apr 2022 17:42:49 +0100
+Message-ID: <509961.1650386569@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Max Kellermann <mk@cm4all.com> wrote:
 
-We have three power supplies that need similar initialization.
-As a preparation for the gpio lookup table conversion, split
-out the initialization into a separate function.
+> Did you read this part of my email?:
 
-Reviewed-by: Sebastian Reichel <sre@kernel.org>
-Acked-by: Sebastian Reichel <sre@kernel.org>
-Cc: linux-pm@vger.kernel.org
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/power/supply/tosa_battery.c | 50 ++++++++++++++---------------
- 1 file changed, 24 insertions(+), 26 deletions(-)
+Sorry, I'm trying to deal with several things at once.
 
-diff --git a/drivers/power/supply/tosa_battery.c b/drivers/power/supply/tosa_battery.c
-index 32cc31cd4761..b26b0eca33e1 100644
---- a/drivers/power/supply/tosa_battery.c
-+++ b/drivers/power/supply/tosa_battery.c
-@@ -343,12 +343,24 @@ static int tosa_bat_resume(struct platform_device *dev)
- #define tosa_bat_resume NULL
- #endif
- 
-+static int tosa_power_supply_register(struct device *dev,
-+			struct tosa_bat *bat,
-+			const struct power_supply_desc *desc)
-+{
-+	struct power_supply_config cfg = {
-+		.drv_data = bat,
-+	};
-+
-+	mutex_init(&bat->work_lock);
-+	bat->psy = power_supply_register(dev, desc, &cfg);
-+
-+	return PTR_ERR_OR_ZERO(bat->psy);
-+}
-+
-+
- static int tosa_bat_probe(struct platform_device *dev)
- {
- 	int ret;
--	struct power_supply_config main_psy_cfg = {},
--				   jacket_psy_cfg = {},
--				   bu_psy_cfg = {};
- 
- 	if (!machine_is_tosa())
- 		return -ENODEV;
-@@ -357,36 +369,22 @@ static int tosa_bat_probe(struct platform_device *dev)
- 	if (ret)
- 		return ret;
- 
--	mutex_init(&tosa_bat_main.work_lock);
--	mutex_init(&tosa_bat_jacket.work_lock);
--
- 	INIT_WORK(&bat_work, tosa_bat_work);
- 
--	main_psy_cfg.drv_data = &tosa_bat_main;
--	tosa_bat_main.psy = power_supply_register(&dev->dev,
--						  &tosa_bat_main_desc,
--						  &main_psy_cfg);
--	if (IS_ERR(tosa_bat_main.psy)) {
--		ret = PTR_ERR(tosa_bat_main.psy);
-+	ret = tosa_power_supply_register(&dev->dev, &tosa_bat_main,
-+					 &tosa_bat_main_desc);
-+	if (ret)
- 		goto err_psy_reg_main;
--	}
- 
--	jacket_psy_cfg.drv_data = &tosa_bat_jacket;
--	tosa_bat_jacket.psy = power_supply_register(&dev->dev,
--						    &tosa_bat_jacket_desc,
--						    &jacket_psy_cfg);
--	if (IS_ERR(tosa_bat_jacket.psy)) {
--		ret = PTR_ERR(tosa_bat_jacket.psy);
-+	ret = tosa_power_supply_register(&dev->dev, &tosa_bat_jacket,
-+					 &tosa_bat_jacket_desc);
-+	if (ret)
- 		goto err_psy_reg_jacket;
--	}
- 
--	bu_psy_cfg.drv_data = &tosa_bat_bu;
--	tosa_bat_bu.psy = power_supply_register(&dev->dev, &tosa_bat_bu_desc,
--						&bu_psy_cfg);
--	if (IS_ERR(tosa_bat_bu.psy)) {
--		ret = PTR_ERR(tosa_bat_bu.psy);
-+	ret = tosa_power_supply_register(&dev->dev, &tosa_bat_bu,
-+					 &tosa_bat_bu_desc);
-+	if (ret)
- 		goto err_psy_reg_bu;
--	}
- 
- 	ret = request_irq(gpio_to_irq(TOSA_GPIO_BAT0_CRG),
- 				tosa_bat_gpio_isr,
--- 
-2.29.2
+> My theory was that fscache shows a mix of old and new pages after the
+> file was modified.  Does this make sense?
+
+Okay - that makes a bit more sense.
+
+Could the file have been modified by a third party?  If you're using NFS3
+there's a problem if two clients can modify a file at the same time.  The
+second write can mask the first write and the client has no way to detect =
+it.
+The problem is inherent to the protocol design.  The NFS2 and NFS3 protoco=
+ls
+don't support anything better than {ctime,mtime,filesize} - the change
+attribute only becomes available with NFS4.
+
+If an NFS file is opened for writing locally, the cache for it supposed to=
+ be
+invalidated and remain unused until there are no open file descriptors lef=
+t
+referring to it.  This is intended for handling DIO writes, but it should
+serve for this also.
+
+The following might be of use in checking if the invalidation happens loca=
+lly:
+
+echo 1 >/sys/kernel/debug/tracing/events/fscache/fscache_invalidate/enable
+
+And then this can be used to check if it correctly identifies that it has =
+an
+obsolete version of the file in the cache when it binds to it:
+
+echo 1 >/sys/kernel/debug/tracing/events/cachefiles/cachefiles_coherency/e=
+nable
+
+
+David
 
