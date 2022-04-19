@@ -2,155 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE38AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC70C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345417AbiDSMhj (ORCPT
+        id S1350102AbiDSMii (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
+        Tue, 19 Apr 2022 08:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbiDSMh0 (ORCPT
+        with ESMTP id S231152AbiDSMig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:37:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89D53340C0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:34:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650371682;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kmRkaKzAt9R+U4rWTjWmga5zw1HoOc2kC7WKpK/XhjA=;
-        b=HNAqWrwc2fJFwVNEB2eiuEA2s5n5dM06iIU4kNc40i7pNXw0gFnTHHKMv/eheNTbWi8uxu
-        OsT9JBMuzVtWTcHrBMNaXi3Xq0+rvhIqpPX1BW8pzt4TRoi0fiKgHwI/vXqz3URBELgngT
-        mwE8qzIs+SDV5pBfyXBapjWoattEEPc=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-614-jPIJFVchPR-oAzXrl5iVEA-1; Tue, 19 Apr 2022 08:34:41 -0400
-X-MC-Unique: jPIJFVchPR-oAzXrl5iVEA-1
-Received: by mail-wr1-f69.google.com with SMTP id p18-20020adf9592000000b00207bc12decbso1605880wrp.21
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:34:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=kmRkaKzAt9R+U4rWTjWmga5zw1HoOc2kC7WKpK/XhjA=;
-        b=LkjB7+9ekZiNSRvx4Tt0bDJia53vFxbAc6s9OS1JimwOJPtEenWToRWAiPlE95lelb
-         N9PD02GW1hQ0lBLofF8RbxOJfY49931QW2DPlWfieWVb9AIdEFACrZ6TivK7eKxg+yfV
-         lVKNudWyNwdcScEQaflSjM69O160irNHC24IBxo2toH5gbn6WJf43N+SU98GEs634sbR
-         CDecFv776R7DYbJJhHF/QWNuM+2a4uyDKcJXcOepjM3r/F4z5IHMhICj8+ytDmKMX+Lb
-         pDIqez0i9/rX4jrPMalUom9lXrQZoVbnYHKJJiZKNYSJgICB64Ujhacn0rsTu516NWTD
-         XhWQ==
-X-Gm-Message-State: AOAM531WbY8Y7621DFE0RnxQW0xIXSgz8hQkwuMrYoYfLXCfIsVXE+ZU
-        ul8LnraAUvdR/LVNajid9syLt6JdSVIL8p9ju5uw21ZfMRSIVTSJja40aAMdzKJbjzjYRSsBDk2
-        kL69zVJyAWI3He3HJVgi7hPHF
-X-Received: by 2002:adf:e188:0:b0:207:9b59:9d82 with SMTP id az8-20020adfe188000000b002079b599d82mr11441204wrb.114.1650371679940;
-        Tue, 19 Apr 2022 05:34:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfp002VP04ht3smessK2Y4vAHKcqQI5bI1sFeNhNsV7IhBIUmSKtYiAN70U6ifKiIlcXyeyw==
-X-Received: by 2002:adf:e188:0:b0:207:9b59:9d82 with SMTP id az8-20020adfe188000000b002079b599d82mr11441185wrb.114.1650371679646;
-        Tue, 19 Apr 2022 05:34:39 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:5d00:d8c2:fbf6:a608:957a? (p200300cbc7045d00d8c2fbf6a608957a.dip0.t-ipconnect.de. [2003:cb:c704:5d00:d8c2:fbf6:a608:957a])
-        by smtp.gmail.com with ESMTPSA id a4-20020a056000188400b0020a9ec6e8e3sm3830865wri.55.2022.04.19.05.34.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 05:34:39 -0700 (PDT)
-Message-ID: <d98bb24d-b8cd-b00b-57c3-d96dae57ad5b@redhat.com>
-Date:   Tue, 19 Apr 2022 14:34:37 +0200
+        Tue, 19 Apr 2022 08:38:36 -0400
+X-Greylist: delayed 1387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 05:35:51 PDT
+Received: from ppsw-41.csi.cam.ac.uk (ppsw-41.csi.cam.ac.uk [131.111.8.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC4E1573B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:35:51 -0700 (PDT)
+X-Cam-AntiVirus: no malware found
+X-Cam-ScannerInfo: https://help.uis.cam.ac.uk/email-scanner-virus
+Received: from hades.srcf.societies.cam.ac.uk ([131.111.179.67]:56344)
+        by ppsw-41.csi.cam.ac.uk (ppsw.cam.ac.uk [131.111.8.139]:25)
+        with esmtps (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        id 1ngmiN-000usy-QF (Exim 4.95)
+        (return-path <amc96@srcf.net>);
+        Tue, 19 Apr 2022 13:12:15 +0100
+Received: from [192.168.1.10] (host-92-26-109-251.as13285.net [92.26.109.251])
+        (Authenticated sender: amc96)
+        by hades.srcf.societies.cam.ac.uk (Postfix) with ESMTPSA id 7565F1FAD5;
+        Tue, 19 Apr 2022 13:12:14 +0100 (BST)
+Message-ID: <8fbbd4ca-54b1-8c1c-19bc-3d0e6044ff5d@srcf.net>
+Date:   Tue, 19 Apr 2022 13:12:14 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     Joel Savitz <jsavitz@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        David Hildenbrand <dhildenb@redhat.com>
-References: <20220418195402.2986573-1-jsavitz@redhat.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [RFC PATCH] kernel/cpu: restart cpu_up when hotplug is disabled
-In-Reply-To: <20220418195402.2986573-1-jsavitz@redhat.com>
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 06/25] x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+Content-Language: en-GB
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Andrew Cooper <Andrew.Cooper3@citrix.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+References: <cover.1650300597.git.jpoimboe@redhat.com>
+ <a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com>
+ <b94cbac6-0a4d-8e4a-ec58-bbd46e385d45@citrix.com>
+ <20220419115737.GU2731@worktop.programming.kicks-ass.net>
+From:   Andrew Cooper <amc96@srcf.net>
+In-Reply-To: <20220419115737.GU2731@worktop.programming.kicks-ass.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18.04.22 21:54, Joel Savitz wrote:
-> The cpu hotplug path may be utilized while hotplug is disabled for a
-> brief moment leading to failures. As an example, attempts to perform
-> cpu hotplug by userspace soon after boot may race with pci_device_probe
-> leading to inconsistent results.
-
-You might want to extend a bit in which situation we observed that issue
-fairly reliably.
-
-When restricting the number of boot cpus on the kernel cmdline, e.g.,
-via "maxcpus=2", udev will find the offline cpus when enumerating all
-cpus and try onlining them. Due to the race, onlining of some cpus fails
-e.g., when racing with pci_device_probe().
-
-While teaching udev to not online coldplugged CPUs when "maxcpus" was
-specified ("policy"), it revealed the underlying issue that onlining a
-CPU can fail with -EBUSY in corner cases when cpu hotplug is temporarily
-disabled.
-
-> 
-> Proposed idea:
-> Call restart_syscall instead of returning -EBUSY since
-> cpu_hotplug_disabled seems to only have a positive value
-> for short, temporary amounts of time.
-> 
-> Does anyone see any serious problems with this?
-> 
-> Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+On 19/04/2022 12:57, Peter Zijlstra wrote:
+> On Tue, Apr 19, 2022 at 11:42:12AM +0000, Andrew Cooper wrote:
+>> On 18/04/2022 17:50, Josh Poimboeuf wrote:
+>>> The startup_xen() kernel entry point is referenced by the ".note.Xen"
+>>> section, but is presumably not indirect-branched to.
+>> It's the real entrypoint of the VM.  It's "got to" by setting %rip
+>> during vcpu setup.
+>>
+>> We could in principle support starting a PV VM with CET active, but that
+>> sounds like an enormous quantity of effort for very little gain.  CET
+>> for Xen PV requires paravirt anyway (because the kernel runs in CPL!=0)
+>> so decisions like this can wait until someone feels like doing the work.
+>>
+>>>   Add ANNOTATE_ENDBR
+>>> to silence future objtool warnings.
+>>>
+>>> Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+>>> Cc: Juergen Gross <jgross@suse.com>
+>>> Cc: Stefano Stabellini <sstabellini@kernel.org>
+>>> Cc: xen-devel@lists.xenproject.org
+>>> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+>> FWIW, Reviewed-by: Andrew Cooper <andrew.cooper3@citrix.com>, preferably
+>> with the commit message tweaked to remove the uncertainty.
+> Something like so then?
+>
 > ---
->  kernel/cpu.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/cpu.c b/kernel/cpu.c
-> index 5797c2a7a93f..2992c7d1d24e 100644
-> --- a/kernel/cpu.c
-> +++ b/kernel/cpu.c
-> @@ -35,6 +35,7 @@
->  #include <linux/percpu-rwsem.h>
->  #include <linux/cpuset.h>
->  #include <linux/random.h>
-> +#include <linux/delay.h>
->  
->  #include <trace/events/power.h>
->  #define CREATE_TRACE_POINTS
-> @@ -1401,7 +1402,9 @@ static int cpu_up(unsigned int cpu, enum cpuhp_state target)
->  	cpu_maps_update_begin();
->  
->  	if (cpu_hotplug_disabled) {
-> -		err = -EBUSY;
-> +		/* avoid busy looping (5ms of sleep should be enough) */
-> +		msleep(5);
-> +		err = restart_syscall();
+> Subject: x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
+> Date: Mon, 18 Apr 2022 09:50:25 -0700
+>
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
+>
+> The startup_xen() kernel entry point is referenced by the ".note.Xen"
+> section, and is the real entry point of the VM. It *will* be
+> indirectly branched to, *however* currently Xen doesn't support PV VM
+> with CET active.
 
-It's worth noting that we use the same approach in
-lock_device_hotplug_sysfs(). It's far from perfect I would say, but we
-really wanted to avoid letting user space having to deal with retry logic.
+Technically it's always IRET'd to, but the point is that it's never
+"branched to" by the execution context of the VM.
 
+So it would be better to say that it's never indirectly branched to. 
+That's what the IBT checks care about.
 
-For example, while memory onlining can fail with -EBUSY, it's not
-expected to fail during memory onlining (we only fail in very rare
-cases, when a memory notifier fails -- for example when kasan fails to
-allocate memory).
+>
+> Add ANNOTATE_ENDBR to silence future objtool warnings.
 
--- 
-Thanks,
+Only just spotted.  All text in the subject and commit message needs
+s/ENDBR/NOENDBR/
 
-David / dhildenb
-
+~Andrew
