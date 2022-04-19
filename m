@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25358C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D52C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353931AbiDSPkP (ORCPT
+        id S1353938AbiDSPkZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42714 "EHLO
+        Tue, 19 Apr 2022 11:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239268AbiDSPkN (ORCPT
+        with ESMTP id S1352379AbiDSPkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:40:13 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3714017040
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:37:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650382650; x=1681918650;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4N2SkFIST0VyNGwkWWx2ut7F+Xkhd+EsUCbxFRceHsA=;
-  b=g1pNkLIpqnXqyzRdia/1gijCdPuOhgj3cDFzIS8sv4wFFay7MlInQ3dQ
-   eiGq+N5A/KOcrPBU8aYO+SzH+FnOZU4TwxXW8kjD7rcAYr+zFIdD95VL6
-   vRe9rBx1C5fvxfzraE+pIIwWNh1I02J7zl2glOTgWadZPynijj+Uj7yT/
-   PmNqzwUK+pQawMK192HUePlQTQV3EDClKHoL/rvrtSYeUY8Xn4xn1gRYV
-   8Ng+oJ71nTBcXkO/ZQbDbNyWJThvSUIRyqUPc/T4NcEsw1HVZdfT0lMIF
-   ZJp8LIjOBThxtWfXDELJb7f0zKnEDov7R2H+lZUrI/m7uh8F5DzP/btxd
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="326694709"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="326694709"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 08:37:29 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="727110814"
-Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.212.111.34]) ([10.212.111.34])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 08:37:29 -0700
-Message-ID: <d8240552-acea-0214-a5a3-6bf07ad6b007@intel.com>
-Date:   Tue, 19 Apr 2022 08:37:28 -0700
+        Tue, 19 Apr 2022 11:40:18 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649AD17040;
+        Tue, 19 Apr 2022 08:37:35 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23JCbNEh019703;
+        Tue, 19 Apr 2022 17:37:24 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=MMWQcd7ztdfHPvacGaXnDXQQDw/8sntKbHOtFacicws=;
+ b=vVylh44DlkT3N6R9KUMdq7dAwFTjIftmkMCO3nv8tE917dkccLDGEn+FJRfq1pTuyP6C
+ sB5kHZizIKqQBVAhejDTBU4fi+kKWqCBCJUHluKcK/Lfg/zn8zmb5xLnG80+mT15DB8F
+ W+91vUWuhH0IM81x7FYGaKB12D/cEc2388zX4emxy5txFOkG/Zr8pvesIOdKEQnufyI+
+ 06MkLL/gLpbBmZw7qQAZ3BJoKmcF1eQQe+7nFOqsfzcEUv0IArkGugWHzie8/87r3IMS
+ NIKXavRJlQpm/YBEOVU62N3yNCIzDTA7GXxZjADaB/qpllYUSs6eIBC4x7Rnft94gGaO 2A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fh09krnem-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 17:37:24 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D92B410002A;
+        Tue, 19 Apr 2022 17:37:23 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D2A48216EFC;
+        Tue, 19 Apr 2022 17:37:23 +0200 (CEST)
+Received: from [10.48.0.142] (10.75.127.47) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 19 Apr
+ 2022 17:37:23 +0200
+Message-ID: <b7b07e11-6078-ca32-7d3d-188542f28f9d@foss.st.com>
+Date:   Tue, 19 Apr 2022 17:37:22 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] ntb_perf: fix doubletest cocci warning
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 0/2] ARM: dts: stm32: add RTC support on stm32mp13 boards
 Content-Language: en-US
-To:     Guo Zhengkui <guozhengkui@vivo.com>, Jon Mason <jdmason@kudzu.us>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Alexander Fomichev <fomichev.ru@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        "open list:NTB DRIVER CORE" <ntb@lists.linux.dev>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     zhengkui_guo@outlook.com
-References: <20220419071855.23338-1-guozhengkui@vivo.com>
-From:   Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <20220419071855.23338-1-guozhengkui@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Valentin Caron <valentin.caron@foss.st.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220407162042.361956-1-valentin.caron@foss.st.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220407162042.361956-1-valentin.caron@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_05,2022-04-15_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Valentin
 
-On 4/19/2022 12:18 AM, Guo Zhengkui wrote:
-> `!data->ops.init` has been repeated triple. The original logic is to
-> check whether `.init`, `.run` and `.clear` callbacks are NULL or not.
->
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+On 4/7/22 18:20, Valentin Caron wrote:
+> Add RTC node on stm32mp13 soc.
+> Enable RTC on stm32mp135f-dk board.
+> 
+> Valentin Caron (2):
+>    ARM: dts: stm32: add RTC node on stm32mp131
+>    ARM: dts: stm32: enable RTC support on stm32mp135f-dk
+> 
+>   arch/arm/boot/dts/stm32mp131.dtsi    | 15 +++++++++++++++
+>   arch/arm/boot/dts/stm32mp135f-dk.dts |  4 ++++
+>   2 files changed, 19 insertions(+)
+> 
 
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+Series applied on stm32-next.
 
-
-> ---
->   drivers/ntb/test/ntb_perf.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/ntb/test/ntb_perf.c b/drivers/ntb/test/ntb_perf.c
-> index c106c3a5097e..dcae4be91365 100644
-> --- a/drivers/ntb/test/ntb_perf.c
-> +++ b/drivers/ntb/test/ntb_perf.c
-> @@ -1451,7 +1451,7 @@ static void perf_ext_lat_work(struct work_struct *work)
->   {
->   	struct perf_ext_lat_data *data = to_ext_lat_data(work);
->   
-> -	if (!data->ops.init || !data->ops.init || !data->ops.init) {
-> +	if (!data->ops.init || !data->ops.run || !data->ops.clear) {
->   		struct perf_ctx *perf = data->perf;
->   
->   		data->status = -EFAULT;
+Thanks
+Alex
