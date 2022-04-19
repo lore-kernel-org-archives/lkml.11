@@ -2,249 +2,323 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01169C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF19BC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244095AbiDSNpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36202 "EHLO
+        id S1352626AbiDSNpH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352663AbiDSNmg (ORCPT
+        with ESMTP id S244173AbiDSNnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:42:36 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2058.outbound.protection.outlook.com [40.107.244.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8A738BE0;
-        Tue, 19 Apr 2022 06:39:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HNBF1lhARWz33HL+AOY1SMctG7zAUGqmyGxY1u6FcwwIEnQo7J2pXeVBayMsDWsuA54lwC2WLdcU0GaZS0lGi6uUmo4OXuxoLLhyFywbvkGs7KSRUJuTsN/KHsDFfEjtZaEpp3zghr4GvLEaAhk7yuSlFAt424Y9TBOR83pHepXtp7ClrpKS3ENc8o3VbspCiwGY4O2XTUcKQFx2+sRgIE+qDfK6zD1x/xA6lEOG/mjndVKaMGqEwiB9A/x9nisjRXo8acbQwe0HTAwmBgmACwe3yIa3KJa5SK0GJG/FIl7/qnUKskX8mO81PwAXBBQfhCiwVZwP77P2C8DB+XvKug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0VcH1a2Of9dqwCAZFZnVntrhLrq6naJJA9nYH1mHfG0=;
- b=HnFrZDKT5WGAQqPMBYX5nK105KJt33iT6Jfftembt9vOPepai1ecz0iEfK/6/KOzqk1Rzv9vFp0Wtvkk/HKL24uY2pO78ULMX38VAuWWatQJCkvD0d/BZXKfeGgdF+4/lpqkzSfuAgRhuo0YrolfWi+7ht5fu9VZB1ReaTsxaGWv0FvE+7GP6d/grMQ2vxrtNvBBeNjMJHuH0xtfr1lSul7jJlWdjK2IK9H7XnJ4AY81SjV6TmVHV8H/mSC0xTmQU2RKebYLxGoC2qgTEnz18riKlKIrrqGJu/LWFebjDsaJPKXvkgZ/n37wB7zzVh6NEFR91J8KgtUo1kz3blmklg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0VcH1a2Of9dqwCAZFZnVntrhLrq6naJJA9nYH1mHfG0=;
- b=Yp2iJiaxIFgaD+QxkUfziKBL8nlU4/j1VPxsb1q69TcN8WlUVD9NUvy3GpARY9YFnMJ54hDyELdZLSVKq1dZ4RUMdq8Uxy1yRIj9LSEtsKPRNDJ4IkNS6VWvawnjqKd2ljL0VDPKBfjts5PLl3nPjepR66IHi3hrAeelK4Pvvd0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silabs.com;
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
- by PH0PR11MB5783.namprd11.prod.outlook.com (2603:10b6:510:128::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Tue, 19 Apr
- 2022 13:39:27 +0000
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::89b8:2d6e:d075:527]) by PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::89b8:2d6e:d075:527%5]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
- 13:39:27 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, Jaehee Park <jhpark1013@gmail.com>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Jaehee Park <jhpark1013@gmail.com>
-Subject: Re: [PATCH] wfx: use container_of() to get vif
-Date:   Tue, 19 Apr 2022 15:39:19 +0200
-Message-ID: <22643645.6Emhk5qWAg@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <20220418035110.GA937332@jaehee-ThinkPad-X1-Extreme>
-References: <20220418035110.GA937332@jaehee-ThinkPad-X1-Extreme>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-ClientProxiedBy: PR0P264CA0286.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1::34) To PH0PR11MB5657.namprd11.prod.outlook.com
- (2603:10b6:510:ee::19)
+        Tue, 19 Apr 2022 09:43:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4DD182;
+        Tue, 19 Apr 2022 06:40:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91168B81981;
+        Tue, 19 Apr 2022 13:40:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BA25C385AF;
+        Tue, 19 Apr 2022 13:40:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650375630;
+        bh=Y28p7Ny9YomGZamqZAIMduIfzMd9ilwbgGj96GOTejs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eUHAFjoiHuXtqZ4ZQCCCjrNWBObk3OpvdAoRndhAbYTT/dWpoD2ncZTLJ89QVYpaG
+         E3ATSEWOwtxhMgdoVM3aoUvIYenIeLY8VecZ74Q1zfAO0JlMqhoBixhEDM2LhMCyTM
+         Bg8EvhbdgtMjbcznvJxbbq6hNISkYGTTR4Tv2UoKdlOSU7hMkR/ruvdJ/iC72Zem7f
+         i9ZFFfE2l05LHOqtf8V/dIsD5stadiF0iLdtFAAfv026f+K1DHAgxo/HxMLDoMG0LJ
+         KlL7TLBkRPDFumi0yT4sk8TbBxJfJ8Zsfkwpvwn7UIjjyX9tWqdiDl36pA3xGyphWy
+         6yb1hp9ibLpEg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
+        jmkrzyszt@gmail.com
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [PATCH 23/41] ARM: omap: split up arch/arm/plat-omap/Kconfig
+Date:   Tue, 19 Apr 2022 15:37:05 +0200
+Message-Id: <20220419133723.1394715-24-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
+References: <20220419133723.1394715-1-arnd@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7a45edf2-e982-407d-1b1b-08da220a062b
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5783:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR11MB5783AEB02D2AFDCC42C0E9F893F29@PH0PR11MB5783.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g5BRC6YjKPXzPcXgTWKxYlMTUzlUqUsn/9GB068aHxx+5wAXklNe6q2Cf6dJOhjvWWmCNSGOaMQFsGViBSIEvbaVrlX1IGsqPkHi8qh5ZhYS/1puOgmW/0eitWy6o5YTQxuTGNa4HbmY/KsGwZf9gHSw1TqfaETfF2k242muvrp/VzS5jm8zF9slahmOlj+N3odP2WqUluyOFPxTrdTKuWAqhymNhy4njClfierRqZ+qTFXbDCmngyg2MWiAVfPGwal/OM3x2u8LcMuqGjOgh6S9CO3OSibbFP6+xtEKM8JUFrBbtl5jIhyePpG+3WvtcJMFLJqUk79PeBYPEYcPCayOgYomYjZ+YSAs1grGB8Wys026I/NyZ5KaSBnJ/Ap8A7y+CQ2dMdVToSNmY5SK0QIeeQmefA8/fgWEUGdwI8FeIkKy/poWoAxmnetCJOUYJunSShK2Rr/P+K3QdWDrzFHljb0Zt4WqweBJJWkv9oyrHMC6clFLuTPuCXlg+1ywASYGiISgKviiiIKvyGREeAW4v4IzuBoCJQpElXHvqBYOTGhrOmrMA1Js6hrdvTxEA9b3UiZglXFHsTZjmynuyrX4q87ypFoHM4GghYgAjYPw7dtHtQaabVlTShj8nhfHHTCejj4Az97Wsu2iqBAMAWlBr0Z/lQhfmmv1XKORkcl9XOGvltNUH47GMb94ynRTeY6KcKkDdOgDE1zSvNVjvuBab5HvxPAOryYwClSfb2VSH2MoMOo8QAIzNWxeM9+p
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(2906002)(8936002)(8676002)(26005)(66574015)(508600001)(33716001)(7416002)(5660300002)(9686003)(52116002)(6506007)(6512007)(6486002)(6666004)(36916002)(110136005)(316002)(86362001)(83380400001)(186003)(66946007)(66556008)(66476007)(38100700002)(38350700002)(921005)(39026012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?EPzW8Ra1kzYeEUmxHhYfyYxsBKnm0tjr3oOHE1+5xrPcc5mLRiXELY9guQ?=
- =?iso-8859-1?Q?S/euGbjqvEiHSsgHd0PcK3mzsCmG2v6omGYe1bIM9g8INCvMMPA2hrA3OB?=
- =?iso-8859-1?Q?wKe0qEevsPD2aLP0KLvm+xddKxSECOdI9rMkGZPV79wiuk1RRhAafjVYNJ?=
- =?iso-8859-1?Q?0Zk4fAQJYGUkpPTO5XgMy6fyB8G6p8d5deuVH1H+4puRoTkCWXt6C9Ahwv?=
- =?iso-8859-1?Q?AIvZ49GciKRj59iORDqtjZ72G81iR3J8SMuy1d3aZZWdK2iNATLa/De15O?=
- =?iso-8859-1?Q?Ut0S/Gr4wV71SjiRCZ7Yw/z+1FPvgAAVH7+PjbKt8Gom8SJWCwtHkk1kJz?=
- =?iso-8859-1?Q?/RluUJTddqZ5sn2PPdZACjZnHi0+yjeYA6pHm/vio16oiv6z7flQetn21a?=
- =?iso-8859-1?Q?mZ2rL/ricOqehlUTvwUe0I52s2wU6lk0CcuRHcKKuuwI6ptT9nJk+kTsvA?=
- =?iso-8859-1?Q?AVJqMzWXR5GQrk6DSRWvtYRlOprHkV3AeQHpxEI8eICbj+SZPfS6PdICQL?=
- =?iso-8859-1?Q?CZ8hjYdH/bnqgS4KOe61Nb26nuKBTR9nCmAq3rPzmxxg8xNDSXdhl5SPwr?=
- =?iso-8859-1?Q?6W4yL21+Br3vmPPZXdnng4qE0g1sSHwQFd/BGIBic79vSMucmgNrZDyukx?=
- =?iso-8859-1?Q?nFpXKnhTQid7H5aWPyBgZZGesTww75ANQrJ06unDd0cdN2mbuTSt0eezKK?=
- =?iso-8859-1?Q?SDvD8CmRyzqjICEqu5hs1B+tM4eram2+YSpG1a9trVdYAfWpET6V5jxxBV?=
- =?iso-8859-1?Q?MQY/JBbPSP8VnLR2uQ0EVf0TB8P9voL5vpHsIBvIQuunK6a4t3mGC55U4X?=
- =?iso-8859-1?Q?Ak6a9u3mdIJfgt7WQ5CSoM61VocRAju+icbOJHLtSLGE803alOHMpYtP3L?=
- =?iso-8859-1?Q?FhQCLwZ/Beme+wcoyqbYqPFwl8qCUNyKmQwhWTbJLPFQ4heLDhMbSGqNcX?=
- =?iso-8859-1?Q?SQXszhVnWXuCmp941XN2KhGFNkR4QMduQ1dA4Am3QJIzwwtGyjaDhrO9A6?=
- =?iso-8859-1?Q?QBFhfyoYWS0+Gutr95czhgDWAFdK/Wpo69/r/AsE6zb366EQ7LPhia9gxm?=
- =?iso-8859-1?Q?OURW22lGZsO11zGBRv0ddMMfOact0mytepo0D7mmlw/Y2xObRAcDt5sV0B?=
- =?iso-8859-1?Q?EcAt1vYobYDzcmAjUZ6gv6bsQXncCptxi0Z0rF2R3gSRWLsHuWSYBcm8j0?=
- =?iso-8859-1?Q?CDQ2pDGeIzPOHKVTD8+Ol8X54fjBgAuaITDXHfe01T12QqtoBNFggB71aN?=
- =?iso-8859-1?Q?oqBjX6poUhrKo8iiqzjELwVknXJPIHccjgs7IxDNUpZhdTw8cXrkLuUBhj?=
- =?iso-8859-1?Q?cg/mBUgD2535IdK+zSrMBr3D/ynDF4TfIOYx8m9xAzJrdQU85MXAoLOV8w?=
- =?iso-8859-1?Q?5PYdvo0RIe6XF14aHBeodgVm2QqfQ0tys7X9Z9zfPUymHJQiMuAhRpAJ4b?=
- =?iso-8859-1?Q?2wjF1rAMGgVp42yC40eljJ/tmX8ORNWxvBZKnf34OHmVAi3sM0AtgA8y5a?=
- =?iso-8859-1?Q?tmB9pvowiciCZZs3jC0EJ9RdO+fi3hMn175EfZkLwQU8zCuDbMSzh1YMoq?=
- =?iso-8859-1?Q?LpnRMRTzN+GBK9iaz/MwrDcmft6f3If8apsDwZwyEZMLIdyU53d39w2ihO?=
- =?iso-8859-1?Q?5biaBgABUMcCQviC8nddCgJ0wzYudA6jUhvRWx37nJPMVbOGquiUs8F7cP?=
- =?iso-8859-1?Q?ylSd7BmfmsLlse6IivEeD6hiClmC70XN0LVwP41cGWknpV4l5YNXk4zGp6?=
- =?iso-8859-1?Q?Rs57zejWyn58Gme+Edb48J9nltZ8LZ04FLHQf6lDJhabstx2oxyOxnMMb+?=
- =?iso-8859-1?Q?RiVGkeC4DA=3D=3D?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a45edf2-e982-407d-1b1b-08da220a062b
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2022 13:39:27.7507
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /ph7CGwYQAFe0oEXuw0L7xqC3gGRt9akor1w23coSSSHYG9X0TAF1mllQ1127YORxHrlGcXBm+3jDY5YQoS5JA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5783
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Monday 18 April 2022 05:51:10 CEST Jaehee Park wrote:
->=20
-> Currently, upon virtual interface creation, wfx_add_interface() stores
-> a reference to the corresponding struct ieee80211_vif in private data,
-> for later usage. This is not needed when using the container_of
-> construct. This construct already has all the info it needs to retrieve
-> the reference to the corresponding struct from the offset that is
-> already available, inherent in container_of(), between its type and
-> member inputs (struct ieee80211_vif and drv_priv, respectively).
-> Remove vif (which was previously storing the reference to the struct
-> ieee80211_vif) from the struct wfx_vif, define a function
-> wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-> the newly defined container_of construct.
->=20
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> ---
->=20
-> Changes from staging to wireless-next tree
-> - changed macro into function and named it back to wvif_to_vif
-> - fit all lines in patch to 80 columns
-> - decared a reference to vif at the beginning of the functions
->=20
-> NOTE: J=E9r=F4me is going to be testing this patch on his hardware
+From: Arnd Bergmann <arnd@arndb.de>
 
-Don't forget to increment the version number of your submission (option
--v of git send-email).
+All the remaining features in here are either omap1
+or omap2plus specific, so move them into the respective
+Kconfig files.
 
->  drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
->  drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
->  drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
->  drivers/net/wireless/silabs/wfx/key.c     |  4 +-
->  drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
->  drivers/net/wireless/silabs/wfx/scan.c    |  9 ++-
->  drivers/net/wireless/silabs/wfx/sta.c     | 69 ++++++++++++++---------
->  7 files changed, 63 insertions(+), 36 deletions(-)
->=20
-> diff --git a/drivers/net/wireless/silabs/wfx/wfx.h b/drivers/net/wireless=
-/silabs/wfx/wfx.h
-> index 6594cc647c2f..718693a4273d 100644
-> --- a/drivers/net/wireless/silabs/wfx/wfx.h
-> +++ b/drivers/net/wireless/silabs/wfx/wfx.h
-> @@ -61,7 +61,6 @@ struct wfx_dev {
->=20
->  struct wfx_vif {
->         struct wfx_dev             *wdev;
-> -       struct ieee80211_vif       *vif;
->         struct ieee80211_channel   *channel;
->         int                        id;
->=20
-> @@ -91,6 +90,11 @@ struct wfx_vif {
->         struct completion          set_pm_mode_complete;
->  };
->=20
-> +static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
-> +{
-> +       return container_of((void *)wvif, struct ieee80211_vif, drv_priv)=
-;
-> +}
-> +
->  static inline struct wfx_vif *wdev_to_wvif(struct wfx_dev *wdev, int vif=
-_id)
->  {
->         if (vif_id >=3D ARRAY_SIZE(wdev->vif)) {
-> diff --git a/drivers/net/wireless/silabs/wfx/data_rx.c b/drivers/net/wire=
-less/silabs/wfx/data_rx.c
-> index a4b5ffe158e4..342b9cd0e74c 100644
-> --- a/drivers/net/wireless/silabs/wfx/data_rx.c
-> +++ b/drivers/net/wireless/silabs/wfx/data_rx.c
-> @@ -16,6 +16,7 @@
->  static void wfx_rx_handle_ba(struct wfx_vif *wvif, struct ieee80211_mgmt=
- *mgmt)
->  {
->         int params, tid;
-> +       struct ieee80211_vif *vif =3D wvif_to_vif(wvif);
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm/Kconfig            |  2 -
+ arch/arm/mach-omap1/Kconfig | 37 +++++++++++++++
+ arch/arm/mach-omap2/Kconfig | 49 ++++++++++++++++++++
+ arch/arm/plat-omap/Kconfig  | 92 -------------------------------------
+ 4 files changed, 86 insertions(+), 94 deletions(-)
+ delete mode 100644 arch/arm/plat-omap/Kconfig
 
-When you can, try to place the longest declaration first ("reverse
-Christmas tree order").
-
-[...]
-> diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wireless=
-/silabs/wfx/sta.c
-> index 3297d73c327a..97fcbad23c94 100644
-> --- a/drivers/net/wireless/silabs/wfx/sta.c
-> +++ b/drivers/net/wireless/silabs/wfx/sta.c
-[...]
-> @@ -152,19 +153,28 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif,=
- bool *enable_ps)
->  {
->         struct ieee80211_channel *chan0 =3D NULL, *chan1 =3D NULL;
->         struct ieee80211_conf *conf =3D &wvif->wdev->hw->conf;
-> +       struct ieee80211_vif *vif =3D wvif_to_vif(wvif);
->=20
-> -       WARN(!wvif->vif->bss_conf.assoc && enable_ps,
-> +       WARN(!vif->bss_conf.assoc && enable_ps,
->              "enable_ps is reliable only if associated");
-> -       if (wdev_to_wvif(wvif->wdev, 0))
-> -               chan0 =3D wdev_to_wvif(wvif->wdev, 0)->vif->bss_conf.chan=
-def.chan;
-> -       if (wdev_to_wvif(wvif->wdev, 1))
-> -               chan1 =3D wdev_to_wvif(wvif->wdev, 1)->vif->bss_conf.chan=
-def.chan;
-> -       if (chan0 && chan1 && wvif->vif->type !=3D NL80211_IFTYPE_AP) {
-> +       if (wdev_to_wvif(wvif->wdev, 0)) {
-> +               struct wfx_vif *wvif_ch0 =3D wdev_to_wvif(wvif->wdev, 0);
-> +               struct ieee80211_vif *vif_ch0 =3D wvif_to_vif(wvif_ch0);
-> +
-> +               chan0 =3D vif_ch0->bss_conf.chandef.chan;
-> +       }
-> +       if (wdev_to_wvif(wvif->wdev, 1)) {
-> +               struct wfx_vif *wvif_ch1 =3D wdev_to_wvif(wvif->wdev, 1);
-> +               struct ieee80211_vif *vif_ch1 =3D wvif_to_vif(wvif_ch1);
-> +
-> +               chan1 =3D vif_ch1->bss_conf.chandef.chan;
-> +       }
-
-I think this code could be simplified into:
-
-       if (wvif->wdev->vif[1])
-               chan1 =3D wvif->wdev->vif[1]->bss_conf.chandef.chan;
-
-(If you choose this way, I suggest to place this change in a separate
-patch)
-
-[...]
-
---=20
-J=E9r=F4me Pouiller
-
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 2e8091e2d8a8..700655e31b04 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -656,8 +656,6 @@ source "arch/arm/mach-npcm/Kconfig"
+ 
+ source "arch/arm/mach-nspire/Kconfig"
+ 
+-source "arch/arm/plat-omap/Kconfig"
+-
+ source "arch/arm/mach-omap1/Kconfig"
+ 
+ source "arch/arm/mach-omap2/Kconfig"
+diff --git a/arch/arm/mach-omap1/Kconfig b/arch/arm/mach-omap1/Kconfig
+index 04155b5ce978..93ea86954a84 100644
+--- a/arch/arm/mach-omap1/Kconfig
++++ b/arch/arm/mach-omap1/Kconfig
+@@ -28,6 +28,11 @@ config ARCH_OMAP16XX
+ 	select CPU_ARM926T
+ 	select OMAP_DM_TIMER
+ 
++config ARCH_OMAP
++	bool
++
++comment "OMAP Feature Selections"
++
+ config OMAP_MUX
+ 	bool "OMAP multiplexing support"
+ 	default y
+@@ -69,6 +74,38 @@ config OMAP_32K_TIMER
+ 	  The actual timer selection is done in the board file
+ 	  through the (DT_)MACHINE_START structure.
+ 
++config OMAP_MPU_TIMER
++	bool "Use mpu timer"
++	depends on ARCH_OMAP1
++	help
++	  Select this option if you want to use the OMAP mpu timer. This
++	  timer provides more intra-tick resolution than the 32KHz timer,
++	  but consumes more power.
++
++config OMAP_SERIAL_WAKE
++	bool "Enable wake-up events for serial ports"
++	depends on ARCH_OMAP1 && OMAP_MUX
++	default y
++	help
++	  Select this option if you want to have your system wake up
++	  to data on the serial RX line. This allows you to wake the
++	  system from serial console.
++
++config OMAP_RESET_CLOCKS
++	bool "Reset unused clocks during boot"
++	depends on ARCH_OMAP
++	help
++	  Say Y if you want to reset unused clocks during boot.
++	  This option saves power, but assumes all drivers are
++	  using the clock framework. Broken drivers that do not
++	  yet use clock framework may not work with this option.
++	  If you are booting from another operating system, you
++	  probably do not want this option enabled until your
++	  device drivers work properly.
++
++config ARCH_OMAP_OTG
++	bool
++
+ comment "OMAP Board Type"
+ 
+ config MACH_OMAP_INNOVATOR
+diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
+index 02c253de9b6e..a8adbb4d478a 100644
+--- a/arch/arm/mach-omap2/Kconfig
++++ b/arch/arm/mach-omap2/Kconfig
+@@ -123,6 +123,8 @@ config OMAP_INTERCONNECT_BARRIER
+ 	bool
+ 	select ARM_HEAVY_MB
+ 	
++config ARCH_OMAP
++	bool
+ 
+ if ARCH_OMAP2PLUS
+ 
+@@ -153,6 +155,53 @@ config SOC_HAS_REALTIME_COUNTER
+ 	depends on SOC_OMAP5 || SOC_DRA7XX
+ 	default y
+ 
++config POWER_AVS_OMAP
++	bool "AVS(Adaptive Voltage Scaling) support for OMAP IP versions 1&2"
++	depends on (ARCH_OMAP3 || ARCH_OMAP4) && PM
++	select POWER_SUPPLY
++	help
++	  Say Y to enable AVS(Adaptive Voltage Scaling)
++	  support on OMAP containing the version 1 or
++	  version 2 of the SmartReflex IP.
++	  V1 is the 65nm version used in OMAP3430.
++	  V2 is the update for the 45nm version of the IP used in OMAP3630
++	  and OMAP4430
++
++	  Please note, that by default SmartReflex is only
++	  initialized and not enabled. To enable the automatic voltage
++	  compensation for vdd mpu and vdd core from user space,
++	  user must write 1 to
++		/debug/smartreflex/sr_<X>/autocomp,
++	  where X is mpu_iva or core for OMAP3.
++	  Optionally autocompensation can be enabled in the kernel
++	  by default during system init via the enable_on_init flag
++	  which an be passed as platform data to the smartreflex driver.
++
++config POWER_AVS_OMAP_CLASS3
++	bool "Class 3 mode of Smartreflex Implementation"
++	depends on POWER_AVS_OMAP && TWL4030_CORE
++	help
++	  Say Y to enable Class 3 implementation of Smartreflex
++
++	  Class 3 implementation of Smartreflex employs continuous hardware
++	  voltage calibration.
++
++config OMAP3_L2_AUX_SECURE_SAVE_RESTORE
++	bool "OMAP3 HS/EMU save and restore for L2 AUX control register"
++	depends on ARCH_OMAP3 && PM
++	help
++	  Without this option, L2 Auxiliary control register contents are
++	  lost during off-mode entry on HS/EMU devices. This feature
++	  requires support from PPA / boot-loader in HS/EMU devices, which
++	  currently does not exist by default.
++
++config OMAP3_L2_AUX_SECURE_SERVICE_SET_ID
++	int "Service ID for the support routine to set L2 AUX control"
++	depends on OMAP3_L2_AUX_SECURE_SAVE_RESTORE
++	default 43
++	help
++	  PPA routine service ID for setting L2 auxiliary control register.
++
+ comment "OMAP Core Type"
+ 	depends on ARCH_OMAP2
+ 
+diff --git a/arch/arm/plat-omap/Kconfig b/arch/arm/plat-omap/Kconfig
+deleted file mode 100644
+index dc53ea8e5bbb..000000000000
+--- a/arch/arm/plat-omap/Kconfig
++++ /dev/null
+@@ -1,92 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-config ARCH_OMAP
+-	bool
+-
+-if ARCH_OMAP
+-
+-menu "TI OMAP Common Features"
+-
+-config ARCH_OMAP_OTG
+-	bool
+-
+-comment "OMAP Feature Selections"
+-
+-config POWER_AVS_OMAP
+-	bool "AVS(Adaptive Voltage Scaling) support for OMAP IP versions 1&2"
+-	depends on (ARCH_OMAP3 || ARCH_OMAP4) && PM
+-	select POWER_SUPPLY
+-	help
+-	  Say Y to enable AVS(Adaptive Voltage Scaling)
+-	  support on OMAP containing the version 1 or
+-	  version 2 of the SmartReflex IP.
+-	  V1 is the 65nm version used in OMAP3430.
+-	  V2 is the update for the 45nm version of the IP used in OMAP3630
+-	  and OMAP4430
+-
+-	  Please note, that by default SmartReflex is only
+-	  initialized and not enabled. To enable the automatic voltage
+-	  compensation for vdd mpu and vdd core from user space,
+-	  user must write 1 to
+-		/debug/smartreflex/sr_<X>/autocomp,
+-	  where X is mpu_iva or core for OMAP3.
+-	  Optionally autocompensation can be enabled in the kernel
+-	  by default during system init via the enable_on_init flag
+-	  which an be passed as platform data to the smartreflex driver.
+-
+-config POWER_AVS_OMAP_CLASS3
+-	bool "Class 3 mode of Smartreflex Implementation"
+-	depends on POWER_AVS_OMAP && TWL4030_CORE
+-	help
+-	  Say Y to enable Class 3 implementation of Smartreflex
+-
+-	  Class 3 implementation of Smartreflex employs continuous hardware
+-	  voltage calibration.
+-
+-config OMAP_RESET_CLOCKS
+-	bool "Reset unused clocks during boot"
+-	depends on ARCH_OMAP
+-	help
+-	  Say Y if you want to reset unused clocks during boot.
+-	  This option saves power, but assumes all drivers are
+-	  using the clock framework. Broken drivers that do not
+-	  yet use clock framework may not work with this option.
+-	  If you are booting from another operating system, you
+-	  probably do not want this option enabled until your
+-	  device drivers work properly.
+-
+-config OMAP_MPU_TIMER
+-	bool "Use mpu timer"
+-	depends on ARCH_OMAP1
+-	help
+-	  Select this option if you want to use the OMAP mpu timer. This
+-	  timer provides more intra-tick resolution than the 32KHz timer,
+-	  but consumes more power.
+-
+-config OMAP3_L2_AUX_SECURE_SAVE_RESTORE
+-	bool "OMAP3 HS/EMU save and restore for L2 AUX control register"
+-	depends on ARCH_OMAP3 && PM
+-	help
+-	  Without this option, L2 Auxiliary control register contents are
+-	  lost during off-mode entry on HS/EMU devices. This feature
+-	  requires support from PPA / boot-loader in HS/EMU devices, which
+-	  currently does not exist by default.
+-
+-config OMAP3_L2_AUX_SECURE_SERVICE_SET_ID
+-	int "Service ID for the support routine to set L2 AUX control"
+-	depends on OMAP3_L2_AUX_SECURE_SAVE_RESTORE
+-	default 43
+-	help
+-	  PPA routine service ID for setting L2 auxiliary control register.
+-
+-config OMAP_SERIAL_WAKE
+-	bool "Enable wake-up events for serial ports"
+-	depends on ARCH_OMAP1 && OMAP_MUX
+-	default y
+-	help
+-	  Select this option if you want to have your system wake up
+-	  to data on the serial RX line. This allows you to wake the
+-	  system from serial console.
+-
+-endmenu
+-
+-endif
+-- 
+2.29.2
 
