@@ -2,80 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 569AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC83BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354973AbiDSRDz (ORCPT
+        id S1355597AbiDSRFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
+        Tue, 19 Apr 2022 13:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356407AbiDSRDh (ORCPT
+        with ESMTP id S1355353AbiDSREy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:03:37 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDD642A23;
-        Tue, 19 Apr 2022 09:53:56 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23JGreZd096708;
-        Tue, 19 Apr 2022 11:53:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650387220;
-        bh=QSI3PLwKbEJCUrBle6uYB9wA895+tkkVHQLd1uDimr4=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=XKbTfnycxjrM94oI0i7Yw3+2rydSUPYJcuFc0b5VRT134vSy85B5+ALiYT+YpSSS1
-         DPCgIYSWsZwyBtY3mJRQke2DW8TrAeP2fb1LITPw5VPUl8kwJjQw67vGSx8Y+uAhHx
-         K/3nN3ALDzBPhu5vdhlc7MpaiZEzk1OXDBHa7zQ8=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23JGreFl010855
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Apr 2022 11:53:40 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 19
- Apr 2022 11:53:40 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 19 Apr 2022 11:53:40 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23JGreYF007427;
-        Tue, 19 Apr 2022 11:53:40 -0500
-Date:   Tue, 19 Apr 2022 11:53:40 -0500
-From:   Bryan Brattlof <bb@ti.com>
-To:     Aparna M <a-m1@ti.com>
-CC:     <nm@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <praneeth@ti.com>, <nikhil.nd@ti.com>
-Subject: Re: [RESEND PATCH v3] arm64: dts: ti: k3-am642-sk: Enable WLAN
- connected to SDHCI0
-Message-ID: <20220419165340.7ijajo4pekaqi6yh@bryanbrattlof.com>
-References: <20220414133612.13365-1-a-m1@ti.com>
+        Tue, 19 Apr 2022 13:04:54 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDB745AC5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:55:46 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ks6so34232490ejb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mvLjz0njahz5PSdk06N4fNganymZL6zmFdqJGNpo6kg=;
+        b=lyvUtvWkZZgipPTQuvf/6SvWqzKOnrDsuU+Wt2SrnJMdOQE80Lc/E4YhBUD1D5FLc2
+         PM/eXxKvBqGeL9IXzWO2qLCv57s0LaBhHz0piYdVL0u+NQZ/nNKz5kyIMPTMBuapuIzj
+         nCHB0m47jWTl02BH7c8DGie+sr88LSWaI7WNw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mvLjz0njahz5PSdk06N4fNganymZL6zmFdqJGNpo6kg=;
+        b=zJRKrxr0dzu6pejd2glA50HhJX4f2aKMX7DH8SzpetEDC2YHnsKyghob2kdqPdiB54
+         ThdLSb0cFpapiouXK9Q8WnjmQN7GirCmaBwt79WDos5jYespWYJYJFBGnp1zk+JeOxIB
+         HHdFQJzefxAUUynzRXvemjIIUG9fqLQhwZnv3I4hbi04CPXOjyuttSkHA23ZmU5yytfr
+         93un5h5bOgPmCSIjWN9JRscW4bKJOHiB51K68Myl7gpA+vZGPwjP3xhjHci11Aar/Zis
+         HxIRNXI8dJu79aU2wG4kRtSr0a1l7F/xxPH4g4E+3Zdfm5WmFuMMNYJ5w8OtbO/K2/Yx
+         poNw==
+X-Gm-Message-State: AOAM530lRWIxi+P5RxP3L40OKaHpRgCVTWakfLYclj0cZuD0mjCay46F
+        p2XEZ3PHhpeBVYJSjXIPAFrxakNEP+QjCcmQ
+X-Google-Smtp-Source: ABdhPJwk9wW3LiEChiXoP+UlqzP8bYKrrswdh5cXiqPScvcUnBSsRHkHmqZu2e3c2yyCIKfRgePeeA==
+X-Received: by 2002:a17:907:7d90:b0:6e8:cd12:8893 with SMTP id oz16-20020a1709077d9000b006e8cd128893mr14689465ejc.13.1650387340346;
+        Tue, 19 Apr 2022 09:55:40 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id br14-20020a170906d14e00b006e88db05620sm5934043ejb.146.2022.04.19.09.55.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 09:55:39 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id i20so23258690wrb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:55:39 -0700 (PDT)
+X-Received: by 2002:adf:a29c:0:b0:20a:a246:a826 with SMTP id
+ s28-20020adfa29c000000b0020aa246a826mr4796793wra.422.1650387338293; Tue, 19
+ Apr 2022 09:55:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220414133612.13365-1-a-m1@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
+ <a0eb6bf9-256a-29b1-2211-496df710f531@linaro.org> <CAD=FV=UjyLofXZqnj=bL89fza5JS6O5Np9W-A4V4WK+na0hdrw@mail.gmail.com>
+ <b7ff08b8-60fb-7629-9399-3d5cca46ab9e@linaro.org> <CAD=FV=Vx5g_xTRZGc9wW=ZLnfsOcubTYFcnYQRC5jLm+n3en0w@mail.gmail.com>
+ <606cc762-a0c2-49a4-3e5d-d2dbd4595bc7@linaro.org>
+In-Reply-To: <606cc762-a0c2-49a4-3e5d-d2dbd4595bc7@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 19 Apr 2022 09:55:25 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=W_SA-3PfDFi-Gkjk9pew5bchFNjQhXX8MkZyuy5UohEQ@mail.gmail.com>
+Message-ID: <CAD=FV=W_SA-3PfDFi-Gkjk9pew5bchFNjQhXX8MkZyuy5UohEQ@mail.gmail.com>
+Subject: Re: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On April 14, 2022 thus sayeth Aparna M:
-> From: Kishon Vijay Abraham I <kishon@ti.com>
-> 
-> WL1837 module is connected to SDHCI0 in AM642 SK. Enable it here.
-> This will enable the WiFi functionaliy on the board.
-> 
-> Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> Signed-off-by: Nikhil Devshatwar <nikhil.nd@ti.com>
-> Signed-off-by: Aparna M <a-m1@ti.com>
+Hi,
 
-Looks good to me!
+On Tue, Apr 19, 2022 at 8:47 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 14/04/2022 19:36, Doug Anderson wrote:
+> > Hi,
+> >
+> > On Thu, Apr 14, 2022 at 12:10 AM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 13/04/2022 23:48, Doug Anderson wrote:
+> >>> I'm actually kinda curious: is there really a good reason for this? I
+> >>> know I haven't been adding things to
+> >>> `Documentation/devicetree/bindings/arm/qcom.yaml` for Qualcomm
+> >>> Chromebooks.  Ironically, it turns out that the script I typically use
+> >>> to invoke checkpatch happens to have "--no-tree" as an argument and
+> >>> that seems to disable this check. Doh!
+> >>>
+> >>> That being said, though, I do wonder a little bit about the value of
+> >>> enumerating the top-level compatible like this in a yaml file.
+> >>> Certainly the yaml schema validation in general can be quite useful,
+> >>> but this top-level listing seems pure overhead. I guess it makes some
+> >>> tools happy, but other than that it seems to provide very little
+> >>> value...
+> >>
+> >> If compatible is not part of ABI, it is allowed to change in whatever
+> >> shape one wishes. In such case, how can anyone (e.g. user-space)
+> >> identify the board? Model name? Also not part of ABI (not documented)...
+> >
+> > Hmm, it is a good question. I guess one issue is that the way
+> > Chromebooks interact with the bootloader it's not trivially easy to
+> > enumerate what exactly the compatible will be in this hardcoded list.
+> > It all has to do with the whole "revision" and "sku" scheme the
+> > bootloader on ARM Chromebooks uses. For example, on one Chromebook I
+> > have the bootloader prints out:
+> >
+> > Compat preference: google,lazor-rev5-sku6 google,lazor-rev5
+> > google,lazor-sku6 google,lazor
+> >
+> > What that means is that:
+> >
+> > 1. The bootloader will first look for 'google,lazor-rev5-sku6'. If it
+> > finds a dts with that compatible it will pick it.
+> >
+> > 2. The bootloader will then look for 'google,lazor-rev5'. If it finds
+> > a dts with that compatible it will pick it.
+> >
+> > 3. The bootloader will then look for 'google,lazor-sku6'. If it finds
+> > a dts with that compatible it will pick it.
+> >
+> > 4. Finally, the bootloader will look for 'google,lazor'.
+> >
+> > There's a method to the madness. Among other things, this allows
+> > revving the board revision for a change to the board even if it
+> > _should_ be invisible to software. The rule is always that the
+> > "newest" device tree that's in Linux is always listed _without_ a
+> > board revision number. An example might help.
+> >
+> > a) Assume '-rev5' is the newest revision available. In Linux this
+> > would be the only dts that advertises "google,lazor" (with no -rev).
+> > Previous dts file would advertise "-rev3" or "-rev4" or whatever.
+> >
+> > b) We need to spin the board for something that should be invisible to
+> > software. Just in case, HW guys change the board strappings to -rev6.
+> > This works _seamlessly_ because the newest dts file always advertises
+> > just "google,lazor"
+> >
+> > c) We spin the board for something that's _not_ invisible. It will be
+> > "-rev7". Now, we go back and add "-rev5" and "-rev6" to the old board
+> > dts file and remove the advertisement for "google,lazor". We create a
+> > new dts file for -rev7 that advertises "google,lazor".
+>
+> Except shuffling the compatibles in bindings, you are changing the
+> meaning of final "google,lazor" compatible. The bootloader works as
+> expected - from most specific (rev5-sku6) to most generic compatible
+> (google,lazor) but why do you need to advertise the latest rev as
+> "google,lazor"? Why the bootloader on latest rev (e.g. rev7) cannot bind
+> to rev7 compatible?
 
-Reviewed-by: Bryan Brattlof <bb@ti.com>
+The problem really comes along when a board strapped as -rev8 comes
+along that is a board spin (and thus a new revision) but "should" be
+invisible to software. Since it should be invisible to software we
+want it to boot without any software changes. As per my previous mail,
+sometimes HW guys make these changes without first consulting software
+(since it's invisible to SW!) and we want to make sure that they're
+still going to strap as "-rev8".
 
-~Bryan
+So what happens with this -rev8 board? The bootloader will check and
+it won't see any device tree that advertises "google,lazor-rev8",
+right? If _all_ lazor revisions all include the "google,lazor"
+compatible then the bootloader won't have any way to know which to
+pick. The bootloader _doesn't_ have the smarts to know that "-rev7" is
+closest to "-rev8". It'll just randomly pick one of the "google,lazor"
+boards. :( This is why we only advertise "google,lazor" for the newest
+device tree.
+
+Yes, I agree it's not beautiful but it's what we ended up with. I
+don't think we want to compromise on the ability to boot new revisions
+without software changes because that will just incentivize people to
+not increment the board revision. The only other option would be to
+make the bootloader smart enough to pick the "next revision down" but
+so far they haven't been willing to do that.
+
+
+I guess the question, though, is what action should be taken. I guess
+options are:
+
+1. Say that the above requirement that new "invisible" HW revs can
+boot w/ no software changes is not a worthy requirement. Personally, I
+wouldn't accept this option.
+
+2. Ignore. Don't try to document top level compatible for these devices.
+
+3. Document the compatible and accept that it's going to shuffle around a lot.
+
+4. Try again to get the bootloader to match earlier revisions as fallbacks.
+
+
+> > Now we can certainly argue back and forth above the above scheme and
+> > how it's terrible and/or great, but it definitely works pretty well
+> > and it's what we've been doing for a while now. Before that we used to
+> > proactively add a whole bunch of "future" revisions "just in case".
+> > That was definitely worse and had the same problem that we'd have to
+> > shuffle compatibles. See, for instance `rk3288-veyron-jerry.dts`.
+> >
+> > One thing we _definitely_ don't want to do is to give HW _any_
+> > incentive to make board spins _without_ changing the revision. HW
+> > sometimes makes spins without first involving software and if it
+> > doesn't boot because they updated the board ID then someone in China
+> > will just put the old ID in and ship it off. That's bad.
+> >
+> > --
+> >
+> > But I guess this doesn't answer your question: how can userspace
+> > identify what board this is running? I don't have an answer to that,
+> > but I guess I'd say that the top-level "compatible" isn't really it.
+>
+> It can, the same as bootloader, by looking at the most specific
+> compatible (rev7).
+>
+> > If nothing else, I think just from the definition it's not guaranteed
+> > to be right, is it? From the spec: "Specifies a list of platform
+> > architectures with which this platform is compatible." The key thing
+> > is "a list". If this can be a list of things then how can you use it
+> > to uniquely identify what one board you're on?
+>
+> The most specific compatible identifies or, like recently Rob confirmed
+> in case of Renesas, the list of compatibles:
+> https://lore.kernel.org/linux-devicetree/Yk2%2F0Jf151gLuCGz@robh.at.kernel.org/
+
+I'm confused. If the device tree contains the compatibles:
+
+"google,lazor-rev4", "google,lazor-rev3", "google,lazor", "qualcomm,sc7180"
+
+You want to know what board you're on and you look at the compatible,
+right? You'll decide that you're on a "google,lazor-rev4" which is the
+most specific compatible. ...but you could have booted a
+"google,lazor-rev3". How do you know?
+
+Further, imagine a case where two different HW manufacturers take some
+reference design and each build hardware that's identical except for
+what's plugged into PCIe / USB / eDP ports. We could have a single
+device tree for these, right? So you could imagine a device tree with
+compatibles these compatibles to support the imaginary CompUTown
+CompUBox and the TheBestStuff BestBox computers:
+
+"computown,compubox", "thebeststuff,bestbox"
+
+Now you boot up. How do you know if you're on a CompUBox or a BestBox?
+
+
+> > That all being said, I think that on Chrome OS the userspace tools
+> > _do_ some amount of parsing of the compatible strings here. For
+> > Chromebooks they leverage the fact that they understand the above
+> > scheme and thus can figure things out. I think they also use things
+> > like `/proc/device-tree/firmware/coreboot/board-id` and
+> > `/proc/device-tree/firmware/coreboot/sku-id`. That doesn't seem to be
+> > documented, though. :(
+> >
+> > I guess the question is, though, why do you need to know what board you're on?
+>
+> You might have (and I had in some previous job) single user-space
+> application working on different HW and responding slightly differently,
+> depending on the hardware it runs. Exactly the same as kernel behaves
+> differently, depending on DTB. The differences for example might be in
+> GPIOs or some other interfaces managed via user-space drivers, not in
+> presence of devices. Another example are system tests behaving
+> differently depending on the DUT, where again you run the tests in a
+> generic way so the DUT is autodetected based on board.
+>
+> Of course you could say: different hardware, has different DTB, so
+> user-space should check entire tree, to figure out how to operate that
+> hardware. Yeah, that's one way, very complex and actually duplicating
+> kernel's work. Embedded apps are specialized, so it is much easier for
+> them to check board compatible and make assumptions on that.
+
+I mean, it's fine if you want to make assumptions for the hardware
+that you work on.
+
+-Doug
