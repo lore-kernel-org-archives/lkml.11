@@ -2,97 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F40C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353311AbiDSObK (ORCPT
+        id S1353332AbiDSObs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46232 "EHLO
+        Tue, 19 Apr 2022 10:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348414AbiDSObH (ORCPT
+        with ESMTP id S1348414AbiDSObo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:31:07 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EFA21E39
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:28:25 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id u18so21517259eda.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:28:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5snmPtDHGIGoFLwIYFGnYkPTgTDRFy3yrXSk8RuXhBw=;
-        b=RyaK5z0senBGYKHrGTylo+K2ugRhGTPqMnF4qLnrgyVkDI+tdjmEz5eOzR0Y1AW6QU
-         y1zPZmrNqRLvm0vTSqh+xmmubISocvwjC4qL1JKLlSIvglE/JhI/7doQ6ENEmXj3Clrj
-         zYxT/lkQ+Dzv5Oo+hLcoDdnTp0p5Kfr/Kplng=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5snmPtDHGIGoFLwIYFGnYkPTgTDRFy3yrXSk8RuXhBw=;
-        b=iNBaA4+P8/xMvi6rCUJILbe9c3P+vwla7waGYJOlV0+H96x7fgwC4a0I/Gu0SzQznK
-         cBLoGe57DGVhcJppqPLYY9Px/teHBblfB6G62oxe6fPB4+czniN32ql35Fo96+ZzBJM5
-         nNue6GoSz//N8xgGaKkGFAwW/cS8xzEtmKoAH3b84rswOQdvASmB5Fc3CjkylYAbPjOc
-         wAqGmTWwI9+4X9sRvCpcGDrXykQq84xM9Cy9IgF91Dep5hf42rXH1RpVn2TCHLRFJXah
-         M7kDbO0K5+tFlms8Fp2o1USvYEx9E6c5K4pSjc7h1KU+98m4tzEgNCKVra89OtRo9eRo
-         VlIw==
-X-Gm-Message-State: AOAM533WoIpZzmZ0KoRsLY5RqsX3/XNvObSERWCbYn4QwkxmizWeF3qB
-        eMyH+tkIeWsdI99ovZdWbdSV1MGocD14No69
-X-Google-Smtp-Source: ABdhPJwZrgMqFGSdqajnE8z/JN+ZS9o2MKnD99b+lqeYi3Cggt+QqqaFdCtX733SJixoUTb552L7Rw==
-X-Received: by 2002:a50:ba8a:0:b0:423:bdf5:41d6 with SMTP id x10-20020a50ba8a000000b00423bdf541d6mr16336862ede.204.1650378503346;
-        Tue, 19 Apr 2022 07:28:23 -0700 (PDT)
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
-        by smtp.gmail.com with ESMTPSA id g24-20020a056402321800b00423e43ebb60sm3497143eda.61.2022.04.19.07.28.22
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 07:28:22 -0700 (PDT)
-Received: by mail-wm1-f54.google.com with SMTP id r64so10790288wmr.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:28:22 -0700 (PDT)
-X-Received: by 2002:a05:600c:210b:b0:38e:c62a:398b with SMTP id
- u11-20020a05600c210b00b0038ec62a398bmr20157535wml.118.1650378502020; Tue, 19
- Apr 2022 07:28:22 -0700 (PDT)
+        Tue, 19 Apr 2022 10:31:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234A2E0CF
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:01 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 14:28:59 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650378540;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JbcZVYeVy7oRTZRSXm6YwXfzAnGw8g2KvwGAxHBzEjc=;
+        b=j+AUehvokXqO62h87OGZVisDu2j/pJaXXL77kyXeIh+GMtDuHkTR3G3k6M4NvN6Qdd78li
+        Adg40eHmJ0oU2V7rQY3ZnJYx2QgARjmVvwnri4AbQkXI6QvEjjm8xjyksx67mQRgyIf0h2
+        7ZhGdH0WWlL7sXWvykZ+E48r2H23LGsnoAV6CMqquOT+cys9u0tNK5+Iy3T9iovfddGX/T
+        m9QcXdnnL2Bgje/Uj2UXTJfgnjZuTihHyJiGGcgNSW60rwGzbNFGXZ8X0SkTd7UswZHbOp
+        kpJGExyJnYtxdlpl8hLxZTq0GbosfCvmdHCQCc1DF2aRobuKh4fElqIPbQhZGQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650378540;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JbcZVYeVy7oRTZRSXm6YwXfzAnGw8g2KvwGAxHBzEjc=;
+        b=ukCSvCJ70I7pr4fL9aAANPkGd6QrGp9VMTzpyiHdPl8L6raPrp8b/BWW+VHiKAYzCvJaKy
+        J+abnBgy7O4+RGAQ==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] gpio: Update TODO to mention immutable
+ irq_chip structures
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220419141846.598305-10-maz@kernel.org>
+References: <20220419141846.598305-10-maz@kernel.org>
 MIME-Version: 1.0
-References: <1650349697-13540-1-git-send-email-quic_vnivarth@quicinc.com> <1650349697-13540-2-git-send-email-quic_vnivarth@quicinc.com>
-In-Reply-To: <1650349697-13540-2-git-send-email-quic_vnivarth@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 19 Apr 2022 07:28:09 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XYduCsrzKYRUR18y+OfJCrjdbDErSPEtz0bYF_VXbMPA@mail.gmail.com>
-Message-ID: <CAD=FV=XYduCsrzKYRUR18y+OfJCrjdbDErSPEtz0bYF_VXbMPA@mail.gmail.com>
-Subject: Re: [V4 1/2] arch: arm64: dts: qcom: sc7280-idp: Configure cts
- pinctrl to bias-bus-hold
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        quic_msavaliy@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165037853927.4207.17133482140796302494.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-On Mon, Apr 18, 2022 at 11:28 PM Vijaya Krishna Nivarthi
-<quic_vnivarth@quicinc.com> wrote:
->
-> WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-> Change sleep pinctrl configuration to handle same.
->
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> ---
-> v4: modify subject of patch to indicate file it is applying to
-> v3: apply same change to active state and other sc7280*.dts* as well
-> v2: used bias-bus-hold as per review comments
-> v1: intial patch used bias-disable for sleep pinctrl in sc7280-idp only
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+Commit-ID:     afefc3266272d40cdcd0fd713c7b42008fea19d5
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/afefc3266272d40cdcd0fd713c7b42008fea19d5
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Tue, 19 Apr 2022 15:18:45 +01:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Tue, 19 Apr 2022 15:22:26 +01:00
 
-You should have carried my tag forward. In any case:
+gpio: Update TODO to mention immutable irq_chip structures
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+5 drivers are converted, a few hundred to go. Definitely worth of
+a TODO entry, in the hope that someone will notice it and do
+a bulk update.
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220419141846.598305-10-maz@kernel.org
+---
+ drivers/gpio/TODO | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/gpio/TODO b/drivers/gpio/TODO
+index b8b1473..f87ff3f 100644
+--- a/drivers/gpio/TODO
++++ b/drivers/gpio/TODO
+@@ -178,3 +178,22 @@ discussed but the idea is to provide a low-level access point
+ for debugging and hacking and to expose all lines without the
+ need of any exporting. Also provide ample ammunition to shoot
+ oneself in the foot, because this is debugfs after all.
++
++
++Moving over to immutable irq_chip structures
++
++Most of the gpio chips implementing interrupt support rely on gpiolib
++intercepting some of the irq_chip callbacks, preventing the structures
++from being made read-only and forcing duplication of structures that
++should otherwise be unique.
++
++The solution is to call into the gpiolib code when needed (resource
++management, enable/disable or unmask/mask callbacks), and to let the
++core code know about that by exposing a flag (IRQCHIP_IMMUTABLE) in
++the irq_chip structure. The irq_chip structure can then be made unique
++and const.
++
++A small number of drivers have been converted (pl061, tegra186, msm,
++amd, apple), and can be used as examples of how to proceed with this
++conversion. Note that drivers using the generic irqchip framework
++cannot be converted yet, but watch this space!
