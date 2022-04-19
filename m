@@ -2,114 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E60C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D14CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355356AbiDSRca (ORCPT
+        id S1355714AbiDSRct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
+        Tue, 19 Apr 2022 13:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354598AbiDSRc2 (ORCPT
+        with ESMTP id S1344485AbiDSRcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:32:28 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B10EC56;
-        Tue, 19 Apr 2022 10:29:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1650389348;
-        bh=KwXzkV0B3f5e2tIrsLC+AOdAfv7m88ysNXObwXd6YFU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=C3r0DjATYEqweUN70N+KSWm8s2Civ07dEeM21QTrj5r1m5ZISvnKT7EL2fK8jKQcG
-         YCjlBNclMYyRmEK6ZfE9at59azUaeOCjiGBJ+iM3/boiWJlrweKhokDKsRGFHpVm44
-         syEqyK5OLmSSqMe8pekmtoe+yOUERDkEvLQKcVvs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.157.75] ([217.61.157.75]) by web-mail.gmx.net
- (3c-app-gmx-bap70.server.lan [172.19.172.170]) (via HTTP); Tue, 19 Apr 2022
- 19:29:08 +0200
+        Tue, 19 Apr 2022 13:32:45 -0400
+Received: from out28-193.mail.aliyun.com (out28-193.mail.aliyun.com [115.124.28.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C60633E;
+        Tue, 19 Apr 2022 10:29:59 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07437557|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0103164-0.000447057-0.989237;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047212;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.NTtx3yP_1650389394;
+Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NTtx3yP_1650389394)
+          by smtp.aliyun-inc.com(33.32.41.12);
+          Wed, 20 Apr 2022 01:29:56 +0800
+Subject: Re: [PATCH 1/3] SPI: Ingenic: Add support for use GPIO as chip select
+ line.
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     broonie@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        linux-spi@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        contact@artur-rojek.eu, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        sernia.zhou@foxmail.com, zhenwenjin@gmail.com, reimu@sudomaker.com
+References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1650032528-118220-2-git-send-email-zhouyanjie@wanyeetech.com>
+ <IUJLAR.XMD0PY9XJ5X41@crapouillou.net>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <797abbbe-2bef-001f-9b4c-5d8e607b2f1c@wanyeetech.com>
+Date:   Wed, 20 Apr 2022 01:29:54 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Message-ID: <trinity-c60358c4-ebd1-47bf-91e0-9ae0beefd39f-1650389348418@3c-app-gmx-bap70>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Aw: Re: [RFC/RFT 2/6] dt-bindings: soc: grf: add
- pcie30-{phy,pipe}-grf
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 19 Apr 2022 19:29:08 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <02b3fe1c-12f9-8f96-a9b5-df44ca001825@linaro.org>
-References: <20220416135458.104048-1-linux@fw-web.de>
- <20220416135458.104048-3-linux@fw-web.de>
- <02b3fe1c-12f9-8f96-a9b5-df44ca001825@linaro.org>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:GSNIHIUWA/GRgjok62B+UG3JpReIUrnZJW4cJo6k+0piMPNyKFMYLVAFWEh1wrHmC12r3
- jNiJtMLDXSgz8acJ/aJzo+jHp/laJRu0OT7D+X3jpnmIx10ZRP1JqBS5CgsRVh/9IdoFFvDn3g/d
- rj15Lid9nt0dWx9ntE2Vb5tFhLn/8safPKxQPqCoi0HjiXWlBT+34uxmGYQ7RC1juT0PrxVRNTqc
- +QTAlJ8jBUmU1xE8ALgCLTfOHz6M+dTJ9/YjpIsyksZMR+MkqhSHhbwhX6bzXV0vtETyR9yddXOr
- u4=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5J5RBFRzPTA=:MMjlPLuedJCMlAG5z+h8Bd
- CK5NFPEE5BVigaDy2laiQ3hRh0HImsKvp9cX2T3LIVYqMkqSsdHqKNBebEb9780iJzIt8QM/K
- y9CLpFPNgTk0uM/rfb3lgNeOPYy+VVHhEX/pWsHHxtLSpMVOZ9kppKDncbHeK2pBCqzqbBABV
- 4Hq6qMPtbDPsmgM9C+lq8lfBsoCDZpGQltXuR+4tcZ0Da3h6jUHz2/UBW1FT1KHOA+laYVvMk
- Riyj53Nwe+OUPmsJs7mnYI2iLWL6L/tUaf5WEUva+1mUYPHoJRbRcCeHcRQJDSOCmqBrYAbYF
- +3s76mG4HUhtZ+cBaMiYRj3eeg8vHx0s6BybOeU3XzkVVYavGi/jCADVnpZYoCtxL4B66wO58
- gjuekbExgepHeqNRmYJS+H+5VFOiH3YJLw4pwg/Q9OAiLjfe7XWTtdNO4nAN8eI9Ed0RIRNkp
- gHPIBavKmNjNsvReK1OGzG2oGnejY7gC5GuhCvFYoAbLXF1/sndvItKF7jMz1MBMPBq8XWDD7
- 1cQLVwUR/fFS0cW9+ozbdCHKY3I/95TDHgeGdXd93tAoRhBryWoYjZkSr8yFglnePJThlEqwR
- 0pq235DHr7bdkoQieORurzxhhH4+Drw7BaTzq40uEnMMZMcPBhf26ZU45rosLjOpGUyJEJJM3
- YTRUlTdc5HFiT33FAqSB83j9MTWyHTmUZJVzHrHq6mSdnFZOm7XeSsY6ZzxfPpgLX1VvmxbNe
- 2z7dslB3GZNBFZ3wpYcTO44+RvZB9DlwXuzmx2QQVHRT5fbtdA1uaNeTflN5aK5nvUU03Wpe+
- L6o34tm
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <IUJLAR.XMD0PY9XJ5X41@crapouillou.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Gesendet: Montag, 18. April 2022 um 17:54 Uhr
-> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Hi Paul,
 
-> > --- a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-> > +++ b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
-> > @@ -14,6 +14,8 @@ properties:
-> >      oneOf:
-> >        - items:
-> >            - enum:
-> > +              - rockchip,pcie30-phy-grf
-> > +              - rockchip,pcie30-pipe-grf
+On 2022/4/20 上午1:13, Paul Cercueil wrote:
+> Hi Zhou,
 >
-> These are without SoC parts. Are these PCIe v3 General Register Files
-> part of some PCIe spec?
+> Le ven., avril 15 2022 at 22:22:06 +0800, 周琰杰 (Zhou Yanjie) 
+> <zhouyanjie@wanyeetech.com> a écrit :
+>> Add support for using GPIOs as chip select lines on Ingenic SoCs.
+>>
+>> Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+>> ---
+>>  drivers/spi/spi-ingenic.c | 11 +++++++++--
+>>  1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/spi/spi-ingenic.c b/drivers/spi/spi-ingenic.c
+>> index 03077a7..672e4ed 100644
+>> --- a/drivers/spi/spi-ingenic.c
+>> +++ b/drivers/spi/spi-ingenic.c
+>> @@ -380,7 +380,7 @@ static int spi_ingenic_probe(struct 
+>> platform_device *pdev)
+>>      struct spi_controller *ctlr;
+>>      struct ingenic_spi *priv;
+>>      void __iomem *base;
+>> -    int ret;
+>> +    int num_cs, ret;
+>>
+>>      pdata = of_device_get_match_data(dev);
+>>      if (!pdata) {
+>> @@ -416,6 +416,11 @@ static int spi_ingenic_probe(struct 
+>> platform_device *pdev)
+>>      if (IS_ERR(priv->flen_field))
+>>          return PTR_ERR(priv->flen_field);
+>>
+>> +    if (of_property_read_u32(dev->of_node, "num-cs", &num_cs)) {
+>
+> One small comment here - I think it would be better to use 
+> device_property_read_u32().
+>
+> The driver should also use device_get_match_data() instead of 
+> of_device_get_match_data(), but that's a cleanup that can be done later.
+>
 
-imho they are shared across SoCs rk3568 and rk3588, but have only seen rk3=
-568 implementation yet.
-PCIe driver currently supports these 2 Soc (different offsets in the Phy-G=
-RF), but can only test rk3568.
+Sure, I will send v2.
 
-pipe-grf seems only be used for rk35688 (offset used in probe is defined f=
-or this SoC), which i cannot test.
 
-so i have left them SoC independed.
+Thanks and best regards!
 
-> >                - rockchip,rk3288-sgrf
-> >                - rockchip,rk3566-pipe-grf
-> >                - rockchip,rk3568-usb2phy-grf
 
-regards Frank
+> Cheers,
+> -Paul
+>
+>> +        dev_warn(dev, "Number of chip select lines not specified.\n");
+>> +        num_cs = 2;
+>> +    }
+>> +
+>>      platform_set_drvdata(pdev, ctlr);
+>>
+>>      ctlr->prepare_transfer_hardware = spi_ingenic_prepare_hardware;
+>> @@ -429,7 +434,9 @@ static int spi_ingenic_probe(struct 
+>> platform_device *pdev)
+>>      ctlr->bits_per_word_mask = pdata->bits_per_word_mask;
+>>      ctlr->min_speed_hz = 7200;
+>>      ctlr->max_speed_hz = 54000000;
+>> -    ctlr->num_chipselect = 2;
+>> +    ctlr->use_gpio_descriptors = true;
+>> +    ctlr->max_native_cs = 2;
+>> +    ctlr->num_chipselect = num_cs;
+>>      ctlr->dev.of_node = pdev->dev.of_node;
+>>
+>>      if (spi_ingenic_request_dma(ctlr, dev))
+>> -- 
+>> 2.7.4
+>>
+>
