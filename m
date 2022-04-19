@@ -2,109 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B67BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 126D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241367AbiDSJ7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 05:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
+        id S241988AbiDSKCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 06:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiDSJ7g (ORCPT
+        with ESMTP id S241939AbiDSKCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 05:59:36 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189082127D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:56:53 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5EC0F240004;
-        Tue, 19 Apr 2022 09:56:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650362212;
+        Tue, 19 Apr 2022 06:02:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E23E2253D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:59:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650362363;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Mq8173Yhb7PWseSDb2n4pQrTc0Fh+GdWcB9T/uTdM2M=;
-        b=HpO7PHrughSJxpPdJhGONJgxyf/vZiM5hnkdHg2WbBKu/FgmsuQ4mxb7LXxMz7f3DhyuEN
-        OTiDujbFsmL3Cu2rxisww3BxUdCbsTiOIs6J31m4sw3Uz5F0Y40B/XzOW/yP0QWwNNH9Ok
-        uZqVLxS9/yCfLkhWUCUqiGC+QZp7pbAGqELsIbrnQ7DOd7NvBBs/eBKjwF/JS1Q9VsfscM
-        eAtqgharoXWYaS+2+HR907QYRSIbXGf2gx99+xWVsGxpA1V24Wv6kqpJfagspDObipq29r
-        GuKPPZFaXyCSYJ1gz9N1KRGml+dxDafact1+n36DXtCK4cGP5YNKpH1AzcERTg==
-Date:   Tue, 19 Apr 2022 11:56:50 +0200
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        jagan@amarulasolutions.com, linus.walleij@linaro.org,
-        linux-kernel@vger.kernel.org, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org, thomas.petazzoni@bootlin.com,
-        tzimmermann@suse.de
-Subject: Re: [PATCH v3] drm: of: Properly try all possible cases for
- bridge/panel detection
-Message-ID: <Yl6HYke4dJsrq9jj@aptenodytes>
-References: <20220329132732.628474-1-paul.kocialkowski@bootlin.com>
- <20220416222141.72321-1-paul@crapouillou.net>
+        bh=ZYCbCMusX5qnw2HYP1MeCveqjGocg9sXBdk9ZKPneIA=;
+        b=Thwk5o7GlihFoojS/x1bNX6b0IQX0L60zR6QZBD91tau2qL3K1ezwNe0FpVtpfC70nPAJO
+        j1ys3833bXC6U/gFkQcd/WJjEuidAlcp9dusaEb98zOo/JneFADp7AJh6GAMCf7HcIdwb0
+        1ZiWMAzfnqfgQM/EH/2qg25NoCgYRkw=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-113-wRAoStKBNJSYVhe0iNQwWw-1; Tue, 19 Apr 2022 05:59:20 -0400
+X-MC-Unique: wRAoStKBNJSYVhe0iNQwWw-1
+Received: by mail-ed1-f71.google.com with SMTP id cn27-20020a0564020cbb00b0041b5b91adb5so10672813edb.15
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:59:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZYCbCMusX5qnw2HYP1MeCveqjGocg9sXBdk9ZKPneIA=;
+        b=qeowRbpqIjH+lS63v6sk8NxcFv1Jw7gzGeFQLqO83LJAL/Jbjk00YV4vZhK/v7jQYa
+         ZvmrTu1vJkXg6nYxJtjGBqPcjTUh9IyhRwtTZXNY07vwvEsIoN8Ve2s4V4Ukdvig8qKW
+         dn+yySgxhS4Z3SK6VZ7RJ77Hz4otDNGgq8aHkNuhplha9HbFf5hK/URtx0EFPAdRfVSf
+         RjayckoTbMJU1W5qVOHfj24r5aN87DMslQDb8koyeqfVWVaa8deIhLbu7DYD+wiywVnL
+         DOLwffCSinWQ4QY8P5+y3E7bbbLFCuCii0AP178aMxK3c4IGNS1e2bmkwlCcVUvJJNSK
+         HOHw==
+X-Gm-Message-State: AOAM532OQNBkpVehdWwXPHfMB/PkxP5ykaYskt2XmRcZhND6I2H1Iir8
+        7eyTUQVmk4AN11NmGMgiR3tNvDshotXe2F9rq+p5oH80m4+4wRdtz8LMwwDzhnNRl9Hsy0MDdC+
+        jD4evU/jqqDFwnu3RS6S3e7hh
+X-Received: by 2002:a17:907:96a1:b0:6e8:9dce:c3bc with SMTP id hd33-20020a17090796a100b006e89dcec3bcmr12479265ejc.589.1650362359322;
+        Tue, 19 Apr 2022 02:59:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxPj/oCA2jmmG43YRFtvikiwgaJYI1/P+OfA2QaPriTfw/gSnUO1tnTCTWh6or2Q3Awqulg1A==
+X-Received: by 2002:a17:907:96a1:b0:6e8:9dce:c3bc with SMTP id hd33-20020a17090796a100b006e89dcec3bcmr12479257ejc.589.1650362359077;
+        Tue, 19 Apr 2022 02:59:19 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id vw17-20020a170907059100b006e8732d1944sm5460828ejb.5.2022.04.19.02.59.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 02:59:18 -0700 (PDT)
+Message-ID: <d75ede81-49da-855a-6679-c3315089e067@redhat.com>
+Date:   Tue, 19 Apr 2022 11:59:17 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="XgDB20WdwLjkKw76"
-Content-Disposition: inline
-In-Reply-To: <20220416222141.72321-1-paul@crapouillou.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 0/3] x86/PCI: Log E820 clipping
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20220414182252.758742-1-helgaas@kernel.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220414182252.758742-1-helgaas@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi All,
 
---XgDB20WdwLjkKw76
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 1/1/70 01:00, Bjorn Helgaas wrote:
+> This is still work-in-progress on the issue of PNP0A03 _CRS methods that
+> are buggy or not interpreted correctly by Linux.
+> 
+> The previous try at:
+>   https://lore.kernel.org/r/20220304035110.988712-1-helgaas@kernel.org
+> caused regressions on some Chromebooks:
+>   https://lore.kernel.org/r/Yjyv03JsetIsTJxN@sirena.org.uk
+> 
+> This v2 drops the commit that caused the Chromebook regression, so it also
+> doesn't fix the issue we were *trying* to fix on Lenovo Yoga and Clevo
+> Barebones.
+> 
+> The point of this v2 update is to split the logging patch into (1) a pure
+> logging addition and (2) the change to only clip PCI windows, which was
+> previously hidden inside the logging patch and not well documented.
+> 
+> Bjorn Helgaas (3):
+>   x86/PCI: Eliminate remove_e820_regions() common subexpressions
+>   x86: Log resource clipping for E820 regions
+>   x86/PCI: Clip only host bridge windows for E820 regions
 
-Hi Paul,
+Thanks, the entire series looks good to me:
 
-On Sat 16 Apr 22, 23:21, Paul Cercueil wrote:
-> Hi Paul,
->=20
-> This patch breaks the ingenic-drm driver.
->=20
-> It calls drm_of_find_panel_or_bridge(np, 0, i, ...) starting for i=3D0, u=
-ntil
-> -ENODEV is returned, which does not happen anymore.
->=20
-> The idea is to probe all the connected panels/bridges, should it be done
-> differently now?
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
-I've sent out a different patch which restores -ENODEV at:
-https://patchwork.freedesktop.org/patch/481135/
+For the series.
 
-Feel free to try it and reply with tested-by/reviewed-by there.
-I've also made a proposal in the thread to skip the "child node" mechanism
-as soon as an of graph is present, which would allow covering more legit
-cases with -ENODEV (the patch linked above doesn't cover all cases that
-need -ENODEV).
+So what is the plan to actually fix the issue seen on some Lenovo models
+and Clevo Barebones ?   As I mentioned previously I think that since all
+our efforts have failed so far that we should maybe reconsider just
+using DMI quirks to ignore the E820 reservation windows for host bridges
+on affected models ?
 
-Ideally we'd like to remove the child node mechanism entirely, but it may
-already be part of a device-tree binding spec.
+That or implement 3 of:
 
-Cheers,
+> So I think the progression is:
+>
+>  1) Remove anything mentioned in E820 from _CRS (4dc2287c1805 [7]).
+>     This worked around some issues on Dell systems.
+>
+>  2) Remove things mentioned in E820 unless they cover the entire
+>     window (5949965ec934 [8])
+>
+>  3) Coalesce adjacent _CRS windows, *then* remove things mentioned in
+>     E820 unless they cover the entire (coalesced) window (current
+>     proposal)
 
-Paul
+Regards,
 
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
+Hans
 
---XgDB20WdwLjkKw76
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJeh2IACgkQ3cLmz3+f
-v9GBKAf8DA/g/QCGdK6HmqooGT+X0CNX9NbaVBgCVkWL/wnG+MEsNTNY0g54m8h/
-yQexs7+ZudJ19RzZAtJFgj3zcc9u/VXYxipI5Q+zFp9Q7UEuNDfZLS1yxSN+hfr9
-fEK1YarFnb/uo/mCWiP2SAJiDtipJe+flEzyutHK6Jf1p2jyAbED4DlZTED8fN1X
-uBkMw63pnPdzJcdx0+sm8xLnbY/bkaMjJasIjmfiimQsI09g+TCu5bBlEJIuMDG9
-2XrTsUWWN7kex6f+cMakL4nhwL8EM1Hmysga6S4cODnhzJqEODXjMiKtCI+yB+hP
-UEUj0lqOrQcgo/RpuKQiFQZxCSkhFA==
-=RY5S
------END PGP SIGNATURE-----
-
---XgDB20WdwLjkKw76--
