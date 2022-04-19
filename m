@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 936BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBA2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356808AbiDSSVe (ORCPT
+        id S1356884AbiDSSVs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37426 "EHLO
+        Tue, 19 Apr 2022 14:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354832AbiDSSUA (ORCPT
+        with ESMTP id S1352843AbiDSSV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:20:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76ED43FDA3;
-        Tue, 19 Apr 2022 11:13:53 -0700 (PDT)
+        Tue, 19 Apr 2022 14:21:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2274940902;
+        Tue, 19 Apr 2022 11:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C2B5B818FE;
-        Tue, 19 Apr 2022 18:13:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E946BC385BB;
-        Tue, 19 Apr 2022 18:13:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FCC0B81865;
+        Tue, 19 Apr 2022 18:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9899C385A7;
+        Tue, 19 Apr 2022 18:13:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392030;
-        bh=blG1BoqgDz4cY3SBTCFsQD2tkAE2zYDC7RKtOQpGP2s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TxJFfnx4YueM6BxDJh1c2w69rTWAzu2HoLOOfpcN3jGwQQ/xSRWfnLVMk+FREIt8U
-         LbZyBI32aDjIuksH8YXVfUej6uF44tRYSIbulDs9ZeycqQzzx5AEJiXauf0cnfUQuA
-         mcAUKvzckoRqfaBmrZxc2sV/3DvkNovjtquufI5EvmpILus/yd1xLuryWknKKtyDfv
-         2FwbggQmfC80lP+4f2Gy+YEYlz9xGaHJsauT0BIggaqnQMNL3aOQyQQDExa+jiZcI0
-         3+8AqwkyTtjFU7m47VQKEnMN5rbEexNc6FMPRXD84iSJs3x5/wZHvI7iFbvZKr+pTs
-         D/XYcrIGlERLw==
+        s=k20201202; t=1650392036;
+        bh=y4FzcMqIYjP6yJMMswEni40ksnSonHHl5KEbQHYCCgw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mm7L8c59Oxh75q8fH3O+On+ekU1CNmtPWFOXnSqXysJEmBr2d2bUuokLjUFEoW8JG
+         TDJaAz+iHEaMqqk5Msr/a0E7289RfzvkknK4rrZvuADOBPeq3POmYpGzupGNUxH8k3
+         sJPK5ycuF6m7gDePG477+zOErQj9vLnXKtBCkWsX9sOax8kxm1MH+NOk+j11YK4wYE
+         UTdY3qO1NcfDcb53O5GUe5arAE4nWOYsk+EICphDKq9IIcPzKqLtu6u3ZISsoGmN/D
+         s4HO8hs7xADbpKA/RXV+Fbwfr1lnJtxNfJZQvB8CdwcQ+ezeA+D3DyqHTbNDBr5Gzq
+         McVO+0Ws0D3hw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>,
-        =?UTF-8?q?=E9=87=91=E9=9F=AC?= <me@kingtous.cn>,
-        Keith Busch <kbusch@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 26/27] nvme-pci: disable namespace identifiers for the MAXIO MAP1002/1202
-Date:   Tue, 19 Apr 2022 14:12:41 -0400
-Message-Id: <20220419181242.485308-26-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 01/18] ARM: vexpress/spc: Avoid negative array index when !SMP
+Date:   Tue, 19 Apr 2022 14:13:35 -0400
+Message-Id: <20220419181353.485719-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181242.485308-1-sashal@kernel.org>
-References: <20220419181242.485308-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,38 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit a98a945b80f8684121d477ae68ebc01da953da1f ]
+[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
 
-The MAXIO MAP1002/1202 controllers reports completely bogus Namespace
-identifiers that even change after suspend cycles.  Disable using
-the Identifiers entirely.
+When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
+a couple negative array index accesses:
 
-Reported-by: 金韬 <me@kingtous.cn>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Tested-by: 金韬 <me@kingtous.cn>
+arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
+arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  583 |   if (init_opp_table[cluster])
+      |       ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
+arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  592 |    init_opp_table[cluster] = true;
+      |    ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
+
+Skip this logic when built !SMP.
+
+Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
+Cc: Liviu Dudau <liviu.dudau@arm.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/mach-vexpress/spc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index b925a5f4afc3..61f01f5afdc1 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3352,6 +3352,10 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
- 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-+	{ PCI_DEVICE(0x1e4B, 0x1002),   /* MAXIO MAP1002 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
-+	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
- 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
+diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+index 1da11bdb1dfb..1c6500c4e6a1 100644
+--- a/arch/arm/mach-vexpress/spc.c
++++ b/arch/arm/mach-vexpress/spc.c
+@@ -580,7 +580,7 @@ static int __init ve_spc_clk_init(void)
+ 		}
+ 
+ 		cluster = topology_physical_package_id(cpu_dev->id);
+-		if (init_opp_table[cluster])
++		if (cluster < 0 || init_opp_table[cluster])
+ 			continue;
+ 
+ 		if (ve_init_opp_table(cpu_dev))
 -- 
 2.35.1
 
