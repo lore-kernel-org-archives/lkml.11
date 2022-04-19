@@ -2,191 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F931C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E548EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351956AbiDSLxJ (ORCPT
+        id S1351924AbiDSLyY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
+        Tue, 19 Apr 2022 07:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351971AbiDSLwq (ORCPT
+        with ESMTP id S1348881AbiDSLyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:52:46 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06A222514
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:50:03 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b24so20877598edu.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:50:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+22hDYu2wEuHGd4AY54ocAOL5u0kABhClqX/TcY/LTY=;
-        b=H3QC9C/R5KWMtDxmmpBzxTkk9M+RZW5ws2177KxkG0PkyXHubfD11/YNIFepjAaqQu
-         9+5v0HiMVHwAEvOPUvTi9UDmYHW3xR73dcLKI5bdDYfJqzl4zX/rW3LjuPOdkv/IjfuW
-         RO8C4nY2FIdSgWflqcH4AHm2ZTd0cC78GfBOPEuRQN6r6yC5UsouIiMGT/rG1KE8HLw0
-         mHRLBtBEK+MC/KnFfs6MmL8kjPtnQxJXkQDeFoEWVzYW8BlzRZJ1NR8dHAaoMki7/Xgg
-         Gng8p+TLfSD6TdDyiXnJu3BCw8+2dclVFf+tTe1WLjrGUfdAcWlBGdgPo4B3/JV26MSK
-         Vnlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+22hDYu2wEuHGd4AY54ocAOL5u0kABhClqX/TcY/LTY=;
-        b=l+TlymZMNmbHn8drwzyr9wmjbaNEiS9pMokav+J+g1C9+ETNFqES7wzU3W39PdPj/4
-         N1UttGrHFo0EnpoGqvsL0FZdGs/XZ1TEFnuTOdhs/bvCqr7xSgGOQQGHcVPWqVLHRhno
-         SthuBFdGqoNtG73OdkTwrsSJ0CK6xis2bKUjI+JnNwFcJkHbkmHt3wBih3WatRVzQDxj
-         8bp1Xvz6cvbX2dVGTrOgQ1wgVgMpFHLQX0eql9xH8Z74hbLIjRGPMRA0brlLS0lo3ExR
-         Mhq4NI17vOivkbqKccWU+9Xz2IYtbR1iQf9wG1XPeRQVYfI2ij+CEXr8eYiVWkW+pA2a
-         9E2g==
-X-Gm-Message-State: AOAM533zEA6W3ki4kb9TbBdP0OoRYPf4Qcm9n9L29Xp2iRATKVLO9aOd
-        Hq8CcwcUjTVNCkqC9ZPZsh7knA==
-X-Google-Smtp-Source: ABdhPJyAypytXd6YzKO7SLGGgIe0gMwBMbxU3UaUCtlCeDPRJAXYOEuM+LrBoWoWZZbdZia5GX2REQ==
-X-Received: by 2002:a05:6402:430c:b0:419:4660:e261 with SMTP id m12-20020a056402430c00b004194660e261mr16895758edc.324.1650369002202;
-        Tue, 19 Apr 2022 04:50:02 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906310a00b006e834953b55sm5547719ejx.27.2022.04.19.04.50.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 04:50:01 -0700 (PDT)
-Message-ID: <f6ea5c51-97dd-b225-3fb7-fcea5f722c39@linaro.org>
-Date:   Tue, 19 Apr 2022 13:50:01 +0200
+        Tue, 19 Apr 2022 07:54:21 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AE135A8F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:51:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=by/avHz0lmt+0CrvyNMfd3ZJgBpesJrRIzEYCC0+J9I=; b=EH26emG8dozfwgbLDRHaT6hR0a
+        T5GBynsNsO4tqZPmoBNSfhF8bWZSGePL4fCQcue5FCIl0KRud3yH/NQGLU6WNJMU9Eztb/6kyxqLw
+        VNQhjmseNibEiCY0wtukgVtCAwkdqrsJMFBIs+hl6pTqcbj1CLdEACIOYHRs/CVsAfs9Z6sk1ufvN
+        DRcgp25XHwok8rSIZNJH14q7yaNsII4KTODZMvSAEt1w645mE+XNsrXNDUASaYPx6hbAckSeox4/O
+        P2U1+3sYqmLXx9kjuBzFvXgOiTueEMDxpCDHPEN7H3STTMtoeGc+iqE6SvM2JS8FOFhvsfVyQqkII
+        NnpgE7mA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngmOI-0033rG-T3; Tue, 19 Apr 2022 11:51:32 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 32919986195; Tue, 19 Apr 2022 13:51:30 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 13:51:30 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v2 00/25] objtool: Interface overhaul
+Message-ID: <20220419115130.GT2731@worktop.programming.kicks-ass.net>
+References: <cover.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] dt-binding: Add cypress,cy8c95x0 binding
-Content-Language: en-US
-To:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220419071503.1596423-1-patrick.rudolph@9elements.com>
- <20220419071503.1596423-2-patrick.rudolph@9elements.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220419071503.1596423-2-patrick.rudolph@9elements.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1650300597.git.jpoimboe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/04/2022 09:15, Patrick Rudolph wrote:
-> Added device tree binding documentation for
-> Cypress CY8C95x0 I2C pin-controller.
-> 
+On Mon, Apr 18, 2022 at 09:50:19AM -0700, Josh Poimboeuf wrote:
 
-Thank you for your patch. There is something to discuss/improve.
+> Josh Poimboeuf (25):
+>   objtool: Enable unreachable warnings for CLANG LTO
+>   libsubcmd: Fix OPTION_GROUP sorting
+>   x86/static_call: Add ANNOTATE_NOENDBR to static call trampoline
+>   x86/retpoline: Add ANNOTATE_ENDBR for retpolines
+>   x86/uaccess: Add ENDBR to __put_user_nocheck*()
+>   x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+>   objtool: Reorganize cmdline options
+>   objtool: Ditch subcommands
+>   objtool: Don't print parentheses in function addresses
+>   objtool: Print data address for "!ENDBR" data warnings
+>   objtool: Use offstr() to print address of missing ENDBR
+>   objtool: Add option to print section addresses
+>   scripts: Create objdump-func helper script
+>   objtool: Make stack validation optional
+>   objtool: Rework ibt and extricate from stack validation
+>   objtool: Extricate sls from stack validation
+>   objtool: Add CONFIG_OBJTOOL
+>   objtool: Make stack validation frame-pointer-specific
+>   objtool: Make static call annotation optional
+>   objtool: Make jump label hack optional
+>   objtool: Make noinstr hacks optional
+>   objtool: Rename "VMLINUX_VALIDATION" -> "NOINSTR_VALIDATION"
+>   objtool: Add HAVE_NOINSTR_VALIDATION
+>   objtool: Remove --lto and --vmlinux in favor of --link
+>   objtool: Update documentation
 
-(...)
+I've taken the liberty of reordering it slightly:
 
-> +  reg:
-> +    maxItems: 1
-> +
-> +  gpio-controller: true
-> +
-> +  '#gpio-cells':
-> +    description:
-> +      The first cell is the pin number and the second cell is used
-> +      to specify optional parameters.
-> +    const: 2
-> +
-> +  gpio-reserved-ranges: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  interrupt-controller: true
-> +
-> +  '#interrupt-cells':
-> +    description:
-> +      Specifies the pin number and flags, as defined in
-> +      include/dt-bindings/interrupt-controller/irq.h
+   objtool: Enable unreachable warnings for CLANG LTO
+   x86/static_call: Add ANNOTATE_NOENDBR to static call trampoline
+   x86/retpoline: Add ANNOTATE_ENDBR for retpolines
+   x86/uaccess: Add ENDBR to __put_user_nocheck*()
+   x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+   objtool: Print data address for "!ENDBR" data warnings
+   objtool: Use offstr() to print address of missing ENDBR
 
-Skip description, it's obvious.
+Go into x86/urgent, and I've added Fixes: tags with various patches from
+the IBT series, and then the rest goes into objtool/core.
 
-> +    const: 2
-> +
-> +  ngpios:
-> +    minimum: 1
-> +    maximum: 60
-> +
-> +  gpio-line-names:
-> +    minItems: 1
-> +    maxItems: 60
-> +
-> +  vdd-supply:
-> +    description:
-> +      Optional power supply.
-> +
-> +patternProperties:
-> +  '-pins$':
-> +    type: object
-> +    description:
-> +      Pinctrl node's client devices use subnodes for desired pin configuration.
-> +      Client device subnodes use below standard properties.
-> +    $ref: "/schemas/pinctrl/pincfg-node.yaml"
-> +
-> +    properties:
-> +      pins:
-> +        description:
-> +          List of gpio pins affected by the properties specified in this
-> +          subnode.
-> +        items:
-> +          oneOf:
+As already indicated, there's going to be a few merge conflicts against
+x86/core, but alas. Resolved as per the below.
 
-Why do you need oneOf here?
-
-> +            - pattern: "^gp([0-7][0-7])$"
-> +        minItems: 1
-> +        maxItems: 60
-> +
-> +      function:
-> +        enum: [ gpio, pwm ]
-> +
-
-No need for blank line. In other cases you put description before the
-property constraints, so do it consistently here as well.
-
-> +        description:
-> +          Specify the alternative function to be configured for the specified
-> +          pins.
-> +
-> +      bias-pull-down: true
-> +
-> +      bias-pull-up: true
-> +
-> +      bias-disable: true
-> +
-> +      output-high: true
-> +
-> +      output-low: true
-> +
-> +      drive-push-pull: true
-> +
-> +      drive-open-drain: true
-> +
-> +      drive-open-source: true
-> +
-> +    required:
-> +      - pins
-> +      - function
-> +
-> +    additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - interrupt-controller
-> +  - '#interrupt-cells'
-> +  - gpio-controller
-> +  - '#gpio-cells'
-
-no allOf referencing pinctrl.yaml? Include it unless there is some
-reason not to.
-
-Best regards,
-Krzysztof
+---
+diff --cc arch/x86/Kconfig
+index 20c1dacd2baa,c8f560802bf2..000000000000
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+diff --cc scripts/Makefile.build
+index 7e7aa1d030a6,ac8167227bc0..000000000000
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@@ -227,15 -227,19 +227,19 @@@ ifdef CONFIG_OBJTOO
+  objtool := $(objtree)/tools/objtool/objtool
+  
+  objtool_args =								\
+- 	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
+- 	$(if $(part-of-module), --module)				\
+- 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
+- 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+- 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
++ 	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
++ 	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
++ 	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
++ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
++ 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
+  	$(if $(CONFIG_RETPOLINE), --retpoline)				\
++ 	$(if $(CONFIG_SLS), --sls)					\
++ 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
++ 	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
+ -	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ +	--uaccess							\
+- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+- 	$(if $(CONFIG_SLS), --sls)
++ 	$(if $(linked-object), --link)					\
++ 	$(if $(part-of-module), --module)				\
++ 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
+  
+  cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
+  cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+diff --cc scripts/link-vmlinux.sh
+index 3a2fffdf49d4,eb9324f07f3d..000000000000
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@@ -126,34 -132,46 +132,44 @@@ objtool_link(
+  		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
+  			objtoolopt="${objtoolopt} --mcount"
+  		fi
+- 	fi
+  
+- 	if is_enabled CONFIG_VMLINUX_VALIDATION; then
+- 		objtoolopt="${objtoolopt} --noinstr"
+- 	fi
++ 		if is_enabled CONFIG_UNWINDER_ORC; then
++ 			objtoolopt="${objtoolopt} --orc"
++ 		fi
+  
+- 	if [ -n "${objtoolopt}" ]; then
+- 		if [ -z "${objtoolcmd}" ]; then
+- 			objtoolcmd="check"
++ 		if is_enabled CONFIG_RETPOLINE; then
++ 			objtoolopt="${objtoolopt} --retpoline"
+  		fi
+- 		objtoolopt="${objtoolopt} --vmlinux"
+- 		if ! is_enabled CONFIG_FRAME_POINTER; then
+- 			objtoolopt="${objtoolopt} --no-fp"
++ 
++ 		if is_enabled CONFIG_SLS; then
++ 			objtoolopt="${objtoolopt} --sls"
+  		fi
+- 		if is_enabled CONFIG_GCOV_KERNEL || is_enabled CONFIG_LTO_CLANG; then
+- 			objtoolopt="${objtoolopt} --no-unreachable"
++ 
++ 		if is_enabled CONFIG_STACK_VALIDATION; then
++ 			objtoolopt="${objtoolopt} --stackval"
+  		fi
+- 		if is_enabled CONFIG_RETPOLINE; then
+- 			objtoolopt="${objtoolopt} --retpoline"
++ 
++ 		if is_enabled CONFIG_HAVE_STATIC_CALL_INLINE; then
++ 			objtoolopt="${objtoolopt} --static-call"
+  		fi
+  
+ -		if is_enabled CONFIG_X86_SMAP; then
+ -			objtoolopt="${objtoolopt} --uaccess"
+ -		fi
+ +		objtoolopt="${objtoolopt} --uaccess"
++ 	fi
+  
+- 		if is_enabled CONFIG_SLS; then
+- 			objtoolopt="${objtoolopt} --sls"
++ 	if is_enabled CONFIG_NOINSTR_VALIDATION; then
++ 		objtoolopt="${objtoolopt} --noinstr"
++ 	fi
++ 
++ 	if [ -n "${objtoolopt}" ]; then
++ 
++ 		if is_enabled CONFIG_GCOV_KERNEL; then
++ 			objtoolopt="${objtoolopt} --no-unreachable"
+  		fi
++ 
++ 		objtoolopt="${objtoolopt} --link"
++ 
+  		info OBJTOOL ${1}
+- 		tools/objtool/objtool ${objtoolcmd} ${objtoolopt} ${1}
++ 		tools/objtool/objtool ${objtoolopt} ${1}
+  	fi
+  }
+  
