@@ -2,114 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603EFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F309C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355755AbiDSRdb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37742 "EHLO
+        id S245671AbiDSReZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 13:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344945AbiDSRdU (ORCPT
+        with ESMTP id S232206AbiDSReV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:33:20 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69AE30F59;
-        Tue, 19 Apr 2022 10:30:37 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23JHUHRe124234;
-        Tue, 19 Apr 2022 12:30:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650389417;
-        bh=tblmGe+8o+9ZJunF2//txAuP0QRnXYIGKc6iN9ViM60=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=x5Inx2bap9zeuEoC0XLd9dRiKWS+N1VbDsz8luum8ppgGOWnYcv5KbsJ5n1yljiI1
-         Kq0akeXJt8ncDnXS1xR+cuM0dEhDWKRvd9xIpFXHO+CH+Ge0hWCEJhhuOx94uBrFZ/
-         5Ij9umpWFKke2Zw7tFkd2B2ia07HOnKGapZClKrY=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23JHUHM9019741
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Apr 2022 12:30:17 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 19
- Apr 2022 12:30:03 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 19 Apr 2022 12:30:03 -0500
-Received: from [10.0.3.15] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23JHTtBT041076;
-        Tue, 19 Apr 2022 12:29:57 -0500
-Message-ID: <b4712133-1694-4f3a-a790-263118717715@ti.com>
-Date:   Tue, 19 Apr 2022 22:59:54 +0530
+        Tue, 19 Apr 2022 13:34:21 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D1C381B4;
+        Tue, 19 Apr 2022 10:31:38 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-de3eda6b5dso18296279fac.0;
+        Tue, 19 Apr 2022 10:31:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vsh1+N3AHFl1INtReH0W0OLxuEQj6Zw6DbwHLNwXacE=;
+        b=zIGF5NXkktJYBrV8alm5bE97t02hw14nhHqbhTojGUFT0ltIxC1DmUi5XsvgF78o8p
+         hOi9UF03hEbiWguwzOPVWkW35JaHzs0ukqlc51Q/LvfVu8P1/2xezSxnpJoDFVc7EUHG
+         9xvsS03XL8cT7J5qVslxtbDeqO0TDVWt0l09VwRSKYfrTTNQs60T1tXnTENfEuDF67W1
+         doMnHDqRekLZ3KayXjtomuvKhThTbiKr3mIO7XPpw6KdZgkwTyIUnLyBYoDSaOSU1Fe8
+         B2F1DHguyH1Ncrs8Tc2+4zXpeTOMx7ZDKJOA+GS6x9EJ2JLp8monLP3B9bHLTZydJ2h2
+         J7sQ==
+X-Gm-Message-State: AOAM531ctP27o2S9BUUkHxwFYfJenDXlhrStvAxVB8tA4iJqKhtJgaqW
+        MdRA1fin/9PVLBz370excQ==
+X-Google-Smtp-Source: ABdhPJwZ4amMBF78Uj2HwtGidHVXq6uMihB5xsWXnDCbEN1qgpu+cOZ/oO2Kjw0LPTDblGdXyLBBYA==
+X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id s37-20020a056870eaa500b000da0b3f2b45mr9151148oap.228.1650389498029;
+        Tue, 19 Apr 2022 10:31:38 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id v20-20020a056870e29400b000da4a0089c9sm5298243oad.27.2022.04.19.10.31.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 10:31:37 -0700 (PDT)
+Received: (nullmailer pid 3011512 invoked by uid 1000);
+        Tue, 19 Apr 2022 17:31:36 -0000
+Date:   Tue, 19 Apr 2022 12:31:36 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] regulator: dt-bindings: qcom,rpmh: document
+ supplies per variant
+Message-ID: <Yl7x+LG9vdL3mcpC@robh.at.kernel.org>
+References: <20220412073123.27229-1-krzysztof.kozlowski@linaro.org>
+ <20220412073123.27229-2-krzysztof.kozlowski@linaro.org>
+ <YlhC5B+ZaNn9wUuB@robh.at.kernel.org>
+ <39b68e91-93cc-ad74-d064-a29ff01d60a6@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/2] Update register & interrupt info in am65x DSS
-Content-Language: en-US
-To:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Rob Herring <robh@kernel.org>, Nishanth Menon <nm@ti.com>
-CC:     Jyri Sarha <jyri.sarha@iki.fi>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Devicetree <devicetree@vger.kernel.org>,
-        Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Nikhil Devshatwar <nikhil.nd@ti.com>
-References: <20220419070302.16502-1-a-bhatia1@ti.com>
- <9e848e84-a31f-98ec-ed6b-c1dce022723b@ideasonboard.com>
-From:   Aradhya Bhatia <a-bhatia1@ti.com>
-In-Reply-To: <9e848e84-a31f-98ec-ed6b-c1dce022723b@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <39b68e91-93cc-ad74-d064-a29ff01d60a6@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 19/04/22 17:36, Tomi Valkeinen wrote:
-> On 19/04/2022 10:03, Aradhya Bhatia wrote:
->> The Display SubSystem IP on the ti's am65x soc has an additional
->> register space "common1" and services a maximum of 2 interrupts.
->>
->> The first patch in the series adds the required updates to the yaml
->> file. The second patch then reflects the yaml updates in the DSS DT
->> node of am65x soc.
->>
->> Aradhya Bhatia (2):
->>    dt-bindings: display: ti,am65x-dss: Add missing register & interrupt
->>    arm64: dts: ti: k3-am65: Add missing register & interrupt in DSS node
->>
->>   .../devicetree/bindings/display/ti/ti,am65x-dss.yaml   | 10 +++++++---
->>   arch/arm64/boot/dts/ti/k3-am65-main.dtsi               |  6 ++++--
->>   2 files changed, 11 insertions(+), 5 deletions(-)
->>
+On Tue, Apr 19, 2022 at 08:44:48AM +0200, Krzysztof Kozlowski wrote:
+> On 14/04/2022 17:51, Rob Herring wrote:
+> > On Tue, Apr 12, 2022 at 09:31:22AM +0200, Krzysztof Kozlowski wrote:
+> >> The RPMH regulator binding covers several devices with different
+> >> regulator supplies, so it uses patterns matching broad range of these
+> >> supplies.  This works fine but is not specific and might miss actual
+> >> mistakes when a wrong supply property is used for given variant.
+> >>
+> >> Describe the supplies depending on the compatible, using a defs-allOf
+> >> method.
+> >>
+> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >> ---
+> >>  .../regulator/qcom,rpmh-regulator.yaml        | 290 +++++++++++++++++-
+> >>  1 file changed, 276 insertions(+), 14 deletions(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+> >> index 842ccef691b8..773536fe37c7 100644
+> >> --- a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+> >> +++ b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+> >> @@ -95,35 +95,297 @@ properties:
+> >>    vdd-rgb-supply:
+> >>      description: Input supply phandle of rgb.
+> >>  
+> >> -  vin-lvs-1-2-supply:
+> >> -    description: Input supply phandle of one or more regulators.
+> >> -
+> >> -  vdd-bob-supply:
+> >> -    description: BOB regulator parent supply phandle.
+> >> -
+> >>    bob:
+> >>      type: object
+> >>      $ref: "regulator.yaml#"
+> >>      description: BOB regulator node.
+> >>  
+> >>  patternProperties:
+> >> -  "^vdd-s([0-9]+)-supply$":
+> >> -    description: Input supply phandle(s) of one or more regulators.
+> >> -
+> >> -  "^vdd-(l[0-9]+[-]){1,5}supply$":
+> >> -    description: Input supply phandle(s) of one or more regulators.
+> >> -
+> >>    "^(smps|ldo|lvs)[0-9]+$":
+> >>      type: object
+> >>      $ref: "regulator.yaml#"
+> >>      description: smps/ldo regulator nodes(s).
+> >>  
+> >> -additionalProperties: false
+> >> -
+> >>  required:
+> >>    - compatible
+> >>    - qcom,pmic-id
+> >>  
+> >> +allOf:
+> >> +  - $ref: "#/$defs/pm6150"
+> >> +  - $ref: "#/$defs/pm6150l"
+> >> +  - $ref: "#/$defs/pm7325"
+> >> +  - $ref: "#/$defs/pm8005"
+> >> +  - $ref: "#/$defs/pm8009"
+> >> +  - $ref: "#/$defs/pm8150"
+> >> +  - $ref: "#/$defs/pm8150l"
+> >> +  - $ref: "#/$defs/pm8350"
+> >> +  - $ref: "#/$defs/pm8350c"
+> >> +  - $ref: "#/$defs/pm8450"
+> >> +  - $ref: "#/$defs/pm8998"
+> >> +  - $ref: "#/$defs/pmg1110"
+> >> +  - $ref: "#/$defs/pmi8998"
+> >> +  - $ref: "#/$defs/pmr735a"
+> >> +  - $ref: "#/$defs/pmx55"
+> >> +  - $ref: "#/$defs/pmx65"
+> >> +
+> >> +unevaluatedProperties: false
+> >> +
+> >> +$defs:
+> > 
+> > I'm not following on why you need $defs here rather than putting the 
+> > if/then schemas under the 'allOf'. $defs should primarily only be used 
+> > where it saves duplicating a schema 2 or more times. That could be the 
+> > case here if there's a case that's a subset of another case.
 > 
-> Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+> The allOf+defs is a workaround for schema behavior. The entire approach
+> if defining properties in "if:then:" works only with
+> unevaluatedProperties, not with additionalProperties. However
+> unevaluatedProperties require to reference other schema, which I do not
+> do here. I don't have other schema.
 > 
-> How are you planning to use the common1 area?
-Tomi, Nishanth,
-Thank you for taking out time to review this.
+> allOf+def has references tricking schema to accept unevaluatedProperties.
 
-The DSS IP is such that it services 2 interrupts in case people want to
-use DSS from 2 SW entities (2nd VM or 2nd core). The regions "common" &
-"common1" cater registers for managing these 2 interrupts.
-Historically, on linux, only 1 interrupt and hence only the "common"
-region has been used. Therefore, the "common1" region is not actually
-required.
+I'm going to relax the meta-schema instead.
 
-The patches, thus, can be ignored.
-
-
-Rob,
-Thank you for pointing out the mistakes I have made. I will be more
-careful about them going further.
-
-> 
->  Tomi
-
-Regards
-Aradhya Bhatia
+Rob
