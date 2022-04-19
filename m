@@ -2,73 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6ECC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC39C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355404AbiDSQ4Q (ORCPT
+        id S1355167AbiDSQzw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
+        Tue, 19 Apr 2022 12:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347390AbiDSQuN (ORCPT
+        with ESMTP id S1352873AbiDSQsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:50:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9A183AA4D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650386827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BWvAKy8LocH47YhakvpIBQwKMnIJQQng3vxQEYIL7zc=;
-        b=VX9Lea2KWKzJbjxUJB+5eNsXFpCLEh2LP7F4CyPIdOU1zFfTPqSS2LoYo0YSoNfkgMna/l
-        wBH6fgiAxG90QkwsxU6bRgklaiCJVMoqE5EQsMdYVfcXV1ETi5SEqAXrjQdn1DBJwuliqu
-        C4SVV9PSezIi3S8OhVzbYj3AfM4UvRw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-511-EaA8j95MOtSsSpdXOLr65A-1; Tue, 19 Apr 2022 12:47:03 -0400
-X-MC-Unique: EaA8j95MOtSsSpdXOLr65A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 19 Apr 2022 12:48:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB47EA1BF;
+        Tue, 19 Apr 2022 09:45:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 34F563820F64;
-        Tue, 19 Apr 2022 16:47:03 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B4A740E80E0;
-        Tue, 19 Apr 2022 16:47:02 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <Yl7mQr05hPg4vELb@rabbit.intern.cm-ag>
-References: <Yl7mQr05hPg4vELb@rabbit.intern.cm-ag> <Yl7EyMLnqqDv63yW@rabbit.intern.cm-ag> <YlWWbpW5Foynjllo@rabbit.intern.cm-ag> <454834.1650373340@warthog.procyon.org.uk> <508603.1650385022@warthog.procyon.org.uk>
-To:     Max Kellermann <mk@cm4all.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: fscache corruption in Linux 5.17?
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4862461883;
+        Tue, 19 Apr 2022 16:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6748FC385A7;
+        Tue, 19 Apr 2022 16:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650386728;
+        bh=G0OvqP43pBlucS2bwhbAfQlIUn2CHJUI1Pp798ChPPw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=jhhGUe+s0QSuW058hOTgQRDXlLp07EUc0RpaIWBYFIkUe/WP3XBJhga9Ehm7dXgJz
+         VPVoU+3Qox99raGnuwwt+IMRCxX6x1G9enBw9BB7m5wUCCGckdk/mc+UOzL9dgwUMt
+         ji1s62SkIYKv9d+tyu2Tl878AV2ArQbwR/Nznr6E0P1kqtLdt1cDEMCvBJU285cyIS
+         2kvJTr+fBiw63HkIiFrp79WZUVxFQlbfZ7Dpy82rlclnMwH9jMtqg5Wih8dKJwjvyG
+         voxxODzyRe3U7c1GdW+MD5woPipjVGr8Kl7ulS4/SvhXnQrZDtilz8w1EZxoxq5uAX
+         3396mF+8umvEw==
+Date:   Tue, 19 Apr 2022 11:45:26 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 0/3] x86/PCI: Log E820 clipping
+Message-ID: <20220419164526.GA1204065@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <510135.1650386821.1@warthog.procyon.org.uk>
-Date:   Tue, 19 Apr 2022 17:47:01 +0100
-Message-ID: <510136.1650386821@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7fa9afde-5cc4-2e5d-30ac-ccc6ff4c8039@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Max Kellermann <mk@cm4all.com> wrote:
+On Tue, Apr 19, 2022 at 05:16:44PM +0200, Hans de Goede wrote:
+> Hi,
+> 
+> On 4/19/22 17:03, Bjorn Helgaas wrote:
+> > On Tue, Apr 19, 2022 at 11:59:17AM +0200, Hans de Goede wrote:
+> >> On 1/1/70 01:00, Bjorn Helgaas wrote:
+> >>> This is still work-in-progress on the issue of PNP0A03 _CRS methods that
+> >>> are buggy or not interpreted correctly by Linux.
+> >>>
+> >>> The previous try at:
+> >>>   https://lore.kernel.org/r/20220304035110.988712-1-helgaas@kernel.org
+> >>> caused regressions on some Chromebooks:
+> >>>   https://lore.kernel.org/r/Yjyv03JsetIsTJxN@sirena.org.uk
+> >>>
+> >>> This v2 drops the commit that caused the Chromebook regression, so it also
+> >>> doesn't fix the issue we were *trying* to fix on Lenovo Yoga and Clevo
+> >>> Barebones.
+> >>>
+> >>> The point of this v2 update is to split the logging patch into (1) a pure
+> >>> logging addition and (2) the change to only clip PCI windows, which was
+> >>> previously hidden inside the logging patch and not well documented.
+> >>>
+> >>> Bjorn Helgaas (3):
+> >>>   x86/PCI: Eliminate remove_e820_regions() common subexpressions
+> >>>   x86: Log resource clipping for E820 regions
+> >>>   x86/PCI: Clip only host bridge windows for E820 regions
+> >>
+> >> Thanks, the entire series looks good to me:
+> >>
+> >> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> > 
+> > Thank you!
+> > 
+> >> So what is the plan to actually fix the issue seen on some Lenovo models
+> >> and Clevo Barebones ?   As I mentioned previously I think that since all
+> >> our efforts have failed so far that we should maybe reconsider just
+> >> using DMI quirks to ignore the E820 reservation windows for host bridges
+> >> on affected models ?
+> > 
+> > I have been resisting DMI quirks but I'm afraid there's no other way.
+> 
+> Well there is the first match adjacent windows returned by _CRS and
+> only then do the "covers whole region" exception check. I still
+> think that would work at least for the chromebook regression...
 
-> I don't think any write is misaligned.  This was triggered by a
-> WordPress update, so I think the WordPress updater truncated and
-> rewrote all files.  Random guess: some pages got transferred to the
-> NFS server, but the local copy in fscache did not get updated.
+Without a crystal clear strategy, I think we're going to be tweaking
+the algorithm forever as the _CRS/E820 mix changes.  That's why I
+think that in the long term, a "use _CRS only, with quirks for
+exceptions" strategy will be simplest.
 
-Do the NFS servers change the files that are being served - or is it just
-WordPress pushing the changes to the NFS servers for the web servers to then
-export?
+> So do you want me to give that a try; or shall I write a patch
+> using DMI quirks. And if we go the DMI quirks, what about
+> matching cmdline arguments?  If we add matching cmdline arguments,
+> which seems to be the sensible thing to do then to allow users
+> to test if they need the quirk, then we basically end up with my
+> first attempt at fixing this from 6 months ago:
+> 
+> https://lore.kernel.org/linux-pci/20211005150956.303707-1-hdegoede@redhat.com/
 
-David
+So I think we should go ahead with DMI quirks instead of trying to
+make the algorithm smarter, and yes, I think we will need commandline
+arguments, probably one to force E820 clipping for future machines,
+and one to disable it for old machines.
 
+> > I think the web we've gotten into, where vendors have used E820 to
+> > interact with _CRS in incompatible and undocumented ways, is not
+> > sustainable.
+> > 
+> > I'm not aware of any spec that says the OS should use E820 to clip
+> > things out of _CRS, so I think the long term plan should be to
+> > decouple them by default.
+> 
+> Right and AFAICT the reason Windows is getting away with this is
+> the same as with the original Dell _CRS has overlap with
+> physical RAM issue (1), Linux assigns address to unassigneds BAR-s
+> starting with the lowest available address in the bridge window,
+> where as Windows assigns addresses from the highest available
+> address in the window.
+
+Right, I agree.  I'm guessing Chromebooks don't get tested with
+Windows at all, so we don't even have that level of testing to help.
+
+> So the real fix here might very well be
+> to rework the BAR assignment code to switch to fill the window
+> from the top rather then from the bottom. AFAICT all issues where
+> excluding _E820 reservations have helped are with _E820 - bridge
+> window overlaps at the bottom of the window.
+> 
+> IOW these are really all bugs in the _CRS method for the bridge,
+> which Windows does not hit because it never actually uses
+> the lowest address(es) of the _CRS returned window.
+
+Yes.  We actually did try this
+(https://git.kernel.org/linus/1af3c2e45e7a), but unfortunately we had
+to revert it.  Even more unfortunately, the revert
+(https://git.kernel.org/linus/5e52f1c5e85f) doesn't have any details
+about what went wrong.
+
+> 1) At least I read in either a bugzilla, or email thread about
+> this that Windows allocating bridge window space from the top
+> was assumed to be why Windows was not impacted.
+> 
+> > Straw man:
+> > 
+> >   - Disable E820 clipping by default.
+> > 
+> >   - Add a quirk to enable E820 clipping for machines older than X,
+> >     e.g., 2023, to avoid breaking machines that currently work.
+> > 
+> >   - Add quirks to disable E820 clipping for individual machines like
+> >     the Lenovo and Clevos that predate X, but E820 clipping breaks
+> >     them.
+> > 
+> >   - Add quirks to enable E820 clipping for individual machines like
+> >     the Chromebooks (and probably machines we don't know about yet)
+> >     that have devices that consume part of _CRS but are not
+> >     enumerable.
+> > 
+> >   - Communicate this to OEMs to try to prevent future machines that
+> >     need quirks.
+> > 
+> > Bjorn
+> > 
+> 
