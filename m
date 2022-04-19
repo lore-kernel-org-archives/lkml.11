@@ -2,136 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15579C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354369AbiDSQHx (ORCPT
+        id S1354342AbiDSQIB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
+        Tue, 19 Apr 2022 12:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354328AbiDSQH3 (ORCPT
+        with ESMTP id S1354393AbiDSQHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:07:29 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611B235ABB;
-        Tue, 19 Apr 2022 09:04:35 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id B48355FD06;
-        Tue, 19 Apr 2022 18:46:43 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1650383203;
-        bh=FgIhnfyhkzdJQqe2GL+vfkTnpbKRdN4mqOCrSqMUQG4=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=jv7Wou6+JNuIklPgKYH35wR6JLyMCCUOdLXLmkHd3WM6dLt0WOqmvlsG8u3/ZxJ6D
-         FUBu5OaunqsvMVodcZMDiLSoNmonn2iwP321lBiTFyR/xkwJzRiR1XdMzKtuJFxQJJ
-         bGRKlWCT9rmeVM8KJ7X6q01JIm1HzLlK2IRyByg7VwqwZBTQjZ4vDz9ZxZYepVnCNZ
-         Qs10cmRoKpDtwx4L7rhQ16BUDfsOVLDW5yX+0EwuPV/fp9O7Zn2qIi4xM9gkrRqCPA
-         5j/cYtXpqPzejZp7Z3QYfzvNvkrwobL1LWHs8YPZUzl1xFYkQhnNPsR/Nu9t/gX4wx
-         lw/Zp6EryiG1w==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 19 Apr 2022 18:46:43 +0300 (MSK)
-From:   Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>
-Subject: [PATCH v1 0/3] iio: accel: add MSA311 accelerometer driver
-Thread-Topic: [PATCH v1 0/3] iio: accel: add MSA311 accelerometer driver
-Thread-Index: AQHYVASG6e/L14/R5Uev6QnUCJ5Flw==
-Date:   Tue, 19 Apr 2022 15:45:48 +0000
-Message-ID: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/04/19 10:34:00 #19304456
-X-KSMG-AntiVirus-Status: Clean, skipped
+        Tue, 19 Apr 2022 12:07:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1A017A8A;
+        Tue, 19 Apr 2022 09:05:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650384306; x=1681920306;
+  h=from:to:cc:subject:date:message-id;
+  bh=wTaXARG76bTc7Xk8fzK/DUZQvwtaVFIYOuxxY4pKMbc=;
+  b=J+d6qLmYx+tgG0jjdDIHFVYedZIDSFDbnRv8ilsm2NJikbICvT7sSH23
+   5iJsdAvFCcvTsoLSME33MdyuJbj/S+1pPsK8hN9cOHaDs3hNTc+W/HUUF
+   T8Fj5TT4p4W+Bb7QM5xUXcKeboR7f0I/ayNvDcbOFDAIqPnccWRREqvYn
+   RdYnYH0wDzsn73AzWo6fCekjgl1ql6LCPyjZebL5eKEMjhy6cRoOx9cwH
+   KWKaPNwvuSJBjtVMY/ixlc7JlCzBfGf7JKbyaTfY5dd6zDFlM5H7al1Y7
+   xLJUAh7LeBhOk1fgP4wFo3OhuQyC2wZPLszui+rutXB1BrgwILbon+2OR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="245694441"
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="245694441"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:05:05 -0700
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="529369855"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:04:59 -0700
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>,
+        Robert Hoo <robert.hu@linux.intel.com>
+Subject: [PATCH v9 2/9] KVM: VMX: Extend BUILD_CONTROLS_SHADOW macro to support 64-bit variation
+Date:   Tue, 19 Apr 2022 23:33:18 +0800
+Message-Id: <20220419153318.11595-1-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-sensitivity consumer applications. It has dynamical user selectable full
-scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
-with output data rates from 1Hz to 1000Hz.
+From: Robert Hoo <robert.hu@linux.intel.com>
 
-Datasheet can be found at following URL:
-https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
+The Tertiary VM-Exec Control, different from previous control fields, is 64
+bit. So extend BUILD_CONTROLS_SHADOW() by adding a 'bit' parameter, to
+support both 32 bit and 64 bit fields' auxiliary functions building.
 
-This driver supports following MSA311 features:
-    - IIO interface
-    - Different power modes: NORMAL, SUSPEND and LOW (using pm_runtime)
-    - ODR (Output Data Rate) selection
-    - Scale and samp_freq selection
-    - IIO triggered buffer, IIO reg access
-    - NEW_DATA interrupt + trigger
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Robert Hoo <robert.hu@linux.intel.com>
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+---
+ arch/x86/kvm/vmx/vmx.h | 56 +++++++++++++++++++++---------------------
+ 1 file changed, 28 insertions(+), 28 deletions(-)
 
-Below features to be done:
-    - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 9c6bfcd84008..122fdbf85a02 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -455,35 +455,35 @@ static inline u8 vmx_get_rvi(void)
+ 	return vmcs_read16(GUEST_INTR_STATUS) & 0xff;
+ }
+ 
+-#define BUILD_CONTROLS_SHADOW(lname, uname)				    \
+-static inline void lname##_controls_set(struct vcpu_vmx *vmx, u32 val)	    \
+-{									    \
+-	if (vmx->loaded_vmcs->controls_shadow.lname != val) {		    \
+-		vmcs_write32(uname, val);				    \
+-		vmx->loaded_vmcs->controls_shadow.lname = val;		    \
+-	}								    \
+-}									    \
+-static inline u32 __##lname##_controls_get(struct loaded_vmcs *vmcs)	    \
+-{									    \
+-	return vmcs->controls_shadow.lname;				    \
+-}									    \
+-static inline u32 lname##_controls_get(struct vcpu_vmx *vmx)		    \
+-{									    \
+-	return __##lname##_controls_get(vmx->loaded_vmcs);		    \
+-}									    \
+-static inline void lname##_controls_setbit(struct vcpu_vmx *vmx, u32 val)   \
+-{									    \
+-	lname##_controls_set(vmx, lname##_controls_get(vmx) | val);	    \
+-}									    \
+-static inline void lname##_controls_clearbit(struct vcpu_vmx *vmx, u32 val) \
+-{									    \
+-	lname##_controls_set(vmx, lname##_controls_get(vmx) & ~val);	    \
++#define BUILD_CONTROLS_SHADOW(lname, uname, bits)				\
++static inline void lname##_controls_set(struct vcpu_vmx *vmx, u##bits val)	\
++{										\
++	if (vmx->loaded_vmcs->controls_shadow.lname != val) {			\
++		vmcs_write##bits(uname, val);					\
++		vmx->loaded_vmcs->controls_shadow.lname = val;			\
++	}									\
++}										\
++static inline u##bits __##lname##_controls_get(struct loaded_vmcs *vmcs)	\
++{										\
++	return vmcs->controls_shadow.lname;					\
++}										\
++static inline u##bits lname##_controls_get(struct vcpu_vmx *vmx)		\
++{										\
++	return __##lname##_controls_get(vmx->loaded_vmcs);			\
++}										\
++static inline void lname##_controls_setbit(struct vcpu_vmx *vmx, u##bits val)	\
++{										\
++	lname##_controls_set(vmx, lname##_controls_get(vmx) | val);		\
++}										\
++static inline void lname##_controls_clearbit(struct vcpu_vmx *vmx, u##bits val)	\
++{										\
++	lname##_controls_set(vmx, lname##_controls_get(vmx) & ~val);		\
+ }
+-BUILD_CONTROLS_SHADOW(vm_entry, VM_ENTRY_CONTROLS)
+-BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS)
+-BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL)
+-BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL)
+-BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL)
++BUILD_CONTROLS_SHADOW(vm_entry, VM_ENTRY_CONTROLS, 32)
++BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS, 32)
++BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL, 32)
++BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL, 32)
++BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL, 32)
+ 
+ /*
+  * VMX_REGS_LAZY_LOAD_SET - The set of registers that will be updated in the
+-- 
+2.27.0
 
-Also this patchset has new vendor prefix for MEMSensing Microsystems and
-MSA311 dt-binding schema.
-
-You can test msa311 driver using libiio and gnuplot following below
-instructions:
-$ # Read 4K samples using buffer with depth equals to 64 samples and
-$ # rotate device a little bit
-$ iio_readdev -u "local:" -b 64 -s 4096 msa311 > /data/local/tmp/msa311.dat
-$ gnuplot
-gnuplot> set title "MSA311 Accel Data"
-gnuplot>
-gnuplot> set key below
-gnuplot>
-gnuplot> set xdata time
-gnuplot> set format x "%H:%M\n%.4S"
-gnuplot> set xlabel "timestamp"
-gnuplot>
-gnuplot> set autoscale y
-gnuplot> plot 'msa311.dat' binary format=3D'%int16%int16%int16%uint16%uint6=
-4'\
->      using ($5/1000000000):1 title "acc_x" with lines,\
->     'msa311.dat' binary format=3D'%int16%int16%int16%uint16%uint64' using=
-\
->     ($5/1000000000):2 title "acc_y" with lines,\
->     'msa311.dat' binary format=3D'%int16%int16%int16%uint16%uint64' using=
-\
->     ($5/1000000000):3 title "acc_z" with lines
-
-Dmitry Rokosov (3):
-  dt-bindings: vendor-prefixes: add MEMSensing Microsystems Co., Ltd.
-  iio: add MEMSensing MSA311 3-axis accelerometer driver
-  dt-bindings: iio: accel: add dt-binding schema for msa311 accel driver
-
- .../bindings/iio/accel/memsensing,msa311.yaml      |   64 +
- .../devicetree/bindings/vendor-prefixes.yaml       |    2 +
- MAINTAINERS                                        |    7 +
- drivers/iio/accel/Kconfig                          |   13 +
- drivers/iio/accel/Makefile                         |    2 +
- drivers/iio/accel/msa311.c                         | 2068 ++++++++++++++++=
-++++
- 6 files changed, 2156 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,=
-msa311.yaml
- create mode 100644 drivers/iio/accel/msa311.c
-
---=20
-2.9.5
