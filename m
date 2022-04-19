@@ -2,200 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D08C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E58C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352090AbiDSNNT (ORCPT
+        id S1349733AbiDSNNg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
+        Tue, 19 Apr 2022 09:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352135AbiDSNMk (ORCPT
+        with ESMTP id S1347234AbiDSNNc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:12:40 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2149463B6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:09:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650373797; x=1681909797;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=o20O9+6jXcWif5snFhuBg7R9/r5GeqAXVjS4hTtjZp4=;
-  b=R+zsFXqY3qg6ESBmUM/SDB8o96QnAaIptG/WazrCQHddMRZDRETlr5Zn
-   YLlwPSF8IRDCi4b+NFGFQQhqi5GjFIhHUpMhneLnIw8dIlNV7ib12O5HU
-   fRIUIy1I1qjDIThLDHoQUr32U/WM1mxqO6yIexsmOyHCnHcj/sfFZIgb4
-   zglNXc6guZ4ZKsTYjDU4Mqkn0e9HnwJS1huj6WuUVGY7naa82v7IYSlS3
-   V86VkQNHjahT+dRRkZUJ/WeyKTD1ePBwUsMxgtU+Me+JXrK12Lnzs61W7
-   27qFnhUjly1liG3qrGeVHCcimrJke9PdSWijr7KN+pw+YW1A68O2e/wMx
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="243692837"
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="243692837"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:09:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="529302235"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 19 Apr 2022 06:09:55 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngncA-0005om-NS;
-        Tue, 19 Apr 2022 13:09:54 +0000
-Date:   Tue, 19 Apr 2022 21:09:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:rcu/next] BUILD REGRESSION
- d6932dca19b1a7cbccad9d4acede8229e61cf97a
-Message-ID: <625eb46d.2vBpDJBHdzzQ5y4B%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 19 Apr 2022 09:13:32 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3492ED57
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:10:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=DmKV20mrS057BFjgATIFfZZcbYOc9ROzIdfK5243MKM=; b=mjrfG+wkWhTeI0dI2U3/RqSdqu
+        JoEaZ6bbl++VC4ETSUfRnKxCv6dr1hOw+XrwTv4Ait7LcnTbVcAEtrFWMRnh9yoRhKXY4frfOgGbb
+        WRNdWc0IHmp5CpK7GWAYLZbVXP/vtkU1UBtssh2G+cjh5mO1i6RnyjK8A83skYrT65Rhysx/LXvre
+        CUahQjroG2a0As//v7wBm/gJiP24DK5hQMeHT1FrRe7hbWNQSh1xrTHR30i0eFoZYgiF46/PMslHf
+        4VaCpC3D9WOKP5xaWO72w1gsnZ2ld22v3EacVlCoKir72iUhhezdGKMRAHBZjDpa8mBgcJVydYGV4
+        f/URuBWw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngncl-006pDV-GG; Tue, 19 Apr 2022 13:10:31 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3704A986195; Tue, 19 Apr 2022 15:10:29 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 15:10:29 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Andrew Cooper <amc96@srcf.net>
+Cc:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Subject: Re: [PATCH v2 06/25] x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+Message-ID: <20220419131029.GV2731@worktop.programming.kicks-ass.net>
+References: <cover.1650300597.git.jpoimboe@redhat.com>
+ <a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com>
+ <b94cbac6-0a4d-8e4a-ec58-bbd46e385d45@citrix.com>
+ <20220419115737.GU2731@worktop.programming.kicks-ass.net>
+ <8fbbd4ca-54b1-8c1c-19bc-3d0e6044ff5d@srcf.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8fbbd4ca-54b1-8c1c-19bc-3d0e6044ff5d@srcf.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
-branch HEAD: d6932dca19b1a7cbccad9d4acede8229e61cf97a  rcu/nocb: Add an option to offload all CPUs on boot
+On Tue, Apr 19, 2022 at 01:12:14PM +0100, Andrew Cooper wrote:
 
-Error/Warning: (recently discovered and may have been fixed)
+> > Subject: x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+> > From: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Date: Mon, 18 Apr 2022 09:50:25 -0700
+> >
+> > From: Josh Poimboeuf <jpoimboe@redhat.com>
+> >
+> > The startup_xen() kernel entry point is referenced by the ".note.Xen"
+> > section, and is the real entry point of the VM. It *will* be
+> > indirectly branched to, *however* currently Xen doesn't support PV VM
+> > with CET active.
+> 
+> Technically it's always IRET'd to, but the point is that it's never
+> "branched to" by the execution context of the VM.
+> 
+> So it would be better to say that it's never indirectly branched to. 
+> That's what the IBT checks care about.
 
-kernel/rcu/tree_nocb.h:1162:14: error: 'rcu_nocb_is_setup' undeclared (first use in this function); did you mean 'rcu_nocb_setup'?
+Right, so I was thinking the IRET could set the NEED_ENDBR bit, but
+yeah, that might be stretching the definition of an indirect-branch a
+wee bit.
 
-Error/Warning ids grouped by kconfigs:
+How about so then?
 
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- i386-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- ia64-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- ia64-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- mips-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- mips-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- riscv-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- riscv-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- sparc-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-`-- x86_64-allyesconfig
-    `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
+---
+Subject: x86/xen: Add ANNOTATE_NOENDBR to startup_xen()
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Date: Mon, 18 Apr 2022 09:50:25 -0700
 
-elapsed time: 911m
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-configs tested: 98
-configs skipped: 3
+The startup_xen() kernel entry point is referenced by the ".note.Xen"
+section, and is the real entry point of the VM. Control transfer is
+through IRET, which *could* set NEED_ENDBR, however Xen currently does
+no such thing.
 
-gcc tested configs:
-arm                              allyesconfig
-arm                                 defconfig
-arm                              allmodconfig
-arm64                               defconfig
-arm64                            allyesconfig
-powerpc                     pq2fads_defconfig
-powerpc                 mpc834x_mds_defconfig
-mips                       bmips_be_defconfig
-sh                          urquell_defconfig
-arm                  randconfig-c002-20220418
-i386                 randconfig-c001-20220418
-x86_64               randconfig-c001-20220418
-arm                  randconfig-c002-20220417
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-parisc64                            defconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a003-20220418
-x86_64               randconfig-a004-20220418
-x86_64               randconfig-a006-20220418
-x86_64               randconfig-a001-20220418
-x86_64               randconfig-a002-20220418
-x86_64               randconfig-a005-20220418
-arc                  randconfig-r043-20220419
-s390                 randconfig-r044-20220419
-arc                  randconfig-r043-20220418
-arc                  randconfig-r043-20220417
-riscv                randconfig-r042-20220417
-s390                 randconfig-r044-20220417
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                                  kexec
-x86_64                          rhel-8.3-func
-x86_64                               rhel-8.3
-x86_64                         rhel-8.3-kunit
+Add ANNOTATE_NOENDBR to silence future objtool warnings.
 
-clang tested configs:
-mips                   sb1250_swarm_defconfig
-powerpc               mpc834x_itxgp_defconfig
-mips                         tb0219_defconfig
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64               randconfig-a012-20220418
-x86_64               randconfig-a013-20220418
-x86_64               randconfig-a011-20220418
-x86_64               randconfig-a015-20220418
-x86_64               randconfig-a016-20220418
-x86_64               randconfig-a014-20220418
-i386                 randconfig-a011-20220418
-i386                 randconfig-a015-20220418
-i386                 randconfig-a016-20220418
-i386                 randconfig-a012-20220418
-i386                 randconfig-a013-20220418
-i386                 randconfig-a014-20220418
-hexagon              randconfig-r041-20220417
-hexagon              randconfig-r041-20220418
-hexagon              randconfig-r045-20220417
-hexagon              randconfig-r045-20220418
-riscv                randconfig-r042-20220418
-s390                 randconfig-r044-20220418
+Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Andrew Cooper <andrew.cooper3@citrix.com>
+Link: https://lkml.kernel.org/r/a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
