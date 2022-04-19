@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E66BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3749DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353396AbiDSOcA (ORCPT
+        id S1352203AbiDSOcF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        Tue, 19 Apr 2022 10:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353325AbiDSObq (ORCPT
+        with ESMTP id S1353329AbiDSObr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:31:46 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7630DE0CF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:03 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 14:29:01 -0000
+        Tue, 19 Apr 2022 10:31:47 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262B0E0CF
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:05 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 14:29:02 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650378542;
+        s=2020; t=1650378543;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dwTssSRZcN+l5J78amCyw5v7vRsMj/YExcd2H+0PI1I=;
-        b=OQTBPLdDhgFI/j8jtPz1A6UTaTyFMKo/sULD03fbFEuPkQf1q2393uTcT63UdjOuDkFqYD
-        51PmjbMPtv8yTaH4qwJB2u/oc5HWLAVESxYNKLbxot/excrvJyee0MlldsOrmjM+W99REg
-        Em9qu3Nrsf/JjViUu0lTQGH5dsYX1bIj/NTZ5+EnRlDcelY/u8Ivuxz6rhcYisEVygRB6I
-        XWF5uCcrwjzbbf6z0KQ/DDfoOJI25jw9JOsm375PN1ROl56zUbDfvYcciVXkZWJ9XPy/Kb
-        lUDduzinNXVby5ITZe/8/Pi0DvyBd9XyBUMDZ737DaxhePM4NVRkhXnfcRgaoA==
+        bh=igW7fwpJSydengzg/bbNTtjpK/uBGIdAR0sNedCbFJU=;
+        b=A+kS3lrMHVmBYEAhhQ4fCzwdrCWmAbThvFkCZu3zXLdUc9cKeQU96rY9Fdig0uWxK3Zx+j
+        X5uXickU5iljS+Q/gtojz37RQdIC9h2s5DKXxWkiKBhhSHACnLR2M1DqB0OmNINFdxBy4X
+        JM4unx39JEjMAttwkDAf2gsUZBGqdg+Fmbj+vaTMXd5mUoV6PLa7a89NtdjPN/tvDKg/yZ
+        FyExpT/MKVv0G9HUJKV/jBbwd5I4keRU4U1r5oOFXZJpRqgaPYr64ulEBZxQE3QtvLf0Cn
+        X7se8yDTDZUOAsKOa1KUAHpo0siwveLf4Omo6ofZEOiCWF7/nhWznWsFsOY1sw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650378542;
+        s=2020e; t=1650378543;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dwTssSRZcN+l5J78amCyw5v7vRsMj/YExcd2H+0PI1I=;
-        b=qz08UOWTgfBdgtFvpG2n6SsruC67FhqzjfCbcaUSNPIS6KX4IAnB+nZfmcG4je9KHY4QiO
-        LMspPyH8zmfDQ6CA==
+        bh=igW7fwpJSydengzg/bbNTtjpK/uBGIdAR0sNedCbFJU=;
+        b=eANlbdRH/qBcaZW5wL72hFhgE43Toz63oyfnU8m1DtTIAcKVhbd2JstuB6mzVjRahE0w8e
+        kICYr3xa67d6OPAQ==
 From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] pinctrl: msmgpio: Make the irqchip immutable
-Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220419141846.598305-8-maz@kernel.org>
-References: <20220419141846.598305-8-maz@kernel.org>
+Subject: [irqchip: irq/irqchip-next] gpio: pl061: Make the irqchip immutable
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>, Marc Zyngier <maz@kernel.org>,
+        tglx@linutronix.de
+In-Reply-To: <20220419141846.598305-6-maz@kernel.org>
+References: <20220419141846.598305-6-maz@kernel.org>
 MIME-Version: 1.0
-Message-ID: <165037854102.4207.4717736702206993862.tip-bot2@tip-bot2>
+Message-ID: <165037854272.4207.3990053802403615021.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -60,142 +61,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     14dbe186b9d42cbf662eae5a4da14687edbf0edb
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/14dbe186b9d42cbf662eae5a4da14687edbf0edb
+Commit-ID:     15d8c14ac849f41f2d41dbddb69f402aaf73ff8b
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/15d8c14ac849f41f2d41dbddb69f402aaf73ff8b
 Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Tue, 19 Apr 2022 15:18:43 +01:00
+AuthorDate:    Tue, 19 Apr 2022 15:18:41 +01:00
 Committer:     Marc Zyngier <maz@kernel.org>
 CommitterDate: Tue, 19 Apr 2022 15:22:26 +01:00
 
-pinctrl: msmgpio: Make the irqchip immutable
+gpio: pl061: Make the irqchip immutable
 
 Prevent gpiolib from messing with the irqchip by advertising
 the irq_chip structure as immutable, making it const, and adding
 the various calls that gpiolib relies upon.
 
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220419141846.598305-8-maz@kernel.org
+Link: https://lore.kernel.org/r/20220419141846.598305-6-maz@kernel.org
 ---
- drivers/pinctrl/qcom/pinctrl-msm.c | 53 ++++++++++++++++++-----------
- 1 file changed, 33 insertions(+), 20 deletions(-)
+ drivers/gpio/gpio-pl061.c | 32 +++++++++++++++++++++++---------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-index 966ea66..a2abfe9 100644
---- a/drivers/pinctrl/qcom/pinctrl-msm.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-@@ -42,7 +42,6 @@
-  * @chip:           gpiochip handle.
-  * @desc:           pin controller descriptor
-  * @restart_nb:     restart notifier block.
-- * @irq_chip:       irq chip information
-  * @irq:            parent irq for the TLMM irq_chip.
-  * @intr_target_use_scm: route irq to application cpu using scm calls
-  * @lock:           Spinlock to protect register resources as well
-@@ -63,7 +62,6 @@ struct msm_pinctrl {
- 	struct pinctrl_desc desc;
- 	struct notifier_block restart_nb;
+diff --git a/drivers/gpio/gpio-pl061.c b/drivers/gpio/gpio-pl061.c
+index 4ecab70..6464056 100644
+--- a/drivers/gpio/gpio-pl061.c
++++ b/drivers/gpio/gpio-pl061.c
+@@ -52,7 +52,6 @@ struct pl061 {
  
--	struct irq_chip irq_chip;
- 	int irq;
+ 	void __iomem		*base;
+ 	struct gpio_chip	gc;
+-	struct irq_chip		irq_chip;
+ 	int			parent_irq;
  
- 	bool intr_target_use_scm;
-@@ -868,6 +866,8 @@ static void msm_gpio_irq_enable(struct irq_data *d)
- 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
- 	struct msm_pinctrl *pctrl = gpiochip_get_data(gc);
- 
-+	gpiochip_enable_irq(gc, d->hwirq);
-+
- 	if (d->parent_data)
- 		irq_chip_enable_parent(d);
- 
-@@ -885,6 +885,8 @@ static void msm_gpio_irq_disable(struct irq_data *d)
- 
- 	if (!test_bit(d->hwirq, pctrl->skip_wake_irqs))
- 		msm_gpio_irq_mask(d);
+ #ifdef CONFIG_PM
+@@ -241,6 +240,8 @@ static void pl061_irq_mask(struct irq_data *d)
+ 	gpioie = readb(pl061->base + GPIOIE) & ~mask;
+ 	writeb(gpioie, pl061->base + GPIOIE);
+ 	raw_spin_unlock(&pl061->lock);
 +
 +	gpiochip_disable_irq(gc, d->hwirq);
  }
  
- /**
-@@ -958,6 +960,14 @@ static void msm_gpio_irq_ack(struct irq_data *d)
- 	raw_spin_unlock_irqrestore(&pctrl->lock, flags);
+ static void pl061_irq_unmask(struct irq_data *d)
+@@ -250,6 +251,8 @@ static void pl061_irq_unmask(struct irq_data *d)
+ 	u8 mask = BIT(irqd_to_hwirq(d) % PL061_GPIO_NR);
+ 	u8 gpioie;
+ 
++	gpiochip_enable_irq(gc, d->hwirq);
++
+ 	raw_spin_lock(&pl061->lock);
+ 	gpioie = readb(pl061->base + GPIOIE) | mask;
+ 	writeb(gpioie, pl061->base + GPIOIE);
+@@ -283,6 +286,24 @@ static int pl061_irq_set_wake(struct irq_data *d, unsigned int state)
+ 	return irq_set_irq_wake(pl061->parent_irq, state);
  }
  
-+static void msm_gpio_irq_eoi(struct irq_data *d)
++static void pl061_irq_print_chip(struct irq_data *data, struct seq_file *p)
 +{
-+	d = d->parent_data;
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
 +
-+	if (d)
-+		d->chip->irq_eoi(d);
++	seq_printf(p, dev_name(gc->parent));
 +}
 +
- static bool msm_gpio_needs_dual_edge_parent_workaround(struct irq_data *d,
- 						       unsigned int type)
- {
-@@ -1255,6 +1265,26 @@ static bool msm_gpio_needs_valid_mask(struct msm_pinctrl *pctrl)
- 	return device_property_count_u16(pctrl->dev, "gpios") > 0;
- }
- 
-+static const struct irq_chip msm_gpio_irq_chip = {
-+	.name			= "msmgpio",
-+	.irq_enable		= msm_gpio_irq_enable,
-+	.irq_disable		= msm_gpio_irq_disable,
-+	.irq_mask		= msm_gpio_irq_mask,
-+	.irq_unmask		= msm_gpio_irq_unmask,
-+	.irq_ack		= msm_gpio_irq_ack,
-+	.irq_eoi		= msm_gpio_irq_eoi,
-+	.irq_set_type		= msm_gpio_irq_set_type,
-+	.irq_set_wake		= msm_gpio_irq_set_wake,
-+	.irq_request_resources	= msm_gpio_irq_reqres,
-+	.irq_release_resources	= msm_gpio_irq_relres,
-+	.irq_set_affinity	= msm_gpio_irq_set_affinity,
-+	.irq_set_vcpu_affinity	= msm_gpio_irq_set_vcpu_affinity,
-+	.flags			= (IRQCHIP_MASK_ON_SUSPEND |
-+				   IRQCHIP_SET_TYPE_MASKED |
-+				   IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND |
-+				   IRQCHIP_IMMUTABLE),
++static const struct irq_chip pl061_irq_chip = {
++	.irq_ack		= pl061_irq_ack,
++	.irq_mask		= pl061_irq_mask,
++	.irq_unmask		= pl061_irq_unmask,
++	.irq_set_type		= pl061_irq_type,
++	.irq_set_wake		= pl061_irq_set_wake,
++	.irq_print_chip		= pl061_irq_print_chip,
++	.flags			= IRQCHIP_IMMUTABLE,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 +};
 +
- static int msm_gpio_init(struct msm_pinctrl *pctrl)
+ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
  {
- 	struct gpio_chip *chip;
-@@ -1276,22 +1306,6 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
- 	if (msm_gpio_needs_valid_mask(pctrl))
- 		chip->init_valid_mask = msm_gpio_init_valid_mask;
- 
--	pctrl->irq_chip.name = "msmgpio";
--	pctrl->irq_chip.irq_enable = msm_gpio_irq_enable;
--	pctrl->irq_chip.irq_disable = msm_gpio_irq_disable;
--	pctrl->irq_chip.irq_mask = msm_gpio_irq_mask;
--	pctrl->irq_chip.irq_unmask = msm_gpio_irq_unmask;
--	pctrl->irq_chip.irq_ack = msm_gpio_irq_ack;
--	pctrl->irq_chip.irq_set_type = msm_gpio_irq_set_type;
--	pctrl->irq_chip.irq_set_wake = msm_gpio_irq_set_wake;
--	pctrl->irq_chip.irq_request_resources = msm_gpio_irq_reqres;
--	pctrl->irq_chip.irq_release_resources = msm_gpio_irq_relres;
--	pctrl->irq_chip.irq_set_affinity = msm_gpio_irq_set_affinity;
--	pctrl->irq_chip.irq_set_vcpu_affinity = msm_gpio_irq_set_vcpu_affinity;
--	pctrl->irq_chip.flags = IRQCHIP_MASK_ON_SUSPEND |
--				IRQCHIP_SET_TYPE_MASKED |
--				IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND;
+ 	struct device *dev = &adev->dev;
+@@ -315,13 +336,6 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
+ 	/*
+ 	 * irq_chip support
+ 	 */
+-	pl061->irq_chip.name = dev_name(dev);
+-	pl061->irq_chip.irq_ack	= pl061_irq_ack;
+-	pl061->irq_chip.irq_mask = pl061_irq_mask;
+-	pl061->irq_chip.irq_unmask = pl061_irq_unmask;
+-	pl061->irq_chip.irq_set_type = pl061_irq_type;
+-	pl061->irq_chip.irq_set_wake = pl061_irq_set_wake;
 -
- 	np = of_parse_phandle(pctrl->dev->of_node, "wakeup-parent", 0);
- 	if (np) {
- 		chip->irq.parent_domain = irq_find_matching_host(np,
-@@ -1300,7 +1314,6 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
- 		if (!chip->irq.parent_domain)
- 			return -EPROBE_DEFER;
- 		chip->irq.child_to_parent_hwirq = msm_gpio_wakeirq;
--		pctrl->irq_chip.irq_eoi = irq_chip_eoi_parent;
- 		/*
- 		 * Let's skip handling the GPIOs, if the parent irqchip
- 		 * is handling the direct connect IRQ of the GPIO.
-@@ -1313,7 +1326,7 @@ static int msm_gpio_init(struct msm_pinctrl *pctrl)
- 	}
+ 	writeb(0, pl061->base + GPIOIE); /* disable irqs */
+ 	irq = adev->irq[0];
+ 	if (!irq)
+@@ -329,7 +343,7 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
+ 	pl061->parent_irq = irq;
  
- 	girq = &chip->irq;
--	girq->chip = &pctrl->irq_chip;
-+	gpio_irq_chip_set_chip(girq, &msm_gpio_irq_chip);
- 	girq->parent_handler = msm_gpio_irq_handler;
- 	girq->fwnode = pctrl->dev->fwnode;
+ 	girq = &pl061->gc.irq;
+-	girq->chip = &pl061->irq_chip;
++	gpio_irq_chip_set_chip(girq, &pl061_irq_chip);
+ 	girq->parent_handler = pl061_irq_handler;
  	girq->num_parents = 1;
+ 	girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
