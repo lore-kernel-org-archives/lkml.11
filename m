@@ -2,158 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE18C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6906EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351180AbiDSLXa (ORCPT
+        id S1348317AbiDSLXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48082 "EHLO
+        Tue, 19 Apr 2022 07:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351054AbiDSLWz (ORCPT
+        with ESMTP id S242198AbiDSLXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:22:55 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0660B344D3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:19:43 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0B4972223A;
-        Tue, 19 Apr 2022 13:19:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1650367182;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zlmjPkUMYoXM1brnmw5UZyknS4jpSubyz4QQX5Xc3BM=;
-        b=H7ALRsy44i6Sq0O2AwH2yQr/24FOFje6dM/9XAvhEvwc7s5bwLty0+RTm+Hfo8GtBuL5YO
-        fbDgvfTWsYG7586d3RXnYN6z+7OVZXOGnb5cD/j3nV+Z9CRkF2p5ljUkVxAzV+1rax0WNd
-        J92Oz9sBaS9mKRrixDoQUL923IG7Exc=
+        Tue, 19 Apr 2022 07:23:47 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CFAC2657
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:21:05 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KjLpt61nYzCr6X;
+        Tue, 19 Apr 2022 19:16:38 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Apr 2022 19:21:02 +0800
+Subject: Re: [PATCH v2] mm/swapfile: unuse_pte can map random data if swap
+ read fails
+To:     David Hildenbrand <david@redhat.com>, <akpm@linux-foundation.org>
+CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
+        <neilb@suse.de>, <apopple@nvidia.com>, <surenb@google.com>,
+        <minchan@kernel.org>, <peterx@redhat.com>, <sfr@canb.auug.org.au>,
+        <rcampbell@nvidia.com>, <naoya.horiguchi@nec.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220416030549.60559-1-linmiaohe@huawei.com>
+ <b57fea1e-5c9b-f47e-f565-16b54f1e8782@redhat.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <1b614ac3-02c0-ec66-b51a-e9b7e1a375ad@huawei.com>
+Date:   Tue, 19 Apr 2022 19:21:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <b57fea1e-5c9b-f47e-f565-16b54f1e8782@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 19 Apr 2022 13:19:41 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
-        Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
-Subject: Re: [PATCH v3 6/9] mtd: spi-nor: core: Add helpers to read/write any
- register
-In-Reply-To: <20220411091033.98754-7-tudor.ambarus@microchip.com>
-References: <20220411091033.98754-1-tudor.ambarus@microchip.com>
- <20220411091033.98754-7-tudor.ambarus@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <0e4ec58c21490dcd9cf82ab89bd8c34c@walle.cc>
-X-Sender: michael@walle.cc
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-11 11:10, schrieb Tudor Ambarus:
-> There are manufacturers that use registers indexed by address. Some of
-> them support "read/write any register" opcodes. Provide core methods 
-> that
-> can be used by all manufacturers. SPI NOR controller ops are 
-> intentionally
-> not supported as we intend to move all the SPI NOR controller drivers
-> under the SPI subsystem.
+On 2022/4/19 15:37, David Hildenbrand wrote:
+> On 16.04.22 05:05, Miaohe Lin wrote:
+>> There is a bug in unuse_pte(): when swap page happens to be unreadable,
+>> page filled with random data is mapped into user address space. In case
+>> of error, a special swap entry indicating swap read fails is set to the
+>> page table. So the swapcache page can be freed and the user won't end up
+>> with a permanently mounted swap because a sector is bad. And if the page
+>> is accessed later, the user process will be killed so that corrupted data
+>> is never consumed. On the other hand, if the page is never accessed, the
+>> user won't even notice it.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>> v2:
+>>   use special swap entry to avoid permanently mounted swap
+>>   free the bad page in swapcache
+>> ---
+>>  include/linux/swap.h    |  7 ++++++-
+>>  include/linux/swapops.h | 10 ++++++++++
+>>  mm/memory.c             |  5 ++++-
+>>  mm/swapfile.c           | 11 +++++++++++
+>>  4 files changed, 31 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/swap.h b/include/linux/swap.h
+>> index d112434f85df..03c576111737 100644
+>> --- a/include/linux/swap.h
+>> +++ b/include/linux/swap.h
+>> @@ -55,6 +55,10 @@ static inline int current_is_kswapd(void)
+>>   * actions on faults.
+>>   */
+>>  
+>> +#define SWAP_READ_ERROR_NUM 1
+>> +#define SWAP_READ_ERROR     (MAX_SWAPFILES + SWP_HWPOISON_NUM + \
+>> +			     SWP_MIGRATION_NUM + SWP_DEVICE_NUM + \
+>> +			     SWP_PTE_MARKER_NUM)
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> Tested-by: Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
-> Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+> Does anything speak against reusing the hwpoison marker? At least from a
+> program POV it's similar "the previously well defined content at this
+> user space address is no longer readable/writable".
 
-I still don't like it because the function doesn't do
-anything what the function name might suggest. The read
-just executes an op, the write executes an op with a
-write enable before. All the behavior is determined by the
-'op' argument.
+Looks like a good idea. :)
 
-Anyway,
-Reviewed-by: Michael Walle <michael@walle.cc>
+> 
+> I recall that we can just set the pfn to 0 for the hwpoison marker.
+> 
+> There is e.g., check_hwpoisoned_entry() and it just stops if it finds
+> "pfn=0".
 
-> ---
-> v3: no changes
-> 
->  drivers/mtd/spi-nor/core.c | 41 ++++++++++++++++++++++++++++++++++++++
->  drivers/mtd/spi-nor/core.h |  4 ++++
->  2 files changed, 45 insertions(+)
-> 
-> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> index 6165dc7bfd17..42794328d3b6 100644
-> --- a/drivers/mtd/spi-nor/core.c
-> +++ b/drivers/mtd/spi-nor/core.c
-> @@ -307,6 +307,47 @@ ssize_t spi_nor_write_data(struct spi_nor *nor,
-> loff_t to, size_t len,
->  	return nor->controller_ops->write(nor, to, len, buf);
->  }
-> 
-> +/**
-> + * spi_nor_read_reg() - read register to flash memory
-> + * @nor:        pointer to 'struct spi_nor'.
-> + * @op:		SPI memory operation. op->data.buf must be DMA-able.
-> + * @proto:	SPI protocol to use for the register operation.
-> + *
-> + * Return: zero on success, -errno otherwise
-> + */
-> +int spi_nor_read_reg(struct spi_nor *nor, struct spi_mem_op *op,
-> +		     enum spi_nor_protocol proto)
-> +{
-> +	if (!nor->spimem)
-> +		return -EOPNOTSUPP;
-> +
-> +	spi_nor_spimem_setup_op(nor, op, proto);
-> +	return spi_nor_spimem_exec_op(nor, op);
-> +}
-> +
-> +/**
-> + * spi_nor_write_reg() - write register to flash memory
-> + * @nor:        pointer to 'struct spi_nor'
-> + * @op:		SPI memory operation. op->data.buf must be DMA-able.
-> + * @proto:	SPI protocol to use for the register operation.
-> + *
-> + * Return: zero on success, -errno otherwise
-> + */
-> +int spi_nor_write_reg(struct spi_nor *nor, struct spi_mem_op *op,
-> +		      enum spi_nor_protocol proto)
-> +{
-> +	int ret;
-> +
-> +	if (!nor->spimem)
-> +		return -EOPNOTSUPP;
-> +
-> +	ret = spi_nor_write_enable(nor);
-> +	if (ret)
-> +		return ret;
-> +	spi_nor_spimem_setup_op(nor, op, proto);
-> +	return spi_nor_spimem_exec_op(nor, op);
-> +}
-> +
->  /**
->   * spi_nor_write_enable() - Set write enable latch with Write Enable 
-> command.
->   * @nor:	pointer to 'struct spi_nor'.
-> diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-> index f952061d5c24..7c704475946d 100644
-> --- a/drivers/mtd/spi-nor/core.h
-> +++ b/drivers/mtd/spi-nor/core.h
-> @@ -554,6 +554,10 @@ ssize_t spi_nor_read_data(struct spi_nor *nor,
-> loff_t from, size_t len,
->  			  u8 *buf);
->  ssize_t spi_nor_write_data(struct spi_nor *nor, loff_t to, size_t len,
->  			   const u8 *buf);
-> +int spi_nor_read_reg(struct spi_nor *nor, struct spi_mem_op *op,
-> +		     enum spi_nor_protocol proto);
-> +int spi_nor_write_reg(struct spi_nor *nor, struct spi_mem_op *op,
-> +		      enum spi_nor_protocol proto);
->  int spi_nor_erase_sector(struct spi_nor *nor, u32 addr);
-> 
->  int spi_nor_otp_read_secr(struct spi_nor *nor, loff_t addr, size_t
-> len, u8 *buf);
+Do you mean that we should set the pfn to 0 for the hwpoison marker so that we can
+distinguish swapin error case from real hwpoison case?
 
--- 
--michael
+> 
+> 
+
+Will try to do this in next version. Thanks a lot!
