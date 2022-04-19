@@ -2,171 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348165AbiDSQua (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
+        id S245392AbiDSQug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 12:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237032AbiDSQq7 (ORCPT
+        with ESMTP id S1354892AbiDSQpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:46:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C8A3AA45;
-        Tue, 19 Apr 2022 09:44:15 -0700 (PDT)
+        Tue, 19 Apr 2022 12:45:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDB23A5D6;
+        Tue, 19 Apr 2022 09:43:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46443B81BFC;
-        Tue, 19 Apr 2022 16:44:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82BFDC385AB;
-        Tue, 19 Apr 2022 16:44:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E04826187A;
+        Tue, 19 Apr 2022 16:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03625C385A7;
+        Tue, 19 Apr 2022 16:43:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386653;
-        bh=HlZzHRRiIXxiYIb7unE9D9JRkVehcUg4A5ffaHMyoGE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dc8zCW3dJAEjPQAJs+LwmynTREYE96xW0kZPfKMMmVcY1AOJIvJ3q/ycpzIiXNKjm
-         9f4pPxSH3rR3YW21RwsvhYYXROgol4QFAbX2s9sRKtt3nsC07FFLGCAABuo/IPrHSc
-         reW7SzLtZLTysbKnIL1gaujuzqWhXqRx37R1IunGzqpsAKyxRWvJ1ZJ+y9OUbDXUCX
-         wivEJxceHwey1Hkz2QfMkxUIgRV8Ar9J98wiQZej2EcVGc+1neAwYYG2rOPiTaZxok
-         PqybMH7WvbH2zSHsDGgX66JJ7x2fpLWqFWnJVfgs2S+CChR6LoREWoBW7xZ1QqJziL
-         +mGW/aP06F8ZA==
-Date:   Tue, 19 Apr 2022 17:44:07 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Subject: Re: [PATCH V10 7/9] regulator: Add a regulator driver for the PM8008
- PMIC
-Message-ID: <Yl7m1z4rriMBkeFJ@sirena.org.uk>
-References: <1649939418-19861-1-git-send-email-quic_c_skakit@quicinc.com>
- <1649939418-19861-8-git-send-email-quic_c_skakit@quicinc.com>
- <CAE-0n533obTi995x_rJG_ihUUquF3MQLJt6VMf7=oxyzMUL5DQ@mail.gmail.com>
- <Yl7Nb0mNjt7kV3uV@sirena.org.uk>
- <CAE-0n53zWdrT7S6MKM_aktnj=AwjUKH0XKySwSkfkX8vTv2w9w@mail.gmail.com>
+        s=k20201202; t=1650386590;
+        bh=WEWND/5nN7JVYVsbs3tEqP+TiJtxEvfNmON5NFDr+Wk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uHGRodE/EXFdM5gCt1FI3C9AngGezCvw/LOdpW6FmOvThrp8Nzbk1OoCIgyZAnm4P
+         DV5ooWF+W6FHjQGEJZ8S2bpy0eBIWTMD7QY0jkXk8TtWxIv5xS+tI4gG/Z7OiSqgQb
+         75ZH7V/j5MWfmRA58vS4sk78r9kN9Y3wE+gjDnMBUfklqn2gJiyhmALPPpUESHnDZa
+         kDcxpEil9qeMCFqZJP3I8lSJYj+AxO3e0UYrmycY42VGAI9lAHBkYeFjrFE3ryVbLi
+         Q56ChwU9KjlooXzQ3qp7gKQ6ovYlXwYOxpFEz4bGRzaq1mEizTbhBsg2hJRhmro6Sq
+         bbav6vLtqM/Bg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Philipp Zabel <philipp.zabel@gmail.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Paul Parsons <lost.distance@yahoo.com>,
+        Tomas Cech <sleep_walker@suse.com>,
+        Sergey Lapin <slapin@ossfans.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
+        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH 33/48] ASoC: pxa: i2s: use normal MMIO accessors
+Date:   Tue, 19 Apr 2022 18:37:55 +0200
+Message-Id: <20220419163810.2118169-34-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
+References: <20220419163810.2118169-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="V9rR58ILWLSg9Vro"
-Content-Disposition: inline
-In-Reply-To: <CAE-0n53zWdrT7S6MKM_aktnj=AwjUKH0XKySwSkfkX8vTv2w9w@mail.gmail.com>
-X-Cookie: That's what she said.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Arnd Bergmann <arnd@arndb.de>
 
---V9rR58ILWLSg9Vro
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+To avoid dereferencing hardwired constant pointers from a global header
+file, change the driver to use devm_platform_ioremap_resource for getting
+an __iomem pointer, and then using readl/writel on that.
 
-On Tue, Apr 19, 2022 at 08:45:47AM -0700, Stephen Boyd wrote:
-> Quoting Mark Brown (2022-04-19 07:55:43)
+Each pointer dereference gets changed by a search&replace, which leads
+to a few overlong lines, but seems less risky than trying to clean up
+the code at the same time.
 
-> > > > +static struct platform_driver pm8008_regulator_driver =3D {
-> > > > +       .driver =3D {
-> > > > +               .name           =3D "qcom-pm8008-regulator",
+Acked-by: Mark Brown <broonie@kernel.org>
+Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Cc: alsa-devel@alsa-project.org
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ sound/soc/pxa/pxa2xx-i2s.c | 110 +++++++++++++++++++++----------------
+ 1 file changed, 62 insertions(+), 48 deletions(-)
 
-> > > I'd prefer to use an of_device_id table here. That would let us popul=
-ate
-> > > a "qcom,pm8008-regulators" node that had the ldo nodes as children and
-> > > avoid mfd cells.
+diff --git a/sound/soc/pxa/pxa2xx-i2s.c b/sound/soc/pxa/pxa2xx-i2s.c
+index 5164c60ba89f..746e6ec9198b 100644
+--- a/sound/soc/pxa/pxa2xx-i2s.c
++++ b/sound/soc/pxa/pxa2xx-i2s.c
+@@ -21,7 +21,6 @@
+ #include <sound/pxa2xx-lib.h>
+ #include <sound/dmaengine_pcm.h>
+ 
+-#include <mach/pxa-regs.h>
+ #include <linux/platform_data/asoc-pxa.h>
+ 
+ #include "pxa2xx-i2s.h"
+@@ -29,13 +28,13 @@
+ /*
+  * I2S Controller Register and Bit Definitions
+  */
+-#define SACR0		__REG(0x40400000)  /* Global Control Register */
+-#define SACR1		__REG(0x40400004)  /* Serial Audio I 2 S/MSB-Justified Control Register */
+-#define SASR0		__REG(0x4040000C)  /* Serial Audio I 2 S/MSB-Justified Interface and FIFO Status Register */
+-#define SAIMR		__REG(0x40400014)  /* Serial Audio Interrupt Mask Register */
+-#define SAICR		__REG(0x40400018)  /* Serial Audio Interrupt Clear Register */
+-#define SADIV		__REG(0x40400060)  /* Audio Clock Divider Register. */
+-#define SADR		__REG(0x40400080)  /* Serial Audio Data Register (TX and RX FIFO access Register). */
++#define SACR0		(0x0000)	/* Global Control Register */
++#define SACR1		(0x0004)	/* Serial Audio I 2 S/MSB-Justified Control Register */
++#define SASR0		(0x000C)	/* Serial Audio I 2 S/MSB-Justified Interface and FIFO Status Register */
++#define SAIMR		(0x0014)	/* Serial Audio Interrupt Mask Register */
++#define SAICR		(0x0018)	/* Serial Audio Interrupt Clear Register */
++#define SADIV		(0x0060)	/* Audio Clock Divider Register. */
++#define SADR		(0x0080)	/* Serial Audio Data Register (TX and RX FIFO access Register). */
+ 
+ #define SACR0_RFTH(x)	((x) << 12)	/* Rx FIFO Interrupt or DMA Trigger Threshold */
+ #define SACR0_TFTH(x)	((x) << 8)	/* Tx FIFO Interrupt or DMA Trigger Threshold */
+@@ -77,16 +76,15 @@ struct pxa_i2s_port {
+ static struct pxa_i2s_port pxa_i2s;
+ static struct clk *clk_i2s;
+ static int clk_ena = 0;
++static void __iomem *i2s_reg_base;
+ 
+ static struct snd_dmaengine_dai_dma_data pxa2xx_i2s_pcm_stereo_out = {
+-	.addr		= __PREG(SADR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+ 	.chan_name	= "tx",
+ 	.maxburst	= 32,
+ };
+ 
+ static struct snd_dmaengine_dai_dma_data pxa2xx_i2s_pcm_stereo_in = {
+-	.addr		= __PREG(SADR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+ 	.chan_name	= "rx",
+ 	.maxburst	= 32,
+@@ -102,7 +100,7 @@ static int pxa2xx_i2s_startup(struct snd_pcm_substream *substream,
+ 		return PTR_ERR(clk_i2s);
+ 
+ 	if (!snd_soc_dai_active(cpu_dai))
+-		SACR0 = 0;
++		writel(0, i2s_reg_base + SACR0);
+ 
+ 	return 0;
+ }
+@@ -114,7 +112,7 @@ static int pxa_i2s_wait(void)
+ 
+ 	/* flush the Rx FIFO */
+ 	for (i = 0; i < 16; i++)
+-		SADR;
++		readl(i2s_reg_base + SADR);
+ 	return 0;
+ }
+ 
+@@ -174,39 +172,39 @@ static int pxa2xx_i2s_hw_params(struct snd_pcm_substream *substream,
+ 
+ 	/* is port used by another stream */
+ 	if (!(SACR0 & SACR0_ENB)) {
+-		SACR0 = 0;
++		writel(0, i2s_reg_base + SACR0);
+ 		if (pxa_i2s.master)
+-			SACR0 |= SACR0_BCKD;
++			writel(readl(i2s_reg_base + SACR0) | (SACR0_BCKD), i2s_reg_base + SACR0);
+ 
+-		SACR0 |= SACR0_RFTH(14) | SACR0_TFTH(1);
+-		SACR1 |= pxa_i2s.fmt;
++		writel(readl(i2s_reg_base + SACR0) | (SACR0_RFTH(14) | SACR0_TFTH(1)), i2s_reg_base + SACR0);
++		writel(readl(i2s_reg_base + SACR1) | (pxa_i2s.fmt), i2s_reg_base + SACR1);
+ 	}
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-		SAIMR |= SAIMR_TFS;
++		writel(readl(i2s_reg_base + SAIMR) | (SAIMR_TFS), i2s_reg_base + SAIMR);
+ 	else
+-		SAIMR |= SAIMR_RFS;
++		writel(readl(i2s_reg_base + SAIMR) | (SAIMR_RFS), i2s_reg_base + SAIMR);
+ 
+ 	switch (params_rate(params)) {
+ 	case 8000:
+-		SADIV = 0x48;
++		writel(0x48, i2s_reg_base + SADIV);
+ 		break;
+ 	case 11025:
+-		SADIV = 0x34;
++		writel(0x34, i2s_reg_base + SADIV);
+ 		break;
+ 	case 16000:
+-		SADIV = 0x24;
++		writel(0x24, i2s_reg_base + SADIV);
+ 		break;
+ 	case 22050:
+-		SADIV = 0x1a;
++		writel(0x1a, i2s_reg_base + SADIV);
+ 		break;
+ 	case 44100:
+-		SADIV = 0xd;
++		writel(0xd, i2s_reg_base + SADIV);
+ 		break;
+ 	case 48000:
+-		SADIV = 0xc;
++		writel(0xc, i2s_reg_base + SADIV);
+ 		break;
+ 	case 96000: /* not in manual and possibly slightly inaccurate */
+-		SADIV = 0x6;
++		writel(0x6, i2s_reg_base + SADIV);
+ 		break;
+ 	}
+ 
+@@ -221,10 +219,10 @@ static int pxa2xx_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
+ 	switch (cmd) {
+ 	case SNDRV_PCM_TRIGGER_START:
+ 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+-			SACR1 &= ~SACR1_DRPL;
++			writel(readl(i2s_reg_base + SACR1) & (~SACR1_DRPL), i2s_reg_base + SACR1);
+ 		else
+-			SACR1 &= ~SACR1_DREC;
+-		SACR0 |= SACR0_ENB;
++			writel(readl(i2s_reg_base + SACR1) & (~SACR1_DREC), i2s_reg_base + SACR1);
++		writel(readl(i2s_reg_base + SACR0) | (SACR0_ENB), i2s_reg_base + SACR0);
+ 		break;
+ 	case SNDRV_PCM_TRIGGER_RESUME:
+ 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+@@ -243,15 +241,15 @@ static void pxa2xx_i2s_shutdown(struct snd_pcm_substream *substream,
+ 				struct snd_soc_dai *dai)
+ {
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		SACR1 |= SACR1_DRPL;
+-		SAIMR &= ~SAIMR_TFS;
++		writel(readl(i2s_reg_base + SACR1) | (SACR1_DRPL), i2s_reg_base + SACR1);
++		writel(readl(i2s_reg_base + SAIMR) & (~SAIMR_TFS), i2s_reg_base + SAIMR);
+ 	} else {
+-		SACR1 |= SACR1_DREC;
+-		SAIMR &= ~SAIMR_RFS;
++		writel(readl(i2s_reg_base + SACR1) | (SACR1_DREC), i2s_reg_base + SACR1);
++		writel(readl(i2s_reg_base + SAIMR) & (~SAIMR_RFS), i2s_reg_base + SAIMR);
+ 	}
+ 
+-	if ((SACR1 & (SACR1_DREC | SACR1_DRPL)) == (SACR1_DREC | SACR1_DRPL)) {
+-		SACR0 &= ~SACR0_ENB;
++	if ((readl(i2s_reg_base + SACR1) & (SACR1_DREC | SACR1_DRPL)) == (SACR1_DREC | SACR1_DRPL)) {
++		writel(readl(i2s_reg_base + SACR0) & (~SACR0_ENB), i2s_reg_base + SACR0);
+ 		pxa_i2s_wait();
+ 		if (clk_ena) {
+ 			clk_disable_unprepare(clk_i2s);
+@@ -264,13 +262,13 @@ static void pxa2xx_i2s_shutdown(struct snd_pcm_substream *substream,
+ static int pxa2xx_soc_pcm_suspend(struct snd_soc_component *component)
+ {
+ 	/* store registers */
+-	pxa_i2s.sacr0 = SACR0;
+-	pxa_i2s.sacr1 = SACR1;
+-	pxa_i2s.saimr = SAIMR;
+-	pxa_i2s.sadiv = SADIV;
++	pxa_i2s.sacr0 = readl(i2s_reg_base + SACR0);
++	pxa_i2s.sacr1 = readl(i2s_reg_base + SACR1);
++	pxa_i2s.saimr = readl(i2s_reg_base + SAIMR);
++	pxa_i2s.sadiv = readl(i2s_reg_base + SADIV);
+ 
+ 	/* deactivate link */
+-	SACR0 &= ~SACR0_ENB;
++	writel(readl(i2s_reg_base + SACR0) & (~SACR0_ENB), i2s_reg_base + SACR0);
+ 	pxa_i2s_wait();
+ 	return 0;
+ }
+@@ -279,12 +277,12 @@ static int pxa2xx_soc_pcm_resume(struct snd_soc_component *component)
+ {
+ 	pxa_i2s_wait();
+ 
+-	SACR0 = pxa_i2s.sacr0 & ~SACR0_ENB;
+-	SACR1 = pxa_i2s.sacr1;
+-	SAIMR = pxa_i2s.saimr;
+-	SADIV = pxa_i2s.sadiv;
++	writel(pxa_i2s.sacr0 & ~SACR0_ENB, i2s_reg_base + SACR0);
++	writel(pxa_i2s.sacr1, i2s_reg_base + SACR1);
++	writel(pxa_i2s.saimr, i2s_reg_base + SAIMR);
++	writel(pxa_i2s.sadiv, i2s_reg_base + SADIV);
+ 
+-	SACR0 = pxa_i2s.sacr0;
++	writel(pxa_i2s.sacr0, i2s_reg_base + SACR0);
+ 
+ 	return 0;
+ }
+@@ -306,12 +304,12 @@ static int pxa2xx_i2s_probe(struct snd_soc_dai *dai)
+ 	 * the SACR0[RST] bit must also be set and cleared to reset all
+ 	 * I2S controller registers.
+ 	 */
+-	SACR0 = SACR0_RST;
+-	SACR0 = 0;
++	writel(SACR0_RST, i2s_reg_base + SACR0);
++	writel(0, i2s_reg_base + SACR0);
+ 	/* Make sure RPL and REC are disabled */
+-	SACR1 = SACR1_DRPL | SACR1_DREC;
++	writel(SACR1_DRPL | SACR1_DREC, i2s_reg_base + SACR1);
+ 	/* Along with FIFO servicing */
+-	SAIMR &= ~(SAIMR_RFS | SAIMR_TFS);
++	writel(readl(i2s_reg_base + SAIMR) & (~(SAIMR_RFS | SAIMR_TFS)), i2s_reg_base + SAIMR);
+ 
+ 	snd_soc_dai_init_dma_data(dai, &pxa2xx_i2s_pcm_stereo_out,
+ 		&pxa2xx_i2s_pcm_stereo_in);
+@@ -371,6 +369,22 @@ static const struct snd_soc_component_driver pxa_i2s_component = {
+ 
+ static int pxa2xx_i2s_drv_probe(struct platform_device *pdev)
+ {
++	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++
++	if (!res) {
++		dev_err(&pdev->dev, "missing MMIO resource\n");
++		return -ENXIO;
++	}
++
++	i2s_reg_base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(i2s_reg_base)) {
++		dev_err(&pdev->dev, "ioremap failed\n");
++		return PTR_ERR(i2s_reg_base);
++	}
++
++	pxa2xx_i2s_pcm_stereo_out.addr = res->start + SADR;
++	pxa2xx_i2s_pcm_stereo_in.addr = res->start + SADR;
++
+ 	return devm_snd_soc_register_component(&pdev->dev, &pxa_i2s_component,
+ 					       &pxa_i2s_dai, 1);
+ }
+-- 
+2.29.2
 
-> > That's encoding the current Linux way of splitting up drivers into the
-> > DT rather than describing the hardware.
-
-> The DT binding has a subnode of the pm8008@8 node for 'regulators'.
-> There's also a subnode for gpios (see qcom,pm8008-gpio). The gpio node
-> has a reg property, so I'm confused how we can even have the regulators
-> container node at the same level as the gpio node with a reg property.
-> Every node that's a child of pm8008@8 either needs to have a reg
-> property or not.
-
-That seems unfortunate if it's a limitation of DT :/
-
-> What benefit does it have to not describe secondary i2c addresses as
-> nodes in DT? I think it's necessary because the reset gpio needs to be
-
-This is a platform device, not an I2C device.  Converting it to an I2C
-device and describing the second I2C address as a separate device would
-be much less of a confusion here (and I suspect may well reflect the
-underlying physical implementation).  I'm mostly concerned about these
-platform devices.
-
-The other option would be to describe each regulator the device supports
-as a separate IP which does have some hope of being reusable since it
-reflects the actual IPs here.
-
-> deasserted before i2c read/write to either address, 8 or 9, will work.
-> Otherwise I don't understand. Having the reset puts us into a small bind
-> though because child nodes sometimes have a reg property and other times
-> don't.
-
-Right, that's an issue and does tie the two I2C addresses of the device
-into a single thing.
-
-> What should the final result be? Dropping the regulators node would end
-> up with the same problem where ldo1 has no reg property. Adding a reg
-> property to ldo1 might work, but it would be a register offset inside
-> i2c address 9 while the binding makes it look like a register offset
-> within 9. The binding for the container node could get two address
-> cells, so that the first cell describes the i2c address offset?
-
-Yeah, I think we want reg properties on the LDOs. =20
-
-> 	i2c {
-> 	  pm8008@8 {
-> 	    compatible =3D "qcom,pm8008";
-> 	    #address-cells =3D <2>;
-> 	    #size-cells =3D <0>;
-> 	    reset-gpios =3D <&tlmm 23 GPIO_ACTIVE_HIGH>;
->=20
-> 	    vdd_l1_l2-supply =3D <&vreg_s8b_1p2>;
->=20
-> 	    gpios@0,c000 {
-> 	      compatible =3D "qcom,pm8008-gpio", "qcom,spmi-gpio";
-> 	      reg =3D <0x0 0xc000>;
-> 	      ...
->=20
-> 	    };
->=20
-> 	    ldo1@1,30 {
-
-This looks sensible to me.
-
-> We don't make a node for each gpio so I don't know why we would make a
-> node for each regulator. The above could be changed to have the
-> regulators node and a reg property like this
-
-GPIOs tend to be one IP block with one set of registers that provides a
-bank of GPIOs.  Regulators tend to be a separate IP block for each
-individual regulator, typically repeated multiple times within a single
-chip.  A binding that describes the regulators within the device should
-generally be describing these individual regulator IPs rather than just
-saying "there are some regulators" which doesn't add any information or
-promote reuse with other PMICs sharing the same IP.
-
---V9rR58ILWLSg9Vro
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJe5tYACgkQJNaLcl1U
-h9D2TAf9FnCeTsouIlxLgzaaesbdlN0c8afCYGJYrSKF7yMHP7yxJIZSzB+I9JBI
-VmcnIzMkTanOi/Pv344J0pCpcgWmWO8XeJ06clB9c6A8f2L93PRGnHIqi5BozysS
-AMHP5V8Uxr0nB8yj6In3ILqA/xJAJc6YFkkM8KWU0PfdgEEqzX1LCx+oZQ6kcxK+
-WNMiQsYFdZ719uWxOInewZiPJJgKQ56QQtxdu/vFOR2k9eNrFX+WJsmNJhK9GKJG
-PQKrh1+F8f6cCa4J0DMdOsNpogxDEnMrv7PR+MKHzvnR3sO5x6a3c0I7RP6MqfU8
-6dxLfhg4QI4i4kZYBL1LmEgV++pmHQ==
-=YO3C
------END PGP SIGNATURE-----
-
---V9rR58ILWLSg9Vro--
