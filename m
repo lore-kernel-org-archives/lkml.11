@@ -2,399 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DFCC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79CD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357749AbiDSUms (ORCPT
+        id S1357717AbiDSUni (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
+        Tue, 19 Apr 2022 16:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357710AbiDSUm0 (ORCPT
+        with ESMTP id S1346344AbiDSUnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:42:26 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5D641982
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:39:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=oONCg7CiQRxtcbN7yeFz4EGC5Qai2mc1zp188Ft5EfQ=; b=iPtOy6u6+Qw6EWhCBLgnfaNnLf
-        OoDfVmU/N2/R2ELPW0CQmkqV7GB3CoeivOpSA6Bu9e8gtfIitW1FFuFirqAefXXbB+AxiMdJvZ86l
-        a5qtsAUxHYDTL/DQl3GR3KOHrayRvDtPvYzi4mC+vjsedKmXjJEPqh+XpuW0/7W/Gd3JJ3WVYVeYl
-        kq7f+rlRvI2k4LPI7naU3Lh+Nu8RN0VllStUbecz11hUwf/58j97eTBolrMUaU4Hys95vZTz6/acb
-        vGS9l3gdJDe0VEYTAeIhQ4R/NQVf1gvOwfwXQH7GFbrLv/0lpz42wUN3hOrURpQ22djrFFH3yQaf4
-        UTm7lDPA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ngudM-003UC3-O7; Tue, 19 Apr 2022 20:39:36 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id AD37430040C;
-        Tue, 19 Apr 2022 22:39:34 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 789A82B526F04; Tue, 19 Apr 2022 22:39:34 +0200 (CEST)
-Message-ID: <20220419203807.655552918@infradead.org>
-User-Agent: quilt/0.66
-Date:   Tue, 19 Apr 2022 22:32:56 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, jpoimboe@redhat.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, mbenes@suse.cz
-Subject: [PATCH 2/2] objtool: Fix code relocs vs weak symbols
-References: <20220419203254.034493341@infradead.org>
+        Tue, 19 Apr 2022 16:43:31 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CD74132F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:40:47 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id D242A1F41C51
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650400846;
+        bh=Rc2i+BQoYrwpgocGYrZDfDAk0Kijzh0pLg1e7NKVmVI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HWIJdBjow/SXHOolXdJUHNUdWrSbBTMZWYg6juNNYdzqVAcRpPeW6uZXhUnT3Mt1y
+         6ivYvweLm03x4RUZEL4dUbYr38Rc9fuf5ROtKN8C5AytTyG0djV+xh+5bybD86qAfs
+         8WtiX5MN4GFpniCX4l0VtMNjAhb7GE3MU+5y8weSRuBFxMYZfA5GId02ipX1byUNNT
+         u+1UTLtgE6m+DospAWqBX0dvEPAbU3kLRPYH2tG+EcnYAaAM6KSr1RjIHwcgVQ9Rh/
+         Kc0UK9vLx5LdPCYJEk1jfgWUJwaY5oerNA/m1NwIDOYcZai8xYxTpEZGkNeGON/VZb
+         LmdQINCw9St5Q==
+Message-ID: <7f497f99-f4c1-33d6-46cf-95bd90188fe3@collabora.com>
+Date:   Tue, 19 Apr 2022 23:40:41 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 11/15] drm/shmem-helper: Add generic memory shrinker
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Dmitry Osipenko <digetx@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org
+References: <20220417223707.157113-1-dmitry.osipenko@collabora.com>
+ <20220417223707.157113-12-dmitry.osipenko@collabora.com>
+ <ebe3dfdb-04ac-9ab1-64ff-9d54f96afe57@suse.de>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <ebe3dfdb-04ac-9ab1-64ff-9d54f96afe57@suse.de>
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Occasionally objtool driven code patching (think .static_call_sites
-.retpoline_sites etc..) goes sideways and it tries to patch an
-instruction that doesn't match.
+On 4/19/22 10:22, Thomas Zimmermann wrote:
+> Hi
+> 
+> Am 18.04.22 um 00:37 schrieb Dmitry Osipenko:
+>> Introduce a common DRM SHMEM shrinker. It allows to reduce code
+>> duplication among DRM drivers that implement theirs own shrinkers.
+>> This is initial version of the shrinker that covers basic needs of
+>> GPU drivers, both purging and eviction of shmem objects are supported.
+>>
+>> This patch is based on a couple ideas borrowed from Rob's Clark MSM
+>> shrinker and Thomas' Zimmermann variant of SHMEM shrinker.
+>>
+>> In order to start using DRM SHMEM shrinker drivers should:
+>>
+>> 1. Implement new purge(), evict() + swap_in() GEM callbacks.
+>> 2. Register shrinker using drm_gem_shmem_shrinker_register(drm_device).
+>> 3. Use drm_gem_shmem_set_purgeable_and_evictable(shmem) and alike API
+>>     functions to activate shrinking of GEMs.
+>>
+>> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
+>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+>> ---
+>>   drivers/gpu/drm/drm_gem_shmem_helper.c | 765 ++++++++++++++++++++++++-
+>>   include/drm/drm_device.h               |   4 +
+>>   include/drm/drm_gem.h                  |  35 ++
+>>   include/drm/drm_gem_shmem_helper.h     | 105 +++-
+>>   4 files changed, 877 insertions(+), 32 deletions(-)
+...
+>> @@ -172,6 +172,41 @@ struct drm_gem_object_funcs {
+>>        * This is optional but necessary for mmap support.
+>>        */
+>>       const struct vm_operations_struct *vm_ops;
+>> +
+>> +    /**
+>> +     * @purge:
+>> +     *
+>> +     * Releases the GEM object's allocated backing storage to the
+>> system.
+>> +     *
+>> +     * Returns the number of pages that have been freed by purging
+>> the GEM object.
+>> +     *
+>> +     * This callback is used by the GEM shrinker.
+>> +     */
+>> +    unsigned long (*purge)(struct drm_gem_object *obj);
+>> +
+>> +    /**
+>> +     * @evict:
+>> +     *
+>> +     * Unpins the GEM object's allocated backing storage, allowing
+>> shmem pages
+>> +     * to be swapped out.
+> 
+> What's the difference to the existing unpin() callback?
 
-Much head-scatching and cursing later the problem is as outlined below
-and affects every section that objtool generates for us, very much
-including the ORC data. The below uses .static_call_sites because it's
-convenient for demonstration purposes, but as mentioned the ORC
-sections, .retpoline_sites and __mount_loc are all similarly affected.
+Drivers need to do more than just unpinning pages when GEMs are evicted.
+Unpinning is only a part of the eviction process. I'll improve the
+doc-comment in v5.
 
-Consider:
+For example, for VirtIO-GPU driver we need to to detach host from the
+guest's memory before pages are evicted [1].
 
-foo-weak.c:
+[1]
+https://gitlab.collabora.com/dmitry.osipenko/linux-kernel-rd/-/blob/932eb03198bce3a21353b09ab71e95f1c19b84c2/drivers/gpu/drm/virtio/virtgpu_object.c#L145
 
-  extern void __SCT__foo(void);
+In case of Panfrost driver, we will need to remove mappings before pages
+are evicted.
 
-  __attribute__((weak)) void foo(void)
-  {
-	  return __SCT__foo();
-  }
+>> +     *
+>> +     * Returns the number of pages that have been unpinned.
+>> +     *
+>> +     * This callback is used by the GEM shrinker.
+>> +     */
+>> +    unsigned long (*evict)(struct drm_gem_object *obj);
+>> +
+>> +    /**
+>> +     * @swap_in:
+>> +     *
+>> +     * Pins GEM object's allocated backing storage if it was
+>> previously evicted,
+>> +     * moving swapped out pages back to memory.
+>> +     *
+>> +     * Returns 0 on success, or -errno on error.
+>> +     *
+>> +     * This callback is used by the GEM shrinker.
+>> +     */
+>> +    int (*swap_in)(struct drm_gem_object *obj);
+> 
+> Why do you need swap_in()? This can be done on-demand as part of a pin
+> or vmap operation.
 
-foo.c:
+Similarly to the unpinning, the pining of pages is only a part of what
+needs to be done for GPU drivers. Besides of returning pages back to
+memory, we also need to make them accessible to GPU and this is a
+driver-specific process. This why we need the additional callbacks.
 
-  extern void __SCT__foo(void);
-  extern void my_foo(void);
+>>   };
+>>     /**
+>> diff --git a/include/drm/drm_gem_shmem_helper.h
+>> b/include/drm/drm_gem_shmem_helper.h
+>> index 70889533962a..a65557b446e6 100644
+>> --- a/include/drm/drm_gem_shmem_helper.h
+>> +++ b/include/drm/drm_gem_shmem_helper.h
+>> @@ -6,6 +6,7 @@
+>>   #include <linux/fs.h>
+>>   #include <linux/mm.h>
+>>   #include <linux/mutex.h>
+>> +#include <linux/shrinker.h>
+>>     #include <drm/drm_file.h>
+>>   #include <drm/drm_gem.h>
+>> @@ -15,8 +16,18 @@
+>>   struct dma_buf_attachment;
+>>   struct drm_mode_create_dumb;
+>>   struct drm_printer;
+>> +struct drm_device;
+>>   struct sg_table;
+>>   +enum drm_gem_shmem_pages_state {
+>> +    DRM_GEM_SHMEM_PAGES_STATE_PURGED = -2,
+>> +    DRM_GEM_SHMEM_PAGES_STATE_EVICTED = -1,
+>> +    DRM_GEM_SHMEM_PAGES_STATE_UNPINNED = 0,
+>> +    DRM_GEM_SHMEM_PAGES_STATE_PINNED = 1,
+>> +    DRM_GEM_SHMEM_PAGES_STATE_EVICTABLE = 2,
+>> +    DRM_GEM_SHMEM_PAGES_STATE_PURGEABLE = 3,
+>> +};
+> 
+> These states can be detected by looking at the vmap and pin refcounts.
+> No need to store them explicitly.
 
-  void foo(void)
-  {
-	  my_foo();
-	  return __SCT__foo();
-  }
+I'll try to revisit this, but I was finding that it's much more
+difficult to follow and debug code without the explicit states.
 
-These generate the obvious code
-(gcc -O2 -fcf-protection=none -fno-asynchronous-unwind-tables -c foo*.c):
+> In your patch, they also come with a
+> big zoo of trivial helpers. None of that seems necessary AFAICT.
 
-foo-weak.o:
-0000000000000000 <foo>:
-   0:   e9 00 00 00 00          jmpq   5 <foo+0x5>      1: R_X86_64_PLT32       __SCT__foo-0x4
+There are couple functions which could be squashed, although this may
+hurt readability of the code a tad. I'll try to take another look at
+this for v5.
 
-foo.o:
-0000000000000000 <foo>:
-   0:   48 83 ec 08             sub    $0x8,%rsp
-   4:   e8 00 00 00 00          callq  9 <foo+0x9>      5: R_X86_64_PLT32       my_foo-0x4
-   9:   48 83 c4 08             add    $0x8,%rsp
-   d:   e9 00 00 00 00          jmpq   12 <foo+0x12>    e: R_X86_64_PLT32       __SCT__foo-0x4
+> What's the difference between purge and evict BTW?
 
-Now, when we link these two files together, you get something like
-(ld -r -o foos.o foo-weak.o foo.o):
+The evicted pages are moved out from memory to a SWAP partition or file.
 
-foos.o:
-0000000000000000 <foo-0x10>:
-   0:   e9 00 00 00 00          jmpq   5 <foo-0xb>      1: R_X86_64_PLT32       __SCT__foo-0x4
-   5:   66 2e 0f 1f 84 00 00 00 00 00   nopw   %cs:0x0(%rax,%rax,1)
-   f:   90                      nop
+The purged pages are destroyed permanently.
 
-0000000000000010 <foo>:
-  10:   48 83 ec 08             sub    $0x8,%rsp
-  14:   e8 00 00 00 00          callq  19 <foo+0x9>     15: R_X86_64_PLT32      my_foo-0x4
-  19:   48 83 c4 08             add    $0x8,%rsp
-  1d:   e9 00 00 00 00          jmpq   22 <foo+0x12>    1e: R_X86_64_PLT32      __SCT__foo-0x4
+>> +
+>>   /**
+>>    * struct drm_gem_shmem_object - GEM object backed by shmem
+>>    */
+>> @@ -43,8 +54,8 @@ struct drm_gem_shmem_object {
+>>        * @madv: State for madvise
+>>        *
+>>        * 0 is active/inuse.
+>> +     * 1 is not-needed/can-be-purged
+>>        * A negative value is the object is purged.
+>> -     * Positive values are driver specific and not used by the helpers.
+>>        */
+>>       int madv;
+>>   @@ -91,6 +102,40 @@ struct drm_gem_shmem_object {
+>>        * @map_wc: map object write-combined (instead of using shmem
+>> defaults).
+>>        */
+>>       bool map_wc;
+>> +
+>> +    /**
+>> +     * @eviction_disable_count:
+>> +     *
+>> +     * The shmem pages are disallowed to be evicted by the memory
+>> shrinker
+>> +     * while count is non-zero. Used internally by memory shrinker.
+>> +     */
+>> +    unsigned int eviction_disable_count;
+>> +
+>> +    /**
+>> +     * @purging_disable_count:
+>> +     *
+>> +     * The shmem pages are disallowed to be purged by the memory
+>> shrinker
+>> +     * while count is non-zero. Used internally by memory shrinker.
+>> +     */
+>> +    unsigned int purging_disable_count;
+>> +
+>> +    /**
+>> +     * @pages_state: Current state of shmem pages. Used internally by
+>> +     * memory shrinker.
+>> +     */
+>> +    enum drm_gem_shmem_pages_state pages_state;
+>> +
+>> +    /**
+>> +     * @evicted: True if shmem pages were evicted by the memory
+>> shrinker.
+>> +     * Used internally by memory shrinker.
+>> +     */
+>> +    bool evicted;
+>> +
+>> +    /**
+>> +     * @pages_shrinkable: True if shmem pages can be evicted or purged
+>> +     * by the memory shrinker. Used internally by memory shrinker.
+>> +     */
+>> +    bool pages_shrinkable;
+> 
+> As commented before, this state can be foundby looking at existing
+> fields. No need to store it separately.
 
-Noting that ld preserves the weak function text, but strips the symbol
-off of it (hence objdump doing that funny negative offset thing). This
-does lead to 'interesting' unused code issues with objtool when ran on
-linked objects, but that seems to be working (fingers crossed).
+When we're transitioning from "evictable" to a "purgeable" state, we
+must not add pages twice to the "shrinkable_count" variable. Hence this
+is not a state, but a variable which prevents the double accounting of
+the pages. Please see drm_gem_shmem_add_pages_to_shrinker() in this patch.
 
-So far so good.. Now lets consider the objtool static_call output
-section (readelf output, old binutils):
-
-foo-weak.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x2c8 contains 1 entry:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 .text + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foo.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x310 contains 2 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 .text + d
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foos.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x430 contains 4 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000100000002 R_X86_64_PC32          0000000000000000 .text + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-0000000000000008  0000000100000002 R_X86_64_PC32          0000000000000000 .text + 1d
-000000000000000c  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-So we have two patch sites, one in the dead code of the weak foo and one
-in the real foo. All is well.
-
-*HOWEVER*, when the toolchain strips unused section symbols it
-generates things like this (using new enough binutils):
-
-foo-weak.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x2c8 contains 1 entry:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 foo + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foo.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x310 contains 2 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 foo + d
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foos.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x430 contains 4 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000100000002 R_X86_64_PC32          0000000000000000 foo + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-0000000000000008  0000000100000002 R_X86_64_PC32          0000000000000000 foo + d
-000000000000000c  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-And now we can see how that foos.o .static_call_sites goes side-ways, we
-now have _two_ patch sites in foo. One for the weak symbol at foo+0
-(which is no longer a static_call site!) and one at foo+d which is in
-fact the right location.
-
-This seems to happen when objtool cannot find a section symbol, in which
-case it falls back to any other symbol to key off of, however in this
-case that goes terribly wrong!
-
-As such, teach objtool to create a section symbol when there isn't
-one.
-
-Fixes: 44f6a7c0755d ("objtool: Fix seg fault with Clang non-section symbols")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- tools/objtool/elf.c |  188 +++++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 166 insertions(+), 22 deletions(-)
-
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -575,37 +575,181 @@ int elf_add_reloc(struct elf *elf, struc
- 	return 0;
- }
- 
--int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
--			  unsigned long offset, unsigned int type,
--			  struct section *insn_sec, unsigned long insn_off)
-+/*
-+ * Ensure that any reloc section containing references to @sym is marked
-+ * changed such that it will get re-generated in elf_rebuild_reloc_sections()
-+ * with the new symbol index.
-+ */
-+static void elf_dirty_reloc_sym(struct elf *elf, struct symbol *sym)
-+{
-+	struct section *sec;
-+
-+	list_for_each_entry(sec, &elf->sections, list) {
-+		struct reloc *reloc;
-+
-+		if (sec->changed)
-+			continue;
-+
-+		list_for_each_entry(reloc, &sec->reloc_list, list) {
-+			if (reloc->sym == sym) {
-+				sec->changed = true;
-+				break;
-+			}
-+		}
-+	}
-+}
-+
-+/*
-+ * Move the first global symbol, as per sh_info, into a new, higher symbol
-+ * index. This fees up the shndx for a new local symbol.
-+ */
-+static int elf_move_global_symbol(struct elf *elf, struct section *symtab,
-+				  struct section *symtab_shndx)
- {
-+	Elf_Data *data, *shndx_data = NULL;
-+	Elf32_Word first_non_local;
- 	struct symbol *sym;
--	int addend;
-+	Elf_Scn *s;
- 
--	if (insn_sec->sym) {
--		sym = insn_sec->sym;
--		addend = insn_off;
-+	first_non_local = symtab->sh.sh_info;
- 
--	} else {
--		/*
--		 * The Clang assembler strips section symbols, so we have to
--		 * reference the function symbol instead:
--		 */
--		sym = find_symbol_containing(insn_sec, insn_off);
--		if (!sym) {
--			/*
--			 * Hack alert.  This happens when we need to reference
--			 * the NOP pad insn immediately after the function.
--			 */
--			sym = find_symbol_containing(insn_sec, insn_off - 1);
-+	sym = find_symbol_by_index(elf, first_non_local);
-+	if (!sym) {
-+		WARN("no non-local symbols !?");
-+		return first_non_local;
-+	}
-+
-+	s = elf_getscn(elf->elf, symtab->idx);
-+	if (!s) {
-+		WARN_ELF("elf_getscn");
-+		return -1;
-+	}
-+
-+	data = elf_newdata(s);
-+	if (!data) {
-+		WARN_ELF("elf_newdata");
-+		return -1;
-+	}
-+
-+	data->d_buf = &sym->sym;
-+	data->d_size = sizeof(sym->sym);
-+	data->d_align = 1;
-+	data->d_type = ELF_T_SYM;
-+
-+	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
-+	elf_dirty_reloc_sym(elf, sym);
-+
-+	symtab->sh.sh_info += 1;
-+	symtab->sh.sh_size += data->d_size;
-+	symtab->changed = true;
-+
-+	/* XXX create ? */
-+	if (symtab_shndx) {
-+		s = elf_getscn(elf->elf, symtab_shndx->idx);
-+		if (!s) {
-+			WARN_ELF("elf_getscn");
-+			return -1;
- 		}
- 
--		if (!sym) {
--			WARN("can't find symbol containing %s+0x%lx", insn_sec->name, insn_off);
-+		shndx_data = elf_newdata(s);
-+		if (!shndx_data) {
-+			WARN_ELF("elf_newshndx_data");
- 			return -1;
- 		}
- 
--		addend = insn_off - sym->offset;
-+		shndx_data->d_buf = &sym->sec->idx;
-+		shndx_data->d_size = sizeof(Elf32_Word);
-+		shndx_data->d_align = 4;
-+		shndx_data->d_type = ELF_T_WORD;
-+
-+		symtab_shndx->sh.sh_size += 4;
-+		symtab_shndx->changed = true;
-+	}
-+
-+	return first_non_local;
-+}
-+
-+static struct symbol *
-+elf_create_section_symbol(struct elf *elf, struct section *sec)
-+{
-+	struct section *symtab, *symtab_shndx;
-+	Elf_Data *shndx_data = NULL;
-+	struct symbol *sym;
-+	Elf32_Word shndx;
-+
-+	symtab = find_section_by_name(elf, ".symtab");
-+	if (symtab) {
-+		symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
-+		if (symtab_shndx)
-+			shndx_data = symtab_shndx->data;
-+	} else {
-+		WARN("no .symtab");
-+		return NULL;
-+	}
-+
-+	sym = malloc(sizeof(*sym));
-+	if (!sym) {
-+		perror("malloc");
-+		return NULL;
-+	}
-+	memset(sym, 0, sizeof(*sym));
-+
-+	sym->idx = elf_move_global_symbol(elf, symtab, symtab_shndx);
-+	if (sym->idx < 0) {
-+		WARN("elf_move_global_symbol");
-+		return NULL;
-+	}
-+
-+	sym->name = sec->name;
-+	sym->sec = sec;
-+
-+	// st_name 0
-+	sym->sym.st_info = GELF_ST_INFO(STB_LOCAL, STT_SECTION);
-+	// st_other 0
-+	// st_value 0
-+	// st_size 0
-+	shndx = sec->idx;
-+	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
-+		sym->sym.st_shndx = shndx;
-+		if (!shndx_data)
-+			shndx = 0;
-+	} else {
-+		sym->sym.st_shndx = SHN_XINDEX;
-+		if (!shndx_data) {
-+			WARN("no .symtab_shndx");
-+			return NULL;
-+		}
-+	}
-+
-+	if (!gelf_update_symshndx(symtab->data, shndx_data, sym->idx, &sym->sym, shndx)) {
-+		WARN_ELF("gelf_update_symshndx");
-+		return NULL;
-+	}
-+
-+	elf_add_symbol(elf, sym);
-+
-+	return sym;
-+}
-+
-+int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
-+			  unsigned long offset, unsigned int type,
-+			  struct section *insn_sec, unsigned long insn_off)
-+{
-+	struct symbol *sym = insn_sec->sym;
-+	int addend = insn_off;
-+
-+	if (!sym) {
-+		/*
-+		 * Due to how weak functions work, we must use section based
-+		 * relocations. Symbol based relocations would result in the
-+		 * weak and non-weak function annotations being overlaid on the
-+		 * non-weak function after linking.
-+		 */
-+		sym = elf_create_section_symbol(elf, insn_sec);
-+		if (!sym)
-+			return -1;
-+
-+		insn_sec->sym = sym;
- 	}
- 
- 	return elf_add_reloc(elf, sec, offset, type, sym, addend);
-
-
+Perhaps something like "pages_accounted_by_shrinker" could be a better
+name for the variable. I'll revisit this for v5.
