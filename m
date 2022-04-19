@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DE1C3527C
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411A5C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355247AbiDSQsq (ORCPT
+        id S1355277AbiDSQsy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
+        Tue, 19 Apr 2022 12:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237117AbiDSQoF (ORCPT
+        with ESMTP id S1354977AbiDSQqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:44:05 -0400
+        Tue, 19 Apr 2022 12:46:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8291E23BF4;
-        Tue, 19 Apr 2022 09:41:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9682039692;
+        Tue, 19 Apr 2022 09:43:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2060B61821;
-        Tue, 19 Apr 2022 16:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBCD4C385A7;
-        Tue, 19 Apr 2022 16:41:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 277516145C;
+        Tue, 19 Apr 2022 16:43:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C435C385A5;
+        Tue, 19 Apr 2022 16:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386481;
-        bh=B/EPqKtpF/X7/qtDP9YwLKtvodaWStDsu3zudJ8kKz8=;
+        s=k20201202; t=1650386613;
+        bh=1CznP/IcfkJndLnXKlEqV7YtwAE/0IZ23NVP7Os5Lbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e/RYNgH/mBUlontysDvDDbQEl/w5JkQ9KERIge+TcJ551/XZYLOWdDTGCMdx+YKy7
-         Eo/SvJOdF5wgBq+JPCny5Iz4sfnm67vOL/aV3JDNF+eu3PEHxKh+sOrXkMuKManFEB
-         FvCJgeGTM+6w0HGQJbhRtyvAVvYZhIZUQzpHF2wCtgZokugnVX+Kwy6gFqN6W1IZJt
-         h6Z8zUzZzd2yynsmy/ykvebZNOmvxQfFa0IczJPaH1E/UzhZyrRLjpixBmukOAd097
-         r+a1YGs658YewbGmFKHNY8vaSw30yUPgx99OTD0iJIm65L2L+bhpmbdN90g/nC0hhO
-         aQjZ7EgUWchew==
+        b=gkyeNvpegI/KQIRWnjwkEYCied4Du61ntShcs66DzkQFnJHkJWp70dBzOiTP/ZG6j
+         n96w9hkpW3grm9KvPbPA2R8JMHGs0B28jY9iQ2TtUgdW5V+XoN0ZLiqkWwVdMXxfJ1
+         g4lG/kC3swRcBOnkw50SSbGy5I/KjmkMOKQ/SlEhuKtrq2jtmRtW2c5FwToKh8BGwy
+         tQTv4ia+QOAVOVszdbwIbLvRCF+TpW81A0z+kf9LYr2Zgm++jGTXkxtLEd4wDmJIYw
+         XmyDe5w2feEiHmwvkFrvwJr16KElh9yxIpw5HNExil/VCLxaA6PWzlCybRgA8G+uZe
+         V5QDp19UieVxQ==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
@@ -60,11 +60,10 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
         linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
         linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        alsa-devel@alsa-project.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 19/48] ARM: pxa: lubbock: pass udc irqs as resource
-Date:   Tue, 19 Apr 2022 18:37:41 +0200
-Message-Id: <20220419163810.2118169-20-arnd@kernel.org>
+        alsa-devel@alsa-project.org
+Subject: [PATCH 36/48] cpufreq: pxa3: move clk register access to clk driver
+Date:   Tue, 19 Apr 2022 18:37:58 +0200
+Message-Id: <20220419163810.2118169-37-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
 References: <20220419163810.2118169-1-arnd@kernel.org>
@@ -76,175 +75,230 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Lubbock is the only machine that has three IRQs for the UDC.
-These are currently hardcoded in the driver based on a
-machine header file.
+The driver needs some low-level register access for setting
+the core and bus frequencies. These registers are owned
+by the clk driver, so move the low-level access into that
+driver with a slightly higher-level interface and avoid
+any machine header file dependencies.
 
-Change this to use platform device resources as we use for
-the generic IRQ anyway.
-
-Cc: Felipe Balbi <balbi@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-usb@vger.kernel.org
-Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Cc: Michael Turquette <mturquette@baylibre.com>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: linux-clk@vger.kernel.org
+Cc: linux-pm@vger.kernel.org
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/mach-pxa/lubbock.c                   | 12 +++++-
- .../arm/mach-pxa/{include/mach => }/lubbock.h |  2 -
- drivers/usb/gadget/udc/pxa25x_udc.c           | 37 ++++++++++---------
- drivers/usb/gadget/udc/pxa25x_udc.h           |  7 +---
- 4 files changed, 32 insertions(+), 26 deletions(-)
- rename arch/arm/mach-pxa/{include/mach => }/lubbock.h (97%)
+ arch/arm/mach-pxa/generic.h              |  1 -
+ arch/arm/mach-pxa/include/mach/generic.h |  5 --
+ arch/arm/mach-pxa/pxa3xx.c               |  1 +
+ drivers/clk/pxa/clk-pxa3xx.c             | 16 ++++++
+ drivers/cpufreq/pxa2xx-cpufreq.c         |  3 --
+ drivers/cpufreq/pxa3xx-cpufreq.c         | 64 +++++++++++++-----------
+ include/linux/clk/pxa.h                  |  9 ++++
+ 7 files changed, 62 insertions(+), 37 deletions(-)
+ delete mode 100644 arch/arm/mach-pxa/include/mach/generic.h
+ create mode 100644 include/linux/clk/pxa.h
 
-diff --git a/arch/arm/mach-pxa/lubbock.c b/arch/arm/mach-pxa/lubbock.c
-index 46aef93c0615..201f89f49642 100644
---- a/arch/arm/mach-pxa/lubbock.c
-+++ b/arch/arm/mach-pxa/lubbock.c
-@@ -46,7 +46,7 @@
+diff --git a/arch/arm/mach-pxa/generic.h b/arch/arm/mach-pxa/generic.h
+index 2f706ef97357..487eadb0fc2a 100644
+--- a/arch/arm/mach-pxa/generic.h
++++ b/arch/arm/mach-pxa/generic.h
+@@ -7,7 +7,6 @@
+  */
  
- #include "pxa25x.h"
- #include <linux/platform_data/asoc-pxa.h>
--#include <mach/lubbock.h>
-+#include "lubbock.h"
- #include "udc.h"
- #include <linux/platform_data/irda-pxaficp.h>
- #include <linux/platform_data/video-pxafb.h>
-@@ -131,6 +131,13 @@ static struct pxa2xx_udc_mach_info udc_info __initdata = {
- 	// no D+ pullup; lubbock can't connect/disconnect in software
- };
+ #include <linux/reboot.h>
+-#include <mach/generic.h>
  
-+static struct resource lubbock_udc_resources[] = {
-+	DEFINE_RES_MEM(0x40600000, 0x10000),
-+	DEFINE_RES_IRQ(IRQ_USB),
-+	DEFINE_RES_IRQ(LUBBOCK_USB_IRQ),
-+	DEFINE_RES_IRQ(LUBBOCK_USB_DISC_IRQ),
-+};
-+
- /* GPIOs for SA1111 PCMCIA */
- static struct gpiod_lookup_table sa1111_pcmcia_gpio_table = {
- 	.dev_id = "1800",
-@@ -496,6 +503,9 @@ static void __init lubbock_init(void)
- 	lubbock_init_pcmcia();
+ struct irq_data;
  
- 	clk_add_alias("SA1111_CLK", NULL, "GPIO11_CLK", NULL);
-+	/* lubbock has two extra IRQs */
-+	pxa25x_device_udc.resource = lubbock_udc_resources;
-+	pxa25x_device_udc.num_resources = ARRAY_SIZE(lubbock_udc_resources);
- 	pxa_set_udc_info(&udc_info);
- 	pxa_set_fb_info(NULL, &sharp_lm8v31);
- 	pxa_set_mci_info(&lubbock_mci_platform_data);
-diff --git a/arch/arm/mach-pxa/include/mach/lubbock.h b/arch/arm/mach-pxa/lubbock.h
-similarity index 97%
-rename from arch/arm/mach-pxa/include/mach/lubbock.h
-rename to arch/arm/mach-pxa/lubbock.h
-index a3af4a2f9446..8e3ff7d57121 100644
---- a/arch/arm/mach-pxa/include/mach/lubbock.h
-+++ b/arch/arm/mach-pxa/lubbock.h
-@@ -1,7 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- *  arch/arm/mach-pxa/include/mach/lubbock.h
-- *
-  *  Author:	Nicolas Pitre
-  *  Created:	Jun 15, 2001
-  *  Copyright:	MontaVista Software Inc.
-diff --git a/drivers/usb/gadget/udc/pxa25x_udc.c b/drivers/usb/gadget/udc/pxa25x_udc.c
-index 6c414c99d01c..c593fc383481 100644
---- a/drivers/usb/gadget/udc/pxa25x_udc.c
-+++ b/drivers/usb/gadget/udc/pxa25x_udc.c
-@@ -44,10 +44,6 @@
- #include <linux/usb/gadget.h>
- #include <linux/usb/otg.h>
- 
--#ifdef CONFIG_ARCH_LUBBOCK
--#include <mach/lubbock.h>
+diff --git a/arch/arm/mach-pxa/include/mach/generic.h b/arch/arm/mach-pxa/include/mach/generic.h
+deleted file mode 100644
+index 613f6a299d0d..000000000000
+--- a/arch/arm/mach-pxa/include/mach/generic.h
++++ /dev/null
+@@ -1,5 +0,0 @@
+-#ifdef CONFIG_PXA3xx
+-extern unsigned	pxa3xx_get_clk_frequency_khz(int);
+-#else
+-#define pxa3xx_get_clk_frequency_khz(x)		(0)
 -#endif
--
- #define UDCCR	 0x0000 /* UDC Control Register */
- #define UDC_RES1 0x0004 /* UDC Undocumented - Reserved1 */
- #define UDC_RES2 0x0008 /* UDC Undocumented - Reserved2 */
-@@ -1578,18 +1574,15 @@ lubbock_vbus_irq(int irq, void *_dev)
- 	int			vbus;
+diff --git a/arch/arm/mach-pxa/pxa3xx.c b/arch/arm/mach-pxa/pxa3xx.c
+index 7881888107c7..f4657f4edb3b 100644
+--- a/arch/arm/mach-pxa/pxa3xx.c
++++ b/arch/arm/mach-pxa/pxa3xx.c
+@@ -25,6 +25,7 @@
+ #include <linux/platform_data/i2c-pxa.h>
+ #include <linux/platform_data/mmp_dma.h>
+ #include <linux/soc/pxa/cpu.h>
++#include <linux/clk/pxa.h>
  
- 	dev->stats.irqs++;
--	switch (irq) {
--	case LUBBOCK_USB_IRQ:
-+	if (irq == dev->usb_irq) {
- 		vbus = 1;
--		disable_irq(LUBBOCK_USB_IRQ);
--		enable_irq(LUBBOCK_USB_DISC_IRQ);
--		break;
--	case LUBBOCK_USB_DISC_IRQ:
-+		disable_irq(dev->usb_irq);
-+		enable_irq(dev->usb_disc_irq);
-+	} else if (irq == dev->usb_disc_irq) {
- 		vbus = 0;
--		disable_irq(LUBBOCK_USB_DISC_IRQ);
--		enable_irq(LUBBOCK_USB_IRQ);
--		break;
--	default:
-+		disable_irq(dev->usb_disc_irq);
-+		enable_irq(dev->usb_irq);
-+	} else {
- 		return IRQ_NONE;
- 	}
+ #include <asm/mach/map.h>
+ #include <asm/suspend.h>
+diff --git a/drivers/clk/pxa/clk-pxa3xx.c b/drivers/clk/pxa/clk-pxa3xx.c
+index 027b78183565..60a0db4f3790 100644
+--- a/drivers/clk/pxa/clk-pxa3xx.c
++++ b/drivers/clk/pxa/clk-pxa3xx.c
+@@ -16,6 +16,7 @@
+ #include <linux/of.h>
+ #include <linux/soc/pxa/cpu.h>
+ #include <mach/smemc.h>
++#include <linux/clk/pxa.h>
+ #include <mach/pxa3xx-regs.h>
  
-@@ -2422,20 +2415,28 @@ static int pxa25x_udc_probe(struct platform_device *pdev)
+ #include <dt-bindings/clock/pxa-clock.h>
+@@ -79,6 +80,21 @@ unsigned int pxa3xx_get_clk_frequency_khz(int info)
+ 	return (unsigned int)clks[0] / KHz;
+ }
  
- #ifdef CONFIG_ARCH_LUBBOCK
- 	if (machine_is_lubbock()) {
--		retval = devm_request_irq(&pdev->dev, LUBBOCK_USB_DISC_IRQ,
-+		dev->usb_irq = platform_get_irq(pdev, 1);
-+		if (dev->usb_irq < 0)
-+			return dev->usb_irq;
++void pxa3xx_clk_update_accr(u32 disable, u32 enable, u32 xclkcfg, u32 mask)
++{
++	u32 accr = ACCR;
 +
-+		dev->usb_disc_irq = platform_get_irq(pdev, 2);
-+		if (dev->usb_disc_irq < 0)
-+			return dev->usb_disc_irq;
++	accr &= ~disable;
++	accr |= enable;
 +
-+		retval = devm_request_irq(&pdev->dev, dev->usb_disc_irq,
- 					  lubbock_vbus_irq, 0, driver_name,
- 					  dev);
- 		if (retval != 0) {
- 			pr_err("%s: can't get irq %i, err %d\n",
--				driver_name, LUBBOCK_USB_DISC_IRQ, retval);
-+				driver_name, dev->usb_disc_irq, retval);
- 			goto err;
- 		}
--		retval = devm_request_irq(&pdev->dev, LUBBOCK_USB_IRQ,
-+		retval = devm_request_irq(&pdev->dev, dev->usb_irq,
- 					  lubbock_vbus_irq, 0, driver_name,
- 					  dev);
- 		if (retval != 0) {
- 			pr_err("%s: can't get irq %i, err %d\n",
--				driver_name, LUBBOCK_USB_IRQ, retval);
-+				driver_name, dev->usb_irq, retval);
- 			goto err;
- 		}
- 	} else
-diff --git a/drivers/usb/gadget/udc/pxa25x_udc.h b/drivers/usb/gadget/udc/pxa25x_udc.h
-index aa4b68fd9fc0..6ab6047edc83 100644
---- a/drivers/usb/gadget/udc/pxa25x_udc.h
-+++ b/drivers/usb/gadget/udc/pxa25x_udc.h
-@@ -117,16 +117,13 @@ struct pxa25x_udc {
- 	u64					dma_mask;
- 	struct pxa25x_ep			ep [PXA_UDC_NUM_ENDPOINTS];
- 	void __iomem				*regs;
-+	int					usb_irq;
-+	int					usb_disc_irq;
- };
- #define to_pxa25x(g)	(container_of((g), struct pxa25x_udc, gadget))
++	ACCR = accr;
++	if (xclkcfg)
++		__asm__("mcr p14, 0, %0, c6, c0, 0\n" : : "r"(xclkcfg));
++
++	while ((ACSR & mask) != (accr & mask))
++		cpu_relax();
++}
++
+ static unsigned long clk_pxa3xx_ac97_get_rate(struct clk_hw *hw,
+ 					     unsigned long parent_rate)
+ {
+diff --git a/drivers/cpufreq/pxa2xx-cpufreq.c b/drivers/cpufreq/pxa2xx-cpufreq.c
+index e74d36d6f78d..ed1ae061a687 100644
+--- a/drivers/cpufreq/pxa2xx-cpufreq.c
++++ b/drivers/cpufreq/pxa2xx-cpufreq.c
+@@ -27,9 +27,6 @@
+ #include <linux/soc/pxa/cpu.h>
+ #include <linux/io.h>
  
- /*-------------------------------------------------------------------------*/
- 
--#ifdef CONFIG_ARCH_LUBBOCK
--#include <mach/lubbock.h>
--/* lubbock can also report usb connect/disconnect irqs */
--#endif
+-#include <mach/pxa2xx-regs.h>
+-#include <mach/smemc.h>
 -
- static struct pxa25x_udc *the_controller;
+ #ifdef DEBUG
+ static unsigned int freq_debug;
+ module_param(freq_debug, uint, 0);
+diff --git a/drivers/cpufreq/pxa3xx-cpufreq.c b/drivers/cpufreq/pxa3xx-cpufreq.c
+index d3b398b4aa6a..4afa48d172db 100644
+--- a/drivers/cpufreq/pxa3xx-cpufreq.c
++++ b/drivers/cpufreq/pxa3xx-cpufreq.c
+@@ -9,12 +9,10 @@
+ #include <linux/init.h>
+ #include <linux/cpufreq.h>
+ #include <linux/soc/pxa/cpu.h>
++#include <linux/clk/pxa.h>
+ #include <linux/slab.h>
+ #include <linux/io.h>
  
- /*-------------------------------------------------------------------------*/
+-#include <mach/generic.h>
+-#include <mach/pxa3xx-regs.h>
+-
+ #define HSS_104M	(0)
+ #define HSS_156M	(1)
+ #define HSS_208M	(2)
+@@ -35,6 +33,28 @@
+ #define DMCFS_26M	(0)
+ #define DMCFS_260M	(3)
+ 
++#define ACCR_XPDIS		(1 << 31)	/* Core PLL Output Disable */
++#define ACCR_SPDIS		(1 << 30)	/* System PLL Output Disable */
++#define ACCR_D0CS		(1 << 26)	/* D0 Mode Clock Select */
++#define ACCR_PCCE		(1 << 11)	/* Power Mode Change Clock Enable */
++#define ACCR_DDR_D0CS		(1 << 7)	/* DDR SDRAM clock frequency in D0CS (PXA31x only) */
++
++#define ACCR_SMCFS_MASK		(0x7 << 23)	/* Static Memory Controller Frequency Select */
++#define ACCR_SFLFS_MASK		(0x3 << 18)	/* Frequency Select for Internal Memory Controller */
++#define ACCR_XSPCLK_MASK	(0x3 << 16)	/* Core Frequency during Frequency Change */
++#define ACCR_HSS_MASK		(0x3 << 14)	/* System Bus-Clock Frequency Select */
++#define ACCR_DMCFS_MASK		(0x3 << 12)	/* Dynamic Memory Controller Clock Frequency Select */
++#define ACCR_XN_MASK		(0x7 << 8)	/* Core PLL Turbo-Mode-to-Run-Mode Ratio */
++#define ACCR_XL_MASK		(0x1f)		/* Core PLL Run-Mode-to-Oscillator Ratio */
++
++#define ACCR_SMCFS(x)		(((x) & 0x7) << 23)
++#define ACCR_SFLFS(x)		(((x) & 0x3) << 18)
++#define ACCR_XSPCLK(x)		(((x) & 0x3) << 16)
++#define ACCR_HSS(x)		(((x) & 0x3) << 14)
++#define ACCR_DMCFS(x)		(((x) & 0x3) << 12)
++#define ACCR_XN(x)		(((x) & 0x7) << 8)
++#define ACCR_XL(x)		((x) & 0x1f)
++
+ struct pxa3xx_freq_info {
+ 	unsigned int cpufreq_mhz;
+ 	unsigned int core_xl : 5;
+@@ -112,41 +132,29 @@ static int setup_freqs_table(struct cpufreq_policy *policy,
+ 
+ static void __update_core_freq(struct pxa3xx_freq_info *info)
+ {
+-	uint32_t mask = ACCR_XN_MASK | ACCR_XL_MASK;
+-	uint32_t accr = ACCR;
+-	uint32_t xclkcfg;
+-
+-	accr &= ~(ACCR_XN_MASK | ACCR_XL_MASK | ACCR_XSPCLK_MASK);
+-	accr |= ACCR_XN(info->core_xn) | ACCR_XL(info->core_xl);
++	u32 mask, disable, enable, xclkcfg;
+ 
++	mask	= ACCR_XN_MASK | ACCR_XL_MASK;
++	disable = mask | ACCR_XSPCLK_MASK;
++	enable  = ACCR_XN(info->core_xn) | ACCR_XL(info->core_xl);
+ 	/* No clock until core PLL is re-locked */
+-	accr |= ACCR_XSPCLK(XSPCLK_NONE);
+-
++	enable |= ACCR_XSPCLK(XSPCLK_NONE);
+ 	xclkcfg = (info->core_xn == 2) ? 0x3 : 0x2;	/* turbo bit */
+ 
+-	ACCR = accr;
+-	__asm__("mcr p14, 0, %0, c6, c0, 0\n" : : "r"(xclkcfg));
+-
+-	while ((ACSR & mask) != (accr & mask))
+-		cpu_relax();
++	pxa3xx_clk_update_accr(disable, enable, xclkcfg, mask);
+ }
+ 
+ static void __update_bus_freq(struct pxa3xx_freq_info *info)
+ {
+-	uint32_t mask;
+-	uint32_t accr = ACCR;
+-
+-	mask = ACCR_SMCFS_MASK | ACCR_SFLFS_MASK | ACCR_HSS_MASK |
+-		ACCR_DMCFS_MASK;
+-
+-	accr &= ~mask;
+-	accr |= ACCR_SMCFS(info->smcfs) | ACCR_SFLFS(info->sflfs) |
+-		ACCR_HSS(info->hss) | ACCR_DMCFS(info->dmcfs);
++	u32 mask, disable, enable;
+ 
+-	ACCR = accr;
++	mask	= ACCR_SMCFS_MASK | ACCR_SFLFS_MASK | ACCR_HSS_MASK |
++		  ACCR_DMCFS_MASK;
++	disable = mask;
++	enable	= ACCR_SMCFS(info->smcfs) | ACCR_SFLFS(info->sflfs) |
++		  ACCR_HSS(info->hss) | ACCR_DMCFS(info->dmcfs);
+ 
+-	while ((ACSR & mask) != (accr & mask))
+-		cpu_relax();
++	pxa3xx_clk_update_accr(disable, enable, 0, mask);
+ }
+ 
+ static unsigned int pxa3xx_cpufreq_get(unsigned int cpu)
+diff --git a/include/linux/clk/pxa.h b/include/linux/clk/pxa.h
+new file mode 100644
+index 000000000000..e5516c608c99
+--- /dev/null
++++ b/include/linux/clk/pxa.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifdef CONFIG_PXA3xx
++extern unsigned	pxa3xx_get_clk_frequency_khz(int);
++extern void pxa3xx_clk_update_accr(u32 disable, u32 enable, u32 xclkcfg, u32 mask);
++#else
++#define pxa3xx_get_clk_frequency_khz(x)		(0)
++#define pxa3xx_clk_update_accr(disable, enable, xclkcfg, mask) do { } while (0)
++#endif
 -- 
 2.29.2
 
