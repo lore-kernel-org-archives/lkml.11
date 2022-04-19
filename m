@@ -2,132 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 551C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35758C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349449AbiDSHjy (ORCPT
+        id S1349451AbiDSHkb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
+        Tue, 19 Apr 2022 03:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235388AbiDSHjw (ORCPT
+        with ESMTP id S242063AbiDSHk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:39:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 125EA22BEF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:37:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650353829;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FM4KVGRiRcud5YspVdmyurfb+munCUhUXXDotfhbDB4=;
-        b=SIHmfyy2BUMcDlOsCsHPu0UwKyZtQr1HVOwHU726raPdeDshITMujIfmObDGqA8GNz2A7c
-        U0tWJpY1g+eUaa+Wxulw3iRoonnMygW25G7yPTgckuWofb7ogNAknmexAZZBAOr8p+cgc1
-        wXf8v3jzjC4j9VVVLl1Gk14j1kUPVC8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-460-H1QKa6VxOAW14XRE9YeHKQ-1; Tue, 19 Apr 2022 03:37:06 -0400
-X-MC-Unique: H1QKa6VxOAW14XRE9YeHKQ-1
-Received: by mail-ed1-f70.google.com with SMTP id da8-20020a056402176800b0041d79488e29so10390262edb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:37:04 -0700 (PDT)
+        Tue, 19 Apr 2022 03:40:29 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E3723148
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:37:48 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id c6so20122218edn.8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:37:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yT6EUKmSqiEGrbP4N0bYTSlk6uDr2husvMlBwTarc14=;
+        b=oESzlwMe4qJx6PkKZ8Nr+xaGNaoz0I1C/zQz/+xq821OHmUr0SaaZZYBTTyunOkwTf
+         FMD1/pwAG6bCuMJat+zkSPg5n5OVeYft77CqsYYaohcX4wuxJaFls8bP6DOskSBd/fQA
+         EVeIcNRNYTjgYkbcLFygXB8RQaBvBgwrqEm2VDyt59c78dNJsF2O9qpzJdvFSrfnMZ6L
+         QTEnnrlXdHHRQW33Aw0QOVdi8vy6btUL6pRtpxAWDQ6dGddxMT9zlCez7AzH3s0ikbcu
+         ssN3mZzkc4+KQcfF+W6IcUKdJZJxr0CI799y4L382EUwf50g+eoVnxNoxI/PiCKyJhOk
+         hb8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=FM4KVGRiRcud5YspVdmyurfb+munCUhUXXDotfhbDB4=;
-        b=IbSXy5EOIjMA0vvUKi7SU8uE+s8s0RRQMI2dgwMOzlJDFpar1sUlHgxOoRKW9uMnsw
-         AcKwUFkgkrLrp6n77ohiSPCHY8U1wJBS7rwgtZmvBD9H5zIiX90Q0dmSVeTstreX+LGc
-         TwQCiJQOerW0lw/8PVilMCPItlAYTUUci/P+OHb62rscrKPayU9h+7+QFsPO466mde07
-         Dc2OdTomciVpwkSSLHhmkGWNRKmU8zdbkKncy+P+aaBgkrDMed5hwgDKUt/zODM5Ufkj
-         8SA1kXbhGgNWbvoFZllGt86QqRV0JaN4ql3sojORAu955BwLIIp9EVh4m1KbM0+WQkiY
-         WsfA==
-X-Gm-Message-State: AOAM530csb0vdsw93ehnBQVTnsE1EU3Tuuta6JDyLStamEDiKFdhfxry
-        hUiHX9qrXYbTbA5Y/8zQJmOLvVCuKEBOL2IUTSXuvdiaHhSawHtL8M83yRiQONLNEpPSMnot0aL
-        gX7qwMS16fJANcWlv3uzxpLj9
-X-Received: by 2002:a17:907:2cc7:b0:6df:b76d:940d with SMTP id hg7-20020a1709072cc700b006dfb76d940dmr12199063ejc.742.1650353823736;
-        Tue, 19 Apr 2022 00:37:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw3hG/W1nT/V3lbt+DapwBobEev6m6WKfqd6rBDyvMyzO4s4Jf3Z9XJXBOz1X7nb8ywMLE6pw==
-X-Received: by 2002:a17:907:2cc7:b0:6df:b76d:940d with SMTP id hg7-20020a1709072cc700b006dfb76d940dmr12199035ejc.742.1650353823437;
-        Tue, 19 Apr 2022 00:37:03 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:5d00:d8c2:fbf6:a608:957a? (p200300cbc7045d00d8c2fbf6a608957a.dip0.t-ipconnect.de. [2003:cb:c704:5d00:d8c2:fbf6:a608:957a])
-        by smtp.gmail.com with ESMTPSA id p9-20020a05640243c900b0041facb9ac9esm7805598edc.1.2022.04.19.00.37.01
+        bh=yT6EUKmSqiEGrbP4N0bYTSlk6uDr2husvMlBwTarc14=;
+        b=hMI8bypVF5/LZdehJwu/Zq8gFkvkXQGCfrnR9zK62WqgSMoHyoDpZfc2fpCuJF/TRN
+         83Yf7pSvjN8q7BdSyMABz4ZxdUT2lcfBhaQjIumtzlA4iwvMFXDmcJ5doYsNentdd3lm
+         f+2phaJpvCm+wCXTeGJg2MZxsYsyoCPJDwG3nmf039xYIq7rDNXJWlynT6zsRzwsSPWY
+         Q3oIoXmOnsYgoO2veANPVvRQOW47Fmt6jFMBMFkh82Jv4v0Tz8du8iiUWMMIWEO/ASW4
+         WHnEVa4B57oMKc2/S7X7dgxTbv/ZdMBE4G01gQLBB5qgZ6nC+xTHOVs9tpKMNWpdsQ6i
+         TF0Q==
+X-Gm-Message-State: AOAM533N7zuVUszcgPvbpIaDwiqqzrTVYjmtJBd2LdFV/47lCdkZjX2p
+        84Ma3RZ+nZM7/Id9qcbBgcE6eQ==
+X-Google-Smtp-Source: ABdhPJy0UNi3XUJDgMW4NFNxXJ9DvThqGjEAKp4ZhYCkikzz8jJsqBSmHmpWm6hNq/7FqpUSfkaD1g==
+X-Received: by 2002:a05:6402:1cc1:b0:413:2cfb:b6ca with SMTP id ds1-20020a0564021cc100b004132cfbb6camr15695999edb.265.1650353866638;
+        Tue, 19 Apr 2022 00:37:46 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id el14-20020a056402360e00b0042121aee887sm7423177edb.77.2022.04.19.00.37.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 00:37:02 -0700 (PDT)
-Message-ID: <b57fea1e-5c9b-f47e-f565-16b54f1e8782@redhat.com>
-Date:   Tue, 19 Apr 2022 09:37:01 +0200
+        Tue, 19 Apr 2022 00:37:46 -0700 (PDT)
+Message-ID: <f3a159b5-ebca-ce00-88dc-ddde353c9031@linaro.org>
+Date:   Tue, 19 Apr 2022 09:37:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2] mm/swapfile: unuse_pte can map random data if swap
- read fails
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] arm64: dts: qcom: db845c: Add support for MCP2517FD
 Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
-        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
-        minchan@kernel.org, peterx@redhat.com, sfr@canb.auug.org.au,
-        rcampbell@nvidia.com, naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220416030549.60559-1-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220416030549.60559-1-linmiaohe@huawei.com>
+To:     Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>
+References: <20220419043348.1483625-1-vkoul@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220419043348.1483625-1-vkoul@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16.04.22 05:05, Miaohe Lin wrote:
-> There is a bug in unuse_pte(): when swap page happens to be unreadable,
-> page filled with random data is mapped into user address space. In case
-> of error, a special swap entry indicating swap read fails is set to the
-> page table. So the swapcache page can be freed and the user won't end up
-> with a permanently mounted swap because a sector is bad. And if the page
-> is accessed later, the user process will be killed so that corrupted data
-> is never consumed. On the other hand, if the page is never accessed, the
-> user won't even notice it.
+On 19/04/2022 06:33, Vinod Koul wrote:
+> Add support for onboard MCP2517FD SPI CAN transceiver attached to
+> SPI0 of RB3.
 > 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
 > ---
-> v2:
->   use special swap entry to avoid permanently mounted swap
->   free the bad page in swapcache
-> ---
->  include/linux/swap.h    |  7 ++++++-
->  include/linux/swapops.h | 10 ++++++++++
->  mm/memory.c             |  5 ++++-
->  mm/swapfile.c           | 11 +++++++++++
->  4 files changed, 31 insertions(+), 2 deletions(-)
+> Changes in v2:
+>  - add cs and pinctrl config
+>  - remove misleading comment
 > 
-> diff --git a/include/linux/swap.h b/include/linux/swap.h
-> index d112434f85df..03c576111737 100644
-> --- a/include/linux/swap.h
-> +++ b/include/linux/swap.h
-> @@ -55,6 +55,10 @@ static inline int current_is_kswapd(void)
->   * actions on faults.
->   */
+>  arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 33 ++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+> index 28fe45c5d516..4f4d45be93e3 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+> +++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+> @@ -28,6 +28,13 @@ chosen {
+>  		stdout-path = "serial0:115200n8";
+>  	};
 >  
-> +#define SWAP_READ_ERROR_NUM 1
-> +#define SWAP_READ_ERROR     (MAX_SWAPFILES + SWP_HWPOISON_NUM + \
-> +			     SWP_MIGRATION_NUM + SWP_DEVICE_NUM + \
-> +			     SWP_PTE_MARKER_NUM)
+> +	/* Fixed crystal oscillator dedicated to MCP2517FD */
+> +	clk40M: can_clock {
 
-Does anything speak against reusing the hwpoison marker? At least from a
-program POV it's similar "the previously well defined content at this
-user space address is no longer readable/writable".
+No underscores in node names.
 
-I recall that we can just set the pfn to 0 for the hwpoison marker.
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <40000000>;
+> +	};
+> +
+>  	dc12v: dc12v-regulator {
+>  		compatible = "regulator-fixed";
+>  		regulator-name = "DC12V";
+> @@ -746,6 +753,24 @@ codec {
+>  	};
+>  };
+>  
+> +&spi0 {
+> +	status = "okay";
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&qup_spi0_default>;
+> +	cs-gpios = <&tlmm 3 GPIO_ACTIVE_LOW>;
+> +
+> +	can@0 {
+> +		compatible = "microchip,mcp2517fd";
+> +		reg = <0>;
+> +		clocks = <&clk40M>;
+> +		interrupts-extended = <&tlmm 104 IRQ_TYPE_LEVEL_LOW>;
+> +		spi-max-frequency = <10000000>;
+> +		vdd-supply = <&vdc_5v>;
+> +		xceiver-supply = <&vdc_5v>;
+> +		status = "okay";
 
-There is e.g., check_hwpoisoned_entry() and it just stops if it finds
-"pfn=0".
+No need for status for new nodes (unless it is an extension of existing
+node?), it is okay by default.
 
 
--- 
-Thanks,
-
-David / dhildenb
-
+Best regards,
+Krzysztof
