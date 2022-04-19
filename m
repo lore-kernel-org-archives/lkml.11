@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 380EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:08:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A73C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355917AbiDSRLR (ORCPT
+        id S1355897AbiDSRLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59842 "EHLO
+        Tue, 19 Apr 2022 13:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355658AbiDSRJ5 (ORCPT
+        with ESMTP id S1343836AbiDSRKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:09:57 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E33DED9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:14 -0700 (PDT)
+        Tue, 19 Apr 2022 13:10:00 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F50C1164
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388034; x=1681924034;
+  t=1650388037; x=1681924037;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ql2r7AqKnHApM/EHR/Pff0tcNQI0JekmA3IUxRweYz0=;
-  b=JWymLZw2iN/fu/UnU9KDK1Ev49ZQ0YD22Nx4Yy9+nFJFLuZaeNU7ikFq
-   LTIyZ+rFp5K5dBfQaUDv5QM8nyEtQ/qr/qelwVpsIFsWlyxLvbq+zvBDV
-   7D7KFX1dZvEZJ4qPHR1yY1KzIZuAIyg+ichRv4OgYOfP9v1Shx6XDyWmr
-   VbT1MjJiyApB36ZQjKYO7l9qc6tOX+2Q/tCDTT2Q8iidwcZautNB8hDzw
-   Jqng7ncuIhEC0d8apjUz+6DSRGc5L9J1nYGEGwyn3T0L8eQ9++/YkTLOU
-   CGGHFJwNJe2zV/0b61PDaKl01dS15SH2rY4GxlTONvQ5tAowbUL6YWgTK
+  bh=HzuyO7S2Ekg+g7XHoS8vhO/ifVxDTWKb+avzh6c7FFM=;
+  b=ZodC3dqXByJS8k+TtY/lFmPAvcDm5mikucM1js787jV/Bwa+4Awuf1Bu
+   h6etn0JQrmtXqhumXNFyLrn0y47IjMcSvSvLohOXyXHsy/mFAOLgeHAEm
+   oHH04r9je2qB96zN49qfldrTLyuF5Ob5tnzb827SqAPjLz3rdd7zP3Wok
+   odA+bA10NDAJyi7qh4zEJFKDfbLhNxe8eE/Hx3tICsmBj8cP29/MGMm4U
+   P65GTXIZcXSOj722jW2g9cRqebxlruA50WF8IpDKGRatf0jCZQzfAuFLk
+   KLpSn1tUCFXepLkSEYPXpd7/o28QfjbRtP31mNGw0fozEMQTGePaQEOwF
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="288918165"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="324261496"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="288918165"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:13 -0700
+   d="scan'208";a="324261496"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:17 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="576192246"
+   d="scan'208";a="530498895"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:11 -0700
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:16 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 25/44] memremap_pages: Add Kconfig for DEVMAP_ACCESS_PROTECTION
-Date:   Tue, 19 Apr 2022 10:06:30 -0700
-Message-Id: <20220419170649.1022246-26-ira.weiny@intel.com>
+Subject: [PATCH V10 31/44] memremap_pages: Define pgmap_set_{readwrite|noaccess}() calls
+Date:   Tue, 19 Apr 2022 10:06:36 -0700
+Message-Id: <20220419170649.1022246-32-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,74 +60,177 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-The persistent memory (PMEM) driver uses the memremap_pages facility to
-provide 'struct page' metadata (vmemmap) for PMEM.  Given that PMEM
-capacity may be orders of magnitude higher capacity than System RAM it
-presents a large vulnerability surface to stray writes.  Unlike stray
-writes to System RAM, which may result in a crash or other undesirable
-behavior, stray writes to PMEM additionally are more likely to result in
-permanent data loss. Reboot is not a remediation for PMEM corruption
-like it is for System RAM.
+A thread that wants to access memory protected by PGMAP protections must
+first enable access, and then disable access when it is done.
 
-Given that PMEM access from the kernel is limited to a constrained set
-of locations (PMEM driver, Filesystem-DAX, and direct-I/O to a DAX
-page), it is amenable to supervisor pkey protection.
+Introduce pgmap_set_{readwrite|noaccess}() for this purpose.  The two
+calls are destined to be used by the kmap API and take a struct page for
+convenience.  They determine if the page is protected and, if so,
+perform the requested operation.
 
-Add a Kconfig option to configure additional devmap protections using
-PKS.
+Toggling between Read/Write and No Access was chosen as it fits well
+with the accessibility of a kmap'ed page.  Discussions did occur
+regarding making a finer grained mapping for Read Only but that is
+something which can be added at a later date.
 
-Only PMEM which is advertised to the memory subsystem needs this
-protection.  Therefore, the feature depends on NVDIMM_PFN.
+In addition, two lower level functions are exported.  They take the
+dev_pagemap object directly for internal consumers who have knowledge of
+the of the dev_pagemap.
+
+All changes in the protections must be through the above calls.  They
+abstract the protection implementation (currently the PKS API) from
+upper layer consumers.
+
+The calls are made nestable by the use of a per task reference count.
+This ensures that the first call to re-enable protection does not
+'break' the last access of the device memory.  Expansion of the task
+struct is unavoidable due to the desire to maintain kmap_local_page() as
+non-atomic and migratable.  The only other idea to track a reference
+count was in a per-cpu variable.  However, doing so would make
+kmap_local_page() equivalent to kmap_atomic() which is undesirable.
+
+Access to device memory during exceptions (#PF) is expected only from
+user faults.  Therefore there is no need to maintain the reference count
+during exceptions.
+
+NOTE: It is not anticipated that any code path will directly nest these
+calls.  For this reason multiple reviewers, including Dan and Thomas,
+asked why this reference counting was needed at this level rather than
+in a higher level call such as kmap_local_page().  The reason is that
+pgmap_set_readwrite() can nest with kmap_{atomic,local_page}().
+Therefore this reference counting is pushed to the lower level to ensure
+that any combination of calls is nestable.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V10
-	Rebased to latest
+	Move code from mm.h to memremap.h
+		Upstream separated memremap.h functionality from mm.h
+		dc90f0846df4 ("mm: don't include <linux/memremap.h> in <linux/mm.h>")
 
 Changes for V9
-	Change this to enable arch pks consumer for mutual exclusion
-		with testing all pkeys
 	From Dan Williams
-		Default to no
-		Clean up commit message
+		Update the commit message with details on why the thread
+			struct needs to be expanded.
+	Following on Dave Hansens suggestion for pks_mk
+		s/pgmap_mk_*/pgmap_set_*/
 
 Changes for V8
-	Split this out from
-		[PATCH V7 13/18] memremap_pages: Add access protection via supervisor Protection Keys (PKS)
+	Split these functions into their own patch.
+		This helps to clarify the commit message and usage.
 ---
- mm/Kconfig | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/linux/memremap.h | 35 +++++++++++++++++++++++++++++++++++
+ include/linux/sched.h    |  7 +++++++
+ init/init_task.c         |  3 +++
+ mm/memremap.c            | 14 ++++++++++++++
+ 4 files changed, 59 insertions(+)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 29c272974aa9..fe1752e6e76c 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -797,6 +797,24 @@ config ZONE_DEVICE
+diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+index 6325f00096ec..1012c6c4c664 100644
+--- a/include/linux/memremap.h
++++ b/include/linux/memremap.h
+@@ -240,8 +240,43 @@ static inline bool devmap_protected(struct page *page)
+ 	return false;
+ }
  
- 	  If FS_DAX is enabled, then say Y.
++void __pgmap_set_readwrite(struct dev_pagemap *pgmap);
++void __pgmap_set_noaccess(struct dev_pagemap *pgmap);
++
++static inline bool pgmap_check_pgmap_prot(struct page *page)
++{
++	if (!devmap_protected(page))
++		return false;
++
++	/*
++	 * There is no known use case to change permissions in an irq for pgmap
++	 * pages
++	 */
++	lockdep_assert_in_irq();
++	return true;
++}
++
++static inline void pgmap_set_readwrite(struct page *page)
++{
++	if (!pgmap_check_pgmap_prot(page))
++		return;
++	__pgmap_set_readwrite(page->pgmap);
++}
++
++static inline void pgmap_set_noaccess(struct page *page)
++{
++	if (!pgmap_check_pgmap_prot(page))
++		return;
++	__pgmap_set_noaccess(page->pgmap);
++}
++
+ #else
  
-+config DEVMAP_ACCESS_PROTECTION
-+	bool "Access protection for memremap_pages()"
-+	depends on NVDIMM_PFN
-+	depends on ARCH_HAS_SUPERVISOR_PKEYS
-+	select ARCH_ENABLE_PKS_CONSUMER
-+	default n
++static inline void __pgmap_set_readwrite(struct dev_pagemap *pgmap) { }
++static inline void __pgmap_set_noaccess(struct dev_pagemap *pgmap) { }
++static inline void pgmap_set_readwrite(struct page *page) { }
++static inline void pgmap_set_noaccess(struct page *page) { }
 +
-+	help
-+	  Enable extra protections on device memory.  This protects against
-+	  unintended access to devices such as a stray writes.  This feature is
-+	  particularly useful to protect against corruption of persistent
-+	  memory.
+ static inline bool pgmap_protection_available(void)
+ {
+ 	return false;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index d5e3c00b74e1..7da0d2a0ac74 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1498,6 +1498,13 @@ struct task_struct {
+ 	struct callback_head		l1d_flush_kill;
+ #endif
+ 
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++	/*
++	 * NOTE: pgmap_prot_count is modified within a single thread of
++	 * execution.  So it does not need to be atomic_t.
++	 */
++	u32                             pgmap_prot_count;
++#endif
+ 	/*
+ 	 * New fields for task_struct should be added above here, so that
+ 	 * they are included in the randomized portion of task_struct.
+diff --git a/init/init_task.c b/init/init_task.c
+index 73cc8f03511a..948b32cf8139 100644
+--- a/init/init_task.c
++++ b/init/init_task.c
+@@ -209,6 +209,9 @@ struct task_struct init_task
+ #ifdef CONFIG_SECCOMP_FILTER
+ 	.seccomp	= { .filter_count = ATOMIC_INIT(0) },
+ #endif
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++	.pgmap_prot_count = 0,
++#endif
+ };
+ EXPORT_SYMBOL(init_task);
+ 
+diff --git a/mm/memremap.c b/mm/memremap.c
+index 215ab9c51917..491bb49255ae 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -94,6 +94,20 @@ static void devmap_protection_disable(void)
+ 	static_branch_dec(&dev_pgmap_protection_static_key);
+ }
+ 
++void __pgmap_set_readwrite(struct dev_pagemap *pgmap)
++{
++	if (!current->pgmap_prot_count++)
++		pks_set_readwrite(PKS_KEY_PGMAP_PROTECTION);
++}
++EXPORT_SYMBOL_GPL(__pgmap_set_readwrite);
 +
-+	  This depends on architecture support of supervisor PKeys and has no
-+	  overhead if the architecture does not support them.
++void __pgmap_set_noaccess(struct dev_pagemap *pgmap)
++{
++	if (!--current->pgmap_prot_count)
++		pks_set_noaccess(PKS_KEY_PGMAP_PROTECTION);
++}
++EXPORT_SYMBOL_GPL(__pgmap_set_noaccess);
 +
-+	  If you have persistent memory say 'Y'.
-+
- #
- # Helpers to mirror range of the CPU page tables of a process into device page
- # tables.
+ #else /* !CONFIG_DEVMAP_ACCESS_PROTECTION */
+ 
+ static void devmap_protection_enable(void) { }
 -- 
 2.35.1
 
