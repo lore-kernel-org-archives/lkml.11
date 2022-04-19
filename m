@@ -2,113 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A14C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E098BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349893AbiDSIS1 (ORCPT
+        id S1349880AbiDSISw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
+        Tue, 19 Apr 2022 04:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349947AbiDSISN (ORCPT
+        with ESMTP id S1349892AbiDSIS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:18:13 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0169632C;
-        Tue, 19 Apr 2022 01:14:56 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id x24so3235388qtq.11;
-        Tue, 19 Apr 2022 01:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Mj8GBm7fHLra8a9Wmaa9qaJw0tz/2aEtzPHOqJEgUyw=;
-        b=VZj+g5TEqFwrOt3e8foNXSoqon431CGXfIpFC2WjAx05e6oe8RlRGadnEsb0PWHPx8
-         MExUVIDkXpJueV34Xf1xPNG04WaULeWZOhIRE7V4+qlpGLxLdX5wMA+qx6vluFhlXlhL
-         2Od7e732KvQev7rInDsV6I5rw/cOFchzCqAGcfMmUlPPZDa1W/mimfN6Pe+8URTj25ws
-         sLZBDQoSx3AIYLtDamiAB5RolOjud+Gv7wDgw7DeozCnXMJKbSzpI+c861CIsxreMApc
-         gMb/CsOni2dy0F6OVYLTJpoex/nMDly2mseAFFpuJxj/Kftfr3l9HC3k6J2ShjMYDZyJ
-         Ov6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Mj8GBm7fHLra8a9Wmaa9qaJw0tz/2aEtzPHOqJEgUyw=;
-        b=3Q/43VgmhOMzKl0baMqF2EB+x1HCveFKCHeOo8DoR0ilaIxS7lB3KCZMKGFVCuMg6k
-         aKcUCGqXl0YNNXiWJz+w8/+dlygUaNIi711KgNgYjYXkvL5BpY+cwD9O6ZVQeO0X36IX
-         5JCH74JEy8P8NA0qDiqVGgEPuqJ4fPFiDrWGIHM4bWsfu0Zn0dGpjmlhcXHKtldgoxRS
-         aOBJhWFeyM7vpLiisIno5MlMYuTN23juaqqc1RPO33+cwJFzYwu535WbxQjb6CwkI/0Q
-         IO56rvkmNVrUCiMAqaSb0R/Zn5H7sa6NFtuMOam9PIaqATPvSVpXaYKpALhILzP4XcGn
-         VUKA==
-X-Gm-Message-State: AOAM532tCQqxkcm8c7iCtwPSLhazwZjKn9J55umGIWJfOajc4HAn5dyc
-        5/zAmnmw9+jgHYXfmPY420M=
-X-Google-Smtp-Source: ABdhPJx+JlotR1kfZlhHiYV5w5lFiOs6ai3kGB9qZ/ssBH8h1S8SzII4+Qjcat7pYOKsIVSbMUO/Yw==
-X-Received: by 2002:ac8:7c46:0:b0:2e1:d6c2:2b15 with SMTP id o6-20020ac87c46000000b002e1d6c22b15mr9491744qtv.405.1650356095930;
-        Tue, 19 Apr 2022 01:14:55 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id p5-20020a378d05000000b0069beaffd5b3sm8061423qkd.4.2022.04.19.01.14.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 01:14:55 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     wg@grandegger.com
-Cc:     mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] can: flexcan: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 19 Apr 2022 08:14:49 +0000
-Message-Id: <20220419081449.2574026-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 19 Apr 2022 04:18:27 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22AB2F009;
+        Tue, 19 Apr 2022 01:15:43 -0700 (PDT)
+X-UUID: ffc4d363a4fe484c94746d57181154b2-20220419
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:72a0743e-9742-4747-84d6-b10151435cbb,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.4,REQID:72a0743e-9742-4747-84d6-b10151435cbb,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:faefae9,CLOUDID:c2305bef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
+        l,QS:0,BEC:nil
+X-UUID: ffc4d363a4fe484c94746d57181154b2-20220419
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1300040232; Tue, 19 Apr 2022 16:15:36 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 19 Apr 2022 16:15:36 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 19 Apr 2022 16:15:36 +0800
+Message-ID: <438d21a46fffebdf858c327c92155b5b91646376.camel@mediatek.com>
+Subject: Re: [PATCH 3/7] clk: mediatek: reset: Merge and revise reset
+ register function
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>
+CC:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
+        <angelogioacchino.delregno@collabora.com>,
+        <chun-jie.chen@mediatek.com>, <yong.liang@mediatek.com>,
+        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <allen-kh.cheng@mediatek.com>, <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 19 Apr 2022 16:15:36 +0800
+In-Reply-To: <CAGXv+5GQR27+iomwHfwYb0gB_QVTZSy6TaZ+1qViMmNPka3Yjw@mail.gmail.com>
+References: <20220418132154.7401-1-rex-bc.chen@mediatek.com>
+         <20220418132154.7401-4-rex-bc.chen@mediatek.com>
+         <CAGXv+5GQR27+iomwHfwYb0gB_QVTZSy6TaZ+1qViMmNPka3Yjw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On Tue, 2022-04-19 at 15:26 +0800, Chen-Yu Tsai wrote:
+> On Mon, Apr 18, 2022 at 9:22 PM Rex-BC Chen <rex-bc.chen@mediatek.com
+> > wrote:
+> > 
+> > Merge the reset register function of v1 and v2 into one function.
+> > - Input the version number to determine which version we will use.
+> > - Add return value of reset register function for error handling.
+> 
+> Please do this in a separate patch. Also you are adding error
+> messages
+> for when of_clk_add_provider() fails, which is not mentioned either.
+> 
+> Most of these platform drivers require a good cleanup of their error
+> handling anyway. It might be a good idea to tackle them later. Or if
+> they look the same, you could try using coccinelle to do a bulk
+> cleanup.
+> 
+> 
+> Thanks
+> ChenYu
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+Hello ChenYu,
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/can/flexcan/flexcan-core.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+I will separate the error handle in another patch.
+I think I will just add a return value. As for cleanup the clock error 
+handling flow, it's not the purpose of this series.
 
-diff --git a/drivers/net/can/flexcan/flexcan-core.c b/drivers/net/can/flexcan/flexcan-core.c
-index 74d7fcbfd065..459e8aecabd5 100644
---- a/drivers/net/can/flexcan/flexcan-core.c
-+++ b/drivers/net/can/flexcan/flexcan-core.c
-@@ -723,11 +723,9 @@ static int flexcan_get_berr_counter(const struct net_device *dev,
- 	const struct flexcan_priv *priv = netdev_priv(dev);
- 	int err;
- 
--	err = pm_runtime_get_sync(priv->dev);
--	if (err < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	err = pm_runtime_resume_and_get(priv->dev);
-+	if (err < 0)
- 		return err;
--	}
- 
- 	err = __flexcan_get_berr_counter(dev, bec);
- 
-@@ -1700,11 +1698,9 @@ static int flexcan_open(struct net_device *dev)
- 		return -EINVAL;
- 	}
- 
--	err = pm_runtime_get_sync(priv->dev);
--	if (err < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	err = pm_runtime_resume_and_get(priv->dev);
-+	if (err < 0)
- 		return err;
--	}
- 
- 	err = open_candev(dev);
- 	if (err)
--- 
-2.25.1
+BRs,
+Rex
+> 
+> > - Rename reset register function to "mtk_clk_register_rst_ctrl"
 
