@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C687C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357594AbiDSULt (ORCPT
+        id S1357601AbiDSULv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
+        Tue, 19 Apr 2022 16:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357148AbiDSUL3 (ORCPT
+        with ESMTP id S1357120AbiDSUL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 16:11:29 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D4D3C731;
-        Tue, 19 Apr 2022 13:08:43 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 20:08:41 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2066D3BF81;
+        Tue, 19 Apr 2022 13:08:41 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:08:38 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650398922;
+        s=2020; t=1650398919;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NPA42ChuTlOaSKtgc0k0MGM0iE9m59AeUtQErq5CWog=;
-        b=44KlVQjV1OpCfNtY+ngn85ulPCc7pmGigVEuRC6YLl4bbhTFBwXsAbDJPLD8K4Wvm89Hu8
-        l3ce3+SL4vSmxBtMUbebz+CFvUUdfy+MraSRGIJb2zT+nkMw1sIRUWv4x8GAcvNLgZFmr7
-        gPfZRAkbUhlfli17sZx5zl6c3F4dgozkr8A2OzuYnJta/r+4Y84L3RG+Ev6RAEofTc3vJ4
-        Uzbc60w4aHVlQMxAhLTVzteW2RslZCZGEoI7BFg3cQ8A6jgfVTdt1FPGuNObEzyLrPbsxa
-        Wvc54tqwIq0eGcWLOB4QGoyJPgg802RsJ0F8Z9wmfiRkqkvbKYMi9w7xyqRKsA==
+        bh=8l7reSWjkYXMhIWsUQJFyIZ1inBA/aa7459JhwsivbA=;
+        b=xkafwJnCxELjwjqbRJmg9QC1kwhMVRnAlYwqyjoYX9OmjDUeVsXhgfns3AI+7MAMLAqDg5
+        TmdVWYM0EmdosP02KSNt3QNGzYil4vaZ4C0xbvGwfn6P/boiCgEqAIT6lMEd2SjyE3Udt6
+        6GmAYXuY5UWCotxxZ7ROunf7ozC/JYSnVyMxojV8EZhOdjKPDKiRo38CymMoWEeJ1sw3qS
+        t5RQhFtgzret5DEhMbibmZ3RZyFJ03Xiqt1aqg8tRiD/OkfYiZCBAHngUOuKCstffAxYNv
+        d5jBbz7jb0+cCE0Y6dn46urME2HFNo8zDBJyfXxkrEPu6tBPEXHTvtM3fTHC1g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650398922;
+        s=2020e; t=1650398919;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NPA42ChuTlOaSKtgc0k0MGM0iE9m59AeUtQErq5CWog=;
-        b=m79/fhyIKk8kxiI0RssEwnET3SbzdhcPvXw0TapoKbyC4iQVR+qGtuxlIzhgla/exAQURZ
-        StVa9yV0aQY476CA==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=8l7reSWjkYXMhIWsUQJFyIZ1inBA/aa7459JhwsivbA=;
+        b=bPj4zu2ZE8UMBRycrWk2oeLvnxBX3BiFZ7OSFYAy/PwIQDaNU5a3wOTO2DxgAif5UBbr4i
+        rrksebYDGMld1oBQ==
+From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86,objtool: Explicitly mark idtentry_body()s tail
- REACHABLE
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+Subject: [tip: x86/urgent] x86/retpoline: Add ANNOTATE_NOENDBR for retpolines
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220408094718.441854969@infradead.org>
-References: <20220408094718.441854969@infradead.org>
+In-Reply-To: <b6ec963dfd9301b6b1d74ef7758fcb0b540d6c6c.1650300597.git.jpoimboe@redhat.com>
+References: <b6ec963dfd9301b6b1d74ef7758fcb0b540d6c6c.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165039892139.4207.18081241946662720260.tip-bot2@tip-bot2>
+Message-ID: <165039891874.4207.2931765503619062389.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,38 +62,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     d66e9d50ea5cd76b2c4875c758efad665283d7ad
-Gitweb:        https://git.kernel.org/tip/d66e9d50ea5cd76b2c4875c758efad665283d7ad
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 08 Apr 2022 11:45:56 +02:00
+Commit-ID:     1c0513dec41e4d40eb21402dff397ad84ca13a44
+Gitweb:        https://git.kernel.org/tip/1c0513dec41e4d40eb21402dff397ad84ca13a44
+Author:        Josh Poimboeuf <jpoimboe@redhat.com>
+AuthorDate:    Mon, 18 Apr 2022 09:50:23 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 19 Apr 2022 21:58:48 +02:00
+CommitterDate: Tue, 19 Apr 2022 21:58:49 +02:00
 
-x86,objtool: Explicitly mark idtentry_body()s tail REACHABLE
+x86/retpoline: Add ANNOTATE_NOENDBR for retpolines
 
-Objtool can figure out that some \cfunc()s are noreturn and then
-complains about certain instances having unreachable tails:
+The retpolines are exported, so they're referenced by ksymtab sections.
+But they're never indirect-branched to, so add ANNOTATE_NOENDBR.
 
-  vmlinux.o: warning: objtool: asm_exc_xen_unknown_trap()+0x16: unreachable instruction
-
+Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220408094718.441854969@infradead.org
+Link: https://lkml.kernel.org/r/b6ec963dfd9301b6b1d74ef7758fcb0b540d6c6c.1650300597.git.jpoimboe@redhat.com
 ---
- arch/x86/entry/entry_64.S | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/lib/retpoline.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 4faac48..73d9585 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -337,6 +337,9 @@ SYM_CODE_END(ret_from_fork)
+diff --git a/arch/x86/lib/retpoline.S b/arch/x86/lib/retpoline.S
+index 5f87bab..b2b2366 100644
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -31,6 +31,7 @@
+ 	.align RETPOLINE_THUNK_SIZE
+ SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
+ 	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
  
- 	call	\cfunc
+ 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
+ 		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
+@@ -55,7 +56,6 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
  
-+	/* For some configurations \cfunc ends up being a noreturn. */
-+	REACHABLE
-+
- 	jmp	error_return
- .endm
+ 	.align RETPOLINE_THUNK_SIZE
+ SYM_CODE_START(__x86_indirect_thunk_array)
+-	ANNOTATE_NOENDBR // apply_retpolines
  
+ #define GEN(reg) THUNK reg
+ #include <asm/GEN-for-each-reg.h>
