@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8765C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241685AbiDSApx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
+        id S241634AbiDSAp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241096AbiDSApN (ORCPT
+        with ESMTP id S241151AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:45:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A26827CCC
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:31 -0700 (PDT)
+        Mon, 18 Apr 2022 20:45:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D956C2AC5C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDA7961386
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08D6C385BB;
-        Tue, 19 Apr 2022 00:42:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 01870CE1299
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC5DC385DB;
+        Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650328947;
-        bh=UmO1hp+XGaTQwCFqLp+65TE9Dy96tWIcIbtYJw8gVdg=;
+        s=k20201202; t=1650328948;
+        bh=byMzJe2H2GUtc2cOXlkFwHCrNq/HY4AjpqDjvfRblZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czLeANH/mmnUhlgFBOq6MhswWz0Amwo6bWRkUr6tGVofoKecr03HUjEEpGM2esbGF
-         hmGyz+6LQwxhIQ8YDYteZfG7Ozc8smeiAntpPycyKxe0wsljMv860LISP2o/26A3DG
-         y2RhwgTfPdu+9tWJ2kjIYLaobpzv2fAsMSaeoPVkrYfTxvvcbG+WEt4TAf3IVh2OBN
-         JgKDwjaEE/y0O9BRW7xz0MHWBcSxs1NeGkylrfX+NnBj6D29hYZ9AzMgnoa71tmuUQ
-         E+uj7OnK7rGrUay2habDbjCytNgRFjeIxkjNqGOxuUvxDn2dOS0q5I4LRULMBx7ja4
-         bXwSFKfmUsFxg==
+        b=BHRomnEW9/Ytc7BPx3QAijQMqWJlL96oxk7MZOZ3uih6/1zLY4MFnuv1xPSd16W3k
+         nZcWOFQdnfEO3sCaJZ/StRTOt1O4edjJChiMSQq9hoJJrKqCioPQI9cLjE6MjqcXt8
+         TlBFYFRlzWQpgDVuI2meBdiT5b54wnNdJDlw/J/yDR0TaVJR974MKxyWPTrvxO4tmU
+         omd0Aw91unuDLZCaxtsPfo/4MibtjotVKUIwJSbBI7K0kqIttJ4j8Gh80izTUPHsIA
+         WN+Sx+C9Uxbu2g4cLa6L2I6jAFwtn1+/gqeXkMJ8qv6gOI+WTTandhBcMaiqCi304v
+         nEpXRoslachqw==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 1E6915C23F4; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 415EE5C3108; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 13/61] tools/nolibc/types: move makedev to types.h and make it a macro
-Date:   Mon, 18 Apr 2022 17:41:37 -0700
-Message-Id: <20220419004225.3952530-13-paulmck@kernel.org>
+Subject: [PATCH nolibc 32/61] tools/nolibc: move exported functions to their own section
+Date:   Mon, 18 Apr 2022 17:41:56 -0700
+Message-Id: <20220419004225.3952530-32-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,50 +53,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-The makedev() man page says it's supposed to be a macro and that some
-OSes have it with the other ones in sys/types.h so it now makes sense
-to move it to types.h as a macro. Let's also define major() and
-minor() that perform the reverse operation.
+Some functions like raise() and memcpy() are permanently exported because
+they're needed by libgcc on certain platforms. However most of the time
+they are not needed and needlessly take space.
+
+Let's move them to their own sub-section, called .text.nolibc_<function>.
+This allows ld to get rid of them if unused when passed --gc-sections.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/nolibc.h | 9 ---------
- tools/include/nolibc/types.h  | 5 +++++
- 2 files changed, 5 insertions(+), 9 deletions(-)
+ tools/include/nolibc/stdlib.h | 2 +-
+ tools/include/nolibc/string.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
-index 2267d98337ea..23fb81414b1b 100644
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -116,13 +116,4 @@ const char *ltoa(long in)
- 	return pos + 1;
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index 4cc1fdf6791e..da08ff30c15a 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -314,7 +314,7 @@ int msleep(unsigned int msecs)
  }
  
--/* Here come a few helper functions */
--
--/* WARNING, it only deals with the 4096 first majors and 256 first minors */
--static __attribute__((unused))
--dev_t makedev(unsigned int major, unsigned int minor)
--{
--	return ((major & 0xfff) << 8) | (minor & 0xff);
--}
--
- #endif /* _NOLIBC_H */
-diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-index 563dbbad0496..b1bff5e717b6 100644
---- a/tools/include/nolibc/types.h
-+++ b/tools/include/nolibc/types.h
-@@ -162,4 +162,9 @@ struct stat {
- 	time_t    st_ctime;   /* time of last status change */
- };
+ /* This one is not marked static as it's needed by libgcc for divide by zero */
+-__attribute__((weak,unused))
++__attribute__((weak,unused,section(".text.nolibc_raise")))
+ int raise(int signal)
+ {
+ 	return sys_kill(sys_getpid(), signal);
+diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
+index c550c9ba8f4c..c1661589cb3c 100644
+--- a/tools/include/nolibc/string.h
++++ b/tools/include/nolibc/string.h
+@@ -69,7 +69,7 @@ void *memmove(void *dst, const void *src, size_t len)
+ }
  
-+/* WARNING, it only deals with the 4096 first majors and 256 first minors */
-+#define makedev(major, minor) ((dev_t)((((major) & 0xfff) << 8) | ((minor) & 0xff)))
-+#define major(dev) ((unsigned int)(((dev) >> 8) & 0xfff))
-+#define minor(dev) ((unsigned int)(((dev) & 0xff))
-+
- #endif /* _NOLIBC_TYPES_H */
+ /* must be exported, as it's used by libgcc on ARM */
+-__attribute__((weak,unused))
++__attribute__((weak,unused,section(".text.nolibc_memcpy")))
+ void *memcpy(void *dst, const void *src, size_t len)
+ {
+ 	return _nolibc_memcpy_up(dst, src, len);
 -- 
 2.31.1.189.g2e36527f23
 
