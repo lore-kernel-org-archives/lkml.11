@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0050AC388F3
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BD1C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348977AbiDSQt1 (ORCPT
+        id S1355402AbiDSQtm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        Tue, 19 Apr 2022 12:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244970AbiDSQqK (ORCPT
+        with ESMTP id S1355091AbiDSQoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:46:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB69239692;
-        Tue, 19 Apr 2022 09:43:26 -0700 (PDT)
+        Tue, 19 Apr 2022 12:44:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1C323BF4;
+        Tue, 19 Apr 2022 09:41:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AB4D61877;
-        Tue, 19 Apr 2022 16:43:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A3AC385AE;
-        Tue, 19 Apr 2022 16:43:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DEB5B819DE;
+        Tue, 19 Apr 2022 16:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B048C385A5;
+        Tue, 19 Apr 2022 16:41:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386605;
-        bh=jVLr/dnEKwuj3c1vrZ91YoCk9HDGqp70ixnIySjnCzk=;
+        s=k20201202; t=1650386504;
+        bh=F7MBpdNOWf67bimqHOji31bTXpJ1ZCUAsldDqvgUu28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWT14rZK6S8SuCBdSeUZzPrc9E19Tfk5z+4e9Xxz5EV84KlZjRCrsV4OOzxS7dHS6
-         4iexBwIyE7R2Bpu6+i2RCf1afkBlvNseI9hOFpc1KtSAzBYh231hgSqMVDhA681sMd
-         tSc90K1WjgKGfBNbN2rCf9UAT41xofayQcYjRr5RlfcxKZzE9DwCXzhkkSatqU7rJA
-         Txl8iVGB3rULKEKOFMBXqDJviTOWOEw+/wfcvwIbK1jtrAzCoSC461ZPz5HedxyzbB
-         zEfwanqzKNV6A15RBOC7RVLcka+KDcF2taZlmtRD7tt/hSaNrcpYJnLCOHouG9UN5P
-         xWRdDk2j4rGQQ==
+        b=M9+kiqJIfUhfsFE1H4YAU921VV0VonfY9j1NKObGUwzCjRXR46YiY5Nj5Dl5rsV5L
+         iADk6/ddM85QG95gOh8OUVYyoEgAxa4D3s0bKJkfzDri4GMhVZSzQQuTx0F/9H+wsJ
+         MVlTyeihlRVWFJ5B3aJxEUdAG2tMIaPk7ers3/ONTltRkZsg/z88XIF9SNvMLClZls
+         I6TvEKcDx5DRBX76OZrUNtcSo4m6dLcfqZX2lAkhvSfR9zZVl354Yk7Zy6TbAGL6Ya
+         K7sfhczH1+GW+wFu7/eCNYeSzMXgdYelcxwq9ivucHJV+x+FdLYDsJhrGZDEpOBDtI
+         Wp06/+3vmFtwg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
@@ -61,9 +61,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
         linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 35/48] ARM: pxa: remove get_clk_frequency_khz()
-Date:   Tue, 19 Apr 2022 18:37:57 +0200
-Message-Id: <20220419163810.2118169-36-arnd@kernel.org>
+Subject: [PATCH 22/48] ARM: pxa: z2: use gpio lookup for audio device
+Date:   Tue, 19 Apr 2022 18:37:44 +0200
+Message-Id: <20220419163810.2118169-23-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
 References: <20220419163810.2118169-1-arnd@kernel.org>
@@ -75,87 +75,88 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-get_clk_frequency_khz() is not a proper name for a global function,
-and there is only one caller.
+The audio device is allocated by the audio driver, and it uses a gpio
+number from the mach/z2.h header file.
 
-Convert viper to use the properly namespaced
-pxa25x_get_clk_frequency_khz() and remove the other references.
+Change it to use a gpio lookup table for the device allocated by the
+driver to keep the header file local to the machine.
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Acked-by: Mark Brown <broonie@kernel.org>
+Cc: alsa-devel@alsa-project.org
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Cc: linux-pm@vger.kernel.org
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/mach-pxa/generic.c      | 15 ---------------
- arch/arm/mach-pxa/generic.h      |  1 -
- arch/arm/mach-pxa/viper.c        |  2 +-
- drivers/cpufreq/pxa2xx-cpufreq.c |  2 --
- 4 files changed, 1 insertion(+), 19 deletions(-)
+ arch/arm/mach-pxa/z2.c | 11 +++++++++++
+ sound/soc/pxa/z2.c     |  5 ++---
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mach-pxa/generic.c b/arch/arm/mach-pxa/generic.c
-index fe1d55d328e5..2c2c82fcf9cb 100644
---- a/arch/arm/mach-pxa/generic.c
-+++ b/arch/arm/mach-pxa/generic.c
-@@ -55,21 +55,6 @@ void __init pxa_timer_init(void)
- 	pxa_timer_nodt_init(IRQ_OST0, io_p2v(0x40a00000));
+diff --git a/arch/arm/mach-pxa/z2.c b/arch/arm/mach-pxa/z2.c
+index 7eaeda269927..bb854e903c8f 100644
+--- a/arch/arm/mach-pxa/z2.c
++++ b/arch/arm/mach-pxa/z2.c
+@@ -651,6 +651,15 @@ static void __init z2_spi_init(void)
+ static inline void z2_spi_init(void) {}
+ #endif
+ 
++static struct gpiod_lookup_table z2_audio_gpio_table = {
++	.dev_id = "soc-audio",
++	.table = {
++		GPIO_LOOKUP("gpio-pxa", GPIO37_ZIPITZ2_HEADSET_DETECT,
++			    "hsdet-gpio", GPIO_ACTIVE_HIGH),
++		{ },
++	},
++};
++
+ /******************************************************************************
+  * Core power regulator
+  ******************************************************************************/
+@@ -755,6 +764,8 @@ static void __init z2_init(void)
+ 	z2_keys_init();
+ 	z2_pmic_init();
+ 
++	gpiod_add_lookup_table(&z2_audio_gpio_table);
++
+ 	pm_power_off = z2_power_off;
  }
  
--/*
-- * Get the clock frequency as reflected by CCCR and the turbo flag.
-- * We assume these values have been applied via a fcs.
-- * If info is not 0 we also display the current settings.
-- */
--unsigned int get_clk_frequency_khz(int info)
--{
--	if (cpu_is_pxa25x())
--		return pxa25x_get_clk_frequency_khz(info);
--	else if (cpu_is_pxa27x())
--		return pxa27x_get_clk_frequency_khz(info);
--	return 0;
--}
--EXPORT_SYMBOL(get_clk_frequency_khz);
--
- void pxa_smemc_set_pcmcia_timing(int sock, u32 mcmem, u32 mcatt, u32 mcio)
- {
- 	__raw_writel(mcmem, MCMEM(sock));
-diff --git a/arch/arm/mach-pxa/generic.h b/arch/arm/mach-pxa/generic.h
-index 67925d3ea026..2f706ef97357 100644
---- a/arch/arm/mach-pxa/generic.h
-+++ b/arch/arm/mach-pxa/generic.h
-@@ -11,7 +11,6 @@
+diff --git a/sound/soc/pxa/z2.c b/sound/soc/pxa/z2.c
+index dc6c48e4738b..7f1c6bc69510 100644
+--- a/sound/soc/pxa/z2.c
++++ b/sound/soc/pxa/z2.c
+@@ -13,7 +13,7 @@
+ #include <linux/timer.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
  
- struct irq_data;
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+@@ -22,7 +22,6 @@
  
--extern unsigned int get_clk_frequency_khz(int info);
- extern void __init pxa_dt_irq_init(int (*fn)(struct irq_data *,
- 					     unsigned int));
- extern void __init pxa_map_io(void);
-diff --git a/arch/arm/mach-pxa/viper.c b/arch/arm/mach-pxa/viper.c
-index 600d9e80b00c..0782f0ed5a6e 100644
---- a/arch/arm/mach-pxa/viper.c
-+++ b/arch/arm/mach-pxa/viper.c
-@@ -851,7 +851,7 @@ static void __init viper_init_vcore_gpios(void)
- 		goto err_dir;
+ #include <asm/mach-types.h>
+ #include <linux/platform_data/asoc-pxa.h>
+-#include <mach/z2.h>
  
- 	/* c/should assume redboot set the correct level ??? */
--	viper_set_core_cpu_voltage(get_clk_frequency_khz(0), 1);
-+	viper_set_core_cpu_voltage(pxa25x_get_clk_frequency_khz(0), 1);
+ #include "../codecs/wm8750.h"
+ #include "pxa2xx-i2s.h"
+@@ -89,7 +88,6 @@ static struct snd_soc_jack_pin hs_jack_pins[] = {
+ /* Headset jack detection gpios */
+ static struct snd_soc_jack_gpio hs_jack_gpios[] = {
+ 	{
+-		.gpio		= GPIO37_ZIPITZ2_HEADSET_DETECT,
+ 		.name		= "hsdet-gpio",
+ 		.report		= SND_JACK_HEADSET,
+ 		.debounce_time	= 200,
+@@ -195,6 +193,7 @@ static int __init z2_init(void)
+ 	if (!z2_snd_device)
+ 		return -ENOMEM;
  
- 	return;
++	hs_jack_gpios[0].gpiod_dev = &z2_snd_device->dev;
+ 	platform_set_drvdata(z2_snd_device, &snd_soc_z2);
+ 	ret = platform_device_add(z2_snd_device);
  
-diff --git a/drivers/cpufreq/pxa2xx-cpufreq.c b/drivers/cpufreq/pxa2xx-cpufreq.c
-index 0f0e676ff781..e74d36d6f78d 100644
---- a/drivers/cpufreq/pxa2xx-cpufreq.c
-+++ b/drivers/cpufreq/pxa2xx-cpufreq.c
-@@ -107,8 +107,6 @@ static struct pxa_freqs pxa27x_freqs[] = {
- static struct cpufreq_frequency_table
- 	pxa27x_freq_table[NUM_PXA27x_FREQS+1];
- 
--extern unsigned get_clk_frequency_khz(int info);
--
- #ifdef CONFIG_REGULATOR
- 
- static int pxa_cpufreq_change_voltage(const struct pxa_freqs *pxa_freq)
 -- 
 2.29.2
 
