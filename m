@@ -2,93 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F99BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348573AbiDSKCd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+        id S242868AbiDSKDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 06:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347788AbiDSKCa (ORCPT
+        with ESMTP id S238346AbiDSKDD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:02:30 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DDB1097;
-        Tue, 19 Apr 2022 02:59:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650362388; x=1681898388;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CPWMk0HA7+zJxEJI8LP26KB7c4E/Ei9njL+XirDH73I=;
-  b=EwoKqU2DWkzdHTaWrQENxBIN4JM4YqRI6N8yxjK4kjx9V76EXIc2PDFU
-   e0kK2H0cpWNm7CSDm3JgsCf1oIi38Vlhocp1Nk88vOBJV4Se607xEOh1w
-   bBau1GAMiXf2LVLXRhAOdopqSqXYd2a6D7bOl9dy7WL9A+ltAuxWuTrup
-   vtjnZIZ96wlHu+/VEyxcnqC720/9Y884n5GIbBvy5sA30sqwCwMxqG9n4
-   gRbSJGYn2z5bv8UarrPVzltShLZ20BRd2+clib+LfE2oYUrV7HYF9a9II
-   0ghg5EjmUGDF9YiWigcJ2aH9t95uK6166Ev4CRnnmB/Nl38f65ZYgjQU3
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="261330030"
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="261330030"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 02:59:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="592724335"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 19 Apr 2022 02:59:45 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngke9-0005cm-1M;
-        Tue, 19 Apr 2022 09:59:45 +0000
-Date:   Tue, 19 Apr 2022 17:59:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Neil Armstrong <narmstrong@baylibre.com>
-Subject: ERROR: modpost: "snd_tea575x_hw_init"
- [drivers/media/pci/bt8xx/bttv.ko] undefined!
-Message-ID: <202204191711.IKJJFjgU-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 19 Apr 2022 06:03:03 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB24613DC8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:00:20 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 861A01F74D;
+        Tue, 19 Apr 2022 10:00:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650362419; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JFQwrU2hFb4VPzzetH0Da+TO97GCBAM9wcZD3DZvdts=;
+        b=NxuByR3iL0REQSwYvutp0rBCshkXiyJZ/QF4YoQv2O5J4y6RiOqhiF/Gxa2L6pE9XVdcxl
+        CfYTCiE8xfo8El787gXrutmxKKNVd+jZnmnZ7emxCHb9hWKfjYV2fpdBS+dbokAhiyj/4O
+        HozU7hWpE7zGRHkYwx+4zLIuROQKl1Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650362419;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JFQwrU2hFb4VPzzetH0Da+TO97GCBAM9wcZD3DZvdts=;
+        b=1s07dcO7q5RJV0Hrz1dzDIu/zQAaZRLdetxqUN0kTOPbs+kCyvMw8QIAULDf0T+v/8r9sf
+        lOqILb7AqFMW8UAA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 6BF7B2C14E;
+        Tue, 19 Apr 2022 10:00:19 +0000 (UTC)
+Date:   Tue, 19 Apr 2022 12:00:19 +0200
+Message-ID: <s5hee1t1jgs.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     syzbot <syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com>
+Cc:     alsa-devel@alsa-project.org, coding@diwic.se, colin.king@intel.com,
+        linux-kernel@vger.kernel.org, perex@perex.cz,
+        syzkaller-bugs@googlegroups.com, tiwai@suse.com
+Subject: Re: [syzbot] KASAN: use-after-free Read in __snd_rawmidi_transmit_peek
+In-Reply-To: <s5hk0bl1m6c.wl-tiwai@suse.de>
+References: <00000000000011555605dceaff03@google.com>
+        <s5hk0bl1m6c.wl-tiwai@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b2d229d4ddb17db541098b83524d901257e93845
-commit: 9958d30f38b96fb763a10d44d18ddad39127d5f4 media: Kconfig: cleanup VIDEO_DEV dependencies
-date:   5 weeks ago
-config: xtensa-randconfig-r022-20220419 (https://download.01.org/0day-ci/archive/20220419/202204191711.IKJJFjgU-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9958d30f38b96fb763a10d44d18ddad39127d5f4
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9958d30f38b96fb763a10d44d18ddad39127d5f4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+On Tue, 19 Apr 2022 11:01:47 +0200,
+Takashi Iwai wrote:
+> 
+> On Mon, 18 Apr 2022 12:12:23 +0200,
+> syzbot wrote:
+> > 
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    a19944809fe9 Merge tag 'hardening-v5.18-rc3' of git://git...
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=16a40ae0f00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=eb177500e563582f
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=70e777a39907d6d5fd0a
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1590dfa8f00000
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
+> > 
+> > ==================================================================
+> > BUG: KASAN: use-after-free in __snd_rawmidi_transmit_peek+0x261/0x360 sound/core/rawmidi.c:1286
+> 
+> Looks like a leftover work.  The fix patch is below.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On the second thought, this would be rather in a different code path,
+and the fix should be smaller like below.  Let's see.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
 
->> ERROR: modpost: "snd_tea575x_hw_init" [drivers/media/pci/bt8xx/bttv.ko] undefined!
->> ERROR: modpost: "snd_tea575x_set_freq" [drivers/media/pci/bt8xx/bttv.ko] undefined!
->> ERROR: modpost: "snd_tea575x_s_hw_freq_seek" [drivers/media/pci/bt8xx/bttv.ko] undefined!
->> ERROR: modpost: "snd_tea575x_enum_freq_bands" [drivers/media/pci/bt8xx/bttv.ko] undefined!
->> ERROR: modpost: "snd_tea575x_g_tuner" [drivers/media/pci/bt8xx/bttv.ko] undefined!
+Takashi
 
+-- 8< --
+From: Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH] ALSA: usb-audio: Clear MIDI port active flag after draining
+
+When a rawmidi output stream is closed, it calls the drain at first,
+then does trigger-off only when the drain returns -ERESTARTSYS as a
+fallback.  It implies that each driver should turn off the stream
+properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
+change the port->active flag after the drain.  This may leave the
+output work picking up the port that is closed right now, which
+eventually leads to a use-after-free for the already released rawmidi
+object.
+
+This patch fixes the bug by properly clearing the port->active flag
+after the output drain.
+
+Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/usb/midi.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/usb/midi.c b/sound/usb/midi.c
+index 2c01649c70f6..7c6ca2b433a5 100644
+--- a/sound/usb/midi.c
++++ b/sound/usb/midi.c
+@@ -1194,6 +1194,7 @@ static void snd_usbmidi_output_drain(struct snd_rawmidi_substream *substream)
+ 		} while (drain_urbs && timeout);
+ 		finish_wait(&ep->drain_wait, &wait);
+ 	}
++	port->active = 0;
+ 	spin_unlock_irq(&ep->buffer_lock);
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
+
