@@ -2,146 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90724C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B22CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350487AbiDSKH4 (ORCPT
+        id S1348548AbiDSKJK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
+        Tue, 19 Apr 2022 06:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350482AbiDSKHv (ORCPT
+        with ESMTP id S231706AbiDSKJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:07:51 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF5D20BCD;
-        Tue, 19 Apr 2022 03:05:09 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J85rai004744;
-        Tue, 19 Apr 2022 10:05:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=pEhu7eU39faiAp1VdJ+LRBfdQWDgHmvH0O3z33FDIyo=;
- b=VXrC8E3LDMNr0WEkhK4Ly2S2wTHfU/t8KnUk2yOnN3zVDq5nmKCk0lrdJffF9ovxTI5J
- zXFUif0vvqT1RobXs92HYJ11tzKIrMcJKyR6C2NUB/7lKzS0KwZpuCSBmKjz3nF2CIFE
- 10wrDWQaGS7iVAY9K9xH9ZUHsqE8xF6Pi5F0SZg+pQUPT4GITisG+CdfC+KWwMs1Rmpi
- 7biRIHsqCfl61mDuPUWyYfJ0L2NBLOQlFwKQZB8eXxD24IYDiF/y56rxFG5N1sCqHbHo
- 2VShLOYMHgKG7zXLzs4VxwF4wbv07Trxw5ah7GhfglZmZp3xxQcufj7+KELBsWx+1wXZ EQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7ekuug2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:05:07 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23J9jXDJ010429;
-        Tue, 19 Apr 2022 10:05:07 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7ekuuf3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:05:07 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23JA2tx6017129;
-        Tue, 19 Apr 2022 10:05:05 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 3ffne944qv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:05:05 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23J9qGho37683646
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Apr 2022 09:52:16 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 145B842045;
-        Tue, 19 Apr 2022 10:05:02 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E1F764203F;
-        Tue, 19 Apr 2022 10:05:00 +0000 (GMT)
-Received: from [9.171.88.57] (unknown [9.171.88.57])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 19 Apr 2022 10:05:00 +0000 (GMT)
-Message-ID: <492b49f4-7800-22af-2924-36f90f32e6b3@linux.ibm.com>
-Date:   Tue, 19 Apr 2022 12:08:18 +0200
+        Tue, 19 Apr 2022 06:09:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B35024581;
+        Tue, 19 Apr 2022 03:06:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28262B81100;
+        Tue, 19 Apr 2022 10:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52AABC385A5;
+        Tue, 19 Apr 2022 10:06:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650362781;
+        bh=Xjd8xF6lDlknu1VxRG+stmss65nhtH4KHhx1LEffttI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gAZOVz8jTW3kGOUMy8Riy51iT0npPo1ZOrX0UteWXpiGJrUczBxY7vQTQH6n0Bhr7
+         7hlzSedRjb7Qbl6HU5QNiFJ2rBUZQNkE/n6bfoVKx9cKe7GBsISscl3eJT3xcpssKc
+         VpW5G6E6ob/4ugmQKxXXeBiFvtFPDE72zsHaIYLM=
+Date:   Tue, 19 Apr 2022 12:06:18 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 16/20] tty: n_gsm: clean up dead code in gsm_queue()
+Message-ID: <Yl6Jmk/j7go9s+0i@kroah.com>
+References: <YlkRO6fAPCuWyT1Y@kroah.com>
+ <20220419081713.5813-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v5 20/21] KVM: s390: introduce CPU feature for zPCI
- Interpretation
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
- <20220404174349.58530-21-mjrosato@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220404174349.58530-21-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: nOtzjr1eQl6CD55HHe1tx75DzsmcJeNp
-X-Proofpoint-GUID: 4pQ1VBQMxl8v1i9ETzLfLQVwu_nKIlSH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-19_03,2022-04-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 mlxscore=0 bulkscore=0 adultscore=0 spamscore=0
- mlxlogscore=999 impostorscore=0 phishscore=0 suspectscore=0 clxscore=1015
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204190052
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419081713.5813-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/4/22 19:43, Matthew Rosato wrote:
-> KVM_S390_VM_CPU_FEAT_ZPCI_INTERP relays whether zPCI interpretive
-> execution is possible based on the available hardware facilities.
+On Tue, Apr 19, 2022 at 01:17:13AM -0700, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> Remove commented out code as it is never used and if anyone accidentally
+> turned it on, it would be broken.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->   arch/s390/include/uapi/asm/kvm.h | 1 +
->   arch/s390/kvm/kvm-s390.c         | 4 ++++
->   2 files changed, 5 insertions(+)
+>  drivers/tty/n_gsm.c | 4 ----
+>  1 file changed, 4 deletions(-)
 > 
-> diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
-> index 7a6b14874d65..ed06458a871f 100644
-> --- a/arch/s390/include/uapi/asm/kvm.h
-> +++ b/arch/s390/include/uapi/asm/kvm.h
-> @@ -130,6 +130,7 @@ struct kvm_s390_vm_cpu_machine {
->   #define KVM_S390_VM_CPU_FEAT_PFMFI	11
->   #define KVM_S390_VM_CPU_FEAT_SIGPIF	12
->   #define KVM_S390_VM_CPU_FEAT_KSS	13
-> +#define KVM_S390_VM_CPU_FEAT_ZPCI_INTERP 14
->   struct kvm_s390_vm_cpu_feat {
->   	__u64 feat[16];
->   };
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index 65a53e22f686..d6988bd22df8 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -433,6 +433,10 @@ static void kvm_s390_cpu_feat_init(void)
->   	if (test_facility(151)) /* DFLTCC */
->   		__insn32_query(INSN_DFLTCC, kvm_s390_available_subfunc.dfltcc);
->   
-> +	/* zPCI Interpretation */
-> +	if (kvm_s390_pci_interp_allowed())
-> +		allow_cpu_feat(KVM_S390_VM_CPU_FEAT_ZPCI_INTERP);
-> +
->   	if (MACHINE_HAS_ESOP)
->   		allow_cpu_feat(KVM_S390_VM_CPU_FEAT_ESOP);
->   	/*
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 07d03447cdfd..1b4077006744 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -1894,10 +1894,6 @@ static void gsm_queue(struct gsm_mux *gsm)
+>  	case UI|PF:
+>  	case UIH:
+>  	case UIH|PF:
+> -#if 0
+> -		if (cr)
+> -			goto invalid;
+> -#endif
+>  		if (dlci == NULL || dlci->state != DLCI_OPEN) {
+>  			gsm_command(gsm, address, DM|PF);
+>  			return;
+> -- 
+> 2.25.1
 > 
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+Hi,
+
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
