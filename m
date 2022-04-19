@@ -2,155 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C03CBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39143C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344718AbiDSPBY (ORCPT
+        id S1346996AbiDSPBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        Tue, 19 Apr 2022 11:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347431AbiDSPBU (ORCPT
+        with ESMTP id S241532AbiDSPBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:01:20 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6C53B291;
-        Tue, 19 Apr 2022 07:58:36 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id m15-20020a7bca4f000000b0038fdc1394b1so1756755wml.2;
-        Tue, 19 Apr 2022 07:58:36 -0700 (PDT)
+        Tue, 19 Apr 2022 11:01:40 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3F43B012
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:58:57 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id j2so31595149ybu.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:58:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7ghNXW0NodixkgL8T98CLlpDZH/0jSgrfBNvM5ej23s=;
-        b=hlZSGMyqcDPTQx6RmtGj1koskcBFnvovRkA/NkQQc1kdKfUCK/xvxNwK2/QMga//vt
-         gvgPCxHQlSAHj+yHIujC+BRmhj1gLP7ekLjV7ZD7NrecJ3BdrZHOw6YBvn/B6cItuKKf
-         MdBYEq0rFmbIYogIZIjdsOO2THvp40Dfj3qsPVPkMBNI2i35smPdCI7UEoXt/JwhcW9Q
-         gx7Jeu3EnBQWxS746ict9bmJuk74OzwMEBkyzbwQJSY3huu8lXCtxwI5vk9YhVDeGMl8
-         YXCw7i4742XSHTgAlzm+90dybKw5PvgRAAqbic2G3krhErrfckVz+/ESYOyynHb2tL31
-         7WQA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XG8kQ+XIcj/kxQkqKlX6Of1DGaCLk+DsEI9aRIpWeLs=;
+        b=Oy9TvaCS/0qIZZ8t1TL2LJxxehNvhY1VAoqRcmRrlCdVK69gizdMFSGDeZiX0xLCOf
+         2KcC7dEOo6dIqoY7Z3aCU/K+5ky2qwleELsn/kkkKEgDhWUXVGKy6Nq3RKuutKo2UkCM
+         vP4RFdEK7kzA6azj/1KzhyiPNPwQ1YXsTxuq0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7ghNXW0NodixkgL8T98CLlpDZH/0jSgrfBNvM5ej23s=;
-        b=VMjp19DdLLqWSND5jusfj1xKB28lSmOkBMtoOHWHMAjhX+T7wtHDvR5GQCpl47E4P9
-         jgpctFIcg/aKH1Jq0U9LbyPgrtUqcAi4hJOKggFmYBMFAQv51zrCWrcYqTjN6ymxIp7g
-         kuFjMyZaL8nhYtcpf6ZZuAX3/LMxOCNXAOpiyHSK20/60jO0FNL96r4TRqoIXtUyKImT
-         EHaK1n2jARLpUqdnc3+Ebrh7Sq422xngOuf0GQk+AWlugZMSQLhQfjMmtqj/kBk/tJIv
-         EogauValPMCPmopqdcSPDj2WndmPgrwdRpZQbS7LoACeIpIapLnhTBDeZwnzsfVH2Bws
-         xA4g==
-X-Gm-Message-State: AOAM532ezfeRFVbqrmPjnOvcjJ4tKXGRJl7MVQCRw71WXWJ3ZTjZ1dNu
-        lOUQZReqIk1iRYxRAWFXKIg=
-X-Google-Smtp-Source: ABdhPJybiVLTSTP7L0aETG6uMJhUECVA5p62Vy3/QCjle5pk3JlVskw99zgtPeLU158U++lWgJMu7w==
-X-Received: by 2002:a05:600c:3785:b0:38e:bca8:f0c1 with SMTP id o5-20020a05600c378500b0038ebca8f0c1mr19958744wmr.56.1650380314825;
-        Tue, 19 Apr 2022 07:58:34 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id p3-20020a5d59a3000000b0020a9132d1fbsm6605119wrr.37.2022.04.19.07.58.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 07:58:34 -0700 (PDT)
-Message-ID: <83a7f222-f62c-fa47-9370-f9b709c3110e@gmail.com>
-Date:   Tue, 19 Apr 2022 16:54:30 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XG8kQ+XIcj/kxQkqKlX6Of1DGaCLk+DsEI9aRIpWeLs=;
+        b=jhKby4VvrMHBPf5j5eCdIkNmvSINV+y3JKMXUIelWs44j3nKL/yWD+fZQxuQyZL6bb
+         1j7Tic5hIrJGUFybtFgy2xwlGMVq8L44VtnD/CSMR7XNHgI3Hv7+/VeVAxghvIYOGoI9
+         4ViYD01lzdCYmcxfcOaiPrPPVVkNGcqGSOlGUwiV06h+uO13c/u1kp4699RyzORPz2g/
+         yb26ZXUe2NvfEA0/jj/tGWBqqt2z7OXCjmWL7LD/QGZpqdu5+9j+lNU6GxffKzNyGAVX
+         KlfD/Oi5tTUNAj3l5ED3eKQozdnD/ZpDGjAAzRB9vXzz0Ix4epEeJk9gbyHV8fCUnKDj
+         qJZA==
+X-Gm-Message-State: AOAM5319hwxol9Qke55cVIBy4fzISA4RHlpMJDWBtCb7HdMKhGJAQMGp
+        JlJq9xWyjh+zvdQQSn7oi9c6ShEyzAlTZZXZAybXYA==
+X-Google-Smtp-Source: ABdhPJyvxzwabX5yi+4hLlFDW7j672aGNtFoJ1IdyVEymCiqxg7DCHw1Bd0ZglILn50oMoTJO2soBbS5WmSx/OFgbVs=
+X-Received: by 2002:a25:3258:0:b0:641:d47c:8321 with SMTP id
+ y85-20020a253258000000b00641d47c8321mr15399843yby.294.1650380337072; Tue, 19
+ Apr 2022 07:58:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/5] dt-bindings: arm: mediatek: mmsys: add power and gce
- properties
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
-        jason-jh.lin@mediatek.com, nancy.lin@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220419033237.23405-1-rex-bc.chen@mediatek.com>
- <20220419033237.23405-2-rex-bc.chen@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220419033237.23405-2-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220419000408.3202635-1-swboyd@chromium.org> <Yl4Au/O/am/ZbX9J@chromium.org>
+ <CAE-0n507D9W5BFfG2vXqN1cqvnrQKLbLw7YejGb5_kH+7X62sw@mail.gmail.com>
+In-Reply-To: <CAE-0n507D9W5BFfG2vXqN1cqvnrQKLbLw7YejGb5_kH+7X62sw@mail.gmail.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Tue, 19 Apr 2022 07:58:46 -0700
+Message-ID: <CACeCKac83uiwdAf2RWqc9DxEft2+BSBn5Kp5PMR23UGKJyk5KQ@mail.gmail.com>
+Subject: Re: [PATCH v2] mfd: cros_ec_dev: Only register PCHG device if present
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Tzung-Bi Shih <tzungbi@kernel.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Apr 19, 2022 at 7:55 AM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Prashant Malani (2022-04-18 17:22:19)
+> > On Apr 18 17:04, Stephen Boyd wrote:
+> > > +             retval = mfd_add_hotplug_devices(ec->dev,
+> > > +                                     cros_ec_pchg_cells,
+> > > +                                     ARRAY_SIZE(cros_ec_pchg_cells));
+> > > +             if (retval)
+> > > +                     dev_warn(ec->dev, "failed to add pchg: %d\n",
+> > > +                              retval);
+> > Tiny nit: Can this fit in 1 line (100 chars[1])?
+> >
+>
+> I'm matching the style of other lines in this file (this is copy
+> pasta). I'll let the maintainer decide what to do.
 
-
-On 19/04/2022 05:32, Rex-BC Chen wrote:
-> From: "jason-jh.lin" <jason-jh.lin@mediatek.com>
-> 
-> Power:
-> 1. Add description for power-domains property.
-> 
-> GCE:
-> 1. Add description for mboxes property.
-> 2. Add description for mediatek,gce-client-reg property.
-> 
-> Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Reviewed-by: CK Hu <ck.hu@mediatek.com>
-
-Applied, thanks.
-
-Matthias
-
-> ---
->   .../bindings/arm/mediatek/mediatek,mmsys.yaml | 31 +++++++++++++++++++
->   1 file changed, 31 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-> index b31d90dc9eb4..6c2c3edcd443 100644
-> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-> @@ -41,6 +41,30 @@ properties:
->     reg:
->       maxItems: 1
->   
-> +  power-domains:
-> +    description:
-> +      A phandle and PM domain specifier as defined by bindings
-> +      of the power controller specified by phandle. See
-> +      Documentation/devicetree/bindings/power/power-domain.yaml for details.
-> +
-> +  mboxes:
-> +    description:
-> +      Using mailbox to communicate with GCE, it should have this
-> +      property and list of phandle, mailbox specifiers. See
-> +      Documentation/devicetree/bindings/mailbox/mtk-gce.txt for details.
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +
-> +  mediatek,gce-client-reg:
-> +    description:
-> +      The register of client driver can be configured by gce with 4 arguments
-> +      defined in this property, such as phandle of gce, subsys id,
-> +      register offset and size.
-> +      Each subsys id is mapping to a base address of display function blocks
-> +      register which is defined in the gce header
-> +      include/dt-bindings/gce/<chip>-gce.h.
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    maxItems: 1
-> +
->     "#clock-cells":
->       const: 1
->   
-> @@ -56,9 +80,16 @@ additionalProperties: false
->   
->   examples:
->     - |
-> +    #include <dt-bindings/power/mt8173-power.h>
-> +    #include <dt-bindings/gce/mt8173-gce.h>
-> +
->       mmsys: syscon@14000000 {
->           compatible = "mediatek,mt8173-mmsys", "syscon";
->           reg = <0x14000000 0x1000>;
-> +        power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
->           #clock-cells = <1>;
->           #reset-cells = <1>;
-> +        mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
-> +                 <&gce 1 CMDQ_THR_PRIO_HIGHEST>;
-> +        mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
->       };
+Quite a bit of that code predates the char limit update, but OK.
