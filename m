@@ -2,206 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77049C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C548BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349300AbiDSH1J (ORCPT
+        id S1349323AbiDSH2o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        Tue, 19 Apr 2022 03:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232480AbiDSH1H (ORCPT
+        with ESMTP id S240255AbiDSH2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:27:07 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3854326EA
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:24:25 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 78E55106F;
-        Tue, 19 Apr 2022 00:24:25 -0700 (PDT)
-Received: from [10.163.40.223] (unknown [10.163.40.223])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C1E7D3F766;
-        Tue, 19 Apr 2022 00:24:17 -0700 (PDT)
-Message-ID: <99df7899-1820-d5b0-a72a-97dab1364075@arm.com>
-Date:   Tue, 19 Apr 2022 12:55:01 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next v4 3/4] arm64: mm: add support for page table check
-Content-Language: en-US
-To:     Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-riscv@lists.infradead.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220418034444.520928-1-tongtiangen@huawei.com>
- <20220418034444.520928-4-tongtiangen@huawei.com>
- <1c314feb-cd78-2bb3-462e-4ea3cefe122e@arm.com>
- <ca13a4ec-17a6-8e29-e29e-39f9b47e78df@huawei.com>
- <CA+CK2bDntHyMGg_R2m9WYovmxjYSHmZP1=pCxt-uVkTvD79oZw@mail.gmail.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <CA+CK2bDntHyMGg_R2m9WYovmxjYSHmZP1=pCxt-uVkTvD79oZw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 19 Apr 2022 03:28:42 -0400
+Received: from mo-csw.securemx.jp (mo-csw1116.securemx.jp [210.130.202.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6ECBDEB9;
+        Tue, 19 Apr 2022 00:25:59 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1116) id 23J7PcOm025490; Tue, 19 Apr 2022 16:25:38 +0900
+X-Iguazu-Qid: 2wHHhfqWLDxBrcVTZM
+X-Iguazu-QSIG: v=2; s=0; t=1650353137; q=2wHHhfqWLDxBrcVTZM; m=qld4KKnohk1Jeo9EqwachByRzp2OONvk4gUUuBo3O9M=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1111) id 23J7PaSC037990
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 19 Apr 2022 16:25:36 +0900
+X-SA-MID: 36308327
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH 1/4] dt-bindings: soc: visconti: Add Toshiba Visconti AFFINE image processing accelerator bindings
+Date:   Tue, 19 Apr 2022 16:20:15 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220419072018.30057-2-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220419072018.30057-1-yuji2.ishikawa@toshiba.co.jp>
+References: <20220419072018.30057-1-yuji2.ishikawa@toshiba.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Adds the Device Tree binding documentation that allows to describe
+the AFFINE image processing accelerator found in Toshiba Visconti SoCs.
+
+Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+---
+ .../soc/visconti/toshiba,visconti-affine.yaml | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-affine.yaml
+
+diff --git a/Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-affine.yaml b/Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-affine.yaml
+new file mode 100644
+index 000000000..a446e1c4f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-affine.yaml
+@@ -0,0 +1,53 @@
++# SPDX-LIcense-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/visconti/toshiba,visconti-affine.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Toshiba Visconti AFFINE image processing accelerator
++
++maintainers:
++  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
++
++description: |
++  Toshiba Visconti AFFINE image processing accelerator provides affine transform, lens undistortion and LUT transform.
++  Visconti5 have up to 2 AFFINE units.
++
++properties:
++  compatible:
++    items:
++      - const: toshiba,visconti-affine
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  index:
++    enum: [0, 1]
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - index
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++        affine0: affine@14000000 {
++            compatible = "toshiba,visconti-affine";
++            reg = <0 0x14000000 0 0x8000>;
++            interrupts = <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>;
++            index = <0>;
++            status = "disabled";
++        };
++    };
+-- 
+2.17.1
 
 
-On 4/18/22 21:50, Pasha Tatashin wrote:
-> On Mon, Apr 18, 2022 at 11:47 AM Tong Tiangen <tongtiangen@huawei.com> wrote:
->>
->>
->>
->> 在 2022/4/18 17:28, Anshuman Khandual 写道:
->>> On 4/18/22 09:14, Tong Tiangen wrote:
->>>> From: Kefeng Wang <wangkefeng.wang@huawei.com>
->>>>
->> [...]
->>>>   #endif
->>>
->>> Ran this series on arm64 platform after enabling
->>>
->>> - CONFIG_PAGE_TABLE_CHECK
->>> - CONFIG_PAGE_TABLE_CHECK_ENFORCED (avoiding kernel command line option)
->>>
->>> After some time, the following error came up
->>>
->>> [   23.266013] ------------[ cut here ]------------
->>> [   23.266807] kernel BUG at mm/page_table_check.c:90!
->>> [   23.267609] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
->>> [   23.268503] Modules linked in:
->>> [   23.269012] CPU: 1 PID: 30 Comm: khugepaged Not tainted 5.18.0-rc3-00004-g60aa8e363a91 #2
->>> [   23.270383] Hardware name: linux,dummy-virt (DT)
->>> [   23.271210] pstate: 40400005 (nZcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>> [   23.272445] pc : page_table_check_clear.isra.6+0x114/0x148
->>> [   23.273429] lr : page_table_check_clear.isra.6+0x64/0x148
->>> [   23.274395] sp : ffff80000afb3ca0
->>> [   23.274994] x29: ffff80000afb3ca0 x28: fffffc00022558e8 x27: ffff80000a27f628
->>> [   23.276260] x26: ffff800009f9f2b0 x25: ffff00008a8d5000 x24: ffff800009f09fa0
->>> [   23.277527] x23: 0000ffff89e00000 x22: ffff800009f09fb8 x21: ffff000089414cc0
->>> [   23.278798] x20: 0000000000000200 x19: fffffc00022a0000 x18: 0000000000000001
->>> [   23.280066] x17: 0000000000000001 x16: 0000000000000000 x15: 0000000000000003
->>> [   23.281331] x14: 0000000000000068 x13: 00000000000000c0 x12: 0000000000000010
->>> [   23.282602] x11: fffffc0002320008 x10: fffffc0002320000 x9 : ffff800009fa1000
->>> [   23.283868] x8 : 00000000ffffffff x7 : 0000000000000001 x6 : ffff800009fa1f08
->>> [   23.285135] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
->>> [   23.286406] x2 : 00000000ffffffff x1 : ffff000080f2800c x0 : ffff000080f28000
->>> [   23.287673] Call trace:
->>> [   23.288123]  page_table_check_clear.isra.6+0x114/0x148
->>> [   23.289043]  __page_table_check_pmd_clear+0x3c/0x50
->>> [   23.289918]  pmdp_collapse_flush+0x114/0x370
->>> [   23.290692]  khugepaged+0x1170/0x19e0
->>> [   23.291356]  kthread+0x110/0x120
->>> [   23.291945]  ret_from_fork+0x10/0x20
->>> [   23.292596] Code: 91001041 b8e80024 51000482 36fffd62 (d4210000)
->>> [   23.293678] ---[ end trace 0000000000000000 ]---
->>> [   23.294511] note: khugepaged[30] exited with preempt_count 2
->>>
->>> Looking into file mm/page_table_check.c where this problem occured.
->>>
->>> /*
->>>   * An enty is removed from the page table, decrement the counters for that page
->>>   * verify that it is of correct type and counters do not become negative.
->>>   */
->>> static void page_table_check_clear(struct mm_struct *mm, unsigned long addr,
->>>                                     unsigned long pfn, unsigned long pgcnt)
->>> {
->>>          struct page_ext *page_ext;
->>>          struct page *page;
->>>          unsigned long i;
->>>          bool anon;
->>>
->>>          if (!pfn_valid(pfn))
->>>                  return;
->>>
->>>          page = pfn_to_page(pfn);
->>>          page_ext = lookup_page_ext(page);
->>>          anon = PageAnon(page);
->>>
->>>          for (i = 0; i < pgcnt; i++) {
->>>                  struct page_table_check *ptc = get_page_table_check(page_ext);
->>>
->>>                  if (anon) {
->>>                          BUG_ON(atomic_read(&ptc->file_map_count));
->>>                          BUG_ON(atomic_dec_return(&ptc->anon_map_count) < 0);
->>>                  } else {
->>>                          BUG_ON(atomic_read(&ptc->anon_map_count));
->>>   Triggered here ====>>  BUG_ON(atomic_dec_return(&ptc->file_map_count) < 0);
->>>                  }
->>>                  page_ext = page_ext_next(page_ext);
->>>          }
->>> }
->>>
->>> Could you explain what was expected during pmdp_collapse_flush() which when
->>> failed, triggered this BUG_ON() ? This counter seems to be page table check
->>> specific, could it just go wrong ? I have not looked into the details about
->>> page table check mechanism.
->>>
->>> - Anshuman
->>> .
->>
->> Hi Anshuman:
->>
->> Thanks for your job.
->>
->> Let me briefly explain the principle of page table check(PTC).
->>
->> PTC introduces the following struct for page mapping type count:
->> struct page_table_check {
->>          atomic_t anon_map_count;
->>          atomic_t file_map_count;
->> };
->> This structure can be obtained by "lookup_page_ext(page)"
->>
->> When page table entries are set(pud/pmd/pte), page_table_check_set()  is
->> called to increase the page mapping count, Also check for errors (eg:if
->> a page is used for anonymous mapping, then the page cannot be used for
->> file mapping at the same time).
->>
->> When page table entries are clear(pud/pmd/pte), page_table_check_clear()
->>   is called to decrease the page mapping count, Also check for errors.
->>
->> The error check rules are described in the following documents:
->> Documentation/vm/page_table_check.rst
->>
->> The setting and clearing of page table entries are symmetrical.
->>
->> Here __page_table_check_pmd_clear() trigger BUGON which indicates that
->> the pmd entry file mapping count has become negative.
->>
->> I guess if PTC didn't detect this exception, would there have been any
->> problems?
-> 
-> It is hard to tell what sort of problem has been detected. More
-> debugging is needed in order to understand it. A huge file entry is
-> being removed from the page table. However, at least one sub page of
-> that entry does not have a record that it was added as a file entry to
-
-I guess PMD splitting scenarios should also be taken care as sub pages
-will also go via appropriate XXX_set_at() helpers ?
-
-> the page table. At Google we found a few internal security bugs using
-> PTCs. However, this being new on ARM64, it is possible that the bug is
-> in PTC/khugepaged itself.
-> 
-> Anshuman is it possible to repro your scenario in QEMU?
-
-I have been unable to reproduce this reported problem. Last time it just
-happened after a fresh boot without anything in particular running. Will
-continue experimenting.
