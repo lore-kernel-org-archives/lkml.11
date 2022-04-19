@@ -2,70 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58406C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350846AbiDSNFP (ORCPT
+        id S1350897AbiDSNFW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
+        Tue, 19 Apr 2022 09:05:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235870AbiDSNFN (ORCPT
+        with ESMTP id S1350880AbiDSNFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:05:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9F213703F
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650373350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z4Kl7+froBrIWrE+d8xHFKl2dYlBi9s4KDLQMa5Aj80=;
-        b=grWumVKt7Q0GATBZn/M3wpKamtWOiFfgcKkK9difYGf11gyCSJvFJ8JM+2QS+l8fqSxooa
-        awUXCAC11O3S2WYhvQwrRlNIW9opP1GBpnnqfge155wOxXGWkJodsMqmVKK76U+HTSLNmq
-        h30yE0WQriA5AbU0Gp2Nw3k/WtuWJ+4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-416-Oknl4-evNKWoUlmRoWs0qQ-1; Tue, 19 Apr 2022 09:02:22 -0400
-X-MC-Unique: Oknl4-evNKWoUlmRoWs0qQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 95AF01014A64;
-        Tue, 19 Apr 2022 13:02:21 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C8FCD40146E;
-        Tue, 19 Apr 2022 13:02:20 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <YlWWbpW5Foynjllo@rabbit.intern.cm-ag>
-References: <YlWWbpW5Foynjllo@rabbit.intern.cm-ag>
-To:     Max Kellermann <mk@cm4all.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: fscache corruption in Linux 5.17?
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <454833.1650373340.1@warthog.procyon.org.uk>
-Date:   Tue, 19 Apr 2022 14:02:20 +0100
-Message-ID: <454834.1650373340@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+        Tue, 19 Apr 2022 09:05:17 -0400
+X-Greylist: delayed 386 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 06:02:32 PDT
+Received: from 2v5136.portmanej.com.pl (2v5136.portmanej.com.pl [94.152.196.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25F03703F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=trybulski.radom.pl; h=
+        content-transfer-encoding:content-type:date:from:to:subject:
+        message-id; s=tlddkim; bh=6rqwT51Ke8/0WFlGBZTfz7WinM8=; b=KiMpTf
+        uFFqh6afDsvWfsX6P2M9n8SZ4u4CObY18A2B0n99SUWKSVfXBUjuY/kHqwGpTeLZ
+        S/TG0RMr6jtdg8XLcAQdcLuI9XuLkR844bjk+oOgg7CPKrwBGDVxYXaSh6WA8waj
+        wnsjyNSYsownnbUDd524k7T8bPexoTjebg13UgkexjWLSP93SjmS+RfainhvM4nw
+        5OOmsrZ+O9R2jpDlklyyb0oQXQYvfTFH43vYqJXWH8Zexjwq0VpS0VYNAmqoyoaJ
+        7IiotklGVUgpfVIcv1BiWO32Tsvzh8tg0KkYCeA0LR3ffoEYLfxRDspnd/sKKsOJ
+        PiSoNnMF1yH5POrQ==
+Received: (qmail 9245 invoked by uid 36007); 19 Apr 2022 12:55:51 -0000
+Received: from 178235179021.dynamic-4-waw-k-1-3-0.vectranet.pl (HELO DESKTOP-4H0A81O) (krzysztof@trybulski.radom.pl@178.235.179.21)
+  by 2v5136.portmanej.com.pl with ESMTPA; 19 Apr 2022 12:55:51 -0000
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Date:   Tue, 19 Apr 2022 14:55:52 +0200
+From:   "Krzysztof Trybulski" <krzysztof@trybulski.radom.pl>
+To:     linux-kernel@vger.kernel.org
+Subject: =?iso-8859-2?Q?Jeste=B6cie_Pa=F1stwo_najlepsi?=
+Organization: Krzysiek Misiek
+Message-ID: <4073f9209f4319522e08cfbb8ed819c0@trybulski.radom.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Max Kellermann <mk@cm4all.com> wrote:
+Dzie=F1 dobry Pa=F1stwu, witam serdecznie.
 
-> two weeks ago, I updated a cluster of web servers to Linux kernel
-> 5.17.1 (5.16.x previously) which includes your rewrite of the fscache
-> code.
+Na imi=EA mam Krzysztof. Nazwisko Trybulski. Jestem kolekcjonerem.
+Jestem niepe=B3nosprawny.
 
-I presume you are actually using a cache?
+Przepraszam, =BFe o=B6mielam si=EA do Pa=F1stwa pisa=E6 aczkolwiek mi na ty=
+m zale=BFy.
 
-David
+Bardzo podoba mi si=EA pa=F1stwa dzia=B3alno=B6=E6. Dlatego pisz=EA.
+
+Ot=F3=BF jako kolekcjoner, kolekcjonuj=EA wszelkiego rodzaju gad=BFety
+reklamowe oraz promocyjne od najlepszych firm i instytucji w Polsce i
+na =B6wiecie: smycze, koszulki, d=B3ugopisy, przypinki oraz inne gad=BFety
+reklamowe i promocyjne a tak=BFe ciekawe materialy w formie papierowej.
+
+Kolekcjonuj=EA gad=BFety tylko od najlepszych. Dlatego by=B3bym niezmiernie
+wdzi=EAczny, szcz=EA=B6liwy, je=BFeli moje zbiory powi=EAkszy=B3y by si=EA =
+o
+materia=B3y od pa=F1stwa lub z pa=F1stwem zwi=B1zanymi.
+
+Kolekcjonuj=EA gad=BFety wszelkiego rodzaju. Bardzo mnie to wci=B1gn=EA=B3o=
+=2E
+
+B=EAd=EA mega wdzi=EAczny je=B6li postanowi=B1 mi pa=F1stwo co=B6 wys=B3a=
+=E6. Nie mam
+ulubionych gad=BFet=F3w. Wszystkie s=B1 fajne, je=B6li s=B1 od fajnych ludz=
+i,
+firm, instytucji.
+
+B=EAd=EA naprawd=EA wdzi=EAczny je=B6li co=B6 od Pa=F1stwa otrzymam.
+
+M=F3j adres do wysy=B3ki to:
+Krzysztof Trybulski
+ul. Jacka Malczewskiego 20/12
+26-609 Radom
+603-165-730
+
+Dzi=EAkuj=EA i wszystkiego dobrego dla Pa=F1stwa.
+
+Z pewno=B6ci=B1 je=B6li tylko nadarzy si=EA taka okazja, zapoznam si=EA z
+pa=F1stwem bli=BFej...
 
