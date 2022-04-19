@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD1AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CA3C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353574AbiDSOcj (ORCPT
+        id S1353653AbiDSOcx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
+        Tue, 19 Apr 2022 10:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353372AbiDSOb5 (ORCPT
+        with ESMTP id S1353389AbiDSOb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:31:57 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B972D38BF4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:11 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id g18so33292913ejc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:11 -0700 (PDT)
+        Tue, 19 Apr 2022 10:31:58 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156F439683
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:15 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id c64so21484804edf.11
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=9ycsKLgtbrDvPBZQp/V5BOPcgPxcbdE+L/fSZOvoL1k=;
-        b=mWcZfCB9WwT4sr/dCQ2dVSMQVrpi4j9AimPSecRSrzqvvjRTU563LgPuYfkU2X9yft
-         hlsSwlKSs6VX85oXN5CqAvuueaVEeZhLiWDWRTeSyDTwQhA3fOoUd+5NwMFBz8xlIo8z
-         46RKukuYuQ5uSAFP/1X7aMxIYLdc+4oIImo0oSFqHxhlpV5RI/AMAqWMXM3cO1HdtYh1
-         69ZNh37WQt3Z/Bm90OQcVMH/DTknE7Bc3xiTRG8dHwuTxi2+fToBsMw7o4y+xpEGNYO0
-         xdMPWXNjGKbcHIlxTWY1ElZnPH1jiSZPHnYN25Fhl3b21iwnvqHyHsEWpsb6SFsqfiCW
-         SoLw==
+        bh=3Xaf32XQyDZ8QYQCnwiTlgKZWDM1IMpdpv//PRxZMXk=;
+        b=GCARkzT4fK+7wMOJVBhua/HKDHTNgwFfSq/EVlETHWevvSHOMUtFII2DjrorFPHzNL
+         EIrUhZ1xOkrwVikMFQ5ks5VnUyV3coqSMGUqVAifke8DNXsNn+01UlsyKNpXmPA0DyOE
+         ru2H2ki/wyCzK7bOvECWsdwHPOz3zkWudNZt0VQF7keQaLd0jkSTf/mmbWpG+1typVSh
+         kLYX9v5GvTTGjTY4X7XdY0LPiOHGtoEcNaHCjrWNZarjF2TYn2j/tC1yJ+Z5AW7m87Ig
+         +VpAhR4jmMxs1ammvXynVTavkuA/ASm2nvHKXryHqn8KSuszW85Psp8J43nsJEjW7tkf
+         5xuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9ycsKLgtbrDvPBZQp/V5BOPcgPxcbdE+L/fSZOvoL1k=;
-        b=HiRyLstvy+aJpS9373V4ULqudBwtNBBQ79LW7GmK4ve1c/2qL3/G/m7buWqdM3NljH
-         9y0zOklK1wyKP1cByADqffsjo8eVGIotRIURfqQsMuWFfL0g5x81E/+2sEKqYMTdbF+s
-         WD0h6xmdSPA0dlbwikAsPTq1HKGeuuwsbvaEoz15e8EEX3uq42WkffnQ7wy4+gzEgkzo
-         HFloS215P9MzzB0LCZI5T1uyigp1LX6mJaNwyXnXxq2sj7pTaYjJw8Zvr9mTwh/jsE0f
-         psWMU2/NcjPpmiiphM064qeR130ivj6Hh5jTONzIlitM2Q7bgQ2uYcUmMa7NaGsq1Q56
-         cOlA==
-X-Gm-Message-State: AOAM5332TI8jVT76aKnhvcJkvLImZtkLSTlu0jMkSaaU7CqXzGT93nan
-        KuXeBrqd8y770xXq3KwUNcq7tA==
-X-Google-Smtp-Source: ABdhPJxtgiL8brvjHKi1NQt223Se/3569MkYsfsTAdEFzWH0xdJ13oU15IQOKY5xU3fQRfK57x2OFQ==
-X-Received: by 2002:a17:906:c10e:b0:6ef:8d09:bffd with SMTP id do14-20020a170906c10e00b006ef8d09bffdmr11125816ejc.135.1650378550281;
-        Tue, 19 Apr 2022 07:29:10 -0700 (PDT)
+        bh=3Xaf32XQyDZ8QYQCnwiTlgKZWDM1IMpdpv//PRxZMXk=;
+        b=tAuKZ+TCgeJVU88BzZaCw5UGel/6vgjJ8oY8SHcJfv6GnED9LdH46Orcz2dp6cIYz7
+         feH/Q5xrUTHIAkCA1rzAMgMdELZBd5QTyUG7G/2iTkH1UQmbBwvgcw725w5n/DRor4o+
+         Sm8mWYIHsBZQGXx+R5lxTXJjzzWEldGEOP2ISBwhry0TLblQIalH7P8SHi+8VloRLFZg
+         xShxVLn9WghOvZqaW+QNEcqI77wTZjkvJ/WtYgygEAny2qS5yOVNfhdp1jFcHJBjJWVr
+         zI300E6wJ7SjlsImpucq/DKdwo3ZdpPPG29hf4x8DcR2aHb2MLIylLL/wpSBEGi7hhVn
+         /o/Q==
+X-Gm-Message-State: AOAM533qjWMoMaRARk9bTVyVsYLw3HxXy3rdccrM5B/irCLpf/dghpIC
+        Fw7glgxUgYSYkEEht1JbjX6Ojg==
+X-Google-Smtp-Source: ABdhPJxhoR39yBkgFdAmsTZlfj1q7CBAj5277XMOoRYvTDCepjkbTVC3aYKFRBXGkw4xOpDRtV/Ygw==
+X-Received: by 2002:aa7:c789:0:b0:413:605d:8d17 with SMTP id n9-20020aa7c789000000b00413605d8d17mr17766287eds.100.1650378553673;
+        Tue, 19 Apr 2022 07:29:13 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm5761884ejy.93.2022.04.19.07.29.09
+        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm5761884ejy.93.2022.04.19.07.29.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:29:09 -0700 (PDT)
+        Tue, 19 Apr 2022 07:29:13 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Markus Mayer <mmayer@broadcom.com>,
         Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
@@ -59,9 +59,9 @@ To:     Markus Mayer <mmayer@broadcom.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH 3/7] memory: ti-emif: simplify platform_get_resource()
-Date:   Tue, 19 Apr 2022 16:28:55 +0200
-Message-Id: <20220419142859.380566-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 6/7] memory: brcmstb_dpfe: simplify platform_get_resource_byname()
+Date:   Tue, 19 Apr 2022 16:28:58 +0200
+Message-Id: <20220419142859.380566-6-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
 References: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
@@ -71,36 +71,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_platform_ioremap_resource() instead of platform_get_resource()
-and devm_ioremap_resource().
+Use devm_platform_ioremap_resource_byname() instead of
+platform_get_resource_byname() and devm_ioremap_resource().
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/memory/ti-aemif.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/memory/brcmstb_dpfe.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/memory/ti-aemif.c b/drivers/memory/ti-aemif.c
-index 51d20c2ccb75..f81e7df8798a 100644
---- a/drivers/memory/ti-aemif.c
-+++ b/drivers/memory/ti-aemif.c
-@@ -328,7 +328,6 @@ static int aemif_probe(struct platform_device *pdev)
+diff --git a/drivers/memory/brcmstb_dpfe.c b/drivers/memory/brcmstb_dpfe.c
+index 14412002775d..76c82e9c8fce 100644
+--- a/drivers/memory/brcmstb_dpfe.c
++++ b/drivers/memory/brcmstb_dpfe.c
+@@ -857,7 +857,6 @@ static int brcmstb_dpfe_probe(struct platform_device *pdev)
  {
- 	int i;
- 	int ret = -ENODEV;
--	struct resource *res;
  	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
- 	struct device_node *child_np;
-@@ -362,8 +361,7 @@ static int aemif_probe(struct platform_device *pdev)
- 	else if (pdata)
- 		aemif->cs_offset = pdata->cs_offset;
+ 	struct brcmstb_dpfe_priv *priv;
+-	struct resource *res;
+ 	int ret;
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	aemif->base = devm_ioremap_resource(dev, res);
-+	aemif->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(aemif->base)) {
- 		ret = PTR_ERR(aemif->base);
- 		goto error;
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+@@ -869,22 +868,19 @@ static int brcmstb_dpfe_probe(struct platform_device *pdev)
+ 	mutex_init(&priv->lock);
+ 	platform_set_drvdata(pdev, priv);
+ 
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dpfe-cpu");
+-	priv->regs = devm_ioremap_resource(dev, res);
++	priv->regs = devm_platform_ioremap_resource_byname(pdev, "dpfe-cpu");
+ 	if (IS_ERR(priv->regs)) {
+ 		dev_err(dev, "couldn't map DCPU registers\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dpfe-dmem");
+-	priv->dmem = devm_ioremap_resource(dev, res);
++	priv->dmem = devm_platform_ioremap_resource_byname(pdev, "dpfe-dmem");
+ 	if (IS_ERR(priv->dmem)) {
+ 		dev_err(dev, "Couldn't map DCPU data memory\n");
+ 		return -ENOENT;
+ 	}
+ 
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dpfe-imem");
+-	priv->imem = devm_ioremap_resource(dev, res);
++	priv->imem = devm_platform_ioremap_resource_byname(pdev, "dpfe-imem");
+ 	if (IS_ERR(priv->imem)) {
+ 		dev_err(dev, "Couldn't map DCPU instruction memory\n");
+ 		return -ENOENT;
 -- 
 2.32.0
 
