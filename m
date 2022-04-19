@@ -2,162 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1453BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A525EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350719AbiDSKbV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        id S239070AbiDSKfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 06:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350670AbiDSKa7 (ORCPT
+        with ESMTP id S232153AbiDSKfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:30:59 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD927275F6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:28:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650364096; x=1681900096;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=oZHnRkPCm8T5oXIKxLsR0BkDUMS+EsF7CIAupgKOdV0=;
-  b=MikVig0b5Bh4EB6MDcY9L4pBB71HgkqSQu8lTzqndFzrsp9gBCYAjbPe
-   Jggg0/Fgs9BZ/AjHphJv9vdPXOkwz2ZR+qBzistvbVAqUHj4z2eevSUql
-   NwiAobKDwbz9c65b6+vQXduQBJwUZpNCtU+WGtAOY5Z+Bm73jLQBopgpw
-   Y=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 19 Apr 2022 03:28:16 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 03:28:16 -0700
-Received: from hu-mojha-hyd.qualcomm.com (10.80.80.8) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 19 Apr 2022 03:28:13 -0700
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <tglx@linutronix.de>, <sboyd@kernel.org>, <rafael@kernel.org>,
-        <johannes@sipsolutions.net>, Mukesh Ojha <quic_mojha@quicinc.com>
-Subject: [PATCH] devcoredump : Serialize devcd_del work
-Date:   Tue, 19 Apr 2022 15:57:57 +0530
-Message-ID: <1650364077-22694-1-git-send-email-quic_mojha@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 19 Apr 2022 06:35:15 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA0829CB2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:32:33 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b58fe329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:58fe:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 416CF1EC0426;
+        Tue, 19 Apr 2022 12:32:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650364348;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=+C400UB/aegXad3nw2fevgP3gS1wreNSifnBkwtUuq0=;
+        b=EFN+/+9+gvjDdebSzdoqGtAviwSkUfNJzNwajmoxtrtEgL4NFpMQD6YrUOLSddjwlkc4IJ
+        8s2t2L0nNRL3MUpAKg9MFV34t/m3MOzP0PMgrp9B9rDyk+BfDLnTSZl/7AjWGiGKHjdHFX
+        Lcyh7drFh17eb/VAF5IdJepW98t6UZk=
+Date:   Tue, 19 Apr 2022 12:32:25 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v7 2/8] x86/crash: Introduce new options to support cpu
+ and memory hotplug
+Message-ID: <Yl6PueNCZZeobMWr@zn.tnic>
+References: <20220413164237.20845-1-eric.devolder@oracle.com>
+ <20220413164237.20845-3-eric.devolder@oracle.com>
+ <Ylgot+LUDQl+G/5N@zn.tnic>
+ <f3ea7ee0-1cb8-6928-d0af-4c2fc63a42a4@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f3ea7ee0-1cb8-6928-d0af-4c2fc63a42a4@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In following scenario(diagram), when one thread X running dev_coredumpm() adds devcd
-device to the framework which sends uevent notification to userspace
-and another thread Y reads this uevent and call to devcd_data_write()
-which eventually try to delete the queued timer that is not initialized/queued yet.
+On Mon, Apr 18, 2022 at 05:03:39PM -0500, Eric DeVolder wrote:
+> I've examined the code with this thought in mind, and I'm not exactly sure how
+> this code should be restructured for !HOTPLUG stubs. I'd very much appreciate
+> an example in order to facilitate accommodating the request!
 
-So, debug object reports some warning and in the meantime, timer is initialized
-and queued from X path. and from Y path, it gets reinitialized again and
-timer->entry.pprev=NULL and try_to_grab_pending() stucks.
+For example, see init_intel_microcode() in arch/x86/include/asm/microcode.h:
 
-To fix this, introduce mutex to serialize the behaviour.
+#ifdef CONFIG_MICROCODE_INTEL
+extern struct microcode_ops * __init init_intel_microcode(void);
+#else
+static inline struct microcode_ops * __init init_intel_microcode(void)
+{
+        return NULL;
+}
+#endif /* CONFIG_MICROCODE_INTEL */
 
- 	cpu0(X)			                      cpu1(Y)
+The actual definition then is in:
 
-    dev_coredump() uevent sent to userspace
-    device_add()  =========================> userspace process Y reads the uevents
-                                             writes to devcd fd which
-                                             results into writes to
+   arch/x86/kernel/cpu/microcode/intel.c:
+   struct microcode_ops * __init init_intel_microcode(void)
 
-                                            devcd_data_write()
-                                              mod_delayed_work()
-                                                try_to_grab_pending()
-                                                  del_timer()
-                                                    debug_assert_init()
-   INIT_DELAYED_WORK
-   schedule_delayed_work
-                                                     debug_object_fixup()
-                                                      timer_fixup_assert_init()
-                                                       timer_setup()
-                                                         do_init_timer()   ==> reinitialized the
-                                                                                 timer to
-                                                                                 timer->entry.pprev=NULL
+and it gets enabled when CONFIG_MICROCODE_INTEL is enabled in the
+.config. When CONFIG_MICROCODE_INTEL=n, the static inline stub gets used
+and optimized away by the compiler.
 
-                                                  timer_pending()
-                                                   !hlist_unhashed_lockless(&timer->entry)
-                                                     !h->pprev  ==> del_timer checks
-                                                                  and finds it to be NULL
- 								  try_to_grab_pending() stucks.
+HTH.
 
-Link: https://lore.kernel.org/lkml/2e1f81e2-428c-f11f-ce92-eb11048cb271@quicinc.com/
-Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
----
- drivers/base/devcoredump.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/base/devcoredump.c b/drivers/base/devcoredump.c
-index f4d794d..316f566 100644
---- a/drivers/base/devcoredump.c
-+++ b/drivers/base/devcoredump.c
-@@ -25,6 +25,7 @@ struct devcd_entry {
- 	struct device devcd_dev;
- 	void *data;
- 	size_t datalen;
-+	struct mutex mutex;
- 	struct module *owner;
- 	ssize_t (*read)(char *buffer, loff_t offset, size_t count,
- 			void *data, size_t datalen);
-@@ -84,7 +85,9 @@ static ssize_t devcd_data_write(struct file *filp, struct kobject *kobj,
- 	struct device *dev = kobj_to_dev(kobj);
- 	struct devcd_entry *devcd = dev_to_devcd(dev);
- 
-+	mutex_lock(&devcd->mutex);
- 	mod_delayed_work(system_wq, &devcd->del_wk, 0);
-+	mutex_unlock(&devcd->mutex);
- 
- 	return count;
- }
-@@ -112,7 +115,9 @@ static int devcd_free(struct device *dev, void *data)
- {
- 	struct devcd_entry *devcd = dev_to_devcd(dev);
- 
-+	mutex_lock(&devcd->mutex);
- 	flush_delayed_work(&devcd->del_wk);
-+	mutex_unlock(&devcd->mutex);
- 	return 0;
- }
- 
-@@ -278,13 +283,14 @@ void dev_coredumpm(struct device *dev, struct module *owner,
- 	devcd->read = read;
- 	devcd->free = free;
- 	devcd->failing_dev = get_device(dev);
--
-+	mutex_init(&devcd->mutex);
- 	device_initialize(&devcd->devcd_dev);
- 
- 	dev_set_name(&devcd->devcd_dev, "devcd%d",
- 		     atomic_inc_return(&devcd_count));
- 	devcd->devcd_dev.class = &devcd_class;
- 
-+	mutex_lock(&devcd->mutex);
- 	if (device_add(&devcd->devcd_dev))
- 		goto put_device;
- 
-@@ -301,10 +307,11 @@ void dev_coredumpm(struct device *dev, struct module *owner,
- 
- 	INIT_DELAYED_WORK(&devcd->del_wk, devcd_del);
- 	schedule_delayed_work(&devcd->del_wk, DEVCD_TIMEOUT);
--
-+	mutex_unlock(&devcd->mutex);
- 	return;
-  put_device:
- 	put_device(&devcd->devcd_dev);
-+	mutex_unlock(&devcd->mutex);
-  put_module:
- 	module_put(owner);
-  free:
 -- 
-2.7.4
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
