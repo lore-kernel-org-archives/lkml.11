@@ -2,121 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0731C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA31C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349662AbiDSH6I (ORCPT
+        id S1349675AbiDSH6s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48992 "EHLO
+        Tue, 19 Apr 2022 03:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349665AbiDSH56 (ORCPT
+        with ESMTP id S243286AbiDSH6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:57:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551B717AB0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:55:15 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ngihX-0000Zo-Ue; Tue, 19 Apr 2022 09:55:07 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ngihV-003vZp-II; Tue, 19 Apr 2022 09:55:04 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ngihT-004Do6-7q; Tue, 19 Apr 2022 09:55:03 +0200
-Date:   Tue, 19 Apr 2022 09:54:55 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Yihao Han <hanyihao@vivo.com>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        kernel@vivo.com
-Subject: Re: [PATCH] macintosh: macio_asic: fix resource_size.cocci warnings
-Message-ID: <20220419075455.vecnndadzkhd2xiz@pengutronix.de>
-References: <20220414140304.82751-1-hanyihao@vivo.com>
+        Tue, 19 Apr 2022 03:58:42 -0400
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3D913DC2;
+        Tue, 19 Apr 2022 00:56:00 -0700 (PDT)
+Received: by mail-ed1-f49.google.com with SMTP id s25so19713638edi.13;
+        Tue, 19 Apr 2022 00:56:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fJ/lP8fDTD2M4Ye8YmxDUmYzoCedu92mR6gpKzyiQqU=;
+        b=XoizcegNEhkxYOKBWzQHT68UcbjHJzvvbsRSx8iI4n+QlzvWZ3zgtK2mBgJZ8bD1iG
+         y7wLRPpI+lXYdSHUaLPo/V1AYFE442Iva+a11NT2SXBzn69g0puBgjueWHW36nPoAjbs
+         uczgIrfdUrRKM0EBTMOwk0FDwViLeFzJ3eiCjoZYEvvv9YGqus79ZltozZq0z00utSrY
+         ZDGfxQ56m3DJLCQ49kKpSlIhWF7tmekmr2z/vN/mir0obsqCuQ+D/STY42NceeAJeg6y
+         LLYqVPILQG7xBFGBVlF8IgpzgH71JAf73DwXtlF6GWzERc3tP12F8cOZwng2eSeRv3fq
+         PUvQ==
+X-Gm-Message-State: AOAM531WoEzV/8If0CVPHmr4raU/5QGOafqCjjgtArTr7kaaoVL5fyU6
+        lpIhFrsw/nBq7YVAtzjK+U4=
+X-Google-Smtp-Source: ABdhPJwvgKc8DptlJU037frUeAg97O7xPjl0BMERQxypZbGb/1cdaq5Yws045/wQDZAbEdnBW8Ye5g==
+X-Received: by 2002:a05:6402:2714:b0:422:aeff:34ae with SMTP id y20-20020a056402271400b00422aeff34aemr16012414edd.92.1650354958806;
+        Tue, 19 Apr 2022 00:55:58 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id o2-20020a170906768200b006e89514a449sm5344136ejm.96.2022.04.19.00.55.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 00:55:58 -0700 (PDT)
+Message-ID: <0c6c2a70-2692-2f5e-edbb-8735a0a80637@kernel.org>
+Date:   Tue, 19 Apr 2022 09:55:57 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sxvrzxezae3ma7n3"
-Content-Disposition: inline
-In-Reply-To: <20220414140304.82751-1-hanyihao@vivo.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] tty: serial: fsl_lpuart: remove the count initialization
+ as it is not needed
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+References: <20220418021844.29591-1-sherry.sun@nxp.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220418021844.29591-1-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 18. 04. 22, 4:18, Sherry Sun wrote:
+> No need to initialize the count variable in lpuart_copy_rx_to_tty(),
+> so let's remove it here.
 
---sxvrzxezae3ma7n3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Right,
 
-On Thu, Apr 14, 2022 at 07:02:42AM -0700, Yihao Han wrote:
-> drivers/macintosh/macio_asic.c:219:26-29: WARNING:
-> Suspicious code. resource_size is maybe missing with res
-> drivers/macintosh/macio_asic.c:221:26-29: WARNING:
-> Suspicious code. resource_size is maybe missing with res
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-For log messages it's ok to overstep the line length limitation for
-commit logs. IMHO adding newlines is worse, not sure that there are no
-other strong opinions though.
-
-> Use resource_size function on resource object instead of
-> explicit computation.
->=20
-> Generated by: scripts/coccinelle/api/resource_size.cocci
->=20
-> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 > ---
->  drivers/macintosh/macio_asic.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/macintosh/macio_asic.c b/drivers/macintosh/macio_asi=
-c.c
-> index 1943a007e2d5..260fccb3863e 100644
-> --- a/drivers/macintosh/macio_asic.c
-> +++ b/drivers/macintosh/macio_asic.c
-> @@ -216,9 +216,9 @@ static int macio_resource_quirks(struct device_node *=
-np, struct resource *res,
->  	/* Some older IDE resources have bogus sizes */
->  	if (of_node_name_eq(np, "IDE") || of_node_name_eq(np, "ATA") ||
->  	    of_node_is_type(np, "ide") || of_node_is_type(np, "ata")) {
-> -		if (index =3D=3D 0 && (res->end - res->start) > 0xfff)
-> +		if (index =3D=3D 0 && (resource_size(res)) > 0xfff)
+>   drivers/tty/serial/fsl_lpuart.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index 87789872f400..452a015825ba 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1118,7 +1118,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+>   	struct dma_chan *chan = sport->dma_rx_chan;
+>   	struct circ_buf *ring = &sport->rx_ring;
+>   	unsigned long flags;
+> -	int count = 0, copied;
+> +	int count, copied;
+>   
+>   	if (lpuart_is_32(sport)) {
+>   		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
 
-You can drop the parenthesis around resource_size(res) here.
 
-Other than that looks fine,
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---sxvrzxezae3ma7n3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJeaswACgkQwfwUeK3K
-7Akmiwf9ENjj+1XyRjZKG6TQJHTh12ZDIDiPKh8kOqIgoTd/QXcYHd8z7bUZckqC
-0MEnKvjMjOKM3RO5/rbMVQFth3PKl5XHsn9iD8+Chn2JPG3Z5bx15pXAxig/z20P
-A9SdzAWpdx17ShxXahVjFiWusA/n6fZ2910e/xtjdzQUM9onzWCSu+8fFLMtCRW7
-pnKofCHibLKVxDYxLDmplqJDM3uEXY8xr2hUrx1PiauhQrWxgMk9CKQaGMFYWCCX
-tNSOro1Tv9SWvMJGQBEsRU8rW3w0YpHBfmfj7gnmf/I8cc+tKTM25u7uOZCbXMBg
-2T2Up7pYQ2lw9G1shEku4uBL4lSLRA==
-=5jxk
------END PGP SIGNATURE-----
-
---sxvrzxezae3ma7n3--
+-- 
+js
+suse labs
