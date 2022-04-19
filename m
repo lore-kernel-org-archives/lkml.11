@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D0CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350142AbiDSIva (ORCPT
+        id S1350149AbiDSIv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        Tue, 19 Apr 2022 04:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235794AbiDSIv1 (ORCPT
+        with ESMTP id S1344989AbiDSIvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:51:27 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F419022B1A;
-        Tue, 19 Apr 2022 01:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650358125; x=1681894125;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kegNEX0ChIhmD7NdNa7wFO+eFscT2RC4rHC8Bs7PAC8=;
-  b=hOB8MDCnFNXImQDSO6NikhXT0U4ge+Qt7PZrmyRUt1ClpUqX2fGRE44g
-   pqoiGoKfBQm32ss8/0SyyjK/6+xEhykEPMZn0q7QlnOoLJRzl43fnkbPI
-   ERVI77zlsbFjPn++Sat6d7Ryjb+y5zlZ09X1gT2TD+2aaPiCFr3jh/Xs3
-   1soC2aZ44bRqAOeEtDVc6cb1NqVleZU9BjvfOO+z/S8O8pZZDztow99y7
-   AryE56l27yCwl2feC67D5KNveYlMirZU9MeYklat/0rhXKBrfYkd06aU+
-   pzvxuCDxOxdaPF2818SIOKKTtpJE2ri3rrfM5DXrVu7q/PmQkCSZlAvgS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="326613554"
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="326613554"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 01:48:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="530037373"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 19 Apr 2022 01:48:42 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngjXO-0005Z6-6W;
-        Tue, 19 Apr 2022 08:48:42 +0000
-Date:   Tue, 19 Apr 2022 16:48:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: drivers/media/platform/intel/pxa_camera.c:2449:34: warning: unused
- variable 'pxa_camera_of_match'
-Message-ID: <202204191631.zjUg442L-lkp@intel.com>
+        Tue, 19 Apr 2022 04:51:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B1422B1B;
+        Tue, 19 Apr 2022 01:49:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id AC0D121123;
+        Tue, 19 Apr 2022 08:49:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650358152; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=veZwth4pnkAc1b01KZ2PxJ5UoKpL05j2z6FljMj67zo=;
+        b=zROyWiGnPlNa5+3/mUcvvdT6F4ulE0KTFzoi7l9Pbq7zhXKxvmQzUCmm/sRigWpcuCKS3W
+        e7HXpqP6S8zOCVVirOrkl3FPeP/3HmmZIy0owUAZZWqx01ujTSelxuhKKyFqzP5XNMRbAL
+        oBKItwYZ8E6u20QB4BldiaTB6GkTXew=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650358152;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=veZwth4pnkAc1b01KZ2PxJ5UoKpL05j2z6FljMj67zo=;
+        b=6i57B4fjuYRq0lKiVBvys5Ei37jjLOL+FXhIjqLGcNMqlx0NpHdAvo2LzSL/m28wMYRa0w
+        igWTqCj+/KCZCGBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3599B139BE;
+        Tue, 19 Apr 2022 08:49:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id lNAKCoh3XmIiegAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Tue, 19 Apr 2022 08:49:12 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 88491bf6;
+        Tue, 19 Apr 2022 08:49:38 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] ceph: fix compilation error when building kernel without FS_ENCRYPT
+Date:   Tue, 19 Apr 2022 09:49:37 +0100
+Message-Id: <20220419084937.3199-1-lhenriques@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro,
+When compiling without FS_ENCRYPTION config, the kernel will fail to build
+with:
 
-First bad commit (maybe != root cause):
+fs/ceph/inode.c:196:7: error: no member named 'fscrypt_auth' in 'struct ceph_inode_info'
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b2d229d4ddb17db541098b83524d901257e93845
-commit: 95495f2aa9d8df1a7697bab24118544d3568f41d media: platform: place Intel drivers on a separate dir
-date:   5 weeks ago
-config: mips-randconfig-r025-20220419 (https://download.01.org/0day-ci/archive/20220419/202204191631.zjUg442L-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c1c49a356162b22554088d269f7689bdb044a9f1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=95495f2aa9d8df1a7697bab24118544d3568f41d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 95495f2aa9d8df1a7697bab24118544d3568f41d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/platform/intel/ lib/lz4/
+Enclose the code within an #ifdef CONFIG_FS_ENCRYPTION to fix it.
 
-If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+---
+ fs/ceph/inode.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-All warnings (new ones prefixed by >>):
+Jeff, feel free to squash this patch into one of the previous patches from
+the snapshot names encryption series.
 
->> drivers/media/platform/intel/pxa_camera.c:2449:34: warning: unused variable 'pxa_camera_of_match' [-Wunused-const-variable]
-   static const struct of_device_id pxa_camera_of_match[] = {
-                                    ^
-   1 warning generated.
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for SSB_EMBEDDED
-   Depends on SSB && SSB_DRIVER_MIPS && SSB_PCICORE_HOSTMODE
-   Selected by
-   - BCM47XX_SSB && BCM47XX
-
-
-vim +/pxa_camera_of_match +2449 drivers/media/platform/intel/pxa_camera.c
-
-7254026cedd42d drivers/media/video/pxa_camera.c               Guennadi Liakhovetski 2011-06-29  2448  
-e9a1d94fa85542 drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29 @2449  static const struct of_device_id pxa_camera_of_match[] = {
-e9a1d94fa85542 drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2450  	{ .compatible = "marvell,pxa270-qci", },
-e9a1d94fa85542 drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2451  	{},
-e9a1d94fa85542 drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2452  };
-e9a1d94fa85542 drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2453  MODULE_DEVICE_TABLE(of, pxa_camera_of_match);
-e9a1d94fa85542 drivers/media/platform/soc_camera/pxa_camera.c Robert Jarzmik        2014-06-29  2454  
-
-:::::: The code at line 2449 was first introduced by commit
-:::::: e9a1d94fa85542d4f3046ac82d234a3c8349c948 [media] media: pxa_camera device-tree support
-
-:::::: TO: Robert Jarzmik <robert.jarzmik@free.fr>
-:::::: CC: Mauro Carvalho Chehab <m.chehab@samsung.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 636e4e0a9dc6..5de7bb9048b7 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -189,6 +189,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	ci->i_rbytes = 0;
+ 	ci->i_btime = ceph_inode(parent)->i_btime;
+ 
++#ifdef CONFIG_FS_ENCRYPTION
+ 	/* if encrypted, just borrow fscrypt_auth from parent */
+ 	if (IS_ENCRYPTED(parent)) {
+ 		struct ceph_inode_info *pci = ceph_inode(parent);
+@@ -205,6 +206,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 			goto err;
+ 		}
+ 	}
++#endif
+ 	if (inode->i_state & I_NEW) {
+ 		inode->i_op = &ceph_snapdir_iops;
+ 		inode->i_fop = &ceph_snapdir_fops;
