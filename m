@@ -2,129 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE917C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355464AbiDSQwL (ORCPT
+        id S1355472AbiDSQwV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
+        Tue, 19 Apr 2022 12:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346034AbiDSQp5 (ORCPT
+        with ESMTP id S1354823AbiDSQnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:45:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D19A3A5D6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:43:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650386592;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V3ODNWfMW+rRhSokZu86v1GXhJjBricpy30YxedvS1g=;
-        b=GGC/aKc6epjyb8qz33WDzkz7vdHatLFmsDOSeJq77hCEJ6oyzCiZ0EFdOm52+mMK1ay6Ju
-        xXNCJDNzjRJ4OimnpdrBcIX9/M6OpCf18OiLh84LH/skKgzZQbYlJ55COX7O6F6g12hcBD
-        T3Tpah57XcNPKzT6ZXuaTyaIiH1NCsQ=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-329-kIl84JomN_KviTwwZ6PMeg-1; Tue, 19 Apr 2022 12:43:10 -0400
-X-MC-Unique: kIl84JomN_KviTwwZ6PMeg-1
-Received: by mail-wm1-f71.google.com with SMTP id 125-20020a1c0283000000b003928cd3853aso1121487wmc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:43:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V3ODNWfMW+rRhSokZu86v1GXhJjBricpy30YxedvS1g=;
-        b=lf+rHETlobwr+SCZn02jVrqOKxF37gvaLMhqiNJi/VBEGGz1JtkJw28YMd+LYIY0w3
-         Te39ZEfxXfw+Pr+BrNhgUVuly+IGaD8MiPSrVFHPVcO88XUQhJlO/WynZSZIg+FPWzii
-         BzknNT8WkZtwCtKdWujAzqTqogaQWx0sRRBsFcAiMS0kYWiyBUcuDO5tExled623HTL1
-         02KNQcM2HNQDFgUM561P30NlTkhl3PnsfFOmJ/iV6tQjDRCsrg2ZHn2hft9vrBpEvBoU
-         UZi1Y6cWXJjYG8YkPumst5HHX5N/TUR0GYYUCXpEwX6vyjXSqztn2dV/RkxbOmk3BqG/
-         Xicw==
-X-Gm-Message-State: AOAM532PXSAWkvCRP38BP490lIkymU6czJsXvyg72tVDKkHY0dfgORn+
-        AiT4SaktqrsX2bVDxeydIuXOfh9LxdsOZ9lIBKrSQNNduPwYuyiBbOU+4KZuWqzCD8eV5KS/ROL
-        IyZViel9FZwNCdaLNET0MBrlB
-X-Received: by 2002:adf:f981:0:b0:205:c3e1:9eba with SMTP id f1-20020adff981000000b00205c3e19ebamr12387507wrr.244.1650386589520;
-        Tue, 19 Apr 2022 09:43:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz/sBvEGx6+IXc/dmS3LEsLdRrH83M0si6np7xgLC//YEu1El92MuYL5XEmIp9phspX0ZKpFQ==
-X-Received: by 2002:adf:f981:0:b0:205:c3e1:9eba with SMTP id f1-20020adff981000000b00205c3e19ebamr12387485wrr.244.1650386589266;
-        Tue, 19 Apr 2022 09:43:09 -0700 (PDT)
-Received: from redhat.com ([2.53.17.80])
-        by smtp.gmail.com with ESMTPSA id v14-20020a7bcb4e000000b0034492fa24c6sm16631515wmj.34.2022.04.19.09.43.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 09:43:07 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 12:43:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Alexander Graf <graf@amazon.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        QEMU Developers <qemu-devel@nongnu.org>,
-        linux-hyperv@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        adrian@parity.io, Laszlo Ersek <lersek@redhat.com>,
-        Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
+        Tue, 19 Apr 2022 12:43:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECA8286FB;
+        Tue, 19 Apr 2022 09:40:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 646A7B81BB5;
+        Tue, 19 Apr 2022 16:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8675C385AD;
+        Tue, 19 Apr 2022 16:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650386450;
+        bh=jhDfr1ZWF3PO87dsTFnhjEgY7CrgFIhStoxQAjgbO8c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IQZbCphc2aVG/7nQPc8i6SmaXQBHDLcd8lu8VCmzfuxTE9zQ1fttSmG7EuqkoEKfV
+         +AijdqGUGVaVV7Gc6JQtpvmfbM8oJLiqSVhH1EBaliC1N03xEc1T1smfyTfNlPQ+ci
+         g7D2ubLO4DZSZbQ1S7mLLZAjhkr/Lf9nzpyNW7rUgW2JoDBYVacKhRiIFK/VFk/Xdk
+         UDw/LuEvBj9xe6IYc/bXh3fl9uuuA9b3Lcl7FHH7ZpoOjUIFEYceuWcUa/cIuAsEha
+         DxLdKbU1RVdss4xqHuQUN0IBiEAqCfNSmrZdnpLyeTBHr4KtQrWshWX4LLED0dDmoN
+         GxgomaIMHhKEQ==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Philipp Zabel <philipp.zabel@gmail.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Paul Parsons <lost.distance@yahoo.com>,
+        Tomas Cech <sleep_walker@suse.com>,
+        Sergey Lapin <slapin@ossfans.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: propagating vmgenid outward and upward
-Message-ID: <20220419124245-mutt-send-email-mst@kernel.org>
-References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
- <c5181fb5-38fb-f261-9de5-24655be1c749@amazon.com>
- <CAHmME9rTMDkE7UA3_wg87mrDVYps+YaHw+dZwF0EbM0zC4pQQw@mail.gmail.com>
- <47137806-9162-0f60-e830-1a3731595c8c@amazon.com>
- <CAHmME9pwfKfKp_qqbmAO5tEaQSZ5srCO5COThK3vWZR4avRF1g@mail.gmail.com>
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
+        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH 15/48] ARM: pxa: tosa: use gpio descriptor for audio
+Date:   Tue, 19 Apr 2022 18:37:37 +0200
+Message-Id: <20220419163810.2118169-16-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
+References: <20220419163810.2118169-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHmME9pwfKfKp_qqbmAO5tEaQSZ5srCO5COThK3vWZR4avRF1g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 05:12:36PM +0200, Jason A. Donenfeld wrote:
-> Hey Alex,
-> 
-> On Thu, Mar 10, 2022 at 12:18 PM Alexander Graf <graf@amazon.com> wrote:
-> > I agree on the slightly racy compromise and that it's a step into the
-> > right direction. Doing this is a no brainer IMHO and I like the proc
-> > based poll approach.
-> 
-> Alright. I'm going to email a more serious patch for that in the next
-> few hours and you can have a look. Let's do that for 5.19.
-> 
-> > I have an additional problem you might have an idea for with the poll
-> > based path. In addition to the clone notification, I'd need to know at
-> > which point everyone who was listening to a clone notification is
-> > finished acting up it. If I spawn a tiny VM to do "work", I want to know
-> > when it's safe to hand requests into it. How do I find out when that
-> > point in time is?
-> 
-> Seems tricky to solve. Even a count of current waiters and a
-> generation number won't be sufficient, since it wouldn't take into
-> account users who haven't _yet_ gotten to waiting. But maybe it's not
-> the right problem to solve? Or somehow not necessary? For example, if
-> the problem is a bit more constrained a solution becomes easier: you
-> have a fixed/known set of readers that you know about, and you
-> guarantee that they're all waiting before the fork. Then after the
-> fork, they all do something to alert you in their poll()er, and you
-> count up how many alerts you get until it matches the number of
-> expected waiters. Would that work? It seems like anything more general
-> than that is just butting heads with the racy compromise we're already
-> making.
-> 
-> Jason
+From: Arnd Bergmann <arnd@arndb.de>
 
-I have some ideas here ... but can you explain the use-case a bit more?
+The audio driver should not use a hardwired gpio number
+from the header. Change it to use a lookup table.
 
+Acked-by: Mark Brown <broonie@kernel.org>
+Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Cc: alsa-devel@alsa-project.org
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/arm/mach-pxa/tosa.c | 12 ++++++++++++
+ sound/soc/pxa/tosa.c     | 16 +++++++---------
+ 2 files changed, 19 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm/mach-pxa/tosa.c b/arch/arm/mach-pxa/tosa.c
+index 9476ed0f55e9..5a16a025192c 100644
+--- a/arch/arm/mach-pxa/tosa.c
++++ b/arch/arm/mach-pxa/tosa.c
+@@ -887,6 +887,17 @@ static struct platform_device wm9712_device = {
+ 	.id	= -1,
+ };
+ 
++static struct gpiod_lookup_table tosa_audio_gpio_table = {
++	.dev_id = "tosa-audio",
++	.table = {
++		GPIO_LOOKUP("tc6393xb",
++			    TOSA_GPIO_L_MUTE - TOSA_TC6393XB_GPIO_BASE,
++			    "l-mute", GPIO_ACTIVE_HIGH),
++		{ },
++	},
++};
++
++
+ static struct platform_device tosa_audio_device = {
+ 	.name	= "tosa-audio",
+ 	.id	= -1,
+@@ -944,6 +955,7 @@ static void __init tosa_init(void)
+ 	PMCR = 0x01;
+ 
+ 	gpiod_add_lookup_table(&tosa_mci_gpio_table);
++	gpiod_add_lookup_table(&tosa_audio_gpio_table);
+ 	pxa_set_mci_info(&tosa_mci_platform_data);
+ 	pxa_set_ficp_info(&tosa_ficp_platform_data);
+ 	pxa_set_i2c_info(NULL);
+diff --git a/sound/soc/pxa/tosa.c b/sound/soc/pxa/tosa.c
+index 06226f9b863e..157e6bcacffd 100644
+--- a/sound/soc/pxa/tosa.c
++++ b/sound/soc/pxa/tosa.c
+@@ -16,14 +16,13 @@
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/device.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ 
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/soc.h>
+ 
+ #include <asm/mach-types.h>
+-#include <mach/tosa.h>
+ #include <linux/platform_data/asoc-pxa.h>
+ 
+ #define TOSA_HP        0
+@@ -35,6 +34,7 @@
+ 
+ static int tosa_jack_func;
+ static int tosa_spk_func;
++static struct gpio_desc *l_mute_gpio;
+ 
+ static void tosa_ext_control(struct snd_soc_dapm_context *dapm)
+ {
+@@ -128,7 +128,7 @@ static int tosa_set_spk(struct snd_kcontrol *kcontrol,
+ static int tosa_hp_event(struct snd_soc_dapm_widget *w,
+ 	struct snd_kcontrol *k, int event)
+ {
+-	gpio_set_value(TOSA_GPIO_L_MUTE, SND_SOC_DAPM_EVENT_ON(event) ? 1 : 0);
++	gpiod_set_value(l_mute_gpio, SND_SOC_DAPM_EVENT_ON(event) ? 1 : 0);
+ 	return 0;
+ }
+ 
+@@ -222,25 +222,23 @@ static int tosa_probe(struct platform_device *pdev)
+ 	struct snd_soc_card *card = &tosa;
+ 	int ret;
+ 
+-	ret = gpio_request_one(TOSA_GPIO_L_MUTE, GPIOF_OUT_INIT_LOW,
+-			       "Headphone Jack");
++	l_mute_gpio = devm_gpiod_get(&pdev->dev, "l-mute", GPIOD_OUT_LOW);
++	ret = PTR_ERR_OR_ZERO(l_mute_gpio);
+ 	if (ret)
+ 		return ret;
+ 
+ 	card->dev = &pdev->dev;
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+-	if (ret) {
++	if (ret)
+ 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
+ 			ret);
+-		gpio_free(TOSA_GPIO_L_MUTE);
+-	}
++
+ 	return ret;
+ }
+ 
+ static int tosa_remove(struct platform_device *pdev)
+ {
+-	gpio_free(TOSA_GPIO_L_MUTE);
+ 	return 0;
+ }
+ 
 -- 
-MST
+2.29.2
 
