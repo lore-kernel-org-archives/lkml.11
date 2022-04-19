@@ -2,103 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E104C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF33DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242749AbiDSQsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
+        id S1355179AbiDSQsX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 12:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355092AbiDSQob (ORCPT
+        with ESMTP id S1354860AbiDSQpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:44:31 -0400
-X-Greylist: delayed 2119 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 09:41:47 PDT
-Received: from nibbler.cm4all.net (nibbler.cm4all.net [IPv6:2001:8d8:970:e500:82:165:145:151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD822A249
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:41:47 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by nibbler.cm4all.net (Postfix) with ESMTP id 3F259C00E1
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 18:41:46 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at nibbler.cm4all.net
-Received: from nibbler.cm4all.net ([127.0.0.1])
-        by localhost (nibbler.cm4all.net [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id URCB-aDoYIYF for <linux-kernel@vger.kernel.org>;
-        Tue, 19 Apr 2022 18:41:39 +0200 (CEST)
-Received: from zero.intern.cm-ag (zero.intern.cm-ag [172.30.16.10])
-        by nibbler.cm4all.net (Postfix) with SMTP id 1679EC00D5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 18:41:39 +0200 (CEST)
-Received: (qmail 29906 invoked from network); 19 Apr 2022 22:31:40 +0200
-Received: from unknown (HELO rabbit.intern.cm-ag) (172.30.3.1)
-  by zero.intern.cm-ag with SMTP; 19 Apr 2022 22:31:40 +0200
-Received: by rabbit.intern.cm-ag (Postfix, from userid 1023)
-        id D8786460EFB; Tue, 19 Apr 2022 18:41:38 +0200 (CEST)
-Date:   Tue, 19 Apr 2022 18:41:38 +0200
-From:   Max Kellermann <mk@cm4all.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Max Kellermann <mk@cm4all.com>, linux-cachefs@redhat.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: fscache corruption in Linux 5.17?
-Message-ID: <Yl7mQr05hPg4vELb@rabbit.intern.cm-ag>
-References: <Yl7EyMLnqqDv63yW@rabbit.intern.cm-ag>
- <YlWWbpW5Foynjllo@rabbit.intern.cm-ag>
- <454834.1650373340@warthog.procyon.org.uk>
- <508603.1650385022@warthog.procyon.org.uk>
+        Tue, 19 Apr 2022 12:45:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421432A249;
+        Tue, 19 Apr 2022 09:42:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F29EEB81BF1;
+        Tue, 19 Apr 2022 16:42:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553D4C385B2;
+        Tue, 19 Apr 2022 16:42:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650386543;
+        bh=6Eb0nGTaa7inf2nC5qlMl31pJtmtNV3Kf+5eTPa8gHA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CO7rCBuiK9AhgJ1IN4juEhgPNA30YC1p9bh8jWaUqHGuF4U7X5oPW4dLW8Qx7dH/V
+         jvdLKFa39OvNa7NZiQZbpgXdY+4Y0fqRg3TgoutA+QCdu2NJzIaHcruOhT9c3p1SDy
+         3KlM2qB9EABeNVlsHNOzcPl2/Lnre9Pp72kx4xJWxjfgCC05fTm6GM4XpLJuyyFN7h
+         yMNiNpSV8C2fa04ZvzNIZlUIWviLtB4PbO9u6GRPuJD4EH8ktQOkKpk8PSuyFz+kwt
+         5PbzTtheQR4cPnNU0VxZP6tU2sx1Pr8qNnC/9Jq0pXnEmKBR6/jlL/DmG5xx/wjiXz
+         T4Z3ivbgbNP9A==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Philipp Zabel <philipp.zabel@gmail.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Paul Parsons <lost.distance@yahoo.com>,
+        Tomas Cech <sleep_walker@suse.com>,
+        Sergey Lapin <slapin@ossfans.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
+        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH 27/48] input: touchscreen: mainstone: sync with zylonite driver
+Date:   Tue, 19 Apr 2022 18:37:49 +0200
+Message-Id: <20220419163810.2118169-28-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
+References: <20220419163810.2118169-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <508603.1650385022@warthog.procyon.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/04/19 18:17, David Howells <dhowells@redhat.com> wrote:
-> 	find /var/cache/fscache -inum $((0xiiii))
-> 
-> and see if you can see the corruption in there.  Note that there may be blocks
-> of zeroes corresponding to unfetched file blocks.
+From: Arnd Bergmann <arnd@arndb.de>
 
-I checked several known-corrupt files, but unfortunately, all
-corruption have disappeared :-(
+The two drivers are almost identical and can work on a variety
+of hardware in principle. The mainstone driver supports additional
+hardware, and the zylonite driver has a few cleanup patches.
 
-The /var/cache/fscache/ files have a time stamp half an hour ago
-(17:53 CET = 15:53 GMT).  I don't know what happened at that time -
-too bad this disappeared after a week, just when we started
-investigating it.
+Sync the two by adding the zylonite changes into the mainstone
+one, and checking for the zylonite board to order to keep the
+default behavior (interrupt enabled) there.
 
-All those new files are all-zero.  No data is stored in any of them.
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: linux-input@vger.kernel.org
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/input/touchscreen/mainstone-wm97xx.c | 59 ++++++++++----------
+ 1 file changed, 31 insertions(+), 28 deletions(-)
 
-Note that I had to enable
-/sys/kernel/debug/tracing/events/cachefiles/enable; the trace events
-you named (read/write/trunc/io_error/vfs_error) do not emit anything.
-This is what I see:
+diff --git a/drivers/input/touchscreen/mainstone-wm97xx.c b/drivers/input/touchscreen/mainstone-wm97xx.c
+index 618c80847d9f..940d3c92b1f8 100644
+--- a/drivers/input/touchscreen/mainstone-wm97xx.c
++++ b/drivers/input/touchscreen/mainstone-wm97xx.c
+@@ -24,9 +24,9 @@
+ #include <linux/gpio/consumer.h>
+ #include <linux/irq.h>
+ #include <linux/interrupt.h>
+-#include <linux/wm97xx.h>
+ #include <linux/io.h>
+-#include <linux/gpio.h>
++#include <linux/soc/pxa/cpu.h>
++#include <linux/wm97xx.h>
+ 
+ #include <mach/regs-ac97.h>
+ 
+@@ -42,23 +42,22 @@ struct continuous {
+ #define WM_READS(sp) ((sp / HZ) + 1)
+ 
+ static const struct continuous cinfo[] = {
+-	{WM9705_ID2, 0, WM_READS(94), 94},
+-	{WM9705_ID2, 1, WM_READS(188), 188},
+-	{WM9705_ID2, 2, WM_READS(375), 375},
+-	{WM9705_ID2, 3, WM_READS(750), 750},
+-	{WM9712_ID2, 0, WM_READS(94), 94},
+-	{WM9712_ID2, 1, WM_READS(188), 188},
+-	{WM9712_ID2, 2, WM_READS(375), 375},
+-	{WM9712_ID2, 3, WM_READS(750), 750},
+-	{WM9713_ID2, 0, WM_READS(94), 94},
+-	{WM9713_ID2, 1, WM_READS(120), 120},
+-	{WM9713_ID2, 2, WM_READS(154), 154},
+-	{WM9713_ID2, 3, WM_READS(188), 188},
++	{ WM9705_ID2, 0, WM_READS(94),  94  },
++	{ WM9705_ID2, 1, WM_READS(188), 188 },
++	{ WM9705_ID2, 2, WM_READS(375), 375 },
++	{ WM9705_ID2, 3, WM_READS(750), 750 },
++	{ WM9712_ID2, 0, WM_READS(94),  94  },
++	{ WM9712_ID2, 1, WM_READS(188), 188 },
++	{ WM9712_ID2, 2, WM_READS(375), 375 },
++	{ WM9712_ID2, 3, WM_READS(750), 750 },
++	{ WM9713_ID2, 0, WM_READS(94),  94  },
++	{ WM9713_ID2, 1, WM_READS(120), 120 },
++	{ WM9713_ID2, 2, WM_READS(154), 154 },
++	{ WM9713_ID2, 3, WM_READS(188), 188 },
+ };
+ 
+ /* continuous speed index */
+ static int sp_idx;
+-static u16 last, tries;
+ static struct gpio_desc *gpiod_irq;
+ 
+ /*
+@@ -102,7 +101,7 @@ static void wm97xx_acc_pen_up(struct wm97xx *wm)
+ {
+ 	unsigned int count;
+ 
+-	schedule_timeout_uninterruptible(1);
++	msleep(1);
+ 
+ 	if (cpu_is_pxa27x()) {
+ 		while (MISR & (1 << 2))
+@@ -117,13 +116,14 @@ static int wm97xx_acc_pen_down(struct wm97xx *wm)
+ {
+ 	u16 x, y, p = 0x100 | WM97XX_ADCSEL_PRES;
+ 	int reads = 0;
++	static u16 last, tries;
+ 
+ 	/* When the AC97 queue has been drained we need to allow time
+ 	 * to buffer up samples otherwise we end up spinning polling
+ 	 * for samples.  The controller can't have a suitably low
+ 	 * threshold set to use the notifications it gives.
+ 	 */
+-	schedule_timeout_uninterruptible(1);
++	msleep(1);
+ 
+ 	if (tries > 5) {
+ 		tries = 0;
+@@ -193,6 +193,8 @@ static int wm97xx_acc_startup(struct wm97xx *wm)
+ 		/* There is some obscure mutant of WM9712 interbred with WM9713
+ 		 * used on Palm HW */
+ 		wm->variant = WM97xx_WM1613;
++	} else if (machine_is_zylonite()) {
++		pen_int = 1;
+ 	}
+ 
+ 	if (pen_int) {
+@@ -253,13 +255,13 @@ static void wm97xx_irq_enable(struct wm97xx *wm, int enable)
+ }
+ 
+ static struct wm97xx_mach_ops mainstone_mach_ops = {
+-	.acc_enabled = 1,
+-	.acc_pen_up = wm97xx_acc_pen_up,
+-	.acc_pen_down = wm97xx_acc_pen_down,
+-	.acc_startup = wm97xx_acc_startup,
+-	.acc_shutdown = wm97xx_acc_shutdown,
+-	.irq_enable = wm97xx_irq_enable,
+-	.irq_gpio = WM97XX_GPIO_2,
++	.acc_enabled	= 1,
++	.acc_pen_up	= wm97xx_acc_pen_up,
++	.acc_pen_down	= wm97xx_acc_pen_down,
++	.acc_startup	= wm97xx_acc_startup,
++	.acc_shutdown	= wm97xx_acc_shutdown,
++	.irq_enable	= wm97xx_irq_enable,
++	.irq_gpio	= WM97XX_GPIO_2,
+ };
+ 
+ static int mainstone_wm97xx_probe(struct platform_device *pdev)
+@@ -274,14 +276,15 @@ static int mainstone_wm97xx_remove(struct platform_device *pdev)
+ 	struct wm97xx *wm = platform_get_drvdata(pdev);
+ 
+ 	wm97xx_unregister_mach_ops(wm);
++
+ 	return 0;
+ }
+ 
+ static struct platform_driver mainstone_wm97xx_driver = {
+-	.probe = mainstone_wm97xx_probe,
+-	.remove = mainstone_wm97xx_remove,
+-	.driver = {
+-		.name = "wm97xx-touch",
++	.probe	= mainstone_wm97xx_probe,
++	.remove	= mainstone_wm97xx_remove,
++	.driver	= {
++		.name	= "wm97xx-touch",
+ 	},
+ };
+ module_platform_driver(mainstone_wm97xx_driver);
+-- 
+2.29.2
 
-  kworker/u98:11-1446185 [016] ..... 1813913.318370: cachefiles_ref: c=00014bd5 o=12080f1c u=1 NEW obj
-  kworker/u98:11-1446185 [016] ..... 1813913.318379: cachefiles_lookup: o=12080f1c dB=3e01ee B=3e5580 e=0
-  kworker/u98:11-1446185 [016] ..... 1813913.318380: cachefiles_mark_active: o=12080f1c B=3e5580
-  kworker/u98:11-1446185 [016] ..... 1813913.318401: cachefiles_coherency: o=12080f1c OK       B=3e5580 c=0
-  kworker/u98:11-1446185 [016] ..... 1813913.318402: cachefiles_ref: c=00014bd5 o=12080f1c u=1 SEE lookup_cookie
-
-> Also, what filesystem is backing your cachefiles cache?  It could be useful to
-> dump the extent list of the file.  You should be able to do this with
-> "filefrag -e".
-
-It's ext4.
-
- Filesystem type is: ef53
- File size of /var/cache/fscache/cache/Infs,3.0,2,,a4214ac,c0000208,,,3002c0,10000,10000,12c,1770,bb8,1770,1/@58/T,c0000208,,1cf4167,184558d9,c0000208,,40,36bab37,40, is 188416 (46 blocks of 4096 bytes)
- /var/cache/fscache/cache/Infs,3.0,2,,a4214ac,c0000208,,,3002c0,10000,10000,12c,1770,bb8,1770,1/@58/T,c0000208,,1cf4167,184558d9,c0000208,,40,36bab37,40,: 0 extents found
- File size of /var/cache/fscache/cache/Infs,3.0,2,,a4214ac,c0000208,,,3002c0,10000,10000,12c,1770,bb8,1770,1/@ea/T,c0000208,,10cc976,1208c7f6,c0000208,,40,36bab37,40, is 114688 (28 blocks of 4096 bytes)
- /var/cache/fscache/cache/Infs,3.0,2,,a4214ac,c0000208,,,3002c0,10000,10000,12c,1770,bb8,1770,1/@ea/T,c0000208,,10cc976,1208c7f6,c0000208,,40,36bab37,40,: 0 extents found
-
-> As to why this happens, a write that's misaligned by 31 bytes should cause DIO
-> to a disk to fail - so it shouldn't be possible to write that.  However, I'm
-> doing fallocate and truncate on the file to shape it so that DIO will work on
-> it, so it's possible that there's a bug there.  The cachefiles_trunc trace
-> lines may help catch that.
-
-I don't think any write is misaligned.  This was triggered by a
-WordPress update, so I think the WordPress updater truncated and
-rewrote all files.  Random guess: some pages got transferred to the
-NFS server, but the local copy in fscache did not get updated.
-
-Max
