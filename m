@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2499DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F57C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242269AbiDSAqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
+        id S242325AbiDSAqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241123AbiDSApO (ORCPT
+        with ESMTP id S241119AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:45:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF8029CA5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF0F29C8F
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80BE2B81144
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACB33C385B8;
-        Tue, 19 Apr 2022 00:42:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9C3061381
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035C6C385C6;
+        Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650328947;
-        bh=y5fnbtEDxlIRgLdidVqgeaZ0Z82o98qJVKjRSnwleXw=;
+        s=k20201202; t=1650328948;
+        bh=iw7VZyIxYEox+Zw4JuU45s1lfP7xk4LgcftYhKIrPlA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q7PzjNCcRGILEs7f4n9xctxnxdHlJsBULK7Qs/wuB9qQhHFobIkfg8sg03UpKVFO4
-         DSXUsE0YkvDkv0T4QP+x27CDnt+5u/9YlOPuZifNavBVMN4kubBFJqCkI+XqotwAHA
-         3o1uhlX3b304CYx3aRqvFeFYk1sjfVIld49QNjygZi+9c9b0W18mqAmvov+2E/mLk3
-         WiAyB0nHzU3c1wddwLUmjm5V6H0Gh04GfzzJo6O7+WRnVsE2pKxjAaWofqJS0/6Q4l
-         lh580j0WCn6mP5breEnQUvQAEXZRW79juXhMQUeZSOZmf02DZPl0bhZZqB7fR+oh+Z
-         OiN2WMfI6NM7g==
+        b=gPItQFmbzPlA5jZo000s6d9Oiz4Wh7CUfuOkVaGnUD8VZNiNVGC+qnlgc4T2Tu0Xn
+         RYACcanQJCwNQOTg6wdqvMwZMzLVLm4ji/MQ4PZLMmkRi5q4r8Ls5BRUSkh8RwG3yp
+         o5SE+ha3ShtkPA4aZjyR/C3DlVtK/GhgapxQu+TGNIZ5Nomu+ZwoWF37T6FCZny6F6
+         OIuBs73WGEnTqLwaF/InhtehpTrFCatk2yebFoyFstutizE2pWM7eVm9b+iVwlADuv
+         7vhwYA7f/BkoZOr/mCZkl+stVTyeRkzbDRVsHs7XA8yYBcWAidkgUVWyRmTUg83ops
+         IyExhjAGz+7Jw==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 1ABFC5C1355; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 23FD15C2DF5; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
-        David Laight <David.Laight@aculab.com>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 11/61] tools/nolibc/types: move the FD_* functions to macros in types.h
-Date:   Mon, 18 Apr 2022 17:41:35 -0700
-Message-Id: <20220419004225.3952530-11-paulmck@kernel.org>
+Subject: [PATCH nolibc 16/61] tools/nolibc/stdlib: add i64toa() and u64toa()
+Date:   Mon, 18 Apr 2022 17:41:40 -0700
+Message-Id: <20220419004225.3952530-16-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -54,87 +53,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-FD_SET, FD_CLR, FD_ISSET, FD_ZERO are often expected to be macros and
-not functions. In addition we already have a file dedicated to such
-macros and types used by syscalls, it's types.h, so let's move them
-there and turn them to macros. FD_CLR() and FD_ISSET() were missing,
-so they were added. FD_ZERO() now deals with its own loop so that it
-doesn't rely on memset() that sets one byte at a time.
+These are 64-bit variants of the itoa() and utoa() functions. They also
+support reentrant ones, and use the same itoa_buffer. The functions are
+a bit larger than the previous ones in 32-bit mode (86 and 98 bytes on
+x86_64 and armv7 respectively), which is why we continue to provide them
+as separate functions.
 
-Cc: David Laight <David.Laight@aculab.com>
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/nolibc.h | 14 --------------
- tools/include/nolibc/types.h  | 30 ++++++++++++++++++++++++++++++
- 2 files changed, 30 insertions(+), 14 deletions(-)
+ tools/include/nolibc/stdlib.h | 72 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
-diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
-index c96c6cb7f3ae..2267d98337ea 100644
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -118,20 +118,6 @@ const char *ltoa(long in)
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index dbb45631c7ca..d972871bf2ba 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -144,6 +144,78 @@ char *utoa(unsigned long in)
+ 	return itoa_buffer;
+ }
  
- /* Here come a few helper functions */
- 
--static __attribute__((unused))
--void FD_ZERO(fd_set *set)
--{
--	memset(set, 0, sizeof(*set));
--}
--
--static __attribute__((unused))
--void FD_SET(int fd, fd_set *set)
--{
--	if (fd < 0 || fd >= FD_SETSIZE)
--		return;
--	set->fd32[fd / 32] |= 1 << (fd & 31);
--}
--
- /* WARNING, it only deals with the 4096 first majors and 256 first minors */
++/* Converts the unsigned 64-bit integer <in> to its string representation into
++ * buffer <buffer>, which must be long enough to store the number and the
++ * trailing zero (21 bytes for 18446744073709551615). The buffer is filled from
++ * the first byte, and the number of characters emitted (not counting the
++ * trailing zero) is returned. The function is constructed in a way to optimize
++ * the code size and avoid any divide that could add a dependency on large
++ * external functions.
++ */
++static __attribute__((unused))
++int u64toa_r(uint64_t in, char *buffer)
++{
++	unsigned long long lim;
++	int digits = 0;
++	int pos = 19; /* start with the highest possible digit */
++	int dig;
++
++	do {
++		for (dig = 0, lim = 1; dig < pos; dig++)
++			lim *= 10;
++
++		if (digits || in >= lim || !pos) {
++			for (dig = 0; in >= lim; dig++)
++				in -= lim;
++			buffer[digits++] = '0' + dig;
++		}
++	} while (pos--);
++
++	buffer[digits] = 0;
++	return digits;
++}
++
++/* Converts the signed 64-bit integer <in> to its string representation into
++ * buffer <buffer>, which must be long enough to store the number and the
++ * trailing zero (21 bytes for -9223372036854775808). The buffer is filled from
++ * the first byte, and the number of characters emitted (not counting the
++ * trailing zero) is returned.
++ */
++static __attribute__((unused))
++int i64toa_r(int64_t in, char *buffer)
++{
++	char *ptr = buffer;
++	int len = 0;
++
++	if (in < 0) {
++		in = -in;
++		*(ptr++) = '-';
++		len++;
++	}
++	len += u64toa_r(in, ptr);
++	return len;
++}
++
++/* converts int64_t <in> to a string using the static itoa_buffer and returns
++ * the pointer to that string.
++ */
++static inline __attribute__((unused))
++char *i64toa(int64_t in)
++{
++	i64toa_r(in, itoa_buffer);
++	return itoa_buffer;
++}
++
++/* converts uint64_t <in> to a string using the static itoa_buffer and returns
++ * the pointer to that string.
++ */
++static inline __attribute__((unused))
++char *u64toa(uint64_t in)
++{
++	u64toa_r(in, itoa_buffer);
++	return itoa_buffer;
++}
++
  static __attribute__((unused))
- dev_t makedev(unsigned int major, unsigned int minor)
-diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-index 2f09abaf95f1..a4dda0a22fc2 100644
---- a/tools/include/nolibc/types.h
-+++ b/tools/include/nolibc/types.h
-@@ -75,6 +75,36 @@ typedef struct {
- 	uint32_t fd32[FD_SETSIZE / 32];
- } fd_set;
- 
-+#define FD_CLR(fd, set) do {                                            \
-+		fd_set *__set = (set);                                  \
-+		int __fd = (fd);                                        \
-+		if (__fd >= 0)                                          \
-+			__set->fd32[__fd / 32] &= ~(1U << (__fd & 31)); \
-+	} while (0)
-+
-+#define FD_SET(fd, set) do {                                            \
-+		fd_set *__set = (set);                                  \
-+		int __fd = (fd);                                        \
-+		if (__fd >= 0)                                          \
-+			__set->fd32[__fd / 32] |= 1U << (__fd & 31);    \
-+	} while (0)
-+
-+#define FD_ISSET(fd, set) ({                                                  \
-+		fd_set *__set = (set);                                        \
-+		int __fd = (fd);                                              \
-+		int __r = 0;                                                  \
-+		if (__fd >= 0)                                                \
-+			__r = !!(__set->fd32[__fd / 32] & 1U << (__fd & 31)); \
-+		__r;                                                          \
-+	})
-+
-+#define FD_ZERO(set) do {                                               \
-+		fd_set *__set = (set);                                  \
-+		int __idx;                                              \
-+		for (__idx = 0; __idx < FD_SETSIZE / 32; __idx ++)      \
-+			__set->fd32[__idx] = 0;                         \
-+	} while (0)
-+
- /* for poll() */
- struct pollfd {
- 	int fd;
+ int msleep(unsigned int msecs)
+ {
 -- 
 2.31.1.189.g2e36527f23
 
