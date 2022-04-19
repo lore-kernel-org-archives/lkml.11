@@ -2,205 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:37:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F131C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352311AbiDSQkY (ORCPT
+        id S1354696AbiDSQlS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+        Tue, 19 Apr 2022 12:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236480AbiDSQkV (ORCPT
+        with ESMTP id S238253AbiDSQlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:40:21 -0400
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D1713EB2;
-        Tue, 19 Apr 2022 09:37:38 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id x200so31965552ybe.13;
-        Tue, 19 Apr 2022 09:37:38 -0700 (PDT)
+        Tue, 19 Apr 2022 12:41:15 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0AE1409E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:38:32 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id x17so30383454lfa.10
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:38:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OQBJCdM90hvT5S/zAE5vLjVmVTwzQZE/0kHANhU68o4=;
+        b=mlAAnQdt5ZbjW5hkIOjAqKQ5iX4QuiTTeQ0I0cdeISpwbgIbmg3RUkkjFw4KpohCbP
+         8RGIByLJCRx2KA0kJsWTv1C/o6B7u0CXk+JrwaIWzh48UoWwa9uJakuvcBRHH6bFB/Ls
+         tX/58Bs+DDYjM2dLCVv6lqqTOUYnJ9PZUOv6ULGKhZceGWjGcHSGQPxkVpBiBs8F9Qnp
+         r07KFTHwyo7HRXZVntsjq1z3BLmxs7I/fJXElyz2uoOWD7csCPeiGFt/JWwuDWWr5NeM
+         urr+wNHsjgoNLx2FkaKlnQvDSUqXKDNBLrjpyvlsa+kZ0ya916mz3qV427umdREsO18+
+         xuPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9VJILz0D6wN43Mvz3whrxbRWAuiBviKyt3Egte5MPtc=;
-        b=7HDcMYyiP/G6zNKnqrUh6qFIp/OT3jZjR8fUJumKCawvs0AWgHudtQAGWhzouZvt+X
-         H0pVRA/WApSKdYSKgkmX9MRFv5smwCWZUXqrxBnM6jsiLITU2BH4KKdUyB17xRPxeCTf
-         WHNeOCnsX8bNAt3lrExJLyR+ZyKIGc7CuATJT6NouhyVApqAnUdlW0dT7UDjc4zB8wBz
-         uIWPMdsdX2xURaXjNl3tn6lNxRViTD5lU4zEipFkMy48PyITYMHzLGLACTKaSh3pUKN+
-         VRI2IHkSBytwhddvjniIarZUb+enpjL7MwzNSihE6kcjVn9f+Ofu69YQ77R4DcG9l5e2
-         ik7g==
-X-Gm-Message-State: AOAM5314sZ1prNnkx+hieUAVyJ8zlhORM6G+3Nnr/vsXy3bSMmCm5gwB
-        IruWP+TdRMQuvxLgmfd74P3LqszOt3JFSyOtW2s=
-X-Google-Smtp-Source: ABdhPJwkKAullBGAw9ZlVXtmETbA9O34EM5azvrq1UVQg+ilUqJCTVzT5AoypoSCvOtw1YDpUOZr7CzOl9CyVN0XmZ8=
-X-Received: by 2002:a05:6902:352:b0:63e:94c:883c with SMTP id
- e18-20020a056902035200b0063e094c883cmr15106699ybs.365.1650386257808; Tue, 19
- Apr 2022 09:37:37 -0700 (PDT)
+        bh=OQBJCdM90hvT5S/zAE5vLjVmVTwzQZE/0kHANhU68o4=;
+        b=OkUE5oka/IUnzmFq6I/BzkOm799SfiktAXxrUiJ1gF1qr1Jqxlb6ojCtPc+pPUZ9Zp
+         tX/lxFEdBb96MJVx8JW2l198D6oj4REw8pbdNgyw+QcS81n0j33VxI0PLwGwHsPPknZL
+         jJbLZd2OyV8oMaj5FnjhOjHa6/yDHPqm9RbRCLEkiZwY0mMNEeVH2/o3Ctve9khPshQ6
+         CGOaIVG/lyk2wnnkvK2k0BKkfS+bH0ObYs7PVoVN0zD5bmNZCz6SN0ACtIBHzQrOS7E4
+         A2Qjy9S5KPS1m1dbV3rb1KMjEjupeV29fPI/ebNXM5bGfEB79n6TXwSWDszP1xDRopr8
+         Blvg==
+X-Gm-Message-State: AOAM533SaSqeiCtDG65cRG8sOCyamuXztfD0z3WsYzEc3Ld8U/+VLtwJ
+        LyWjPaRClAWCGa9wKRwtIFht/Dvgok7B43wBjLps6Q==
+X-Google-Smtp-Source: ABdhPJy7I2GKesc7liKjiMsmsfYQ2u7aN/j0jHnPAFWYKa/qL6Bwrbr7ipVhkCDdP45fYwSBJO2iIe+zNJ/l2AeXGP0=
+X-Received: by 2002:a05:6512:3d8e:b0:471:b4d4:32f with SMTP id
+ k14-20020a0565123d8e00b00471b4d4032fmr491452lfv.288.1650386310460; Tue, 19
+ Apr 2022 09:38:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220415133356.179706384@linutronix.de> <20220415161206.934040006@linutronix.de>
-In-Reply-To: <20220415161206.934040006@linutronix.de>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 19 Apr 2022 18:37:27 +0200
-Message-ID: <CAJZ5v0iDJ7k5cyZt8GWp4kBVrk8h74+kY_=dh48m1xnf9G3ksQ@mail.gmail.com>
-Subject: Re: [patch 10/10] x86/aperfmperf: Replace arch_freq_get_on_cpu()
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
+References: <20220419160407.1740458-1-Jason@zx2c4.com>
+In-Reply-To: <20220419160407.1740458-1-Jason@zx2c4.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Tue, 19 Apr 2022 18:37:54 +0200
+Message-ID: <CAG48ez3amS6=omb8XVDEz9H2bk3MxTEK_XPjD=ZO-cXcDqz-cg@mail.gmail.com>
+Subject: Re: [PATCH] random: add fork_event sysctl for polling VM forks
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Alexander Graf <graf@amazon.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Colm MacCarthaigh <colmmacc@amazon.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 9:20 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+On Tue, Apr 19, 2022 at 6:04 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> In order to inform userspace of virtual machine forks, this commit adds
+> a "fork_event" sysctl, which does not return any data, but allows
+> userspace processes to poll() on it for notification of VM forks.
 >
-> Reading the current CPU frequency from /sys/..../scaling_cur_freq involves
-> in the worst case two IPIs due to the ad hoc sampling.
+> It avoids exposing the actual vmgenid from the hypervisor to userspace,
+> in case there is any randomness value in keeping it secret. Rather,
+> userspace is expected to simply use getrandom() if it wants a fresh
+> value.
 >
-> The frequency invariance infrastructure provides the APERF/MPERF samples
-> already. Utilize them and consolidate this with the /proc/cpuinfo readout.
+> For example, the following snippet can be used to print a message every
+> time a VM forks, after the RNG has been reseeded:
 >
-> The sample is considered valid for 20ms. So for idle or isolated NOHZ full
-> CPUs the function returns 0, which is matching the previous behaviour.
->
-> The resulting text size vs. the original APERF/MPERF plus the separate
-> frequency invariance code:
->
->   text:         2411    ->   723
->   init.text:       0    ->   767
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+>   struct pollfd fd = { .fd = open("/proc/sys/kernel/random/fork_event", O_RDONLY)  };
+>   assert(fd.fd >= 0);
+>   for (;;) {
+>     assert(poll(&fd, 1, -1) > 0);
+>     puts("vm fork detected");
+>   }
 
-All good AFAICS.
-
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-> ---
->  arch/x86/kernel/cpu/aperfmperf.c |   94 ---------------------------------------
->  arch/x86/kernel/cpu/proc.c       |    2
->  2 files changed, 2 insertions(+), 94 deletions(-)
->
-> --- a/arch/x86/kernel/cpu/aperfmperf.c
-> +++ b/arch/x86/kernel/cpu/aperfmperf.c
-> @@ -35,98 +35,6 @@ static DEFINE_PER_CPU_SHARED_ALIGNED(str
->         .seq = SEQCNT_ZERO(cpu_samples.seq)
->  };
->
-> -struct aperfmperf_sample {
-> -       unsigned int    khz;
-> -       atomic_t        scfpending;
-> -       ktime_t time;
-> -       u64     aperf;
-> -       u64     mperf;
-> -};
-> -
-> -static DEFINE_PER_CPU(struct aperfmperf_sample, samples);
-> -
-> -#define APERFMPERF_CACHE_THRESHOLD_MS  10
-> -#define APERFMPERF_REFRESH_DELAY_MS    10
-> -#define APERFMPERF_STALE_THRESHOLD_MS  1000
-> -
-> -/*
-> - * aperfmperf_snapshot_khz()
-> - * On the current CPU, snapshot APERF, MPERF, and jiffies
-> - * unless we already did it within 10ms
-> - * calculate kHz, save snapshot
-> - */
-> -static void aperfmperf_snapshot_khz(void *dummy)
-> -{
-> -       u64 aperf, aperf_delta;
-> -       u64 mperf, mperf_delta;
-> -       struct aperfmperf_sample *s = this_cpu_ptr(&samples);
-> -       unsigned long flags;
-> -
-> -       local_irq_save(flags);
-> -       rdmsrl(MSR_IA32_APERF, aperf);
-> -       rdmsrl(MSR_IA32_MPERF, mperf);
-> -       local_irq_restore(flags);
-> -
-> -       aperf_delta = aperf - s->aperf;
-> -       mperf_delta = mperf - s->mperf;
-> -
-> -       /*
-> -        * There is no architectural guarantee that MPERF
-> -        * increments faster than we can read it.
-> -        */
-> -       if (mperf_delta == 0)
-> -               return;
-> -
-> -       s->time = ktime_get();
-> -       s->aperf = aperf;
-> -       s->mperf = mperf;
-> -       s->khz = div64_u64((cpu_khz * aperf_delta), mperf_delta);
-> -       atomic_set_release(&s->scfpending, 0);
-> -}
-> -
-> -static bool aperfmperf_snapshot_cpu(int cpu, ktime_t now, bool wait)
-> -{
-> -       s64 time_delta = ktime_ms_delta(now, per_cpu(samples.time, cpu));
-> -       struct aperfmperf_sample *s = per_cpu_ptr(&samples, cpu);
-> -
-> -       /* Don't bother re-computing within the cache threshold time. */
-> -       if (time_delta < APERFMPERF_CACHE_THRESHOLD_MS)
-> -               return true;
-> -
-> -       if (!atomic_xchg(&s->scfpending, 1) || wait)
-> -               smp_call_function_single(cpu, aperfmperf_snapshot_khz, NULL, wait);
-> -
-> -       /* Return false if the previous iteration was too long ago. */
-> -       return time_delta <= APERFMPERF_STALE_THRESHOLD_MS;
-> -}
-> -
-> -unsigned int arch_freq_get_on_cpu(int cpu)
-> -{
-> -       struct aperfmperf_sample *s = per_cpu_ptr(&samples, cpu);
-> -
-> -       if (!cpu_khz)
-> -               return 0;
-> -
-> -       if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
-> -               return 0;
-> -
-> -       if (!housekeeping_cpu(cpu, HK_TYPE_MISC))
-> -               return 0;
-> -
-> -       if (rcu_is_idle_cpu(cpu))
-> -               return 0;
-> -
-> -       if (aperfmperf_snapshot_cpu(cpu, ktime_get(), true))
-> -               return per_cpu(samples.khz, cpu);
-> -
-> -       msleep(APERFMPERF_REFRESH_DELAY_MS);
-> -       atomic_set(&s->scfpending, 1);
-> -       smp_mb(); /* ->scfpending before smp_call_function_single(). */
-> -       smp_call_function_single(cpu, aperfmperf_snapshot_khz, NULL, 1);
-> -
-> -       return per_cpu(samples.khz, cpu);
-> -}
-> -
->  static void init_counter_refs(void)
->  {
->         u64 aperf, mperf;
-> @@ -493,7 +401,7 @@ void arch_scale_freq_tick(void)
->   */
->  #define MAX_SAMPLE_AGE ((unsigned long)HZ / 50)
->
-> -unsigned int aperfmperf_get_khz(int cpu)
-> +unsigned int arch_freq_get_on_cpu(int cpu)
->  {
->         struct aperfmperf *s = per_cpu_ptr(&cpu_samples, cpu);
->         unsigned long last;
-> --- a/arch/x86/kernel/cpu/proc.c
-> +++ b/arch/x86/kernel/cpu/proc.c
-> @@ -84,7 +84,7 @@ static int show_cpuinfo(struct seq_file
->                 seq_printf(m, "microcode\t: 0x%x\n", c->microcode);
->
->         if (cpu_has(c, X86_FEATURE_TSC)) {
-> -               unsigned int freq = aperfmperf_get_khz(cpu);
-> +               unsigned int freq = arch_freq_get_on_cpu(cpu);
->
->                 if (!freq)
->                         freq = cpufreq_quick_get(cpu);
->
+This is a bit of a weird API, because normally .poll is supposed to be
+level-triggered rather than edge-triggered... and AFAIK things like
+epoll also kinda assume that ->poll() doesn't modify state (but that
+only _really_ matters in weird cases). But at the same time, it looks
+like the existing proc_sys_poll() already goes against that? So I
+don't know what the right thing to do there is...
