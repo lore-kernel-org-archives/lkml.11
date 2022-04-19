@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB709C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3929EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbiDSSZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
+        id S1357133AbiDSSZs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 14:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356994AbiDSSWe (ORCPT
+        with ESMTP id S1357007AbiDSSWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9963E13E11;
-        Tue, 19 Apr 2022 11:14:54 -0700 (PDT)
+        Tue, 19 Apr 2022 14:22:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10FA1901A;
+        Tue, 19 Apr 2022 11:14:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C0F75CE19AA;
-        Tue, 19 Apr 2022 18:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5CC7C385A7;
-        Tue, 19 Apr 2022 18:14:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78E36B818E0;
+        Tue, 19 Apr 2022 18:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35C4EC385AB;
+        Tue, 19 Apr 2022 18:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392091;
-        bh=PppC3vam2C5Yu3j4i8ueQKhK2ayOhbdqrydENy51b+I=;
+        s=k20201202; t=1650392097;
+        bh=288k9DnEcV4ejGaEJ796PXFMibFI/0Co3swJzfncqIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oemJFg9ICwDz3AzBpSP7lvR5O+6rvjlVpleYLElYc1H5vhbHPWQLk6m2iKHWZDudV
-         FlZPZ0zQmv5MrDZAME7octLntbDtUi4poCVfB+a/f8zJm51woxWuCX3ZeddvAFxEFF
-         OHZHO5PiZ5TFWevSJNyDv5v277hXJ2AZgLQ4bpGJYooyLnK59MlduVL3ffV8N3rmcf
-         GBo3UDA11uudBdU3pZPLK54s8ock04AoPSAp8ZjrO5FZi0lDK7ruDWzB/sLTXMgnYn
-         tvtcU5POVAlQclL6tuLgRwrAUhiLW4lgpH+LkdBxAgQEsKTFFdKQEirpbRjgoVJhNQ
-         nOuE+qegv8J4Q==
+        b=RbkGs36UBh/nWgqVBDwJAIjrLaBdwjFUliMuOCKBvYlNC2MeLcb6P2RPlejvLy4kh
+         wa0OVglCKGrZtLKMXgJhMfJDfVjIzN1wc5KL/rrbUK8CXw5bvbdI/JsCu0B0/uZrzG
+         EJGjzATogpDRqe+otqUAhfQ27EFRo0qPw2rmQaf+GN99EwScjBEwI/jyOCM3Yicdfr
+         meV/C/QmC2CCR52Dr0bwQygVP/7xm+zmybPCrwdjsPDpTu9AR+0B+cRv9iGdcFGYtk
+         WMqnanFyWUWHXK1emmm2w95NwPgJFW1t4dB3J4Yvw2BxkApn9+IErGnYPImP81O8jA
+         bafVrGMILIMQQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sameer Pujar <spujar@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, thierry.reding@gmail.com,
-        mperttunen@nvidia.com, linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/14] reset: tegra-bpmp: Restore Handle errors in BPMP response
-Date:   Tue, 19 Apr 2022 14:14:31 -0400
-Message-Id: <20220419181444.485959-2-sashal@kernel.org>
+Cc:     Hongbin Wang <wh_bin@126.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/14] vxlan: fix error return code in vxlan_fdb_append
+Date:   Tue, 19 Apr 2022 14:14:34 -0400
+Message-Id: <20220419181444.485959-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181444.485959-1-sashal@kernel.org>
 References: <20220419181444.485959-1-sashal@kernel.org>
@@ -54,56 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Hongbin Wang <wh_bin@126.com>
 
-[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
+[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
 
-This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
-Handle errors in BPMP response").
+When kmalloc and dst_cache_init failed,
+should return ENOMEM rather than ENOBUFS.
 
-The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
-hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-response") can be removed now.
-
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/vxlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
-index 24d3395964cc..4c5bba52b105 100644
---- a/drivers/reset/tegra/reset-bpmp.c
-+++ b/drivers/reset/tegra/reset-bpmp.c
-@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
- 	struct mrq_reset_request request;
- 	struct tegra_bpmp_message msg;
-+	int err;
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index c5991e31c557..f4869b1836f3 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -679,11 +679,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
  
- 	memset(&request, 0, sizeof(request));
- 	request.cmd = command;
-@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	msg.tx.data = &request;
- 	msg.tx.size = sizeof(request);
+ 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
+ 	if (rd == NULL)
+-		return -ENOBUFS;
++		return -ENOMEM;
  
--	return tegra_bpmp_transfer(bpmp, &msg);
-+	err = tegra_bpmp_transfer(bpmp, &msg);
-+	if (err)
-+		return err;
-+	if (msg.rx.ret)
-+		return -EINVAL;
-+
-+	return 0;
- }
+ 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
+ 		kfree(rd);
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 	}
  
- static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
+ 	rd->remote_ip = *ip;
 -- 
 2.35.1
 
