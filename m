@@ -2,178 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A25C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77281C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356346AbiDSSPJ (ORCPT
+        id S1356365AbiDSSPK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
+        Tue, 19 Apr 2022 14:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356323AbiDSSOj (ORCPT
+        with ESMTP id S1356304AbiDSSO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:14:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED683DA5F;
-        Tue, 19 Apr 2022 11:11:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6AE8DCE188A;
-        Tue, 19 Apr 2022 18:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D98DC385A5;
-        Tue, 19 Apr 2022 18:11:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650391908;
-        bh=td2dPsECXqyRY/ABkxSK/V+113r84hWAnEKvyOEtiLI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RgWQt+PRjPseSIzlB9vmCci6MBOFTpPL9fYs7lNsAgDhOJsj0ipoMjohgq60xFG9C
-         253Y+jOD5Yj9Ud4iuL0pAJtKVUgsT3SEUc0CzXZSDr4BvtbQIJLJ68IHVaG1WIrBE5
-         n3EjnfSis2lzY99cqNRUUnfAi3SxWHRetkbgGv6bTzbRrrDFPBrsNahGjoRjDaAzUb
-         S4y0klIY0Ous6sQcBVdCsRBf+lz67NfK2qXYz8RuqOjkFtnwA5ZmeoVjiWaXMiXKbX
-         fBo85jqREeS2OBafA+J43mwo2nl190r6XhU3KWAq5su0yxspJPGNp+bVNa99QNAeqN
-         VLg+fIY6/FbfQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 14/34] net: atlantic: Avoid out-of-bounds indexing
-Date:   Tue, 19 Apr 2022 14:10:41 -0400
-Message-Id: <20220419181104.484667-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
-References: <20220419181104.484667-1-sashal@kernel.org>
+        Tue, 19 Apr 2022 14:14:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79A1B3D4BB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:11:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650391917;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LwUaVyvkJpv+b43R2pNDTJa0Sg8BzHKo5UTqR77pruc=;
+        b=KLQmXZzNeaF6nFQu3m2ZDxficAZhX4lHb6SdCflzifkqBJgf2yjTWDDrqG0AksySUDftFr
+        8DQPKoP+MHKaNdEVETsY14dcDEca59sM1bc8+/k96bz7eNxzqLecuExkvhAf+3g34jAOiZ
+        Q19Xv3P8ntaOt20w/g/Hds6iIr6WSYo=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-624-EKDFvnEaMO6a4kza1yE__Q-1; Tue, 19 Apr 2022 14:11:55 -0400
+X-MC-Unique: EKDFvnEaMO6a4kza1yE__Q-1
+Received: by mail-qv1-f71.google.com with SMTP id 30-20020a0c80a1000000b00446218e1bcbso12551304qvb.23
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:11:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LwUaVyvkJpv+b43R2pNDTJa0Sg8BzHKo5UTqR77pruc=;
+        b=yu+TtPuBfnX1oTrnzXK0QWI0qh1mEuxTsQUkWzm/LcsyJ5y0ayDqCSN6Bjp87zIsFP
+         A+o2354rxPndXiO6TrT5fY+O+QoUZiXvXVa54phrFgmqFeq10B1n3fQOCtxLKf9+5kDR
+         F0emCnqLMQYU/S4+dK8adcXJlqSnGKeNVe6Lr/aITkipkwfepR9uPo6NykG4k6L5Ex1c
+         V2H9ipIyFVlAPl+H+8juQ3HWig+aSiCQ8htUSgKBJdDzeoPLdb6a/b/hCGVXVPQq7pcj
+         SgSknNyC9Md5i31nQoL96qtYyRQ228aPKPr137BF6JGMacizauZ2MYKYxy5g+L+Wj9Gb
+         pPBA==
+X-Gm-Message-State: AOAM533wEFogzrqEenkLJxu0o4yKkP3MvzVwKi1cM5CGbDOij5ZaHYWf
+        6U+kt/twETE2HbqER+zZ59vOhZV6p9NGQR9UYv77N3Vfr/SmDktIEh+bCgjpZ9M6OH3nNxMO32e
+        zX+p+fZldxkRjH/or6cUfWfjw
+X-Received: by 2002:ac8:57c3:0:b0:2f2:2a4:fd15 with SMTP id w3-20020ac857c3000000b002f202a4fd15mr5998025qta.339.1650391915367;
+        Tue, 19 Apr 2022 11:11:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyHzZnfiEoTE9rq8ROzmmv2/PC1BvV4lSL4t+0tPZRfEQwxsSBiOPjTXcSOMF6iNYRfANzpIw==
+X-Received: by 2002:ac8:57c3:0:b0:2f2:2a4:fd15 with SMTP id w3-20020ac857c3000000b002f202a4fd15mr5998008qta.339.1650391915104;
+        Tue, 19 Apr 2022 11:11:55 -0700 (PDT)
+Received: from [192.168.0.188] ([24.48.139.231])
+        by smtp.gmail.com with ESMTPSA id s18-20020a05622a1a9200b002f335693f4bsm390102qtc.38.2022.04.19.11.11.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 11:11:54 -0700 (PDT)
+Message-ID: <b5575449-08a2-2901-e7e1-a97150e4878c@redhat.com>
+Date:   Tue, 19 Apr 2022 14:11:53 -0400
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] vm_swappiness=0 should still try to avoid swapping
+ anon memory
+Content-Language: en-US
+To:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Cc:     hannes@cmpxchg.org, aquini@redhat.com, shakeelb@google.com,
+        llong@redhat.com, mhocko@suse.com, hakavlad@inbox.lv
+References: <20210809223740.59009-1-npache@redhat.com>
+From:   Nico Pache <npache@redhat.com>
+In-Reply-To: <20210809223740.59009-1-npache@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+I think its is important to note the issue we are seeing has greatly improved
+since the initial posting. However we have noticed that the issue is still
+present (and significantly worse) when cgroupV1 is set.
 
-[ Upstream commit 8d3a6c37d50d5a0504c126c932cc749e6dd9c78f ]
+We were initially testing with CgroupV1 and later found that the issue was not
+as bad in CgroupV2 (but was still an noticeable issue). This is also resulting
+in the splitting of THPs in the host kernel.
 
-UBSAN warnings are observed on atlantic driver:
-[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
-[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
+-- Nico
 
-The ring is dereferenced right before breaking out the loop, to prevent
-that from happening, only use the index in the loop to fix the issue.
-
-BugLink: https://bugs.launchpad.net/bugs/1958770
-Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
-Link: https://lore.kernel.org/r/20220408022204.16815-1-kai.heng.feng@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../net/ethernet/aquantia/atlantic/aq_nic.c   |  8 +++----
- .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
- 2 files changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 33f1a1377588..24d715c28a35 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -486,8 +486,8 @@ int aq_nic_start(struct aq_nic_s *self)
- 	if (err < 0)
- 		goto err_exit;
- 
--	for (i = 0U, aq_vec = self->aq_vec[0];
--		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
-+	for (i = 0U; self->aq_vecs > i; ++i) {
-+		aq_vec = self->aq_vec[i];
- 		err = aq_vec_start(aq_vec);
- 		if (err < 0)
- 			goto err_exit;
-@@ -517,8 +517,8 @@ int aq_nic_start(struct aq_nic_s *self)
- 		mod_timer(&self->polling_timer, jiffies +
- 			  AQ_CFG_POLLING_TIMER_INTERVAL);
- 	} else {
--		for (i = 0U, aq_vec = self->aq_vec[0];
--			self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
-+		for (i = 0U; self->aq_vecs > i; ++i) {
-+			aq_vec = self->aq_vec[i];
- 			err = aq_pci_func_alloc_irq(self, i, self->ndev->name,
- 						    aq_vec_isr, aq_vec,
- 						    aq_vec_get_affinity_mask(aq_vec));
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-index f4774cf051c9..6ab1f3212d24 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
- 	if (!self) {
- 		err = -EINVAL;
- 	} else {
--		for (i = 0U, ring = self->ring[0];
--			self->tx_rings > i; ++i, ring = self->ring[i]) {
-+		for (i = 0U; self->tx_rings > i; ++i) {
-+			ring = self->ring[i];
- 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
- 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
- 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
-@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
- 	self->aq_hw_ops = aq_hw_ops;
- 	self->aq_hw = aq_hw;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
- 		if (err < 0)
- 			goto err_exit;
-@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
- 	unsigned int i = 0U;
- 	int err = 0;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
- 							&ring[AQ_VEC_TX_ID]);
- 		if (err < 0)
-@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
- 	struct aq_ring_s *ring = NULL;
- 	unsigned int i = 0U;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
- 						 &ring[AQ_VEC_TX_ID]);
- 
-@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
- 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
- 	}
-@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
- 		if (i < self->rx_rings)
- 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
--- 
-2.35.1
+On 8/9/21 18:37, Nico Pache wrote:
+> Since commit 170b04b7ae49 ("mm/workingset: prepare the workingset detection
+> infrastructure for anon LRU") and commit b91ac374346b ("mm: vmscan: enforce
+> inactive:active ratio at the reclaim root") swappiness can start prematurely
+> swapping anon memory. This is due to the assumption that refaulting anon should
+> always allow the shrinker to target anon memory. Add a check for swappiness
+> being >0 before indiscriminately targeting Anon. Before these commits
+> when a user had swappiness=0 anon memory would rarely get swapped; this
+> behavior has remained constant sense RHEL5. This commit keeps that behavior
+> intact and prevents the new workingset refaulting from challenging the anon
+> memory when swappiness=0.
+> 
+> Anon can still be swapped to prevent OOM. This does not completely disable
+> swapping, but rather tames the refaulting aspect of the code that allows for
+> the deactivating of anon memory.
+> 
+> We have two customer workloads that discovered this issue:
+> 1) A VM claiming 95% of the hosts memory followed by file reads (never dirty)
+>    which begins to challenge the anon. Refaulting the anon working set will then
+>    cause the indiscriminant swapping of the anon.
+> 
+> 2) A VM running a in-memory DB is being populated from file reads.
+>    Swappiness is set to 0 or 1 to defer write I/O as much as possible. Once
+>    the customer experienced low memory, swapping anon starts, with
+>    little-to-no PageCache being swapped.
+> 
+> Previously the file cache would account for almost all of the memory
+> reclaimed and reads would throttle. Although the two LRU changes mentioned
+> allow for less thrashing of file cache, customers would like to be able to keep
+> the swappiness=0 behavior that has been present in the kernel for a long
+> time.
+> 
+> A similar solution may be possible in get_scan_count(), which determines the
+> reclaim pressure for each LRU; however I believe that kind of solution may be
+> too aggressive, and will not allow other parts of the code (like direct reclaim)
+> from targeting the active_anon list. This way we stop the problem at the heart
+> of what is causing the issue, with the least amount of interference in other
+> code paths. Furthermore, shrink_lruvec can modify the reclaim pressure of each
+> LRU, which may make the get_scan_count solution even trickier.
+> 
+> Changelog:
+>  -V3:
+>     * Blame the right commit and be more descriptive in my log message.
+>     * inactive_is_low should remain independent from the new swappiness check.
+>     * Change how we get the swappiness value. Shrink_node can be called with a
+>       null target_mem_cgroup so we should depend on the target_lruvec to do the
+>       null check on memcg.
+> 
+>  -V2:
+>      * made this mem_cgroup specific so now it will work with v1, v2, and
+>        no cgroups.
+>      * I've also touched up my commit log.
+> 
+> Signed-off-by: Nico Pache <npache@redhat.com>
+> ---
+>  mm/vmscan.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 4620df62f0ff..9f2420da4037 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -2883,8 +2883,12 @@ static void shrink_node(pg_data_t *pgdat, struct scan_control *sc)
+>  	struct lruvec *target_lruvec;
+>  	bool reclaimable = false;
+>  	unsigned long file;
+> +	struct mem_cgroup *memcg;
+> +	int swappiness;
+>  
+>  	target_lruvec = mem_cgroup_lruvec(sc->target_mem_cgroup, pgdat);
+> +	memcg = lruvec_memcg(target_lruvec);
+> +	swappiness = mem_cgroup_swappiness(memcg);
+>  
+>  again:
+>  	memset(&sc->nr, 0, sizeof(sc->nr));
+> @@ -2909,7 +2913,7 @@ static void shrink_node(pg_data_t *pgdat, struct scan_control *sc)
+>  
+>  		refaults = lruvec_page_state(target_lruvec,
+>  				WORKINGSET_ACTIVATE_ANON);
+> -		if (refaults != target_lruvec->refaults[0] ||
+> +		if ((swappiness && refaults != target_lruvec->refaults[0]) ||
+>  			inactive_is_low(target_lruvec, LRU_INACTIVE_ANON))
+>  			sc->may_deactivate |= DEACTIVATE_ANON;
+>  		else
 
