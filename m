@@ -2,168 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB18C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 05:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC221C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 05:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348456AbiDSFOL (ORCPT
+        id S1348487AbiDSFPe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 01:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
+        Tue, 19 Apr 2022 01:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiDSFOJ (ORCPT
+        with ESMTP id S229545AbiDSFPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 01:14:09 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21DE21E21;
-        Mon, 18 Apr 2022 22:11:27 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id d19so4841854qko.3;
-        Mon, 18 Apr 2022 22:11:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JXEZ5C8fYOz+un4E/+M4H7uOYX0LQVxNU9wzlCZQgnI=;
-        b=eII8IdHoWLxjcKl0Sg+2eT49DZP+AhiUxs7TAqxbXeF/yiv5sjwIDUKREFQEKWxzn4
-         kSnJJ1XwNvrRRwdX5GOzB9qaejlo8q7L5vi9bmG0ntRIXlvZpwIfyMCQJpGcgl92Pe69
-         DF5QLpTFc6wX8ijdI2lRKhCKS4VGlrKh2vFFnWSwPK2hA8iLfbAkaKvuSUxFenLECl0P
-         qzmXCo7ex0FCiLKn4X0oTUyBNPzczXwDlJstIk7jlj3UMuG9qnDF7lh+B/IQm+HZALNU
-         ZAPq5xhYHdKN8cptiEwAg/wXKel1AWBE//GqQ88X+fX8w7DYzE1E9pTcz/OEDtyuqgSv
-         Trhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JXEZ5C8fYOz+un4E/+M4H7uOYX0LQVxNU9wzlCZQgnI=;
-        b=mDnGX4q1KPobaDjBilkf82pg6P3F72xG+fgcCMYmDiBYJVgz9hhb+G10GA2h+nCIaw
-         eTWXigXB3FcWpEGqFjqhPUUjJ5kC9epwozgSuDPXAXXJiCGL20A/giBSeREQSxnyjA8u
-         DvF6mkat6MDfOt1A7mFEkp37DF76eOygcLaU9rSd06Nks2dp2QgnYbiqZMBS6vDJdIzo
-         Qfmwqx7sJ3/CIh4zsTFjVyhUT4vq+Soz73JUT09BBzAXkrqpP/SQCiKdh3y3/vZdC8s5
-         G6irql30l5iOu/wLxtP3OGtL5yh2cW7wI2qTrQGEp/fzj21vOuiC+KkThJb+ryOpo/xL
-         bXIQ==
-X-Gm-Message-State: AOAM533L897+uI3pNDuj0U0GTGNFjHw2DNRT52FUD9oFfeuoE81C2haZ
-        ZY5fbB0+viZHs5/p0NjzrL92AC9407s=
-X-Google-Smtp-Source: ABdhPJwxG8YlmBr7Dtj1KIGOFk9rucVNbIgI/EDbWfI/FxwsK8Eu2be6DFUis7xFz986aFYem0hfKw==
-X-Received: by 2002:a37:a196:0:b0:69e:b207:16ee with SMTP id k144-20020a37a196000000b0069eb20716eemr3051364qke.321.1650345086571;
-        Mon, 18 Apr 2022 22:11:26 -0700 (PDT)
-Received: from godwin.fios-router.home (pool-108-18-137-133.washdc.fios.verizon.net. [108.18.137.133])
-        by smtp.gmail.com with ESMTPSA id y85-20020a376458000000b0069e64801b7dsm5327222qkb.62.2022.04.18.22.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 22:11:26 -0700 (PDT)
-From:   Sean Anderson <seanga2@gmail.com>
-To:     linux-mips@vger.kernel.org, linux-clk@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Keguang Zhang <keguang.zhang@gmail.com>,
-        Du Huanpeng <dhu@hodcarrier.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Yang Ling <gnaygnil@gmail.com>,
-        Sean Anderson <seanga2@gmail.com>
-Subject: [RFT PATCH] clk: ls1c: Fix PLL rate calculation
-Date:   Tue, 19 Apr 2022 01:11:14 -0400
-Message-Id: <20220419051114.1569291-1-seanga2@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 19 Apr 2022 01:15:31 -0400
+X-Greylist: delayed 1138 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Apr 2022 22:12:49 PDT
+Received: from gherkin.frus.com (cpe-67-11-228-40.satx.res.rr.com [67.11.228.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF995220C1;
+        Mon, 18 Apr 2022 22:12:49 -0700 (PDT)
+Received: by gherkin.frus.com (Postfix, from userid 500)
+        id 485DF61DAA; Mon, 18 Apr 2022 23:53:50 -0500 (CDT)
+Date:   Mon, 18 Apr 2022 23:53:50 -0500
+From:   Bob Tracy <rct@frus.com>
+To:     debian-alpha@lists.debian.org
+Cc:     Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: 5.17.0 boot issue on Miata
+Message-ID: <Yl5AXvU+cBH5ex4K@gherkin.frus.com>
+References: <Yj0u150JJpsb9nj4@gherkin.frus.com>
+ <20220326222157.GA13650@tower>
+ <YkuejknyPDJoQEDC@gherkin.frus.com>
+ <20220405050125.GA25969@tower>
+ <YkxKRElYUhMgOOCN@gherkin.frus.com>
+ <10d61d8f-edfc-fc39-0936-233692464dbd@gmx.de>
+ <Yk4XsdHvjrLqN1LR@gherkin.frus.com>
+ <YlAyZdZ6afL58Ege@gherkin.frus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlAyZdZ6afL58Ege@gherkin.frus.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While reviewing Dhu's patch adding ls1c300 clock support to U-Boot [1], I
-noticed the following calculation, which is copied from
-drivers/clk/loongson1/clk-loongson1c.c:
+(Adding linux-scsi and linux-kernel, now that bisection is complete.)
 
-ulong ls1c300_pll_get_rate(struct clk *clk)
-{
-	unsigned int mult;
-	long long parent_rate;
-	void *base;
-	unsigned int val;
+On Wed, Apr 06, 2022 at 05:44:01PM -0500, Bob Tracy wrote:
+> v5.17-rc2 ok.  v5.17-rc3 I get the disk sector errors and hang that I
+> reported in the first message in this thread.
 
-	parent_rate = clk_get_parent_rate(clk);
-	base = (void *)clk->data;
+This is on an Alpha Miata platform (PWS 433au) with QLogic ISP1020 controller.
 
-	val = readl(base + START_FREQ);
-	mult = FIELD_GET(FRAC_N, val) + FIELD_GET(M_PLL, val);
-	return (mult * parent_rate) / 4;
-}
+Here's the implicated commit:
 
-I would like to examine the use of M_PLL and FRAC_N to calculate the multiplier
-for the PLL. The datasheet has the following to say:
+edb854a3680bacc9ef9b91ec0c5ff6105886f6f3 is the first bad commit
+commit edb854a3680bacc9ef9b91ec0c5ff6105886f6f3
+Author: Ming Lei <ming.lei@redhat.com>
+Date:   Thu Jan 27 23:37:33 2022 +0800
 
-START_FREQ 位    缺省值      描述
-========== ===== =========== ====================================
-FRAC_N     23:16 0           PLL 倍频系数的小数部分
+    scsi: core: Reallocate device's budget map on queue depth change
+    
+    We currently use ->cmd_per_lun as initial queue depth for setting up the
+    budget_map. Martin Wilck reported that it is common for the queue_depth to
+    be subsequently updated in slave_configure() based on detected hardware
+    characteristics.
+    
+    As a result, for some drivers, the static host template settings for
+    cmd_per_lun and can_queue won't actually get used in practice. And if the
+    default values are used to allocate the budget_map, memory may be consumed
+    unnecessarily.
+    
+    Fix the issue by reallocating the budget_map after ->slave_configure()
+    returns. At that time the device queue_depth should accurately reflect what
+    the hardware needs.
+    
+    Link: https://lore.kernel.org/r/20220127153733.409132-1-ming.lei@redhat.com
+    Cc: Bart Van Assche <bvanassche@acm.org>
+    Reported-by: Martin Wilck <martin.wilck@suse.com>
+    Suggested-by: Martin Wilck <martin.wilck@suse.com>
+    Tested-by: Martin Wilck <mwilck@suse.com>
+    Reviewed-by: Martin Wilck <mwilck@suse.com>
+    Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+    Signed-off-by: Ming Lei <ming.lei@redhat.com>
+    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 
-                 由          PLL 倍频系数的整数部分
-M_PLL      15:8  NAND_D[3:0] (理论可以达到 255，建议不要超过 100)
-                 配置
+ drivers/scsi/scsi_scan.c | 55 +++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 50 insertions(+), 5 deletions(-)
 
-which according to google translate means
-
-START_FREQ Bits  Default       Description
-========== ===== ============= ================================================
-FRAC_N     23:16 0             Fractional part of the PLL multiplication factor
-
-                 Depends on    Integer part of PLL multiplication factor
-M_PLL      15:8  NAND_D[3:0]   (Theoretically it can reach 255, [but] it is
-                 configuration  recommended not to exceed 100)
-
-So just based on this description, I would expect that the formula to be
-something like
-
-	rate = parent * (255 * M_PLL + FRAC_N) / 255 / 4
-
-However, the datasheet also gives the following formula:
-
-	rate = parent * (M_PLL + FRAC_N) / 4
-
-which is what the Linux driver has implemented. I find this very unusual.
-First, the datasheet specifically says that these fields are the integer and
-fractional parts of the multiplier. Second, I think such a construct does not
-easily map to traditional PLL building blocks. Implementing this formula in
-hardware would likely require an adder, just to then set the threshold of a
-clock divider.
-
-I think it is much more likely that the first formula is correct. The author of
-the datasheet may think of a multiplier of (say) 3.14 as
-
-	M_PLL = 3
-	FRAC_N = 0.14
-
-which together sum to the correct multiplier, even though the actual value
-stored in FRAC_N would be 36.
-
-I suspect that this has slipped by unnoticed because when FRAC_N is 0, there is
-no difference in the formulae. The following patch is untested, but I suspect
-it will fix this issue. I would appreciate if anyone with access to the
-hardware could measure the output of the PLL (or one of its derived clocks) and
-determine the correct formula.
-
-[1] https://lore.kernel.org/u-boot/20220418204519.19991-1-dhu@hodcarrier.org/T/#u
-
-Fixes: b4626a7f4892 ("CLK: Add Loongson1C clock support")
-Signed-off-by: Sean Anderson <seanga2@gmail.com>
----
-
- drivers/clk/loongson1/clk-loongson1c.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson1/clk-loongson1c.c
-index 703f87622cf5..2b98a116c1ea 100644
---- a/drivers/clk/loongson1/clk-loongson1c.c
-+++ b/drivers/clk/loongson1/clk-loongson1c.c
-@@ -21,9 +21,9 @@ static unsigned long ls1x_pll_recalc_rate(struct clk_hw *hw,
- 	u32 pll, rate;
- 
- 	pll = __raw_readl(LS1X_CLK_PLL_FREQ);
--	rate = ((pll >> 8) & 0xff) + ((pll >> 16) & 0xff);
-+	rate = (pll & 0xff00) + ((pll >> 16) & 0xff);
- 	rate *= OSC;
--	rate >>= 2;
-+	rate >>= 10;
- 
- 	return rate;
- }
--- 
-2.35.1
-
+ Respectfully,
+ --Bob
