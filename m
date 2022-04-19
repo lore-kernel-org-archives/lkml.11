@@ -2,144 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED53C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353237AbiDSOZR (ORCPT
+        id S1351036AbiDSO0i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40170 "EHLO
+        Tue, 19 Apr 2022 10:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346781AbiDSOZN (ORCPT
+        with ESMTP id S231808AbiDSO0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:25:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DABB2A27D
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:22:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650378149;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gx2u0UDEGlbJLmTjSX+0S/6XhMRFSaDMTCWYbhQAR20=;
-        b=ZAgHLUuStRZQ86OVIarpNfLn4maSjxx2yl/hHawxCCgw2D6iV67d9XRvcwqDgx7eoWy1QP
-        ptQH/TR6M+xTQTgHWGCiI99fKJCwgmZINDUf/IFkwsHXiWnDBn0Tf8jFVZf9xzvthcrudl
-        Q3wjkv3E2hLJJHXd31yesNgE+lrPRa4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-502-2Ii0ajvxNeikvyfFkEhgzQ-1; Tue, 19 Apr 2022 10:22:25 -0400
-X-MC-Unique: 2Ii0ajvxNeikvyfFkEhgzQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B3D86811E75;
-        Tue, 19 Apr 2022 14:22:24 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.194.169])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AAAC8145F94D;
-        Tue, 19 Apr 2022 14:22:22 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     poros@redhat.com, mschmidt@redhat.com, Fei Liu <feliu@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Brett Creeley <brett.creeley@intel.com>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net v2] ice: Protect vf_state check by cfg_lock in ice_vc_process_vf_msg()
-Date:   Tue, 19 Apr 2022 16:22:21 +0200
-Message-Id: <20220419142221.2349382-1-ivecera@redhat.com>
+        Tue, 19 Apr 2022 10:26:32 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EE625E8E;
+        Tue, 19 Apr 2022 07:23:47 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KjQxx17wLzfYqr;
+        Tue, 19 Apr 2022 22:23:01 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Apr 2022 22:23:45 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Apr 2022 22:23:44 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <pulehui@huawei.com>
+Subject: [PATCH v2 bpf-next 2/2] libbpf: Support riscv USDT argument parsing logic
+Date:   Tue, 19 Apr 2022 22:52:38 +0800
+Message-ID: <20220419145238.482134-3-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220419145238.482134-1-pulehui@huawei.com>
+References: <20220419145238.482134-1-pulehui@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previous patch labelled "ice: Fix incorrect locking in
-ice_vc_process_vf_msg()"  fixed an issue with ignored messages
-sent by VF driver but a small race window still left.
+Add riscv-specific USDT argument specification parsing logic.
+riscv USDT argument format is shown below:
+- Memory dereference case:
+  "size@off(reg)", e.g. "-8@-88(s0)"
+- Constant value case:
+  "size@val", e.g. "4@5"
+- Register read case:
+  "size@reg", e.g. "-8@a1"
 
-Recently caught trace during 'ip link set ... vf 0 vlan ...' operation:
+s8 will be marked as poison while it's a reg of riscv, we need
+to alias it in advance. Both RV32 and RV64 have been tested.
 
-[ 7332.995625] ice 0000:3b:00.0: Clearing port VLAN on VF 0
-[ 7333.001023] iavf 0000:3b:01.0: Reset indication received from the PF
-[ 7333.007391] iavf 0000:3b:01.0: Scheduling reset task
-[ 7333.059575] iavf 0000:3b:01.0: PF returned error -5 (IAVF_ERR_PARAM) to our request 3
-[ 7333.059626] ice 0000:3b:00.0: Invalid message from VF 0, opcode 3, len 4, error -1
-
-Setting of VLAN for VF causes a reset of the affected VF using
-ice_reset_vf() function that runs with cfg_lock taken:
-
-1. ice_notify_vf_reset() informs IAVF driver that reset is needed and
-   IAVF schedules its own reset procedure
-2. Bit ICE_VF_STATE_DIS is set in vf->vf_state
-3. Misc initialization steps
-4. ice_sriov_post_vsi_rebuild() -> ice_vf_set_initialized() and that
-   clears ICE_VF_STATE_DIS in vf->vf_state
-
-Step 3 is mentioned race window because IAVF reset procedure runs in
-parallel and one of its step is sending of VIRTCHNL_OP_GET_VF_RESOURCES
-message (opcode==3). This message is handled in ice_vc_process_vf_msg()
-and if it is received during the mentioned race window then it's
-marked as invalid and error is returned to VF driver.
-
-Protect vf_state check in ice_vc_process_vf_msg() by cfg_lock to avoid
-this race condition.
-
-Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
-Tested-by: Fei Liu <feliu@redhat.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+v1-v2:
+ - Add brief test results.
+ - Make reg_map more intuitive.
+ tools/lib/bpf/usdt.c | 107 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 107 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 5612c032f15a..b72606c9e6d0 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -3625,6 +3625,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 		return;
- 	}
+diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
+index 8e77a7260..f1c9339cf 100644
+--- a/tools/lib/bpf/usdt.c
++++ b/tools/lib/bpf/usdt.c
+@@ -10,6 +10,11 @@
+ #include <linux/ptrace.h>
+ #include <linux/kernel.h>
  
-+	mutex_lock(&vf->cfg_lock);
++/* s8 will be marked as poison while it's a reg of riscv */
++#if defined(__riscv)
++#define rv_s8 s8
++#endif
 +
- 	/* Check if VF is disabled. */
- 	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states)) {
- 		err = -EPERM;
-@@ -3648,19 +3650,14 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 				      NULL, 0);
- 		dev_err(dev, "Invalid message from VF %d, opcode %d, len %d, error %d\n",
- 			vf_id, v_opcode, msglen, err);
--		ice_put_vf(vf);
--		return;
-+		goto finish;
- 	}
- 
--	mutex_lock(&vf->cfg_lock);
--
- 	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
- 		ice_vc_send_msg_to_vf(vf, v_opcode,
- 				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
- 				      0);
--		mutex_unlock(&vf->cfg_lock);
--		ice_put_vf(vf);
--		return;
-+		goto finish;
- 	}
- 
- 	switch (v_opcode) {
-@@ -3773,6 +3770,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 			 vf_id, v_opcode, err);
- 	}
- 
-+finish:
- 	mutex_unlock(&vf->cfg_lock);
- 	ice_put_vf(vf);
+ #include "bpf.h"
+ #include "libbpf.h"
+ #include "libbpf_common.h"
+@@ -1400,6 +1405,108 @@ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec
+ 	return len;
  }
+ 
++#elif defined(__riscv)
++
++static int calc_pt_regs_off(const char *reg_name)
++{
++	static struct {
++		const char *name;
++		size_t pt_regs_off;
++	} reg_map[] = {
++		{ "ra", offsetof(struct user_regs_struct, ra) },
++		{ "sp", offsetof(struct user_regs_struct, sp) },
++		{ "gp", offsetof(struct user_regs_struct, gp) },
++		{ "tp", offsetof(struct user_regs_struct, tp) },
++		{ "a0", offsetof(struct user_regs_struct, a0) },
++		{ "a1", offsetof(struct user_regs_struct, a1) },
++		{ "a2", offsetof(struct user_regs_struct, a2) },
++		{ "a3", offsetof(struct user_regs_struct, a3) },
++		{ "a4", offsetof(struct user_regs_struct, a4) },
++		{ "a5", offsetof(struct user_regs_struct, a5) },
++		{ "a6", offsetof(struct user_regs_struct, a6) },
++		{ "a7", offsetof(struct user_regs_struct, a7) },
++		{ "s0", offsetof(struct user_regs_struct, s0) },
++		{ "s1", offsetof(struct user_regs_struct, s1) },
++		{ "s2", offsetof(struct user_regs_struct, s2) },
++		{ "s3", offsetof(struct user_regs_struct, s3) },
++		{ "s4", offsetof(struct user_regs_struct, s4) },
++		{ "s5", offsetof(struct user_regs_struct, s5) },
++		{ "s6", offsetof(struct user_regs_struct, s6) },
++		{ "s7", offsetof(struct user_regs_struct, s7) },
++		{ "s8", offsetof(struct user_regs_struct, rv_s8) },
++		{ "s9", offsetof(struct user_regs_struct, s9) },
++		{ "s10", offsetof(struct user_regs_struct, s10) },
++		{ "s11", offsetof(struct user_regs_struct, s11) },
++		{ "t0", offsetof(struct user_regs_struct, t0) },
++		{ "t1", offsetof(struct user_regs_struct, t1) },
++		{ "t2", offsetof(struct user_regs_struct, t2) },
++		{ "t3", offsetof(struct user_regs_struct, t3) },
++		{ "t4", offsetof(struct user_regs_struct, t4) },
++		{ "t5", offsetof(struct user_regs_struct, t5) },
++		{ "t6", offsetof(struct user_regs_struct, t6) },
++	};
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(reg_map); i++) {
++		if (strcmp(reg_name, reg_map[i].name) == 0)
++			return reg_map[i].pt_regs_off;
++	}
++
++	pr_warn("usdt: unrecognized register '%s'\n", reg_name);
++	return -ENOENT;
++}
++
++static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
++{
++	char *reg_name = NULL;
++	int arg_sz, len, reg_off;
++	long off;
++
++	if (sscanf(arg_str, " %d @ %ld ( %m[a-z0-9] ) %n", &arg_sz, &off, &reg_name, &len) == 3) {
++		/* Memory dereference case, e.g., -8@-88(s0) */
++		arg->arg_type = USDT_ARG_REG_DEREF;
++		arg->val_off = off;
++		reg_off = calc_pt_regs_off(reg_name);
++		free(reg_name);
++		if (reg_off < 0)
++			return reg_off;
++		arg->reg_off = reg_off;
++	} else if (sscanf(arg_str, " %d @ %ld %n", &arg_sz, &off, &len) == 2) {
++		/* Constant value case, e.g., 4@5 */
++		arg->arg_type = USDT_ARG_CONST;
++		arg->val_off = off;
++		arg->reg_off = 0;
++	} else if (sscanf(arg_str, " %d @ %m[a-z0-9] %n", &arg_sz, &reg_name, &len) == 2) {
++		/* Register read case, e.g., -8@a1 */
++		arg->arg_type = USDT_ARG_REG;
++		arg->val_off = 0;
++		reg_off = calc_pt_regs_off(reg_name);
++		free(reg_name);
++		if (reg_off < 0)
++			return reg_off;
++		arg->reg_off = reg_off;
++	} else {
++		pr_warn("usdt: unrecognized arg #%d spec '%s'\n", arg_num, arg_str);
++		return -EINVAL;
++	}
++
++	arg->arg_signed = arg_sz < 0;
++	if (arg_sz < 0)
++		arg_sz = -arg_sz;
++
++	switch (arg_sz) {
++	case 1: case 2: case 4: case 8:
++		arg->arg_bitshift = 64 - arg_sz * 8;
++		break;
++	default:
++		pr_warn("usdt: unsupported arg #%d (spec '%s') size: %d\n",
++			arg_num, arg_str, arg_sz);
++		return -EINVAL;
++	}
++
++	return len;
++}
++
+ #else
+ 
+ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
 -- 
-2.35.1
+2.25.1
 
