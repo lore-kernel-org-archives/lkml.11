@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 682FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241527AbiDSS31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
+        id S1356929AbiDSS3d (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 14:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357244AbiDSSWz (ORCPT
+        with ESMTP id S1357327AbiDSSXJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5843EA86;
-        Tue, 19 Apr 2022 11:15:34 -0700 (PDT)
+        Tue, 19 Apr 2022 14:23:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6346A43496;
+        Tue, 19 Apr 2022 11:15:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3B0C60E07;
-        Tue, 19 Apr 2022 18:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A3B3C385A9;
-        Tue, 19 Apr 2022 18:15:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F00FB818E0;
+        Tue, 19 Apr 2022 18:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC96C385A7;
+        Tue, 19 Apr 2022 18:15:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392133;
-        bh=JrTg5TVja6fp8tRt+hMunCtik+nRg8374/t6ZUaDplY=;
+        s=k20201202; t=1650392147;
+        bh=j7amTvci1rK5poKpvcIYr4L3A0uwvlLReL8CwaJdS20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V2aj9MvWWdk1Dg4hG/6Vq8f75m4z5o5KupQl5cJomPQaIuK58Jfx4f65AajFF8aro
-         HSb12RrW7YbnGMxjvS9klCyxD6pCvP9bSA6Gthb6ONipjBszRp4Y03p2qoAM9uYzsn
-         gahsqyTwoQ6HCfR2pg4YESvwgo95ADhIRPfQVshYGxRdxDTSfPWw7hXUrYikXXtF0Z
-         sWIYv5TJ0WYay6QGV/duYlLFogQXfZmTd5B5Bw5Y+ybNjfSzvbB4AW+05bwHwavoLG
-         4ScgeTsTo9Ps5Zis+x5p2C9gfmPv3Ewc/KXZv74hIEPB+sHfULSU5vwTBlTFfTzOmv
-         lmP4k5+V2Rpkw==
+        b=t7lrh+9bIHghDFvN98RiScWItVMMYxqVP+u+5qvp5QOc7qbp8KwtL0YaJG5YJgNCz
+         J/uo3h2wUdvSTUCZr57jusd5dqDLWmHW2PXM3QaMgNT1EF6a1a1z2OKTiVFr6cwOPC
+         EGmE5tFMwySgtUokbWG5njmGzloks1y5OAmg4bs407yfMvZnRFwOGSvH+YKeyKNLDF
+         aZ/9Tuy4nb+rmJNOBoB3v1BdPVz1zpowhP6Q9XZXPRwGHKXjdTjHXAkGXp13mjucKV
+         /Hj9wAeocvCxD+Qk2XvHbMe7omT9j4rflRBirsXHzbKlJqN5Vfg5Yk7if1COwhVrI5
+         9y91S008MVsXg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, corentin.chary@gmail.com,
-        markgross@kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 03/12] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
-Date:   Tue, 19 Apr 2022 14:15:16 -0400
-Message-Id: <20220419181525.486166-3-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 09/12] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
+Date:   Tue, 19 Apr 2022 14:15:22 -0400
+Message-Id: <20220419181525.486166-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
 References: <20220419181525.486166-1-sashal@kernel.org>
@@ -53,38 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
+[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
 
-Eliminate the follow smatch warnings:
+Both of of_get_parent() and of_parse_phandle() return node pointer with
+refcount incremented, use of_node_put() on it to decrease refcount
+when done.
 
-drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
-'value' is never less than zero.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/samsung-laptop.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
-index 7b160ee98115..3e66be504a0d 100644
---- a/drivers/platform/x86/samsung-laptop.c
-+++ b/drivers/platform/x86/samsung-laptop.c
-@@ -1125,8 +1125,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+index 3184c8f7cdd0..6e69bcdf9c40 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+@@ -530,11 +530,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
+ 	info->phc_index = -1;
  
- 	if (value > samsung->kbd_led.max_brightness)
- 		value = samsung->kbd_led.max_brightness;
--	else if (value < 0)
--		value = 0;
+ 	fman_node = of_get_parent(mac_node);
+-	if (fman_node)
++	if (fman_node) {
+ 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
++		of_node_put(fman_node);
++	}
  
- 	samsung->kbd_led_wk = value;
- 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
+-	if (ptp_node)
++	if (ptp_node) {
+ 		ptp_dev = of_find_device_by_node(ptp_node);
++		of_node_put(ptp_node);
++	}
+ 
+ 	if (ptp_dev)
+ 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
