@@ -2,178 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C46C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49004C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351608AbiDSQvH (ORCPT
+        id S1351629AbiDSQvR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
+        Tue, 19 Apr 2022 12:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354693AbiDSQpd (ORCPT
+        with ESMTP id S1355132AbiDSQqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:45:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C0F36152;
-        Tue, 19 Apr 2022 09:42:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59CF9B81BBC;
-        Tue, 19 Apr 2022 16:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB59C385AE;
-        Tue, 19 Apr 2022 16:42:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386567;
-        bh=XRVRts6/PmPxgnBeeTopOk8hsXuEnYK24eY44iFBTjY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SrYcNU0XHeFfz9FFmwRnhtwk5VI3KPUyVVYDZ1vZsf/9ibd4zLruL0iYjAxUyiwgp
-         zmOuXhLr4WTdOB1309oLHotg6wtk/R/duI+zVweeCWm3uDXswBZIZxB7bVKunqu/CC
-         EdMhLyLGmp315u6yW24LoEVof2mtuD5mi09URRw/1IqaKVlqShBeopuwMcloOvibS8
-         PU5fwThkpiXRfLrjJtNm+iH3D7eSCFQGuRvIg5P1RDAEYLIRMmxDeXbThxhNRZi323
-         coE08BVk9QZsh8XR9qGt6reyxhJbZKJAWfaiL1ui30TgqLeVpFNIO7Y6/vA2Fm0la6
-         XCHr2bVGVwWJA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Philipp Zabel <philipp.zabel@gmail.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Paul Parsons <lost.distance@yahoo.com>,
-        Tomas Cech <sleep_walker@suse.com>,
-        Sergey Lapin <slapin@ossfans.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
-        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        alsa-devel@alsa-project.org, Manuel Lauss <manuel.lauss@gmail.com>
-Subject: [PATCH 30/48] Input: wm97xx - get rid of irq_enable method in wm97xx_mach_ops
-Date:   Tue, 19 Apr 2022 18:37:52 +0200
-Message-Id: <20220419163810.2118169-31-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
-References: <20220419163810.2118169-1-arnd@kernel.org>
+        Tue, 19 Apr 2022 12:46:42 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1445339692
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:43:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=AJfejJ1xRbeAbdDxHLT7uHPFlknNYzGKCJWzpyqVuJ0=; b=V0K+okUbjL2FdlW0dNWrPRnG19
+        hbP+LhTEco8cFNLakW0d+otCS5J0XlGHE5ruV1jrSTdyv6IY4ZgJYHOZahr+dREe8uImL7JRQWMq0
+        UY3IbmWubSoUqAMrkHWY+JRecGMLvv0nJpLJ+v/YYW/uFZBTXuY60VYpLzMio0pfvLjxR5rMapwsj
+        DLHaYW4PZasQC7Z+BM34rnhdtL+Y1GsWfq8EwSYq2LJE6pp2smCT799O0Vs2UFogwbo/6DmyUNwSi
+        k6yBGijSkOzC3x8NU1mv9yg2pyOTfrQtLSsTyDG/B0tmZZywr6iZl6mDPqqQGgPQWo6dbMyaPgjKh
+        TVd4LAnw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngqxD-006s0I-WA; Tue, 19 Apr 2022 16:43:52 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B77DE986195; Tue, 19 Apr 2022 18:43:47 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 18:43:47 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v2 00/25] objtool: Interface overhaul
+Message-ID: <20220419164347.GX2731@worktop.programming.kicks-ass.net>
+References: <cover.1650300597.git.jpoimboe@redhat.com>
+ <20220419115130.GT2731@worktop.programming.kicks-ass.net>
+ <20220419153622.ydn6uurtaeencmol@treble>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419153622.ydn6uurtaeencmol@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+On Tue, Apr 19, 2022 at 08:36:22AM -0700, Josh Poimboeuf wrote:
+> On Tue, Apr 19, 2022 at 01:51:30PM +0200, Peter Zijlstra wrote:
+> > I've taken the liberty of reordering it slightly:
+> > 
+> >    objtool: Enable unreachable warnings for CLANG LTO
+> >    x86/static_call: Add ANNOTATE_NOENDBR to static call trampoline
+> >    x86/retpoline: Add ANNOTATE_ENDBR for retpolines
+> >    x86/uaccess: Add ENDBR to __put_user_nocheck*()
+> >    x86/xen: Add ANNOTATE_ENDBR to startup_xen()
+> >    objtool: Print data address for "!ENDBR" data warnings
+> >    objtool: Use offstr() to print address of missing ENDBR
+> > 
+> > Go into x86/urgent, and I've added Fixes: tags with various patches from
+> > the IBT series, and then the rest goes into objtool/core.
+> > 
+> > As already indicated, there's going to be a few merge conflicts against
+> > x86/core, but alas. Resolved as per the below.
+> 
+> Thanks!  I guess tip bot is broken?
 
-Now that we are using oneshot threaded IRQ this method is not used anymore.
-
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-[arnd: add the db1300 change as well]
-Cc: Manuel Lauss <manuel.lauss@gmail.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/mips/alchemy/devboards/db1300.c         | 9 ---------
- drivers/input/touchscreen/mainstone-wm97xx.c | 9 ---------
- drivers/input/touchscreen/zylonite-wm97xx.c  | 9 ---------
- include/linux/wm97xx.h                       | 3 ---
- 4 files changed, 30 deletions(-)
-
-diff --git a/arch/mips/alchemy/devboards/db1300.c b/arch/mips/alchemy/devboards/db1300.c
-index cd72eaa1168f..e70e529ddd91 100644
---- a/arch/mips/alchemy/devboards/db1300.c
-+++ b/arch/mips/alchemy/devboards/db1300.c
-@@ -732,16 +732,7 @@ static struct platform_device db1300_lcd_dev = {
- /**********************************************************************/
- 
- #if IS_ENABLED(CONFIG_TOUCHSCREEN_WM97XX)
--static void db1300_wm97xx_irqen(struct wm97xx *wm, int enable)
--{
--	if (enable)
--		enable_irq(DB1300_AC97_PEN_INT);
--	else
--		disable_irq_nosync(DB1300_AC97_PEN_INT);
--}
--
- static struct wm97xx_mach_ops db1300_wm97xx_ops = {
--	.irq_enable	= db1300_wm97xx_irqen,
- 	.irq_gpio	= WM97XX_GPIO_3,
- };
- 
-diff --git a/drivers/input/touchscreen/mainstone-wm97xx.c b/drivers/input/touchscreen/mainstone-wm97xx.c
-index 8f6fe68f1f99..c39f49720fe4 100644
---- a/drivers/input/touchscreen/mainstone-wm97xx.c
-+++ b/drivers/input/touchscreen/mainstone-wm97xx.c
-@@ -246,21 +246,12 @@ static void wm97xx_acc_shutdown(struct wm97xx *wm)
- 	}
- }
- 
--static void wm97xx_irq_enable(struct wm97xx *wm, int enable)
--{
--	if (enable)
--		enable_irq(wm->pen_irq);
--	else
--		disable_irq_nosync(wm->pen_irq);
--}
--
- static struct wm97xx_mach_ops mainstone_mach_ops = {
- 	.acc_enabled	= 1,
- 	.acc_pen_up	= wm97xx_acc_pen_up,
- 	.acc_pen_down	= wm97xx_acc_pen_down,
- 	.acc_startup	= wm97xx_acc_startup,
- 	.acc_shutdown	= wm97xx_acc_shutdown,
--	.irq_enable	= wm97xx_irq_enable,
- 	.irq_gpio	= WM97XX_GPIO_2,
- };
- 
-diff --git a/drivers/input/touchscreen/zylonite-wm97xx.c b/drivers/input/touchscreen/zylonite-wm97xx.c
-index ed7eae638713..a70fe4abe520 100644
---- a/drivers/input/touchscreen/zylonite-wm97xx.c
-+++ b/drivers/input/touchscreen/zylonite-wm97xx.c
-@@ -160,20 +160,11 @@ static int wm97xx_acc_startup(struct wm97xx *wm)
- 	return 0;
- }
- 
--static void wm97xx_irq_enable(struct wm97xx *wm, int enable)
--{
--	if (enable)
--		enable_irq(wm->pen_irq);
--	else
--		disable_irq_nosync(wm->pen_irq);
--}
--
- static struct wm97xx_mach_ops zylonite_mach_ops = {
- 	.acc_enabled	= 1,
- 	.acc_pen_up	= wm97xx_acc_pen_up,
- 	.acc_pen_down	= wm97xx_acc_pen_down,
- 	.acc_startup	= wm97xx_acc_startup,
--	.irq_enable	= wm97xx_irq_enable,
- 	.irq_gpio	= WM97XX_GPIO_2,
- };
- 
-diff --git a/include/linux/wm97xx.h b/include/linux/wm97xx.h
-index 85bd8dd3caea..332d2b0f29b9 100644
---- a/include/linux/wm97xx.h
-+++ b/include/linux/wm97xx.h
-@@ -254,9 +254,6 @@ struct wm97xx_mach_ops {
- 	int (*acc_startup) (struct wm97xx *);
- 	void (*acc_shutdown) (struct wm97xx *);
- 
--	/* interrupt mask control - required for accelerated operation */
--	void (*irq_enable) (struct wm97xx *, int enable);
--
- 	/* GPIO pin used for accelerated operation */
- 	int irq_gpio;
- 
--- 
-2.29.2
-
+Not pushed out yet, still in queue.git. Hopefully a little later today.
