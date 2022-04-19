@@ -2,142 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 605FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5407CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358292AbiDSXtd (ORCPT
+        id S1358365AbiDSXth (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 19:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        Tue, 19 Apr 2022 19:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352297AbiDSXtZ (ORCPT
+        with ESMTP id S1358101AbiDSXt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 19:49:25 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870471EED2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:46:41 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650412000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dz1VIM0uOb4OFT5vjsJmvFN5uJS7lSMD11xUufLa4SE=;
-        b=OZCGW8R3rDrfoeJVcFtn9I3/oLnd92vxhRSesXB28UUHsW5tEb0skqxclQAjj1xIVHk/Jt
-        LLb2u/SkuQPOMLDKG8EwYovwZTLQKOUVuBjqhyReZmcjjJYE1VndLJo9ZEQvBDIXdCEm2y
-        6CFWd3NVImL2t7PhQ133ZwBvEZLwX4Vv0sTdZsQzzidAVJBsaIcpRSalJe3xA7Bi8WwX3H
-        cT9D/iBBvwmYaal9AOJJOZt/8OqTGRLBDSCrDljDChsOTvlC4oYnJk6vZRY228DZu0LTd7
-        8DtIiWoWL9ekOOP9X+KFr4fjvSifUJsxzKhc0eS1+HB2wYE/y5OPapfnJ/bkMA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650412000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dz1VIM0uOb4OFT5vjsJmvFN5uJS7lSMD11xUufLa4SE=;
-        b=WVBX/41uM/GPuFFdEt0BZ77NL828pAS2Z6koZCHhKakxzjVYPC7M6+d+RUV3sqL1hDMFrD
-        KZJAiyHto31wn3CQ==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH printk v3 03/15] printk: add missing memory barrier to wake_up_klogd()
-Date:   Wed, 20 Apr 2022 01:52:25 +0206
-Message-Id: <20220419234637.357112-4-john.ogness@linutronix.de>
-In-Reply-To: <20220419234637.357112-1-john.ogness@linutronix.de>
-References: <20220419234637.357112-1-john.ogness@linutronix.de>
+        Tue, 19 Apr 2022 19:49:26 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BD62018A;
+        Tue, 19 Apr 2022 16:46:41 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id a10so289287oif.9;
+        Tue, 19 Apr 2022 16:46:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9Dehn88Ll7BtUdvgyx2lkGmMqT0Tj9xWydgg6NgtluA=;
+        b=VosXpeoVLhzsyAl1blbG4cVIlMyFZ2LqrcBckgME/840WGuIxThIKFbJSA2UGPnTyS
+         ZIgIZlucYr6lRmwCnPuTmTk1SSMkJ0v3T4AYhFFs22yiLuLk3BY4U6y70dwSiMkGvKxA
+         vNdAS8eE+hfs/KHkKvMFrJxHBwtb6w+y9jtgsLJBg/Y7Qq1dGR0LB1yVqtLfe7G7d1V8
+         dBFxbDWwCxIS7cxAIrpQ0Z1j2ljP8PFql2yn6lg35Lr7hTXEX4kO7+Bt+m5EhAJip8Dc
+         2Q66P7CVNl0lnefhQSTHYjaLdFHWaTD4lYZ+RrVQIdmVuJ9VU4EGJ2Nx2xZTzbBmbk6M
+         7htg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9Dehn88Ll7BtUdvgyx2lkGmMqT0Tj9xWydgg6NgtluA=;
+        b=BxLSMYUL3oZczXRyCXZf4dg0q0CyAMRnGbWKHZLcyrIIbEunR7lYqeRGxGMYqlVJ+t
+         e70wH2sj7ln0AW79lo4Kui37/s+PJlm+1hWGz6SF3hntgdP06KG6qdCGYtmEJqTA4zta
+         9rM/uaTe033NtsxH4u7lfc0Ux8xCi2KcXU+qsy1S2PF0tNlE0APnX2BTUw17/ZG97UsH
+         QqD/uhVDEkaLeKTxxO0wFAakbV++ycDjQzzzypUY/wo69Jl0cfMi4lzyeQSfz3riwndI
+         UuSoUHPoa9RjPJntgvBDUAhWf5aYddkHK/YzFDV5BtGxGxmTGnXW3jWzAbVGSbEyYt1H
+         iujw==
+X-Gm-Message-State: AOAM531NnI/Ga0U0CzkofY0UnTYdHlZwloG447UZWphV44TBUS7Sj+ta
+        MS7wwEBZNI5uMomSg+hnuOPZG6sZ2kU=
+X-Google-Smtp-Source: ABdhPJzd0miG+YXnmgDdjRJUJBGUjE5wptjYEpBrlw3JwY72bVLuWtY0gbKIQ8L+GmUwn/JqyN5enQ==
+X-Received: by 2002:a05:6808:16a7:b0:2f9:39c4:c597 with SMTP id bb39-20020a05680816a700b002f939c4c597mr504924oib.101.1650412001256;
+        Tue, 19 Apr 2022 16:46:41 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id q12-20020a4ad54c000000b003245ac0a745sm6044454oos.22.2022.04.19.16.46.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 16:46:40 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <8a8124e0-0789-fcc2-826c-69ef870a42d3@roeck-us.net>
+Date:   Tue, 19 Apr 2022 16:46:38 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] hwmod: (pmbus) disable PEC if not enabled
+Content-Language: en-US
+To:     wujek dev <dev_public@wujek.eu>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220419205228.303952-1-dev_public@wujek.eu>
+ <734e748b-941c-5ae1-5140-22cc845bdfc1@roeck-us.net>
+ <zNXN2w4xqB6a_14RhNubTjTdcUmzypjeVY-5FXeXlPHsYDuSdQ0qlDjO0CNFnYOrUUAnIlBBIdvMjKURyH4nuthmNQ29ifpaNywsWiU99oQ=@wujek.eu>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <zNXN2w4xqB6a_14RhNubTjTdcUmzypjeVY-5FXeXlPHsYDuSdQ0qlDjO0CNFnYOrUUAnIlBBIdvMjKURyH4nuthmNQ29ifpaNywsWiU99oQ=@wujek.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is important that any new records are visible to preparing
-waiters before the waker checks if the wait queue is empty.
-Otherwise it is possible that:
+On 4/19/22 15:10, wujek dev wrote:
+> ------- Original Message -------
+> On Wednesday, April 20th, 2022 at 00:00, Guenter Roeck <linux@roeck-us.net> wrote:
+>>
+>>
+>> On 4/19/22 13:53, Adam Wujek wrote:
+>>
+>>> Explicitly disable PEC when the client does not support it.
+>>> Without the explicit disable, when the device with the PEC support is removed
+>>> later when a device without PEC support is inserted into the same address,
+>>> the driver uses the old value of client->flags which contains the I2C_CLIENT_PEC
+>>> flag. As a consequence the PEC is used when it should not.
+>>
+>>
+>> How can that happen ? I would assume the I2C device gets deleted and re-created
+>> in that case, which should clear the PEC flag.
+>>
+>> Guenter
+> In my case it was when I unloaded the driver for the I2C slave, changed the advertised PEC value in PMBUS_CAPABILITY register on slave. Then loaded the driver. When the switch was from disable->enable it worked as expected (this case was already covered), but when the PEC was set in the slave from enabled->disabled it was still using PEC to communicate.
 
-- there are new records available
-- the waker sees an empty wait queue and does not wake
-- the preparing waiter sees no new records and begins to wait
+So it is really the same device, only you unload the driver, change the
+device configuration (presumably with i2cset commands), and load it
+again. Please explain that in more detail in the commit description.
 
-This is exactly the problem that the function description of
-waitqueue_active() warns about.
-
-Use wq_has_sleeper() instead of waitqueue_active() because it
-includes the necessary full memory barrier.
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- kernel/printk/printk.c | 39 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 13a1eebe72af..f817dfb4852d 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -746,8 +746,19 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
- 			goto out;
- 		}
- 
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * This pairs with wake_up_klogd:A.
-+		 */
- 		ret = wait_event_interruptible(log_wait,
--				prb_read_valid(prb, atomic64_read(&user->seq), r));
-+				prb_read_valid(prb,
-+					atomic64_read(&user->seq), r)); /* LMM(devkmsg_read:A) */
- 		if (ret)
- 			goto out;
- 	}
-@@ -1513,7 +1524,18 @@ static int syslog_print(char __user *buf, int size)
- 		seq = syslog_seq;
- 
- 		mutex_unlock(&syslog_lock);
--		len = wait_event_interruptible(log_wait, prb_read_valid(prb, seq, NULL));
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * This pairs with wake_up_klogd:A.
-+		 */
-+		len = wait_event_interruptible(log_wait,
-+				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
- 		mutex_lock(&syslog_lock);
- 
- 		if (len)
-@@ -3316,7 +3338,18 @@ void wake_up_klogd(void)
- 		return;
- 
- 	preempt_disable();
--	if (waitqueue_active(&log_wait)) {
-+	/*
-+	 * Guarantee any new records can be seen by tasks preparing to wait
-+	 * before this context checks if the wait queue is empty.
-+	 *
-+	 * The full memory barrier within wq_has_sleeper() pairs with the full
-+	 * memory barrier within set_current_state() of
-+	 * prepare_to_wait_event(), which is called after ___wait_event() adds
-+	 * the waiter but before it has checked the wait condition.
-+	 *
-+	 * This pairs with devkmsg_read:A and syslog_print:A.
-+	 */
-+	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
- 		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
- 		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	}
--- 
-2.30.2
-
+Thanks,
+Guenter
