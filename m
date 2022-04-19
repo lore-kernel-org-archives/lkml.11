@@ -2,251 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D319C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17543C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349626AbiDSHzN (ORCPT
+        id S1349635AbiDSHzQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        Tue, 19 Apr 2022 03:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349610AbiDSHzG (ORCPT
+        with ESMTP id S1349619AbiDSHzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 03:55:06 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FA831342;
-        Tue, 19 Apr 2022 00:52:21 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso979528wma.0;
-        Tue, 19 Apr 2022 00:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=eZpQIMcf57eQ4Toe30lop11XB/wtE4XfPzcJjOelQAQ=;
-        b=ZtBJaerAOEjk+R53uNhpU1wTf+RmUBy2/7sWUosxlIh7R7F9g7AQ6qw9nLavxeC2cK
-         kU/CAWn/3GZRLINAGcGerEoooPYKXVHIlb2SiqlpCwmnW3dRfamr1idgDSuV9UFGoWk3
-         YDP/1REHzokK8iOWwDy44uY066OU1mApx5+XjgJVP6FIC31ug6At/QQtzhkxnqAhpEsG
-         bfUdrTfcsKa1/SdvHYz4PwE9pMT9yBBANBOzNz2AOO0jrQes992FroVBXZXTZsDWopJ5
-         uC44V6XX+jhh15uHG0hzY9S7qsTwP+/Vug/z8VV8tkrhwaADfR6cmp5I+3c5q9XZW8Mz
-         L9ZQ==
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E567E31DDB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:52:22 -0700 (PDT)
+Received: by mail-qv1-f50.google.com with SMTP id b17so12514068qvf.12
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:52:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=eZpQIMcf57eQ4Toe30lop11XB/wtE4XfPzcJjOelQAQ=;
-        b=Vwe28eqifRAS1JJYSVavsQW3HG86XO66tMEI6BBXiO8OwmJRfLCbQGgPDj8ThvdKOn
-         rkIGXV1iw2OU6LfFd+DuaNiuSLnpE4lIvyrrhPcUSy+XcsNNPUYsZR3KFZ1sGVMPWHtI
-         uvCARmqQ5N7Rstn+gVbhefCkPqfRq4DqnL/QHcLm5POhVdfkgy4zxdsnWLVDx3JOY5j6
-         fuh+pl/0nV9NOAR73Z78lJLeObybcheD3zIAspC2BGDUP4geYZRXD7fjrKNcrBZX2Tot
-         opHna5WwDfWd8vCeof5CE4FOk+N7pbHVcTLDFMK9aZOCXEyrETELLJV58NJhJTo7i9vO
-         cSOQ==
-X-Gm-Message-State: AOAM530fe+JrO42eUnDxbvU3JYErzqxUcDXz3pMpr8TMZ9OEclmt2Y8z
-        KsBazmk0JAzST0KDINJplj2SPHRf8LU=
-X-Google-Smtp-Source: ABdhPJweuRk6oDVCcwSRhuZjnG9UdFTrsXSCa+eFj3YFe7XBwPmwPUjSO5MQvyDdgW/2DwT8soCYJw==
-X-Received: by 2002:a1c:3587:0:b0:381:50ff:cbd with SMTP id c129-20020a1c3587000000b0038150ff0cbdmr18757314wma.140.1650354739543;
-        Tue, 19 Apr 2022 00:52:19 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id m188-20020a1c26c5000000b0039187bb7e9asm12472904wmm.6.2022.04.19.00.52.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 00:52:19 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 09:52:17 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Philipp Tomsich <philipp.tomsich@vrull.eu>
-Cc:     Guo Ren <guoren@kernel.org>, Samuel Holland <samuel@sholland.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei Fu <wefu@redhat.com>, Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH 0/2] riscv: implement Zicbom-based CMO instructions + the
- t-head variant
-Message-ID: <Yl5qMXCpwmxho/FN@Red>
-References: <YllWTN+15CoskNBt@Red>
- <70da24dd-2d03-fc49-151d-daabb315a5f6@sholland.org>
- <YlpxsYREWv/LQ+HY@Red>
- <849a3728-7e84-4f26-0c73-4d68eae9ae01@sholland.org>
- <YlsZxVjgt3ZNQ7Ub@Red>
- <CAJF2gTSNzLfon7yH3zvOJfYwQnVRvNWW7KygShLqcagRfbyAkg@mail.gmail.com>
- <YlvTkfIO9Oz3ib5i@Red>
- <CAJF2gTQ5rYATTHj2UtwxKw0dpvdHBUAih1RJf0XuGM8b6euZwQ@mail.gmail.com>
- <YlxP26dklDj2y+cP@Red>
- <CAAeLtUC=eF6hp2V2d7wEWWX=vkEcP8NoPLLz=hUrE4x4Q7u4mw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VpM1PtiHq5rdtdF2Z1pptR1cVQG3GJl0J2jHpx0HNOE=;
+        b=Ve/Ox7ti93JBrF3at9DJpunuyOOYwJah9HfKkZOTCDrbqwlu775M60CcZD8i6VfeuI
+         tpY7QKDebfs2fUjd8nJFjsAr5AN6j0U2T+jghuUhEtYdK1iMReQWyWhYjktJgKmjq9zh
+         SUbgx9tmGnxnJIMvuSIzPya7rn84C+VqmPnHKiKzaq3yobypU+YOymGQwefSff028gec
+         O4g43fQAvPr0alLM+NUTjW7eg5GYWJiwhfVLzTINcqsirvOHK4MQrjKExJMTemdeImcD
+         8JyAmn3PV6ILYUMZ9A6+yDZ2r7Z7aZ88lIppAh2BlmF3YFIzVlJ5T3n7VpZ4zghgWfKu
+         g+qg==
+X-Gm-Message-State: AOAM533J9Hnjk4RFYE2lMsfNhTf8O716cYxPTw6UUnj52WupEO8GpbD2
+        1GDNoF/i9M7LQ4mXWf7F2sz2LiEhjdyyIQ==
+X-Google-Smtp-Source: ABdhPJz//HOyy3VL2niCdUzX7QS1+q51CUYQK/Ac7t1zsvJH3KNdVE4PnPD9FUw1Nvocgb/QWIRVOw==
+X-Received: by 2002:ad4:5deb:0:b0:446:44ec:8d88 with SMTP id jn11-20020ad45deb000000b0044644ec8d88mr10354001qvb.126.1650354741454;
+        Tue, 19 Apr 2022 00:52:21 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id m139-20020a37a391000000b0069e88edfdacsm3877467qke.105.2022.04.19.00.52.20
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 00:52:20 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id d19so1173027ybc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:52:20 -0700 (PDT)
+X-Received: by 2002:a25:8087:0:b0:641:dd06:577d with SMTP id
+ n7-20020a258087000000b00641dd06577dmr13514790ybk.207.1650354739846; Tue, 19
+ Apr 2022 00:52:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAAeLtUC=eF6hp2V2d7wEWWX=vkEcP8NoPLLz=hUrE4x4Q7u4mw@mail.gmail.com>
+References: <20220413162359.325021-1-javierm@redhat.com> <20220413162359.325021-6-javierm@redhat.com>
+In-Reply-To: <20220413162359.325021-6-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 19 Apr 2022 09:52:08 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX_myNcA1eG=-qOHhtCEMnnV_eMjQF3dWakd7O6JbXskQ@mail.gmail.com>
+Message-ID: <CAMuHMdX_myNcA1eG=-qOHhtCEMnnV_eMjQF3dWakd7O6JbXskQ@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] drm/solomon: Add SSD130x OLED displays SPI support
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Chen-Yu Tsai <wens@kernel.org>, Rob Herring <robh@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maxime Ripard <maxime@cerno.tech>,
+        YueHaibing <yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, Apr 18, 2022 at 05:29:10PM +0200, Philipp Tomsich a écrit :
-> On Sun, 17 Apr 2022 at 19:35, Corentin Labbe <clabbe.montjoie@gmail.com> wrote:
-> >
-> > Le Sun, Apr 17, 2022 at 04:49:34PM +0800, Guo Ren a écrit :
-> > > On Sun, Apr 17, 2022 at 4:45 PM Corentin Labbe
-> > > <clabbe.montjoie@gmail.com> wrote:
-> > > >
-> > > > Le Sun, Apr 17, 2022 at 10:17:34AM +0800, Guo Ren a écrit :
-> > > > > On Sun, Apr 17, 2022 at 3:32 AM Corentin Labbe
-> > > > > <clabbe.montjoie@gmail.com> wrote:
-> > > > > >
-> > > > > > Le Sat, Apr 16, 2022 at 12:47:29PM -0500, Samuel Holland a écrit :
-> > > > > > > On 4/16/22 2:35 AM, Corentin Labbe wrote:
-> > > > > > > > Le Fri, Apr 15, 2022 at 09:19:23PM -0500, Samuel Holland a écrit :
-> > > > > > > >> On 4/15/22 6:26 AM, Corentin Labbe wrote:
-> > > > > > > >>> Le Mon, Mar 07, 2022 at 11:46:18PM +0100, Heiko Stuebner a écrit :
-> > > > > > > >>>> This series is based on the alternatives changes done in my svpbmt series
-> > > > > > > >>>> and thus also depends on Atish's isa-extension parsing series.
-> > > > > > > >>>>
-> > > > > > > >>>> It implements using the cache-management instructions from the  Zicbom-
-> > > > > > > >>>> extension to handle cache flush, etc actions on platforms needing them.
-> > > > > > > >>>>
-> > > > > > > >>>> SoCs using cpu cores from T-Head like the Allwinne D1 implement a
-> > > > > > > >>>> different set of cache instructions. But while they are different,
-> > > > > > > >>>> instructions they provide the same functionality, so a variant can
-> > > > > > > >>>> easly hook into the existing alternatives mechanism on those.
-> > > > > > > >>>>
-> > > > > > > >>>>
-> > > > > > > >>>
-> > > > > > > >>> Hello
-> > > > > > > >>>
-> > > > > > > >>> I am testing https://github.com/smaeul/linux.git branch:origin/riscv/d1-wip which contain this serie.
-> > > > > > > >>>
-> > > > > > > >>> I am hitting a buffer corruption problem with DMA.
-> > > > > > > >>> The sun8i-ce crypto driver fail self tests due to "device overran destination buffer".
-> > > > > > > >>> In fact the buffer is not overran by device but by dma_map_single() operation.
-> > > > > > > >>>
-> > > > > > > >>> The following small code show the problem:
-> > > > > > > >>>
-> > > > > > > >>> dma_addr_t dma;
-> > > > > > > >>> u8 *buf;
-> > > > > > > >>> #define BSIZE 2048
-> > > > > > > >>> #define DMASIZE 16
-> > > > > > > >>>
-> > > > > > > >>> buf = kmalloc(BSIZE, GFP_KERNEL | GFP_DMA);
-> > > > > > > >>> for (i = 0; i < BSIZE; i++)
-> > > > > > > >>>     buf[i] = 0xFE;
-> > > > > > > >>> print_hex_dump(KERN_INFO, "DMATEST1:", DUMP_PREFIX_NONE, 16, 4, buf, 256, false);
-> > > > > > > >>> dma = dma_map_single(ce->dev, buf, DMASIZE, DMA_FROM_DEVICE);
-> > > > > > > >>
-> > > > > > > >> This function (through dma_direct_map_page()) ends up calling
-> > > > > > > >> arch_sync_dma_for_device(..., ..., DMA_FROM_DEVICE), which invalidates the CPU's
-> > > > > > > >> cache. This is the same thing other architectures do (at least arm, arm64,
-> > > > > > > >> openrisc, and powerpc). So this appears to be working as intended.
-> > > > > > > >
-> > > > > > > > This behavour is not present at least on ARM and ARM64.
-> > > > > > > > The sample code I provided does not corrupt the buffer on them.
-> > > > > > >
-> > > > > > > That can be explained by the 0xFE bytes having been flushed to DRAM already in
-> > > > > > > your ARM/ARM64 tests, whereas in your riscv64 case, the 0xFE bytes were still in
-> > > > > > > a dirty cache line. The cache topology and implementation is totally different
-> > > > > > > across the SoCs, so this is not too surprising.
-> > > > > > >
-> > > > > > > Semantically, dma_map_single(..., DMA_FROM_DEVICE) means you are doing a
-> > > > > > > unidirectional DMA transfer from the device into that buffer. So the contents of
-> > > > > > > the buffer are "undefined" until the DMA transfer completes. If you are also
-> > > > > > > writing data into the buffer from the CPU side, then you need DMA_BIDIRECTIONAL.
-> > > > > > >
-> > > > > > > Regards,
-> > > > > > > Samuel
-> > > > > >
-> > > > > > +CC crypto mailing list + maintainer
-> > > > > >
-> > > > > > My problem is that crypto selftest, for each buffer where I need to do a cipher operation,
-> > > > > > concat a poison buffer to check that device does write beyond buffer.
-> > > > > >
-> > > > > > But the dma_map_sg(FROM_DEVICE) corrupts this poison buffer and crypto selftests fails thinking my device did a buffer overrun.
-> > > > > >
-> > > > > > So you mean that on SoC D1, this crypto API check strategy is impossible ?
-> > > > >
-> > > > > I think you could try to replace all CLEAN & INVAL ops with FLUSH ops
-> > > > > for the testing. (All cache block-aligned data from the device for the
-> > > > > CPU should be invalided.)
-> > > > >
-> > > >
-> > > > With:
-> > > > diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-noncoherent.c
-> > > > index 2c124bcc1932..608483522e05 100644
-> > > > --- a/arch/riscv/mm/dma-noncoherent.c
-> > > > +++ b/arch/riscv/mm/dma-noncoherent.c
-> > > > @@ -21,7 +21,7 @@ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size, enum dma_data_dire
-> > > >                 ALT_CMO_OP(CLEAN, (unsigned long)phys_to_virt(paddr), size);
-> > > >                 break;
-> > > >         case DMA_FROM_DEVICE:
-> > > > -               ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr), size);
-> > > > +               ALT_CMO_OP(FLUSH, (unsigned long)phys_to_virt(paddr), size);
-> > > >                 break;
-> > > >         case DMA_BIDIRECTIONAL:
-> > > >                 ALT_CMO_OP(FLUSH, (unsigned long)phys_to_virt(paddr), size);
-> > > >
-> > > >
-> > > > The crypto self test works and I got no more buffer corruption.
-> > > No, No ... it's not a solution. That means your driver has a problem.
-> > > From device, we only need INVAL enough.
-> > >
-> >
-> > For me, my driver works fine, the problem came from dma_map_sg(), probably I didnt explain right, I restart.
-> >
-> > Example:
-> > crypto self test send to my driver an AES cipher operation of 16 bytes inside a SG, but the original buffer is greater (said 32 for the example).
-> > So the first 16 bytes are used by the SG and the last 16 bytes are a poisoned buffer (with value 0xFE) to check driver do not write beyong the normal operation of 16 bytes (and beyond the SG length).
-> >
-> > Doing the dma_map_sg(FROM_DEVICE) on the SG corrupt the whole buffer.
-> 
-> Doesn't the DMA_FROM_DEVICE indicate that there are no expected writes
-> from the CPU to the buffer (and that any modifications to the
-> underlying cache line can be dropped via an invalidation)?
-> In other words: does the behavior change when mapping as
-> DMA_BIDIRECTIONAL — and: should a map/unmap sequence be used where it
-> is first mapped as DMA_TO_DEVICE when poisoning the buffer and later
-> as DMA_FROM_DEVICE when in normal operation?
-> 
+Hi Javier,
 
-There are no cpu writes after the dma_map(FROM_DEVICE).
-The buffer is initialized by the cryptoAPI before.
-Furtheremore, the buffer corrupted is next to the buffer being mapped.
+On Wed, Apr 13, 2022 at 6:24 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> The ssd130x driver only provides the core support for these devices but it
+> does not have any bus transport logic. Add a driver to interface over SPI.
+>
+> There is a difference in the communication protocol when using 4-wire SPI
+> instead of I2C. For the latter, a control byte that contains a D/C# field
+> has to be sent. This field tells the controller whether the data has to be
+> written to the command register or to the graphics display data memory.
+>
+> But for 4-wire SPI that control byte is not used, instead a real D/C# line
+> must be pulled HIGH for commands data and LOW for graphics display data.
+>
+> For this reason the standard SPI regmap can't be used and a custom .write
+> bus handler is needed.
+>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Acked-by: Mark Brown <broonie@kernel.org>
 
-I verified the size of dma_map_sg() via some debug:
-sun8i-ce 3040000.crypto: sun8i_ce_cipher_prepare ecb(aes) cryptlen=16
-dma_direct_map_sg:483 SG0 len=16   <- dma_map TO_DEVICE
-dma_direct_map_sg:483 SG0 len=16   <- dma_map FROM_DEVICE
-need:a47ca9dd e0df4c86 a070af6e 91710dec 
-have:a47ca9dd e0df4c86 a070af6e 91710dec
-dump whole buffer:
-over:a47ca9dd e0df4c86 a070af6e 91710dec
-over:ec05e6f2 d542fb77 128b2059 5bf06986 < here we should have 0xFE
-alg: skcipher: ecb-aes-sun8i-ce encryption overran dst buffer on test vector 1, cfg=\"random: use_finup src_divs=[<reimport>100.0%@+1604]\"
+Thanks for your patch!
 
+> --- /dev/null
+> +++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
 
-Note that I tried the following patch:
-diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 4948201065cc..c5b945974441 100644
---- a/crypto/testmgr.c
-+++ b/crypto/testmgr.c
-@@ -19,6 +19,7 @@
- #include <crypto/aead.h>
- #include <crypto/hash.h>
- #include <crypto/skcipher.h>
-+#include <linux/cacheflush.h>
- #include <linux/err.h>
- #include <linux/fips.h>
- #include <linux/module.h>
-@@ -205,6 +206,7 @@ static void testmgr_free_buf(char *buf[XBUFSIZE])
- static inline void testmgr_poison(void *addr, size_t len)
- {
-        memset(addr, TESTMGR_POISON_BYTE, len);
-+       flush_icache_range(addr, addr + len);
- }
- 
- /* Is the memory region still fully poisoned? */
+> +/*
+> + * The regmap bus .write handler, it is just a wrapper around spi_write()
+> + * but toggling the Data/Command control pin (D/C#). Since for 4-wire SPI
+> + * a D/C# pin is used, in contrast with I2C where a control byte is sent,
+> + * prior to every data byte, that contains a bit with the D/C# value.
+> + *
+> + * These control bytes are considered registers by the ssd130x core driver
+> + * and can be used by the ssd130x SPI driver to determine if the data sent
+> + * is for a command register or for the Graphic Display Data RAM (GDDRAM).
+> + */
+> +static int ssd130x_spi_write(void *context, const void *data, size_t count)
+> +{
+> +       struct ssd130x_spi_transport *t = context;
+> +       struct spi_device *spi = t->spi;
+> +       const u8 *reg = data;
+> +
+> +       if (*reg == SSD130X_COMMAND)
+> +               gpiod_set_value_cansleep(t->dc, 0);
+> +
+> +       if (*reg == SSD130X_DATA)
+> +               gpiod_set_value_cansleep(t->dc, 1);
+> +
+> +       /* Remove the control byte since is not used by the 4-wire SPI */
+> +       return spi_write(spi, ((u8 *)data) + 1, count - 1);
 
-This patch fixes the problem, but I am not sure this is the rigth way.
-A DMA mapping operation corrupting buffer around seems not good.
+As I don't like casts, perhaps
+
+    spi_write(spi, reg + 1, count - 1);
+
+? But this is up to you.
+
+> +/*
+> + * The SPI core always reports a MODALIAS uevent of the form "spi:<dev>", even
+> + * if the device was registered via OF. This means that the module will not be
+> + * auto loaded, unless it contains an alias that matches the MODALIAS reported.
+> + *
+> + * To workaround this issue, add a SPI device ID table. Even when this should
+> + * not be needed for this driver to match the registered SPI devices.
+> + */
+> +static const struct spi_device_id ssd130x_spi_table[] = {
+> +       { "sh1106",  SH1106_ID },
+> +       { "ssd1305", SSD1305_ID },
+> +       { "ssd1306", SSD1306_ID },
+> +       { "ssd1307", SSD1307_ID },
+> +       { "ssd1309", SSD1309_ID },
+> +       { /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, ssd130x_spi_table);
+
+I'm not sure about the need for this part, but as Mark provided his
+Ac-ed--by, I assume it's correct.
+
+The rest LGTM, so
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
