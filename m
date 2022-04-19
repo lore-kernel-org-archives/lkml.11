@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B41CFC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C389EC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356092AbiDSRMl (ORCPT
+        id S1356117AbiDSRMw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
+        Tue, 19 Apr 2022 13:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355583AbiDSRJ5 (ORCPT
+        with ESMTP id S1355332AbiDSRJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:09:57 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F715F5B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:14 -0700 (PDT)
+        Tue, 19 Apr 2022 13:09:58 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A438BEA
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388033; x=1681924033;
+  t=1650388035; x=1681924035;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bSg1SSR8/uHeBlXU/TSHBEVrfJclqHVfsxA9NRaiIU8=;
-  b=SIwhqX2sfCv5mNWsMVa2M4/fwflup2jIUjVP8idQPfP8D4Nve6ELsBk7
-   uw9+S4l+b2/SI4gYxAS+uObZ10ebqEC6HZthSsn8y030veiHgLOqfbABk
-   CPe2wzsVtk96J/N+Shu9YH9gHmzp0VcP++N7/qMlHOgBfwcPeG928eyik
-   IUxUVLGHFMATDbGzZmCJMfLruBJRXwmVupB1/sTevCSkQx31dH4g4vqNj
-   i/c8aYDHlX7xq1RtjRtIc8gXcmmh+Ize8SYtMf1R4lZ0qGc1tu6uNTQph
-   E2aevjIsm6umQ5+skMJxouuvXgC95YPG/uNIJ92Ta4ngH26KEfmpTyIDw
+  bh=48r55Tzhghkqvh16jlfpDIA8KBy3fgH76RnR2W3gPbY=;
+  b=h/Kz8sEE4stBXkFvIGnLmJ0X7y3X76SxHpp6xzgJn3XQGlJCL6ZWlP0u
+   aqBaui2QNP8W3XVbdiQNTG/2lDqhw7eGpdOgHELvKNmKIMMXiHn0UxgC9
+   Tz8ibEgv1WPAjNqzryv3aSIyuuu5PEsbYQbX/XBzhZt5E4qniZtvUrb0b
+   LQ8tDnF2LuGSrsD1T0FYBCZFOTTq7MQnxMAWo41XX3a/0e5G9qOLN5hTj
+   8KUuvb6n0K9LA5RZjcW1FIc/FP8mmjwriWsbF8JKjbZHStijp24VmjfZh
+   0Se9w13mI2DFgBgFLIFnLdHUQfgvWcAStyl9sr0Ahs9F0pdRs6b//e5HJ
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350267618"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261420847"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="350267618"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:13 -0700
+   d="scan'208";a="261420847"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:14 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="727145550"
+   d="scan'208";a="625733419"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:12 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:14 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 27/44] memremap_pages: Introduce a PGMAP_PROTECTION flag
-Date:   Tue, 19 Apr 2022 10:06:32 -0700
-Message-Id: <20220419170649.1022246-28-ira.weiny@intel.com>
+Subject: [PATCH V10 29/44] memremap_pages: Reserve a PKS pkey for eventual use by PMEM
+Date:   Tue, 19 Apr 2022 10:06:34 -0700
+Message-Id: <20220419170649.1022246-30-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,125 +60,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-The persistent memory (PMEM) driver uses the memremap_pages facility to
-provide 'struct page' metadata (vmemmap) for PMEM.  Given that PMEM
-capacity maybe orders of magnitude higher capacity than System RAM it
-presents a large vulnerability surface to stray writes.  Unlike stray
-writes to System RAM, which may result in a crash or other undesirable
-behavior, stray writes to PMEM additionally are more likely to result in
-permanent data loss. Reboot is not a remediation for PMEM corruption
-like it is for System RAM.
-
-Given that PMEM access from the kernel is limited to a constrained set
-of locations (PMEM driver, Filesystem-DAX, and direct-I/O to a DAX
-page), it is amenable to supervisor pkey protection.
-
-Some systems which have configured DEVMAP_ACCESS_PROTECTION may not have
-PMEM installed.  Or the PMEM may not be mapped into the direct map.  In
-addition, some callers of memremap_pages() will not want the mapped
-pages protected.
-
-Define a new PGMAP flag to distinguish page maps which are protected.
-Use this flag to enable runtime protection support.  A static key is
-used to optimize the runtime support.
-
-Specifying this flag on a system which can't support protections will
-fail.  Callers are expected to check if protections are supported via
-pgmap_protection_available().  It was considered to have callers specify
-the flag and check if the dev_pagemap object returned was protected or
-not.  But this was considered less efficient than a direct check
-beforehand.
+Reserve a pkey for use by the memmap facility and set the default
+protections to Access Disabled.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
+Changes for V10
+	This patch now reserves a key before the PKS testing does.  So
+	adjust for this being the only key at this point in the series.
+
 Changes for V9
-	Clean up commit message
-
-Changes for V8
-	Split this out into it's own patch
+	Adjust for new key allocation
+	From Dave Hansen
+		use pkey
 ---
- include/linux/memremap.h |  1 +
- mm/memremap.c            | 40 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 41 insertions(+)
+ include/linux/pks-keys.h | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/memremap.h b/include/linux/memremap.h
-index 7980d0db8617..02c415b1b278 100644
---- a/include/linux/memremap.h
-+++ b/include/linux/memremap.h
-@@ -83,6 +83,7 @@ struct dev_pagemap_ops {
- };
+diff --git a/include/linux/pks-keys.h b/include/linux/pks-keys.h
+index c914afecb2d3..4e63c8061e55 100644
+--- a/include/linux/pks-keys.h
++++ b/include/linux/pks-keys.h
+@@ -60,17 +60,22 @@
  
- #define PGMAP_ALTMAP_VALID	(1 << 0)
-+#define PGMAP_PROTECTION	(1 << 1)
+ /* PKS_KEY_DEFAULT must be 0 */
+ #define PKS_KEY_DEFAULT		0
+-#define PKS_KEY_MAX		PKS_NEW_KEY(PKS_KEY_DEFAULT, 1)
++#define PKS_KEY_PGMAP_PROTECTION \
++		PKS_NEW_KEY(PKS_KEY_DEFAULT, CONFIG_DEVMAP_ACCESS_PROTECTION)
++#define PKS_KEY_MAX		PKS_NEW_KEY(PKS_KEY_PGMAP_PROTECTION, 1)
  
- /**
-  * struct dev_pagemap - metadata for ZONE_DEVICE mappings
-diff --git a/mm/memremap.c b/mm/memremap.c
-index af0223605e69..4dfb3025cee3 100644
---- a/mm/memremap.c
-+++ b/mm/memremap.c
-@@ -62,6 +62,37 @@ static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
- }
- #endif /* CONFIG_FS_DAX */
+ /* PKS_KEY_DEFAULT_INIT must be RW */
+ #define PKS_KEY_DEFAULT_INIT	PKS_DECLARE_INIT_VALUE(PKS_KEY_DEFAULT, RW, 1)
++#define PKS_KEY_PGMAP_INIT	PKS_DECLARE_INIT_VALUE(PKS_KEY_PGMAP_PROTECTION, \
++					AD, CONFIG_DEVMAP_ACCESS_PROTECTION)
  
-+#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
-+
-+/*
-+ * Note; all devices which have asked for protections share the same key.  The
-+ * key may, or may not, have been provided by the core.  If not, protection
-+ * will be disabled.  The key acquisition is attempted when the first ZONE
-+ * DEVICE requests it and freed when all zones have been unmapped.
-+ *
-+ * Also this must be EXPORT_SYMBOL rather than EXPORT_SYMBOL_GPL because it is
-+ * intended to be used in the kmap API.
-+ */
-+DEFINE_STATIC_KEY_FALSE(dev_pgmap_protection_static_key);
-+EXPORT_SYMBOL(dev_pgmap_protection_static_key);
-+
-+static void devmap_protection_enable(void)
-+{
-+	static_branch_inc(&dev_pgmap_protection_static_key);
-+}
-+
-+static void devmap_protection_disable(void)
-+{
-+	static_branch_dec(&dev_pgmap_protection_static_key);
-+}
-+
-+#else /* !CONFIG_DEVMAP_ACCESS_PROTECTION */
-+
-+static void devmap_protection_enable(void) { }
-+static void devmap_protection_disable(void) { }
-+
-+#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
-+
- static void pgmap_array_delete(struct range *range)
- {
- 	xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
-@@ -148,6 +179,9 @@ void memunmap_pages(struct dev_pagemap *pgmap)
+ #define PKS_ALL_AD_MASK \
+ 	GENMASK(PKS_NUM_PKEYS * PKR_BITS_PER_PKEY, \
+ 		PKS_KEY_MAX * PKR_BITS_PER_PKEY)
  
- 	WARN_ONCE(pgmap->altmap.alloc, "failed to free all reserved pages\n");
- 	devmap_managed_enable_put(pgmap);
-+
-+	if (pgmap->flags & PGMAP_PROTECTION)
-+		devmap_protection_disable();
- }
- EXPORT_SYMBOL_GPL(memunmap_pages);
+ #define PKS_INIT_VALUE ((PKS_ALL_AD & PKS_ALL_AD_MASK) | \
+-			PKS_KEY_DEFAULT_INIT \
++			PKS_KEY_DEFAULT_INIT | \
++			PKS_KEY_PGMAP_INIT \
+ 			)
  
-@@ -295,6 +329,12 @@ void *memremap_pages(struct dev_pagemap *pgmap, int nid)
- 	if (WARN_ONCE(!nr_range, "nr_range must be specified\n"))
- 		return ERR_PTR(-EINVAL);
- 
-+	if (pgmap->flags & PGMAP_PROTECTION) {
-+		if (!pgmap_protection_available())
-+			return ERR_PTR(-EINVAL);
-+		devmap_protection_enable();
-+	}
-+
- 	switch (pgmap->type) {
- 	case MEMORY_DEVICE_PRIVATE:
- 		if (!IS_ENABLED(CONFIG_DEVICE_PRIVATE)) {
+ #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
 -- 
 2.35.1
 
