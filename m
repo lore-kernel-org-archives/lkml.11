@@ -2,108 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B98BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F580C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353559AbiDSPIl (ORCPT
+        id S1353628AbiDSPJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
+        Tue, 19 Apr 2022 11:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236347AbiDSPIj (ORCPT
+        with ESMTP id S1343927AbiDSPJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:08:39 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440CB3968B;
-        Tue, 19 Apr 2022 08:05:57 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E46C12129B;
-        Tue, 19 Apr 2022 15:05:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650380755; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RIeKtDiX0nw/kN8tZFnbYwbUF0osRimfD25Cqjw9rO0=;
-        b=p0AkssQvCUGX2FIMw2M6305MzO023ILQ5u5IfEsBVHXyJHDV+Ebng9/Or4tm5v9ZLS2kLq
-        hoWrwtxaDSJOTaOA3LVtFIwda/AweGfgvh+HYRp+GubmdbcetanPTiaxtoKJsw/GevrmpQ
-        1tb0zNKv/NJqEwQgpoFNU25svmJC4qE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650380755;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RIeKtDiX0nw/kN8tZFnbYwbUF0osRimfD25Cqjw9rO0=;
-        b=VIM4uKnDgGnQYW+y/rVChWFXlTtd7njqOyGqs9fi4c7mcZ9x9bowKajd514kd6PgEoABL8
-        YF5T9AcBpjedztCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C9CE2139BE;
-        Tue, 19 Apr 2022 15:05:55 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id kgk+MdPPXmLlMAAAMHmgww
-        (envelope-from <iivanov@suse.de>); Tue, 19 Apr 2022 15:05:55 +0000
-Date:   Tue, 19 Apr 2022 18:05:55 +0300
-From:   "Ivan T. Ivanov" <iivanov@suse.de>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Phil Elwell <phil@raspberrypi.org>,
-        kernel test robot <lkp@intel.com>,
-        bcm-kernel-feedback-list@broadcom.com, linux-clk@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] clk: bcm2835: Round UART input clock up
-Message-ID: <20220419150555.igh6tdxgjb7meygx@suse>
-References: <20220404125113.80239-1-iivanov@suse.de>
- <20220414105656.qt52zmr5vjmjdcxc@suse>
- <0b3356c0-b4c8-91ed-dfde-9f50483ec36f@i2se.com>
- <20220418110516.s7jxsfa3jl7aagrf@suse>
- <2a46bd1c-600b-5bd9-1c19-20c809f63945@i2se.com>
- <20220418113801.uree7rvkzxpiwyni@suse>
- <6adc9c1c-ec75-b52c-9c44-00296eaa00f6@i2se.com>
+        Tue, 19 Apr 2022 11:09:36 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E270B3A5FE;
+        Tue, 19 Apr 2022 08:06:52 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id t25so21668345edt.9;
+        Tue, 19 Apr 2022 08:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yICZo35JVSCay/S/x1TB8kX9507M+hco0NaA8O/7pCU=;
+        b=dqhBAOnaEOaiRPgnwFlRiMHN3lB5cjbPy5HM5ysMYjsbjEcCoKfr7kln27sTR9pRgV
+         gE5PzIU0MJamXr0s+yAUwpgHUDOCYAE5LWPiTTJqtWn4BulTN10rSw9f/JjshFGaTM1L
+         YUTdDpHPJ02DV3sOMYKKCj86Y0cspr8Ys8jwmp9x38xRSrRXkgqDG0EGAjaRdSUDuZH/
+         DLzHUrk0uJg7sOLFCc8na9Jplo0SYN3U9ynpRRJfaU2I9hNcr01RuWySYDl0NbjwNHYi
+         kELwR6JUC8qvRI1xwp2ur+FRci7aVgOBkEsRITJyLUOcbjQQkHmWPBdNgjdFsoLWcndc
+         k7dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yICZo35JVSCay/S/x1TB8kX9507M+hco0NaA8O/7pCU=;
+        b=CjFt3RuyUlQtj0ApaNJl+rs+r60vQblj6A0C6IKUtqi8XLA8MsPgZu/lKL0Q5ctDFf
+         3djTVSXv55GRtbSUVuiCrMhNKunWNrP19TqJ5Zg9CAPz3OSVnnwLY3eRZWEr3nAi2fzX
+         QYZn5wCFISUNbxRoodp3ob7Ly4fq/SrpsdJuxFR/72eQSQX5VqIzQfjlmh8p7Kiz5Jc2
+         KltNisGLif6+62iKKrY4dUJ7PoSLGR6iJO60Uo455TYxxk9K8Be5tD0LMgp4fHFzXzvc
+         i++QynjcYngKX7PswPn4s1nn2pqf7Vde1Th23qqbbkmGlbipwNXDn1jcPitFzRPCkaHa
+         BoXg==
+X-Gm-Message-State: AOAM533Qu48lnM9BzWjFg27YeFEj5AmU21yU5Bv8d6lsUVWbGT54LPTv
+        GOTH6DlTneoTjw/qSfRkP4w=
+X-Google-Smtp-Source: ABdhPJyydUHtFp3YDsnBHqpecx1FOJ26DObQViOuhiNGCtKScNX7BimnMLHUfAZfVE1+x3dHcfClpQ==
+X-Received: by 2002:aa7:c948:0:b0:413:2bed:e82e with SMTP id h8-20020aa7c948000000b004132bede82emr17908502edt.394.1650380811313;
+        Tue, 19 Apr 2022 08:06:51 -0700 (PDT)
+Received: from [192.168.0.182] ([188.24.22.234])
+        by smtp.gmail.com with ESMTPSA id kb9-20020a1709070f8900b006e889aad94esm5772063ejc.128.2022.04.19.08.06.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 08:06:50 -0700 (PDT)
+Message-ID: <417c3fdb-a264-250b-7385-d5f9acf166d1@gmail.com>
+Date:   Tue, 19 Apr 2022 18:06:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6adc9c1c-ec75-b52c-9c44-00296eaa00f6@i2se.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: add AD4130
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+References: <20220419093506.135553-1-cosmin.tanislav@analog.com>
+ <20220419093506.135553-2-cosmin.tanislav@analog.com>
+ <1650370363.604220.1977871.nullmailer@robh.at.kernel.org>
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+In-Reply-To: <1650370363.604220.1977871.nullmailer@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04-18 18:01, Stefan Wahren wrote:
-> > > 
-> > > Do you use the mainline DTS or the vendor DTS to see this issue?
-> > > 
-> > For (open)SUSE we use downstream DTS.
+
+
+On 4/19/22 15:12, Rob Herring wrote:
+> On Tue, 19 Apr 2022 12:35:05 +0300, Cosmin Tanislav wrote:
+>> AD4130-8 is an ultra-low power, high precision, measurement solution for
+>> low bandwidth battery operated applications.
+>>
+>> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
+>> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
+>> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
+>> selectable filter options, smart sequencer, sensor biasing and excitation
+>> options, diagnostics, and a FIFO buffer.
+>>
+>> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+>> ---
+>>   .../bindings/iio/adc/adi,ad4130.yaml          | 263 ++++++++++++++++++
+>>   1 file changed, 263 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
+>>
 > 
-> This is popular and bad at the same time. We as the mainline kernel
-> developer cannot guarantee that this works as expected. A lot of issues are
-> caused by mixing vendor DTS with mainline kernel, so in general (not for
-> this specific issue) you are on your own with this approach.
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> Error: Documentation/devicetree/bindings/iio/adc/adi,ad4130.example.dts:35.30-31 syntax error
+> FATAL ERROR: Unable to parse input tree
+> make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/iio/adc/adi,ad4130.example.dtb] Error 1
+> make[1]: *** Waiting for unfinished jobs....
+> make: *** [Makefile:1401: dt_binding_check] Error 2
+> 
+> doc reference errors (make refcheckdocs):
+> 
+> See https://patchwork.ozlabs.org/patch/
+> 
+> This check can fail if there are any dependencies. The base for a patch
+> series is generally the most recent rc1.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit.
 > 
 
-Yep, I am aware of that. I am still trying to recover after recent
-gpio-ranges fiasco, also still working on fixing non-exported firmware
-clocks, which break HDMI output on some of the devices.
-
-> I know this is a little bit off topic but except from overlay support, can
-> you provide a list of most missing features of the mainline kernel / DTS?
-
-Well, 260+ overlays for free is not insignificant benefit. Beside few
-breakages from time to time using downstream device tree works fine.
-
-Regards,
-Ivan
+Sending V3 to fix this. Please disregard.
 
