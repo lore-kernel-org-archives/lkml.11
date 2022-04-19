@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3721C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29516C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243522AbiDSAtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S235357AbiDSAtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241373AbiDSApR (ORCPT
+        with ESMTP id S241378AbiDSApR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:45:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E142A726
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294C929CA5
         for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A252D6142A
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 877066141B
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74596C36AE3;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A82CC34119;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=CSPgFxhNYiFfEEQ3oyWb8YPNPLzB29lov0oRZDkF6kc=;
+        bh=ZESxgMtm/TynkTOd56b8EQARVEB7blDLPa29zdfArME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nj0WFf3bBOR4XHd++zhKAVuA85aeF/qcSerB68dfRRNBGcOyApPnxR2ztRvOPeDFj
-         n0bHD8yg+b48/WLcGuhBucYfLiQp5ZCcz+imeNr1LXbtv2pYo1GxXt1aGx9OWNohUx
-         8wW0ok+Km4vk1UkVJHLdi1BYaeUvwILCHIDyxB2jDslBi0woup5znq9xOxh+StPIGZ
-         BcPsV85RkWwWs1z5KSA/0twDJnMoie45Z1uO9W13loJFBRpmoMY1fg63j4njSHuLWC
-         Ku5wXy4X/j3Ub1sgP/jwOe5bI7SVSf71BdCy1QYTguyFzfWMRDpFFKHoKtDHzQ6qWs
-         EoKshYCKUpHuA==
+        b=YqTnWb1+Dfzn4jhUUOdP+dmpo5ZnI00hmkENba8B0hXdsO9Vl1ZOjrdrBgCktsR9d
+         FgH94pRGQ6PS9xktgI/4BHrzXtRpd9OF74hrhYMbpWRyMscmO93JulGRPyQuY9zpM7
+         nFFEHA9VSpk49DrQtxwirZmkfUAmLC/FVlTzakq1Fra1W1hF0jZ1vBrFTbyMBovnT5
+         RqyE8Pw4LcjUCoB0P+tcrwc46gstGuEMn1fkNDtySJKC3641M4qyoXg/lTl0ULfIvq
+         7ZgpTiWk+e60LhtZVxNHySh7FX0fElmMuUWo0dWAajDrBINVrPf6zNeaEMy/8nyrpn
+         WFlKye6Qy3VQg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 539B15C322D; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 51C9E5C322C; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 42/61] tools/nolibc/stdlib: implement abort()
-Date:   Mon, 18 Apr 2022 17:42:06 -0700
-Message-Id: <20220419004225.3952530-42-paulmck@kernel.org>
+Subject: [PATCH nolibc 41/61] tools/nolibc: also mention how to build by just setting the include path
+Date:   Mon, 18 Apr 2022 17:42:05 -0700
+Message-Id: <20220419004225.3952530-41-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,35 +53,68 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-libgcc uses it for certain divide functions, so it must be exported. Like
-for memset() we do that in its own section so that the linker can strip
-it when not needed.
+Now that a few basic include files are provided, some simple portable
+programs may build, which will save them from having to surround their
+includes with #ifndef NOLIBC. This patch mentions how to proceed, and
+enumerates the list of files that are covered.
+
+A comprehensive list of required include files is available here:
+
+  https://en.cppreference.com/w/c/header
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/stdlib.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ tools/include/nolibc/nolibc.h | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
-diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
-index b46bebd48ba2..733105c574ee 100644
---- a/tools/include/nolibc/stdlib.h
-+++ b/tools/include/nolibc/stdlib.h
-@@ -23,6 +23,14 @@ static __attribute__((unused)) char itoa_buffer[21];
-  * As much as possible, please keep functions alphabetically sorted.
-  */
- 
-+/* must be exported, as it's used by libgcc for various divide functions */
-+__attribute__((weak,unused,noreturn,section(".text.nolibc_abort")))
-+void abort(void)
-+{
-+	sys_kill(sys_getpid(), SIGABRT);
-+	for (;;);
-+}
-+
- static __attribute__((unused))
- long atol(const char *s)
- {
+diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
+index 561dcdb83cee..b2bc48d3cfe4 100644
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -57,22 +57,32 @@
+  * having to specify anything.
+  *
+  * Finally some very common libc-level functions are provided. It is the case
+- * for a few functions usually found in string.h, ctype.h, or stdlib.h. Nothing
+- * is currently provided regarding stdio emulation.
++ * for a few functions usually found in string.h, ctype.h, or stdlib.h.
+  *
+- * The macro NOLIBC is always defined, so that it is possible for a program to
+- * check this macro to know if it is being built against and decide to disable
+- * some features or simply not to include some standard libc files.
+- *
+- * Ideally this file should be split in multiple files for easier long term
+- * maintenance, but provided as a single file as it is now, it's quite
+- * convenient to use. Maybe some variations involving a set of includes at the
+- * top could work.
++ * The nolibc.h file is only a convenient entry point which includes all other
++ * files. It also defines the NOLIBC macro, so that it is possible for a
++ * program to check this macro to know if it is being built against and decide
++ * to disable some features or simply not to include some standard libc files.
+  *
+  * A simple static executable may be built this way :
+  *      $ gcc -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \
+  *            -static -include nolibc.h -o hello hello.c -lgcc
+  *
++ * Simple programs meant to be reasonably portable to various libc and using
++ * only a few common includes, may also be built by simply making the include
++ * path point to the nolibc directory:
++ *      $ gcc -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \
++ *            -I../nolibc -o hello hello.c -lgcc
++ *
++ * The available standard (but limited) include files are:
++ *   ctype.h, errno.h, signal.h, stdio.h, stdlib.h, string.h, time.h
++ *
++ * In addition, the following ones are expected to be provided by the compiler:
++ *   float.h, stdarg.h, stddef.h
++ *
++ * The following ones which are part to the C standard are not provided:
++ *   assert.h, locale.h, math.h, setjmp.h, limits.h
++ *
+  * A very useful calling convention table may be found here :
+  *      http://man7.org/linux/man-pages/man2/syscall.2.html
+  *
 -- 
 2.31.1.189.g2e36527f23
 
