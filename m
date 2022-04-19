@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6F9C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6B2C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357400AbiDSS2G (ORCPT
+        id S1357562AbiDSS2S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42746 "EHLO
+        Tue, 19 Apr 2022 14:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357503AbiDSSX1 (ORCPT
+        with ESMTP id S1357601AbiDSSXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56984443C7;
-        Tue, 19 Apr 2022 11:16:28 -0700 (PDT)
+        Tue, 19 Apr 2022 14:23:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C794144A03;
+        Tue, 19 Apr 2022 11:16:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D373CB818EE;
-        Tue, 19 Apr 2022 18:16:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B1CC385AB;
-        Tue, 19 Apr 2022 18:16:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D3886142E;
+        Tue, 19 Apr 2022 18:16:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFECCC385A5;
+        Tue, 19 Apr 2022 18:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392180;
-        bh=0ezynSW+qWhDxjKoqYRKJ3NXElJ577uMaunC0bZhw34=;
+        s=k20201202; t=1650392195;
+        bh=EosSNH8QIq0HX0UFhXMnJQen0qV3zQiLsp4EowtHQFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KFH+UGq7J+yTv2aIeE4QvwmHTXRWJpo771OuicinkHQ9AlYY0yC4d8LqG+BP0jq1h
-         mf6bEWod2DvlGzqKnASuIVYRVKvs9AOOTuak6BTGVwyD4NMwcl0vtV1iv73xwBcrr4
-         oXOu0QmGaMd86i7rYwng4XoWTDyXI2Utbm1I7mKvf4SEJn32tU0JPWCmdKnykhhXJr
-         HGNpm32gzEASE81S3nv363BZBIE0maKXPXz+hxQTI433AWjXFQn4XkMOrjct8mUxw/
-         ymVG0FG4cZ3VfEm27p68XMe3hJb9Q5XRHYJ2Cj06DOm0kUUr5OpkUGKHwZ2FY5FNp8
-         QpJpF0G8HouDQ==
+        b=dkiDosQEs7rvgWiKXfGPHPXy35pk9/me1RMvkOEObpaeRjKF4FcgVcAzsKn0oRtOm
+         aMB2W6rHERO695HGCdYGAxOrE39y91QmbWzbOIh5KRDqCsZKsIyKmwXcV4oTuOHLaa
+         3in9UP6zxBY6WtLLg+Cw4KvfqKygEAqfa0paYyK/+HDMT6QKJOV497u2KlwcsQsos8
+         BENQJ+f+mGa3aJY0/+pLUYk0x5AWF4qbvZwQyY5VeJPyGxs7N5rrOTOpLnWz6Ij1X2
+         lUei2XDHKljWC7gdKChk2t3xXzoQanAHHHMKxfCydWC9JeP9jqnm/L8B+s4IMkWvSk
+         wt9io25YJi7qw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tomas Melin <tomas.melin@vaisala.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
-        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 8/9] net: macb: Restart tx only if queue pointer is lagging
-Date:   Tue, 19 Apr 2022 14:15:56 -0400
-Message-Id: <20220419181557.486336-8-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Steve French <sfrench@samba.org>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Rohith Surabattula <rohiths.msft@gmail.com>,
+        linux-cifs@vger.kernel.org, Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 4.9 5/7] cifs: Check the IOCB_DIRECT flag, not O_DIRECT
+Date:   Tue, 19 Apr 2022 14:16:23 -0400
+Message-Id: <20220419181625.486476-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181557.486336-1-sashal@kernel.org>
-References: <20220419181557.486336-1-sashal@kernel.org>
+In-Reply-To: <20220419181625.486476-1-sashal@kernel.org>
+References: <20220419181625.486476-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,62 +56,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Melin <tomas.melin@vaisala.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
+[ Upstream commit 994fd530a512597ffcd713b0f6d5bc916c5698f0 ]
 
-commit 4298388574da ("net: macb: restart tx after tx used bit read")
-added support for restarting transmission. Restarting tx does not work
-in case controller asserts TXUBR interrupt and TQBP is already at the end
-of the tx queue. In that situation, restarting tx will immediately cause
-assertion of another TXUBR interrupt. The driver will end up in an infinite
-interrupt loop which it cannot break out of.
+Use the IOCB_DIRECT indicator flag on the I/O context rather than checking to
+see if the file was opened O_DIRECT.
 
-For cases where TQBP is at the end of the tx queue, instead
-only clear TX_USED interrupt. As more data gets pushed to the queue,
-transmission will resume.
-
-This issue was observed on a Xilinx Zynq-7000 based board.
-During stress test of the network interface,
-driver would get stuck on interrupt loop within seconds or minutes
-causing CPU to stall.
-
-Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <sfrench@samba.org>
+cc: Shyam Prasad N <nspmangalore@gmail.com>
+cc: Rohith Surabattula <rohiths.msft@gmail.com>
+cc: linux-cifs@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/cifs/cifsfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 045ab0ec5ca2..456d84cbcc6b 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1265,6 +1265,7 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	unsigned int head = queue->tx_head;
- 	unsigned int tail = queue->tx_tail;
- 	struct macb *bp = queue->bp;
-+	unsigned int head_idx, tbqp;
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index 95e4f074b766..b85c283ad08b 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -766,7 +766,7 @@ cifs_loose_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+ 	ssize_t rc;
+ 	struct inode *inode = file_inode(iocb->ki_filp);
  
- 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
- 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
-@@ -1272,6 +1273,13 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	if (head == tail)
- 		return;
+-	if (iocb->ki_filp->f_flags & O_DIRECT)
++	if (iocb->ki_flags & IOCB_DIRECT)
+ 		return cifs_user_readv(iocb, iter);
  
-+	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
-+	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
-+	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
-+
-+	if (tbqp == head_idx)
-+		return;
-+
- 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
- }
- 
+ 	rc = cifs_revalidate_mapping(inode);
 -- 
 2.35.1
 
