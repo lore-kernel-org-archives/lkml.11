@@ -2,245 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50023C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E9F8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348039AbiDSDfu (ORCPT
+        id S1348063AbiDSDf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 23:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
+        Mon, 18 Apr 2022 23:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347478AbiDSDfd (ORCPT
+        with ESMTP id S1347609AbiDSDfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 23:35:33 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5278F2B27A;
-        Mon, 18 Apr 2022 20:32:51 -0700 (PDT)
-X-UUID: 4fc04c0bba8a486782b64f4a597454cd-20220419
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:647b5e72-917e-4f70-be2c-10fded56ba93,OB:30,L
-        OB:60,IP:0,URL:25,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ha
-        m,ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:647b5e72-917e-4f70-be2c-10fded56ba93,OB:30,LOB
-        :60,IP:0,URL:25,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3
-        D,ACTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:b96d51ef-06b0-4305-bfbf-554bfc9d151a,C
-        OID:f4e117ea2a5f,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 4fc04c0bba8a486782b64f4a597454cd-20220419
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 139664917; Tue, 19 Apr 2022 11:32:44 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 19 Apr 2022 11:32:44 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 19 Apr
- 2022 11:32:40 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 19 Apr 2022 11:32:40 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
-CC:     <airlied@linux.ie>, <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH 5/5] dt-bindings: mediatek: add ethdr definition for mt8195
-Date:   Tue, 19 Apr 2022 11:32:37 +0800
-Message-ID: <20220419033237.23405-6-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220419033237.23405-1-rex-bc.chen@mediatek.com>
-References: <20220419033237.23405-1-rex-bc.chen@mediatek.com>
+        Mon, 18 Apr 2022 23:35:41 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A45A2BB0B;
+        Mon, 18 Apr 2022 20:32:55 -0700 (PDT)
+Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Sv3DffzFpXP;
+        Tue, 19 Apr 2022 11:30:23 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:52 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH V2 net-next 1/9] net: hns3: add ethtool parameter check for CQE/EQE mode
+Date:   Tue, 19 Apr 2022 11:27:01 +0800
+Message-ID: <20220419032709.15408-2-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220419032709.15408-1-huangguangbin2@huawei.com>
+References: <20220419032709.15408-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Nancy.Lin" <nancy.lin@mediatek.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-Add vdosys1 ETHDR definition.
+For DEVICE_VERSION_V2, the hardware does not support the CQE mode.
+So add capability bit for coalesce CQE mode and add parameter check
+for it in ethtool.
 
-Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../display/mediatek/mediatek,ethdr.yaml      | 158 ++++++++++++++++++
- 1 file changed, 158 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  4 +++
+ .../hns3/hns3_common/hclge_comm_cmd.c         |  2 ++
+ .../hns3/hns3_common/hclge_comm_cmd.h         |  1 +
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  5 +---
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 28 +++++++++++++++++--
+ 5 files changed, 33 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-new file mode 100644
-index 000000000000..e8303c28a361
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-@@ -0,0 +1,158 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/mediatek/mediatek,ethdr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 79c64f4e67d2..8a3a446219f7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -96,6 +96,7 @@ enum HNAE3_DEV_CAP_BITS {
+ 	HNAE3_DEV_SUPPORT_PORT_VLAN_BYPASS_B,
+ 	HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B,
+ 	HNAE3_DEV_SUPPORT_MC_MAC_MNG_B,
++	HNAE3_DEV_SUPPORT_CQ_B,
+ };
+ 
+ #define hnae3_dev_fd_supported(hdev) \
+@@ -155,6 +156,9 @@ enum HNAE3_DEV_CAP_BITS {
+ #define hnae3_ae_dev_mc_mac_mng_supported(ae_dev) \
+ 	test_bit(HNAE3_DEV_SUPPORT_MC_MAC_MNG_B, (ae_dev)->caps)
+ 
++#define hnae3_ae_dev_cq_supported(ae_dev) \
++	test_bit(HNAE3_DEV_SUPPORT_CQ_B, (ae_dev)->caps)
 +
-+title: MediaTek Ethdr Device Tree Bindings
+ enum HNAE3_PF_CAP_BITS {
+ 	HNAE3_PF_SUPPORT_VLAN_FLTR_MDF_B = 0,
+ };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
+index c15ca710dabb..c8b151d29f53 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
+@@ -149,6 +149,7 @@ static const struct hclge_comm_caps_bit_map hclge_pf_cmd_caps[] = {
+ 	{HCLGE_COMM_CAP_PORT_VLAN_BYPASS_B,
+ 	 HNAE3_DEV_SUPPORT_PORT_VLAN_BYPASS_B},
+ 	{HCLGE_COMM_CAP_PORT_VLAN_BYPASS_B, HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B},
++	{HCLGE_COMM_CAP_CQ_B, HNAE3_DEV_SUPPORT_CQ_B},
+ };
+ 
+ static const struct hclge_comm_caps_bit_map hclge_vf_cmd_caps[] = {
+@@ -160,6 +161,7 @@ static const struct hclge_comm_caps_bit_map hclge_vf_cmd_caps[] = {
+ 	{HCLGE_COMM_CAP_QB_B, HNAE3_DEV_SUPPORT_QB_B},
+ 	{HCLGE_COMM_CAP_TX_PUSH_B, HNAE3_DEV_SUPPORT_TX_PUSH_B},
+ 	{HCLGE_COMM_CAP_RXD_ADV_LAYOUT_B, HNAE3_DEV_SUPPORT_RXD_ADV_LAYOUT_B},
++	{HCLGE_COMM_CAP_CQ_B, HNAE3_DEV_SUPPORT_CQ_B},
+ };
+ 
+ static void
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
+index 876650eddac4..7a7d4cf9bf35 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
+@@ -338,6 +338,7 @@ enum HCLGE_COMM_CAP_BITS {
+ 	HCLGE_COMM_CAP_PAUSE_B = 14,
+ 	HCLGE_COMM_CAP_RXD_ADV_LAYOUT_B = 15,
+ 	HCLGE_COMM_CAP_PORT_VLAN_BYPASS_B = 17,
++	HCLGE_COMM_CAP_CQ_B = 18,
+ };
+ 
+ enum HCLGE_COMM_API_CAP_BITS {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 14dc12c2155d..7e9f9da2f392 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -5159,10 +5159,7 @@ static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
+ 			priv->tqp_vector[i].rx_group.dim.mode = mode;
+ 	}
+ 
+-	/* only device version above V3(include V3), GL can switch CQ/EQ
+-	 * period mode.
+-	 */
+-	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3) {
++	if (hnae3_ae_dev_cq_supported(ae_dev)) {
+ 		u32 new_mode;
+ 		u64 reg;
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 9f4111fd2986..8663ba5d41d8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1415,11 +1415,33 @@ static int hns3_check_ql_coalesce_param(struct net_device *netdev,
+ 	return 0;
+ }
+ 
+-static int hns3_check_coalesce_para(struct net_device *netdev,
+-				    struct ethtool_coalesce *cmd)
++static int
++hns3_check_cqe_coalesce_param(struct net_device *netdev,
++			      struct kernel_ethtool_coalesce *kernel_coal)
++{
++	struct hnae3_handle *handle = hns3_get_handle(netdev);
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
 +
-+maintainers:
-+  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-+  - Philipp Zabel <p.zabel@pengutronix.de>
++	if ((kernel_coal->use_cqe_mode_tx || kernel_coal->use_cqe_mode_rx) &&
++	    !hnae3_ae_dev_cq_supported(ae_dev)) {
++		netdev_err(netdev, "coalesced cqe mode is not supported\n");
++		return -EOPNOTSUPP;
++	}
 +
-+description: |
-+  ETHDR is designed for HDR video and graphics conversion in the external display path.
-+  It handles multiple HDR input types and performs tone mapping, color space/color
-+  format conversion, and then combine different layers, output the required HDR or
-+  SDR signal to the subsequent display path. This engine is composed of two video
-+  frontends, two graphic frontends, one video backend and a mixer. ETHDR has two
-+  DMA function blocks, DS and ADL. These two function blocks read the pre-programmed
-+  registers from DRAM and set them to HW in the v-blanking period.
++	return 0;
++}
 +
-+properties:
-+  compatible:
-+    items:
-+      - const: mediatek,mt8195-disp-ethdr
-+  reg:
-+    maxItems: 7
-+  reg-names:
-+    items:
-+      - const: mixer
-+      - const: vdo_fe0
-+      - const: vdo_fe1
-+      - const: gfx_fe0
-+      - const: gfx_fe1
-+      - const: vdo_be
-+      - const: adl_ds
-+  interrupts:
-+    minItems: 1
-+  iommus:
-+    description: The compatible property is DMA function blocks.
-+      Should point to the respective IOMMU block with master port as argument,
-+      see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for
-+      details.
-+    minItems: 1
-+    maxItems: 2
-+  clocks:
-+    items:
-+      - description: mixer clock
-+      - description: video frontend 0 clock
-+      - description: video frontend 1 clock
-+      - description: graphic frontend 0 clock
-+      - description: graphic frontend 1 clock
-+      - description: video backend clock
-+      - description: autodownload and menuload clock
-+      - description: video frontend 0 async clock
-+      - description: video frontend 1 async clock
-+      - description: graphic frontend 0 async clock
-+      - description: graphic frontend 1 async clock
-+      - description: video backend async clock
-+      - description: ethdr top clock
-+  clock-names:
-+    items:
-+      - const: mixer
-+      - const: vdo_fe0
-+      - const: vdo_fe1
-+      - const: gfx_fe0
-+      - const: gfx_fe1
-+      - const: vdo_be
-+      - const: adl_ds
-+      - const: vdo_fe0_async
-+      - const: vdo_fe1_async
-+      - const: gfx_fe0_async
-+      - const: gfx_fe1_async
-+      - const: vdo_be_async
-+      - const: ethdr_top
-+  power-domains:
-+    maxItems: 1
-+  resets:
-+    maxItems: 5
-+  mediatek,gce-client-reg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: The register of display function block to be set by gce.
-+      There are 4 arguments in this property, gce node, subsys id, offset and
-+      register size. The subsys id is defined in the gce header of each chips
-+      include/include/dt-bindings/gce/<chip>-gce.h, mapping to the register of
-+      display function block.
++static int
++hns3_check_coalesce_para(struct net_device *netdev,
++			 struct ethtool_coalesce *cmd,
++			 struct kernel_ethtool_coalesce *kernel_coal)
+ {
+ 	int ret;
+ 
++	ret = hns3_check_cqe_coalesce_param(netdev, kernel_coal);
++	if (ret)
++		return ret;
 +
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - power-domains
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/mt8195-clk.h>
-+    #include <dt-bindings/gce/mt8195-gce.h>
-+    #include <dt-bindings/memory/mt8195-memory-port.h>
-+    #include <dt-bindings/power/mt8195-power.h>
-+    #include <dt-bindings/reset/mt8195-resets.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        disp_ethdr@1c114000 {
-+                compatible = "mediatek,mt8195-disp-ethdr";
-+                reg = <0 0x1c114000 0 0x1000>,
-+                      <0 0x1c115000 0 0x1000>,
-+                      <0 0x1c117000 0 0x1000>,
-+                      <0 0x1c119000 0 0x1000>,
-+                      <0 0x1c11a000 0 0x1000>,
-+                      <0 0x1c11b000 0 0x1000>,
-+                      <0 0x1c11b000 0 0x1000>;
-+                reg-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
-+                            "vdo_be", "adl_ds";
-+                mediatek,gce-client-reg = <&gce0 SUBSYS_1c11XXXX 0x4000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0x5000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0x7000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0x9000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0xa000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0xb000 0x1000>,
-+                                          <&gce0 SUBSYS_1c11XXXX 0xc000 0x1000>;
-+                clocks = <&vdosys1 CLK_VDO1_DISP_MIXER>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE0>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE1>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE0>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE1>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_BE>,
-+                         <&vdosys1 CLK_VDO1_26M_SLOW>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE0_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_FE1_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE0_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_GFX_FE1_DL_ASYNC>,
-+                         <&vdosys1 CLK_VDO1_HDR_VDO_BE_DL_ASYNC>,
-+                         <&topckgen CLK_TOP_ETHDR>;
-+                clock-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
-+                              "vdo_be", "adl_ds", "vdo_fe0_async", "vdo_fe1_async",
-+                              "gfx_fe0_async", "gfx_fe1_async","vdo_be_async",
-+                              "ethdr_top";
-+                power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+                iommus = <&iommu_vpp M4U_PORT_L3_HDR_DS>,
-+                         <&iommu_vpp M4U_PORT_L3_HDR_ADL>;
-+                interrupts = <GIC_SPI 517 IRQ_TYPE_LEVEL_HIGH 0>; /* disp mixer */
-+                resets = <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE0_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE1_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE0_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE1_DL_ASYNC>,
-+                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_BE_DL_ASYNC>;
-+        };
-+    };
-+
-+...
+ 	ret = hns3_check_gl_coalesce_para(netdev, cmd);
+ 	if (ret) {
+ 		netdev_err(netdev,
+@@ -1494,7 +1516,7 @@ static int hns3_set_coalesce(struct net_device *netdev,
+ 	if (hns3_nic_resetting(netdev))
+ 		return -EBUSY;
+ 
+-	ret = hns3_check_coalesce_para(netdev, cmd);
++	ret = hns3_check_coalesce_para(netdev, cmd, kernel_coal);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
-2.18.0
+2.33.0
 
