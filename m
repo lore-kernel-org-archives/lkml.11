@@ -2,93 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B66C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245237AbiDSKOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37432 "EHLO
+        id S1350523AbiDSKOu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 06:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350516AbiDSKM2 (ORCPT
+        with ESMTP id S1350513AbiDSKOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:12:28 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6629BCF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:09:45 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id g13so4111921ejb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:09:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=YFDNhide2XsUmvM8LDTWVfeOwV1KO1o2ZUWzKE5/SFk=;
-        b=G7EcWbpYoSAE1Lcg+xSOON5dxTvgUD2Cvatu5KLZxziEhw8eZ7euCX8hhBvjFbPwhK
-         4se+dIuQNzJefYfAaLJhnTR34wRRUZjdVjUMMFhJsspcddrm3uTXTJUH0DYrfVSurYYW
-         detDS7NDqTpiI4zcm/9kgSqk7kbchNED0Lw1OiiKdWDK/y+rqTrs6WwjGFnJHabOOxl3
-         mCr4WOEmAgcsQ1/RyRGcEa6wO9wNbfX/pCw7xlNuo1JgmXDEtdrOgfUo6ULqlojWG0i4
-         +VX/24ZNb3W5Qw1LMRt1nbx0j8bKlIRx2SX+/LgiQcTs+juP3b+rktTC6oJ34rGGPBEH
-         f2FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YFDNhide2XsUmvM8LDTWVfeOwV1KO1o2ZUWzKE5/SFk=;
-        b=keso2RF2jKGXi1jqW+41NrtYkaVdW39kpfuxVM5xB4qs/42HJVP8TPypgg8l7bbJx/
-         zWzhvZTBqGJiU7ftKJNG1uf+8lLknGPNNdBIXhXZMnobxc0h0XyhUYBbZAWIejdRiD7r
-         E/NqGzs4NVMoC129pbC3k4fSOuU3lwaQ5LkQkGd4ogmCRtbp/jxzcKPfoFXzk1WC6slA
-         PE1mXpj1LbouLLatLoI6ZBC/hZQG335gejX6aucqTUN+KGt5j55otF9swD7Mxiuo0tW5
-         XAYrM/vBuJ/j59GJmNkmzPnHKok+a8pxi0Gzidd7Jy3VSmPfp157mDwdm9G19fR8EGnS
-         vKJw==
-X-Gm-Message-State: AOAM531KhlMEcXz7+YFdSw1yGOGKwUn+QaZHXMhtQovqFsvP+g9x+WH9
-        kya60lvi1U8xezxwJNMShHBfbg==
-X-Google-Smtp-Source: ABdhPJwMaBWKax5gcTKNS0foupA/Zto/4d9xR3glykA1o5QTs+rB8WGba9q/yqz8HLsoqqCfAt3N6w==
-X-Received: by 2002:a17:906:4cd8:b0:6db:372:c4ba with SMTP id q24-20020a1709064cd800b006db0372c4bamr12385934ejt.57.1650362984517;
-        Tue, 19 Apr 2022 03:09:44 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i22-20020a1709063c5600b006e8a8a48baesm5569260ejg.99.2022.04.19.03.09.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 03:09:42 -0700 (PDT)
-Message-ID: <a8c5d574-c050-bbc3-efa6-9b45f5f27524@linaro.org>
-Date:   Tue, 19 Apr 2022 12:09:41 +0200
+        Tue, 19 Apr 2022 06:14:45 -0400
+Received: from mg.sunplus.com (mswedge1.sunplus.com [60.248.182.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C84A11BE85;
+        Tue, 19 Apr 2022 03:12:01 -0700 (PDT)
+X-MailGates: (compute_score:DELIVER,40,3)
+Received: from 172.17.9.202
+        by mg01.sunplus.com with MailGates ESMTP Server V5.0(27730:0:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Tue, 19 Apr 2022 18:07:55 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Tue, 19 Apr 2022 18:07:55 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Tue, 19 Apr 2022 18:07:55 +0800
+From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+CC:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        "edumazet@google.com" <edumazet@google.com>
+Subject: RE: [PATCH net-next v8 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Topic: [PATCH net-next v8 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Index: AQHYTt60q5RPpkXZvk6NoPqcLCmB1Kzuz6GAgAAV3oCACBN/MA==
+Date:   Tue, 19 Apr 2022 10:07:55 +0000
+Message-ID: <e784ab5356aa4b6e93765b54bdefea0a@sphcmbx02.sunplus.com.tw>
+References: <1649817118-14667-1-git-send-email-wellslutw@gmail.com>
+ <1649817118-14667-3-git-send-email-wellslutw@gmail.com>
+ <20220414141825.50eb8b6a@kernel.org> <Ylgjab6qLsrzKZKc@lunn.ch>
+In-Reply-To: <Ylgjab6qLsrzKZKc@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] riscv: dts: sifive: fu540-c000: align dma node name
- with dtschema
-Content-Language: en-US
-To:     Green Wan <green.wan@sifive.com>, Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Palmer Debbelt <palmer@sifive.com>, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220318162044.169350-1-krzysztof.kozlowski@canonical.com>
- <20220318162044.169350-2-krzysztof.kozlowski@canonical.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220318162044.169350-2-krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/03/2022 17:20, Krzysztof Kozlowski wrote:
-> Fixes dtbs_check warnings like:
-> 
->   dma@3000000: $nodename:0: 'dma@3000000' does not match '^dma-controller(@.*)?$'
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
->  arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Any comments here?
-
-Best regards,
-Krzysztof
+PiA+ID4gKwkJLyogR2V0IG1hYy1hZGRyZXNzIGZyb20gbnZtZW0uICovDQo+ID4gPiArCQlyZXQg
+PSBzcGwyc3dfbnZtZW1fZ2V0X21hY19hZGRyZXNzKCZwZGV2LT5kZXYsIHBvcnRfbnAsIG1hY19h
+ZGRyKTsNCj4gPiA+ICsJCWlmIChyZXQpIHsNCj4gPiA+ICsJCQlkZXZfaW5mbygmcGRldi0+ZGV2
+LCAiR2VuZXJhdGUgYSByYW5kb20gbWFjIGFkZHJlc3MhXG4iKTsNCj4gPiA+ICsNCj4gPiA+ICsJ
+CQkvKiBHZW5lcmF0ZSBhIG1hYyBhZGRyZXNzIHVzaW5nIE9VSSBvZiBTdW5wbHVzIFRlY2hub2xv
+Z3kNCj4gPiA+ICsJCQkgKiBhbmQgcmFuZG9tIGNvbnRyb2xsZXIgbnVtYmVyLg0KPiA+ID4gKwkJ
+CSAqLw0KPiA+ID4gKwkJCW1hY19hZGRyWzBdID0gMHhmYzsgLyogT1VJIG9mIFN1bnBsdXM6IGZj
+OjRiOmJjICovDQo+ID4gPiArCQkJbWFjX2FkZHJbMV0gPSAweDRiOw0KPiA+ID4gKwkJCW1hY19h
+ZGRyWzJdID0gMHhiYzsNCj4gPiA+ICsJCQltYWNfYWRkclszXSA9IGdldF9yYW5kb21faW50KCkg
+JSAyNTY7DQo+ID4gPiArCQkJbWFjX2FkZHJbNF0gPSBnZXRfcmFuZG9tX2ludCgpICUgMjU2Ow0K
+PiA+ID4gKwkJCW1hY19hZGRyWzVdID0gZ2V0X3JhbmRvbV9pbnQoKSAlIDI1NjsNCj4gPg0KPiA+
+IEkgZG9uJ3QgdGhpbmsgeW91IGNhbiBkbyB0aGF0LiBFaXRoZXIgeW91IHVzZSB5b3VyIE9VSSBh
+bmQgYXNzaWduIHRoZQ0KPiA+IGFkZHJlc3MgYXQgbWFudWZhY3R1cmUgb3IgeW91IG11c3QgdXNl
+IGEgbG9jYWxseSBhZG1pbmlzdGVyZWQgYWRkcmVzcy4NCj4gPiBBbmQgaWYgbG9jYWxseSBhZG1p
+bmlzdGVyZWQgYWRkcmVzcyBpcyB1c2VkIGl0IGJldHRlciBiZSBjb21wbGV0ZWx5DQo+ID4gcmFu
+ZG9tIHRvIGxvd2VyIHRoZSBwcm9iYWJpbGl0eSBvZiBjb2xsaXNpb24gdG8gYWJzb2x1dGUgbWlu
+aW11bS4NCj4gDQo+IEkgY29tbWVudGVkIGFib3V0IHRoYXQgaW4gYW4gZWFybGllciB2ZXJzaW9u
+IG9mIHRoZXNlIHBhdGNoZXMuIFdlIHByb2JhYmx5IG5lZWQgYSBxdW90ZQ0KPiBmcm9tIHRoZSA4
+MDIuMSBvciA4MDIuMyB3aGljaCBzYXlzIHRoaXMgaXMgTy5LLg0KPiANCj4gCSBBbmRyZXcNCg0K
+SGkgQW5kcmV3LA0KDQpJIHBsYW4gdG8gcmVwbGFjZSBhYm92ZSBzdGF0ZW1lbnRzIHdpdGg6DQoN
+CglldGhfcmFuZG9tX2FkZHIobWFjX2FkZHIpOw0KDQpldGhfcmFuZG9tX2FkZHIoKSBnZW5lcmF0
+ZXMgbG9jYWxseSBhZG1pbmlzdGVyZWQgKHJhbmRvbSkgYWRkcmVzcy4NCg0KRG8geW91IG1lYW4g
+SSBjYW4ga2VlcCB1c2UgdGhlIG1hYyBhZGRyZXNzOiAiT1VJICsgcmFuZG9tIG51bWJlciI/DQpP
+bmx5IG5lZWQgdG8gYWRkIGNvbW1lbnQgZm9yIGl0LiANCldoYXQgY29tbWVudCBzaG91bGQgSSBh
+ZGQ/IFdoaWNoIG9uZSBkbyB5b3UgcmVjb21tZW5kPw0KDQpUaGFuayB5b3UgdmVyeSBtdWNoIGZv
+ciB5b3VyIHJldmlldy4NCg0KDQpCZXN0IHJlZ2FyZHMsDQpXZWxscw0KDQo=
