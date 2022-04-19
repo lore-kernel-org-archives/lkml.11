@@ -2,107 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DECDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 309B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350288AbiDSOqR (ORCPT
+        id S1351088AbiDSOqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33140 "EHLO
+        Tue, 19 Apr 2022 10:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351116AbiDSOqD (ORCPT
+        with ESMTP id S1351904AbiDSOqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:46:03 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DEC3A5DC;
-        Tue, 19 Apr 2022 07:42:56 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 14:42:39 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650379360;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b7OJ7fxN/CHWsQzM3HtGGSNRkYu2h73FDMImgPW55fk=;
-        b=DQ7WL0jtEyy0oIq0iYsD14iR6DMr9Hf8kHD5z2TBu+zqFuPqsSs6G45dIj5QLiNOC13Rn8
-        E60v9ZsfsXRq63TvKdtQucyEaPbZzeuaFLi9IKJJW9rBf2hhzQ9N00ewQb7u0e4Q83ATXj
-        bZkyKRQ3G7Hwex69f7+iIlg7pVieYNY2BV1TIO62EAJ/7VG269EvWa7YtqiwbuaT+ygkhz
-        CIXmItRg5k5zP1CBVe0GwjOP1425EdA5yemrzS1reyxaZbCwDJkrH9HXYD1CdtcV+klpnt
-        5+Q4i9a1vZsVaTH40b/JaTpP9y4B0qUE32v6B6sbASPkxs08U1Itn4TcMRz+UA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650379360;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b7OJ7fxN/CHWsQzM3HtGGSNRkYu2h73FDMImgPW55fk=;
-        b=0L3Uo3maE4RKH/GoiA2siJjxM4T7Sm88UPS1yZXKr9FPmfNdjD44ESNfBgqA6jz8teXQE5
-        y/SmPJnAy77g+4AA==
-From:   "tip-bot2 for Tom Lendacky" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/tdx] x86/mm: Fix spacing within memory encryption features message
-Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: =?utf-8?q?=3C02401f3024b18e90bc2508147e22e729436cb6d9=2E16502?=
- =?utf-8?q?98573=2Egit=2Ethomas=2Elendacky=40amd=2Ecom=3E?=
-References: =?utf-8?q?=3C02401f3024b18e90bc2508147e22e729436cb6d9=2E165029?=
- =?utf-8?q?8573=2Egit=2Ethomas=2Elendacky=40amd=2Ecom=3E?=
+        Tue, 19 Apr 2022 10:46:25 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id B4F883A71A
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:43:18 -0700 (PDT)
+Received: (qmail 594300 invoked by uid 1000); 19 Apr 2022 10:43:02 -0400
+Date:   Tue, 19 Apr 2022 10:43:02 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Evan Green <evgreen@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Rajat Jain <rajatja@chromium.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Youngjin Jang <yj84.jang@samsung.com>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] USB: hcd-pci: Fully suspend across freeze/thaw
+ cycle
+Message-ID: <Yl7KdjrrUrqMkzq8@rowland.harvard.edu>
+References: <20220418210046.2060937-1-evgreen@chromium.org>
+ <20220418135819.v2.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
 MIME-Version: 1.0
-Message-ID: <165037935939.4207.14107957668797882327.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418135819.v2.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/tdx branch of tip:
+On Mon, Apr 18, 2022 at 02:00:46PM -0700, Evan Green wrote:
+> The documentation for the freeze() method says that it "should quiesce
+> the device so that it doesn't generate IRQs or DMA". The unspoken
+> consequence of not doing this is that MSIs aimed at non-boot CPUs may
+> get fully lost if they're sent during the period where the target CPU is
+> offline.
+> 
+> The current callbacks for USB HCD do not fully quiesce interrupts,
+> specifically on XHCI. Change to use the full suspend/resume flow for
+> freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
+> where USB devices fail to thaw during hibernation because XHCI misses
+> its interrupt and cannot recover.
+> 
+> Signed-off-by: Evan Green <evgreen@chromium.org>
+> 
+> ---
 
-Commit-ID:     9e3cdf7ad39356c11b6a4f3c407726f9bcc85956
-Gitweb:        https://git.kernel.org/tip/9e3cdf7ad39356c11b6a4f3c407726f9bcc85956
-Author:        Tom Lendacky <thomas.lendacky@amd.com>
-AuthorDate:    Mon, 18 Apr 2022 11:16:13 -05:00
-Committer:     Dave Hansen <dave.hansen@linux.intel.com>
-CommitterDate: Tue, 19 Apr 2022 07:17:25 -07:00
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
 
-x86/mm: Fix spacing within memory encryption features message
+> Changes in v2:
+>  - Added the patch modifying the remote wakeup state
 
-The spacing is off in the memory encryption features message on AMD
-platforms that support memory encryption, e.g.:
+That wasn't a change to this patch.  No matter.
 
-  "Memory Encryption Features active:AMD  SEV SEV-ES"
-
-There is no space before "AMD" and two spaces after it. Fix this so that
-the message is spaced properly:
-
-  "Memory Encryption Features active: AMD SEV SEV-ES"
-
-Fixes: 968b493173ac ("x86/mm: Make DMA memory shared for TD guest")
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Link: https://lkml.kernel.org/r/02401f3024b18e90bc2508147e22e729436cb6d9.1650298573.git.thomas.lendacky@amd.com
----
- arch/x86/mm/mem_encrypt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 10ee40b..1562f5e 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -49,7 +49,7 @@ static void print_mem_encrypt_feature_info(void)
- 		return;
- 	}
- 
--	pr_cont("AMD ");
-+	pr_cont(" AMD");
- 
- 	/* Secure Memory Encryption */
- 	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
+>  - Removed the change to freeze_noirq/thaw_noirq
+> 
+>  drivers/usb/core/hcd-pci.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
+> index 8176bc81a635d6..ae5e6d572376be 100644
+> --- a/drivers/usb/core/hcd-pci.c
+> +++ b/drivers/usb/core/hcd-pci.c
+> @@ -616,10 +616,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
+>  	.suspend_noirq	= hcd_pci_suspend_noirq,
+>  	.resume_noirq	= hcd_pci_resume_noirq,
+>  	.resume		= hcd_pci_resume,
+> -	.freeze		= check_root_hub_suspended,
+> +	.freeze		= hcd_pci_suspend,
+>  	.freeze_noirq	= check_root_hub_suspended,
+>  	.thaw_noirq	= NULL,
+> -	.thaw		= NULL,
+> +	.thaw		= hcd_pci_resume,
+>  	.poweroff	= hcd_pci_suspend,
+>  	.poweroff_noirq	= hcd_pci_suspend_noirq,
+>  	.restore_noirq	= hcd_pci_resume_noirq,
