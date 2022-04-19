@@ -2,148 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B00C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353431AbiDSOcX (ORCPT
+        id S1353439AbiDSOc0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
+        Tue, 19 Apr 2022 10:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353347AbiDSObv (ORCPT
+        with ESMTP id S1353320AbiDSOb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:31:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E6C35A86
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:08 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 14:29:06 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650378547;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pmdYZG57UDB3nKmKGQneikiRzLQywHmdFzppNpNTQLM=;
-        b=afZaWc3ZCCuzTZrKEr1aVWbY2FBIq0H/gYfOUd2cdq2uBVB3rKTvYL69+wicoOJY/5ihLr
-        O1fMzQjrEEZfQWr/bWrtGDc+UtCq0w1sMOBoZxUxFcGw33r8lbh8alQUCFpMALw3F+jcvP
-        p/ImS4QS2oHw2Ym7kF1Yi+iRbZvy1Hl/5uqSt2gK7veZfTSpeo2Gky1esJef02iC5miwqr
-        So7aqUdS/oqy7ncB7sXYMc/Cc0D8Pi8tEo3Hhcoq+C7A4k16XdT1cz48bR0IPnOEpqpfG7
-        52m8bHUzPmlVUl10Y3UenAVuFiAyJK9TdAosNGDUhBup9Tdd4H5ol6oPsclYSw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650378547;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pmdYZG57UDB3nKmKGQneikiRzLQywHmdFzppNpNTQLM=;
-        b=38ipGL4B3CCkqcmeBktKFlq2VAqmpLS2y02aEUhgJ9R7dwQCLIpqa6RHFlafzS8k/g0Lci
-        LyrcweihDnZ6MGCQ==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] gpio: Don't fiddle with irqchips marked
- as immutable
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220419141846.598305-2-maz@kernel.org>
-References: <20220419141846.598305-2-maz@kernel.org>
+        Tue, 19 Apr 2022 10:31:57 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7618C37AA8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:10 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id k23so33314738ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=2N/Ro8Ws00N9zI662d9l1Uiu28krkVVTLr3w9xUy4LE=;
+        b=VkTpfjX53d6k+MKXNZ17GJFxNNwjHIX4otStVY0qaCFky7SWV1jEP88NkSV8z/b6JD
+         uqXMYrjDPk4TsAP/Ld/W5wvHtr8h+7TCqJKHgPGSQVlyCGoWMKY53pOqQa2/eFCukxsQ
+         BKx+rHKl+tgySR/zzxG7/r74pN0hzK7Ky+/AVF2ayxGtmjHH6av1GsceyY4Dwh5j3eBy
+         /Xkb2fQFklMm65GUMwi0vwl+fI1cK8gVIuplHiT9GuZT31rMHm8Is0ERKMoKs21nZo9F
+         FQxG3+zfj+WfVHpN4tiYjCR3R8NZ9pL8va6rRyKB22gMFXMCV2FXqu+zlwfUl3yxdSfC
+         q9xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2N/Ro8Ws00N9zI662d9l1Uiu28krkVVTLr3w9xUy4LE=;
+        b=g7nl3FGmmDWWLqY8j26rG95mwQVL06uSVNTOwrpCuq66JKd33EMw5jaADYOGOj1eef
+         IaXpbOF7jdLkqPs7sSCKVdkrB1BUV2QhXzYTjpNsVQBRua7+//uu/XO0FfML4AnbJOr4
+         cOJSOsPAGH3iXnpWlzp5uMYb77hDag7o9h8Uj8tBtgyeF9NpVEfbo3OaI1n0TVXySfi7
+         xTCGeK6cgeZosnlwmUGTj9jbrXVHsY0yJZWHPb7HAd7ywbOnsXBNZ1p7ihDUui8Yoqxd
+         bbgZs8s0LJDMVeHhZYm56VrD86G1ksJA8wDJzvWSuGLxwDc3lBCOq+VjQGZbhXFkW8L4
+         MZgA==
+X-Gm-Message-State: AOAM531SVJ9fUUP9LM/pylGPVv+7e4qKIc7i+27Ejar0Rgc5rXk2qExL
+        6h0rgIt71g02SRwLRCHisPC++Q==
+X-Google-Smtp-Source: ABdhPJzotgX/HM13ib5WFyPurhgxFPdKifNZn2lb6iKuv5tvbGiSnyjrNsCjIf+iBtLGEWtPehJYtw==
+X-Received: by 2002:a17:906:99c5:b0:6df:8215:4ccd with SMTP id s5-20020a17090699c500b006df82154ccdmr13791540ejn.684.1650378549067;
+        Tue, 19 Apr 2022 07:29:09 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm5761884ejy.93.2022.04.19.07.29.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 07:29:08 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Markus Mayer <mmayer@broadcom.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH 2/7] memory: emif: simplify platform_get_resource()
+Date:   Tue, 19 Apr 2022 16:28:54 +0200
+Message-Id: <20220419142859.380566-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
+References: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Message-ID: <165037854631.4207.10307653212413379012.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+Use devm_platform_ioremap_resource() instead of platform_get_resource()
+and devm_ioremap_resource().
 
-Commit-ID:     6c846d026d490b2383d395bc8e7b06336219667b
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/6c846d026d490b2383d395bc8e7b06336219667b
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Tue, 19 Apr 2022 15:18:37 +01:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Tue, 19 Apr 2022 15:22:25 +01:00
-
-gpio: Don't fiddle with irqchips marked as immutable
-
-In order to move away from gpiolib messing with the internals of
-unsuspecting irqchips, add a flag by which irqchips advertise
-that they are not to be messed with, and do solemnly swear that
-they correctly call into the gpiolib helpers when required.
-
-Also nudge the users into converting their drivers to the
-new model.
-
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220419141846.598305-2-maz@kernel.org
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/gpio/gpiolib.c | 7 ++++++-
- include/linux/irq.h    | 2 ++
- kernel/irq/debugfs.c   | 1 +
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/memory/emif.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index e59884c..48191e6 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1475,6 +1475,11 @@ static void gpiochip_set_irq_hooks(struct gpio_chip *gc)
+diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
+index edf3ba7447ed..6c2a421b86e3 100644
+--- a/drivers/memory/emif.c
++++ b/drivers/memory/emif.c
+@@ -1107,7 +1107,6 @@ static struct emif_data *__init_or_module get_device_details(
+ static int __init_or_module emif_probe(struct platform_device *pdev)
  {
- 	struct irq_chip *irqchip = gc->irq.chip;
+ 	struct emif_data	*emif;
+-	struct resource		*res;
+ 	int			irq, ret;
  
-+	if (irqchip->flags & IRQCHIP_IMMUTABLE)
-+		return;
-+
-+	chip_warn(gc, "not an immutable chip, please consider fixing it!\n");
-+
- 	if (!irqchip->irq_request_resources &&
- 	    !irqchip->irq_release_resources) {
- 		irqchip->irq_request_resources = gpiochip_irq_reqres;
-@@ -1633,7 +1638,7 @@ static void gpiochip_irqchip_remove(struct gpio_chip *gc)
- 		irq_domain_remove(gc->irq.domain);
- 	}
+ 	if (pdev->dev.of_node)
+@@ -1126,8 +1125,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+ 	emif->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, emif);
  
--	if (irqchip) {
-+	if (irqchip && !(irqchip->flags & IRQCHIP_IMMUTABLE)) {
- 		if (irqchip->irq_request_resources == gpiochip_irq_reqres) {
- 			irqchip->irq_request_resources = NULL;
- 			irqchip->irq_release_resources = NULL;
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index f92788c..5053082 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -569,6 +569,7 @@ struct irq_chip {
-  * IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND:  Invokes __enable_irq()/__disable_irq() for wake irqs
-  *                                    in the suspend path if they are in disabled state
-  * IRQCHIP_AFFINITY_PRE_STARTUP:      Default affinity update before startup
-+ * IRQCHIP_IMMUTABLE:		      Don't ever change anything in this chip
-  */
- enum {
- 	IRQCHIP_SET_TYPE_MASKED			= (1 <<  0),
-@@ -582,6 +583,7 @@ enum {
- 	IRQCHIP_SUPPORTS_NMI			= (1 <<  8),
- 	IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND	= (1 <<  9),
- 	IRQCHIP_AFFINITY_PRE_STARTUP		= (1 << 10),
-+	IRQCHIP_IMMUTABLE			= (1 << 11),
- };
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	emif->base = devm_ioremap_resource(emif->dev, res);
++	emif->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(emif->base))
+ 		goto error;
  
- #include <linux/irqdesc.h>
-diff --git a/kernel/irq/debugfs.c b/kernel/irq/debugfs.c
-index 2b43f5f..bc8e40c 100644
---- a/kernel/irq/debugfs.c
-+++ b/kernel/irq/debugfs.c
-@@ -58,6 +58,7 @@ static const struct irq_bit_descr irqchip_flags[] = {
- 	BIT_MASK_DESCR(IRQCHIP_SUPPORTS_LEVEL_MSI),
- 	BIT_MASK_DESCR(IRQCHIP_SUPPORTS_NMI),
- 	BIT_MASK_DESCR(IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND),
-+	BIT_MASK_DESCR(IRQCHIP_IMMUTABLE),
- };
- 
- static void
+-- 
+2.32.0
+
