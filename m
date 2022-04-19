@@ -2,117 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BD7C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241622AbiDSJ20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 05:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        id S245349AbiDSJaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 05:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241574AbiDSJ2Y (ORCPT
+        with ESMTP id S241574AbiDSJaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 05:28:24 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4400E27FD3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:25:42 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id g18so21537351wrb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:25:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bVmGu64HyeyAZzKuzIehzK+dbcp+uasGY7c7tKrsK6Q=;
-        b=loDeX0yVrkg3GluWrjP7aZ7M3FT9n22j6L1qrs9YsQTltHHvJJCc3y56KmhBl3sqe8
-         1LKe5YEzPqftEuYMRf4RiH/f53uwFsmqW82h8kbkRJUnBsQX6m6cZ1VnrzK7kt/eogUe
-         HQi+s1ZlhtyPtqgNaJFM4vdbicAEfgW1CBJb7vR9+DQm3mlP+FQ+cjMhfK+gWEyE0f65
-         SD1Cc52YV8G/wx5ssRH4+cI6fVudIpSubBFVKZ7cxin/BYx2afWDUi6/irEjS0sgfAT+
-         oxMBua1lMOBRSQ1hK/38tE4EKKZGX746oo/4dza5QRfaFbXu0uzjiKIw5xYnbcnHvOt4
-         kpDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bVmGu64HyeyAZzKuzIehzK+dbcp+uasGY7c7tKrsK6Q=;
-        b=L3kIMqzvkvT4cb8E4EAo2QWur4k0I6Zyg/CAnLzH63anBpc6AYIsXlJVPFfAHsHoxD
-         e4mBmIskBVH1aWwBkUGBw80RzyS+35Ex87ED3swCw1qyCHM4Agey1237s/WfRP0X98fU
-         /OfEnCDfWjugiwpEYF33ta507yFj9KRkfDhMd+cDM6yQsWDCmLNcvAAbOwDUTKDMMVmS
-         fDXIq9BUZB3kYx7UEasg3eCz7wnTuFYuEBgkfjpAVoP6MRZu9Reem6odogkf4JsDkl0Q
-         GneE9EAgrZuVEIdtYmvbr7UdrAopyelA3bOweopeVSsF6QxfplNL4bS7ajSo3/d42eyb
-         K3bQ==
-X-Gm-Message-State: AOAM530wWIE4pNkg57OKyoBM5O8vlb0+63YnvAelLiczDcUZTZvaVoQX
-        vn4MxIZIrEAprj4II/FO/U7SrpXoKOm8vWPVcf5l5g==
-X-Google-Smtp-Source: ABdhPJy4LMvCOsIcHOlbW8mjefXgM4G+1U2IhqdZHfwseqUoR7C9D/OvU5jpEERqI1ZhVeYS+IGjUmTZu2Dq7hPIn8g=
-X-Received: by 2002:adf:e108:0:b0:1ef:97ad:5372 with SMTP id
- t8-20020adfe108000000b001ef97ad5372mr10746333wrz.658.1650360340796; Tue, 19
- Apr 2022 02:25:40 -0700 (PDT)
+        Tue, 19 Apr 2022 05:30:15 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AC2289A6;
+        Tue, 19 Apr 2022 02:27:33 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J8iJTP023210;
+        Tue, 19 Apr 2022 09:27:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=0tKn3hDvFvxg183TNhXn/GmxoRV+KWkNdRcOGgR6kIQ=;
+ b=b2nr/Ls9ksvTUAepv5nfvGzNfCFi+trbAcuMeIwRZNYsNWrvuXwfdtxaF4wv1daP14AU
+ +l9GwyAIIL28uEu2grDXrGaZqk9iIhoocDCoQGoqztzAST/XpnfP6pkxnz61+OUs79sA
+ 4HWeNuX90mJCMjVm2hoGTGiLfXG0du434XFS1QExTHnzHUahQbNKGX92MbZ0HPQ13Kbb
+ h8gq7LZ4tz4wdSj0H8iUOf6rN2b/2cC/076zoJ52NNBOFxEs4/sYPjSMFL1aJqF0IrY3
+ eVtYw+ClkUYBV0iaUriFY2ylCiMYw+7ni3/qgOXWeg7aBL/O4OLqjBEztMAlxRQNMZVn yA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7btjeqh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 09:27:33 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23J9R0Fr013444;
+        Tue, 19 Apr 2022 09:27:32 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7btjeph-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 09:27:32 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23J9D2LX016256;
+        Tue, 19 Apr 2022 09:27:29 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3ffne8m310-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 09:27:28 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23J9RPsX41091488
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 09:27:25 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B830442041;
+        Tue, 19 Apr 2022 09:27:25 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 755894203F;
+        Tue, 19 Apr 2022 09:27:24 +0000 (GMT)
+Received: from [9.171.88.57] (unknown [9.171.88.57])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 19 Apr 2022 09:27:24 +0000 (GMT)
+Message-ID: <6f229041-4ee4-664a-26ac-6e36cddecef4@linux.ibm.com>
+Date:   Tue, 19 Apr 2022 11:30:41 +0200
 MIME-Version: 1.0
-References: <20220412125035.40312-1-quic_jinlmao@quicinc.com> <20220412125035.40312-7-quic_jinlmao@quicinc.com>
-In-Reply-To: <20220412125035.40312-7-quic_jinlmao@quicinc.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Tue, 19 Apr 2022 10:25:39 +0100
-Message-ID: <CAJ9a7VjL_EPLGubKVjCyng=yhHOfa4TToMtCk3JN6fNJTnsK_g@mail.gmail.com>
-Subject: Re: [PATCH v5 06/10] docs: sysfs: coresight: Add sysfs ABI
- documentation for TPDM
-To:     Mao Jinlong <quic_jinlmao@quicinc.com>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v5 13/21] KVM: s390: mechanism to enable guest zPCI
+ Interpretation
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-14-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220404174349.58530-14-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Y5NkNbTdg9bp5oW7wfQOMKzv8k8bRyn8
+X-Proofpoint-ORIG-GUID: ds5rU1w4g_HazOPf83KeoGglUcWedkWE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_03,2022-04-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ priorityscore=1501 suspectscore=0 bulkscore=0 phishscore=0 mlxlogscore=999
+ clxscore=1015 spamscore=0 adultscore=0 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204190051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
 
-On Tue, 12 Apr 2022 at 13:51, Mao Jinlong <quic_jinlmao@quicinc.com> wrote:
->
-> Add API usage document for sysfs API in TPDM driver.
->
-> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+
+On 4/4/22 19:43, Matthew Rosato wrote:
+> The guest must have access to certain facilities in order to allow
+> interpretive execution of zPCI instructions and adapter event
+> notifications.  However, there are some cases where a guest might
+> disable interpretation -- provide a mechanism via which we can defer
+> enabling the associated zPCI interpretation facilities until the guest
+> indicates it wishes to use them.
+> 
+> Acked-by: Pierre Morel <pmorel@linux.ibm.com>
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+
+You can change the ACK with a RB (I think it already was a RB)
+
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+
+
 > ---
->  .../ABI/testing/sysfs-bus-coresight-devices-tpdm    | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm b/Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
-> new file mode 100644
-> index 000000000000..d70ba429f38d
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
-> @@ -0,0 +1,13 @@
-> +What:          /sys/bus/coresight/devices/<tpdm-name>/integration_test
-> +Date:          April 2022
-> +KernelVersion  5.18
-> +Contact:       Jinlong Mao (QUIC) <quic_jinlmao@quicinc.com>, Tao Zhang (QUIC) <quic_taozha@quicinc.com>
-> +Description:
-> +               (Write) Run integration test for tpdm. Integration test
-> +               will generate test data for tpdm. It can help to make
-> +               sure that the trace path is enabled and the link configurations
-> +               are fine.
+>   arch/s390/include/asm/kvm_host.h |  4 ++++
+>   arch/s390/kvm/kvm-s390.c         | 37 ++++++++++++++++++++++++++++++++
+>   arch/s390/kvm/kvm-s390.h         | 10 +++++++++
+>   3 files changed, 51 insertions(+)
+> 
+> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+> index c1518a505060..8e381603b6a7 100644
+> --- a/arch/s390/include/asm/kvm_host.h
+> +++ b/arch/s390/include/asm/kvm_host.h
+> @@ -254,7 +254,10 @@ struct kvm_s390_sie_block {
+>   #define ECB2_IEP	0x20
+>   #define ECB2_PFMFI	0x08
+>   #define ECB2_ESCA	0x04
+> +#define ECB2_ZPCI_LSI	0x02
+>   	__u8    ecb2;                   /* 0x0062 */
+> +#define ECB3_AISI	0x20
+> +#define ECB3_AISII	0x10
+>   #define ECB3_DEA 0x08
+>   #define ECB3_AES 0x04
+>   #define ECB3_RI  0x01
+> @@ -940,6 +943,7 @@ struct kvm_arch{
+>   	int use_cmma;
+>   	int use_pfmfi;
+>   	int use_skf;
+> +	int use_zpci_interp;
+>   	int user_cpu_state_ctrl;
+>   	int user_sigp;
+>   	int user_stsi;
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index a9eb8b75af93..327649ddddce 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -1029,6 +1029,41 @@ static int kvm_s390_vm_set_crypto(struct kvm *kvm, struct kvm_device_attr *attr)
+>   	return 0;
+>   }
+>   
+> +static void kvm_s390_vcpu_pci_setup(struct kvm_vcpu *vcpu)
+> +{
+> +	/* Only set the ECB bits after guest requests zPCI interpretation */
+> +	if (!vcpu->kvm->arch.use_zpci_interp)
+> +		return;
 > +
-> +               value to this sysfs node:
-> +               1 : Genreate 64 bits data
-s/Genreate/Generate
-
-> +               2 : Generate 32 bits data
-> --
-> 2.17.1
->
-
-Reviewed by: Mike Leach <mike.leach@linaro.org>
-
+> +	vcpu->arch.sie_block->ecb2 |= ECB2_ZPCI_LSI;
+> +	vcpu->arch.sie_block->ecb3 |= ECB3_AISII + ECB3_AISI;
+> +}
+> +
+> +/* Must be called with kvm->lock held */
+> +void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm)
+> +{
+> +	struct kvm_vcpu *vcpu;
+> +	unsigned long i;
+> +
+> +	/*
+> +	 * If host is configured for PCI and the necessary facilities are
+> +	 * available, turn on interpretation for the life of this guest
+> +	 */
+> +	if (!kvm_s390_pci_interp_allowed())
+> +		return;
+> +
+> +	kvm->arch.use_zpci_interp = 1;
+> +
+> +	kvm_s390_vcpu_block_all(kvm);
+> +
+> +	kvm_for_each_vcpu(i, vcpu, kvm) {
+> +		kvm_s390_vcpu_pci_setup(vcpu);
+> +		kvm_s390_sync_request(KVM_REQ_VSIE_RESTART, vcpu);
+> +	}
+> +
+> +	kvm_s390_vcpu_unblock_all(kvm);
+> +}
+> +
+>   static void kvm_s390_sync_request_broadcast(struct kvm *kvm, int req)
+>   {
+>   	unsigned long cx;
+> @@ -3329,6 +3364,8 @@ static int kvm_s390_vcpu_setup(struct kvm_vcpu *vcpu)
+>   
+>   	kvm_s390_vcpu_crypto_setup(vcpu);
+>   
+> +	kvm_s390_vcpu_pci_setup(vcpu);
+> +
+>   	mutex_lock(&vcpu->kvm->lock);
+>   	if (kvm_s390_pv_is_protected(vcpu->kvm)) {
+>   		rc = kvm_s390_pv_create_cpu(vcpu, &uvrc, &uvrrc);
+> diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
+> index 497d52a83c78..975cffaf13de 100644
+> --- a/arch/s390/kvm/kvm-s390.h
+> +++ b/arch/s390/kvm/kvm-s390.h
+> @@ -507,6 +507,16 @@ void kvm_s390_reinject_machine_check(struct kvm_vcpu *vcpu,
+>    */
+>   void kvm_s390_vcpu_crypto_reset_all(struct kvm *kvm);
+>   
+> +/**
+> + * kvm_s390_vcpu_pci_enable_interp
+> + *
+> + * Set the associated PCI attributes for each vcpu to allow for zPCI Load/Store
+> + * interpretation as well as adapter interruption forwarding.
+> + *
+> + * @kvm: the KVM guest
+> + */
+> +void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm);
+> +
+>   /**
+>    * diag9c_forwarding_hz
+>    *
+> 
 
 -- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+Pierre Morel
+IBM Lab Boeblingen
