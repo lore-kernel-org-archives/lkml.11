@@ -2,130 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 02:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F43EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 02:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345446AbiDSCiB (ORCPT
+        id S1345463AbiDSCjJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 22:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        Mon, 18 Apr 2022 22:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbiDSCh4 (ORCPT
+        with ESMTP id S232957AbiDSCjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 22:37:56 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AD0BE15
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 19:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650335715; x=1681871715;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/dj95LQS+m9Y5Z6+lCt7fVFVp2F0MwsWR2VKegZkPm0=;
-  b=UJ8vgXI8NvvQKCP00WcRudIQEJ8BPfC3gBYnn/dtYGKa8llDV5rCzYP5
-   NzJVOslb+9g0OwCnEkAvEt1f3xHFiaGqaFqlSgrKy9YBd8+jF0owz/fao
-   jjncBGu1obC4IIjCWVoifLlawHYmdaWLHNAxSF65OIXXadcGZr9hkt0nU
-   VowXmWMdF3VmMS2yvzOIDZ4zVXR9Q5+Vk8JeYnYHBehCoW6LCMbDy7kHp
-   SHlTvRfksveJVxMUgn7q08sU+j5M/wTzKFTrcZS7X9ElqKR1Wc80HAaCb
-   2yEGXgt5x0B4xvdoXcmC978wz9Qw3ZVenBYN/cNcJSCdnpSs776/cvvKp
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="350106664"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="350106664"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 19:35:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="860421227"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 18 Apr 2022 19:35:14 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngdhx-0005Dg-Ms;
-        Tue, 19 Apr 2022 02:35:13 +0000
-Date:   Tue, 19 Apr 2022 10:34:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1637/2356] kernel/entry/kvm.c:15:4: error:
- implicit declaration of function 'clear_notify_signal' is invalid in C99
-Message-ID: <202204191041.z5pcMgFP-lkp@intel.com>
+        Mon, 18 Apr 2022 22:39:08 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02967DF98;
+        Mon, 18 Apr 2022 19:36:27 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kj7Gd44lVz4xL4;
+        Tue, 19 Apr 2022 12:36:25 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650335785;
+        bh=oMrzUi04AV+ANN49YbNpkN9W7z6eq6wLjwMluWdUU2A=;
+        h=Date:From:To:Cc:Subject:From;
+        b=PT6Ea1+nmpA5NdfzamuM/PFrfdL4GrJmAfWbFlIuVfEMFl7NJA7UAjWt9nXJ6RqYv
+         s0ElG9R5Hjuee4lRtoNYZN+Mbl+2WcnxvmxC5AADaHufelnRHRvoXKhNU+i0olWsG4
+         SNlG5+DM3i3KgwZtW03b3ziez2PZpdfy48wBQGZ4p62Ilo/kTGGL+Z/wga9wq2pM/d
+         cHSkbXN8Lop/WvP6VveaU6e8rw/2aHu/615ezy7f3gxGIHj9+XLj/e5ItQe+xx2SZn
+         ZSwnBhiM01+ZZdqfMtTwi/ScQf/SBQmDAsp18itVwsU+sxK8Iglz8W4rgRQ90pPUHK
+         7SyODevJ5L8gw==
+Date:   Tue, 19 Apr 2022 12:36:24 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the rcu tree
+Message-ID: <20220419123624.12c57642@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/signed; boundary="Sig_/OnNTJqksbvO=f3B/ky.=Gxz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   af93551cf39027d176f30b9beafc60a4c130998a
-commit: 7056b88fee812761b8c015f328951fa1f7522a75 [1637/2356] headers/deps: syscalls: Optimize <linux/syscalls.h> dependencies
-config: x86_64-randconfig-a014-20220418 (https://download.01.org/0day-ci/archive/20220419/202204191041.z5pcMgFP-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 429cbac0390654f90bba18a41799464adf31a5ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=7056b88fee812761b8c015f328951fa1f7522a75
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 7056b88fee812761b8c015f328951fa1f7522a75
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+--Sig_/OnNTJqksbvO=f3B/ky.=Gxz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi all,
 
-All errors (new ones prefixed by >>):
+After merging the rcu tree, today's linux-next build (x86_64 allmodconfig)
+failed like this:
 
->> kernel/entry/kvm.c:15:4: error: implicit declaration of function 'clear_notify_signal' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-                           clear_notify_signal();
-                           ^
-   1 error generated.
+In file included from kernel/rcu/tree.c:5031:
+kernel/rcu/tree_nocb.h: In function 'rcu_init_nohz':
+kernel/rcu/tree_nocb.h:1162:14: error: 'rcu_nocb_is_setup' undeclared (firs=
+t use in this function); did you mean 'rcu_nocb_setup'?
+ 1162 |         if (!rcu_nocb_is_setup) {
+      |              ^~~~~~~~~~~~~~~~~
+      |              rcu_nocb_setup
+kernel/rcu/tree_nocb.h:1162:14: note: each undeclared identifier is reporte=
+d only once for each function it appears in
 
+Caused by commit
 
-vim +/clear_notify_signal +15 kernel/entry/kvm.c
+  d6932dca19b1 ("rcu/nocb: Add an option to offload all CPUs on boot")
 
-935ace2fb5cc49 Thomas Gleixner   2020-07-22   8  
-935ace2fb5cc49 Thomas Gleixner   2020-07-22   9  static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  10  {
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  11  	do {
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  12  		int ret;
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  13  
-7c5d8fa6fbb12a Eric W. Biederman 2022-02-09  14  		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-7c5d8fa6fbb12a Eric W. Biederman 2022-02-09 @15  			clear_notify_signal();
-7c5d8fa6fbb12a Eric W. Biederman 2022-02-09  16  			if (task_work_pending(current))
-7c5d8fa6fbb12a Eric W. Biederman 2022-02-09  17  				task_work_run();
-7c5d8fa6fbb12a Eric W. Biederman 2022-02-09  18  		}
-12db8b690010cc Jens Axboe        2020-10-26  19  
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  20  		if (ti_work & _TIF_SIGPENDING) {
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  21  			kvm_handle_signal_exit(vcpu);
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  22  			return -EINTR;
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  23  		}
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  24  
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  25  		if (ti_work & _TIF_NEED_RESCHED)
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  26  			schedule();
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  27  
-3c532798ec96b6 Jens Axboe        2020-10-03  28  		if (ti_work & _TIF_NOTIFY_RESUME)
-03248addadf1a5 Eric W. Biederman 2022-02-09  29  			resume_user_mode_work(NULL);
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  30  
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  31  		ret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  32  		if (ret)
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  33  			return ret;
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  34  
-6ce895128b3bff Mark Rutland      2021-11-29  35  		ti_work = read_thread_flags();
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  36  	} while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  37  	return 0;
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  38  }
-935ace2fb5cc49 Thomas Gleixner   2020-07-22  39  
+interacting with commit
 
-:::::: The code at line 15 was first introduced by commit
-:::::: 7c5d8fa6fbb12a3f0eefe8762bfede508e147cb3 task_work: Decouple TIF_NOTIFY_SIGNAL and task_work
+  8d2aaa9b7c29 ("rcu/nocb: Move rcu_nocb_is_setup to rcu_state")
 
-:::::: TO: Eric W. Biederman <ebiederm@xmission.com>
-:::::: CC: Eric W. Biederman <ebiederm@xmission.com>
+I have used the rcu tree from next-20220414 for today.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/OnNTJqksbvO=f3B/ky.=Gxz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJeICgACgkQAVBC80lX
+0GzSJgf/dfmU5U6Z22cj/kOQZ6GYnFypYBtv6QuBPmStaFbqZ2+Iuj5U8ydihFzi
+Tx9Q7SVWIRcYJJ4v1VPeTQAQRJq0gFw79B5X0ulNMCah2MtN8WxiEFF1dxFOuuXJ
+OpoBPALTyryWvhY+4ARQUWRWaQBRST94aBHPc8Um6myAtgyxOt+3nYbzZ79b6K67
+dJejQuqwVEOf82rpm8lxSVEQDy5ryzkoq2/uVKY4WIDvf2N5FCdA63XdAO4R1ubZ
+7gaCL6MDhsFBV8b2yTLSuOGFgEaif8Fp34gcMQMAuUTymnHO68ztFjL1nUD4gUSV
+p9aI08fCWYySWrIcbd47ARTQvToRcQ==
+=rWwp
+-----END PGP SIGNATURE-----
+
+--Sig_/OnNTJqksbvO=f3B/ky.=Gxz--
