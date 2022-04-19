@@ -2,117 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B275C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C104CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243050AbiDSHy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        id S1349606AbiDSHzK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 03:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234750AbiDSHyz (ORCPT
+        with ESMTP id S1349603AbiDSHy7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:54:55 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B185617C;
-        Tue, 19 Apr 2022 00:52:13 -0700 (PDT)
+        Tue, 19 Apr 2022 03:54:59 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3B82E6BD;
+        Tue, 19 Apr 2022 00:52:17 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id bo5so7806145pfb.4;
+        Tue, 19 Apr 2022 00:52:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1650354733; x=1681890733;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7yEGglKynMcyHWuUSkM7xE+cnhYCihGyLD9i03cdWOI=;
-  b=QwbEcQxv+ojfx8bpAeSwztuiSM4FX3+3v+J7sM6L3+jck9iGrU6QuHor
-   E+c5YTOm7z4WtS47EVTtbSAJgewcBiYY3vX/3n7nKgFEIBaFJkcol431S
-   JnmWvsQLoTIPGOtreVeyr4nOPuiNuQB4xtsyqGBPbjzHcLiYdUrxHHK+y
-   4ISv8NEWp7KBEBV/dhML9jtyuZ7FF39ln4tkSXU5bhr3+Zef5w1PPh8Mj
-   vyNz+KDC82ZURbCE2qyUnkE0qnEqnfzXcZnRbCh/xt13lU00BovPSI6B1
-   bAndvbKjc/F5iKuS/hv2cPRPwqVQJ0YOkYmoeZ8Q99LiYUx0DY1d87uiN
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,272,1643670000"; 
-   d="scan'208";a="23348530"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 19 Apr 2022 09:52:11 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 19 Apr 2022 09:52:11 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 19 Apr 2022 09:52:11 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1650354731; x=1681890731;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7yEGglKynMcyHWuUSkM7xE+cnhYCihGyLD9i03cdWOI=;
-  b=C923aVZHazZt1VbmGDV5zXNljBqwXpHb9nCbdY/HmyPTgdMTjNtgiOSe
-   yL9zja1nC20qls+SUZ42tnLXT+peRj79bVTu10eqZ+XMW1JiNYWJFEEbu
-   t/mduc+jGImdtwGxziEc7slR/8ICh5t0cOBXIXgCISXdwZuWeL0Tf0fAG
-   obtdE7NDoC1OzqCNpZLicjnyLAkt2ktyLAt0h+pxyrh+sfpPi4nRAWD6C
-   cJjNmx38s8/pK4WZsT5dlhpvxafVyed9QfyNASpAj+A2AOAlOMlOOrlMi
-   UTRIGsSGL7ck4Afh99q/3ltXDsTpsNQ8XNQY5SOkZXw8WMaMl9Eevvxxv
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,272,1643670000"; 
-   d="scan'208";a="23348527"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 19 Apr 2022 09:52:10 +0200
-Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 8CCFE280070;
-        Tue, 19 Apr 2022 09:52:10 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LbagtcGr17cUgL/Dxb7Jxl0XjRMyxocFSQk1tlSTw6M=;
+        b=ZHpPsCtFnq/XYFTKouYXbPY5DqJmJKcMuAuLML53z0iyg9Y9UqH5uD69IkDt3+TM04
+         Vi/NZ8lowc8khFkPHVCCk7KvzaUJK96iKuVBY7Fs5QbSEPoIcBCW6VcW8JV1NWtAdbao
+         Rg7lz9yijbk3Sm7zdQZHI9iq7UBfBLMY3rS9uKDUonyZ3R1jd+traMOhon+1sia9bxF8
+         AbaGarU3vP4WONcgLUzEds3KcCXwR6a/CfkhMUQDwzGBRs1hSVQwmVTv7agU8h3J/KWC
+         htpG1/MGt84ORalmadjIOcRIjFzaykN0cDQLjl+0Z8J0zSYsxmhl3GF639RP9Qyq0bLl
+         E0dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LbagtcGr17cUgL/Dxb7Jxl0XjRMyxocFSQk1tlSTw6M=;
+        b=7y54CIcJAP4upSuxsW+wxgWBZ4d/neIzlTwzY6+JbrU3mY/MmrAOEZLW/2kWiOpts9
+         jVhIdcx0QVxVdhd7X90RZyD7srVSB1ajluyFbndOrEJmv+2PqKQAKQFSx5xrP9ktUAih
+         Iin72MCNsgpPgOnt2Cr7W6bLVPt6MR5E07ThndalPyAZxMmer5GZcoHX+fOFRNl0ltym
+         neJdUDT4AMEFiie6gaJHf0KJYwbGoKpHH2kTzOI+Yhs/Ap0sym3Wrj8L5CToytKlkHCf
+         ChDD6533y7hFyLh9kt08StBuWsdSKeUDWdOakk72aU1tcMP3mWdbdlGhSrwjEOFP+MyL
+         dmEg==
+X-Gm-Message-State: AOAM530Gv8Pe7WPWq4wsp5KGg4XRfKAZgD8AtrD4J1zVpFE4y72UrIo3
+        aWezGmK1wAuMzL7sjEF89CVIgTyQwA0=
+X-Google-Smtp-Source: ABdhPJzJycYbzJJsaA2D055+vWJ21xmPpMzbl2F3whdYaeQElDGMkYTAAw9LlvJlcqJVh4m9jdaQhw==
+X-Received: by 2002:a63:d456:0:b0:399:4c5a:2682 with SMTP id i22-20020a63d456000000b003994c5a2682mr13240841pgj.573.1650354737287;
+        Tue, 19 Apr 2022 00:52:17 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id b25-20020aa78719000000b0050a4b5cf892sm12169108pfo.60.2022.04.19.00.52.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 00:52:16 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 13:22:10 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH v2] arm64: dts: ti: k3-am64-mcu: remove incorrect UART base clock rates
-Date:   Tue, 19 Apr 2022 09:51:57 +0200
-Message-Id: <20220419075157.189347-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        MSM <linux-arm-msm@vger.kernel.org>
+Subject: Re: [PATCH v3 3/6] arm64: dts: qcom: msm8996: User generic node name
+ for DMA
+Message-ID: <20220419075210.GA51180@9a2d8922b8f1>
+References: <20220417210436.6203-1-singh.kuldeep87k@gmail.com>
+ <20220417210436.6203-4-singh.kuldeep87k@gmail.com>
+ <CAH=2Nty6gTX-u1LZZ_g3FZfpkX2CaV3Gh+R8DJODuh4489nCyw@mail.gmail.com>
+ <20220418192721.GA6884@9a2d8922b8f1>
+ <CAH=2NtxNcs31dQDuGwqs_U9fwhpUdJ1OVLOs5Epe7YwMHDd0aQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAH=2NtxNcs31dQDuGwqs_U9fwhpUdJ1OVLOs5Epe7YwMHDd0aQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We found that (at least some versions of) the sci-fw set the base clock
-rate for UARTs in the MCU domain to 96 MHz instead of the expected 48 MHz,
-leading to incorrect baud rates when used from Linux.
+On Tue, Apr 19, 2022 at 02:37:19AM +0530, Bhupesh Sharma wrote:
+> My patch already has an ACK from the DMA maintainer, whereas your's is
+> still in review.
 
-As the 8250_omap driver will query the actual clock rate from the clk
-driver when clock-frequency is unset, removing the incorrect property is
-sufficient to fix the baud rate.
+Sincere apologies, I saw your original patch only and missed Ack.
+Please note, mine change is reviewed by FDT maintainer.
 
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
+> So please drop this patch from the next version.
 
-v2: remove incorrect clock-frequency instead of using
-    assigned-clock-rates to modify the base clock
-
- arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
-index 2bb5c9ff172c..02d4285acbb8 100644
---- a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
-@@ -10,7 +10,6 @@ mcu_uart0: serial@4a00000 {
- 		compatible = "ti,am64-uart", "ti,am654-uart";
- 		reg = <0x00 0x04a00000 0x00 0x100>;
- 		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
--		clock-frequency = <48000000>;
- 		current-speed = <115200>;
- 		power-domains = <&k3_pds 149 TI_SCI_PD_EXCLUSIVE>;
- 		clocks = <&k3_clks 149 0>;
-@@ -21,7 +20,6 @@ mcu_uart1: serial@4a10000 {
- 		compatible = "ti,am64-uart", "ti,am654-uart";
- 		reg = <0x00 0x04a10000 0x00 0x100>;
- 		interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
--		clock-frequency = <48000000>;
- 		current-speed = <115200>;
- 		power-domains = <&k3_pds 160 TI_SCI_PD_EXCLUSIVE>;
- 		clocks = <&k3_clks 160 0>;
--- 
-2.25.1
-
+If we are going to have mine binding version, then skipping dts change
+here will trigger Rob's bot warning.
