@@ -2,118 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D53C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13488C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350736AbiDSTAz (ORCPT
+        id S1354906AbiDSTA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        Tue, 19 Apr 2022 15:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349562AbiDSTAw (ORCPT
+        with ESMTP id S233003AbiDSTAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 15:00:52 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4CF3EF08
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:58:07 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 11:58:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650394686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aHP1fr3pFCglhUt6wslEJqCTPQEvCI12BCqK6uc3qpE=;
-        b=gnhLIOha4Zr8ErfXIK162pTJfscSXT9fDJM6MJH7Df5HlbvUDZ2PwsBxD8idBgSHTR6Yi+
-        PuheUtLEu2Xge91pGBxcIz4PW4NnBj8sDVUFnKGYlJ0Sml0iP33rIdgScf0G5KNVQICfuD
-        ckx16d5O1MfYiOOoQPTCVk5QCrZD5dg=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH rfc 0/5] mm: introduce shrinker sysfs interface
-Message-ID: <Yl8GOJd/iUHkTEL3@carbon>
-References: <20220416002756.4087977-1-roman.gushchin@linux.dev>
- <20220419182030.idqqmtim4slhbked@moria.home.lan>
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490D03EF0A;
+        Tue, 19 Apr 2022 11:58:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Bp4bwe3H7WczeFj56jWpI8QBoijIjdBXfNXBKn0bveA=; b=BnjvFkL1Ut5niN1GJU9Qqiqxk6
+        bSPHAiXL02AryU4BQbQpKlkwkXIt6mnpaGai1EkMfb0N77GoGMiPu82Wt1d4/+QTWXcjmBV6Ku7ag
+        5hFnENghTqRcnVGh//6lZ3HUdy935pKzoa0T5tTd6a06gSHsV+1rn8Io1dCb+FjgCxRGlfV1yw4Y7
+        cXkAHqXV7UtAWVHSPZreuF+Fv6h6X24hK0ekZ6grYTMiEtvlDlP9dUvb31vc66WRUZZTLiANfU0Sd
+        ijIbnGbDawioK8ZKRXJzI4YrOxtoaUSi1Hwf0K71Z6Ka7hBoV/5ziHXVUw7oTmuDiI0mQAuI0pLBc
+        s6mPA9Zw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58334)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ngt2s-0001Sk-I9; Tue, 19 Apr 2022 19:57:50 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ngt2g-00011J-Hx; Tue, 19 Apr 2022 19:57:38 +0100
+Date:   Tue, 19 Apr 2022 19:57:38 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        max.krummenacher@toradex.com, Shawn Guo <shawnguo@kernel.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: Re: [next] arm: boot failed - PC is at cpu_ca15_set_pte_ext
+Message-ID: <Yl8GInPZyl2PqK7D@shell.armlinux.org.uk>
+References: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220419182030.idqqmtim4slhbked@moria.home.lan>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 02:20:30PM -0400, Kent Overstreet wrote:
-> On Fri, Apr 15, 2022 at 05:27:51PM -0700, Roman Gushchin wrote:
-> > There are 50+ different shrinkers in the kernel, many with their own bells and
-> > whistles. Under the memory pressure the kernel applies some pressure on each of
-> > them in the order of which they were created/registered in the system. Some
-> > of them can contain only few objects, some can be quite large. Some can be
-> > effective at reclaiming memory, some not.
-> > 
-> > The only existing debugging mechanism is a couple of tracepoints in
-> > do_shrink_slab(): mm_shrink_slab_start and mm_shrink_slab_end. They aren't
-> > covering everything though: shrinkers which report 0 objects will never show up,
-> > there is no support for memcg-aware shrinkers. Shrinkers are identified by their
-> > scan function, which is not always enough (e.g. hard to guess which super
-> > block's shrinker it is having only "super_cache_scan"). They are a passive
-> > mechanism: there is no way to call into counting and scanning of an individual
-> > shrinker and profile it.
-> > 
-> > To provide a better visibility and debug options for memory shrinkers
-> > this patchset introduces a /sys/kernel/shrinker interface, to some extent
-> > similar to /sys/kernel/slab.
-> > 
-> > For each shrinker registered in the system a folder is created. The folder
-> > contains "count" and "scan" files, which allow to trigger count_objects()
-> > and scan_objects() callbacks. For memcg-aware and numa-aware shrinkers
-> > count_memcg, scan_memcg, count_node, scan_node, count_memcg_node
-> > and scan_memcg_node are additionally provided. They allow to get per-memcg
-> > and/or per-node object count and shrink only a specific memcg/node.
-> 
-> Cool!
-> 
-> I've been starting to sketch out some shrinker improvements of my own, perhaps
-> we could combine efforts.
+On Tue, Apr 19, 2022 at 04:28:52PM +0530, Naresh Kamboju wrote:
+> Linux next 20220419 boot failed on arm architecture qemu_arm and BeagleBoard
+> x15 device.
 
-Thanks! Absolutely!
+Was the immediately previous linux-next behaving correctly?
 
-> The issue I've been targeting is that when we hit an
-> OOM, we currently don't get a lot of useful information - shrinkers ought to be
-> included, and we really want information on shrinker's internal state (e.g.
-> object dirtyness) if we're to have a chance at understanding why memory isn't
-> getting reclaimed.
-> 
-> https://evilpiepirate.org/git/bcachefs.git/log/?h=shrinker_to_text
-> 
-> This adds a .to_text() method - a pretty-printer - that shrinkers can
-> implement, and then on OOM we report on the top 10 shrinkers by memory usage, in
-> sorted order.
+If so, nothing has changed in the ARM32 kernel tree, so this must be
+someone else's issue - code that someone else has pushed into
+linux-next.
 
-We must be really careful with describing what's allowed and not allowed
-by these callbacks. In-kernel OOM is the last-resort mechanism and it should
-be able to make forward progress in really nasty circumstances. So there are
-significant (and not very well described) limitations on what can be done
-from the oom context.
+It looks to me like someone is walking the page tables incorrectly,
+somewhere buried in handle_mm_fault(), because the PTE pointer is in
+the upper-2k of a 4k page, which is most definitely illegal on arm32.
 
-> 
-> Another thing I'd like to do is have shrinkers report usage not just in object
-> counts but in bytes; I think it should be obvious why that's desirable.
-
-I totally agree, it's actually on my short-term todo list.
-
-> 
-> Maybe we could have a memory-reporting-and-shrinker-improvements session at LSF?
-> I'd love to do some collective brainstorming and get some real momementum going
-> in this area.
-
-Would be really nice! I'm planning to work on improving shrinkers and gather ideas
-and problems, so having a discussion would be really great.
-
-Thanks!
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
