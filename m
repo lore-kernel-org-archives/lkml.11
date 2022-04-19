@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09118C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57311C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352594AbiDSUMS (ORCPT
+        id S1357056AbiDSUMW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
+        Tue, 19 Apr 2022 16:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357497AbiDSULa (ORCPT
+        with ESMTP id S1357547AbiDSULb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:11:30 -0400
+        Tue, 19 Apr 2022 16:11:31 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E95638BCF;
-        Tue, 19 Apr 2022 13:08:47 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 20:08:44 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EF23915B;
+        Tue, 19 Apr 2022 13:08:48 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:08:45 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1650398926;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
@@ -24,34 +24,36 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dr9D43cyEIItLhjmCstfgE1otN6PsZi5WlZx0hk2dZY=;
-        b=QGnNwB8cyPcMaH/abxt6+NDtRRPyaQ85qaFyLzL3a/S1Mlluy1OwqEo+gC3VXG4xzs3Mgy
-        A3Oe3jiOiW+IUobxHgjLy3BelHSFSYuN67R4skTYLsBvYg2B61b9N1njOK5AORd94OkXvf
-        96Hig/f2CSI45SdhgIDclzdd0SiI+hhzxCi5/CiGgVKrQcxlOS1zerlr+o+qNZgY2uJ7Zg
-        jwSybQo/kOJLVDXPOWe17njRdd24LczYYLBkgzMzAK99oidsVq0bmvev8Fme68hImi818f
-        ZKE8JS3iSZ5HLzuzgMziPY9vZ4SqxwvckHcVNRowZYNdBgev0aQf2oNQRA3p3A==
+        bh=Rf4ZSXcLpUXFhDAUeIcOJF0LZS002XFFa3S5R4lEIfs=;
+        b=dX9sGwfSn0Fgw/wiuYmwS4kSZ8lIT65HykuDpbZX4KHPh+oFKbOpWu0NJZYdkeJBBy1Q+J
+        DtSGJ3gOy7e9UAGm/OZQsP9+0Ie+d2agSXjbgPkuimjoCFJFYiOxia6oS1QsqQi+aB5whg
+        QiDqR0HMN/K8evkl6C0Uo6AnqPb557KNadyxac9Vo5vvK7dLHyP8sWaZQX1Bs/uj6gUCGV
+        yD1c6mqQdIYapL3S3p2mpHuxUBbFVnNeWI71bfOW4eOf4q7kC6ICMagMC2c3ZkXcAar0ED
+        M8+VTaJ+VvO8Fu6iyMyCx2AHJAL3dZi+6DsE+kFPhdVc4n0P7l0aKELx8cEzeg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650398926;
+        s=2020e; t=1650398927;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dr9D43cyEIItLhjmCstfgE1otN6PsZi5WlZx0hk2dZY=;
-        b=iba0/8T15yE2qDRTpHS8HC3BmtlqFWxxpeACDGX+lJj2mSeND1KLidtJag2EPura9VicxZ
-        lR/riXYVOwrk8CCQ==
-From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
+        bh=Rf4ZSXcLpUXFhDAUeIcOJF0LZS002XFFa3S5R4lEIfs=;
+        b=EjAKK7/wEKKPFYBThoT4j/4ftHWc8MzRj/gbwl+C1mi7jn1bcBSqfNOA+lHDqUeuGp/r/w
+        yb2WJv2RhiA5yOCg==
+From:   "tip-bot2 for Dmitry Monakhov" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] MAINTAINERS: Add x86 unwinding entry
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+Subject: [tip: x86/urgent] x86/unwind/orc: Recheck address range after stack
+ info was updated
+Cc:     Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <db2b764b735a9481df9f7717a3a1f75ba496fcc1.1650387176.git.jpoimboe@redhat.com>
-References: <db2b764b735a9481df9f7717a3a1f75ba496fcc1.1650387176.git.jpoimboe@redhat.com>
+In-Reply-To: <1650353656-956624-1-git-send-email-dmtrmonakhov@yandex-team.ru>
+References: <1650353656-956624-1-git-send-email-dmtrmonakhov@yandex-team.ru>
 MIME-Version: 1.0
-Message-ID: <165039892495.4207.6630628303987069418.tip-bot2@tip-bot2>
+Message-ID: <165039892583.4207.7758088738350413608.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,41 +64,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     610abf3dea1092445b4b185e14ed130d1ec6aa74
-Gitweb:        https://git.kernel.org/tip/610abf3dea1092445b4b185e14ed130d1ec6aa74
-Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Tue, 19 Apr 2022 09:54:41 -07:00
+Commit-ID:     6c8ef58a50b5fab6e364b558143490a2014e2a4f
+Gitweb:        https://git.kernel.org/tip/6c8ef58a50b5fab6e364b558143490a2014e2a4f
+Author:        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+AuthorDate:    Tue, 19 Apr 2022 10:34:16 +03:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 19 Apr 2022 21:58:47 +02:00
+CommitterDate: Tue, 19 Apr 2022 21:58:46 +02:00
 
-MAINTAINERS: Add x86 unwinding entry
+x86/unwind/orc: Recheck address range after stack info was updated
 
-Create a new section for x86 unwinder maintenance.
+A crash was observed in the ORC unwinder:
 
+  BUG: stack guard page was hit at 000000000dd984a2 (stack is 00000000d1caafca..00000000613712f0)
+  kernel stack overflow (page fault): 0000 [#1] SMP NOPTI
+  CPU: 93 PID: 23787 Comm: context_switch1 Not tainted 5.4.145 #1
+  RIP: 0010:unwind_next_frame
+  Call Trace:
+   <NMI>
+   perf_callchain_kernel
+   get_perf_callchain
+   perf_callchain
+   perf_prepare_sample
+   perf_event_output_forward
+   __perf_event_overflow
+   perf_ibs_handle_irq
+   perf_ibs_nmi_handler
+   nmi_handle
+   default_do_nmi
+   do_nmi
+   end_repeat_nmi
+
+This was really two bugs:
+
+  1) The perf IBS code passed inconsistent regs to the unwinder.
+
+  2) The unwinder didn't handle the bad input gracefully.
+
+Fix the latter bug.  The ORC unwinder needs to be immune against bad
+inputs.  The problem is that stack_access_ok() doesn't recheck the
+validity of the full range of registers after switching to the next
+valid stack with get_stack_info().  Fix that.
+
+[ jpoimboe: rewrote commit log ]
+
+Signed-off-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/db2b764b735a9481df9f7717a3a1f75ba496fcc1.1650387176.git.jpoimboe@redhat.com
+Link: https://lore.kernel.org/r/1650353656-956624-1-git-send-email-dmtrmonakhov@yandex-team.ru
 Signed-off-by: Peter Zijlstra <peterz@infradead.org>
 ---
- MAINTAINERS |  9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/x86/kernel/unwind_orc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 40fa195..63ace80 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21434,6 +21434,15 @@ F:	arch/x86/include/asm/uv/
- F:	arch/x86/kernel/apic/x2apic_uv_x.c
- F:	arch/x86/platform/uv/
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 794fdef..38185ae 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -339,11 +339,11 @@ static bool stack_access_ok(struct unwind_state *state, unsigned long _addr,
+ 	struct stack_info *info = &state->stack_info;
+ 	void *addr = (void *)_addr;
  
-+X86 STACK UNWINDING
-+M:	Josh Poimboeuf <jpoimboe@redhat.com>
-+M:	Peter Zijlstra <peterz@infradead.org>
-+S:	Supported
-+F:	arch/x86/include/asm/unwind*.h
-+F:	arch/x86/kernel/dumpstack.c
-+F:	arch/x86/kernel/stacktrace.c
-+F:	arch/x86/kernel/unwind_*.c
-+
- X86 VDSO
- M:	Andy Lutomirski <luto@kernel.org>
- L:	linux-kernel@vger.kernel.org
+-	if (!on_stack(info, addr, len) &&
+-	    (get_stack_info(addr, state->task, info, &state->stack_mask)))
+-		return false;
++	if (on_stack(info, addr, len))
++		return true;
+ 
+-	return true;
++	return !get_stack_info(addr, state->task, info, &state->stack_mask) &&
++		on_stack(info, addr, len);
+ }
+ 
+ static bool deref_stack_reg(struct unwind_state *state, unsigned long addr,
