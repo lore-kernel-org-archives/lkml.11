@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F788C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353010AbiDSN6i (ORCPT
+        id S1344053AbiDSOAw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        Tue, 19 Apr 2022 10:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346094AbiDSN6a (ORCPT
+        with ESMTP id S235548AbiDSOAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:58:30 -0400
+        Tue, 19 Apr 2022 10:00:48 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D65AF38BEC;
-        Tue, 19 Apr 2022 06:55:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB85938D88;
+        Tue, 19 Apr 2022 06:58:05 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E88E1063;
-        Tue, 19 Apr 2022 06:55:47 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8170106F;
+        Tue, 19 Apr 2022 06:58:05 -0700 (PDT)
 Received: from [10.32.36.25] (e121896.Emea.Arm.com [10.32.36.25])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F03B83F766;
-        Tue, 19 Apr 2022 06:55:43 -0700 (PDT)
-Message-ID: <d934c6a2-ecc3-48cb-a65f-99f7789af7bc@arm.com>
-Date:   Tue, 19 Apr 2022 14:55:42 +0100
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C76403F766;
+        Tue, 19 Apr 2022 06:58:02 -0700 (PDT)
+Message-ID: <cfd80315-ff94-1394-f194-be9eec0d9202@arm.com>
+Date:   Tue, 19 Apr 2022 14:58:01 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH V5 1/8] perf: Add system error and not in transaction
- branch types
+Subject: Re: [PATCH V5 5/8] perf/tools: Add system error and not in
+ transaction branch types
 Content-Language: en-US
 To:     Anshuman Khandual <anshuman.khandual@arm.com>,
         linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
@@ -44,9 +44,9 @@ Cc:     Robin Murphy <robin.murphy@arm.com>,
         Will Deacon <will@kernel.org>,
         linux-arm-kernel@lists.infradead.org
 References: <20220404045046.634522-1-anshuman.khandual@arm.com>
- <20220404045046.634522-2-anshuman.khandual@arm.com>
+ <20220404045046.634522-6-anshuman.khandual@arm.com>
 From:   James Clark <james.clark@arm.com>
-In-Reply-To: <20220404045046.634522-2-anshuman.khandual@arm.com>
+In-Reply-To: <20220404045046.634522-6-anshuman.khandual@arm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -56,33 +56,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 On 04/04/2022 05:50, Anshuman Khandual wrote:
-> This expands generic branch type classification by adding two more entries
-> there in i.e system error and not in transaction. This also updates the x86
-> implementation to process X86_BR_NO_TX records as appropriate. This changes
-> branch types reported to user space on x86 platform but it should not be a
-> problem. The possible scenarios and impacts are enumerated here.
-> 
-> --------------------------------------------------------------------------
-> | kernel | perf tool |                     Impact                        |
-> --------------------------------------------------------------------------
-> |   old  |    old    |  Works as before                                  |
-> --------------------------------------------------------------------------
-> |   old  |    new    |  PERF_BR_UNKNOWN is processed                     |
-> --------------------------------------------------------------------------
-> |   new  |    old    |  PERF_BR_NO_TX are blocked via old PERF_BR_MAX    |
-> --------------------------------------------------------------------------
-> |   new  |    new    |  NO_TX are recognized                             |
-> --------------------------------------------------------------------------
-> 
-> When PERF_BR_NO_TX is blocked via old PERF_BR_MAX (new kernel with old perf
-> tool) the user space might throw up an warning complaining about an
-> unrecognized branch types being reported, but it's expected. PERF_BR_SERROR
-> & PERF_BR_NO_TX branch types will be used for BRBE implementation on arm64
-> platform.
-> 
-> PERF_BR_NO_TX complements 'abort' and 'in_tx' elements in perf_branch_entry
-> which represent other transaction states for a given branch record. Because
-> this completes the transaction state classification.
+> This updates the perf tool with generic branch type classification with two
+> new branch types i.e system error (PERF_BR_SERROR) and not in transaction
+> (PERF_BR_NO_TX) which got updated earlier in the kernel. This also updates
+> corresponding branch type strings in branch_type_name().
 > 
 > Cc: Peter Zijlstra <peterz@infradead.org>
 > Cc: Ingo Molnar <mingo@redhat.com>
@@ -97,31 +74,17 @@ On 04/04/2022 05:50, Anshuman Khandual wrote:
 > Cc: linux-perf-users@vger.kernel.org
 > Cc: linux-kernel@vger.kernel.org
 > Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-
 Reviewed-by: James Clark <james.clark@arm.com>
 
 > ---
->  arch/x86/events/intel/lbr.c     | 2 +-
->  include/uapi/linux/perf_event.h | 2 ++
->  2 files changed, 3 insertions(+), 1 deletion(-)
+>  tools/include/uapi/linux/perf_event.h | 2 ++
+>  tools/perf/util/branch.c              | 4 +++-
+>  2 files changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
-> index fe1742c4ca49..30dcd18936d5 100644
-> --- a/arch/x86/events/intel/lbr.c
-> +++ b/arch/x86/events/intel/lbr.c
-> @@ -1336,7 +1336,7 @@ static int branch_map[X86_BR_TYPE_MAP_MAX] = {
->  	PERF_BR_IND_CALL,	/* X86_BR_IND_CALL */
->  	PERF_BR_UNKNOWN,	/* X86_BR_ABORT */
->  	PERF_BR_UNKNOWN,	/* X86_BR_IN_TX */
-> -	PERF_BR_UNKNOWN,	/* X86_BR_NO_TX */
-> +	PERF_BR_NO_TX,		/* X86_BR_NO_TX */
->  	PERF_BR_CALL,		/* X86_BR_ZERO_CALL */
->  	PERF_BR_UNKNOWN,	/* X86_BR_CALL_STACK */
->  	PERF_BR_IND,		/* X86_BR_IND_JMP */
-> diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+> diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
 > index d37629dbad72..26d8f0b5ac0d 100644
-> --- a/include/uapi/linux/perf_event.h
-> +++ b/include/uapi/linux/perf_event.h
+> --- a/tools/include/uapi/linux/perf_event.h
+> +++ b/tools/include/uapi/linux/perf_event.h
 > @@ -253,6 +253,8 @@ enum {
 >  	PERF_BR_COND_RET	= 10,	/* conditional function return */
 >  	PERF_BR_ERET		= 11,	/* exception return */
@@ -131,3 +94,18 @@ Reviewed-by: James Clark <james.clark@arm.com>
 >  	PERF_BR_MAX,
 >  };
 >  
+> diff --git a/tools/perf/util/branch.c b/tools/perf/util/branch.c
+> index a9a909db8cc7..abc673347bee 100644
+> --- a/tools/perf/util/branch.c
+> +++ b/tools/perf/util/branch.c
+> @@ -51,7 +51,9 @@ const char *branch_type_name(int type)
+>  		"COND_CALL",
+>  		"COND_RET",
+>  		"ERET",
+> -		"IRQ"
+> +		"IRQ",
+> +		"SERROR",
+> +		"NO_TX"
+>  	};
+>  
+>  	if (type >= 0 && type < PERF_BR_MAX)
