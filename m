@@ -2,80 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354117AbiDSP65 (ORCPT
+        id S1354127AbiDSP7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59144 "EHLO
+        Tue, 19 Apr 2022 11:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351075AbiDSP6x (ORCPT
+        with ESMTP id S1351075AbiDSP7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:58:53 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623AC237DF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:56:10 -0700 (PDT)
-Received: from mail-wr1-f49.google.com ([209.85.221.49]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MfqCF-1o9Y7F2teT-00gEG6 for <linux-kernel@vger.kernel.org>; Tue, 19 Apr
- 2022 17:56:08 +0200
-Received: by mail-wr1-f49.google.com with SMTP id t1so23068725wra.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:56:08 -0700 (PDT)
-X-Gm-Message-State: AOAM530J4iC5qoKmZl+bhVs7pO0E0QLHjjcIOqMPkonZ+WeQLeACc8B9
-        9ZnTF/Y7/ug3JFFxeIsKahvt5VKUnJWgOcJ9tjc=
-X-Google-Smtp-Source: ABdhPJxNIyESz/EVgCAypLtywVxRPvsQ8wXEzf0J1Ebj9gCD6DgIxC5lVZ/hv26NhvTTi3jOvV6qDowOWFJ9AsDuCuU=
-X-Received: by 2002:a5d:6983:0:b0:207:a226:df4b with SMTP id
- g3-20020a5d6983000000b00207a226df4bmr12207718wru.192.1650383768397; Tue, 19
- Apr 2022 08:56:08 -0700 (PDT)
+        Tue, 19 Apr 2022 11:59:36 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41FC237D8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:56:53 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4FBF11F746;
+        Tue, 19 Apr 2022 15:56:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650383812; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OtGb0B+xVaMUOR9TH3eGpGH3Rm/fFjg1NOhtMi5AUB0=;
+        b=Q4gR8e9hF6R1WIxUXQa0AxU+tadg5Q0S/b//sEZCC6M3Qbe5z0t/+XAsNHDN05NA9tWM0f
+        KvxuWeIhgaiWW1ydLDdLU4qx/GnAJv+aPGMkK2kEgQHMMRgB1YrBGuiz/806L2xDMDgFKx
+        qLTrAYARB252gd04IozSIo3UEvEQDBc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650383812;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OtGb0B+xVaMUOR9TH3eGpGH3Rm/fFjg1NOhtMi5AUB0=;
+        b=GsmktdgmvEF9My+EljUH0wy6tjAUH8F2AFdXn7ez/QNin50kfMzEoavOW1TiGFFeRHTjDV
+        bUvOVXm95E9hiuBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D649B139BE;
+        Tue, 19 Apr 2022 15:56:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id REqfM8PbXmLyRQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 19 Apr 2022 15:56:51 +0000
+Message-ID: <b35374d1-858c-393a-7b63-8816efe9b175@suse.cz>
+Date:   Tue, 19 Apr 2022 17:56:51 +0200
 MIME-Version: 1.0
-References: <20191018154052.1276506-1-arnd@arndb.de> <20191018154201.1276638-33-arnd@arndb.de>
- <87d0egjzxk.fsf@belgarion.home>
-In-Reply-To: <87d0egjzxk.fsf@belgarion.home>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 19 Apr 2022 17:55:52 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1VfUqBZo_CMukwsLeb4pqg2C9i5mqG1KXaK8EpLAOc8g@mail.gmail.com>
-Message-ID: <CAK8P3a1VfUqBZo_CMukwsLeb4pqg2C9i5mqG1KXaK8EpLAOc8g@mail.gmail.com>
-Subject: Re: [PATCH 33/46] ARM: pxa: pcmcia: move smemc configuration back to arch
-To:     Robert Jarzmik <robert.jarzmik@free.fr>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:6gUaDHSNhIuN3JqRKBOBlXuWEzqKDWyaas8K7x5kulOP8mEw4Js
- VqoDD2m9zefZiOPb2Yitq56JJpuxM2muTOox9h4r8tc1kuMOTJuodzlHVfg6BHVEfBk2AZn
- AMvPn+QWftWRDnrMHGn6Th0KFqKYVBcfUNZmTJQXxhfpkPAHmlE3PSlPZcyqygQRE8vY8vW
- Q9rK2tjdPYpOHcSzkKlWA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ui0cDskGqH8=:Bxt57pLUfNfeEuXvE1oysQ
- xzbbGOx0O1gmONDnfdYXolFKIEqm8JPwpbtv86EHR/sWGZ4txWKp7VMnEDC9ckmGj7R0CyVVb
- 46VWWoIQBLk6Z44RMFpGv7DaFpssppRiKKZleon96ap576X9Gm8DzYfYrBTpk7QFdJ3SyHYfG
- pSvoXU43MmCxweQC2dowE5Mw/DVhfRJWB18maK34+TXnpIu4Qxo0Q77vUnUEzyO+en/3gtXM8
- GbBM+c5aKeUG1Nyy+6wbDGcJJ+OGloi+deNtKLWCrdynpz+Raavau8WcTd+mlDmF3oY/9mUC/
- i8Rzwgt3EZ9DFBVaUjIIOmdf1viYjfkIHBY347OFK/Gu0NjDzE8JOP5c5RU+r6cNrXwekZQky
- dECeVnEwaXbz13mEUAAmRwExINAXu/wJjZJkM7IOcEnyMX+kgfdql2qT38HffpcbUmZlhtH0c
- aTr/VM6IpnLSpX2rIs0BF7v/WZz09sVFUv3kEzW2M0fbhbwWHdiWUm+5qxduppGKIorsbwBfz
- LAAn0WT7XW2l1coV2i/4WCKsG44mLDANBUd/nmznc0jUdcdcPOt9xSQ/Dpk/p07Zh6B+ZGuCX
- kpDCzv+hC5tM/6G4H3bt6xtnTO4OWLj0wD8yGSBeOX0i0jGWsh9+XHV4/Ns6D4jCxoFs+6udo
- uD1b2PP4N0w3/xK7sTBowZbGxX7G46XOlcGXvuiQkJF9zCk8fj5tVzduIrsXfuU67WpdDuGbZ
- 9AQMHISh5RqQrM24lchiUwOBoWCJ71eFbhOQgXmHW1J2WpTQYbq/Uj/gsmLPUJN0KkCqJk+sP
- otHaDoaqQEyNpTnnyGlR+FLamkBeEsHSXMru6mJu5/BvQhWCZw=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 15/16] mm/gup: trigger FAULT_FLAG_UNSHARE when
+ R/O-pinning a possibly shared anonymous page
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220329160440.193848-1-david@redhat.com>
+ <20220329160440.193848-16-david@redhat.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220329160440.193848-16-david@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 10:58 PM Robert Jarzmik <robert.jarzmik@free.fr> wrote:
-> > -static int pxa2xx_pcmcia_set_timing(struct soc_pcmcia_socket *skt)
-> > -{
-> > -     unsigned long clk = clk_get_rate(skt->clk);
-> > -     return pxa2xx_pcmcia_set_mcxx(skt, clk / 10000);
-> That curious, because you divide here by 10^4, while in the old
-> pxa2xx_pcmcia_set_mcxx() that was 10^3 ... is that a fix I don't see ?
+On 3/29/22 18:04, David Hildenbrand wrote:
+> Whenever GUP currently ends up taking a R/O pin on an anonymous page that
+> might be shared -- mapped R/O and !PageAnonExclusive() -- any write fault
+> on the page table entry will end up replacing the mapped anonymous page
+> due to COW, resulting in the GUP pin no longer being consistent with the
+> page actually mapped into the page table.
+> 
+> The possible ways to deal with this situation are:
+>  (1) Ignore and pin -- what we do right now.
+>  (2) Fail to pin -- which would be rather surprising to callers and
+>      could break user space.
+>  (3) Trigger unsharing and pin the now exclusive page -- reliable R/O
+>      pins.
+> 
+> Let's implement 3) because it provides the clearest semantics and
+> allows for checking in unpin_user_pages() and friends for possible BUGs:
+> when trying to unpin a page that's no longer exclusive, clearly
+> something went very wrong and might result in memory corruptions that
+> might be hard to debug. So we better have a nice way to spot such
+> issues.
+> 
+> This change implies that whenever user space *wrote* to a private
+> mapping (IOW, we have an anonymous page mapped), that GUP pins will
+> always remain consistent: reliable R/O GUP pins of anonymous pages.
+> 
+> As a side note, this commit fixes the COW security issue for hugetlb with
+> FOLL_PIN as documented in:
+>   https://lore.kernel.org/r/3ae33b08-d9ef-f846-56fb-645e3b9b4c66@redhat.com
+> The vmsplice reproducer still applies, because vmsplice uses FOLL_GET
+> instead of FOLL_PIN.
+> 
+> Note that follow_huge_pmd() doesn't apply because we cannot end up in
+> there with FOLL_PIN.
+> 
+> This commit is heavily based on prototype patches by Andrea.
+> 
+> Co-developed-by: Andrea Arcangeli <aarcange@redhat.com>
+> Signed-off-by: Andrea Arcangeli <aarcange@redhat.com>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 
-Revisiting an older patch here: I'm fairly sure the change was my typo,
-fixed it now, thanks!
-
-      Arnd
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
