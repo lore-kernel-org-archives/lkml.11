@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E96F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8261C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234728AbiDSO2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
+        id S1349337AbiDSO2y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 10:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353484AbiDSO2K (ORCPT
+        with ESMTP id S1353446AbiDSO2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:28:10 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51924634F;
-        Tue, 19 Apr 2022 07:25:27 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id r83so3856810pgr.2;
-        Tue, 19 Apr 2022 07:25:27 -0700 (PDT)
+        Tue, 19 Apr 2022 10:28:01 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA374615B;
+        Tue, 19 Apr 2022 07:25:16 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id s17so5073913plg.9;
+        Tue, 19 Apr 2022 07:25:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=V2XIqcdWZLZ6QhkysIjeGWslZHtJcz+vplIUafCxugM=;
-        b=MOi01fvFRljtspIqhYSGTrwOQU5LYW1s9xhOzeaVXfaf1foOgWoRwJay0GxqikA7jM
-         E8FOi3KIwPxjlzaR27LnpNtlHshJzHZmjPr3l9cS7BhM9YGeHcH7asuyzHE/kRM2d96S
-         +peh6M7lJWCXeBTvNf0XSUaF3HpOrGP8T16Sp7puadYdsFa9s0xLmabFEfFcVzFwP9MO
-         p2F93mtCadhI6LsSZ2DmxgZEhCcyZsymmiB8mvnRffnuqQta4FmAuoYKVicIMiv70ogb
-         SqU1AdPFFKA+u/HUxkTwSG4f2SR2IWjl3ap+ujgmD9bX1xpzeeltL88KfFfNzuxiVr3u
-         sd+w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d5wz0mPibPZZTEoFjOQeeIvFKSEaATByfDSSqqkPSZc=;
+        b=qZ89eNbxg2HFY5/pSU8PkiJ47WYAC6qi0bgAeU3XRv/XtpPO4QiZiH2skn00r3zjDE
+         yg9HcAv5ME7n3G9EtBv7ovw8QPlaDvURhcY9OSf/z0R2WAGmmrFM5Pd+dC49gKQ3uqFA
+         L1vbfBnwG6bBo+uh9g9McooycDTMUkmrr4jCzm6+WxUt1cvM5K00eeBezeK462uxJExU
+         lhnDR2d583ujVey/+axSJ1fCyQ0qq3rJ/GWRdCx7Ebp7+oAab5j8DkR0pzBmATJ7kuEo
+         kkaTkLAI0fp5xA0pX4OWk5wFOnrIPh8GbwowTT1Xig1fHIOR5JyMvSptk8Vn28CA1XGn
+         xqxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=V2XIqcdWZLZ6QhkysIjeGWslZHtJcz+vplIUafCxugM=;
-        b=T1yk7R7QAXXtLF6yrgsLXv8xIVPuXv1nYJuOM6oNJ8bpVz30aWiio7ml0tFub0d0Ct
-         S+0fCwIV7POW0VVKyShly0Z5pz5lZof/QBtah49PPJl75YSvxuE8yNWTkhVEm2bqXM63
-         OXyYvRcmvgnFfNUTGVVItqk8k5nGqy3tRNeYyil+uUlD6a3WzUHRItCOuJt0gVngxpXd
-         9iFUTwyhA/d8U5OPAF7hkagJ1ePTxZkWOw+Zal/1xfRXKhuy2zWq4xddtk0D/fK6linD
-         z5gPxYu5N4y7pQg97lnKwUOoojTQ0nQjyGsAnVg8Dtt56owUk6y2f4UQ7fcpV7BhDrSd
-         YaXQ==
-X-Gm-Message-State: AOAM532Gpu6dAIf0LgXYdV6i9epAwLjeSZT7KfGJazBZu7zFuZCVcKo+
-        I4JA7obO2yZuySuJYdlbCME=
-X-Google-Smtp-Source: ABdhPJzCKW3Xm3lgZE1UbJffYaPAT0Ljgn4RLlo2BuUgIUp5R6Hg+vwnMnsZu5sAsC5rd48FKzWCSg==
-X-Received: by 2002:a05:6a00:1a01:b0:505:b3e5:b5fc with SMTP id g1-20020a056a001a0100b00505b3e5b5fcmr17948583pfv.53.1650378326610;
-        Tue, 19 Apr 2022 07:25:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d5wz0mPibPZZTEoFjOQeeIvFKSEaATByfDSSqqkPSZc=;
+        b=3zbD+gpJpoAs4ts5LyBjdPDDX7GlQ/w/Us12VzixPDgjrNMH2HEspv8bILrW8KeaG2
+         gKjvYKoc9ysSqRrBbGyTNR9wA+uqVmdnA225BxzM1QCI7GJ2ymDI14t9J6EANSPy8PNt
+         nw+nQgBkEYRwvqGRKWWJcvW/8sEcgb657UjyTwR29cNcf+0WlaX5vQQf3IINdKsBYYeT
+         Of7ChBKevP2i4LJv6vo8ZVRu+UBQsTP0C4CW3eXQWcV++dH4khTRcqGZupI1xh186jgu
+         x3/1NPDQXuYhbq9Sf27Yc5V5F6PqRGaQAfpeLtHspvbet4VYg8UwATVUaA+zBNK8i4d2
+         pKNg==
+X-Gm-Message-State: AOAM531AOi7ld18lvrFMXiVW7TvJ7OP1Ow91u8KFr7gJrfZQzS3WGhGf
+        2ETu1cxOAMgW5tt2bLDHBnh3oNgqfpQ=
+X-Google-Smtp-Source: ABdhPJyhuD7hHHUs7YtB/6bFzuIb7pegX+hR+fLQm6tWhmjLrhKAn7yUCjkk/pl2ZzmcO8pkk4HdAg==
+X-Received: by 2002:a17:903:2441:b0:159:208:755c with SMTP id l1-20020a170903244100b001590208755cmr9439064pls.160.1650378315569;
+        Tue, 19 Apr 2022 07:25:15 -0700 (PDT)
 Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.23
+        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:25:26 -0700 (PDT)
+        Tue, 19 Apr 2022 07:25:15 -0700 (PDT)
 From:   Cixi Geng <gengcixi@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
@@ -55,12 +56,10 @@ To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         yuming.zhu1@unisoc.com
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V4 3/7] iio: adc: Fine tune the scale calibration values
-Date:   Tue, 19 Apr 2022 22:24:54 +0800
-Message-Id: <20220419142458.884933-4-gengcixi@gmail.com>
+Subject: [PATCH V4 0/7] iio: adc: sc27xx: adjust structure and add PMIC's support
+Date:   Tue, 19 Apr 2022 22:24:51 +0800
+Message-Id: <20220419142458.884933-1-gengcixi@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220419142458.884933-1-gengcixi@gmail.com>
-References: <20220419142458.884933-1-gengcixi@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -69,59 +68,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Cixi Geng <cixi.geng1@unisoc.com>
 
-Small adjustment the scale calibration value for the sc2731,
-use new name sc2731_[big|small]_scale_graph_calib, and remove
-the origin [big|small]_scale_graph_calib struct for unused.
+this patchset add a sc27xx_adc_variant_data structure
+and add sc272*,sc273* and ump9620 PMIC support.
 
-Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
+v2 changes:
+  fix dt_binding_check error
+  adjust some code-style issue
+  optimize the copy-paste functions
+  the smatch warnings found by lkp
+  and  ohter comments by v1 patches.
 
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
----
- drivers/iio/adc/sc27xx_adc.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+v3 changes:
+  fix nvmem-cells Items value and add ump9620 dt sample
+  add the correct signature for each patch
+  fix the unused warning in 3/7, add explain for set the scales
+  remove duplicate code,add goto label in sc27xx_adc_read
+  pull out the refactor code into a single patch
+  delete the suspend and resume pm for ump9620
 
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index aee076c8e2b1..24211d2a71b1 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -103,14 +103,17 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
- 	100, 341,
- };
- 
--static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
--	4200, 856,
--	3600, 733,
-+/*
-+ * Add the sc2731_[big|small]_scale_graph_calib for sc2731 pmic.
-+ */
-+static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-+	4200, 850,
-+	3600, 728,
- };
- 
--static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
--	1000, 833,
--	100, 80,
-+static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-+	1000, 838,
-+	100, 84,
- };
- 
- static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
-@@ -130,11 +133,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 	size_t len;
- 
- 	if (big_scale) {
--		calib_graph = &big_scale_graph_calib;
-+		calib_graph = &sc2731_big_scale_graph_calib;
- 		graph = &big_scale_graph;
- 		cell_name = "big_scale_calib";
- 	} else {
--		calib_graph = &small_scale_graph_calib;
-+		calib_graph = &sc2731_small_scale_graph_calib;
- 		graph = &small_scale_graph;
- 		cell_name = "small_scale_calib";
- 	}
+v4 changes:
+  Add fix tag in the 2/7 patch.
+  Separate modification and refactoring 3/7(v3) to 2 pathes.
+  remove the pmic_type struct instead of a boot set_volref
+  to define the specific feathure.
+  use switch statement in all scale_init functions.
+  remove ump9620 pmic support in this patchset, submit separately
+  in the next patches.
+
+Cixi Geng (7):
+  dt-bindings:iio:adc: add sprd,ump9620-adc dt-binding
+  iio: adc: sc27xx: fix read big scale voltage not right
+  iio: adc: Fine tune the scale calibration values
+  iio: adc: sc27xx: structure adjustment and optimization
+  iio: adc: refactor some functions for support more PMiCs
+  iio: adc: sc27xx: add support for PMIC sc2720 and sc2721
+  iio: adc: sc27xx: add support for PMIC sc2730
+
+ .../bindings/iio/adc/sprd,sc2720-adc.yaml     |  59 ++-
+ drivers/iio/adc/sc27xx_adc.c                  | 473 ++++++++++++++++--
+ 2 files changed, 491 insertions(+), 41 deletions(-)
+
 -- 
 2.25.1
 
