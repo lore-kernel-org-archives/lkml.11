@@ -2,58 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9831CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C39C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353177AbiDSUo1 (ORCPT
+        id S1357234AbiDSUtQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59702 "EHLO
+        Tue, 19 Apr 2022 16:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357711AbiDSUmc (ORCPT
+        with ESMTP id S238778AbiDSUtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:42:32 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D40BEE
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:39:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Subject:Cc:To:From:Date:Message-ID:
-        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=ROhogLVDJv2twC0NObQKkeLJe873ECih460hy+INEQs=; b=DhU6f5mkIBFearZIkpsWWbPWEe
-        kZ+OHuF03zpFG1xL5YE0QradHDc7cxDHC39wLVJ8iSJC1zLLM0Mwr3tfR4EpnU84MuZMgUZ8CkiuI
-        PSjY0OcAMajtmvfyPE6GaHefDFZPN+UOFZNa/sXpP87+tz40Zz2FiTFF4NEMhXwcdShW+U5AVAmSq
-        Kpla1oyGeoIP1MjlXQagHiADsfTjjNBvaube733wNq5YIzVtuw/5x3ZYz6z0c5C3LSHLvQqYcoWY5
-        puGVeDJF0EHKvtNxV0e1+unPgbN17Wn3mxC4fB7+wVRuJc2HUjwkEtqk73Z6i0clxYzJ6zTUXJU/R
-        61AwQMCw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ngudM-006uqz-Cs; Tue, 19 Apr 2022 20:39:37 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id AB23B3003AA;
-        Tue, 19 Apr 2022 22:39:34 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 719F1212B0C79; Tue, 19 Apr 2022 22:39:34 +0200 (CEST)
-Message-ID: <20220419203254.034493341@infradead.org>
-User-Agent: quilt/0.66
-Date:   Tue, 19 Apr 2022 22:32:54 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, jpoimboe@redhat.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, mbenes@suse.cz
-Subject: [PATCH 0/2] objtool: Fix code reloc vs weak symbols
+        Tue, 19 Apr 2022 16:49:15 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE4A40E7F;
+        Tue, 19 Apr 2022 13:46:31 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (85-76-5-145-nat.elisa-mobile.fi [85.76.5.145])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 60E7325B;
+        Tue, 19 Apr 2022 22:46:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1650401189;
+        bh=x4iwTrvMOK1pF9UjiOQniu0sEPxBKmMpDAcVjB8e25A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wBOrarR1e/F73knmYEcDF4z2drGIN9yGVpasEdJ8ve9IfsRKH5OEbfBagpEZ71Mba
+         r7wp6j/XjqsXB4CxVU/uW+7ySAH/ZTUCQS4D4F1s7xEZr3cTuEZ5uH6Bj0K++NigGw
+         tmM/vjrlRG6ABZxGVDr8zcydwk0HyQNCYhpwRFOs=
+Date:   Tue, 19 Apr 2022 23:46:31 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Dan Vacura <w36195@motorola.com>
+Cc:     linux-usb@vger.kernel.org, stable@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bhupesh Sharma <bhupesh.sharma@st.com>,
+        linux-kernel@vger.kernel.org,
+        Paul Elder <paul.elder@ideasonboard.com>
+Subject: Re: [PATCH v2] usb: gadget: uvc: Fix crash when encoding data for
+ usb request
+Message-ID: <Yl8fp6WukSPTgYC8@pendragon.ideasonboard.com>
+References: <20220318164706.22365-1-w36195@motorola.com>
+ <YjyDp4l37XimcoZh@pendragon.ideasonboard.com>
+ <YjzTQX3PlkBG2q6U@p1g3>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YjzTQX3PlkBG2q6U@p1g3>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two fun bugs that make can cause other fun fail if you have a fresh enough
-toolchain that strips unused section symbols.
+Hi Dan,
 
-The symptoms can vary between a faulty unwind to a kernel splat for trying to
-patch the wrong text.
+On Thu, Mar 24, 2022 at 03:23:29PM -0500, Dan Vacura wrote:
+> On Thu, Mar 24, 2022 at 04:43:51PM +0200, Laurent Pinchart wrote:
+> > On Fri, Mar 18, 2022 at 11:47:06AM -0500, Dan Vacura wrote:
+> > > During the uvcg_video_pump() process, if an error occurs and
+> > > uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+> > > the current marker (queue->buf_used) of the active buffer (no longer
+> > > active) is not reset. On the next iteration of uvcg_video_pump() the
+> > > stale buf_used count will be used and the logic of min((unsigned
+> > > int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+> > > nbytes size, causing an invalid memory access.
+> > 
+> > When uvcg_queue_cancel() is called, it will empty the queue->irqqueue.
+> > The next uvcg_video_pump() iteration should thus get a NULL buffer when
+> > calling uvcg_queue_head(), and shouldn't proceed to calling
+> > video->encode(). Is the issue that the application queues further
+> > buffers after cancellation, which puts a new buffer in the irqqueue ?
+> 
+> Yes, that's exactly what's happening. The application has one thread
+> that is receiving camera frames and queuing them to the gadget driver,
+> the other thread is waiting for empty buffers to dequeue, generated via
+> uvcg_queue_next_buffer(), to send back for camera to fill. Is there a
+> requirement to serialize this logic?
 
-I found it while playing with text patching and Josh confirmed it very much
-affects ORC data too.
+Not in userspace, any required serialization should be handled in the
+kernel. Unless I'm mistaken we already have a lock to handle concurrent
+QBUF and DQBUF calls, so it should be fine.
 
+> In addition, I can check for the
+> state of the buffers that have just been dequeued, but not sure what to
+> do if there's a failure.
+
+That's a good question, discussed below.
+
+> > I wonder if we need to expand the discussion here to what should be done
+> > if an error occurs in uvcg_video_pump(). We currently cancel the queue
+> > and drop all queued buffers, but don't prevent more buffers to be
+> > queued. Should we force the application to stop streaming in case of
+> > error, clean up and restart ? Or are usb_ep_queue() errors expected to
+> > happen from time to time, with graceful error recovery a required
+> > feature of the gadget driver ?
+> 
+> Good question, this is out of my expertise, but I can comment about what
+> I see in our current setup, qcom snapdragon chipsets with the dwc3
+> drivers on 5.10-android. Depending on the host I connect to, the -18
+> errors in uvc_video_complete() can occur during normal use, sometimes
+> several times in a span of a few seconds. I wasn't seeing usb_eq_queue()
+> errors. When the error occurs the device application doesn't do anything
+> special and continues queuing subsequent buffers. Sometimes there is
+> visible corruption in the received data, but the streaming gracefully
+> recovers, mpeg or yuv.
+
+So it looks like we need to handle this condition gracefully. This means
+that we shouldn't cancel the queue, but continue with the next transfer,
+doesn't it ?
+
+> > > [80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+> > > with status -18.
+> > > [80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+> > > with status -18.
+> > > ...
+> > > uvcg_queue_cancel() is called and the queue is cleared out, but the
+> > > marker queue->buf_used is not reset.
+> > > ...
+> > > [80802.262328][ T8682] Unable to handle kernel paging request at virtual
+> > > address ffffffc03af9f000
+> > > ...
+> > > ...
+> > > [80802.263138][ T8682] Call trace:
+> > > [80802.263146][ T8682]  __memcpy+0x12c/0x180
+> > > [80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+> > > [80802.263165][ T8682]  process_one_work+0x2cc/0x568
+> > > [80802.263173][ T8682]  worker_thread+0x28c/0x518
+> > > [80802.263181][ T8682]  kthread+0x160/0x170
+> > > [80802.263188][ T8682]  ret_from_fork+0x10/0x18
+> > > [80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+> > > 
+> > > Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+> > > Signed-off-by: Dan Vacura <w36195@motorola.com>
+> > > 
+> > > ---
+> > > Changes in v2:
+> > > - Add Fixes tag
+> > > 
+> > >  drivers/usb/gadget/function/uvc_queue.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > > 
+> > > diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
+> > > index d852ac9e47e7..2cda982f3765 100644
+> > > --- a/drivers/usb/gadget/function/uvc_queue.c
+> > > +++ b/drivers/usb/gadget/function/uvc_queue.c
+> > > @@ -264,6 +264,8 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
+> > >  		buf->state = UVC_BUF_STATE_ERROR;
+> > >  		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+> > >  	}
+> > > +	queue->buf_used = 0;
+> > > +
+> > >  	/* This must be protected by the irqlock spinlock to avoid race
+> > >  	 * conditions between uvc_queue_buffer and the disconnection event that
+> > >  	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+
+-- 
+Regards,
+
+Laurent Pinchart
