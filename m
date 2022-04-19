@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E8EC352A7
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80EAC352B6
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351575AbiDSLiK (ORCPT
+        id S1351394AbiDSLiO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        Tue, 19 Apr 2022 07:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351386AbiDSLhf (ORCPT
+        with ESMTP id S1351434AbiDSLhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:37:35 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3E313F17
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:52 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id s18so32355057ejr.0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:52 -0700 (PDT)
+        Tue, 19 Apr 2022 07:37:41 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1EE13F0A
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:58 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id b15so20855842edn.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rk4GrfXMwJbLvQiVana1UoJ1THyewcmBCMxkYGfguzc=;
-        b=bZcovbSWF6o2arWzTigSJRHioa/LpdZ+Sy6qfFHoDdZg4zOpttbt+cEt7sC0+KAMgc
-         kjFI6Xl5Qkk0tuWaxpLC9pt627FKQYXBUqbpErU4FCXACI/FX/49UmrIKZGC/VVQ/yNl
-         thkwNFCClHLlC3MLJ3KmifplRZUWh88lwO4mY+6j9uINEwu9Zkkn4y42snAbFDPzpryZ
-         0iUqZU1KszkYfoNGB78yr1y3hU2ztgm1ciO2lgnILN72uHpo+U1B5f6kPrA2dA0oYM6P
-         007wp/Ik4Iv1jaN4vnouaRv15VbqVpPeIVN4Ud0vWErJzstfVcug/keSU4SnpnBrAXKK
-         0Usg==
+        bh=38ZdSROX5+RqupZAHBAG40n0Dr6hAO3z18g5N59SQU4=;
+        b=lAgBbkTU8D6YEYE8EnVc7TQgg9yEr1TplNJ63UCkyqf8OgNnbEGMYGuI0ZRt1YnUYR
+         kRpzUg0XO57gjImkecp7vfOrmW6v8xsYuT+ykmV5SUJcz29qohXYrmCJTI7S2t2WEnmY
+         zWSSpz6b3AQM0jiHTyP0UQ4lX9NEWkolxtvviMwY/VFI7K7PqkqfewJxRLZ92G+WDd3a
+         5+GPbuJLW9kL+l3TS2YvThY8XMvPqVq5exMhf16lR6dG9IJgDOBsGaYXv2G92fSmcLh/
+         4fD229aWI/XNs7a02eGlv4mhOk4HHJqOdvHLlkD/PJA4giJ3K9/qVmo8vebRSosWnhPy
+         b8nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rk4GrfXMwJbLvQiVana1UoJ1THyewcmBCMxkYGfguzc=;
-        b=VqQ41BWvnB2bfGb9i4Qd3Mx9dQaEupguHn57c5z6TCNI+Jv+qKY6klohCSUkScvMXh
-         nPX7pgi5qrwO2A9NrFw3T8JPzunNCz6sB+adABAQEpKiy+BaEACN+ULC0NKY59gYK2G0
-         yYza1fkgg6gZzzWqASaaZWMl9W5zzhEL9IqojD7SYc2fxP3vBMy148voZJZGXoQr4ixM
-         KK42cevB18JT8cvgJ4ACX4wQv0afsld7nOPwy8+5lrlpjrU0ui4GIefHex8ujQemPvjB
-         AbHcEzFV2qFbwTJv3AHRwmT8//qudn3dNTzWVB1pjWdMAWAv1MdkVGXaycyGafLPJeeQ
-         bGow==
-X-Gm-Message-State: AOAM531/Ez9D7k/MIkIiqtlLUUtZGsRu3GKeU4ySV7LXE+4W2+nczba3
-        +8uXaHAkDvh2bNAlv6sKxE37fg==
-X-Google-Smtp-Source: ABdhPJzbytfn6U4klzpcMgwS7vfB8ICxKj/t5N2gXKEuUopbN5DyDh0kRWezTKeQA3rJF5XGiwm0+g==
-X-Received: by 2002:a17:907:1c85:b0:6e8:da11:85cb with SMTP id nb5-20020a1709071c8500b006e8da1185cbmr12859129ejc.678.1650368090686;
-        Tue, 19 Apr 2022 04:34:50 -0700 (PDT)
+        bh=38ZdSROX5+RqupZAHBAG40n0Dr6hAO3z18g5N59SQU4=;
+        b=DoCzJ5Y4RTu/qfcKWh3AWA98IfZLfVdKA5I7WPzlftuP5yEfOQee6FmQhNaigM9zkj
+         PFReBS8POuu61EoxKrSGiKbbqU5u7ekNOqUmfjFe5f/+XBnhagqoYDOSc6Vg6KtziK/u
+         lGAGXWQqnYVUvY46CteBVraEVcqlLYCSUMajzx5tYp7wZLHj83qze6kWySRyx3FXmd0S
+         B0TSSlEo//x+AZNfRJ9VPfKTvQ3M89DJ77G/rcyVmrR5S/+3NRZnGl7NqSM7odTun1ji
+         vNhEnBEFsqXW17DuFKSyKUhLGWuOBkDbnYWiLNMY6GGYlsFDogtJJrK2JiqL7hxTG1YT
+         CQEw==
+X-Gm-Message-State: AOAM5321vKkM9dimDWkDIzhqqUPgCCG+rxrrv3tzSNjcmYd0JQGr4AUW
+        ug858rMLDTINK/n3dI0wxRY8iA==
+X-Google-Smtp-Source: ABdhPJwnUhzb/0NAh+XYKj3k5xldAGjfpt63mghhlCD2VxFrpw9UxcHdu27TYmnA97GWmVv6IQjoNw==
+X-Received: by 2002:a05:6402:3713:b0:41d:96f6:8a09 with SMTP id ek19-20020a056402371300b0041d96f68a09mr16881762edb.136.1650368096901;
+        Tue, 19 Apr 2022 04:34:56 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.34.49
+        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.34.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 04:34:50 -0700 (PDT)
+        Tue, 19 Apr 2022 04:34:56 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>
@@ -78,9 +78,9 @@ Cc:     Stuart Yoder <stuyoder@gmail.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v7 02/12] amba: Use driver_set_override() instead of open-coding
-Date:   Tue, 19 Apr 2022 13:34:25 +0200
-Message-Id: <20220419113435.246203-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v7 06/12] s390/cio: Use driver_set_override() instead of open-coding
+Date:   Tue, 19 Apr 2022 13:34:29 +0200
+Message-Id: <20220419113435.246203-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
 References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
@@ -90,24 +90,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a helper to set driver_override to reduce the amount of duplicated
+Use a helper to set driver_override to the reduce amount of duplicated
 code.  Make the driver_override field const char, because it is not
 modified by the core and it matches other subsystems.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Vineeth Vijayan <vneethv@linux.ibm.com>
 ---
- drivers/amba/bus.c       | 28 ++++------------------------
- include/linux/amba/bus.h |  6 +++++-
+ drivers/s390/cio/cio.h |  6 +++++-
+ drivers/s390/cio/css.c | 28 ++++------------------------
  2 files changed, 9 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index d3bd14aaabf6..f3d26d698b77 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -94,31 +94,11 @@ static ssize_t driver_override_store(struct device *_dev,
+diff --git a/drivers/s390/cio/cio.h b/drivers/s390/cio/cio.h
+index 1cb9daf9c645..fa8df50bb49e 100644
+--- a/drivers/s390/cio/cio.h
++++ b/drivers/s390/cio/cio.h
+@@ -103,7 +103,11 @@ struct subchannel {
+ 	struct work_struct todo_work;
+ 	struct schib_config config;
+ 	u64 dma_mask;
+-	char *driver_override; /* Driver name to force a match */
++	/*
++	 * Driver name to force a match.  Do not set directly, because core
++	 * frees it.  Use driver_set_override() to set or clear it.
++	 */
++	const char *driver_override;
+ } __attribute__ ((aligned(8)));
+ 
+ DECLARE_PER_CPU_ALIGNED(struct irb, cio_irb);
+diff --git a/drivers/s390/cio/css.c b/drivers/s390/cio/css.c
+index fa8293335077..913b6ddd040b 100644
+--- a/drivers/s390/cio/css.c
++++ b/drivers/s390/cio/css.c
+@@ -338,31 +338,11 @@ static ssize_t driver_override_store(struct device *dev,
  				     const char *buf, size_t count)
  {
- 	struct amba_device *dev = to_amba_device(_dev);
+ 	struct subchannel *sch = to_subchannel(dev);
 -	char *driver_override, *old, *cp;
 -
 -	/* We need to keep extra room for a newline */
@@ -122,41 +140,24 @@ index d3bd14aaabf6..f3d26d698b77 100644
 -	if (cp)
 -		*cp = '\0';
 -
--	device_lock(_dev);
--	old = dev->driver_override;
+-	device_lock(dev);
+-	old = sch->driver_override;
 -	if (strlen(driver_override)) {
--		dev->driver_override = driver_override;
+-		sch->driver_override = driver_override;
 -	} else {
 -		kfree(driver_override);
--		dev->driver_override = NULL;
+-		sch->driver_override = NULL;
 -	}
--	device_unlock(_dev);
+-	device_unlock(dev);
 +	int ret;
  
 -	kfree(old);
-+	ret = driver_set_override(_dev, &dev->driver_override, buf, count);
++	ret = driver_set_override(dev, &sch->driver_override, buf, count);
 +	if (ret)
 +		return ret;
  
  	return count;
  }
-diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
-index 6562f543c3e0..93799a72ff82 100644
---- a/include/linux/amba/bus.h
-+++ b/include/linux/amba/bus.h
-@@ -70,7 +70,11 @@ struct amba_device {
- 	unsigned int		cid;
- 	struct amba_cs_uci_id	uci;
- 	unsigned int		irq[AMBA_NR_IRQS];
--	char			*driver_override;
-+	/*
-+	 * Driver name to force a match.  Do not set directly, because core
-+	 * frees it.  Use driver_set_override() to set or clear it.
-+	 */
-+	const char		*driver_override;
- };
- 
- struct amba_driver {
 -- 
 2.32.0
 
