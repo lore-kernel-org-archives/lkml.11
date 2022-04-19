@@ -2,127 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4723C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE783C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241213AbiDSK2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        id S1350669AbiDSKa7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 06:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350669AbiDSK1d (ORCPT
+        with ESMTP id S242200AbiDSKaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:27:33 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA57389E;
-        Tue, 19 Apr 2022 03:24:49 -0700 (PDT)
-Received: from localhost ([31.220.114.252]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MCbMz-1npJkn4351-009fUR; Tue, 19 Apr 2022 12:24:27 +0200
-Date:   Tue, 19 Apr 2022 12:24:26 +0200
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: proximity: mb1232: Switch to use
- fwnode_irq_get()
-Message-ID: <Yl6N2rnZsdJ9WJ6q@arbad>
-References: <20220413183123.20292-1-andriy.shevchenko@linux.intel.com>
- <20220416120726.0ba78960@jic23-huawei>
+        Tue, 19 Apr 2022 06:30:55 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85263275F6;
+        Tue, 19 Apr 2022 03:28:13 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J9Aexp004777;
+        Tue, 19 Apr 2022 10:28:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=QnPfcT3aQm4wRRbd1y2TwgeqmbD666U2uW+Vxfg7yaQ=;
+ b=glv/vOuT58kVk8IeD+SxAWgb5AZgUx1RNZyO1Pvbog+G7M1iNrMqS4fDdLFI0N9xxTOA
+ gVsv/R7aSAY3kn+Pz3bfdLxyocumpeAAOzFObd4D6Rb/A8Nhht6eHg9do7A+sZtlzGhc
+ TKXpssa4f73Pl744ZwpTEq0Psp8n5001SBtj00Y/NNiH3NGmBzfWmO75IJlr8gcD5++c
+ WmH36Yb3bYz3RqZbsCvCgXlD0F+v0IMAZftc4c4ke4N/DjWMZZeU6fxLNE5BaEiAmr1R
+ SenPYh2ugq4Dz6bxeL+I36/8iYoBs5DhDr+vh+7chUFlLKtYGgs56tQ+6wXYtAy7sQsB Cg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7ekva0m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 10:28:09 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23J9vo4v023136;
+        Tue, 19 Apr 2022 10:28:09 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7ekv9yx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 10:28:09 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23JACxiA026438;
+        Tue, 19 Apr 2022 10:28:07 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ffne945vx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 10:28:07 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23JAS4CB37224850
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 10:28:04 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4F05811C04C;
+        Tue, 19 Apr 2022 10:28:04 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0F27911C050;
+        Tue, 19 Apr 2022 10:28:04 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 19 Apr 2022 10:28:03 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: [PATCH v3 1/4] PCI: Clean up pci_scan_slot()
+Date:   Tue, 19 Apr 2022 12:28:00 +0200
+Message-Id: <20220419102803.3430139-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220419102803.3430139-1-schnelle@linux.ibm.com>
+References: <20220419102803.3430139-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220416120726.0ba78960@jic23-huawei>
-X-Provags-ID: V03:K1:h28I5PaIB1AGwZVfL+JEIK0W7L2gRQU9pIM8fijwncou7OulhXQ
- i0QT2/BlAmO8EpRN7HVoeQDoPn+4cux2VnJyYPR2syiR1Kl1TossTGE3g+sC8AvhKtF1QE5
- oYYbKWSjVqZd7Z9wVa4uESUIMgTWti9GTmlZTEQ+3g9Fp5xK9yneilMoOG7l04O1b4TQ1gM
- 5lIiD23u9tIMNcXyZKzUw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:otICPBEuBO0=:00N7IK7k89SMBuOxXaHP50
- IV1cN06/tnBYlHpdSe/U2DX3I46714cy+SHR06+RIH9wwvAIkCZ/oPZPmgPeCFw7XL04xlMwc
- NsTieuByThtsDyoj66X4NmhPSSkExWawGkzn233vVvagXPi9olBAXX5xOo1ufJfc891UHeSMP
- raAUN84+i3j6PrLEfnLlBk835uoFIehkK+77KQ0fnPAPIhksa1czlYtokb0QKCQP0qKqdLRkj
- 5ZERZQXwKeFT6zAEtbzJTtI8Bic5z0p0Q/o5X3VaKg+n7+GrUfp3VYTlBUDk79D26HljKZpP/
- SnJaQxCR6rvB0MQgXYMrFspGVx/Fq6SMlZG35tROJHWbvtarmAWwW1dTkGHThfKp+Omt2viV1
- i2jB4sP8F2uePmYE3vnVlGbogIsm2cO+rE+RyEN/iLSYrE8uPhT7r3RUrmW2tSEJW/j4V5D23
- dLffRvHLAWrhugHaZrFMFCnKR7fRrG1l8vZvRR8mMbP1L0CQoAh4TUi47ufxo6oVcjAE9FRwn
- fotXrDAQ8I95MTOP/KJTfP24tGvVDMGhat6cM0f7ZwyAaNo+lbXNd6kkt7/zOuYb++hjdF0wi
- lLAnejuYtNaYOTYZ+wq5QQrsybzFJZyywn2quxMKLcBMVgB9qCdJoPY53HKaYp5WYH1g8Awof
- IE9I4BKKOcwqGckHGulsT8Wicu309iL+Tvitsvf850PyvMKTPvwHlpH0tg3JpVSYxEIU=
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: t8czAsQle4o1PotRlKGhmVkxOf1_Dlo3
+X-Proofpoint-GUID: MB_ON1VMkQx_KoETrl42A61be9hStEkS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_03,2022-04-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 mlxscore=0 bulkscore=0 adultscore=0 spamscore=0
+ mlxlogscore=999 impostorscore=0 phishscore=0 suspectscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204190052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+While determining the next PCI function is factored out of
+pci_scan_slot() into next_fn() the former still handles the first
+function as a special case duplicating the code from the scan loop and
+splitting the condition that the first function exits from it being
+multifunction which is tested in next_fn().
 
-Jonathan Cameron <jic23@kernel.org> schrieb am Sa, 16. Apr 12:07:
-> On Wed, 13 Apr 2022 21:31:23 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > We have OF-centric variant of fwnode_irq_get() in the driver.
-> > Replace it with a call to an agnostic implementation.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Whilst I 'think' this ends up being functionally identical
-> I'd like to leave it a little longer to see if Andreas has
-> time to take a look and verify this change is fine.
-> 
-> There seem to be subtle differences in the irq setup as the
-> new code does a sanity check on the domain being available
-> and defers if not which I don't think happens with the
-> existing code.
+Furthermore the non ARI branch of next_fn() mixes the case that
+multifunction devices may have non-contiguous function ranges and dev
+may thus be NULL with the multifunction requirement. It also signals
+that no further functions need to be scanned by returning 0 which is
+a valid function number.
 
-Anyway interrupts are optional and the driver will work without i don't see any
-issue here.
+Improve upon this by moving all conditions for having to scan for more
+functions into next_fn() and make them obvious and commented.
 
-Acked-by: Andreas Klinger <ak@it-klinger.de>
+By changing next_fn() to return -ENODEV instead of 0 when there is no
+next function we can then handle the initial function inside the loop
+and deduplicate the shared handling.
 
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> > ---
-> >  drivers/iio/proximity/mb1232.c | 8 +++++---
-> >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/proximity/mb1232.c b/drivers/iio/proximity/mb1232.c
-> > index ad4b1fb2607a..0bca5f74de68 100644
-> > --- a/drivers/iio/proximity/mb1232.c
-> > +++ b/drivers/iio/proximity/mb1232.c
-> > @@ -10,12 +10,14 @@
-> >   * https://www.maxbotix.com/documents/I2CXL-MaxSonar-EZ_Datasheet.pdf
-> >   */
-> >  
-> > +#include <linux/bitops.h>
-> >  #include <linux/err.h>
-> >  #include <linux/i2c.h>
-> > -#include <linux/of_irq.h>
-> >  #include <linux/delay.h>
-> > +#include <linux/mod_devicetable.h>
-> >  #include <linux/module.h>
-> > -#include <linux/bitops.h>
-> > +#include <linux/property.h>
-> > +
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/sysfs.h>
-> >  #include <linux/iio/buffer.h>
-> > @@ -209,7 +211,7 @@ static int mb1232_probe(struct i2c_client *client,
-> >  
-> >  	init_completion(&data->ranging);
-> >  
-> > -	data->irqnr = irq_of_parse_and_map(dev->of_node, 0);
-> > +	data->irqnr = fwnode_irq_get(dev_fwnode(&client->dev), 0);
-> >  	if (data->irqnr <= 0) {
-> >  		/* usage of interrupt is optional */
-> >  		data->irqnr = -1;
-> 
+No functional change is intended.
 
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/pci/probe.c | 41 +++++++++++++++++++----------------------
+ 1 file changed, 19 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 17a969942d37..389aa1f9cb2c 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2579,33 +2579,35 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+ }
+ EXPORT_SYMBOL(pci_scan_single_device);
+ 
+-static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+-			    unsigned int fn)
++static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+ {
+ 	int pos;
+ 	u16 cap = 0;
+ 	unsigned int next_fn;
+ 
+-	if (pci_ari_enabled(bus)) {
+-		if (!dev)
+-			return 0;
++	if (dev && pci_ari_enabled(bus)) {
+ 		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+ 		if (!pos)
+-			return 0;
++			return -ENODEV;
+ 
+ 		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+ 		next_fn = PCI_ARI_CAP_NFN(cap);
+ 		if (next_fn <= fn)
+-			return 0;	/* protect against malformed list */
++			return -ENODEV;	/* protect against malformed list */
+ 
+ 		return next_fn;
+ 	}
+ 
+-	/* dev may be NULL for non-contiguous multifunction devices */
+-	if (!dev || dev->multifunction)
+-		return (fn + 1) % 8;
+-
+-	return 0;
++	/* only multifunction devices may have more functions */
++	if (dev && !dev->multifunction)
++		return -ENODEV;
++	/*
++	 * A function 0 is required but multifunction devices may
++	 * be non-contiguous so dev can be NULL otherwise.
++	 */
++	if (!fn && !dev)
++		return -ENODEV;
++	return (fn <= 6) ? fn + 1 : -ENODEV;
+ }
+ 
+ static int only_one_child(struct pci_bus *bus)
+@@ -2643,24 +2645,19 @@ static int only_one_child(struct pci_bus *bus)
+  */
+ int pci_scan_slot(struct pci_bus *bus, int devfn)
+ {
+-	unsigned int fn, nr = 0;
+-	struct pci_dev *dev;
++	int fn, nr = 0;
++	struct pci_dev *dev = NULL;
+ 
+ 	if (only_one_child(bus) && (devfn > 0))
+ 		return 0; /* Already scanned the entire slot */
+ 
+-	dev = pci_scan_single_device(bus, devfn);
+-	if (!dev)
+-		return 0;
+-	if (!pci_dev_is_added(dev))
+-		nr++;
+-
+-	for (fn = next_fn(bus, dev, 0); fn > 0; fn = next_fn(bus, dev, fn)) {
++	for (fn = 0; fn >= 0; fn = next_fn(bus, dev, fn)) {
+ 		dev = pci_scan_single_device(bus, devfn + fn);
+ 		if (dev) {
+ 			if (!pci_dev_is_added(dev))
+ 				nr++;
+-			dev->multifunction = 1;
++			if (nr > 1)
++				dev->multifunction = 1;
+ 		}
+ 	}
+ 
 -- 
-Andreas Klinger
-Grabenreith 27
-84508 Burgkirchen
-+49 8623 919966
-ak@it-klinger.de
-www.it-klinger.de
-www.grabenreith.de
+2.32.0
+
