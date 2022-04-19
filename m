@@ -2,77 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4652AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D573BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352038AbiDSMO7 (ORCPT
+        id S1352050AbiDSMPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58734 "EHLO
+        Tue, 19 Apr 2022 08:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352260AbiDSMNB (ORCPT
+        with ESMTP id S1352443AbiDSMNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:13:01 -0400
+        Tue, 19 Apr 2022 08:13:11 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A52377DD;
-        Tue, 19 Apr 2022 05:08:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CA610A9;
+        Tue, 19 Apr 2022 05:09:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1lvxcKnGXEZSQ46qlcZLm8oKI0iNua4Tz0vIoesYXjY=; b=FKaywvYRPXa1OdccTJp0XgAWdH
-        NajyWXuVIKm8rnPSk0vcaA4ZjwhurC8x2ybsH/rX9v+/rspbd4eFQ14BkZefitsVlI8dYf4XSy8xg
-        7x7zC6md/9FuDbjiAeGqRL6h/5tGHjPyV3KB3XTFspUGg+JfJWlVKTZMBROwmxKCc3xI=;
+        bh=8gQWXQgd27+7MjvZ/x9NAZsP0RMarQtIN5a8js2NhjY=; b=mzKoH3TXs2ckA/NQw7+zgkNA5K
+        8p0VVw0yWNiUHQ3Ohv+7MbWluGIHQO7uu0pzi4wrKVM53wXY1XHgpaGYN6WEwNXK/+MRUY4CBBGFV
+        SAIjxVSGcE6bRlBATcYyxrWoQ8cbfSrZhpLStIiS4JSOlavyI01sMEL7eWzSHfs3oTFQ=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1ngmeF-00GUaa-9X; Tue, 19 Apr 2022 14:07:59 +0200
-Date:   Tue, 19 Apr 2022 14:07:59 +0200
+        id 1ngmfg-00GUco-Kr; Tue, 19 Apr 2022 14:09:28 +0200
+Date:   Tue, 19 Apr 2022 14:09:28 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     cgel.zte@gmail.com
-Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] net: phy: fix error check return value of phy_read()
-Message-ID: <Yl6mH0HKCGPxgejI@lunn.ch>
-References: <20220419014439.2561835-1-lv.ruyi@zte.com.cn>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, nico@fluxnic.net,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 2/4] ARM: dts: dove: Update sdio-host node names to
+ match schema
+Message-ID: <Yl6meIXs9C6Z6AsA@lunn.ch>
+References: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
+ <20220419024611.1327525-3-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220419014439.2561835-1-lv.ruyi@zte.com.cn>
+In-Reply-To: <20220419024611.1327525-3-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 01:44:39AM +0000, cgel.zte@gmail.com wrote:
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Tue, Apr 19, 2022 at 02:46:09PM +1200, Chris Packham wrote:
+> Update the node names of the sdio-host@ interfaces to be mmc@ to match
+> the node name enforced by the mmc-controller.yaml schema.
 > 
-> phy_read() returns a negative number if there's an error, but the
-> error-checking code in the bcm87xx driver's config_intr function
-> triggers if phy_read() returns non-zero.  Correct that.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-> ---
->  drivers/net/phy/bcm87xx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/bcm87xx.c
-> index 313563482690..e62b53718010 100644
-> --- a/drivers/net/phy/bcm87xx.c
-> +++ b/drivers/net/phy/bcm87xx.c
-> @@ -146,7 +146,7 @@ static int bcm87xx_config_intr(struct phy_device *phydev)
->  
->  	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
->  		err = phy_read(phydev, BCM87XX_LASI_STATUS);
-> -		if (err)
-> +		if (err < 0)
->  			return err;
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 
-This should probably have a Fixes: tag, and be for net, not next-next.
-Please read the netdev FAQ about the trees, and submittinng fixes for
-netdev.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-     Andrew
+    Andrew
