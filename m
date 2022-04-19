@@ -2,161 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA57C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357469AbiDSTCQ (ORCPT
+        id S1357451AbiDSTCT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47228 "EHLO
+        Tue, 19 Apr 2022 15:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357409AbiDSTCE (ORCPT
+        with ESMTP id S1357448AbiDSTCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 15:02:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE1693F30C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:59:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650394760;
+        Tue, 19 Apr 2022 15:02:09 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A563F335;
+        Tue, 19 Apr 2022 11:59:25 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b5839329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:5839:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DA1CB1EC0535;
+        Tue, 19 Apr 2022 20:59:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650394759;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QyIEdvhmJJJsD19FekHwRVcHvpWqFs76gAJaIth1sgU=;
-        b=SNM+1P/V40INmLpzdIh7yoR6yEJS5eOsCGmPEhxKbfJzz84ocvZDKEDj6c2mlUJy76QNnF
-        1Vx/BJYysuKiaEjOsipGxGw/eDsuNADaBMpDaIpb4VxYrU6HSzhZOOZxNPbLG7b3W2GnhI
-        Wt9Viyv0mykrJsoJ6v80F8XyANSz45Y=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-gUax4OPVOWWjWoH5cflGEg-1; Tue, 19 Apr 2022 14:59:16 -0400
-X-MC-Unique: gUax4OPVOWWjWoH5cflGEg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 46DAD2999B53;
-        Tue, 19 Apr 2022 18:59:16 +0000 (UTC)
-Received: from thuth.com (unknown [10.39.192.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2909E413736;
-        Tue, 19 Apr 2022 18:59:11 +0000 (UTC)
-From:   Thomas Huth <thuth@redhat.com>
-To:     kvm@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v2 3/4] KVM: s390: selftests: Use TAP interface in the tprot test
-Date:   Tue, 19 Apr 2022 20:58:56 +0200
-Message-Id: <20220419185857.128351-4-thuth@redhat.com>
-In-Reply-To: <20220419185857.128351-1-thuth@redhat.com>
-References: <20220419185857.128351-1-thuth@redhat.com>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=yrDZi8RMHpoQYGjBhUR4MquierfF40OlMH05yPCr678=;
+        b=NPvKM/Wy8mQo++H2OW7Voa1icNv7WJbylKqcGbmX9/8e2j/yCYoiJqcJ0+5o9B005Mpzj/
+        TD+yw6C+vRnnfSqzgCvjEYc+SWyUsoaK+QzztzQGEAAJVJC2oEMbsbx74N6rtA0u15QPpf
+        KNmXSR9VCSZUViMcCDgEmNh/kg8/la0=
+Date:   Tue, 19 Apr 2022 20:59:16 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-um@lists.infradead.org, X86 ML <x86@kernel.org>,
+        linux-xtensa@linux-xtensa.org
+Subject: Re: [PATCH v5 07/11] x86: use fallback for random_get_entropy()
+ instead of zero
+Message-ID: <Yl8GhNjwPLNiUfSZ@zn.tnic>
+References: <20220419111650.1582274-1-Jason@zx2c4.com>
+ <20220419111650.1582274-8-Jason@zx2c4.com>
+ <Yl78gLLcSb3EHv0B@zn.tnic>
+ <CAHmME9q03Je-ROzzHCgZC0vy1n=y8bsGBOAs8U_K_r3ebLNHbw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHmME9q03Je-ROzzHCgZC0vy1n=y8bsGBOAs8U_K_r3ebLNHbw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The tprot test currently does not have any output (unless one of
-the TEST_ASSERT statement fails), so it's hard to say for a user
-whether a certain new sub-test has been included in the binary or
-not. Let's make this a little bit more user-friendly and include
-some TAP output via the kselftests.h interface.
+On Tue, Apr 19, 2022 at 08:38:41PM +0200, Jason A. Donenfeld wrote:
+> I think I prefer doing (a), and leaving (b) for another time when you
+> or another x86 maintainer can do so. But I'll do whichever you say.
+> Which would you like?
 
-Signed-off-by: Thomas Huth <thuth@redhat.com>
----
- tools/testing/selftests/kvm/s390x/tprot.c | 28 +++++++++++++++++++----
- 1 file changed, 23 insertions(+), 5 deletions(-)
+We are switching all feature checks to cpu_feature_enabled() so you
+might as well do the new preferred way of checking when adding a
+new function and so that we have one less place to touch. Which is
+appreciated. :)
 
-diff --git a/tools/testing/selftests/kvm/s390x/tprot.c b/tools/testing/selftests/kvm/s390x/tprot.c
-index c097b9db495e..baba883d7a6d 100644
---- a/tools/testing/selftests/kvm/s390x/tprot.c
-+++ b/tools/testing/selftests/kvm/s390x/tprot.c
-@@ -8,6 +8,7 @@
- #include <sys/mman.h>
- #include "test_util.h"
- #include "kvm_util.h"
-+#include "kselftest.h"
- 
- #define PAGE_SHIFT 12
- #define PAGE_SIZE (1 << PAGE_SHIFT)
-@@ -63,12 +64,12 @@ static enum permission test_protection(void *addr, uint8_t key)
- }
- 
- enum stage {
--	STAGE_END,
- 	STAGE_INIT_SIMPLE,
- 	TEST_SIMPLE,
- 	STAGE_INIT_FETCH_PROT_OVERRIDE,
- 	TEST_FETCH_PROT_OVERRIDE,
- 	TEST_STORAGE_PROT_OVERRIDE,
-+	STAGE_END			/* this must be the last entry */
- };
- 
- struct test {
-@@ -182,7 +183,7 @@ static void guest_code(void)
- 	GUEST_SYNC(perform_next_stage(&i, mapped_0));
- }
- 
--#define HOST_SYNC(vmp, stage)							\
-+#define HOST_SYNC_NO_TAP(vmp, stage)						\
- ({										\
- 	struct kvm_vm *__vm = (vmp);						\
- 	struct ucall uc;							\
-@@ -198,12 +199,21 @@ static void guest_code(void)
- 	ASSERT_EQ(uc.args[1], __stage);						\
- })
- 
-+#define HOST_SYNC(vmp, stage)			\
-+{						\
-+	HOST_SYNC_NO_TAP(vmp, stage);		\
-+	ksft_test_result_pass("" #stage "\n");	\
-+}
-+
- int main(int argc, char *argv[])
- {
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	vm_vaddr_t guest_0_page;
- 
-+	ksft_print_header();
-+	ksft_set_plan(STAGE_END);
-+
- 	vm = vm_create_default(VCPU_ID, 0, guest_code);
- 	run = vcpu_state(vm, VCPU_ID);
- 
-@@ -212,9 +222,13 @@ int main(int argc, char *argv[])
- 	HOST_SYNC(vm, TEST_SIMPLE);
- 
- 	guest_0_page = vm_vaddr_alloc(vm, PAGE_SIZE, 0);
--	if (guest_0_page != 0)
--		print_skip("Did not allocate page at 0 for fetch protection override tests");
--	HOST_SYNC(vm, STAGE_INIT_FETCH_PROT_OVERRIDE);
-+	if (guest_0_page != 0) {
-+		HOST_SYNC_NO_TAP(vm, STAGE_INIT_FETCH_PROT_OVERRIDE);
-+		ksft_test_result_skip("STAGE_INIT_FETCH_PROT_OVERRIDE - "
-+				      "Did not allocate page at 0\n");
-+	} else {
-+		HOST_SYNC(vm, STAGE_INIT_FETCH_PROT_OVERRIDE);
-+	}
- 	if (guest_0_page == 0)
- 		mprotect(addr_gva2hva(vm, (vm_vaddr_t)0), PAGE_SIZE, PROT_READ);
- 	run->s.regs.crs[0] |= CR0_FETCH_PROTECTION_OVERRIDE;
-@@ -224,4 +238,8 @@ int main(int argc, char *argv[])
- 	run->s.regs.crs[0] |= CR0_STORAGE_PROTECTION_OVERRIDE;
- 	run->kvm_dirty_regs = KVM_SYNC_CRS;
- 	HOST_SYNC(vm, TEST_STORAGE_PROT_OVERRIDE);
-+
-+	kvm_vm_free(vm);
-+
-+	ksft_finished();
- }
+Thx!
+
 -- 
-2.27.0
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
