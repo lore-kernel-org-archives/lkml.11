@@ -2,84 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89929C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351021AbiDSNH7 (ORCPT
+        id S1349864AbiDSNKu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
+        Tue, 19 Apr 2022 09:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351862AbiDSNHk (ORCPT
+        with ESMTP id S229483AbiDSNKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:07:40 -0400
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625563897;
-        Tue, 19 Apr 2022 06:04:57 -0700 (PDT)
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-e2442907a1so17365021fac.8;
-        Tue, 19 Apr 2022 06:04:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hmv7BCoG9xMuTHy7XQpuDdOYvPkOMNXrFUTmk6cE7FI=;
-        b=WPpkprkBmLhbjM2M/ChvvDDSmcv+A7E9xjsa2YirxJR+2tSwI32RRKQ2ShArthNBR9
-         /l1fmd09yCeW0i4I5xlthMkjk74Hm98nszYfUQPXc6DLLMqxFRIpN4jkvO1xa1t86D+c
-         h3DFivk27yrNid9+f+KbHsZtCe/To5cTH97WOO0BX34PsxymfazvlQ8kFvdOwkFoEkXJ
-         /qkdHpQjWj15BmhQ00lE18h8urRhY5AyUlDvYboCTRIWJr7k8M2jYoDMpzS+652Nzzl+
-         sc0dxFbzum3nxGq7Q3vHMLwzbC+ZEJ4kAtCCZIk0j2htgz0c6vLFsRKDwqUE6Lvmf34u
-         YkFw==
-X-Gm-Message-State: AOAM533wthEaoiIF2aRou5LvFTYfExTXSaMn0N2sKinz3UoJPvf3tiLo
-        FDFwN+lSQvHLluAXLWSBzm0HX4Udpg==
-X-Google-Smtp-Source: ABdhPJzCnK5W/ao6T4hWW6UKbG98kmw2fUOYc1OlcalHsw1nMMRHO8pUpp1tQ+BR6PjNWJHfYHLhYQ==
-X-Received: by 2002:a05:6870:f713:b0:d2:8adb:aaeb with SMTP id ej19-20020a056870f71300b000d28adbaaebmr6467542oab.111.1650373496712;
-        Tue, 19 Apr 2022 06:04:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q1-20020a056820028100b00335f00b5b9bsm5268538ood.15.2022.04.19.06.04.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 06:04:56 -0700 (PDT)
-Received: (nullmailer pid 2242450 invoked by uid 1000);
-        Tue, 19 Apr 2022 13:04:55 -0000
-Date:   Tue, 19 Apr 2022 08:04:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Drew Fustini <dfustini@baylibre.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Dave Gerlach <d-gerlach@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, Nishanth Menon <nm@ti.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: wkup-m3-ipc: Add ti,set-io-isolation
- property
-Message-ID: <Yl6zdxYUyGiO9AG7@robh.at.kernel.org>
-References: <20220414192722.2978837-1-dfustini@baylibre.com>
- <20220414192722.2978837-2-dfustini@baylibre.com>
+        Tue, 19 Apr 2022 09:10:47 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9962B18B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650373681; x=1681909681;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=i7kopf3YArKvjboCT3liagNNqNzvCwqxIhyPrNCjFeU=;
+  b=GEv7cr/ARIDonaJd/1WdnhStCep/zoCGWPoO645fbB//9UmGG8civ6bV
+   ea57FHgJ6YcV2ds96k4y+5BXUKDpyBnez5RitzUD0C7N5ErYIErDe186E
+   r7X52lC48fsPnY+xDIieZb4Xkwt0r//AjEcUBL4Uz/uorD8p69zKTNmhv
+   LgkBKvE3QuW8C8b46dJT2EzYPEGzQO5pKZ5RRKs1ZzlND5jSwSdKUz9cd
+   s7+n0t+3LKk7jhJXzCh6elJOWmfX9KOJ6nuHmVJcklgoKpbYoniAAk/HT
+   HmXjA/NFbFdOz4kxJUN8U3+uJmF+g60Q+DPCnPsj8/4rgbGbsEgu5i1qv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="262618207"
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="262618207"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:08:00 -0700
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="554720563"
+Received: from kkho1-mobl3.amr.corp.intel.com (HELO [10.209.54.209]) ([10.209.54.209])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:07:59 -0700
+Message-ID: <e31ff7c4-7cdc-fdaf-b12c-fc1e51798a1b@linux.intel.com>
+Date:   Tue, 19 Apr 2022 08:07:58 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414192722.2978837-2-dfustini@baylibre.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: out-of-bounds access in sound/soc/sof/topology.c
+Content-Language: en-US
+To:     =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Jaska Uimonen <jaska.uimonen@linux.intel.com>
+Cc:     alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.com>,
+        linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>,
+        Mark Brown <broonie@kernel.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        sound-open-firmware@alsa-project.org
+References: <Ylk5o3EC/hyX5UQ0@google.com>
+ <8eeb08ec-4836-cf7d-2285-8ed74ccfc1cb@linux.intel.com>
+ <8986a1c6-b546-7a66-a778-048487624c95@linux.intel.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <8986a1c6-b546-7a66-a778-048487624c95@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 12:27:23 -0700, Drew Fustini wrote:
-> Add documentation for the ti,set-io-isolation DT property on the wkup_m3_ipc
-> node which tells the wkup_m3_ipc driver to use the wkup_m3 to enable
-> IO Isolation during low power mode transitions on am43xx platforms.
-> 
-> Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
-> [dfustini: convert to YAML, make DTS example that passes check]
-> Signed-off-by: Drew Fustini <dfustini@baylibre.com>
-> ---
-> Changes from v2:
-> - correct indentation of the 'allOf:' block
-> 
-> Changes from v1:
-> - correct typo of 'ti,set-io-isolation' property in subject
-> - make 'ti,set-io-isolation' only valid for 'ti,am4372-wkup-m3-ipc'
-> 
->  .../bindings/soc/ti/wkup-m3-ipc.yaml          | 78 +++++++++++++++++--
->  1 file changed, 73 insertions(+), 5 deletions(-)
-> 
 
-Applied, thanks!
+
+On 4/19/22 06:50, Péter Ujfalusi wrote:
+> Hi Sergey, Pierre,
+> 
+> On 15/04/2022 19:00, Pierre-Louis Bossart wrote:
+>> Thanks Sergey for this email.
+>>
+>> On 4/15/22 04:23, Sergey Senozhatsky wrote:
+>>> Hi,
+>>>
+>>> I'm running 5.10.111 LTS, so if this has been fixed already then we definitely
+>>> want to cherry pick the fix for -stable.
+> 
+> I'm afraid, that this is still valid as of today, but in real life I
+> don't think it can happen.
+> 
+>>> Anonymous union in this struct is of zero size
+>>>
+>>> /* generic control data */
+>>> struct sof_ipc_ctrl_data {
+>>>         struct sof_ipc_reply rhdr;
+>>>         uint32_t comp_id;
+>>>
+>>>         /* control access and data type */
+>>>         uint32_t type;          /**< enum sof_ipc_ctrl_type */
+>>>         uint32_t cmd;           /**< enum sof_ipc_ctrl_cmd */
+>>>         uint32_t index;         /**< control index for comps > 1 control */
+>>>
+>>>         /* control data - can either be appended or DMAed from host */
+>>>         struct sof_ipc_host_buffer buffer;
+>>>         uint32_t num_elems;     /**< in array elems or bytes for data type */
+>>>         uint32_t elems_remaining;       /**< elems remaining if sent in parts */
+>>>
+>>>         uint32_t msg_index;     /**< for large messages sent in parts */
+>>>
+>>>         /* reserved for future use */
+>>>         uint32_t reserved[6];
+>>>
+>>>         /* control data - add new types if needed */
+>>>         union {
+>>>                 /* channel values can be used by volume type controls */
+>>>                 struct sof_ipc_ctrl_value_chan chanv[0];
+>>>                 /* component values used by routing controls like mux, mixer */
+>>>                 struct sof_ipc_ctrl_value_comp compv[0];
+>>>                 /* data can be used by binary controls */
+>>>                 struct sof_abi_hdr data[0];
+>>>         };
+>>> } __packed;
+>>>
+>>> sof_ipc_ctrl_value_chan and sof_ipc_ctrl_value_comp are of the same
+>>> size - 8 bytes, while sof_abi_hdr is much larger - _at least_ 32 bytes
+>>> (`__u32 data[0]` in sof_abi_hdr suggest that there should be more
+>>> payload after header). But they all contribute 0 to sizeof(sof_ipc_ctrl_data).
+>>>
+>>> Now control data allocations looks as follows
+>>>
+>>> 	scontrol->size = struct_size(scontrol->control_data, chanv,
+>>> 				     le32_to_cpu(mc->num_channels));
+>>> 	scontrol->control_data = kzalloc(scontrol->size, GFP_KERNEL);
+>>>
+>>> Which is sizeof(sof_ipc_ctrl_data) + mc->num_channels * sizeof(sof_ipc_ctrl_value_chan)
+>>>
+>>> For some reason it uses sizeof(sof_ipc_ctrl_value_chan), which is not
+>>> the largest member of the union.
+>>>
+>>> And this is where the problem is: in order to make control->data.FOO loads
+>>> and stores legal we need mc->num_channels to be of at least 4. So that
+>>>
+>>>    sizeof(sof_ipc_ctrl_data) + mc->num_channels * sizeof(sof_ipc_ctrl_value_chan)
+>>>
+>>>                 92           +        4         *            8
+>>>
+>>> will be the same as
+>>>
+>>>    sizeof(sof_ipc_ctrl_data) + sizeof(sof_abi_hdr).
+>>>
+>>>                 92           +           32
+>>>
+>>> Otherwise scontrol->control_data->data.FOO will access nearby/foreign
+>>> slab object.
+>>>
+>>> And there is at least one such memory access. In sof_get_control_data().
+>>>
+>>> 	wdata[i].pdata = wdata[i].control->control_data->data;
+>>> 	*size += wdata[i].pdata->size;
+>>>
+>>>
+>>> pdata->size is at offset 8, but if, say, mc->num_channels == 1 then
+>>> we allocate only 8 bytes for pdata, so pdata->size is 4 bytes outside
+>>> of allocated slab object.
+>>>
+>>> Thoughts?
+> 
+> Your analyzes are spot on, unfortunately. But...
+> 
+> As of today, the sof_get_control_data() is in the call path of
+> (ipc3-topology.c):
+> 
+> sof_widget_update_ipc_comp_process() -> sof_process_load() ->
+> sof_get_control_data()
+> 
+> sof_widget_update_ipc_comp_process() is the ipc_setup callback for
+> snd_soc_dapm_effect. If I'm not mistaken these only carries bin payload
+> and never MIXER/ENUM/SWITCH/VOLUME.
+> This means that the sof_get_control_data() is only called with
+> SND_SOC_TPLG_TYPE_BYTES and for that the allocated data area is correct.
+> 
+> This can explain why we have not seen any issues so far. This does not
+> renders the code right, as how it is written atm is wrong.
+
+
+Sergey's results with KASAN show that there's a real-life problem though. I also don't understand how that might happen.
+
+Could it be that these results are with a specific topology where our assumptions are incorrect?
+
