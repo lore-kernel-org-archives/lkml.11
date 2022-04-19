@@ -2,90 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 848EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A46C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350330AbiDSJX1 (ORCPT
+        id S1350334AbiDSJZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 05:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        Tue, 19 Apr 2022 05:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348089AbiDSJXZ (ORCPT
+        with ESMTP id S232418AbiDSJZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 05:23:25 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A2F1EC7B;
-        Tue, 19 Apr 2022 02:20:37 -0700 (PDT)
-X-UUID: 5785afea21194b938aaf14636734ca62-20220419
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:bb22d69a-8eda-4df4-b539-fabbd3fc1d47,OB:10,L
-        OB:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:95
-X-CID-INFO: VERSION:1.1.4,REQID:bb22d69a-8eda-4df4-b539-fabbd3fc1d47,OB:10,LOB
-        :10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:95
-X-CID-META: VersionHash:faefae9,CLOUDID:3fad5def-06b0-4305-bfbf-554bfc9d151a,C
-        OID:973f1007eb6d,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 5785afea21194b938aaf14636734ca62-20220419
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1915951628; Tue, 19 Apr 2022 17:20:33 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 19 Apr 2022 17:20:32 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 19 Apr 2022 17:20:31 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH] dt-bindings: arm: Add compatible for Mediatek MT8192
-Date:   Tue, 19 Apr 2022 17:20:30 +0800
-Message-ID: <20220419092030.30519-1-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Tue, 19 Apr 2022 05:25:24 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16A92A24B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:22:41 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id bv16so4419987wrb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 02:22:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p8P6IeNR1TwtrMg6RsrKfdY4Yo5Rygb5DfiPVUoKhK8=;
+        b=by0FVyX6p0zMcvlQP3Y+c8K8TzgSgvcE5pyCF1vetrjvKiBQtCgOwo2ZZWote70zYk
+         o9LMkdzdoRmlCNb2amRWJGhf1KdRzvw+TmHMwSj3jdMJksgGdAr/RMXpGiMyCbL3wax2
+         91qaPs2u8lB9l4uXPjOarOfRvJX+DT5UFJGrw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p8P6IeNR1TwtrMg6RsrKfdY4Yo5Rygb5DfiPVUoKhK8=;
+        b=576a/lEcLGSvRbS7tWUKoRVCLNixeVTC83et7GqYYzOLG8HNEPahpy6gwT/k3LlLhO
+         fhJApVHzuhNwZA0R8vyc+SloNo08FV3I4pZKy7Qn4HYok+/xw3O0f3NDn9oQvBU7M8z7
+         bSP1IKR6SrfzLiG30gBC0vHqgqmZ3hOHs+jN4hcsLu6AZbXtvB/HGgucJw+vGFJowuSJ
+         e2Tq+AktvPzjX0waO9PR32pfQhFQXE16B/LNVxRrCnz7idhA3L846amWTBvtd0XRDUU9
+         aTbhC+QH1VmRZsdIXAIu3k7KmWauqyTb4vdC7S+Oq7xnH6ostJS3bW9chv22Pnw8iTrW
+         jMFg==
+X-Gm-Message-State: AOAM532y8UZHahhNvAoNI2MOUPg2HJl7lN5mDX5PekON452LKElmC40h
+        fO+wkjgRiL1DID8r34Wxht/K7xHjt+8a+xbHkbFQCg==
+X-Google-Smtp-Source: ABdhPJzFGn7LU0fqJ7O61lsvDaAZ/2DWIaGN8GbhlNMmxqCmPG3XLkxvdSi+ys256zE0obhK3F0PwBs+L0/P7lP7rrk=
+X-Received: by 2002:a05:6000:18c1:b0:207:87dc:94b2 with SMTP id
+ w1-20020a05600018c100b0020787dc94b2mr10927908wrq.437.1650360160433; Tue, 19
+ Apr 2022 02:22:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <1649844596-5264-1-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <1649844596-5264-1-git-send-email-quic_srivasam@quicinc.com>
+From:   Judy Hsiao <judyhsiao@chromium.org>
+Date:   Tue, 19 Apr 2022 17:22:29 +0800
+Message-ID: <CAJXt+b9EKzJ6V2OxYwMiexw2sFhwc0U28XuerC7829ZuHAvghg@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: qcom: lpass-platform: Update memremap flag to MEMREMAP_WC
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
+        srinivas.kandagatla@linaro.org, quic_rohkumar@quicinc.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds dt-binding documentation for the Mediatek MT8192
-reference board.
-
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
-index ab0593c77321..3a9b92ee915b 100644
---- a/Documentation/devicetree/bindings/arm/mediatek.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
-@@ -131,6 +131,10 @@ properties:
-           - enum:
-               - mediatek,mt8183-evb
-           - const: mediatek,mt8183
-+      - items:
-+          - enum:
-+              - mediatek,mt8192-evb
-+          - const: mediatek,mt8192
-       - items:
-           - enum:
-               - mediatek,mt8195-evb
--- 
-2.18.0
-
+> -       buf->area = (unsigned char * __force)memremap(buf->addr, buf->bytes, MEMREMAP_WT);
+> +       buf->area = (unsigned char * __force)memremap(buf->addr, buf->bytes, MEMREMAP_WC);
+Should we replace the memremap() with other standard DMA buffer
+allocation API like: snd_pcm_set_managed_buffer() ?
+Thanks!
+>
+>         return 0;
+>  }
+> --
+> 2.7.4
+>
