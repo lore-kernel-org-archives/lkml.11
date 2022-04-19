@@ -2,168 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E93C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A58C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349007AbiDSGrt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 02:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S244714AbiDSGs5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 02:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349028AbiDSGrf (ORCPT
+        with ESMTP id S232364AbiDSGs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 02:47:35 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46625BC0A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 23:44:51 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id g18so30835637ejc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 23:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WDQdMsSQtFeONfrPWRQrEMWsmK9TYCXo9oQyKgCX1d4=;
-        b=W+DEw3OjhbAorYeQvkZAGbdpHDkjISIw2sWe7zSQRBSDh3kasiZwD3BvHX9g6DsaeF
-         Z1zeOIp/nCjpP4LNqhDwh2Bl39liGxKTC2D2N1TbhkAOpaEsRLf6zRK+OAfWbHawGpVb
-         dDc1ONAw+G1uVAm4MZnn/jw7CWyH7TD/VjyM9sfIHDdI+ENh9f2zRasrOFLafKxDS1h5
-         47lMDtfkJGU/nuspJfIvREbR+WZYQM6sy8m0HMbdeOjVLvGYLAcFsTJpMqz4qaYpbj6C
-         dwjMD3EC04lWTJeBRG1AqBD4X/cUvQ6+LjCk4SyMnRfaXQ0CEKvVtcRE2Ns0E+U1I3+k
-         ZeXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WDQdMsSQtFeONfrPWRQrEMWsmK9TYCXo9oQyKgCX1d4=;
-        b=HgCTBJrWpuW9bXOJIvwRZfBYBqEgEetPGWBKshxIKqpApwcSiphaeCH3PdXwS6v73F
-         5O9ID7s3CG+os4GJGMOdMoJQ0y5Tk4mLELifZL9QMb5i30gtDa+ot25tcFLUQcBhLrCw
-         BQqgMA6+B/TmoQ1YKxmfoZL9gSxgeFdaLxUlnzIdNdxG4Bn8r/XxMWGNokYlNEedgwNR
-         Z3OI1gLYWLyt0wSBqndKUvscdJ+Dj7Tm/vmqMeDyJnAigQSWW9K6IYNwxer9xuEZz3wa
-         EhCJXstwX8mWaLQU66OtTUy7888wB54FajLPq34/y0/fStAvY+O7i8tQI55jmEDgBTtj
-         U2qQ==
-X-Gm-Message-State: AOAM5306bVi4pbgBaNcL1S5Q+jB3RtTw8/Wbdu1M/697OzNu9SKm86ph
-        7EufEr5kf4DyIJezUoaikUDKKg==
-X-Google-Smtp-Source: ABdhPJxZvaWhIZoWqA8l9E3QzXXqm8pjAwVmspK/s+lgWoyTFUJy55XOrlYTGTP6SvstEVOAaHiuEQ==
-X-Received: by 2002:a17:907:6095:b0:6e7:cc3f:c33d with SMTP id ht21-20020a170907609500b006e7cc3fc33dmr12375812ejc.570.1650350689890;
-        Mon, 18 Apr 2022 23:44:49 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id eq7-20020a056402298700b00419d8d46a8asm7693260edb.39.2022.04.18.23.44.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 23:44:49 -0700 (PDT)
-Message-ID: <39b68e91-93cc-ad74-d064-a29ff01d60a6@linaro.org>
-Date:   Tue, 19 Apr 2022 08:44:48 +0200
+        Tue, 19 Apr 2022 02:48:56 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F0F13E91
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 23:46:14 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J5thmQ026853;
+        Tue, 19 Apr 2022 06:46:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=OwrZ1xSPlHo3K6MX7dSt0I5DPkr9r+mFtOkAh+aIZzM=;
+ b=jxM5oSUSisNE/s8ojyMm/pLlzCxNaKqExNwVu6us450OfARL9/oeIIVZo1TVsuG+z1Ki
+ Wa9SQ4my1VrQQ7jO+dJgOtKtDRGxFNXsYHG2QqyvfwtqMgbcTYYOaMQDL6y1Xhv51qnM
+ Z6HieqsgBeXmYyllhr/97ck4Q9im8WA7PjKII3YmkPjtqDOsstktG0yyQdp+FDqLDwi9
+ RDqU3Q59QBJsUq6vFF9+4HV3JvT30z7nRgv1T5LhpoCUT7fwdksXWUDHDT9JicNJaCw7
+ bqD7SWGcPeRkeKP20i4D3vJ5nwff8gyKCykcRTRys3gZtosa7rZlZL7dGEV7gStna2ar gA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg791y846-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 06:46:08 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23J6cwFA018972;
+        Tue, 19 Apr 2022 06:46:07 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg791y83j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 06:46:07 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23J6axYP028134;
+        Tue, 19 Apr 2022 06:46:05 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3ffne931er-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 06:46:05 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23J6k2mS26476910
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 06:46:03 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DC43BAE053;
+        Tue, 19 Apr 2022 06:46:02 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0284BAE04D;
+        Tue, 19 Apr 2022 06:46:02 +0000 (GMT)
+Received: from linux.ibm.com (unknown [9.145.146.209])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 19 Apr 2022 06:46:01 +0000 (GMT)
+Date:   Tue, 19 Apr 2022 09:45:59 +0300
+From:   Mike Rapoport <rppt@linux.ibm.com>
+To:     Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Suren Baghdasaryan <surenb@google.com>
+Subject: Re: [PATCH] mm, page_alloc: check pfn is valid before moving to
+ freelist
+Message-ID: <Yl5ap4veIr5ugce1@linux.ibm.com>
+References: <cover.1649794059.git.quic_sudaraja@quicinc.com>
+ <fb3c8c008994b2ed96f74b6b9698ff998b689bd2.1649794059.git.quic_sudaraja@quicinc.com>
+ <Ylc3JGy6DUq00ryv@linux.ibm.com>
+ <ee7bfc09-80af-a348-36ab-9d4ba9c612fa@quicinc.com>
+ <Yl0IZWT2nsiYtqBT@linux.ibm.com>
+ <85dfcf28-7e43-7bfe-d63a-97dde28cf207@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] regulator: dt-bindings: qcom,rpmh: document
- supplies per variant
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220412073123.27229-1-krzysztof.kozlowski@linaro.org>
- <20220412073123.27229-2-krzysztof.kozlowski@linaro.org>
- <YlhC5B+ZaNn9wUuB@robh.at.kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YlhC5B+ZaNn9wUuB@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <85dfcf28-7e43-7bfe-d63a-97dde28cf207@quicinc.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: VPFBGIVXxo8MypdEOJbUVELqEq4RSA--
+X-Proofpoint-GUID: 2Swav3roYJ1Jp12puw-sVORFdyr8ZjQJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_02,2022-04-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
+ phishscore=0 suspectscore=0 spamscore=0 adultscore=0 mlxscore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1015 priorityscore=1501
+ mlxlogscore=766 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204190034
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/04/2022 17:51, Rob Herring wrote:
-> On Tue, Apr 12, 2022 at 09:31:22AM +0200, Krzysztof Kozlowski wrote:
->> The RPMH regulator binding covers several devices with different
->> regulator supplies, so it uses patterns matching broad range of these
->> supplies.  This works fine but is not specific and might miss actual
->> mistakes when a wrong supply property is used for given variant.
->>
->> Describe the supplies depending on the compatible, using a defs-allOf
->> method.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  .../regulator/qcom,rpmh-regulator.yaml        | 290 +++++++++++++++++-
->>  1 file changed, 276 insertions(+), 14 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
->> index 842ccef691b8..773536fe37c7 100644
->> --- a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
->> +++ b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
->> @@ -95,35 +95,297 @@ properties:
->>    vdd-rgb-supply:
->>      description: Input supply phandle of rgb.
->>  
->> -  vin-lvs-1-2-supply:
->> -    description: Input supply phandle of one or more regulators.
->> -
->> -  vdd-bob-supply:
->> -    description: BOB regulator parent supply phandle.
->> -
->>    bob:
->>      type: object
->>      $ref: "regulator.yaml#"
->>      description: BOB regulator node.
->>  
->>  patternProperties:
->> -  "^vdd-s([0-9]+)-supply$":
->> -    description: Input supply phandle(s) of one or more regulators.
->> -
->> -  "^vdd-(l[0-9]+[-]){1,5}supply$":
->> -    description: Input supply phandle(s) of one or more regulators.
->> -
->>    "^(smps|ldo|lvs)[0-9]+$":
->>      type: object
->>      $ref: "regulator.yaml#"
->>      description: smps/ldo regulator nodes(s).
->>  
->> -additionalProperties: false
->> -
->>  required:
->>    - compatible
->>    - qcom,pmic-id
->>  
->> +allOf:
->> +  - $ref: "#/$defs/pm6150"
->> +  - $ref: "#/$defs/pm6150l"
->> +  - $ref: "#/$defs/pm7325"
->> +  - $ref: "#/$defs/pm8005"
->> +  - $ref: "#/$defs/pm8009"
->> +  - $ref: "#/$defs/pm8150"
->> +  - $ref: "#/$defs/pm8150l"
->> +  - $ref: "#/$defs/pm8350"
->> +  - $ref: "#/$defs/pm8350c"
->> +  - $ref: "#/$defs/pm8450"
->> +  - $ref: "#/$defs/pm8998"
->> +  - $ref: "#/$defs/pmg1110"
->> +  - $ref: "#/$defs/pmi8998"
->> +  - $ref: "#/$defs/pmr735a"
->> +  - $ref: "#/$defs/pmx55"
->> +  - $ref: "#/$defs/pmx65"
->> +
->> +unevaluatedProperties: false
->> +
->> +$defs:
+On Mon, Apr 18, 2022 at 03:32:21PM -0700, Sudarshan Rajagopalan wrote:
+> On 4/18/2022 12:24 AM, Mike Rapoport wrote:
+> > On Fri, Apr 15, 2022 at 02:30:52AM +0530, Sudarshan Rajagopalan wrote:
+> > > On 4/14/2022 2:18 AM, Mike Rapoport wrote:
+> > >
+> > > We have a feature where we carve out some portion of memory in RAM partition
+> > > table, hence we see such base addresses here.
+> > >
+> > Cannot the firmware align that portion at some sensible boundary?
+> > Or at least report the carved out range as "reserved" (and maybe NOMAP)
+> > rather than as hole?
 > 
-> I'm not following on why you need $defs here rather than putting the 
-> if/then schemas under the 'allOf'. $defs should primarily only be used 
-> where it saves duplicating a schema 2 or more times. That could be the 
-> case here if there's a case that's a subset of another case.
+> We can have the firmware or ABL align the address to next pageblock size
+> boundary. This would simple mean loosing few MBs of memory with alignment.
+> Same with making them as "reserved" with "nomap".
 
-The allOf+defs is a workaround for schema behavior. The entire approach
-if defining properties in "if:then:" works only with
-unevaluatedProperties, not with additionalProperties. However
-unevaluatedProperties require to reference other schema, which I do not
-do here. I don't have other schema.
+Reserved and nomap do not have to be aligned and there will be a valid
+struct page for such regions.
 
-allOf+def has references tricking schema to accept unevaluatedProperties.
+Still, the kernel should be able to cope with firmware oddities so a fix
+for 5.15 is still needed.
+ 
+> > That said, your patch will not fix anything in the current kernel because
+> > the issue should not happen there, right?
+> 
+> Yes, the issue seems to be fixed in latest kernel version with the patches
+> to drop arm64 pfn_valid. But the core issue is present on previous kernel
+> versions with the scenario explained. Any procedure to have this fixed on
+> 5.15 kernel?
+>
+> > I'd suggest backporting a9c38c5d267c ("dma-mapping: remove bogus test for
+> > pfn_valid from dma_map_resource") and 3de360c3fdb3 ("arm64/mm: drop
+> > HAVE_ARCH_PFN_VALID") to 5.15.
+>
+> The issue is not seen with these patches backported. Not sure of the
+> procedure to send patches for 5.15 kernel, but can we have them backported
+> to 5.15?
 
+Please look at Documentation/process/stable-kernel-rules.rst for
+explanation how to send patches to stable kernels. 
 
-Best regards,
-Krzysztof
+-- 
+Sincerely yours,
+Mike.
