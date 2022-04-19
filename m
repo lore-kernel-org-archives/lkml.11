@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E3EC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860A6C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355793AbiDSQxy (ORCPT
+        id S1355820AbiDSQyA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
+        Tue, 19 Apr 2022 12:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348967AbiDSQqC (ORCPT
+        with ESMTP id S1355082AbiDSQoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:46:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113A5396A3;
-        Tue, 19 Apr 2022 09:43:19 -0700 (PDT)
+        Tue, 19 Apr 2022 12:44:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AC523BF4;
+        Tue, 19 Apr 2022 09:41:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A15E56145C;
-        Tue, 19 Apr 2022 16:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BED67C385A9;
-        Tue, 19 Apr 2022 16:43:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81744B819DE;
+        Tue, 19 Apr 2022 16:41:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035C7C385AE;
+        Tue, 19 Apr 2022 16:41:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386598;
-        bh=v2JXUsT+aPSiyV8AWZ0OLtn99RZRKtVDeuty5M4eG68=;
+        s=k20201202; t=1650386489;
+        bh=CV2DfOuzXf7kUPil8tZ7gZo9izvbbtgmXRdVGoTTjS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tt/fiI6JfMKScsjC4gupDTlXwIFAYWcsYENflWn5n3kMrbCN+Y2cCr3glEwE1sItJ
-         cONsIQQLt01Y/qCAeHUUbJd9TpD27gE/DUc3zMZ7c0U2VwpCWQ+qBf7uwrq/GZGzTX
-         3FGOj+knk17r2GSyltkagM0yCF+n9LJkDIwNmtctqNly1C9p720AIevLts/VbLM17G
-         O+4nFGEcvsfnWMk8Au/5OQB6coNhg3LP2cgERB8iHAG0NNlBzSNRpU2laCxc90/bD8
-         8gZIgUWRqfgnaIv2WyLz/01oqgCe1ixn6EBO/7GUMc0aVvmzyH6K1PsZ1Shk5OoOYF
-         /MoVumyBheReg==
+        b=KP5D3/+gEbUNQwq4+2Dg5ZiO0/4UD7UBYxqQ+Yhzyb8rcMpQy8IwFnD3vc7nRThh9
+         0S/UDwriRgtkpACByKJG0x9h6S5YK9TudrYKnkr6NhsX4J5fKn6ygewSDktxKDpnIv
+         tCIuO2FwqWl//65PEBymVPwNOmkUQYMSZ9p1GIJ8MV0q3d+ZIUxvSSsZsxbivMXbmX
+         rBvFb4Uy8VNcVIp7gUj0ZEUm+nWs62XeJSEZiKgu2W6BY2wI3KzjhVsDVg/3FFR+Sz
+         R7ffATntjCQqbOT5/L1YIUTX+OZ6M/ixyUEcIRbi2l9O7ozPWfqM11qZUjM90rXQq0
+         vHB3D8vED3y3w==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
@@ -61,9 +61,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
         linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 34/48] ARM: pxa: pcmcia: move smemc configuration back to arch
-Date:   Tue, 19 Apr 2022 18:37:56 +0200
-Message-Id: <20220419163810.2118169-35-arnd@kernel.org>
+Subject: [PATCH 20/48] ARM: pxa: spitz: use gpio descriptors for audio
+Date:   Tue, 19 Apr 2022 18:37:42 +0200
+Message-Id: <20220419163810.2118169-21-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
 References: <20220419163810.2118169-1-arnd@kernel.org>
@@ -75,193 +75,247 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Rather than poking at the smemc registers directly from the
-pcmcia/pxa2xx_base driver, move those bits into machine file
-to have a cleaner interface.
+The audio driver should not use a hardwired gpio number
+from the header. Change it to use a lookup table.
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Link: https://lore.kernel.org/lkml/87d0egjzxk.fsf@belgarion.home/
+Acked-by: Mark Brown <broonie@kernel.org>
+Cc: alsa-devel@alsa-project.org
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/mach-pxa/generic.c   | 29 ++++++++++++++++++++++
- drivers/pcmcia/pxa2xx_base.c  | 46 ++++++++++++-----------------------
- include/linux/soc/pxa/smemc.h | 10 ++++++++
- 3 files changed, 55 insertions(+), 30 deletions(-)
- create mode 100644 include/linux/soc/pxa/smemc.h
+ arch/arm/mach-pxa/spitz.c                    | 33 ++++++++++-
+ arch/arm/mach-pxa/{include/mach => }/spitz.h |  2 +-
+ arch/arm/mach-pxa/spitz_pm.c                 |  2 +-
+ sound/soc/pxa/spitz.c                        | 58 ++++++++------------
+ 4 files changed, 57 insertions(+), 38 deletions(-)
+ rename arch/arm/mach-pxa/{include/mach => }/spitz.h (99%)
 
-diff --git a/arch/arm/mach-pxa/generic.c b/arch/arm/mach-pxa/generic.c
-index f9083c4f0aea..fe1d55d328e5 100644
---- a/arch/arm/mach-pxa/generic.c
-+++ b/arch/arm/mach-pxa/generic.c
-@@ -70,6 +70,35 @@ unsigned int get_clk_frequency_khz(int info)
+diff --git a/arch/arm/mach-pxa/spitz.c b/arch/arm/mach-pxa/spitz.c
+index a648e7094e84..cd8f00945373 100644
+--- a/arch/arm/mach-pxa/spitz.c
++++ b/arch/arm/mach-pxa/spitz.c
+@@ -44,7 +44,7 @@
+ #include <linux/platform_data/mmc-pxamci.h>
+ #include <linux/platform_data/usb-ohci-pxa27x.h>
+ #include <linux/platform_data/video-pxafb.h>
+-#include <mach/spitz.h>
++#include "spitz.h"
+ #include "sharpsl_pm.h"
+ #include <mach/smemc.h>
+ 
+@@ -962,11 +962,42 @@ static void __init spitz_i2c_init(void)
+ static inline void spitz_i2c_init(void) {}
+ #endif
+ 
++static struct gpiod_lookup_table spitz_audio_gpio_table = {
++	.dev_id = "spitz-audio",
++	.table = {
++		GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_L - SPITZ_SCP_GPIO_BASE,
++			    "mute-l", GPIO_ACTIVE_HIGH),
++		GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_R - SPITZ_SCP_GPIO_BASE,
++			    "mute-r", GPIO_ACTIVE_HIGH),
++		GPIO_LOOKUP("sharp-scoop.1", SPITZ_GPIO_MIC_BIAS - SPITZ_SCP2_GPIO_BASE,
++			    "mic", GPIO_ACTIVE_HIGH),
++		{ },
++	},
++};
++
++static struct gpiod_lookup_table akita_audio_gpio_table = {
++	.dev_id = "spitz-audio",
++	.table = {
++		GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_L - SPITZ_SCP_GPIO_BASE,
++			    "mute-l", GPIO_ACTIVE_HIGH),
++		GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_R - SPITZ_SCP_GPIO_BASE,
++			    "mute-r", GPIO_ACTIVE_HIGH),
++		GPIO_LOOKUP("i2c-max7310", AKITA_GPIO_MIC_BIAS - AKITA_IOEXP_GPIO_BASE,
++			    "mic", GPIO_ACTIVE_HIGH),
++		{ },
++	},
++};
++
+ /******************************************************************************
+  * Audio devices
+  ******************************************************************************/
+ static inline void spitz_audio_init(void)
+ {
++	if (machine_is_akita())
++		gpiod_add_lookup_table(&akita_audio_gpio_table);
++	else
++		gpiod_add_lookup_table(&spitz_audio_gpio_table);
++
+ 	platform_device_register_simple("spitz-audio", -1, NULL, 0);
  }
- EXPORT_SYMBOL(get_clk_frequency_khz);
  
-+void pxa_smemc_set_pcmcia_timing(int sock, u32 mcmem, u32 mcatt, u32 mcio)
-+{
-+	__raw_writel(mcmem, MCMEM(sock));
-+	__raw_writel(mcatt, MCATT(sock));
-+	__raw_writel(mcio, MCIO(sock));
-+}
-+EXPORT_SYMBOL_GPL(pxa_smemc_set_pcmcia_timing);
-+
-+void pxa_smemc_set_pcmcia_socket(int nr)
-+{
-+	switch (nr) {
-+	case 0:
-+		__raw_writel(0, MECR);
-+		break;
-+	case 1:
-+		/*
-+		 * We have at least one socket, so set MECR:CIT
-+		 * (Card Is There)
-+		 */
-+		__raw_writel(MECR_CIT, MECR);
-+		break;
-+	case 2:
-+		/* Set CIT and MECR:NOS (Number Of Sockets) */
-+		__raw_writel(MECR_CIT | MECR_NOS, MECR);
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(pxa_smemc_set_pcmcia_socket);
-+
- /*
-  * Intel PXA2xx internal register mapping.
-  *
-diff --git a/drivers/pcmcia/pxa2xx_base.c b/drivers/pcmcia/pxa2xx_base.c
-index 7cd1375d6087..0ea41f1411e5 100644
---- a/drivers/pcmcia/pxa2xx_base.c
-+++ b/drivers/pcmcia/pxa2xx_base.c
-@@ -24,11 +24,10 @@
- #include <linux/spinlock.h>
- #include <linux/platform_device.h>
- #include <linux/soc/pxa/cpu.h>
-+#include <linux/soc/pxa/smemc.h>
+diff --git a/arch/arm/mach-pxa/include/mach/spitz.h b/arch/arm/mach-pxa/spitz.h
+similarity index 99%
+rename from arch/arm/mach-pxa/include/mach/spitz.h
+rename to arch/arm/mach-pxa/spitz.h
+index 04828d8918aa..f97e3ebd762d 100644
+--- a/arch/arm/mach-pxa/include/mach/spitz.h
++++ b/arch/arm/mach-pxa/spitz.h
+@@ -11,7 +11,7 @@
+ #define __ASM_ARCH_SPITZ_H  1
+ #endif
  
--#include <mach/smemc.h>
- #include <asm/io.h>
+-#include "irqs.h" /* PXA_NR_BUILTIN_GPIO, PXA_GPIO_TO_IRQ */
++#include <mach/irqs.h> /* PXA_NR_BUILTIN_GPIO, PXA_GPIO_TO_IRQ */
+ #include <linux/fb.h>
+ 
+ /* Spitz/Akita GPIOs */
+diff --git a/arch/arm/mach-pxa/spitz_pm.c b/arch/arm/mach-pxa/spitz_pm.c
+index 201dabe883b6..6689b67f9ce5 100644
+--- a/arch/arm/mach-pxa/spitz_pm.c
++++ b/arch/arm/mach-pxa/spitz_pm.c
+@@ -19,7 +19,7 @@
  #include <asm/irq.h>
--#include <mach/pxa2xx-regs.h>
  #include <asm/mach-types.h>
  
- #include <pcmcia/ss.h>
-@@ -113,7 +112,7 @@ static inline u_int pxa2xx_pcmcia_cmd_time(u_int mem_clk_10khz,
- 	return (300000 * (pcmcia_mcxx_asst + 1) / mem_clk_10khz);
- }
+-#include <mach/spitz.h>
++#include "spitz.h"
+ #include "pxa27x.h"
+ #include "sharpsl_pm.h"
  
--static int pxa2xx_pcmcia_set_mcmem( int sock, int speed, int clock )
-+static uint32_t pxa2xx_pcmcia_mcmem(int sock, int speed, int clock)
+diff --git a/sound/soc/pxa/spitz.c b/sound/soc/pxa/spitz.c
+index 7c1384a869ca..44303b6eb228 100644
+--- a/sound/soc/pxa/spitz.c
++++ b/sound/soc/pxa/spitz.c
+@@ -14,13 +14,12 @@
+ #include <linux/timer.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/soc.h>
+ 
+ #include <asm/mach-types.h>
+-#include <mach/spitz.h>
+ #include "../codecs/wm8750.h"
+ #include "pxa2xx-i2s.h"
+ 
+@@ -37,7 +36,7 @@
+ 
+ static int spitz_jack_func;
+ static int spitz_spk_func;
+-static int spitz_mic_gpio;
++static struct gpio_desc *gpiod_mic, *gpiod_mute_l, *gpiod_mute_r;
+ 
+ static void spitz_ext_control(struct snd_soc_dapm_context *dapm)
  {
- 	uint32_t val;
+@@ -56,8 +55,8 @@ static void spitz_ext_control(struct snd_soc_dapm_context *dapm)
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Mic Jack");
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Line Jack");
+ 		snd_soc_dapm_enable_pin_unlocked(dapm, "Headphone Jack");
+-		gpio_set_value(SPITZ_GPIO_MUTE_L, 1);
+-		gpio_set_value(SPITZ_GPIO_MUTE_R, 1);
++		gpiod_set_value(gpiod_mute_l, 1);
++		gpiod_set_value(gpiod_mute_r, 1);
+ 		break;
+ 	case SPITZ_MIC:
+ 		/* enable mic jack and bias, mute hp */
+@@ -65,8 +64,8 @@ static void spitz_ext_control(struct snd_soc_dapm_context *dapm)
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Headset Jack");
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Line Jack");
+ 		snd_soc_dapm_enable_pin_unlocked(dapm, "Mic Jack");
+-		gpio_set_value(SPITZ_GPIO_MUTE_L, 0);
+-		gpio_set_value(SPITZ_GPIO_MUTE_R, 0);
++		gpiod_set_value(gpiod_mute_l, 0);
++		gpiod_set_value(gpiod_mute_r, 0);
+ 		break;
+ 	case SPITZ_LINE:
+ 		/* enable line jack, disable mic bias and mute hp */
+@@ -74,8 +73,8 @@ static void spitz_ext_control(struct snd_soc_dapm_context *dapm)
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Headset Jack");
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Mic Jack");
+ 		snd_soc_dapm_enable_pin_unlocked(dapm, "Line Jack");
+-		gpio_set_value(SPITZ_GPIO_MUTE_L, 0);
+-		gpio_set_value(SPITZ_GPIO_MUTE_R, 0);
++		gpiod_set_value(gpiod_mute_l, 0);
++		gpiod_set_value(gpiod_mute_r, 0);
+ 		break;
+ 	case SPITZ_HEADSET:
+ 		/* enable and unmute headset jack enable mic bias, mute L hp */
+@@ -83,8 +82,8 @@ static void spitz_ext_control(struct snd_soc_dapm_context *dapm)
+ 		snd_soc_dapm_enable_pin_unlocked(dapm, "Mic Jack");
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Line Jack");
+ 		snd_soc_dapm_enable_pin_unlocked(dapm, "Headset Jack");
+-		gpio_set_value(SPITZ_GPIO_MUTE_L, 0);
+-		gpio_set_value(SPITZ_GPIO_MUTE_R, 1);
++		gpiod_set_value(gpiod_mute_l, 0);
++		gpiod_set_value(gpiod_mute_r, 1);
+ 		break;
+ 	case SPITZ_HP_OFF:
  
-@@ -124,12 +123,10 @@ static int pxa2xx_pcmcia_set_mcmem( int sock, int speed, int clock )
- 		| ((pxa2xx_mcxx_hold(speed, clock)
- 		& MCXX_HOLD_MASK) << MCXX_HOLD_SHIFT);
+@@ -93,8 +92,8 @@ static void spitz_ext_control(struct snd_soc_dapm_context *dapm)
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Headset Jack");
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Mic Jack");
+ 		snd_soc_dapm_disable_pin_unlocked(dapm, "Line Jack");
+-		gpio_set_value(SPITZ_GPIO_MUTE_L, 0);
+-		gpio_set_value(SPITZ_GPIO_MUTE_R, 0);
++		gpiod_set_value(gpiod_mute_l, 0);
++		gpiod_set_value(gpiod_mute_r, 0);
+ 		break;
+ 	}
  
--	__raw_writel(val, MCMEM(sock));
--
--	return 0;
-+	return val;
- }
- 
--static int pxa2xx_pcmcia_set_mcio( int sock, int speed, int clock )
-+static int pxa2xx_pcmcia_mcio(int sock, int speed, int clock)
+@@ -199,7 +198,7 @@ static int spitz_set_spk(struct snd_kcontrol *kcontrol,
+ static int spitz_mic_bias(struct snd_soc_dapm_widget *w,
+ 	struct snd_kcontrol *k, int event)
  {
- 	uint32_t val;
- 
-@@ -140,12 +137,11 @@ static int pxa2xx_pcmcia_set_mcio( int sock, int speed, int clock )
- 		| ((pxa2xx_mcxx_hold(speed, clock)
- 		& MCXX_HOLD_MASK) << MCXX_HOLD_SHIFT);
- 
--	__raw_writel(val, MCIO(sock));
- 
--	return 0;
-+	return val;
- }
- 
--static int pxa2xx_pcmcia_set_mcatt( int sock, int speed, int clock )
-+static int pxa2xx_pcmcia_mcatt(int sock, int speed, int clock)
- {
- 	uint32_t val;
- 
-@@ -156,31 +152,26 @@ static int pxa2xx_pcmcia_set_mcatt( int sock, int speed, int clock )
- 		| ((pxa2xx_mcxx_hold(speed, clock)
- 		& MCXX_HOLD_MASK) << MCXX_HOLD_SHIFT);
- 
--	__raw_writel(val, MCATT(sock));
- 
--	return 0;
-+	return val;
- }
- 
--static int pxa2xx_pcmcia_set_mcxx(struct soc_pcmcia_socket *skt, unsigned int clk)
-+static int pxa2xx_pcmcia_set_timing(struct soc_pcmcia_socket *skt)
- {
-+	unsigned long clk = clk_get_rate(skt->clk) / 10000;
- 	struct soc_pcmcia_timing timing;
- 	int sock = skt->nr;
- 
- 	soc_common_pcmcia_get_timing(skt, &timing);
- 
--	pxa2xx_pcmcia_set_mcmem(sock, timing.mem, clk);
--	pxa2xx_pcmcia_set_mcatt(sock, timing.attr, clk);
--	pxa2xx_pcmcia_set_mcio(sock, timing.io, clk);
-+	pxa_smemc_set_pcmcia_timing(sock,
-+		pxa2xx_pcmcia_mcmem(sock, timing.mem, clk),
-+		pxa2xx_pcmcia_mcatt(sock, timing.attr, clk),
-+		pxa2xx_pcmcia_mcio(sock, timing.io, clk));
- 
+-	gpio_set_value_cansleep(spitz_mic_gpio, SND_SOC_DAPM_EVENT_ON(event));
++	gpiod_set_value_cansleep(gpiod_mic, SND_SOC_DAPM_EVENT_ON(event));
  	return 0;
  }
  
--static int pxa2xx_pcmcia_set_timing(struct soc_pcmcia_socket *skt)
--{
--	unsigned long clk = clk_get_rate(skt->clk);
--	return pxa2xx_pcmcia_set_mcxx(skt, clk / 10000);
--}
+@@ -287,39 +286,28 @@ static int spitz_probe(struct platform_device *pdev)
+ 	struct snd_soc_card *card = &snd_soc_spitz;
+ 	int ret;
+ 
+-	if (machine_is_akita())
+-		spitz_mic_gpio = AKITA_GPIO_MIC_BIAS;
+-	else
+-		spitz_mic_gpio = SPITZ_GPIO_MIC_BIAS;
 -
- #ifdef CONFIG_CPU_FREQ
+-	ret = gpio_request(spitz_mic_gpio, "MIC GPIO");
+-	if (ret)
+-		goto err1;
+-
+-	ret = gpio_direction_output(spitz_mic_gpio, 0);
+-	if (ret)
+-		goto err2;
++	gpiod_mic = devm_gpiod_get(&pdev->dev, "mic", GPIOD_OUT_LOW);
++	if (IS_ERR(gpiod_mic))
++		return PTR_ERR(gpiod_mic);
++	gpiod_mute_l = devm_gpiod_get(&pdev->dev, "mute-l", GPIOD_OUT_LOW);
++	if (IS_ERR(gpiod_mute_l))
++		return PTR_ERR(gpiod_mute_l);
++	gpiod_mute_r = devm_gpiod_get(&pdev->dev, "mute-r", GPIOD_OUT_LOW);
++	if (IS_ERR(gpiod_mute_r))
++		return PTR_ERR(gpiod_mute_r);
  
- static int
-@@ -215,18 +206,13 @@ pxa2xx_pcmcia_frequency_change(struct soc_pcmcia_socket *skt,
+ 	card->dev = &pdev->dev;
  
- void pxa2xx_configure_sockets(struct device *dev, struct pcmcia_low_level *ops)
- {
--	/*
--	 * We have at least one socket, so set MECR:CIT
--	 * (Card Is There)
--	 */
--	uint32_t mecr = MECR_CIT;
-+	int nr = 1;
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+-	if (ret) {
++	if (ret)
+ 		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
+ 			ret);
+-		goto err2;
+-	}
+-
+-	return 0;
  
--	/* Set MECR:NOS (Number Of Sockets) */
- 	if ((ops->first + ops->nr) > 1 ||
- 	    machine_is_viper() || machine_is_arcom_zeus())
--		mecr |= MECR_NOS;
-+		nr = 2;
- 
--	__raw_writel(mecr, MECR);
-+	pxa_smemc_set_pcmcia_socket(nr);
+-err2:
+-	gpio_free(spitz_mic_gpio);
+-err1:
+ 	return ret;
  }
- EXPORT_SYMBOL(pxa2xx_configure_sockets);
  
-diff --git a/include/linux/soc/pxa/smemc.h b/include/linux/soc/pxa/smemc.h
-new file mode 100644
-index 000000000000..cbf1a2d8af29
---- /dev/null
-+++ b/include/linux/soc/pxa/smemc.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef __PXA_REGS_H
-+#define __PXA_REGS_H
-+
-+#include <linux/types.h>
-+
-+void pxa_smemc_set_pcmcia_timing(int sock, u32 mcmem, u32 mcatt, u32 mcio);
-+void pxa_smemc_set_pcmcia_socket(int nr);
-+
-+#endif
+ static int spitz_remove(struct platform_device *pdev)
+ {
+-	gpio_free(spitz_mic_gpio);
+ 	return 0;
+ }
+ 
 -- 
 2.29.2
 
