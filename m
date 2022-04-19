@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0382DC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A66C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:46:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352652AbiDSNsy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        id S235478AbiDSNs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353027AbiDSNrv (ORCPT
+        with ESMTP id S1352864AbiDSNpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:47:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707EC39B94;
-        Tue, 19 Apr 2022 06:42:10 -0700 (PDT)
+        Tue, 19 Apr 2022 09:45:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8183939173;
+        Tue, 19 Apr 2022 06:41:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 062FC61703;
-        Tue, 19 Apr 2022 13:42:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C584EC385AF;
-        Tue, 19 Apr 2022 13:42:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 238BDB8198B;
+        Tue, 19 Apr 2022 13:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85ADEC385B0;
+        Tue, 19 Apr 2022 13:41:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650375729;
-        bh=Nld9/TUbdgbuYnE7Z7eTyTcTbCiTvbx9DCX+XPf/dIk=;
+        s=k20201202; t=1650375699;
+        bh=UESTNhRpqCdmOp1XFvzi39fpM7sULzK7+yHauqukJgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fTaW3ZmdkeE3M3MSimua2kQNujfUwk186UwRzP9feCXD7A+q0u7XKDY/iN7u67RMI
-         /AWDexKMBep9fzvxSbNH4rFQvJW4X70cPKHbziWo9zYxu4dheQ24oukIZKWAh8DZA6
-         G7AHSK8r2efuyEv8w5DHvzk2D7nULMqc1uRCM6XYyi22XTK9k/NAuvFApEZoC1QcJo
-         UH6QNxvMI8+ltP6+J4YHtROdU3WWDzA7+Awo68f+DUWX04woHy9iwLoJQCA/wwXqZK
-         CQBhDEmafMImWeCYVDSlKu5aMItJmzaoZNI+PtUjVqnuByOBHAfhzWLLIyM7DBeWKU
-         pUR94w4Aj7p7Q==
+        b=qN9Y+eXIXoBe7y4TGwmSZZVExIPvDiGiWQet4fH81EnPncUzwHNWtwJGsY0JYakO5
+         ieE4QfHwXAynpvZYZ8I/rORqxFxxcrHC8uhh9dPC5cMy5EFTa1VMfxpra8+tJNdEGG
+         y/nxkofQTm0FspP0LVUYlssfbUKsMywSyPappcPTyOe/CcTltiL0WCa18tUiJ5htqe
+         P7yjD5xk7TGFmi/cCP8q3ujCRWlK/rt27yUduttq75nsmlB26koCVmVI39ToEeDgJ3
+         4QYMXy9PKlQiS9e/fHPi6ZUa8bAMf16ReuxZRt8ni4Y+YGTV+WxebK/v6W2sjZcyA9
+         IDq9aNHMe6VJg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
         jmkrzyszt@gmail.com
@@ -59,9 +58,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH 36/41] usb: gadget: omap_udc: Make it CCF clk API compatible
-Date:   Tue, 19 Apr 2022 15:37:18 +0200
-Message-Id: <20220419133723.1394715-37-arnd@kernel.org>
+Subject: [PATCH 32/41] ARM: OMAP1: clock: Fix UART rate reporting algorithm
+Date:   Tue, 19 Apr 2022 15:37:14 +0200
+Message-Id: <20220419133723.1394715-33-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
 References: <20220419133723.1394715-1-arnd@kernel.org>
@@ -73,65 +72,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-The driver, OMAP1 specific, now omits clk_prepare/unprepare() steps, not
-supported by OMAP1 custom implementation of clock API.  However, non-CCF
-stubs of those functions exist for use on such platforms until converted
-to CCF.
-
-Update the driver to be compatible with CCF implementation of clock API.
+Since its introduction to the mainline kernel, omap1_uart_recalc() helper
+makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
+it only provides the bit number.  Fix it.
 
 Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/usb/gadget/udc/omap_udc.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ arch/arm/mach-omap1/clock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/udc/omap_udc.c b/drivers/usb/gadget/udc/omap_udc.c
-index 5096d24915ce..9ee472937482 100644
---- a/drivers/usb/gadget/udc/omap_udc.c
-+++ b/drivers/usb/gadget/udc/omap_udc.c
-@@ -2609,6 +2609,8 @@ static void omap_udc_release(struct device *dev)
- 	if (udc->dc_clk) {
- 		if (udc->clk_requested)
- 			omap_udc_enable_clock(0);
-+		clk_unprepare(udc->hhc_clk);
-+		clk_unprepare(udc->dc_clk);
- 		clk_put(udc->hhc_clk);
- 		clk_put(udc->dc_clk);
- 	}
-@@ -2773,8 +2775,8 @@ static int omap_udc_probe(struct platform_device *pdev)
- 		hhc_clk = clk_get(&pdev->dev, "usb_hhc_ck");
- 		BUG_ON(IS_ERR(dc_clk) || IS_ERR(hhc_clk));
- 		/* can't use omap_udc_enable_clock yet */
--		clk_enable(dc_clk);
--		clk_enable(hhc_clk);
-+		clk_prepare_enable(dc_clk);
-+		clk_prepare_enable(hhc_clk);
- 		udelay(100);
- 	}
+diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
+index 44877554eb41..42e094e781ce 100644
+--- a/arch/arm/mach-omap1/clock.c
++++ b/arch/arm/mach-omap1/clock.c
+@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
+ unsigned long omap1_uart_recalc(struct clk *clk)
+ {
+ 	unsigned int val = __raw_readl(clk->enable_reg);
+-	return val & clk->enable_bit ? 48000000 : 12000000;
++	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
+ }
  
-@@ -2783,8 +2785,8 @@ static int omap_udc_probe(struct platform_device *pdev)
- 		hhc_clk = clk_get(&pdev->dev, "l3_ocpi_ck");
- 		BUG_ON(IS_ERR(dc_clk) || IS_ERR(hhc_clk));
- 		/* can't use omap_udc_enable_clock yet */
--		clk_enable(dc_clk);
--		clk_enable(hhc_clk);
-+		clk_prepare_enable(dc_clk);
-+		clk_prepare_enable(hhc_clk);
- 		udelay(100);
- 	}
- 
-@@ -2932,8 +2934,8 @@ static int omap_udc_probe(struct platform_device *pdev)
- 		usb_put_phy(xceiv);
- 
- 	if (cpu_is_omap16xx() || cpu_is_omap7xx()) {
--		clk_disable(hhc_clk);
--		clk_disable(dc_clk);
-+		clk_disable_unprepare(hhc_clk);
-+		clk_disable_unprepare(dc_clk);
- 		clk_put(hhc_clk);
- 		clk_put(dc_clk);
- 	}
+ unsigned long omap1_sossi_recalc(struct clk *clk)
 -- 
 2.29.2
 
