@@ -2,98 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1326AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB399C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357398AbiDSSjN (ORCPT
+        id S1354083AbiDSSkZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38940 "EHLO
+        Tue, 19 Apr 2022 14:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357619AbiDSShv (ORCPT
+        with ESMTP id S1357425AbiDSSkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:37:51 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA3F3FDA1;
-        Tue, 19 Apr 2022 11:30:57 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id k23so34681475ejd.3;
-        Tue, 19 Apr 2022 11:30:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=97fWddKSGmLrVBKXP8D65MNLbFu69dXpLbEp8OeL0JY=;
-        b=l4gaGxR7QY976pTLr51DV5OFFvZ4SvJxGNErfabGm/GnDcsHJDY/Gdk/2Z0EkzaQLq
-         s7p0x+toR+dVXKzTOT/KpgKoBkUKU27RVLblkE0A9OXiqrtVu8G31A8/n9v6B8Sfk25u
-         3EsqcW67ipUUI1wd6PXhpolMX3CkD8cPku7CLVV38euJBrhPIwjvYyAI9OejewDE4cpd
-         tWMS6Me9ASCDuQsGmBcUOXqQbHO8qHPX4lQcfZXWX0HPMrGjnsZTbNGb2V3XvSW0OUiU
-         F9IKzakhpNdtaDKBg775xKB9RG9zVpPWnPIbruH8DyRNCQi4n2u1CEC9w7V9BciV+QFj
-         e3KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=97fWddKSGmLrVBKXP8D65MNLbFu69dXpLbEp8OeL0JY=;
-        b=RKEh80dVSxUvueiQ/YKrqRbLs1iDoVCS4VTGjv+h0wN31ExfEVlYHSkPVVeUz2yqzn
-         7ky82ua94FNQY8ybiP8Q+Yfyqr7OsWUlwwJUFWioyINvX3uTYDI7TmBklEmuNjTa5m3I
-         ElN44T0biBYj3IiW//53fHjnPkdVhYIb5DcSoqpGyXtum9MbIHuPldT2tx5e3BA+0vQs
-         UlJJFtYFryrvjhZARP3raphyS9A3WXa5ISchTjRqnU7wPx2ax9TlpVf6cikDqc82ZmU6
-         P25J14wMBH1v7onCLzNMdYyp1yPApZrSJKIdniCiygbVnr30jtM8WHKCkJ5SHR4Hj2Hp
-         H3TA==
-X-Gm-Message-State: AOAM530QraoSAQaHqXAi7ZzdUuB6chxwRGYTIwGLl8+thEICt0J69d8p
-        9QjfKs/bqlkH3lfFbJHU6Uc=
-X-Google-Smtp-Source: ABdhPJy40m5Mj+RdiYvb/wXuHzxxId5OkZmRF/y55+fiCI2YZOOZ0XAkb8ztMvmaAqyjR4wELyXmFA==
-X-Received: by 2002:a17:907:3da5:b0:6e8:c2c8:1f18 with SMTP id he37-20020a1709073da500b006e8c2c81f18mr14463438ejc.728.1650393055646;
-        Tue, 19 Apr 2022 11:30:55 -0700 (PDT)
-Received: from linux.. (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.gmail.com with ESMTPSA id bq23-20020a056402215700b0041d8fcac53asm8799915edb.23.2022.04.19.11.30.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 11:30:55 -0700 (PDT)
-From:   Bean Huo <huobean@gmail.com>
-To:     alim.akhtar@samsung.com, avri.altman@wdc.com,
-        asutoshd@codeaurora.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, stanley.chu@mediatek.com,
-        beanhuo@micron.com, bvanassche@acm.org, tomas.winkler@intel.com,
-        cang@codeaurora.org, daejun7.park@samsung.com,
-        powen.kao@mediatek.com, peter.wang@mediatek.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/5] scsi: ufshpb: Remove 0 assignment for enum value
-Date:   Tue, 19 Apr 2022 20:30:41 +0200
-Message-Id: <20220419183044.789065-3-huobean@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220419183044.789065-1-huobean@gmail.com>
-References: <20220419183044.789065-1-huobean@gmail.com>
+        Tue, 19 Apr 2022 14:40:07 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126983D1EB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650393440; x=1681929440;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7EnDri+rzzXdbwBNvqibLC0OTDCudKYbxio2FvHLIN8=;
+  b=Nhj+xTsA1igDFXeoK1lNJr5KjBvpS+aSpGVOQhkQlM4wDtbdy9FPiUiB
+   oD+Vk1SEbfxg+hZ6quXiR6X1D4JwnpARRrGEqv/reJziL6LZ0NH0LbZ+Z
+   dtCl9k7TA4DFh2FnXN8QM8H+U6SNM8USQiimjV+qZGsEOsqevltBJk7Lw
+   EjhDwBkmbJgyM9Ar5EOKJJMzf0FZaeNPGtsKkkuDLdGl2qv6Hi/OhQTKv
+   uG5J9K+mUkN/0D8nPB/q5JP9P784QmVhGmzOk+aa+K2Cd5mez/zSE1uPm
+   in3zL8pJ/bKzwYe9FGQfK6nkvoOsxbkIOl845fHFY0NjuZm5fb6/ciMCI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261445155"
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="261445155"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 11:37:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="727176861"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 19 Apr 2022 11:37:18 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngsiz-00065I-Eo;
+        Tue, 19 Apr 2022 18:37:17 +0000
+Date:   Wed, 20 Apr 2022 02:36:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
+Subject: [broonie-ci:file4opaUI 20/24] drivers/spi/spi-intel.c:808:38: error:
+ passing argument 2 of 'iop->exec_op' from incompatible pointer type
+Message-ID: <202204200200.q7QlOOQc-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bean Huo <beanhuo@micron.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git file4opaUI
+head:   64ef86292800d770fcd8916cf07b1bea58559680
+commit: 246bb4cbc6a55a247e5e0afd57c91e0dec0c77c3 [20/24] spi: intel: Implement dirmap hooks
+config: powerpc-randconfig-r022-20220419 (https://download.01.org/0day-ci/archive/20220420/202204200200.q7QlOOQc-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git/commit/?id=246bb4cbc6a55a247e5e0afd57c91e0dec0c77c3
+        git remote add broonie-ci https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git
+        git fetch --no-tags broonie-ci file4opaUI
+        git checkout 246bb4cbc6a55a247e5e0afd57c91e0dec0c77c3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/spi/
 
-If the first enumerator has no initializer, the value of the corresponding
-constant is zero.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Bean Huo <beanhuo@micron.com>
----
- drivers/scsi/ufs/ufshpb.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/drivers/scsi/ufs/ufshpb.h b/drivers/scsi/ufs/ufshpb.h
-index 2825ec69a6a6..b7e2817d4e76 100644
---- a/drivers/scsi/ufs/ufshpb.h
-+++ b/drivers/scsi/ufs/ufshpb.h
-@@ -59,8 +59,8 @@ enum UFSHPB_MODE {
- };
- 
- enum UFSHPB_STATE {
--	HPB_INIT = 0,
--	HPB_PRESENT = 1,
-+	HPB_INIT,
-+	HPB_PRESENT,
- 	HPB_SUSPEND,
- 	HPB_FAILED,
- 	HPB_RESET,
+   In file included from include/linux/mtd/spi-nor.h:10,
+                    from drivers/spi/spi-intel.c:13:
+   include/linux/mtd/cfi.h:62:2: warning: #warning No CONFIG_MTD_CFI_Ix selected. No NOR chip support can work. [-Wcpp]
+      62 | #warning No CONFIG_MTD_CFI_Ix selected. No NOR chip support can work.
+         |  ^~~~~~~
+   drivers/spi/spi-intel.c: In function 'intel_spi_dirmap_read':
+>> drivers/spi/spi-intel.c:808:38: error: passing argument 2 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     808 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
+         |                                  ~~~~^~~~~
+         |                                      |
+         |                                      struct spi_mem *
+   drivers/spi/spi-intel.c:808:38: note: expected 'const struct intel_spi_mem_op *' but argument is of type 'struct spi_mem *'
+   drivers/spi/spi-intel.c:808:45: error: passing argument 3 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     808 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
+         |                                             ^~~
+         |                                             |
+         |                                             const struct intel_spi_mem_op *
+   drivers/spi/spi-intel.c:808:45: note: expected 'const struct spi_mem_op *' but argument is of type 'const struct intel_spi_mem_op *'
+>> drivers/spi/spi-intel.c:808:15: error: too many arguments to function 'iop->exec_op'
+     808 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
+         |               ^~~
+   drivers/spi/spi-intel.c: In function 'intel_spi_dirmap_write':
+   drivers/spi/spi-intel.c:824:38: error: passing argument 2 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     824 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
+         |                                  ~~~~^~~~~
+         |                                      |
+         |                                      struct spi_mem *
+   drivers/spi/spi-intel.c:824:38: note: expected 'const struct intel_spi_mem_op *' but argument is of type 'struct spi_mem *'
+   drivers/spi/spi-intel.c:824:45: error: passing argument 3 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     824 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
+         |                                             ^~~
+         |                                             |
+         |                                             const struct intel_spi_mem_op *
+   drivers/spi/spi-intel.c:824:45: note: expected 'const struct spi_mem_op *' but argument is of type 'const struct intel_spi_mem_op *'
+   drivers/spi/spi-intel.c:824:15: error: too many arguments to function 'iop->exec_op'
+     824 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
+         |               ^~~
+   cc1: some warnings being treated as errors
+
+
+vim +808 drivers/spi/spi-intel.c
+
+   794	
+   795	static ssize_t intel_spi_dirmap_read(struct spi_mem_dirmap_desc *desc, u64 offs,
+   796					     size_t len, void *buf)
+   797	{
+   798		struct intel_spi *ispi = spi_master_get_devdata(desc->mem->spi->master);
+   799		const struct intel_spi_mem_op *iop = desc->priv;
+   800		struct spi_mem_op op = desc->info.op_tmpl;
+   801		int ret;
+   802	
+   803		/* Fill in the gaps */
+   804		op.addr.val = offs;
+   805		op.data.nbytes = len;
+   806		op.data.buf.in = buf;
+   807	
+ > 808		ret = iop->exec_op(ispi, desc->mem, iop, &op);
+   809		return ret ? ret : len;
+   810	}
+   811	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
