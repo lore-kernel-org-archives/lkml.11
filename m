@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA27C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1955BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352586AbiDSNpb (ORCPT
+        id S1352592AbiDSNpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        Tue, 19 Apr 2022 09:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244866AbiDSNnp (ORCPT
+        with ESMTP id S1352812AbiDSNoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:43:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8E8182;
-        Tue, 19 Apr 2022 06:41:02 -0700 (PDT)
+        Tue, 19 Apr 2022 09:44:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6752AB876;
+        Tue, 19 Apr 2022 06:41:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF144B8197F;
-        Tue, 19 Apr 2022 13:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1808EC385A5;
-        Tue, 19 Apr 2022 13:40:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6E2616BF;
+        Tue, 19 Apr 2022 13:41:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BA99C385AC;
+        Tue, 19 Apr 2022 13:41:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650375659;
-        bh=0G3cWV48CpbBHTE2pnfpd8IteUQx33zVzk5I5jOHq28=;
+        s=k20201202; t=1650375675;
+        bh=Zu+s/Y6CPoLWnIUPjVgATnzi0v1z3Jhkw2fBKn8V10M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tcaHuW+qziDrvzUpHuEMFKwFU24gmYLLaVW/lH4YSmvt7xGUnfF0sNVHp802pMZbG
-         K6J/uNMNn5vL9mXzi8X3zRI/z8lzVEB3EuRwjjxKiFdSM+arUaoowF1MoiFyyH8XVV
-         /v4R5gyMXGZMU1ta0p9hOmph2xXY8RLU5gpqA4zETCrSrM5Xh09D1z+ACK4EbozYv5
-         9Sive/zvlpYwCeQ4lV4Bn/MYQu9361EX6fnn4oEfAgmr8UYhW5oVkAM1jX9gnVVYhJ
-         ZhuIwaJaHXeGR4SyNhWN+K44rhkpWMXYC38ShwJwl87he4xwz0XOvHfjHqz/624Ycs
-         325kt1woDgtcA==
+        b=U5cHM84vrLY3O3eyj59RLMY2m4fa/fIXcrDCJ9kjqXW9XoISe3lQxXTO6L1dAaoQk
+         oQoOecRjFl/5jFqnm0E7okbJ6ifMuDNAdWBOnlrkhp25WpgKIJYVTtI7PuyR0j44Wt
+         7VsEFwWnvRKUEPainDkDn9AuVbG7J1W7AlpltYmSzKoWeF58QXmvv/f82nxuMT/W8N
+         aPUFb2G2ez74e0BV9D2X9qJaN5aJ9wiK14osJsk3UfjTmuRqz6tm7WcpnIOvwfOH1f
+         Xlf8Y8XE35dK5tWzEayPKnnm9LQnhR2Mue+H9vmhX/9J78LZeH0skpwslSkMEsZyAj
+         DLN5B2SpMEUCQ==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
         jmkrzyszt@gmail.com
@@ -59,9 +59,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH 27/41] ARM: omap1: use pci_remap_iospace() for omap_cf
-Date:   Tue, 19 Apr 2022 15:37:09 +0200
-Message-Id: <20220419133723.1394715-28-arnd@kernel.org>
+Subject: [PATCH 29/41] ARM: omap1: fix build with no SoC selected
+Date:   Tue, 19 Apr 2022 15:37:11 +0200
+Message-Id: <20220419133723.1394715-30-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
 References: <20220419133723.1394715-1-arnd@kernel.org>
@@ -73,134 +73,97 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The ISA I/O space handling in omap_cf is incompatible with
-PCI drivers in a multiplatform kernel, and requires a custom
-mach/io.h.
+In a multiplatform randconfig kernel, one can have
+CONFIG_ARCH_OMAP1 enabled, but none of the specific SoCs.
+This leads to some build issues as the code is not
+meant to deal with this configuration at the moment:
 
-Change the driver to use pci_remap_iospace() like PCI drivers do,
-so the generic ioport access can work across platforms.
+arch/arm/mach-omap1/io.c:86:20: error: unused function 'omap1_map_common_io' [-Werror,-Wunused-function]
+arch/arm/mach-omap1/pm.h:113:2: error: "Power management for this processor not implemented yet" [-Werror,-W#warnings]
 
-To actually use that code, we have to select CONFIG_PCI
-here.
+Use the same trick as on OMAP2 and guard the actual compilation
+of platform code with another Makefile ifdef check based
+on an option that depends on having at least one SoC enabled.
+
+The io.c file still needs to get compiled to allow building
+device drivers with a dependency on CONFIG_ARCH_OMAP1.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/Kconfig                      |  2 +-
- arch/arm/mach-omap1/include/mach/io.h | 45 ---------------------------
- drivers/pcmcia/omap_cf.c              | 10 +++---
- 3 files changed, 5 insertions(+), 52 deletions(-)
- delete mode 100644 arch/arm/mach-omap1/include/mach/io.h
+ arch/arm/Kconfig                | 1 -
+ arch/arm/mach-omap1/Kconfig     | 4 ++++
+ arch/arm/mach-omap1/Makefile    | 4 ++++
+ include/linux/soc/ti/omap1-io.h | 4 ++--
+ 4 files changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 700655e31b04..a57ad0928edc 100644
+index fb6afa6bbc8f..a65f2c05f01c 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -487,11 +487,11 @@ config ARCH_OMAP1
+@@ -485,7 +485,6 @@ config ARCH_S3C24XX
+ 
+ config ARCH_OMAP1
  	bool "TI OMAP1"
- 	select ARCH_OMAP
+-	select ARCH_OMAP
  	select CLKSRC_MMIO
-+	select FORCE_PCI if PCCARD
+ 	select FORCE_PCI if PCCARD
  	select GENERIC_IRQ_CHIP
- 	select GPIOLIB
- 	select HAVE_LEGACY_CLK
- 	select IRQ_DOMAIN
--	select NEED_MACH_IO_H if PCCARD
- 	select NEED_MACH_MEMORY_H
- 	select SPARSE_IRQ
- 	help
-diff --git a/arch/arm/mach-omap1/include/mach/io.h b/arch/arm/mach-omap1/include/mach/io.h
-deleted file mode 100644
-index ce4f8005b26f..000000000000
---- a/arch/arm/mach-omap1/include/mach/io.h
-+++ /dev/null
-@@ -1,45 +0,0 @@
--/*
-- * arch/arm/mach-omap1/include/mach/io.h
-- *
-- * IO definitions for TI OMAP processors and boards
-- *
-- * Copied from arch/arm/mach-sa1100/include/mach/io.h
-- * Copyright (C) 1997-1999 Russell King
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License as published by the
-- * Free Software Foundation; either version 2 of the License, or (at your
-- * option) any later version.
-- *
-- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
-- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
-- * NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-- *
-- * You should have received a copy of the GNU General Public License along
-- * with this program; if not, write to the Free Software Foundation, Inc.,
-- * 675 Mass Ave, Cambridge, MA 02139, USA.
-- *
-- * Modifications:
-- *  06-12-1997	RMK	Created.
-- *  07-04-1999	RMK	Major cleanup
-- */
--
--#ifndef __ASM_ARM_ARCH_IO_H
--#define __ASM_ARM_ARCH_IO_H
--
--#define IO_SPACE_LIMIT 0xffffffff
--
--/*
-- * We don't actually have real ISA nor PCI buses, but there is so many
-- * drivers out there that might just work if we fake them...
-- */
--#define __io(a)		__typesafe_io(a)
--
--#endif
-diff --git a/drivers/pcmcia/omap_cf.c b/drivers/pcmcia/omap_cf.c
-index 093022ce7d91..1972a8f6fa8e 100644
---- a/drivers/pcmcia/omap_cf.c
-+++ b/drivers/pcmcia/omap_cf.c
-@@ -205,6 +205,7 @@ static int __init omap_cf_probe(struct platform_device *pdev)
- 	int			irq;
- 	int			status;
- 	struct resource		*res;
-+	struct resource		iospace = DEFINE_RES_IO(SZ_64, SZ_4K);
+diff --git a/arch/arm/mach-omap1/Kconfig b/arch/arm/mach-omap1/Kconfig
+index 93ea86954a84..d4b0cd91a4f9 100644
+--- a/arch/arm/mach-omap1/Kconfig
++++ b/arch/arm/mach-omap1/Kconfig
+@@ -28,6 +28,10 @@ config ARCH_OMAP16XX
+ 	select CPU_ARM926T
+ 	select OMAP_DM_TIMER
  
- 	seg = (int) pdev->dev.platform_data;
- 	if (seg == 0 || seg > 3)
-@@ -235,9 +236,9 @@ static int __init omap_cf_probe(struct platform_device *pdev)
- 	cf->phys_cf = res->start;
++config ARCH_OMAP1_ANY
++	select ARCH_OMAP
++	def_bool ARCH_OMAP730 || ARCH_OMAP850 || ARCH_OMAP15XX || ARCH_OMAP16XX
++
+ config ARCH_OMAP
+ 	bool
  
- 	/* pcmcia layer only remaps "real" memory */
--	cf->socket.io_offset = (unsigned long)
--			ioremap(cf->phys_cf + SZ_4K, SZ_2K);
--	if (!cf->socket.io_offset) {
-+	cf->socket.io_offset = iospace.start;
-+	status = pci_remap_iospace(&iospace, cf->phys_cf + SZ_4K);
-+	if (status) {
- 		status = -ENOMEM;
- 		goto fail1;
- 	}
-@@ -285,8 +286,6 @@ static int __init omap_cf_probe(struct platform_device *pdev)
- fail2:
- 	release_mem_region(cf->phys_cf, SZ_8K);
- fail1:
--	if (cf->socket.io_offset)
--		iounmap((void __iomem *) cf->socket.io_offset);
- 	free_irq(irq, cf);
- fail0:
- 	kfree(cf);
-@@ -300,7 +299,6 @@ static int __exit omap_cf_remove(struct platform_device *pdev)
- 	cf->active = 0;
- 	pcmcia_unregister_socket(&cf->socket);
- 	del_timer_sync(&cf->timer);
--	iounmap((void __iomem *) cf->socket.io_offset);
- 	release_mem_region(cf->phys_cf, SZ_8K);
- 	free_irq(cf->irq, cf);
- 	kfree(cf);
+diff --git a/arch/arm/mach-omap1/Makefile b/arch/arm/mach-omap1/Makefile
+index 0615cb0ba580..506074b86333 100644
+--- a/arch/arm/mach-omap1/Makefile
++++ b/arch/arm/mach-omap1/Makefile
+@@ -3,6 +3,8 @@
+ # Makefile for the linux kernel.
+ #
+ 
++ifdef CONFIG_ARCH_OMAP1_ANY
++
+ # Common support
+ obj-y := io.o id.o sram-init.o sram.o time.o irq.o mux.o flash.o \
+ 	 serial.o devices.o dma.o omap-dma.o fb.o
+@@ -57,3 +59,5 @@ obj-$(CONFIG_ARCH_OMAP730)		+= gpio7xx.o
+ obj-$(CONFIG_ARCH_OMAP850)		+= gpio7xx.o
+ obj-$(CONFIG_ARCH_OMAP15XX)		+= gpio15xx.o
+ obj-$(CONFIG_ARCH_OMAP16XX)		+= gpio16xx.o
++
++endif
+diff --git a/include/linux/soc/ti/omap1-io.h b/include/linux/soc/ti/omap1-io.h
+index 9332c92690f4..f7f12728d4a6 100644
+--- a/include/linux/soc/ti/omap1-io.h
++++ b/include/linux/soc/ti/omap1-io.h
+@@ -5,7 +5,7 @@
+ #ifndef __ASSEMBLER__
+ #include <linux/types.h>
+ 
+-#if defined(CONFIG_ARCH_OMAP) && defined(CONFIG_ARCH_OMAP1)
++#ifdef CONFIG_ARCH_OMAP1_ANY
+ /*
+  * NOTE: Please use ioremap + __raw_read/write where possible instead of these
+  */
+@@ -15,7 +15,7 @@ extern u32 omap_readl(u32 pa);
+ extern void omap_writeb(u8 v, u32 pa);
+ extern void omap_writew(u16 v, u32 pa);
+ extern void omap_writel(u32 v, u32 pa);
+-#elif defined(CONFIG_COMPILE_TEST)
++#else
+ static inline u8 omap_readb(u32 pa)  { return 0; }
+ static inline u16 omap_readw(u32 pa) { return 0; }
+ static inline u32 omap_readl(u32 pa) { return 0; }
 -- 
 2.29.2
 
