@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62377C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E67C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356639AbiDSSRa (ORCPT
+        id S1356614AbiDSSS0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
+        Tue, 19 Apr 2022 14:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356511AbiDSSQK (ORCPT
+        with ESMTP id S1356584AbiDSSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:16:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5193EABD;
-        Tue, 19 Apr 2022 11:12:37 -0700 (PDT)
+        Tue, 19 Apr 2022 14:17:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408673EBAA;
+        Tue, 19 Apr 2022 11:12:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5007DB81986;
-        Tue, 19 Apr 2022 18:12:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD4FC385A7;
-        Tue, 19 Apr 2022 18:12:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B640E60C34;
+        Tue, 19 Apr 2022 18:12:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA21C385A9;
+        Tue, 19 Apr 2022 18:12:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650391955;
-        bh=YPTj9OOrUeZwZkfCIZpAkWUxMPpzXgHJJrP8oXqzkWs=;
+        s=k20201202; t=1650391970;
+        bh=PppC3vam2C5Yu3j4i8ueQKhK2ayOhbdqrydENy51b+I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s2JqpdYbvQZBwF6zfc6CaisuaKgZbVcNHYYGr36YaUU61XcJedbzWc0nvQydj+IgV
-         kFK/3OMRCCEn89qa9I6JBd3+j8uLzDstumIM1KYpC0xZYSxMmmTlIV/vRwlI0xNH/x
-         +JcNM8N9grI1aSs+F9MvFFJyCjPO0aM6lO0CLJL+285HcpG1xEJuNbYQm5K4UNPb+h
-         tuaNbT1BFy/eX1cr1qOOSKocYkFAAe1kS/55e4P3IOtNXx70z3cSbCfDYIDJx/n4KI
-         Dt4WXQYpaaF90tOYsSAqLXpBzq4shmLXZs70bkw3cNvovlk5tD4lspjIuAzvyQTOYx
-         ScnVqZoCu67vA==
+        b=PcIHGFjPpZhJA3r9x7OQAYayl6j1JJ/p6x6qHdo7ktsulkBAwftfP0v325zDlorO8
+         W6/muLQ6jZhUPiTVt2xRFGkQ2+FyO3cwz9al18c+t55Ss+8x+zefKCXeSTms7WeVas
+         JHtqtQADazBT74YXsZD+Bj00NFye3N9T3p28hc59sjch8MctmG0BqyHSG/StTQqbW+
+         q7NcAKL1pyN5xfPY6rYFermsTfKD1wn4dFfAaxynZxivglUqt9TKe1V8DeKdB1OIww
+         ppOb34OaqJC8srTpJK5kX8zlsV2l4LBvD9sYUTdRKphJoz8FU6d6d8iCvywUvTw3Hv
+         YAPbYrBHNfDtQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>,
-        =?UTF-8?q?=E9=87=91=E9=9F=AC?= <me@kingtous.cn>,
-        Keith Busch <kbusch@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 31/34] nvme-pci: disable namespace identifiers for the MAXIO MAP1002/1202
-Date:   Tue, 19 Apr 2022 14:10:58 -0400
-Message-Id: <20220419181104.484667-31-sashal@kernel.org>
+Cc:     Sameer Pujar <spujar@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, thierry.reding@gmail.com,
+        mperttunen@nvidia.com, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 03/27] reset: tegra-bpmp: Restore Handle errors in BPMP response
+Date:   Tue, 19 Apr 2022 14:12:18 -0400
+Message-Id: <20220419181242.485308-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
-References: <20220419181104.484667-1-sashal@kernel.org>
+In-Reply-To: <20220419181242.485308-1-sashal@kernel.org>
+References: <20220419181242.485308-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,38 +55,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Sameer Pujar <spujar@nvidia.com>
 
-[ Upstream commit a98a945b80f8684121d477ae68ebc01da953da1f ]
+[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
 
-The MAXIO MAP1002/1202 controllers reports completely bogus Namespace
-identifiers that even change after suspend cycles.  Disable using
-the Identifiers entirely.
+This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
+Handle errors in BPMP response").
 
-Reported-by: 金韬 <me@kingtous.cn>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Tested-by: 金韬 <me@kingtous.cn>
+The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
+hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
+original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
+response") can be removed now.
+
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 6a99ed680915..6be611f49a45 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3443,6 +3443,10 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
- 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-+	{ PCI_DEVICE(0x1e4B, 0x1002),   /* MAXIO MAP1002 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
-+	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
- 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
+diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
+index 24d3395964cc..4c5bba52b105 100644
+--- a/drivers/reset/tegra/reset-bpmp.c
++++ b/drivers/reset/tegra/reset-bpmp.c
+@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
+ 	struct mrq_reset_request request;
+ 	struct tegra_bpmp_message msg;
++	int err;
+ 
+ 	memset(&request, 0, sizeof(request));
+ 	request.cmd = command;
+@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	msg.tx.data = &request;
+ 	msg.tx.size = sizeof(request);
+ 
+-	return tegra_bpmp_transfer(bpmp, &msg);
++	err = tegra_bpmp_transfer(bpmp, &msg);
++	if (err)
++		return err;
++	if (msg.rx.ret)
++		return -EINVAL;
++
++	return 0;
+ }
+ 
+ static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
 -- 
 2.35.1
 
