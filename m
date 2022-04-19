@@ -2,121 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348402AbiDSNWq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
+        id S233943AbiDSN3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351985AbiDSNWk (ORCPT
+        with ESMTP id S239761AbiDSN24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:22:40 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D1A2C8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:19:56 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y20so12721116eju.7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:19:56 -0700 (PDT)
+        Tue, 19 Apr 2022 09:28:56 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D9D21E19;
+        Tue, 19 Apr 2022 06:26:14 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-e2afb80550so17476256fac.1;
+        Tue, 19 Apr 2022 06:26:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cWoWgEcXIMYRuEsZLERLpvc6D4fQ6dZb3dEHGDCcqIs=;
-        b=fY6TQpn2KPv+1NlQy1Jow9T1OohAsjrB3oV9ppqNtHvd0r+4OW08v/avNwv1G8Odjm
-         D/2GsdfYMSvjtxG1P4B7SzmR2XTR5xS2bZ0XXxMVMHNciSyV6R5MO6AkQwLdeFk1lHfh
-         Cgt7v30oEPEsJbmsWTr9+ULhOcR1ribWin+0SWBgoc1mhBYRwOlMDx37E219LP/c8iur
-         e8Jl67Cq3yYNgZHQHPlunLvMK0ujRMh0wPaA5jNKhTst45qBNw6ujFZl8BZe81KmcSAw
-         S+BsJt8ItH1FzOurK6u7x4BM44CcrZpOkFaSvq0vaqehD0L+SUhwh2c75xAXXhRm0fg5
-         rMMQ==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=luBr1xSCGoCbhSjWtwlU/G7MaEflGQoKcEEDFnq129A=;
+        b=POp824OWPw/M3WzXfW43JkSKaaTXbZ2YLgkLtQjzo4c8YiuBq/nRdSi9FggDzB61cx
+         W9wmhg22twzq3CNyui5KDI7tbT+icX17E+0ibvKrqJX0hlosGgdiJhkLg8q9CFAbeZ7B
+         kwlhCmpSMJIG+2yG4ej0rmMAPCL6Vcz5/PrWyUK+9Qvmeq/qK3y2yRwA6veVOr4zZjTn
+         CjEdfFaVLlh0/73mRUByjyCKKL5QEH9zFMg6Gzd3aAnz8loKKvzIYrLk3ol34x4P6K5z
+         NFGXOJYisO0Z+tSh8RWnc2wnKbjwpr9nk75ch9sfYphJZ31MsQcKM65b+jdnI6OBCKts
+         xfNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cWoWgEcXIMYRuEsZLERLpvc6D4fQ6dZb3dEHGDCcqIs=;
-        b=aNNiE/FORLQlhMkIDGZY4y/LTHsSblYVfC/3nShBSinZXKX81lYPH9XsMGp4HhZl74
-         UZ6VjNHK2kPRlnOaHHIyJw+Hf73SgLGMSoyOXJoZY4uE7ktKFf+VSfsMgNBFHIpWNs38
-         qSga/ReT6YvVvcLNou9U2ML3iVZVPNbGFcqlM+9ZEWAXF50eMWt7w84D13pYJG0TaXsy
-         +wKFeL28IobQhMYX+QKM3GycH11U8pBdsTBHtc9z6NbmJntvj4wXwGq/iouqpVEp2bVJ
-         qydm1Wbun3+hfpPlVYLASvuK1j3teMErk/f/+vJvhp2FrhiCKxE36ZR2viZydId2fLN4
-         wBbA==
-X-Gm-Message-State: AOAM533RilKWwmtPPSrlQDm32rFxP1nPLBvnZSeZnaS78Ad8HbDCKTxV
-        Do7T8gQmIL/k0PV4cKzUK0cclXYQBD51Pf4ZVrEr5Q==
-X-Google-Smtp-Source: ABdhPJwnqnEl1PogZpbrEzxXO0aXN+psYbjJRFm+NSGmxo/x2WJ/ZC6/8hzNHXDDrwtWHaCSyZ4gF5RFiYFl5n9G5cc=
-X-Received: by 2002:a17:907:1c8a:b0:6e9:2a0d:d7b7 with SMTP id
- nb10-20020a1709071c8a00b006e92a0dd7b7mr13404246ejc.572.1650374394669; Tue, 19
- Apr 2022 06:19:54 -0700 (PDT)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=luBr1xSCGoCbhSjWtwlU/G7MaEflGQoKcEEDFnq129A=;
+        b=tWhwHFEDbLY5sxRM+tdPzIQBAGu61IpBLAxGTcozxRkluPg4E2PNafeWSvci5yB3J4
+         RaLNkK8/15CRZBf/VnHlSLkok83d6e2NVYIyXZ1UTsP32vQaXQZNA4KmHfrlfl46yr5R
+         +9eRxKClRbbixATevK6vvI13+VQGnKOKsVC7yCZ4fwOSfduesM52IyQ5zWFI38uy0LOP
+         DtqUpi9WTDZHr9IKeMhGv3GPFcXmtxeG9StPojgUTShgRfiuUL5/9ecyg7Gy3j3uaDtp
+         BxH0g3M1blzc95HqT2tWCFckqIn7IDh1n2YUDHNojxalWxBF5WcLe/uiJG/82qKU42dh
+         FysQ==
+X-Gm-Message-State: AOAM533FeRAfL+zCtVGqaSqsecHonfGLfDSFEKfu4fuiXQVYeyiQcKXB
+        SJKBAHRQZpTKr3uXKsJeNMc=
+X-Google-Smtp-Source: ABdhPJw3BmUO4t9P7pZqCqph0AOAgJrVVXFte7LbbgUPib1uqBTWoNVIfAzY9W6JG97WXEc+2TKrgg==
+X-Received: by 2002:a05:6870:818a:b0:e5:b9b5:6340 with SMTP id k10-20020a056870818a00b000e5b9b56340mr5687227oae.127.1650374773603;
+        Tue, 19 Apr 2022 06:26:13 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id y22-20020a4aea36000000b0033914f661a2sm4358795ood.33.2022.04.19.06.26.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 06:26:12 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <66221f7a-7d5c-2891-a882-3c3e397dbf0b@roeck-us.net>
+Date:   Tue, 19 Apr 2022 06:26:10 -0700
 MIME-Version: 1.0
-References: <20220418034444.520928-1-tongtiangen@huawei.com>
- <20220418034444.520928-4-tongtiangen@huawei.com> <073cb6a6-3dbc-75d4-dbfe-a5299a6b0510@arm.com>
-In-Reply-To: <073cb6a6-3dbc-75d4-dbfe-a5299a6b0510@arm.com>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Tue, 19 Apr 2022 09:19:16 -0400
-Message-ID: <CA+CK2bCPrQ=F0jNRxcVZ9f18Rm-kAATO3xFE79TZDoWQ99GC4Q@mail.gmail.com>
-Subject: Re: [PATCH -next v4 3/4] arm64: mm: add support for page table check
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     Tong Tiangen <tongtiangen@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-riscv@lists.infradead.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.15 000/189] 5.15.35-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220419073048.315594917@linuxfoundation.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220419073048.315594917@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 6:22 AM Anshuman Khandual
-<anshuman.khandual@arm.com> wrote:
->
->
-> On 4/18/22 09:14, Tong Tiangen wrote:
-> > +#ifdef CONFIG_PAGE_TABLE_CHECK
-> > +static inline bool pte_user_accessible_page(pte_t pte)
-> > +{
-> > +     return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
-> > +}
-> > +
-> > +static inline bool pmd_user_accessible_page(pmd_t pmd)
-> > +{
-> > +     return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
-> > +}
-> > +
-> > +static inline bool pud_user_accessible_page(pud_t pud)
-> > +{
-> > +     return pud_present(pud) && pud_user(pud);
-> > +}
-> > +#endif
-> Wondering why check for these page table entry states when init_mm
-> has already being excluded ? Should not user page tables be checked
-> for in entirety for all updates ? what is the rationale for filtering
-> out only pxx_user_access_page entries ?
+On 4/19/22 00:32, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.35 release.
+> There are 189 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 21 Apr 2022 07:30:20 +0000.
+> Anything received after that time might be too late.
+> 
 
-The point is to prevent false sharing and memory corruption issues.
-The idea of PTC to be simple and relatively independent  from the MM
-state machine that catches invalid page sharing. I.e. if an R/W anon
-page is accessible by user land, that page can never be mapped into
-another process (internally shared anons are treated as named
-mappings).
 
-Therefore, we try not to rely on MM states, and ensure that when a
-page-table entry is accessible by user it meets the required
-assumptions: no false sharing, etc.
+Build results:
+	total: 155 pass: 155 fail: 0
+Qemu test results:
+	total: 488 pass: 488 fail: 0
 
-For example, one bug that was caught with PTC was where a driver on an
-unload would put memory on a freelist but memory is still mapped in
-user page table.
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-Pasha
+Guenter
