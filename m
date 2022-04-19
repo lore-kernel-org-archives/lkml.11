@@ -2,99 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE43FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C021C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357794AbiDSUzq (ORCPT
+        id S1357802AbiDSU4A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        Tue, 19 Apr 2022 16:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357775AbiDSUzl (ORCPT
+        with ESMTP id S1357792AbiDSUz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:55:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C03E41605
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:52:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650401577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sTPP9q4Dpfu9p0KID4dIJ0Vy0gJV20AUzdB83Ep9O/Q=;
-        b=DOrYMbB7tTcduPPD+rOvrOTIRlm+ILij2cDcD3bzZXEoEGlk1XLKSbBZe240CT0mMVxC24
-        vizIcG5IQ2+Uh4se/YvJ8T/ryyrxBCZ0+7KXt4bu1z6b6/3peKARH6nRqW31/nxlTJw5Cn
-        uqzCa9NskyAyG9yOe1Py4ownFJ++9F8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-544-KjrSqcfAOma0LRif7Dwsbw-1; Tue, 19 Apr 2022 16:52:39 -0400
-X-MC-Unique: KjrSqcfAOma0LRif7Dwsbw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C4C9F2A5954A;
-        Tue, 19 Apr 2022 20:52:29 +0000 (UTC)
-Received: from cmirabil.remote.csb (unknown [10.22.8.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B2C92166B4F;
-        Tue, 19 Apr 2022 20:52:29 +0000 (UTC)
-From:   Charles Mirabile <cmirabil@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Charles Mirabile <cmirabil@redhat.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
-        Mwesigwa Guma <mguma@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH v9 5/6] MAINTAINERS: Add sensehat driver authors to MAINTAINERS
-Date:   Tue, 19 Apr 2022 16:51:57 -0400
-Message-Id: <20220419205158.28088-6-cmirabil@redhat.com>
-In-Reply-To: <20220419205158.28088-1-cmirabil@redhat.com>
-References: <20220419205158.28088-1-cmirabil@redhat.com>
+        Tue, 19 Apr 2022 16:55:59 -0400
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1AC3EF2A
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:53:13 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:53:03 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wujek.eu;
+        s=protonmail2; t=1650401589;
+        bh=n6zmsaqdCt4kKxEu/G00u+G6nFOZOq6snSec48Ro65U=;
+        h=Date:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:Cc:
+         Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=vgZv9S6G4tHoUPR7I65J+UFMD+91LA2wstHK3xACdttBTl+8ENujETD3iuZHOx+w2
+         bF+TMwz0LSJeKgNbpm3uX11fcKQz+8auSj85YqQ7+Jf+/F3CUJioC52fz5QiAlsUMM
+         tK68ORZe0Q+gPfA8LpsTQVzGydwiyXFIUnuZuCC21JNOk/CprTktgGLIZtfhApJNSS
+         iUvoK8fkjNcCmtNZK+EUUZL9zzfsCAI08vZCznNM2fEFs4NHxjYJldt2EZllQTAtRv
+         26WXE56f1sECE0jeSSNs3MID++1DWeH1oV83ngOlHs42or2fioiLBfU5iH9jhJZ6uo
+         HiSY8gQyixY8w==
+From:   Adam Wujek <dev_public@wujek.eu>
+Cc:     Adam Wujek <dev_public@wujek.eu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Reply-To: Adam Wujek <dev_public@wujek.eu>
+Subject: [PATCH] hwmod: (pmbus) disable PEC if not enabled
+Message-ID: <20220419205228.303952-1-dev_public@wujek.eu>
+Feedback-ID: 23425257:user:proton
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the driver authors to MAINAINERS.
+Explicitly disable PEC when the client does not support it.
+Without the explicit disable, when the device with the PEC support is remov=
+ed
+later when a device without PEC support is inserted into the same address,
+the driver uses the old value of client->flags which contains the I2C_CLIEN=
+T_PEC
+flag. As a consequence the PEC is used when it should not.
 
-Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
-Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
-Co-developed-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
 ---
- MAINTAINERS | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/hwmon/pmbus/pmbus_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 40fa1955ca3f..b93f060322a3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17747,6 +17747,17 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
- F:	Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
- F:	drivers/iio/chemical/sunrise_co2.c
- 
-+SENSEHAT DRIVER
-+M:	Charles Mirabile <cmirabil@redhat.com>
-+M:	Mwesigwa Guma <mguma@redhat.com>
-+M:	Joel Savitz <jsavitz@redhat.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
-+F:	Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
-+F:	Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
-+F:	drivers/auxdisplay/sensehat-display.c
-+F:	drivers/input/joystick/sensehat-joystick.c
-+
- SENSIRION SCD30 CARBON DIOXIDE SENSOR DRIVER
- M:	Tomasz Duszynski <tomasz.duszynski@octakon.com>
- S:	Maintained
--- 
-2.31.1
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_c=
+ore.c
+index 82c3754e21e3..f8ca36759b0a 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2014,6 +2014,8 @@ static int pmbus_init_common(struct i2c_client *clien=
+t, struct pmbus_data *data,
+ =09ret =3D i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
+ =09if (ret >=3D 0 && (ret & PB_CAPABILITY_ERROR_CHECK))
+ =09=09client->flags |=3D I2C_CLIENT_PEC;
++=09else
++=09=09client->flags &=3D ~I2C_CLIENT_PEC;
+
+ =09pmbus_clear_faults(client);
+
+--
+2.17.1
+
 
