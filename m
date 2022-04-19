@@ -2,117 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD14C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A10FAC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354807AbiDSQmA (ORCPT
+        id S1354822AbiDSQmE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
+        Tue, 19 Apr 2022 12:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241799AbiDSQlu (ORCPT
+        with ESMTP id S238253AbiDSQly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:41:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D30815A2B;
+        Tue, 19 Apr 2022 12:41:54 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913A515A32;
         Tue, 19 Apr 2022 09:39:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D34EF61826;
-        Tue, 19 Apr 2022 16:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F23EEC385AB;
-        Tue, 19 Apr 2022 16:38:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386346;
-        bh=/w2/TuJUuh8aAeAb2m2RYQ0ha5XDa7wX5MqtonXBziw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JSa8soCOWoHbvEvEMCJM5/utpcask8B1DWr5x2vp91tbyaynmX0rTSsEKOTeoQHXR
-         xSRS3Xno7rnCUQ3pMwm4mb0C5Nn4Un3kthir4lze9lCf7arGoOqvJyX6s9isYF1BTg
-         81xrpPmbsNyOwda4gry9Su9QAWOc6aLDIvSCivZ6D7ALqa5hnnFk8qqp6WGo4H0jz/
-         n3cmV2yg+Hsqp/2KBOQWv4OG8fsDhuMeF3RquJVsVmQ3r03jGQ5Jb/kE9Eg+MfTnPV
-         0fhh0N+QRSE/UK4kqmfvj+oYMYiI2cyul44m5sN6XHaZpuap2KcE/Ox9+lUvfY7liW
-         OcEgijUbKxbQQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Philipp Zabel <philipp.zabel@gmail.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Paul Parsons <lost.distance@yahoo.com>,
-        Tomas Cech <sleep_walker@suse.com>,
-        Sergey Lapin <slapin@ossfans.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
-        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 02/48] ARM: pxa: make mainstone.h private
-Date:   Tue, 19 Apr 2022 18:37:24 +0200
-Message-Id: <20220419163810.2118169-3-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
-References: <20220419163810.2118169-1-arnd@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650386347; x=1681922347;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=NA8+CwAZOe9pALoUtEw8c4AIdJ41F1kIfFTTUm8pZhM=;
+  b=D+O6O90wdAnGlU44CS8mPwiTzu8dymRX+cv8WTTaFW4TQjMvT6SCiBBq
+   bl/RmqpcSl6Id09H9Ys1UpWj1wr4Ic2fQwBkwcv4CSFh1DViBzR4QnJFu
+   89GCNjt05YK9tWyPvCg4zXtOQvkuPcsblkMYNPYvMUK1C5seXcVNYuPYL
+   4dPRHbPGED0+hCYdy7nPE3OCY3OEcD+w2uukwaYc2tH0Vx+PWWorcQhl9
+   lkyLPT7z8G+rdX0GAMvgMpXm+26wjHiX/DDigJ6A/MsFla6qwAaaEAyUg
+   WJrsBXDE9MaSGjrj4Y3QFy1bSonf41HszjuLV4nfG2bNGMmyMfuca5HGk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="245702522"
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="245702522"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:39:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="554802133"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:39:06 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     hdegoede@redhat.com, markgross@kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        corbet@lwn.net, gregkh@linuxfoundation.org,
+        andriy.shevchenko@linux.intel.com, jithu.joseph@intel.com,
+        ashok.raj@intel.com, tony.luck@intel.com, rostedt@goodmis.org,
+        dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        patches@lists.linux.dev, ravi.v.shankar@intel.com
+Subject: [PATCH v3 02/11] Documentation: In-Field Scan
+Date:   Tue, 19 Apr 2022 09:38:50 -0700
+Message-Id: <20220419163859.2228874-3-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419163859.2228874-1-tony.luck@intel.com>
+References: <20220407191347.9681-1-jithu.joseph@intel.com>
+ <20220419163859.2228874-1-tony.luck@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Add documentation for In-Field Scan (IFS). This documentation
+describes the basics of IFS, the loading IFS image, chunk
+authentication, running scan and how to check result via sysfs
+as well as tunable parameters.
 
-No driver includes this any more, so don't expose it globally.
+The CORE_CAPABILITIES MSR enumerates whether IFS is supported.
 
-Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+The full  github location for distributing the IFS images is
+still being decided. So just a placeholder included for now
+in the documentation.
+
+Future CPUs will support more than one type of test. Plan for
+that now by using a ".0" suffix on the ABI directory names.
+Additional test types will use ".1", etc.
+
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
 ---
- arch/arm/mach-pxa/mainstone.c                    | 2 +-
- arch/arm/mach-pxa/{include/mach => }/mainstone.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
- rename arch/arm/mach-pxa/{include/mach => }/mainstone.h (99%)
+ Documentation/x86/ifs.rst   | 101 ++++++++++++++++++++++++++++++++++++
+ Documentation/x86/index.rst |   1 +
+ 2 files changed, 102 insertions(+)
+ create mode 100644 Documentation/x86/ifs.rst
 
-diff --git a/arch/arm/mach-pxa/mainstone.c b/arch/arm/mach-pxa/mainstone.c
-index d237bd030238..997f6e502201 100644
---- a/arch/arm/mach-pxa/mainstone.c
-+++ b/arch/arm/mach-pxa/mainstone.c
-@@ -45,7 +45,7 @@
- #include <asm/mach/flash.h>
- 
- #include "pxa27x.h"
--#include <mach/mainstone.h>
-+#include "mainstone.h"
- #include <mach/audio.h>
- #include <linux/platform_data/video-pxafb.h>
- #include <linux/platform_data/mmc-pxamci.h>
-diff --git a/arch/arm/mach-pxa/include/mach/mainstone.h b/arch/arm/mach-pxa/mainstone.h
-similarity index 99%
-rename from arch/arm/mach-pxa/include/mach/mainstone.h
-rename to arch/arm/mach-pxa/mainstone.h
-index 1698f2ffd7c7..ba003742e003 100644
---- a/arch/arm/mach-pxa/include/mach/mainstone.h
-+++ b/arch/arm/mach-pxa/mainstone.h
-@@ -1,7 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- *  arch/arm/mach-pxa/include/mach/mainstone.h
-- *
-  *  Author:	Nicolas Pitre
-  *  Created:	Nov 14, 2002
-  *  Copyright:	MontaVista Software Inc.
+diff --git a/Documentation/x86/ifs.rst b/Documentation/x86/ifs.rst
+new file mode 100644
+index 000000000000..62f3c07d433a
+--- /dev/null
++++ b/Documentation/x86/ifs.rst
+@@ -0,0 +1,101 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=============
++In-Field Scan
++=============
++
++Introduction
++------------
++
++In Field Scan (IFS) is a hardware feature to run circuit level tests on
++a CPU core to detect problems that are not caught by parity or ECC checks.
++Future CPUs will support more than one type of test which will show up
++with a new platform-device instance-id, for now only .0 is exposed.
++
++
++IFS Image
++---------
++
++Intel provides a firmware file containing the scan tests via
++github [#f1]_.  Similar to microcode there is a separate file for each
++family-model-stepping.
++
++IFS Image Loading
++-----------------
++
++The driver loads the tests into memory reserved BIOS local to each CPU
++socket in a two step process using writes to MSRs to first load the
++SHA hashes for the test. Then the tests themselves. Status MSRs provide
++feedback on the success/failure of these steps. When a new test file
++is installed it can be loaded by writing to the driver reload file::
++
++  # echo 1 > /sys/bus/platform/drivers/intel_ifs.0/reload
++
++Similar to microcode, the current version of the scan tests is stored
++in a fixed location: /lib/firmware/intel/ifs.0/family-model-stepping.scan
++
++Running tests
++-------------
++
++Tests are run by the driver synchronizing execution of all threads on a
++core and then writing to the ACTIVATE_SCAN MSR on all threads. Instruction
++execution continues when:
++
++1) All tests have completed.
++2) Execution was interrupted.
++3) A test detected a problem.
++
++In all cases reading the SCAN_STATUS MSR provides details on what
++happened. The driver makes the value of this MSR visible to applications
++via the "details" file (see below). Interrupted tests may be restarted.
++
++The IFS driver provides sysfs interfaces via /sys/devices/platform/intel_ifs.0/
++to control execution:
++
++Test a specific core::
++
++  # echo <cpu#> > /sys/devices/platform/intel_ifs.0/run_test
++
++when HT is enabled any of the sibling cpu# can be specified to test its
++corresponding physical core. Since the tests are per physical core, the
++result of testing any thread is same. It is only necessary to test one
++thread.
++
++For e.g. to test core corresponding to cpu5
++
++  # echo 5 > /sys/devices/platform/intel_ifs.0/run_test
++
++Results of the last test is provided in /sys::
++
++  $ cat /sys/devices/platform/intel_ifs.0/status
++  pass
++
++Status can be one of pass, fail, untested
++
++Additional details of the last test is provided by the details file::
++
++  $ cat /sys/devices/platform/intel_ifs.0/details
++  0x8081
++
++The details file reports the hex value of the SCAN_STATUS MSR.
++Hardware defined error codes are documented in volume 4 of the Intel
++Software Developer's Manual but the error_code field may contain one of
++the following driver defined software codes:
++
+++------+--------------------+
++| 0xFD | Software timeout   |
+++------+--------------------+
++| 0xFE | Partial completion |
+++------+--------------------+
++
++Driver design choices
++---------------------
++
++1) The ACTIVATE_SCAN MSR allows for running any consecutive subrange of
++available tests. But the driver always tries to run all tests and only
++uses the subrange feature to restart an interrupted test.
++
++2) Hardware allows for some number of cores to be tested in parallel.
++The driver does not make use of this, it only tests one core at a time.
++
++.. [#f1] https://github.com/intel/TBD
+diff --git a/Documentation/x86/index.rst b/Documentation/x86/index.rst
+index 91b2fa456618..9d8e8a73d57b 100644
+--- a/Documentation/x86/index.rst
++++ b/Documentation/x86/index.rst
+@@ -35,6 +35,7 @@ x86-specific Documentation
+    usb-legacy-support
+    i386/index
+    x86_64/index
++   ifs
+    sva
+    sgx
+    features
 -- 
-2.29.2
+2.35.1
 
