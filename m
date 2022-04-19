@@ -2,192 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 733D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BEEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353861AbiDSU4R (ORCPT
+        id S1357814AbiDSU4g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43688 "EHLO
+        Tue, 19 Apr 2022 16:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241627AbiDSU4P (ORCPT
+        with ESMTP id S241627AbiDSU4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:56:15 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB7F40A0B;
-        Tue, 19 Apr 2022 13:53:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1650401606; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U9uKVqzeLetai30xHUmUHKRNgiB0fOsmb+j/KNxuO5E=;
-        b=Kb4WazaT5eGIpoe8lsOUMLB/t0kA43FxEBV25Fvb6y8mc3lyrFr4l07dBfFN7BSImbx5eZ
-        Wpuk6ed7iNQc+nU+UhQ9QXr9b3kJ0hqkEjZ+30IANT1CO7IVI1wdOcDh8Ml7OU8DqKhBtE
-        xwS2hb/OtdJBfjTIMeyui+SUZOd9Ax8=
-Date:   Tue, 19 Apr 2022 21:53:17 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 3/5] rtc: jz4740: Reset scratchpad register on power loss
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>, list@opendingux.net,
-        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Message-Id: <T0ULAR.TKXMRCDN7DQ53@crapouillou.net>
-In-Reply-To: <Yl8U4JDSHwjT9nXw@mail.local>
-References: <20220418184933.13172-1-paul@crapouillou.net>
-        <20220418184933.13172-4-paul@crapouillou.net> <Yl8PBx5qyvMrwrV/@mail.local>
-        <I1RLAR.CF78L45NPJDC1@crapouillou.net> <Yl8U4JDSHwjT9nXw@mail.local>
+        Tue, 19 Apr 2022 16:56:36 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468DF40A0B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To;
+        bh=Pp7b7E7AVDeMb0DdCtRbojjkzRPx2ePj4YA90yzEPsg=; b=FkvkgHcXy5HsjoxRaMVVETCNXO
+        yfgxL63f1nuizpnPwa07uYyj2ACn8TJsjn3rMg5PCecEq7i0D9A+wJ8u6FThqluHRN8CVBtsVq8I3
+        vVcCNsAFPM127lCOK3VUqn8PufYnZ/zWDzVAIebFtENdYvlHu4XID0eP2jzSzWTJSxqf8ZPoj+on3
+        acrxuvzKx2xlxOOTFCVRNJMZxp/ipJAz9vm2hRFlpjtjQrMOUVfVcYpSFZAWBJgPAP4Q3XWv1Xc44
+        c7M/9qiuP6q3tRprEvD6ECZKhE+jU6v5cDJxxJtc6pm8d6472z6g+VZuCpJ0jyaRIPYScc5CG2BFg
+        /0AdgYCw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngur2-003UlB-My; Tue, 19 Apr 2022 20:53:44 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5A80A30040C;
+        Tue, 19 Apr 2022 22:53:44 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 3FBD72B526F04; Tue, 19 Apr 2022 22:53:44 +0200 (CEST)
+Message-ID: <20220419205241.339242797@infradead.org>
+User-Agent: quilt/0.66
+Date:   Tue, 19 Apr 2022 22:41:11 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, jpoimboe@redhat.com, brgerst@gmail.com,
+        jiangshanlai@gmail.com, Andrew.Cooper3@citrix.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org
+Subject: [PATCH 2/2] x86,entry: Use PUSH_AND_CLEAR_REGS for compat
+References: <20220419204109.520779286@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Since the upper regs don't exist for ia32 code, preserving them
+doesn't hurt and it simplifies the code.
 
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ arch/x86/entry/calling.h         |    9 ++--
+ arch/x86/entry/entry_64_compat.S |   87 +--------------------------------------
+ 2 files changed, 8 insertions(+), 88 deletions(-)
 
-Le mar., avril 19 2022 at 22:00:32 +0200, Alexandre Belloni=20
-<alexandre.belloni@bootlin.com> a =E9crit :
-> On 19/04/2022 20:48:54+0100, Paul Cercueil wrote:
->>  Hi Alexandre,
->>=20
->>  Le mar., avril 19 2022 at 21:35:35 +0200, Alexandre Belloni
->>  <alexandre.belloni@bootlin.com> a =E9crit :
->>  > On 18/04/2022 19:49:31+0100, Paul Cercueil wrote:
->>  > >  On power loss, reading the RTC value would fail as the=20
->> scratchpad
->>  > > lost
->>  > >  its magic value, until the hardware clock was set once again.
->>  > >
->>  > >  To avoid that, reset the RTC value to Epoch in the probe if we
->>  > > detect
->>  > >  that the scratchpad lost its magic value.
->>  > >
->>  > >  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->>  > >  ---
->>  > >   drivers/rtc/rtc-jz4740.c | 24 +++++++++++++++++++++---
->>  > >   1 file changed, 21 insertions(+), 3 deletions(-)
->>  > >
->>  > >  diff --git a/drivers/rtc/rtc-jz4740.c=20
->> b/drivers/rtc/rtc-jz4740.c
->>  > >  index 119baf168b32..aac5f68bf626 100644
->>  > >  --- a/drivers/rtc/rtc-jz4740.c
->>  > >  +++ b/drivers/rtc/rtc-jz4740.c
->>  > >  @@ -42,6 +42,9 @@
->>  > >   /* Magic value to enable writes on jz4780 */
->>  > >   #define JZ_RTC_WENR_MAGIC	0xA55A
->>  > >
->>  > >  +/* Value written to the scratchpad to detect power losses */
->>  > >  +#define JZ_RTC_SCRATCHPAD_MAGIC	0x12345678
->>  > >  +
->>  > >   #define JZ_RTC_WAKEUP_FILTER_MASK	0x0000FFE0
->>  > >   #define JZ_RTC_RESET_COUNTER_MASK	0x00000FE0
->>  > >
->>  > >  @@ -134,10 +137,11 @@ static int=20
->> jz4740_rtc_ctrl_set_bits(struct
->>  > > jz4740_rtc *rtc, uint32_t mask,
->>  > >   static int jz4740_rtc_read_time(struct device *dev, struct
->>  > > rtc_time *time)
->>  > >   {
->>  > >   	struct jz4740_rtc *rtc =3D dev_get_drvdata(dev);
->>  > >  -	uint32_t secs, secs2;
->>  > >  +	uint32_t secs, secs2, magic;
->>  > >   	int timeout =3D 5;
->>  > >
->>  > >  -	if (jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD) !=3D=20
->> 0x12345678)
->>  > >  +	magic =3D jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD);
->>  > >  +	if (magic !=3D JZ_RTC_SCRATCHPAD_MAGIC)
->>  > >   		return -EINVAL;
->>  > >
->>  > >   	/* If the seconds register is read while it is updated, it=20
->> can
->>  > > contain a
->>  > >  @@ -169,7 +173,8 @@ static int jz4740_rtc_set_time(struct=20
->> device
->>  > > *dev, struct rtc_time *time)
->>  > >   	if (ret)
->>  > >   		return ret;
->>  > >
->>  > >  -	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SCRATCHPAD,
->>  > > 0x12345678);
->>  > >  +	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SCRATCHPAD,
->>  > >  +				    JZ_RTC_SCRATCHPAD_MAGIC);
->>  > >   }
->>  > >
->>  > >   static int jz4740_rtc_read_alarm(struct device *dev, struct
->>  > > rtc_wkalrm *alrm)
->>  > >  @@ -307,6 +312,7 @@ static int jz4740_rtc_probe(struct
->>  > > platform_device *pdev)
->>  > >   	struct jz4740_rtc *rtc;
->>  > >   	unsigned long rate;
->>  > >   	struct clk *clk;
->>  > >  +	uint32_t magic;
->>  > >   	int ret, irq;
->>  > >
->>  > >   	rtc =3D devm_kzalloc(dev, sizeof(*rtc), GFP_KERNEL);
->>  > >  @@ -369,6 +375,18 @@ static int jz4740_rtc_probe(struct
->>  > > platform_device *pdev)
->>  > >   	/* Each 1 Hz pulse should happen after (rate) ticks */
->>  > >   	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_REGULATOR, rate - 1);
->>  > >
->>  > >  +	magic =3D jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD);
->>  > >  +	if (magic !=3D JZ_RTC_SCRATCHPAD_MAGIC) {
->>  > >  +		/*
->>  > >  +		 * If the scratchpad doesn't hold our magic value, then a
->>  > >  +		 * power loss occurred. Reset to Epoch.
->>  > >  +		 */
->>  > >  +		struct rtc_time time;
->>  > >  +
->>  > >  +		rtc_time64_to_tm(0, &time);
->>  > >  +		jz4740_rtc_set_time(dev, &time);
->>  >
->>  > Don't do that, this defeats the purpose of detecting when the=20
->> power is
->>  > lost. Returning a known bogus time is the worst thing you can do=20
->> here.
->>=20
->>  So what is the best thing to do then?
->>=20
->=20
-> Well, -EINVAL is returned when the time is invalid, this should be
-> enough. I'm not actually sure what is the issue you are trying to fix
-> here.
-
-htop fails to start and tells me:
-"No btime in /proc/stat: No such file or directory"
-
-until the date is reset. So I was assuming it was a case of the jz4740=20
-driver not being correct and breaking userspace.
-
-Cheers,
--Paul
-
-
->=20
->>  Cheers,
->>  -Paul
->>=20
->>  > >  +	}
->>  > >  +
->>  > >   	ret =3D devm_rtc_register_device(rtc->rtc);
->>  > >   	if (ret)
->>  > >   		return ret;
->>  > >  --
->>  > >  2.35.1
->>  > >
->>  >
->>  > --
->>  > Alexandre Belloni, co-owner and COO, Bootlin
->>  > Embedded Linux and Kernel engineering
->>  > https://bootlin.com
->>=20
->>=20
->=20
-> --
-> Alexandre Belloni, co-owner and COO, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -63,13 +63,15 @@ For 32-bit we have the following convent
+  * for assembly code:
+  */
+ 
+-.macro PUSH_REGS rdx=%rdx rax=%rax save_ret=0
++.macro PUSH_REGS rdx=%rdx rax=%rax save_ret=0 save_rdi=1
+ 	.if \save_ret
+ 	pushq	%rsi		/* pt_regs->si */
+ 	movq	8(%rsp), %rsi	/* temporarily store the return address in %rsi */
+ 	movq	%rdi, 8(%rsp)	/* pt_regs->di (overwriting original return address) */
+ 	.else
++	.if \save_rdi
+ 	pushq   %rdi		/* pt_regs->di */
++	.endif
+ 	pushq   %rsi		/* pt_regs->si */
+ 	.endif
+ 	pushq	\rdx		/* pt_regs->dx */
+@@ -111,11 +113,10 @@ For 32-bit we have the following convent
+ 	xorl	%r13d, %r13d	/* nospec r13 */
+ 	xorl	%r14d, %r14d	/* nospec r14 */
+ 	xorl	%r15d, %r15d	/* nospec r15 */
+-
+ .endm
+ 
+-.macro PUSH_AND_CLEAR_REGS rdx=%rdx rax=%rax save_ret=0
+-	PUSH_REGS rdx=\rdx, rax=\rax, save_ret=\save_ret
++.macro PUSH_AND_CLEAR_REGS rdx=%rdx rax=%rax save_ret=0 save_rdi=1
++	PUSH_REGS rdx=\rdx, rax=\rax, save_ret=\save_ret save_rdi=\save_rdi
+ 	CLEAR_REGS
+ .endm
+ 
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -83,32 +83,7 @@ SYM_INNER_LABEL(entry_SYSENTER_compat_af
+ 	movl	%eax, %eax
+ 
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	pushq	%rdi			/* pt_regs->di */
+-	pushq	%rsi			/* pt_regs->si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	pushq	%rcx			/* pt_regs->cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   $0			/* pt_regs->r8  = 0 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   $0			/* pt_regs->r9  = 0 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   $0			/* pt_regs->r10 = 0 */
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   $0			/* pt_regs->r11 = 0 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   $0			/* pt_regs->r12 = 0 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   $0			/* pt_regs->r13 = 0 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   $0			/* pt_regs->r14 = 0 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   $0			/* pt_regs->r15 = 0 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
++	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
+ 	UNWIND_HINT_REGS
+ 
+ 	cld
+@@ -225,35 +200,7 @@ SYM_INNER_LABEL(entry_SYSCALL_compat_saf
+ SYM_INNER_LABEL(entry_SYSCALL_compat_after_hwframe, SYM_L_GLOBAL)
+ 	movl	%eax, %eax		/* discard orig_ax high bits */
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	pushq	%rdi			/* pt_regs->di */
+-	pushq	%rsi			/* pt_regs->si */
+-	xorl	%esi, %esi		/* nospec   si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	xorl	%edx, %edx		/* nospec   dx */
+-	pushq	%rbp			/* pt_regs->cx (stashed in bp) */
+-	xorl	%ecx, %ecx		/* nospec   cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   $0			/* pt_regs->r8  = 0 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   $0			/* pt_regs->r9  = 0 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   $0			/* pt_regs->r10 = 0 */
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   $0			/* pt_regs->r11 = 0 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   $0			/* pt_regs->r12 = 0 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   $0			/* pt_regs->r13 = 0 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   $0			/* pt_regs->r14 = 0 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   $0			/* pt_regs->r15 = 0 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
++	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
+ 	UNWIND_HINT_REGS
+ 
+ 	movq	%rsp, %rdi
+@@ -381,35 +328,7 @@ SYM_CODE_START(entry_INT80_compat)
+ 	pushq	1*8(%rdi)		/* regs->orig_ax */
+ 	pushq	(%rdi)			/* pt_regs->di */
+ .Lint80_keep_stack:
+-
+-	pushq	%rsi			/* pt_regs->si */
+-	xorl	%esi, %esi		/* nospec   si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	xorl	%edx, %edx		/* nospec   dx */
+-	pushq	%rcx			/* pt_regs->cx */
+-	xorl	%ecx, %ecx		/* nospec   cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   %r8			/* pt_regs->r8 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   %r9			/* pt_regs->r9 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   %r10			/* pt_regs->r10*/
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   %r11			/* pt_regs->r11 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   %r12                    /* pt_regs->r12 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   %r13                    /* pt_regs->r13 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   %r14                    /* pt_regs->r14 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   %r15                    /* pt_regs->r15 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
++	PUSH_AND_CLEAR_REGS save_rdi=0
+ 	UNWIND_HINT_REGS
+ 
+ 	cld
 
 
