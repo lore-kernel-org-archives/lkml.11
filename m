@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B537C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344565AbiDSS3H (ORCPT
+        id S1356857AbiDSS3Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
+        Tue, 19 Apr 2022 14:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356877AbiDSSWG (ORCPT
+        with ESMTP id S1357226AbiDSSWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7CA3EB98;
-        Tue, 19 Apr 2022 11:14:28 -0700 (PDT)
+        Tue, 19 Apr 2022 14:22:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202B642EDC;
+        Tue, 19 Apr 2022 11:15:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FC01B81983;
-        Tue, 19 Apr 2022 18:14:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F79C385B0;
-        Tue, 19 Apr 2022 18:14:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85E0A61459;
+        Tue, 19 Apr 2022 18:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6B6C385AD;
+        Tue, 19 Apr 2022 18:15:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392065;
-        bh=l9uC7Jd/JtduUprt9DTiagtw6UvvCPakC11dX7OhYYk=;
+        s=k20201202; t=1650392132;
+        bh=uezcfXl9P+IPn6+18yV+x/ymhvpLGiH3VEU2mLngXFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gn4ckzZxCo8iov6EBz/bn/K81vr0ZYNC3W2kdQmmsUG3FpWCyH/b6fPahyTbC4aAg
-         qwBPqllT3SoT0gVxi0qVtC5KAU6r21oOhvmmGZ7yqE1uyu+W7b/r0kWLrplpnLLjkd
-         KlKXcJr059N7PUI/Pn5RKBtirkqBqOBoZLT1t9jaYs4E8PPbpWtvEKe557mWMLExlX
-         fCBBb2PHd772bT2ehlJ6tMJqihCBs/914+psJJGdMYmUSOVgCtk5vjswawthBlo4BR
-         fpeb65vwrUq19TYlt0VYL+ZuTlgqNbFqB8wi1S5XckrZNemR++yKjv+hhHaUK4DzFS
-         ktXHY83Nwp7eQ==
+        b=hQqklYMhAdPkSts4zqztJAIZw48qGvaJSrkT1MFTW+01B31XiTk4uKU09r6H5Veb7
+         SgBv4DKM36mJeVOo7PCgVpqUIU0dRISQc0QvBwy6CsDgRZalr+UuR5uXC1ZXdi2iGt
+         4ZXujE3NG+c7bXRlBjoVQ3fp5BerW9TNBe+MUsGAhtYCC1C7qeeuXgApr6nKfOKOg/
+         +xtuDqJZqZgIEJjm01xlyuTEWN5Eiv3tlb+OfzkbXsfwdZ8uuIcxLHdDl1hSjGkGlN
+         hndKyVftGDrcmw2jfxrmnVBNWc4u1m/He0RW3xLb9+9H41vq0nfDM/d7ABnqnEHGoN
+         hWSDd4/FIiroA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/18] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 19 Apr 2022 14:13:45 -0400
-Message-Id: <20220419181353.485719-11-sashal@kernel.org>
+Cc:     Sameer Pujar <spujar@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, thierry.reding@gmail.com,
+        mperttunen@nvidia.com, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/12] reset: tegra-bpmp: Restore Handle errors in BPMP response
+Date:   Tue, 19 Apr 2022 14:15:15 -0400
+Message-Id: <20220419181525.486166-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181353.485719-1-sashal@kernel.org>
-References: <20220419181353.485719-1-sashal@kernel.org>
+In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
+References: <20220419181525.486166-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,44 +55,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Sameer Pujar <spujar@nvidia.com>
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
+Handle errors in BPMP response").
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
+hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
+original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
+response") can be removed now.
+
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 1268996b7030..2f9075429c43 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
+diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
+index 5daf2ee1a396..f9790b60f996 100644
+--- a/drivers/reset/tegra/reset-bpmp.c
++++ b/drivers/reset/tegra/reset-bpmp.c
+@@ -23,6 +23,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
+ 	struct mrq_reset_request request;
+ 	struct tegra_bpmp_message msg;
++	int err;
  
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
+ 	memset(&request, 0, sizeof(request));
+ 	request.cmd = command;
+@@ -33,7 +34,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	msg.tx.data = &request;
+ 	msg.tx.size = sizeof(request);
  
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
+-	return tegra_bpmp_transfer(bpmp, &msg);
++	err = tegra_bpmp_transfer(bpmp, &msg);
++	if (err)
++		return err;
++	if (msg.rx.ret)
++		return -EINVAL;
++
++	return 0;
+ }
  
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
+ static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
 -- 
 2.35.1
 
