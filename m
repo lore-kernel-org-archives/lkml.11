@@ -2,79 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80910C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71404C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240807AbiDSAk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        id S240901AbiDSAnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237339AbiDSAkv (ORCPT
+        with ESMTP id S235718AbiDSAnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:40:51 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECC827163
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:38:11 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id n11so12122396qvl.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:38:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject
-         :content-language:to:disposition-notification-to
-         :content-transfer-encoding;
-        bh=O/39KxrjTXbMZLJDhwPEa021aH0kdwg1Gk5HnjEQ3Lc=;
-        b=mecdPxcV4TufZjm9BbdVXBneOupw2sAgoxtSwZDKRn1VtGzUHoySXsqMA9T+2oEc+p
-         LwAhUfeW7pCCe40QpjtuarH0D36GseLRDmcHKnKbzI3e/OkSHQRZOp3WSFWxfXNOq1we
-         iZQr67/RQf4Swxh87Yxi/jXQ4KM1gJcrri2NhaiE4gi8gyiw9R3gJZPYf8V1bJ7uKCaw
-         yp3g0pQTUnLo3hjzz1BBx44wSJDLv5ifHf/fjaSUpw0W/oT9X65Vdvp1lC4Kvs1vI4Mc
-         kku9VUHCctsE9YtGdh2r7+ur3UBkxCugXr69LYSkI2Ph+oaBh9W7JZu9N4vFfX1oxXFK
-         6/GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:content-language:to:disposition-notification-to
-         :content-transfer-encoding;
-        bh=O/39KxrjTXbMZLJDhwPEa021aH0kdwg1Gk5HnjEQ3Lc=;
-        b=YrzF1TGDRoWjyBqOs0g9rCZScm5KDYxV/ZmKW7TjYk4sCSD1t4ySG6IWftuaYCmpHn
-         pCjer94mV3cgVINomhf7TggCLd7+RmGVVDaQ3h2D8XWN89dbVmI7QMtoseU52jK86Iwd
-         WhDffTCIGtt841KbnoMJxScbibLuhoxPKaeGkg/rMGFJhumAqh+nksIUUs0X5hm71dt7
-         z62DbArzjBVbNTKziBxjLzDHto4yzLl+Kae+vkgJy2aPCO48cofEX/7DT3K3uXN5HpNv
-         qHdjYn89Rstb+zw1lVBrThLxYIV7XX2pj49wKdqYq+pWf6IKv0Qe9bJ1MCjUTYCMsfYq
-         Ng7A==
-X-Gm-Message-State: AOAM531aFZV3qq0yJBbPd1VJx5567C6OBR7ro5waev9j5LeLKnXBlNvg
-        TD4qGMNSSCu2cfh3HJmH/CXEV2LpwVs=
-X-Google-Smtp-Source: ABdhPJwDiXqTPBGp2xXIty64QcYZJEm8BMoLLJvIfPxLfZ/DLTwIb9cGc3k4f9BhmS01ORzPFUa0Hg==
-X-Received: by 2002:a05:6214:5089:b0:446:6576:95bd with SMTP id kk9-20020a056214508900b00446657695bdmr3642294qvb.61.1650328690469;
-        Mon, 18 Apr 2022 17:38:10 -0700 (PDT)
-Received: from [10.1.1.117] (pool-71-121-149-202.bltmmd.fios.verizon.net. [71.121.149.202])
-        by smtp.gmail.com with ESMTPSA id p5-20020a378d05000000b0069beaffd5b3sm7606413qkd.4.2022.04.18.17.38.09
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 17:38:10 -0700 (PDT)
-Message-ID: <5ae22b2e-97de-6680-50a3-887ab87b3b87@gmail.com>
-Date:   Mon, 18 Apr 2022 20:37:51 -0400
+        Mon, 18 Apr 2022 20:43:52 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB13E0D5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:41:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650328871; x=1681864871;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HOYO7JlUYf5H14URgos3ZrjOtwiy2yVhHwcj7ha5tsM=;
+  b=aME0RFkFCPoV98/inWqFhps/rHFGsE76WB/3dD509lzgnm984MfMcTjt
+   y04YA6B4GR71ovYJMfrcPsoPIn4WoKS1Zb7tl2qhNDvmM9eJCzTKhj11f
+   OJB+R2HQqQTG29u/7Lq3EHY6RHmSNJNPdinS7y41a4pKLqJ9rkANV1/9Y
+   rhnMCr9ubgP+Y6IxnmKDCzwoKCasVe1eAIYgh77DylQhopSmHjLZw+SAG
+   uDuOXuH8foP80pnyaKYrO8v0QcuRfirQIImz1nQxnotyjFSJEM8kiNIj1
+   ovGXvJGsUlFzM6dylynE9tDIBHvgUb885VWTg78aEaGjwRH7oQjXgYiep
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="324083887"
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="324083887"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 17:41:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="529822632"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 18 Apr 2022 17:41:08 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngbvX-000584-S1;
+        Tue, 19 Apr 2022 00:41:07 +0000
+Date:   Tue, 19 Apr 2022 08:41:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Russ Weight <russell.h.weight@intel.com>, mcgrof@kernel.org,
+        rafael@kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, trix@redhat.com, lgoncalv@redhat.com,
+        yilun.xu@intel.com, hao.wu@intel.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: Re: [PATCH v3 3/8] firmware_loader: Split sysfs support from fallback
+Message-ID: <202204190831.KrZOnvww-lkp@intel.com>
+References: <20220418223753.639058-4-russell.h.weight@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101
- Thunderbird/100.0
-From:   hanasaki-gmail <hanasaki@gmail.com>
-Subject: kernel LAN : Intel 2.5GbE LAN : support
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418223753.639058-4-russell.h.weight@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel LAN : Intel 2.5GbE LAN  : support
-Intel 2.5GbE LAN chip (2.5 Gbps/1 Gbps/100 Mbps)
+Hi Russ,
 
-Looking at the below motherboard.
-what .config option and kernel module supports
-this ethernet LAN chip and at 2.5GB?
+Thank you for the patch! Yet something to improve:
 
-What is the first kernel version having support?
+[auto build test ERROR on driver-core/driver-core-testing]
+[also build test ERROR on shuah-kselftest/next mcgrof/sysctl-next linus/master v5.18-rc3 next-20220414]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-ref:
-X570SI AORUS PRO AX (rev. 1.1)
-https://www.gigabyte.com/us/Motherboard/X570SI-AORUS-PRO-AX-rev-11
+url:    https://github.com/intel-lab-lkp/linux/commits/Russ-Weight/Extend-FW-framework-for-user-FW-uploads/20220419-064126
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git 3123109284176b1532874591f7c81f3837bbdc17
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220419/202204190831.KrZOnvww-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/7fb618c8a43c6350d4f11246daf3a62cd2c2843d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Russ-Weight/Extend-FW-framework-for-user-FW-uploads/20220419-064126
+        git checkout 7fb618c8a43c6350d4f11246daf3a62cd2c2843d
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/base/firmware_loader/fallback.h:9,
+                    from drivers/base/firmware_loader/main.c:44:
+   drivers/base/firmware_loader/sysfs.h: In function '__firmware_loading_timeout':
+>> drivers/base/firmware_loader/sysfs.h:74:34: error: invalid use of undefined type 'struct firmware_fallback_config'
+      74 |         return fw_fallback_config.loading_timeout;
+         |                                  ^
+   drivers/base/firmware_loader/sysfs.h: In function '__fw_fallback_set_timeout':
+   drivers/base/firmware_loader/sysfs.h:80:27: error: invalid use of undefined type 'struct firmware_fallback_config'
+      80 |         fw_fallback_config.loading_timeout = timeout;
+         |                           ^
+
+
+vim +74 drivers/base/firmware_loader/sysfs.h
+
+    70	
+    71	/* These getters are vetted to use int properly */
+    72	static inline int __firmware_loading_timeout(void)
+    73	{
+  > 74		return fw_fallback_config.loading_timeout;
+    75	}
+    76	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
