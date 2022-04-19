@@ -2,95 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C056C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352127AbiDSNNu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
+        id S243699AbiDSNSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347234AbiDSNNq (ORCPT
+        with ESMTP id S231267AbiDSNSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:13:46 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73D53122E;
-        Tue, 19 Apr 2022 06:11:03 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 19 Apr 2022 09:18:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0F633E0B;
+        Tue, 19 Apr 2022 06:15:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id A224B21118;
-        Tue, 19 Apr 2022 13:11:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650373862;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b/3K0pRlotaEfeU4+3K4eR5b2A9Pz6oNCQOD+UvB+zk=;
-        b=Mwrfi3PuJtG3lF8zpNdohOuLyeCfFp0GdoKSmNwoxeFSgYwqo4zURKNJzPEVbz6voetTPp
-        3yJkioCD3xtKVzBGaG4/gxc7sXRIO+IZp7sPtdwF7xDe8694fLmmBUVGEMcpnknsnSTk3R
-        8Rpx29y+aqnwcAqss4uxns5R4MGMiHA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650373862;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b/3K0pRlotaEfeU4+3K4eR5b2A9Pz6oNCQOD+UvB+zk=;
-        b=YNXpRNTTh2slhKeGK8LbdSeunWutxGvrv/T/jdT76Q6855uZJBZ+0jj151T8EGr7laxjQu
-        noHeFvTDSKLuxABg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 65ADB139BE;
-        Tue, 19 Apr 2022 13:11:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id +voeGOa0XmJ8fwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 19 Apr 2022 13:11:02 +0000
-Date:   Tue, 19 Apr 2022 15:06:59 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Josef Bacik <josef@toxicpanda.com>, linux-doc@vger.kernel.org,
-        Matthew Wilcox <willy@infradead.org>, Chris Mason <clm@fb.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, Schspa Shi <schspa@gmail.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: zstd: remove extraneous asterix at the head of
- zstd_reclaim_timer_fn() comment
-Message-ID: <20220419130659.GD2348@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Bagas Sanjaya <bagasdotme@gmail.com>,
-        Josef Bacik <josef@toxicpanda.com>, linux-doc@vger.kernel.org,
-        Matthew Wilcox <willy@infradead.org>, Chris Mason <clm@fb.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        Schspa Shi <schspa@gmail.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220418125934.566647-1-bagasdotme@gmail.com>
- <Yl2Dx+jefYs1Un+8@localhost.localdomain>
- <b5b42b49-9d0c-c745-f355-89900b53f6e1@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39B5561605;
+        Tue, 19 Apr 2022 13:15:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40465C385A5;
+        Tue, 19 Apr 2022 13:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650374134;
+        bh=XyLeUd/v63OA7SUTUm0rez8xElwKroMr+psf6pn932Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TLl0fxObFpL5KXlYroSc8qt8bgjljkyAsi/GCsHFxNwrkZiau7vl+4nRFWJ1V9jNl
+         sZp7pRHZ3yipIISK0qweCepkBfbxtXzz+efrwtlm1UDi1YZta2xS7995BnHX+Uz1JA
+         ALK5xe3MoaNr/rxVwtLYYPf4S5ZG9REGjKxTop/fCWXNA8wuMQ1oLMC67PXlyJOe2Q
+         35VNNfG6Vmdy4espTVVQIk9NMn9XcLDnXZg17jQ7AZ1yRUcrzKgPLOEZ1lAxOSrVG9
+         VkXrTg6ut13jj698dTAVFpVifH0KzNCBsiHk/WjqW9I7+7qNcPj0BAQBxMe/VZVGRB
+         uHeWdFUPHGF8Q==
+Date:   Tue, 19 Apr 2022 14:15:29 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        linux-spi@vger.kernel.org, Pratyush Yadav <p.yadav@ti.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.17 34/49] spi: cadence-quadspi: fix protocol
+ setup for non-1-1-X operations
+Message-ID: <Yl618Qfbm3NpGjB5@sirena.org.uk>
+References: <20220412004411.349427-1-sashal@kernel.org>
+ <20220412004411.349427-34-sashal@kernel.org>
+ <d618fc184f162b1da8d75729b5939bed52308040.camel@ew.tq-group.com>
+ <YlVrbR6Giy2OXe1R@sirena.org.uk>
+ <YlyHqKVBC9u1F9xS@sashalap>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="um3oZgsUst9dpcPu"
 Content-Disposition: inline
-In-Reply-To: <b5b42b49-9d0c-c745-f355-89900b53f6e1@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <YlyHqKVBC9u1F9xS@sashalap>
+X-Cookie: That's what she said.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 12:19:44PM +0700, Bagas Sanjaya wrote:
-> On 4/18/22 22:29, Josef Bacik wrote:
-> > Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-> > 
-> > Thanks,
-> > 
-> > Josef
-> 
-> Thanks for the review. Should I send v2 with your Reviewed-by
-> tag?
 
-No, and please don't send fixes for the kdoc formats, the script does
-not have the same preferences as we who actually have to read the code.
-The kdoc format is convenient for more thnigs than just generating
-public documentation.
+--um3oZgsUst9dpcPu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Sun, Apr 17, 2022 at 05:33:28PM -0400, Sasha Levin wrote:
+> On Tue, Apr 12, 2022 at 01:07:09PM +0100, Mark Brown wrote:
+
+> > For the benefit of those playing at home that's "spi: cadence-quadspi:
+> > fix incorrect supports_op() return value".  It's much more the sort of
+> > thing I'd expect to see backported to stable so it seems good from that
+> > point of view.
+
+> I'm a bit confused as I don't see the other patch in Linus's tree?
+
+> I'll queue this one up then...
+
+I've only recently applied the above commit, it's not sent to Linus yet.
+
+--um3oZgsUst9dpcPu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJetfEACgkQJNaLcl1U
+h9CDZQf/TY/cVb9af5Ei63uqOeKzzcs5loIODBJ04wcdky0mYlICzwT4NKRcWp+P
+t7T/O0b+AGrhzo0vXw1B16RAdm6hYcmZ7hPzw4zp1EoC/EwY/jUustgwOn0ZRMWT
+tBfVKS0IVu98ptUgeYu14xX57jqPkHx5QkoXk32Deuv/d781sApq3+wK9licaIZA
++mZb5mEttMx1pVk5wCFEgVrylMu1yhwu7roTI2HLC4wlw1jhDXfE3e8MBmLvL3xe
+uUTYVak90sl5pJc6J69sfUdI5I6HG0C36BHArucu9/p7bGa/iMV7YqwaD4EpefqY
+HzxI+3UIgt0DXIvI5KuQG+vO8eVSdw==
+=9Ape
+-----END PGP SIGNATURE-----
+
+--um3oZgsUst9dpcPu--
