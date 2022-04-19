@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78336C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B41CFC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355882AbiDSRKw (ORCPT
+        id S1356092AbiDSRMl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
+        Tue, 19 Apr 2022 13:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355612AbiDSRJu (ORCPT
+        with ESMTP id S1355583AbiDSRJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:09:50 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8141138
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:07 -0700 (PDT)
+        Tue, 19 Apr 2022 13:09:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F715F5B
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388027; x=1681924027;
+  t=1650388033; x=1681924033;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=OvMcHVtcJvbvw4mAw0A77nXekx1g9G9EavzzKuKHygk=;
-  b=Xq2FZQgRlEaUq802TILiJZkv3LWUVXlGahX/6kNiur3gGsQJMo6jHfYZ
-   U1jgJaPN17hbukbFPWVXM3Gn+kpJL1KfoCpMNyE87H+q8W3dc/9EK8sXi
-   EV3uL9E70blmmRV4mVgFUmKZwyLLSX3w/CTlFKowklaR+/VSQHwWnok+h
-   N7HeXfjhBQcQo4a61+bgufgx6zhX4X8QOOi/L7hz+s4Lh9+PY+7fhF3RJ
-   bXna2kf9y0kpl4z04UEZrqky6ZqaZrXnRJcGiorZKdF2jJVrkckYHTLfz
-   BH+yxkxumA1Zi46nRR+sonXhmM88jqWbhOp2PWila7aAn9No7LxY+KBw1
+  bh=bSg1SSR8/uHeBlXU/TSHBEVrfJclqHVfsxA9NRaiIU8=;
+  b=SIwhqX2sfCv5mNWsMVa2M4/fwflup2jIUjVP8idQPfP8D4Nve6ELsBk7
+   uw9+S4l+b2/SI4gYxAS+uObZ10ebqEC6HZthSsn8y030veiHgLOqfbABk
+   CPe2wzsVtk96J/N+Shu9YH9gHmzp0VcP++N7/qMlHOgBfwcPeG928eyik
+   IUxUVLGHFMATDbGzZmCJMfLruBJRXwmVupB1/sTevCSkQx31dH4g4vqNj
+   i/c8aYDHlX7xq1RtjRtIc8gXcmmh+Ize8SYtMf1R4lZ0qGc1tu6uNTQph
+   E2aevjIsm6umQ5+skMJxouuvXgC95YPG/uNIJ92Ta4ngH26KEfmpTyIDw
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991849"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350267618"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263991849"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:07 -0700
+   d="scan'208";a="350267618"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:13 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="861588499"
+   d="scan'208";a="727145550"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:06 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:12 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 19/44] entry: Add calls for save/restore auxiliary pt_regs
-Date:   Tue, 19 Apr 2022 10:06:24 -0700
-Message-Id: <20220419170649.1022246-20-ira.weiny@intel.com>
+Subject: [PATCH V10 27/44] memremap_pages: Introduce a PGMAP_PROTECTION flag
+Date:   Tue, 19 Apr 2022 10:06:32 -0700
+Message-Id: <20220419170649.1022246-28-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,119 +60,125 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Some architectures have auxiliary pt_regs space which is available to
-store extra information on the stack.  For ease of implementation the
-common C code was left to fill in the data when needed.
+The persistent memory (PMEM) driver uses the memremap_pages facility to
+provide 'struct page' metadata (vmemmap) for PMEM.  Given that PMEM
+capacity maybe orders of magnitude higher capacity than System RAM it
+presents a large vulnerability surface to stray writes.  Unlike stray
+writes to System RAM, which may result in a crash or other undesirable
+behavior, stray writes to PMEM additionally are more likely to result in
+permanent data loss. Reboot is not a remediation for PMEM corruption
+like it is for System RAM.
 
-Add calls to the architecture save and restore auxiliary pt_regs
-functions.  Define empty calls for any architecture which does not have
-auxiliary pt_regs.
+Given that PMEM access from the kernel is limited to a constrained set
+of locations (PMEM driver, Filesystem-DAX, and direct-I/O to a DAX
+page), it is amenable to supervisor pkey protection.
 
-NOTE: Due to the split nature of the Xen exit code
-irqentry_exit_cond_resched() requires an unbalanced call to
-arch_restore_aux_pt_regs().
+Some systems which have configured DEVMAP_ACCESS_PROTECTION may not have
+PMEM installed.  Or the PMEM may not be mapped into the direct map.  In
+addition, some callers of memremap_pages() will not want the mapped
+pages protected.
+
+Define a new PGMAP flag to distinguish page maps which are protected.
+Use this flag to enable runtime protection support.  A static key is
+used to optimize the runtime support.
+
+Specifying this flag on a system which can't support protections will
+fail.  Callers are expected to check if protections are supported via
+pgmap_protection_available().  It was considered to have callers specify
+the flag and check if the dev_pagemap object returned was protected or
+not.  But this was considered less efficient than a direct check
+beforehand.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Update commit message
+	Clean up commit message
 
 Changes for V8
-	New patch which introduces a generic auxiliary pt_register save
-		restore.
+	Split this out into it's own patch
 ---
- include/linux/entry-common.h |  7 +++++++
- kernel/entry/common.c        | 16 ++++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ include/linux/memremap.h |  1 +
+ mm/memremap.c            | 40 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index f35086d2a258..15b35ca937f2 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -79,6 +79,13 @@ static __always_inline void arch_check_user_regs(struct pt_regs *regs);
- static __always_inline void arch_check_user_regs(struct pt_regs *regs) {}
- #endif
+diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+index 7980d0db8617..02c415b1b278 100644
+--- a/include/linux/memremap.h
++++ b/include/linux/memremap.h
+@@ -83,6 +83,7 @@ struct dev_pagemap_ops {
+ };
  
-+#ifndef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
-+
-+static inline void arch_save_aux_pt_regs(struct pt_regs *regs) { }
-+static inline void arch_restore_aux_pt_regs(struct pt_regs *regs) { }
-+
-+#endif
-+
+ #define PGMAP_ALTMAP_VALID	(1 << 0)
++#define PGMAP_PROTECTION	(1 << 1)
+ 
  /**
-  * enter_from_user_mode - Establish state when coming from user mode
-  *
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 8f73b54bfa56..9a02b517c7e7 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -317,7 +317,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
--		return ret;
-+		goto aux_save;
- 	}
- 
- 	/*
-@@ -356,7 +356,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 		instrumentation_end();
- 
- 		ret.exit_rcu = true;
--		return ret;
-+		goto aux_save;
- 	}
- 
- 	/*
-@@ -371,6 +371,11 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
- 
-+aux_save:
-+	instrumentation_begin();
-+	arch_save_aux_pt_regs(regs);
-+	instrumentation_end();
-+
- 	return ret;
+  * struct dev_pagemap - metadata for ZONE_DEVICE mappings
+diff --git a/mm/memremap.c b/mm/memremap.c
+index af0223605e69..4dfb3025cee3 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -62,6 +62,37 @@ static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
  }
+ #endif /* CONFIG_FS_DAX */
  
-@@ -401,6 +406,7 @@ void dynamic_irqentry_exit_cond_resched(void)
- 
- void irqentry_exit_cond_resched(struct pt_regs *regs)
- {
-+	arch_restore_aux_pt_regs(regs);
- 	irqentry_exit_cond_resched_internal();
- }
- 
-@@ -408,6 +414,10 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- {
- 	lockdep_assert_irqs_disabled();
- 
-+	instrumentation_begin();
-+	arch_restore_aux_pt_regs(regs);
-+	instrumentation_end();
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
 +
- 	/* Check whether this returns to user mode */
- 	if (user_mode(regs)) {
- 		irqentry_exit_to_user_mode(regs);
-@@ -459,6 +469,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- 	instrumentation_begin();
- 	trace_hardirqs_off_finish();
- 	ftrace_nmi_enter();
-+	arch_save_aux_pt_regs(regs);
- 	instrumentation_end();
- 
- 	return irq_state;
-@@ -467,6 +478,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
++/*
++ * Note; all devices which have asked for protections share the same key.  The
++ * key may, or may not, have been provided by the core.  If not, protection
++ * will be disabled.  The key acquisition is attempted when the first ZONE
++ * DEVICE requests it and freed when all zones have been unmapped.
++ *
++ * Also this must be EXPORT_SYMBOL rather than EXPORT_SYMBOL_GPL because it is
++ * intended to be used in the kmap API.
++ */
++DEFINE_STATIC_KEY_FALSE(dev_pgmap_protection_static_key);
++EXPORT_SYMBOL(dev_pgmap_protection_static_key);
++
++static void devmap_protection_enable(void)
++{
++	static_branch_inc(&dev_pgmap_protection_static_key);
++}
++
++static void devmap_protection_disable(void)
++{
++	static_branch_dec(&dev_pgmap_protection_static_key);
++}
++
++#else /* !CONFIG_DEVMAP_ACCESS_PROTECTION */
++
++static void devmap_protection_enable(void) { }
++static void devmap_protection_disable(void) { }
++
++#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
++
+ static void pgmap_array_delete(struct range *range)
  {
- 	instrumentation_begin();
-+	arch_restore_aux_pt_regs(regs);
- 	ftrace_nmi_exit();
- 	if (irq_state.lockdep) {
- 		trace_hardirqs_on_prepare();
+ 	xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
+@@ -148,6 +179,9 @@ void memunmap_pages(struct dev_pagemap *pgmap)
+ 
+ 	WARN_ONCE(pgmap->altmap.alloc, "failed to free all reserved pages\n");
+ 	devmap_managed_enable_put(pgmap);
++
++	if (pgmap->flags & PGMAP_PROTECTION)
++		devmap_protection_disable();
+ }
+ EXPORT_SYMBOL_GPL(memunmap_pages);
+ 
+@@ -295,6 +329,12 @@ void *memremap_pages(struct dev_pagemap *pgmap, int nid)
+ 	if (WARN_ONCE(!nr_range, "nr_range must be specified\n"))
+ 		return ERR_PTR(-EINVAL);
+ 
++	if (pgmap->flags & PGMAP_PROTECTION) {
++		if (!pgmap_protection_available())
++			return ERR_PTR(-EINVAL);
++		devmap_protection_enable();
++	}
++
+ 	switch (pgmap->type) {
+ 	case MEMORY_DEVICE_PRIVATE:
+ 		if (!IS_ENABLED(CONFIG_DEVICE_PRIVATE)) {
 -- 
 2.35.1
 
