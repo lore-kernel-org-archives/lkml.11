@@ -2,96 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 149E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353808AbiDSP1O (ORCPT
+        id S1353802AbiDSP2Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
+        Tue, 19 Apr 2022 11:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353806AbiDSP1F (ORCPT
+        with ESMTP id S1354260AbiDSP2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:27:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0492D38BFF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650381862;
+        Tue, 19 Apr 2022 11:28:18 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9ABDEDD;
+        Tue, 19 Apr 2022 08:25:34 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 59F30FF80D;
+        Tue, 19 Apr 2022 15:25:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650381932;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Cp3erbdHIxI8pbHHBBO/snHJsYK0Yd+hp7YCIMU9Eq0=;
-        b=YoVRtGcbkL379lkEC0QaoHO5yOsaCb18pFKgLc1sqVNbs/di8iSGBrPg04YzVkY+uzkYlm
-        j2oBlD/WE/raTFWFdzV0TYy6RKmeJ8XkG6/Qn5HdnT05P8QvbEvObBI1JSRu2Ni8Mm1ke+
-        Z0z+w7aSoFPdHSQB+4+hMaeAG2KS6GQ=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-hdFINmWuPK2ng3KFzN80eg-1; Tue, 19 Apr 2022 11:24:20 -0400
-X-MC-Unique: hdFINmWuPK2ng3KFzN80eg-1
-Received: by mail-ed1-f70.google.com with SMTP id cn27-20020a0564020cbb00b0041b5b91adb5so11197844edb.15
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:24:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cp3erbdHIxI8pbHHBBO/snHJsYK0Yd+hp7YCIMU9Eq0=;
-        b=4+UcZbITgY1pIph5af5ykZnUfqdTzQQiif0o/J1TkcH9GMggc8B8fSUvinUwxz3t5D
-         GTeqO7C5YLYj8kxBto0IkzH6Hljbf6W4Uy4WgZR6kp+ML/kMTMxg8dU9F1yHjTlfZRsu
-         PIT3ZWe/T6ADY1I5hk15WDDW1Crw8Z0hIpccjZmHoApfZPbjCp5z5AHqW6YATq8Pz6YK
-         G3yex41RAHl1Q9xCWGyD6N83i8crVbU5Hwhr6uhTmfft9jk78lO5xWvr0Z3DRloDihyM
-         SjbqyHMbnXwCv6+54C1YczROnxDFscvivX/jFlXW+VcaVVDID0fT3NgbKWYqELYS0k2m
-         Acpg==
-X-Gm-Message-State: AOAM531RZUmYvWPeHUFfMOebLyWVt0dHuuCue9L7XZO4gcnIGNOmEqbW
-        3Vht+suHEEAGaHB9gKLsg0seuJUBASeE4zdrwlcak/qhcZeR0Xw65zYv+/NpoDExZ8fw65KFr9R
-        MFnJo5Xv6ML3/ARjBqvB+wbTd8ycPFQZDBHdwYkX+
-X-Received: by 2002:a17:907:8a03:b0:6ec:8197:e8ac with SMTP id sc3-20020a1709078a0300b006ec8197e8acmr13305418ejc.379.1650381859452;
-        Tue, 19 Apr 2022 08:24:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyEV2IgUHFtehd7uHS7lnxS/tYG3PBuNMrvIeNlWN6+XHPGaya3+IKBxGf3ipbReX5cmQisNirCElxQhR5nhVo=
-X-Received: by 2002:a17:907:8a03:b0:6ec:8197:e8ac with SMTP id
- sc3-20020a1709078a0300b006ec8197e8acmr13305391ejc.379.1650381859157; Tue, 19
- Apr 2022 08:24:19 -0700 (PDT)
+        bh=Bq9PeeGKcHRkxdXVgUr01rmzSL3+CeljQ3EucZX0P7Y=;
+        b=D5GBhDkyZrK5yvyrOhTnlTFai3nybJgtqeJ4Btz8MX+iAYbIB8QguBUEXby9NcFEsox2Ay
+        nEBVao0mKpzibIZwXRjI+fegNSQSw7yP0VTNq2TEF9zGIcyMj40seUL5zSgEDw6yP0fImV
+        lJF05G0KenAPpCFxgqJkSYhSYBiG/PZ/bVpCHQ4t0OlvyMid9HQRfk/ROI9Kgcj6DyTUMD
+        xvSthEuLiZuwLSoV+spy5qdHex3A5uN+vsMGrjnOmyQmI94UOSi1NIfHY47bk0U1gnoFxS
+        +z+RfEv5dQrJmZydxKRtn5ikkNVGrQpVuMaMw2rcPP/XoxZz0Iya3GbS7msmUg==
+Date:   Tue, 19 Apr 2022 17:25:28 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Liang Yang <liang.yang@amlogic.com>
+Cc:     <linux-mtd@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 1/2] mtd: rawnand: meson: discard the common MMC sub
+ clock framework
+Message-ID: <20220419172528.2dd75e7b@xps13>
+In-Reply-To: <2e382e3e-c231-c9e4-73a1-0637288fcd4f@amlogic.com>
+References: <20220402074921.13316-1-liang.yang@amlogic.com>
+        <20220402074921.13316-2-liang.yang@amlogic.com>
+        <20220404103034.48ec16b1@xps13>
+        <50105d6b-8ced-1b72-30cb-a709c4a4dd26@amlogic.com>
+        <d5a33645-fac1-9c69-afe6-654bfe93ca48@amlogic.com>
+        <20220419102629.1c77aa2a@xps13>
+        <2e382e3e-c231-c9e4-73a1-0637288fcd4f@amlogic.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <YlWWbpW5Foynjllo@rabbit.intern.cm-ag> <454834.1650373340@warthog.procyon.org.uk>
- <Yl7EyMLnqqDv63yW@rabbit.intern.cm-ag>
-In-Reply-To: <Yl7EyMLnqqDv63yW@rabbit.intern.cm-ag>
-From:   David Wysochanski <dwysocha@redhat.com>
-Date:   Tue, 19 Apr 2022 11:23:42 -0400
-Message-ID: <CALF+zOnxxvDPd6L=W6N0WnS_jbYLBDfENKTousT36jQ37h_Vnw@mail.gmail.com>
-Subject: Re: [Linux-cachefs] fscache corruption in Linux 5.17?
-To:     Max Kellermann <mk@cm4all.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-cachefs <linux-cachefs@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 10:19 AM Max Kellermann <mk@cm4all.com> wrote:
->
-> On 2022/04/19 15:02, David Howells <dhowells@redhat.com> wrote:
-> > I presume you are actually using a cache?
->
-> Yes, see:
->
-> On 2022/04/12 17:10, Max Kellermann <max@rabbit.intern.cm-ag> wrote:
-> > All web servers mount a storage via NFSv3 with fscache.
->
-> At least one web server is still in this broken state right now.  So
-> if you need anything from that server, tell me, and I'll get it.
->
-> I will need to downgrade to 5.16 tomorrow to get rid of the corruption
-> bug (I've delayed this for a week, waiting for your reply).  After
-> tomorrow, I can no longer help debugging this.
->
-> Max
->
+Hello,
 
-FWIW, I just noticed one of my unit tests is failing with data
-corruption with NFSv3 only (NFS4.x does not fail) on 5.18.0-rc3 - not
-sure how repeatable it is.
-I'll see what I can find out.
+liang.yang@amlogic.com wrote on Tue, 19 Apr 2022 17:17:48 +0800:
 
+> Hello Miquel,
+>=20
+> On 2022/4/19 16:26, Miquel Raynal wrote:
+> > [ EXTERNAL EMAIL ]
+> >=20
+> > Hello,
+> >=20
+> > liang.yang@amlogic.com wrote on Mon, 18 Apr 2022 11:40:10 +0800:
+> >  =20
+> >> Hi Miquel,
+> >>
+> >> i have some confusion when i prepare the patches. for DT compatibility=
+, it falls back to the old DT when failed to get resource by the new DT, bu=
+t there is some points:
+> >> a. old DT depends on MMC sub clock driver, but it never be merged, so =
+it can't work. =20
+> >=20
+> > I don't get what you mean here, sorry. I believe there is a new way to
+> > describe this clock but grabbing the one from the MMC still works, does
+> > not it?
+> >  =20
+>=20
+> No, it doesn't. after the NFC driver using the MMC sub clock framework wa=
+s merged into the mainline of kernel, we didn't continue to submit the seri=
+es of patches about MMC sub clock after v9. when i found that, we made a di=
+scussion to decide whether to recover the series of patches about MMC sub c=
+lock framework, finally, see the description from cover letter, we plan to =
+abandon it and adopt the new clock scheme in this series of patches.
+
+I am not sure to follow. Is the current code completely broken? I
+believe it is not, so I don't understand your issue.
+
+Can you please summarize the situation?
+
+>=20
+> Thanks.
+>=20
+> >> b. if it falls back to the old DT, beside the regmap lookup below, it =
+seems that we have to preserve the code of the old clock setting in nfc_clk=
+_init(). =20
+> >=20
+> > Yes, probably.
+> >  =20
+> >> do we still need to avoid break DT compatibility? =20
+> >=20
+> > We should try our best to avoid breaking the DT, yes.
+> >  =20
+> >>
+> >> Thanks.
+> >>
+> >> On 2022/4/11 10:40, Liang Yang wrote: =20
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nfc->dev =3D dev;
+> >>>>> -=C2=A0=C2=A0=C2=A0 res =3D platform_get_resource(pdev, IORESOURCE_=
+MEM, 0);
+> >>>>> -=C2=A0=C2=A0=C2=A0 nfc->reg_base =3D devm_ioremap_resource(dev, re=
+s);
+> >>>>> +=C2=A0=C2=A0=C2=A0 nfc->reg_base =3D devm_platform_ioremap_resourc=
+e_byname(pdev, "nfc"); =20
+> >>>>
+> >>>> This change seems unrelated. =20
+> >>>
+> >>> To be consistent with the following > devm_platform_ioremap_resource_=
+byname(pdev, "emmc"). do you mean that we > don't need it?> =20
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(nfc->reg_base))
+> >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_=
+ERR(nfc->reg_base);
+> >>>>> -=C2=A0=C2=A0=C2=A0 nfc->reg_clk =3D
+> >>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 syscon_regmap_lookup_by=
+_phandle(dev->of_node,
+> >>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "a=
+mlogic,mmc-syscon");
+> >>>>> -=C2=A0=C2=A0=C2=A0 if (IS_ERR(nfc->reg_clk)) {
+> >>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_err(dev, "Failed to=
+ lookup clock base\n");
+> >>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR(nfc->reg=
+_clk);
+> >>>>> -=C2=A0=C2=A0=C2=A0 }
+> >>>>> +=C2=A0=C2=A0=C2=A0 nfc->sd_emmc_clock =3D devm_platform_ioremap_re=
+source_byname(pdev, >>> "emmc");
+> >>>>> +=C2=A0=C2=A0=C2=A0 if (IS_ERR(nfc->sd_emmc_clock))
+> >>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR(nfc->sd_=
+emmc_clock); =20
+> >>>>
+> >>>> While I agree this is much better than the previous solution, we can=
+not
+> >>>> break DT compatibility, so you need to try getting the emmc clock, b=
+ut
+> >>>> if it fails you should fallback to the regmap lookup. =20
+> >>>
+> >>> ok, i will fix it next version. thanks. =20
+> >>>    >>>>   >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 irq =3D platform_get_=
+irq(pdev, 0); =20
+> >=20
+> >=20
+> > Thanks,
+> > Miqu=C3=A8l
+> >=20
+> > . =20
+
+
+Thanks,
+Miqu=C3=A8l
