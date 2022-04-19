@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D06BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350802AbiDSS1C (ORCPT
+        id S1357034AbiDSS1P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
+        Tue, 19 Apr 2022 14:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356975AbiDSSWd (ORCPT
+        with ESMTP id S1357201AbiDSSWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:33 -0400
+        Tue, 19 Apr 2022 14:22:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A5AE1D;
-        Tue, 19 Apr 2022 11:14:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A029942A3C;
+        Tue, 19 Apr 2022 11:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E30E860AC0;
-        Tue, 19 Apr 2022 18:14:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333B8C385A7;
-        Tue, 19 Apr 2022 18:14:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C0A061453;
+        Tue, 19 Apr 2022 18:15:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDC8C385A7;
+        Tue, 19 Apr 2022 18:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392087;
-        bh=y4FzcMqIYjP6yJMMswEni40ksnSonHHl5KEbQHYCCgw=;
+        s=k20201202; t=1650392128;
+        bh=e4G0xTSYBF2+KO/eQLTax+MxgRIrhCoscGPppvkspR0=;
         h=From:To:Cc:Subject:Date:From;
-        b=e6XFhBVg3hflRTSXNqcnPQezR70jUe1wMfPj2w2SRIEVA784T4+tLjHxiuWdSY9LQ
-         C9rAiXy8yYMLQNX81zHerk9XNi/a5fdxb31zEmmAhZs2+9C3GLz0AnXoINOlMgTkbc
-         WWEDDA1qyP/QlJjJQthXIvEvsAF6/i0FKRT+eoIc/ZY5gkrwDiUEc3g5Z21b9eoUI3
-         bPV6KqzIdTGjmFVvdUXDRmzdlJDXC0CQCuTPC9o9sxBj6/4XEPiIuSynGGnBOxw8fG
-         BCt9GeWTFObDTZKV+gf4OiZ82bHNxjDH3smnWyD7GpBViZmtbIXcoFV+MmAddeDRZU
-         GxaZQhDSsX9Bg==
+        b=amb9DUFDEOTupAc9roFt1KoS7uwfsVpRr4DEVk2ieeLV2Oz++u+6ytIrS/7NPU5n0
+         LYRgv72PGGV9/2dNnbqumxqUBYWmCLMBMSw9icD6JeEV3gzyUgJc0DVNMdCRKp5MXL
+         ZQfqGn3cEcMi3/RSka9r7Jn9avK9KWFbaAYczvCAhl5D2kEYs/Kqns62YvKhoFMr4k
+         PR5x0hXzG4z2vEFcu+Hz2RwXSreeub0K0bGXy35rv9FKnXtuL5ivm+vclzcDPwhDj0
+         meczRdoa++3AHo6igf/Ny4qA5RCwO1N2zTqS7dZpIZF0fL5acA8H5QwdG6Nw3F0eTK
+         bmMnbbZg8RjfA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -42,9 +42,9 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 01/14] ARM: vexpress/spc: Avoid negative array index when !SMP
-Date:   Tue, 19 Apr 2022 14:14:30 -0400
-Message-Id: <20220419181444.485959-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 01/12] ARM: vexpress/spc: Avoid negative array index when !SMP
+Date:   Tue, 19 Apr 2022 14:15:14 -0400
+Message-Id: <20220419181525.486166-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 X-stable: review
@@ -92,7 +92,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
-index 1da11bdb1dfb..1c6500c4e6a1 100644
+index 55bbbc3b328f..e65c04be86cc 100644
 --- a/arch/arm/mach-vexpress/spc.c
 +++ b/arch/arm/mach-vexpress/spc.c
 @@ -580,7 +580,7 @@ static int __init ve_spc_clk_init(void)
