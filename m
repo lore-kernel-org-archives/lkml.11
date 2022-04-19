@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63386C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiDSAqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
+        id S241818AbiDSAq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241156AbiDSApO (ORCPT
+        with ESMTP id S241209AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:45:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96792AC79
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05BF2315B
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18154613B3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E68AC385CF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22037B81148
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BFEC385C8;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=EnqCsnUKai4u5M/XWwiBMkwKvoG6dGydw1Q83m4mYW4=;
+        bh=Rr5DHLrOuEqdBkc+qgPwuN4SXQHozI5fyVdTHY9LHDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lmqBzm/9oocXTeceMy8rN6/PF8T65Gb2SX/AsjzmtC8i0OEP2ulloSpGcI9cjTrcT
-         2Gpf2UvGdjKyrTxDZpNvduwrGNnQLpIu8IV6DffJHAFhIOApvL/sBgRGhEumBM/tiK
-         MeeOXIOh1EzEn2Ugo/SXeQuN17Z6bRJ3JXiV6CMTcpQNNOSPtGYgCE6FjbwW295mXe
-         1sFmDWRvKjN3OYeDN9vaeCunRgGhpzXDZAMpOAFDziz16jgj5JqsaTXLT6Xl/FMg/l
-         xyqep3NnqBEb/vaOyVhzO0d0kgkDMpe9mef/OGArnJY+C3/wt6ByDnOHfn/sD54KRo
-         KceBd4cqzXUuA==
+        b=Qt51eV+qPXPHyl4qfKIJSHjfhhn6gVODPCgpDVcwt/5XaCnFGRiuwwLf1tyN8QKrb
+         4owRFhCPLsLxtEBM9Cl/kQrov++qve2aukq7fFgasZMenfZcgnQkXvYIilkpokPcb7
+         z0wWH16wiPquGHtVZvDTzipE6z+/RXYcwZ5hpyctErqh+Q6sfpAd4JsdHb3xHaFhkR
+         JwkCqWRxt0vlU/hjQE3VVKk+wQVTcpuajem3NnfpgN3wrIQKXZj6QlPGuDPxYV9nXO
+         PRDlJy+k4CppLkuYFOd7A4k8gDDEeCnUXyS7OR5AFexQICfy4I8c+ZvV4WuW7IYoOl
+         iv1dSS4r4gdww==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 2F7365C30EF; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 36E745C30FC; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 22/61] tools/nolibc/types: define EXIT_SUCCESS and EXIT_FAILURE
-Date:   Mon, 18 Apr 2022 17:41:46 -0700
-Message-Id: <20220419004225.3952530-22-paulmck@kernel.org>
+Subject: [PATCH nolibc 26/61] tools/nolibc/stdlib: make raise() use the lower level syscalls only
+Date:   Mon, 18 Apr 2022 17:41:50 -0700
+Message-Id: <20220419004225.3952530-26-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,29 +53,28 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-These ones are found in some examples found in man pages and ease
-portability tests.
+raise() doesn't set errno, so there's no point calling kill(), better
+call sys_kill(), which also reduces the function's size.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/types.h | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/include/nolibc/stdlib.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-index b1bff5e717b6..e0749dc0bd06 100644
---- a/tools/include/nolibc/types.h
-+++ b/tools/include/nolibc/types.h
-@@ -71,6 +71,9 @@
- #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
- #define WIFEXITED(status)   (((status) & 0x7f) == 0)
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index db47362a750f..4cc1fdf6791e 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -317,7 +317,7 @@ int msleep(unsigned int msecs)
+ __attribute__((weak,unused))
+ int raise(int signal)
+ {
+-	return kill(getpid(), signal);
++	return sys_kill(sys_getpid(), signal);
+ }
  
-+/* standard exit() codes */
-+#define EXIT_SUCCESS 0
-+#define EXIT_FAILURE 1
- 
- /* for select() */
- typedef struct {
+ static __attribute__((unused))
 -- 
 2.31.1.189.g2e36527f23
 
