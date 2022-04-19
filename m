@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B780AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357223AbiDSS1l (ORCPT
+        id S1357240AbiDSS1t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
+        Tue, 19 Apr 2022 14:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357341AbiDSSXK (ORCPT
+        with ESMTP id S1357393AbiDSSXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884C33EF03;
-        Tue, 19 Apr 2022 11:15:54 -0700 (PDT)
+        Tue, 19 Apr 2022 14:23:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4009343AE3;
+        Tue, 19 Apr 2022 11:16:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E028861426;
-        Tue, 19 Apr 2022 18:15:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC2AC385A7;
-        Tue, 19 Apr 2022 18:15:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 670E760DBC;
+        Tue, 19 Apr 2022 18:16:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6496C385A5;
+        Tue, 19 Apr 2022 18:15:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392153;
-        bh=+Io3hLHcIRjPNqlAsc4Dro7jHI0gIfKz6QljcJbbR9M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Skufuqq6M3QhB8HovGk4CTwr528/0CrUOGE1IqnV1edXN/ymAZfnrvkERcp0EG7JP
-         rfifYX+4gQQBqqc70lVIMBe3hmqwD4Y1Z4Ne7oLEvyh9sER/UHIlWDIy9wzbIEoJaq
-         PvtQE/IVh9TO+K4wuPzdJO7Mk68i1zhoprgxR/+AOurp+qElybM9iFtudgDSO0Oqlj
-         YxAKV/cjd/IWAelNtHf2D7iWcPwtQJh+OXGr9DjfRwJ1G3dtiaoKVDr1Ok+g7vUqX9
-         //afhZ2az9sdZK5ayzvaFsyi1eUyjA9GMNK3ZmPeBJ7Xa4N6GCOXHDr8eJgQFyhdmJ
-         v2bNKKoCYHTyQ==
+        s=k20201202; t=1650392160;
+        bh=aj2MJe6FxnGwrXKvMahFbCQYAaT+4ocJ3YhgWHEGcDc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fp8mxRkjcYkbtsZl0FjckEfUPWSi+Jw8XsNUoyBNgujBjbaHzwMCeYCbXSclSRloF
+         8tv2ZUvfIA4txs8YefNGSLYwKHJQNFXOky59NiKXRfdVLg3fyqY0HBRFIvRuH6wvDW
+         hJsctZMKu2VzLh3lSnhL4qz0jGU5lf1fuhVRSJagmMGBRM8CWfL2ayAaWozwyWquJw
+         qXlCzXFSPGX6ryGwrtoC2WD0DPRQujPUIlJ/pSF+Tq2w8vFP2QbmNKbEmeLGOeXBVD
+         r76BGqaKSGzYnwKrZbMaDRA0xy/jVa4yTboIyvFG5EwzytIgBrzOrngx9Z0SIH4fdT
+         exgpudwdgS4rg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tomas Melin <tomas.melin@vaisala.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
-        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/12] net: macb: Restart tx only if queue pointer is lagging
-Date:   Tue, 19 Apr 2022 14:15:24 -0400
-Message-Id: <20220419181525.486166-11-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 1/9] ARM: vexpress/spc: Avoid negative array index when !SMP
+Date:   Tue, 19 Apr 2022 14:15:49 -0400
+Message-Id: <20220419181557.486336-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
-References: <20220419181525.486166-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,62 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Melin <tomas.melin@vaisala.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
+[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
 
-commit 4298388574da ("net: macb: restart tx after tx used bit read")
-added support for restarting transmission. Restarting tx does not work
-in case controller asserts TXUBR interrupt and TQBP is already at the end
-of the tx queue. In that situation, restarting tx will immediately cause
-assertion of another TXUBR interrupt. The driver will end up in an infinite
-interrupt loop which it cannot break out of.
+When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
+a couple negative array index accesses:
 
-For cases where TQBP is at the end of the tx queue, instead
-only clear TX_USED interrupt. As more data gets pushed to the queue,
-transmission will resume.
+arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
+arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  583 |   if (init_opp_table[cluster])
+      |       ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
+arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  592 |    init_opp_table[cluster] = true;
+      |    ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
 
-This issue was observed on a Xilinx Zynq-7000 based board.
-During stress test of the network interface,
-driver would get stuck on interrupt loop within seconds or minutes
-causing CPU to stall.
+Skip this logic when built !SMP.
 
-Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
+Cc: Liviu Dudau <liviu.dudau@arm.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/mach-vexpress/spc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 460bb81acf2b..d8e4842af055 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1364,6 +1364,7 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	unsigned int head = queue->tx_head;
- 	unsigned int tail = queue->tx_tail;
- 	struct macb *bp = queue->bp;
-+	unsigned int head_idx, tbqp;
+diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+index 635b0d549487..c16f39614003 100644
+--- a/arch/arm/mach-vexpress/spc.c
++++ b/arch/arm/mach-vexpress/spc.c
+@@ -584,7 +584,7 @@ static int __init ve_spc_clk_init(void)
+ 		}
  
- 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
- 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
-@@ -1371,6 +1372,13 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	if (head == tail)
- 		return;
+ 		cluster = topology_physical_package_id(cpu_dev->id);
+-		if (init_opp_table[cluster])
++		if (cluster < 0 || init_opp_table[cluster])
+ 			continue;
  
-+	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
-+	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
-+	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
-+
-+	if (tbqp == head_idx)
-+		return;
-+
- 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
- }
- 
+ 		if (ve_init_opp_table(cpu_dev))
 -- 
 2.35.1
 
