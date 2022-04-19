@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5457C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 047BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344406AbiDSSaJ (ORCPT
+        id S1351226AbiDSSaO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:30:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39222 "EHLO
+        Tue, 19 Apr 2022 14:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357462AbiDSSXX (ORCPT
+        with ESMTP id S1357255AbiDSSWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA803EF15;
-        Tue, 19 Apr 2022 11:16:22 -0700 (PDT)
+        Tue, 19 Apr 2022 14:22:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70D043382;
+        Tue, 19 Apr 2022 11:15:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73E6E6142E;
-        Tue, 19 Apr 2022 18:16:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5266CC385A5;
-        Tue, 19 Apr 2022 18:16:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D89D461403;
+        Tue, 19 Apr 2022 18:15:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BE3C385A5;
+        Tue, 19 Apr 2022 18:15:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392178;
-        bh=EX1IsrkM0zF2k65NZtSJkyhfT+wuZZjuxtcTS721YU0=;
+        s=k20201202; t=1650392136;
+        bh=eCE1CZAAPdlfnzSERiKsxjnWn5dd5PjbFxbrblaz3JU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m3AUGc9qragY8s3JERL6P5a6GO18RGuQyYCVgUOPzEa4UT65Ra0RkeTX+m8lu5qa7
-         ls8M10petEtAjn6wexQi7tOpmgicsppQzYt0FkVAgFkYx6GcELrUV9JanS35Yijkft
-         3d8xv3tcK1VOqWg5CJawgstVY5pWexwYQhTrmDlk1O3el0tWywmeoSP+ineuoDDhAJ
-         jbBO9bbfZB3w1zuF0Sa4wRzO3G/KcJ9bC5kCbvuWaUY3xpAg/BpjmyIJYTbMUSgDDC
-         ZiCQv4Vg/f8T5wEEvHkzaQyHkNcn1yDPCQ5X4uGxSqZ+Gp4emIgxUWOKQjCraFvT+F
-         tbs41vI6PxAyQ==
+        b=b4ecBEOgmU1MgZO+dC4QD51FYuPozwa1+6g8bQRAN9lcS3AOCjFMMUMInM/dqgnbA
+         hdE7JN2s41zqGHAyrTh2Z1jC+xOqt2MpeOmpYmukxkF5k3rhGfjskyBzp1CRPwy9p0
+         vhcG5vEQTUAe4mOKLRgG56LGad3Bk0bOuUpu9RonK8jPGeMjr31MzRKBuulFx1iJWc
+         2aJgk0/MQh9WxSfsaAKnGq24LR9NAdNXj6f5R+EYtFQJL0O45HxYGnqgi6MWtu/KxI
+         AGLeLeh2SOFH4TQz727AvpGEYi5PJr38hlHMVQQCXjwBRFe3jlkOzPvBs06L/M7o+7
+         /KVfK7atYms6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
-        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 7/9] drm/msm/mdp5: check the return of kzalloc()
-Date:   Tue, 19 Apr 2022 14:15:55 -0400
-Message-Id: <20220419181557.486336-7-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.19 04/12] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 19 Apr 2022 14:15:17 -0400
+Message-Id: <20220419181525.486166-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181557.486336-1-sashal@kernel.org>
-References: <20220419181557.486336-1-sashal@kernel.org>
+In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
+References: <20220419181525.486166-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,43 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
+[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+Fix:
 
-Besides, since mdp5_plane_reset() is void type, so we should better
-set `plane-state` to NULL after releasing it.
+  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
+    ^~~~
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/481055/
-Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+[ A slight correction with parentheses around the argument by tiwai ]
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/mdp/mdp5/mdp5_plane.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/usb/usbaudio.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/mdp/mdp5/mdp5_plane.c
-index 4b22ac3413a1..1f9e3c5ea47d 100644
---- a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/mdp/mdp5/mdp5_plane.c
-@@ -197,7 +197,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
- 		drm_framebuffer_unreference(plane->state->fb);
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index 0c7ea78317fc..0206fecfd377 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -22,7 +22,7 @@
+  */
  
- 	kfree(to_mdp5_plane_state(plane->state));
-+	plane->state = NULL;
- 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
-+	if (!mdp5_state)
-+		return;
+ /* handling of USB vendor/product ID pairs as 32-bit numbers */
+-#define USB_ID(vendor, product) (((vendor) << 16) | (product))
++#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
+ #define USB_ID_VENDOR(id) ((id) >> 16)
+ #define USB_ID_PRODUCT(id) ((u16)(id))
  
- 	/* assign default blend parameters */
- 	mdp5_state->alpha = 255;
 -- 
 2.35.1
 
