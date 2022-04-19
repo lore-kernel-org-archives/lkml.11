@@ -2,199 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E548EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C230C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:52:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351924AbiDSLyY (ORCPT
+        id S1351932AbiDSLzH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
+        Tue, 19 Apr 2022 07:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348881AbiDSLyV (ORCPT
+        with ESMTP id S232714AbiDSLzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:54:21 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AE135A8F
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=by/avHz0lmt+0CrvyNMfd3ZJgBpesJrRIzEYCC0+J9I=; b=EH26emG8dozfwgbLDRHaT6hR0a
-        T5GBynsNsO4tqZPmoBNSfhF8bWZSGePL4fCQcue5FCIl0KRud3yH/NQGLU6WNJMU9Eztb/6kyxqLw
-        VNQhjmseNibEiCY0wtukgVtCAwkdqrsJMFBIs+hl6pTqcbj1CLdEACIOYHRs/CVsAfs9Z6sk1ufvN
-        DRcgp25XHwok8rSIZNJH14q7yaNsII4KTODZMvSAEt1w645mE+XNsrXNDUASaYPx6hbAckSeox4/O
-        P2U1+3sYqmLXx9kjuBzFvXgOiTueEMDxpCDHPEN7H3STTMtoeGc+iqE6SvM2JS8FOFhvsfVyQqkII
-        NnpgE7mA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ngmOI-0033rG-T3; Tue, 19 Apr 2022 11:51:32 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 32919986195; Tue, 19 Apr 2022 13:51:30 +0200 (CEST)
-Date:   Tue, 19 Apr 2022 13:51:30 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH v2 00/25] objtool: Interface overhaul
-Message-ID: <20220419115130.GT2731@worktop.programming.kicks-ass.net>
-References: <cover.1650300597.git.jpoimboe@redhat.com>
+        Tue, 19 Apr 2022 07:55:05 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF07A35AB6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:52:22 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KjMbF2F0vzfYt2;
+        Tue, 19 Apr 2022 19:51:37 +0800 (CST)
+Received: from container.huawei.com (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 19 Apr 2022 19:52:20 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <Julia.Lawall@inria.fr>, <nicolas.palix@imag.fr>,
+        <daniel.thompson@linaro.org>, <cocci@inria.fr>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] cocinelle: iterators: optimize device_node_continue rule
+Date:   Tue, 19 Apr 2022 20:10:13 +0800
+Message-ID: <20220419121013.1290398-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1650300597.git.jpoimboe@redhat.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 09:50:19AM -0700, Josh Poimboeuf wrote:
+Execute the device_node_continue.cocci for kernel source. Get an error
+report as following:
+./drivers/pci/hotplug/pnv_php.c:161:2-13: ERROR: probable double put.
 
-> Josh Poimboeuf (25):
->   objtool: Enable unreachable warnings for CLANG LTO
->   libsubcmd: Fix OPTION_GROUP sorting
->   x86/static_call: Add ANNOTATE_NOENDBR to static call trampoline
->   x86/retpoline: Add ANNOTATE_ENDBR for retpolines
->   x86/uaccess: Add ENDBR to __put_user_nocheck*()
->   x86/xen: Add ANNOTATE_ENDBR to startup_xen()
->   objtool: Reorganize cmdline options
->   objtool: Ditch subcommands
->   objtool: Don't print parentheses in function addresses
->   objtool: Print data address for "!ENDBR" data warnings
->   objtool: Use offstr() to print address of missing ENDBR
->   objtool: Add option to print section addresses
->   scripts: Create objdump-func helper script
->   objtool: Make stack validation optional
->   objtool: Rework ibt and extricate from stack validation
->   objtool: Extricate sls from stack validation
->   objtool: Add CONFIG_OBJTOOL
->   objtool: Make stack validation frame-pointer-specific
->   objtool: Make static call annotation optional
->   objtool: Make jump label hack optional
->   objtool: Make noinstr hacks optional
->   objtool: Rename "VMLINUX_VALIDATION" -> "NOINSTR_VALIDATION"
->   objtool: Add HAVE_NOINSTR_VALIDATION
->   objtool: Remove --lto and --vmlinux in favor of --link
->   objtool: Update documentation
+After analysis, we can find that it is false positive, because it is to
+detach the node from device tree. And we can abstract out an exception.
 
-I've taken the liberty of reordering it slightly:
-
-   objtool: Enable unreachable warnings for CLANG LTO
-   x86/static_call: Add ANNOTATE_NOENDBR to static call trampoline
-   x86/retpoline: Add ANNOTATE_ENDBR for retpolines
-   x86/uaccess: Add ENDBR to __put_user_nocheck*()
-   x86/xen: Add ANNOTATE_ENDBR to startup_xen()
-   objtool: Print data address for "!ENDBR" data warnings
-   objtool: Use offstr() to print address of missing ENDBR
-
-Go into x86/urgent, and I've added Fixes: tags with various patches from
-the IBT series, and then the rest goes into objtool/core.
-
-As already indicated, there's going to be a few merge conflicts against
-x86/core, but alas. Resolved as per the below.
-
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 ---
-diff --cc arch/x86/Kconfig
-index 20c1dacd2baa,c8f560802bf2..000000000000
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-diff --cc scripts/Makefile.build
-index 7e7aa1d030a6,ac8167227bc0..000000000000
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@@ -227,15 -227,19 +227,19 @@@ ifdef CONFIG_OBJTOO
-  objtool := $(objtree)/tools/objtool/objtool
-  
-  objtool_args =								\
-- 	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
-- 	$(if $(part-of-module), --module)				\
-- 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
-- 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
-- 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
-+ 	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
-+ 	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
-+ 	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
-+ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
-+ 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
-  	$(if $(CONFIG_RETPOLINE), --retpoline)				\
-+ 	$(if $(CONFIG_SLS), --sls)					\
-+ 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
-+ 	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
- -	$(if $(CONFIG_X86_SMAP), --uaccess)				\
- +	--uaccess							\
-- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
-- 	$(if $(CONFIG_SLS), --sls)
-+ 	$(if $(linked-object), --link)					\
-+ 	$(if $(part-of-module), --module)				\
-+ 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
-  
-  cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
-  cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-diff --cc scripts/link-vmlinux.sh
-index 3a2fffdf49d4,eb9324f07f3d..000000000000
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@@ -126,34 -132,46 +132,44 @@@ objtool_link(
-  		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
-  			objtoolopt="${objtoolopt} --mcount"
-  		fi
-- 	fi
-  
-- 	if is_enabled CONFIG_VMLINUX_VALIDATION; then
-- 		objtoolopt="${objtoolopt} --noinstr"
-- 	fi
-+ 		if is_enabled CONFIG_UNWINDER_ORC; then
-+ 			objtoolopt="${objtoolopt} --orc"
-+ 		fi
-  
-- 	if [ -n "${objtoolopt}" ]; then
-- 		if [ -z "${objtoolcmd}" ]; then
-- 			objtoolcmd="check"
-+ 		if is_enabled CONFIG_RETPOLINE; then
-+ 			objtoolopt="${objtoolopt} --retpoline"
-  		fi
-- 		objtoolopt="${objtoolopt} --vmlinux"
-- 		if ! is_enabled CONFIG_FRAME_POINTER; then
-- 			objtoolopt="${objtoolopt} --no-fp"
-+ 
-+ 		if is_enabled CONFIG_SLS; then
-+ 			objtoolopt="${objtoolopt} --sls"
-  		fi
-- 		if is_enabled CONFIG_GCOV_KERNEL || is_enabled CONFIG_LTO_CLANG; then
-- 			objtoolopt="${objtoolopt} --no-unreachable"
-+ 
-+ 		if is_enabled CONFIG_STACK_VALIDATION; then
-+ 			objtoolopt="${objtoolopt} --stackval"
-  		fi
-- 		if is_enabled CONFIG_RETPOLINE; then
-- 			objtoolopt="${objtoolopt} --retpoline"
-+ 
-+ 		if is_enabled CONFIG_HAVE_STATIC_CALL_INLINE; then
-+ 			objtoolopt="${objtoolopt} --static-call"
-  		fi
-  
- -		if is_enabled CONFIG_X86_SMAP; then
- -			objtoolopt="${objtoolopt} --uaccess"
- -		fi
- +		objtoolopt="${objtoolopt} --uaccess"
-+ 	fi
-  
-- 		if is_enabled CONFIG_SLS; then
-- 			objtoolopt="${objtoolopt} --sls"
-+ 	if is_enabled CONFIG_NOINSTR_VALIDATION; then
-+ 		objtoolopt="${objtoolopt} --noinstr"
-+ 	fi
-+ 
-+ 	if [ -n "${objtoolopt}" ]; then
-+ 
-+ 		if is_enabled CONFIG_GCOV_KERNEL; then
-+ 			objtoolopt="${objtoolopt} --no-unreachable"
-  		fi
-+ 
-+ 		objtoolopt="${objtoolopt} --link"
-+ 
-  		info OBJTOOL ${1}
-- 		tools/objtool/objtool ${objtoolcmd} ${objtoolopt} ${1}
-+ 		tools/objtool/objtool ${objtoolopt} ${1}
-  	fi
-  }
-  
+ scripts/coccinelle/iterators/device_node_continue.cocci | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/coccinelle/iterators/device_node_continue.cocci b/scripts/coccinelle/iterators/device_node_continue.cocci
+index f8cd14dfa604..4b8ee3316a8c 100644
+--- a/scripts/coccinelle/iterators/device_node_continue.cocci
++++ b/scripts/coccinelle/iterators/device_node_continue.cocci
+@@ -49,9 +49,11 @@ for_each_node_with_property(n,e1) S
+ &
+ i@p1(...) {
+    ... when != of_node_get(n)
++       when != of_detach_node(n)
+        when any
+    of_node_put@p2(n);
+-   ... when any
++   ... when != of_detach_node(n)
++       when any
+ }
+ )
+ 
+-- 
+2.25.1
+
