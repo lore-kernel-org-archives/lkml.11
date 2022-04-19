@@ -2,136 +2,397 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD14C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D55C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:41:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353507AbiDSOlq (ORCPT
+        id S1348021AbiDSOns (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
+        Tue, 19 Apr 2022 10:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235233AbiDSOln (ORCPT
+        with ESMTP id S1351109AbiDSOng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:41:43 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083F021273
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:39:01 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-e5ca5c580fso7377708fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1s42UKgWJ4Pw4SvGNmkzwP7DSmoxOCXsEkE3mMBdmkk=;
-        b=bryyFja6G/AfZjaCCp3S0G0ceVcHhyW1VQrZVSljNUEwwov2BVcqUpiqzWWuUzKqiW
-         9rJzlHdS162QkPuOqWZq7UQ2VwiHR0xor0h0WIoSFyLZhJlv2+zectxrETiTHrAjY79E
-         zvaLn+f9Sm9B8dmjE0Or93kQWpSpKq8AoM3n7JxTsgPapjJO/8m3TQ/iaLFyz1DG2xIq
-         RiP7Bb6DpCXBOYWqJ6Jt2a/BXMLG9VaCGTBE7IW3ABkGUkYwH5Uo8gsuMe03xupp43CJ
-         d8Hsw0jY3vd60CmLcfC6WgcMi3fzGpjUKBX5/aT2leGku3O/VYO4boI+1k75w43bNywb
-         4uvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1s42UKgWJ4Pw4SvGNmkzwP7DSmoxOCXsEkE3mMBdmkk=;
-        b=G0rAqGpbWCWoEVWrVrNtt28cWwuJDnGi3iJaMAoAVkOgEMW+Us71LXKnU9B2o4kDRF
-         NH8PxeXCp+KAWYBgTm8JU5mBy1iOLuvN7ZW7l0TDT/Kl6C/acUX7RV8N6HoDvC93d9BR
-         fkfixqOe1WY5kSdknXcQttvRHe/eCO4ibW/+7HhbAaWKP+q07UX1v6MQTa5QsXeS6tPq
-         MrhkrUhmQyoMPHMvyYSN3CkxTGYOYD0LNiw1i5wTPB6nFzDVEuKBwj5Wzqj85to8++s4
-         LgxWBOvm9Tc2UakcIOI17MG9DWmIzzSI9IXZk1unIQNnptHLhjH4j2KsPRQb7N4gy+dv
-         iMNA==
-X-Gm-Message-State: AOAM533JXB4aZmvkYKVZg3ATzhdYFYscCzQddq/rT6InAFNr2fK+h+SM
-        br3Pzrz8i6su7EtS+8FpKhMs8JbemgKUw4ThQrk=
-X-Google-Smtp-Source: ABdhPJxYRk2m9Utt9pJajmRXaqGutiUzLUudX5XJtfTMosQAR+UFtPG9su2APCdSuDKfZxLYGcxAh0AbE+xOcVMMHxQ=
-X-Received: by 2002:a05:6870:d683:b0:de:eaa2:3550 with SMTP id
- z3-20020a056870d68300b000deeaa23550mr6741761oap.253.1650379140409; Tue, 19
- Apr 2022 07:39:00 -0700 (PDT)
+        Tue, 19 Apr 2022 10:43:36 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36AEA21819;
+        Tue, 19 Apr 2022 07:40:53 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E1E041063;
+        Tue, 19 Apr 2022 07:40:52 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.75.72])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A597E3F766;
+        Tue, 19 Apr 2022 07:40:49 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 15:40:45 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     He Zhe <zhe.he@windriver.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, dave.hansen@linux.intel.com, keescook@chromium.org,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, benh@kernel.crashing.org, paulus@samba.org,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com, hpa@zytor.com,
+        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC 2/8] arm64: stacktrace: Add arch_within_stack_frames
+Message-ID: <Yl7J7aVzKiWRtrGi@FVFF77S0Q05N>
+References: <20220418132217.1573072-1-zhe.he@windriver.com>
+ <20220418132217.1573072-3-zhe.he@windriver.com>
 MIME-Version: 1.0
-References: <20220419103721.4080045-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
-In-Reply-To: <20220419103721.4080045-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 19 Apr 2022 10:38:49 -0400
-Message-ID: <CADnq5_MfjrZvegj-4r4DhRR5FDe6casvfcy54G0tM8PZqbsHeg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd/pm: fix double free in si_parse_power_table()
-To:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Cc:     Lijo Lazar <lijo.lazar@amd.com>, David Airlie <airlied@linux.ie>,
-        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220418132217.1573072-3-zhe.he@windriver.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+Hi,
 
-On Tue, Apr 19, 2022 at 8:49 AM Keita Suzuki
-<keitasuzuki.park@sslab.ics.keio.ac.jp> wrote:
->
-> In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-> is allocated. If the allocation of each member fails, the array itself
-> is freed and returned with an error code. However, the array is later
-> freed again in si_dpm_fini() function which is called when the function
-> returns an error.
->
-> This leads to potential double free of the array adev->pm.dpm.ps, as
-> well as leak of its array members, since the members are not freed in
-> the allocation function and the array is not nulled when freed.
-> In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-> array member, is not updated until the member allocation is
-> successfully finished, this could also lead to either use after free,
-> or uninitialized variable access in si_dpm_fini().
->
-> Fix this by postponing the free of the array until si_dpm_fini() and
-> increment adev->pm.dpm.num_ps everytime the array member is allocated.
->
-> Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+On Mon, Apr 18, 2022 at 09:22:11PM +0800, He Zhe wrote:
+> This function checks if the given address range crosses frame boundary.
+
+I don't think that's quite true, becuase arm64's procedure call standard
+(AAPCS64) doesn't give us enough information to determine this without
+additional metadata from the compiler, which we simply don't have today.
+
+Since there's a lot of confusion in this area, I've made a bit of an info dump
+below, before review on the patch itself, but TBH I'm struggling to see that
+this is all that useful.
+
+On arm64, we use a calling convention called AAPCS64, (in full: "Procedure Call
+Standard for the Arm® 64-bit Architecture (AArch64)"). That's maintained at:
+
+  https://github.com/ARM-software/abi-aa
+
+... with the latest release (as of today) at:
+
+  https://github.com/ARM-software/abi-aa/blob/60a8eb8c55e999d74dac5e368fc9d7e36e38dda4/aapcs64/aapcs64.rst
+  https://github.com/ARM-software/abi-aa/releases/download/2022Q1/aapcs64.pdf
+
+In AAPCS64, there are two related but distinct things to be aware of:
+
+* The "stack frame" of a function, which is the entire contiguous region of
+  stack memory used by a function.
+
+* The "frame record", which is the saved FP and LR placed *somewhere* within
+  the function's stack frame. The FP points at the most recent frame record on
+  the stack, and at function call boundaries points at the caller's frame
+  record.
+
+AAPCS64 doesn't say *where* a frame record is placed within a stack frame, and
+there are reasons for compilers to place above and below it. So in genral, a
+functionss stack frame looks like:
+      
+        +=========+
+        |  above  |
+        |---------|
+        | FP | LR |
+        |---------|
+        |  below  |
+        +=========+
+
+... where the "above" or "below" portions might be any size (even 0 bytes).
+
+Typical code generation today means for most functions that the "below" portion
+is 0 bytes in size, but this is not guaranteed, and even today there are cases
+where this is not true.
+
+When one function calls another without a stack transition, that looks like:
+
+        +=========+ ___
+        |  above  |    \
+        |---------|    |
+     ,->| FP | LR |    +-- Caller's stack frame
+     |  |---------|    |
+     |  |  below  | ___/
+     |  +=========+ ___ 
+     |  |  above  |    \
+     |  |---------|    |
+     '--| FP | LR |    +-- Callee's stack frame
+        |---------|    |
+        |  below  | ___/
+        +=========+
+
+Where there's a stack transition, and the new stack is at a *lower* VA than the
+old stack, that looks like:
+
+        +=========+ ___
+        |  above  |    \
+        |---------|    |
+     ,->| FP | LR |    +-- Caller's stack frame
+     |  |---------|    |
+     |  |  below  | ___/
+     |  +=========+
+     | 
+     |  ~~~~~~~~~~~
+     |  Arbitrarily 
+     |  large gap,
+     |  potentially
+     |  including
+     |  other data
+     |  ~~~~~~~~~~~
+     |
+     |  +=========+ ___ 
+     |  |  above  |    \
+     |  |---------|    |
+     '--| FP | LR |    +-- Callee's stack frame
+        |---------|    |
+        |  below  | ___/
+        +=========+
+
+Where there's a stack transition, and the new stack is at a *higher* VA than
+the old stack, that looks like:
+
+        +=========+ ___ 
+        |  above  |    \
+        |---------|    |
+     ,--| FP | LR |    +-- Callee's stack frame
+     |  |---------|    |
+     |  |  below  | ___/
+     |  +=========+
+     |
+     |  ~~~~~~~~~~~
+     |  Arbitrarily 
+     |  large gap,
+     |  potentially
+     |  including
+     |  other data
+     |  ~~~~~~~~~~~
+     | 
+     |  +=========+ ___
+     |  |  above  |    \
+     |  |---------|    |
+     '->| FP | LR |    +-- Caller's stack frame
+        |---------|    |
+        |  below  | ___/
+        +=========+
+ 
+In all of these cases, we *cannot* identify the boundary between the two stack
+frames, we can *only* identify where something overlaps a frame record. That
+might itself be a good thing, but it's not the same thing as what you describe
+in the commit message.
+
+> It is based on the existing x86 algorithm, but implemented via stacktrace.
+> This can be tested by USERCOPY_STACK_FRAME_FROM and
+> USERCOPY_STACK_FRAME_TO in lkdtm.
+
+Can you please explain *why* we'd want this?
+
+Who do we expect to use this?
+
+What's the overhead in practice?
+
+Has this passed a more realistic stress test (e.g. running some userspace
+applications which make intensive use of copies to/from the kernel)?
+
+> 
+> Signed-off-by: He Zhe <zhe.he@windriver.com>
 > ---
->  drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> index caae54487f9c..079888229485 100644
-> --- a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> +++ b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
-> @@ -7331,17 +7331,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
->         if (!adev->pm.dpm.ps)
->                 return -ENOMEM;
->         power_state_offset = (u8 *)state_array->states;
-> -       for (i = 0; i < state_array->ucNumEntries; i++) {
-> +       for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
->                 u8 *idx;
->                 power_state = (union pplib_power_state *)power_state_offset;
->                 non_clock_array_index = power_state->v2.nonClockInfoIndex;
->                 non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
->                         &non_clock_info_array->nonClockInfo[non_clock_array_index];
->                 ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
-> -               if (ps == NULL) {
-> -                       kfree(adev->pm.dpm.ps);
-> +               if (ps == NULL)
->                         return -ENOMEM;
-> -               }
->                 adev->pm.dpm.ps[i].ps_priv = ps;
->                 si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
->                                               non_clock_info,
-> @@ -7363,8 +7361,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
->                         k++;
->                 }
->                 power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-> +               adev->pm.dpm.num_ps++;
->         }
-> -       adev->pm.dpm.num_ps = state_array->ucNumEntries;
->
->         /* fill in the vce power states */
->         for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
-> --
+>  arch/arm64/Kconfig                   |  1 +
+>  arch/arm64/include/asm/thread_info.h | 12 +++++
+>  arch/arm64/kernel/stacktrace.c       | 76 ++++++++++++++++++++++++++--
+>  3 files changed, 85 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 57c4c995965f..0f52a83d7771 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -165,6 +165,7 @@ config ARM64
+>  	select HAVE_ARCH_TRACEHOOK
+>  	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
+>  	select HAVE_ARCH_VMAP_STACK
+> +	select HAVE_ARCH_WITHIN_STACK_FRAMES
+>  	select HAVE_ARM_SMCCC
+>  	select HAVE_ASM_MODVERSIONS
+>  	select HAVE_EBPF_JIT
+> diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
+> index e1317b7c4525..b839ad9f2248 100644
+> --- a/arch/arm64/include/asm/thread_info.h
+> +++ b/arch/arm64/include/asm/thread_info.h
+> @@ -58,6 +58,18 @@ void arch_setup_new_exec(void);
+>  void arch_release_task_struct(struct task_struct *tsk);
+>  int arch_dup_task_struct(struct task_struct *dst,
+>  				struct task_struct *src);
+> +/*
+> + * Walks up the stack frames to make sure that the specified object is
+> + * entirely contained by a single stack frame.
+> + *
+> + * Returns:
+> + *	GOOD_FRAME	if within a frame
+
+As above, we cannot identify this reliably.
+
+> + *	BAD_STACK	if placed across a frame boundary (or outside stack)
+> + *	NOT_STACK	unable to determine (no frame pointers, etc)
+
+On arm64 we always have frame pointers enabled, so this is a confusing comment.
+Is this a copy-paste from x86?
+
+> + */
+> +int arch_within_stack_frames(const void * const stack,
+> +		const void * const stackend,
+> +		const void *obj, unsigned long len);
+>  
+>  #endif
+>  
+> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+> index e4103e085681..219b90c1de12 100644
+> --- a/arch/arm64/kernel/stacktrace.c
+> +++ b/arch/arm64/kernel/stacktrace.c
+> @@ -145,12 +145,17 @@ NOKPROBE_SYMBOL(unwind_frame);
+>  
+>  static void notrace walk_stackframe(struct task_struct *tsk,
+>  				    struct stackframe *frame,
+> -				    bool (*fn)(void *, unsigned long), void *data)
+> +				    stack_trace_consume_fn fn, void *data)
+>  {
+> +	struct frame_info fi;
+> +
+>  	while (1) {
+>  		int ret;
+>  
+> -		if (!fn(data, frame->pc))
+> +		fi.pc = frame->pc;
+> +		fi.fp = frame->fp;
+> +		fi.prev_fp = frame->prev_fp;
+> +		if (!fn(data, &fi))
+>  			break;
+>  		ret = unwind_frame(tsk, frame);
+>  		if (ret < 0)
+
+As on my prior comment, I don't think we want to alter our generic stack walker
+in this way. If we need more info, I'd prefer to expose this in layers, keeping
+arch_stack_walk unchanged, but having an arm64_stack_walk that can pass some
+arm64-specific data.
+
+> @@ -159,10 +164,10 @@ static void notrace walk_stackframe(struct task_struct
+> *tsk,
+>  }
+>  NOKPROBE_SYMBOL(walk_stackframe);
+>  
+> -static bool dump_backtrace_entry(void *arg, unsigned long where)
+> +static bool dump_backtrace_entry(void *arg, struct frame_info *fi)
+>  {
+>  	char *loglvl = arg;
+> -	printk("%s %pSb\n", loglvl, (void *)where);
+> +	printk("%s %pSb\n", loglvl, (void *)fi->pc);
+>  	return true;
+>  }
+>  
+> @@ -210,3 +215,66 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+>  
+>  	walk_stackframe(task, &frame, consume_entry, cookie);
+>  }
+> +
+> +struct arch_stack_object {
+> +	unsigned long start;
+> +	unsigned long len;
+> +	int flag;
+
+What is "flag" ?
+
+> +};
+> +
+> +static bool arch_stack_object_check(void *data, struct frame_info *fi)
+> +{
+> +	struct arch_stack_object *obj = (struct arch_stack_object *)data;
+> +
+> +	/* Skip the frame of arch_within_stack_frames itself */
+> +	if (fi->prev_fp == 0)
+> +		return true;
+
+That's not what this is skipping. The first time arch_stack_walk() is called,
+it gives the PC of its caller (i.e. arch_within_stack_frames), and it's own
+synthetic FP. The next time around it gives the FP of it's caller.
+
+> +
+> +	/*
+> +	 * low ----------------------------------------------> high
+> +	 * [saved bp][saved ip][args][local vars][saved bp][saved ip]
+> +	 *                     ^----------------^
+> +	 *               allow copies only within here
+> +	 */
+
+This diagram is not valid for arm64. There is no "bp" or "ip", and each stack
+frame can be laid out more arbitrarily relative to the frame record.
+
+> +	if (obj->start + obj->len <= fi->fp) {
+> +		obj->flag = obj->start >=
+> +			fi->prev_fp + 2 * sizeof(void *) ?
+> +			GOOD_FRAME : BAD_STACK;
+
+This check is broken in several ways if there's a stack transition, since the
+placement of fp and prev_fp is legitimately arbitrary.
+
+This would also be a lot clearer if you bailed out early rather than nesting
+checks.
+
+The best thing you can realistically do is check that the object falls entirely
+within a given stack, then check that that no frames intersect the object. You
+don't need prev_fp for that, since you can just check each frame record in
+turn, then bail out once the object has been passed (i.e. once we've hit the
+correct stack, and either seen an FP above it or transitioned to another
+stack).
+
+> +		return false;
+> +	} else
+> +		return true;
+> +}
+> +
+> +/*
+> + * Walks up the stack frames to make sure that the specified object is
+> + * entirely contained by a single stack frame.
+> + *
+> + * Returns:
+> + *	GOOD_FRAME	if within a frame
+> + *	BAD_STACK	if placed across a frame boundary (or outside stack)
+> + *	NOT_STACK	unable to determine (no frame pointers, etc)
+> + */
+
+This is the exact same comment as in the header. My comments from there apply
+here, and one of the two should disappear.
+
+> +int arch_within_stack_frames(const void * const stack,
+> +		const void * const stackend,
+> +		const void *obj, unsigned long len)
+> +{
+> +#if defined(CONFIG_FRAME_POINTER)
+
+As above, this *cannot* be selected on arm64.
+
+> +	struct arch_stack_object object;
+> +	struct pt_regs regs;
+> +
+> +	if (__builtin_frame_address(1) == 0)
+> +		return NOT_STACK;
+
+When do you expect this to happen?
+
+> +
+> +	object.start = (unsigned long)obj;
+> +	object.len = len;
+> +	object.flag = NOT_STACK;
+> +
+> +	regs.regs[29] = (u64)__builtin_frame_address(1);
+
+NAK to making a synthetic pt_regs like this. That an abuse of the existing API,
+and you don't need to do this in the first place.
+
+> +
+> +	arch_stack_walk(arch_stack_object_check, (void *)&object, NULL, &regs);
+
+A void pointer cast is not necessary.
+
+Thanks,
+Mark.
+
+> +
+> +	return object.flag;
+> +#else
+> +	return NOT_STACK;
+> +#endif
+> +}
+> -- 
 > 2.25.1
->
+> 
