@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4713C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 02:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 02:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345138AbiDSCtF (ORCPT
+        id S1345360AbiDSCtK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 22:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
+        Mon, 18 Apr 2022 22:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345110AbiDSCtB (ORCPT
+        with ESMTP id S1345117AbiDSCtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 22:49:01 -0400
 Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAED2229C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C09022291
         for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 19:46:18 -0700 (PDT)
 Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 2E3142C0775;
-        Tue, 19 Apr 2022 02:46:16 +0000 (UTC)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id D61892C035C;
+        Tue, 19 Apr 2022 02:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1650336376;
-        bh=IapzqfmOH6ZkWiJ7DCEzdYzOLcumquaJvcJruZwLsXk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GvZ5/lQvZqhDBAHHKorwLnPovC7yXOMlGZeb68nez7MOyvuf2xlEt+okvQC0AXH/x
-         e9B7OOHiLWuFIv+QPA5OHmJ3yI31G/8kJac8TMbUTxIdvxiBQF8YyJxa2HhZfCVT4w
-         1HQcbJdsJ1+9LUJe9abSYa1lKGXWQ0Jrje2jubw1Mwj6xVER7X7qvlwIUf5WCW36Q9
-         pfc9EOX10grEqHGPxxgbZfDmdDjGU6qKkmrpfeDndoa40lXPjvFni9ql6LoXSvEKdm
-         5gineOesOJ6rX+zIIJ8OmrfcZI3iwv1sA0R63q4PdRXjVew1vGZP+LWJ2H6RWk9CkF
-         Mev6UeOsuMGrA==
+        s=mail181024; t=1650336375;
+        bh=sRGk2YLIrbWxJbw0oiF+CRe6renxMpGCpGXuPsK7JdI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OY9GiVihNEYm7fqbyQJNeSLfHQeKH2+Z+quZZiFRnYdhsLy0nKIZ/Vp5ndQmfA1kt
+         9Mc+coZ8ZaNvRvUL2tWl4Snz9BapbGjealn9vTUQWLTawg35nxNHEHOwLNJWG6/OZW
+         +NsijBFnmRqYQz71uQYnT2vtZlrzEtcbLyu+chBekPTQI2lTbcSkJKwuh5qWhTTLYf
+         63Rt2/DQ5uH8Zkwa/+IA8b65euTM8xiVjCfQgVib0lBcFZxea9u06q/7jmbmOKphDu
+         7aSFbxYzTrUhVl4SJprVgcy5EJonPcr2tkVdjhIxAJOBVo+YGGVqkuXA5KpcBQuLvI
+         DhTNN84yGzoTQ==
 Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B625e22780000>; Tue, 19 Apr 2022 14:46:16 +1200
+        id <B625e22770000>; Tue, 19 Apr 2022 14:46:15 +1200
 Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 0C35713EE37;
-        Tue, 19 Apr 2022 14:46:16 +1200 (NZST)
+        by pat.atlnz.lc (Postfix) with ESMTP id A9AE213EE37;
+        Tue, 19 Apr 2022 14:46:15 +1200 (NZST)
 Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 666612A2679; Tue, 19 Apr 2022 14:46:14 +1200 (NZST)
+        id 0E73D2A2679; Tue, 19 Apr 2022 14:46:14 +1200 (NZST)
 From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
 To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
         andrew@lunn.ch, gregory.clement@bootlin.com,
@@ -47,56 +47,53 @@ To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
 Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v2 2/4] ARM: dts: dove: Update sdio-host node names to match schema
-Date:   Tue, 19 Apr 2022 14:46:09 +1200
-Message-Id: <20220419024611.1327525-3-chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v2 0/4] dt-bindings: mmc: Convert orion/dove bindings to JSON schema
+Date:   Tue, 19 Apr 2022 14:46:07 +1200
+Message-Id: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
-References: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=RL7N4Lq+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=9fF3QZy3S0T7Ev_h1A0A:9
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=RL7N4Lq+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=gYTcDOeBFi1z4r4J0SoA:9
 X-SEG-SpamProfiler-Score: 0
 x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the node names of the sdio-host@ interfaces to be mmc@ to match
-the node name enforced by the mmc-controller.yaml schema.
+This is a small series converting the device tree bindings for the orion =
+and
+dove sdhci controllers to JSON schema.
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
----
+The first 2 patches update the dtsi files to use a node name enforces by =
+the
+schema. These need to be applied for the schema to validate correctly.
 
-Notes:
-    Changes in v2:
-    - None
+The next 2 patches convert the old text binding to JSON schema.
 
- arch/arm/boot/dts/dove.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Chris Packham (4):
+  ARM: dts: mvebu: Update mvsdio node names to match schema
+  ARM: dts: dove: Update sdio-host node names to match schema
+  dt-bindings: mmc: convert orion-sdio to JSON schema
+  dt-bindings: mmc: convert sdhci-dove to JSON schema
 
-diff --git a/arch/arm/boot/dts/dove.dtsi b/arch/arm/boot/dts/dove.dtsi
-index 89e0bdaf3a85..d81562eac7aa 100644
---- a/arch/arm/boot/dts/dove.dtsi
-+++ b/arch/arm/boot/dts/dove.dtsi
-@@ -337,7 +337,7 @@ channel1 {
- 				};
- 			};
-=20
--			sdio1: sdio-host@90000 {
-+			sdio1: mmc@90000 {
- 				compatible =3D "marvell,dove-sdhci";
- 				reg =3D <0x90000 0x100>;
- 				interrupts =3D <36>, <38>;
-@@ -380,7 +380,7 @@ ethphy: ethernet-phy {
- 				};
- 			};
-=20
--			sdio0: sdio-host@92000 {
-+			sdio0: mmc@92000 {
- 				compatible =3D "marvell,dove-sdhci";
- 				reg =3D <0x92000 0x100>;
- 				interrupts =3D <35>, <37>;
+ .../bindings/mmc/marvell,dove-sdhci.yaml      | 44 +++++++++++++++++++
+ .../bindings/mmc/marvell,orion-sdio.yaml      | 44 +++++++++++++++++++
+ .../devicetree/bindings/mmc/orion-sdio.txt    | 16 -------
+ .../devicetree/bindings/mmc/sdhci-dove.txt    | 14 ------
+ arch/arm/boot/dts/armada-370-xp.dtsi          |  2 +-
+ arch/arm/boot/dts/armada-375.dtsi             |  2 +-
+ arch/arm/boot/dts/dove.dtsi                   |  4 +-
+ arch/arm/boot/dts/kirkwood-6192.dtsi          |  2 +-
+ arch/arm/boot/dts/kirkwood-6281.dtsi          |  2 +-
+ arch/arm/boot/dts/kirkwood-6282.dtsi          |  2 +-
+ 10 files changed, 95 insertions(+), 37 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mmc/marvell,dove-sd=
+hci.yaml
+ create mode 100644 Documentation/devicetree/bindings/mmc/marvell,orion-s=
+dio.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mmc/orion-sdio.txt
+ delete mode 100644 Documentation/devicetree/bindings/mmc/sdhci-dove.txt
+
 --=20
 2.35.1
 
