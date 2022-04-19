@@ -2,118 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A04C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BCAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357273AbiDSSbA (ORCPT
+        id S1357280AbiDSSbF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
+        Tue, 19 Apr 2022 14:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357445AbiDSS2I (ORCPT
+        with ESMTP id S1357501AbiDSS2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:28:08 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3A932ED4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:20:33 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id t26so4241372qtn.6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zeR3V0x/d5dS+XbGlGq1iYQwImzuhf524PVpciJ0wyA=;
-        b=f5MU9YQh2Eunm+v3zEufTrXY3X1K+ZReCWqTSryDhoUg5tqzZbCHuntywVLW4Nrj6T
-         eS3a8FNZ7JhNWz/Mcwt2BdW20BCxmuxR4dA1Tx9M2lJpyDUpNkVwjmYYdjIQbexud61h
-         NSY7ItILuCfFvzk42D8a9+0k9Wdh9pAlc4KDk8QjCQMjFOk7zNYPu35ohvTft8tkAPIm
-         yl9Oxg7/5+HHzCfvXA9V8x6jH4RdwXF/30DxlSar4NPGGNqDzl3zU1NWAcS2oA8FbQ7d
-         r/RdKJFFc3EgwU2+2jeXGdvgDEPMVrIdAZU/E8VpyzSw76zEcrsB8YCy9U4f+rtt1VLJ
-         qq6A==
+        Tue, 19 Apr 2022 14:28:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 158303DA59
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:21:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650392508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lWTHKMQjdn7m9FQKkTKQCYJuIOK57zO3rzKobW88z1Q=;
+        b=WXdVBCkS6JzGNteX2DBURbPEWqGtOQNFQdMfTbZo7XdvGGsmUC3846F2DIV8HvKn73oN6i
+        ScxfM1Jii4U+f6qjltSfDLv65zCCFrNS8V3jbs9siSkkLno4SvmOm/fREbyXFz7u9LQSgp
+        6+boS+b6IxF7KmyMtwjTkBLD3mey+vU=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-523-aZgSQoUENiiK9T_sFzw9nQ-1; Tue, 19 Apr 2022 14:21:47 -0400
+X-MC-Unique: aZgSQoUENiiK9T_sFzw9nQ-1
+Received: by mail-qv1-f71.google.com with SMTP id dd5-20020ad45805000000b004461b16d4caso13806142qvb.16
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:21:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zeR3V0x/d5dS+XbGlGq1iYQwImzuhf524PVpciJ0wyA=;
-        b=vjPx0V/N3JwRI37p8CCA6w3XqHXHCefGBuxTd1N2uR06fBFg0xygG8orSlEUNSfIvg
-         UsWIHJIOExr+BgYxvXpPKbmv9cqXkNcVrpMCTc16hFIhy9pwQM0tfIcjWIVcBCIumPDM
-         pCZzWJxrFaf/kzPG2kT9CYH1rfg0tyDiVF0+pQ8JmgTPSjIhoH7L4aMgzamOPFl6hyJx
-         jNyD8mJGstH+W9W00HHiC+VFFBlPhuvPHdrI66R71vJGq7nUnS8/MzGd92O/DPuauvy7
-         +Cn8xTomicJD+If8TCAFH9mSQ0kZ1vWnRw85A0mspuDpd64oemeFKCUoqLP3duhq2+r8
-         vXzA==
-X-Gm-Message-State: AOAM533BmEPKrhd9XJ8SA6/GbWDkQty3iaaaVCNiMBsZQU92jp0LEAqT
-        8n1K7azgw9Fyhh3pqa+4VQ==
-X-Google-Smtp-Source: ABdhPJyWhY5AlGyL4nF/Zmhqbckoo3GR+ES0yQigZFUARWQO7ZzpOXeGJ8v+v296DWXyfRUh4KlRZw==
-X-Received: by 2002:ac8:578b:0:b0:2e2:324a:7b6c with SMTP id v11-20020ac8578b000000b002e2324a7b6cmr11081009qta.267.1650392432986;
-        Tue, 19 Apr 2022 11:20:32 -0700 (PDT)
-Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id s18-20020a05622a1a9200b002f335693f4bsm400640qtc.38.2022.04.19.11.20.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lWTHKMQjdn7m9FQKkTKQCYJuIOK57zO3rzKobW88z1Q=;
+        b=i4fvKxYDGoJgAqzUA1VmSfPnwUMUWxroLNjU4uwJ+eNqYpVJeR0Bq87g7vNWakVtfk
+         RBqHMPwQoLsOdU9Lfgc16K6WJbgnjEyuqRJ6XKF4KIeKvD4OFTmAFUc7xcBU7ZViEbxX
+         jGlNBs1uJgkqNFwLVS6qp7Sn9thro1Ib4gAPogCTBFDsY/qE26RibCHLMKQEfDswf6Y+
+         DRxaFuFhEaYcxdbK4w+J1aCLJhfDhLu1uSqj/9eLy5tFMbcPLprvQdctARKXIoAr3mzi
+         nmOnBQLYylcCjjgWJu0JA2Rf5L1lGsb0PW3neVGxIRl4jNCZ5yqLh45Y4+wniVqvSlrc
+         DQPw==
+X-Gm-Message-State: AOAM533eKBCSqzJ7e3DkDyV3rAOFBGMOi9SDtQUFCbNQHkQNnQcXVKOb
+        +yB0GkKOHXgVU0jqdT8E4q+FZqThvt9KzMMpvGK7cwXkgFvItAX5h/knW7HA8IHypYEFNkwW8/O
+        Xp8BA4p9OsZNpqHkFjtVyORFu
+X-Received: by 2002:a05:622a:52:b0:2f3:3e3b:8d05 with SMTP id y18-20020a05622a005200b002f33e3b8d05mr1167017qtw.159.1650392506153;
+        Tue, 19 Apr 2022 11:21:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxCDAj7ir4s3pP6W0rSrBZtTkPI1yRL/hmNRGfB1yQs8OUlkx6UOtPpKbXFB/CBhC0UzH/F1g==
+X-Received: by 2002:a05:622a:52:b0:2f3:3e3b:8d05 with SMTP id y18-20020a05622a005200b002f33e3b8d05mr1167006qtw.159.1650392505973;
+        Tue, 19 Apr 2022 11:21:45 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id y13-20020a05622a164d00b002f1ff52c518sm453121qtj.28.2022.04.19.11.21.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 11:20:32 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 14:20:30 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH rfc 0/5] mm: introduce shrinker sysfs interface
-Message-ID: <20220419182030.idqqmtim4slhbked@moria.home.lan>
-References: <20220416002756.4087977-1-roman.gushchin@linux.dev>
+        Tue, 19 Apr 2022 11:21:45 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     balbi@kernel.org, gregkh@linuxfoundation.org, colin.king@intel.com,
+        stern@rowland.harvard.edu, jakobkoschel@gmail.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] usb: gadget: net2272: clean up comments
+Date:   Tue, 19 Apr 2022 14:21:42 -0400
+Message-Id: <20220419182142.1805918-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220416002756.4087977-1-roman.gushchin@linux.dev>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 05:27:51PM -0700, Roman Gushchin wrote:
-> There are 50+ different shrinkers in the kernel, many with their own bells and
-> whistles. Under the memory pressure the kernel applies some pressure on each of
-> them in the order of which they were created/registered in the system. Some
-> of them can contain only few objects, some can be quite large. Some can be
-> effective at reclaiming memory, some not.
-> 
-> The only existing debugging mechanism is a couple of tracepoints in
-> do_shrink_slab(): mm_shrink_slab_start and mm_shrink_slab_end. They aren't
-> covering everything though: shrinkers which report 0 objects will never show up,
-> there is no support for memcg-aware shrinkers. Shrinkers are identified by their
-> scan function, which is not always enough (e.g. hard to guess which super
-> block's shrinker it is having only "super_cache_scan"). They are a passive
-> mechanism: there is no way to call into counting and scanning of an individual
-> shrinker and profile it.
-> 
-> To provide a better visibility and debug options for memory shrinkers
-> this patchset introduces a /sys/kernel/shrinker interface, to some extent
-> similar to /sys/kernel/slab.
-> 
-> For each shrinker registered in the system a folder is created. The folder
-> contains "count" and "scan" files, which allow to trigger count_objects()
-> and scan_objects() callbacks. For memcg-aware and numa-aware shrinkers
-> count_memcg, scan_memcg, count_node, scan_node, count_memcg_node
-> and scan_memcg_node are additionally provided. They allow to get per-memcg
-> and/or per-node object count and shrink only a specific memcg/node.
+Spelling replacements
+definiton to definition
+acceptible to acceptable
+seperately to separately
 
-Cool!
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/usb/gadget/udc/net2272.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I've been starting to sketch out some shrinker improvements of my own, perhaps
-we could combine efforts. The issue I've been targeting is that when we hit an
-OOM, we currently don't get a lot of useful information - shrinkers ought to be
-included, and we really want information on shrinker's internal state (e.g.
-object dirtyness) if we're to have a chance at understanding why memory isn't
-getting reclaimed.
+diff --git a/drivers/usb/gadget/udc/net2272.c b/drivers/usb/gadget/udc/net2272.c
+index 6a8884632273..c97cd4bc817c 100644
+--- a/drivers/usb/gadget/udc/net2272.c
++++ b/drivers/usb/gadget/udc/net2272.c
+@@ -71,7 +71,7 @@ static ushort dma_ep = 1;
+ module_param(dma_ep, ushort, 0644);
+ 
+ /*
+- * dma_mode: net2272 dma mode setting (see LOCCTL1 definiton):
++ * dma_mode: net2272 dma mode setting (see LOCCTL1 definition):
+  *	mode 0 == Slow DREQ mode
+  *	mode 1 == Fast DREQ mode
+  *	mode 2 == Burst mode
+@@ -97,7 +97,7 @@ module_param(fifo_mode, ushort, 0644);
+ /*
+  * enable_suspend: When enabled, the driver will respond to
+  * USB suspend requests by powering down the NET2272.  Otherwise,
+- * USB suspend requests will be ignored.  This is acceptible for
++ * USB suspend requests will be ignored.  This is acceptable for
+  * self-powered devices.  For bus powered devices set this to 1.
+  */
+ static ushort enable_suspend = 0;
+@@ -288,7 +288,7 @@ static void net2272_ep_reset(struct net2272_ep *ep)
+ 			  | (1 << LOCAL_OUT_ZLP)
+ 			  | (1 << BUFFER_FLUSH));
+ 
+-	/* fifo size is handled seperately */
++	/* fifo size is handled separately */
+ }
+ 
+ static int net2272_disable(struct usb_ep *_ep)
+-- 
+2.27.0
 
-https://evilpiepirate.org/git/bcachefs.git/log/?h=shrinker_to_text
-
-This adds a .to_text() method - a pretty-printer - that shrinkers can
-implement, and then on OOM we report on the top 10 shrinkers by memory usage, in
-sorted order.
-
-Another thing I'd like to do is have shrinkers report usage not just in object
-counts but in bytes; I think it should be obvious why that's desirable.
-
-Maybe we could have a memory-reporting-and-shrinker-improvements session at LSF?
-I'd love to do some collective brainstorming and get some real momementum going
-in this area.
