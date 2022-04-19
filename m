@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C687C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357585AbiDSULr (ORCPT
+        id S1357594AbiDSULt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
+        Tue, 19 Apr 2022 16:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356897AbiDSULV (ORCPT
+        with ESMTP id S1357148AbiDSUL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:11:21 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6020539172;
-        Tue, 19 Apr 2022 13:08:38 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 20:08:35 -0000
+        Tue, 19 Apr 2022 16:11:29 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D4D3C731;
+        Tue, 19 Apr 2022 13:08:43 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:08:41 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650398917;
+        s=2020; t=1650398922;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oUsQRUynxwE6aIVskGFZYHhGJAmT1WprsF9+cnYba2M=;
-        b=Aa4IOSb5QUUOiJm63N8W7YUdwcsDbVp9IFpXVT9QWP9B4GXR5BOKs1ubfBQgIisMwcJuVz
-        cWWfIz+yw7GSpaMq2eAnxF+i9e4C6wQiOPYTIpbckiiJJ1JYNXsUYyHbQJeR/NLBkxSCFL
-        e3cP13xBghv5JpvyH/aeDSRSfRP6eH2veykrjxZgrUkJoNTYrsZTLZs4edleVop9rHRpK2
-        IKwd1SBvRvNeuGLUS3TBvIYlchb/kzYUg6jJzyoahANg4GFiaZkXAnAAKc/8oLab/9Yprn
-        XwRyxwx+NVLhzFOO6IjmO6Z35gWNwNQXc43UTVOgLAOfSDvQtm2y8z8ftC2mXQ==
+        bh=NPA42ChuTlOaSKtgc0k0MGM0iE9m59AeUtQErq5CWog=;
+        b=44KlVQjV1OpCfNtY+ngn85ulPCc7pmGigVEuRC6YLl4bbhTFBwXsAbDJPLD8K4Wvm89Hu8
+        l3ce3+SL4vSmxBtMUbebz+CFvUUdfy+MraSRGIJb2zT+nkMw1sIRUWv4x8GAcvNLgZFmr7
+        gPfZRAkbUhlfli17sZx5zl6c3F4dgozkr8A2OzuYnJta/r+4Y84L3RG+Ev6RAEofTc3vJ4
+        Uzbc60w4aHVlQMxAhLTVzteW2RslZCZGEoI7BFg3cQ8A6jgfVTdt1FPGuNObEzyLrPbsxa
+        Wvc54tqwIq0eGcWLOB4QGoyJPgg802RsJ0F8Z9wmfiRkqkvbKYMi9w7xyqRKsA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650398917;
+        s=2020e; t=1650398922;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oUsQRUynxwE6aIVskGFZYHhGJAmT1WprsF9+cnYba2M=;
-        b=RP65PgRA4EMKNNsEtl01Z1ClvBbFGpbMM60mt8l8zl04YhsZFfvZOzQsizJPfP/j5t36oM
-        xhA9RMoNn8MZMPDw==
-From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
+        bh=NPA42ChuTlOaSKtgc0k0MGM0iE9m59AeUtQErq5CWog=;
+        b=m79/fhyIKk8kxiI0RssEwnET3SbzdhcPvXw0TapoKbyC4iQVR+qGtuxlIzhgla/exAQURZ
+        StVa9yV0aQY476CA==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] objtool: Print data address for "!ENDBR" data warnings
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: x86/urgent] x86,objtool: Explicitly mark idtentry_body()s tail
+ REACHABLE
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <762e88d51300e8eaf0f933a5b0feae20ac033bea.1650300597.git.jpoimboe@redhat.com>
-References: <762e88d51300e8eaf0f933a5b0feae20ac033bea.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <20220408094718.441854969@infradead.org>
+References: <20220408094718.441854969@infradead.org>
 MIME-Version: 1.0
-Message-ID: <165039891592.4207.1506577697956201551.tip-bot2@tip-bot2>
+Message-ID: <165039892139.4207.18081241946662720260.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,49 +63,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     4baae989e638e9bf4b7d29bc5e36b581fddcca52
-Gitweb:        https://git.kernel.org/tip/4baae989e638e9bf4b7d29bc5e36b581fddcca52
-Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:29 -07:00
+Commit-ID:     d66e9d50ea5cd76b2c4875c758efad665283d7ad
+Gitweb:        https://git.kernel.org/tip/d66e9d50ea5cd76b2c4875c758efad665283d7ad
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Fri, 08 Apr 2022 11:45:56 +02:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 19 Apr 2022 21:58:50 +02:00
+CommitterDate: Tue, 19 Apr 2022 21:58:48 +02:00
 
-objtool: Print data address for "!ENDBR" data warnings
+x86,objtool: Explicitly mark idtentry_body()s tail REACHABLE
 
-When a "!ENDBR" warning is reported for a data section, objtool just
-prints the text address of the relocation target twice, without giving
-any clues about the location of the original data reference:
+Objtool can figure out that some \cfunc()s are noreturn and then
+complains about certain instances having unreachable tails:
 
-  vmlinux.o: warning: objtool: dcbnl_netdevice_event()+0x0: .text+0xb64680: data relocation to !ENDBR: dcbnl_netdevice_event+0x0
+  vmlinux.o: warning: objtool: asm_exc_xen_unknown_trap()+0x16: unreachable instruction
 
-Instead, print the address of the data reference, in addition to the
-address of the relocation target.
-
-  vmlinux.o: warning: objtool: dcbnl_nb+0x0: .data..read_mostly+0xe260: data relocation to !ENDBR: dcbnl_netdevice_event+0x0
-
-Fixes: 89bc853eae4a ("objtool: Find unused ENDBR instructions")
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/762e88d51300e8eaf0f933a5b0feae20ac033bea.1650300597.git.jpoimboe@redhat.com
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220408094718.441854969@infradead.org
 ---
- tools/objtool/check.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ arch/x86/entry/entry_64.S | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index e3a675d..b822a6d 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3817,11 +3817,8 @@ static int validate_ibt(struct objtool_file *file)
- 			struct instruction *dest;
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 4faac48..73d9585 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -337,6 +337,9 @@ SYM_CODE_END(ret_from_fork)
  
- 			dest = validate_ibt_reloc(file, reloc);
--			if (is_data && dest && !dest->noendbr) {
--				warn_noendbr("data ", reloc->sym->sec,
--					     reloc->sym->offset + reloc->addend,
--					     dest);
--			}
-+			if (is_data && dest && !dest->noendbr)
-+				warn_noendbr("data ", sec, reloc->offset, dest);
- 		}
- 	}
+ 	call	\cfunc
+ 
++	/* For some configurations \cfunc ends up being a noreturn. */
++	REACHABLE
++
+ 	jmp	error_return
+ .endm
  
