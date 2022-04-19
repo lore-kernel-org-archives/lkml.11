@@ -2,101 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E3BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:45:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348963AbiDSGqR (ORCPT
+        id S1349051AbiDSGrp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 02:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
+        Tue, 19 Apr 2022 02:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348997AbiDSGqC (ORCPT
+        with ESMTP id S1349041AbiDSGrk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 02:46:02 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB12131343;
-        Mon, 18 Apr 2022 23:43:20 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id s4so12844773qkh.0;
-        Mon, 18 Apr 2022 23:43:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lCEwVctplujUVn3aWOAAg060aVQwyGc3JDb5YqPzLpg=;
-        b=Rzglu8dkVnAtjM3wsCn4uI2jtekslQMjTbEJx6z7NujF2SDSfpEQ3ciQusg6iNqU59
-         8zoSmSPXvCWtQJltyu6jFPICGvVHe9dAOQZQ81REw1ngzRrpLog+mysa/uQvNgztaZdb
-         aaNZwpRefsRzWzDV6afIn6EyiEhTl61d4iaJWVr17o3W/CRdTUUtFxkcAtiwJBvAjIn4
-         3ZRe5nFNhRmKXg3MEIfjHwj+ty0BcTf7mo81kH/xuO1hixP2RuCwGQgVihc+6utd/iOv
-         /smycl11fjB9zATTnVkEGUmduXr3pgBxuOgM52aSL6M8H8RcoTCn7i3OaVCkUE3dLAER
-         WM4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lCEwVctplujUVn3aWOAAg060aVQwyGc3JDb5YqPzLpg=;
-        b=YrQ0rL5jWSN6gBn1/rvKL1G8d+39vl8z0u+7ZDTUa8hNmk4WyzHiX6VHSPBiwz9f7s
-         E7fiLJovZOI7KpyxSUdRLvDRLL5PW/As98HLKeIxPgLBfGYVPAs2kIcaMY6jbkMexecC
-         Rh7kf9eTPZ3qaxRT+xzqoRnec36EUuoYoxkgS1r1nWSnVF7swnhj7sh5OXQ1A8jqk7EV
-         ODz044pQcWb+NqfQl9pQwmrfrSXwBubp5X8fmRicksH02i3WfS3GoGzhY8Eta5khlY0k
-         aywVcVQvH66j8uW/8TAsGl3orRYuJqrqPYSrPp3j0zUwN+f8RAuEtxHrsgmqNyA8/B5D
-         5U3Q==
-X-Gm-Message-State: AOAM532dBcXhj/x274AAUaFYSDe2ZDPd3AGDnbCgpnpq/e5Ieq//ctof
-        vVo+/SNwDol+76eLhVWaxo/Qavzwb0U=
-X-Google-Smtp-Source: ABdhPJyIqAjVWapfZuf+9IuFP0bQM4o+OeOppDY7/+9kKdQpTnNAiKVXqMjz6QBSKvLb9KBH0M5t3Q==
-X-Received: by 2002:a05:620a:2456:b0:69e:9fa0:6479 with SMTP id h22-20020a05620a245600b0069e9fa06479mr4744407qkn.414.1650350599703;
-        Mon, 18 Apr 2022 23:43:19 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 2-20020ac84e82000000b002f1f95ce5fbsm4559081qtp.3.2022.04.18.23.43.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 23:43:19 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     dmitry.torokhov@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] Input: Remove unneeded variable
-Date:   Tue, 19 Apr 2022 06:42:55 +0000
-Message-Id: <20220419064255.2563333-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 19 Apr 2022 02:47:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FCC713CFE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 23:44:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650350696;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LefR+GnWqX3MjBts53Y0LYPST2a84sipLAxvttQVcyI=;
+        b=IaTh8DcPsaRi7nQnGhj4agQvDABFl0+Fe250uehKFCoSjY7ycMXaPdDA8yjux+o9QXB1w5
+        bRkK9XS4aeH2pFa7LiQuR7ynrXWEmAn8yv+iH1jz5tfV3YY05A7y2gbG16a6rNNGPBh4g3
+        BMggiX7Nl+RFrJNCnFuKhSqxtz1MY7w=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-297-k1KNzykeP-iWA7oMKLO9tw-1; Tue, 19 Apr 2022 02:44:52 -0400
+X-MC-Unique: k1KNzykeP-iWA7oMKLO9tw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 150BE29DD980;
+        Tue, 19 Apr 2022 06:44:52 +0000 (UTC)
+Received: from starship (unknown [10.40.194.231])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 04C19215CDD1;
+        Tue, 19 Apr 2022 06:44:48 +0000 (UTC)
+Message-ID: <8b2ff3dc317db18c8128381d5d62057a90f68265.camel@redhat.com>
+Subject: Re: [PATCH 2/4] KVM: nVMX: Defer APICv updates while L2 is active
+ until L1 is active
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Gaoning Pan <pgn@zju.edu.cn>,
+        Yongkang Jia <kangel@zju.edu.cn>
+Date:   Tue, 19 Apr 2022 09:44:48 +0300
+In-Reply-To: <Yl2FXfCjvkNgM4w3@google.com>
+References: <20220416034249.2609491-1-seanjc@google.com>
+         <20220416034249.2609491-3-seanjc@google.com>
+         <227adbe6e8d82ad4c5a803c117d4231808a0e451.camel@redhat.com>
+         <Yl2FXfCjvkNgM4w3@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+On Mon, 2022-04-18 at 15:35 +0000, Sean Christopherson wrote:
+> On Mon, Apr 18, 2022, Maxim Levitsky wrote:
+> > On Sat, 2022-04-16 at 03:42 +0000, Sean Christopherson wrote:
+> > When L2 uses APICv/AVIC, we just safely passthrough its usage to the real hardware.
+> > 
+> > If we were to to need to inhibit it, we would have to emulate APICv/AVIC so that L1 would
+> > still think that it can use it - thankfully there is no need for that.
+> 
+> What if L1 passes through IRQs and all MSRs to L2? 
 
-Remove unneeded variable used to store return value.
+KVM absolutely should inhibit L1 AVIC/APICv in this case if L2 triggers AUTOEOI inhibit via msr write via non
+intercepted msr, and I don't see why it won't work.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- drivers/input/input.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+It should not affect L2's APICv/AVIC though, only L1 can decide that it wants to inhibit it,
+and it has all the means to do so without any help from L0.
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index e5a668ce884d..1365c9dfb5f2 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -1793,8 +1793,6 @@ EXPORT_SYMBOL(input_reset_device);
+
+In regard to APICv, neither vmcs02 nor vmcs01 should need to be touched on a vCPU
+that does this though:
  
- static int input_inhibit_device(struct input_dev *dev)
- {
--	int ret = 0;
--
- 	mutex_lock(&dev->mutex);
  
- 	if (dev->inhibited)
-@@ -1816,7 +1814,7 @@ static int input_inhibit_device(struct input_dev *dev)
+- vmcs02 can't have APICv enabled, because passthrough of interrupts thankfully
+  conflicts with APICv (virtual interrupt delivery depends on intercepting interrupts)
+  and even if that was false, it would have contained L2's APICv settings which should
+  continue to work as usual.
  
- out:
- 	mutex_unlock(&dev->mutex);
--	return ret;
-+	return 0;
- }
+- vmcs01 isn't active on this vCPU, so no need to touch it. vmcs01 of other vCPUs
+  which don't run nested, does need to be updated to have APICv inhibited, 
+  which should work just fine unless there are bugs in KVM's APICv.
  
- static int input_uninhibit_device(struct input_dev *dev)
--- 
-2.25.1
+ 
+- Posted interrupts that target L1 will be delivered as normal interrupts and cause KVM to 
+  inject them to L2 (because of no interception)
+ 
+- Posted interrupts that target L2 can't even happen because APICv can't be enabled in L1
+
+ 
+In regard to SVM, in theory you can have interrupt intercept disabled and yet have AVIC enabled
+in both L0 and L1, but it should work just fine as well:
+ 
+In this case, while running nested:
+ 
+L2 if it has direct access to L1's AVIC, will be able to write there but all writes will
+be normal MMIO writes and work as usual but not accelerated.
+ 
+Interrupts that target L1 will not go through AVIC, but be delivered via normal IPIs,
+because L1's avic is inhibited on this vCPU locally, and then KVM will inject them to L2.
+ 
+Interrupts that target L2 will go through nested AVIC and land there just fine.
+ 
+AVIC inhibition/uninhibition in this case has 0 effect on this vCPU, as L1 AVIC is already
+inhibited locally on this vCPU, and my code will correctly do nothing in this case.
+
+Yes in theory, when L1 doesn't use AVIC for L2, and passes through all interrupts to L2,
+I could have setup vmcb02 to use L0's AVIC and let interrupts that target L1 go to L2
+via AVIC, but it is just not worth the complexity this adds, and it might not even
+work correctly in some cases, since L1 still has its own APIC, even if it doesn't
+really receive interrupts while L2 is running.
+
+ 
+IMHO it all adds up.
+ 
+Best regards,
+	Maxim Levitsky
+
+
+
+>   L1 isn't expecting a VM-Exit, so
+> KVM can't safely punt to L1 even if conceptually we think that it's L1's problem.
+> 
+> It's a contrived scenario, but technically possible.
+> 
+
 
