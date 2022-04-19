@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6043C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B236C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351604AbiDSLjJ (ORCPT
+        id S1351640AbiDSLjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
+        Tue, 19 Apr 2022 07:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351465AbiDSLho (ORCPT
+        with ESMTP id S1351400AbiDSLhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:37:44 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A60B5F99
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:01 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id g13so4533246ejb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:01 -0700 (PDT)
+        Tue, 19 Apr 2022 07:37:37 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5364DED5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:53 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id t11so32218492eju.13
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7atrdHIPQWrKPdmTA65creUl3MO148uK4lDHmIisbDg=;
-        b=WxMg6XUgp81lXoeea6Vkx3cBnSpHn5GDg4Xb06H7rvL8o6r9kDTwT+y+cwIcbumpid
-         5qIHq+cB77g+DzrnMjqL9f/Ed57GfS5yxtrVc6ASVSzZHsJgtj5aKznr0s595wUoxAnN
-         E/S59Yi0tUvqKEu/O4lE69dAXqFwBPc+QSW0laxY134MT7i+ojjBgD2IE/n6Bg3JBK93
-         Lhu1zjZTUDvZFXPj1n6KqXKzWC2AmiaAXacBHU2rGY3ZqPv3n2RRFu2/8vB3K1vvwjTm
-         QoCq5W4VtfwwNz1R3vc2qvcpdZ7AyY7MmyP985K0TFgeeES2okX68npv32Q+7bUR1Vam
-         JqIQ==
+        bh=nKruD0hbBUx+nn+GE9l7RUaXsMouYslDmZcMsioEI1Q=;
+        b=hxNjQS3zh1TQ37oSrtUfwGeYt8aW2l1Sm9h+uqAsWbZdx5+TPuoUvrKY8uokxdMtKF
+         mLleac6wVOFOW7qIB9iinBjCBoXX/FzWvlxYEZVhYw7BCc4WpSuZLt5wiVLIRDX5VNXA
+         EFZhQhF/6rxTsmb8pJWhxF1tp3Za3zoA9fhB9WtIt9/kJJ274ZiN1OG2yJ5VN6t5Q8tF
+         z2mkOIFH34l1KyNXFjitqrXaPshNh57GLfsfYeuhRIumEncNvFdkH5ZeibHt5U0Vo1mV
+         w3TldCvphkT2yXiXTbOEEORvl3SIruFqbopdn22vRIZgwmnKeXZBCaUuInNWhNmv7xIJ
+         kTlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7atrdHIPQWrKPdmTA65creUl3MO148uK4lDHmIisbDg=;
-        b=0MIvj1URINpzorOZgg/aNbOgAxeTeMIiwVl6RNA3kJzCcDGjwZICp4so1o1I+BAmdd
-         QnAlK03x7xV0tkxfGHQ2fg4awc0GmIFvkz7TOny91NiyrpRLEQmeilgBx5IsTGwLiTqd
-         iZJV4uZTpRoa/I2LsXqWGU2GjUzowtNZgVN3FZOq2RmNWm7Gpv4f+ZwqPywi+tfUCHjW
-         WIqIIwuh8Xn7Ijy4c5Icmjb7Ch4VTZU9QeLgUfhxLVwoaUl90jYnqX2ddt2vHgoqdHWs
-         Q63kaW/vo4sZSdt77XOUxmgfwvdeNw3OZbyftNaO+csthg7NIg+pBXtuI4SJ89o/LnKe
-         mhuQ==
-X-Gm-Message-State: AOAM530bCUXyQQfgWUE5HNj0C1+oDKH9jO6r98GQgTfc8VwFgiSvWE5J
-        00bc3wy8Rl/oVosKWdpJFq2zcA==
-X-Google-Smtp-Source: ABdhPJy/HDdRnFcEBc8e1p8gVzy6WYfbU/9ZfvPlCkGd8Q6ySzsHA+NJEntfhZ+3uR4IyIIiCxdJng==
-X-Received: by 2002:a17:906:6a1e:b0:6e8:aa9d:d8b8 with SMTP id qw30-20020a1709066a1e00b006e8aa9dd8b8mr13070576ejc.269.1650368100023;
-        Tue, 19 Apr 2022 04:35:00 -0700 (PDT)
+        bh=nKruD0hbBUx+nn+GE9l7RUaXsMouYslDmZcMsioEI1Q=;
+        b=3GVjrcqkZtIOfxa7goqqCNyG07CWBL4q9nyXmJJDSCMgyJmp3K99ECPqC9MyBnj1uU
+         24EyrhgK5mOc8Fi8sI2ZLTc0bjDBVvh8Rq90ytE++XS/QNUMgZgGSOrJ9GutwWol5yma
+         YQRuFTvTvdGLoFl4wTMDOjaidla12ZfClv1mjkE6qzZtmk0qMozNAuHr8nnJAAp3J2tC
+         KN5RpjYVKjkZ3D7WlJxg/o4kG+y+gGVEvbaBZ8H5e7CEeKq9B4vqCWuqnoJOqKShR7jU
+         waB6ZVakyDaPXS+5sTFkaCAFSluTkNllQCgzktUjejjzqIVNSrM0eKLs2xWpjY3OMcAC
+         6sCg==
+X-Gm-Message-State: AOAM533ZsETyomR7y6rxlAxNHU2SeQAOBtXOjQW5yKvMY9kLZIWPchss
+        R+rruZF89iRBA5mfA7+ilhOylQ==
+X-Google-Smtp-Source: ABdhPJym75DUa6YNLz0AzuXs59T5CIn4fkAzbWaGNW1BaMcFnN8QHFCcwCaQ7sI4GiRmHTg63Mvf6A==
+X-Received: by 2002:a17:907:1c82:b0:6ef:69a5:35bf with SMTP id nb2-20020a1709071c8200b006ef69a535bfmr13318299ejc.142.1650368092317;
+        Tue, 19 Apr 2022 04:34:52 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.34.58
+        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.34.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 04:34:59 -0700 (PDT)
+        Tue, 19 Apr 2022 04:34:51 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>
@@ -77,11 +77,10 @@ Cc:     Stuart Yoder <stuyoder@gmail.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>
-Subject: [PATCH v7 08/12] vdpa: Use helper for safer setting of driver_override
-Date:   Tue, 19 Apr 2022 13:34:31 +0200
-Message-Id: <20220419113435.246203-9-krzysztof.kozlowski@linaro.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v7 03/12] fsl-mc: Use driver_set_override() instead of open-coding
+Date:   Tue, 19 Apr 2022 13:34:26 +0200
+Message-Id: <20220419113435.246203-4-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
 References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
@@ -91,29 +90,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a helper to set driver_override to the reduce amount of duplicated
-code.
+Use a helper to set driver_override to reduce the amount of duplicated
+code.  Make the driver_override field const char, because it is not
+modified by the core and it matches other subsystems.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- drivers/vdpa/vdpa.c  | 29 ++++-------------------------
- include/linux/vdpa.h |  4 +++-
- 2 files changed, 7 insertions(+), 26 deletions(-)
+ drivers/bus/fsl-mc/fsl-mc-bus.c | 25 ++++---------------------
+ include/linux/fsl/mc.h          |  6 ++++--
+ 2 files changed, 8 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 2b75c00b1005..33d1ad60cba7 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -77,32 +77,11 @@ static ssize_t driver_override_store(struct device *dev,
+diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+index 8fd4a356a86e..ba01c7f4de92 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -166,31 +166,14 @@ static ssize_t driver_override_store(struct device *dev,
  				     const char *buf, size_t count)
  {
- 	struct vdpa_device *vdev = dev_to_vdpa(dev);
--	const char *driver_override, *old;
+ 	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
+-	char *driver_override, *old = mc_dev->driver_override;
 -	char *cp;
 +	int ret;
  
--	/* We need to keep extra room for a newline */
+ 	if (WARN_ON(dev->bus != &fsl_mc_bus_type))
+ 		return -EINVAL;
+ 
 -	if (count >= (PAGE_SIZE - 1))
 -		return -EINVAL;
 -
@@ -125,38 +126,44 @@ index 2b75c00b1005..33d1ad60cba7 100644
 -	if (cp)
 -		*cp = '\0';
 -
--	device_lock(dev);
--	old = vdev->driver_override;
 -	if (strlen(driver_override)) {
--		vdev->driver_override = driver_override;
+-		mc_dev->driver_override = driver_override;
 -	} else {
 -		kfree(driver_override);
--		vdev->driver_override = NULL;
+-		mc_dev->driver_override = NULL;
 -	}
--	device_unlock(dev);
 -
 -	kfree(old);
-+	ret = driver_set_override(dev, &vdev->driver_override, buf, count);
++	ret = driver_set_override(dev, &mc_dev->driver_override, buf, count);
 +	if (ret)
 +		return ret;
  
  	return count;
  }
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 8943a209202e..c0a5083632ab 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -64,7 +64,9 @@ struct vdpa_mgmt_dev;
-  * struct vdpa_device - representation of a vDPA device
-  * @dev: underlying device
-  * @dma_dev: the actual device that is performing DMA
+diff --git a/include/linux/fsl/mc.h b/include/linux/fsl/mc.h
+index 7b6c42bfb660..7a87ab9eba99 100644
+--- a/include/linux/fsl/mc.h
++++ b/include/linux/fsl/mc.h
+@@ -170,7 +170,9 @@ struct fsl_mc_obj_desc {
+  * @regions: pointer to array of MMIO region entries
+  * @irqs: pointer to array of pointers to interrupts allocated to this device
+  * @resource: generic resource associated with this MC object device, if any.
 - * @driver_override: driver name to force a match
 + * @driver_override: driver name to force a match; do not set directly,
 + *                   because core frees it; use driver_set_override() to
 + *                   set or clear it.
-  * @config: the configuration ops for this device.
-  * @cf_mutex: Protects get and set access to configuration layout.
-  * @index: device index
+  *
+  * Generic device object for MC object devices that are "attached" to a
+  * MC bus.
+@@ -204,7 +206,7 @@ struct fsl_mc_device {
+ 	struct fsl_mc_device_irq **irqs;
+ 	struct fsl_mc_resource *resource;
+ 	struct device_link *consumer_link;
+-	char   *driver_override;
++	const char *driver_override;
+ };
+ 
+ #define to_fsl_mc_device(_dev) \
 -- 
 2.32.0
 
