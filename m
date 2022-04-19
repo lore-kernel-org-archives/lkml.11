@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B71A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C16C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237793AbiDSAHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
+        id S236929AbiDSAHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236930AbiDSAGJ (ORCPT
+        with ESMTP id S236870AbiDSAGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:06:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096292316D;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B176237FA;
         Mon, 18 Apr 2022 17:03:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8E6AB81144;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4726612DC;
         Tue, 19 Apr 2022 00:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0CC9C385B7;
-        Tue, 19 Apr 2022 00:03:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BEF1C385C7;
+        Tue, 19 Apr 2022 00:03:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650326605;
-        bh=iyJn1yotRTIEBfPDSDKM1gy8KIt7R7cfA59bZDZBO2c=;
+        bh=YwNURKj9mCIVjxikZL9NORCNyWNTo9uPcdOZhbmsazc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=euaXErJ69GFH6SlFDJuLr/ePnr2+HVSW6yPG5axeuTidfP0r4h446YoAGVF+1aaFK
-         v1TwbP6g2eZEUJ7g3uI8kn6tQ9qDCvifV8SwrwgwblmqimBV8xSvzKADlweP8kn8pE
-         FdjUWroN4Y0ijSlueKAaBvnoekeFZnUn4ZVUywtaDTWKQkoyomaRQVJnkLaO/N7yH3
-         7kVhatnB2aCpLoG5OTtofT6JrRP8513O8lD7+MwEhIVLL0CUSBfFQGvlRGfCEV8JZi
-         TQy5t5a3g3+ODBEbCezLyF+7854E+6Z5fY/8F0geBH7c12WfgZV+uNLgtj0PxOHPLl
-         uJ23XKnhP/1+g==
+        b=RxdI+F6nO1OTvalSor++1mZLjYnYU8Y+aoppUZZ8k3QCqMWlamU/36mJsF+OZGNBT
+         86yeE7C3ZvDHvpaj+g00OR0hgH3ecm1bhH7UsBlPDRubzRgTS3lsq+RxR2/RIfna81
+         YkzC9dnjPQKUPrv6t1R6kGnkf+1qWhayp0KqEv/OvRFxFsbOGQgF53cP7oaXl3mIL3
+         E4R51gi4VREdCVH25xDY76DlJIpllyVqDGH5W8h9+IdyooPU8OP40d0xuiKLIyBLSz
+         4EAdjiGIH7Giw8Q3UaOSG5gMWXzIkKUqDZGUv95f1d9rW6u7kgPYTqHjdHyj6+LSZa
+         8kPVNIsHbcDww==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 5D4CB5C12AB; Mon, 18 Apr 2022 17:03:24 -0700 (PDT)
+        id 6D2B45C30DF; Mon, 18 Apr 2022 17:03:24 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
         rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
         Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Subject: [PATCH rcu 09/21] srcu: Use invalid initial value for srcu_node GP sequence numbers
-Date:   Mon, 18 Apr 2022 17:03:10 -0700
-Message-Id: <20220419000322.3948903-9-paulmck@kernel.org>
+Subject: [PATCH rcu 18/21] srcu: Automatically determine size-transition strategy at boot
+Date:   Mon, 18 Apr 2022 17:03:19 -0700
+Message-Id: <20220419000322.3948903-18-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419000315.GA3948789@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419000315.GA3948789@paulmck-ThinkPad-P17-Gen-1>
@@ -51,138 +51,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, tree SRCU relies on the srcu_node structures being initialized
-at the same time that the srcu_struct itself is initialized, and thus
-use the initial grace-period sequence number as the initial value for
-the srcu_node structure's ->srcu_have_cbs[] and ->srcu_gp_seq_needed_exp
-fields.  Although this has a high probability of also working when the
-srcu_node array is allocated and initialized at some random later time,
-it would be better to avoid leaving such things to chance.
-
-This commit therefore initializes these fields with 0x2, which is a
-recognizable invalid value.  It then adds the required checks for this
-invalid value in order to avoid confusion on long-running kernels
-(especially those on 32-bit systems) that allocate and initialize
-srcu_node arrays late in life.
+This commit adds a srcutree.convert_to_big option of zero that causes
+SRCU to decide at boot whether to wait for contention (small systems) or
+immediately expand to large (large systems).  A new srcutree.big_cpu_lim
+(defaulting to 128) defines how many CPUs constitute a large system.
 
 Co-developed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
 Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- kernel/rcu/srcutree.c | 36 +++++++++++++++++++++++++++---------
- 1 file changed, 27 insertions(+), 9 deletions(-)
+ .../admin-guide/kernel-parameters.txt         |  9 ++++++++
+ kernel/rcu/srcutree.c                         | 23 ++++++++++++++++---
+ 2 files changed, 29 insertions(+), 3 deletions(-)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 177e688768c0..057e30613d00 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5608,6 +5608,14 @@
+ 			off:    Disable mitigation and remove
+ 				performance impact to RDRAND and RDSEED
+ 
++	srcutree.big_cpu_lim [KNL]
++			Specifies the number of CPUs constituting a
++			large system, such that srcu_struct structures
++			should immediately allocate an srcu_node array.
++			This kernel-boot parameter defaults to 128, but
++			takes effect only when srcutree.convert_to_big
++			is equal to zero.
++
+ 	srcutree.convert_to_big [KNL]
+ 			Specifies under what conditions an SRCU tree
+ 			srcu_struct structure will be converted to big
+@@ -5616,6 +5624,7 @@
+ 				   0:  Never.
+ 				   1:  At init_srcu_struct() time.
+ 				   2:  When rcutorture decides to.
++				   3:  Decide at boot time (default).
+ 				0x1X:  Above plus if high contention.
+ 
+ 			Either way, the srcu_node tree will be sized based
 diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-index fec608f69962..155c430c6a73 100644
+index 0bc6a0a3edee..b9dec26245e0 100644
 --- a/kernel/rcu/srcutree.c
 +++ b/kernel/rcu/srcutree.c
-@@ -107,6 +107,18 @@ static void init_srcu_struct_data(struct srcu_struct *ssp)
+@@ -41,10 +41,10 @@ module_param(counter_wrap_check, ulong, 0444);
+ 
+ /*
+  * Control conversion to SRCU_SIZE_BIG:
+- *    0: Don't convert at all (default).
++ *    0: Don't convert at all.
+  *    1: Convert at init_srcu_struct() time.
+  *    2: Convert when rcutorture invokes srcu_torture_stats_print().
+- *    3: Decide at boot time based on system shape.
++ *    3: Decide at boot time based on system shape (default).
+  * 0x1x: Convert when excessive contention encountered.
+  */
+ #define SRCU_SIZING_NONE	0
+@@ -57,9 +57,13 @@ module_param(counter_wrap_check, ulong, 0444);
+ #define SRCU_SIZING_IS_INIT() (SRCU_SIZING_IS(SRCU_SIZING_INIT))
+ #define SRCU_SIZING_IS_TORTURE() (SRCU_SIZING_IS(SRCU_SIZING_TORTURE))
+ #define SRCU_SIZING_IS_CONTEND() (convert_to_big & SRCU_SIZING_CONTEND)
+-static int convert_to_big = SRCU_SIZING_NONE;
++static int convert_to_big = SRCU_SIZING_AUTO;
+ module_param(convert_to_big, int, 0444);
+ 
++/* Number of CPUs to trigger init_srcu_struct()-time transition to big. */
++static int big_cpu_lim __read_mostly = 128;
++module_param(big_cpu_lim, int, 0444);
++
+ /* Contention events per jiffy to initiate transition to big. */
+ static int small_contention_lim __read_mostly = 100;
+ module_param(small_contention_lim, int, 0444);
+@@ -1619,6 +1623,17 @@ void __init srcu_init(void)
+ {
+ 	struct srcu_struct *ssp;
+ 
++	/* Decide on srcu_struct-size strategy. */
++	if (SRCU_SIZING_IS(SRCU_SIZING_AUTO)) {
++		if (nr_cpu_ids >= big_cpu_lim) {
++			convert_to_big = SRCU_SIZING_INIT; // Don't bother waiting for contention.
++			pr_info("%s: Setting srcu_struct sizes to big.\n", __func__);
++		} else {
++			convert_to_big = SRCU_SIZING_NONE | SRCU_SIZING_CONTEND;
++			pr_info("%s: Setting srcu_struct sizes based on contention.\n", __func__);
++		}
++	}
++
+ 	/*
+ 	 * Once that is set, call_srcu() can follow the normal path and
+ 	 * queue delayed work. This must follow RCU workqueues creation
+@@ -1629,6 +1644,8 @@ void __init srcu_init(void)
+ 		ssp = list_first_entry(&srcu_boot_list, struct srcu_struct,
+ 				      work.work.entry);
+ 		list_del_init(&ssp->work.work.entry);
++		if (SRCU_SIZING_IS(SRCU_SIZING_INIT) && ssp->srcu_size_state == SRCU_SIZE_SMALL)
++			ssp->srcu_size_state = SRCU_SIZE_ALLOC;
+ 		queue_work(rcu_gp_wq, &ssp->work.work);
  	}
  }
- 
-+/* Invalid seq state, used during snp node initialization */
-+#define SRCU_SNP_INIT_SEQ		0x2
-+
-+/*
-+ * Check whether sequence number corresponding to snp node,
-+ * is invalid.
-+ */
-+static inline bool srcu_invl_snp_seq(unsigned long s)
-+{
-+	return rcu_seq_state(s) == SRCU_SNP_INIT_SEQ;
-+}
-+
- /*
-  * Allocated and initialize SRCU combining tree.  Returns @true if
-  * allocation succeeded and @false otherwise.
-@@ -139,10 +151,10 @@ static bool init_srcu_struct_nodes(struct srcu_struct *ssp)
- 		WARN_ON_ONCE(ARRAY_SIZE(snp->srcu_have_cbs) !=
- 			     ARRAY_SIZE(snp->srcu_data_have_cbs));
- 		for (i = 0; i < ARRAY_SIZE(snp->srcu_have_cbs); i++) {
--			snp->srcu_have_cbs[i] = 0;
-+			snp->srcu_have_cbs[i] = SRCU_SNP_INIT_SEQ;
- 			snp->srcu_data_have_cbs[i] = 0;
- 		}
--		snp->srcu_gp_seq_needed_exp = 0;
-+		snp->srcu_gp_seq_needed_exp = SRCU_SNP_INIT_SEQ;
- 		snp->grplo = -1;
- 		snp->grphi = -1;
- 		if (snp == &ssp->node[0]) {
-@@ -386,8 +398,7 @@ static bool srcu_readers_active(struct srcu_struct *ssp)
-  */
- static unsigned long srcu_get_delay(struct srcu_struct *ssp)
- {
--	if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq),
--			 READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
-+	if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq), READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
- 		return 0;
- 	return SRCU_INTERVAL;
- }
-@@ -561,6 +572,7 @@ static void srcu_gp_end(struct srcu_struct *ssp)
- 	int idx;
- 	unsigned long mask;
- 	struct srcu_data *sdp;
-+	unsigned long sgsne;
- 	struct srcu_node *snp;
- 	int ss_state;
- 
-@@ -594,7 +606,8 @@ static void srcu_gp_end(struct srcu_struct *ssp)
- 				cbs = snp->srcu_have_cbs[idx] == gpseq;
- 			snp->srcu_have_cbs[idx] = gpseq;
- 			rcu_seq_set_state(&snp->srcu_have_cbs[idx], 1);
--			if (ULONG_CMP_LT(snp->srcu_gp_seq_needed_exp, gpseq))
-+			sgsne = snp->srcu_gp_seq_needed_exp;
-+			if (srcu_invl_snp_seq(sgsne) || ULONG_CMP_LT(sgsne, gpseq))
- 				WRITE_ONCE(snp->srcu_gp_seq_needed_exp, gpseq);
- 			mask = snp->srcu_data_have_cbs[idx];
- 			snp->srcu_data_have_cbs[idx] = 0;
-@@ -652,14 +665,17 @@ static void srcu_funnel_exp_start(struct srcu_struct *ssp, struct srcu_node *snp
- 				  unsigned long s)
- {
- 	unsigned long flags;
-+	unsigned long sgsne;
- 
- 	if (snp)
- 		for (; snp != NULL; snp = snp->srcu_parent) {
-+			sgsne = READ_ONCE(snp->srcu_gp_seq_needed_exp);
- 			if (rcu_seq_done(&ssp->srcu_gp_seq, s) ||
--			    ULONG_CMP_GE(READ_ONCE(snp->srcu_gp_seq_needed_exp), s))
-+			    (!srcu_invl_snp_seq(sgsne) && ULONG_CMP_GE(sgsne, s)))
- 				return;
- 			spin_lock_irqsave_rcu_node(snp, flags);
--			if (ULONG_CMP_GE(snp->srcu_gp_seq_needed_exp, s)) {
-+			sgsne = snp->srcu_gp_seq_needed_exp;
-+			if (!srcu_invl_snp_seq(sgsne) && ULONG_CMP_GE(sgsne, s)) {
- 				spin_unlock_irqrestore_rcu_node(snp, flags);
- 				return;
- 			}
-@@ -687,6 +703,7 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
- {
- 	unsigned long flags;
- 	int idx = rcu_seq_ctr(s) % ARRAY_SIZE(sdp->mynode->srcu_have_cbs);
-+	unsigned long sgsne;
- 	struct srcu_node *snp;
- 	struct srcu_node *snp_leaf = smp_load_acquire(&sdp->mynode);
- 	unsigned long snp_seq;
-@@ -698,7 +715,7 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
- 				return; /* GP already done and CBs recorded. */
- 			spin_lock_irqsave_rcu_node(snp, flags);
- 			snp_seq = snp->srcu_have_cbs[idx];
--			if (ULONG_CMP_GE(snp_seq, s)) {
-+			if (!srcu_invl_snp_seq(snp_seq) && ULONG_CMP_GE(snp_seq, s)) {
- 				if (snp == snp_leaf && snp_seq == s)
- 					snp->srcu_data_have_cbs[idx] |= sdp->grpmask;
- 				spin_unlock_irqrestore_rcu_node(snp, flags);
-@@ -713,7 +730,8 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
- 			snp->srcu_have_cbs[idx] = s;
- 			if (snp == snp_leaf)
- 				snp->srcu_data_have_cbs[idx] |= sdp->grpmask;
--			if (!do_norm && ULONG_CMP_LT(snp->srcu_gp_seq_needed_exp, s))
-+			sgsne = snp->srcu_gp_seq_needed_exp;
-+			if (!do_norm && (srcu_invl_snp_seq(sgsne) || ULONG_CMP_LT(sgsne, s)))
- 				WRITE_ONCE(snp->srcu_gp_seq_needed_exp, s);
- 			spin_unlock_irqrestore_rcu_node(snp, flags);
- 		}
 -- 
 2.31.1.189.g2e36527f23
 
