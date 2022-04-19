@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B76DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351223AbiDSXUR (ORCPT
+        id S1358488AbiDSXUX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 19:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40632 "EHLO
+        Tue, 19 Apr 2022 19:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358433AbiDSXTu (ORCPT
+        with ESMTP id S1358446AbiDSXT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 19:19:50 -0400
+        Tue, 19 Apr 2022 19:19:57 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0EB38DBD
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:17:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F78A38BCB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:17:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650410225; x=1681946225;
+  t=1650410228; x=1681946228;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=399e3lHpjBHe7mWdvwgPSwXsG4YcgPg1kSj/Aj1QR8Q=;
-  b=UpgDjuXKzOOVqQdOu4gHA36sABl7/ujnr8Vx03MmKEHL/HLLajQONtIN
-   SQPJTAlxOnXxfvpL2Xr7aZDE1Y5/ioXpbjRX+VoYDSjmnpObgiyvnpcHO
-   /jlUm1LfGnb+ECDEZHQtAXBnbZQbPlFXAx6zMzFDhzJ6J76H7De+YKj3t
-   BvMWZb8BU4wLeFx3IfdAoph8e+XYh0B6/c8bUYl6ulTrvuWR/hGzmc9GF
-   8HtqrkTd4KwxzVUZrE6R4GQDZXgRzIfuddsLX9stT7KYMAp8iOtfDJicV
-   5TOlarj8Yv2VljklCNVloNcEWMyWzWlXEO5Q4gyFo/5MIVJRt3wSwkecA
+  bh=NWTGWZWcRc9p2wqt5aw/lC0gfCcwoVoJflI0xauXUjw=;
+  b=C+oFlKfnFgbrDgpCpAZPPaF1o1pvFgWC8t2d8eYr44bNAZFNA9clYXY6
+   +feJLJCW8Z6+U7YSnIGV8yRX1SUI/Cywf1WrejyYjhmTCLy6CoEYxp61G
+   oua9T819cYo+dOAmFN2fyyRBRuxOXSt67sg1L+/72ybRzB/d1fbM3lfQ8
+   4Tpmw6NIgak8Vex9QQa/hsaPIMi0dRvPf0Y6xO98M4wfKiF6Bjv1XzRtg
+   WO8sHRzXaVEbw+shBJYXkwBdI+udWmEgdDxQObExoRJOICumK8dTdNQ1e
+   auQLm2/rhVdDx9dP9o2faYJBFtz9Bd3tDaVIEl2NJNQKOUzf/hOE3JMjO
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263656656"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263656665"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263656656"
+   d="scan'208";a="263656665"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:04 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:07 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="862277733"
+   d="scan'208";a="862277835"
 Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.68.17])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:03 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:06 -0700
 From:   Russ Weight <russell.h.weight@intel.com>
 To:     mcgrof@kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org
 Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
         hao.wu@intel.com, matthew.gerlach@linux.intel.com,
         basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
         Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v4 4/8] firmware_loader: Add firmware-upload support
-Date:   Tue, 19 Apr 2022 16:16:54 -0700
-Message-Id: <20220419231658.664388-5-russell.h.weight@intel.com>
+Subject: [PATCH v4 8/8] selftests: firmware: Add firmware upload selftests
+Date:   Tue, 19 Apr 2022 16:16:58 -0700
+Message-Id: <20220419231658.664388-9-russell.h.weight@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220419231658.664388-1-russell.h.weight@intel.com>
 References: <20220419231658.664388-1-russell.h.weight@intel.com>
@@ -56,852 +56,312 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the firmware subsystem to support a persistent sysfs interface that
-userspace may use to initiate a firmware update. For example, FPGA based
-PCIe cards load firmware and FPGA images from local FLASH when the card
-boots. The images in FLASH may be updated with new images provided by the
-user at his/her convenience.
-
-A device driver may call firmware_upload_register() to expose persistent
-"loading" and "data" sysfs files. These files are used in the same way as
-the fallback sysfs "loading" and "data" files. When 0 is written to
-"loading" to complete the write of firmware data, the data is transferred
-to the lower-level driver using pre-registered call-back functions. The
-data transfer is done in the context of a kernel worker thread.
+Add selftests to verify the firmware upload mechanism. These test
+include simple firmware uploads as well as upload cancellation and
+error injection. The test creates three firmware devices and verifies
+that they all work correctly and independently.
 
 Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 Reviewed-by: Tianfei zhang <tianfei.zhang@intel.com>
 Signed-off-by: Russ Weight <russell.h.weight@intel.com>
 ---
-v1:
-  - renamed fw_upload_register() and fw_upload_unregister() to
-    firmware_upload_register() and fw_upload_unregister().
-  - Moved ifdef'd section of code out of firmware_loading_store() in sysfs.c
-    into a new function, fw_upload_start(), in sysfs_upload.c.
-  - Changed #defines to enums for error codes and progress states
-  - Added additional kernel-doc supported symbols into the documentation.
-    Some rewording in documentation as well.
-  - Added module reference counting for the parent module in the
-    firmware_upload_register() and firmware_upload_unregister() functions
-    to fix problems found when testing with test_firmware module.
-  - Removed unnecessary module reference counting for THIS_MODULE. This
-    module holds a reference count for the parent module, and the parent
-    module has symbol dependencies on this module.
-v2:   
-  - Updated documentation Date and KernelVersion fields to July 2022
-    and 5.19.
-  - Unconditionally set fw_priv->is_paged_buf to true in
-    firmware_upload_register();
+v2:
+  - No changes from v1
 v3:
   - Added Reviewed-by tag
-  - Added kdoc support for enum fw_upload_prog progress codes
 v4:
   - Added Reviewed-by tag
 ---
- .../ABI/testing/sysfs-class-firmware          |  32 ++
- .../driver-api/firmware/fw_upload.rst         | 107 +++++++
- Documentation/driver-api/firmware/index.rst   |   1 +
- drivers/base/firmware_loader/Kconfig          |  14 +
- drivers/base/firmware_loader/Makefile         |   1 +
- drivers/base/firmware_loader/firmware.h       |   6 +
- drivers/base/firmware_loader/main.c           |  16 +-
- drivers/base/firmware_loader/sysfs.c          |  19 +-
- drivers/base/firmware_loader/sysfs.h          |   4 +
- drivers/base/firmware_loader/sysfs_upload.c   | 276 ++++++++++++++++++
- drivers/base/firmware_loader/sysfs_upload.h   |  49 ++++
- include/linux/firmware.h                      |  82 ++++++
- 12 files changed, 595 insertions(+), 12 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-firmware
- create mode 100644 Documentation/driver-api/firmware/fw_upload.rst
- create mode 100644 drivers/base/firmware_loader/sysfs_upload.c
- create mode 100644 drivers/base/firmware_loader/sysfs_upload.h
+ tools/testing/selftests/firmware/Makefile     |   2 +-
+ tools/testing/selftests/firmware/config       |   1 +
+ tools/testing/selftests/firmware/fw_lib.sh    |   7 +
+ .../selftests/firmware/fw_run_tests.sh        |   4 +
+ tools/testing/selftests/firmware/fw_upload.sh | 214 ++++++++++++++++++
+ 5 files changed, 227 insertions(+), 1 deletion(-)
+ create mode 100755 tools/testing/selftests/firmware/fw_upload.sh
 
-diff --git a/Documentation/ABI/testing/sysfs-class-firmware b/Documentation/ABI/testing/sysfs-class-firmware
-new file mode 100644
-index 000000000000..18336c23b70d
+diff --git a/tools/testing/selftests/firmware/Makefile b/tools/testing/selftests/firmware/Makefile
+index 40211cd8f0e6..7992969deaa2 100644
+--- a/tools/testing/selftests/firmware/Makefile
++++ b/tools/testing/selftests/firmware/Makefile
+@@ -4,7 +4,7 @@ CFLAGS = -Wall \
+          -O2
+ 
+ TEST_PROGS := fw_run_tests.sh
+-TEST_FILES := fw_fallback.sh fw_filesystem.sh fw_lib.sh
++TEST_FILES := fw_fallback.sh fw_filesystem.sh fw_upload.sh fw_lib.sh
+ TEST_GEN_FILES := fw_namespace
+ 
+ include ../lib.mk
+diff --git a/tools/testing/selftests/firmware/config b/tools/testing/selftests/firmware/config
+index bf634dda0720..6e402519b117 100644
+--- a/tools/testing/selftests/firmware/config
++++ b/tools/testing/selftests/firmware/config
+@@ -3,3 +3,4 @@ CONFIG_FW_LOADER=y
+ CONFIG_FW_LOADER_USER_HELPER=y
+ CONFIG_IKCONFIG=y
+ CONFIG_IKCONFIG_PROC=y
++CONFIG_FW_UPLOAD=y
+diff --git a/tools/testing/selftests/firmware/fw_lib.sh b/tools/testing/selftests/firmware/fw_lib.sh
+index 5b8c0fedee76..fe8d34dbe7ca 100755
+--- a/tools/testing/selftests/firmware/fw_lib.sh
++++ b/tools/testing/selftests/firmware/fw_lib.sh
+@@ -63,6 +63,7 @@ check_setup()
+ 	HAS_FW_LOADER_USER_HELPER="$(kconfig_has CONFIG_FW_LOADER_USER_HELPER=y)"
+ 	HAS_FW_LOADER_USER_HELPER_FALLBACK="$(kconfig_has CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y)"
+ 	HAS_FW_LOADER_COMPRESS="$(kconfig_has CONFIG_FW_LOADER_COMPRESS=y)"
++	HAS_FW_UPLOAD="$(kconfig_has CONFIG_FW_UPLOAD=y)"
+ 	PROC_FW_IGNORE_SYSFS_FALLBACK="0"
+ 	PROC_FW_FORCE_SYSFS_FALLBACK="0"
+ 
+@@ -113,6 +114,12 @@ verify_reqs()
+ 			exit 0
+ 		fi
+ 	fi
++	if [ "$TEST_REQS_FW_UPLOAD" = "yes" ]; then
++		if [ ! "$HAS_FW_UPLOAD" = "yes" ]; then
++			echo "firmware upload disabled so ignoring test"
++			exit 0
++		fi
++	fi
+ }
+ 
+ setup_tmp_file()
+diff --git a/tools/testing/selftests/firmware/fw_run_tests.sh b/tools/testing/selftests/firmware/fw_run_tests.sh
+index 777377078d5e..f6d95a2d5124 100755
+--- a/tools/testing/selftests/firmware/fw_run_tests.sh
++++ b/tools/testing/selftests/firmware/fw_run_tests.sh
+@@ -22,6 +22,10 @@ run_tests()
+ 	proc_set_force_sysfs_fallback $1
+ 	proc_set_ignore_sysfs_fallback $2
+ 	$TEST_DIR/fw_fallback.sh
++
++	proc_set_force_sysfs_fallback $1
++	proc_set_ignore_sysfs_fallback $2
++	$TEST_DIR/fw_upload.sh
+ }
+ 
+ run_test_config_0001()
+diff --git a/tools/testing/selftests/firmware/fw_upload.sh b/tools/testing/selftests/firmware/fw_upload.sh
+new file mode 100755
+index 000000000000..c7a6f06c9adb
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-class-firmware
-@@ -0,0 +1,32 @@
-+What: 		/sys/class/firmware/.../data
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	The data sysfs file is used for firmware-fallback and for
-+		firmware uploads. Cat a firmware image to this sysfs file
-+		after you echo 1 to the loading sysfs file. When the firmware
-+		image write is complete, echo 0 to the loading sysfs file. This
-+		sequence will signal the completion of the firmware write and
-+		signal the lower-level driver that the firmware data is
-+		available.
++++ b/tools/testing/selftests/firmware/fw_upload.sh
+@@ -0,0 +1,214 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++# This validates the user-initiated fw upload mechanism of the firmware
++# loader. It verifies that one or more firmware devices can be created
++# for a device driver. It also verifies the data transfer, the
++# cancellation support, and the error flows.
++set -e
 +
-+What: 		/sys/class/firmware/.../loading
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	The loading sysfs file is used for both firmware-fallback and
-+		for firmware uploads. Echo 1 onto the loading file to indicate
-+		you are writing a firmware file to the data sysfs node. Echo
-+		-1 onto this file to abort the data write or echo 0 onto this
-+		file to indicate that the write is complete. For firmware
-+		uploads, the zero value also triggers the transfer of the
-+		firmware data to the lower-level device driver.
++TEST_REQS_FW_UPLOAD="yes"
++TEST_DIR=$(dirname $0)
 +
-+What: 		/sys/class/firmware/.../timeout
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	This file supports the timeout mechanism for firmware
-+		fallback.  This file has no affect on firmware uploads. For
-+		more information on timeouts please see the documentation
-+		for firmware fallback.
-diff --git a/Documentation/driver-api/firmware/fw_upload.rst b/Documentation/driver-api/firmware/fw_upload.rst
-new file mode 100644
-index 000000000000..afbd8baca0d7
---- /dev/null
-+++ b/Documentation/driver-api/firmware/fw_upload.rst
-@@ -0,0 +1,107 @@
-+.. SPDX-License-Identifier: GPL-2.0
++progress_states="preparing transferring  programming"
++errors="hw-error
++	timeout
++	device-busy
++	invalid-file-size
++	read-write-error
++	flash-wearout"
++error_abort="user-abort"
++fwname1=fw1
++fwname2=fw2
++fwname3=fw3
 +
-+===================
-+Firmware Upload API
-+===================
++source $TEST_DIR/fw_lib.sh
 +
-+A device driver that registers with the firmware loader will expose
-+persistent sysfs nodes to enable users to initiate firmware updates for
-+that device.  It is the responsibility of the device driver and/or the
-+device itself to perform any validation on the data received. Firmware
-+upload uses the same *loading* and *data* sysfs files described in the
-+documentation for firmware fallback.
++check_mods
++check_setup
++verify_reqs
 +
-+Register for firmware upload
-+============================
++trap "upload_finish" EXIT
 +
-+A device driver registers for firmware upload by calling
-+firmware_upload_register(). Among the parameter list is a name to
-+identify the device under /sys/class/firmware. A user may initiate a
-+firmware upload by echoing a 1 to the *loading* sysfs file for the target
-+device. Next, the user writes the firmware image to the *data* sysfs
-+file. After writing the firmware data, the user echos 0 to the *loading*
-+sysfs file to signal completion. Echoing 0 to *loading* also triggers the
-+transfer of the firmware to the lower-lever device driver in the context
-+of a kernel worker thread.
++upload_finish() {
++	local fwdevs="$fwname1 $fwname2 $fwname3"
 +
-+To use the firmware upload API, write a driver that implements a set of
-+ops.  The probe function calls firmware_upload_register() and the remove
-+function calls firmware_upload_unregister() such as::
-+
-+	static const struct fw_upload_ops m10bmc_ops = {
-+		.prepare = m10bmc_sec_prepare,
-+		.write = m10bmc_sec_write,
-+		.poll_complete = m10bmc_sec_poll_complete,
-+		.cancel = m10bmc_sec_cancel,
-+		.cleanup = m10bmc_sec_cleanup,
-+	};
-+
-+	static int m10bmc_sec_probe(struct platform_device *pdev)
-+	{
-+		const char *fw_name, *truncate;
-+		struct m10bmc_sec *sec;
-+		struct fw_upload *fwl;
-+		unsigned int len;
-+
-+		sec = devm_kzalloc(&pdev->dev, sizeof(*sec), GFP_KERNEL);
-+		if (!sec)
-+			return -ENOMEM;
-+
-+		sec->dev = &pdev->dev;
-+		sec->m10bmc = dev_get_drvdata(pdev->dev.parent);
-+		dev_set_drvdata(&pdev->dev, sec);
-+
-+		fw_name = dev_name(sec->dev);
-+		truncate = strstr(fw_name, ".auto");
-+		len = (truncate) ? truncate - fw_name : strlen(fw_name);
-+		sec->fw_name = kmemdup_nul(fw_name, len, GFP_KERNEL);
-+
-+		fwl = firmware_upload_register(sec->dev, sec->fw_name, &m10bmc_ops, sec);
-+		if (IS_ERR(fwl)) {
-+			dev_err(sec->dev, "Firmware Upload driver failed to start\n");
-+			kfree(sec->fw_name);
-+			return PTR_ERR(fwl);
-+		}
-+
-+		sec->fwl = fwl;
-+		return 0;
-+	}
-+
-+	static int m10bmc_sec_remove(struct platform_device *pdev)
-+	{
-+		struct m10bmc_sec *sec = dev_get_drvdata(&pdev->dev);
-+
-+		firmware_upload_unregister(sec->fwl);
-+		kfree(sec->fw_name);
-+		return 0;
-+	}
-+
-+firmware_upload_register
-+------------------------
-+.. kernel-doc:: drivers/base/firmware_loader/sysfs_upload.c
-+   :identifiers: firmware_upload_register
-+
-+firmware_upload_unregister
-+--------------------------
-+.. kernel-doc:: drivers/base/firmware_loader/sysfs_upload.c
-+   :identifiers: firmware_upload_unregister
-+
-+Firmware Upload Ops
-+-------------------
-+.. kernel-doc:: include/linux/firmware.h
-+   :identifiers: fw_upload_ops
-+
-+Firmware Upload Progress Codes
-+------------------------------
-+The following progress codes are used internally by the firmware loader:
-+
-+.. kernel-doc:: drivers/base/firmware_loader/sysfs_upload.h
-+   :identifiers: fw_upload_prog
-+
-+Firmware Upload Error Codes
-+---------------------------
-+The following error codes may be returned by the driver ops in case of
-+failure:
-+
-+.. kernel-doc:: include/linux/firmware.h
-+   :identifiers: fw_upload_err
-diff --git a/Documentation/driver-api/firmware/index.rst b/Documentation/driver-api/firmware/index.rst
-index 57415d657173..9d2c19dc8e36 100644
---- a/Documentation/driver-api/firmware/index.rst
-+++ b/Documentation/driver-api/firmware/index.rst
-@@ -8,6 +8,7 @@ Linux Firmware API
-    core
-    efi/index
-    request_firmware
-+   fw_upload
-    other_interfaces
- 
- .. only::  subproject and html
-diff --git a/drivers/base/firmware_loader/Kconfig b/drivers/base/firmware_loader/Kconfig
-index 9e03178eee00..adf2b182d74d 100644
---- a/drivers/base/firmware_loader/Kconfig
-+++ b/drivers/base/firmware_loader/Kconfig
-@@ -190,5 +190,19 @@ config FW_CACHE
- 
- 	  If unsure, say Y.
- 
-+config FW_UPLOAD
-+	bool "Enable users to initiate firmware updates using sysfs"
-+	select FW_LOADER_SYSFS
-+	select FW_LOADER_PAGED_BUF
-+	help
-+	  Enabling this option will allow device drivers to expose a persistent
-+	  sysfs interface that allows firmware updates to be initiated from
-+	  userspace. For example, FPGA based PCIe cards load firmware and FPGA
-+	  images from local FLASH when the card boots. The images in FLASH may
-+	  be updated with new images provided by the user. Enable this device
-+	  to support cards that rely on user-initiated updates for firmware files.
-+
-+	  If unsure, say N.
-+
- endif # FW_LOADER
- endmenu
-diff --git a/drivers/base/firmware_loader/Makefile b/drivers/base/firmware_loader/Makefile
-index aab213f82288..60d19f9e0ddc 100644
---- a/drivers/base/firmware_loader/Makefile
-+++ b/drivers/base/firmware_loader/Makefile
-@@ -7,5 +7,6 @@ firmware_class-objs := main.o
- firmware_class-$(CONFIG_FW_LOADER_USER_HELPER) += fallback.o
- firmware_class-$(CONFIG_EFI_EMBEDDED_FIRMWARE) += fallback_platform.o
- firmware_class-$(CONFIG_FW_LOADER_SYSFS) += sysfs.o
-+firmware_class-$(CONFIG_FW_UPLOAD) += sysfs_upload.o
- 
- obj-y += builtin/
-diff --git a/drivers/base/firmware_loader/firmware.h b/drivers/base/firmware_loader/firmware.h
-index d5ff32a1ba2d..fe77e91c38a2 100644
---- a/drivers/base/firmware_loader/firmware.h
-+++ b/drivers/base/firmware_loader/firmware.h
-@@ -87,6 +87,7 @@ struct fw_priv {
- };
- 
- extern struct mutex fw_lock;
-+extern struct firmware_cache fw_cache;
- 
- static inline bool __fw_state_check(struct fw_priv *fw_priv,
- 				    enum fw_status status)
-@@ -159,7 +160,12 @@ static inline bool fw_state_is_loading(struct fw_priv *fw_priv)
- 	return __fw_state_check(fw_priv, FW_STATUS_LOADING);
- }
- 
-+int alloc_lookup_fw_priv(const char *fw_name, struct firmware_cache *fwc,
-+			 struct fw_priv **fw_priv, void *dbuf, size_t size,
-+			 size_t offset, u32 opt_flags);
- int assign_fw(struct firmware *fw, struct device *device);
-+void free_fw_priv(struct fw_priv *fw_priv);
-+void fw_state_init(struct fw_priv *fw_priv);
- 
- #ifdef CONFIG_FW_LOADER
- bool firmware_is_builtin(const struct firmware *fw);
-diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
-index 2cc11d93753a..874a5ef31c56 100644
---- a/drivers/base/firmware_loader/main.c
-+++ b/drivers/base/firmware_loader/main.c
-@@ -91,9 +91,9 @@ static inline struct fw_priv *to_fw_priv(struct kref *ref)
-  * guarding for corner cases a global lock should be OK */
- DEFINE_MUTEX(fw_lock);
- 
--static struct firmware_cache fw_cache;
-+struct firmware_cache fw_cache;
- 
--static void fw_state_init(struct fw_priv *fw_priv)
-+void fw_state_init(struct fw_priv *fw_priv)
- {
- 	struct fw_state *fw_st = &fw_priv->fw_st;
- 
-@@ -163,13 +163,9 @@ static struct fw_priv *__lookup_fw_priv(const char *fw_name)
- }
- 
- /* Returns 1 for batching firmware requests with the same name */
--static int alloc_lookup_fw_priv(const char *fw_name,
--				struct firmware_cache *fwc,
--				struct fw_priv **fw_priv,
--				void *dbuf,
--				size_t size,
--				size_t offset,
--				u32 opt_flags)
-+int alloc_lookup_fw_priv(const char *fw_name, struct firmware_cache *fwc,
-+			 struct fw_priv **fw_priv, void *dbuf, size_t size,
-+			 size_t offset, u32 opt_flags)
- {
- 	struct fw_priv *tmp;
- 
-@@ -224,7 +220,7 @@ static void __free_fw_priv(struct kref *ref)
- 	kfree(fw_priv);
- }
- 
--static void free_fw_priv(struct fw_priv *fw_priv)
-+void free_fw_priv(struct fw_priv *fw_priv)
- {
- 	struct firmware_cache *fwc = fw_priv->fwc;
- 	spin_lock(&fwc->lock);
-diff --git a/drivers/base/firmware_loader/sysfs.c b/drivers/base/firmware_loader/sysfs.c
-index 2af56a28bb8d..09b7c77b8589 100644
---- a/drivers/base/firmware_loader/sysfs.c
-+++ b/drivers/base/firmware_loader/sysfs.c
-@@ -6,8 +6,8 @@
- #include <linux/slab.h>
- #include <linux/types.h>
- 
--#include "firmware.h"
- #include "sysfs.h"
-+#include "sysfs_upload.h"
- 
- /*
-  * sysfs support for firmware loader
-@@ -94,6 +94,10 @@ static void fw_dev_release(struct device *dev)
- {
- 	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
- 
-+	if (fw_sysfs->fw_upload_priv) {
-+		free_fw_priv(fw_sysfs->fw_priv);
-+		kfree(fw_sysfs->fw_upload_priv);
-+	}
- 	kfree(fw_sysfs);
- }
- 
-@@ -197,6 +201,14 @@ static ssize_t firmware_loading_store(struct device *dev,
- 				written = rc;
- 			} else {
- 				fw_state_done(fw_priv);
-+
-+				/*
-+				 * If this is a user-initiated firmware upload
-+				 * then start the upload in a worker thread now.
-+				 */
-+				rc = fw_upload_start(fw_sysfs);
-+				if (rc)
-+					written = rc;
- 			}
- 			break;
- 		}
-@@ -206,6 +218,9 @@ static ssize_t firmware_loading_store(struct device *dev,
- 		fallthrough;
- 	case -1:
- 		fw_load_abort(fw_sysfs);
-+		if (fw_sysfs->fw_upload_priv)
-+			fw_state_init(fw_sysfs->fw_priv);
-+
- 		break;
- 	}
- out:
-@@ -213,7 +228,7 @@ static ssize_t firmware_loading_store(struct device *dev,
- 	return written;
- }
- 
--static DEVICE_ATTR(loading, 0644, firmware_loading_show, firmware_loading_store);
-+DEVICE_ATTR(loading, 0644, firmware_loading_show, firmware_loading_store);
- 
- static void firmware_rw_data(struct fw_priv *fw_priv, char *buffer,
- 			     loff_t offset, size_t count, bool read)
-diff --git a/drivers/base/firmware_loader/sysfs.h b/drivers/base/firmware_loader/sysfs.h
-index b7b5c1766052..c21bcfe374ff 100644
---- a/drivers/base/firmware_loader/sysfs.h
-+++ b/drivers/base/firmware_loader/sysfs.h
-@@ -4,9 +4,12 @@
- 
- #include <linux/device.h>
- 
-+#include "firmware.h"
-+
- MODULE_IMPORT_NS(FIRMWARE_LOADER_PRIVATE);
- 
- extern struct firmware_fallback_config fw_fallback_config;
-+extern struct device_attribute dev_attr_loading;
- 
- #ifdef CONFIG_FW_LOADER_USER_HELPER
- /**
-@@ -73,6 +76,7 @@ struct fw_sysfs {
- 	struct device dev;
- 	struct fw_priv *fw_priv;
- 	struct firmware *fw;
-+	void *fw_upload_priv;
- };
- 
- static inline struct fw_sysfs *to_fw_sysfs(struct device *dev)
-diff --git a/drivers/base/firmware_loader/sysfs_upload.c b/drivers/base/firmware_loader/sysfs_upload.c
-new file mode 100644
-index 000000000000..0a6450d1974f
---- /dev/null
-+++ b/drivers/base/firmware_loader/sysfs_upload.c
-@@ -0,0 +1,276 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/firmware.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+
-+#include "sysfs.h"
-+#include "sysfs_upload.h"
-+
-+/*
-+ * Support for user-space to initiate a firmware upload to a device.
-+ */
-+
-+static void fw_upload_update_progress(struct fw_upload_priv *fwlp,
-+				      enum fw_upload_prog new_progress)
-+{
-+	mutex_lock(&fwlp->lock);
-+	fwlp->progress = new_progress;
-+	mutex_unlock(&fwlp->lock);
++	for name in $fwdevs; do
++		if [ -e "$DIR/$name" ]; then
++			echo -n "$name" > "$DIR"/upload_unregister
++		fi
++	done
 +}
 +
-+static void fw_upload_set_error(struct fw_upload_priv *fwlp,
-+				enum fw_upload_err err_code)
-+{
-+	mutex_lock(&fwlp->lock);
-+	fwlp->err_progress = fwlp->progress;
-+	fwlp->err_code = err_code;
-+	mutex_unlock(&fwlp->lock);
++upload_fw() {
++	local name="$1"
++	local file="$2"
++
++	echo 1 > "$DIR"/"$name"/loading
++	cat "$file" > "$DIR"/"$name"/data
++	echo 0 > "$DIR"/"$name"/loading
 +}
 +
-+static void fw_upload_prog_complete(struct fw_upload_priv *fwlp)
-+{
-+	mutex_lock(&fwlp->lock);
-+	fwlp->progress = FW_UPLOAD_PROG_IDLE;
-+	mutex_unlock(&fwlp->lock);
++verify_fw() {
++	local name="$1"
++	local file="$2"
++
++	echo -n "$name" > "$DIR"/config_upload_name
++	if ! cmp "$file" "$DIR"/upload_read > /dev/null 2>&1; then
++		echo "$0: firmware compare for $name did not match" >&2
++		exit 1
++	fi
++
++	echo "$0: firmware upload for $name works" >&2
++	return 0
 +}
 +
-+static void fw_upload_main(struct work_struct *work)
-+{
-+	struct fw_upload_priv *fwlp;
-+	struct fw_sysfs *fw_sysfs;
-+	u32 written = 0, offset = 0;
-+	enum fw_upload_err ret;
-+	struct device *fw_dev;
-+	struct fw_upload *fwl;
++inject_error() {
++	local name="$1"
++	local status="$2"
++	local error="$3"
 +
-+	fwlp = container_of(work, struct fw_upload_priv, work);
-+	fwl = fwlp->fw_upload;
-+	fw_sysfs = (struct fw_sysfs *)fwl->priv;
-+	fw_dev = &fw_sysfs->dev;
-+
-+	fw_upload_update_progress(fwlp, FW_UPLOAD_PROG_PREPARING);
-+	ret = fwlp->ops->prepare(fwl, fwlp->data, fwlp->remaining_size);
-+	if (ret != FW_UPLOAD_ERR_NONE) {
-+		fw_upload_set_error(fwlp, ret);
-+		goto putdev_exit;
-+	}
-+
-+	fw_upload_update_progress(fwlp, FW_UPLOAD_PROG_TRANSFERRING);
-+	while (fwlp->remaining_size) {
-+		ret = fwlp->ops->write(fwl, fwlp->data, offset,
-+					fwlp->remaining_size, &written);
-+		if (ret != FW_UPLOAD_ERR_NONE || !written) {
-+			if (ret == FW_UPLOAD_ERR_NONE) {
-+				dev_warn(fw_dev, "write-op wrote zero data\n");
-+				ret = FW_UPLOAD_ERR_RW_ERROR;
-+			}
-+			fw_upload_set_error(fwlp, ret);
-+			goto done;
-+		}
-+
-+		fwlp->remaining_size -= written;
-+		offset += written;
-+	}
-+
-+	fw_upload_update_progress(fwlp, FW_UPLOAD_PROG_PROGRAMMING);
-+	ret = fwlp->ops->poll_complete(fwl);
-+	if (ret != FW_UPLOAD_ERR_NONE)
-+		fw_upload_set_error(fwlp, ret);
-+
-+done:
-+	if (fwlp->ops->cleanup)
-+		fwlp->ops->cleanup(fwl);
-+
-+putdev_exit:
-+	put_device(fw_dev->parent);
-+
-+	/*
-+	 * Note: fwlp->remaining_size is left unmodified here to provide
-+	 * additional information on errors. It will be reinitialized when
-+	 * the next firmeware upload begins.
-+	 */
-+	mutex_lock(&fw_lock);
-+	fw_free_paged_buf(fw_sysfs->fw_priv);
-+	fw_state_init(fw_sysfs->fw_priv);
-+	mutex_unlock(&fw_lock);
-+	fwlp->data = NULL;
-+	fw_upload_prog_complete(fwlp);
++	echo 1 > "$DIR"/"$name"/loading
++	echo -n "inject":"$status":"$error" > "$DIR"/"$name"/data
++	echo 0 > "$DIR"/"$name"/loading
 +}
 +
-+/*
-+ * Start a worker thread to upload data to the parent driver.
-+ * Must be called with fw_lock held.
-+ */
-+int fw_upload_start(struct fw_sysfs *fw_sysfs)
-+{
-+	struct fw_priv *fw_priv = fw_sysfs->fw_priv;
-+	struct device *fw_dev = &fw_sysfs->dev;
-+	struct fw_upload_priv *fwlp;
++await_status() {
++	local name="$1"
++	local expected="$2"
++	local status
++	local i
 +
-+	if (!fw_sysfs->fw_upload_priv)
-+		return 0;
++	let i=0
++	while [ $i -lt 50 ]; do
++		status=$(cat "$DIR"/"$name"/status)
++		if [ "$status" = "$expected" ]; then
++			return 0;
++		fi
++		sleep 1e-03
++		let i=$i+1
++	done
 +
-+	if (!fw_priv->size) {
-+		fw_free_paged_buf(fw_priv);
-+		fw_state_init(fw_sysfs->fw_priv);
-+		return 0;
-+	}
-+
-+	fwlp = fw_sysfs->fw_upload_priv;
-+	mutex_lock(&fwlp->lock);
-+
-+	/* Do not interfere with an on-going fw_upload */
-+	if (fwlp->progress != FW_UPLOAD_PROG_IDLE) {
-+		mutex_unlock(&fwlp->lock);
-+		return -EBUSY;
-+	}
-+
-+	get_device(fw_dev->parent); /* released in fw_upload_main */
-+
-+	fwlp->progress = FW_UPLOAD_PROG_RECEIVING;
-+	fwlp->err_code = 0;
-+	fwlp->remaining_size = fw_priv->size;
-+	fwlp->data = fw_priv->data;
-+
-+	pr_debug("%s: fw-%s fw_priv=%p data=%p size=%u\n",
-+		 __func__, fw_priv->fw_name,
-+		 fw_priv, fw_priv->data,
-+		 (unsigned int)fw_priv->size);
-+
-+	queue_work(system_long_wq, &fwlp->work);
-+	mutex_unlock(&fwlp->lock);
-+
-+	return 0;
++	echo "$0: Invalid status: Expected $expected, Actual $status" >&2
++	return 1;
 +}
 +
-+/**
-+ * firmware_upload_register() - register for the firmware upload sysfs API
-+ * @parent: parent device instantiating firmware upload
-+ * @name: firmware name to be associated with this device
-+ * @ops: pointer to structure of firmware upload ops
-+ * @dd_handle: pointer to parent driver private data
-+ *
-+ *	@name must be unique among all users of firmware upload. The firmware
-+ *	sysfs files for this device will be found at /sys/class/firmware/@name.
-+ *
-+ *	Return: struct fw_upload pointer or ERR_PTR()
-+ *
-+ **/
-+struct fw_upload *
-+firmware_upload_register(struct module *module, struct device *parent,
-+			 const char *name, const struct fw_upload_ops *ops,
-+			 void *dd_handle)
-+{
-+	u32 opt_flags = FW_OPT_NOCACHE;
-+	struct fw_upload *fw_upload;
-+	struct fw_upload_priv *fw_upload_priv;
-+	struct fw_sysfs *fw_sysfs;
-+	struct fw_priv *fw_priv;
-+	struct device *fw_dev;
-+	int ret;
++await_idle() {
++	local name="$1"
 +
-+	if (!name || name[0] == '\0')
-+		return ERR_PTR(-EINVAL);
-+
-+	if (!ops || !ops->cancel || !ops->prepare ||
-+	    !ops->write || !ops->poll_complete) {
-+		dev_err(parent, "Attempt to register without all required ops\n");
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	if (!try_module_get(module))
-+		return ERR_PTR(-EFAULT);
-+
-+	fw_upload = kzalloc(sizeof(*fw_upload), GFP_KERNEL);
-+	if (!fw_upload) {
-+		ret = -ENOMEM;
-+		goto exit_module_put;
-+	}
-+
-+	fw_upload_priv = kzalloc(sizeof(*fw_upload_priv), GFP_KERNEL);
-+	if (!fw_upload_priv) {
-+		ret = -ENOMEM;
-+		goto free_fw_upload;
-+	}
-+
-+	fw_upload_priv->fw_upload = fw_upload;
-+	fw_upload_priv->ops = ops;
-+	mutex_init(&fw_upload_priv->lock);
-+	fw_upload_priv->module = module;
-+	fw_upload_priv->name = name;
-+	fw_upload_priv->err_code = 0;
-+	fw_upload_priv->progress = FW_UPLOAD_PROG_IDLE;
-+	INIT_WORK(&fw_upload_priv->work, fw_upload_main);
-+	fw_upload->dd_handle = dd_handle;
-+
-+	fw_sysfs = fw_create_instance(NULL, name, parent, opt_flags);
-+	if (IS_ERR(fw_sysfs)) {
-+		ret = PTR_ERR(fw_sysfs);
-+		goto free_fw_upload_priv;
-+	}
-+	fw_upload->priv = fw_sysfs;
-+	fw_sysfs->fw_upload_priv = fw_upload_priv;
-+	fw_dev = &fw_sysfs->dev;
-+
-+	ret = alloc_lookup_fw_priv(name, &fw_cache, &fw_priv,  NULL, 0, 0,
-+				   FW_OPT_NOCACHE);
-+	if (ret != 0) {
-+		if (ret > 0)
-+			ret = -EINVAL;
-+		goto free_fw_sysfs;
-+	}
-+	fw_priv->is_paged_buf = true;
-+	fw_sysfs->fw_priv = fw_priv;
-+
-+	ret = device_add(fw_dev);
-+	if (ret) {
-+		dev_err(fw_dev, "%s: device_register failed\n", __func__);
-+		put_device(fw_dev);
-+		goto exit_module_put;
-+	}
-+
-+	return fw_upload;
-+
-+free_fw_sysfs:
-+	kfree(fw_sysfs);
-+
-+free_fw_upload_priv:
-+	kfree(fw_upload_priv);
-+
-+free_fw_upload:
-+	kfree(fw_upload);
-+
-+exit_module_put:
-+	module_put(module);
-+
-+	return ERR_PTR(ret);
-+}
-+EXPORT_SYMBOL_GPL(firmware_upload_register);
-+
-+/**
-+ * firmware_upload_unregister() - Unregister firmware upload interface
-+ * @fw_upload: pointer to struct fw_upload
-+ **/
-+void firmware_upload_unregister(struct fw_upload *fw_upload)
-+{
-+	struct fw_sysfs *fw_sysfs = fw_upload->priv;
-+	struct fw_upload_priv *fw_upload_priv = fw_sysfs->fw_upload_priv;
-+
-+	mutex_lock(&fw_upload_priv->lock);
-+	if (fw_upload_priv->progress == FW_UPLOAD_PROG_IDLE) {
-+		mutex_unlock(&fw_upload_priv->lock);
-+		goto unregister;
-+	}
-+
-+	fw_upload_priv->ops->cancel(fw_upload);
-+	mutex_unlock(&fw_upload_priv->lock);
-+
-+	/* Ensure lower-level device-driver is finished */
-+	flush_work(&fw_upload_priv->work);
-+
-+unregister:
-+	device_unregister(&fw_sysfs->dev);
-+	module_put(fw_upload_priv->module);
-+}
-+EXPORT_SYMBOL_GPL(firmware_upload_unregister);
-diff --git a/drivers/base/firmware_loader/sysfs_upload.h b/drivers/base/firmware_loader/sysfs_upload.h
-new file mode 100644
-index 000000000000..18bd4d99f064
---- /dev/null
-+++ b/drivers/base/firmware_loader/sysfs_upload.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __FIRMWARE_UPLOAD_H
-+#define __FIRMWARE_UPLOAD_H
-+
-+#include <linux/device.h>
-+
-+/**
-+ * enum fw_upload_prog - firmware upload progress codes
-+ * @FW_UPLOAD_PROG_IDLE: there is no firmware upload in progress
-+ * @FW_UPLOAD_PROG_RECEIVING: worker thread is receiving firmware data
-+ * @FW_UPLOAD_PROG_PREPARING: target device is preparing for firmware upload
-+ * @FW_UPLOAD_PROG_TRANSFERRING: data is being copied to the device
-+ * @FW_UPLOAD_PROG_PROGRAMMING: device is performing the firmware update
-+ * @FW_UPLOAD_PROG_MAX: Maximum progress code marker
-+ */
-+enum fw_upload_prog {
-+	FW_UPLOAD_PROG_IDLE,
-+	FW_UPLOAD_PROG_RECEIVING,
-+	FW_UPLOAD_PROG_PREPARING,
-+	FW_UPLOAD_PROG_TRANSFERRING,
-+	FW_UPLOAD_PROG_PROGRAMMING,
-+	FW_UPLOAD_PROG_MAX
-+};
-+
-+struct fw_upload_priv {
-+	struct fw_upload *fw_upload;
-+	struct module *module;
-+	const char *name;
-+	const struct fw_upload_ops *ops;
-+	struct mutex lock;		  /* protect data structure contents */
-+	struct work_struct work;
-+	const u8 *data;			  /* pointer to update data */
-+	u32 remaining_size;		  /* size remaining to transfer */
-+	enum fw_upload_prog progress;
-+	enum fw_upload_prog err_progress; /* progress at time of failure */
-+	enum fw_upload_err err_code;	  /* security manager error code */
-+};
-+
-+#ifdef CONFIG_FW_UPLOAD
-+int fw_upload_start(struct fw_sysfs *fw_sysfs);
-+umode_t fw_upload_is_visible(struct kobject *kobj, struct attribute *attr, int n);
-+#else
-+static inline int fw_upload_start(struct fw_sysfs *fw_sysfs)
-+{
-+	return 0;
-+}
-+#endif
-+
-+#endif /* __FIRMWARE_UPLOAD_H */
-diff --git a/include/linux/firmware.h b/include/linux/firmware.h
-index ec2ccfebef65..de7fea3bca51 100644
---- a/include/linux/firmware.h
-+++ b/include/linux/firmware.h
-@@ -17,6 +17,64 @@ struct firmware {
- 	void *priv;
- };
- 
-+/**
-+ * enum fw_upload_err - firmware upload error codes
-+ * @FW_UPLOAD_ERR_NONE: returned to indicate success
-+ * @FW_UPLOAD_ERR_HW_ERROR: error signalled by hardware, see kernel log
-+ * @FW_UPLOAD_ERR_TIMEOUT: SW timed out on handshake with HW/firmware
-+ * @FW_UPLOAD_ERR_CANCELED: upload was cancelled by the user
-+ * @FW_UPLOAD_ERR_BUSY: there is an upload operation already in progress
-+ * @FW_UPLOAD_ERR_INVALID_SIZE: invalid firmware image size
-+ * @FW_UPLOAD_ERR_RW_ERROR: read or write to HW failed, see kernel log
-+ * @FW_UPLOAD_ERR_WEAROUT: FLASH device is approaching wear-out, wait & retry
-+ * @FW_UPLOAD_ERR_MAX: Maximum error code marker
-+ */
-+enum fw_upload_err {
-+	FW_UPLOAD_ERR_NONE,
-+	FW_UPLOAD_ERR_HW_ERROR,
-+	FW_UPLOAD_ERR_TIMEOUT,
-+	FW_UPLOAD_ERR_CANCELED,
-+	FW_UPLOAD_ERR_BUSY,
-+	FW_UPLOAD_ERR_INVALID_SIZE,
-+	FW_UPLOAD_ERR_RW_ERROR,
-+	FW_UPLOAD_ERR_WEAROUT,
-+	FW_UPLOAD_ERR_MAX
-+};
-+
-+struct fw_upload {
-+	void *dd_handle; /* reference to parent driver */
-+	void *priv;	 /* firmware loader private fields */
-+};
-+
-+/**
-+ * struct fw_upload_ops - device specific operations to support firmware upload
-+ * @prepare:		  Required: Prepare secure update
-+ * @write:		  Required: The write() op receives the remaining
-+ *			  size to be written and must return the actual
-+ *			  size written or a negative error code. The write()
-+ *			  op will be called repeatedly until all data is
-+ *			  written.
-+ * @poll_complete:	  Required: Check for the completion of the
-+ *			  HW authentication/programming process.
-+ * @cancel:		  Required: Request cancellation of update. This op
-+ *			  is called from the context of a different kernel
-+ *			  thread, so race conditions need to be considered.
-+ * @cleanup:		  Optional: Complements the prepare()
-+ *			  function and is called at the completion
-+ *			  of the update, on success or failure, if the
-+ *			  prepare function succeeded.
-+ */
-+struct fw_upload_ops {
-+	enum fw_upload_err (*prepare)(struct fw_upload *fw_upload,
-+				      const u8 *data, u32 size);
-+	enum fw_upload_err (*write)(struct fw_upload *fw_upload,
-+				    const u8 *data, u32 offset,
-+				    u32 size, u32 *written);
-+	enum fw_upload_err (*poll_complete)(struct fw_upload *fw_upload);
-+	void (*cancel)(struct fw_upload *fw_upload);
-+	void (*cleanup)(struct fw_upload *fw_upload);
-+};
-+
- struct module;
- struct device;
- 
-@@ -112,6 +170,30 @@ static inline int request_partial_firmware_into_buf
- 
- #endif
- 
-+#ifdef CONFIG_FW_UPLOAD
-+
-+struct fw_upload *
-+firmware_upload_register(struct module *module, struct device *parent,
-+			 const char *name, const struct fw_upload_ops *ops,
-+			 void *dd_handle);
-+void firmware_upload_unregister(struct fw_upload *fw_upload);
-+
-+#else
-+
-+static inline struct fw_upload *
-+firmware_upload_register(struct module *module, struct device *parent,
-+			 const char *name, const struct fw_upload_ops *ops,
-+			 void *dd_handle)
-+{
-+		return ERR_PTR(-EINVAL);
++	await_status "$name" "idle"
++	return $?
 +}
 +
-+static inline void firmware_upload_unregister(struct fw_upload *fw_upload)
-+{
++expect_error() {
++	local name="$1"
++	local expected="$2"
++	local error=$(cat "$DIR"/"$name"/error)
++
++	if [ "$error" != "$expected" ]; then
++		echo "Invalid error: Expected $expected, Actual $error" >&2
++		return 1
++	fi
++
++	return 0
 +}
 +
-+#endif
++random_firmware() {
++	local bs="$1"
++	local count="$2"
++	local file=$(mktemp -p /tmp uploadfwXXX.bin)
 +
- int firmware_request_cache(struct device *device, const char *name);
- 
- #endif
++	dd if=/dev/urandom of="$file" bs="$bs" count="$count" > /dev/null 2>&1
++	echo "$file"
++}
++
++test_upload_cancel() {
++	local name="$1"
++	local status
++
++	for status in $progress_states; do
++		inject_error $name $status $error_abort
++		if ! await_status $name $status; then
++			exit 1
++		fi
++
++		echo 1 > "$DIR"/"$name"/cancel
++
++		if ! await_idle $name; then
++			exit 1
++		fi
++
++		if ! expect_error $name "$status":"$error_abort"; then
++			exit 1
++		fi
++	done
++
++	echo "$0: firmware upload cancellation works"
++	return 0
++}
++
++test_error_handling() {
++	local name=$1
++	local status
++	local error
++
++	for status in $progress_states; do
++		for error in $errors; do
++			inject_error $name $status $error
++
++			if ! await_idle $name; then
++				exit 1
++			fi
++
++			if ! expect_error $name "$status":"$error"; then
++				exit 1
++			fi
++
++		done
++	done
++	echo "$0: firmware upload error handling works"
++}
++
++test_fw_too_big() {
++	local name=$1
++	local fw_too_big=`random_firmware 512 5`
++	local expected="preparing:invalid-file-size"
++
++	upload_fw $name $fw_too_big
++	rm -f $fw_too_big
++
++	if ! await_idle $name; then
++		exit 1
++	fi
++
++	if ! expect_error $name $expected; then
++		exit 1
++	fi
++
++	echo "$0: oversized firmware error handling works"
++}
++
++echo -n "$fwname1" > "$DIR"/upload_register
++echo -n "$fwname2" > "$DIR"/upload_register
++echo -n "$fwname3" > "$DIR"/upload_register
++
++test_upload_cancel $fwname1
++test_error_handling $fwname1
++test_fw_too_big $fwname1
++
++fw_file1=`random_firmware 512 4`
++fw_file2=`random_firmware 512 3`
++fw_file3=`random_firmware 512 2`
++
++upload_fw $fwname1 $fw_file1
++upload_fw $fwname2 $fw_file2
++upload_fw $fwname3 $fw_file3
++
++verify_fw ${fwname1} ${fw_file1}
++verify_fw ${fwname2} ${fw_file2}
++verify_fw ${fwname3} ${fw_file3}
++
++echo -n "$fwname1" > "$DIR"/upload_unregister
++echo -n "$fwname2" > "$DIR"/upload_unregister
++echo -n "$fwname3" > "$DIR"/upload_unregister
++
++exit 0
 -- 
 2.25.1
 
