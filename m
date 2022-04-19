@@ -2,102 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3378C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE69EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238391AbiDSAK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35222 "EHLO
+        id S238519AbiDSALC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237905AbiDSAKe (ORCPT
+        with ESMTP id S238490AbiDSAK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:10:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088DE3A7;
-        Mon, 18 Apr 2022 17:07:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2887B81128;
-        Tue, 19 Apr 2022 00:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69CC2C385A7;
-        Tue, 19 Apr 2022 00:07:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650326869;
-        bh=foMf23lIes/rMz31pIG7k0ikz3d3jyzbGaaxO/rqneQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MDWcWieJ9hUB60S2H6udEw6eCNgTrAhp+Z3TGaTP0n5G3sZ6ZHCP+jhTfTkAvunk3
-         L5h+oVLbidYo6TcZDIwKBrZctHuvWKMCv7i+8qiCoBHB556yqWcXuVIGM+Bts8Ef1o
-         UrZYZT7YPoQpuYbY/DqrMNeMgr4SnijxW+vpi4I3BEryq+CcRk1wduxT/qC0wXv1jQ
-         2VkiJ06d6iQ2M6HQfHsBKG1vbdVCqmeSwcLcRTpjxcDTWJW2N3T1XNVTKxFrJk7yth
-         LH3v3zbi1zdlvNGMlpOJe4NtQMGT3fGdJ1aGetddvEKTpypjJSXLoVbjlYmVC5FuGH
-         hbeN8BgQmN2yg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 2887A5C0A23; Mon, 18 Apr 2022 17:07:49 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, David Vernet <void@manifault.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 5/6] rcutorture: Add missing return and use __func__ in warning
-Date:   Mon, 18 Apr 2022 17:07:45 -0700
-Message-Id: <20220419000746.3949667-5-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220419000541.GA3949109@paulmck-ThinkPad-P17-Gen-1>
-References: <20220419000541.GA3949109@paulmck-ThinkPad-P17-Gen-1>
+        Mon, 18 Apr 2022 20:10:59 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855B4140B9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:08:03 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id 79so7782177iou.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:08:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7tF3c6TuAx2/gqKC2eSazVibSz9h+i31K2V91yIVOmA=;
+        b=fZlC3O4715i80XRaOmWBwU3+x4X86p4smdf/gHbChB8zH9gi0UOXVhriGODXSYRrNy
+         An6/mUOEEeUGymlWSiKIaaKetmXGTL+ZoEVph6wiknRmM48uyJIgSqN8ELf6JcSbRj15
+         tw8AApGeHduo7bjMQsbnr+7Z86oZnEPE6hMAE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7tF3c6TuAx2/gqKC2eSazVibSz9h+i31K2V91yIVOmA=;
+        b=XfCzlU8sIxJzHhxhqJLIL07HTmASzKVS9/bjRruNjwQeJN9g+KEWGpGoro5Gdj7fNO
+         iekOCxd7dBM0Rkrh7qlHZ3AKyM1P0EevNTCFhgGF0hhD/9uFhhGEL67VmxTG17dg7ZdL
+         8mx2T+gqPfYdGBhMzjZUhtXTQvGFIZlTxOofAgJV4vQct4251aWIXDQbsItux9GtbpFg
+         /MooYcdCphF0/0BTQYg7ECE8I+io81UpM4pXkw4jIYiFajemlzR9UwXKRUR3Vbqbh464
+         6kuFIO5jXSmuEMV/tZIPh9RN9zKTrINyS2gKz8ftW/4L46uMHzLrQfMeTn4q8yDBW0tK
+         u5rw==
+X-Gm-Message-State: AOAM532rrseYI6KmClT5fwfTSKDfzDNCQwksysXW3Ffdu011O6ppqMiX
+        FgyEGF+gwfv1jWIy8HOIffnohA==
+X-Google-Smtp-Source: ABdhPJwyLrEjl7dyWyFuPqzKlT6IcLHzzzasodqPCu2EXiRCwSUmvu2eEG3Rvy/FduzgNANfMTozmA==
+X-Received: by 2002:a02:c50b:0:b0:32a:6fd4:65d1 with SMTP id s11-20020a02c50b000000b0032a6fd465d1mr523482jam.88.1650326882950;
+        Mon, 18 Apr 2022 17:08:02 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id c9-20020a92d3c9000000b002ca966b8961sm8005000ilh.26.2022.04.18.17.08.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 17:08:02 -0700 (PDT)
+Subject: Re: [PATCH 5.17 000/219] 5.17.4-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <74014b97-0b5c-1a77-39ac-df097407fe65@linuxfoundation.org>
+Date:   Mon, 18 Apr 2022 18:08:01 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Vernet <void@manifault.com>
+On 4/18/22 6:09 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.4 release.
+> There are 219 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.4-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-The rcutorture module has an rcu_torture_writer task that repeatedly
-performs writes, synchronizations, and deletes. There is a corner-case
-check in rcu_torture_writer() wherein if nsynctypes is 0, a warning is
-issued and the task waits to be stopped via a call to
-torture_kthread_stopping() rather than performing any work.
+Compiled and booted on my test system. No dmesg regressions.
 
-There should be a return statement following this call to
-torture_kthread_stopping(), as the intention with issuing the call to
-torture_kthread_stopping() in the first place is to avoid the
-rcu_torture_writer task from performing any work. Some of the work may even
-be dangerous to perform, such as potentially causing a #DE due to
-nsynctypes being used in a modulo operator when querying for sync updates
-to issue.
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-This patch adds the missing return call.  As a bonus, it also fixes a
-checkpatch warning that was emitted due to the WARN_ONCE() call using the
-name of the function rather than __func__.
-
-Signed-off-by: David Vernet <void@manifault.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- kernel/rcu/rcutorture.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index d5105fb6c980..f1292d9e86b5 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -1178,7 +1178,7 @@ rcu_torture_writer(void *arg)
- 			 " GP expediting controlled from boot/sysfs for %s.\n",
- 			 torture_type, cur_ops->name);
- 	if (WARN_ONCE(nsynctypes == 0,
--		      "rcu_torture_writer: No update-side primitives.\n")) {
-+		      "%s: No update-side primitives.\n", __func__)) {
- 		/*
- 		 * No updates primitives, so don't try updating.
- 		 * The resulting test won't be testing much, hence the
-@@ -1186,6 +1186,7 @@ rcu_torture_writer(void *arg)
- 		 */
- 		rcu_torture_writer_state = RTWS_STOPPING;
- 		torture_kthread_stopping("rcu_torture_writer");
-+		return 0;
- 	}
- 
- 	do {
--- 
-2.31.1.189.g2e36527f23
+thanks,
+-- Shuah
 
