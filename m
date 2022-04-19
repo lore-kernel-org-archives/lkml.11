@@ -2,160 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17543C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E665AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349635AbiDSHzQ (ORCPT
+        id S1349649AbiDSHze (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
+        Tue, 19 Apr 2022 03:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349619AbiDSHzG (ORCPT
+        with ESMTP id S1349656AbiDSHza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:55:06 -0400
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E567E31DDB
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:52:22 -0700 (PDT)
-Received: by mail-qv1-f50.google.com with SMTP id b17so12514068qvf.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:52:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VpM1PtiHq5rdtdF2Z1pptR1cVQG3GJl0J2jHpx0HNOE=;
-        b=Ve/Ox7ti93JBrF3at9DJpunuyOOYwJah9HfKkZOTCDrbqwlu775M60CcZD8i6VfeuI
-         tpY7QKDebfs2fUjd8nJFjsAr5AN6j0U2T+jghuUhEtYdK1iMReQWyWhYjktJgKmjq9zh
-         SUbgx9tmGnxnJIMvuSIzPya7rn84C+VqmPnHKiKzaq3yobypU+YOymGQwefSff028gec
-         O4g43fQAvPr0alLM+NUTjW7eg5GYWJiwhfVLzTINcqsirvOHK4MQrjKExJMTemdeImcD
-         8JyAmn3PV6ILYUMZ9A6+yDZ2r7Z7aZ88lIppAh2BlmF3YFIzVlJ5T3n7VpZ4zghgWfKu
-         g+qg==
-X-Gm-Message-State: AOAM533J9Hnjk4RFYE2lMsfNhTf8O716cYxPTw6UUnj52WupEO8GpbD2
-        1GDNoF/i9M7LQ4mXWf7F2sz2LiEhjdyyIQ==
-X-Google-Smtp-Source: ABdhPJz//HOyy3VL2niCdUzX7QS1+q51CUYQK/Ac7t1zsvJH3KNdVE4PnPD9FUw1Nvocgb/QWIRVOw==
-X-Received: by 2002:ad4:5deb:0:b0:446:44ec:8d88 with SMTP id jn11-20020ad45deb000000b0044644ec8d88mr10354001qvb.126.1650354741454;
-        Tue, 19 Apr 2022 00:52:21 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id m139-20020a37a391000000b0069e88edfdacsm3877467qke.105.2022.04.19.00.52.20
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 00:52:20 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id d19so1173027ybc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:52:20 -0700 (PDT)
-X-Received: by 2002:a25:8087:0:b0:641:dd06:577d with SMTP id
- n7-20020a258087000000b00641dd06577dmr13514790ybk.207.1650354739846; Tue, 19
- Apr 2022 00:52:19 -0700 (PDT)
+        Tue, 19 Apr 2022 03:55:30 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7324733355;
+        Tue, 19 Apr 2022 00:52:37 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J65ULh020922;
+        Tue, 19 Apr 2022 07:52:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=3NJX3fxwHy42fijIDZ0EQ+IlMYgeMtaKWgmaLwA0axI=;
+ b=tZ64Q0+fau85GWrQDsEuGK09jp3nEU/VCjFTi0p9dfjfDZMVbDiDdwej2ORakI6jX8q4
+ AbD9iAY39fbFL2178M96vWnh00NOhGtvc08xrEZdEO90l3U6RyB4wkKZc77cffv0mUUP
+ Z2KLeR9lU0Ak1g5Y43NOxQQ/djdXHZwSdWqxOs8MlmhiZ7Z1RBXleO6dyU4eq57cDZeQ
+ QKGk+iZKJMfUWqyYitpmOQWPh0Rk2d6Y/33FEZzXSrJckZ+rcd+FMRZy+S9LNwdg6CvY
+ tsLmVI6CHCEcpRcl7TujqDVuBFYF5XFFHJIYOjXps9Vvrw5md0WEvN8Ace/wromG9moM xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7ekrx6a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 07:52:35 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23J7b8mc006108;
+        Tue, 19 Apr 2022 07:52:35 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7ekrx5k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 07:52:35 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23J7l6cH026712;
+        Tue, 19 Apr 2022 07:52:33 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 3ffne8kvxc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 07:52:33 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23J7djvv46399842
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 07:39:45 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0CC4042045;
+        Tue, 19 Apr 2022 07:52:30 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 626004203F;
+        Tue, 19 Apr 2022 07:52:28 +0000 (GMT)
+Received: from [9.171.88.57] (unknown [9.171.88.57])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 19 Apr 2022 07:52:28 +0000 (GMT)
+Message-ID: <4cf23453-e00a-c2e2-aeb1-4030e16d6d17@linux.ibm.com>
+Date:   Tue, 19 Apr 2022 09:55:45 +0200
 MIME-Version: 1.0
-References: <20220413162359.325021-1-javierm@redhat.com> <20220413162359.325021-6-javierm@redhat.com>
-In-Reply-To: <20220413162359.325021-6-javierm@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 19 Apr 2022 09:52:08 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX_myNcA1eG=-qOHhtCEMnnV_eMjQF3dWakd7O6JbXskQ@mail.gmail.com>
-Message-ID: <CAMuHMdX_myNcA1eG=-qOHhtCEMnnV_eMjQF3dWakd7O6JbXskQ@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] drm/solomon: Add SSD130x OLED displays SPI support
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Chen-Yu Tsai <wens@kernel.org>, Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <maxime@cerno.tech>,
-        YueHaibing <yuehaibing@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v5 10/21] KVM: s390: pci: add basic kvm_zdev structure
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-11-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220404174349.58530-11-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: whuwc8zQR5Os_OIlNrUKEKV8ErpHGwFN
+X-Proofpoint-GUID: JiyIKgXHGrZfYeHA4c9qY2cwhm3ds2dH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_02,2022-04-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 mlxscore=0 bulkscore=0 adultscore=0 spamscore=0
+ mlxlogscore=999 impostorscore=0 phishscore=0 suspectscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204190040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
 
-On Wed, Apr 13, 2022 at 6:24 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> The ssd130x driver only provides the core support for these devices but it
-> does not have any bus transport logic. Add a driver to interface over SPI.
->
-> There is a difference in the communication protocol when using 4-wire SPI
-> instead of I2C. For the latter, a control byte that contains a D/C# field
-> has to be sent. This field tells the controller whether the data has to be
-> written to the command register or to the graphics display data memory.
->
-> But for 4-wire SPI that control byte is not used, instead a real D/C# line
-> must be pulled HIGH for commands data and LOW for graphics display data.
->
-> For this reason the standard SPI regmap can't be used and a custom .write
-> bus handler is needed.
->
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> Acked-by: Mark Brown <broonie@kernel.org>
 
-Thanks for your patch!
+On 4/4/22 19:43, Matthew Rosato wrote:
+> This structure will be used to carry kvm passthrough information related to
+> zPCI devices.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
+
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+
+> ---
+>   arch/s390/include/asm/pci.h |  3 +++
+>   arch/s390/kvm/Makefile      |  1 +
+>   arch/s390/kvm/pci.c         | 38 +++++++++++++++++++++++++++++++++++++
+>   arch/s390/kvm/pci.h         | 21 ++++++++++++++++++++
+>   4 files changed, 63 insertions(+)
+>   create mode 100644 arch/s390/kvm/pci.c
+>   create mode 100644 arch/s390/kvm/pci.h
+> 
+> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+> index 4c5b8fbc2079..9eb20cebaa18 100644
+> --- a/arch/s390/include/asm/pci.h
+> +++ b/arch/s390/include/asm/pci.h
+> @@ -97,6 +97,7 @@ struct zpci_bar_struct {
+>   };
+>   
+>   struct s390_domain;
+> +struct kvm_zdev;
+>   
+>   #define ZPCI_FUNCTIONS_PER_BUS 256
+>   struct zpci_bus {
+> @@ -190,6 +191,8 @@ struct zpci_dev {
+>   	struct dentry	*debugfs_dev;
+>   
+>   	struct s390_domain *s390_domain; /* s390 IOMMU domain data */
+> +
+> +	struct kvm_zdev *kzdev; /* passthrough data */
+>   };
+>   
+>   static inline bool zdev_enabled(struct zpci_dev *zdev)
+> diff --git a/arch/s390/kvm/Makefile b/arch/s390/kvm/Makefile
+> index 26f4a74e5ce4..00cf6853d93f 100644
+> --- a/arch/s390/kvm/Makefile
+> +++ b/arch/s390/kvm/Makefile
+> @@ -10,4 +10,5 @@ ccflags-y := -Ivirt/kvm -Iarch/s390/kvm
+>   kvm-y += kvm-s390.o intercept.o interrupt.o priv.o sigp.o
+>   kvm-y += diag.o gaccess.o guestdbg.o vsie.o pv.o
+>   
+> +kvm-$(CONFIG_PCI) += pci.o
+>   obj-$(CONFIG_KVM) += kvm.o
+> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+> new file mode 100644
+> index 000000000000..213be236c05a
 > --- /dev/null
-> +++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
-
+> +++ b/arch/s390/kvm/pci.c
+> @@ -0,0 +1,38 @@
+> +// SPDX-License-Identifier: GPL-2.0
 > +/*
-> + * The regmap bus .write handler, it is just a wrapper around spi_write()
-> + * but toggling the Data/Command control pin (D/C#). Since for 4-wire SPI
-> + * a D/C# pin is used, in contrast with I2C where a control byte is sent,
-> + * prior to every data byte, that contains a bit with the D/C# value.
+> + * s390 kvm PCI passthrough support
 > + *
-> + * These control bytes are considered registers by the ssd130x core driver
-> + * and can be used by the ssd130x SPI driver to determine if the data sent
-> + * is for a command register or for the Graphic Display Data RAM (GDDRAM).
+> + * Copyright IBM Corp. 2022
+> + *
+> + *    Author(s): Matthew Rosato <mjrosato@linux.ibm.com>
 > + */
-> +static int ssd130x_spi_write(void *context, const void *data, size_t count)
+> +
+> +#include <linux/kvm_host.h>
+> +#include <linux/pci.h>
+> +#include "pci.h"
+> +
+> +int kvm_s390_pci_dev_open(struct zpci_dev *zdev)
 > +{
-> +       struct ssd130x_spi_transport *t = context;
-> +       struct spi_device *spi = t->spi;
-> +       const u8 *reg = data;
+> +	struct kvm_zdev *kzdev;
 > +
-> +       if (*reg == SSD130X_COMMAND)
-> +               gpiod_set_value_cansleep(t->dc, 0);
+> +	kzdev = kzalloc(sizeof(struct kvm_zdev), GFP_KERNEL);
+> +	if (!kzdev)
+> +		return -ENOMEM;
 > +
-> +       if (*reg == SSD130X_DATA)
-> +               gpiod_set_value_cansleep(t->dc, 1);
+> +	kzdev->zdev = zdev;
+> +	zdev->kzdev = kzdev;
 > +
-> +       /* Remove the control byte since is not used by the 4-wire SPI */
-> +       return spi_write(spi, ((u8 *)data) + 1, count - 1);
-
-As I don't like casts, perhaps
-
-    spi_write(spi, reg + 1, count - 1);
-
-? But this is up to you.
-
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(kvm_s390_pci_dev_open);
+> +
+> +void kvm_s390_pci_dev_release(struct zpci_dev *zdev)
+> +{
+> +	struct kvm_zdev *kzdev;
+> +
+> +	kzdev = zdev->kzdev;
+> +	WARN_ON(kzdev->zdev != zdev);
+> +	zdev->kzdev = 0;
+> +	kfree(kzdev);
+> +}
+> +EXPORT_SYMBOL_GPL(kvm_s390_pci_dev_release);
+> diff --git a/arch/s390/kvm/pci.h b/arch/s390/kvm/pci.h
+> new file mode 100644
+> index 000000000000..ce93978e8913
+> --- /dev/null
+> +++ b/arch/s390/kvm/pci.h
+> @@ -0,0 +1,21 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
 > +/*
-> + * The SPI core always reports a MODALIAS uevent of the form "spi:<dev>", even
-> + * if the device was registered via OF. This means that the module will not be
-> + * auto loaded, unless it contains an alias that matches the MODALIAS reported.
+> + * s390 kvm PCI passthrough support
 > + *
-> + * To workaround this issue, add a SPI device ID table. Even when this should
-> + * not be needed for this driver to match the registered SPI devices.
+> + * Copyright IBM Corp. 2022
+> + *
+> + *    Author(s): Matthew Rosato <mjrosato@linux.ibm.com>
 > + */
-> +static const struct spi_device_id ssd130x_spi_table[] = {
-> +       { "sh1106",  SH1106_ID },
-> +       { "ssd1305", SSD1305_ID },
-> +       { "ssd1306", SSD1306_ID },
-> +       { "ssd1307", SSD1307_ID },
-> +       { "ssd1309", SSD1309_ID },
-> +       { /* sentinel */ }
+> +
+> +#ifndef __KVM_S390_PCI_H
+> +#define __KVM_S390_PCI_H
+> +
+> +#include <linux/kvm_host.h>
+> +#include <linux/pci.h>
+> +
+> +struct kvm_zdev {
+> +	struct zpci_dev *zdev;
+> +	struct kvm *kvm;
 > +};
-> +MODULE_DEVICE_TABLE(spi, ssd130x_spi_table);
+> +
+> +#endif /* __KVM_S390_PCI_H */
+> 
 
-I'm not sure about the need for this part, but as Mark provided his
-Ac-ed--by, I assume it's correct.
-
-The rest LGTM, so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Pierre Morel
+IBM Lab Boeblingen
