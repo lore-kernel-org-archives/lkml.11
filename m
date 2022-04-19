@@ -2,60 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CBCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC64C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357194AbiDSS1d (ORCPT
+        id S1357317AbiDSS2A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        Tue, 19 Apr 2022 14:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357314AbiDSSXI (ORCPT
+        with ESMTP id S1357444AbiDSSXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:08 -0400
+        Tue, 19 Apr 2022 14:23:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDAA3EA9A;
-        Tue, 19 Apr 2022 11:15:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBDB43EE8;
+        Tue, 19 Apr 2022 11:16:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C676E6142D;
-        Tue, 19 Apr 2022 18:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C7FEC385A5;
-        Tue, 19 Apr 2022 18:15:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 673D660E07;
+        Tue, 19 Apr 2022 18:16:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D98C385A7;
+        Tue, 19 Apr 2022 18:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392146;
-        bh=WRD22SHiuWGqWImiwisnOdYw8qlqqL9/ywduZJnPKSg=;
+        s=k20201202; t=1650392167;
+        bh=e58p+eX3tzKZICjXxJ3Z7whh5AvYJrfSGi0Pe0PQWXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FnFwbZhjtGzvib2KmO1skNaGp5ZJuhA9EQ9zFgcwu+uQFLIJXVSnIafVPN3jboiGS
-         5mzJe4zxeIOyIsysUY6UhfVY3H4SA8DO02V7QFiOcwhFa3CR/GytB3ZRSyr3bvwsih
-         +6pZy1YbQfohjJdVkKzCcZR0LuAsWkGsbK+FjZt6mUJ2dAOcd7uiJdudyJ2IKg9Tee
-         jnJWSwoGyhI2w83BP2VlJzeuNjL/w9QuEIOXAX03YsT8c5GS/cZVGNKCc9dbUFTwAk
-         xBJ4KfPEitA7/nbNxYf6kyyf1YDfhEkCaocUXMBFTL1kr5J6O+2bLI/jMU9Q/MX7tK
-         scczNwm/lZYkg==
+        b=kbQaohM2zbuUYOd3jaCKc9hfxe3pYdJhk0OhRmT+Sg2N3dSAX0oJEv5uC7ymjHApw
+         V26aF9KsnI6o/2XYU/pyPVQ9NjxHi6vgvYUta5DWI+LzNY/WzaEn/dzhf4hsRN2C/t
+         GTnDSkMtZ1fK7NZkKIzKzFUpTsHqGijHo4lE5Lip7ZxZI/3UMan++vLfr719genYnH
+         9Nm5IWlbwj1AEJdy4oq/9oajwfyzsYF0N8sJHCeCOMPtWQTZxVpiarcvTfvItOfPYy
+         9KBjqs/WQWQVZXfnio5VkLVOe6RjI+iSViQO+QxJ1lA7cQ/ur4I0vI0MpSUX+30TdP
+         G1mCUgUc7bHxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>, Borislav Petkov <bp@suse.de>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Sasha Levin <sashal@kernel.org>, pabeni@redhat.com,
-        linus.walleij@linaro.org, mbrugger@suse.com,
-        mike.rudenko@gmail.com, sean.anderson@seco.com, angus@akkea.ca,
-        linux-wireless@vger.kernel.org, SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH AUTOSEL 4.19 08/12] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 19 Apr 2022 14:15:21 -0400
-Message-Id: <20220419181525.486166-8-sashal@kernel.org>
+Cc:     Hongbin Wang <wh_bin@126.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 4/9] vxlan: fix error return code in vxlan_fdb_append
+Date:   Tue, 19 Apr 2022 14:15:52 -0400
+Message-Id: <20220419181557.486336-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
-References: <20220419181525.486166-1-sashal@kernel.org>
+In-Reply-To: <20220419181557.486336-1-sashal@kernel.org>
+References: <20220419181557.486336-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -63,53 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de>
+From: Hongbin Wang <wh_bin@126.com>
 
-[ Upstream commit 6fb3a5868b2117611f41e421e10e6a8c2a13039a ]
+[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
 
-Fix:
+When kmalloc and dst_cache_init failed,
+should return ENOMEM rather than ENOBUFS.
 
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: In function ‘brcmf_sdio_drivestrengthinit’:
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3798:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43143_CHIP_ID, 17):
-    ^~~~
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3809:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43362_CHIP_ID, 13):
-    ^~~~
-
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: netdev@vger.kernel.org
-Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/Ykx0iRlvtBnKqtbG@zn.tnic
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/vxlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index a5195bdb4d9b..0a96c1071e5b 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -560,7 +560,7 @@ enum brcmf_sdio_frmtype {
- 	BRCMF_SDIO_FT_SUB,
- };
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 066a4654e838..31657f15eb07 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -524,11 +524,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
  
--#define SDIOD_DRVSTR_KEY(chip, pmu)     (((chip) << 16) | (pmu))
-+#define SDIOD_DRVSTR_KEY(chip, pmu)     (((unsigned int)(chip) << 16) | (pmu))
+ 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
+ 	if (rd == NULL)
+-		return -ENOBUFS;
++		return -ENOMEM;
  
- /* SDIO Pad drive strength to select value mappings */
- struct sdiod_drive_str {
+ 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
+ 		kfree(rd);
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 	}
+ 
+ 	rd->remote_ip = *ip;
 -- 
 2.35.1
 
