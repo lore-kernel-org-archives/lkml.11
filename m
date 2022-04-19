@@ -2,200 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356505AbiDSSRO (ORCPT
+        id S1354328AbiDSSRS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
+        Tue, 19 Apr 2022 14:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356484AbiDSSQJ (ORCPT
+        with ESMTP id S1356479AbiDSSQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 14:16:09 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC643E0D3;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5833E0CF;
         Tue, 19 Apr 2022 11:12:36 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id r13so34610666ejd.5;
-        Tue, 19 Apr 2022 11:12:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZhelTs57qB8l8snfqOh3tsOfdXgjXxOg3YxbLx/o20g=;
-        b=KMjlgvdZbFgtrDUD5sGre35l5IsjYq/4lFCHGa5O4f6vUnz8Z879bU2B9iknQi29hc
-         zQoZsHYeuBBHKqoc0JXikAHQUVjXoTHRHeVaeqoBXFcZMJAYgs2bVl6SqIDbvA/K0/jq
-         hH9V1AOPG1FXqLhQV4VslfQmc7Igc0rhuOa+x7u1cBI5T1BHiZe54e2IONJ3pIa0U1dt
-         2c9JQyviwNIY6SI01uSrEtgXVupQjNTqWVT3n0bMuCzwS5KkZ2aReqSxwypKY9j+fKRN
-         RI/4N0IOUFf3SGn592yRrR16+grUd+49M2m2y962EHNY+sC8RxQjiK1qw2nli57m02FE
-         q+qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZhelTs57qB8l8snfqOh3tsOfdXgjXxOg3YxbLx/o20g=;
-        b=LpwWRpAQwSgGVSCvAIiuWcosSmCjK/wJRmUUh+3qprW+ujiiNMNmsSsdXlIUlr/Up2
-         +rJRn5AM37ZGJ9DUpHcR7Cr/3R1piFlNXkNHp+T9l0GaqPFs4TP+TlcZPlUbTGEODt0L
-         cRzplWfoIRrCsU53qnsYYlrFyFOpOBs8Mxb63NBiDycGmCMpHV4knty3s+IZfZkEQGPT
-         7hKwBEdVKr6WSqzwIJww5LcSYzggu20F/ajWG8tU1Go50omZUR2f3WIOMMrodGoVMrR2
-         lskUMRn4LY5uH1Hd7anKSRVS7wv+ZamcHYt9JKR6y7hoJ8U2jphQOTwugZ951bCc7Icv
-         3Nig==
-X-Gm-Message-State: AOAM531QdRfgsIpi9/cG4if9xp1tVTvU7fEYyfE0CWLBKajw0e3Ooonz
-        M6Ch/kEf2sbUw8YuydZdKzI=
-X-Google-Smtp-Source: ABdhPJyeIZRBjgA3MKX+mlJppPwTSIKZXJss/g8U03EN6uX9wqh5+ibHjB3tWGPq+OFnSu3HfGR4tA==
-X-Received: by 2002:a17:907:2d08:b0:6e8:8e58:f70e with SMTP id gs8-20020a1709072d0800b006e88e58f70emr15434200ejc.301.1650391955354;
-        Tue, 19 Apr 2022 11:12:35 -0700 (PDT)
-Received: from localhost.localdomain ([212.102.35.230])
-        by smtp.gmail.com with ESMTPSA id b20-20020a1709063f9400b006e12836e07fsm5930614ejj.154.2022.04.19.11.12.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 11:12:35 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Sam Shih <sam.shih@mediatek.com>, Stephen Boyd <sboyd@kernel.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] dt-bindings: arm: mediatek: apmixedsys: Convert to DT schema
-Date:   Tue, 19 Apr 2022 22:09:38 +0400
-Message-Id: <20220419180938.19397-3-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220419180938.19397-1-y.oudjana@protonmail.com>
-References: <20220419180938.19397-1-y.oudjana@protonmail.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0159B81866;
+        Tue, 19 Apr 2022 18:12:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD3AC385AD;
+        Tue, 19 Apr 2022 18:12:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650391953;
+        bh=vzuoswBEu+mRl+KX28BgumYGMcE+hVAphztABp/H15Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=P28W8G7s6w24YVijShY2wP91wpi1XpZon14BHhNXDYlL9eizXO52eCGvjtyJJIQ15
+         IO5Da1mmPCOK/J3pAKq+QsJmM2qIX7Ggtdk/XURZ7kv1CYdDlXGU1GiysUR73w8QJs
+         6U7x3Q217E6twPQhy5ZQeJ1r5nwPMYLon/oqFBC9R3/MxhRDHfhHdzBTwQFSZNf/21
+         kGIeR4e5dRtB2G5o53UuK1d+NUaP3nUEWYQ6fp49gzv6EH50uCpFLAVwF3hn36OC62
+         2HdFOBPdfnPWXJim5UqFTrxBjqt/aP7GGqHZrSuCjEfC9dxXiyHYcLvaTW5p/5s5dI
+         td2aXC6VxqMLg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 30/34] nvme: add a quirk to disable namespace identifiers
+Date:   Tue, 19 Apr 2022 14:10:57 -0400
+Message-Id: <20220419181104.484667-30-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
+References: <20220419181104.484667-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-Convert apmixedsys bindings to DT schema format. MT2701, MT7623 and
-MT7629 device trees currently have the syscon compatible without
-it being mentioned in the old DT bindings file which introduces
-dtbs_check errors when converting to DT schema as-is, so
-mediatek,mt2701-apmixedsys and mediatek,mt7629-apmixedsys are placed
-in the last items list with the syscon compatible, and syscon is
-added to the mediatek,mt7623-apmixedsys list.
+[ Upstream commit 00ff400e6deee00f7b15e200205b2708b63b8cf6 ]
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+Add a quirk to disable using and exporting namespace identifiers for
+controllers where they are broken beyond repair.
+
+The most directly visible problem with non-unique namespace identifiers
+is that they break the /dev/disk/by-id/ links, with the link for a
+supposedly unique identifier now pointing to one of multiple possible
+namespaces that share the same ID, and a somewhat random selection of
+which one actually shows up.
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm/mediatek/mediatek,apmixedsys.txt      | 35 -----------
- .../arm/mediatek/mediatek,apmixedsys.yaml     | 60 +++++++++++++++++++
- 2 files changed, 60 insertions(+), 35 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.yaml
+ drivers/nvme/host/core.c | 24 ++++++++++++++++++------
+ drivers/nvme/host/nvme.h |  5 +++++
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
-deleted file mode 100644
-index 3fa755866528..000000000000
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
-+++ /dev/null
-@@ -1,35 +0,0 @@
--Mediatek apmixedsys controller
--==============================
--
--The Mediatek apmixedsys controller provides the PLLs to the system.
--
--Required Properties:
--
--- compatible: Should be one of:
--	- "mediatek,mt2701-apmixedsys"
--	- "mediatek,mt2712-apmixedsys", "syscon"
--	- "mediatek,mt6765-apmixedsys", "syscon"
--	- "mediatek,mt6779-apmixedsys", "syscon"
--	- "mediatek,mt6797-apmixedsys"
--	- "mediatek,mt7622-apmixedsys"
--	- "mediatek,mt7623-apmixedsys", "mediatek,mt2701-apmixedsys"
--	- "mediatek,mt7629-apmixedsys"
--	- "mediatek,mt7986-apmixedsys"
--	- "mediatek,mt8135-apmixedsys"
--	- "mediatek,mt8167-apmixedsys", "syscon"
--	- "mediatek,mt8173-apmixedsys"
--	- "mediatek,mt8183-apmixedsys", "syscon"
--	- "mediatek,mt8516-apmixedsys"
--- #clock-cells: Must be 1
--
--The apmixedsys controller uses the common clk binding from
--Documentation/devicetree/bindings/clock/clock-bindings.txt
--The available clocks are defined in dt-bindings/clock/mt*-clk.h.
--
--Example:
--
--apmixedsys: clock-controller@10209000 {
--	compatible = "mediatek,mt8173-apmixedsys";
--	reg = <0 0x10209000 0 0x1000>;
--	#clock-cells = <1>;
--};
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.yaml
-new file mode 100644
-index 000000000000..fc967fdc8aec
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,apmixedsys.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 6215d50ed3e7..10f7c79caac2 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -1363,6 +1363,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
+ 				 warn_str, cur->nidl);
+ 			return -1;
+ 		}
++		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
++			return NVME_NIDT_EUI64_LEN;
+ 		memcpy(ids->eui64, data + sizeof(*cur), NVME_NIDT_EUI64_LEN);
+ 		return NVME_NIDT_EUI64_LEN;
+ 	case NVME_NIDT_NGUID:
+@@ -1371,6 +1373,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
+ 				 warn_str, cur->nidl);
+ 			return -1;
+ 		}
++		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
++			return NVME_NIDT_NGUID_LEN;
+ 		memcpy(ids->nguid, data + sizeof(*cur), NVME_NIDT_NGUID_LEN);
+ 		return NVME_NIDT_NGUID_LEN;
+ 	case NVME_NIDT_UUID:
+@@ -1379,6 +1383,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
+ 				 warn_str, cur->nidl);
+ 			return -1;
+ 		}
++		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
++			return NVME_NIDT_UUID_LEN;
+ 		uuid_copy(&ids->uuid, data + sizeof(*cur));
+ 		return NVME_NIDT_UUID_LEN;
+ 	case NVME_NIDT_CSI:
+@@ -1475,12 +1481,18 @@ static int nvme_identify_ns(struct nvme_ctrl *ctrl, unsigned nsid,
+ 	if ((*id)->ncap == 0) /* namespace not allocated or attached */
+ 		goto out_free_id;
+ 
+-	if (ctrl->vs >= NVME_VS(1, 1, 0) &&
+-	    !memchr_inv(ids->eui64, 0, sizeof(ids->eui64)))
+-		memcpy(ids->eui64, (*id)->eui64, sizeof(ids->eui64));
+-	if (ctrl->vs >= NVME_VS(1, 2, 0) &&
+-	    !memchr_inv(ids->nguid, 0, sizeof(ids->nguid)))
+-		memcpy(ids->nguid, (*id)->nguid, sizeof(ids->nguid));
 +
-+title: MediaTek AP Mixedsys Controller
++	if (ctrl->quirks & NVME_QUIRK_BOGUS_NID) {
++		dev_info(ctrl->device,
++			 "Ignoring bogus Namespace Identifiers\n");
++	} else {
++		if (ctrl->vs >= NVME_VS(1, 1, 0) &&
++		    !memchr_inv(ids->eui64, 0, sizeof(ids->eui64)))
++			memcpy(ids->eui64, (*id)->eui64, sizeof(ids->eui64));
++		if (ctrl->vs >= NVME_VS(1, 2, 0) &&
++		    !memchr_inv(ids->nguid, 0, sizeof(ids->nguid)))
++			memcpy(ids->nguid, (*id)->nguid, sizeof(ids->nguid));
++	}
+ 
+ 	return 0;
+ 
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index 730cc80d84ff..68c42e831117 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -144,6 +144,11 @@ enum nvme_quirks {
+ 	 * encoding the generation sequence number.
+ 	 */
+ 	NVME_QUIRK_SKIP_CID_GEN			= (1 << 17),
 +
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+
-+description:
-+  The Mediatek apmixedsys controller provides PLLs to the system.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt6797-apmixedsys
-+              - mediatek,mt7622-apmixedsys
-+              - mediatek,mt7986-apmixedsys
-+              - mediatek,mt8135-apmixedsys
-+              - mediatek,mt8173-apmixedsys
-+              - mediatek,mt8516-apmixedsys
-+      - items:
-+          - const: mediatek,mt7623-apmixedsys
-+          - const: mediatek,mt2701-apmixedsys
-+          - const: syscon
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-apmixedsys
-+              - mediatek,mt2712-apmixedsys
-+              - mediatek,mt6765-apmixedsys
-+              - mediatek,mt6779-apmixedsys
-+              - mediatek,mt7629-apmixedsys
-+              - mediatek,mt8167-apmixedsys
-+              - mediatek,mt8183-apmixedsys
-+          - const: syscon
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#clock-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    apmixedsys: clock-controller@10209000 {
-+        compatible = "mediatek,mt8173-apmixedsys";
-+        reg = <0x10209000 0x1000>;
-+        #clock-cells = <1>;
-+    };
++	/*
++	 * Reports garbage in the namespace identifiers (eui64, nguid, uuid).
++	 */
++	NVME_QUIRK_BOGUS_NID			= (1 << 18),
+ };
+ 
+ /*
 -- 
-2.35.3
+2.35.1
 
