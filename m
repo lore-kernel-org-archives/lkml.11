@@ -2,131 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CECF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346661AbiDSD3Q (ORCPT
+        id S1346718AbiDSDc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 23:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53078 "EHLO
+        Mon, 18 Apr 2022 23:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346588AbiDSD3N (ORCPT
+        with ESMTP id S239486AbiDSDcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 23:29:13 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46AB2899B
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 20:26:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650338791; x=1681874791;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=r+QISWs4fMwsMVKIBPuBSRZ9kMAUjuYmYVVU7WsKJDw=;
-  b=PaCItAxhqX/fM4pvr0FFcL/817Sxm7abSjMHxGcuXFC65usCXt2/Ty5I
-   3VOv8GU/INdgsOKQphv5IroEUhn+16y5bWJdZ0BtlXMaY871dh+ynRwZE
-   dBidsG1/73ckeyokTnYG7yVi31ggT08MftwyiIDRl7NjLq9UBPJ20Zk+f
-   gW5inrHwwRyVS92sBxwdEncjM6aOLnA9vvgjC9psxedpdkea/Y19CjPaL
-   capN+X7Bh1dPMmcujf23bFluUefmN0alTUyY3rbjADRCwSG3ahb7Rnf/B
-   wNxFIwIOm+eqYXVcpOBBFvKMZsUMDplFVWK4a0/eDrbX4UwjW7rPShvAW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="350113224"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="350113224"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 20:26:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="561559520"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 18 Apr 2022 20:26:21 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngeVQ-0005Hv-AF;
-        Tue, 19 Apr 2022 03:26:20 +0000
-Date:   Tue, 19 Apr 2022 11:26:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1662/2356]
- include/linux/bpf-cgroup-api.h:99:17: warning: incompatible integer to
- pointer conversion initializing 'struct cgroup *' with an expression of type
- 'int'
-Message-ID: <202204191109.jMo5t4hA-lkp@intel.com>
+        Mon, 18 Apr 2022 23:32:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597A313D15
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 20:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9C8B60FC5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 369B8C385A8;
+        Tue, 19 Apr 2022 03:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650339012;
+        bh=r//ufWO4fvNfizfxS4vuRz+uxWC37f5ihVH/4Y4xBAE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Xtc7k0+NbNf3WdkIynN4Xt+VJBtCOe1o+m2nWwP8M2VnfPZzVcxMhVLerZcThCfNs
+         h0uU9ti6oALFYdH5rbIpKFSECHSK7DuY5od+77aHaKAbmeWnZW6tizpEdzL4Ldeo7m
+         CPiT0iC7L5CW1vmFMvbtwNu0Hc6j1fdM3iIg7rqWBja9HugFgCtuQec9xAvFjufzjo
+         zt0aAWGKsgzo+NIP8JSqytPU2wTG6mL9uQPXFURnTEge9Q110En38IqtPWVuWkYQQw
+         xVnUKILVrXdunYHe+ZfQ9Z/zM3shej1+9zDrQVvT2sUDwQm61N/HQ1tn/sQpRglGMa
+         OHx7ke62GwOgw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 16B7AE8DD61;
+        Tue, 19 Apr 2022 03:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it
+ for ioctls
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165033901208.10174.13978945686641197234.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Apr 2022 03:30:12 +0000
+References: <20220318165422.686848-1-linux@roeck-us.net>
+In-Reply-To: <20220318165422.686848-1-linux@roeck-us.net>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     bleung@chromium.org, chrome-platform@lists.linux.dev,
+        linux-kernel@vger.kernel.org, dnojiri@chromium.org,
+        robbarnes@google.com, rajatja@google.com, briannorris@chromium.org,
+        parthmalkan@google.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   af93551cf39027d176f30b9beafc60a4c130998a
-commit: 946f6b0a519a1210d974a40c8400726c341e0bd6 [1662/2356] headers/deps: cgroup: Split <linux/bpf-cgroup.h> into <linux/bpf-cgroup-types.h> and <linux/bpf-cgroup-api.h>
-config: x86_64-randconfig-a013-20220418 (https://download.01.org/0day-ci/archive/20220419/202204191109.jMo5t4hA-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 429cbac0390654f90bba18a41799464adf31a5ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=946f6b0a519a1210d974a40c8400726c341e0bd6
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 946f6b0a519a1210d974a40c8400726c341e0bd6
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/bpf/ mm/ net/ipv4/ sound/soc/codecs/
+Hello:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This patch was applied to chrome-platform/linux.git (for-kernelci)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-All warnings (new ones prefixed by >>):
+On Fri, 18 Mar 2022 09:54:22 -0700 you wrote:
+> Commit 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use
+> cros_ec_cmd_xfer_status helper") inadvertendly changed the userspace ABI.
+> Previously, cros_ec ioctls would only report errors if the EC communication
+> failed, and otherwise return success and the result of the EC
+> communication. An EC command execution failure was reported in the EC
+> response field. The above mentioned commit changed this behavior, and the
+> ioctl itself would fail. This breaks userspace commands trying to analyze
+> the EC command execution error since the actual EC command response is no
+> longer reported to userspace.
+> 
+> [...]
 
-   In file included from kernel/bpf/cgroup.c:17:
-   include/linux/bpf-cgroup-api.h:99:24: error: implicit declaration of function 'sock_cgroup_ptr' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-                                 ^
->> include/linux/bpf-cgroup-api.h:99:17: warning: incompatible integer to pointer conversion initializing 'struct cgroup *' with an expression of type 'int' [-Wint-conversion]
-           struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-                          ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from kernel/bpf/cgroup.c:31:
-   In file included from kernel/bpf/../cgroup/cgroup-internal.h:7:
-   include/linux/cgroup_api.h:875:30: error: static declaration of 'sock_cgroup_ptr' follows non-static declaration
-   static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
-                                ^
-   include/linux/bpf-cgroup-api.h:99:24: note: previous implicit declaration is here
-           struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-                                 ^
-   1 warning and 2 errors generated.
---
-   In file included from net/ipv4/udp.c:103:
-   include/linux/bpf-cgroup-api.h:99:24: error: implicit declaration of function 'sock_cgroup_ptr' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-                                 ^
->> include/linux/bpf-cgroup-api.h:99:17: warning: incompatible integer to pointer conversion initializing 'struct cgroup *' with an expression of type 'int' [-Wint-conversion]
-           struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-                          ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning and 1 error generated.
+Here is the summary with links:
+  - [v2] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
+    https://git.kernel.org/chrome-platform/c/57b888ca2541
 
-
-vim +99 include/linux/bpf-cgroup-api.h
-
-    90	
-    91	int bpf_percpu_cgroup_storage_copy(struct bpf_map *map, void *key, void *value);
-    92	int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
-    93					     void *value, u64 flags);
-    94	
-    95	/* Opportunistic check to see whether we have any BPF program attached*/
-    96	static inline bool cgroup_bpf_sock_enabled(struct sock *sk,
-    97						   enum cgroup_bpf_attach_type type)
-    98	{
-  > 99		struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-   100		struct bpf_prog_array *array;
-   101	
-   102		array = rcu_access_pointer(cgrp->bpf.effective[type]);
-   103		return array != &bpf_empty_prog_array.hdr;
-   104	}
-   105	
-
+You are awesome, thank you!
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
