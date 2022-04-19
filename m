@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53529C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbiDSAqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
+        id S229635AbiDSAqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241143AbiDSApO (ORCPT
+        with ESMTP id S241156AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:45:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9D02A730
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96792AC79
         for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4656D61387
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18154613B3
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BA3AC385D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E68AC385CF;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=yyxQcEQkGbsIpnbxVQaX+H2riId0XmKKxGJBUjEqkRw=;
+        bh=EnqCsnUKai4u5M/XWwiBMkwKvoG6dGydw1Q83m4mYW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mekSrUYrjKBfSYGCKiGEsfwMkO0o/KZw4tMxqAdtDYITorxJu+hNkWVreyPx+w0Q/
-         VxZlreJCGirS1gUfSwGp/qbR50jiEpOE3cbObAFHjwf77F4WmMsF/9mzOyyKJsw70M
-         u9TOT8aNib+tqS5yh1pYx3gvIrtcv6Qr99Mz7vdfEYc8H7DdSDYRy4IhRiWJYpW72d
-         Ku2m6TmqmRZZ1ZalQCwsn3TOKY+6dVzFwjNFVVza2ykAJ2hwl2TJ0HllIB1ctYVjN4
-         N0kk7tex+qX7wT4zEGZb0tkXt+kJsjqWB3+tly8PHT5SO4TslG8XdVOmA2E6eLSKRE
-         nqSMlKYcXpknQ==
+        b=lmqBzm/9oocXTeceMy8rN6/PF8T65Gb2SX/AsjzmtC8i0OEP2ulloSpGcI9cjTrcT
+         2Gpf2UvGdjKyrTxDZpNvduwrGNnQLpIu8IV6DffJHAFhIOApvL/sBgRGhEumBM/tiK
+         MeeOXIOh1EzEn2Ugo/SXeQuN17Z6bRJ3JXiV6CMTcpQNNOSPtGYgCE6FjbwW295mXe
+         1sFmDWRvKjN3OYeDN9vaeCunRgGhpzXDZAMpOAFDziz16jgj5JqsaTXLT6Xl/FMg/l
+         xyqep3NnqBEb/vaOyVhzO0d0kgkDMpe9mef/OGArnJY+C3/wt6ByDnOHfn/sD54KRo
+         KceBd4cqzXUuA==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 38B645C30FE; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 2F7365C30EF; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 27/61] tools/nolibc/sys: make getpgrp(), getpid(), gettid() not set errno
-Date:   Mon, 18 Apr 2022 17:41:51 -0700
-Message-Id: <20220419004225.3952530-27-paulmck@kernel.org>
+Subject: [PATCH nolibc 22/61] tools/nolibc/types: define EXIT_SUCCESS and EXIT_FAILURE
+Date:   Mon, 18 Apr 2022 17:41:46 -0700
+Message-Id: <20220419004225.3952530-22-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,64 +53,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-These syscalls never fail so there is no need to extract and set errno
-for them.
+These ones are found in some examples found in man pages and ease
+portability tests.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/sys.h | 24 +++---------------------
- 1 file changed, 3 insertions(+), 21 deletions(-)
+ tools/include/nolibc/types.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/include/nolibc/sys.h b/tools/include/nolibc/sys.h
-index 539af457a91b..ef017cc0a580 100644
---- a/tools/include/nolibc/sys.h
-+++ b/tools/include/nolibc/sys.h
-@@ -458,13 +458,7 @@ pid_t sys_getpgrp(void)
- static __attribute__((unused))
- pid_t getpgrp(void)
- {
--	pid_t ret = sys_getpgrp();
--
--	if (ret < 0) {
--		SET_ERRNO(-ret);
--		ret = -1;
--	}
--	return ret;
-+	return sys_getpgrp();
- }
+diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
+index b1bff5e717b6..e0749dc0bd06 100644
+--- a/tools/include/nolibc/types.h
++++ b/tools/include/nolibc/types.h
+@@ -71,6 +71,9 @@
+ #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
+ #define WIFEXITED(status)   (((status) & 0x7f) == 0)
  
++/* standard exit() codes */
++#define EXIT_SUCCESS 0
++#define EXIT_FAILURE 1
  
-@@ -481,13 +475,7 @@ pid_t sys_getpid(void)
- static __attribute__((unused))
- pid_t getpid(void)
- {
--	pid_t ret = sys_getpid();
--
--	if (ret < 0) {
--		SET_ERRNO(-ret);
--		ret = -1;
--	}
--	return ret;
-+	return sys_getpid();
- }
- 
- 
-@@ -504,13 +492,7 @@ pid_t sys_gettid(void)
- static __attribute__((unused))
- pid_t gettid(void)
- {
--	pid_t ret = sys_gettid();
--
--	if (ret < 0) {
--		SET_ERRNO(-ret);
--		ret = -1;
--	}
--	return ret;
-+	return sys_gettid();
- }
- 
- 
+ /* for select() */
+ typedef struct {
 -- 
 2.31.1.189.g2e36527f23
 
