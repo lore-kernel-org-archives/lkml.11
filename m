@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 141A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 705E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355324AbiDSQvh (ORCPT
+        id S1355364AbiDSQvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        Tue, 19 Apr 2022 12:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355104AbiDSQow (ORCPT
+        with ESMTP id S1350141AbiDSQpj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:44:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E11326ED;
-        Tue, 19 Apr 2022 09:42:09 -0700 (PDT)
+        Tue, 19 Apr 2022 12:45:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C924F36E26;
+        Tue, 19 Apr 2022 09:42:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAB6461866;
-        Tue, 19 Apr 2022 16:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61CCC385AC;
-        Tue, 19 Apr 2022 16:42:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63FC761874;
+        Tue, 19 Apr 2022 16:42:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80884C385AC;
+        Tue, 19 Apr 2022 16:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386528;
-        bh=pMXP3tiz+pXmptnDBsvlTEJvLY7a6WjIQlAUDseVC7c=;
+        s=k20201202; t=1650386574;
+        bh=RVE6EmI/XNsvZr+sz6SY+1PqohGEsq3I0n4zlwh58+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WNtq6L7kYzLqPo1CgDnRfCSkhbU40rWot44wiH0w7KY5q5PTaeX6yBsSjejpCMIO5
-         7YyF6BGgXkj9KCnK6hk1vKyGqJQqYGi0k986h/js2Dhzln1p0JAC3zoc9J0QoVPOEL
-         TweRk/7T+kSDIDXkf8Ls1dRyo2LMdJPLhNkThXg9d52y29Ru+lYVKiNP2G3UFkn5vQ
-         cGC7cmPNtQJ2U0GFsNug3uLKlp06uWSZX6uTKLJ1lTu+kvNpDykOw9NqOoWZtYj2UY
-         ruEFGMjX0RkqbWcX1HOwB0ciYaSwKKyyeA+rysBsucYttmfP/kQc1miV4a16y8Cds+
-         GVXQTXNlRlmpA==
+        b=dHkbZ59jO4tpFys0DP7olW8IY7ZH5CGyEM3n2P2fl7D3JvK9hQ7BKYiNMCkVX0QMO
+         DzwIJv2XuHva+L/KHbieQhFRPKov89shvDnwcRIqSGqfBDAYykBmRV+5xMRQwCndOp
+         sHEX5civiLh3GC6mOa9LkgRIlBFjYRIyGRh7lIfTZoJ/GNwulWi9NOLR6NJJ2N2jTC
+         fWVoQDYVTClTgFIbtWF4Aw1YdDz3Dn9HqY5Kktz5XtwGO57L+cplp1HmwGjhzgiXge
+         HL9aNnhck3V9UwzUA23nrnbbVePDqvxauzNlGoRmQeEK/cTZnnxkove2t2MWjx50A7
+         aeTu+UERvoByg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
@@ -61,9 +61,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
         linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 25/48] ARM: pxa: zylonite: use gpio lookup instead mfp header
-Date:   Tue, 19 Apr 2022 18:37:47 +0200
-Message-Id: <20220419163810.2118169-26-arnd@kernel.org>
+Subject: [PATCH 31/48] ASoC: pxa: use pdev resource for FIFO regs
+Date:   Tue, 19 Apr 2022 18:37:53 +0200
+Message-Id: <20220419163810.2118169-32-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
 References: <20220419163810.2118169-1-arnd@kernel.org>
@@ -75,121 +75,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The mach/mfp.h header is only used by this one driver
-for hardcoded gpio numbers. Change that to use a lookup
-table instead.
+The driver currently takes the hardwired FIFO address from
+a header file that we want to eliminate. Change it to use
+the mmio resource instead and stop including the here.
 
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: linux-input@vger.kernel.org
+Acked-by: Mark Brown <broonie@kernel.org>
+Cc: alsa-devel@alsa-project.org
 Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/mach-pxa/zylonite.c                | 31 +++++++++++++++++++++
- drivers/input/touchscreen/zylonite-wm97xx.c | 20 +++++++------
- 2 files changed, 42 insertions(+), 9 deletions(-)
+ sound/soc/pxa/pxa2xx-ac97.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/mach-pxa/zylonite.c b/arch/arm/mach-pxa/zylonite.c
-index c48dd6d03df9..ba6dc86da855 100644
---- a/arch/arm/mach-pxa/zylonite.c
-+++ b/arch/arm/mach-pxa/zylonite.c
-@@ -32,6 +32,7 @@
- #include <linux/platform_data/usb-ohci-pxa27x.h>
- #include <linux/platform_data/keypad-pxa27x.h>
- #include <linux/platform_data/mtd-nand-pxa3xx.h>
-+#include <mach/mfp.h>
+diff --git a/sound/soc/pxa/pxa2xx-ac97.c b/sound/soc/pxa/pxa2xx-ac97.c
+index 9443c1390d2f..809ea34736ed 100644
+--- a/sound/soc/pxa/pxa2xx-ac97.c
++++ b/sound/soc/pxa/pxa2xx-ac97.c
+@@ -21,10 +21,12 @@
+ #include <sound/pxa2xx-lib.h>
+ #include <sound/dmaengine_pcm.h>
  
- #include "devices.h"
- #include "generic.h"
-@@ -425,6 +426,35 @@ static void __init zylonite_init_ohci(void)
- static inline void zylonite_init_ohci(void) {}
- #endif /* CONFIG_USB_OHCI_HCD || CONFIG_USB_OHCI_HCD_MODULE */
+-#include <mach/pxa-regs.h>
+-#include <mach/regs-ac97.h>
+ #include <linux/platform_data/asoc-pxa.h>
  
-+static struct gpiod_lookup_table zylonite_wm97xx_touch_gpio15_table = {
-+	.dev_id = "wm97xx-touch.0",
-+	.table = {
-+		GPIO_LOOKUP("gpio-pxa", mfp_to_gpio(MFP_PIN_GPIO15),
-+			    "touch", GPIO_ACTIVE_LOW),
-+		{ },
-+	},
-+};
++#define PCDR	0x0040  /* PCM FIFO Data Register */
++#define MODR	0x0140  /* Modem FIFO Data Register */
++#define MCDR	0x0060  /* Mic-in FIFO Data Register */
 +
-+static struct gpiod_lookup_table zylonite_wm97xx_touch_gpio26_table = {
-+	.dev_id = "wm97xx-touch.0",
-+	.table = {
-+		GPIO_LOOKUP("gpio-pxa", mfp_to_gpio(MFP_PIN_GPIO26),
-+			    "touch", GPIO_ACTIVE_LOW),
-+		{ },
-+	},
-+};
-+
-+static void __init zylonite_init_wm97xx_touch(void)
-+{
-+	if (!IS_ENABLED(CONFIG_TOUCHSCREEN_WM97XX_ZYLONITE))
-+		return;
-+
-+	if (cpu_is_pxa320())
-+		gpiod_add_lookup_table(&zylonite_wm97xx_touch_gpio15_table);
-+	else
-+		gpiod_add_lookup_table(&zylonite_wm97xx_touch_gpio26_table);
-+}
-+
- static void __init zylonite_init(void)
+ static void pxa2xx_ac97_warm_reset(struct ac97_controller *adrv)
  {
- 	pxa_set_ffuart_info(NULL);
-@@ -450,6 +480,7 @@ static void __init zylonite_init(void)
- 	zylonite_init_nand();
- 	zylonite_init_leds();
- 	zylonite_init_ohci();
-+	zylonite_init_wm97xx_touch();
- }
+ 	pxa2xx_ac97_try_warm_reset();
+@@ -59,35 +61,30 @@ static struct ac97_controller_ops pxa2xx_ac97_ops = {
+ };
  
- MACHINE_START(ZYLONITE, "PXA3xx Platform Development Kit (aka Zylonite)")
-diff --git a/drivers/input/touchscreen/zylonite-wm97xx.c b/drivers/input/touchscreen/zylonite-wm97xx.c
-index f57bdf083188..cabdd6e3c6f8 100644
---- a/drivers/input/touchscreen/zylonite-wm97xx.c
-+++ b/drivers/input/touchscreen/zylonite-wm97xx.c
-@@ -17,14 +17,13 @@
- #include <linux/moduleparam.h>
- #include <linux/kernel.h>
- #include <linux/delay.h>
--#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/soc/pxa/cpu.h>
- #include <linux/wm97xx.h>
+ static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_stereo_in = {
+-	.addr		= __PREG(PCDR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+ 	.chan_name	= "pcm_pcm_stereo_in",
+ 	.maxburst	= 32,
+ };
  
--#include <mach/mfp.h>
- #include <mach/regs-ac97.h>
+ static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_stereo_out = {
+-	.addr		= __PREG(PCDR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_4_BYTES,
+ 	.chan_name	= "pcm_pcm_stereo_out",
+ 	.maxburst	= 32,
+ };
  
- struct continuous {
-@@ -181,14 +180,17 @@ static struct wm97xx_mach_ops zylonite_mach_ops = {
- static int zylonite_wm97xx_probe(struct platform_device *pdev)
- {
- 	struct wm97xx *wm = platform_get_drvdata(pdev);
--	int gpio_touch_irq;
--
--	if (cpu_is_pxa320())
--		gpio_touch_irq = mfp_to_gpio(MFP_PIN_GPIO15);
--	else
--		gpio_touch_irq = mfp_to_gpio(MFP_PIN_GPIO26);
-+	struct gpio_desc *gpio_touch_irq;
-+	int err;
+ static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_aux_mono_out = {
+-	.addr		= __PREG(MODR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_2_BYTES,
+ 	.chan_name	= "pcm_aux_mono_out",
+ 	.maxburst	= 16,
+ };
+ 
+ static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_aux_mono_in = {
+-	.addr		= __PREG(MODR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_2_BYTES,
+ 	.chan_name	= "pcm_aux_mono_in",
+ 	.maxburst	= 16,
+ };
+ 
+ static struct snd_dmaengine_dai_dma_data pxa2xx_ac97_pcm_mic_mono_in = {
+-	.addr		= __PREG(MCDR),
+ 	.addr_width	= DMA_SLAVE_BUSWIDTH_2_BYTES,
+ 	.chan_name	= "pcm_aux_mic_mono",
+ 	.maxburst	= 16,
+@@ -226,6 +223,7 @@ static int pxa2xx_ac97_dev_probe(struct platform_device *pdev)
+ 	int ret;
+ 	struct ac97_controller *ctrl;
+ 	pxa2xx_audio_ops_t *pdata = pdev->dev.platform_data;
++	struct resource *regs;
+ 	void **codecs_pdata;
+ 
+ 	if (pdev->id != -1) {
+@@ -233,6 +231,16 @@ static int pxa2xx_ac97_dev_probe(struct platform_device *pdev)
+ 		return -ENXIO;
+ 	}
+ 
++	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!regs)
++		return -ENXIO;
 +
-+	gpio_touch_irq = devm_gpiod_get(&pdev->dev, "touch", GPIOD_IN);
-+	err = PTR_ERR_OR_ZERO(gpio_touch_irq);
-+	if (err) {
-+		dev_err(&pdev->dev, "Cannot get irq gpio: %d\n", err);
-+		return err;
-+	}
- 
--	wm->pen_irq = gpio_to_irq(gpio_touch_irq);
-+	wm->pen_irq = gpiod_to_irq(gpio_touch_irq);
- 	irq_set_irq_type(wm->pen_irq, IRQ_TYPE_EDGE_BOTH);
- 
- 	wm97xx_config_gpio(wm, WM97XX_GPIO_13, WM97XX_GPIO_IN,
++	pxa2xx_ac97_pcm_stereo_in.addr = regs->start + PCDR;
++	pxa2xx_ac97_pcm_stereo_out.addr = regs->start + PCDR;
++	pxa2xx_ac97_pcm_aux_mono_out.addr = regs->start + MODR;
++	pxa2xx_ac97_pcm_aux_mono_in.addr = regs->start + MODR;
++	pxa2xx_ac97_pcm_mic_mono_in.addr = regs->start + MCDR;
++
+ 	ret = pxa2xx_ac97_hw_probe(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "PXA2xx AC97 hw probe error (%d)\n", ret);
 -- 
 2.29.2
 
