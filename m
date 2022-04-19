@@ -2,87 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78443C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 396B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357356AbiDSSio (ORCPT
+        id S1353154AbiDSSit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
+        Tue, 19 Apr 2022 14:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357599AbiDSSho (ORCPT
+        with ESMTP id S1357689AbiDSSh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:37:44 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE702B27F;
-        Tue, 19 Apr 2022 11:30:10 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id a15so1503875pfv.11;
-        Tue, 19 Apr 2022 11:30:10 -0700 (PDT)
+        Tue, 19 Apr 2022 14:37:59 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733561F60C;
+        Tue, 19 Apr 2022 11:33:50 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id u5-20020a17090a6a8500b001d0b95031ebso2747662pjj.3;
+        Tue, 19 Apr 2022 11:33:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eKFioxOzghl9O19J5OuKB0d7mfsjViJLel8CE15qcbU=;
-        b=pWkWXgBERKLNVtKHTDizwMCKyCLWw8LwbLgtgU7ZGopBv/QOh8u+OJgNm0sOIGoB+E
-         lUqv8wbV5D05b1Tm51VCSB9bQg+tbnVQv+q5LUr8mSLFogleiK/OpPFp7HZTzgHw5FGZ
-         0OB1HKaRKQSyCYmPi/71w51LTS0YEq478+io2fw4aiYVWdSWXnZox31ivr/GgQcljp9m
-         2yvdjcWPlidRu+w+8njyrIymc5xJfxnT7LceAE9iSqcaOnloSNnDFj9u676N9JikMXgd
-         pIaB/YxG3CZBhgeDQed1G5yXnoQyzQ2j8sWKNY67o+WHdo6V6rSMHlcaakywgZGu/5xI
-         j4AQ==
+        bh=CKt7NnL2WCnYF3IJkaP6ANmOKulqn9UJ42AVdgrbYZM=;
+        b=ELQufKHWhcQ7POnzX5e2nsQYuOrNbCdzc4rlKefQO1wspKrz9BRzgKAtklOBFDuWHg
+         gKQLR1L38bDUzbqpEsJ/851NmgDP/C0XkUCBCutyErpI+ILrrYdHSKU35BLxuHBZe4n5
+         eIN+6QZk5flzABfB5OBaOJnnc6daZRDC8pEkQJkob4JzIQVdzoxtaMjYx1cj/B0oceV0
+         BQQZ7QH2uv1gJ14izA68jXC/CXq5elJJfEOsSk8u2+rlUVUVpp/nKxWqLvLIJpkhLs2E
+         fB5X5ZS68dHa1kVGjH+z3pYEcwYPYy2XhL2odWjd52sjnjAyGOTgVlsECW3ZxpHnSaEG
+         VahQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=eKFioxOzghl9O19J5OuKB0d7mfsjViJLel8CE15qcbU=;
-        b=Nofc5y2V+CK5Eug3hDG428jxxZsAJAulO437VzFcmq8arxcvLWAKvurzsMVQZxA1Vv
-         DAQfbsFcTX2Z6GmYgqb/FfsxEuwOUBoIrVXXk8u8tc5zt+mzMk9RoeUP0FL4JZNfbRIy
-         7sO/J88jo837vVwdkHjXpJ9WJIC+ddtWqxPwHAMXeopcYVKSfwyArzbc/1VicS29RXLw
-         XFoFwThU1SDIZskRxRW5yEhXr1YAHgy0QV8TmYEDWXetuQ0FoYw8vC8g1ZXoAU6AJULW
-         8DfGJHwrPdA+ltIC6c/3FJbs4Fwf0hi5PYf9WRxI2ehro41WhK9iKZDwxVir/0BFB6aI
-         ECZg==
-X-Gm-Message-State: AOAM532+zCFAeFYLnE2d80IAnuqr8y5noVU/tUndll+s4o44jgi/qiDf
-        0NTsNXtvW57XAUDDTyUpfUk=
-X-Google-Smtp-Source: ABdhPJz7xRlqXEq+ldjZc5d9qGFyh22DlAaxSqMBK08X0bj/eXOK/7CFd+JUx3ana49zba0WkF/vXg==
-X-Received: by 2002:a05:6a00:2408:b0:4f7:a8cb:9b63 with SMTP id z8-20020a056a00240800b004f7a8cb9b63mr19312824pfh.33.1650393009772;
-        Tue, 19 Apr 2022 11:30:09 -0700 (PDT)
+        bh=CKt7NnL2WCnYF3IJkaP6ANmOKulqn9UJ42AVdgrbYZM=;
+        b=7q1FXZuonjhckfRfick1gGNHHWtl/vHcQ5a/p/StiUtLbloZBrkYcz/fzq6JiXxx6o
+         IDmiJroUEnYGIP/430k5xvvkJyK1Zy/oz/cDUZqcyulsNa6QdGII9euhD+cISUVjDAq6
+         30ezZV44ojXicXcoojze6hoHO3P4lo4vMHMMw2twqRYSN4aV3kEo+IgWNGOYN/idqZDO
+         hubMwlqPl/wtfChTKAtAeJLFHV69pqo5c4ldDR3wxPDFFD+lMVL4IsAvDaApdJnAnja8
+         gv62S7LuSQ0nNXUOvec8TqpoW/DsKNzsLrIqXNYKkQvemgx+jaBHV2VWk6yvs098SloX
+         LDAA==
+X-Gm-Message-State: AOAM531E5sch/D8sd/NpG3Jr0I67fHv/25q9i3TNXW/r/YZRJBrZoGGO
+        uNBPUAuX0BwxKKJ+Eezh1mY=
+X-Google-Smtp-Source: ABdhPJyK+JBVMlycoxvLkKXqa1o8rQ1mr2VI/izO1bCtrLEYx5oYkb8TO/1X3t5D1i0FmVRl8mgDRw==
+X-Received: by 2002:a17:90a:1b02:b0:1cb:a256:c0a7 with SMTP id q2-20020a17090a1b0200b001cba256c0a7mr19733587pjq.185.1650393229989;
+        Tue, 19 Apr 2022 11:33:49 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm18351117pfl.15.2022.04.19.11.30.08
+        by smtp.gmail.com with ESMTPSA id n19-20020a62e513000000b005048eef5827sm17963074pff.142.2022.04.19.11.33.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 11:30:09 -0700 (PDT)
-Message-ID: <9b68b674-b167-89c4-6b77-c3b50b3312dd@gmail.com>
-Date:   Tue, 19 Apr 2022 11:30:07 -0700
+        Tue, 19 Apr 2022 11:33:49 -0700 (PDT)
+Message-ID: <f8d78967-8842-57de-9464-4e281de2e7d7@gmail.com>
+Date:   Tue, 19 Apr 2022 11:33:48 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH] ARM: dts: BCM5301X: Disable gmac0 and enable port@8 on
- Asus RT-AC88U
+Subject: Re: [PATCH v1] soc: bcm: Check for NULL return of devm_kzalloc()
 Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-References: <20220410094454.2788-1-arinc.unal@arinc9.com>
+To:     QintaoShen <unSimple1993@163.com>, f.fainelli@gmail.com
+Cc:     bcm-kernel-feedback-list@broadcom.com, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1648110940-4684-1-git-send-email-unSimple1993@163.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220410094454.2788-1-arinc.unal@arinc9.com>
+In-Reply-To: <1648110940-4684-1-git-send-email-unSimple1993@163.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 4/10/2022 2:44 AM, Arınç ÜNAL wrote:
-> Disable gmac0 which is not connected to any switch MAC. Enable port@8 of
-> the Broadcom switch which is connected to gmac2.
+On 3/24/2022 1:35 AM, QintaoShen wrote:
+> As the potential failuer of allocation, devm_kzalloc() may return NULL.
+> Then the 'pd->pmb' and the follow lines of code may bring null pointer dereference.
 > 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Therefore, it is better to check the return value of devm_kzalloc() to avoid this confusion.
+> 
+> Signed-off-by: QintaoShen <unSimple1993@163.com>
 
-Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, 
+Applied to https://github.com/Broadcom/stblinux/commits/drivers/next, 
 thanks!
+
+I modified your patch to have a Fixes: tag as replied, and follow 
+Sergey's style recommendation.
 -- 
 Florian
