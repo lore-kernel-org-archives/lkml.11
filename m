@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6103EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69193C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356636AbiDSSSe (ORCPT
+        id S1356649AbiDSSSh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
+        Tue, 19 Apr 2022 14:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356599AbiDSSRQ (ORCPT
+        with ESMTP id S1356638AbiDSSRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:17:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48C23EA86;
-        Tue, 19 Apr 2022 11:12:54 -0700 (PDT)
+        Tue, 19 Apr 2022 14:17:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB093ED38;
+        Tue, 19 Apr 2022 11:13:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3623ECE17D2;
-        Tue, 19 Apr 2022 18:12:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CB4C385AC;
-        Tue, 19 Apr 2022 18:12:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68AF760A75;
+        Tue, 19 Apr 2022 18:13:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34B6AC385A5;
+        Tue, 19 Apr 2022 18:12:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650391971;
-        bh=5OERo2r+XXRBZapPjMBAUbdhmImkWNTw4gJreqwgq2c=;
+        s=k20201202; t=1650391980;
+        bh=T1EzDUfwjggOELHvvCTAYsHts3WIZamAMmLGdfdkNLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rnj0/upqt+CgU1X2f9ES6k9WWdaR7SxwCP2b2Cyqf2vh2/u8v3URTXZIsM+Ywvcy7
-         eQJjDf6glqEyAlAo0wCIx1TzkfSTOHVIf4y+OyBhv1ONnWRodxAPAKs1eUtv2UjvdR
-         x0TGG/N9UTjD8CCnV0DqniRz5w6wSM3ecQ518evhpINEewe2u5Pto9TMKFhI1wOYD+
-         NPdXe3Keuncmr94cXwWhA9Xvlr23URg18Yf6ZbCtyHcyHv5JR/ESAklih1SaqOFR3K
-         L7IxjQGQsv8EyzvBMl1qz9jRcTADLHL2Ro7rBja1MPUQcQuYtkwtUpxFbhxLcwuszc
-         CWi4/oG7YFb/g==
+        b=IgC8pQu+sgDNaqY9Xc7f2jPJ5FJSiIoHj7Zrk2gu0hBJad8GgUSDM4l2YKuOfpYnx
+         LV26XzkaZkaHJFI4B8YIoUkcSr2f3Trmt2ZM/drI8PzHmItpanUc7aUvpLAeqDH5ST
+         pC6rTvhbMkfIV89ozhgUNLR9hwk1d8+vGRfdP0nfQlJpXIsNWp1ddr1imeTjqF7O7l
+         m1hZRA7tbmtXXCFUJuo68QbDAA/YIfralG2joDoLT4LWf9G0/pUzj4zLzrKYXQAT07
+         kFhAGad9UA3iQda/Jtt42USEcNC4o75kz6z/4MobNxjAtxxpNISAmgb8aJVS71HXG4
+         8fZsZI91YZwFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, corentin.chary@gmail.com,
-        markgross@kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 04/27] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
-Date:   Tue, 19 Apr 2022 14:12:19 -0400
-Message-Id: <20220419181242.485308-4-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
+        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, greenfoo@u92.eu,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 06/27] drm/msm/disp: check the return value of kzalloc()
+Date:   Tue, 19 Apr 2022 14:12:21 -0400
+Message-Id: <20220419181242.485308-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181242.485308-1-sashal@kernel.org>
 References: <20220419181242.485308-1-sashal@kernel.org>
@@ -54,38 +57,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
+[ Upstream commit f75e582b0c3ee8f0bddc2248cc8b9175f29c5937 ]
 
-Eliminate the follow smatch warnings:
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
-'value' is never less than zero.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/tencent_B3E19486FF39415098B572B7397C2936C309@qq.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/samsung-laptop.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
-index 7ee010aa740a..404bdb4cbfae 100644
---- a/drivers/platform/x86/samsung-laptop.c
-+++ b/drivers/platform/x86/samsung-laptop.c
-@@ -1121,8 +1121,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
+diff --git a/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c b/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
+index cabe15190ec1..369e57f73a47 100644
+--- a/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
++++ b/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
+@@ -169,6 +169,8 @@ void msm_disp_snapshot_add_block(struct msm_disp_state *disp_state, u32 len,
+ 	va_list va;
  
- 	if (value > samsung->kbd_led.max_brightness)
- 		value = samsung->kbd_led.max_brightness;
--	else if (value < 0)
--		value = 0;
+ 	new_blk = kzalloc(sizeof(struct msm_disp_state_block), GFP_KERNEL);
++	if (!new_blk)
++		return;
  
- 	samsung->kbd_led_wk = value;
- 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
+ 	va_start(va, fmt);
+ 
 -- 
 2.35.1
 
