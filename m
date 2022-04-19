@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5115AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63907C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347833AbiDSSYp (ORCPT
+        id S1356932AbiDSSYx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
+        Tue, 19 Apr 2022 14:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356911AbiDSSWP (ORCPT
+        with ESMTP id S1356928AbiDSSWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 14:22:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218E23E0F5;
-        Tue, 19 Apr 2022 11:14:34 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C66141630;
+        Tue, 19 Apr 2022 11:14:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F358B818EE;
-        Tue, 19 Apr 2022 18:14:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1F21C385AD;
-        Tue, 19 Apr 2022 18:14:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46A03B81185;
+        Tue, 19 Apr 2022 18:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C679C385A5;
+        Tue, 19 Apr 2022 18:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392072;
-        bh=TppHbrbLXc+yU7aWV0WWS5L91TcbqUtNa4n9fGhNDdQ=;
+        s=k20201202; t=1650392075;
+        bh=PN7MlZLaSFRiCAIEjdDacTif52kmQ1VuhqaPv/a7oQk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GRMsV8m0rXSEVCCF4MG3qSOWVdpR7IUZlZhoz7xzEiTCzbLEV2z8nBKvgn77WxTuQ
-         SQuAWRkk+aq4tqj5DvaW7THq+Ggd698oaSS7TIpEQXtKgnNn9bAbu+cQEYtS+Twu3H
-         wIrCNO+/Qc+GDMTebZYSkqUiAmt8Mc9KDj1a6qeob64CBRURQur3nORnr40YVkaZsF
-         X/Hcg99LUm5+m/cW3LzqiJZ6JCtgfLB0WYwq9PJk8ZUYhOPj0hRHTdnwHdw2rCIPyQ
-         xVJkXMBc54k3Fj1O/MlVWb8u0ZVykV4+r30uHbeBepRWlP0xMjQkciL+1DOHG+zYCr
-         j0TKsw0rRZxBw==
+        b=nLc8r3K6x9zNOg+HYLiakoHU5WpZ/t/pMy7ElNnBZiDgxvEGOPsla1l0/6u4I1iso
+         NZeALahfFxKnJbDw8AMDe5Dgx+/CPeSbtt7seTFLANdT1zXrg+2mVl6JTon+WQsyTN
+         bsJ3Y9HVai91tzpA49jhawkSSXY6qW1r72Ti5+X55pNzLftWctQs1xkIXVEX2Ic3aV
+         CnHPp6KczU2TYG//MNbdwWq4K/hAKmH+ZkAa3y7H1cqqqc+p48ejAYkT0jUndx85yS
+         ej0VUudsnAmDxIQUvykeul0jEUTs1n3SB49xVvE7HpL/14V9Acxno1Dbyd6v8/ZxHg
+         nJ+IEJqxTi1hg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, sean@poorly.run,
-        airlied@linux.ie, daniel@ffwll.ch, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 13/18] drm/msm: Stop using iommu_present()
-Date:   Tue, 19 Apr 2022 14:13:47 -0400
-Message-Id: <20220419181353.485719-13-sashal@kernel.org>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, njavali@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 15/18] scsi: qedi: Fix failed disconnect handling
+Date:   Tue, 19 Apr 2022 14:13:49 -0400
+Message-Id: <20220419181353.485719-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181353.485719-1-sashal@kernel.org>
 References: <20220419181353.485719-1-sashal@kernel.org>
@@ -56,38 +56,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit e2a88eabb02410267519b838fb9b79f5206769be ]
+[ Upstream commit 857b06527f707f5df634b854898a191b5c1d0272 ]
 
-Even if some IOMMU has registered itself on the platform "bus", that
-doesn't necessarily mean it provides translation for the device we
-care about. Replace iommu_present() with a more appropriate check.
+We set the qedi_ep state to EP_STATE_OFLDCONN_START when the ep is
+created. Then in qedi_set_path we kick off the offload work. If userspace
+times out the connection and calls ep_disconnect, qedi will only flush the
+offload work if the qedi_ep state has transitioned away from
+EP_STATE_OFLDCONN_START. If we can't connect we will not have transitioned
+state and will leave the offload work running, and we will free the qedi_ep
+from under it.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Patchwork: https://patchwork.freedesktop.org/patch/480707/
-Link: https://lore.kernel.org/r/5ab4f4574d7f3e042261da702d493ee40d003356.1649168268.git.robin.murphy@arm.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+This patch just has us init the work when we create the ep, then always
+flush it.
+
+Link: https://lore.kernel.org/r/20220408001314.5014-10-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Acked-by: Manish Rangankar <mrangankar@marvell.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/qedi/qedi_iscsi.c | 69 +++++++++++++++++-----------------
+ 1 file changed, 34 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index e37e5afc680a..ad88cb9c86ec 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -316,7 +316,7 @@ bool msm_use_mmu(struct drm_device *dev)
- 	struct msm_drm_private *priv = dev->dev_private;
- 
- 	/* a2xx comes with its own MMU */
--	return priv->is_a2xx || iommu_present(&platform_bus_type);
-+	return priv->is_a2xx || device_iommu_mapped(dev->dev);
+diff --git a/drivers/scsi/qedi/qedi_iscsi.c b/drivers/scsi/qedi/qedi_iscsi.c
+index f51723e2d522..b92be0d7db82 100644
+--- a/drivers/scsi/qedi/qedi_iscsi.c
++++ b/drivers/scsi/qedi/qedi_iscsi.c
+@@ -817,6 +817,37 @@ static int qedi_task_xmit(struct iscsi_task *task)
+ 	return qedi_iscsi_send_ioreq(task);
  }
  
- static int msm_init_vram(struct drm_device *dev)
++static void qedi_offload_work(struct work_struct *work)
++{
++	struct qedi_endpoint *qedi_ep =
++		container_of(work, struct qedi_endpoint, offload_work);
++	struct qedi_ctx *qedi;
++	int wait_delay = 5 * HZ;
++	int ret;
++
++	qedi = qedi_ep->qedi;
++
++	ret = qedi_iscsi_offload_conn(qedi_ep);
++	if (ret) {
++		QEDI_ERR(&qedi->dbg_ctx,
++			 "offload error: iscsi_cid=%u, qedi_ep=%p, ret=%d\n",
++			 qedi_ep->iscsi_cid, qedi_ep, ret);
++		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
++		return;
++	}
++
++	ret = wait_event_interruptible_timeout(qedi_ep->tcp_ofld_wait,
++					       (qedi_ep->state ==
++					       EP_STATE_OFLDCONN_COMPL),
++					       wait_delay);
++	if (ret <= 0 || qedi_ep->state != EP_STATE_OFLDCONN_COMPL) {
++		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
++		QEDI_ERR(&qedi->dbg_ctx,
++			 "Offload conn TIMEOUT iscsi_cid=%u, qedi_ep=%p\n",
++			 qedi_ep->iscsi_cid, qedi_ep);
++	}
++}
++
+ static struct iscsi_endpoint *
+ qedi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
+ 		int non_blocking)
+@@ -865,6 +896,7 @@ qedi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
+ 	}
+ 	qedi_ep = ep->dd_data;
+ 	memset(qedi_ep, 0, sizeof(struct qedi_endpoint));
++	INIT_WORK(&qedi_ep->offload_work, qedi_offload_work);
+ 	qedi_ep->state = EP_STATE_IDLE;
+ 	qedi_ep->iscsi_cid = (u32)-1;
+ 	qedi_ep->qedi = qedi;
+@@ -1015,12 +1047,11 @@ static void qedi_ep_disconnect(struct iscsi_endpoint *ep)
+ 	qedi_ep = ep->dd_data;
+ 	qedi = qedi_ep->qedi;
+ 
++	flush_work(&qedi_ep->offload_work);
++
+ 	if (qedi_ep->state == EP_STATE_OFLDCONN_START)
+ 		goto ep_exit_recover;
+ 
+-	if (qedi_ep->state != EP_STATE_OFLDCONN_NONE)
+-		flush_work(&qedi_ep->offload_work);
+-
+ 	if (qedi_ep->conn) {
+ 		qedi_conn = qedi_ep->conn;
+ 		conn = qedi_conn->cls_conn->dd_data;
+@@ -1185,37 +1216,6 @@ static int qedi_data_avail(struct qedi_ctx *qedi, u16 vlanid)
+ 	return rc;
+ }
+ 
+-static void qedi_offload_work(struct work_struct *work)
+-{
+-	struct qedi_endpoint *qedi_ep =
+-		container_of(work, struct qedi_endpoint, offload_work);
+-	struct qedi_ctx *qedi;
+-	int wait_delay = 5 * HZ;
+-	int ret;
+-
+-	qedi = qedi_ep->qedi;
+-
+-	ret = qedi_iscsi_offload_conn(qedi_ep);
+-	if (ret) {
+-		QEDI_ERR(&qedi->dbg_ctx,
+-			 "offload error: iscsi_cid=%u, qedi_ep=%p, ret=%d\n",
+-			 qedi_ep->iscsi_cid, qedi_ep, ret);
+-		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
+-		return;
+-	}
+-
+-	ret = wait_event_interruptible_timeout(qedi_ep->tcp_ofld_wait,
+-					       (qedi_ep->state ==
+-					       EP_STATE_OFLDCONN_COMPL),
+-					       wait_delay);
+-	if ((ret <= 0) || (qedi_ep->state != EP_STATE_OFLDCONN_COMPL)) {
+-		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
+-		QEDI_ERR(&qedi->dbg_ctx,
+-			 "Offload conn TIMEOUT iscsi_cid=%u, qedi_ep=%p\n",
+-			 qedi_ep->iscsi_cid, qedi_ep);
+-	}
+-}
+-
+ static int qedi_set_path(struct Scsi_Host *shost, struct iscsi_path *path_data)
+ {
+ 	struct qedi_ctx *qedi;
+@@ -1331,7 +1331,6 @@ static int qedi_set_path(struct Scsi_Host *shost, struct iscsi_path *path_data)
+ 			  qedi_ep->dst_addr, qedi_ep->dst_port);
+ 	}
+ 
+-	INIT_WORK(&qedi_ep->offload_work, qedi_offload_work);
+ 	queue_work(qedi->offload_thread, &qedi_ep->offload_work);
+ 
+ 	ret = 0;
 -- 
 2.35.1
 
