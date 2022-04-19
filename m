@@ -2,84 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F03C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D27C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:10:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349726AbiDSIL1 (ORCPT
+        id S1349739AbiDSINH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
+        Tue, 19 Apr 2022 04:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243633AbiDSILW (ORCPT
+        with ESMTP id S243633AbiDSIM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:11:22 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:08:37 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDDE27FCE
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:08:37 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2022041908073224b770bf3ad841af0b
-        for <linux-kernel@vger.kernel.org>;
-        Tue, 19 Apr 2022 10:07:33 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=wpl+486sr7a22vbdMzfanbhjqUxRTVD+M5ueXoQSE64=;
- b=BseYIEuS0itiYBiNIdvmZiwlpWrkKtzGGm4b3nPxSGViZzGaoOG6pCxtlTau3xJWdRiK1U
- ZmFGtHGnBytmWRYc3oHiHqzlf9oA739zQfuvCprEzdcGCZ5fwobFEUQpvDTjeuXl38+eMv0M
- J7ac0F8Tffvr0ilth/63Zc407otvg=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 15/20] tty: n_gsm: fix missing update of modem controls after DLCI open
-Date:   Tue, 19 Apr 2022 01:07:24 -0700
-Message-Id: <20220419080724.5726-1-daniel.starke@siemens.com>
-In-Reply-To: <YlkQ5Jh8HIm+AJHe@kroah.com>
-References: <YlkQ5Jh8HIm+AJHe@kroah.com>
+        Tue, 19 Apr 2022 04:12:58 -0400
+X-Greylist: delayed 1696 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:10:16 PDT
+Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9270DDF82;
+        Tue, 19 Apr 2022 01:10:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=9qfOo1FOODXMcgRdw2ZARNk7YVVQEHz8SOv8rQTaLoA=; b=X2GPqOmJxqY6DAgWW5I24FKKxA
+        9FS+xd33q5yCd1Go2L75/ZTQ1sPucX9A2LApeUCxsCsV3pQ0SM+g2nhKjek2kmwrAZbZvYBitGEW8
+        RXfHkKyxVE4ZWlzyW6QZjhQpRjqqRnkr+3pfx68JtHm/goTEpIPsPvsHJxoS6osuKxqG6OKVBRxmn
+        hizF/+03PXnEmqVk4EoFerdxuBzswE7m9vKf/Xrkkcv7EakYMKlxuVyIAm1nlUj5GZh+4QVUleCMO
+        x0jdzJBHWen2/i4qEVq6ScpZVeI/K4nBiGEG5Cye7rZAWgvLDCGEkqDvFtV5SAHM5SjAcd16I3W4f
+        c9W8DYYg==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1ngiUl-000EbL-BN; Tue, 19 Apr 2022 09:41:55 +0200
+Received: from [2001:a61:2a5d:d701:9e5c:8eff:fe01:8578]
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1ngiUk-000KyO-Us; Tue, 19 Apr 2022 09:41:54 +0200
+Message-ID: <4a940702-8a34-c163-2e5a-8dfd835e56d0@metafoo.de>
+Date:   Tue, 19 Apr 2022 09:41:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [v4 10/14] iio: document "serial_number" sysfs attribute
+Content-Language: en-US
+To:     Andrea Merello <andrea.merello@gmail.com>, jic23@kernel.org,
+        mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     robh+dt@kernel.org, andy.shevchenko@gmail.com,
+        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
+        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
+References: <20220415130005.85879-1-andrea.merello@gmail.com>
+ <20220415130005.85879-11-andrea.merello@gmail.com>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20220415130005.85879-11-andrea.merello@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26516/Mon Apr 18 10:21:52 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 4/15/22 15:00, Andrea Merello wrote:
+> From: Andrea Merello <andrea.merello@iit.it>
+>
+> This patch adds ABI documentation for the new "serial_number" sysfs
+> attribute. The first user is the bno055 IIO driver.
+>
+> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+> ---
+>   Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+>   1 file changed, 7 insertions(+)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 2a6954ea1c71..3be613f64843 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -2048,3 +2048,10 @@ Contact:	linux-iio@vger.kernel.org
+>   Description:
+>   		Raw (unscaled) euler angles readings. Units after
+>   		application of scale are deg.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/serial_number
 
-Currently the peer is not informed about the initial state of the modem
-control lines after a new DLCI has been opened.
-Fix this by sending the initial modem control line states after DLCI open.
+Can we make this `serialnumber`? IIO uses underscores to separate 
+different parts of the name and to a machine (e.g. libiio) serial_number 
+looks like a channel called serial with an attribute called number.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index f3fb66be8513..07d03447cdfd 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -370,6 +370,7 @@ static const u8 gsm_fcs8[256] = {
- #define GOOD_FCS	0xCF
- 
- static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
-+static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
- 
- /**
-  *	gsm_fcs_add	-	update FCS
-@@ -1479,6 +1480,9 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Register gsmtty driver,report gsmtty dev add uevent for user */
- 	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
-+	/* Send current modem state */
-+	if (dlci->addr)
-+		gsmtty_modem_update(dlci, 0);
- 	wake_up(&dlci->gsm->event);
- }
- 
--- 
-2.25.1
+> +KernelVersion:	5.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		An example format is 16-bytes, 2-digits-per-byte, HEX-string
+> +		representing the sensor unique ID number.
+
 
