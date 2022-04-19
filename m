@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357618AbiDSUMB (ORCPT
+        id S1357630AbiDSUME (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
+        Tue, 19 Apr 2022 16:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357205AbiDSUL3 (ORCPT
+        with ESMTP id S1356787AbiDSUL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:11:29 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56E63CFC9;
-        Tue, 19 Apr 2022 13:08:44 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 20:08:42 -0000
+        Tue, 19 Apr 2022 16:11:28 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0C23B54F;
+        Tue, 19 Apr 2022 13:08:40 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:08:37 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650398923;
+        s=2020; t=1650398919;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mo1rBP3UZcSdUGWNRgAT7Y5jTBTHjhkOlUTq2ehNa8U=;
-        b=wM6lWXxHlBH/idc+Js5mAMlOveMM6v4YnIdg9Vts53LuKqEEOlFLnmdp0pd6SdDt1IoR7n
-        3S5BBI3A1MzCvjmurMoSwQNH2PaNOONqVsiikAiK+atTiN2wmumWREk3gYK2CKXXaaBSBw
-        PzrcaK8l9kqNDr8D7AAd6m0CFQNc2DD8GDwpjEd30EaA6r5BmigsJYV75IJfmWMeMBIs+B
-        HnL1HfrjIVnFjL8bN1e25nLFOEe73F8Kf41eo0K32zaVoIW0PvhmzzGFnN2Dmi3kTa1n5f
-        wUyZ3GOqxFSo8OsNGLRVpfvydr0dcPEHfgNuDghn9YbdMWw6sGhlKv7myOCUbQ==
+        bh=grdZ2Oj3dJxAOhhOQTQGSWoAAOMuLN+PO2IJmd9VYYM=;
+        b=v27tyKEUBnENDrLRPaDLsD54L7GX3SmOk9GFPA5WudXbZWulZqo/8XyJvBdMplD9x3HoTm
+        1CQ0i2kD5ZWWA2z79jhvsESbSaUqgEEeWRN0UBdsEzM+u6wPpJQ5SDHBV/wLV6shK2U0yO
+        +KEmV6NsffXhEwmd2RS3yxtEG6UuNc2/G1g3DvYGvKUGIoE8ryMtkuyWW1Hukw3Xj5GWIP
+        xCXGncsQii9D04N/m3sxHnlr8psf6tI0FjLvSeYeM+NoAaMc3NXTtoeaeKrJ8hYNEBmpC8
+        9xKhLQ+Ok0TzaGdbmxSc8o/TzoAmFY0JENibJs0bJ20kblMHHK2oxDvPjNsdaA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650398923;
+        s=2020e; t=1650398919;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mo1rBP3UZcSdUGWNRgAT7Y5jTBTHjhkOlUTq2ehNa8U=;
-        b=9Axo+abZJ2iTImqMaGil8McDcTNqy1+i7S3vh+I7Y8WyE5aDmLkf4WwmIubnSt2AqeWWEl
-        XsLPAuSWQrjWzqDQ==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
+        bh=grdZ2Oj3dJxAOhhOQTQGSWoAAOMuLN+PO2IJmd9VYYM=;
+        b=p8cG9SdylvLJ+/5xZV6v/RzSIaErT090VmEn6rv9iAXbmdQTqtWrYl/kggl05n6y92xlnh
+        UXG9TpYkC2OFGADQ==
+From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86,objtool: Mark cpu_startup_entry() __noreturn
-Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+Subject: [tip: x86/urgent] x86/uaccess: Add ENDBR to __put_user_nocheck*()
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220408094718.383658532@infradead.org>
-References: <20220408094718.383658532@infradead.org>
+In-Reply-To: <207f02177a23031091d1a608de6049a9e5e8ff80.1650300597.git.jpoimboe@redhat.com>
+References: <207f02177a23031091d1a608de6049a9e5e8ff80.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165039892227.4207.12342259491044823487.tip-bot2@tip-bot2>
+Message-ID: <165039891783.4207.3884581753436962797.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,52 +62,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     d4e5268a08b211b536fed29beb24271ecd85187e
-Gitweb:        https://git.kernel.org/tip/d4e5268a08b211b536fed29beb24271ecd85187e
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 08 Apr 2022 11:45:55 +02:00
+Commit-ID:     7a00829f8ac3f76b3a3aa5c28ce4ddfd2f977bbe
+Gitweb:        https://git.kernel.org/tip/7a00829f8ac3f76b3a3aa5c28ce4ddfd2f977bbe
+Author:        Josh Poimboeuf <jpoimboe@redhat.com>
+AuthorDate:    Mon, 18 Apr 2022 09:50:24 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 19 Apr 2022 21:58:48 +02:00
+CommitterDate: Tue, 19 Apr 2022 21:58:49 +02:00
 
-x86,objtool: Mark cpu_startup_entry() __noreturn
+x86/uaccess: Add ENDBR to __put_user_nocheck*()
 
-GCC-8 isn't clever enough to figure out that cpu_start_entry() is a
-noreturn while objtool is. This results in code after the call in
-start_secondary(). Give GCC a hand so that they all agree on things.
+The __put_user_nocheck*() inner labels are exported, so in keeping with
+the "allow exported functions to be indirectly called" policy, add
+ENDBR.
 
-  vmlinux.o: warning: objtool: start_secondary()+0x10e: unreachable
-
-Reported-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220408094718.383658532@infradead.org
+Link: https://lkml.kernel.org/r/207f02177a23031091d1a608de6049a9e5e8ff80.1650300597.git.jpoimboe@redhat.com
 ---
- include/linux/cpu.h   | 2 +-
- tools/objtool/check.c | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/lib/putuser.S | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/linux/cpu.h b/include/linux/cpu.h
-index 9cf51e4..54dc2f9 100644
---- a/include/linux/cpu.h
-+++ b/include/linux/cpu.h
-@@ -167,7 +167,7 @@ static inline int suspend_disable_secondary_cpus(void) { return 0; }
- static inline void suspend_enable_secondary_cpus(void) { }
- #endif /* !CONFIG_PM_SLEEP_SMP */
- 
--void cpu_startup_entry(enum cpuhp_state state);
-+void __noreturn cpu_startup_entry(enum cpuhp_state state);
- 
- void cpu_idle_poll_ctrl(bool enable);
- 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index bd0c2c8..e3a675d 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -184,6 +184,7 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
- 		"do_group_exit",
- 		"stop_this_cpu",
- 		"__invalid_creds",
-+               "cpu_startup_entry",
- 	};
- 
- 	if (!func)
+diff --git a/arch/x86/lib/putuser.S b/arch/x86/lib/putuser.S
+index ecb2049..b7dfd60 100644
+--- a/arch/x86/lib/putuser.S
++++ b/arch/x86/lib/putuser.S
+@@ -48,6 +48,7 @@ SYM_FUNC_START(__put_user_1)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+ SYM_INNER_LABEL(__put_user_nocheck_1, SYM_L_GLOBAL)
++	ENDBR
+ 	ASM_STAC
+ 1:	movb %al,(%_ASM_CX)
+ 	xor %ecx,%ecx
+@@ -62,6 +63,7 @@ SYM_FUNC_START(__put_user_2)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+ SYM_INNER_LABEL(__put_user_nocheck_2, SYM_L_GLOBAL)
++	ENDBR
+ 	ASM_STAC
+ 2:	movw %ax,(%_ASM_CX)
+ 	xor %ecx,%ecx
+@@ -76,6 +78,7 @@ SYM_FUNC_START(__put_user_4)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+ SYM_INNER_LABEL(__put_user_nocheck_4, SYM_L_GLOBAL)
++	ENDBR
+ 	ASM_STAC
+ 3:	movl %eax,(%_ASM_CX)
+ 	xor %ecx,%ecx
+@@ -90,6 +93,7 @@ SYM_FUNC_START(__put_user_8)
+ 	cmp %_ASM_BX,%_ASM_CX
+ 	jae .Lbad_put_user
+ SYM_INNER_LABEL(__put_user_nocheck_8, SYM_L_GLOBAL)
++	ENDBR
+ 	ASM_STAC
+ 4:	mov %_ASM_AX,(%_ASM_CX)
+ #ifdef CONFIG_X86_32
