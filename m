@@ -2,56 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C545DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357630AbiDSUME (ORCPT
+        id S1357644AbiDSUMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
+        Tue, 19 Apr 2022 16:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356787AbiDSUL2 (ORCPT
+        with ESMTP id S1357213AbiDSUL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:11:28 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0C23B54F;
-        Tue, 19 Apr 2022 13:08:40 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 20:08:37 -0000
+        Tue, 19 Apr 2022 16:11:29 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FF63B578;
+        Tue, 19 Apr 2022 13:08:45 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:08:43 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650398919;
+        s=2020; t=1650398924;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=grdZ2Oj3dJxAOhhOQTQGSWoAAOMuLN+PO2IJmd9VYYM=;
-        b=v27tyKEUBnENDrLRPaDLsD54L7GX3SmOk9GFPA5WudXbZWulZqo/8XyJvBdMplD9x3HoTm
-        1CQ0i2kD5ZWWA2z79jhvsESbSaUqgEEeWRN0UBdsEzM+u6wPpJQ5SDHBV/wLV6shK2U0yO
-        +KEmV6NsffXhEwmd2RS3yxtEG6UuNc2/G1g3DvYGvKUGIoE8ryMtkuyWW1Hukw3Xj5GWIP
-        xCXGncsQii9D04N/m3sxHnlr8psf6tI0FjLvSeYeM+NoAaMc3NXTtoeaeKrJ8hYNEBmpC8
-        9xKhLQ+Ok0TzaGdbmxSc8o/TzoAmFY0JENibJs0bJ20kblMHHK2oxDvPjNsdaA==
+        bh=Yls/9B9Yczz+xBHu/VTOozK/UB3dXNmhLBxQDqdIcrM=;
+        b=y8ShKEENQJhyj6mQRCgwHbOQue49O757A77IOrWb08KUyo3gZkgQHRZ/aw+x6cVAJfbh9G
+        oQGqgXk4ohhz1ziLwAELI05r0lrxuxB4rO/DV9Xuyd/X0GVgUemYmcHkC8NmYkIYJjJ5zR
+        wGA/x9Qpn1Eev5c4K0dx2LCcjl2ql/I7bOcMfBcz6DzqAWpb1TDeGU06OxE1glKdLAYDJM
+        eJJ739LXiPWt/Eetz6b7FTXkcbdRcj5PJGSqj4tbktlGMtMt1V4jwVEUn57VcKDkakOTA3
+        lp5G8Sg3VwQc3ZOqdgcTicNah5Eh55YNLGHILCYNechbL0q0DLtRcQcHG6uhiQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650398919;
+        s=2020e; t=1650398924;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=grdZ2Oj3dJxAOhhOQTQGSWoAAOMuLN+PO2IJmd9VYYM=;
-        b=p8cG9SdylvLJ+/5xZV6v/RzSIaErT090VmEn6rv9iAXbmdQTqtWrYl/kggl05n6y92xlnh
-        UXG9TpYkC2OFGADQ==
-From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
+        bh=Yls/9B9Yczz+xBHu/VTOozK/UB3dXNmhLBxQDqdIcrM=;
+        b=4Mjzj03VvGC2DHMHWa90HxJ/7UcvRdLTKbmNy2p4iQPU8GJP0s37I2j5WQYKgEFLzewH9i
+        7mc5qothklMARpAg==
+From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/uaccess: Add ENDBR to __put_user_nocheck*()
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: x86/urgent] x86,xen,objtool: Add UNWIND hint
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <207f02177a23031091d1a608de6049a9e5e8ff80.1650300597.git.jpoimboe@redhat.com>
-References: <207f02177a23031091d1a608de6049a9e5e8ff80.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <20220408094718.321246297@infradead.org>
+References: <20220408094718.321246297@infradead.org>
 MIME-Version: 1.0
-Message-ID: <165039891783.4207.3884581753436962797.tip-bot2@tip-bot2>
+Message-ID: <165039892316.4207.7405922361985895288.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,60 +64,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     7a00829f8ac3f76b3a3aa5c28ce4ddfd2f977bbe
-Gitweb:        https://git.kernel.org/tip/7a00829f8ac3f76b3a3aa5c28ce4ddfd2f977bbe
-Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:24 -07:00
+Commit-ID:     2730d3c14a85617c177337f2e2af2108bf82c4ca
+Gitweb:        https://git.kernel.org/tip/2730d3c14a85617c177337f2e2af2108bf82c4ca
+Author:        Peter Zijlstra <peterz@infradead.org>
+AuthorDate:    Fri, 08 Apr 2022 11:45:54 +02:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 19 Apr 2022 21:58:49 +02:00
+CommitterDate: Tue, 19 Apr 2022 21:58:47 +02:00
 
-x86/uaccess: Add ENDBR to __put_user_nocheck*()
+x86,xen,objtool: Add UNWIND hint
 
-The __put_user_nocheck*() inner labels are exported, so in keeping with
-the "allow exported functions to be indirectly called" policy, add
-ENDBR.
+SYM_CODE_START*() doesn't get auto-validated and needs an UNWIND hint
+to get checked, add one.
 
-Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+  vmlinux.o: warning: objtool: pvh_start_xen()+0x0: unreachable
+
+Reported-by: Thomas Gleixner <tglx@linutronix.de>
+Reported-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/207f02177a23031091d1a608de6049a9e5e8ff80.1650300597.git.jpoimboe@redhat.com
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220408094718.321246297@infradead.org
 ---
- arch/x86/lib/putuser.S | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/platform/pvh/head.S | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/lib/putuser.S b/arch/x86/lib/putuser.S
-index ecb2049..b7dfd60 100644
---- a/arch/x86/lib/putuser.S
-+++ b/arch/x86/lib/putuser.S
-@@ -48,6 +48,7 @@ SYM_FUNC_START(__put_user_1)
- 	cmp %_ASM_BX,%_ASM_CX
- 	jae .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_1, SYM_L_GLOBAL)
-+	ENDBR
- 	ASM_STAC
- 1:	movb %al,(%_ASM_CX)
- 	xor %ecx,%ecx
-@@ -62,6 +63,7 @@ SYM_FUNC_START(__put_user_2)
- 	cmp %_ASM_BX,%_ASM_CX
- 	jae .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_2, SYM_L_GLOBAL)
-+	ENDBR
- 	ASM_STAC
- 2:	movw %ax,(%_ASM_CX)
- 	xor %ecx,%ecx
-@@ -76,6 +78,7 @@ SYM_FUNC_START(__put_user_4)
- 	cmp %_ASM_BX,%_ASM_CX
- 	jae .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_4, SYM_L_GLOBAL)
-+	ENDBR
- 	ASM_STAC
- 3:	movl %eax,(%_ASM_CX)
- 	xor %ecx,%ecx
-@@ -90,6 +93,7 @@ SYM_FUNC_START(__put_user_8)
- 	cmp %_ASM_BX,%_ASM_CX
- 	jae .Lbad_put_user
- SYM_INNER_LABEL(__put_user_nocheck_8, SYM_L_GLOBAL)
-+	ENDBR
- 	ASM_STAC
- 4:	mov %_ASM_AX,(%_ASM_CX)
- #ifdef CONFIG_X86_32
+diff --git a/arch/x86/platform/pvh/head.S b/arch/x86/platform/pvh/head.S
+index 72c1e42..7fe564e 100644
+--- a/arch/x86/platform/pvh/head.S
++++ b/arch/x86/platform/pvh/head.S
+@@ -50,6 +50,7 @@
+ #define PVH_DS_SEL		(PVH_GDT_ENTRY_DS * 8)
+ 
+ SYM_CODE_START_LOCAL(pvh_start_xen)
++	UNWIND_HINT_EMPTY
+ 	cld
+ 
+ 	lgdt (_pa(gdt))
