@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6339C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD30C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353473AbiDSOis (ORCPT
+        id S1353491AbiDSOiu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55604 "EHLO
+        Tue, 19 Apr 2022 10:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353415AbiDSOim (ORCPT
+        with ESMTP id S1353466AbiDSOin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:38:42 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B2A1FCEE;
-        Tue, 19 Apr 2022 07:35:59 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 22:35:29 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650378957;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QawvvwMKEl52ui8qtXQSbeAZjXUbrb0qfB23spQfQ5o=;
-        b=V2i84UtxHjyIILi/gKDecMrXxZHmNluIocH16r4VPQD6u4LEOHLM+hQg3Pt5MaSbts9s1F
-        pIy1R8GpScNNC3spVtoSLh6JAQcD3kjT7l23TKEbJhDrTtWtr9vSsO1w/8ujxPTvCe0HN4
-        KmQ5TaCHq+fTgMKN7hS57OFf0e/ApZk=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH 2/2] drm/nvdla: Add driver support for NVDLA
-Message-ID: <20220419143529.GA44323@chq-T47>
-References: <20220419135908.39606-1-cai.huoqing@linux.dev>
- <20220419135908.39606-3-cai.huoqing@linux.dev>
- <20bac605-97e6-e5cd-c4e4-83a8121645d8@amd.com>
+        Tue, 19 Apr 2022 10:38:43 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id A658020190
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:36:00 -0700 (PDT)
+Received: (qmail 594028 invoked by uid 1000); 19 Apr 2022 10:35:59 -0400
+Date:   Tue, 19 Apr 2022 10:35:59 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     Evan Green <evgreen@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Rajat Jain <rajatja@chromium.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Razvan Heghedus <heghedus.razvan@gmail.com>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Youngjin Jang <yj84.jang@samsung.com>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] USB: Quiesce interrupts across pm freeze
+Message-ID: <Yl7Iz/lGk3fITzMK@rowland.harvard.edu>
+References: <20220418210046.2060937-1-evgreen@chromium.org>
+ <9f2752b5-8717-8ea3-1462-69bcfe42bb0e@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20bac605-97e6-e5cd-c4e4-83a8121645d8@amd.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <9f2752b5-8717-8ea3-1462-69bcfe42bb0e@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19 4月 22 16:07:44, Christian König wrote:
-> Am 19.04.22 um 15:59 schrieb Cai Huoqing:
-> > The NVIDIA Deep Learning Accelerator (NVDLA) is an open source IP
-> > which is integrated into NVIDIA Jetson AGX Xavier,
-> > so add driver support for this accelerator.
-> > 
-> > Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
-> > 
+On Tue, Apr 19, 2022 at 09:05:53AM +0200, Oliver Neukum wrote:
 > 
-> Well doesn't looks so bad on first glance (regarding coding style etc..)
 > 
-> But am I blind or isn't there any UAPI for the driver? I mean adding a DRM
-> driver without any change to include/uapi/drm is really odd.
-thanks for your reply, I will rename nvdla_ioctl.h which is UAPI headfile,
-then put it to include/uapi/drm.
+> On 18.04.22 23:00, Evan Green wrote:
+> > The documentation for the freeze() method says that it "should quiesce
+> > the device so that it doesn't generate IRQs or DMA". The unspoken
+> > consequence of not doing this is that MSIs aimed at non-boot CPUs may
+> > get fully lost if they're sent during the period where the target CPU is
+> > offline.
+> >
+> > The current behavior of the USB subsystem still allows interrupts to
+> > come in after freeze, both in terms of remote wakeups and HC events
+> > related to things like root plug port activity. This can get controllers
+> > like XHCI, which is very sensitive to lost interrupts, in a wedged
+> > state. This series attempts to fully quiesce interrupts coming from USB
+> > across in a freeze or quiescent state.
+> >
+> > These patches are grouped together because they serve a united purpose,
+> > but are actually independent. They could be merged or reverted
+> > individually.
+> Hi,
+> 
+> sorry for being a bit late in this discussion. There was something that
+> I didn't remember immediately.
+> 
+> We have a set of quirky devices that need HID_QUIRK_ALWAYS_POLL.
+> They have the nasty firmware bug that, if you suspend them without
+> remote wakeup, they will crash or reset themselves.
+> I am afraid that has an obvious relevance to your cool patches.
+> I am not completely sure how to deal with this. It seems to me that the
+> quirk will need to be shifted from HID to core USB and thaw() needs to
+> be translated into usb_device_reset() + reset_resume() for them,
+> but I am not really sure about the optimal mechanism.
 
-thanks,
-Cai
-> 
-> Regards,
-> Christian.
+We may not need to do anything.  This patch specifically addresses 
+hibernation, not system suspend or runtime suspend.  A device crashing 
+or resetting during hibernation is not at all unusual; we should be able 
+to handle such cases properly.
+
+The THAW part of suspend-to-hibernation is used only for writing the 
+memory image to permanent storage.  I doubt that a malfunctioning HID 
+device would interfere with this process.
+
+Alan Stern
