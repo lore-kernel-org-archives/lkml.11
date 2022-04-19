@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EADEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C66C5C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354894AbiDSQm0 (ORCPT
+        id S1354998AbiDSQnB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
+        Tue, 19 Apr 2022 12:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354754AbiDSQly (ORCPT
+        with ESMTP id S1354763AbiDSQlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:41:54 -0400
+        Tue, 19 Apr 2022 12:41:55 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A9E15FC5;
-        Tue, 19 Apr 2022 09:39:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157A0167DF;
+        Tue, 19 Apr 2022 09:39:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650386349; x=1681922349;
+  t=1650386351; x=1681922351;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NLrqu/pKW+TURbMxtYrEbcPFcWVgS9/aTQM+0w4anyU=;
-  b=codKyXn6xpDdgdy2PS/Ct/EP++Yd7X2HusGsfVpZh50hSOc/BmfdQx9l
-   ugzdyMsrcbSyQ5VWQJXwjlqg3DkrW1f5eIiC2W2ip9oSYQ4WCVkSrY7qe
-   p6xSnC8WUNv9X8QTByOOVknv10PjbZY35tV8eZPGGMRuhsotVyBVuo1w5
-   YNqphVfx37vpmtGjHu6fClpGh2mLlp1XesZKO1wGlTUdJldpRqk0jMIUd
-   3UchTdA0HlXAXtEWC/5SwTlOcegXqaHY3MaLJiIQcUPOmwwyMT1lcyhQD
-   D2EUrdTOBXcDfpCRq3zpt0wJE5z5DcevcmeIjLLMnoB1bKUsRv+7RdiPB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="245702531"
+  bh=GiGJaH71F5oTpM1VXhMQYtv9L+oZv5Oh7aW9Jy9k+CQ=;
+  b=BY9+Bpm5Y3DCDGcA91Zlv83lSUOD2LzjmNfU5b0Nc+i8ZYvFRNpwN14f
+   JTJION84kvA57goboL+MzoVdNBmctWlsOgdDhIsMeSY/XgfSt9RGivytk
+   YHrEYGO4iwoY/vNjjqNFZHV/GS5U7snNuyRF5OqlFXfyr56pjjFpAzhaZ
+   aZbr0w04ZtIAyQuBuOqT4Wu3TwBDEzoR0S8+VfjWObIlNJ50c3d20niwK
+   jz3+uNaPLa9sdDXQjy//IUk7qgwVEir1tuh2xKhZ8exdEWB9FP8df1PSb
+   mEHqvDq5Zvcho/pw0Skfe0kTRTPPm8ymAgoMJ9vY1icfEpCG/aberdHoE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="245702555"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="245702531"
+   d="scan'208";a="245702555"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:39:08 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:39:10 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="554802143"
+   d="scan'208";a="554802172"
 Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:39:07 -0700
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:39:09 -0700
 From:   Tony Luck <tony.luck@intel.com>
 To:     hdegoede@redhat.com, markgross@kernel.org
 Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -48,9 +48,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
         patches@lists.linux.dev, ravi.v.shankar@intel.com
-Subject: [PATCH v3 05/11] platform/x86/intel/ifs: Read IFS firmware image
-Date:   Tue, 19 Apr 2022 09:38:53 -0700
-Message-Id: <20220419163859.2228874-6-tony.luck@intel.com>
+Subject: [PATCH v3 10/11] trace: platform/x86/intel/ifs: Add trace point to track Intel IFS operations
+Date:   Tue, 19 Apr 2022 09:38:58 -0700
+Message-Id: <20220419163859.2228874-11-tony.luck@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419163859.2228874-1-tony.luck@intel.com>
 References: <20220407191347.9681-1-jithu.joseph@intel.com>
@@ -61,144 +61,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jithu Joseph <jithu.joseph@intel.com>
+Add tracing support which may be useful for debugging systems that fail to complete
+In Field Scan tests.
 
-Driver probe routine allocates structure to communicate status
-and parameters between functions in the driver. Also call
-load_ifs_binary() to load the scan image file.
-
-There is a separate scan image file for each processor family,
-model, stepping combination. This is read from the static path:
-
-  /lib/firmware/intel/ifs/{ff-mm-ss}.scan
-
-Step 1 in loading is to generate the correct path and use
-request_firmware_direct() to load into memory.
-
-Subsequent patches will use the IFS MSR interfaces to copy
-the image to BIOS reserved memory and validate the SHA256
-checksums.
-
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
-Co-developed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com
 Signed-off-by: Tony Luck <tony.luck@intel.com>
 ---
- drivers/platform/x86/intel/ifs/Makefile |  2 +-
- drivers/platform/x86/intel/ifs/core.c   | 23 ++++++++++++++++++
- drivers/platform/x86/intel/ifs/ifs.h    | 19 +++++++++++++++
- drivers/platform/x86/intel/ifs/load.c   | 31 +++++++++++++++++++++++++
- 4 files changed, 74 insertions(+), 1 deletion(-)
- create mode 100644 drivers/platform/x86/intel/ifs/ifs.h
- create mode 100644 drivers/platform/x86/intel/ifs/load.c
+ MAINTAINERS                              |  1 +
+ drivers/platform/x86/intel/ifs/runtest.c |  5 ++++
+ include/trace/events/intel_ifs.h         | 38 ++++++++++++++++++++++++
+ 3 files changed, 44 insertions(+)
+ create mode 100644 include/trace/events/intel_ifs.h
 
-diff --git a/drivers/platform/x86/intel/ifs/Makefile b/drivers/platform/x86/intel/ifs/Makefile
-index bf8adc57892c..eab0cc81f38e 100644
---- a/drivers/platform/x86/intel/ifs/Makefile
-+++ b/drivers/platform/x86/intel/ifs/Makefile
-@@ -2,4 +2,4 @@ obj-$(CONFIG_INTEL_IFS_DEVICE)	+= intel_ifs_device.o
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9e372a960fa5..b488ff628a43 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9867,6 +9867,7 @@ R:	Ashok Raj <ashok.raj@intel.com>
+ R:	Tony Luck <tony.luck@intel.com>
+ S:	Maintained
+ F:	drivers/platform/x86/intel/ifs
++F:	include/trace/events/intel_ifs.h
  
- obj-$(CONFIG_INTEL_IFS)		+= intel_ifs.o
+ INTEL INTEGRATED SENSOR HUB DRIVER
+ M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+diff --git a/drivers/platform/x86/intel/ifs/runtest.c b/drivers/platform/x86/intel/ifs/runtest.c
+index 246eff250563..c6fa9385dda0 100644
+--- a/drivers/platform/x86/intel/ifs/runtest.c
++++ b/drivers/platform/x86/intel/ifs/runtest.c
+@@ -24,6 +24,9 @@ static atomic_t siblings_out;
+ static int cpu_sibl_ct;
+ static bool scan_enabled = true;
  
--intel_ifs-objs			:= core.o
-+intel_ifs-objs			:= core.o load.o
-diff --git a/drivers/platform/x86/intel/ifs/core.c b/drivers/platform/x86/intel/ifs/core.c
-index eb34b877dac0..139449f11a64 100644
---- a/drivers/platform/x86/intel/ifs/core.c
-+++ b/drivers/platform/x86/intel/ifs/core.c
-@@ -4,7 +4,30 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
++#define CREATE_TRACE_POINTS
++#include <trace/events/intel_ifs.h>
++
+ struct ifs_work {
+ 	struct work_struct w;
+ 	struct device *dev;
+@@ -217,6 +220,8 @@ static void ifs_work_func(struct work_struct *work)
  
-+#include "ifs.h"
+ 		rdmsrl(MSR_SCAN_STATUS, status.data);
+ 
++		trace_ifs_status(activate, status);
 +
-+static int ifs_probe(struct platform_device *pdev)
-+{
-+	struct ifs_data *ifsd;
-+
-+	ifsd = devm_kzalloc(&pdev->dev, sizeof(*ifsd), GFP_KERNEL);
-+	if (!ifsd)
-+		return -ENOMEM;
-+
-+	dev_set_drvdata(&pdev->dev, ifsd);
-+
-+	switch (pdev->id) {
-+	case 0:
-+		/* Load IFS binary to BIOS reserved memory area */
-+		ifsd->loaded = !load_ifs_binary(&pdev->dev);
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
- static struct platform_driver intel_ifs_driver = {
-+	.probe = ifs_probe,
- 	.driver = {
- 		.name = "intel_ifs",
- 	},
-diff --git a/drivers/platform/x86/intel/ifs/ifs.h b/drivers/platform/x86/intel/ifs/ifs.h
+ 		/* Some cases can be retried, give up for others */
+ 		if (!can_restart(status))
+ 			break;
+diff --git a/include/trace/events/intel_ifs.h b/include/trace/events/intel_ifs.h
 new file mode 100644
-index 000000000000..dacc8b6ce159
+index 000000000000..0611f370cb37
 --- /dev/null
-+++ b/drivers/platform/x86/intel/ifs/ifs.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright(c) 2022 Intel Corporation. */
++++ b/include/trace/events/intel_ifs.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM intel_ifs
 +
-+#ifndef _IFS_H_
-+#define _IFS_H_
++#if !defined(_TRACE_IFS_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_IFS_H
 +
-+/**
-+ * struct ifs_data - attributes related to intel IFS driver
-+ * @loaded_version: stores the currently loaded ifs image version.
-+ * @loaded: If a valid test binary has been loaded into the memory
-+ */
-+struct ifs_data {
-+	int loaded_version;
-+	bool loaded;
-+};
++#include <linux/ktime.h>
++#include <linux/tracepoint.h>
 +
-+int load_ifs_binary(struct device *dev);
++TRACE_EVENT(ifs_status,
 +
-+#endif
-diff --git a/drivers/platform/x86/intel/ifs/load.c b/drivers/platform/x86/intel/ifs/load.c
-new file mode 100644
-index 000000000000..fa6c64707a73
---- /dev/null
-+++ b/drivers/platform/x86/intel/ifs/load.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(c) 2022 Intel Corporation. */
++	TP_PROTO(union ifs_scan activate, union ifs_status status),
 +
-+#include <linux/firmware.h>
-+#include <linux/platform_device.h>
++	TP_ARGS(activate, status),
 +
-+static const char *ifs_path = "intel/ifs/";
++	TP_STRUCT__entry(
++		__field(	u64,	status	)
++		__field(	u8,	start	)
++		__field(	u8,	stop	)
++	),
 +
-+/*
-+ * Load ifs image. Before loading ifs module, the ifs image must be located
-+ * in /lib/firmware/intel/ifs and named as {family/model/stepping}.{testname}.
-+ */
-+int load_ifs_binary(struct device *dev)
-+{
-+	const struct firmware *fw;
-+	char scan_path[256];
-+	int ret;
++	TP_fast_assign(
++		__entry->start	= activate.start;
++		__entry->stop	= activate.stop;
++		__entry->status	= status.data;
++	),
 +
-+	snprintf(scan_path, sizeof(scan_path), "%s%02x-%02x-%02x.scan", ifs_path,
-+		 boot_cpu_data.x86, boot_cpu_data.x86_model, boot_cpu_data.x86_stepping);
++	TP_printk("start: %.2x, stop: %.2x, status: %llx",
++		__entry->start,
++		__entry->stop,
++		__entry->status)
++);
 +
-+	ret = request_firmware_direct(&fw, scan_path, dev);
-+	if (ret) {
-+		dev_err(dev, "ifs file %s load failed\n", scan_path);
-+		return ret;
-+	}
++#endif /* _TRACE_IFS_H */
 +
-+	release_firmware(fw);
-+
-+	return ret;
-+}
++/* This part must be outside protection */
++#include <trace/define_trace.h>
 -- 
 2.35.1
 
