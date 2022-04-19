@@ -2,155 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 391D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2237C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350010AbiDSMUP (ORCPT
+        id S1352182AbiDSMU1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39874 "EHLO
+        Tue, 19 Apr 2022 08:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346541AbiDSMUL (ORCPT
+        with ESMTP id S241359AbiDSMUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:20:11 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C66925E90
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:17:28 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id x17so29033305lfa.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:17:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=c4jLu+nEjW6ZyZXVzGI5SDD7yHtnUvhBe/fmRqUVNIQ=;
-        b=XHTyOUDABQ14gZmVv1k6ZT33I2aAbve42wB0HyHQxv7GIG6L7ZAKcuW2rGSxXu/ygr
-         JnWzRmFHo9x1ZE21q1MdOXNxgM0G6U0dzM3232itmYKA3MVrjrU/MLuccHMgIGDrN3hH
-         D3+yMStuFAvLXza9j2W/bcrz9OIx2WmpcXkiVEVsqxbasDR23Ydv/wFqPV9IL4cz2XuP
-         +09gFQTuxn7+b56CTrbPi8/Pq6zYk0zHk6sQvCLKjT9J2p/G9SV4KjVtjs3cOMisAS2O
-         mivwFNQc84cRhVQafMN71BdlBSk1jKUOclNnS4aoAd2n+l9UOg0Iyj5GA7Yfjtxo1el9
-         KIRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=c4jLu+nEjW6ZyZXVzGI5SDD7yHtnUvhBe/fmRqUVNIQ=;
-        b=QxPfNAzNmRCAYugtqKdjd7c4Snza5l59BOviDKVKDvES1+EfJHGCGy3aMw6H9kAKkZ
-         07Sirv0TGcRahV/6evrotQLsFDHj43RGCWCcoS4LuLIglvXMEr8904tYiDIP2WaZz5Rn
-         0rgMZ6lWIFkyFPlZW45LgG3Z8hizeVCFGN+6sdwAKUEYxxsuWr6pczO575U1l2LkiI61
-         Elwt5NFAqrc7g/P6rzfZWI5e6NDdl01aJhsml4/UyKHY6D5OENXLpyWJ6Jdjmr7EWz8w
-         XuDl+AW8qcOEKmi6NXdstO1jSnf//Eg/Xh5fnXYPQ2+cZXkthJQp6W/oHOeFUHv9FTVU
-         xong==
-X-Gm-Message-State: AOAM531XOdE/k97Gn+9irNxeSUTZQiQX25icXZvuDti3YWR95zfdQ+la
-        WvxqkBREb+sIx/h0yw7R69o=
-X-Google-Smtp-Source: ABdhPJwkKAkPv72l8VLD2wXgvdqXMSxh5RJKyI64dvC+KXpqtAP43wJmw6LIPT1nv21iuUsXGSy77w==
-X-Received: by 2002:a05:6512:c28:b0:471:9a7d:de9e with SMTP id z40-20020a0565120c2800b004719a7dde9emr5320943lfu.440.1650370646660;
-        Tue, 19 Apr 2022 05:17:26 -0700 (PDT)
-Received: from [192.168.1.7] ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id e15-20020a19500f000000b0046bb76678bcsm1497380lfb.131.2022.04.19.05.17.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 05:17:26 -0700 (PDT)
-Subject: Re: [RFC PATCH 6/6] arm/xen: Assign xen-virtio DMA ops for virtio
- devices in Xen guests
-To:     Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Julien Grall <julien@xen.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <1649963973-22879-1-git-send-email-olekstysh@gmail.com>
- <1649963973-22879-7-git-send-email-olekstysh@gmail.com>
- <alpine.DEB.2.22.394.2204151305050.915916@ubuntu-linux-20-04-desktop>
- <YlpdBHKT1bYzZe2e@infradead.org>
- <f879622e-5656-deb1-1930-f0cd180a4ab1@gmail.com>
- <alpine.DEB.2.22.394.2204181202080.915916@ubuntu-linux-20-04-desktop>
-From:   Oleksandr <olekstysh@gmail.com>
-Message-ID: <6a04cc34-fbb3-44d8-c1a4-03bda5b3deb1@gmail.com>
-Date:   Tue, 19 Apr 2022 15:17:25 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 19 Apr 2022 08:20:25 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC00237CC;
+        Tue, 19 Apr 2022 05:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=kF/1igt59y2TfJ2YePNkFCihKIWNIpvzG5QTYk64o6w=; b=gV7cI+0qib+6e9uGnkem4GoPRv
+        ruCgmtIpE2BSfVqo5GisnzuiUAFPq8gZhp32Xn5E/gn3pIdnPIg9t4GSLzySH1B7fQw1QtUmYGhjs
+        z2kCS7W7xO1LvqH64gNBfTSKZWUYeA1oWMW+srx5EfwRdf5t6mztaHuRkrMwXakwB02s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ngmnc-00GUjL-PL; Tue, 19 Apr 2022 14:17:40 +0200
+Date:   Tue, 19 Apr 2022 14:17:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, UNGLinuxDriver@microchip.com,
+        richardcochran@gmail.com
+Subject: Re: [RFC PATCH net-next 0/2] net: phy: Extend sysfs to adjust PHY
+ latency.
+Message-ID: <Yl6oZLIaBnPVkeqN@lunn.ch>
+References: <20220419083704.48573-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.22.394.2204181202080.915916@ubuntu-linux-20-04-desktop>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419083704.48573-1-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Apr 19, 2022 at 10:37:02AM +0200, Horatiu Vultur wrote:
+> The previous try of setting the PHY latency was here[1]. But this approach
+> could not work for multiple reasons:
+> - the interface was not generic enough so it would be hard to be extended
+>   in the future
+> - if there were multiple time stamper in the system then it was not clear
+>   to which one should adjust these values.
+> 
+> So the next try is to extend sysfs and configure exactly the desired PHY.
 
-Hello Stefano, Juergen
+What about timestampers which are not PHYs? Ideally you want one
+interface which will work for any sort of stamper, be it MAC, PHY, or
+a bump in the wire between the MAC and the PHY.
 
-
-On 18.04.22 22:11, Stefano Stabellini wrote:
-> On Mon, 18 Apr 2022, Oleksandr wrote:
->> On 16.04.22 09:07, Christoph Hellwig wrote:
->>
->> Hello Christoph
->>
->>> On Fri, Apr 15, 2022 at 03:02:45PM -0700, Stefano Stabellini wrote:
->>>> This makes sense overall. Considering that the swiotlb-xen case and the
->>>> virtio case are mutually exclusive, I would write it like this:
->>> Curious question:  Why can't the same grant scheme also be used for
->>> non-virtio devices?  I really hate having virtio hooks in the arch
->>> dma code.  Why can't Xen just say in DT/ACPI that grants can be used
->>> for a given device?
-> [...]
->
->> This patch series tries to make things work with "virtio" devices in Xen
->> system without introducing any modifications to code under drivers/virtio.
->
-> Actually, I think Christoph has a point.
->
-> There is nothing inherently virtio specific in this patch series or in
-> the "xen,dev-domid" device tree binding.
-
-
-Although the main intention of this series was to enable using virtio 
-devices in Xen guests, I agree that nothing in new DMA ops layer 
-(xen-virtio.c) is virtio specific (at least at the moment). Regarding 
-the whole patch series I am not quite sure, as it uses 
-arch_has_restricted_virtio_memory_access().
-
-
->   Assuming a given device is
-> emulated by a Xen backend, it could be used with grants as well.
->
-> For instance, we could provide an emulated e1000 NIC with a
-> "xen,dev-domid" property in device tree. Linux could use grants with it
-> and the backend could map the grants. It would work the same way as
-> virtio-net/block/etc. Passthrough devices wouldn't have the
-> "xen,dev-domid" property, so no problems.
->
-> So I think we could easily generalize this work and expand it to any
-> device. We just need to hook on the "xen,dev-domid" device tree
-> property.
->
-> I think it is just a matter of:
-> - remove the "virtio,mmio" check from xen_is_virtio_device
-> - rename xen_is_virtio_device to something more generic, like
->    xen_is_grants_device
-> - rename xen_virtio_setup_dma_ops to something more generic, like
->    xen_grants_setup_dma_ops
->
-> And that's pretty much it.
-
-+ likely renaming everything in that patch series not to mention virtio 
-(mostly related to xen-virtio.c internals).
-
-
-Stefano, thank you for clarifying Christoph's point.
-
-Well, I am not against going this direction. Could we please make a 
-decision on this? @Juergen, what is your opinion?
-
-
-
--- 
-Regards,
-
-Oleksandr Tyshchenko
-
+  Andrew
