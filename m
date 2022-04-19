@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE287C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C1CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355526AbiDSRJr (ORCPT
+        id S1355617AbiDSRJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
+        Tue, 19 Apr 2022 13:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355357AbiDSRJg (ORCPT
+        with ESMTP id S1355515AbiDSRJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:09:36 -0400
+        Tue, 19 Apr 2022 13:09:38 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F555FF7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:06:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A2F2AF
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:06:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388013; x=1681924013;
+  t=1650388016; x=1681924016;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4kg96elYopHb8G+ADzcmCb8Kh5ugzUamsq/2aa+YD4w=;
-  b=ZVSM1sGmAxhpfn5iglGqwXYe/CCOwcVrab2Q0ZRjLKo1W4BoeMsc09mr
-   DvqS3ffSnJHCzl6Vq7hvKoa6h7kPtH7LtF0uoJAdZlndYN1bVNLrqggBp
-   BrpRmQE4+nHitsqakA6Qm2GX1k4W69uDAZYJXY9MMeqH5Yu6wKKizaCSy
-   1H72YFRFufuRZJd6rH0Bxd90kn0S4JGbfiFFF73ke5wgwTWaDWjz58J/H
-   TAV6S/oisr6CvW+F9OIpNbySVYvaiDcpn0TQA22m46z4cNfaCqO3RWrlW
-   bal1GWWUdbZ6zjcUpjea0Ug9NrMS/+dVqYEhsqAv6G8tZ2b/MiMSlkekz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350267538"
+  bh=Ve/4jZtTUjdgGjXgqqd9l88h+YQVxKChCdKoifAV604=;
+  b=dJiSPti57wzMt2LeuZt/rUwDpAkfl3rRLeozQJ00L5GHH4dPZDq+MuMP
+   WikST/I8o5lnLWT1ALaEnkF7toqV6vi6Rye/xOBxrjobOaAhvefz3FQ7D
+   l/X6ELVEcrWKjW64/yYzc2yaVyia4jXUN2AlFc1HBVpEWu6+KOEg9GLsW
+   EdLYRNrersqAYqtt0saCC82HF2MG0iK/WxKWpZwNVnCTisjw0ww1DmSz8
+   y1IAE0yJNorZu/lWBlrkY/pkrDshiZLxaFbFH8xH99uQw37AVF6Z/ysG9
+   gPZRtHnvxRSPNZ52HF37G00UHdJxi/p9R2COv2G9NI6VaahabxjOs7ysd
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350267544"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="350267538"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:06:53 -0700
+   d="scan'208";a="350267544"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:06:55 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="727145490"
+   d="scan'208";a="625733252"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:06:51 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:06:55 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 01/44] Documentation/protection-keys: Clean up documentation for User Space pkeys
-Date:   Tue, 19 Apr 2022 10:06:06 -0700
-Message-Id: <20220419170649.1022246-2-ira.weiny@intel.com>
+Subject: [PATCH V10 06/44] x86/pkeys: Add PKS CPU feature bit
+Date:   Tue, 19 Apr 2022 10:06:11 -0700
+Message-Id: <20220419170649.1022246-7-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,81 +60,69 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-The documentation for user space pkeys was a bit dated including things
-such as Amazon and distribution testing information which is irrelevant
-now.
+Memory Protection Keys (pkeys) provides a mechanism for enforcing
+page-based protections, but without requiring modification of the page
+tables when an application changes protection domains.
 
-Update the documentation.  This also streamlines adding the Supervisor
-pkey documentation later on.
+The supervisor support for memory protection keys is referred to as
+PKS (Protection Keys Supervisor).
 
-Cc: "Moger, Babu" <Babu.Moger@amd.com>
+Add the defines for the CPU support bit and the boilerplate disable
+infrastructure predicated on the new ARCH_ENABLE_SUPERVISOR_PKEYS
+Kconfig option.
+
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
-Changes for V9:
-	use pkey
-	Change information on which CPU's have PKU
----
- Documentation/core-api/protection-keys.rst | 44 +++++++++++-----------
- 1 file changed, 21 insertions(+), 23 deletions(-)
+Changes for V9
+	Dave Hansen
+		New commit message
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index ec575e72d0b2..bf28ac0401f3 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -4,31 +4,29 @@
- Memory Protection Keys
- ======================
+Changes for V8
+	Split this out into it's own patch
+---
+ arch/x86/include/asm/cpufeatures.h       | 1 +
+ arch/x86/include/asm/disabled-features.h | 8 +++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 73e643ae94b6..a98a9aa2b845 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -368,6 +368,7 @@
+ #define X86_FEATURE_MOVDIR64B		(16*32+28) /* MOVDIR64B instruction */
+ #define X86_FEATURE_ENQCMD		(16*32+29) /* ENQCMD and ENQCMDS instructions */
+ #define X86_FEATURE_SGX_LC		(16*32+30) /* Software Guard Extensions Launch Control */
++#define X86_FEATURE_PKS			(16*32+31) /* Protection Keys for Supervisor pages */
  
--Memory Protection Keys for Userspace (PKU aka PKEYs) is a feature
--which is found on Intel's Skylake (and later) "Scalable Processor"
--Server CPUs. It will be available in future non-server Intel parts
--and future AMD processors.
--
--For anyone wishing to test or use this feature, it is available in
--Amazon's EC2 C5 instances and is known to work there using an Ubuntu
--17.04 image.
--
--Memory Protection Keys provides a mechanism for enforcing page-based
--protections, but without requiring modification of the page tables
--when an application changes protection domains.  It works by
--dedicating 4 previously ignored bits in each page table entry to a
--"protection key", giving 16 possible keys.
--
--There is also a new user-accessible register (PKRU) with two separate
--bits (Access Disable and Write Disable) for each key.  Being a CPU
--register, PKRU is inherently thread-local, potentially giving each
-+Memory Protection Keys provide a mechanism for enforcing page-based
-+protections, but without requiring modification of the page tables when an
-+application changes protection domains.
-+
-+Pkeys Userspace (PKU) is a feature which can be found on:
-+        * Intel server CPUs, Skylake and later
-+        * Intel client CPUs, Tiger Lake (11th Gen Core) and later
-+        * Future AMD CPUs
-+
-+Pkeys work by dedicating 4 previously Reserved bits in each page table entry to
-+a "protection key", giving 16 possible keys.
-+
-+Protections for each key are defined with a per-CPU user-accessible register
-+(PKRU).  Each of these is a 32-bit register storing two bits (Access Disable
-+and Write Disable) for each of 16 keys.
-+
-+Being a CPU register, PKRU is inherently thread-local, potentially giving each
- thread a different set of protections from every other thread.
+ /* AMD-defined CPU features, CPUID level 0x80000007 (EBX), word 17 */
+ #define X86_FEATURE_OVERFLOW_RECOV	(17*32+ 0) /* MCA overflow recovery support */
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
+index 1231d63f836d..cc73453bc218 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -44,6 +44,12 @@
+ # define DISABLE_OSPKE		(1<<(X86_FEATURE_OSPKE & 31))
+ #endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
  
--There are two new instructions (RDPKRU/WRPKRU) for reading and writing
--to the new register.  The feature is only available in 64-bit mode,
--even though there is theoretically space in the PAE PTEs.  These
--permissions are enforced on data access only and have no effect on
--instruction fetches.
-+There are two instructions (RDPKRU/WRPKRU) for reading and writing to the
-+register.  The feature is only available in 64-bit mode, even though there is
-+theoretically space in the PAE PTEs.  These permissions are enforced on data
-+access only and have no effect on instruction fetches.
- 
- Syscalls
- ========
++#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
++# define DISABLE_PKS		0
++#else
++# define DISABLE_PKS		(1<<(X86_FEATURE_PKS & 31))
++#endif
++
+ #ifdef CONFIG_X86_5LEVEL
+ # define DISABLE_LA57	0
+ #else
+@@ -88,7 +94,7 @@
+ #define DISABLED_MASK14	0
+ #define DISABLED_MASK15	0
+ #define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP| \
+-			 DISABLE_ENQCMD)
++			 DISABLE_ENQCMD|DISABLE_PKS)
+ #define DISABLED_MASK17	0
+ #define DISABLED_MASK18	0
+ #define DISABLED_MASK19	0
 -- 
 2.35.1
 
