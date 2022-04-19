@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3532C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348111AbiDSDgm (ORCPT
+        id S1348114AbiDSDgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 23:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
+        Mon, 18 Apr 2022 23:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347757AbiDSDfl (ORCPT
+        with ESMTP id S1347750AbiDSDfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 23:35:41 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83D12BB29;
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776BC2BB1D;
         Mon, 18 Apr 2022 20:32:56 -0700 (PDT)
-Received: from kwepemi500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Ql2BFSzCrT9;
-        Tue, 19 Apr 2022 11:28:31 +0800 (CST)
+Received: from kwepemi500005.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Vz2Ncyz1GD6J;
+        Tue, 19 Apr 2022 11:32:11 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500006.china.huawei.com (7.221.188.68) with Microsoft SMTP Server
+ kwepemi500005.china.huawei.com (7.221.188.179) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:55 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:54 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:54 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 8/9] net: hns3: replace magic value by HCLGE_RING_REG_OFFSET
-Date:   Tue, 19 Apr 2022 11:27:08 +0800
-Message-ID: <20220419032709.15408-9-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 5/9] net: hns3: add log for setting tx spare buf size
+Date:   Tue, 19 Apr 2022 11:27:05 +0800
+Message-ID: <20220419032709.15408-6-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220419032709.15408-1-huangguangbin2@huawei.com>
 References: <20220419032709.15408-1-huangguangbin2@huawei.com>
@@ -49,29 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Magic values are not recommended.
+For the active tx spare buffer size maybe changed according
+to the page size, so add log to notice it.
 
-Signed-off-by: Peng Li<lipeng321@huawei.com>
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 528b5a17adb0..e13d71abd9f7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -3315,7 +3315,7 @@ static void hclgevf_get_regs(struct hnae3_handle *handle, u32 *version,
- 		for (i = 0; i < reg_um; i++)
- 			*reg++ = hclgevf_read_dev(&hdev->hw,
- 						  ring_reg_addr_list[i] +
--						  0x200 * j);
-+						  HCLGEVF_TQP_REG_SIZE * j);
- 		for (i = 0; i < separator_num; i++)
- 			*reg++ = SEPARATOR_VALUE;
- 	}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index e647751e9054..73498e125492 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1898,6 +1898,8 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
+ 		old_tx_spare_buf_size = h->kinfo.tx_spare_buf_size;
+ 		new_tx_spare_buf_size = *(u32 *)data;
++		netdev_info(netdev, "request to set tx spare buf size from %u to %u\n",
++			    old_tx_spare_buf_size, new_tx_spare_buf_size);
+ 		ret = hns3_set_tx_spare_buf_size(netdev, new_tx_spare_buf_size);
+ 		if (ret ||
+ 		    (!priv->ring->tx_spare && new_tx_spare_buf_size != 0)) {
+@@ -1915,6 +1917,10 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 
+ 			return ret;
+ 		}
++
++		netdev_info(netdev, "the actvie tx spare buf size is %u, due to page order\n",
++			    priv->ring->tx_spare->len);
++
+ 		break;
+ 	default:
+ 		ret = -EOPNOTSUPP;
 -- 
 2.33.0
 
