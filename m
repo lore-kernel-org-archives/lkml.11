@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6579DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358480AbiDSXts (ORCPT
+        id S1358492AbiDSXtx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 19:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39412 "EHLO
+        Tue, 19 Apr 2022 19:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358164AbiDSXt1 (ORCPT
+        with ESMTP id S1358180AbiDSXt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 19:49:27 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83458E0D3
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7F91DA52
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:46:43 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650412000;
+        s=2020; t=1650412001;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=idqLxg8c0zPONbMqkGQYt63bX+D2LzcQxo7PzK47A6w=;
-        b=dyr0bKW/d4GEOPHA/THaaIpUzBhEH5d3H2VZLaDJj429Q65YPUzXcAeyXShm9S4KGeGr/u
-        aW3LwfdE9jiRpaP3cuRNcC+kcGGId0vkR0N8iEpTUJ4ptQbCf7nBDwgRZm0XW62ABpVgnW
-        iQAI8JDYRRvCawGfctcGqfmskH/VibOybb1ljU+Q8D8ulP8m9yjQC/vNAmwEAVOgILfPxV
-        +4hPmkLX4LFQth43TFWrCkCQB8bhTamLQGSp+2XJ3PQUc4qED73hxXmyG75ABaK7pa6pDc
-        CE+zw5wjSJ2oGCx3+PE+lIBI13HYDLRJDZOOAZLkm53abxdLglVDEtHZoethAw==
+        bh=WojArbM9OzLNiontaIQZoMbzC5aP6fR9aoNVu9FnfGE=;
+        b=Sos/EZ4DnLNhubs5EVj4evdQZQmzC3Gmd+zMls9Xvk1JX6zgqtS4iqa640r3TU2TTGfZ+y
+        kHjiaFM6lwck4EbopQRqnUviJsKtIZaaMJy1yRPOJxTaqyHrmRapSfV4/HpTLIAbhI5FV6
+        5rdJxDOp2NzTI9PXUAu6FVBJH5zGEsLP5g88Uflkt8w/F2/RRAK3WBIWvhDDuUuGmSB0BD
+        Xhqpa6HVwnzj0JFltuHcSO81REmzLHKjVLytGPMwMOf4HgiBnE23khofN5WXuFxUvvOpZi
+        FsIyfqOn28/V7Vsgbi5e0YjKcNE5MsuPrpR/Emyb5P0dm8ktYISDj2bIPdfi/A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650412000;
+        s=2020e; t=1650412001;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=idqLxg8c0zPONbMqkGQYt63bX+D2LzcQxo7PzK47A6w=;
-        b=rmK6r2o4pePmlsjq5j7Teab5DnjBhvuw0dPdQk+6opfdM0kv7iHIk4zntLJqdiNy2eeNKR
-        t3X7LJOOrHk+BaCg==
+        bh=WojArbM9OzLNiontaIQZoMbzC5aP6fR9aoNVu9FnfGE=;
+        b=twfu5jLa5BuAOjvqmSo/2v0tdfOoYjRsUzoRskXsP2LW+lzH/IRyioy53ChEPQ1LZnbh2q
+        3Q264YFqZA+2TFAw==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH printk v3 05/15] printk: wake waiters for safe and NMI contexts
-Date:   Wed, 20 Apr 2022 01:52:27 +0206
-Message-Id: <20220419234637.357112-6-john.ogness@linutronix.de>
+Subject: [PATCH printk v3 07/15] printk: call boot_delay_msec() in printk_delay()
+Date:   Wed, 20 Apr 2022 01:52:29 +0206
+Message-Id: <20220419234637.357112-8-john.ogness@linutronix.de>
 In-Reply-To: <20220419234637.357112-1-john.ogness@linutronix.de>
 References: <20220419234637.357112-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -54,87 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When printk() is called from safe or NMI contexts, it will directly
-store the record (vprintk_store()) and then defer the console output.
-However, defer_console_output() only causes console printing and does
-not wake any waiters of new records.
+boot_delay_msec() is always called immediately before printk_delay()
+so just call it from within printk_delay().
 
-Wake waiters from defer_console_output() so that they also are aware
-of the new records from safe and NMI contexts.
-
-Fixes: 03fc7f9c99c1 ("printk/nmi: Prevent deadlock when accessing the main log buffer in NMI")
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/printk/printk.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ kernel/printk/printk.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index e23357002648..7bb148a1debb 100644
+index 82ad3d3d0d4a..2f99e0b383b9 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -754,7 +754,7 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
- 		 * prepare_to_wait_event() pairs with the full memory barrier
- 		 * within wq_has_sleeper().
- 		 *
--		 * This pairs with wake_up_klogd:A.
-+		 * This pairs with __wake_up_klogd:A.
- 		 */
- 		ret = wait_event_interruptible(log_wait,
- 				prb_read_valid(prb,
-@@ -1532,7 +1532,7 @@ static int syslog_print(char __user *buf, int size)
- 		 * prepare_to_wait_event() pairs with the full memory barrier
- 		 * within wq_has_sleeper().
- 		 *
--		 * This pairs with wake_up_klogd:A.
-+		 * This pairs with __wake_up_klogd:A.
- 		 */
- 		len = wait_event_interruptible(log_wait,
- 				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
-@@ -3332,7 +3332,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
- static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
- 	IRQ_WORK_INIT_LAZY(wake_up_klogd_work_func);
+@@ -2048,8 +2048,10 @@ static u8 *__printk_recursion_counter(void)
  
--void wake_up_klogd(void)
-+static void __wake_up_klogd(int val)
+ int printk_delay_msec __read_mostly;
+ 
+-static inline void printk_delay(void)
++static inline void printk_delay(int level)
  {
- 	if (!printk_percpu_data_ready())
- 		return;
-@@ -3349,22 +3349,26 @@ void wake_up_klogd(void)
- 	 *
- 	 * This pairs with devkmsg_read:A and syslog_print:A.
- 	 */
--	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
--		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
-+	if (wq_has_sleeper(&log_wait) || /* LMM(__wake_up_klogd:A) */
-+	    (val & PRINTK_PENDING_OUTPUT)) {
-+		this_cpu_or(printk_pending, val);
- 		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
++	boot_delay_msec(level);
++
+ 	if (unlikely(printk_delay_msec)) {
+ 		int m = printk_delay_msec;
+ 
+@@ -2274,8 +2276,7 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		in_sched = true;
  	}
- 	preempt_enable();
- }
  
--void defer_console_output(void)
-+void wake_up_klogd(void)
- {
--	if (!printk_percpu_data_ready())
--		return;
-+	__wake_up_klogd(PRINTK_PENDING_WAKEUP);
-+}
+-	boot_delay_msec(level);
+-	printk_delay();
++	printk_delay(level);
  
--	preempt_disable();
--	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
--	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
--	preempt_enable();
-+void defer_console_output(void)
-+{
-+	/*
-+	 * New messages may have been added directly to the ringbuffer
-+	 * using vprintk_store(), so wake any waiters as well.
-+	 */
-+	__wake_up_klogd(PRINTK_PENDING_WAKEUP | PRINTK_PENDING_OUTPUT);
- }
+ 	printed_len = vprintk_store(facility, level, dev_info, fmt, args);
  
- void printk_trigger_flush(void)
 -- 
 2.30.2
 
