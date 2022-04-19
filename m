@@ -2,116 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64083C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 604A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355424AbiDSQtr (ORCPT
+        id S1355446AbiDSQt6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        Tue, 19 Apr 2022 12:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349998AbiDSQpV (ORCPT
+        with ESMTP id S1347148AbiDSQot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:45:21 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C0933E3A
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:42:38 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 09:42:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650386556;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BgIKdz66kPcyA341qp0ZDvtyQNkSL0ly49y8sDVGu0o=;
-        b=Sef1m0iG1d4B3iQ18wyIK/tdzdNhUvFwVR4i52oZGdDUaUUm/8B5Y0mg2tchnjcLdkQ4t2
-        Vzl+P/VZv4cKLNJNimLr6Q9eq/SzlrjcFppI13fiIcPXI2P8Mk4F+awJPlmV0GBOHomtAl
-        /+5Rvql1mr/GXTF4nikqR5Z42XJNNrc=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH] mm: do not call add_nr_deferred() with zero deferred
-Message-ID: <Yl7mdguNR3CabMAN@carbon>
-References: <20220416004104.4089743-1-roman.gushchin@linux.dev>
- <59404249-de0c-c569-d04a-9da38ed14b0a@redhat.com>
+        Tue, 19 Apr 2022 12:44:49 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7863388C;
+        Tue, 19 Apr 2022 09:42:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Gmwp6hCpDpkNeao1lmSCrEoofE1rLIQS3F3WG/Ay4d0=; b=W5IKh7p5XPGVml/PRLwu/wftZa
+        bQxNObOao0RyxRjUMJWj4TdES7GvlOXKERMZUsJdQAxSqB3glodi02FdkLrowD13CzSh8wtgp+cGe
+        tb1cH97dlQ36uYREZHwE2GuJGsppO0tjARYSR24bT4ZcGnHgrrIZzXrtXZdhVOLmvYcmdWmOn3MGD
+        vDsQNB+fg5YYkJDyLHZv4JM3164RkpvwiLIAUjM33gjmIcr2+TC5BaUL76kJ7x9nKJcn8izBrLpo6
+        BvUFxjVQfh6mSTAWHEIipjPYfJEoacEWZ/l/UfeIo1OBKJLveLn3eNbtBSFGrSxFu+KXH3XrLTj1g
+        TCNk8ktA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngqvP-003Gz9-Lt; Tue, 19 Apr 2022 16:41:59 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 9E760986195; Tue, 19 Apr 2022 18:41:57 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 18:41:57 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [patch 00/10] x86/cpu: Consolidate APERF/MPERF code
+Message-ID: <20220419164157.GW2731@worktop.programming.kicks-ass.net>
+References: <20220415133356.179706384@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <59404249-de0c-c569-d04a-9da38ed14b0a@redhat.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220415133356.179706384@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 02:56:06PM +0200, David Hildenbrand wrote:
-> On 16.04.22 02:41, Roman Gushchin wrote:
-> > add_nr_deferred() is often called with next_deferred equal to 0.
-> > For instance, it's happening under low memory pressure for any
-> > shrinkers with a low number of cached objects. A corresponding trace
-> > looks like:
-> >   <...>-619914 [005] .... 467456.345160: mm_shrink_slab_end: \
-> >   super_cache_scan+0x0/0x1a0 0000000087027f06: nid: 1	     \
-> >   unused scan count 0 new scan count 0 total_scan 0	     \
-> >   last shrinker return val 0
-> > 
-> >   <...>-619914 [005] .... 467456.345371: mm_shrink_slab_end: \
-> >   super_cache_scan+0x0/0x1a0 0000000087027f06: nid: 1	     \
-> >   unused scan count 0 new scan count 0 total_scan 0	     \
-> >   last shrinker return val 0
-> > 
-> >   <...>-619914 [005] .... 467456.345380: mm_shrink_slab_end: \
-> >   super_cache_scan+0x0/0x1a0 0000000087027f06: nid: 1 unused \
-> >   scan count 0 new scan count 0 total_scan 0	             \
-> >   last shrinker return val 0
-> > 
-> > This lead to unnecessary checks and atomic operations, which can be
-> > avoided by checking next_deferred for not being zero before calling
-> > add_nr_deferred(). In this case the mm_shrink_slab_end trace point
-> > will get a potentially slightly outdated "new scan count" value, but
-> > it's totally fine.
-> 
-> Sufficient improvement to justify added complexity for anybody reading
-> that code?
+On Fri, Apr 15, 2022 at 09:19:48PM +0200, Thomas Gleixner wrote:
+> ---
+>  arch/x86/include/asm/cpu.h       |    2 
+>  arch/x86/include/asm/topology.h  |   17 -
+>  arch/x86/kernel/acpi/cppc.c      |   28 --
+>  arch/x86/kernel/cpu/aperfmperf.c |  474 +++++++++++++++++++++++++++++++--------
+>  arch/x86/kernel/cpu/proc.c       |    2 
+>  arch/x86/kernel/smpboot.c        |  358 -----------------------------
+>  fs/proc/cpuinfo.c                |    6 
+>  include/linux/cpufreq.h          |    1 
+>  8 files changed, 405 insertions(+), 483 deletions(-)
 
-I don't have any numbers and really doubt the difference is significant,
-however the added complexity is also small: one "if" statement.
-Anyway, if you feel strongly against this change, I'm fine with dropping it.
 
-> 
-> > 
-> > Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
-> > ---
-> >  mm/vmscan.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/mm/vmscan.c b/mm/vmscan.c
-> > index d4a7d2bd276d..19d3d4fa1aad 100644
-> > --- a/mm/vmscan.c
-> > +++ b/mm/vmscan.c
-> > @@ -808,7 +808,10 @@ static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
-> >  	 * move the unused scan count back into the shrinker in a
-> >  	 * manner that handles concurrent updates.
-> >  	 */
-> > -	new_nr = add_nr_deferred(next_deferred, shrinker, shrinkctl);
-> > +	if (next_deferred)
-> > +		new_nr = add_nr_deferred(next_deferred, shrinker, shrinkctl);
-> > +	else
-> > +		new_nr = nr;
-> >  
-> >  	trace_mm_shrink_slab_end(shrinker, shrinkctl->nid, freed, nr, new_nr, total_scan);
-> >  	return freed;
-> 
-> And if we still want to do this optimization, why not put it into
-> add_nr_deferred()?
-
-Because of the semantics of add_nr_deferred(), which returns the deferred value.
-It's not used for anything except tracing, so maybe it's a place for another
-change.
-
-Thanks!
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
