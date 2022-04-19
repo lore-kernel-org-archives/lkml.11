@@ -2,226 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15645C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 05:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A29C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 05:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234428AbiDSF5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 01:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45622 "EHLO
+        id S1348726AbiDSF7M (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 01:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233616AbiDSF5G (ORCPT
+        with ESMTP id S233616AbiDSF7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 01:57:06 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8CE2AE15
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 22:54:24 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ec0bb4b715so160967317b3.5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 22:54:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QJZmsK4vKYnU0w6RHfAyLK/7+Llp4RiGehU2CWjNg24=;
-        b=MhTzfQVye+t/qRemYQqmjYRJKDjUqBOQvpJ+vm+DynqeTzQtpiuwhW+P5dAAMDerwc
-         yIrlDwUlW/nRDgvYzWIInMqPergHzVYZQdmKnFGJsKI3FAUDP01ZDyxDmzzg9wj9r1F/
-         giJtLil6yYyApXeiobxAlpVxEMxxA39fx3JpvvfvtQwQ5kGu2IP384WS/qM6/jr8qrVT
-         gqHGp2r63JgLmMmbYJJh1dz1wNwD/B5LWtSUMnFFAkUi1ZQUhgD6RlyLkxK5LjAxucMA
-         Af4C3ovEhpBv2ZiAdlqV2IiNw3ABnxuANJ058Lfva9MdbTGXlKhNHKYpIuJQKvjqtLUS
-         7iaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QJZmsK4vKYnU0w6RHfAyLK/7+Llp4RiGehU2CWjNg24=;
-        b=cTcrBnQ/5bBxV4jjn0vATcYppEqOsih7ZGkLpEwpsDJn7bIvtJUsi4507vPY5E5ksj
-         OYnkNuDcBuJOTVy8mOLFk52jZFmFFAfXyXobk28mUNCNdlN3tM+YTe04PqwzMDwpcqGo
-         FrE5ye1+FO4RGyTgSPeUKr+6Ap4uy8wMLZu5YOXcAOratEwxQG8rFuIegJCfRO1Rt0Fk
-         i7t7aWoieI0PptzdywZeenkjMBqppRnGjNqmNsEIXlV4MBBfO6trdHHUtc/5QhP0YBfC
-         OToMKlDCeVso/zU2Pdeqcm5nDbZrbktV4C4WrPs1do01EaKOeoXAEsksuiVirDSClpnz
-         rr+A==
-X-Gm-Message-State: AOAM5325ZdjzjE1SyQBECh1mNemAuaXxDRzaN7VEbc8FFYs9YguE+OlI
-        umDAeRTlriGr9VEFAX22Hn6ZsuU29UMXZ4+qLYi68A==
-X-Google-Smtp-Source: ABdhPJy4PYoWE5mXWwVzU7jxjccKuw/CPG7c2pCjoZKungtIdrvFAnfLBLVdpY0XGt6ytjqagPbRK37uqQJhRkCjzYk=
-X-Received: by 2002:a0d:ffc3:0:b0:2eb:2327:3361 with SMTP id
- p186-20020a0dffc3000000b002eb23273361mr13779938ywf.36.1650347663981; Mon, 18
- Apr 2022 22:54:23 -0700 (PDT)
+        Tue, 19 Apr 2022 01:59:10 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8120D2C12A
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 22:56:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650347789; x=1681883789;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NQZ1ELKIhHGJPtksKnoCuYLI6cyUCLOezuWDOAdka/M=;
+  b=iTw6fnQr99xOz5vBKlZ2P480JSLdm7A2yJVwb0lRhCEunPX3FPBPyMHX
+   lDJFfVOmOXYFq3GlmWyav5FPTB3nSI2B0qm6/AfLkkOysC7QeKu6x39ex
+   4WJpg8kkVZD9YDy5+7fNRPglZWNVWaBF59wPKrz49r/2ZVh+qx5HX3GB4
+   DiatYUvAwX7nb8VzqYf1bo964N8Ig+xAtbdFaoL1cOlA5dqmG5KtC1Qyu
+   8i/5dsFQBoX8BjZgKrWXTgH8cIYODaxpwGJhGVWiDbxMFSXeAGegxWo9V
+   wnsXEFZByUPX7tDsEVQZDpoI2P9I9ud/BGMpBla/Dbg0IxL6AmNITvNRW
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="326583573"
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="326583573"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 22:56:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="702068894"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 18 Apr 2022 22:56:28 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nggqh-0005P8-IT;
+        Tue, 19 Apr 2022 05:56:27 +0000
+Date:   Tue, 19 Apr 2022 13:56:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1496/2356]
+ drivers/crypto/ccp/ccp-dmaengine.c:650:17: error: implicit declaration of
+ function 'list_del_rcu'; did you mean 'llist_del_all'?
+Message-ID: <202204191349.4UyNaAJQ-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220418121145.140991388@linuxfoundation.org>
-In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 19 Apr 2022 11:24:12 +0530
-Message-ID: <CA+G9fYt2yK_jPhhWVqj74SrwaJ+DQeW3adeoUAkuBw9M+7TtgQ@mail.gmail.com>
-Subject: Re: [PATCH 5.10 000/105] 5.10.112-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Apr 2022 at 18:06, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.10.112 release.
-> There are 105 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.10.112-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.10.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   af93551cf39027d176f30b9beafc60a4c130998a
+commit: 87052c4c3bbc437e628c8d687fd5133d135333d0 [1496/2356] headers/deps: fs: Optimize <linux/fs.h> header dependencies
+config: x86_64-randconfig-a003-20220418 (https://download.01.org/0day-ci/archive/20220419/202204191349.4UyNaAJQ-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=87052c4c3bbc437e628c8d687fd5133d135333d0
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 87052c4c3bbc437e628c8d687fd5133d135333d0
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+All errors (new ones prefixed by >>):
 
-## Build
-* kernel: 5.10.112-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.10.y
-* git commit: d5c581fe77b5122ed284c7739724414ca5059b0e
-* git describe: v5.10.111-106-gd5c581fe77b5
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
-.111-106-gd5c581fe77b5
+   drivers/crypto/ccp/ccp-dmaengine.c: In function 'ccp_dma_release':
+>> drivers/crypto/ccp/ccp-dmaengine.c:650:17: error: implicit declaration of function 'list_del_rcu'; did you mean 'llist_del_all'? [-Werror=implicit-function-declaration]
+     650 |                 list_del_rcu(&dma_chan->device_node);
+         |                 ^~~~~~~~~~~~
+         |                 llist_del_all
+   cc1: some warnings being treated as errors
 
-## Test Regressions (compared to v5.10.110-171-g6c8e5cb264df)
-No test regressions found.
 
-## Metric Regressions (compared to v5.10.110-171-g6c8e5cb264df)
-No metric regressions found.
+vim +650 drivers/crypto/ccp/ccp-dmaengine.c
 
-## Test Fixes (compared to v5.10.110-171-g6c8e5cb264df)
-No metric fixes found.
+58ea8abf490415 Gary R Hook  2016-04-18  639  
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  640  static void ccp_dma_release(struct ccp_device *ccp)
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  641  {
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  642  	struct ccp_dma_chan *chan;
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  643  	struct dma_chan *dma_chan;
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  644  	unsigned int i;
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  645  
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  646  	for (i = 0; i < ccp->cmd_q_count; i++) {
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  647  		chan = ccp->ccp_dma_chan + i;
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  648  		dma_chan = &chan->dma_chan;
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  649  		tasklet_kill(&chan->cleanup_tasklet);
+54cce8ecb9254f Dāvis Mosāns 2022-02-28 @650  		list_del_rcu(&dma_chan->device_node);
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  651  	}
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  652  }
+54cce8ecb9254f Dāvis Mosāns 2022-02-28  653  
 
-## Metric Fixes (compared to v5.10.110-171-g6c8e5cb264df)
-No metric fixes found.
+:::::: The code at line 650 was first introduced by commit
+:::::: 54cce8ecb9254f971b40a72911c6da403720a2d2 crypto: ccp - ccp_dmaengine_unregister release dma channels
 
-## Test result summary
-total: 95928, pass: 81529, fail: 646, skip: 13045, xfail: 708
+:::::: TO: Dāvis Mosāns <davispuh@gmail.com>
+:::::: CC: Herbert Xu <herbert@gondor.apana.org.au>
 
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 296 total, 296 passed, 0 failed
-* arm64: 47 total, 47 passed, 0 failed
-* i386: 44 total, 41 passed, 3 failed
-* mips: 41 total, 38 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 65 total, 53 passed, 12 failed
-* riscv: 32 total, 29 passed, 3 failed
-* s390: 26 total, 26 passed, 0 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x86_64: 47 total, 47 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
