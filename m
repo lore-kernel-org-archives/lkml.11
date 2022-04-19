@@ -2,310 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85902C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A6BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354246AbiDSQGh (ORCPT
+        id S1354250AbiDSQHD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        Tue, 19 Apr 2022 12:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244370AbiDSQGf (ORCPT
+        with ESMTP id S244370AbiDSQG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:06:35 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89282E9F5;
-        Tue, 19 Apr 2022 09:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650384232; x=1681920232;
-  h=from:to:cc:subject:date:message-id;
-  bh=5H0ADa7knrAzY7lcnaHovwrz0D8sNpbzQ1sE8UkEXIU=;
-  b=IMxJltUckTuIFVaKOB+ZpbF8AMfHHqKsnNbIctCNSi36Nk64OyuHmgKS
-   Q2z9zCLIdEdScVmCAKfBz+eSHQQ53lFKku8JrIlZ3hACWgdL1h8KIXO2+
-   H6BBspAR246c7fgzY7dt/hlHZvNISyqslwasjsukq76GvLfsUqwecSh6C
-   Idy2HJ3h0qbZM2x9ok13/CP3keBfGtW3PSEL0tYCEWInQol1JZIzU6185
-   S5C5sDGLnSOGE+AEezCWfTydaInbOS9YoNDRyVP0sWa8f8DgEpHmWlq4c
-   TcAVwOV8wmhOD1iBNH7WhZcAUiR5kIvipmAq72y3OBqoMqxMmdvCpraJT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263975048"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263975048"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:03:52 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="727121335"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:03:46 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v9 0/9] IPI virtualization support for VM
-Date:   Tue, 19 Apr 2022 23:31:55 +0800
-Message-Id: <20220419153155.11504-1-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Apr 2022 12:06:59 -0400
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CBE344FF;
+        Tue, 19 Apr 2022 09:04:16 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id j2so31958364ybu.0;
+        Tue, 19 Apr 2022 09:04:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gELaQOf9Rj6C8VNSNQ3uNKSPk0ySJbTinIMoZcK7lh4=;
+        b=Ih44qOtKjwoUqThTCkb0+nJOa7pIQ7D1itRAo047QkPoZJq7WJBZY/IGMQalPzWPuI
+         RIe0sOUdV3L6Md5DA1LbktvulzV9/4zVnJidUkqhhU1u3koApXez160rh5RV1go0XWbY
+         4cE7Zi+Bu8cK8D63lwWP8EdaNlXuEMCB0mmqRQBeH8ge6+7/m6nR8vyL0F/c092ZmnGC
+         WqBXmNqmoL7WWzOZaPUYa2hdV36rTC540I/KLkvqZllcJEjLiWyjzRCLjCLQ0TIFEiLD
+         nPA6rhjPbpBNxPICUdntmu3aV4d4RLhL+noyXOrWZNxxx4+dlmR6m/TnHVd/Gs8AS7ZW
+         rpXg==
+X-Gm-Message-State: AOAM531+2FXdPJBF6bUxJcVNXNNwW76bfVbRsHBnQXdUYORRivjTfoMp
+        vvlSAICZ7YUJDpMw49WCOJzyKU0UXwgJw8aM857Wjvd1t7U=
+X-Google-Smtp-Source: ABdhPJySdZu7kJ80ddxqUSt6NhXZwCC1tFB5mB2i3+wMcDWa0g0Nk7Pb1wIM/KMByphQnRkIzRZ+2uzUnTOqWFaVIOs=
+X-Received: by 2002:a25:230d:0:b0:641:375c:b5ad with SMTP id
+ j13-20020a25230d000000b00641375cb5admr15404846ybj.137.1650384255763; Tue, 19
+ Apr 2022 09:04:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220415133356.179706384@linutronix.de> <20220415161206.536733494@linutronix.de>
+In-Reply-To: <20220415161206.536733494@linutronix.de>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 19 Apr 2022 18:04:04 +0200
+Message-ID: <CAJZ5v0h07hXW3WuBq673yk1HOuQLSw7-hJTntX331FDZRh1tDA@mail.gmail.com>
+Subject: Re: [patch 03/10] x86/aperfmperf: Separate AP/BP frequency invariance init
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, issuing an IPI except self-ipi in guest on Intel CPU
-always causes a VM-exit. It can lead to non-negligible overhead
-to some workloads involving frequent IPIs when running in VMs.
+On Fri, Apr 15, 2022 at 9:19 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> This code is convoluted and because it can be invoked post init via the
+> ACPI/CPPC code, all of the initialization functionality is built in instead
+> of being part of init text and init data.
+>
+> As a first step create separate calls for the boot and the application
+> processors.
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>  arch/x86/include/asm/topology.h  |   12 +++++-------
+>  arch/x86/kernel/acpi/cppc.c      |    3 ++-
+>  arch/x86/kernel/cpu/aperfmperf.c |   23 +++++++++++------------
+>  arch/x86/kernel/smpboot.c        |    4 ++--
+>  4 files changed, 20 insertions(+), 22 deletions(-)
+>
+> --- a/arch/x86/include/asm/topology.h
+> +++ b/arch/x86/include/asm/topology.h
+> @@ -216,14 +216,12 @@ extern void arch_scale_freq_tick(void);
+>  #define arch_scale_freq_tick arch_scale_freq_tick
+>
+>  extern void arch_set_max_freq_ratio(bool turbo_disabled);
+> -void init_freq_invariance(bool secondary, bool cppc_ready);
+> +extern void bp_init_freq_invariance(bool cppc_ready);
+> +extern void ap_init_freq_invariance(void);
+>  #else
+> -static inline void arch_set_max_freq_ratio(bool turbo_disabled)
+> -{
+> -}
+> -static inline void init_freq_invariance(bool secondary, bool cppc_ready)
+> -{
+> -}
+> +static inline void arch_set_max_freq_ratio(bool turbo_disabled) { }
+> +static inline void bp_init_freq_invariance(bool cppc_ready) { }
+> +static inline void ap_init_freq_invariance(void) { }
+>  #endif
+>
+>  #ifdef CONFIG_ACPI_CPPC_LIB
+> --- a/arch/x86/kernel/acpi/cppc.c
+> +++ b/arch/x86/kernel/acpi/cppc.c
+> @@ -96,7 +96,8 @@ void init_freq_invariance_cppc(void)
+>
+>         mutex_lock(&freq_invariance_lock);
+>
+> -       init_freq_invariance(secondary, true);
+> +       if (!secondary)
+> +               bp_init_freq_invariance(true);
+>         secondary = true;
+>
+>         mutex_unlock(&freq_invariance_lock);
+> --- a/arch/x86/kernel/cpu/aperfmperf.c
+> +++ b/arch/x86/kernel/cpu/aperfmperf.c
+> @@ -428,31 +428,24 @@ static void register_freq_invariance_sys
+>  static inline void register_freq_invariance_syscore_ops(void) {}
+>  #endif
+>
+> -void init_freq_invariance(bool secondary, bool cppc_ready)
+> +void bp_init_freq_invariance(bool cppc_ready)
+>  {
+> -       bool ret = false;
+> +       bool ret;
+>
+> -       if (!boot_cpu_has(X86_FEATURE_APERFMPERF))
+> +       if (!cpu_feature_enabled(X86_FEATURE_APERFMPERF))
+>                 return;
+>
+> -       if (secondary) {
+> -               if (static_branch_likely(&arch_scale_freq_key)) {
+> -                       init_counter_refs();
+> -               }
+> -               return;
+> -       }
+> +       init_counter_refs();
+>
+>         if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL)
+>                 ret = intel_set_max_freq_ratio();
+>         else if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
+> -               if (!cppc_ready) {
+> +               if (!cppc_ready)
+>                         return;
+> -               }
+>                 ret = amd_set_max_freq_ratio(&arch_turbo_freq_ratio);
+>         }
+>
+>         if (ret) {
+> -               init_counter_refs();
+>                 static_branch_enable(&arch_scale_freq_key);
+>                 register_freq_invariance_syscore_ops();
+>                 pr_info("Estimated ratio of average max frequency by base frequency (times 1024): %llu\n", arch_max_freq_ratio);
+> @@ -461,6 +454,12 @@ void init_freq_invariance(bool secondary
+>         }
+>  }
+>
+> +void ap_init_freq_invariance(void)
+> +{
+> +       if (cpu_feature_enabled(X86_FEATURE_APERFMPERF))
+> +               init_counter_refs();
 
-IPI virtualization is a new VT-x feature, targeting to eliminate
-VM-exits on source vCPUs when issuing unicast, physical-addressing
-IPIs. Once it is enabled, the processor virtualizes following kinds
-of operations that send IPIs without causing VM-exits:
-- Memory-mapped ICR writes
-- MSR-mapped ICR writes
-- SENDUIPI execution
+This doesn't check arch_scale_freq_key now which may be a good thing
+to mention in the changelog.
 
-This patch series implements IPI virtualization support in KVM.
+I don't see anything questionable in the patch, though, so
 
-Patches 1-4 add tertiary processor-based VM-execution support
-framework, which is used to enumerate IPI virtualization.
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Patch 5 handles APIC-write VM exit due to writes to ICR MSR when
-guest works in x2APIC mode. This is a new case introduced by
-Intel VT-x.
-
-Patch 6 cleanup code in vmx_refresh_apicv_exec_ctrl(). Prepare for
-IPIv status dynamical update along with APICv status change.
-
-Patch 7 move kvm_arch_vcpu_precreate() under kvm->lock protection.
-This patch is prepared for IPIv PID-table allocation prior to
-the creation of vCPUs.
-
-Patch 8 provide userspace capability to set maximum possible VCPU
-ID for current VM. IPIv can refer to this value to allocate memory
-for PID-pointer table.
-
-Patch 9 implements IPI virtualization related function including
-feature enabling through tertiary processor-based VM-execution in
-various scenarios of VMCS configuration, PID table setup in vCPU
-creation and vCPU block consideration.
-
-Document for IPI virtualization is now available at the latest "Intel
-Architecture Instruction Set Extensions Programming Reference".
-
-Document Link:
-https://software.intel.com/content/www/us/en/develop/download/intel-architecture-instruction-set-extensions-programming-reference.html
-
-We did experiment to measure average time sending IPI from source vCPU
-to the target vCPU completing the IPI handling by kvm unittest w/ and
-w/o IPI virtualization. When IPI virtualization enabled, it will reduce
-22.21% and 15.98% cycles consuming in xAPIC mode and x2APIC mode
-respectively.
---------------------------------------
-KVM unittest:vmexit/ipi
-
-2 vCPU, AP was modified to run in idle loop instead of halt to ensure
-no VM exit impact on target vCPU.
-
-                Cycles of IPI
-                xAPIC mode              x2APIC mode
-        test    w/o IPIv  w/ IPIv       w/o IPIv  w/ IPIv
-        1       6106      4816          4265      3768
-        2       6244      4656          4404      3546
-        3       6165      4658          4233      3474
-        4       5992      4710          4363      3430
-        5       6083      4741          4215      3551
-        6       6238      4904          4304      3547
-        7       6164      4617          4263      3709
-        8       5984      4763          4518      3779
-        9       5931      4712          4645      3667
-        10      5955      4530          4332      3724
-        11      5897      4673          4283      3569
-        12      6140      4794          4178      3598
-        13      6183      4728          4363      3628
-        14      5991      4994          4509      3842
-        15      5866      4665          4520      3739
-        16      6032      4654          4229      3701
-        17      6050      4653          4185      3726
-        18      6004      4792          4319      3746
-        19      5961      4626          4196      3392
-        20      6194      4576          4433      3760
-
-Average cycles  6059      4713.1        4337.85   3644.8
-%Reduction                -22.21%                 -15.98%
-
---------------------------------------
-IPI microbenchmark:
-(https://lore.kernel.org/kvm/20171219085010.4081-1-ynorov@caviumnetworks.com)
-
-2 vCPUs, 1:1 pin vCPU to pCPU, guest VM runs with idle=poll, x2APIC mode
-
-Result with IPIv enabled:
-
-Dry-run:                         0,             272798 ns
-Self-IPI:                  5094123,           11114037 ns
-Normal IPI:              131697087,          173321200 ns
-Broadcast IPI:                   0,          155649075 ns
-Broadcast lock:                  0,          161518031 ns
-
-Result with IPIv disabled:
-
-Dry-run:                         0,             272766 ns
-Self-IPI:                  5091788,           11123699 ns
-Normal IPI:              145215772,          174558920 ns
-Broadcast IPI:                   0,          175785384 ns
-Broadcast lock:                  0,          149076195 ns
-
-
-As IPIv can benefit unicast IPI to other CPU, Normal IPI test case gain
-about 9.73% time saving on average out of 15 test runs when IPIv is
-enabled.
-
-Normal IPI statistics (unit:ns):
-        test    w/o IPIv        w/ IPIv
-        1       153346049       140907046
-        2       147218648       141660618
-        3       145215772       117890672
-        4       146621682       136430470
-        5       144821472       136199421
-        6       144704378       131676928
-        7       141403224       131697087
-        8       144775766       125476250
-        9       140658192       137263330
-        10      144768626       138593127
-        11      145166679       131946752
-        12      145020451       116852889
-        13      148161353       131406280
-        14      148378655       130174353
-        15      148903652       127969674
-
-Average time    145944306.6     131742993.1 ns
-%Reduction                      -9.73%
-
---------------------------------------
-hackbench:
-
-8 vCPUs, guest VM free run, x2APIC mode
-./hackbench -p -l 100000
-
-                w/o IPIv        w/ IPIv
-Time            91.887          74.605
-%Reduction                      -18.808%
-
-96 vCPUs, guest VM fre run, x2APIC mode
-./hackbench -p -l 1000000
-
-                w/o IPIv        w/ IPIv
-Time            287.504         235.185
-%Reduction                      -18.198%
-
---------------------------------------
-v8->v9:
-1. Drop patch to forbid change of APIC ID.
-2. Change max_vcpu_ids only set once
-3. Refactor vCPU pre-creation code
-
-v7->v8:
-1. Add trace in kvm_apic_write_nodecode() to track
-vICR Write in APIC Write VM-exit handling
-2. Move IPIv PID table allocation done in the vCPU
-pre-creation (kvm_arch_vcpu_precreate()) protected
-by kvm->lock.
-3. Misc code refine
-
-v6->v7:
-1. Revise kvm_apic_write_nodecode() on dealing with
-   vICR busy bit in x2apic mode
-2. Merge PID-table memory allocation with max_vcpu_id
-   into IPIv enabling patch
-3. Change to allocate PID-table, setup vCPU's PID-table
-   entry and IPIv related VMCS fields once IPIv can
-   be enabled, which support runtime enabling IPIv.
-
-v5->v6:
-1. Adapt kvm_apic_write_nodecode() implementation based
-   on Sean's fix of x2apic's ICR register process.
-2. Drop the patch handling IPIv table entry setting in
-   case APIC ID changed, instead applying Levitsky's patch
-   to disallow setting APIC ID in any case.
-3. Drop the patch resizing the PID-pointer table on demand.
-   Allow userspace to set maximum vcpu id at runtime that
-   IPIv can refer to the practical value to allocate memory
-   for PID-pointer table.
-
-v4 -> v5:
-1. Deal with enable_ipiv parameter following current
-   vmcs configuration rule.
-2. Allocate memory for PID-pointer table dynamically
-3. Support guest runtime modify APIC ID in xAPIC mode
-4. Helper to judge possibility to take PI block in IPIv case
-
-v3 -> v4:
-1. Refine code style of patch 2
-2. Move tertiary control shadow build into patch 3
-3. Make vmx_tertiary_exec_control to be static function
-
-v2 -> v3:
-1. Misc change on tertiary execution control
-   definition and capability setup
-2. Alternative to get tertiary execution
-   control configuration
-
-v1 -> v2:
-1. Refine the IPIv enabling logic for VM.
-   Remove ipiv_active definition per vCPU.
-
---------------------------------------
-
-Chao Gao (1):
-  KVM: VMX: enable IPI virtualization
-
-Robert Hoo (4):
-  x86/cpu: Add new VMX feature, Tertiary VM-Execution control
-  KVM: VMX: Extend BUILD_CONTROLS_SHADOW macro to support 64-bit
-    variation
-  KVM: VMX: Detect Tertiary VM-Execution control when setup VMCS config
-  KVM: VMX: Report tertiary_exec_control field in dump_vmcs()
-
-Zeng Guang (4):
-  KVM: x86: Add support for vICR APIC-write VM-Exits in x2APIC mode
-  KVM: VMX: Clean up vmx_refresh_apicv_exec_ctrl()
-  KVM: Move kvm_arch_vcpu_precreate() under kvm->lock
-  KVM: x86: Allow userspace set maximum VCPU id for VM
-
- Documentation/virt/kvm/api.rst     |  18 ++++
- arch/s390/kvm/kvm-s390.c           |   2 -
- arch/x86/include/asm/kvm-x86-ops.h |   1 +
- arch/x86/include/asm/kvm_host.h    |   7 ++
- arch/x86/include/asm/msr-index.h   |   1 +
- arch/x86/include/asm/vmx.h         |  11 +++
- arch/x86/include/asm/vmxfeatures.h |   5 +-
- arch/x86/kernel/cpu/feat_ctl.c     |   9 +-
- arch/x86/kvm/lapic.c               |  24 ++++-
- arch/x86/kvm/vmx/capabilities.h    |  13 +++
- arch/x86/kvm/vmx/evmcs.c           |   2 +
- arch/x86/kvm/vmx/evmcs.h           |   1 +
- arch/x86/kvm/vmx/posted_intr.c     |  15 +++-
- arch/x86/kvm/vmx/posted_intr.h     |   2 +
- arch/x86/kvm/vmx/vmcs.h            |   1 +
- arch/x86/kvm/vmx/vmx.c             | 137 +++++++++++++++++++++++++----
- arch/x86/kvm/vmx/vmx.h             |  64 ++++++++------
- arch/x86/kvm/x86.c                 |  29 +++++-
- virt/kvm/kvm_main.c                |  10 ++-
- 19 files changed, 294 insertions(+), 58 deletions(-)
-
--- 
-2.27.0
-
+> +}
+> +
+>  static void disable_freq_invariance_workfn(struct work_struct *work)
+>  {
+>         static_branch_disable(&arch_scale_freq_key);
+> --- a/arch/x86/kernel/smpboot.c
+> +++ b/arch/x86/kernel/smpboot.c
+> @@ -186,7 +186,7 @@ static void smp_callin(void)
+>          */
+>         set_cpu_sibling_map(raw_smp_processor_id());
+>
+> -       init_freq_invariance(true, false);
+> +       ap_init_freq_invariance();
+>
+>         /*
+>          * Get our bogomips.
+> @@ -1396,7 +1396,7 @@ void __init native_smp_prepare_cpus(unsi
+>  {
+>         smp_prepare_cpus_common();
+>
+> -       init_freq_invariance(false, false);
+> +       bp_init_freq_invariance(false);
+>         smp_sanity_check();
+>
+>         switch (apic_intr_mode) {
+>
