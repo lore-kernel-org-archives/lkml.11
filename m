@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D44C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08845C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358450AbiDSXUE (ORCPT
+        id S1358473AbiDSXUK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 19:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        Tue, 19 Apr 2022 19:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358427AbiDSXTu (ORCPT
+        with ESMTP id S1358442AbiDSXT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 19:19:50 -0400
+        Tue, 19 Apr 2022 19:19:56 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A0938BC0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:17:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFBA3916E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:17:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650410224; x=1681946224;
+  t=1650410227; x=1681946227;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tb52JKf5oeEwGj4yRjFXmIliJkAXhk4tI2kf+ib5tys=;
-  b=VvxjY0ygR439CsJtIh2pNirk1WL3ap9VcEWsSLPnGqPOhhvggKUNtlbu
-   sxXlGPWRlryP4rHKE7X5ejYcYbNsm9JTC4UygUb/GtYquK/c6xx2pk8sZ
-   V5KE9gkPS+UZYWTlYMz3Q5pjNCDVngmq5dNcg6JdNNlIEsBuGirObr6R/
-   h07pLdiIQo3HbzYGOrEKaF+NI2QYOKfohV65RrVasE+gYWx0kk5bta0oE
-   kCfsUBT82wmpG8UR+2edC3r4os/MPCRuDc5xdSKSOpY+BL4pgFsYivuaz
-   w6aHkBNusREM7JtuLgCUsGX4lY0IbuL3aiywq7pX+z9G1V4ZziK2rBdC7
+  bh=+bTKlecCMWksydtAI1vz+Jiw9o7AwXThA5nOtcBoJZU=;
+  b=PjTjmXIlk/VIdNJ8aoNFvqxI6oZudDY2rDgIFgJWk3D/z+YphmTiDbs6
+   T6H2ZZyvuQCnC9kl0Grj4rjKAY73SjZCHHj+5OU3XLaKKfVH0O6cEL6Nj
+   ZZTtQ60q1CDcucQtr6rea+JNavSTRR5AXD8imZSYhRNimAypfkwStrNuc
+   kkp53lQil4Y/IzgN38U9n0g9eLhaCdb+Gqr2gjQIrIopv59PEjIHBrCu8
+   TtcgPYsjcz2FnRvoxq6R95XrZrRjDv+7Ue4sDQ6UDXj0ud2udp98sI1p3
+   +2P2oRHDpISM1YanFMZTmKTiXaWRbSVew82J1wym0aH/OVM5q4PtdvB5s
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263656654"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263656663"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263656654"
+   d="scan'208";a="263656663"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:04 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:06 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="862277703"
+   d="scan'208";a="862277810"
 Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.68.17])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:03 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 16:17:06 -0700
 From:   Russ Weight <russell.h.weight@intel.com>
 To:     mcgrof@kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org
 Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
         hao.wu@intel.com, matthew.gerlach@linux.intel.com,
         basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
         Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v4 3/8] firmware_loader: Split sysfs support from fallback
-Date:   Tue, 19 Apr 2022 16:16:53 -0700
-Message-Id: <20220419231658.664388-4-russell.h.weight@intel.com>
+Subject: [PATCH v4 7/8] test_firmware: Error injection for firmware upload
+Date:   Tue, 19 Apr 2022 16:16:57 -0700
+Message-Id: <20220419231658.664388-8-russell.h.weight@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220419231658.664388-1-russell.h.weight@intel.com>
 References: <20220419231658.664388-1-russell.h.weight@intel.com>
@@ -56,1113 +56,247 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for sharing the "loading" and "data" sysfs nodes with the
-new firmware upload support, split out sysfs functionality from fallback.c
-and fallback.h into sysfs.c and sysfs.h. This includes the firmware
-class driver code that is associated with the sysfs files and the
-fw_fallback_config support for the timeout sysfs node.
+Add error injection capability to the test_firmware module specifically
+for firmware upload testing. Error injection instructions are transferred
+as the first part of the firmware payload. The format of an error
+injection string is similar to the error strings that may be read from
+the error sysfs node.
 
-CONFIG_FW_LOADER_SYSFS is created and is selected by
-CONFIG_FW_LOADER_USER_HELPER in order to include sysfs.o in
-firmware_class-objs.
+To inject the error "programming:hw-error", one would use the error
+injection string "inject:programming:hw-error" as the firmware payload:
 
-This is mostly just a code reorganization. There are a few symbols that
-change in scope, and these can be identified by looking at the header
-file changes. A few white-space warnings from checkpatch are also
-addressed in this patch.
+$ echo 1 > loading
+$ echo inject:programming:hw-error > data
+$ echo 0 > loading
+$ cat status
+idle
+$ cat error
+programming:hw-error
+
+The first part of the error string is the progress state of the upload at
+the time of the error. The progress state would be one of the following:
+"preparing", "transferring", or "programming". The second part of the
+error string is one of the following: "hw-error", "timeout", "device-busy",
+"invalid-file-size", "read-write-error", "flash-wearout", and "user-abort".
+
+Note that all of the error strings except "user-abort" will fail without
+delay. The "user-abort" error will cause the firmware upload to stall at
+the requested progress state for up to 5 minutes to allow you to echo 1
+to the cancel sysfs node. It is this cancellation that causes the
+'user-abort" error. If the upload is not cancelled within the 5 minute
+time period, then the upload will complete without an error.
 
 Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 Reviewed-by: Tianfei zhang <tianfei.zhang@intel.com>
 Signed-off-by: Russ Weight <russell.h.weight@intel.com>
 ---
-v1:
-  - Renamed files fw_sysfs.c and fw_sysfs.h to sysfs.c and sysfs.h
-  - Moved "MODULE_IMPORT_NS(FIRMWARE_LOADER_PRIVATE);" from sysfs.c to
-    sysfs.h to address an error identified by the kernel test robot
-    <lkp@intel.com>
 v2:
-  - No change (other than adapting to changes in patch 3)
+  - No changes from v1
 v3:
   - Added Reviewed-by tag
 v4:
   - Added Reviewed-by tag
-  - Fixed errors reported by the kernel test robot <lkp@intel.com> by adjusting
-    the functions that are bound by "#fdef CONFIG_FW_LOADER_USER_HELPER".
 ---
- drivers/base/firmware_loader/Kconfig    |   4 +
- drivers/base/firmware_loader/Makefile   |   1 +
- drivers/base/firmware_loader/fallback.c | 418 ------------------------
- drivers/base/firmware_loader/fallback.h |  46 +--
- drivers/base/firmware_loader/sysfs.c    | 399 ++++++++++++++++++++++
- drivers/base/firmware_loader/sysfs.h    |  96 ++++++
- 6 files changed, 501 insertions(+), 463 deletions(-)
- create mode 100644 drivers/base/firmware_loader/sysfs.c
- create mode 100644 drivers/base/firmware_loader/sysfs.h
+ lib/test_firmware.c | 127 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 122 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/base/firmware_loader/Kconfig b/drivers/base/firmware_loader/Kconfig
-index 38f3b66bf52b..9e03178eee00 100644
---- a/drivers/base/firmware_loader/Kconfig
-+++ b/drivers/base/firmware_loader/Kconfig
-@@ -29,6 +29,9 @@ if FW_LOADER
- config FW_LOADER_PAGED_BUF
- 	bool
+diff --git a/lib/test_firmware.c b/lib/test_firmware.c
+index 2b8c56d7bf37..76115c1a2629 100644
+--- a/lib/test_firmware.c
++++ b/lib/test_firmware.c
+@@ -117,12 +117,18 @@ struct test_config {
+ 			    struct device *device);
+ };
  
-+config FW_LOADER_SYSFS
-+	bool
++struct upload_inject_err {
++	const char *prog;
++	enum fw_upload_err err_code;
++};
 +
- config EXTRA_FIRMWARE
- 	string "Build named firmware blobs into the kernel binary"
- 	help
-@@ -72,6 +75,7 @@ config EXTRA_FIRMWARE_DIR
+ struct test_firmware_upload {
+ 	char *name;
+ 	struct list_head node;
+ 	char *buf;
+ 	size_t size;
+ 	bool cancel_request;
++	struct upload_inject_err inject;
+ 	struct fw_upload *fwl;
+ };
  
- config FW_LOADER_USER_HELPER
- 	bool "Enable the firmware sysfs fallback mechanism"
-+	select FW_LOADER_SYSFS
- 	select FW_LOADER_PAGED_BUF
- 	help
- 	  This option enables a sysfs loading facility to enable firmware
-diff --git a/drivers/base/firmware_loader/Makefile b/drivers/base/firmware_loader/Makefile
-index e87843408fe6..aab213f82288 100644
---- a/drivers/base/firmware_loader/Makefile
-+++ b/drivers/base/firmware_loader/Makefile
-@@ -6,5 +6,6 @@ obj-$(CONFIG_FW_LOADER)	+= firmware_class.o
- firmware_class-objs := main.o
- firmware_class-$(CONFIG_FW_LOADER_USER_HELPER) += fallback.o
- firmware_class-$(CONFIG_EFI_EMBEDDED_FIRMWARE) += fallback_platform.o
-+firmware_class-$(CONFIG_FW_LOADER_SYSFS) += sysfs.o
- 
- obj-y += builtin/
-diff --git a/drivers/base/firmware_loader/fallback.c b/drivers/base/firmware_loader/fallback.c
-index 8063eb595719..bf68e3947814 100644
---- a/drivers/base/firmware_loader/fallback.c
-+++ b/drivers/base/firmware_loader/fallback.c
-@@ -3,12 +3,9 @@
- #include <linux/types.h>
- #include <linux/kconfig.h>
- #include <linux/list.h>
--#include <linux/slab.h>
- #include <linux/security.h>
--#include <linux/highmem.h>
- #include <linux/umh.h>
- #include <linux/sysctl.h>
--#include <linux/vmalloc.h>
- #include <linux/module.h>
- 
- #include "fallback.h"
-@@ -18,22 +15,6 @@
-  * firmware fallback mechanism
-  */
- 
--MODULE_IMPORT_NS(FIRMWARE_LOADER_PRIVATE);
--
--extern struct firmware_fallback_config fw_fallback_config;
--
--/* These getters are vetted to use int properly */
--static inline int __firmware_loading_timeout(void)
--{
--	return fw_fallback_config.loading_timeout;
--}
--
--/* These setters are vetted to use int properly */
--static void __fw_fallback_set_timeout(int timeout)
--{
--	fw_fallback_config.loading_timeout = timeout;
--}
--
- /*
-  * use small loading timeout for caching devices' firmware because all these
-  * firmware images have been loaded successfully at lease once, also system is
-@@ -63,37 +44,6 @@ static inline int fw_sysfs_wait_timeout(struct fw_priv *fw_priv,  long timeout)
- 	return __fw_state_wait_common(fw_priv, timeout);
+@@ -1067,20 +1073,105 @@ static void upload_release_all(void)
+ 	test_fw_config->upload_name = NULL;
  }
  
--struct fw_sysfs {
--	bool nowait;
--	struct device dev;
--	struct fw_priv *fw_priv;
--	struct firmware *fw;
--};
--
--static struct fw_sysfs *to_fw_sysfs(struct device *dev)
--{
--	return container_of(dev, struct fw_sysfs, dev);
--}
--
--static void __fw_load_abort(struct fw_priv *fw_priv)
--{
--	/*
--	 * There is a small window in which user can write to 'loading'
--	 * between loading done/aborted and disappearance of 'loading'
--	 */
--	if (fw_state_is_aborted(fw_priv) || fw_state_is_done(fw_priv))
--		return;
--
--	fw_state_aborted(fw_priv);
--}
--
--static void fw_load_abort(struct fw_sysfs *fw_sysfs)
--{
--	struct fw_priv *fw_priv = fw_sysfs->fw_priv;
--
--	__fw_load_abort(fw_priv);
--}
--
- static LIST_HEAD(pending_fw_head);
- 
- void kill_pending_fw_fallback_reqs(bool only_kill_custom)
-@@ -110,374 +60,6 @@ void kill_pending_fw_fallback_reqs(bool only_kill_custom)
- 	mutex_unlock(&fw_lock);
- }
- 
--static ssize_t timeout_show(struct class *class, struct class_attribute *attr,
--			    char *buf)
--{
--	return sysfs_emit(buf, "%d\n", __firmware_loading_timeout());
--}
--
--/**
-- * timeout_store() - set number of seconds to wait for firmware
-- * @class: device class pointer
-- * @attr: device attribute pointer
-- * @buf: buffer to scan for timeout value
-- * @count: number of bytes in @buf
-- *
-- *	Sets the number of seconds to wait for the firmware.  Once
-- *	this expires an error will be returned to the driver and no
-- *	firmware will be provided.
-- *
-- *	Note: zero means 'wait forever'.
-- **/
--static ssize_t timeout_store(struct class *class, struct class_attribute *attr,
--			     const char *buf, size_t count)
--{
--	int tmp_loading_timeout = simple_strtol(buf, NULL, 10);
--
--	if (tmp_loading_timeout < 0)
--		tmp_loading_timeout = 0;
--
--	__fw_fallback_set_timeout(tmp_loading_timeout);
--
--	return count;
--}
--static CLASS_ATTR_RW(timeout);
--
--static struct attribute *firmware_class_attrs[] = {
--	&class_attr_timeout.attr,
--	NULL,
--};
--ATTRIBUTE_GROUPS(firmware_class);
--
--static void fw_dev_release(struct device *dev)
--{
--	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
--
--	kfree(fw_sysfs);
--}
--
--static int do_firmware_uevent(struct fw_sysfs *fw_sysfs, struct kobj_uevent_env *env)
--{
--	if (add_uevent_var(env, "FIRMWARE=%s", fw_sysfs->fw_priv->fw_name))
--		return -ENOMEM;
--	if (add_uevent_var(env, "TIMEOUT=%i", __firmware_loading_timeout()))
--		return -ENOMEM;
--	if (add_uevent_var(env, "ASYNC=%d", fw_sysfs->nowait))
--		return -ENOMEM;
--
--	return 0;
--}
--
--static int firmware_uevent(struct device *dev, struct kobj_uevent_env *env)
--{
--	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
--	int err = 0;
--
--	mutex_lock(&fw_lock);
--	if (fw_sysfs->fw_priv)
--		err = do_firmware_uevent(fw_sysfs, env);
--	mutex_unlock(&fw_lock);
--	return err;
--}
--
--static struct class firmware_class = {
--	.name		= "firmware",
--	.class_groups	= firmware_class_groups,
--	.dev_uevent	= firmware_uevent,
--	.dev_release	= fw_dev_release,
--};
--
--int register_sysfs_loader(void)
--{
--	int ret = class_register(&firmware_class);
--
--	if (ret != 0)
--		return ret;
--	return register_firmware_config_sysctl();
--}
--
--void unregister_sysfs_loader(void)
--{
--	unregister_firmware_config_sysctl();
--	class_unregister(&firmware_class);
--}
--
--static ssize_t firmware_loading_show(struct device *dev,
--				     struct device_attribute *attr, char *buf)
--{
--	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
--	int loading = 0;
--
--	mutex_lock(&fw_lock);
--	if (fw_sysfs->fw_priv)
--		loading = fw_state_is_loading(fw_sysfs->fw_priv);
--	mutex_unlock(&fw_lock);
--
--	return sysfs_emit(buf, "%d\n", loading);
--}
--
--/**
-- * firmware_loading_store() - set value in the 'loading' control file
-- * @dev: device pointer
-- * @attr: device attribute pointer
-- * @buf: buffer to scan for loading control value
-- * @count: number of bytes in @buf
-- *
-- *	The relevant values are:
-- *
-- *	 1: Start a load, discarding any previous partial load.
-- *	 0: Conclude the load and hand the data to the driver code.
-- *	-1: Conclude the load with an error and discard any written data.
-- **/
--static ssize_t firmware_loading_store(struct device *dev,
--				      struct device_attribute *attr,
--				      const char *buf, size_t count)
--{
--	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
--	struct fw_priv *fw_priv;
--	ssize_t written = count;
--	int loading = simple_strtol(buf, NULL, 10);
--
--	mutex_lock(&fw_lock);
--	fw_priv = fw_sysfs->fw_priv;
--	if (fw_state_is_aborted(fw_priv) || fw_state_is_done(fw_priv))
--		goto out;
--
--	switch (loading) {
--	case 1:
--		/* discarding any previous partial load */
--		fw_free_paged_buf(fw_priv);
--		fw_state_start(fw_priv);
--		break;
--	case 0:
--		if (fw_state_is_loading(fw_priv)) {
--			int rc;
--
--			/*
--			 * Several loading requests may be pending on
--			 * one same firmware buf, so let all requests
--			 * see the mapped 'buf->data' once the loading
--			 * is completed.
--			 * */
--			rc = fw_map_paged_buf(fw_priv);
--			if (rc)
--				dev_err(dev, "%s: map pages failed\n",
--					__func__);
--			else
--				rc = security_kernel_post_load_data(fw_priv->data,
--						fw_priv->size,
--						LOADING_FIRMWARE, "blob");
--
--			/*
--			 * Same logic as fw_load_abort, only the DONE bit
--			 * is ignored and we set ABORT only on failure.
--			 */
--			if (rc) {
--				fw_state_aborted(fw_priv);
--				written = rc;
--			} else {
--				fw_state_done(fw_priv);
--			}
--			break;
--		}
--		fallthrough;
--	default:
--		dev_err(dev, "%s: unexpected value (%d)\n", __func__, loading);
--		fallthrough;
--	case -1:
--		fw_load_abort(fw_sysfs);
--		break;
--	}
--out:
--	mutex_unlock(&fw_lock);
--	return written;
--}
--
--static DEVICE_ATTR(loading, 0644, firmware_loading_show, firmware_loading_store);
--
--static void firmware_rw_data(struct fw_priv *fw_priv, char *buffer,
--			   loff_t offset, size_t count, bool read)
--{
--	if (read)
--		memcpy(buffer, fw_priv->data + offset, count);
--	else
--		memcpy(fw_priv->data + offset, buffer, count);
--}
--
--static void firmware_rw(struct fw_priv *fw_priv, char *buffer,
--			loff_t offset, size_t count, bool read)
--{
--	while (count) {
--		void *page_data;
--		int page_nr = offset >> PAGE_SHIFT;
--		int page_ofs = offset & (PAGE_SIZE-1);
--		int page_cnt = min_t(size_t, PAGE_SIZE - page_ofs, count);
--
--		page_data = kmap(fw_priv->pages[page_nr]);
--
--		if (read)
--			memcpy(buffer, page_data + page_ofs, page_cnt);
--		else
--			memcpy(page_data + page_ofs, buffer, page_cnt);
--
--		kunmap(fw_priv->pages[page_nr]);
--		buffer += page_cnt;
--		offset += page_cnt;
--		count -= page_cnt;
--	}
--}
--
--static ssize_t firmware_data_read(struct file *filp, struct kobject *kobj,
--				  struct bin_attribute *bin_attr,
--				  char *buffer, loff_t offset, size_t count)
--{
--	struct device *dev = kobj_to_dev(kobj);
--	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
--	struct fw_priv *fw_priv;
--	ssize_t ret_count;
--
--	mutex_lock(&fw_lock);
--	fw_priv = fw_sysfs->fw_priv;
--	if (!fw_priv || fw_state_is_done(fw_priv)) {
--		ret_count = -ENODEV;
--		goto out;
--	}
--	if (offset > fw_priv->size) {
--		ret_count = 0;
--		goto out;
--	}
--	if (count > fw_priv->size - offset)
--		count = fw_priv->size - offset;
--
--	ret_count = count;
--
--	if (fw_priv->data)
--		firmware_rw_data(fw_priv, buffer, offset, count, true);
--	else
--		firmware_rw(fw_priv, buffer, offset, count, true);
--
--out:
--	mutex_unlock(&fw_lock);
--	return ret_count;
--}
--
--static int fw_realloc_pages(struct fw_sysfs *fw_sysfs, int min_size)
--{
--	int err;
--
--	err = fw_grow_paged_buf(fw_sysfs->fw_priv,
--				PAGE_ALIGN(min_size) >> PAGE_SHIFT);
--	if (err)
--		fw_load_abort(fw_sysfs);
--	return err;
--}
--
--/**
-- * firmware_data_write() - write method for firmware
-- * @filp: open sysfs file
-- * @kobj: kobject for the device
-- * @bin_attr: bin_attr structure
-- * @buffer: buffer being written
-- * @offset: buffer offset for write in total data store area
-- * @count: buffer size
-- *
-- *	Data written to the 'data' attribute will be later handed to
-- *	the driver as a firmware image.
-- **/
--static ssize_t firmware_data_write(struct file *filp, struct kobject *kobj,
--				   struct bin_attribute *bin_attr,
--				   char *buffer, loff_t offset, size_t count)
--{
--	struct device *dev = kobj_to_dev(kobj);
--	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
--	struct fw_priv *fw_priv;
--	ssize_t retval;
--
--	if (!capable(CAP_SYS_RAWIO))
--		return -EPERM;
--
--	mutex_lock(&fw_lock);
--	fw_priv = fw_sysfs->fw_priv;
--	if (!fw_priv || fw_state_is_done(fw_priv)) {
--		retval = -ENODEV;
--		goto out;
--	}
--
--	if (fw_priv->data) {
--		if (offset + count > fw_priv->allocated_size) {
--			retval = -ENOMEM;
--			goto out;
--		}
--		firmware_rw_data(fw_priv, buffer, offset, count, false);
--		retval = count;
--	} else {
--		retval = fw_realloc_pages(fw_sysfs, offset + count);
--		if (retval)
--			goto out;
--
--		retval = count;
--		firmware_rw(fw_priv, buffer, offset, count, false);
--	}
--
--	fw_priv->size = max_t(size_t, offset + count, fw_priv->size);
--out:
--	mutex_unlock(&fw_lock);
--	return retval;
--}
--
--static struct bin_attribute firmware_attr_data = {
--	.attr = { .name = "data", .mode = 0644 },
--	.size = 0,
--	.read = firmware_data_read,
--	.write = firmware_data_write,
--};
--
--static struct attribute *fw_dev_attrs[] = {
--	&dev_attr_loading.attr,
--	NULL
--};
--
--static struct bin_attribute *fw_dev_bin_attrs[] = {
--	&firmware_attr_data,
--	NULL
--};
--
--static const struct attribute_group fw_dev_attr_group = {
--	.attrs = fw_dev_attrs,
--	.bin_attrs = fw_dev_bin_attrs,
--};
--
--static const struct attribute_group *fw_dev_attr_groups[] = {
--	&fw_dev_attr_group,
--	NULL
--};
--
--static struct fw_sysfs *
--fw_create_instance(struct firmware *firmware, const char *fw_name,
--		   struct device *device, u32 opt_flags)
--{
--	struct fw_sysfs *fw_sysfs;
--	struct device *f_dev;
--
--	fw_sysfs = kzalloc(sizeof(*fw_sysfs), GFP_KERNEL);
--	if (!fw_sysfs) {
--		fw_sysfs = ERR_PTR(-ENOMEM);
--		goto exit;
--	}
--
--	fw_sysfs->nowait = !!(opt_flags & FW_OPT_NOWAIT);
--	fw_sysfs->fw = firmware;
--	f_dev = &fw_sysfs->dev;
--
--	device_initialize(f_dev);
--	dev_set_name(f_dev, "%s", fw_name);
--	f_dev->parent = device;
--	f_dev->class = &firmware_class;
--	f_dev->groups = fw_dev_attr_groups;
--exit:
--	return fw_sysfs;
--}
--
- /**
-  * fw_load_sysfs_fallback() - load a firmware via the sysfs fallback mechanism
-  * @fw_sysfs: firmware sysfs information for the firmware to load
-diff --git a/drivers/base/firmware_loader/fallback.h b/drivers/base/firmware_loader/fallback.h
-index 9f3055d3b4ca..144148595660 100644
---- a/drivers/base/firmware_loader/fallback.h
-+++ b/drivers/base/firmware_loader/fallback.h
-@@ -6,29 +6,7 @@
- #include <linux/device.h>
- 
- #include "firmware.h"
--
--/**
-- * struct firmware_fallback_config - firmware fallback configuration settings
-- *
-- * Helps describe and fine tune the fallback mechanism.
-- *
-- * @force_sysfs_fallback: force the sysfs fallback mechanism to be used
-- * 	as if one had enabled CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y.
-- * 	Useful to help debug a CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y
-- * 	functionality on a kernel where that config entry has been disabled.
-- * @ignore_sysfs_fallback: force to disable the sysfs fallback mechanism.
-- * 	This emulates the behaviour as if we had set the kernel
-- * 	config CONFIG_FW_LOADER_USER_HELPER=n.
-- * @old_timeout: for internal use
-- * @loading_timeout: the timeout to wait for the fallback mechanism before
-- * 	giving up, in seconds.
-- */
--struct firmware_fallback_config {
--	unsigned int force_sysfs_fallback;
--	unsigned int ignore_sysfs_fallback;
--	int old_timeout;
--	int loading_timeout;
--};
-+#include "sysfs.h"
- 
- #ifdef CONFIG_FW_LOADER_USER_HELPER
- int firmware_fallback_sysfs(struct firmware *fw, const char *name,
-@@ -40,19 +18,6 @@ void kill_pending_fw_fallback_reqs(bool only_kill_custom);
- void fw_fallback_set_cache_timeout(void);
- void fw_fallback_set_default_timeout(void);
- 
--int register_sysfs_loader(void);
--void unregister_sysfs_loader(void);
--#ifdef CONFIG_SYSCTL
--extern int register_firmware_config_sysctl(void);
--extern void unregister_firmware_config_sysctl(void);
--#else
--static inline int register_firmware_config_sysctl(void)
--{
--	return 0;
--}
--static inline void unregister_firmware_config_sysctl(void) { }
--#endif /* CONFIG_SYSCTL */
--
- #else /* CONFIG_FW_LOADER_USER_HELPER */
- static inline int firmware_fallback_sysfs(struct firmware *fw, const char *name,
- 					  struct device *device,
-@@ -66,15 +31,6 @@ static inline int firmware_fallback_sysfs(struct firmware *fw, const char *name,
- static inline void kill_pending_fw_fallback_reqs(bool only_kill_custom) { }
- static inline void fw_fallback_set_cache_timeout(void) { }
- static inline void fw_fallback_set_default_timeout(void) { }
--
--static inline int register_sysfs_loader(void)
--{
--	return 0;
--}
--
--static inline void unregister_sysfs_loader(void)
--{
--}
- #endif /* CONFIG_FW_LOADER_USER_HELPER */
- 
- #ifdef CONFIG_EFI_EMBEDDED_FIRMWARE
-diff --git a/drivers/base/firmware_loader/sysfs.c b/drivers/base/firmware_loader/sysfs.c
-new file mode 100644
-index 000000000000..2af56a28bb8d
---- /dev/null
-+++ b/drivers/base/firmware_loader/sysfs.c
-@@ -0,0 +1,399 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/highmem.h>
-+#include <linux/module.h>
-+#include <linux/security.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+
-+#include "firmware.h"
-+#include "sysfs.h"
-+
 +/*
-+ * sysfs support for firmware loader
++ * This table is replicated from .../firmware_loader/sysfs_upload.c
++ * and needs to be kept in sync.
 + */
++static const char * const fw_upload_err_str[] = {
++	[FW_UPLOAD_ERR_NONE]	     = "none",
++	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
++	[FW_UPLOAD_ERR_TIMEOUT]	     = "timeout",
++	[FW_UPLOAD_ERR_CANCELED]     = "user-abort",
++	[FW_UPLOAD_ERR_BUSY]	     = "device-busy",
++	[FW_UPLOAD_ERR_INVALID_SIZE] = "invalid-file-size",
++	[FW_UPLOAD_ERR_RW_ERROR]     = "read-write-error",
++	[FW_UPLOAD_ERR_WEAROUT]	     = "flash-wearout",
++};
 +
-+void __fw_load_abort(struct fw_priv *fw_priv)
++static void upload_err_inject_error(struct test_firmware_upload *tst,
++				    const u8 *p, const char *prog)
 +{
++	enum fw_upload_err err;
++
++	for (err = FW_UPLOAD_ERR_NONE + 1; err < FW_UPLOAD_ERR_MAX; err++) {
++		if (strncmp(p, fw_upload_err_str[err],
++			    strlen(fw_upload_err_str[err])) == 0) {
++			tst->inject.prog = prog;
++			tst->inject.err_code = err;
++			return;
++		}
++	}
++}
++
++static void upload_err_inject_prog(struct test_firmware_upload *tst,
++				   const u8 *p)
++{
++	static const char * const progs[] = {
++		"preparing:", "transferring:", "programming:"
++	};
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(progs); i++) {
++		if (strncmp(p, progs[i], strlen(progs[i])) == 0) {
++			upload_err_inject_error(tst, p + strlen(progs[i]),
++						progs[i]);
++			return;
++		}
++	}
++}
++
++#define FIVE_MINUTES_MS	(5 * 60 * 1000)
++static enum fw_upload_err
++fw_upload_wait_on_cancel(struct test_firmware_upload *tst)
++{
++	int ms_delay;
++
++	for (ms_delay = 0; ms_delay < FIVE_MINUTES_MS; ms_delay += 100) {
++		msleep(100);
++		if (tst->cancel_request)
++			return FW_UPLOAD_ERR_CANCELED;
++	}
++	return FW_UPLOAD_ERR_NONE;
++}
++
+ static enum fw_upload_err test_fw_upload_prepare(struct fw_upload *fwl,
+ 						 const u8 *data, u32 size)
+ {
+ 	struct test_firmware_upload *tst = fwl->dd_handle;
++	enum fw_upload_err ret = FW_UPLOAD_ERR_NONE;
++	const char *progress = "preparing:";
+ 
+ 	tst->cancel_request = false;
+ 
+-	if (!size || size > TEST_UPLOAD_MAX_SIZE)
+-		return FW_UPLOAD_ERR_INVALID_SIZE;
++	if (!size || size > TEST_UPLOAD_MAX_SIZE) {
++		ret = FW_UPLOAD_ERR_INVALID_SIZE;
++		goto err_out;
++	}
++
++	if (strncmp(data, "inject:", strlen("inject:")) == 0)
++		upload_err_inject_prog(tst, data + strlen("inject:"));
+ 
+ 	memset(tst->buf, 0, TEST_UPLOAD_MAX_SIZE);
+ 	tst->size = size;
+ 
+-	return FW_UPLOAD_ERR_NONE;
++	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
++	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
++		return FW_UPLOAD_ERR_NONE;
++
++	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
++		ret = fw_upload_wait_on_cancel(tst);
++	else
++		ret = tst->inject.err_code;
++
++err_out:
 +	/*
-+	 * There is a small window in which user can write to 'loading'
-+	 * between loading done/aborted and disappearance of 'loading'
++	 * The cleanup op only executes if the prepare op succeeds.
++	 * If the prepare op fails, it must do it's own clean-up.
 +	 */
-+	if (fw_state_is_aborted(fw_priv) || fw_state_is_done(fw_priv))
-+		return;
++	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
++	tst->inject.prog = NULL;
 +
-+	fw_state_aborted(fw_priv);
-+}
++	return ret;
+ }
+ 
+ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
+@@ -1088,6 +1179,7 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
+ 					       u32 size, u32 *written)
+ {
+ 	struct test_firmware_upload *tst = fwl->dd_handle;
++	const char *progress = "transferring:";
+ 	u32 blk_size;
+ 
+ 	if (tst->cancel_request)
+@@ -1097,17 +1189,33 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
+ 	memcpy(tst->buf + offset, data + offset, blk_size);
+ 
+ 	*written = blk_size;
+-	return FW_UPLOAD_ERR_NONE;
 +
-+#ifdef CONFIG_FW_LOADER_USER_HELPER
-+static ssize_t timeout_show(struct class *class, struct class_attribute *attr,
-+			    char *buf)
++	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
++	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
++		return FW_UPLOAD_ERR_NONE;
++
++	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
++		return fw_upload_wait_on_cancel(tst);
++
++	return tst->inject.err_code;
+ }
+ 
+ static enum fw_upload_err test_fw_upload_complete(struct fw_upload *fwl)
+ {
+ 	struct test_firmware_upload *tst = fwl->dd_handle;
++	const char *progress = "programming:";
+ 
+ 	if (tst->cancel_request)
+ 		return FW_UPLOAD_ERR_CANCELED;
+ 
+-	return FW_UPLOAD_ERR_NONE;
++	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
++	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
++		return FW_UPLOAD_ERR_NONE;
++
++	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
++		return fw_upload_wait_on_cancel(tst);
++
++	return tst->inject.err_code;
+ }
+ 
+ static void test_fw_upload_cancel(struct fw_upload *fwl)
+@@ -1117,11 +1225,20 @@ static void test_fw_upload_cancel(struct fw_upload *fwl)
+ 	tst->cancel_request = true;
+ }
+ 
++static void test_fw_cleanup(struct fw_upload *fwl)
 +{
-+	return sysfs_emit(buf, "%d\n", __firmware_loading_timeout());
++	struct test_firmware_upload *tst = fwl->dd_handle;
++
++	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
++	tst->inject.prog = NULL;
 +}
 +
-+/**
-+ * timeout_store() - set number of seconds to wait for firmware
-+ * @class: device class pointer
-+ * @attr: device attribute pointer
-+ * @buf: buffer to scan for timeout value
-+ * @count: number of bytes in @buf
-+ *
-+ *	Sets the number of seconds to wait for the firmware.  Once
-+ *	this expires an error will be returned to the driver and no
-+ *	firmware will be provided.
-+ *
-+ *	Note: zero means 'wait forever'.
-+ **/
-+static ssize_t timeout_store(struct class *class, struct class_attribute *attr,
-+			     const char *buf, size_t count)
-+{
-+	int tmp_loading_timeout = simple_strtol(buf, NULL, 10);
-+
-+	if (tmp_loading_timeout < 0)
-+		tmp_loading_timeout = 0;
-+
-+	__fw_fallback_set_timeout(tmp_loading_timeout);
-+
-+	return count;
-+}
-+static CLASS_ATTR_RW(timeout);
-+
-+static struct attribute *firmware_class_attrs[] = {
-+	&class_attr_timeout.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(firmware_class);
-+
-+static int do_firmware_uevent(struct fw_sysfs *fw_sysfs, struct kobj_uevent_env *env)
-+{
-+	if (add_uevent_var(env, "FIRMWARE=%s", fw_sysfs->fw_priv->fw_name))
-+		return -ENOMEM;
-+	if (add_uevent_var(env, "TIMEOUT=%i", __firmware_loading_timeout()))
-+		return -ENOMEM;
-+	if (add_uevent_var(env, "ASYNC=%d", fw_sysfs->nowait))
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static int firmware_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
-+	int err = 0;
-+
-+	mutex_lock(&fw_lock);
-+	if (fw_sysfs->fw_priv)
-+		err = do_firmware_uevent(fw_sysfs, env);
-+	mutex_unlock(&fw_lock);
-+	return err;
-+}
-+#endif /* CONFIG_FW_LOADER_USER_HELPER */
-+
-+static void fw_dev_release(struct device *dev)
-+{
-+	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
-+
-+	kfree(fw_sysfs);
-+}
-+
-+static struct class firmware_class = {
-+	.name		= "firmware",
-+#ifdef CONFIG_FW_LOADER_USER_HELPER
-+	.class_groups	= firmware_class_groups,
-+	.dev_uevent	= firmware_uevent,
-+#endif
-+	.dev_release	= fw_dev_release,
-+};
-+
-+int register_sysfs_loader(void)
-+{
-+	int ret = class_register(&firmware_class);
-+
-+	if (ret != 0)
-+		return ret;
-+	return register_firmware_config_sysctl();
-+}
-+
-+void unregister_sysfs_loader(void)
-+{
-+	unregister_firmware_config_sysctl();
-+	class_unregister(&firmware_class);
-+}
-+
-+static ssize_t firmware_loading_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
-+	int loading = 0;
-+
-+	mutex_lock(&fw_lock);
-+	if (fw_sysfs->fw_priv)
-+		loading = fw_state_is_loading(fw_sysfs->fw_priv);
-+	mutex_unlock(&fw_lock);
-+
-+	return sysfs_emit(buf, "%d\n", loading);
-+}
-+
-+/**
-+ * firmware_loading_store() - set value in the 'loading' control file
-+ * @dev: device pointer
-+ * @attr: device attribute pointer
-+ * @buf: buffer to scan for loading control value
-+ * @count: number of bytes in @buf
-+ *
-+ *	The relevant values are:
-+ *
-+ *	 1: Start a load, discarding any previous partial load.
-+ *	 0: Conclude the load and hand the data to the driver code.
-+ *	-1: Conclude the load with an error and discard any written data.
-+ **/
-+static ssize_t firmware_loading_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
-+	struct fw_priv *fw_priv;
-+	ssize_t written = count;
-+	int loading = simple_strtol(buf, NULL, 10);
-+
-+	mutex_lock(&fw_lock);
-+	fw_priv = fw_sysfs->fw_priv;
-+	if (fw_state_is_aborted(fw_priv) || fw_state_is_done(fw_priv))
-+		goto out;
-+
-+	switch (loading) {
-+	case 1:
-+		/* discarding any previous partial load */
-+		fw_free_paged_buf(fw_priv);
-+		fw_state_start(fw_priv);
-+		break;
-+	case 0:
-+		if (fw_state_is_loading(fw_priv)) {
-+			int rc;
-+
-+			/*
-+			 * Several loading requests may be pending on
-+			 * one same firmware buf, so let all requests
-+			 * see the mapped 'buf->data' once the loading
-+			 * is completed.
-+			 */
-+			rc = fw_map_paged_buf(fw_priv);
-+			if (rc)
-+				dev_err(dev, "%s: map pages failed\n",
-+					__func__);
-+			else
-+				rc = security_kernel_post_load_data(fw_priv->data,
-+								    fw_priv->size,
-+								    LOADING_FIRMWARE,
-+								    "blob");
-+
-+			/*
-+			 * Same logic as fw_load_abort, only the DONE bit
-+			 * is ignored and we set ABORT only on failure.
-+			 */
-+			if (rc) {
-+				fw_state_aborted(fw_priv);
-+				written = rc;
-+			} else {
-+				fw_state_done(fw_priv);
-+			}
-+			break;
-+		}
-+		fallthrough;
-+	default:
-+		dev_err(dev, "%s: unexpected value (%d)\n", __func__, loading);
-+		fallthrough;
-+	case -1:
-+		fw_load_abort(fw_sysfs);
-+		break;
-+	}
-+out:
-+	mutex_unlock(&fw_lock);
-+	return written;
-+}
-+
-+static DEVICE_ATTR(loading, 0644, firmware_loading_show, firmware_loading_store);
-+
-+static void firmware_rw_data(struct fw_priv *fw_priv, char *buffer,
-+			     loff_t offset, size_t count, bool read)
-+{
-+	if (read)
-+		memcpy(buffer, fw_priv->data + offset, count);
-+	else
-+		memcpy(fw_priv->data + offset, buffer, count);
-+}
-+
-+static void firmware_rw(struct fw_priv *fw_priv, char *buffer,
-+			loff_t offset, size_t count, bool read)
-+{
-+	while (count) {
-+		void *page_data;
-+		int page_nr = offset >> PAGE_SHIFT;
-+		int page_ofs = offset & (PAGE_SIZE - 1);
-+		int page_cnt = min_t(size_t, PAGE_SIZE - page_ofs, count);
-+
-+		page_data = kmap(fw_priv->pages[page_nr]);
-+
-+		if (read)
-+			memcpy(buffer, page_data + page_ofs, page_cnt);
-+		else
-+			memcpy(page_data + page_ofs, buffer, page_cnt);
-+
-+		kunmap(fw_priv->pages[page_nr]);
-+		buffer += page_cnt;
-+		offset += page_cnt;
-+		count -= page_cnt;
-+	}
-+}
-+
-+static ssize_t firmware_data_read(struct file *filp, struct kobject *kobj,
-+				  struct bin_attribute *bin_attr,
-+				  char *buffer, loff_t offset, size_t count)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
-+	struct fw_priv *fw_priv;
-+	ssize_t ret_count;
-+
-+	mutex_lock(&fw_lock);
-+	fw_priv = fw_sysfs->fw_priv;
-+	if (!fw_priv || fw_state_is_done(fw_priv)) {
-+		ret_count = -ENODEV;
-+		goto out;
-+	}
-+	if (offset > fw_priv->size) {
-+		ret_count = 0;
-+		goto out;
-+	}
-+	if (count > fw_priv->size - offset)
-+		count = fw_priv->size - offset;
-+
-+	ret_count = count;
-+
-+	if (fw_priv->data)
-+		firmware_rw_data(fw_priv, buffer, offset, count, true);
-+	else
-+		firmware_rw(fw_priv, buffer, offset, count, true);
-+
-+out:
-+	mutex_unlock(&fw_lock);
-+	return ret_count;
-+}
-+
-+static int fw_realloc_pages(struct fw_sysfs *fw_sysfs, int min_size)
-+{
-+	int err;
-+
-+	err = fw_grow_paged_buf(fw_sysfs->fw_priv,
-+				PAGE_ALIGN(min_size) >> PAGE_SHIFT);
-+	if (err)
-+		fw_load_abort(fw_sysfs);
-+	return err;
-+}
-+
-+/**
-+ * firmware_data_write() - write method for firmware
-+ * @filp: open sysfs file
-+ * @kobj: kobject for the device
-+ * @bin_attr: bin_attr structure
-+ * @buffer: buffer being written
-+ * @offset: buffer offset for write in total data store area
-+ * @count: buffer size
-+ *
-+ *	Data written to the 'data' attribute will be later handed to
-+ *	the driver as a firmware image.
-+ **/
-+static ssize_t firmware_data_write(struct file *filp, struct kobject *kobj,
-+				   struct bin_attribute *bin_attr,
-+				   char *buffer, loff_t offset, size_t count)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct fw_sysfs *fw_sysfs = to_fw_sysfs(dev);
-+	struct fw_priv *fw_priv;
-+	ssize_t retval;
-+
-+	if (!capable(CAP_SYS_RAWIO))
-+		return -EPERM;
-+
-+	mutex_lock(&fw_lock);
-+	fw_priv = fw_sysfs->fw_priv;
-+	if (!fw_priv || fw_state_is_done(fw_priv)) {
-+		retval = -ENODEV;
-+		goto out;
-+	}
-+
-+	if (fw_priv->data) {
-+		if (offset + count > fw_priv->allocated_size) {
-+			retval = -ENOMEM;
-+			goto out;
-+		}
-+		firmware_rw_data(fw_priv, buffer, offset, count, false);
-+		retval = count;
-+	} else {
-+		retval = fw_realloc_pages(fw_sysfs, offset + count);
-+		if (retval)
-+			goto out;
-+
-+		retval = count;
-+		firmware_rw(fw_priv, buffer, offset, count, false);
-+	}
-+
-+	fw_priv->size = max_t(size_t, offset + count, fw_priv->size);
-+out:
-+	mutex_unlock(&fw_lock);
-+	return retval;
-+}
-+
-+static struct bin_attribute firmware_attr_data = {
-+	.attr = { .name = "data", .mode = 0644 },
-+	.size = 0,
-+	.read = firmware_data_read,
-+	.write = firmware_data_write,
-+};
-+
-+static struct attribute *fw_dev_attrs[] = {
-+	&dev_attr_loading.attr,
-+	NULL
-+};
-+
-+static struct bin_attribute *fw_dev_bin_attrs[] = {
-+	&firmware_attr_data,
-+	NULL
-+};
-+
-+static const struct attribute_group fw_dev_attr_group = {
-+	.attrs = fw_dev_attrs,
-+	.bin_attrs = fw_dev_bin_attrs,
-+};
-+
-+static const struct attribute_group *fw_dev_attr_groups[] = {
-+	&fw_dev_attr_group,
-+	NULL
-+};
-+
-+struct fw_sysfs *
-+fw_create_instance(struct firmware *firmware, const char *fw_name,
-+		   struct device *device, u32 opt_flags)
-+{
-+	struct fw_sysfs *fw_sysfs;
-+	struct device *f_dev;
-+
-+	fw_sysfs = kzalloc(sizeof(*fw_sysfs), GFP_KERNEL);
-+	if (!fw_sysfs) {
-+		fw_sysfs = ERR_PTR(-ENOMEM);
-+		goto exit;
-+	}
-+
-+	fw_sysfs->nowait = !!(opt_flags & FW_OPT_NOWAIT);
-+	fw_sysfs->fw = firmware;
-+	f_dev = &fw_sysfs->dev;
-+
-+	device_initialize(f_dev);
-+	dev_set_name(f_dev, "%s", fw_name);
-+	f_dev->parent = device;
-+	f_dev->class = &firmware_class;
-+	f_dev->groups = fw_dev_attr_groups;
-+exit:
-+	return fw_sysfs;
-+}
-diff --git a/drivers/base/firmware_loader/sysfs.h b/drivers/base/firmware_loader/sysfs.h
-new file mode 100644
-index 000000000000..b7b5c1766052
---- /dev/null
-+++ b/drivers/base/firmware_loader/sysfs.h
-@@ -0,0 +1,96 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __FIRMWARE_SYSFS_H
-+#define __FIRMWARE_SYSFS_H
-+
-+#include <linux/device.h>
-+
-+MODULE_IMPORT_NS(FIRMWARE_LOADER_PRIVATE);
-+
-+extern struct firmware_fallback_config fw_fallback_config;
-+
-+#ifdef CONFIG_FW_LOADER_USER_HELPER
-+/**
-+ * struct firmware_fallback_config - firmware fallback configuration settings
-+ *
-+ * Helps describe and fine tune the fallback mechanism.
-+ *
-+ * @force_sysfs_fallback: force the sysfs fallback mechanism to be used
-+ *	as if one had enabled CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y.
-+ *	Useful to help debug a CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y
-+ *	functionality on a kernel where that config entry has been disabled.
-+ * @ignore_sysfs_fallback: force to disable the sysfs fallback mechanism.
-+ *	This emulates the behaviour as if we had set the kernel
-+ *	config CONFIG_FW_LOADER_USER_HELPER=n.
-+ * @old_timeout: for internal use
-+ * @loading_timeout: the timeout to wait for the fallback mechanism before
-+ *	giving up, in seconds.
-+ */
-+struct firmware_fallback_config {
-+	unsigned int force_sysfs_fallback;
-+	unsigned int ignore_sysfs_fallback;
-+	int old_timeout;
-+	int loading_timeout;
-+};
-+
-+/* These getters are vetted to use int properly */
-+static inline int __firmware_loading_timeout(void)
-+{
-+	return fw_fallback_config.loading_timeout;
-+}
-+
-+/* These setters are vetted to use int properly */
-+static inline void __fw_fallback_set_timeout(int timeout)
-+{
-+	fw_fallback_config.loading_timeout = timeout;
-+}
-+
-+int register_sysfs_loader(void);
-+void unregister_sysfs_loader(void);
-+#ifdef CONFIG_SYSCTL
-+int register_firmware_config_sysctl(void);
-+void unregister_firmware_config_sysctl(void);
-+#else
-+static inline int register_firmware_config_sysctl(void)
-+{
-+	return 0;
-+}
-+
-+static inline void unregister_firmware_config_sysctl(void) { }
-+#endif /* CONFIG_SYSCTL */
-+#else /* CONFIG_FW_LOADER_USER_HELPER */
-+static inline int register_sysfs_loader(void)
-+{
-+	return 0;
-+}
-+
-+static inline void unregister_sysfs_loader(void)
-+{
-+}
-+#endif /* CONFIG_FW_LOADER_USER_HELPER */
-+
-+struct fw_sysfs {
-+	bool nowait;
-+	struct device dev;
-+	struct fw_priv *fw_priv;
-+	struct firmware *fw;
-+};
-+
-+static inline struct fw_sysfs *to_fw_sysfs(struct device *dev)
-+{
-+	return container_of(dev, struct fw_sysfs, dev);
-+}
-+
-+void __fw_load_abort(struct fw_priv *fw_priv);
-+
-+static inline void fw_load_abort(struct fw_sysfs *fw_sysfs)
-+{
-+	struct fw_priv *fw_priv = fw_sysfs->fw_priv;
-+
-+	__fw_load_abort(fw_priv);
-+}
-+
-+struct fw_sysfs *
-+fw_create_instance(struct firmware *firmware, const char *fw_name,
-+		   struct device *device, u32 opt_flags);
-+
-+#endif /* __FIRMWARE_SYSFS_H */
+ static const struct fw_upload_ops upload_test_ops = {
+ 	.prepare = test_fw_upload_prepare,
+ 	.write = test_fw_upload_write,
+ 	.poll_complete = test_fw_upload_complete,
+ 	.cancel = test_fw_upload_cancel,
++	.cleanup = test_fw_cleanup
+ };
+ 
+ static ssize_t upload_register_store(struct device *dev,
 -- 
 2.25.1
 
