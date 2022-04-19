@@ -2,152 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94728C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEC3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345757AbiDSPKZ (ORCPT
+        id S1345122AbiDSPLE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
+        Tue, 19 Apr 2022 11:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345122AbiDSPJW (ORCPT
+        with ESMTP id S235986AbiDSPLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:09:22 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68DCA3A1BB
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:06:39 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id z8so18415300oix.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:06:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LO5D8IQiXerqDtltovMxrybBsDShYrVWcmmoOckwnnY=;
-        b=BYCn5F0XgInlZJxMgslo67sVMtt2pgaLsSywFeL7y0SzlubtCZN4KjtYRjeaE35OtQ
-         27A/WKCMQLQnnodLLNZEfSVk5omkbUkpzzD+EzJauEG5yidJBrMhI8oP7GuWSsSyHIjg
-         r5/cEb9FOsvRsXXMQFdEx6sXCAWHqnxsK2GI0iMJOr/mSo9CGcTC14E09Mf0sxLpxduJ
-         7uzpLcLyaKK5ZBONW0TnF6ciCj7Auuev7Bz0BFTduhnr3+3tXdM5dgql9D9HLWNV6Jjb
-         Bk6ifvWpSviwp8Gqxt6oQVUYwsAKxCh/9fEIo7a0/4dlVt4AXqw3KEJAKYXezHtqKozd
-         lc0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LO5D8IQiXerqDtltovMxrybBsDShYrVWcmmoOckwnnY=;
-        b=jzSp2wCXhhknhzfgXr3l5SloWNwXaqO9BpyXBs+8X13qZjEFQvR6zgNIb7VAtDL+LX
-         cSg3ejbZMIWZnF0hMTFLhk82KnHw1Tx3GEcWxNc8OO/IKDlae3SHZg0uYKfXwcyS/5P9
-         4f3GJpsLn4xmwcbCmo69hwvyflLtOTHD0UHsiI5jSEMavXF2xvn9PMlvUnWZyK1HlJHI
-         w9ilikCJY2TjC7dn7RS3SOuxfZLS7CiLYDvUL90ORPJSC4l+7ICPkmBkdozqAnjCvXdL
-         DluIS7ZkZXJ8OAwD++NnGbdy9mJOGzX734L07htkpa/VqtuKB0k5le2o0JeBWl02nfs7
-         SROA==
-X-Gm-Message-State: AOAM533vOHseC/ADAbMAdaMRM5rZxuY4glfiCPzMSSwvdXxhvGdP3uyQ
-        lP7dLkicExHXXRytXIz55uhDJ3AC0yhgxW3Gv14=
-X-Google-Smtp-Source: ABdhPJw/9kNIDpUpFT0h8fEWyNrFgldUoKCfMk4FYkSedoqHAYOn3snP9dcAwic4oAGbzyN1EzSjxThP7jAiINQzwDw=
-X-Received: by 2002:a05:6808:1486:b0:2f9:e821:51d9 with SMTP id
- e6-20020a056808148600b002f9e82151d9mr7614844oiw.253.1650380798833; Tue, 19
- Apr 2022 08:06:38 -0700 (PDT)
+        Tue, 19 Apr 2022 11:11:03 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD653A721;
+        Tue, 19 Apr 2022 08:08:20 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id AC9801F4267B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650380899;
+        bh=wE87yBeheg5nImXJNHE8hDnX7SEP4mrWfxluB9Rr99Q=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=iAOE9Sv0da11Nw5ZlOwrnD+04YO8d9pRVEOtAeTuuCzELSb0e7r/+3sVXylYRdLNQ
+         2YbLQXFNhKthcsABt5iOFOH1mk+ZXJZAwIjWnWJs41gl6KEW2zt11XwvpnCSeqSdb4
+         lz7nKBrFFdFl5zTztschsp8IA7iYk+v7jynLoRJYRdDxiDbMbXoK+u7MqAux3e4T1p
+         VpAEml7dKCrm4ljeWeXPvYHHZq/cE/Mqo3kxN5m4EXoFNbSmB8soa7F+L76TUbdpEW
+         6/PyKOYJq4yZVcSd4tK9Npksy0IzurV1FRNS0ibppcHt6wvZXZQ7eUOHQbv+fFAMka
+         lb1JTfaq6WZ4Q==
+Message-ID: <3591fcc1-d34a-b40a-4e78-edcf9d2ddf08@collabora.com>
+Date:   Tue, 19 Apr 2022 17:08:16 +0200
 MIME-Version: 1.0
-References: <alpine.DEB.2.22.394.2204161738390.3501@hadrien>
-In-Reply-To: <alpine.DEB.2.22.394.2204161738390.3501@hadrien>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 19 Apr 2022 11:06:27 -0400
-Message-ID: <CADnq5_NgQ+wd174nD+fQi_uwaHhfbPbvpXd1pdnUYEOucmgPFg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu/powerplay/vega10: fix minmax.cocci warnings
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     kbuild-all@lists.01.org, kernel test robot <lkp@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Denis Efremov <efremov@linux.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH 0/7] clk: mediatek: Move to struct clk_hw provider
+ APIs
+Content-Language: en-US
+To:     Chen-Yu Tsai <wenst@chromium.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220419081246.2546159-1-wenst@chromium.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220419081246.2546159-1-wenst@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 16, 2022 at 11:41 AM Julia Lawall <julia.lawall@inria.fr> wrote=
-:
->
-> From: kernel test robot <lkp@intel.com>
->
-> Use max to simplify the code.
->
-> Generated by: scripts/coccinelle/misc/minmax.cocci
->
-> CC: Denis Efremov <efremov@linux.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+Il 19/04/22 10:12, Chen-Yu Tsai ha scritto:
+> Hi everyone,
+> 
+> This is part 2 of my proposed MediaTek clk driver cleanup work [1].
+> 
 
-This introduces a type comparison warning:
+..snip..
 
-drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/vega10_hwmgr.c: In
-function =E2=80=98vega10_odn_initial_default_setting=E2=80=99:
-./include/linux/minmax.h:20:35: warning: comparison of distinct
-pointer types lacks a cast
-   20 |         (!!(sizeof((typeof(x) *)1 =3D=3D (typeof(y) *)1)))
-      |                                   ^~
-./include/linux/minmax.h:26:18: note: in expansion of macro =E2=80=98__type=
-check=E2=80=99
-   26 |                 (__typecheck(x, y) && __no_side_effects(x, y))
-      |                  ^~~~~~~~~~~
-./include/linux/minmax.h:36:31: note: in expansion of macro =E2=80=98__safe=
-_cmp=E2=80=99
-   36 |         __builtin_choose_expr(__safe_cmp(x, y), \
-      |                               ^~~~~~~~~~
-./include/linux/minmax.h:52:25: note: in expansion of macro =E2=80=98__care=
-ful_cmp=E2=80=99
-   52 | #define max(x, y)       __careful_cmp(x, y, >)
-      |                         ^~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/vega10_hwmgr.c:350:40:
-note: in expansion of macro =E2=80=98max=E2=80=99
-  350 |         od_table[2]->entries[i].vddc =3D max(odn_table->max_vddc,
-      |                                        ^~~
+> 
+> The next phase of the cleanup/improvement shall be to introduce some
+> variant of `struct clk_parent_data` to describe clk relationships
+> efficiently.
+> 
+> Please have a look.
+> 
 
-Alex
+Hello Chen-Yu,
 
->
-> ---
->
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
-> head:   028192fea1de083f4f12bfb1eb7c4d7beb5c8ecd
-> commit: 5f66f73b9ff4dcabd4e2405ba9c32e80e02f9408 coccinelle: misc: add mi=
-nmax script
-> :::::: branch date: 17 hours ago
-> :::::: commit date: 12 months ago
->
-> Please take the patch only if it's a positive warning. Thanks!
->
->  drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c |   10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
->
-> --- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c
-> +++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c
-> @@ -345,12 +345,10 @@ static int vega10_odn_initial_default_se
->                 odn_table->min_vddc =3D dep_table[0]->entries[0].vddc;
->
->         i =3D od_table[2]->count - 1;
-> -       od_table[2]->entries[i].clk =3D hwmgr->platform_descriptor.overdr=
-iveLimit.memoryClock > od_table[2]->entries[i].clk ?
-> -                                       hwmgr->platform_descriptor.overdr=
-iveLimit.memoryClock :
-> -                                       od_table[2]->entries[i].clk;
-> -       od_table[2]->entries[i].vddc =3D odn_table->max_vddc > od_table[2=
-]->entries[i].vddc ?
-> -                                       odn_table->max_vddc :
-> -                                       od_table[2]->entries[i].vddc;
-> +       od_table[2]->entries[i].clk =3D max(hwmgr->platform_descriptor.ov=
-erdriveLimit.memoryClock,
-> +                                         od_table[2]->entries[i].clk);
-> +       od_table[2]->entries[i].vddc =3D max(odn_table->max_vddc,
-> +                                          od_table[2]->entries[i].vddc);
->
->         return 0;
->  }
+I am grateful to see this series, as the MediaTek clock drivers are getting
+a bit old, despite new platforms being implemented practically as we speak.
+
+With this, you surely get that I completely agree with the proposed cleanup
+and modernization of the entire MediaTek clocks infrastructure, but I think
+that introducing a `struct clk_parent_data` for these drivers is, at this
+point, a must, that not only fully justifies these patches, but also "makes
+the point" - as the effect of that would be a performance improvement as we
+would *at least* avoid lots of clk_cpy_name() in case of parent_hws, or in
+case or parent_data where no .fw_name is provided (which would be the case
+for most of the clocks).
+
+That said, my advice would be to add that conversion to declaring clocks
+with .hw.init.parent_data and/or .hw.init.parent_hws to this series as to
+really make it complete.
+
+Of course, if you have concerns about old platforms that you cannot test,
+or for which this kind of conversion would require a huge amount of effort,
+then I would go for converting as many as possible as a first step and then
+leave the others for later.
+
+I would envision MT8183, 8186, 8192, 8195 to be a good amount of first
+candidates for this great effort.
+
+Cheers,
+Angelo
