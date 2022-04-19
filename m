@@ -2,112 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8261C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C97C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349337AbiDSO2y (ORCPT
+        id S1350034AbiDSO27 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
+        Tue, 19 Apr 2022 10:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353446AbiDSO2B (ORCPT
+        with ESMTP id S1349510AbiDSO2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:28:01 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA374615B;
-        Tue, 19 Apr 2022 07:25:16 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id s17so5073913plg.9;
-        Tue, 19 Apr 2022 07:25:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d5wz0mPibPZZTEoFjOQeeIvFKSEaATByfDSSqqkPSZc=;
-        b=qZ89eNbxg2HFY5/pSU8PkiJ47WYAC6qi0bgAeU3XRv/XtpPO4QiZiH2skn00r3zjDE
-         yg9HcAv5ME7n3G9EtBv7ovw8QPlaDvURhcY9OSf/z0R2WAGmmrFM5Pd+dC49gKQ3uqFA
-         L1vbfBnwG6bBo+uh9g9McooycDTMUkmrr4jCzm6+WxUt1cvM5K00eeBezeK462uxJExU
-         lhnDR2d583ujVey/+axSJ1fCyQ0qq3rJ/GWRdCx7Ebp7+oAab5j8DkR0pzBmATJ7kuEo
-         kkaTkLAI0fp5xA0pX4OWk5wFOnrIPh8GbwowTT1Xig1fHIOR5JyMvSptk8Vn28CA1XGn
-         xqxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d5wz0mPibPZZTEoFjOQeeIvFKSEaATByfDSSqqkPSZc=;
-        b=3zbD+gpJpoAs4ts5LyBjdPDDX7GlQ/w/Us12VzixPDgjrNMH2HEspv8bILrW8KeaG2
-         gKjvYKoc9ysSqRrBbGyTNR9wA+uqVmdnA225BxzM1QCI7GJ2ymDI14t9J6EANSPy8PNt
-         nw+nQgBkEYRwvqGRKWWJcvW/8sEcgb657UjyTwR29cNcf+0WlaX5vQQf3IINdKsBYYeT
-         Of7ChBKevP2i4LJv6vo8ZVRu+UBQsTP0C4CW3eXQWcV++dH4khTRcqGZupI1xh186jgu
-         x3/1NPDQXuYhbq9Sf27Yc5V5F6PqRGaQAfpeLtHspvbet4VYg8UwATVUaA+zBNK8i4d2
-         pKNg==
-X-Gm-Message-State: AOAM531AOi7ld18lvrFMXiVW7TvJ7OP1Ow91u8KFr7gJrfZQzS3WGhGf
-        2ETu1cxOAMgW5tt2bLDHBnh3oNgqfpQ=
-X-Google-Smtp-Source: ABdhPJyhuD7hHHUs7YtB/6bFzuIb7pegX+hR+fLQm6tWhmjLrhKAn7yUCjkk/pl2ZzmcO8pkk4HdAg==
-X-Received: by 2002:a17:903:2441:b0:159:208:755c with SMTP id l1-20020a170903244100b001590208755cmr9439064pls.160.1650378315569;
-        Tue, 19 Apr 2022 07:25:15 -0700 (PDT)
-Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:25:15 -0700 (PDT)
-From:   Cixi Geng <gengcixi@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        yuming.zhu1@unisoc.com
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V4 0/7] iio: adc: sc27xx: adjust structure and add PMIC's support
-Date:   Tue, 19 Apr 2022 22:24:51 +0800
-Message-Id: <20220419142458.884933-1-gengcixi@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 19 Apr 2022 10:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E506259;
+        Tue, 19 Apr 2022 07:25:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A46E6128E;
+        Tue, 19 Apr 2022 14:25:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DECC385A5;
+        Tue, 19 Apr 2022 14:25:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650378323;
+        bh=385UWGPgJs8E8vVjk7sIvSsiYikdStn+sRLPZRWRDow=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=E/ykLEj2ASgMS2kC3AVCamcUKmdEQ3BGq3ek12FMf7etNH/zW0qSObFZDn/iM9eDi
+         devv0LJZNKPEg4CJXphoPHaze2/29SG7ZBrHamEYMLO2Ppgzm14NBrP0yPEvPihZ2O
+         Lzo0bG1Lpbui4EZpWo0bg3y2zRrkwdxLMdDi/zvieX1ckFeU7LNsRM3D8qSBj78xWr
+         1ZFvy1u87/gD03jp6Q2GoSt3fld14S/Eb1o4DPx1sgxOJ4cFuuacvybqSAjUBTSQ1k
+         Y9SOQncaFAao8ONb51Ynl6cD1KNE4Z6aVr376tvxjEBatKGo+2vK5n0fs8Y+ow3syH
+         r/xZTcLU+YAuQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 29A3B5C031F; Tue, 19 Apr 2022 07:25:23 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 07:25:23 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: Re: [PATCH rcu 02/12] rcu: Make the TASKS_RCU Kconfig option be
+ selected
+Message-ID: <20220419142523.GJ4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220419001123.GA3949851@paulmck-ThinkPad-P17-Gen-1>
+ <20220419001233.3950188-2-paulmck@kernel.org>
+ <20220419231358.2a0517ee265296a25b4305be@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419231358.2a0517ee265296a25b4305be@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+On Tue, Apr 19, 2022 at 11:13:58PM +0900, Masami Hiramatsu wrote:
+> On Mon, 18 Apr 2022 17:12:23 -0700
+> "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> 
+> > Currently, any kernel built with CONFIG_PREEMPTION=y also gets
+> > CONFIG_TASKS_RCU=y, which is not helpful to people trying to build
+> > preemptible kernels of minimal size.
+> > 
+> > Because CONFIG_TASKS_RCU=y is needed only in kernels doing tracing of
+> > one form or another, this commit moves from TASKS_RCU deciding when it
+> > should be enabled to the tracing Kconfig options explicitly selecting it.
+> > This allows building preemptible kernels without TASKS_RCU, if desired.
+> > 
+> > This commit also updates the SRCU-N and TREE09 rcutorture scenarios
+> > in order to avoid Kconfig errors that would otherwise result from
+> > CONFIG_TASKS_RCU being selected without its CONFIG_RCU_EXPERT dependency
+> > being met.
+> 
+> Thanks for fixing this dependency.
+> 
+> This looks good to me (for kprobe part)
+> 
+> Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
 
-this patchset add a sc27xx_adc_variant_data structure
-and add sc272*,sc273* and ump9620 PMIC support.
+Thank you!  I will apply this on my next rebase.
 
-v2 changes:
-  fix dt_binding_check error
-  adjust some code-style issue
-  optimize the copy-paste functions
-  the smatch warnings found by lkp
-  and  ohter comments by v1 patches.
+							Thanx, Paul
 
-v3 changes:
-  fix nvmem-cells Items value and add ump9620 dt sample
-  add the correct signature for each patch
-  fix the unused warning in 3/7, add explain for set the scales
-  remove duplicate code,add goto label in sc27xx_adc_read
-  pull out the refactor code into a single patch
-  delete the suspend and resume pm for ump9620
-
-v4 changes:
-  Add fix tag in the 2/7 patch.
-  Separate modification and refactoring 3/7(v3) to 2 pathes.
-  remove the pmic_type struct instead of a boot set_volref
-  to define the specific feathure.
-  use switch statement in all scale_init functions.
-  remove ump9620 pmic support in this patchset, submit separately
-  in the next patches.
-
-Cixi Geng (7):
-  dt-bindings:iio:adc: add sprd,ump9620-adc dt-binding
-  iio: adc: sc27xx: fix read big scale voltage not right
-  iio: adc: Fine tune the scale calibration values
-  iio: adc: sc27xx: structure adjustment and optimization
-  iio: adc: refactor some functions for support more PMiCs
-  iio: adc: sc27xx: add support for PMIC sc2720 and sc2721
-  iio: adc: sc27xx: add support for PMIC sc2730
-
- .../bindings/iio/adc/sprd,sc2720-adc.yaml     |  59 ++-
- drivers/iio/adc/sc27xx_adc.c                  | 473 ++++++++++++++++--
- 2 files changed, 491 insertions(+), 41 deletions(-)
-
--- 
-2.25.1
-
+> Thank you,
+> 
+> > 
+> > [ paulmck: Apply BPF_SYSCALL feedback from Andrii Nakryiko. ]
+> > 
+> > Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> > Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> > Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+> > Cc: Andrii Nakryiko <andrii@kernel.org>
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > Cc: Masami Hiramatsu <mhiramat@kernel.org>
+> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > 
+> > --- Update SRCU-N and TREE09 to avoid Kconfig errors.
+> > 
+> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > ---
+> >  arch/Kconfig                                          | 1 +
+> >  kernel/bpf/Kconfig                                    | 1 +
+> >  kernel/rcu/Kconfig                                    | 3 ++-
+> >  kernel/trace/Kconfig                                  | 1 +
+> >  tools/testing/selftests/rcutorture/configs/rcu/SRCU-N | 2 ++
+> >  tools/testing/selftests/rcutorture/configs/rcu/TREE09 | 2 ++
+> >  6 files changed, 9 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/Kconfig b/arch/Kconfig
+> > index 29b0167c088b..1bf29ce754af 100644
+> > --- a/arch/Kconfig
+> > +++ b/arch/Kconfig
+> > @@ -35,6 +35,7 @@ config KPROBES
+> >  	depends on MODULES
+> >  	depends on HAVE_KPROBES
+> >  	select KALLSYMS
+> > +	select TASKS_RCU if PREEMPTION
+> >  	help
+> >  	  Kprobes allows you to trap at almost any kernel address and
+> >  	  execute a callback function.  register_kprobe() establishes
+> > diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+> > index d56ee177d5f8..2dfe1079f772 100644
+> > --- a/kernel/bpf/Kconfig
+> > +++ b/kernel/bpf/Kconfig
+> > @@ -27,6 +27,7 @@ config BPF_SYSCALL
+> >  	bool "Enable bpf() system call"
+> >  	select BPF
+> >  	select IRQ_WORK
+> > +	select TASKS_RCU if PREEMPTION
+> >  	select TASKS_TRACE_RCU
+> >  	select BINARY_PRINTF
+> >  	select NET_SOCK_MSG if NET
+> > diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+> > index f559870fbf8b..4f665ae0cf55 100644
+> > --- a/kernel/rcu/Kconfig
+> > +++ b/kernel/rcu/Kconfig
+> > @@ -78,7 +78,8 @@ config TASKS_RCU_GENERIC
+> >  	  task-based RCU implementations.  Not for manual selection.
+> >  
+> >  config TASKS_RCU
+> > -	def_bool PREEMPTION
+> > +	def_bool 0
+> > +	select IRQ_WORK
+> >  	help
+> >  	  This option enables a task-based RCU implementation that uses
+> >  	  only voluntary context switch (not preemption!), idle, and
+> > diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+> > index 2c43e327a619..bf5da6c4e999 100644
+> > --- a/kernel/trace/Kconfig
+> > +++ b/kernel/trace/Kconfig
+> > @@ -144,6 +144,7 @@ config TRACING
+> >  	select BINARY_PRINTF
+> >  	select EVENT_TRACING
+> >  	select TRACE_CLOCK
+> > +	select TASKS_RCU if PREEMPTION
+> >  
+> >  config GENERIC_TRACER
+> >  	bool
+> > diff --git a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N
+> > index 2da8b49589a0..07f5e0a70ae7 100644
+> > --- a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N
+> > +++ b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N
+> > @@ -6,3 +6,5 @@ CONFIG_PREEMPT_NONE=y
+> >  CONFIG_PREEMPT_VOLUNTARY=n
+> >  CONFIG_PREEMPT=n
+> >  #CHECK#CONFIG_RCU_EXPERT=n
+> > +CONFIG_KPROBES=n
+> > +CONFIG_FTRACE=n
+> > diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TREE09 b/tools/testing/selftests/rcutorture/configs/rcu/TREE09
+> > index 8523a7515cbf..fc45645bb5f4 100644
+> > --- a/tools/testing/selftests/rcutorture/configs/rcu/TREE09
+> > +++ b/tools/testing/selftests/rcutorture/configs/rcu/TREE09
+> > @@ -13,3 +13,5 @@ CONFIG_DEBUG_LOCK_ALLOC=n
+> >  CONFIG_RCU_BOOST=n
+> >  CONFIG_DEBUG_OBJECTS_RCU_HEAD=n
+> >  #CHECK#CONFIG_RCU_EXPERT=n
+> > +CONFIG_KPROBES=n
+> > +CONFIG_FTRACE=n
+> > -- 
+> > 2.31.1.189.g2e36527f23
+> > 
+> 
+> 
+> -- 
+> Masami Hiramatsu <mhiramat@kernel.org>
