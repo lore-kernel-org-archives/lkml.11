@@ -2,184 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD139C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B213CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354540AbiDSQT1 (ORCPT
+        id S1354522AbiDSQT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56322 "EHLO
+        Tue, 19 Apr 2022 12:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354537AbiDSQTR (ORCPT
+        with ESMTP id S1354551AbiDSQTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:19:17 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797A6396A3;
-        Tue, 19 Apr 2022 09:16:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650384991; x=1681920991;
-  h=from:to:cc:subject:date:message-id;
-  bh=YlRsC+/41T+2N/ctZZSqpu7aySiqxH12farWrJv1ANM=;
-  b=FvGdaR0F7fX3TQygAep10ZKf/pycoddt+ydjl/f6YP6jlO5i4NFaDQjm
-   7JKHZbGUS2/OoRSF5sepmbRS/7Jz2pml8xAYqA87aXpEMZwujQUiZXFV+
-   KCfXkF2uf35BxyDs+mmY9Sscrw00+iPCB34GsaBDWI7Fz+9XUsYdYzGCR
-   6tNBk1JnofLtDeVCKOETqxkW+x6BprMSLsLKN9l4m3QU/Ywyec2gt278i
-   pg6EVgqIt19PR8PeT1hBRNGnvKAf/xClLsPQUNmBfFoOV7tCpCSukiOw8
-   znxyhCLsiFppB6Ty55kIW6biQOyfZQipkCqj7p8M/Dpzunrx0WrFk+11a
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="243738115"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="243738115"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:16:31 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="529374957"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:16:25 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v9 8/9] KVM: x86: Allow userspace set maximum VCPU id for VM
-Date:   Tue, 19 Apr 2022 23:44:44 +0800
-Message-Id: <20220419154444.11888-1-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Apr 2022 12:19:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99FB03A5F8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650385000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=feagHcqxbeiZZqCkc7XRmApRsAl3Hwsk1QnHwbNmE9Q=;
+        b=ZoEt0vZdj04l9rcRdyo4Y/ohfWtNlU/qvot66ojnanzlLLjdn2R39c/6wXldNLt0XfF4UF
+        kkN0dA3fUX+UE/jg08W7HPQM7Cp1H4SYLlbpJRgfsA/OOW0TOi9cMr4tmVFfD9FaZh+n2o
+        5gDy1LLyCrnClvxxbF5kEIBE4iw3OkM=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-639-vTekoS4bMUqzdXCHgeqD9w-1; Tue, 19 Apr 2022 12:16:39 -0400
+X-MC-Unique: vTekoS4bMUqzdXCHgeqD9w-1
+Received: by mail-io1-f71.google.com with SMTP id y10-20020a056602164a00b00653f388e244so6654908iow.22
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:16:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=feagHcqxbeiZZqCkc7XRmApRsAl3Hwsk1QnHwbNmE9Q=;
+        b=orQxl7yo19nlBPbTrlFUCXmzoo5JOsEEMOeS1ElhWRG9rmR5+zK/se34r+H39TpuJN
+         J2/Sdc9yvvoePW2k37AxwusFsp1FqYv+tpUx51oDJTV7o0HwzpcO+7TPLw7EbIF08VS8
+         WbsF2RhP0rmWs0jfoBZbJOJBxHGyStcqueK8qn15Nvv1BtzyAjVXdkW/ANbCL3jI+ysq
+         qfjhV1VUG+JAjhK8XQ5K02OjE+sJtdyFuC0Zt6zn3JruGzeNc6SYi4IjPnSg4OCjQn+p
+         Yx6Y1W1Jld7ZI+sepn1etUUTATfGgP6WCTPPZBpbnnVPTDNmr42M4a/0EmsGbD4CzZqo
+         eAjA==
+X-Gm-Message-State: AOAM530/7pz7W9wvwsrB0TNFfbmu+gS1LMXanatE3XK4deIpgU36mZoZ
+        V85HcuMvbYmw4XlE8mvFeeQU6Q8iWipxcJ6rMHBtwhxkK0wquc8KCEUtQ8nAnRo3OEu8vqlobmx
+        LLPeQOmB+pm8zonQwmlPxbCYw
+X-Received: by 2002:a05:6e02:1d85:b0:2cb:fa5e:73fa with SMTP id h5-20020a056e021d8500b002cbfa5e73famr7182100ila.294.1650384998619;
+        Tue, 19 Apr 2022 09:16:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwhHvQQOCwK/bC1iSAYmZ/USMc21YsvbIyJomXHZ6/51e2BqTSDdxCO939mrDl7PDkCurFtYQ==
+X-Received: by 2002:a05:6e02:1d85:b0:2cb:fa5e:73fa with SMTP id h5-20020a056e021d8500b002cbfa5e73famr7182085ila.294.1650384998180;
+        Tue, 19 Apr 2022 09:16:38 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id a1-20020a923301000000b002cae7560bfesm9092389ilf.62.2022.04.19.09.16.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 09:16:37 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 12:16:35 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Alistair Popple <apopple@nvidia.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
+        willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
+        neilb@suse.de, surenb@google.com, minchan@kernel.org,
+        sfr@canb.auug.org.au, rcampbell@nvidia.com,
+        naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm/swapfile: unuse_pte can map random data if swap
+ read fails
+Message-ID: <Yl7gY6G8/To1yHOe@xz-m1.local>
+References: <20220416030549.60559-1-linmiaohe@huawei.com>
+ <87tuapk9n7.fsf@nvdebian.thelocal>
+ <5a78dd68-343d-ac57-a698-2cfead8ee366@huawei.com>
+ <72cfde7a-61d7-980c-4653-94ae83eb4257@redhat.com>
+ <87pmldjxiq.fsf@nvdebian.thelocal>
+ <21003e7a-01e4-c751-dd41-fce4149d424c@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <21003e7a-01e4-c751-dd41-fce4149d424c@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce new max_vcpu_ids in KVM for x86 architecture. Userspace
-can assign maximum possible vcpu id for current VM session using
-KVM_CAP_MAX_VCPU_ID of KVM_ENABLE_CAP ioctl().
+On Tue, Apr 19, 2022 at 01:14:29PM +0200, David Hildenbrand wrote:
+> On 19.04.22 10:08, Alistair Popple wrote:
+> > David Hildenbrand <david@redhat.com> writes:
+> > 
+> >> On 19.04.22 09:29, Miaohe Lin wrote:
+> >>> On 2022/4/19 11:51, Alistair Popple wrote:
+> >>>> Miaohe Lin <linmiaohe@huawei.com> writes:
+> >>>>
+> >>>>> There is a bug in unuse_pte(): when swap page happens to be unreadable,
+> >>>>> page filled with random data is mapped into user address space. In case
+> >>>>> of error, a special swap entry indicating swap read fails is set to the
+> >>>>> page table. So the swapcache page can be freed and the user won't end up
+> >>>>> with a permanently mounted swap because a sector is bad. And if the page
+> >>>>> is accessed later, the user process will be killed so that corrupted data
+> >>>>> is never consumed. On the other hand, if the page is never accessed, the
+> >>>>> user won't even notice it.
+> >>>>
+> >>>> Hi Miaohe,
+> >>>>> It seems we're not actually using the pfn that gets stored in the special swap
+> >>>> entry here. Is my understanding correct? If so I think it would be better to use
+> >>>
+> >>> Yes, you're right. The pfn is not used now. What we need here is a special swap entry
+> >>> to do the right things. I think we can change to store some debugging information instead
+> >>> of pfn if needed in the future.
+> >>>
+> >>>> the new PTE markers Peter introduced[1] rather than adding another swap entry
+> >>>> type.
+> >>>
+> >>> IIUC, we should not reuse that swap entry here. From definition:
+> >>>
+> >>> PTE markers
+> >>> `========='
+> >>> ...
+> >>> PTE marker is a new type of swap entry that is ony applicable to file
+> >>> backed memories like shmem and hugetlbfs.  It's used to persist some
+> >>> pte-level information even if the original present ptes in pgtable are
+> >>> zapped.
+> >>>
+> >>> It's designed for file backed memories while swapin error entry is for anonymous
+> >>> memories. And there has some differences in processing. So it's not a good idea
+> >>> to reuse pte markers. Or am I miss something?
+> >>
+> >> I tend to agree. As raised in my other reply, maybe we can simply reuse
+> >> hwpoison entries and update the documentation of them accordingly.
+> > 
+> > Unless I've missed something I don't think PTE markers should be restricted
+> > solely to file backed memory. It's true that the only user of them at the moment
+> > is UFFD-WP for file backed memory, but PTE markers are just a special swap entry
+> > same as what is added here.
+> 
+> There is a difference.
+> 
+> What we want here is "there used to be something mapped but it's not
+> readable anymore. Please fail hard when userspace tries accessing
+> this.". Just like with hwpoison entries.
+> 
+> What a pte marker expresses is that "here is nothing mapped right now
+> but we have additional metadata available here. For file-backed memory,
+> it translates to: If we ever touch this page, lookup the pagecache what
+> to map here."
+> 
+> In the anonymous memory world, this would map to "populate the zeropage
+> or a fresh anonymous page on access." and keep the metadata around.
 
-This is done for x86 only because the sole use case is to guide
-memory allocation for PID-pointer table, a structure needed to
-enable VMX IPI.
+So far it's defined like that, but it does not necessarily need to.  IMHO
+PTE marker could work here for the anonymous use case as Alistair stated.
+Say, it's fairly simple to not go into anonymous page handling at all if we
+see this pte marker with the new bit set.  It's indeed just tailored for
+such use case where we don't need to store special data like pfn.
 
-By default, max_vcpu_ids set as KVM_MAX_VCPU_IDS.
+Hwpoison entry looks good to me too, but as discussed we may need to
+reserve pfn=0 or -1 or anything we're sure an invalid value, and then we'll
+also need to cover the rest hwpoison related code (carefully, as rightfully
+pointed out by Miaohe on the difference of VM_FAULT_* fields being
+returned) to not faultly treat the "swp device read error" with general
+MCEs.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- Documentation/virt/kvm/api.rst  | 18 ++++++++++++++++++
- arch/x86/include/asm/kvm_host.h |  6 ++++++
- arch/x86/kvm/x86.c              | 25 ++++++++++++++++++++++++-
- 3 files changed, 48 insertions(+), 1 deletion(-)
+From that POV it seems pte markers would be slightly cleaner, we'll need to
+touch up existing pte markers code path to start accept anonymous vmas,
+though.  No strong opinion on this.
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index d13fa6600467..0c6ad2d8bea0 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -7136,6 +7136,24 @@ The valid bits in cap.args[0] are:
-                                     IA32_MISC_ENABLE[bit 18] is cleared.
- =================================== ============================================
- 
-+7.32 KVM_CAP_MAX_VCPU_ID
-+------------------------
-+
-+:Architectures: x86
-+:Target: VM
-+:Parameters: args[0] - maximum APIC ID value set for current VM
-+:Returns: 0 on success, -EINVAL if args[0] is beyond KVM_MAX_VCPU_IDS
-+          supported in KVM or if it has been settled.
-+
-+Userspace is able to calculate the limit to APIC ID values from designated CPU
-+topology. This capability allows userspace to specify maximum possible APIC ID
-+assigned for current VM session prior to the creation of vCPUs. By design, it
-+can set only once and doesn't accept change any more. KVM will manage memory
-+allocation of VM-scope structures which depends on the value of APIC ID.
-+
-+Calling KVM_CHECK_EXTENSION for this capability returns the value of maximum APIC
-+ID that KVM supports at runtime. It sets as KVM_MAX_VCPU_IDS by default.
-+
- 8. Other capabilities.
- ======================
- 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index d23e80a56eb8..cdd14033988d 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1238,6 +1238,12 @@ struct kvm_arch {
- 	hpa_t	hv_root_tdp;
- 	spinlock_t hv_root_tdp_lock;
- #endif
-+	/*
-+	 * VM-scope maximum vCPU ID. Used to determine the size of structures
-+	 * that increase along with the maximum vCPU ID, in which case, using
-+	 * the global KVM_MAX_VCPU_IDS may lead to significant memory waste.
-+	 */
-+	u32 max_vcpu_ids;
- };
- 
- struct kvm_vm_stat {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 277a0da8c290..744e88a71b63 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4320,7 +4320,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 		r = KVM_MAX_VCPUS;
- 		break;
- 	case KVM_CAP_MAX_VCPU_ID:
--		r = KVM_MAX_VCPU_IDS;
-+		if (!kvm->arch.max_vcpu_ids)
-+			r = KVM_MAX_VCPU_IDS;
-+		else
-+			r = kvm->arch.max_vcpu_ids;
- 		break;
- 	case KVM_CAP_PV_MMU:	/* obsolete */
- 		r = 0;
-@@ -6064,6 +6067,20 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 		}
- 		mutex_unlock(&kvm->lock);
- 		break;
-+	case KVM_CAP_MAX_VCPU_ID:
-+		r = -EINVAL;
-+		if (cap->args[0] > KVM_MAX_VCPU_IDS)
-+			break;
-+
-+		mutex_lock(&kvm->lock);
-+		if (kvm->arch.max_vcpu_ids == cap->args[0]) {
-+			r = 0;
-+		} else if (!kvm->arch.max_vcpu_ids) {
-+			kvm->arch.max_vcpu_ids = cap->args[0];
-+			r = 0;
-+		}
-+		mutex_unlock(&kvm->lock);
-+		break;
- 	default:
- 		r = -EINVAL;
- 		break;
-@@ -11172,6 +11189,12 @@ int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
- 		pr_warn_once("kvm: SMP vm created on host with unstable TSC; "
- 			     "guest TSC will not be reliable\n");
- 
-+	if (!kvm->arch.max_vcpu_ids)
-+		kvm->arch.max_vcpu_ids = KVM_MAX_VCPU_IDS;
-+
-+	if (id >= kvm->arch.max_vcpu_ids)
-+		return -EINVAL;
-+
- 	return 0;
- }
- 
+Btw, is there an error dumped into dmesg when the read error happens (e.g.,
+would block IO path trigger some warning already)?  I'm wondering whether
+we should report it to the user somehow so that the user should know even
+earlier than when the bad page is accessed, then the user could potentially
+do something useful.
+
 -- 
-2.27.0
+Peter Xu
 
