@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFF3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B4FC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353604AbiDSOcr (ORCPT
+        id S1353681AbiDSOc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
+        Tue, 19 Apr 2022 10:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353383AbiDSOb6 (ORCPT
+        with ESMTP id S1353398AbiDSOcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:31:58 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83D238D90
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:12 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id lc2so33263949ejb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:12 -0700 (PDT)
+        Tue, 19 Apr 2022 10:32:01 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEE03969E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:16 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id z99so21508519ede.5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=Ynz+wXsaKci/uCPa0T2egAwOljY4OEI2Not830eyYso=;
-        b=GlWac5GHq4bFI2oMKXg1MyPfzXSaMwipfkARfjnZ5YqX1HUSIyuw+Y4MTxwtW6Wo6y
-         Lkuot2RbGwKK46iIxOBVUhx5fhUMVAKtxeAv4JRC+F2+VLuyBRGJGhUL+5OfjacMArPp
-         kZiNr7sdyXvNbaVwS3ghptVeG6X4LJXm/64uwgH2S+GNSoBsq7vJLF/eUCAF26JRtNTP
-         JXPHmcOy2X4E8UuGq0w9l1VogtqMBtEvDdjEvRcJ569QjhstCXoCTcstSUqCFyzTC682
-         8cuopAxbp6V2apVkZliSdCoKkKL5Br9XG/SdZ6gReLbhl3tBVuEmHi6SmQ4n2mAXCVwZ
-         B1Lw==
+        bh=xWS9zh5KMUXIqFZALN21cYcGLfXB3BzUXuFD0a0fUOw=;
+        b=aLV9hLaJJ0NaAlRkO0aHQgwZPtV2CafANhXdezXlvGXflg0FXgSZKgiFBo5azgdpoe
+         iBsB2CHPZElvVUvAhCQ3YTfehyZNBGF/wZ8qHQY31N/Z50eaxl1riMkeh9PUq+zVURKW
+         tXd2/Ec5cDNI8Bfqi8RcV/4NeeTvpgkhiQ77dO0LlWLWI36dyTvhAelFG86MD/MncwRX
+         EN5nuCJ6EflxmGNk9yKMixNIqf4J5Ypj2faFSv2VXc6uNHhqhcNNEBiamuJTDaw1zsUx
+         u8BjjM1d/7Jm9SbC9x48/U0ZqLOxSwiu+NQ6eazi7QF2U/gsIx6Iw8lOKImpLy81KsZa
+         y2PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ynz+wXsaKci/uCPa0T2egAwOljY4OEI2Not830eyYso=;
-        b=ZnOZrMWJFbrchPe6wHoC42Y/LeOXd3str/nepGhZOrEeoI9SpIH+Rp9oO0bBGt8SyB
-         Hy9T7OzuWcsiwKrWEtSEk5QSq2Y1FxnjgC15ocqRyYIUl5+wMl7geVKSSlIn6bNYhbwU
-         ifd5hlHX4Ubn3mIj7pBMr8npYkvKYuWn2aDmKtOMtB7rXCF3h+hPRVN0AYI0i9fXnRBS
-         wP6wgAU984ZO3AgrgroQopvoYxdr7cNhLrOpL8gywQGnwgERNYRkrRf+/O+Yt8/V+SQf
-         KkD2/GsFdmQ5MKqaBz1TvEqt3KkRIHm4hkGAWqywGz40Uo2mLXz+v6V97qZ2fH2+9YNZ
-         wzaw==
-X-Gm-Message-State: AOAM53025ad9w5bIEiP4kSFytzQmwGKmjEVoQaaSLnuTxmP9TKSyGFtl
-        lj7ZIP+LcGPGpDE+ReLtHdGgXQ==
-X-Google-Smtp-Source: ABdhPJyAwjk70JTjJB+moeKuDW1E4dkWfB+u4jhaJ0VsVEhrDbhVshcuFYPOkdMHO3UzR71ZTSm85w==
-X-Received: by 2002:a17:906:d10c:b0:6cd:4aa2:cd62 with SMTP id b12-20020a170906d10c00b006cd4aa2cd62mr13605827ejz.229.1650378551397;
-        Tue, 19 Apr 2022 07:29:11 -0700 (PDT)
+        bh=xWS9zh5KMUXIqFZALN21cYcGLfXB3BzUXuFD0a0fUOw=;
+        b=lXMWXHUYopxBHSp647WfIJxczLZVMpT40DEb8pyBu8WD/96vM1307HQxPiPcuFBDYU
+         CtEZRZa7IcRvjMaph3qRq0HTji2mlHOFxlO/dMc6Ix4rfPTdukzYOe4xLPuIqDeKnuFI
+         VYlNXI9hY9HQjnLprHJr41rU99XzF2v2kMWJaTW14SWT/QTy+ynv29cyjLq4GAMSO95k
+         MB/oZqR6O6H7I5DQNAn/DHc2FqTWBiR2BKSWa3a/CnEphx3JQzm8M3VPMMjBo+31h0wL
+         8ENkGNfJ9vsKiQZIkuMGTCPHPmksseL8M4OwOLvynem7fG2DIHRKmEGp8Pnap2cTi63n
+         bbRA==
+X-Gm-Message-State: AOAM5334sAHyq8YcmUjgozuhmv51q+if6KCOWastbOIfzextjeEeHg9V
+        QUgBGHgcb6KFBPwlbjyTmpcDlw==
+X-Google-Smtp-Source: ABdhPJzkzsncCIKBUOGljWWovNy5FkPnFo0osExDv5Sz3kp3CcXwRLh62x+x0uhbvqikml8HwNYnRw==
+X-Received: by 2002:a05:6402:1e8c:b0:424:1d6:1b71 with SMTP id f12-20020a0564021e8c00b0042401d61b71mr3019255edf.211.1650378554873;
+        Tue, 19 Apr 2022 07:29:14 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm5761884ejy.93.2022.04.19.07.29.10
+        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm5761884ejy.93.2022.04.19.07.29.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:29:10 -0700 (PDT)
+        Tue, 19 Apr 2022 07:29:14 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Markus Mayer <mmayer@broadcom.com>,
         Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
@@ -59,9 +59,9 @@ To:     Markus Mayer <mmayer@broadcom.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH 4/7] memory: ti-emif-pm: simplify platform_get_resource()
-Date:   Tue, 19 Apr 2022 16:28:56 +0200
-Message-Id: <20220419142859.380566-4-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 7/7] memory: renesas-rpc-if: simplify platform_get_resource_byname()
+Date:   Tue, 19 Apr 2022 16:28:59 +0200
+Message-Id: <20220419142859.380566-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
 References: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
@@ -71,31 +71,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_platform_get_and_ioremap_resource() instead of
-platform_get_resource() and devm_ioremap_resource().
+Use devm_platform_ioremap_resource_byname() instead of
+platform_get_resource_byname() and devm_ioremap_resource().
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/memory/ti-emif-pm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/memory/renesas-rpc-if.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/memory/ti-emif-pm.c b/drivers/memory/ti-emif-pm.c
-index 179fec2da56d..31d6266f008c 100644
---- a/drivers/memory/ti-emif-pm.c
-+++ b/drivers/memory/ti-emif-pm.c
-@@ -290,9 +290,9 @@ static int ti_emif_probe(struct platform_device *pdev)
+diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
+index ba9c526833c0..4316988d791a 100644
+--- a/drivers/memory/renesas-rpc-if.c
++++ b/drivers/memory/renesas-rpc-if.c
+@@ -259,8 +259,7 @@ int rpcif_sw_init(struct rpcif *rpc, struct device *dev)
  
- 	emif_data->pm_data.ti_emif_sram_config = (unsigned long)match->data;
+ 	rpc->dev = dev;
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	emif_data->pm_data.ti_emif_base_addr_virt = devm_ioremap_resource(dev,
--									  res);
-+	emif_data->pm_data.ti_emif_base_addr_virt = devm_platform_get_and_ioremap_resource(pdev,
-+											   0,
-+											   &res);
- 	if (IS_ERR(emif_data->pm_data.ti_emif_base_addr_virt)) {
- 		ret = PTR_ERR(emif_data->pm_data.ti_emif_base_addr_virt);
- 		return ret;
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "regs");
+-	rpc->base = devm_ioremap_resource(&pdev->dev, res);
++	rpc->base = devm_platform_ioremap_resource_byname(pdev, "regs");
+ 	if (IS_ERR(rpc->base))
+ 		return PTR_ERR(rpc->base);
+ 
 -- 
 2.32.0
 
