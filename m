@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B326C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9943EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242530AbiDSAsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
+        id S242658AbiDSAsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241314AbiDSApQ (ORCPT
+        with ESMTP id S241142AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:45:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57792CE30
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:34 -0700 (PDT)
+        Mon, 18 Apr 2022 20:45:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC582AC51
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A240A61426
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 181366138B
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744C7C3411C;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20174C385D1;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=QdhjjxhJ7SHpqY5mdpkVbTMHi36forprWYIZSJUVTUg=;
+        bh=TXGXxxDUWM3g7RndkKdMyxMfgFKYo/NmOYDBPkR2PO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXlVRfSzb+anc4S3lOIYVHiLxrzgRwgawPoevA95ykPOFgD/8jWpEfPXfORtnab36
-         bt4alEe+xSuKwMXdxmsCOuxdC1h9A98vHdw3QS2dikLJC5GnKCbGFeiLvgxl6bO2PX
-         XJ8bHMLtVLgWfFwop6OqXbiGV3Sjry4Mkva0VJu1/UXZRJAiRg3/WUuArNSwLtJef0
-         jNgxcJvnw++TCGFoN3bKnLfxrH+atK8Jl0AfZR0HX4k3P4aIr8nQ2Bcm7uVtJB7pV9
-         KEL+4d+kUC7wBeWmCbJFz32wYevUthVSoIWhLgbMVvypfLzbsz2wIyMd2tT0d1SsY5
-         bDTDrCUetCp6g==
+        b=npTj/QxtzwbLb44f/6Dil+BCDyCFtLyMhclIALEZZ3iHbeHaDhPMougDmfixqWGeU
+         HDezrEwx+FWpGfAjDhr13Y1AWTdLTCMHxXOx6fILFEN3bB8BIpBXgvehoFmjgtBiZp
+         XhnAUlkiIeA2YFtr0IIndBc8oYYCwMUR2usKBu6RT5zfuGdGYdFEl+lLr5GgDW1Kx2
+         QdVbkzjz51L2LBUXyj9UpzkiFpSNBTNLMACvEVDsb4YO4zKH3+RQrhrtQqpTXLbd+m
+         o6OwuzTtimWCeVTnIUQr4D8sz31/W1pWihYKV4G6oBOA2uR0/jXRt/cNsaWVluNCf0
+         uG1/Z0HpTZ6Rw==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 554FC5C3230; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 351C65C30FB; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 43/61] tools/nolibc/stdio: make printf(%s) accept NULL
-Date:   Mon, 18 Apr 2022 17:42:07 -0700
-Message-Id: <20220419004225.3952530-43-paulmck@kernel.org>
+Subject: [PATCH nolibc 25/61] tools/nolibc/stdlib: avoid a 64-bit shift in u64toh_r()
+Date:   Mon, 18 Apr 2022 17:41:49 -0700
+Message-Id: <20220419004225.3952530-25-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,30 +53,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-It's often convenient to support this, especially in test programs where
-a NULL may correspond to an allocation error or a non-existing value.
-Let's make printf("%s") support being passed a NULL. In this case it
-prints "(null)" like glibc's printf().
+The build of printf() on mips requires libgcc for functions __ashldi3 and
+__lshrdi3 due to 64-bit shifts when scanning the input number. These are
+not really needed in fact since we scan the number 4 bits at a time. Let's
+arrange the loop to perform two 32-bit shifts instead on 32-bit platforms.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/stdio.h | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/include/nolibc/stdlib.h | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/tools/include/nolibc/stdio.h b/tools/include/nolibc/stdio.h
-index cb4d3ab3a565..559ebe052a75 100644
---- a/tools/include/nolibc/stdio.h
-+++ b/tools/include/nolibc/stdio.h
-@@ -220,6 +220,8 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
- 			}
- 			else if (c == 's') {
- 				outstr = va_arg(args, char *);
-+				if (!outstr)
-+					outstr="(null)";
- 			}
- 			else if (c == '%') {
- 				/* queue it verbatim */
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index 82a4cf606d3c..db47362a750f 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -200,14 +200,18 @@ int u64toh_r(uint64_t in, char *buffer)
+ 	int dig;
+ 
+ 	do {
+-		dig = in >> pos;
+-		in -= (uint64_t)dig << pos;
++		if (sizeof(long) >= 8) {
++			dig = (in >> pos) & 0xF;
++		} else {
++			/* 32-bit platforms: avoid a 64-bit shift */
++			uint32_t d = (pos >= 32) ? (in >> 32) : in;
++			dig = (d >> (pos & 31)) & 0xF;
++		}
++		if (dig > 9)
++			dig += 'a' - '0' - 10;
+ 		pos -= 4;
+-		if (dig || digits || pos < 0) {
+-			if (dig > 9)
+-				dig += 'a' - '0' - 10;
++		if (dig || digits || pos < 0)
+ 			buffer[digits++] = '0' + dig;
+-		}
+ 	} while (pos >= 0);
+ 
+ 	buffer[digits] = 0;
 -- 
 2.31.1.189.g2e36527f23
 
