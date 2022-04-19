@@ -2,110 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 01:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6668C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 01:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245438AbiDSBfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 21:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        id S244854AbiDSBjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 21:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235649AbiDSBfw (ORCPT
+        with ESMTP id S235649AbiDSBji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 21:35:52 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1332A1EAE3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 18:33:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650331992; x=1681867992;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hoMj3UjH0T+82jSYD+xlE5pPs568f7YF1XmJsBKbDJ0=;
-  b=YBSg/TdxeioeGQ0QCshLz0z7BRjZoH8fJVyEbdISUyA+b+3UEP9ZGWYV
-   zAmo+wfpMqLA0l0AFFt56IPsUfU0t4oweoIlhAIEivlfb3hc3KpaeP1z9
-   pi/EGfCC9s3rty9innVoiTVzpG+2Yw5NMu7+3zKVExj9NUC2+Uq894lLk
-   teQElI7cefNs6werIGfNuJprUuKHTm6K0OrMG+2p6ObQuQ9WDWQAb11Cm
-   0r46V93uVwdKhK0VSeoLjeYF7YzgczQqwXwcRuNYmWxIJBMsJHYqgzgIS
-   VvZClzs3urUGYoTvVqNKnD2PAbwaAX3AXv/l2fOKOvyO7s8lot/hIJtEa
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="263407461"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="263407461"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 18:33:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="592595956"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 18 Apr 2022 18:33:10 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngcjt-0005AS-Nu;
-        Tue, 19 Apr 2022 01:33:09 +0000
-Date:   Tue, 19 Apr 2022 09:32:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 627/2356]
- include/asm-generic/barrier.h:16:10: fatal error: 'asm/vdso/processor.h'
- file not found
-Message-ID: <202204190905.l6YtOTKW-lkp@intel.com>
+        Mon, 18 Apr 2022 21:39:38 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00BC114B;
+        Mon, 18 Apr 2022 18:36:55 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id fu34so2568501qtb.8;
+        Mon, 18 Apr 2022 18:36:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8Yke2vGYLiJCkGyPInhuyijxDy/0Qofixn5QpzPB3vE=;
+        b=SPotxyjOGfWKjyMPXrZnOr4NDXjDwDApnR8cEMXKr8thRc6yq5NbLU1E6NOQTyqGeh
+         yfFKF3UREESAOKrL5+rSIMr7H/cLy7phTZF8Z9cjAd1o3pcIAggfFHRBdw0JYHU2IoVU
+         Dx7mXwsQlaW5TLgOCjrH/HiuA0uxMYZ29aokmWZlGkymVjJKvFc3pNjRhZZtcRuveY0g
+         caUleBHm+4l49hWYlHXG9VuNJppiAI7vFw1SY9LtrYhr8bA3qz94fNBfcgMn4I7F5h+R
+         lj7uUNcgZ2+arw1gxQusZ/qRRPQmVCnq11wLf8dhqw7/UWmhy316/afshQ9Ql5L75Agx
+         A8WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8Yke2vGYLiJCkGyPInhuyijxDy/0Qofixn5QpzPB3vE=;
+        b=zA01VfwHrkb3ocqdBok/0RtH+4zmRrtr7i0M4jO/5O3Sq1+q6P1Rau6pxVOjeDo0uZ
+         OyKE3BsJnhA0wi6TAjLsP8MbN754//LBOkORZPAYQSH3aDS3nDGqeyfcNr88M4rUuCnC
+         2AMq0zCUykf9peL8fXccCzmWcB0ZsI4yFfi3xllGIWvErBTekSOCwtxw9qVaHn5xzaIz
+         pzYUrZDpATc2IVg54k84Jk9AYY+sACpPoNYxF++ZRP07LJojtuv3TOyICHJXvSkB/+w4
+         6KEqbSpsdCO+RA0xbEtsc0F3jb147VScQlBRt4cZMaOUwXBRlNrBi9G/lLtWtx8JUg/W
+         DtKw==
+X-Gm-Message-State: AOAM533WKEJMsa7yD5hzn6xDcuwtIBh2bxsZ9vQG1zZjl4ZcGcv4SuBE
+        IVhmzdwrwysivv4KSUNqs+H7nTXCvIM=
+X-Google-Smtp-Source: ABdhPJwMRCGCo3HARt+3j2n2sZQvmTy2+f5n7dQhR+8gvAubs8e3baodz2uTlQKzSgoxR5u1Atf1+w==
+X-Received: by 2002:ac8:5743:0:b0:2e1:cee6:f15 with SMTP id 3-20020ac85743000000b002e1cee60f15mr8911648qtx.634.1650332214801;
+        Mon, 18 Apr 2022 18:36:54 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id q139-20020a37a791000000b0069e88513517sm3664391qke.91.2022.04.18.18.36.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 18:36:54 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     thierry.reding@gmail.com, jonathanh@nvidia.com
+Cc:     lv.ruyi@zte.com.cn, arnd@arndb.de, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] firmware: tegra: fix error check return value of debugfs_create_file()
+Date:   Tue, 19 Apr 2022 01:36:48 +0000
+Message-Id: <20220419013648.2561533-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   af93551cf39027d176f30b9beafc60a4c130998a
-commit: 8f4012659d7f54036074d08da273cb686c819191 [627/2356] headers/deps: Add header dependencies to .h files: <asm/vdso/processor.h>
-config: hexagon-randconfig-r026-20220417 (https://download.01.org/0day-ci/archive/20220419/202204190905.l6YtOTKW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 429cbac0390654f90bba18a41799464adf31a5ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=8f4012659d7f54036074d08da273cb686c819191
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 8f4012659d7f54036074d08da273cb686c819191
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon prepare
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
+so use IS_ERR() to check it.
 
-All errors (new ones prefixed by >>):
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-   In file included from kernel/bounds.c:13:
-   In file included from include/linux/log2.h:12:
-   In file included from include/linux/bitops.h:28:
-   In file included from arch/hexagon/include/asm/bitops.h:13:
-   In file included from arch/hexagon/include/asm/atomic.h:13:
-   In file included from ./arch/hexagon/include/generated/asm/barrier.h:1:
->> include/asm-generic/barrier.h:16:10: fatal error: 'asm/vdso/processor.h' file not found
-   #include <asm/vdso/processor.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
-   make[2]: *** [scripts/Makefile.build:120: kernel/bounds.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1194: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +16 include/asm-generic/barrier.h
-
-    15	
-  > 16	#include <asm/vdso/processor.h>
-    17	#include <linux/compiler.h>
-    18	#include <linux/kcsan-checks.h>
-    19	#include <asm/rwonce.h>
-    20	
-
+diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
+index fd89899aeeed..0c440afd5224 100644
+--- a/drivers/firmware/tegra/bpmp-debugfs.c
++++ b/drivers/firmware/tegra/bpmp-debugfs.c
+@@ -474,7 +474,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
+ 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
+ 			dentry = debugfs_create_file(name, mode, parent, bpmp,
+ 						     &bpmp_debug_fops);
+-			if (!dentry) {
++			if (IS_ERR(dentry)) {
+ 				err = -ENOMEM;
+ 				goto out;
+ 			}
+@@ -725,7 +725,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+ 
+ 		if (t & DEBUGFS_S_ISDIR) {
+ 			dentry = debugfs_create_dir(name, parent);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
+ 			if (err < 0)
+@@ -738,7 +738,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+ 			dentry = debugfs_create_file(name, mode,
+ 						     parent, bpmp,
+ 						     &debugfs_fops);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 		}
+ 	}
+@@ -788,11 +788,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
+ 		return 0;
+ 
+ 	root = debugfs_create_dir("bpmp", NULL);
+-	if (!root)
++	if (IS_ERR(root))
+ 		return -ENOMEM;
+ 
+ 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
+-	if (!bpmp->debugfs_mirror) {
++	if (IS_ERR(bpmp->debugfs_mirror)) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
+
