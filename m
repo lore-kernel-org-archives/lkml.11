@@ -2,164 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F7DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354641AbiDSQeg (ORCPT
+        id S1354655AbiDSQfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46974 "EHLO
+        Tue, 19 Apr 2022 12:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiDSQee (ORCPT
+        with ESMTP id S1354647AbiDSQfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:34:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DEA323BF4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:31:51 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E07011F753;
-        Tue, 19 Apr 2022 16:31:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650385909; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FO3XX7Rny2nsJoT+gYq0ibjOzFl1Xd4EM1kydabFEzE=;
-        b=kjokVUJ3xRC0ikC463fBM8xhon5NE74/yvmE8X96/o1PsvEjmSm80uds6zRrMGyGjszGvm
-        rOy1yIYyESFXkRyVxxueBHQrQFCezHrP8mP0NmExj+b1M6/gfZIM5Sx/L/1vU9iqwEdxAq
-        CkATQbHpsq0f2Op5GAJyEbE+MCe5CnU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650385909;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FO3XX7Rny2nsJoT+gYq0ibjOzFl1Xd4EM1kydabFEzE=;
-        b=T9zksfhxLXx1ImU1UANHvwz0/HZ5i5o86PA59TzsIBJeQPbjUuPRdFLYwkLrmTn4rBRLJg
-        EXWdcvejuv6xGpBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 88124132E7;
-        Tue, 19 Apr 2022 16:31:49 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wDeNIPXjXmL5VQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 19 Apr 2022 16:31:49 +0000
-Message-ID: <3cc33611-a430-1ce4-bb30-7dc62a530cb8@suse.cz>
-Date:   Tue, 19 Apr 2022 18:31:49 +0200
+        Tue, 19 Apr 2022 12:35:20 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D5128E24
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:32:37 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e2fa360f6dso18088116fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:32:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=odPjXDn1qUyXBL474BmnX4+5acHAQntCdaPerLBY6uc=;
+        b=OY3C4/FTf8IG5kfLY+hzIhzZZnzQvxaXEcEQzv9ujIhtG+YtUcNd4XunaL/UDSsy0r
+         OLYTX0Nlp1+uoBdApb7N+Enc8DGSl4Ym2pE5E6YnDjWbRbS2UzQcn6nAhla11cWUgDEH
+         Rg4tG79eX97PpZ+053iOo/2I5Bx9dEGbtetFu+7XdIaPpdHoG5qE6ZuIQjigTDtmsc4D
+         6OlPiHwDHxwGb+r1QF084U41prxQy0Vp0d28WIB7ZFBPMqvXZbrEqprkPpCc/uqMDMgs
+         OjR9u6UMqs5sB1CPul6qKT5bDXVa5nkQYgkdm3xZPsRuSHublhnDglAFnS1sB1rh4knJ
+         qKAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=odPjXDn1qUyXBL474BmnX4+5acHAQntCdaPerLBY6uc=;
+        b=xGL+2hT/6Hxwt4xmGrRYJU6XbfB10WgR8XS2GfqQwv4EUZyKKASSdaflpDW873/5OK
+         NyNRB2Gs+XU6RzlNrlAIo8CWYSGeulLmB+hQa1uaZhIlB6EJeSfMVYr+grseLUutFvvv
+         WoEwHpD3zhwQQZujxH1jzfs2cAyF6I9lR0lZDpF+340FdofvvWd+OlVLQsMv9I1TKxef
+         r7+QtxUk4blFxeQh3lqnu+mqlR3li/0ZYua+Wcgciyp5zlphza8mN0RtRD0NXDQl1nqt
+         UWmTxvj9XhZplTluo/DMGPkxLx1j7q3NtYlAAi7k5Qsm44EvQNK+kqBpO4aJv4uevSVb
+         X1UQ==
+X-Gm-Message-State: AOAM533TEMED4gtJjvnZTKnM+VoPsVfBL/iUGSXSyZdfm6gbqRbOZ3d5
+        Exq9rJ12q80mVbNW5ckOmSfI4A==
+X-Google-Smtp-Source: ABdhPJyyaGnDnb8N6WNJC2Mxus4qrGseodJd3wTFR7i//oXY99DebeILx8V0O/GDzfmehQGpt7NnWA==
+X-Received: by 2002:a05:6870:218e:b0:e6:1aae:c91d with SMTP id l14-20020a056870218e00b000e61aaec91dmr1967451oae.267.1650385956714;
+        Tue, 19 Apr 2022 09:32:36 -0700 (PDT)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id z10-20020a056870514a00b000e5aaea5448sm3533688oak.36.2022.04.19.09.32.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 09:32:35 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 09:34:41 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Wilczy??ski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: qcom: Remove ddrss_sf_tbu clock from sc8180x
+Message-ID: <Yl7kofUVpMYirIjg@ripper>
+References: <20220331013415.592748-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 14/16] mm: support GUP-triggered unsharing of anonymous
- pages
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-15-david@redhat.com>
- <9005b167-db08-c967-463b-5e0e092cbb6c@suse.cz>
- <c003964a-9fa1-b17c-158a-8ccbf4ff8656@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <c003964a-9fa1-b17c-158a-8ccbf4ff8656@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331013415.592748-1-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/19/22 18:29, David Hildenbrand wrote:
->>> @@ -4515,8 +4550,11 @@ static inline vm_fault_t create_huge_pmd(struct vm_fault *vmf)
->>>  /* `inline' is required to avoid gcc 4.1.2 build error */
->>>  static inline vm_fault_t wp_huge_pmd(struct vm_fault *vmf)
->>>  {
->>> +	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
->>> +
->>>  	if (vma_is_anonymous(vmf->vma)) {
->>> -		if (userfaultfd_huge_pmd_wp(vmf->vma, vmf->orig_pmd))
->>> +		if (unlikely(unshare) &&
->> 
->> Is this condition flipped, should it be "likely(!unshare)"? As the similar
->> code in do_wp_page() does.
+On Wed 30 Mar 18:34 PDT 2022, Bjorn Andersson wrote:
+
+> The Qualcomm SC8180X platform was piggy backing on the SM8250
+> qcom_pcie_cfg, but the platform doesn't have the ddrss_sf_tbu clock, so
+> it now fails to probe due to the missing clock.
 > 
-> Good catch, this should affect uffd-wp on THP -- it wouldn't trigger as expected. Thanks a lot for finding that!
-
-Yay, glad I was right this time.
-
->> 
->>> +		    userfaultfd_huge_pmd_wp(vmf->vma, vmf->orig_pmd))
->>>  			return handle_userfault(vmf, VM_UFFD_WP);
->>>  		return do_huge_pmd_wp_page(vmf);
->>>  	}
->>> @@ -4651,10 +4689,11 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
->>>  		update_mmu_tlb(vmf->vma, vmf->address, vmf->pte);
->>>  		goto unlock;
->>>  	}
->>> -	if (vmf->flags & FAULT_FLAG_WRITE) {
->>> +	if (vmf->flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) {
->>>  		if (!pte_write(entry))
->>>  			return do_wp_page(vmf);
->>> -		entry = pte_mkdirty(entry);
->>> +		else if (likely(vmf->flags & FAULT_FLAG_WRITE))
->>> +			entry = pte_mkdirty(entry);
->>>  	}
->>>  	entry = pte_mkyoung(entry);
->>>  	if (ptep_set_access_flags(vmf->vma, vmf->address, vmf->pte, entry,
->> 
+> Give SC8180X its own qcom_pcie_cfg, without the ddrss_sf_tbu flag set.
 > 
+> Fixes: 0614f98bbb9f ("PCI: qcom: Add ddrss_sf_tbu flag")
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Ping. Would be nice to have this regression fix picked up for v5.18...
+
+Thanks,
+Bjorn
+
+> ---
+>  drivers/pci/controller/dwc/pcie-qcom.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 > 
-> So the following on top, right?
-
-Looks good!
-
-> diff --git a/mm/memory.c b/mm/memory.c
-> index 8b3cb73f5e44..4584c7e87a70 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3137,7 +3137,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
->                         free_swap_cache(old_page);
->                 put_page(old_page);
->         }
-> -       return page_copied && !unshare ? VM_FAULT_WRITE : 0;
-> +       return (page_copied && !unshare) ? VM_FAULT_WRITE : 0;
->  oom_free_new:
->         put_page(new_page);
->  oom:
-> @@ -4604,7 +4604,7 @@ static inline vm_fault_t wp_huge_pmd(struct vm_fault *vmf)
->         const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index 6ab90891801d..816028c0f6ed 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -1550,6 +1550,11 @@ static const struct qcom_pcie_cfg sc7280_cfg = {
+>  	.pipe_clk_need_muxing = true,
+>  };
 >  
->         if (vma_is_anonymous(vmf->vma)) {
-> -               if (unlikely(unshare) &&
-> +               if (likely(!unshare) &&
->                     userfaultfd_huge_pmd_wp(vmf->vma, vmf->orig_pmd))
->                         return handle_userfault(vmf, VM_UFFD_WP);
->                 return do_huge_pmd_wp_page(vmf);
+> +static const struct qcom_pcie_cfg sc8180x_cfg = {
+> +	.ops = &ops_1_9_0,
+> +	.has_tbu_clk = true,
+> +};
+> +
+>  static const struct dw_pcie_ops dw_pcie_ops = {
+>  	.link_up = qcom_pcie_link_up,
+>  	.start_link = qcom_pcie_start_link,
+> @@ -1656,7 +1661,7 @@ static const struct of_device_id qcom_pcie_match[] = {
+>  	{ .compatible = "qcom,pcie-qcs404", .data = &ipq4019_cfg },
+>  	{ .compatible = "qcom,pcie-sdm845", .data = &sdm845_cfg },
+>  	{ .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
+> -	{ .compatible = "qcom,pcie-sc8180x", .data = &sm8250_cfg },
+> +	{ .compatible = "qcom,pcie-sc8180x", .data = &sc8180x_cfg },
+>  	{ .compatible = "qcom,pcie-sm8450-pcie0", .data = &sm8450_pcie0_cfg },
+>  	{ .compatible = "qcom,pcie-sm8450-pcie1", .data = &sm8450_pcie1_cfg },
+>  	{ .compatible = "qcom,pcie-sc7280", .data = &sc7280_cfg },
+> -- 
+> 2.35.1
 > 
-> 
-
