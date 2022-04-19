@@ -2,189 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F21DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbiDSSjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
+        id S240777AbiDSSjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 14:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357653AbiDSShy (ORCPT
+        with ESMTP id S1357621AbiDSShv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:37:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DE5FF1;
-        Tue, 19 Apr 2022 11:32:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56FBB615A6;
-        Tue, 19 Apr 2022 18:32:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B515BC385BB;
-        Tue, 19 Apr 2022 18:32:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650393147;
-        bh=md0tG2V1t23ZnRlqUCm/DSQwwQtpFcWbjxl5FLEoEv4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=W0rDFyXH+Y4efoyOnsqNuYiJmzhCiI6h9S/IY7vLQ0uLcNiwyzet7N76wpqbRAm30
-         1jqnComDoxuqmYOsfDjPA4y4IULg+iCVZd6KW8jGbhlptQQNieVGtdDsdx3dtc0XJ+
-         B1JG/I0jTQuifGxjaRZf6PdX4JnyRSSZJ1n2xDnKk5h6zYs/gZUqPOMOes8O0riSGE
-         yot+jdxfHO73G0eCf6jG7r1iYS0rlDQCyt3Z3ZLFBtWtXh5NY3R7Hs9IA/BzWOWoZd
-         m7G8EcMmArocQBNTLWRV8SNi17Z1xQSxctb1aG558N+lBbXlBOuexVA3DS9aUbrA1o
-         vBJGSQ2N4JB+Q==
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-e604f712ecso5168895fac.9;
-        Tue, 19 Apr 2022 11:32:27 -0700 (PDT)
-X-Gm-Message-State: AOAM532fwLQWwEhjvmr1BZUjS4aXo+gDWbesKCSAMLT7VBfFAnv9I7bA
-        fChsNW8SbKknUuQ7wRiz1D81IZSlib3yQJmsLuc=
-X-Google-Smtp-Source: ABdhPJy+tDK9eGCepkKXeOvvfKeb4HZc+BluW5/5YJu1JhLSn0xWy3QnFC8BRtKUY0f9PpybIp3EFNlsyXbWugc+Hn4=
-X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
- s37-20020a056870eaa500b000da0b3f2b45mr9290611oap.228.1650393146846; Tue, 19
- Apr 2022 11:32:26 -0700 (PDT)
+        Tue, 19 Apr 2022 14:37:51 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3693FDAC;
+        Tue, 19 Apr 2022 11:30:58 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 21so22452586edv.1;
+        Tue, 19 Apr 2022 11:30:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=quF0kGFJZARtpZdxF32uHKlym+kdTs0MbLMlThQPGOk=;
+        b=ALdJe0/n8CLQQkXATOw+mP6ETLroIdVvEXBh4bny8gcUHVzwFdgyQOYGaG3LLVBsOy
+         R6CNsgFGBmNN0HLHdZMhmGFrFpLmvoml3mrYl4orTrSP8FjiKKl6motRIinRA8JbZhq1
+         fGJXKqnvmz9ZXIFsUPwOF9JlnAsk3TqPA4xZnqoGhk7Qey9Mv6m6BcLJCco+tUO7JzaK
+         q5Hv0k5D77eU+ohxtQ0XPZDZ3b+/Iq3NSEjYjrKlQu+F+l6VSss+WxH9oL0foBO9Wn93
+         DVjDKVQlTsaIgvIkypzh3UINVqr9zaMxcTbEpxyUxb5FPjBx1G5GKtNc7ifzJdPiCNf+
+         Od+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=quF0kGFJZARtpZdxF32uHKlym+kdTs0MbLMlThQPGOk=;
+        b=1+y4zeP1mCmOrOdzzV6VLZsIzV0mSVX0i59C88ODx9XRr1geHarYTpnHNjmOmNwuLh
+         /PsS6xp9DaM+VkELoNB5FL08jzgdaL9d5Gx0/U7XxgkyQl8Qid88wNXitmhXfYKtbO3a
+         SfblcOzcpKYSFQrio+cHcKMpcifXN+6YErLVB8fS2KPQTYJaaBKCPcAs0ugvhsAUMAST
+         RR0kvcRQ9A+M+50M3xE0UyKTuVB8yxE5AAdzeBfW2qmTPeqHN9VoqbBD4604C8xiuURy
+         5VyTISNGzAX+6JIuc6xqUgtglnJHIulBoK/7A0QcrYDap2UjhnGFAtnxdhQiaC5v0reX
+         wzGw==
+X-Gm-Message-State: AOAM532thZIQC+nvoeGBcXzclQagS3ra2cEa8CNFLX9QeIMcwl5Nx1B8
+        rGc0c4WKzbn5uEzifbmuF1U=
+X-Google-Smtp-Source: ABdhPJyWEhY+u7KTDVJXiiqlYrBD+6qdbWkkxBlC3rcgahcZC2o0tXsZyNRMLfckCmul0NN+FKI0RQ==
+X-Received: by 2002:aa7:db0f:0:b0:41d:7b44:2613 with SMTP id t15-20020aa7db0f000000b0041d7b442613mr18735469eds.126.1650393057426;
+        Tue, 19 Apr 2022 11:30:57 -0700 (PDT)
+Received: from linux.. (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
+        by smtp.gmail.com with ESMTPSA id bq23-20020a056402215700b0041d8fcac53asm8799915edb.23.2022.04.19.11.30.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 11:30:57 -0700 (PDT)
+From:   Bean Huo <huobean@gmail.com>
+To:     alim.akhtar@samsung.com, avri.altman@wdc.com,
+        asutoshd@codeaurora.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, stanley.chu@mediatek.com,
+        beanhuo@micron.com, bvanassche@acm.org, tomas.winkler@intel.com,
+        cang@codeaurora.org, daejun7.park@samsung.com,
+        powen.kao@mediatek.com, peter.wang@mediatek.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 4/5] scsi: ufshpb: Add handing of device reset HPB regions Infos in HPB device mode
+Date:   Tue, 19 Apr 2022 20:30:43 +0200
+Message-Id: <20220419183044.789065-5-huobean@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220419183044.789065-1-huobean@gmail.com>
+References: <20220419183044.789065-1-huobean@gmail.com>
 MIME-Version: 1.0
-References: <20220414101314.1250667-1-mawupeng1@huawei.com>
- <CAMj1kXGSStDgj9ABmUaTLnBmpQFksh3wx4tx=mJohum4GQe3Gg@mail.gmail.com> <6de859df-e1c3-e9aa-4530-3b61b9c69a28@huawei.com>
-In-Reply-To: <6de859df-e1c3-e9aa-4530-3b61b9c69a28@huawei.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 19 Apr 2022 20:32:15 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGyKQMeFWSK-s84pdL89qPTyTN_x3WHTgp_R7sH1+qOfA@mail.gmail.com>
-Message-ID: <CAMj1kXGyKQMeFWSK-s84pdL89qPTyTN_x3WHTgp_R7sH1+qOfA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/9] introduce mirrored memory support for arm64
-To:     mawupeng <mawupeng1@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, hpa@zyccr.com,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Joerg Roedel <jroedel@suse.de>, songmuchun@bytedance.com,
-        macro@orcam.me.uk, Frederic Weisbecker <frederic@kernel.org>,
-        W_Armin@gmx.de, John Garry <john.garry@huawei.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        chenhuacai@kernel.org, David Hildenbrand <david@redhat.com>,
-        gpiccoli@igalia.com, Mark Rutland <mark.rutland@arm.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        linux-ia64@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 16 Apr 2022 at 03:32, mawupeng <mawupeng1@huawei.com> wrote:
->
->
->
-> =E5=9C=A8 2022/4/14 18:22, Ard Biesheuvel =E5=86=99=E9=81=93:
-> > On Thu, 14 Apr 2022 at 11:54, Wupeng Ma <mawupeng1@huawei.com> wrote:
-> >>
-> >> From: Ma Wupeng <mawupeng1@huawei.com>
-> >>
-> >> Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory=
- ranges")
-> >> introduced mirrored memory support for x86. This support rely on UEFI =
-to
-> >> report mirrored memory address ranges.  See UEFI 2.5 spec pages 157-15=
-8:
-> >>
-> >>    http://www.uefi.org/sites/default/files/resources/UEFI%202_5.pdf
-> >>
-> >> Memory mirroring is a technique used to separate memory into two separ=
-ate
-> >> channels, usually on a memory device, like a server. In memory mirrori=
-ng,
-> >> one channel is copied to another to create redundancy. This method mak=
-es
-> >> input/output (I/O) registers and memory appear with more than one addr=
-ess
-> >> range because the same physical byte is accessible at more than one
-> >> address. Using memory mirroring, higher memory reliability and a highe=
-r
-> >> level of memory consolidation are possible.
-> >>
-> >> Arm64 can support this too. So mirrored memory support is added to sup=
-port
-> >> arm64.
-> >>
-> >> Efi_fake_mem is used for testing mirrored features and will not be use=
-d in
-> >> production environment. This test features can fake memory's attribute
-> >> values.
-> >>
-> >> The reason why efi_fake_mem support is put first is that memory's attr=
-ibute
-> >> is reported by BIOS which is hard to simulate. With this support, any =
-arm64
-> >> machines with efi support can easily test mirrored features.
-> >>
-> >> The main purpose of this patchset is to introduce mirrored support for
-> >> arm64 and we have already fixed the problems we had which is shown in
-> >> patch #5 to patch #7 and try to bring total isolation in patch #8 whic=
-h
-> >> will disable mirror feature if kernelcore is not specified.
-> >>
-> >> In order to test this support in arm64:
-> >> - patch this patchset
-> >> - add efi_fake_mem=3D8G@0:0x10000 in kernel parameter to simulate mirr=
-ored
-> >>    memroy between phy addr 0-8G.
-> >> - add kernelcore=3Dmirror in kernel parameter
-> >> - start you kernel
-> >>
-> >
-> > As I explained before:
-> >
-> > - NAK to EFI fake_mem support on arm64
->
-> fake_mem support on arm64 will be removed in subsequent version.
->
-> > - NAK to the whole series until you come up with a proposal on how to
-> > locate the static kernel image itself into more reliable memory, as
-> > there is really no point to any of this otherwise.
->
-> Sorry I am not familiar with this, as you metioned before,
->
->  > you have to iterate over the memory map and look for regions with
->  > the desired attribute, and allocate those pages explicitly.
->
-> Do you mean this is x86, commit c05cd79750fb
-> ("x86/boot/KASLR: Prefer mirrored memory regions for the kernel physical =
-address").
-> I will do some research.
->
->  > I'd prefer to implement this in the bootloader, and only add minimal
->  > logic to the stub to respect the placement of the kernel by the loader
->  > if the loader signals it to do so.
->
-> Does this bootloader refer to grub and then add minimal logic to arm64-st=
-ub.c?
->
+From: Bean Huo <beanhuo@micron.com>
 
-Any bootloader, yes.
+In UFS HPB Spec JESD220-3A,
 
-> What is the loader signal?
+"5.8. Active and inactive information upon power cycle
+...
+When the device is powered off by the host, the device may restore L2P map data
+upon power up or build from the host’s HPB READ command. In case device powered
+up and lost HPB information, device can signal to the host through HPB Sense data,
+by setting HPB Operation as ‘2’ which will inform the host that device reset HPB
+information."
 
-A protocol installed onto the image handle, as I suggested before. I
-even cc'ed you on a patch that implements this.
+Therefore, for HPB device control mode, if the UFS device is reset via the RST_N
+pin, the active region information in the device will be reset. If the host side
+receives this notification from the device side, it is recommended to inactivate
+all active regions in the host's HPB cache.
 
-> System exists mirrored memory reported by uefi?
->
+Signed-off-by: Bean Huo <beanhuo@micron.com>
+---
+ drivers/scsi/ufs/ufshpb.c | 73 ++++++++++++++++++++++++++++-----------
+ 1 file changed, 53 insertions(+), 20 deletions(-)
 
-What on earth is the point of any of this if the only use case being
-targeted is efi_fake_mem with arbitrary fake mirrored regions?
+diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
+index 4538164fc493..4b15fa862beb 100644
+--- a/drivers/scsi/ufs/ufshpb.c
++++ b/drivers/scsi/ufs/ufshpb.c
+@@ -1143,6 +1143,39 @@ static int ufshpb_add_region(struct ufshpb_lu *hpb, struct ufshpb_region *rgn)
+ 	spin_unlock_irqrestore(&hpb->rgn_state_lock, flags);
+ 	return ret;
+ }
++/**
++ *ufshpb_submit_region_inactive() - submit a region to be inactivated later
++ *@hpb: per-LU HPB instance
++ *@region_index: the index associated with the region that will be inactivated later
++ */
++static void ufshpb_submit_region_inactive(struct ufshpb_lu *hpb, int region_index)
++{
++	int subregion_index;
++	struct ufshpb_region *rgn;
++	struct ufshpb_subregion *srgn;
++
++	/*
++	 * Remove this region from active region list and add it to inactive list
++	 */
++	spin_lock(&hpb->rsp_list_lock);
++	ufshpb_update_inactive_info(hpb, region_index);
++	spin_unlock(&hpb->rsp_list_lock);
++
++	rgn = hpb->rgn_tbl + region_index;
++
++	/*
++	 * Set subregion state to be HPB_SRGN_INVALID, there will no HPB read on this subregion
++	 */
++	spin_lock(&hpb->rgn_state_lock);
++	if (rgn->rgn_state != HPB_RGN_INACTIVE) {
++		for (subregion_index = 0; subregion_index < rgn->srgn_cnt; subregion_index++) {
++			srgn = rgn->srgn_tbl + subregion_index;
++			if (srgn->srgn_state == HPB_SRGN_VALID)
++				srgn->srgn_state = HPB_SRGN_INVALID;
++		}
++	}
++	spin_unlock(&hpb->rgn_state_lock);
++}
+ 
+ static void ufshpb_rsp_req_region_update(struct ufshpb_lu *hpb,
+ 					 struct utp_hpb_rsp *rsp_field)
+@@ -1202,25 +1235,8 @@ static void ufshpb_rsp_req_region_update(struct ufshpb_lu *hpb,
+ 
+ 	for (i = 0; i < rsp_field->inactive_rgn_cnt; i++) {
+ 		rgn_i = be16_to_cpu(rsp_field->hpb_inactive_field[i]);
+-		dev_dbg(&hpb->sdev_ufs_lu->sdev_dev,
+-			"inactivate(%d) region %d\n", i, rgn_i);
+-
+-		spin_lock(&hpb->rsp_list_lock);
+-		ufshpb_update_inactive_info(hpb, rgn_i);
+-		spin_unlock(&hpb->rsp_list_lock);
+-
+-		rgn = hpb->rgn_tbl + rgn_i;
+-
+-		spin_lock(&hpb->rgn_state_lock);
+-		if (rgn->rgn_state != HPB_RGN_INACTIVE) {
+-			for (srgn_i = 0; srgn_i < rgn->srgn_cnt; srgn_i++) {
+-				srgn = rgn->srgn_tbl + srgn_i;
+-				if (srgn->srgn_state == HPB_SRGN_VALID)
+-					srgn->srgn_state = HPB_SRGN_INVALID;
+-			}
+-		}
+-		spin_unlock(&hpb->rgn_state_lock);
+-
++		dev_dbg(&hpb->sdev_ufs_lu->sdev_dev, "inactivate(%d) region %d\n", i, rgn_i);
++		ufshpb_submit_region_inactive(hpb, rgn_i);
+ 	}
+ 
+ out:
+@@ -1255,7 +1271,10 @@ static void ufshpb_dev_reset_handler(struct ufs_hba *hba)
+ 
+ 	__shost_for_each_device(sdev, hba->host) {
+ 		hpb = ufshpb_get_hpb_data(sdev);
+-		if (hpb && hpb->is_hcm)
++		if (!hpb)
++			continue;
++
++		if (hpb->is_hcm) {
+ 			/*
+ 			 * For the HPB host mode, in case device powered up and lost HPB
+ 			 * information, we will set the region flag to be RGN_FLAG_UPDATE,
+@@ -1263,6 +1282,20 @@ static void ufshpb_dev_reset_handler(struct ufs_hba *hba)
+ 			 * in the UFS device).
+ 			 */
+ 			ufshpb_set_regions_update(hpb);
++		} else {
++			/*
++			 * For the HPB device mode, we add all active regions to inactive list,
++			 * they will be inactivated later in ufshpb_map_work_handler()
++			 */
++			struct victim_select_info *lru_info = &hpb->lru_info;
++			struct ufshpb_region *rgn;
++
++			list_for_each_entry(rgn, &lru_info->lh_lru_rgn, list_lru_rgn)
++				ufshpb_submit_region_inactive(hpb, rgn->rgn_idx);
++
++			if (ufshpb_get_state(hpb) == HPB_PRESENT)
++				queue_work(ufshpb_wq, &hpb->map_work);
++		}
+ 	}
+ }
+ 
+-- 
+2.34.1
 
-So yes, unless there are systems that need this, I don't see a point
-in merging any of this.
