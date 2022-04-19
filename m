@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0228EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE20C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356965AbiDSSaB (ORCPT
+        id S1345287AbiDSSaE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
+        Tue, 19 Apr 2022 14:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357437AbiDSSXV (ORCPT
+        with ESMTP id S1357430AbiDSSXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 14:23:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE1B43ED0;
-        Tue, 19 Apr 2022 11:16:14 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBD03EAB6;
+        Tue, 19 Apr 2022 11:16:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25C376142D;
-        Tue, 19 Apr 2022 18:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52DEFC385A5;
-        Tue, 19 Apr 2022 18:16:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6079B819AE;
+        Tue, 19 Apr 2022 18:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483C9C385A5;
+        Tue, 19 Apr 2022 18:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392169;
-        bh=IZI1pv8Ex4cfr00pOxZe1myvfnxTKl2H2WTiS4ekVeI=;
+        s=k20201202; t=1650392166;
+        bh=j0gl3vwHeaKb2MMhrqnV3OYaEofGRoT5zWN/DeGK2dI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TbyaPltLzw+2c4SbPpKMYkw7XjPXSZXNCZ4N7pBT2fpsFi9y6RoOHSyrQ1dFqwJ59
-         LeQB0NQqMxtQa4PwfJddvs3euRAsu5CZl3gVxvbFrdrMa/G/zEWXa+NgQr6O8tqK05
-         a0geGcvfjvzxSL1CQsf3pYQ+3o8qh9aYnovOE2d2ApQ8VH181GJxYbKM/GVxC2AOyb
-         6bDSO5QZcKbn4cM5Rf4tikoRAMRcSIIXRpAYaD/2xf0Ep7HPsG/iOZEYHgNMZyFvxC
-         QNGLVvL2w29Refb21pqIEhxw4X05PsXD0XsKJzFBbt9Efh6OsjDGxsL/VQctmTI9US
-         foWwt4STxc0RA==
+        b=H8jUkFe7RE6W65hj8kx+mBagfkm6UkiFvKdd4UDEOwbKYW8KJ1eN1sacf1baaBXd8
+         eWkQJ/qVSk/p3PFBBS89vBUy+GczPVe90d0ByczGjtT+b/8XhYsrJB+Blcb4iN/1jU
+         aHLt6UXibo6Cd1eapN8PUYfJOZ0tECV6YtSL1nZQm5a35XLxZjNbfgqhZ4w4URaCKD
+         xPWcV61eQaBjYBYGGmTGyiCI+Muflm92hPFXGbkLup+eOPZVLxlrKzRfObtUGzJ9vG
+         VriRwdJTDwMHGQflg6kckMx22aOpOgl8KI7j0nvk6hU6ZaVm2WF8hd7MQYEyV5RYVB
+         0FU28J3gbuXcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Steve French <sfrench@samba.org>,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        linux-cifs@vger.kernel.org, Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 4.14 5/9] cifs: Check the IOCB_DIRECT flag, not O_DIRECT
-Date:   Tue, 19 Apr 2022 14:15:53 -0400
-Message-Id: <20220419181557.486336-5-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 3/9] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 19 Apr 2022 14:15:51 -0400
+Message-Id: <20220419181557.486336-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181557.486336-1-sashal@kernel.org>
 References: <20220419181557.486336-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,37 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 994fd530a512597ffcd713b0f6d5bc916c5698f0 ]
+[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
 
-Use the IOCB_DIRECT indicator flag on the I/O context rather than checking to
-see if the file was opened O_DIRECT.
+Fix:
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Steve French <sfrench@samba.org>
-cc: Shyam Prasad N <nspmangalore@gmail.com>
-cc: Rohith Surabattula <rohiths.msft@gmail.com>
-cc: linux-cifs@vger.kernel.org
-Signed-off-by: Steve French <stfrench@microsoft.com>
+  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
+    ^~~~
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+[ A slight correction with parentheses around the argument by tiwai ]
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c | 2 +-
+ sound/usb/usbaudio.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index dba0d12c3db1..1d3f98572068 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -773,7 +773,7 @@ cifs_loose_read_iter(struct kiocb *iocb, struct iov_iter *iter)
- 	ssize_t rc;
- 	struct inode *inode = file_inode(iocb->ki_filp);
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index 62456a806bb4..4b8f1c46420d 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -22,7 +22,7 @@
+  */
  
--	if (iocb->ki_filp->f_flags & O_DIRECT)
-+	if (iocb->ki_flags & IOCB_DIRECT)
- 		return cifs_user_readv(iocb, iter);
+ /* handling of USB vendor/product ID pairs as 32-bit numbers */
+-#define USB_ID(vendor, product) (((vendor) << 16) | (product))
++#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
+ #define USB_ID_VENDOR(id) ((id) >> 16)
+ #define USB_ID_PRODUCT(id) ((u16)(id))
  
- 	rc = cifs_revalidate_mapping(inode);
 -- 
 2.35.1
 
