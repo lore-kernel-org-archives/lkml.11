@@ -2,104 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F073C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 22:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C61C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 22:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358148AbiDSWCv (ORCPT
+        id S1358154AbiDSWDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 18:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
+        Tue, 19 Apr 2022 18:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232898AbiDSWCt (ORCPT
+        with ESMTP id S232898AbiDSWDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 18:02:49 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CEB22B0C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 15:00:04 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id m132so33556250ybm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 15:00:04 -0700 (PDT)
+        Tue, 19 Apr 2022 18:03:06 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7443BA60;
+        Tue, 19 Apr 2022 15:00:23 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id a10so56060oif.9;
+        Tue, 19 Apr 2022 15:00:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WaRzQ4klN9ADXoVL2/N/GdSyXHSUMyLkroRcRJGiyVo=;
-        b=dsrvHvVw5CVTuYDjOZ4qvSA0xlGQ9a7GqFzdPXMtEddMQ65wpQPzZqOX/JbXwhprLR
-         hPqkmxoXvBpkzvae2A5VxtWBiv9VY9kRWmXJ+gNgfr/J936VxV0clghSDI22NmxKt6B1
-         HK7/ftdE06eNgpBj5leo1XsK8IIFCdSEa9VpY+wehnw1M5Hh1AqCZmlTGeEQwdiqRty+
-         cW2dboQNQeR+KAybRGfQl22NikK/qMzaLhJ2IIcrKITmvBaledZvlBC39xLZDPSZ9+KJ
-         JjPkH3I8poggbgEpZNVssMvzVQGwXLljvU6Em9lqaRW44S5WXiNBK0t6/gH/HIxRaWbv
-         LmJg==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eBs7CZQL5YV7OnaTPtslbp1P80YDQjl3qZLiZzB1YUE=;
+        b=gyx4Xa/FJorjPR7T0cDMuH4cSm9a+cnHXKf60tuvv8cj1sjXQhhz5v2LfVyH1GrqJJ
+         TdHTKCFBNLOCt6DUPGakmdgTBYmu7z9C2yKMy3OQRC0YoxW6qtP5r1QOmAebTY+aoPM/
+         khD+KDZjWdvLTpwZ8xkxfj7VtlJw7Ntc/HdtkujRcAelOfF9oPzatxvXiRQl95C1BDAE
+         bOW/UYm+hB74RDAlpscpp3ORnOqh2KH2GddLgqc1Dp5/6Bg7qdxkPao1eQKDFgBOFKbC
+         6ju8qFAsB4vyv8Nui1UeiFSSzTfYJmya9GTFExOCOpMa7coY9AHeys7xNqy/qJtgIzre
+         hRIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WaRzQ4klN9ADXoVL2/N/GdSyXHSUMyLkroRcRJGiyVo=;
-        b=2DozSxqnYGlQhSoRTiGy7cWBTJlO3JG/IyQ4dIMO4cspR3N8cPBKFY9YDTRSqg/0eQ
-         kyQecxci5S5ZPKF1UCYAq+gMxsYeCW6cmaZyBkl2kHijW3Re8DXEM/7/aTCNu33UvlDQ
-         hAURfs4hmMEZqYGockYbMIpjjeu1Q0Ora5dsBfKPJiaVC/WFF2yMvY8XTase0wiVz7VO
-         nOd/Y2Q1k1LdHfB4RZYCI7aNRfCMxy6H6mY5gfDSKBRxVdpPlwvx18O7gLtgHNzF8NKl
-         a73IDt9LyL+VgB9YZ+mucPpzcc50a0khpE85icBWnemR6KVUX1d0EZDEDYV24rBlPLam
-         863Q==
-X-Gm-Message-State: AOAM531GRsoTxCHIgXj7d3SAqT1zy6kw+XvC825giaxo9kZGoZx8czVC
-        ei1yIXO0F9iE0K5Ix/07dvo9YU86tHs8yMfOkWbq7Q==
-X-Google-Smtp-Source: ABdhPJyCOTK/Tp48a1k8AcfN/cTDyqQzbuqieOsXlmrpfSjjG6eK1W8C3AEqhU8MKnqaFQHcd0hbJwfVrHu5J84iAjY=
-X-Received: by 2002:a25:a12a:0:b0:644:e94e:5844 with SMTP id
- z39-20020a25a12a000000b00644e94e5844mr12511065ybh.492.1650405602771; Tue, 19
- Apr 2022 15:00:02 -0700 (PDT)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eBs7CZQL5YV7OnaTPtslbp1P80YDQjl3qZLiZzB1YUE=;
+        b=LscLGedhUYom0eIb5YtHQ1TIH212+b9YcGEldodLkFWw9U2y4pYDf/lFCRAFsH6xdK
+         qkEHCdBUBq1g7relvZ0muoFyqEhhDSJ4ESkoyh6wZ1RtxOm6ZxkZilR3/q7fw1iBLTrb
+         uAMY/qKl8a/e8vr5Xyx167Lwkg/xduRKhfGWHyzId6fE7gBhpHZscmosAvanphCs2VHZ
+         qVphFADXdjhO9MNrCuX884CaT9FXDrCjUnvzDlqDRaDOSrHPFaADF1dCbDl7nt/Foi1G
+         MbIAZ4QvnH807aaWah1irMY97m9IpgJXg4f4WvcTnhsEL7ooRUBCdOZkLRE0MTE6SzTH
+         b9Eg==
+X-Gm-Message-State: AOAM531CH7D09GYzO0A2QiDPIM5c2ecUlDwbgosORCuw6o5WatalhqIR
+        lG0+89XtIqPewyaJUCK0js/h08KR5CY=
+X-Google-Smtp-Source: ABdhPJxq9tmxUcraw8eslHwRmDcCm6nCvUAZeydUZ0WbOezbkeF71BmUDCyZbidmIJ5rQKwJBCARkA==
+X-Received: by 2002:aca:1117:0:b0:322:4189:8959 with SMTP id 23-20020aca1117000000b0032241898959mr316168oir.254.1650405622469;
+        Tue, 19 Apr 2022 15:00:22 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m65-20020acabc44000000b002ed13d0fe6fsm5512450oif.23.2022.04.19.15.00.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 15:00:21 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <734e748b-941c-5ae1-5140-22cc845bdfc1@roeck-us.net>
+Date:   Tue, 19 Apr 2022 15:00:19 -0700
 MIME-Version: 1.0
-References: <20220414025705.598-1-mario.limonciello@amd.com>
-In-Reply-To: <20220414025705.598-1-mario.limonciello@amd.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 19 Apr 2022 23:59:51 +0200
-Message-ID: <CACRpkdZsv1u7Df=PLC8E_ZS5GAdW3PfEYjctfSJJuAev8mu9=w@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Basavaraj.Natikar@amd.com, Richard.Gong@amd.com,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] hwmod: (pmbus) disable PEC if not enabled
+Content-Language: en-US
+To:     Adam Wujek <dev_public@wujek.eu>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220419205228.303952-1-dev_public@wujek.eu>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220419205228.303952-1-dev_public@wujek.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 4:57 AM Mario Limonciello
-<mario.limonciello@amd.com> wrote:
+On 4/19/22 13:53, Adam Wujek wrote:
+> Explicitly disable PEC when the client does not support it.
+> Without the explicit disable, when the device with the PEC support is removed
+> later when a device without PEC support is inserted into the same address,
+> the driver uses the old value of client->flags which contains the I2C_CLIENT_PEC
+> flag. As a consequence the PEC is used when it should not.
+> 
 
-> commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before
-> initialization") attempted to fix a race condition that lead to a NULL
-> pointer, but in the process caused a regression for _AEI/_EVT declared
-> GPIOs. This manifests in messages showing deferred probing while trying
-> to allocate IRQs like so:
->
-> [    0.688318] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
-> [    0.688337] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
-> [    0.688348] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
-> [    0.688359] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003E to IRQ, err -517
-> [    0.688369] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003A to IRQ, err -517
-> [    0.688379] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003B to IRQ, err -517
-> [    0.688389] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0002 to IRQ, err -517
-> [    0.688399] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0011 to IRQ, err -517
-> [    0.688410] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0012 to IRQ, err -517
-> [    0.688420] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0007 to IRQ, err -517
->
-> The code for walking _AEI doesn't handle deferred probing and so this leads
-> to non-functional GPIO interrupts.
->
-> Fix this issue by moving the call to `acpi_gpiochip_request_interrupts` to
-> occur after gc->irc.initialized is set.
->
-> Cc: Shreeya Patel <shreeya.patel@collabora.com>
-> Cc: stable@vger.kernel.org
-> Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
-> Reported-by: Mario Limonciello <mario.limonciello@amd.com>
-> Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/T/#u
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+How can that happen ? I would assume the I2C device gets deleted and re-created
+in that case, which should clear the PEC flag.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Guenter
 
-Yours,
-Linus Walleij
+> Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+> ---
+>   drivers/hwmon/pmbus/pmbus_core.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+> index 82c3754e21e3..f8ca36759b0a 100644
+> --- a/drivers/hwmon/pmbus/pmbus_core.c
+> +++ b/drivers/hwmon/pmbus/pmbus_core.c
+> @@ -2014,6 +2014,8 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+>   	ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
+>   	if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK))
+>   		client->flags |= I2C_CLIENT_PEC;
+> +	else
+> +		client->flags &= ~I2C_CLIENT_PEC;
+> 
+>   	pmbus_clear_faults(client);
+> 
+> --
+> 2.17.1
+> 
+> 
+
