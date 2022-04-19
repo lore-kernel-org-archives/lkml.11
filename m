@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC64C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F13C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357317AbiDSS2A (ORCPT
+        id S1357393AbiDSS2y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
+        Tue, 19 Apr 2022 14:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357444AbiDSSXW (ORCPT
+        with ESMTP id S1356908AbiDSSWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBDB43EE8;
-        Tue, 19 Apr 2022 11:16:18 -0700 (PDT)
+        Tue, 19 Apr 2022 14:22:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA7641622;
+        Tue, 19 Apr 2022 11:14:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 673D660E07;
-        Tue, 19 Apr 2022 18:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D98C385A7;
-        Tue, 19 Apr 2022 18:16:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86035B81185;
+        Tue, 19 Apr 2022 18:14:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92DAEC385A5;
+        Tue, 19 Apr 2022 18:14:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392167;
-        bh=e58p+eX3tzKZICjXxJ3Z7whh5AvYJrfSGi0Pe0PQWXM=;
+        s=k20201202; t=1650392070;
+        bh=904Yeuvzqm23g7s+sAX4Ms24/YBBVjFmcCiyB/hFFGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kbQaohM2zbuUYOd3jaCKc9hfxe3pYdJhk0OhRmT+Sg2N3dSAX0oJEv5uC7ymjHApw
-         V26aF9KsnI6o/2XYU/pyPVQ9NjxHi6vgvYUta5DWI+LzNY/WzaEn/dzhf4hsRN2C/t
-         GTnDSkMtZ1fK7NZkKIzKzFUpTsHqGijHo4lE5Lip7ZxZI/3UMan++vLfr719genYnH
-         9Nm5IWlbwj1AEJdy4oq/9oajwfyzsYF0N8sJHCeCOMPtWQTZxVpiarcvTfvItOfPYy
-         9KBjqs/WQWQVZXfnio5VkLVOe6RjI+iSViQO+QxJ1lA7cQ/ur4I0vI0MpSUX+30TdP
-         G1mCUgUc7bHxQ==
+        b=mWDrXPhzwIMhmqu40vwvmbpX3ghdzXVP2Jt9bn4LXQlc+99f8DO+RolK328IPH4gx
+         LeeKbHf6ZyCJElVcFSPK57L7G/QhXmTBWTJBPpLO5Gtg8V3jsnB9IlGOidS24Py65W
+         wVqtnBzO2ZmdTw9JV3A2p5hjJTndf9OtN0lDlmUpJ8TO1YQ/73TqJZLDcSwik+54GF
+         +2s/Si/eOuSAvTQCFf+/A97SqGr6WNLFtlbv2wzfZmdwoxrOG0kNk/bF80T8IMnYng
+         THDhnIiDr2/MXQDsiK+1mHg731ULnJC9DXLOACPtjVo4QhFBPIkMJrKcFyQvWaZ3Hn
+         dQr11ztXOvQaw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hongbin Wang <wh_bin@126.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 4/9] vxlan: fix error return code in vxlan_fdb_append
-Date:   Tue, 19 Apr 2022 14:15:52 -0400
-Message-Id: <20220419181557.486336-4-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
+        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
+        maxime@cerno.tech, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 12/18] drm/msm/mdp5: check the return of kzalloc()
+Date:   Tue, 19 Apr 2022 14:13:46 -0400
+Message-Id: <20220419181353.485719-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181557.486336-1-sashal@kernel.org>
-References: <20220419181557.486336-1-sashal@kernel.org>
+In-Reply-To: <20220419181353.485719-1-sashal@kernel.org>
+References: <20220419181353.485719-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,38 +56,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
+[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
 
-When kmalloc and dst_cache_init failed,
-should return ENOMEM rather than ENOBUFS.
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Besides, since mdp5_plane_reset() is void type, so we should better
+set `plane-state` to NULL after releasing it.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/481055/
+Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 066a4654e838..31657f15eb07 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -524,11 +524,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+index 83423092de2f..da0799333970 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+@@ -179,7 +179,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
+ 		drm_framebuffer_put(plane->state->fb);
  
- 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
- 	if (rd == NULL)
--		return -ENOBUFS;
-+		return -ENOMEM;
+ 	kfree(to_mdp5_plane_state(plane->state));
++	plane->state = NULL;
+ 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
++	if (!mdp5_state)
++		return;
  
- 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
- 		kfree(rd);
--		return -ENOBUFS;
-+		return -ENOMEM;
- 	}
- 
- 	rd->remote_ip = *ip;
+ 	/* assign default blend parameters */
+ 	mdp5_state->alpha = 255;
 -- 
 2.35.1
 
