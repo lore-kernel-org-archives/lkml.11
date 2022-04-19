@@ -2,256 +2,367 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61000C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 10:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348472AbiDSKEi (ORCPT
+        id S1348610AbiDSKGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
+        Tue, 19 Apr 2022 06:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230186AbiDSKEa (ORCPT
+        with ESMTP id S230186AbiDSKGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:04:30 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4462012A88
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 03:01:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650362508; x=1681898508;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=uKDBpVTAENxOBNzmr+R5zbaHJC/AWRj7MvcfFxcLDIE=;
-  b=NU9U/78sJcQaqyVutPPjOZ3PdjKDdoo4+W0JlSAPo5qu0DRKGgrw0L8m
-   n828SqhlZroUL0lAo5SO8xic6jW9BKoYoBJwtHMYGBXTXKMWc0ngQV1jN
-   RXRU9mVkrdiUpdT+IK0/rO8EFAFfr/qD+sQPHGxQpZV9UhhHwD+Ep+KKh
-   yUDeitRZg5OXW4nrwCnyDuors12nN2J+lGKIV6ObXNECMfqYmvKievsOV
-   FNof5CXGdWeaZQK+otzAioMtFdNMPWx5xOoNCNRv2Pb6dAWV52uQXVUT7
-   WWvkntSe9PlMdsrfrfzswqQB85/rPua06h78yhR3IxdjI8xOQ8LfscA83
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="326626616"
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="326626616"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 03:01:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="510083204"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 19 Apr 2022 03:01:45 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngkg5-0005cs-2w;
-        Tue, 19 Apr 2022 10:01:45 +0000
-Date:   Tue, 19 Apr 2022 18:00:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.04.16a] BUILD REGRESSION
- 21b595e4233e6885bdea2819c206a470cc207ea5
-Message-ID: <625e8854.9Z61O5qYHrqU2x7p%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 19 Apr 2022 06:06:37 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703CF140E9;
+        Tue, 19 Apr 2022 03:03:55 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J7jJrU001971;
+        Tue, 19 Apr 2022 10:03:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=8eLKw9sRdwyYKxhryxJcrz3CnK9fai6nAc4kGCBkFa8=;
+ b=QTn7HUMBlXtwFWXrzNy7qCHf1vdrutfr3iXCwWFDdL+Ys66rZk7UscKzvCCJfwCFV17E
+ TvwUOBwMBon1znf4YlZahHsSNa4zo11gfd6mDSx5irCMZicjnSX2qxS6+TYyfmJhbGxY
+ v9SKUyZRN8I5kop/Yox2zfBEAJ02ohiDLAGtb5lqvxHyBi3jUthm+bLzhlxrETRZy5sw
+ VJ4c7WynGWy7gpucuBZ++jE18ZRkoXRyFFYUDX8Vaq2o2Rx0vKRkAGFG/bqzYhnqPgSc
+ 4xb97VKwHmHINlTvsQXL1mhRHDLGhuciWUQKF9Js4fADC4sssBneJzTvM2Lcjxxwderq bg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7vntjy5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 10:03:54 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23J9xX4t023279;
+        Tue, 19 Apr 2022 10:03:54 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7vntjxf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 10:03:53 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23JA3p46020329;
+        Tue, 19 Apr 2022 10:03:51 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06fra.de.ibm.com with ESMTP id 3ffn2huaec-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 10:03:51 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23JA3lVV47579630
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 10:03:47 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB19042041;
+        Tue, 19 Apr 2022 10:03:47 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8E0BE42042;
+        Tue, 19 Apr 2022 10:03:46 +0000 (GMT)
+Received: from [9.171.88.57] (unknown [9.171.88.57])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 19 Apr 2022 10:03:46 +0000 (GMT)
+Message-ID: <de630458-f48a-1b97-2bd3-53284c7d2a5e@linux.ibm.com>
+Date:   Tue, 19 Apr 2022 12:07:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v5 19/21] KVM: s390: add KVM_S390_ZPCI_OP to manage guest
+ zPCI devices
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-20-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220404174349.58530-20-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: hQ5ulVQxOCD3_DC4Gf3BpV1xLoJeN6jn
+X-Proofpoint-GUID: 7eqs-FurOukMlniQMIYQYioBkI8ss3nj
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_04,2022-04-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ phishscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 impostorscore=0 mlxlogscore=999 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204190052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.04.16a
-branch HEAD: 21b595e4233e6885bdea2819c206a470cc207ea5  rcu/nocb: Add an option to offload all CPUs on boot
 
-Error/Warning reports:
 
-https://lore.kernel.org/lkml/202204191137.9uki6akh-lkp@intel.com
+On 4/4/22 19:43, Matthew Rosato wrote:
+> The KVM_S390_ZPCI_OP ioctl provides a mechanism for managing
+> hardware-assisted virtualization features for s390X zPCI passthrough.
+> Add the first 2 operations, which can be used to enable/disable
+> the specified device for Adapter Event Notification interpretation.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>   Documentation/virt/kvm/api.rst | 45 +++++++++++++++++++++++
+>   arch/s390/kvm/kvm-s390.c       | 23 ++++++++++++
+>   arch/s390/kvm/pci.c            | 65 ++++++++++++++++++++++++++++++++++
+>   arch/s390/kvm/pci.h            |  2 ++
+>   include/uapi/linux/kvm.h       | 31 ++++++++++++++++
+>   5 files changed, 166 insertions(+)
+> 
+> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> index d13fa6600467..474f502c2ea0 100644
+> --- a/Documentation/virt/kvm/api.rst
+> +++ b/Documentation/virt/kvm/api.rst
+> @@ -5645,6 +5645,51 @@ enabled with ``arch_prctl()``, but this may change in the future.
+>   The offsets of the state save areas in struct kvm_xsave follow the contents
+>   of CPUID leaf 0xD on the host.
+>   
+> +4.135 KVM_S390_ZPCI_OP
+> +--------------------
+> +
+> +:Capability: KVM_CAP_S390_ZPCI_OP
+> +:Architectures: s390
+> +:Type: vcpu ioctl
+> +:Parameters: struct kvm_s390_zpci_op (in)
+> +:Returns: 0 on success, <0 on error
+> +
+> +Used to manage hardware-assisted virtualization features for zPCI devices.
+> +
+> +Parameters are specified via the following structure::
+> +
+> +  struct kvm_s390_zpci_op {
+> +	/* in */
+> +	__u32 fh;		/* target device */
+> +	__u8  op;		/* operation to perform */
+> +	__u8  pad[3];
+> +	union {
+> +		/* for KVM_S390_ZPCIOP_REG_AEN */
+> +		struct {
+> +			__u64 ibv;	/* Guest addr of interrupt bit vector */
+> +			__u64 sb;	/* Guest addr of summary bit */
+> +			__u32 flags;
+> +			__u32 noi;	/* Number of interrupts */
+> +			__u8 isc;	/* Guest interrupt subclass */
+> +			__u8 sbo;	/* Offset of guest summary bit vector */
+> +			__u16 pad;
+> +		} reg_aen;
+> +		__u64 reserved[8];
+> +	} u;
+> +  };
+> +
+> +The type of operation is specified in the "op" field.
+> +KVM_S390_ZPCIOP_REG_AEN is used to register the VM for adapter event
+> +notification interpretation, which will allow firmware delivery of adapter
+> +events directly to the vm, with KVM providing a backup delivery mechanism;
+> +KVM_S390_ZPCIOP_DEREG_AEN is used to subsequently disable interpretation of
+> +adapter event notifications.
+> +
+> +The target zPCI function must also be specified via the "fh" field.  For the
+> +KVM_S390_ZPCIOP_REG_AEN operation, additional information to establish firmware
+> +delivery must be provided via the "reg_aen" struct.
+> +
+> +The "reserved" field is meant for future extensions.
+>   
+>   5. The kvm_run structure
+>   ========================
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index 704d85214f4f..65a53e22f686 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -616,6 +616,12 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+>   	case KVM_CAP_S390_PROTECTED:
+>   		r = is_prot_virt_host();
+>   		break;
+> +	case KVM_CAP_S390_ZPCI_OP:
+> +		if (kvm_s390_pci_interp_allowed())
+> +			r = 1;
+> +		else
+> +			r = 0;
+> +		break;
+>   	default:
+>   		r = 0;
+>   	}
+> @@ -2621,6 +2627,23 @@ long kvm_arch_vm_ioctl(struct file *filp,
+>   			r = -EFAULT;
+>   		break;
+>   	}
+> +	case KVM_S390_ZPCI_OP: {
+> +		struct kvm_s390_zpci_op args;
+> +
+> +		r = -EINVAL;
+> +		if (!IS_ENABLED(CONFIG_VFIO_PCI))
+> +			break;
+> +		if (copy_from_user(&args, argp, sizeof(args))) {
+> +			r = -EFAULT;
+> +			break;
+> +		}
+> +		r = kvm_s390_pci_zpci_op(kvm, &args);
+> +		if (r)
+> +			break;
+> +		if (copy_to_user(argp, &args, sizeof(args)))
+> +			r = -EFAULT;
+> +		break;
+> +	}
+>   	default:
+>   		r = -ENOTTY;
+>   	}
+> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+> index 66565f5f3f43..d941657bcb39 100644
+> --- a/arch/s390/kvm/pci.c
+> +++ b/arch/s390/kvm/pci.c
+> @@ -588,6 +588,71 @@ void kvm_s390_pci_clear_list(struct kvm *kvm)
+>   		unregister_kvm(kzdev->zdev);
+>   }
+>   
+> +static struct kvm_zdev *get_kzdev_by_fh(struct kvm *kvm, u32 fh)
+> +{
+> +	struct kvm_zdev *kzdev, *retval = NULL;
+> +
+> +	spin_lock(&kvm->arch.kzdev_list_lock);
+> +	list_for_each_entry(kzdev, &kvm->arch.kzdev_list, entry) {
+> +		if (kzdev->zdev->fh == fh) {
+> +			retval = kzdev;
+> +			break;
+> +		}
+> +	}
+> +	spin_unlock(&kvm->arch.kzdev_list_lock);
+> +
+> +	return retval;
+> +}
+> +
+> +static int kvm_s390_pci_zpci_reg_aen(struct zpci_dev *zdev,
+> +				     struct kvm_s390_zpci_op *args)
+> +{
+> +	struct zpci_fib fib = {};
+> +
+> +	fib.fmt0.aibv = args->u.reg_aen.ibv;
+> +	fib.fmt0.isc = args->u.reg_aen.isc;
+> +	fib.fmt0.noi = args->u.reg_aen.noi;
+> +	if (args->u.reg_aen.sb != 0) {
+> +		fib.fmt0.aisb = args->u.reg_aen.sb;
+> +		fib.fmt0.aisbo = args->u.reg_aen.sbo;
+> +		fib.fmt0.sum = 1;
+> +	} else {
+> +		fib.fmt0.aisb = 0;
+> +		fib.fmt0.aisbo = 0;
+> +		fib.fmt0.sum = 0;
+> +	}
+> +
+> +	if (args->u.reg_aen.flags & KVM_S390_ZPCIOP_REGAEN_HOST)
+> +		return kvm_s390_pci_aif_enable(zdev, &fib, true);
+> +	else
+> +		return kvm_s390_pci_aif_enable(zdev, &fib, false);
+> +}
+> +
+> +int kvm_s390_pci_zpci_op(struct kvm *kvm, struct kvm_s390_zpci_op *args)
+> +{
+> +	struct kvm_zdev *kzdev;
+> +	struct zpci_dev *zdev;
+> +	int r;
+> +
+> +	kzdev = get_kzdev_by_fh(kvm, args->fh);
+> +	if (!kzdev)
+> +		return -ENODEV;
+> +	zdev = kzdev->zdev;
+> +
+> +	switch (args->op) {
+> +	case KVM_S390_ZPCIOP_REG_AEN:
+> +		r = kvm_s390_pci_zpci_reg_aen(zdev, args);
+> +		break;
+> +	case KVM_S390_ZPCIOP_DEREG_AEN:
+> +		r = kvm_s390_pci_aif_disable(zdev, false);
+> +		break;
+> +	default:
+> +		r = -EINVAL;
+> +	}
+> +
+> +	return r;
+> +}
+> +
+>   int kvm_s390_pci_init(void)
+>   {
+>   	aift = kzalloc(sizeof(struct zpci_aift), GFP_KERNEL);
+> diff --git a/arch/s390/kvm/pci.h b/arch/s390/kvm/pci.h
+> index cb5ec3208923..b053b50c0904 100644
+> --- a/arch/s390/kvm/pci.h
+> +++ b/arch/s390/kvm/pci.h
+> @@ -59,6 +59,8 @@ void kvm_s390_pci_aen_exit(void);
+>   void kvm_s390_pci_init_list(struct kvm *kvm);
+>   void kvm_s390_pci_clear_list(struct kvm *kvm);
+>   
+> +int kvm_s390_pci_zpci_op(struct kvm *kvm, struct kvm_s390_zpci_op *args);
+> +
+>   int kvm_s390_pci_init(void);
+>   
+>   static inline bool kvm_s390_pci_interp_allowed(void)
+> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> index 91a6fe4e02c0..014adb30d42c 100644
+> --- a/include/uapi/linux/kvm.h
+> +++ b/include/uapi/linux/kvm.h
+> @@ -1144,6 +1144,7 @@ struct kvm_ppc_resize_hpt {
+>   #define KVM_CAP_S390_MEM_OP_EXTENSION 211
+>   #define KVM_CAP_PMU_CAPABILITY 212
+>   #define KVM_CAP_DISABLE_QUIRKS2 213
+> +#define KVM_CAP_S390_ZPCI_OP 214
+>   
+>   #ifdef KVM_CAP_IRQ_ROUTING
+>   
+> @@ -2060,4 +2061,34 @@ struct kvm_stats_desc {
+>   /* Available with KVM_CAP_XSAVE2 */
+>   #define KVM_GET_XSAVE2		  _IOR(KVMIO,  0xcf, struct kvm_xsave)
+>   
+> +/* Available with KVM_CAP_S390_ZPCI_OP */
+> +#define KVM_S390_ZPCI_OP	  _IOW(KVMIO,  0xd0, struct kvm_s390_zpci_op)
+> +
+> +struct kvm_s390_zpci_op {
+> +	/* in */
+> +	__u32 fh;		/* target device */
+> +	__u8  op;		/* operation to perform */
+> +	__u8  pad[3];
+> +	union {
+> +		/* for KVM_S390_ZPCIOP_REG_AEN */
+> +		struct {
+> +			__u64 ibv;	/* Guest addr of interrupt bit vector */
+> +			__u64 sb;	/* Guest addr of summary bit */
+> +			__u32 flags;
+> +			__u32 noi;	/* Number of interrupts */
+> +			__u8 isc;	/* Guest interrupt subclass */
+> +			__u8 sbo;	/* Offset of guest summary bit vector */
+> +			__u16 pad;
+> +		} reg_aen;
+> +		__u64 reserved[8];
+> +	} u;
+> +};
+> +
+> +/* types for kvm_s390_zpci_op->op */
+> +#define KVM_S390_ZPCIOP_REG_AEN		0
+> +#define KVM_S390_ZPCIOP_DEREG_AEN	1
+> +
+> +/* flags for kvm_s390_zpci_op->u.reg_aen.flags */
+> +#define KVM_S390_ZPCIOP_REGAEN_HOST	(1 << 0)
+> +
+>   #endif /* __LINUX_KVM_H */
+> 
 
-Error/Warning: (recently discovered and may have been fixed)
 
-kernel/rcu/tree_nocb.h:1162:14: error: 'rcu_nocb_is_setup' undeclared (first use in this function); did you mean 'rcu_nocb_setup'?
+The purpose is to setup the IRQ for the zPCI device wouldn't it be more 
+logical to go through VFIO_DEVICE_SET_IRQS and there jump to the zPCI 
+handling, like it is done for the capabilities, instead to go directly 
+through KVM?
+We would also spare the research for the real FH in KVM.
 
-Error/Warning ids grouped by kconfigs:
 
-gcc_recent_errors
-|-- alpha-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- alpha-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- arc-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- arm-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- arm-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- arm64-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- i386-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- ia64-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- ia64-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- mips-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- mips-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- parisc-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- riscv-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- riscv-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- s390-allmodconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- s390-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-|-- sparc-allyesconfig
-|   `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
-`-- x86_64-allyesconfig
-    `-- kernel-rcu-tree_nocb.h:error:rcu_nocb_is_setup-undeclared-(first-use-in-this-function)
 
-elapsed time: 872m
 
-configs tested: 134
-configs skipped: 3
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                 randconfig-c001-20220418
-sparc                       sparc32_defconfig
-xtensa                  cadence_csp_defconfig
-mips                            ar7_defconfig
-powerpc                     pq2fads_defconfig
-powerpc                 mpc834x_mds_defconfig
-sparc                       sparc64_defconfig
-powerpc                 mpc8540_ads_defconfig
-sh                     magicpanelr2_defconfig
-nios2                               defconfig
-sh                          landisk_defconfig
-arm                        shmobile_defconfig
-sparc64                          alldefconfig
-microblaze                      mmu_defconfig
-parisc                           alldefconfig
-xtensa                  nommu_kc705_defconfig
-m68k                          hp300_defconfig
-sh                            hp6xx_defconfig
-mips                         cobalt_defconfig
-powerpc                      pasemi_defconfig
-s390                       zfcpdump_defconfig
-powerpc64                        alldefconfig
-sh                        edosk7760_defconfig
-sh                        apsh4ad0a_defconfig
-riscv             nommu_k210_sdcard_defconfig
-mips                       bmips_be_defconfig
-sh                          urquell_defconfig
-arm                  randconfig-c002-20220418
-x86_64               randconfig-c001-20220418
-arm                  randconfig-c002-20220417
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a003-20220418
-x86_64               randconfig-a004-20220418
-x86_64               randconfig-a006-20220418
-x86_64               randconfig-a001-20220418
-x86_64               randconfig-a002-20220418
-x86_64               randconfig-a005-20220418
-i386                 randconfig-a004-20220418
-i386                 randconfig-a001-20220418
-i386                 randconfig-a003-20220418
-i386                 randconfig-a005-20220418
-i386                 randconfig-a006-20220418
-i386                 randconfig-a002-20220418
-arc                  randconfig-r043-20220418
-arc                  randconfig-r043-20220417
-riscv                randconfig-r042-20220417
-s390                 randconfig-r044-20220417
-arc                  randconfig-r043-20220419
-s390                 randconfig-r044-20220419
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-mips                     cu1000-neo_defconfig
-arm                            dove_defconfig
-mips                         tb0219_defconfig
-powerpc                    mvme5100_defconfig
-powerpc                    ge_imp3a_defconfig
-powerpc                     pseries_defconfig
-mips                   sb1250_swarm_defconfig
-powerpc               mpc834x_itxgp_defconfig
-powerpc                     kmeter1_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64               randconfig-a016-20220418
-x86_64               randconfig-a012-20220418
-x86_64               randconfig-a013-20220418
-x86_64               randconfig-a014-20220418
-x86_64               randconfig-a015-20220418
-x86_64               randconfig-a011-20220418
-i386                 randconfig-a011-20220418
-i386                 randconfig-a015-20220418
-i386                 randconfig-a016-20220418
-i386                 randconfig-a012-20220418
-i386                 randconfig-a013-20220418
-i386                 randconfig-a014-20220418
-hexagon              randconfig-r041-20220417
-hexagon              randconfig-r041-20220418
-hexagon              randconfig-r045-20220417
-s390                 randconfig-r044-20220418
-riscv                randconfig-r042-20220418
-hexagon              randconfig-r045-20220418
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Pierre Morel
+IBM Lab Boeblingen
