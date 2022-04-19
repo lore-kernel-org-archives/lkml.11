@@ -2,277 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D621BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD92C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:47:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245034AbiDSQuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
+        id S1349826AbiDSQuW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 12:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242507AbiDSQnM (ORCPT
+        with ESMTP id S235504AbiDSQqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:43:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BD617E23;
-        Tue, 19 Apr 2022 09:40:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B4FDB819DE;
-        Tue, 19 Apr 2022 16:40:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDD0FC385A5;
-        Tue, 19 Apr 2022 16:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386426;
-        bh=ptMtOudbQ5loXUIBoTxa9Js2NvWZa4r2mq6O40yUHH0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sn7fnX8rRkBuqtQMfRkdqeTmIHa3aEVyEQqy3ea6Rcph7o5+q2+oJQtgfayzkGgGD
-         pBrobPc0a288Jt5l21HSNaRfaU6aAdkHaECQNojqoW85epuPmw1VvMwvkSO6N07k/3
-         115Wizs7BJeOANhRCBPtn5ETmJ1DN/7eD9VqdGz01zYvnNHqGUiTr7Xr5IQ32fnJKz
-         73a5FySo1/OXZDPRM/Hg6r35U+vs89tmssHNWG7O1Y8buOzXQepqwD84VLvP022GvN
-         c6H9ZVfE372WNIs8vRZiLFyLD+Hr6zPSL7rCagmKzA+O8wvtPs7NCaSk+bRoY9berF
-         uj9Ak7o458yOA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Philipp Zabel <philipp.zabel@gmail.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Paul Parsons <lost.distance@yahoo.com>,
-        Tomas Cech <sleep_walker@suse.com>,
-        Sergey Lapin <slapin@ossfans.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-input@vger.kernel.org,
-        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 12/48] ARM: pxa: make addr-map.h header local
-Date:   Tue, 19 Apr 2022 18:37:34 +0200
-Message-Id: <20220419163810.2118169-13-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220419163810.2118169-1-arnd@kernel.org>
-References: <20220419163810.2118169-1-arnd@kernel.org>
+        Tue, 19 Apr 2022 12:46:22 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B9939692;
+        Tue, 19 Apr 2022 09:43:39 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id x17so30408634lfa.10;
+        Tue, 19 Apr 2022 09:43:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gyw0DllU2NEgcTB/Sa92qGNKU8xdBjvfAuK5cohiajI=;
+        b=asRrscuJnEsdZ1tzYA0fN9xCDH2APZtdudLZmkQnLh6p0uiaAxipNglQMl57a4UMxy
+         78eqnW78ESl336vWjH8XLn8Zd43FNXLdVkToS0MiB6cvvCy2PmJYxYWrvV7lMB4CNhXR
+         6Y4WnxmZ0LRShtGTEkrW7DoErjKohz+R86lgBhFL1gi0q1bO0a/MR3mNtUq6EtaTE/i0
+         6ckG3UJ/dn5qBWqHdT98XxrjALJfahY+7izZrCdcWLEW9h2azZq5+m5LqeZqFzxfzu1/
+         F50tp++qazDDdaa4JJjgBBXRVfCClJcgaU6IZpyHKa6Maw20JmgOSW9AwydqsQ8I6qCz
+         gSNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gyw0DllU2NEgcTB/Sa92qGNKU8xdBjvfAuK5cohiajI=;
+        b=F7pbVJLUWUKzEyXLfODi0AwsRXNm1gtoyCrQIwZqWzsgAY/m/YuF4LXNr+Xij8H0VU
+         1S4AEkDdrzk4paUxBQNXoP+ZHJVvQjZvj5GLaIOAncChDLP2iZRWbO5rc2faEjlpndJF
+         NQmjL+Frg3Fb5cu26x9AaN7E1q4reSluxyqEQgdaIKTX/kxguB5xeuh6iAeaC51c8g4I
+         pfVvsGuUwkh4jvufHRMKghuM9JNFNxxThe0g6jFCNvbbdHIIet2688FkBjLrJijg8uD5
+         J8qcpZfObT/497oHpRXPFi+AkCVOw50yADiSx0m82ioJ1h3sx7SVxNlkJ707MH9LLARk
+         9hyA==
+X-Gm-Message-State: AOAM533VByyqEwIdg+34BYm83sqw2puBSdBkiDnRp5X+c0xUIVcE2LfH
+        sL5dXX4LQ9NzpBZBWVUhY1o=
+X-Google-Smtp-Source: ABdhPJw79nRXKU8UnnOwpeWQ6iU3EAQKrdBBD+fWBtL4nWEsSBKj2o68Cnkizg4e+tkZK6f6yIYWwA==
+X-Received: by 2002:ac2:4c4b:0:b0:471:a8e2:198d with SMTP id o11-20020ac24c4b000000b00471a8e2198dmr2671909lfk.121.1650386617950;
+        Tue, 19 Apr 2022 09:43:37 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id s22-20020a197716000000b0046bc65188d6sm1562325lfc.80.2022.04.19.09.43.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 09:43:37 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Tue, 19 Apr 2022 18:43:35 +0200
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>, rcu@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        rushikesh.s.kadam@intel.com, vineethrp@gmail.com, urezki@gmail.com
+Subject: Re: [PATCH v4] rcu/nocb: Add an option to offload all CPUs on boot
+Message-ID: <Yl7mt2XkHo7obhpz@pc638.lan>
+References: <20220418175403.2553842-1-joel@joelfernandes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418175403.2553842-1-joel@joelfernandes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Apr 18, 2022 at 05:54:03PM +0000, Joel Fernandes (Google) wrote:
+> From: Joel Fernandes <joel@joelfernandes.org>
+> 
+> On systems with CONFIG_RCU_NOCB_CPU=y, there is no default mask provided
+> which ends up not offloading any CPU. This patch removes a dependency
+> from the bootloader having to know about RCU and about how to provide
+> the mask.
+> 
+> With the new option enabled, all CPUs will be offloaded on boot unless
+> rcu_nocbs= or rcu_nohz_full= kernel parameters provide a CPU list.
+> 
+> Signed-off-by: Joel Fernandes <joel@joelfernandes.org>
+> ---
+> v4: mostly style related fixes.
+> v3 is back to v1 but with a config option defaulting to 'n'.
+> v2 was forcing the option to override no_cbs=
+>
+Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 
-Drivers should not rely on the contents of this file, so
-move it into the platform directory directly.
-
-Cc: Philipp Zabel <philipp.zabel@gmail.com>
-Cc: Paul Parsons <lost.distance@yahoo.com>
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/lkml/87mudkmx8g.fsf@belgarion.home/
----
- arch/arm/mach-pxa/{include/mach => }/addr-map.h | 0
- arch/arm/mach-pxa/generic.c                     | 2 +-
- arch/arm/mach-pxa/hx4700.c                      | 2 +-
- arch/arm/mach-pxa/lpd270.c                      | 2 +-
- arch/arm/mach-pxa/magician.c                    | 2 +-
- arch/arm/mach-pxa/mainstone.c                   | 2 +-
- arch/arm/mach-pxa/pxa25x.c                      | 2 +-
- arch/arm/mach-pxa/pxa25x.h                      | 2 +-
- arch/arm/mach-pxa/pxa27x.c                      | 2 +-
- arch/arm/mach-pxa/pxa27x.h                      | 2 +-
- arch/arm/mach-pxa/pxa3xx.c                      | 2 +-
- arch/arm/mach-pxa/pxa3xx.h                      | 2 +-
- arch/arm/mach-pxa/trizeps4.h                    | 2 +-
- arch/arm/mach-pxa/xcep.c                        | 2 +-
- 14 files changed, 13 insertions(+), 13 deletions(-)
- rename arch/arm/mach-pxa/{include/mach => }/addr-map.h (100%)
-
-diff --git a/arch/arm/mach-pxa/include/mach/addr-map.h b/arch/arm/mach-pxa/addr-map.h
-similarity index 100%
-rename from arch/arm/mach-pxa/include/mach/addr-map.h
-rename to arch/arm/mach-pxa/addr-map.h
-diff --git a/arch/arm/mach-pxa/generic.c b/arch/arm/mach-pxa/generic.c
-index 3c3cd90bb9b4..f9083c4f0aea 100644
---- a/arch/arm/mach-pxa/generic.c
-+++ b/arch/arm/mach-pxa/generic.c
-@@ -22,7 +22,7 @@
- #include <asm/mach/map.h>
- #include <asm/mach-types.h>
- 
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/irqs.h>
- #include <mach/reset.h>
- #include <mach/smemc.h>
-diff --git a/arch/arm/mach-pxa/hx4700.c b/arch/arm/mach-pxa/hx4700.c
-index 191a6c24fe19..140a44cb2989 100644
---- a/arch/arm/mach-pxa/hx4700.c
-+++ b/arch/arm/mach-pxa/hx4700.c
-@@ -40,7 +40,7 @@
- #include <asm/mach/arch.h>
- 
- #include "pxa27x.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/hx4700.h>
- #include <linux/platform_data/irda-pxaficp.h>
- 
-diff --git a/arch/arm/mach-pxa/lpd270.c b/arch/arm/mach-pxa/lpd270.c
-index 7f10b86f85fd..e03436710752 100644
---- a/arch/arm/mach-pxa/lpd270.c
-+++ b/arch/arm/mach-pxa/lpd270.c
-@@ -38,7 +38,7 @@
- 
- #include "pxa27x.h"
- #include "lpd270.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <linux/platform_data/asoc-pxa.h>
- #include <linux/platform_data/video-pxafb.h>
- #include <linux/platform_data/mmc-pxamci.h>
-diff --git a/arch/arm/mach-pxa/magician.c b/arch/arm/mach-pxa/magician.c
-index 345a44d15a2c..20ca3e28c7fb 100644
---- a/arch/arm/mach-pxa/magician.c
-+++ b/arch/arm/mach-pxa/magician.c
-@@ -34,7 +34,7 @@
- #include <asm/system_info.h>
- 
- #include "pxa27x.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/magician.h>
- #include <linux/platform_data/video-pxafb.h>
- #include <linux/platform_data/mmc-pxamci.h>
-diff --git a/arch/arm/mach-pxa/mainstone.c b/arch/arm/mach-pxa/mainstone.c
-index c8200fc2159d..f0072e63b456 100644
---- a/arch/arm/mach-pxa/mainstone.c
-+++ b/arch/arm/mach-pxa/mainstone.c
-@@ -51,7 +51,7 @@
- #include <linux/platform_data/irda-pxaficp.h>
- #include <linux/platform_data/usb-ohci-pxa27x.h>
- #include <linux/platform_data/keypad-pxa27x.h>
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/smemc.h>
- 
- #include "generic.h"
-diff --git a/arch/arm/mach-pxa/pxa25x.c b/arch/arm/mach-pxa/pxa25x.c
-index dfc90b41fba3..8d21c7eef1d2 100644
---- a/arch/arm/mach-pxa/pxa25x.c
-+++ b/arch/arm/mach-pxa/pxa25x.c
-@@ -34,7 +34,7 @@
- #include "pxa25x.h"
- #include <mach/reset.h>
- #include "pm.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/smemc.h>
- 
- #include "generic.h"
-diff --git a/arch/arm/mach-pxa/pxa25x.h b/arch/arm/mach-pxa/pxa25x.h
-index 403bc16c2ed2..4699ebf7b486 100644
---- a/arch/arm/mach-pxa/pxa25x.h
-+++ b/arch/arm/mach-pxa/pxa25x.h
-@@ -2,7 +2,7 @@
- #ifndef __MACH_PXA25x_H
- #define __MACH_PXA25x_H
- 
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/pxa2xx-regs.h>
- #include "mfp-pxa25x.h"
- #include <mach/irqs.h>
-diff --git a/arch/arm/mach-pxa/pxa27x.c b/arch/arm/mach-pxa/pxa27x.c
-index 38fdd22c4dc5..c36a9784fab8 100644
---- a/arch/arm/mach-pxa/pxa27x.c
-+++ b/arch/arm/mach-pxa/pxa27x.c
-@@ -33,7 +33,7 @@
- #include <mach/reset.h>
- #include <linux/platform_data/usb-ohci-pxa27x.h>
- #include "pm.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/smemc.h>
- 
- #include "generic.h"
-diff --git a/arch/arm/mach-pxa/pxa27x.h b/arch/arm/mach-pxa/pxa27x.h
-index 6c99090647d2..bf2755561fe5 100644
---- a/arch/arm/mach-pxa/pxa27x.h
-+++ b/arch/arm/mach-pxa/pxa27x.h
-@@ -3,7 +3,7 @@
- #define __MACH_PXA27x_H
- 
- #include <linux/suspend.h>
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/pxa2xx-regs.h>
- #include "mfp-pxa27x.h"
- #include <mach/irqs.h>
-diff --git a/arch/arm/mach-pxa/pxa3xx.c b/arch/arm/mach-pxa/pxa3xx.c
-index 7c569fa2a6da..7881888107c7 100644
---- a/arch/arm/mach-pxa/pxa3xx.c
-+++ b/arch/arm/mach-pxa/pxa3xx.c
-@@ -32,7 +32,7 @@
- #include <mach/reset.h>
- #include <linux/platform_data/usb-ohci-pxa27x.h>
- #include "pm.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/smemc.h>
- #include <mach/irqs.h>
- 
-diff --git a/arch/arm/mach-pxa/pxa3xx.h b/arch/arm/mach-pxa/pxa3xx.h
-index 22ace053ea25..6b424d328680 100644
---- a/arch/arm/mach-pxa/pxa3xx.h
-+++ b/arch/arm/mach-pxa/pxa3xx.h
-@@ -2,7 +2,7 @@
- #ifndef __MACH_PXA3XX_H	
- #define __MACH_PXA3XX_H
- 
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/pxa3xx-regs.h>
- #include <mach/irqs.h>
- 
-diff --git a/arch/arm/mach-pxa/trizeps4.h b/arch/arm/mach-pxa/trizeps4.h
-index 7597b9de11e2..e0f37c0ff06f 100644
---- a/arch/arm/mach-pxa/trizeps4.h
-+++ b/arch/arm/mach-pxa/trizeps4.h
-@@ -11,7 +11,7 @@
- #ifndef _TRIPEPS4_H_
- #define _TRIPEPS4_H_
- 
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/irqs.h> /* PXA_GPIO_TO_IRQ */
- 
- /* physical memory regions */
-diff --git a/arch/arm/mach-pxa/xcep.c b/arch/arm/mach-pxa/xcep.c
-index e6ab428287ae..7389e0199144 100644
---- a/arch/arm/mach-pxa/xcep.c
-+++ b/arch/arm/mach-pxa/xcep.c
-@@ -25,7 +25,7 @@
- #include <asm/mach/map.h>
- 
- #include "pxa25x.h"
--#include <mach/addr-map.h>
-+#include "addr-map.h"
- #include <mach/smemc.h>
- 
- #include "generic.h"
--- 
-2.29.2
-
+--
+Uladzislau Rezki
