@@ -2,127 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 120B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 23:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358064AbiDSXr2 (ORCPT
+        id S1358138AbiDSXt0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 19:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        Tue, 19 Apr 2022 19:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236755AbiDSXr0 (ORCPT
+        with ESMTP id S1347036AbiDSXtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 19:47:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 338D621813
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:44:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650411881;
+        Tue, 19 Apr 2022 19:49:25 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F341D0CC
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:46:41 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650411999;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oYGafAneoUZHzEpI/8/bT8Grd+Q/phBRFprX8SG/5bY=;
-        b=c0D0avCHttmjOQNEviiqVk94T5WrAKjCgPYQAHsP+OKcR6C/7b+65srCG6Df7BNbAegR5/
-        8+P2cp7wDXZgj5pDixjXsJgzDbNrVzcyYrmnb+BeH9s3JEaI0UFvPrX5zdUBd8a349d9p8
-        t6ZibFxNbypaveWkIf1LaiK0zhF3gu4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-132-A3-U_55VPByrISC6o1Aezw-1; Tue, 19 Apr 2022 19:44:40 -0400
-X-MC-Unique: A3-U_55VPByrISC6o1Aezw-1
-Received: by mail-wm1-f71.google.com with SMTP id m125-20020a1c2683000000b00391893a2febso76450wmm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 16:44:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oYGafAneoUZHzEpI/8/bT8Grd+Q/phBRFprX8SG/5bY=;
-        b=Ji9sStWBP6qDkE2Z15hnl/0bDUK4EmFRlukmHVztBaYgMCW1UAsZsSKstRtGmn1Xk7
-         /pGwDlZ0SmSLZq3V7/vWb11/29bNCDMBkLztLkjGUY8RsTC/gpyrGLmVRKCPP8rytvwL
-         AVLLQFTblsFmDpnGnH53XxhS4QA23f6IiAVLjynMmga6mGMQVjcfGJxPF4tDW3Sd5nks
-         rMzAAjYyM2AQoj+gk+lvu7omuCvr1nh+LyFYkBO7gu+84VCBJeXqNDmCZy5y9zp+9SLv
-         2X/XRdyK1dpHrZFi4HdUxKhJw7U5kDyBjx0af7wxNqbEX6UmzcOtFmVH3XIWz05D51Wy
-         tZsw==
-X-Gm-Message-State: AOAM531U5myaegn+TCCFcKieSbmE+tTJIQkogK9Zy0WF7i24Ig4C79UG
-        iTez2q2VdtXOwfgZCGMpusEKGDawqSf7TfZGfKvnytut4i+ER28bIFasg1Km6YLKYearTmVVei4
-        xTkEafQzUQtw9A+R8TAN006lddxzfczbq6g/lxsumDrxQq3eHed2oLzpC8cVBVwpO7WxkH9eoYJ
-        k=
-X-Received: by 2002:adf:e301:0:b0:205:db69:6dba with SMTP id b1-20020adfe301000000b00205db696dbamr13903205wrj.605.1650411878555;
-        Tue, 19 Apr 2022 16:44:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyd21waJxZOqKa793oN0FwdeBAnzWxA1Koh+HqrwD58qJEbPViWBCVhaKh7RSE4dFJnB0AKtQ==
-X-Received: by 2002:adf:e301:0:b0:205:db69:6dba with SMTP id b1-20020adfe301000000b00205db696dbamr13903193wrj.605.1650411878317;
-        Tue, 19 Apr 2022 16:44:38 -0700 (PDT)
-Received: from kherbst.pingu.com (ip1f10bb48.dynamic.kabel-deutschland.de. [31.16.187.72])
-        by smtp.gmail.com with ESMTPSA id z3-20020a1cf403000000b0037d1f4a2201sm16560045wma.21.2022.04.19.16.44.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 16:44:37 -0700 (PDT)
-From:   Karol Herbst <kherbst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Karol Herbst <kherbst@redhat.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH] drm/i915: Fix race in __i915_vma_remove_closed
-Date:   Wed, 20 Apr 2022 01:44:36 +0200
-Message-Id: <20220419234436.2638649-1-kherbst@redhat.com>
-X-Mailer: git-send-email 2.35.1
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w6/o/PjZ0Qpg9L4OKIrmGvdcvR+21LH+ujrVsqfiSt0=;
+        b=ZH55eHdhqD0hK56pLkFN1875zoAdSildxIT8/cLmkWit8NvyYB/rOAkonzF7zEIzn2u6KP
+        j46F1QkFOcj+uJvicJkRyli3urWAxF05xWcMiPAcGybzRnx/j5oG0utmqRAylai7W2Qcna
+        oI6SrlJxiJh6BfKf1Zl7u74TFC4/RdPy7WW1JqFyF3jVPCKZmpzUQXelGZhIwXGyV7RnVC
+        2bZsVdiOkdoZ1FLZlO/mg/gdLbcuiN5nNQVXtmFVDLl24PrCmQlijTtUQimGpBaaiAEXK1
+        EZKVI2oq4kLCoWQibSkgYCMM/LWwTnYZXzQHS+DRywYQEE58qWDlGklE9ISh/A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650411999;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w6/o/PjZ0Qpg9L4OKIrmGvdcvR+21LH+ujrVsqfiSt0=;
+        b=7IYbHz3QLMuWIudlG/JSLNZ2HKTfpGLJgfeL3D44mhRhozUa6EZiSuZ+XL/TELOaVN3L0y
+        HTvd/eNDxp06sgBw==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH printk v3 02/15] printk: cpu sync always disable interrupts
+Date:   Wed, 20 Apr 2022 01:52:24 +0206
+Message-Id: <20220419234637.357112-3-john.ogness@linutronix.de>
+In-Reply-To: <20220419234637.357112-1-john.ogness@linutronix.de>
+References: <20220419234637.357112-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i915_vma_reopen checked if the vma is closed before without taking the
-lock. So multiple threads could attempt removing the vma.
+The CPU sync functions are a NOP for !CONFIG_SMP. But for
+!CONFIG_SMP they still need to disable interrupts in order to
+preserve context within the CPU sync sections.
 
-Instead the lock needs to be taken before actually checking.
-
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: intel-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5732
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
 ---
- drivers/gpu/drm/i915/i915_vma.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ include/linux/printk.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index 162e8d83691b..bb3b6e4bee8b 100644
---- a/drivers/gpu/drm/i915/i915_vma.c
-+++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -1615,17 +1615,17 @@ void i915_vma_close(struct i915_vma *vma)
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 859323a52985..b70a42f94031 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -281,9 +281,16 @@ extern int __printk_cpu_sync_try_get(void);
+ extern void __printk_cpu_sync_wait(void);
+ extern void __printk_cpu_sync_put(void);
  
- static void __i915_vma_remove_closed(struct i915_vma *vma)
- {
--	struct intel_gt *gt = vma->vm->gt;
++#else
++
++#define __printk_cpu_sync_try_get() true
++#define __printk_cpu_sync_wait()
++#define __printk_cpu_sync_put()
++#endif /* CONFIG_SMP */
++
+ /**
+- * printk_cpu_sync_get_irqsave() - Acquire the printk cpu-reentrant spinning
+- *                                 lock and disable interrupts.
++ * printk_cpu_sync_get_irqsave() - Disable interrupts and acquire the printk
++ *                                 cpu-reentrant spinning lock.
+  * @flags: Stack-allocated storage for saving local interrupt state,
+  *         to be passed to printk_cpu_sync_put_irqrestore().
+  *
+@@ -322,13 +329,6 @@ extern void __printk_cpu_sync_put(void);
+ 		local_irq_restore(flags);	\
+ 	} while (0)
+ 
+-#else
 -
--	spin_lock_irq(&gt->closed_lock);
- 	list_del_init(&vma->closed_link);
--	spin_unlock_irq(&gt->closed_lock);
- }
+-#define printk_cpu_sync_get_irqsave(flags) ((void)flags)
+-#define printk_cpu_sync_put_irqrestore(flags) ((void)flags)
+-
+-#endif /* CONFIG_SMP */
+-
+ extern int kptr_restrict;
  
- void i915_vma_reopen(struct i915_vma *vma)
- {
-+	struct intel_gt *gt = vma->vm->gt;
-+
-+	spin_lock_irq(&gt->closed_lock);
- 	if (i915_vma_is_closed(vma))
- 		__i915_vma_remove_closed(vma);
-+	spin_unlock_irq(&gt->closed_lock);
- }
- 
- static void force_unbind(struct i915_vma *vma)
-@@ -1651,7 +1651,11 @@ static void release_references(struct i915_vma *vma, bool vm_ddestroy)
- 
- 	spin_unlock(&obj->vma.lock);
- 
-+	struct intel_gt *gt = vma->vm->gt;
-+
-+	spin_lock_irq(&gt->closed_lock);
- 	__i915_vma_remove_closed(vma);
-+	spin_unlock_irq(&gt->closed_lock);
- 
- 	if (vm_ddestroy)
- 		i915_vm_resv_put(vma->vm);
+ /**
 -- 
-2.35.1
+2.30.2
 
