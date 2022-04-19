@@ -2,116 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D61DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F88C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350911AbiDSLMD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        id S241502AbiDSLNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 07:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231945AbiDSLL7 (ORCPT
+        with ESMTP id S230010AbiDSLNQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:11:59 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FBC2B1AF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:09:16 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id m15-20020a7bca4f000000b0038fdc1394b1so1316196wml.2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:09:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=k9SQS6DEx7PcK3aZSt7NFnPshwNlUhuY2vj8QCcgdU8=;
-        b=f8jTBzdCgR6gZoEBSlPxq90yrNFz+cJET9rvKb4SBbgJ3hbal36VvgdomSIglGgnO2
-         3m52LyW2/NdxIy6Gtfurhq600ou6nWq7Vo8VlhKKUxdcfpzNbNSLAAfHScLAiqIPJnli
-         D04SCxBNOYYZDuahNhtsJDUlWB5unMRdTrn/kJnFc31Ui5htITjZeD61zi+pb1l97IW/
-         9L2Qo1bthVeE7l1MPTQDaeETEDSUvtMflBQ2dm1j4rDzIRWNfzKlW/Uw0sUAHMuob9pS
-         l8EMODJrZvsH0VNyDN0nBwcr4Kae1lvAroCpPCxGh5764YFDnTKwa7A2Abu/qUz8uQLW
-         /tNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=k9SQS6DEx7PcK3aZSt7NFnPshwNlUhuY2vj8QCcgdU8=;
-        b=EHDMi3YBnYudwcVLurLoTjlfMYyXlS20TNWTKGNpVvnGgX6MKDy8+lFj+gMoHKzYMg
-         LojihT+qeC8uvp+juQ6CeJyldyeXpCxE6FaX8E0U6T4MOPVHXSrci59+XoOWZ1ohOk5n
-         /hcDu7JzqqymTALEVCmRHY9LaZNyAiLijVRTo7txvKgPqBywhAaFqNTU4TnR62a6ym7A
-         K2SP7EjJbZeSUXl5GYtYsuxde9k9wYSNtNz2xpN0TEYmndPp0djU6QT8RHMU3ch/iRkk
-         RqTqUjUlkYYXR0QygRAs0BNeqWjmnP7lNkgOdNpthROz5de6xf2utVdU1K+w+vdu5G+N
-         hBuQ==
-X-Gm-Message-State: AOAM531uTo5mtkCha/uyPuOBcwVI8rktJGZ49G7/EQz+PKaR3z007dJq
-        oOrd/PUkfnCXtpNE2JJyf9zMNQ==
-X-Google-Smtp-Source: ABdhPJyom0pejQx9+muBJ4LXKjDgivoBsIZxgzm1mENjReqSKOE98rUgPTpWVyVn3NH52/xaRjs95g==
-X-Received: by 2002:a05:600c:4f87:b0:392:9236:3c73 with SMTP id n7-20020a05600c4f8700b0039292363c73mr11110988wmq.158.1650366554533;
-        Tue, 19 Apr 2022 04:09:14 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id 7-20020a05600c024700b0038ec0c4a2e7sm18549936wmj.11.2022.04.19.04.09.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 04:09:14 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 13:09:11 +0200
-From:   LABBE Corentin <clabbe@baylibre.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 24/33] dt-bindings: crypto: convert rockchip-crypto to
- YAML
-Message-ID: <Yl6YV9nLVI4qYsPP@Red>
-References: <20220413190713.1427956-1-clabbe@baylibre.com>
- <20220413190713.1427956-25-clabbe@baylibre.com>
- <44efe8b6-1712-5b87-f030-2f1328533ee8@linaro.org>
+        Tue, 19 Apr 2022 07:13:16 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4C713FA5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:10:34 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 435A42223A;
+        Tue, 19 Apr 2022 13:10:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1650366632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cfPpEjaOUS/pYpwo8vqM6KxbOl5fAswZopmIejMpqYs=;
+        b=a/lFR+XiRuP4D0KZT0I2wV3hArcQFZqoZCAtmrboMp3RAw4thlnSZT8iQ0a19N3v9CyF0E
+        16OhbLs4QxnAi5jiBnAfzxRuANxRs2j6NGTN8P+Sy55OkwK/vc3FbY6pAzRUKHzeZ0x49y
+        QVhfhsDkw4azrXYgL3xoY0I8SAbiUB8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <44efe8b6-1712-5b87-f030-2f1328533ee8@linaro.org>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 19 Apr 2022 13:10:32 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com
+Subject: Re: [PATCH v3 4/9] mtd: spi-nor: core: Introduce method for RDID op
+In-Reply-To: <20220411091033.98754-5-tudor.ambarus@microchip.com>
+References: <20220411091033.98754-1-tudor.ambarus@microchip.com>
+ <20220411091033.98754-5-tudor.ambarus@microchip.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <1812e033c1fd0c779b34166ebe796d32@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, Apr 13, 2022 at 09:31:13PM +0200, Krzysztof Kozlowski a écrit :
-> On 13/04/2022 21:07, Corentin Labbe wrote:
-> > Convert rockchip-crypto to YAML.
+Am 2022-04-11 11:10, schrieb Tudor Ambarus:
+> RDID is used in the core to auto detect the flash, but also by some
+> manufacturer drivers that contain flashes that support Octal DTR mode,
+> so that they can read the flash ID after the switch to Octal DTR was 
+> made
+> to test if the switch was successful. Introduce a core method for RDID 
+> op
+> to avoid code duplication.
 > 
-> Thank you for your patch. There is something to discuss/improve.
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> ---
+> v3: s/reg_proto/proto
 > 
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - rockchip,rk3288-crypto
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 4
-> > +
-> > +  clock-names:
-> > +    maxItems: 4
+>  drivers/mtd/spi-nor/core.c | 50 ++++++++++++++++++++++++++------------
+>  drivers/mtd/spi-nor/core.h |  9 +++++++
+>  2 files changed, 44 insertions(+), 15 deletions(-)
 > 
-> This is not needed and dt_bindings_check should complain.
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index b55d922d46dd..6165dc7bfd17 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -369,6 +369,37 @@ int spi_nor_write_disable(struct spi_nor *nor)
+>  	return ret;
+>  }
 > 
-> > +    items:
-> > +      const: aclk
-> > +      const: hclk
-> > +      const: sclk
-> > +      const: apb_pclk
-> > +
-> > +  resets:
-> > +    maxItems: 1
-> > +
-> > +  reset-names:
-> > +    maxItems: 1
-> 
-> The same.
-> 
+> +/**
+> + * spi_nor_read_id() - Read the JEDEC ID.
+> + * @nor:	pointer to 'struct spi_nor'.
+> + * @naddr:	number of address bytes to send. Can be zero if the 
+> operation
+> + *		does not need to send an address.
+> + * @ndummy:	number of dummy bytes to send after an opcode or address. 
+> Can
+> + *		be zero if the operation does not require dummy bytes.
+> + * @id:		pointer to a DMA-able buffer where the value of the JEDEC ID
+> + *		will be written.
+> + * @proto:	the SPI protocol for register operation.
+> + *
+> + * Return: 0 on success, -errno otherwise.
+> + */
+> +int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+> +		    enum spi_nor_protocol proto)
 
-I forgot to test the intermediate patch...
-Before I send a new version, does the final document is okay ?
+I'm unsure on the last parameter, no other call have it.
+The usual pattern is
+
+old_proto = nor->reg_proto;
+spi_nor_read_id();
+nor->reg_proto = old_proto;
+
+But I don't care too much.
+
+Reviewed-by: Michael Walle <michael@walle.cc>
+
+> +{
+> +	int ret;
+> +
+> +	if (nor->spimem) {
+> +		struct spi_mem_op op =
+> +			SPI_NOR_READID_OP(naddr, ndummy, id, SPI_NOR_MAX_ID_LEN);
+> +
+> +		spi_nor_spimem_setup_op(nor, &op, proto);
+> +		ret = spi_mem_exec_op(nor->spimem, &op);
+> +	} else {
+> +		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
+> +						    SPI_NOR_MAX_ID_LEN);
+> +	}
+> +	return ret;
+> +}
+> +
+>  /**
+>   * spi_nor_read_sr() - Read the Status Register.
+>   * @nor:	pointer to 'struct spi_nor'.
+> @@ -1649,24 +1680,13 @@ static const struct flash_info
+> *spi_nor_match_id(struct spi_nor *nor,
+>  	return NULL;
+>  }
+> 
+> -static const struct flash_info *spi_nor_read_id(struct spi_nor *nor)
+> +static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+>  {
+>  	const struct flash_info *info;
+>  	u8 *id = nor->bouncebuf;
+>  	int ret;
+> 
+> -	if (nor->spimem) {
+> -		struct spi_mem_op op =
+> -			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 1),
+> -				   SPI_MEM_OP_NO_ADDR,
+> -				   SPI_MEM_OP_NO_DUMMY,
+> -				   SPI_MEM_OP_DATA_IN(SPI_NOR_MAX_ID_LEN, id, 1));
+> -
+> -		ret = spi_mem_exec_op(nor->spimem, &op);
+> -	} else {
+> -		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
+> -						    SPI_NOR_MAX_ID_LEN);
+> -	}
+> +	ret = spi_nor_read_id(nor, 0, 0, id, nor->reg_proto);
+>  	if (ret) {
+>  		dev_dbg(nor->dev, "error %d reading JEDEC ID\n", ret);
+>  		return ERR_PTR(ret);
+> @@ -2903,7 +2923,7 @@ static const struct flash_info
+> *spi_nor_get_flash_info(struct spi_nor *nor,
+>  	}
+>  	/* Try to auto-detect if chip name wasn't specified or not found */
+>  	if (!info)
+> -		return spi_nor_read_id(nor);
+> +		return spi_nor_detect(nor);
+> 
+>  	/*
+>  	 * If caller has specified name of flash model that can normally be
+> @@ -2912,7 +2932,7 @@ static const struct flash_info
+> *spi_nor_get_flash_info(struct spi_nor *nor,
+>  	if (name && info->id_len) {
+>  		const struct flash_info *jinfo;
+> 
+> -		jinfo = spi_nor_read_id(nor);
+> +		jinfo = spi_nor_detect(nor);
+>  		if (IS_ERR(jinfo)) {
+>  			return jinfo;
+>  		} else if (jinfo != info) {
+> diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+> index b7fd760e3b47..f952061d5c24 100644
+> --- a/drivers/mtd/spi-nor/core.h
+> +++ b/drivers/mtd/spi-nor/core.h
+> @@ -11,6 +11,13 @@
+> 
+>  #define SPI_NOR_MAX_ID_LEN	6
+> 
+> +/* Standard SPI NOR flash operations. */
+> +#define SPI_NOR_READID_OP(naddr, ndummy, buf, len)			\
+> +	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDID, 0),			\
+> +		   SPI_MEM_OP_ADDR(naddr, 0, 0),			\
+> +		   SPI_MEM_OP_DUMMY(ndummy, 0),				\
+> +		   SPI_MEM_OP_DATA_IN(len, buf, 0))
+> +
+>  enum spi_nor_option_flags {
+>  	SNOR_F_HAS_SR_TB	= BIT(0),
+>  	SNOR_F_NO_OP_CHIP_ERASE	= BIT(1),
+> @@ -534,6 +541,8 @@ void spi_nor_unlock_and_unprep(struct spi_nor 
+> *nor);
+>  int spi_nor_sr1_bit6_quad_enable(struct spi_nor *nor);
+>  int spi_nor_sr2_bit1_quad_enable(struct spi_nor *nor);
+>  int spi_nor_sr2_bit7_quad_enable(struct spi_nor *nor);
+> +int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+> +		    enum spi_nor_protocol reg_proto);
+>  int spi_nor_read_sr(struct spi_nor *nor, u8 *sr);
+>  int spi_nor_sr_ready(struct spi_nor *nor);
+>  int spi_nor_read_cr(struct spi_nor *nor, u8 *cr);
+
+-- 
+-michael
