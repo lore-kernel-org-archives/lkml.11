@@ -2,72 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 567B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D49AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351883AbiDSLtH (ORCPT
+        id S1351857AbiDSLtQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        Tue, 19 Apr 2022 07:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351821AbiDSLsp (ORCPT
+        with ESMTP id S1351842AbiDSLtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:48:45 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752292A25B;
-        Tue, 19 Apr 2022 04:46:03 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KjMRx5SMtz1J9j7;
-        Tue, 19 Apr 2022 19:45:17 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Apr
- 2022 19:46:00 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
-        <yuehaibing@huawei.com>
-Subject: [PATCH bpf-next] samples/bpf: reduce the sampling interval in xdp1_user
-Date:   Tue, 19 Apr 2022 19:47:46 +0800
-Message-ID: <20220419114746.291613-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Apr 2022 07:49:11 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FC52AE2E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:46:29 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id bj24so12351385oib.11
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:46:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zr+VGX0mhBp9NZinaclK39Iaheyjh+GcxufQM98q2T4=;
+        b=TaPVENVs6UeX/0wd28BijzB9+2vH3hkykLfAx6Z+TianLJL/RErxbAX9zvCD+siM/Z
+         uLqmKaIs6I21/BZuoX5aH54xHpMduMGKHjQmyllRJaUuuBA2culEnlxqKuir7uxiFapV
+         3KrFAo/2ggciJwo9Etg/qeEu5hsSc4fTqlm8c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zr+VGX0mhBp9NZinaclK39Iaheyjh+GcxufQM98q2T4=;
+        b=U3Wpxd9CpUGKzZy9qWyos3h5yMgwVjEh7C5DWM3fIH1AXGkwrZahWlrEGm0tStdMoL
+         gnuNTK4hCjAmvsnJ4RAT/nCW3x1u5yDcL1Hyf6V9W4/z2ZrEjhzRT6hbc9+DWkm8MtdF
+         fvK/fICM2Jme8e9CjYugxt0tvBXQWtOCa6oW68UTZCLX/OAvustUUZXuv6C2mxf8V9t5
+         Rq2SA7k/EsSg0FQqgL+I52kaG4QusUTbrhoVFJ8BYX5Dv/4JrVHfAFnnovm3B/Z9ZKUg
+         Ixy8x7SLIVsyjAkubijYFcUa1aD7ghc8Qkm0ioYyDXBYeTFOoVJrcaAPKxrJD8nHRVks
+         PnIQ==
+X-Gm-Message-State: AOAM533drcuHUiw6VYvmKchcKQPxNdY+LtWlBloHo1d9nuFkn+8LEwLS
+        zz7IFYGFLi4WWW6oyn7aEgpZlWCRl/Nq3Q==
+X-Google-Smtp-Source: ABdhPJzYa/FMt4AwzPZvvGyCipFylBW05AyjcbZFE23Ot17k4K9hz6yCnN4iiS0BGFxKE4W/QdR6EA==
+X-Received: by 2002:a05:6808:1d7:b0:322:5866:9ee3 with SMTP id x23-20020a05680801d700b0032258669ee3mr6682848oic.171.1650368788691;
+        Tue, 19 Apr 2022 04:46:28 -0700 (PDT)
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com. [209.85.161.48])
+        by smtp.gmail.com with ESMTPSA id x2-20020a4a2a42000000b0033a3c4392c3sm2277798oox.26.2022.04.19.04.46.26
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 04:46:27 -0700 (PDT)
+Received: by mail-oo1-f48.google.com with SMTP id 65-20020a4a1a44000000b00333316787bbso2642786oof.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:46:26 -0700 (PDT)
+X-Received: by 2002:a4a:8081:0:b0:33a:52ed:3b3b with SMTP id
+ z1-20020a4a8081000000b0033a52ed3b3bmr1777631oof.26.1650368786395; Tue, 19 Apr
+ 2022 04:46:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+References: <20220418090652.3156-1-Ping-lei.Lin@mediatek.com>
+In-Reply-To: <20220418090652.3156-1-Ping-lei.Lin@mediatek.com>
+From:   Ricardo Ribalda <ribalda@chromium.org>
+Date:   Tue, 19 Apr 2022 13:46:15 +0200
+X-Gmail-Original-Message-ID: <CANiDSCvLb785H7qyAzSfTSBRpO2eM-oJFF5SgVHXdL1O-GusLA@mail.gmail.com>
+Message-ID: <CANiDSCvLb785H7qyAzSfTSBRpO2eM-oJFF5SgVHXdL1O-GusLA@mail.gmail.com>
+Subject: Re: [PATCH v3] media: usb: uvc: Add UVC_GUID_FORMAT_H265
+To:     James_Lin <Ping-lei.Lin@mediatek.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, sherlock.chang@mediatek.com,
+        lecopzer.chen@mediatek.com, max.yan@mediatek.com,
+        tm.wu@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If interval is 2, and sum - prev[key] = 1, the result = 0. This will
-mislead the tester that the port has no traffic right now. So reduce the
-sampling interval to 1.
+Hi James
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- samples/bpf/xdp1_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for your patch
 
-diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-index 631f0cabe139..bacebb4b602f 100644
---- a/samples/bpf/xdp1_user.c
-+++ b/samples/bpf/xdp1_user.c
-@@ -161,7 +161,7 @@ int main(int argc, char **argv)
- 	}
- 	prog_id = info.id;
- 
--	poll_stats(map_fd, 2);
-+	poll_stats(map_fd, 1);
- 
- 	return 0;
- }
+On Mon, 18 Apr 2022 at 11:07, James_Lin <Ping-lei.Lin@mediatek.com> wrote:
+>
+> This patch aims to add UVC_GUID_FORMAT_H265
+> High Efficiency Video Coding (HEVC), also known as H.265 and MPEG-H Part 2.
+> They describe the same video encoding method.
+> So for handling their behavior is the same.
+> However, when external camera device describes this encoding method,
+> some use hevc, some use h265.
+> There is no uniform specification to describe this encoding method.
+> So if an external camera device use h265 to describe this encoding method,
+> driver will not recognize it.
+> Therefore, this patch is to enable driver to read HEVC/H265
+> and convert it to V4L2_PIX_FMT_HEVC.
+>
+> Signed-off-by: James_Lin <Ping-lei.Lin@mediatek.com>
+
+Reviewed-by: Ricardo Ribalda <ribalda@chromium.org>
+
+> ---
+>  drivers/media/usb/uvc/uvc_driver.c | 5 +++++
+>  drivers/media/usb/uvc/uvcvideo.h   | 3 +++
+>  2 files changed, 8 insertions(+)
+>
+> diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+> index dda0f0aa78b8..e437e9f95890 100644
+> --- a/drivers/media/usb/uvc/uvc_driver.c
+> +++ b/drivers/media/usb/uvc/uvc_driver.c
+> @@ -154,6 +154,11 @@ static struct uvc_format_desc uvc_fmts[] = {
+>                 .guid           = UVC_GUID_FORMAT_H264,
+>                 .fcc            = V4L2_PIX_FMT_H264,
+>         },
+
+Maybe I would add a comment here saying that some cameras represent
+hevc as h265.
+
+> +       {
+> +               .name           = "H.265",
+> +               .guid           = UVC_GUID_FORMAT_H265,
+> +               .fcc            = V4L2_PIX_FMT_HEVC,
+> +       },
+>         {
+>                 .name           = "Greyscale 8 L/R (Y8I)",
+>                 .guid           = UVC_GUID_FORMAT_Y8I,
+> diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+> index 143230b3275b..41f4d8c33f2a 100644
+> --- a/drivers/media/usb/uvc/uvcvideo.h
+> +++ b/drivers/media/usb/uvc/uvcvideo.h
+> @@ -139,6 +139,9 @@
+>  #define UVC_GUID_FORMAT_H264 \
+>         { 'H',  '2',  '6',  '4', 0x00, 0x00, 0x10, 0x00, \
+>          0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+> +#define UVC_GUID_FORMAT_H265 \
+> +       { 'H',  '2',  '6',  '5', 0x00, 0x00, 0x10, 0x00, \
+> +        0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+>  #define UVC_GUID_FORMAT_Y8I \
+>         { 'Y',  '8',  'I',  ' ', 0x00, 0x00, 0x10, 0x00, \
+>          0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+> --
+> 2.18.0
+>
+
+
 -- 
-2.17.1
-
+Ricardo Ribalda
