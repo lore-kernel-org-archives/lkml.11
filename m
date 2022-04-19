@@ -2,140 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD58C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B61ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349999AbiDSPC5 (ORCPT
+        id S1350218AbiDSPFA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
+        Tue, 19 Apr 2022 11:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353571AbiDSPCo (ORCPT
+        with ESMTP id S1347789AbiDSPE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:02:44 -0400
-Received: from out28-49.mail.aliyun.com (out28-49.mail.aliyun.com [115.124.28.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591F9193E0;
-        Tue, 19 Apr 2022 08:00:00 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.0822624|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_alarm|0.0337172-0.000537099-0.965746;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=michael@allwinnertech.com;NM=1;PH=DS;RN=19;RT=19;SR=0;TI=SMTPD_---.NTqoddF_1650380382;
-Received: from 192.168.10.102(mailfrom:michael@allwinnertech.com fp:SMTPD_---.NTqoddF_1650380382)
-          by smtp.aliyun-inc.com(11.95.168.178);
-          Tue, 19 Apr 2022 22:59:55 +0800
-Message-ID: <5cfbdc20-fafa-18b5-71ef-0ce8b91566a7@allwinnertech.com>
-Date:   Tue, 19 Apr 2022 22:59:48 +0800
+        Tue, 19 Apr 2022 11:04:57 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9399B2D1DB;
+        Tue, 19 Apr 2022 08:02:13 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id CF4D7240012;
+        Tue, 19 Apr 2022 15:02:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650380530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GsDF21Scwpzk12ag+GO/8lcdNxhDhaAggJYyHxq2BDk=;
+        b=gKhcg6VhM7omoOFct2rFBg35LWARoAzxbEfp5VezTqIKwH69hQPhqjnfXMIKwFLcP2wxGs
+        XG3HTl8ibshJEny/FEYMVglygvSnDOSyam9n5HSPH9oU875QUZvmTuGFPCtSrNrniTezCj
+        Ety2BHZhaOT+jX0kSfyJavQ34UXRQlYjH7aaStaWbbzS3SnXkaveh+shKiVuSmwatAkNL1
+        ceDJFSuH7sLCEW2+iBuykcrqyf9mjpp8jUHEKcQX5KHc+uNmj+nleg0bcxa81kI/76GEuK
+        aSq+B/Qm9l8RwlbjMV/jMOFiL9iY5yysb4YkHMksQ4KgZ35tiF/PQ8zgu6tEAw==
+Date:   Tue, 19 Apr 2022 17:00:44 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 03/12] dt-bindings: net: pcs: add bindings for
+ Renesas RZ/N1 MII converter
+Message-ID: <20220419170044.450050ca@fixe.home>
+In-Reply-To: <Yl68k22fUw7uBgV9@robh.at.kernel.org>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        <20220414122250.158113-4-clement.leger@bootlin.com>
+        <Yl68k22fUw7uBgV9@robh.at.kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] mmc: block: enable cache-flushing when mmc cache is on
-Content-Language: en-GB
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     axboe@kernel.dk, adrian.hunter@intel.com, avri.altman@wdc.com,
-        kch@nvidia.com, beanhuo@micron.com, swboyd@chromium.org,
-        digetx@gmail.com, bigeasy@linutronix.de, CLoehle@hyperstone.com,
-        cjb@laptop.org, arnd@arndb.de, andreiw@motorola.com,
-        tgih.jun@samsung.com, jh80.chung@samsung.com,
-        linus.walleij@linaro.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        allwinner-opensource-support@allwinnertech.com
-References: <20220331073223.106415-1-michael@allwinnertech.com>
- <CAPDyKFq4yowT_t_y_fg9vqgyr=qVykWeOux8H6CGZDyn0M5JhQ@mail.gmail.com>
-From:   Michael Wu <michael@allwinnertech.com>
-In-Reply-To: <CAPDyKFq4yowT_t_y_fg9vqgyr=qVykWeOux8H6CGZDyn0M5JhQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/04/2022 19:52, Ulf Hansson wrote:
-> On Thu, 31 Mar 2022 at 09:32, Michael Wu <michael@allwinnertech.com> wrote:
->>
->> The mmc core enables cache by default. But it only enables
->> cache-flushing when host supports cmd23 and eMMC supports
->> reliable-write.
->> For hosts which do not support cmd23 or eMMCs which do not support
->> reliable-write, the cache can not be flushed by `sync` command.
->> This may leads to cache data lost.
->> This patch enables cache-flushing as long as cache is enabled,
->> no matter host supports cmd23 and/or eMMC supports reliable write
->> or not.
->> For SD cards, backwards compatibility is guaranteed. Newer components
->> like SD5.0 which have cache are also supported in advance, which means
->> this patch will also be applicable if SD5.0 cache is added to the mmc
->> core in the future.
-> 
-> SD 5.0 cache support was added in the commit 130206a615a9 below. No
-> need to resend, I will take care of updating the commit message.
-> >>
->> Fixes: f4c5522b0a88 ("mmc: Reliable write support.")
->> Fixes: 881d1c25f765 ("mmc: core: Add cache control for eMMC4.5 device")
->> Fixes: 130206a615a9 ("mmc: core: Add support for cache ctrl for SD cards")
->> Fixes: d0c97cfb81eb ("mmc: core: Use CMD23 for multiblock transfers when we can.")
->> Fixes: e9d5c746246c ("mmc/block: switch to using blk_queue_write_cache()")
-> 
-> I will have a look at the above to see what makes sense to add - and
-> then I will add a stable tag too.
-> 
-Dear Ulf,
-Thank you for your effort. I saw this patch which was taken care by you 
-on the mainline [commit 08ebf903af57], and also the commits in 
-stable-queque by Greg-KH. I guess this means this patch is accepted/closed.
-I'm so happy and want to say thank you for all the help. Next time I'm 
-sure I'll do it better :)
+Le Tue, 19 Apr 2022 08:43:47 -0500,
+Rob Herring <robh@kernel.org> a =C3=A9crit :
 
--- 
-Best Regards,
-Michael Wu
+> > +  clocks:
+> > +    items:
+> > +      - description: MII reference clock
+> > +      - description: RGMII reference clock
+> > +      - description: RMII reference clock
+> > +      - description: AHB clock used for the MII converter register int=
+erface
+> > +
+> > +  renesas,miic-cfg-mode:
+> > +    description: MII mux configuration mode. This value should use one=
+ of the
+> > +                 value defined in dt-bindings/net/pcs-rzn1-miic.h. =20
+>=20
+> Describe possible values here as constraints. At present, I don't see=20
+> the point of this property if there is only 1 possible value and it is=20
+> required.
 
->>
->> Reviewed-by: Avri Altman <Avri.Altman@wdc.com>
->> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
->>
->> Signed-off-by: Michael Wu <michael@allwinnertech.com>
-> 
-> Thanks, applied for fixes!
-> 
-> Kind regards
-> Uffe
-> 
-> 
->> ---
->>   drivers/mmc/core/block.c | 12 +++++++++---
->>   1 file changed, 9 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
->> index 4e67c1403cc9..ec76ed82abb9 100644
->> --- a/drivers/mmc/core/block.c
->> +++ b/drivers/mmc/core/block.c
->> @@ -2350,6 +2350,8 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
->>          struct mmc_blk_data *md;
->>          int devidx, ret;
->>          char cap_str[10];
->> +       bool cache_enabled = false;
->> +       bool fua_enabled = false;
->>
->>          devidx = ida_simple_get(&mmc_blk_ida, 0, max_devices, GFP_KERNEL);
->>          if (devidx < 0) {
->> @@ -2429,13 +2431,17 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
->>                          md->flags |= MMC_BLK_CMD23;
->>          }
->>
->> -       if (mmc_card_mmc(card) &&
->> -           md->flags & MMC_BLK_CMD23 &&
->> +       if (md->flags & MMC_BLK_CMD23 &&
->>              ((card->ext_csd.rel_param & EXT_CSD_WR_REL_PARAM_EN) ||
->>               card->ext_csd.rel_sectors)) {
->>                  md->flags |= MMC_BLK_REL_WR;
->> -               blk_queue_write_cache(md->queue.queue, true, true);
->> +               fua_enabled = true;
->> +               cache_enabled = true;
->>          }
->> +       if (mmc_cache_enabled(card->host))
->> +               cache_enabled  = true;
->> +
->> +       blk_queue_write_cache(md->queue.queue, cache_enabled, fua_enabled);
->>
->>          string_get_size((u64)size, 512, STRING_UNITS_2,
->>                          cap_str, sizeof(cap_str));
->> --
->> 2.29.0
->>
+The ethernet subsystem contains a number of internal muxes that allows
+to configure ethernet routing. This configuration option allows to set
+the register that configure these muxes.
+
+After talking with Andrew, I considered moving to something like this:
+
+eth-miic@44030000 {
+  compatible =3D "renesas,rzn1-miic";
+
+  mii_conv1: mii-conv-1 {
+    renesas,miic-input =3D <MIIC_GMAC1_PORT>;
+    port =3D <1>;
+  };
+  mii_conv2: mii-conv-2 {
+    renesas,miic-input =3D <MIIC_SWITCHD_PORT>;
+    port =3D <2>;
+  };
+   ...
+};
+
+Which would allow embedding the configuration inside the port
+sub-nodes. Moreover, it allows a better validation of the values using
+the schema validation directly since only a limited number of values
+are allowed for each port.
+
+>=20
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > + =20
+> > +patternProperties:
+> > +  "^mii-conv@[0-4]$":
+> > +    type: object =20
+>=20
+>        additionalProperties: false
+>=20
+> > +    description: MII converter port
+> > +
+> > +    properties:
+> > +      reg:
+> > +        maxItems: 1 =20
+>=20
+> Why do you need sub-nodes? They don't have any properties. A simple mask=
+=20
+> property could tell you which ports are present/active/enabled if that's=
+=20
+> what you are tracking. Or the SoC specific compatibles you need to add=20
+> can imply the ports if they are SoC specific.
+
+The MACs are using phandles to these sub-nodes to query a specific MII
+converter port PCS:
+
+switch@44050000 {
+    compatible =3D "renesas,rzn1-a5psw";
+
+    ports {
+        port@0 {
+            reg =3D <0>;
+            label =3D "lan0";
+            phy-handle =3D <&switch0phy3>;
+            pcs-handle =3D <&mii_conv4>;
+        };
+    };
+};
+
+According to Andrew, this is not a good idea to represent the PCS as a
+bus since it is indeed not a bus. I could also switch to something like
+pcs-handle =3D <&eth_mii 4> but i'm not sure what you'd prefer. We could
+also remove this from the device-tree and consider each driver to
+request the MII ouput to be configured using something like this for
+instance:
+
+ miic_request_pcs(pcs_np, miic_port_nr, MIIC_SWITCHD_PORT);
+
+But I'm not really fan of this because it requires the drivers to
+assume some specificities of the MII converter (port number are not in
+the same order of the switch for instance) and thus I would prefer this
+to be in the device-tree.
+
+Let me know if you can think of something that would suit you
+better but  keep in mind that I need to correctly match a switch/MAC
+port with a PCS port and that I also need to configure MII internal
+muxes.=20
+
+For more information, you can look at section 8 of the manual at [1].
+
+Thanks,
+
+[1]
+https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-gr=
+oup-users-manual-system-introduction-multiplexing-electrical-and
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
