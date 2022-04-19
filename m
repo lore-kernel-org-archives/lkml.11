@@ -2,85 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A238BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350025AbiDSIfN (ORCPT
+        id S1350036AbiDSIf0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
+        Tue, 19 Apr 2022 04:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350027AbiDSIfJ (ORCPT
+        with ESMTP id S1350031AbiDSIfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:35:09 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113CE19282
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:32:28 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id k23so31353984ejd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:32:27 -0700 (PDT)
+        Tue, 19 Apr 2022 04:35:23 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658FD20F60
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:32:40 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id o20-20020a05600c511400b0038ebbbb2ad8so995937wms.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Uv3d/o/806ehQWARNzXCTE9V0xEyE2ujT7hzeCnXZOM=;
-        b=TfpRTEcQBJjGwylM5lPmbE9Sokay7j8KnqwaUaos+LKYQ1woooRQ19BQpVz8kPar32
-         esfUVPrC63VXdBdWvbb4P1M2+SxHc13af1Evi0/lzJosRqCH0xOdMTQns/hgnNpmJURt
-         RCV/ABAtI4iWA8pdTRSvpYlpi9kWTA9hxBJOjvdjUpIFoWIKe+PqksjlL9FyFpT0HW7Y
-         gcWm9ZwlYbMtSQpvDA1yL6bC6yIIna8FVd/hSn1LcTRasuCyWC4JROgamsg6jueb83t6
-         IvVYxhDVANdxBjB79/XM1/HwihVEus25U+kEMClHem3LnwMvyMYaH6iAjRK8IX1gxjmw
-         McKA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MHvs75OIdBcW18yBO72Em+wYmTcQRlmIYGoMfGShO9k=;
+        b=e8aQaurBWDlSp7s0M5kfav7M7rW8d1x5lxD7JtvOOy55WVtz56crt8Oudr7I+Zp/AM
+         X7WvU2brUonFdV3xHXtlSE6Twe9EnbX2q/p1YPArL+VDrTs+0/sJPYAuJRZug07jBU5U
+         dRGnIu6Xrq7v7J1O/Rku506iKJbcXD07p1k25KF9hItPzS9AGk+HDhLB3ELsOjflHnyJ
+         uDLpD3Lp5FyTGXpPUPjTTbG5rl+hEwxQTV4kTOoLsuRfln8VMAlNjoIVwar4zyViPhH3
+         XCOQRl7IM2CEl8iTmKUl0+BkH49WkYZ60gYLXQImQ1jcWz+j7yTmQbO63d9mJCGpN9k7
+         1OMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Uv3d/o/806ehQWARNzXCTE9V0xEyE2ujT7hzeCnXZOM=;
-        b=cG8FSbDq9rs8nw/R5AEm8buiuR4aMG1eu9pi1xffXNWaB1kRlIqon6CSpNYzbew3Um
-         NmKmgaBO1dcRykL8lPQkSdjQTNTXdK8dHqd0gOFas8+Zhffz92A68rzGQ4nszr5xdMKq
-         K+VbzTf7Bs1zKAzZrmaVI8GVzgJPApOI4lcIHXry3l62WwEwBXKCQhC9fFnDyGONXXum
-         g0iN0hcr30AxQsckNHAJmt3TiuZCBB6Qy2ZlXoVqNKc2O1b4ye/mxzrPbtZstyT0/M4F
-         6bufhOBGyvwD3moY5NcIg+9x2/3so6Y0HtXIAfQPprdnf/zG3VrYnRbSppjxrXRDQ35F
-         TRPg==
-X-Gm-Message-State: AOAM530xBeaSABMWBX12VXOLqdZAdnf/A/vPzkLG/qTS6K4Y31Yu9ava
-        zxRSvWEMrl13R9k9c6HFflsLOg==
-X-Google-Smtp-Source: ABdhPJw+5rmqS/LdAxogjfpIh94vjbsa9aPZC2x7C1G/78t6qXMTGqnXsWMrD/xAsUsv+fmyGW7hbQ==
-X-Received: by 2002:a17:907:1b1e:b0:6d7:31b0:e821 with SMTP id mp30-20020a1709071b1e00b006d731b0e821mr12523412ejc.334.1650357146335;
-        Tue, 19 Apr 2022 01:32:26 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ee17-20020a056402291100b0041fe1e4e342sm8051869edb.27.2022.04.19.01.32.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 01:32:25 -0700 (PDT)
-Message-ID: <bacca876-c023-3c3f-e27e-61ef957bbdd0@linaro.org>
-Date:   Tue, 19 Apr 2022 10:32:25 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MHvs75OIdBcW18yBO72Em+wYmTcQRlmIYGoMfGShO9k=;
+        b=fA3aECWGJD8oPykLDYBQaYkiYqiQRNcrezl9dkRmPgU39QGlDxSR6WpcOq2pKJXaos
+         r9Kv/eQztJBsDvJlbd74e6SHc79XWSHv3tq+beCrBHchMe0pxDhao9dHK/4eNgfQuWNg
+         h/vhRL2z7n0SaEgm7AWiHW/v1Md+6UBsNnEeu7qOoPoG5rJvW2+yD4ZcuGRgsCmFqt95
+         0NyjNptlNYiTfJ9j4HQ4m0XjoMEiIeJdDEwgjSW3ipAJ6wyb7CpDsP0bF/a/caARHemJ
+         Iz44Y+5mC/wXh1npRoLBFz21CeeyGd2X2yR9C6BF7w9lRbndtnjVBz9Ia+6+Dm5V5cUR
+         an2g==
+X-Gm-Message-State: AOAM530UjbIJ6iRD5ASS4v9fM5WiXjAWzD2qOstIHlSScEqrDCB5mxhn
+        gKb5XAP/lS5lN9JmQCZXHeH/l05U6qQIPzF9ZkBSmg==
+X-Google-Smtp-Source: ABdhPJzQhWxnwUMFOcpQPCWc/3KSDPEv7os9QOAeC3syMn4xsJmdbG24HL6lPci1vlSXnS5HChzrZVbdum1QfhR1nXU=
+X-Received: by 2002:a7b:cc13:0:b0:38e:67e3:db47 with SMTP id
+ f19-20020a7bcc13000000b0038e67e3db47mr19059920wmh.133.1650357158957; Tue, 19
+ Apr 2022 01:32:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] extcon: ptn5150: add queue work sync before driver
- release
-Content-Language: en-US
-To:     Li Jun <jun.li@nxp.com>, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com
-Cc:     linux-kernel@vger.kernel.org, frank.li@nxp.com, xu.yang_2@nxp.com
-References: <1650354202-10445-1-git-send-email-jun.li@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1650354202-10445-1-git-send-email-jun.li@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220412125035.40312-1-quic_jinlmao@quicinc.com> <20220412125035.40312-9-quic_jinlmao@quicinc.com>
+In-Reply-To: <20220412125035.40312-9-quic_jinlmao@quicinc.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Tue, 19 Apr 2022 09:32:37 +0100
+Message-ID: <CAJ9a7VjgHwPcLFZdApPcLdsOZ_s=nkRXar5hqrFtDscrc0CqBw@mail.gmail.com>
+Subject: Re: [PATCH v5 08/10] dt-bindings: arm: Adds CoreSight TPDA hardware definitions
+To:     Mao Jinlong <quic_jinlmao@quicinc.com>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/04/2022 09:43, Li Jun wrote:
-> Add device managed action to sync pending queue work, otherwise
-> the queued work may run after the work is destroyed.
-> 
-> Signed-off-by: Li Jun <jun.li@nxp.com>
+Hi
 
-Fixes: 4ed754de2d66 ("extcon: Add support for ptn5150 extcon driver")
+On Tue, 12 Apr 2022 at 13:51, Mao Jinlong <quic_jinlmao@quicinc.com> wrote:
+>
+> Adds new coresight-tpda.yaml file describing the bindings required
+> to define tpda in the device trees.
+>
+> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
+> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+> ---
+>  .../bindings/arm/coresight-tpda.yaml          | 119 ++++++++++++++++++
+>  1 file changed, 119 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/arm/coresight-tpda.yaml b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+> new file mode 100644
+> index 000000000000..2c79de0a7928
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+> @@ -0,0 +1,119 @@
+> +# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
+> +# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/coresight-tpda.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Trace, Profiling and Diagnostics Aggregator - TPDA
+> +
+> +description: |
+> +  TPDAs are responsible for packetization and timestamping of data sets
+> +  utilizing the MIPI STPv2 packet protocol. Pulling data sets from one or
+> +  more attached TPDM and pushing the resultant (packetized) data out a
+> +  master ATB interface. Performing an arbitrated ATB interleaving (funneling)
+> +  task for free-flowing data from TPDM (i.e. CMB and DSB data set flows).
+> +
+> +maintainers:
+> +  - Suzuki K Poulose <suzuki.poulose@arm.com>
+> +  - Mathieu Poirier <mathieu.poirier@linaro.org>
+> +
+
+as mentioned in patch 03 - these should be bindings maintainers.
+
+with the above change
+
+Reviewed by: Mike Leach <mike.leach@linaro.org>
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
-Best regards,
-Krzysztof
+> +properties:
+> +  $nodename:
+> +    pattern: "^tpda(@[0-9a-f]+)$"
+> +  compatible:
+> +    items:
+> +      - const: qcom,coresight-tpda
+> +      - const: arm,primecell
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    items:
+> +      - const: apb_pclk
+> +
+> +  in-ports:
+> +    type: object
+> +    description: |
+> +      Input connections from TPDM to TPDA
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^port@[0-9a-f]+$":
+> +        type: object
+> +        required:
+> +          - reg
+> +
+> +    required:
+> +      - '#size-cells'
+> +      - '#address-cells'
+> +
+> +  out-ports:
+> +    type: object
+> +    description: |
+> +      Output connections from the TPDA to legacy CoreSight trace bus.
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +
+> +    properties:
+> +     port:
+> +       description:
+> +         Output connection from the TPDA to legacy CoreSight Trace bus.
+> +       $ref: /schemas/graph.yaml#/properties/port
+> +
+> +required:
+> +    - compatible
+> +    - reg
+> +    - clocks
+> +    - clock-names
+> +    - in-ports
+> +    - out-ports
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  # minimum tpda definition.
+> +  - |
+> +    tpda@6004000 {
+> +       compatible = "qcom,coresight-tpda", "arm,primecell";
+> +       reg = <0x6004000 0x1000>;
+> +
+> +       qcom,tpda-atid = <65>;
+> +
+> +       clocks = <&aoss_qmp>;
+> +       clock-names = "apb_pclk";
+> +
+> +       in-ports {
+> +         #address-cells = <1>;
+> +         #size-cells = <0>;
+> +
+> +        port@0 {
+> +          reg = <0>;
+> +          tpda_qdss_0_in_tpdm_dcc: endpoint {
+> +            remote-endpoint =
+> +              <&tpdm_dcc_out_tpda_qdss_0>;
+> +            };
+> +        };
+> +      };
+> +
+> +       out-ports {
+> +         port {
+> +                 tpda_qdss_out_funnel_in0: endpoint {
+> +                    remote-endpoint =
+> +                    <&funnel_in0_in_tpda_qdss>;
+> +                  };
+> +          };
+> +       };
+> +    };
+> +
+> +...
+> --
+> 2.17.1
+>
+
+
+--
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
