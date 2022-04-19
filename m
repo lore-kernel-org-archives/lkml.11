@@ -2,258 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C25C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350244AbiDSJAx (ORCPT
+        id S1350247AbiDSJCt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 05:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
+        Tue, 19 Apr 2022 05:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350238AbiDSJAw (ORCPT
+        with ESMTP id S1350267AbiDSJCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 05:00:52 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7503526566
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:58:08 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id t67so29844070ybi.2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:58:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uWhCip3fDG+TKfDmUA9mehz6Jb3Xj61Z8RdZMlRGon0=;
-        b=iDcuFfwBYw9X3d9HgY5iw1gY5PHiqyUz9JBw2zZdRma71kKPpUZz0A073IqA3rHUBP
-         sA9f4K96C4YwGXHh2fQGQONjOCOSUqC4hjIre3CG4Nz9WJ9htyp2mj/U6duMMSG3RoXD
-         th6MCk+aAL7C4XFf1t1skOf53huJk7xCQNcG0/3v6N7WaSoiDJu/+DGJ3tM16GexES9n
-         iUak44zKRRamCHIBRWXm+JuLABWzmNV8yB16o/9XIQF9+7dd+rQ0a01+34chFeqtVofg
-         oCHZHTuupSBkjR/kox4y3wKR35gdbR1DA2chrSzAgSIWi0N4UVoDiL096hNcdtKukEyI
-         wrKg==
+        Tue, 19 Apr 2022 05:02:34 -0400
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10416B876;
+        Tue, 19 Apr 2022 01:59:51 -0700 (PDT)
+Received: by mail-qk1-f179.google.com with SMTP id q75so4289800qke.6;
+        Tue, 19 Apr 2022 01:59:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uWhCip3fDG+TKfDmUA9mehz6Jb3Xj61Z8RdZMlRGon0=;
-        b=UodE4uSEOwxEKbkc6Z38zRqcvhyn/Y1+5QHqWhtf2FdHY1NPe8cJdMHtV6vlbcQ7rl
-         zIsXguC1yP6ro10Fjj/xwZH5CRtpNzbLz4Zf6aDi+3Tt0e5w5eUELfZMC0JRWOtLMDzk
-         3qFOrKJpR/rBPDr1IMHjDKJlQlJNZynzPDBJLkGHfs1ARgEDVgSDLxHLt4R4rfpo4syM
-         lZGA0YCh9L7PFYkTxUzkwPSVEnZVWM1eCP43didVH3NdLNrifS7rcN4U+F53/UA93rQ3
-         TMc4pnjbmuYFPlRcJEU5y5+0EZ6KnnaS2N+6VHVr7OCyD4mpv3SaAYXHDikfxxWcbxdo
-         RIJQ==
-X-Gm-Message-State: AOAM532jiSMtDH7eQ0dYjyaF5/wX005xPZX69pJhvGoKXxh/S0zx/qYX
-        e0ozBuPcZKEjpPmFsP70j2ZQND8ibije8X+MCQ0crA==
-X-Google-Smtp-Source: ABdhPJzE/mHSTlzY9FXXPUOZ7ZDCq4E5Vu5+G5BSF/gHwXlGTgo7NddRvJ/KZcHlHvHIcWDKItyqs9abojVR1wru6jY=
-X-Received: by 2002:a25:9909:0:b0:624:57e:d919 with SMTP id
- z9-20020a259909000000b00624057ed919mr14266932ybn.494.1650358687447; Tue, 19
- Apr 2022 01:58:07 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=2tS14D5PGmg/JLCqgQ04J95Jt9tqRjNAbrf1/kgwkng=;
+        b=duf6Gf8DnFDySzprLxJRPqjJacUoAkFKBAEiMVRMfLgDvkr1RZnUbp2X9jGfo0pbBw
+         3lihBbqPdKGoOYozgCT0GalQ8nd9HIXrcl6DYl0Rw3Pv73+HZPkg5920toXhs0bcF1Fp
+         onFBA3RvUp7ubUwF2R/gJaRah4tjA4edNZy0cNQj0f6TYflvvQ5gnbyuchhgdfvkjfRb
+         nJ5Z9iO0EfVH+v9XkUDk4CYq2fj/+DpYEDG8/G2/g/hI9+o0n0yCy64PioDhRqMEckyj
+         s6+MIQl0FIjc7CPUcT6NFULrGum97VFjMFfljQ8HQn7D7kMyuSWTGaGsmjLVgWvU4tvT
+         HObA==
+X-Gm-Message-State: AOAM531tdmIoQkhOOha/QfJEgKqsi178+qNNShY4RrQVwwV60HYTIQWR
+        cgcSldTX0gD21xnVzMmCF1mji4D1U/TiUA==
+X-Google-Smtp-Source: ABdhPJxEozh2DMFXsMVnUH8FLob95bDsBhAJJ4tjh+6WGam56QaPC4JWhorlliMEDC9t9b6Isb6JHA==
+X-Received: by 2002:a05:620a:2441:b0:69c:3451:2a60 with SMTP id h1-20020a05620a244100b0069c34512a60mr8674837qkn.181.1650358789985;
+        Tue, 19 Apr 2022 01:59:49 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id n22-20020ac85b56000000b002f1d7a2867dsm8945619qtw.67.2022.04.19.01.59.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 01:59:49 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ebf4b91212so164793507b3.8;
+        Tue, 19 Apr 2022 01:59:49 -0700 (PDT)
+X-Received: by 2002:a81:5210:0:b0:2ef:21e3:54dd with SMTP id
+ g16-20020a815210000000b002ef21e354ddmr14521561ywb.438.1650358789297; Tue, 19
+ Apr 2022 01:59:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220418121127.127656835@linuxfoundation.org>
-In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 19 Apr 2022 14:27:56 +0530
-Message-ID: <CA+G9fYtWXBGS_Dysadq3SsXfZeEbj+VQQOXwwfLBNA4cXkvotQ@mail.gmail.com>
-Subject: Re: [PATCH 4.19 00/32] 4.19.239-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+References: <20220419085330.1178925-1-valentin.caron@foss.st.com> <20220419085330.1178925-2-valentin.caron@foss.st.com>
+In-Reply-To: <20220419085330.1178925-2-valentin.caron@foss.st.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 19 Apr 2022 10:59:38 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVCeuC5qStugnssWKUeOVWxd_3XyYtS0mrZpqQVaXAP2w@mail.gmail.com>
+Message-ID: <CAMuHMdVCeuC5qStugnssWKUeOVWxd_3XyYtS0mrZpqQVaXAP2w@mail.gmail.com>
+Subject: Re: [PATCH V3 1/3] serial: stm32: remove infinite loop possibility in
+ putchar function
+To:     Valentin Caron <valentin.caron@foss.st.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Apr 2022 at 18:16, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Hi Valentin,
+
+On Tue, Apr 19, 2022 at 10:54 AM Valentin Caron
+<valentin.caron@foss.st.com> wrote:
+> Rework stm32_usart_console_putchar() function in order to anticipate
+> the case where the character can never be sent.
 >
-> This is the start of the stable review cycle for the 4.19.239 release.
-> There are 32 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+
+Thanks for your patch!
+
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -1640,10 +1640,16 @@ static void stm32_usart_console_putchar(struct uart_port *port, unsigned char ch
+>  {
+>         struct stm32_port *stm32_port = to_stm32_port(port);
+>         const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+> +       u32 isr;
+> +       int ret;
 >
-> Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.19.239-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> -       while (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE))
+> -               cpu_relax();
+> -
+> +       ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr, isr,
+> +                                               (isr & USART_SR_TXE), 100,
+> +                                               STM32_USART_TIMEOUT_USEC);
+> +       if (ret != 0) {
+> +               dev_err(port->dev, "Error while sending data in UART TX : %d\n", ret);
 
+Does it make sense to print this message, i.e. will the user ever see it?
+Or is the failure above temporary?
+I assume that you have seen this trigger?
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+> +               return;
+> +       }
+>         writel_relaxed(ch, port->membase + ofs->tdr);
+>  }
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Gr{oetje,eeting}s,
 
-## Build
-* kernel: 4.19.239-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-4.19.y
-* git commit: 6124afa49867cbf9d4266132d020c7bfd11b768d
-* git describe: v4.19.238-33-g6124afa49867
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
-.238-33-g6124afa49867
-
-## Test Regressions (compared to v4.19.237-258-g1376b0e9d231)
-No test regressions found.
-
-## Metric Regressions (compared to v4.19.237-258-g1376b0e9d231)
-No metric regressions found.
-
-## Test Fixes (compared to v4.19.237-258-g1376b0e9d231)
-No test fixes found.
-
-## Metric Fixes (compared to v4.19.237-258-g1376b0e9d231)
-No metric fixes found.
-
-NOTE:
-kernel deadlock warning on x86 with kselftest merge configs still noticed
-this was reported yesterday from the previous stable rc review [1].
-This needs to be bisected.
-
-[   18.504172] WARNING: inconsistent lock state
-[   18.508451] 4.19.238 #1 Not tainted
-<>
-[   18.691758]  Possible unsafe locking scenario:
-[   18.691758]
-[   18.697689]        CPU0
-[   18.700137]        ----
-[   18.702586]   lock(&(&xprt->transport_lock)->rlock);
-[   18.707562]   <Interrupt>
-[   18.710184]     lock(&(&xprt->transport_lock)->rlock);
-[   18.715335]
-[   18.715335]  *** DEADLOCK ***
-[   18.715335]
-[   18.721270] 2 locks held by kworker/u12:3/60:
-[   18.725633]  #0: (____ptrval____)
-((wq_completion)\"rpciod\"){+.+.}, at: process_one_work+0x1e0/0x6c0
-[   18.734711]  #1: (____ptrval____)
-((work_completion)(&task->u.tk_work)){+.+.}, at:
-process_one_work+0x1e0/0x6c0
-
-[1] https://lore.kernel.org/stable/CA+G9fYvgzFW7sMZVdw5r970QNNg4OK8=3DpbQV0=
-kDfbOX-rXu5Rw@mail.gmail.com/
-
-## Test result summary
-total: 83824, pass: 67955, fail: 882, skip: 13136, xfail: 1851
-
-## Build Summary
-* arm: 281 total, 275 passed, 6 failed
-* arm64: 39 total, 39 passed, 0 failed
-* i386: 18 total, 18 passed, 0 failed
-* mips: 27 total, 27 passed, 0 failed
-* powerpc: 36 total, 36 passed, 0 failed
-* s390: 12 total, 12 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 38 total, 38 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
+                        Geert
 
 --
-Linaro LKFT
-https://lkft.linaro.org
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
