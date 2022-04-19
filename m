@@ -2,78 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6ECC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236311AbiDSQ42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59396 "EHLO
+        id S1355404AbiDSQ4Q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 12:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348941AbiDSQuN (ORCPT
+        with ESMTP id S1347390AbiDSQuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 12:50:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9EE3B018;
-        Tue, 19 Apr 2022 09:47:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9A183AA4D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650386827;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BWvAKy8LocH47YhakvpIBQwKMnIJQQng3vxQEYIL7zc=;
+        b=VX9Lea2KWKzJbjxUJB+5eNsXFpCLEh2LP7F4CyPIdOU1zFfTPqSS2LoYo0YSoNfkgMna/l
+        wBH6fgiAxG90QkwsxU6bRgklaiCJVMoqE5EQsMdYVfcXV1ETi5SEqAXrjQdn1DBJwuliqu
+        C4SVV9PSezIi3S8OhVzbYj3AfM4UvRw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-511-EaA8j95MOtSsSpdXOLr65A-1; Tue, 19 Apr 2022 12:47:03 -0400
+X-MC-Unique: EaA8j95MOtSsSpdXOLr65A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF88DB81BDF;
-        Tue, 19 Apr 2022 16:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49663C385A9;
-        Tue, 19 Apr 2022 16:47:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650386829;
-        bh=Tb4+gvc0BMUd7WNE4C0Od+R6C3ZesJ36is8v5xYE3NY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=rL+c7w97tmbha4lzDRMO4ALdbH06PARcZthDKSE/kvFZqrKr9YNryBxM6kHJddAme
-         X31LB/MpLEFWFxlnG9IPUpSU8FoCA+uxU/wfTyFxcVmluPCpzqRd6JOHoKic2BF6iS
-         v61GS+xjHMQw86VE3Q6NBEeYhcm/jh6he60mrddrQjP1PqyhBxIhJ0zirF74v8fLPV
-         D0icNPxC2g84DmdRQQ1FuBG4KPapm+/+9FJE9hpQXVmzmUCZEJxSe3zSuOjbjKSQrL
-         HJ4mY9B3GjnRON3eF+mR6jMnplCNUtjZuPEimNNRFGr82GoRMVfw002TdKaIxtlfKK
-         RnLihrEJ+Xkug==
-Message-ID: <a789eb92-7d4c-7ec5-8f3e-7765c238cb1f@kernel.org>
-Date:   Tue, 19 Apr 2022 09:47:08 -0700
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 34F563820F64;
+        Tue, 19 Apr 2022 16:47:03 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B4A740E80E0;
+        Tue, 19 Apr 2022 16:47:02 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <Yl7mQr05hPg4vELb@rabbit.intern.cm-ag>
+References: <Yl7mQr05hPg4vELb@rabbit.intern.cm-ag> <Yl7EyMLnqqDv63yW@rabbit.intern.cm-ag> <YlWWbpW5Foynjllo@rabbit.intern.cm-ag> <454834.1650373340@warthog.procyon.org.uk> <508603.1650385022@warthog.procyon.org.uk>
+To:     Max Kellermann <mk@cm4all.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: fscache corruption in Linux 5.17?
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: linux-next: Fixes tag needs some work in the arc-current tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Vineet Gupta <vgupta@kernel.org>
-Cc:     Rolf Eike Beer <eb@emlix.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220419064023.4cedc139@canb.auug.org.au>
-From:   Vineet Gupta <vgupta@kernel.org>
-In-Reply-To: <20220419064023.4cedc139@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <510135.1650386821.1@warthog.procyon.org.uk>
+Date:   Tue, 19 Apr 2022 17:47:01 +0100
+Message-ID: <510136.1650386821@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+Max Kellermann <mk@cm4all.com> wrote:
 
-On 4/18/22 13:40, Stephen Rothwell wrote:
-> Hi all,
->
-> In commit
->
->    a20aadab6ad6 ("arc: drop definitions of pgd_index() and pgd_offset{, _k}() entirely")
->
-> Fixes tag
->
->    Fixes: 974b9b2c68f ("mm: consolidate pte_index() and pte_offset_*() definitions")
->
-> has these problem(s):
->
->    - SHA1 should be at least 12 digits long
->      This can be fixed for the future by setting core.abbrev to 12 (or
->      more) or (for git v2.11 or later) just making sure it is not set
->      (or set to "auto").
+> I don't think any write is misaligned.  This was triggered by a
+> WordPress update, so I think the WordPress updater truncated and
+> rewrote all files.  Random guess: some pages got transferred to the
+> NFS server, but the local copy in fscache did not get updated.
 
-I've fixed this and pushed.
+Do the NFS servers change the files that are being served - or is it just
+WordPress pushing the changes to the NFS servers for the web servers to then
+export?
 
-Thx,
--Vineet
+David
+
