@@ -2,152 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A93C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243600AbiDSM6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
+        id S1348774AbiDSM6S (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 08:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239538AbiDSM6I (ORCPT
+        with ESMTP id S242350AbiDSM6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:58:08 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2076.outbound.protection.outlook.com [40.107.21.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5A62B183
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:55:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QXUnWKA0O/oDpCLv9wSAZ6oxmP6bg5q5QRmNbNUIq0IOmCf+ExjrnQtJcK2Wj12A9YGG9L90gT6nIULshGaqvYk/5wKvtgOLZnVY008za5jW/jSXXp8DrReiqlPrE/CwuURhQqfjOnDQjxgEFu6vh2qZ0pd4Q35OcGbsgxK2BpWr/6yv177i0eT5phqysM2fjeMheOQUlZXmWQ99/ZClzhMpg37X0ix418+7cASBkB7Hid8Yz39KoTEBmt8L2WVQ4Hc5zviZ8JtRhdrxq7zwMiLmiQ7KuWB4uVbOn5+Dh0ncyqFiEWAP+f79T9BUYambJFTZlXQOoOg6mjUepMuTXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hkR/0uA9o742GLsmFXhXaT7TrvMgGEKC8iGu7Dd1Nak=;
- b=EsE5/z2DNuGdpeLkSRCWrToWNaV6ktn7QTXUGbgPZwWNIDlHeSRHJySR2f8J4aEfKSx/Hjf+fp6dh0ZwyNJbZ6565kz9El/OS7/yH0r1wf7VqFRaTGmSgMKGgo941wdeCGm7A7rVLaHf0N/kD5m0lcTFZfuZzDHFN/8YWhWYV7Ce3dyrGVITYIqvFgFMcbwWyqUhfEFw0AOnnxQxTlpjFTinkiY7LC9HTuxpmijI30H1N3M49hT4jmCew9OBucRBxlK3ohUr13j4hXr97ga/fkP0P4ogxYxqGqm7ODhhYmVQ2JgfnSf5dnm87OaYfoWpHU2jTPK75lDcEWB7u1CuRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hkR/0uA9o742GLsmFXhXaT7TrvMgGEKC8iGu7Dd1Nak=;
- b=MU1iIG/v9enKWbcK6Eu8oxwgaO9f2wS4sQ4nugMasxgWC+t+Gx1A3mGhaQZJ+ZEWEy5oye5LmL91pfzi7ocLZsK+iTTtSdh4j9m7/ioISNClFQp0VAvcctDOjA6z4Aj+crJLTOLs3O/vUm5h7uo+zhFqHN0Tkk/kygOU5W1t+fU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4333.eurprd04.prod.outlook.com (2603:10a6:803:49::27)
- by DB7PR04MB4954.eurprd04.prod.outlook.com (2603:10a6:10:1e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Tue, 19 Apr
- 2022 12:55:22 +0000
-Received: from VI1PR04MB4333.eurprd04.prod.outlook.com
- ([fe80::d1b0:5a64:86d7:8a42]) by VI1PR04MB4333.eurprd04.prod.outlook.com
- ([fe80::d1b0:5a64:86d7:8a42%4]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
- 12:55:22 +0000
-From:   Li Jun <jun.li@nxp.com>
-To:     myungjoo.ham@samsung.com, cw00.choi@samsung.com, krzk@kernel.org
-Cc:     linux-kernel@vger.kernel.org, frank.li@nxp.com, xu.yang_2@nxp.com
-Subject: [PATCH v3 1/2] extcon: ptn5150: add queue work sync before driver release
-Date:   Tue, 19 Apr 2022 20:44:08 +0800
-Message-Id: <1650372249-10787-1-git-send-email-jun.li@nxp.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: SGAP274CA0002.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::14)
- To VI1PR04MB4333.eurprd04.prod.outlook.com (2603:10a6:803:49::27)
+        Tue, 19 Apr 2022 08:58:09 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 899122B180
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:55:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DB62106F;
+        Tue, 19 Apr 2022 05:55:26 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.75.72])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6A513F766;
+        Tue, 19 Apr 2022 05:55:23 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 13:55:19 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com, catalin.marinas@arm.com,
+        will@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        broonie@kernel.org, ardb@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com
+Subject: Re: [PATCH v4 2/2] arm64/ftrace: Make function graph use ftrace
+ directly
+Message-ID: <Yl6xN2qf7k5YeEdl@FVFF77S0Q05N>
+References: <20220409153554.14470-1-zhouchengming@bytedance.com>
+ <20220409153554.14470-2-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dae9e084-d058-4ca8-58f1-08da2203dd9b
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4954:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB4954F1334C0CA26624109C7889F29@DB7PR04MB4954.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dATlusac5LrTaTtM7YuCqIRkl/lHQypNggHmcvvN+TjKoXzxLgqwhCKMS5rUlqsIdy40Yi0kP6U++Tj7sDGG/sTrQxkG8sI3jtfa7JeyUcVzerkQ9ZK+RMiufaYQDVyhchkq/xUP6tq8M9Tb3xO1v2urDjEqk8MJaQRr5HeU47gSRVk7uSbf754UsogO0qZGLZEDghYDp4BMllaErigJHHYwyF2IzSUiLq3WiEmg/2tDmcR7s1YEOy7E0oaQmPpnngHbN+L4Ba4mUuTaIuTE9gxdedFbKzg/mvgJBGAF9O3PcKNc1fOEyCBX5bI4fa3oxoTAGhBvUYP6jZ9DVqw04mwT95JhXZJtamYZbxFRDN1dSfbwm0ZoxMwTwUF6z3aRZVP5hJaHpuomVcDtGfEFb8TKjxHZhoRSIIrevpRP1XS7fJnLNLKE2dbYl4YMHoUVxyE524CkeQPjV9s5vFHGrmzY5NdeqsyCSWSNTwgYE6VND3ZcLTEdnBA2tNZxDiYSzjHEqSVW4ExG3qul6min6N+75CCBM11140Ghk1XmoBZqCgMea331WbXUk+QndN1AFCyqbBa/Up/Qx8GTr6HxEnGPStK7x4v/4TEjAPOWrHIM5SPmcWYk7edTd6A1DVMwrv9Cg+nrjr+Q2O6JKj+VITyjFuEAyu3homZNfErzmgRBzSf6giaS+Johaqs1s/PpO8o1XaWpj7EDKzYavGyRTg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4333.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(5660300002)(6512007)(8936002)(6506007)(508600001)(316002)(6486002)(4326008)(52116002)(8676002)(66946007)(66476007)(6666004)(66556008)(86362001)(38350700002)(38100700002)(186003)(36756003)(83380400001)(2906002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OWFJQ3oQW/Lzy2Is3ARS5yIz7zUEOeEz8H3QcXRNHgq0knEf9aIPnxHuPhFl?=
- =?us-ascii?Q?iFMyE+Sg6MPON6tRkuBsjKmheduy3oQceen63KJHnMj4YKajDGfhRkhOkSru?=
- =?us-ascii?Q?5EVJqaefLOEDO+epqp5HNRdbGHd7D8nFjoj0BWtD5WBXgeXtAZiHvQKXHenU?=
- =?us-ascii?Q?G/iobnhIYO3r0OhWslhNAAmpGxzasWsjXJVqopoK90XVznrg0cOrRJmsIei5?=
- =?us-ascii?Q?yoHh8BZJUjcZvmafKLP6fIrKiasBM2HiqV3ms5xtK5smUo9Rc0oZ5/quDjyd?=
- =?us-ascii?Q?IX7D0suBWY5wrzcp61qVddh95mX2rLV3TwSIEamZvjDQ5I9TwTka9rVrvPK0?=
- =?us-ascii?Q?70LNzITYHFwOWuX7KnP0lv01J1Rw1mvnTlPtZHKd8xQ0HQX2x7DMmvkWDwKf?=
- =?us-ascii?Q?tGau5R42BMvTU6sjpgBQIp9zPuSyjKTTerRDwtx8nrkTTNIe+TKAAfo4MUvh?=
- =?us-ascii?Q?Rv+UMpbdKg4S/A5ZENh6IC5hzMqVa2h90dq8NOMfiw5hegLG4UKJsqUgNkCm?=
- =?us-ascii?Q?G9m5rS7zCgQOKNTOzao8n5DTvpasGLKHLs6648VbeioRwgWa2UsyGG4fbEAL?=
- =?us-ascii?Q?MIK5zlr2sfNFHG0Xmg20Y+6wEING3OaiGz5428nADRjp/GY46D7IN91Q4dw4?=
- =?us-ascii?Q?j5eS/BAFuksRKNlIoFWNRBe2zLA1z/l/cmRovt+pJO8nKAwJklZ/S9nRyfji?=
- =?us-ascii?Q?OrrtiFEkGRSsyQRjlxGtCVt7pZMQYYfmob+2KT/Ff0mS4Ty7Q/f35dU+8btM?=
- =?us-ascii?Q?FFAmeaf3G5NA5wdg1YjmdfXdxzSNVD7OWPTkx26uK2fIhYZBsG63Zm5lbJpk?=
- =?us-ascii?Q?s4VWUDNzEgmVQLuYGNbP87HOqXJkWas7A5lX1ON0GKypgQv6Bp/rCIfrlxQC?=
- =?us-ascii?Q?qnmSpr/qbWaBCyzKs8kjKw7eVkge++67ye2y+vVqOL2lla1ATx+VT4HLHfH2?=
- =?us-ascii?Q?ZkxwodeBwwKEtABACwsaIm2EoroqZDYohkgVPDSpDO1c6bznjSYbWthtDqeT?=
- =?us-ascii?Q?wnvM6oul/ZRpPQEkOVqmbW+y/97I1LPWNVdMtkeozBwQfshqRszIOcgUWx22?=
- =?us-ascii?Q?xKvIN0C9nIUVRvJLGcia4z1WlfLOouYaSzPe+5rO/Ry7VVKErNefLRxSdUOc?=
- =?us-ascii?Q?9FK9tSHWWaqtLOxEBSRDXz9Ca0ZG4wr3S8MnQ9tzUbWw0ENpNOI8dp9lktN8?=
- =?us-ascii?Q?oa1d7/CL7K6tftJGpjqh7C/WG8hl05wkGKpLFi1kvNu7f4etdS9kc/QoMUrO?=
- =?us-ascii?Q?VSMH3unvkYbQRtHxzZKkxV/TDUoC34koTGFivP1ixhvDP10zUw8DjzYJRDCf?=
- =?us-ascii?Q?4dZydifJVoRTK1M1AIyKiWg4GLjzxgC5L9Jo2rbRCGTkUGa7XPIflBfahLdN?=
- =?us-ascii?Q?DOZE1XybYtKqTIbZMxYU3CrTsA1TKySlNjgxnviF1eedZWPDHYC5VDX+wvWW?=
- =?us-ascii?Q?XMBAigRQDxfjUaH7B0ZdpdemmKNnvBLpPxj0FSeG2bLRb5CvFktBjZxXxHTH?=
- =?us-ascii?Q?YRFUs741Vcxr2B0elzoyTnswGR0IZyFKsL+YgKVXEOy0z/uBZ3ZFaImDqIpp?=
- =?us-ascii?Q?HVkhGP87XD82GqrhNaZzzDI7U/iOghz6Jbsd5SwMsVBhyAR5z2dnJpUpMd3A?=
- =?us-ascii?Q?RlVCd06vUx4+27lxQF1E6gVJ3k2Kb+2JEr3phRs+S3+nGZWIAj8aUIuM1JEq?=
- =?us-ascii?Q?J4gUvVadDqHJZUEAdLz8SsT/lyWKGWwwvwqzPb+CES0VztCULSfwHu5y4gNC?=
- =?us-ascii?Q?/820KrkO4A=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dae9e084-d058-4ca8-58f1-08da2203dd9b
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4333.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2022 12:55:22.8288
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M8WvFJKz2cFy/hVTuV4qd7Oy644Z62lgsRgnRW9mpR/oNtAR9anISsQlUw3Ptq+u
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4954
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220409153554.14470-2-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device managed action to sync pending queue work, otherwise
-the queued work may run after the work is destroyed.
+On Sat, Apr 09, 2022 at 11:35:54PM +0800, Chengming Zhou wrote:
+> As we do in commit 0c0593b45c9b ("x86/ftrace: Make function graph
+> use ftrace directly"), we don't need special hook for graph tracer,
+> but instead we use graph_ops:func function to install return_hooker.
+> 
+> Since commit 3b23e4991fb6 ("arm64: implement ftrace with regs") add
+> implementation for FTRACE_WITH_REGS on arm64, we can easily adopt
+> the same cleanup on arm64.
+> 
+> And this cleanup only changes the FTRACE_WITH_REGS implementation,
+> so the mcount-based implementation is unaffected.
 
-Fixes: 4ed754de2d66 ("extcon: Add support for ptn5150 extcon driver")
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Li Jun <jun.li@nxp.com>
----
-change for v3:
-- Add Fixes and R-b tag.
+Could you please say *why* we only do this for FTRACE_WITH_REGS? IIUC that's
+possible, but would require more invasive refactoring of the core code; have I
+understood correctly?
 
- drivers/extcon/extcon-ptn5150.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+If so, could we please make this:
 
-diff --git a/drivers/extcon/extcon-ptn5150.c b/drivers/extcon/extcon-ptn5150.c
-index 5b9a3cf8df26..2a7874108df8 100644
---- a/drivers/extcon/extcon-ptn5150.c
-+++ b/drivers/extcon/extcon-ptn5150.c
-@@ -194,6 +194,13 @@ static int ptn5150_init_dev_type(struct ptn5150_info *info)
- 	return 0;
- }
- 
-+static void ptn5150_work_sync_and_put(void *data)
-+{
-+	struct ptn5150_info *info = data;
-+
-+	cancel_work_sync(&info->irq_work);
-+}
-+
- static int ptn5150_i2c_probe(struct i2c_client *i2c)
- {
- 	struct device *dev = &i2c->dev;
-@@ -284,6 +291,10 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
- 	if (ret)
- 		return -EINVAL;
- 
-+	ret = devm_add_action_or_reset(dev, ptn5150_work_sync_and_put, info);
-+	if (ret)
-+		return ret;
-+
- 	/*
- 	 * Update current extcon state if for example OTG connection was there
- 	 * before the probe
--- 
-2.25.1
+| While in theory it would be possible to make a similar cleanup for
+| !FTRACE_WITH_REGS, this will require rework of the core code, and so for now
+| we only change the FTRACE_WITH_REGS implementation.
 
+It'd be quite nice if we could clean up the !FTRACE_WITH_REGS case similarly,
+but as it appeass that would require far more invasive changes, I'm happy to
+leave that for future work.
+
+>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> ---
+> v3:
+>  - Add comments in ftrace_graph_func() as suggested by Steve. Thanks.
+> 
+> v2:
+>  - Remove FTRACE_WITH_REGS ftrace_graph_caller asm, thanks Mark.
+> ---
+>  arch/arm64/include/asm/ftrace.h  |  7 +++++++
+>  arch/arm64/kernel/entry-ftrace.S | 17 -----------------
+>  arch/arm64/kernel/ftrace.c       | 17 +++++++++++++++++
+>  3 files changed, 24 insertions(+), 17 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
+> index 1494cfa8639b..dbc45a4157fa 100644
+> --- a/arch/arm64/include/asm/ftrace.h
+> +++ b/arch/arm64/include/asm/ftrace.h
+> @@ -80,8 +80,15 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
+>  
+>  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
+>  struct dyn_ftrace;
+> +struct ftrace_ops;
+> +struct ftrace_regs;
+> +
+>  int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
+>  #define ftrace_init_nop ftrace_init_nop
+> +
+> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
+> +		       struct ftrace_ops *op, struct ftrace_regs *fregs);
+> +#define ftrace_graph_func ftrace_graph_func
+>  #endif
+>  
+>  #define ftrace_return_address(n) return_address(n)
+> diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+> index e535480a4069..d42a205ef625 100644
+> --- a/arch/arm64/kernel/entry-ftrace.S
+> +++ b/arch/arm64/kernel/entry-ftrace.S
+> @@ -97,12 +97,6 @@ SYM_CODE_START(ftrace_common)
+>  SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
+>  	bl	ftrace_stub
+>  
+> -#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+> -SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL) // ftrace_graph_caller();
+> -	nop				// If enabled, this will be replaced
+> -					// "b ftrace_graph_caller"
+> -#endif
+> -
+>  /*
+>   * At the callsite x0-x8 and x19-x30 were live. Any C code will have preserved
+>   * x19-x29 per the AAPCS, and we created frame records upon entry, so we need
+> @@ -127,17 +121,6 @@ ftrace_common_return:
+>  	ret	x9
+>  SYM_CODE_END(ftrace_common)
+>  
+> -#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+> -SYM_CODE_START(ftrace_graph_caller)
+> -	ldr	x0, [sp, #S_PC]
+> -	sub	x0, x0, #AARCH64_INSN_SIZE	// ip (callsite's BL insn)
+> -	add	x1, sp, #S_LR			// parent_ip (callsite's LR)
+> -	ldr	x2, [sp, #PT_REGS_SIZE]	   	// parent fp (callsite's FP)
+> -	bl	prepare_ftrace_return
+> -	b	ftrace_common_return
+> -SYM_CODE_END(ftrace_graph_caller)
+> -#endif
+> -
+>  #else /* CONFIG_DYNAMIC_FTRACE_WITH_REGS */
+>  
+>  /*
+> diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
+> index 4506c4a90ac1..35eb7c9b5e53 100644
+> --- a/arch/arm64/kernel/ftrace.c
+> +++ b/arch/arm64/kernel/ftrace.c
+> @@ -268,6 +268,22 @@ void prepare_ftrace_return(unsigned long self_addr, unsigned long *parent,
+>  }
+>  
+>  #ifdef CONFIG_DYNAMIC_FTRACE
+> +
+> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
+> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
+> +		       struct ftrace_ops *op, struct ftrace_regs *fregs)
+> +{
+> +	/*
+> +	 * Athough graph_ops doesn't have FTRACE_OPS_FL_SAVE_REGS set in flags,
+> +	 * regs can't be NULL in DYNAMIC_FTRACE_WITH_REGS. By design, it should
+> +	 * be fixed when DYNAMIC_FTRACE_WITH_ARGS is implemented.
+> +	 */
+
+This is a bit confusing, since it makes it sound like there's an bug in the
+current implementation, rather than something that would need to change if
+support for DYNAMIC_FTRACE_WITH_ARGS is added.
+
+Could we please make this:
+
+	/*
+	 * When DYNAMIC_FTRACE_WITH_REGS is selected, `fregs` can never be NULL
+	 * and arch_ftrace_get_regs(fregs) will always give a non-NULL pt_regs
+	 * in which we can safely modify the LR.
+	 */
+
+Other than that, this looks good to me. I gave it a spin under QEMU atop
+v5.18-rc3. The CONFIG_FTRACE_STARTUP_TEST tests all pass, and I played with the
+graph tracer with:
+
+| # echo do_el0_svc > /sys/kernel/tracing/set_graph_function 
+| # echo function_graph > /sys/kernel/tracing/current_tracer
+
+... for which the resutls looks sane.
+
+To make sure this didn't adversely affect the return address rewriting, I also
+concurrently ran perf with:
+
+| # perf record -g -e raw_syscalls:sys_enter:k /bin/true
+| # perf report
+
+... for which the results also looked fine.
+
+I also tested the !DYNAMIC_FTRACE_WITH_REGS modes by building with an older
+compiler and also building with !DYNAMIC_FTRACE, which all looked good.
+
+So FWIW:
+
+Tested-by: Mark Rutland <mark.rutland@arm.com>
+
+... and if you make the changes I requested above:
+
+Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+
+If you could spin a v5 with that folded in, that would be great.
+
+Thanks,
+Mark.
