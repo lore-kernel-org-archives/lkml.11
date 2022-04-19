@@ -2,118 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356335AbiDSTDA (ORCPT
+        id S1357482AbiDSTDR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        Tue, 19 Apr 2022 15:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357545AbiDSTCi (ORCPT
+        with ESMTP id S1357497AbiDSTDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 15:02:38 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B56B1C6;
-        Tue, 19 Apr 2022 11:59:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1650394759; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=gyMpKPwcZ56A0saJrbnZ2SGeHNdFwrYWpbLGx4k4y84R17oVRQmnonieJVIHPZpah0c+9Qe9fe5lGD40v6XI/ZyJiowh3uclK+QF2JHzb8FtQ2SIvVRXNWyvWTcErBlJ03VmPx4ziJEoK7gzu+IjbFe4u1VfLzgjX01c3cgeuWA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1650394759; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=9VjwSH0I9W/DB4x/BmRW3flCPs5gbLidfDoHgiRZ19E=; 
-        b=f6z9mss4D2oQa/Pxv8nau+aVX/wXNvFKkZ2pb3n/X1hdAY2DE7hM3rmJOcKopNrqwAVAduWPu3k85etTGQn7W5AScEzGa17M2Y9wZxB9QcJQoPBpd8pWxPMi+BS7rcxMtAsK/OXKYPPBmr3U3lQewiXFzGa2yij/uUOk5HLNcjg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1650394759;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=9VjwSH0I9W/DB4x/BmRW3flCPs5gbLidfDoHgiRZ19E=;
-        b=NV9Zgjw9a55SlOkSW+AhfsTH1oRAcNtDgGFThRtVAYI3uMCpWbSZWXl7XYg+dh8B
-        00+vebYCpTFhaEq2CGoN+vuXKoUTSHODXOcHOQYZMD6Y2ooUO2JscEFDilh5jsQgICZ
-        /LeNWbe4Cn6ZCfpYIslKePnYJm/XkB/Z2ChOEkxo=
-Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 165039475819462.97284354678186; Tue, 19 Apr 2022 11:59:18 -0700 (PDT)
-Message-ID: <4c84c9ce-be19-ee34-d9d0-e69495722b01@arinc9.com>
-Date:   Tue, 19 Apr 2022 21:59:12 +0300
+        Tue, 19 Apr 2022 15:03:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7113F886;
+        Tue, 19 Apr 2022 12:00:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E31FC615C6;
+        Tue, 19 Apr 2022 19:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0300C385A5;
+        Tue, 19 Apr 2022 19:00:22 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Xw2ORET4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1650394820;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=N8yac2TcoM0oB2N8o8RD8oOMSu6h8CMOQ/2gSGccCdo=;
+        b=Xw2ORET4meDc2i1UG0CWYpbs0iaUWcQnLT3ffJhZo1U8Lsm7pSxAHbESvxu8nlzUyWWdVC
+        Echm4IJ8Ex7+0Q42YtIrN7D8W6MW+t1gBXd6FAgUc7yL/6cenmykPrqYtsHFv7WPqZjCz7
+        8PrWgelWU+IK+xlb0J2ldbd+F7tgmBA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0d8a6a5d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 19 Apr 2022 19:00:19 +0000 (UTC)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2ec0bb4b715so183078087b3.5;
+        Tue, 19 Apr 2022 12:00:19 -0700 (PDT)
+X-Gm-Message-State: AOAM533fC6iLORr5IZul8Rg7Oj7MJkyhrfIN34Y2fCmuauWp4RI1u91G
+        +VDxBGCDqbbVBTJmdV93gFxngkqx22w2qcGUpr8=
+X-Google-Smtp-Source: ABdhPJwRc+bdyLezDAgNgTxENBqQkZz9Fe0qv2Ndkg8iOqE2wh+a0hjP/G2ABFOAPTKw6cDikwVfRb4lj/Ti4WdfWac=
+X-Received: by 2002:a81:6a84:0:b0:2ec:c59:9d22 with SMTP id
+ f126-20020a816a84000000b002ec0c599d22mr17880030ywc.499.1650394817507; Tue, 19
+ Apr 2022 12:00:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 13/14] dt-bindings: pinctrl: add binding for Ralink
- RT305X pinctrl
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+References: <20220419111650.1582274-1-Jason@zx2c4.com> <20220419111650.1582274-8-Jason@zx2c4.com>
+ <Yl78gLLcSb3EHv0B@zn.tnic> <CAHmME9q03Je-ROzzHCgZC0vy1n=y8bsGBOAs8U_K_r3ebLNHbw@mail.gmail.com>
+ <Yl8GhNjwPLNiUfSZ@zn.tnic>
+In-Reply-To: <Yl8GhNjwPLNiUfSZ@zn.tnic>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 19 Apr 2022 21:00:06 +0200
+X-Gmail-Original-Message-ID: <CAHmME9q1wD7EBQPBaR1mBu5ZN+fSpe8yPMWTd7H20+sYEzy8cw@mail.gmail.com>
+Message-ID: <CAHmME9q1wD7EBQPBaR1mBu5ZN+fSpe8yPMWTd7H20+sYEzy8cw@mail.gmail.com>
+Subject: Re: [PATCH v5 07/11] x86: use fallback for random_get_entropy()
+ instead of zero
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, "Theodore Ts'o" <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joe Perches <joe@perches.com>, erkin.bozoglu@xeront.com,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-References: <20220414173916.5552-1-arinc.unal@arinc9.com>
- <20220414173916.5552-14-arinc.unal@arinc9.com>
- <Yl758u9iIMnhYPz2@robh.at.kernel.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <Yl758u9iIMnhYPz2@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-um@lists.infradead.org, X86 ML <x86@kernel.org>,
+        linux-xtensa@linux-xtensa.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/04/2022 21:05, Rob Herring wrote:
-> On Thu, Apr 14, 2022 at 08:39:15PM +0300, Arınç ÜNAL wrote:
->> Add binding for the Ralink RT305X pin controller for RT3050, RT3052,
->> RT3350, RT3352 and RT5350 SoCs.
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->>   .../pinctrl/ralink,rt305x-pinctrl.yaml        | 92 +++++++++++++++++++
->>   1 file changed, 92 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/pinctrl/ralink,rt305x-pinctrl.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/pinctrl/ralink,rt305x-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/ralink,rt305x-pinctrl.yaml
->> new file mode 100644
->> index 000000000000..425401c54269
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pinctrl/ralink,rt305x-pinctrl.yaml
->> @@ -0,0 +1,92 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/pinctrl/ralink,rt305x-pinctrl.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Ralink RT305X Pin Controller
->> +
->> +maintainers:
->> +  - Arınç ÜNAL <arinc.unal@arinc9.com>
->> +  - Sergio Paracuellos <sergio.paracuellos@gmail.com>
->> +
->> +description:
->> +  Ralink RT305X pin controller for RT3050, RT3052, RT3350, RT3352 and RT5350
->> +  SoCs.
->> +  The pin controller can only set the muxing of pin groups. Muxing individual
->> +  pins is not supported. There is no pinconf support.
->> +
->> +properties:
->> +  compatible:
->> +    const: ralink,rt305x-pinctrl
-> 
-> You should have a compatible for each SoC unless these are all just
-> fused or package varients of the same chip.
+Hi Borislav,
 
-The rt305x pin controller calls code from 
-arch/mips/include/asm/mach-ralink/rt305x.h to determine the SoC and uses 
-different pinmux data by the result of the determination.
+On Tue, Apr 19, 2022 at 8:59 PM Borislav Petkov <bp@alien8.de> wrote:
+>
+> On Tue, Apr 19, 2022 at 08:38:41PM +0200, Jason A. Donenfeld wrote:
+> > I think I prefer doing (a), and leaving (b) for another time when you
+> > or another x86 maintainer can do so. But I'll do whichever you say.
+> > Which would you like?
+>
+> We are switching all feature checks to cpu_feature_enabled() so you
+> might as well do the new preferred way of checking when adding a
+> new function and so that we have one less place to touch. Which is
+> appreciated. :)
 
-I guess we can call this fused.
+Okay, no problem. I'll make the change there and get_cycles() for v+1
+of the patchset.
 
-Arınç
+Jason
