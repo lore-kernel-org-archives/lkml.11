@@ -2,98 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D27C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D2CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349739AbiDSINH (ORCPT
+        id S1349737AbiDSINu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
+        Tue, 19 Apr 2022 04:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243633AbiDSIM6 (ORCPT
+        with ESMTP id S1349733AbiDSINh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:12:58 -0400
-X-Greylist: delayed 1696 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:10:16 PDT
-Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9270DDF82;
-        Tue, 19 Apr 2022 01:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=9qfOo1FOODXMcgRdw2ZARNk7YVVQEHz8SOv8rQTaLoA=; b=X2GPqOmJxqY6DAgWW5I24FKKxA
-        9FS+xd33q5yCd1Go2L75/ZTQ1sPucX9A2LApeUCxsCsV3pQ0SM+g2nhKjek2kmwrAZbZvYBitGEW8
-        RXfHkKyxVE4ZWlzyW6QZjhQpRjqqRnkr+3pfx68JtHm/goTEpIPsPvsHJxoS6osuKxqG6OKVBRxmn
-        hizF/+03PXnEmqVk4EoFerdxuBzswE7m9vKf/Xrkkcv7EakYMKlxuVyIAm1nlUj5GZh+4QVUleCMO
-        x0jdzJBHWen2/i4qEVq6ScpZVeI/K4nBiGEG5Cye7rZAWgvLDCGEkqDvFtV5SAHM5SjAcd16I3W4f
-        c9W8DYYg==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1ngiUl-000EbL-BN; Tue, 19 Apr 2022 09:41:55 +0200
-Received: from [2001:a61:2a5d:d701:9e5c:8eff:fe01:8578]
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1ngiUk-000KyO-Us; Tue, 19 Apr 2022 09:41:54 +0200
-Message-ID: <4a940702-8a34-c163-2e5a-8dfd835e56d0@metafoo.de>
-Date:   Tue, 19 Apr 2022 09:41:54 +0200
+        Tue, 19 Apr 2022 04:13:37 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B095E167C3;
+        Tue, 19 Apr 2022 01:10:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=CUndTrsqJFoM106lC4x26CnMR+Y77lrRAU5HyT6wp+4=; b=WlW05aSHPhNgABJfo46SfybTvT
+        u9RLlWN2Hxn3fhsYN6JOYuvpiDj3mmEMdVlj+WCk+mboHAgHHTJEpd6c0yq6CTD9NpT2jy0jh+K9F
+        QGT7pRnOY/zizVdNABBeRCH7zVCxBk/Jd/SsInQp9z+NUW9NXKRRoQtnQ0BuGf8doPX+sUjkStq/l
+        DHnsRHVBwnzRZEjChjyPb2ZDvHJJpRGP7VrUvaK3DtctcDntid3M3SdQzFWxcvwWpS4hIShDssxJx
+        v0UgBrb5DEuJJhUJVwIS5TsxLrONKFw4JAnI2Avv+i2Nh3ZFkDtkJip+WEIhL+U78NSTleiino7X2
+        a6qtlOpw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngiwd-002ueG-2y; Tue, 19 Apr 2022 08:10:43 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 2D84F98618A; Tue, 19 Apr 2022 10:10:41 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 10:10:41 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Zhihao Cheng <chengzhihao1@huawei.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        yukuai3@huawei.com
+Subject: Re: [PATCH v2] fs-writeback: =?utf-8?Q?wri?=
+ =?utf-8?Q?teback=5Fsb=5Finodes=EF=BC=9ARecalculat?= =?utf-8?Q?e?= 'wrote'
+ according skipped pages
+Message-ID: <20220419081041.GL2731@worktop.programming.kicks-ass.net>
+References: <20220418092824.3018714-1-chengzhihao1@huawei.com>
+ <CAHk-=wh7CqEu+34=jUsSaMcMHe4Uiz7JrgYjU+eE-SJ3MPS-Gg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [v4 10/14] iio: document "serial_number" sysfs attribute
-Content-Language: en-US
-To:     Andrea Merello <andrea.merello@gmail.com>, jic23@kernel.org,
-        mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
-        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-References: <20220415130005.85879-1-andrea.merello@gmail.com>
- <20220415130005.85879-11-andrea.merello@gmail.com>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-In-Reply-To: <20220415130005.85879-11-andrea.merello@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26516/Mon Apr 18 10:21:52 2022)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wh7CqEu+34=jUsSaMcMHe4Uiz7JrgYjU+eE-SJ3MPS-Gg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/22 15:00, Andrea Merello wrote:
-> From: Andrea Merello <andrea.merello@iit.it>
->
-> This patch adds ABI documentation for the new "serial_number" sysfs
-> attribute. The first user is the bno055 IIO driver.
->
-> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-> ---
->   Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
->   1 file changed, 7 insertions(+)
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 2a6954ea1c71..3be613f64843 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -2048,3 +2048,10 @@ Contact:	linux-iio@vger.kernel.org
->   Description:
->   		Raw (unscaled) euler angles readings. Units after
->   		application of scale are deg.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/serial_number
+On Mon, Apr 18, 2022 at 12:43:43PM -0700, Linus Torvalds wrote:
+> Similarly, tsk_is_pi_blocked() will disable the plug flush.
 
-Can we make this `serialnumber`? IIO uses underscores to separate 
-different parts of the name and to a machine (e.g. libiio) serial_number 
-looks like a channel called serial with an attribute called number.
+Bah, I'm forever confused by that clause... I did ask for a comment at
+some point but that never seems to have happened.
 
+  https://lore.kernel.org/all/20190816160626.12742-1-bigeasy@linutronix.de/T/#md983b64256814c046cec9ec875f4a975029b0daa
 
-> +KernelVersion:	5.19
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		An example format is 16-bytes, 2-digits-per-byte, HEX-string
-> +		representing the sensor unique ID number.
-
-
+Seems to indicate it is about scheduling while holding a lock and the
+unplug then leading to a deadlock.
