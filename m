@@ -2,190 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D372EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 01:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 01:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343918AbiDSBzz (ORCPT
+        id S1343977AbiDSB4N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 21:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        Mon, 18 Apr 2022 21:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344031AbiDSBzw (ORCPT
+        with ESMTP id S1343930AbiDSB4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 21:55:52 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2056.outbound.protection.outlook.com [40.107.92.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD8F27FE5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 18:53:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rad9Jm5LO5cOsARu2USY4tT1jTCLnazFGfzHKgtrVSBDIlUGdtww1KtELuEffeAM0q4n5wg+2yF7qWZkRII88VW81ZXNNkY4PY2a3WSyqpuVdqq5BLP2r8vYuuHUYnneNxWed7AAHkqoN61tCIpQTLFmhpsOuIMZRI+JL/ljpd5hFRfUiUwGSbBYrfbjngbD6rb0eFNUpviLyQunXR/s2kZZBYIc1ROjJaxMJWokkncIDzPIpJiJhMcJ7N5aS3yRXDUmOoyYgNegNff6oFrFmr+r3844bIHxg5gQo5yiMG7fSNYOeCrKEZVOb6VB1miGkQdcV0GsWcCauVPwoSui/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0bPNNmaqv3X5JsYP1NY077LN2WePYETQL9o1TBGY1e0=;
- b=eiVhIe2RlvKVkmwWUl+rV/jpYgBpEkhcfjYK8TEzEQCmp6US7PVBF6/g1X9j/QLv32mom+R9a/SwM0ZSZn+3cUkNqh3q/bEFOYgh9ZfHZbfWLopOpfYP59+E5YZjviVcMNvKdyqd1nHvcMq6IhRKF4pHs+eKlcEc9zNq9pIdNZ+INTRZd5Dfpg9rg5SdbXoyz/AtfEEwYuePCxqG8pYsAlzD+NEUUnoXQK3kXqmY9fOEWpzoIMSs00d3GkC8Sx2Q1yJeFPPG4PLSrObPFB4DFe/fFnZqL/7mPGp58m2DGS7shLJJ3btkbKICECIDJkUMwIMePkYuUU/VBjIDT6XNEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0bPNNmaqv3X5JsYP1NY077LN2WePYETQL9o1TBGY1e0=;
- b=SGFiC+z3xv4rrZ0HzNDwe+34+6Fm9VJpiJiTvVceJlJRRM/48VgK0BxT2pqedAh2AKXa+AbJM9tioagk68If06Q0F7NjrRAckgWyhuYtpWCrK2TlGikm7bynF0VfjuGzUC2l6oJ/bikuMca/ab+g5xrnZjaMF3rdJvKEffAlV0d3Py62v8gQ8ztaS3ZRGy76WHqYqyIJNV8XwBMYqcjXHvmPseu/aAgCNPVr5P9UXOfufPCJ/p/5GgAsgJokYtG7Ondkv9jPvCYsma1R9ZEPVYdmJDb3rFZAyvKuUtIiGLd9drrCS6XWvOSh8QwymKDVY0LtGC1XD1YMGDGlxifFKg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by CY4PR12MB1349.namprd12.prod.outlook.com (2603:10b6:903:40::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Tue, 19 Apr
- 2022 01:53:08 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::2d17:b68a:e101:4c18]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::2d17:b68a:e101:4c18%6]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
- 01:53:08 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, christian.koenig@amd.com,
-        jhubbard@nvidia.com, rcampbell@nvidia.com
-Subject: Re: [PATCH] mm/mmu_notifier.c: Fix race in
- mmu_interval_notifier_remove()
-Date:   Tue, 19 Apr 2022 11:51:58 +1000
-References: <20220414031810.1787209-1-apopple@nvidia.com>
- <20220414135005.GJ64706@ziepe.ca>
-User-agent: mu4e 1.6.9; emacs 27.1
-In-reply-to: <20220414135005.GJ64706@ziepe.ca>
-Message-ID: <87v8v5kfem.fsf@nvdebian.thelocal>
-Content-Type: multipart/mixed; boundary="=-=-="
-X-ClientProxiedBy: SJ0PR13CA0145.namprd13.prod.outlook.com
- (2603:10b6:a03:2c6::30) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Mon, 18 Apr 2022 21:56:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B2127CCE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 18:53:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650333210; x=1681869210;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=onaBKRMk1DhTJ8zWoTq8KheY5mYtnuJ8MW026J5UGO0=;
+  b=EtRZPiLH9jKIdwchRiX4n5fNlzLd0kYQqJrPb4aYcP3KWJBGSwkJu3gK
+   WYucXk3uSVPmW9ADtAeWiNF1j5DYoyWZqd/j0zepsD+Qq0vTw4HxXneZg
+   kXBhhjqxGX1QKqqnfdBc+VlyykTWbsalR628Uqugu9bcDZ+d8zHe9Z0x4
+   amUj+u0pCHIJ+E3kQxdSo8fN+UecyRHwiJTNeGnPi4O5jED/vmyWd7g6W
+   k3B+B0fpqdcsbLqleMWUgVqVzEER8zx0yA5XUpjPmJHzhBdrf99aL+3Z5
+   yTIkpQs4EBB/7Gi3TPXX/PlQzOZyR+8jy5c5pYZ4+uEpd8Lmy9lHGBJxh
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="263826114"
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="263826114"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 18:53:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="509953429"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 18 Apr 2022 18:53:11 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngd3H-0005BM-60;
+        Tue, 19 Apr 2022 01:53:11 +0000
+Date:   Tue, 19 Apr 2022 09:53:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1645/2356]
+ drivers/thermal/intel/intel_hfi.c:401:25: warning: incompatible integer to
+ pointer conversion assigning to 'void *' from 'int'
+Message-ID: <202204190947.AY5XKXTY-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 45057af2-0e07-42cb-f881-08da21a75a3e
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1349:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB13493DC9AA8ABABB78978C7BDFF29@CY4PR12MB1349.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VcVXCGzsR/HF4OhZZ0Rz62zmWsLNMSb67tbFZhyBS21ElSXsgrDA9cgrwtUfJowY3klCrBzf4qh6iEOMi6HGNyk0MoU+lzbDBGDZ5jJ7xFrKvPj+t1w3QmeEXjLZ+67b0/4i7n4gSV0xZImuUy3PidT84Y88nxwvG2L1ppnTo6JgEpPGZoD5DXxVx6p8PHfIn2UUbhBogdC5dO0GgbgQL1U1BG+DUIqkPQy6Hm78IUw6g9SgEtC3tBqxUm9Y7HuxMG9WUk3jN8zshxvJ5rzAMMsHLVs6xY4bCE011Nm+JpAiBnxVxChrOL5mMgHKHg2tWf1HFbxgv5XkzsoebtmO3MyzJ9baRLdhmMufQTPeneSnC5yYjhFuQTmPIAAjYBG4LxtyiBDszLjASDKgeZLQ2srl413Rz0gpemZjklYcaOtGG9Pz9BdYcDEkoDsPueMZUxIkR8MJiiotkGbzTg7a5p2mkXxhg0wuCbkTId/yGGXry0ulXF0lRqkEa7FRS0exc4v3gV8SkD4zFj+xgtGSbHw+TY/b0QZSawOEHgKE1PfMTQ6aDNyoiyMhxQIiWBlnWnGJbupeJ/0fhIg30M8zGN41J0g/RiuzALSFSFgzLKCG3o1BCfBYl2yqzlk+4abkpAVNKmOktj8QHlY2H8H6GQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(38100700002)(8936002)(5660300002)(6506007)(4326008)(6666004)(508600001)(316002)(66946007)(66476007)(66556008)(8676002)(9686003)(26005)(6486002)(86362001)(6916009)(107886003)(44144004)(2906002)(83380400001)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NVyHCXH2eLy680pg1Xz73m0US2R8LGmCqndcMVEnq+E8dFnSH4OQolvEuuDC?=
- =?us-ascii?Q?WnUkWUWMqUpvlHZvo8+ToFytdx/xKN5hOqDhHxJ4HwGYpzN3XV4gjwinAXNW?=
- =?us-ascii?Q?HDaZSn1I8NE3QFrBKx5b7nmj7q/LMIvZZPkrlzYwRFdMEP+Sz85Bqn9OIV+I?=
- =?us-ascii?Q?yOzras6PWz/cauhjrvGSIp0sFMYNvT6SQAAbKIPtFwVKekw0RGoYNpWxYkMD?=
- =?us-ascii?Q?I3pa8undxS47hy428VluJhQRzvxkMPQKKACH5h9Qlxsz25Ok7EHFOioY68jZ?=
- =?us-ascii?Q?LabulEz8HtEwhd6pcWIAMLnkqgiHqEcQlRbNw/h0ci99LdC6JUGPSKxg++s0?=
- =?us-ascii?Q?OAnVosCyeD9cE/P/95s6Nn7AjacgSCZlZptd8mxZjg/7TA9gYzRcd/Orx0yv?=
- =?us-ascii?Q?fOIqENU5s2sv7b/drwKA4NJ2NmejQsZzspPLaIDdW7cx9AGdnmp/AdZD0Uyq?=
- =?us-ascii?Q?OHFQI4osMly3XjkW6S1iPI3sO9Nd+ywtqzyu4c/IrrC2gnQ9M/tlumj7E7Qv?=
- =?us-ascii?Q?Z4oIlwb9GJtDvAcAisu2x0i6Jj++pobk3ssGHXATLIy6NnlLRKXb4OsANAIj?=
- =?us-ascii?Q?6gnsi/hueWpwKaeCiZ9twjm7XMKEDnf0CPvN1xV1e9A7tHfYAd/a1bs6eWF6?=
- =?us-ascii?Q?bkL3EK6LrIzeYhhz0vYAhVlnP4C1P0vIS3gZMW7e5mERRkoQx/LJjkPOVc2F?=
- =?us-ascii?Q?LpOuSxhXQhNObCJ0XwZIVJ4uUg6iABFcosTC+8WZ2EZB81Uzp8y4QPZTk915?=
- =?us-ascii?Q?QUtlMkmME9izoi4BMWeQulFKtWTUKhvzw8kDbRmsYXpInXjBLXZJnPVBQslc?=
- =?us-ascii?Q?IzTtj/kyJGf3pt4+8MeNFHf/CIR/iGYAIwy0CoIxsTnjmvzFhXvNMgbaQty5?=
- =?us-ascii?Q?9eb7qlcLLxM01ATpUz5J2+RIqTyITsSoOsqyNCl9yjFVxD0wlnih10xqwRq+?=
- =?us-ascii?Q?Y2PW7EGJTOaJcoeasQGpVflZ+IzfxXE4yvgN0HV5Hlh+O2MuSQ9pm7/fV/Ie?=
- =?us-ascii?Q?zcDyJ9DFAIfFjc5nujHufmPeXA909O0I0I3DrUdfOlEZkOFBpjx2K4COYTgQ?=
- =?us-ascii?Q?SQAdZZAkbhb3ehTYRmDz8zDlAEjwF0A2OujjcWsjcwvBetN6065SixzBL3YS?=
- =?us-ascii?Q?s2TRf4VQ+RykWTCf9ohQxVnNYmr8Q2JNvoS1PN7W+D4d1ejEo55VRQ/DKBnT?=
- =?us-ascii?Q?Nlbj0yvmcQYhOzy+3H7R/va2LuLQJqtUJ/AgxbqZz/he4eG7iZuXL6Vo8ucv?=
- =?us-ascii?Q?GuiGcYpiN7fygJ92+QhGalsVFSYdUwQoCx8sz+QojYx6xp0HNqumC1V88J7C?=
- =?us-ascii?Q?wInD17APtkbrZ8ftZuhvdWtXkMfBxU/ae3B4zDlcA6o62NuR46hhKOtb8axQ?=
- =?us-ascii?Q?ru5ki7/meqqt0aSn3s7byM/0zHoPXGShYm/gb56O458PkqA5PDM9sthZmwmN?=
- =?us-ascii?Q?CGcjF4AcJKlb4RvFcrVHN+A4iQ0ZeiycODFY8hFSXM8snrVaqtsvH1qkN1xu?=
- =?us-ascii?Q?uJt/X9aG7kaMcpZ6u8jK03/QzRTDH6KyjXhG8+ubFCWThoFalzTdkdikxNZV?=
- =?us-ascii?Q?Xj/fnCImyPsTQDeU29iq5zUCeLkj9B2ZWOM5hhdtViff7l+6hx/5SVFzYTdq?=
- =?us-ascii?Q?a30DsJDhy6ixLmGuC8pu0QFfpZ5ZOtY7yrf6feevelBcucMpworwlaIag6my?=
- =?us-ascii?Q?84RyLiT2ZEgALniyOKux3DeNOIAz7rzi+IgDoiGPL5pavcnfWUicV2CnXG/U?=
- =?us-ascii?Q?0r2DupV9qA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45057af2-0e07-42cb-f881-08da21a75a3e
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2022 01:53:08.5865
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bk79gXVw5H4XS9JLXI4/4iMDPGk/l7ciDLCzjKURCgihyQQnqiUJ6USCGktTvonRpGCVuxirWCJmprKxvPqofQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1349
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Disposition: inline
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   af93551cf39027d176f30b9beafc60a4c130998a
+commit: 96618ccf069eedafdb527ebc33c48b30b348a406 [1645/2356] headers/deps: mm: Remove the <linux/gfp_api.h> header from <linux/gfp.h>
+config: x86_64-randconfig-a012-20220418 (https://download.01.org/0day-ci/archive/20220419/202204190947.AY5XKXTY-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 429cbac0390654f90bba18a41799464adf31a5ec)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=96618ccf069eedafdb527ebc33c48b30b348a406
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 96618ccf069eedafdb527ebc33c48b30b348a406
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/ drivers/block/aoe/ drivers/bus/mhi/host/ drivers/gpu/drm/i915/gvt/ drivers/gpu/drm/tiny/ drivers/hwmon/ drivers/iio/dac/ drivers/misc/ drivers/platform/x86/ drivers/power/supply/ drivers/spi/ drivers/thermal/intel/ lib/crypto/ net/mctp/
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> On Thu, Apr 14, 2022 at 01:18:10PM +1000, Alistair Popple wrote:
->> In some cases it is possible for mmu_interval_notifier_remove() to race
->> with mn_tree_inv_end() allowing it to return while the notifier data
->> structure is still in use. Consider the following sequence:
->>
->> CPU0 - mn_tree_inv_end()            CPU1 - mmu_interval_notifier_remove()
->>                                     spin_lock(subscriptions->lock);
->>                                     seq = subscriptions->invalidate_seq;
->> spin_lock(subscriptions->lock);     spin_unlock(subscriptions->lock);
->> subscriptions->invalidate_seq++;
->>                                     wait_event(invalidate_seq != seq);
->>                                     return;
->> interval_tree_remove(interval_sub); kfree(interval_sub);
->> spin_unlock(subscriptions->lock);
->> wake_up_all();
->>
->> As the wait_event() condition is true it will return immediately. This
->> can lead to use-after-free type errors if the caller frees the data
->> structure containing the interval notifier subscription while it is
->> still on a deferred list. Fix this by changing invalidate_seq to an
->> atomic type as it is read outside of the lock and moving the increment
->> until after deferred lists have been updated.
->
-> Oh, yes, that is a mistake.
->
-> I would not solve it with more unlocked atomics though, this is just a
-> simple case of a missing lock - can you look at this and if you like
-> it post it as a patch please?
+All warnings (new ones prefixed by >>):
 
-Yep, that looks good and is easier to understand. For some reason I had assumed
-the lack of locking was intentional. Will post the below fix as v2.
+   drivers/thermal/intel/intel_hfi.c:401:27: error: implicit declaration of function 'alloc_pages_exact' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           hfi_instance->hw_table = alloc_pages_exact(hfi_features.nr_table_pages,
+                                    ^
+>> drivers/thermal/intel/intel_hfi.c:401:25: warning: incompatible integer to pointer conversion assigning to 'void *' from 'int' [-Wint-conversion]
+           hfi_instance->hw_table = alloc_pages_exact(hfi_features.nr_table_pages,
+                                  ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/thermal/intel/intel_hfi.c:448:2: error: implicit declaration of function 'free_pages_exact' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           free_pages_exact(hfi_instance->hw_table, hfi_features.nr_table_pages);
+           ^
+   drivers/thermal/intel/intel_hfi.c:448:2: note: did you mean 'alloc_pages_exact'?
+   drivers/thermal/intel/intel_hfi.c:401:27: note: 'alloc_pages_exact' declared here
+           hfi_instance->hw_table = alloc_pages_exact(hfi_features.nr_table_pages,
+                                    ^
+   1 warning and 2 errors generated.
 
-> diff --git a/mm/mmu_notifier.c b/mm/mmu_notifier.c
-> index 459d195d2ff64b..f45ff1b7626a62 100644
-> --- a/mm/mmu_notifier.c
-> +++ b/mm/mmu_notifier.c
-> @@ -1036,6 +1036,18 @@ int mmu_interval_notifier_insert_locked(
->  }
->  EXPORT_SYMBOL_GPL(mmu_interval_notifier_insert_locked);
->
-> +static bool
-> +mmu_interval_seq_released(struct mmu_notifier_subscriptions *subscriptions,
-> +			  unsigned long seq)
-> +{
-> +	bool ret;
-> +
-> +	spin_lock(&subscriptions->lock);
-> +	ret = subscriptions->invalidate_seq != seq;
-> +	spin_unlock(&subscriptions->lock);
-> +	return ret;
-> +}
-> +
->  /**
->   * mmu_interval_notifier_remove - Remove a interval notifier
->   * @interval_sub: Interval subscription to unregister
-> @@ -1083,7 +1095,7 @@ void mmu_interval_notifier_remove(struct mmu_interval_notifier *interval_sub)
->  	lock_map_release(&__mmu_notifier_invalidate_range_start_map);
->  	if (seq)
->  		wait_event(subscriptions->wq,
-> -			   READ_ONCE(subscriptions->invalidate_seq) != seq);
-> +			   mmu_interval_seq_released(subscriptions, seq));
->
->  	/* pairs with mmgrab in mmu_interval_notifier_insert() */
->  	mmdrop(mm);
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
---=-=-=--
+vim +401 drivers/thermal/intel/intel_hfi.c
+
+2d74e6319abe27 Ricardo Neri 2022-01-27  343  
+2d74e6319abe27 Ricardo Neri 2022-01-27  344  /**
+2d74e6319abe27 Ricardo Neri 2022-01-27  345   * intel_hfi_online() - Enable HFI on @cpu
+2d74e6319abe27 Ricardo Neri 2022-01-27  346   * @cpu:	CPU in which the HFI will be enabled
+2d74e6319abe27 Ricardo Neri 2022-01-27  347   *
+2d74e6319abe27 Ricardo Neri 2022-01-27  348   * Enable the HFI to be used in @cpu. The HFI is enabled at the die/package
+2d74e6319abe27 Ricardo Neri 2022-01-27  349   * level. The first CPU in the die/package to come online does the full HFI
+2d74e6319abe27 Ricardo Neri 2022-01-27  350   * initialization. Subsequent CPUs will just link themselves to the HFI
+2d74e6319abe27 Ricardo Neri 2022-01-27  351   * instance of their die/package.
+2d74e6319abe27 Ricardo Neri 2022-01-27  352   *
+2d74e6319abe27 Ricardo Neri 2022-01-27  353   * This function is called before enabling the thermal vector in the local APIC
+2d74e6319abe27 Ricardo Neri 2022-01-27  354   * in order to ensure that @cpu has an associated HFI instance when it receives
+2d74e6319abe27 Ricardo Neri 2022-01-27  355   * an HFI event.
+2d74e6319abe27 Ricardo Neri 2022-01-27  356   */
+2d74e6319abe27 Ricardo Neri 2022-01-27  357  void intel_hfi_online(unsigned int cpu)
+2d74e6319abe27 Ricardo Neri 2022-01-27  358  {
+2d74e6319abe27 Ricardo Neri 2022-01-27  359  	struct hfi_instance *hfi_instance;
+2d74e6319abe27 Ricardo Neri 2022-01-27  360  	struct hfi_cpu_info *info;
+2d74e6319abe27 Ricardo Neri 2022-01-27  361  	phys_addr_t hw_table_pa;
+2d74e6319abe27 Ricardo Neri 2022-01-27  362  	u64 msr_val;
+2d74e6319abe27 Ricardo Neri 2022-01-27  363  	u16 die_id;
+2d74e6319abe27 Ricardo Neri 2022-01-27  364  
+2d74e6319abe27 Ricardo Neri 2022-01-27  365  	/* Nothing to do if hfi_instances are missing. */
+2d74e6319abe27 Ricardo Neri 2022-01-27  366  	if (!hfi_instances)
+2d74e6319abe27 Ricardo Neri 2022-01-27  367  		return;
+2d74e6319abe27 Ricardo Neri 2022-01-27  368  
+2d74e6319abe27 Ricardo Neri 2022-01-27  369  	/*
+2d74e6319abe27 Ricardo Neri 2022-01-27  370  	 * Link @cpu to the HFI instance of its package/die. It does not
+2d74e6319abe27 Ricardo Neri 2022-01-27  371  	 * matter whether the instance has been initialized.
+2d74e6319abe27 Ricardo Neri 2022-01-27  372  	 */
+2d74e6319abe27 Ricardo Neri 2022-01-27  373  	info = &per_cpu(hfi_cpu_info, cpu);
+2d74e6319abe27 Ricardo Neri 2022-01-27  374  	die_id = topology_logical_die_id(cpu);
+2d74e6319abe27 Ricardo Neri 2022-01-27  375  	hfi_instance = info->hfi_instance;
+2d74e6319abe27 Ricardo Neri 2022-01-27  376  	if (!hfi_instance) {
+2d74e6319abe27 Ricardo Neri 2022-01-27  377  		if (die_id < 0 || die_id >= max_hfi_instances)
+2d74e6319abe27 Ricardo Neri 2022-01-27  378  			return;
+2d74e6319abe27 Ricardo Neri 2022-01-27  379  
+2d74e6319abe27 Ricardo Neri 2022-01-27  380  		hfi_instance = &hfi_instances[die_id];
+2d74e6319abe27 Ricardo Neri 2022-01-27  381  		info->hfi_instance = hfi_instance;
+2d74e6319abe27 Ricardo Neri 2022-01-27  382  	}
+2d74e6319abe27 Ricardo Neri 2022-01-27  383  
+2d74e6319abe27 Ricardo Neri 2022-01-27  384  	init_hfi_cpu_index(info);
+2d74e6319abe27 Ricardo Neri 2022-01-27  385  
+2d74e6319abe27 Ricardo Neri 2022-01-27  386  	/*
+2d74e6319abe27 Ricardo Neri 2022-01-27  387  	 * Now check if the HFI instance of the package/die of @cpu has been
+2d74e6319abe27 Ricardo Neri 2022-01-27  388  	 * initialized (by checking its header). In such case, all we have to
+2d74e6319abe27 Ricardo Neri 2022-01-27  389  	 * do is to add @cpu to this instance's cpumask.
+2d74e6319abe27 Ricardo Neri 2022-01-27  390  	 */
+2d74e6319abe27 Ricardo Neri 2022-01-27  391  	mutex_lock(&hfi_instance_lock);
+2d74e6319abe27 Ricardo Neri 2022-01-27  392  	if (hfi_instance->hdr) {
+2d74e6319abe27 Ricardo Neri 2022-01-27  393  		cpumask_set_cpu(cpu, hfi_instance->cpus);
+2d74e6319abe27 Ricardo Neri 2022-01-27  394  		goto unlock;
+2d74e6319abe27 Ricardo Neri 2022-01-27  395  	}
+2d74e6319abe27 Ricardo Neri 2022-01-27  396  
+2d74e6319abe27 Ricardo Neri 2022-01-27  397  	/*
+2d74e6319abe27 Ricardo Neri 2022-01-27  398  	 * Hardware is programmed with the physical address of the first page
+2d74e6319abe27 Ricardo Neri 2022-01-27  399  	 * frame of the table. Hence, the allocated memory must be page-aligned.
+2d74e6319abe27 Ricardo Neri 2022-01-27  400  	 */
+2d74e6319abe27 Ricardo Neri 2022-01-27 @401  	hfi_instance->hw_table = alloc_pages_exact(hfi_features.nr_table_pages,
+2d74e6319abe27 Ricardo Neri 2022-01-27  402  						   GFP_KERNEL | __GFP_ZERO);
+2d74e6319abe27 Ricardo Neri 2022-01-27  403  	if (!hfi_instance->hw_table)
+2d74e6319abe27 Ricardo Neri 2022-01-27  404  		goto unlock;
+2d74e6319abe27 Ricardo Neri 2022-01-27  405  
+2d74e6319abe27 Ricardo Neri 2022-01-27  406  	hw_table_pa = virt_to_phys(hfi_instance->hw_table);
+2d74e6319abe27 Ricardo Neri 2022-01-27  407  
+2d74e6319abe27 Ricardo Neri 2022-01-27  408  	/*
+2d74e6319abe27 Ricardo Neri 2022-01-27  409  	 * Allocate memory to keep a local copy of the table that
+2d74e6319abe27 Ricardo Neri 2022-01-27  410  	 * hardware generates.
+2d74e6319abe27 Ricardo Neri 2022-01-27  411  	 */
+2d74e6319abe27 Ricardo Neri 2022-01-27  412  	hfi_instance->local_table = kzalloc(hfi_features.nr_table_pages << PAGE_SHIFT,
+2d74e6319abe27 Ricardo Neri 2022-01-27  413  					    GFP_KERNEL);
+2d74e6319abe27 Ricardo Neri 2022-01-27  414  	if (!hfi_instance->local_table)
+2d74e6319abe27 Ricardo Neri 2022-01-27  415  		goto free_hw_table;
+2d74e6319abe27 Ricardo Neri 2022-01-27  416  
+2d74e6319abe27 Ricardo Neri 2022-01-27  417  	/*
+2d74e6319abe27 Ricardo Neri 2022-01-27  418  	 * Program the address of the feedback table of this die/package. On
+2d74e6319abe27 Ricardo Neri 2022-01-27  419  	 * some processors, hardware remembers the old address of the HFI table
+2d74e6319abe27 Ricardo Neri 2022-01-27  420  	 * even after having been reprogrammed and re-enabled. Thus, do not free
+2d74e6319abe27 Ricardo Neri 2022-01-27  421  	 * the pages allocated for the table or reprogram the hardware with a
+2d74e6319abe27 Ricardo Neri 2022-01-27  422  	 * new base address. Namely, program the hardware only once.
+2d74e6319abe27 Ricardo Neri 2022-01-27  423  	 */
+2d74e6319abe27 Ricardo Neri 2022-01-27  424  	msr_val = hw_table_pa | HW_FEEDBACK_PTR_VALID_BIT;
+2d74e6319abe27 Ricardo Neri 2022-01-27  425  	wrmsrl(MSR_IA32_HW_FEEDBACK_PTR, msr_val);
+2d74e6319abe27 Ricardo Neri 2022-01-27  426  
+2d74e6319abe27 Ricardo Neri 2022-01-27  427  	init_hfi_instance(hfi_instance);
+2d74e6319abe27 Ricardo Neri 2022-01-27  428  
+ab09b0744a9944 Ricardo Neri 2022-01-27  429  	INIT_DELAYED_WORK(&hfi_instance->update_work, hfi_update_work_fn);
+ab09b0744a9944 Ricardo Neri 2022-01-27  430  	raw_spin_lock_init(&hfi_instance->table_lock);
+ab09b0744a9944 Ricardo Neri 2022-01-27  431  	raw_spin_lock_init(&hfi_instance->event_lock);
+ab09b0744a9944 Ricardo Neri 2022-01-27  432  
+2d74e6319abe27 Ricardo Neri 2022-01-27  433  	cpumask_set_cpu(cpu, hfi_instance->cpus);
+2d74e6319abe27 Ricardo Neri 2022-01-27  434  
+ab09b0744a9944 Ricardo Neri 2022-01-27  435  	/*
+ab09b0744a9944 Ricardo Neri 2022-01-27  436  	 * Enable the hardware feedback interface and never disable it. See
+ab09b0744a9944 Ricardo Neri 2022-01-27  437  	 * comment on programming the address of the table.
+ab09b0744a9944 Ricardo Neri 2022-01-27  438  	 */
+ab09b0744a9944 Ricardo Neri 2022-01-27  439  	rdmsrl(MSR_IA32_HW_FEEDBACK_CONFIG, msr_val);
+ab09b0744a9944 Ricardo Neri 2022-01-27  440  	msr_val |= HW_FEEDBACK_CONFIG_HFI_ENABLE_BIT;
+ab09b0744a9944 Ricardo Neri 2022-01-27  441  	wrmsrl(MSR_IA32_HW_FEEDBACK_CONFIG, msr_val);
+ab09b0744a9944 Ricardo Neri 2022-01-27  442  
+2d74e6319abe27 Ricardo Neri 2022-01-27  443  unlock:
+2d74e6319abe27 Ricardo Neri 2022-01-27  444  	mutex_unlock(&hfi_instance_lock);
+2d74e6319abe27 Ricardo Neri 2022-01-27  445  	return;
+2d74e6319abe27 Ricardo Neri 2022-01-27  446  
+2d74e6319abe27 Ricardo Neri 2022-01-27  447  free_hw_table:
+2d74e6319abe27 Ricardo Neri 2022-01-27  448  	free_pages_exact(hfi_instance->hw_table, hfi_features.nr_table_pages);
+2d74e6319abe27 Ricardo Neri 2022-01-27  449  	goto unlock;
+2d74e6319abe27 Ricardo Neri 2022-01-27  450  }
+2d74e6319abe27 Ricardo Neri 2022-01-27  451  
+
+:::::: The code at line 401 was first introduced by commit
+:::::: 2d74e6319abe278981e79166b6c2d0c3ed39b1ae thermal: intel: hfi: Handle CPU hotplug events
+
+:::::: TO: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+:::::: CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
