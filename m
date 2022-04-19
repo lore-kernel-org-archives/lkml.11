@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63940C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B780AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357202AbiDSS1h (ORCPT
+        id S1357223AbiDSS1l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37262 "EHLO
+        Tue, 19 Apr 2022 14:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357287AbiDSSXH (ORCPT
+        with ESMTP id S1357341AbiDSSXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D7A433AE;
-        Tue, 19 Apr 2022 11:15:40 -0700 (PDT)
+        Tue, 19 Apr 2022 14:23:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884C33EF03;
+        Tue, 19 Apr 2022 11:15:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF848B818EE;
-        Tue, 19 Apr 2022 18:15:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1332C385A9;
-        Tue, 19 Apr 2022 18:15:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E028861426;
+        Tue, 19 Apr 2022 18:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC2AC385A7;
+        Tue, 19 Apr 2022 18:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392137;
-        bh=H+7J76yVJjZsQhiXj0f3cOOgJ06vpupY1VOdh3C30xc=;
+        s=k20201202; t=1650392153;
+        bh=+Io3hLHcIRjPNqlAsc4Dro7jHI0gIfKz6QljcJbbR9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NAfxmvM/pC6FpuomelPAXKLhj2pqjhEhQ4hQAh5TEB0aNCUHxzfNvqzu43kdPz2Lu
-         tgsNylF8IytFcpCt8Ud7+Up+DBpEaJSzlBBSl0Cn2qgIib8WN2DqhVLuiXXidxsWxe
-         sfXWZGkmZP9SS1wzjd/uAMsFwmfkhGzUW85ImTB/ZHUGzS3vIMccuVUn1OXu+Fkejf
-         +tUiwXFpMtrOale7TVy1pn8TsrFXJlzE3dTeR+N/0HbTMSA/m1G4RgGbU4vom5qw2a
-         L3Eq1VclciA6WJ9XBefFuwz+usmG9jIvZJ4NM6enwzplY6ZGZjthm6YzNXz/xDqbE5
-         X+K+oOOueff3Q==
+        b=Skufuqq6M3QhB8HovGk4CTwr528/0CrUOGE1IqnV1edXN/ymAZfnrvkERcp0EG7JP
+         rfifYX+4gQQBqqc70lVIMBe3hmqwD4Y1Z4Ne7oLEvyh9sER/UHIlWDIy9wzbIEoJaq
+         PvtQE/IVh9TO+K4wuPzdJO7Mk68i1zhoprgxR/+AOurp+qElybM9iFtudgDSO0Oqlj
+         YxAKV/cjd/IWAelNtHf2D7iWcPwtQJh+OXGr9DjfRwJ1G3dtiaoKVDr1Ok+g7vUqX9
+         //afhZ2az9sdZK5ayzvaFsyi1eUyjA9GMNK3ZmPeBJ7Xa4N6GCOXHDr8eJgQFyhdmJ
+         v2bNKKoCYHTyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hongbin Wang <wh_bin@126.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 05/12] vxlan: fix error return code in vxlan_fdb_append
-Date:   Tue, 19 Apr 2022 14:15:18 -0400
-Message-Id: <20220419181525.486166-5-sashal@kernel.org>
+Cc:     Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
+        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 11/12] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 19 Apr 2022 14:15:24 -0400
+Message-Id: <20220419181525.486166-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
 References: <20220419181525.486166-1-sashal@kernel.org>
@@ -53,38 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
-When kmalloc and dst_cache_init failed,
-should return ENOMEM rather than ENOBUFS.
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
+
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
+
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index eacc1e32d547..1b98a888a168 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -524,11 +524,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 460bb81acf2b..d8e4842af055 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1364,6 +1364,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
  
- 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
- 	if (rd == NULL)
--		return -ENOBUFS;
-+		return -ENOMEM;
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1371,6 +1372,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
  
- 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
- 		kfree(rd);
--		return -ENOBUFS;
-+		return -ENOMEM;
- 	}
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
++
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+ }
  
- 	rd->remote_ip = *ip;
 -- 
 2.35.1
 
