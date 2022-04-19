@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A4A7C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78336C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355893AbiDSRKy (ORCPT
+        id S1355882AbiDSRKw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
+        Tue, 19 Apr 2022 13:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355604AbiDSRJr (ORCPT
+        with ESMTP id S1355612AbiDSRJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:09:47 -0400
+        Tue, 19 Apr 2022 13:09:50 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E2762C2
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8141138
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388022; x=1681924022;
+  t=1650388027; x=1681924027;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yN0yRbdkpZNX+e/QEdD0Iwhz8NeQzBwyhB1u8C+FbRs=;
-  b=Jmmu8xTpkoaKgQlbIMTn/N+SAyUxEEjebGUVMl/MTjNaYnK3BsSns0gv
-   hI/GS4kIRmx5vnlViONryVhvFblJnQ0le/qmMIbGmas51O1+kxgkoQFBk
-   kB6M536ZqovX7NFGqueOFYJz9dhE4oK/XX1QUR0jv7YRyZT4iNyd5BQOO
-   9do84tEHbN3BxcRLptK0SnwIZPfbmqBNmzaGxgSNCEfvPpLRmOrb/SQpz
-   WwbRz4GsGwrolbsnoYxTr98ujcCE/dJC2NsoDF2uC/A/xzy+tpXtLJrKu
-   jVKb1cShtxxNF8UaSAyL4Moocf7aNtEW5mKfKeSaesrd1uoWm7Iazvy2Z
+  bh=OvMcHVtcJvbvw4mAw0A77nXekx1g9G9EavzzKuKHygk=;
+  b=Xq2FZQgRlEaUq802TILiJZkv3LWUVXlGahX/6kNiur3gGsQJMo6jHfYZ
+   U1jgJaPN17hbukbFPWVXM3Gn+kpJL1KfoCpMNyE87H+q8W3dc/9EK8sXi
+   EV3uL9E70blmmRV4mVgFUmKZwyLLSX3w/CTlFKowklaR+/VSQHwWnok+h
+   N7HeXfjhBQcQo4a61+bgufgx6zhX4X8QOOi/L7hz+s4Lh9+PY+7fhF3RJ
+   bXna2kf9y0kpl4z04UEZrqky6ZqaZrXnRJcGiorZKdF2jJVrkckYHTLfz
+   BH+yxkxumA1Zi46nRR+sonXhmM88jqWbhOp2PWila7aAn9No7LxY+KBw1
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991825"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991849"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263991825"
+   d="scan'208";a="263991849"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:02 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:07 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="861588291"
+   d="scan'208";a="861588499"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:02 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:06 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 14/44] mm/pkeys: Introduce pks_set_readwrite()
-Date:   Tue, 19 Apr 2022 10:06:19 -0700
-Message-Id: <20220419170649.1022246-15-ira.weiny@intel.com>
+Subject: [PATCH V10 19/44] entry: Add calls for save/restore auxiliary pt_regs
+Date:   Tue, 19 Apr 2022 10:06:24 -0700
+Message-Id: <20220419170649.1022246-20-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,174 +60,119 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-When kernel code needs access to a PKS protected page they will need to
-change the protections for the pkey to Read/Write.
+Some architectures have auxiliary pt_regs space which is available to
+store extra information on the stack.  For ease of implementation the
+common C code was left to fill in the data when needed.
 
-Define pks_set_readwrite() to update the specified pkey.  Define
-pks_update_protection() as a helper to do the heavy lifting and allow
-for subsequent pks_set_*() calls.
+Add calls to the architecture save and restore auxiliary pt_regs
+functions.  Define empty calls for any architecture which does not have
+auxiliary pt_regs.
 
-Define PKEY_READ_WRITE rather than use a magic value of '0' in
-pks_update_protection().
-
-Finally, ensure preemption is disabled for pks_write_pkrs() because the
-context of this call can not generally be predicted.
-
-pks.h is created to avoid conflicts and header dependencies with the
-user space pkey code.
-
-Add documentation.
+NOTE: Due to the split nature of the Xen exit code
+irqentry_exit_cond_resched() requires an unbalanced call to
+arch_restore_aux_pt_regs().
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
-changes for v9
-	Move MSR documentation note to this patch
-	move declarations to incline/linux/pks.h
-	from rick edgecombe
-		change pkey type to u8
-	validate pkey range in pks_update_protection
-	from 0day
-		fix documentation link
-	from dave hansen
-		s/pks_mk_*/pks_set_*/
-		use pkey
-		s/pks_saved_pkrs/pkrs/
+Changes for V9
+	Update commit message
 
-changes for v8
-	define pkey_read_write
-	make the call inline
-	clean up the names
-	use pks_write_pkrs() with preemption disabled
-	split this out from 'add pks kernel api'
-	include documentation in this patch
+Changes for V8
+	New patch which introduces a generic auxiliary pt_register save
+		restore.
 ---
- Documentation/core-api/protection-keys.rst | 15 +++++++++++
- arch/x86/mm/pkeys.c                        | 31 ++++++++++++++++++++++
- include/linux/pks.h                        | 31 ++++++++++++++++++++++
- include/uapi/asm-generic/mman-common.h     |  1 +
- 4 files changed, 78 insertions(+)
- create mode 100644 include/linux/pks.h
+ include/linux/entry-common.h |  7 +++++++
+ kernel/entry/common.c        | 16 ++++++++++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index fe63acf5abbe..3af92e1cbffd 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -142,3 +142,18 @@ Adding pages to a pkey protected domain
+diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+index f35086d2a258..15b35ca937f2 100644
+--- a/include/linux/entry-common.h
++++ b/include/linux/entry-common.h
+@@ -79,6 +79,13 @@ static __always_inline void arch_check_user_regs(struct pt_regs *regs);
+ static __always_inline void arch_check_user_regs(struct pt_regs *regs) {}
+ #endif
  
- .. kernel-doc:: arch/x86/include/asm/pgtable_types.h
-         :doc: PKS_KEY_ASSIGNMENT
++#ifndef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
 +
-+Changing permissions of individual keys
-+---------------------------------------
++static inline void arch_save_aux_pt_regs(struct pt_regs *regs) { }
++static inline void arch_restore_aux_pt_regs(struct pt_regs *regs) { }
 +
-+.. kernel-doc:: include/linux/pks.h
-+        :identifiers: pks_set_readwrite
++#endif
 +
-+MSR details
-+~~~~~~~~~~~
-+
-+WRMSR is typically an architecturally serializing instruction.  However,
-+WRMSR(MSR_IA32_PKRS) is an exception.  It is not a serializing instruction and
-+instead maintains ordering properties similar to WRPKRU.  Thus it is safe to
-+immediately use a mapping when the pks_set*() functions returns.  Check the
-+latest SDM for details.
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index 39e4c2cbc279..e4cbc79686ea 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -6,6 +6,7 @@
- #include <linux/debugfs.h>		/* debugfs_create_u32()		*/
- #include <linux/mm_types.h>             /* mm_struct, vma, etc...       */
- #include <linux/pkeys.h>                /* PKEY_*                       */
-+#include <linux/pks.h>
- #include <linux/pks-keys.h>
- #include <uapi/asm-generic/mman-common.h>
+ /**
+  * enter_from_user_mode - Establish state when coming from user mode
+  *
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index 8f73b54bfa56..9a02b517c7e7 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -317,7 +317,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
  
-@@ -275,4 +276,34 @@ void pks_setup(void)
- 	cr4_set_bits(X86_CR4_PKS);
+ 	if (user_mode(regs)) {
+ 		irqentry_enter_from_user_mode(regs);
+-		return ret;
++		goto aux_save;
+ 	}
+ 
+ 	/*
+@@ -356,7 +356,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+ 		instrumentation_end();
+ 
+ 		ret.exit_rcu = true;
+-		return ret;
++		goto aux_save;
+ 	}
+ 
+ 	/*
+@@ -371,6 +371,11 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
+ 	trace_hardirqs_off_finish();
+ 	instrumentation_end();
+ 
++aux_save:
++	instrumentation_begin();
++	arch_save_aux_pt_regs(regs);
++	instrumentation_end();
++
+ 	return ret;
  }
  
-+/*
-+ * Do not call this directly, see pks_set*().
-+ *
-+ * @pkey: Key for the domain to change
-+ * @protection: protection bits to be used
-+ *
-+ * Protection utilizes the same protection bits specified for User pkeys
-+ *     PKEY_DISABLE_ACCESS
-+ *     PKEY_DISABLE_WRITE
-+ *
-+ */
-+void pks_update_protection(u8 pkey, u8 protection)
-+{
-+	u32 pkrs;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	if (WARN_ON_ONCE(pkey >= PKS_KEY_MAX))
-+		return;
-+
-+	pkrs = current->thread.pkrs;
-+	current->thread.pkrs = pkey_update_pkval(pkrs, pkey,
-+						 protection);
-+	preempt_disable();
-+	pks_write_pkrs(current->thread.pkrs);
-+	preempt_enable();
-+}
-+EXPORT_SYMBOL_GPL(pks_update_protection);
-+
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-diff --git a/include/linux/pks.h b/include/linux/pks.h
-new file mode 100644
-index 000000000000..8b705a937b19
---- /dev/null
-+++ b/include/linux/pks.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_PKS_H
-+#define _LINUX_PKS_H
-+
-+#ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-+
-+#include <linux/types.h>
-+
-+#include <uapi/asm-generic/mman-common.h>
-+
-+void pks_update_protection(u8 pkey, u8 protection);
-+
-+/**
-+ * pks_set_readwrite() - Make the domain Read/Write
-+ * @pkey: the pkey for which the access should change.
-+ *
-+ * Allow all access, read and write, to the domain specified by pkey.  This is
-+ * not a global update and only affects the current running thread.
-+ */
-+static inline void pks_set_readwrite(u8 pkey)
-+{
-+	pks_update_protection(pkey, PKEY_READ_WRITE);
-+}
-+
-+#else /* !CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-+
-+static inline void pks_set_readwrite(u8 pkey) {}
-+
-+#endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-+
-+#endif /* _LINUX_PKS_H */
-diff --git a/include/uapi/asm-generic/mman-common.h b/include/uapi/asm-generic/mman-common.h
-index 6c1aa92a92e4..f179544bd33a 100644
---- a/include/uapi/asm-generic/mman-common.h
-+++ b/include/uapi/asm-generic/mman-common.h
-@@ -80,6 +80,7 @@
- /* compatibility flags */
- #define MAP_FILE	0
+@@ -401,6 +406,7 @@ void dynamic_irqentry_exit_cond_resched(void)
  
-+#define PKEY_READ_WRITE		0x0
- #define PKEY_DISABLE_ACCESS	0x1
- #define PKEY_DISABLE_WRITE	0x2
- #define PKEY_ACCESS_MASK	(PKEY_DISABLE_ACCESS |\
+ void irqentry_exit_cond_resched(struct pt_regs *regs)
+ {
++	arch_restore_aux_pt_regs(regs);
+ 	irqentry_exit_cond_resched_internal();
+ }
+ 
+@@ -408,6 +414,10 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ {
+ 	lockdep_assert_irqs_disabled();
+ 
++	instrumentation_begin();
++	arch_restore_aux_pt_regs(regs);
++	instrumentation_end();
++
+ 	/* Check whether this returns to user mode */
+ 	if (user_mode(regs)) {
+ 		irqentry_exit_to_user_mode(regs);
+@@ -459,6 +469,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
+ 	instrumentation_begin();
+ 	trace_hardirqs_off_finish();
+ 	ftrace_nmi_enter();
++	arch_save_aux_pt_regs(regs);
+ 	instrumentation_end();
+ 
+ 	return irq_state;
+@@ -467,6 +478,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
+ void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
+ {
+ 	instrumentation_begin();
++	arch_restore_aux_pt_regs(regs);
+ 	ftrace_nmi_exit();
+ 	if (irq_state.lockdep) {
+ 		trace_hardirqs_on_prepare();
 -- 
 2.35.1
 
