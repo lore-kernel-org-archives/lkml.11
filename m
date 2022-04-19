@@ -2,1808 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8064C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E9BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351312AbiDSNG1 (ORCPT
+        id S1351327AbiDSNGh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
+        Tue, 19 Apr 2022 09:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351179AbiDSNGW (ORCPT
+        with ESMTP id S1351374AbiDSNGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:06:22 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3B0377C8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:03:36 -0700 (PDT)
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KjP5B4QwkzCrBV;
-        Tue, 19 Apr 2022 20:59:10 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 21:03:34 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 21:03:34 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <john.garry@huawei.com>, <will@kernel.org>, <mark.rutland@arm.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <f.fangjian@huawei.com>, <huangguangbin2@huawei.com>,
-        <lipeng321@huawei.com>, <shenjian15@huawei.com>,
-        <moyufeng@huawei.com>
-Subject: [PATCH V4 2/2] drivers/perf: hisi: add driver for HNS3 PMU
-Date:   Tue, 19 Apr 2022 20:57:50 +0800
-Message-ID: <20220419125750.5924-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220419125750.5924-1-huangguangbin2@huawei.com>
-References: <20220419125750.5924-1-huangguangbin2@huawei.com>
+        Tue, 19 Apr 2022 09:06:35 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060.outbound.protection.outlook.com [40.107.220.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E75737A03;
+        Tue, 19 Apr 2022 06:03:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GfVUJ8XgzzlnGTEvAVktVrkHnLd4qlYc84mNe4xqU2Y4+pEc6XpMkGEqUdMZXZh3u2rNvDuzRyVhR93A9D09cCXB06M74I+frfPMEfkozxFfVg37s0UfU0X3zjftzOQlD+7fxnsyZqqod+0ClF/c1mIYGnBQuFOflm0Gv75+tQ4BRrg+vT0g7nIg45eWI7bQ2Xrh//uStqS8KX+c0gzQgJypmu81C00OIBncRVg19S8/AM8smEf/GrOTMDT9RdMvw2JcGlYMp5Q7KqBQVjGGps8AUwWMF+eYcJpiQ5BvNUtr88F1E+V19FXI0UiAXK/2kd35cfX5d8UDTHvkOHJCTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ovzeeNOS6Omw9zacYr/PS6cq2VGFN0HZEqxAU/B9Fb8=;
+ b=ZxLAV3+7HLjqzhvJy4EZK6aAtUv15Cm4GvjklVfWgKalSt2DHUcl9HLfGaCzRPO4Bfwhe17yFoMXYW01fVuvGIK5nV6WA3DK/MrQ+FiJ4T4h+g2phAGGPLL55E7LJqqLmpYrrfQPa8k2I4+T2YdMFEXPiDujNoJyI0r8uGmMINyKsY4ci5ReFl05Ahn11onOYOHRdrXdk05ViLJUUJj+UpTPFvxIcHu4a0kjycTSF4LEmBCnSBAL0banpXwhhvvij2Z8uFHgeDrVYGQJcrrP0Mljh8wNrRQ8yZaa59Y3kkB+uu5iwjeWd5ndTu9D3C3yeI9Fs3VUCRZdeISGTWu24Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ovzeeNOS6Omw9zacYr/PS6cq2VGFN0HZEqxAU/B9Fb8=;
+ b=gEnz5aBUVmolbfLyTDQhKlMcuhHJN4YLBp8lPs2joYERULp3YAqW0A/mvjopxu5oz2dyCZy2EqUjQR6cbDCdemneN/gtqmfZfnf79wd2L9cU86jxMYRYolZsl3ym4lkfDuO4B+sMk6qhaE7AFKsA+cP7mda1kymvXJwvbgGwcXA=
+Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
+ by BY5PR12MB5543.namprd12.prod.outlook.com (2603:10b6:a03:1d1::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Tue, 19 Apr
+ 2022 13:03:48 +0000
+Received: from BL1PR12MB5157.namprd12.prod.outlook.com
+ ([fe80::3157:3164:59df:b603]) by BL1PR12MB5157.namprd12.prod.outlook.com
+ ([fe80::3157:3164:59df:b603%8]) with mapi id 15.20.5186.013; Tue, 19 Apr 2022
+ 13:03:48 +0000
+From:   "Limonciello, Mario" <Mario.Limonciello@amd.com>
+To:     firew4lker <firew4lker@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+CC:     "Natikar, Basavaraj" <Basavaraj.Natikar@amd.com>,
+        "Gong, Richard" <Richard.Gong@amd.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] gpio: Request interrupts after IRQ is initialized
+Thread-Topic: [PATCH] gpio: Request interrupts after IRQ is initialized
+Thread-Index: AQHYT6tiDiONtoBF+k2+wW5PsRbBBqz0DMIAgAEPJoCAAiA0YA==
+Date:   Tue, 19 Apr 2022 13:03:48 +0000
+Message-ID: <BL1PR12MB5157E0609CEBA19D2BE95C1CE2F29@BL1PR12MB5157.namprd12.prod.outlook.com>
+References: <20220414025705.598-1-mario.limonciello@amd.com>
+ <20966c6b-9045-9f8b-ba35-bf44091ce380@gmail.com>
+ <67df4178-5943-69d8-0d61-f533671a1248@amd.com>
+In-Reply-To: <67df4178-5943-69d8-0d61-f533671a1248@amd.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SetDate=2022-04-19T13:02:31Z;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Method=Privileged;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Name=Public-AIP 2.0;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=127d9d00-5152-408e-992a-13f5d961bd9c;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_enabled: true
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-04-19T13:03:47Z
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_method: Privileged
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_name: Public-AIP 2.0
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: ab2f2b5c-8ae4-4fdb-86f9-96a3fce27a06
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_contentbits: 0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 54565942-2202-4058-4f9d-08da22050b6a
+x-ms-traffictypediagnostic: BY5PR12MB5543:EE_
+x-microsoft-antispam-prvs: <BY5PR12MB5543BB4C66A31C76C6130AD3E2F29@BY5PR12MB5543.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2ijAaUwt+jD0B78sJjB44VpvmOJaAwZ1iO+c+uL8sKz2sa/cpnVIYlKvXaNVRAEUXBxSjoafqoGdrKg30xqDHiNvwu+P/RKkquMY8ZgPybL0wzpE2uxl+LpIDRZmC2m6kM3zdC2WCZE/RfJaJzf9xsd0JxWfvsQ3g7jsVWc+66JdSZXDAeXb2Z90Rn/mgYaWlAJS34zDbYtZTvtUEGHkMlabKEMIrj0Lo40LCVM+eSMPH7d+64AehagYo6XWlFLmUvQnuGGXlXg5/tg/yqhEHYcqsIGS1TEy4SsI7IldLXzQa3v5PnZEBSZugCsSdvICpwOwD8zrquI9LPLc1n8VAiRgH9yqGV+Xg3iD9uBJZYiO1CVmAJUpTG2LA3Izs+Iuk/acJ4OSpSYnHeTxT8f+DtuBG545YG1OGtYMiDqb44Zi+5nKl4tqwSYzGVhiRoUw5xCrWC5mepWSfg+iXAklqIdvIr6JJONUBtQzF1fWdJArQ5hveAEVj94ZHfShueCTUXAyppTIsSBV6PMyqC64i9ZB7ppPKurd8ubUOtK0OWULsn+9MGa/Dt1VduNOolT0AZ3iykTIVkRZiiU0cVTDEm1fFrSGMc9FfQlrFpsxDadCzdJPitmNnxip1jAcyg9qImtnluQRyvOCgJ0Hw1xxuDv9GTuy8SCZif6BVNeppQaIBuBWahyIb4U1ebRiGE5CutG4NXHxcAZ0gCBqzKgVl37RRQ5AkqMxRzh4in9K3VRJ/OE7TIdgEwlKlFlI/2xgYZt+Y70CJgNZaT9FXGgubHpXw2Pn+yCMLmiQghwCJdwU3xPXAkPVSycRmMr1g+aChD5bBtMgktXHK/RbmyhTPw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5157.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(122000001)(9686003)(52536014)(33656002)(8936002)(186003)(45080400002)(5660300002)(316002)(966005)(83380400001)(2906002)(66556008)(66476007)(71200400001)(76116006)(66446008)(508600001)(64756008)(8676002)(66946007)(38100700002)(55016003)(110136005)(54906003)(6506007)(7696005)(38070700005)(86362001)(53546011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MW02SHZ3b1JOSmRtZnJHMlJydUEyZkxJS0lxc21TRytHbnJFT3hrQm5lWWZv?=
+ =?utf-8?B?Y0svVytNSFA4WDNYYktkM3M0NEtZR3F2TVk5U2U2bTg1Sy9lN0d2S1BHNnUz?=
+ =?utf-8?B?WGt4d3ZMTHpMMGVJa1FacVBpbGt0VEF6Z05qOHBvczhtOXF3c2pjeUNtMFJL?=
+ =?utf-8?B?VDF1c2FRSzZycXFrV0ZPS01Tb1k4OTRlSjRianRCRkR2Vyt3cVlTd1YrQk9k?=
+ =?utf-8?B?N2FFMUE3T1IrbXZWK20xN1BPZWV5b0JTN24vZ2NobXplRmNHSHVLdHZ2YTFZ?=
+ =?utf-8?B?LzBvL2I2NjNFb3ZsTXkyVzRSM0ZSc2xLMC9td005bkt1cldHbFFqUHFNaFNT?=
+ =?utf-8?B?aVFMTFRTclRwamtYK3BSUjdQd25ycFgzeTBJUDNGUGp6SjU5WkVEWHpBR2FJ?=
+ =?utf-8?B?Ylp0VWdyTE9Yb3VhdWNRdmFQaVFrMTFSZXFjZXVISzlsNi85NDU5SGthbFdQ?=
+ =?utf-8?B?YVczR3oyQUZhLzc1ZzdndlJVWng0OEg5SGcxYTVaVFp1RUxIVHpDKzVCVWNa?=
+ =?utf-8?B?Z002bEIwQVU3VHNzdVR1a1QvZEdmeVIvUDhOS1V4Q0tjeXRwb3dSRVBwQlZl?=
+ =?utf-8?B?Zk51bmN6SmJWT2p2KzVrRUJvczJWbmxSZE5jdzl4TkNzK3hvd21CTzZxSEZL?=
+ =?utf-8?B?MkFaUEl5Tlg0Ym5GS29HaEpaZWxpMERiOU56eFVvazViRU5HbFh3UGx2ZE1s?=
+ =?utf-8?B?bWFhbDdiV1dXUldPNXV5ZmFkNTRZbmtYNjY0Z2RTN3VUOUcyWWVXdTRxNk9L?=
+ =?utf-8?B?VFBJZWFQeEZpOHNNR1Z1eU11N0t4Mmhyck9XYkx1QjJIcUFwUzdlWUlQbkhs?=
+ =?utf-8?B?amlOeDRxYzkveVZuckNoQkFQU0pxSkVwT1lOK3JzZmRtMWVJWVlNMVRwaGUy?=
+ =?utf-8?B?VXQwZENxdHNwNXlsL3VCcEFzSWk0aGFHc3djYkVTcldmUkpvTXlmcGttd3cw?=
+ =?utf-8?B?dlhtbXJRSEdjV3ZJWkwrem5BdXhuU21hSnZucktsQ2oxc1FZQU4yVzJ6RFZR?=
+ =?utf-8?B?UVBqc1JhbEpoU0xhM3F2ODhoZHRjWTNocEhyMHJ4cERINTVOZDFjQzdXb0hh?=
+ =?utf-8?B?ejZxSlkraXg0MDA4WndMK2QwQUxRSzhMQTBPRzVqQlpTc2ZQbVJPcUxSU09B?=
+ =?utf-8?B?MmI0RVNrK2F3dStUbVFXUFlmQzhLTmN3eWZoM2dwdDh6RlQvME9hRFJZVGx1?=
+ =?utf-8?B?TTZxTU5uRTUrWXRrMzdzejdmQmM2UHJ2a2dURm1VbG5YR0FVdGRvMUhjcUNR?=
+ =?utf-8?B?eHRCbm9xWWg1Zis0Q0VNenBLSjNRb2FmeHNheDM0bVMxL1BFZVhWWWxyQytG?=
+ =?utf-8?B?cGR5Y3k1L2I4OVBQZmZBSm9Qcm1RbDJQb0RRS21jL2R2SWwzSGlWbzFFMFly?=
+ =?utf-8?B?Q0R1eGZ3b3RXc3o5OStsUUR1S3hlVEFjdUlGNnRZa1ljVGlKbWxzMHJMQkpS?=
+ =?utf-8?B?VGdkaDFuUlhSU242eGVlUzJ2QUZaY3dBVE1lY3Q4TEtUbWJyb1paT0hPWlN2?=
+ =?utf-8?B?QVQ5bjVKWmphZ21rL2djTVdvWmFML1FLcFhkTzdHYmJJemE5Q1lIWW81V0JY?=
+ =?utf-8?B?dksvczdZV1ZxQkVWbStDdEtsSXRCUUdLcVlCa0Z6U1F5TUc0emRqNlBuczVJ?=
+ =?utf-8?B?bkdWZThPUkIwQ1EvZFR1TUdIbXhmQTBJbUF4R2JpK2NRb285azk2TlB4TVdv?=
+ =?utf-8?B?TENjejdzNG9FSzlScUsyTGlEeEJxWFU3VHdHZkEvVlNSWUFvbTB1RFhEMUk1?=
+ =?utf-8?B?Vkl5djJHSWM4WWlUTjRZMzJ3STBlUjBKWWQ2Nkw2d0JQVzlxWGRPYnQ5QTh3?=
+ =?utf-8?B?V0xzbEFaajRBKzF0aXovaVp0bGVobWZDbUVkKysxeTNXVGx4NUJ3UlVsQklO?=
+ =?utf-8?B?YzM0VmVRTjBKU0ZGRjJKb0dveVgxRFJYNjI4WGIwblc2aTgxZXkrT0NNZmNT?=
+ =?utf-8?B?YVRLczlGMFcvUUt2UThmUzA4VXVBUk5qendRRmowdnNCUmwwN0oybnVGL3Y1?=
+ =?utf-8?B?RTZBbmo3dDZCZ1Z1R1JlY2taeXBEZ1FVSU56SjJZWW9qSUtVcHl0VHhpUUc5?=
+ =?utf-8?B?TVlVZ0FVOHhsaWQ3Zi9MMXN0ZWUzTVpDOVVGTWVvLzM2RXk1M2dNb3p1UkVR?=
+ =?utf-8?B?VVV5OVBWRDlTZHlwWVNJMkVFaHcxTk9SS1I5bjk0SVRxaFNTWUhWdjVqUS90?=
+ =?utf-8?B?a1JXSkhUanFZWktuOE5IZHp0ellKRGNQTWdEenJaQ244eGQxK2lraGhhWnhZ?=
+ =?utf-8?B?L2c0RW9yUlZHcWxNTUlMV0JrdDZac29vL1ArQ3p1cVpOaGVERVhoZUVqUWNK?=
+ =?utf-8?B?d2h2M1NKbWNZb2twemtEdUNGQnVWTldRbFp1MDB5cUkyTlRSZ3FUUDFvSDA3?=
+ =?utf-8?Q?Vxz5preu/cXc6Pcw9R6iA/ls+YXHuTZ9aVRzf9j+FnyYk?=
+x-ms-exchange-antispam-messagedata-1: AVeApgKg1JS6MA==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54565942-2202-4058-4f9d-08da22050b6a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2022 13:03:48.7887
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: isDBwaUShmbdcYfYYQ4BqkNKlmctiktfwfDmx0t4XwQN8ImB5wlYfqXJSlkAd9npEIcJbnKpEF+QDvXlYAEqhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5543
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HNS3(HiSilicon Network System 3) PMU is RCiEP device in HiSilicon SoC NIC,
-supports collection of performance statistics such as bandwidth, latency,
-packet rate and interrupt rate.
-
-NIC of each SICL has one PMU device for it. Driver registers each PMU
-device to perf, and exports information of supported events, filter mode of
-each event, bdf range, hardware clock frequency, identifier and so on via
-sysfs.
-
-Each PMU device has its own registers of control, counters and interrupt,
-and it supports 8 hardware events, each hardward event has its own
-registers for configuration, counters and interrupt.
-
-Filter options contains:
-event        - select event
-port         - select physical port of nic
-tc           - select tc(must be used with port)
-func         - select PF/VF
-queue        - select queue of PF/VF(must be used with func)
-intr         - select interrupt number(must be used with func)
-global       - select all functions of IO DIE
-
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- MAINTAINERS                       |    6 +
- drivers/perf/hisilicon/Kconfig    |    9 +
- drivers/perf/hisilicon/Makefile   |    1 +
- drivers/perf/hisilicon/hns3_pmu.c | 1659 +++++++++++++++++++++++++++++
- include/linux/cpuhotplug.h        |    1 +
- 5 files changed, 1676 insertions(+)
- create mode 100644 drivers/perf/hisilicon/hns3_pmu.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 69a2935daf6c..34b87348503a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8691,6 +8691,12 @@ F:	Documentation/admin-guide/perf/hisi-pcie-pmu.rst
- F:	Documentation/admin-guide/perf/hisi-pmu.rst
- F:	drivers/perf/hisilicon
- 
-+HISILICON HNS3 PMU DRIVER
-+M:	Guangbin Huang <huangguangbin2@huawei.com>
-+S:	Supported
-+F:	Documentation/admin-guide/perf/hns3-pmu.rst
-+F:	drivers/perf/hisilicon/hns3_pmu.c
-+
- HISILICON QM AND ZIP Controller DRIVER
- M:	Zhou Wang <wangzhou1@hisilicon.com>
- L:	linux-crypto@vger.kernel.org
-diff --git a/drivers/perf/hisilicon/Kconfig b/drivers/perf/hisilicon/Kconfig
-index 5546218b5598..b2f0f0c86bb2 100644
---- a/drivers/perf/hisilicon/Kconfig
-+++ b/drivers/perf/hisilicon/Kconfig
-@@ -14,3 +14,12 @@ config HISI_PCIE_PMU
- 	  RCiEP devices.
- 	  Adds the PCIe PMU into perf events system for monitoring latency,
- 	  bandwidth etc.
-+
-+config HNS3_PMU
-+	tristate "HNS3 PERF PMU"
-+	depends on PCI && ARM64
-+	help
-+	  Provide support for HNS3 performance monitoring unit (PMU) RCiEP
-+	  devices.
-+	  Adds the HNS3 PMU into perf events system for monitoring latency,
-+	  bandwidth etc.
-diff --git a/drivers/perf/hisilicon/Makefile b/drivers/perf/hisilicon/Makefile
-index 506ed39e3266..13297ec2798f 100644
---- a/drivers/perf/hisilicon/Makefile
-+++ b/drivers/perf/hisilicon/Makefile
-@@ -4,3 +4,4 @@ obj-$(CONFIG_HISI_PMU) += hisi_uncore_pmu.o hisi_uncore_l3c_pmu.o \
- 			  hisi_uncore_pa_pmu.o
- 
- obj-$(CONFIG_HISI_PCIE_PMU) += hisi_pcie_pmu.o
-+obj-$(CONFIG_HNS3_PMU) += hns3_pmu.o
-diff --git a/drivers/perf/hisilicon/hns3_pmu.c b/drivers/perf/hisilicon/hns3_pmu.c
-new file mode 100644
-index 000000000000..e14ca6f29aec
---- /dev/null
-+++ b/drivers/perf/hisilicon/hns3_pmu.c
-@@ -0,0 +1,1659 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * This driver adds support for HNS3 PMU iEP device. Related perf events are
-+ * bandwidth, latency, packet rate, interrupt rate etc.
-+ *
-+ * Copyright (C) 2022 HiSilicon Limited
-+ */
-+#include <linux/bitfield.h>
-+#include <linux/bitmap.h>
-+#include <linux/bug.h>
-+#include <linux/cpuhotplug.h>
-+#include <linux/cpumask.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/interrupt.h>
-+#include <linux/iopoll.h>
-+#include <linux/irq.h>
-+#include <linux/kernel.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/pci-epf.h>
-+#include <linux/perf_event.h>
-+#include <linux/smp.h>
-+
-+/* registers offset address */
-+#define HNS3_PMU_REG_GLOBAL_CTRL		0x0000
-+#define HNS3_PMU_REG_CLOCK_FREQ			0x0020
-+#define HNS3_PMU_REG_BDF			0x0fe0
-+#define HNS3_PMU_REG_VERSION			0x0fe4
-+#define HNS3_PMU_REG_DEVICE_ID			0x0fe8
-+
-+#define HNS3_PMU_REG_EVENT_OFFSET		0x1000
-+#define HNS3_PMU_REG_EVENT_SIZE			0x1000
-+#define HNS3_PMU_REG_EVENT_CTRL_LOW		0x00
-+#define HNS3_PMU_REG_EVENT_CTRL_HIGH		0x04
-+#define HNS3_PMU_REG_EVENT_INTR_STATUS		0x08
-+#define HNS3_PMU_REG_EVENT_INTR_MASK		0x0c
-+#define HNS3_PMU_REG_EVENT_COUNTER		0x10
-+#define HNS3_PMU_REG_EVENT_EXT_COUNTER		0x18
-+#define HNS3_PMU_REG_EVENT_QID_CTRL		0x28
-+#define HNS3_PMU_REG_EVENT_QID_PARA		0x2c
-+
-+#define HNS3_PMU_FILTER_SUPPORT_GLOBAL		BIT(0)
-+#define HNS3_PMU_FILTER_SUPPORT_PORT		BIT(1)
-+#define HNS3_PMU_FILTER_SUPPORT_PORT_TC		BIT(2)
-+#define HNS3_PMU_FILTER_SUPPORT_FUNC		BIT(3)
-+#define HNS3_PMU_FILTER_SUPPORT_FUNC_QUEUE	BIT(4)
-+#define HNS3_PMU_FILTER_SUPPORT_FUNC_INTR	BIT(5)
-+
-+#define HNS3_PMU_FILTER_ALL_TC			0xf
-+#define HNS3_PMU_FILTER_ALL_QUEUE		0xffff
-+
-+#define HNS3_PMU_CTRL_SUBEVENT_S		4
-+#define HNS3_PMU_CTRL_FILTER_MODE_S		24
-+
-+#define HNS3_PMU_GLOBAL_START			BIT(0)
-+
-+#define HNS3_PMU_EVENT_STATUS_RESET		BIT(11)
-+#define HNS3_PMU_EVENT_EN			BIT(12)
-+#define HNS3_PMU_EVENT_OVERFLOW_RESTART		BIT(15)
-+
-+#define HNS3_PMU_QID_PARA_FUNC_S		0
-+#define HNS3_PMU_QID_PARA_QUEUE_S		16
-+
-+#define HNS3_PMU_QID_CTRL_REQ_ENABLE		BIT(0)
-+#define HNS3_PMU_QID_CTRL_DONE			BIT(1)
-+#define HNS3_PMU_QID_CTRL_MISS			BIT(2)
-+
-+#define HNS3_PMU_INTR_MASK_OVERFLOW		BIT(1)
-+
-+#define HNS3_PMU_MAX_HW_EVENTS			8
-+
-+/*
-+ * Each hardware event contains two registers (counter and ext_counter) for
-+ * bandwidth, packet rate, latency and interrupt rate. These two registers will
-+ * be triggered to run at the same when a hardware event is enabled. The meaning
-+ * of counter and ext_counter of different event type are different, their
-+ * meaning show as follow:
-+ *
-+ * +----------------+------------------+---------------+
-+ * |   event type   |     counter      |  ext_counter  |
-+ * +----------------+------------------+---------------+
-+ * | bandwidth      | byte number      | cycle number  |
-+ * +----------------+------------------+---------------+
-+ * | packet rate    | packet number    | cycle number  |
-+ * +----------------+------------------+---------------+
-+ * | latency        | cycle number     | packet number |
-+ * +----------------+------------------+---------------+
-+ * | interrupt rate | interrupt number | cycle number  |
-+ * +----------------+------------------+---------------+
-+ *
-+ * The cycle number indicates increment of counter of hardware timer, the
-+ * frequency of hardware timer can be read from hw_clk_freq file.
-+ *
-+ * Performance of each hardware event is calculated by: counter / ext_counter.
-+ *
-+ * Since processing of data is preferred to be done in userspace, we expose
-+ * ext_counter as a separate event for userspace and use bit 16 to indicate it.
-+ * For example, event 0x00001 and 0x10001 are actually one event for hardware
-+ * because bit 0-15 are same. If the bit 16 of one event is 0 means to read
-+ * counter register, otherwise means to read ext_counter register.
-+ */
-+/* bandwidth events */
-+#define HNS3_PMU_EVT_BW_SSU_EGU_BYTE_NUM		0x00001
-+#define HNS3_PMU_EVT_BW_SSU_EGU_TIME			0x10001
-+#define HNS3_PMU_EVT_BW_SSU_RPU_BYTE_NUM		0x00002
-+#define HNS3_PMU_EVT_BW_SSU_RPU_TIME			0x10002
-+#define HNS3_PMU_EVT_BW_SSU_ROCE_BYTE_NUM		0x00003
-+#define HNS3_PMU_EVT_BW_SSU_ROCE_TIME			0x10003
-+#define HNS3_PMU_EVT_BW_ROCE_SSU_BYTE_NUM		0x00004
-+#define HNS3_PMU_EVT_BW_ROCE_SSU_TIME			0x10004
-+#define HNS3_PMU_EVT_BW_TPU_SSU_BYTE_NUM		0x00005
-+#define HNS3_PMU_EVT_BW_TPU_SSU_TIME			0x10005
-+#define HNS3_PMU_EVT_BW_RPU_RCBRX_BYTE_NUM		0x00006
-+#define HNS3_PMU_EVT_BW_RPU_RCBRX_TIME			0x10006
-+#define HNS3_PMU_EVT_BW_RCBTX_TXSCH_BYTE_NUM		0x00008
-+#define HNS3_PMU_EVT_BW_RCBTX_TXSCH_TIME		0x10008
-+#define HNS3_PMU_EVT_BW_WR_FBD_BYTE_NUM			0x00009
-+#define HNS3_PMU_EVT_BW_WR_FBD_TIME			0x10009
-+#define HNS3_PMU_EVT_BW_WR_EBD_BYTE_NUM			0x0000a
-+#define HNS3_PMU_EVT_BW_WR_EBD_TIME			0x1000a
-+#define HNS3_PMU_EVT_BW_RD_FBD_BYTE_NUM			0x0000b
-+#define HNS3_PMU_EVT_BW_RD_FBD_TIME			0x1000b
-+#define HNS3_PMU_EVT_BW_RD_EBD_BYTE_NUM			0x0000c
-+#define HNS3_PMU_EVT_BW_RD_EBD_TIME			0x1000c
-+#define HNS3_PMU_EVT_BW_RD_PAY_M0_BYTE_NUM		0x0000d
-+#define HNS3_PMU_EVT_BW_RD_PAY_M0_TIME			0x1000d
-+#define HNS3_PMU_EVT_BW_RD_PAY_M1_BYTE_NUM		0x0000e
-+#define HNS3_PMU_EVT_BW_RD_PAY_M1_TIME			0x1000e
-+#define HNS3_PMU_EVT_BW_WR_PAY_M0_BYTE_NUM		0x0000f
-+#define HNS3_PMU_EVT_BW_WR_PAY_M0_TIME			0x1000f
-+#define HNS3_PMU_EVT_BW_WR_PAY_M1_BYTE_NUM		0x00010
-+#define HNS3_PMU_EVT_BW_WR_PAY_M1_TIME			0x10010
-+
-+/* packet rate events */
-+#define HNS3_PMU_EVT_PPS_IGU_SSU_PACKET_NUM		0x00100
-+#define HNS3_PMU_EVT_PPS_IGU_SSU_TIME			0x10100
-+#define HNS3_PMU_EVT_PPS_SSU_EGU_PACKET_NUM		0x00101
-+#define HNS3_PMU_EVT_PPS_SSU_EGU_TIME			0x10101
-+#define HNS3_PMU_EVT_PPS_SSU_RPU_PACKET_NUM		0x00102
-+#define HNS3_PMU_EVT_PPS_SSU_RPU_TIME			0x10102
-+#define HNS3_PMU_EVT_PPS_SSU_ROCE_PACKET_NUM		0x00103
-+#define HNS3_PMU_EVT_PPS_SSU_ROCE_TIME			0x10103
-+#define HNS3_PMU_EVT_PPS_ROCE_SSU_PACKET_NUM		0x00104
-+#define HNS3_PMU_EVT_PPS_ROCE_SSU_TIME			0x10104
-+#define HNS3_PMU_EVT_PPS_TPU_SSU_PACKET_NUM		0x00105
-+#define HNS3_PMU_EVT_PPS_TPU_SSU_TIME			0x10105
-+#define HNS3_PMU_EVT_PPS_RPU_RCBRX_PACKET_NUM		0x00106
-+#define HNS3_PMU_EVT_PPS_RPU_RCBRX_TIME			0x10106
-+#define HNS3_PMU_EVT_PPS_RCBTX_TPU_PACKET_NUM		0x00107
-+#define HNS3_PMU_EVT_PPS_RCBTX_TPU_TIME			0x10107
-+#define HNS3_PMU_EVT_PPS_RCBTX_TXSCH_PACKET_NUM		0x00108
-+#define HNS3_PMU_EVT_PPS_RCBTX_TXSCH_TIME		0x10108
-+#define HNS3_PMU_EVT_PPS_WR_FBD_PACKET_NUM		0x00109
-+#define HNS3_PMU_EVT_PPS_WR_FBD_TIME			0x10109
-+#define HNS3_PMU_EVT_PPS_WR_EBD_PACKET_NUM		0x0010a
-+#define HNS3_PMU_EVT_PPS_WR_EBD_TIME			0x1010a
-+#define HNS3_PMU_EVT_PPS_RD_FBD_PACKET_NUM		0x0010b
-+#define HNS3_PMU_EVT_PPS_RD_FBD_TIME			0x1010b
-+#define HNS3_PMU_EVT_PPS_RD_EBD_PACKET_NUM		0x0010c
-+#define HNS3_PMU_EVT_PPS_RD_EBD_TIME			0x1010c
-+#define HNS3_PMU_EVT_PPS_RD_PAY_M0_PACKET_NUM		0x0010d
-+#define HNS3_PMU_EVT_PPS_RD_PAY_M0_TIME			0x1010d
-+#define HNS3_PMU_EVT_PPS_RD_PAY_M1_PACKET_NUM		0x0010e
-+#define HNS3_PMU_EVT_PPS_RD_PAY_M1_TIME			0x1010e
-+#define HNS3_PMU_EVT_PPS_WR_PAY_M0_PACKET_NUM		0x0010f
-+#define HNS3_PMU_EVT_PPS_WR_PAY_M0_TIME			0x1010f
-+#define HNS3_PMU_EVT_PPS_WR_PAY_M1_PACKET_NUM		0x00110
-+#define HNS3_PMU_EVT_PPS_WR_PAY_M1_TIME			0x10110
-+#define HNS3_PMU_EVT_PPS_NICROH_TX_PRE_PACKET_NUM	0x00111
-+#define HNS3_PMU_EVT_PPS_NICROH_TX_PRE_TIME		0x10111
-+#define HNS3_PMU_EVT_PPS_NICROH_RX_PRE_PACKET_NUM	0x00112
-+#define HNS3_PMU_EVT_PPS_NICROH_RX_PRE_TIME		0x10112
-+
-+/* latency events */
-+#define HNS3_PMU_EVT_DLY_TX_PUSH_TIME			0x00202
-+#define HNS3_PMU_EVT_DLY_TX_PUSH_PACKET_NUM		0x10202
-+#define HNS3_PMU_EVT_DLY_TX_TIME			0x00204
-+#define HNS3_PMU_EVT_DLY_TX_PACKET_NUM			0x10204
-+#define HNS3_PMU_EVT_DLY_SSU_TX_NIC_TIME		0x00206
-+#define HNS3_PMU_EVT_DLY_SSU_TX_NIC_PACKET_NUM		0x10206
-+#define HNS3_PMU_EVT_DLY_SSU_TX_ROCE_TIME		0x00207
-+#define HNS3_PMU_EVT_DLY_SSU_TX_ROCE_PACKET_NUM		0x10207
-+#define HNS3_PMU_EVT_DLY_SSU_RX_NIC_TIME		0x00208
-+#define HNS3_PMU_EVT_DLY_SSU_RX_NIC_PACKET_NUM		0x10208
-+#define HNS3_PMU_EVT_DLY_SSU_RX_ROCE_TIME		0x00209
-+#define HNS3_PMU_EVT_DLY_SSU_RX_ROCE_PACKET_NUM		0x10209
-+#define HNS3_PMU_EVT_DLY_RPU_TIME			0x0020e
-+#define HNS3_PMU_EVT_DLY_RPU_PACKET_NUM			0x1020e
-+#define HNS3_PMU_EVT_DLY_TPU_TIME			0x0020f
-+#define HNS3_PMU_EVT_DLY_TPU_PACKET_NUM			0x1020f
-+#define HNS3_PMU_EVT_DLY_RPE_TIME			0x00210
-+#define HNS3_PMU_EVT_DLY_RPE_PACKET_NUM			0x10210
-+#define HNS3_PMU_EVT_DLY_TPE_TIME			0x00211
-+#define HNS3_PMU_EVT_DLY_TPE_PACKET_NUM			0x10211
-+#define HNS3_PMU_EVT_DLY_TPE_PUSH_TIME			0x00212
-+#define HNS3_PMU_EVT_DLY_TPE_PUSH_PACKET_NUM		0x10212
-+#define HNS3_PMU_EVT_DLY_WR_FBD_TIME			0x00213
-+#define HNS3_PMU_EVT_DLY_WR_FBD_PACKET_NUM		0x10213
-+#define HNS3_PMU_EVT_DLY_WR_EBD_TIME			0x00214
-+#define HNS3_PMU_EVT_DLY_WR_EBD_PACKET_NUM		0x10214
-+#define HNS3_PMU_EVT_DLY_RD_FBD_TIME			0x00215
-+#define HNS3_PMU_EVT_DLY_RD_FBD_PACKET_NUM		0x10215
-+#define HNS3_PMU_EVT_DLY_RD_EBD_TIME			0x00216
-+#define HNS3_PMU_EVT_DLY_RD_EBD_PACKET_NUM		0x10216
-+#define HNS3_PMU_EVT_DLY_RD_PAY_M0_TIME			0x00217
-+#define HNS3_PMU_EVT_DLY_RD_PAY_M0_PACKET_NUM		0x10217
-+#define HNS3_PMU_EVT_DLY_RD_PAY_M1_TIME			0x00218
-+#define HNS3_PMU_EVT_DLY_RD_PAY_M1_PACKET_NUM		0x10218
-+#define HNS3_PMU_EVT_DLY_WR_PAY_M0_TIME			0x00219
-+#define HNS3_PMU_EVT_DLY_WR_PAY_M0_PACKET_NUM		0x10219
-+#define HNS3_PMU_EVT_DLY_WR_PAY_M1_TIME			0x0021a
-+#define HNS3_PMU_EVT_DLY_WR_PAY_M1_PACKET_NUM		0x1021a
-+#define HNS3_PMU_EVT_DLY_MSIX_WRITE_TIME		0x0021c
-+#define HNS3_PMU_EVT_DLY_MSIX_WRITE_PACKET_NUM		0x1021c
-+
-+/* interrupt rate events */
-+#define HNS3_PMU_EVT_PPS_MSIX_NIC_INTR_NUM		0x00300
-+#define HNS3_PMU_EVT_PPS_MSIX_NIC_TIME			0x10300
-+
-+/* filter mode supported by each bandwidth event */
-+#define HNS3_PMU_FILTER_BW_SSU_EGU		0x07
-+#define HNS3_PMU_FILTER_BW_SSU_RPU		0x1f
-+#define HNS3_PMU_FILTER_BW_SSU_ROCE		0x0f
-+#define HNS3_PMU_FILTER_BW_ROCE_SSU		0x0f
-+#define HNS3_PMU_FILTER_BW_TPU_SSU		0x1f
-+#define HNS3_PMU_FILTER_BW_RPU_RCBRX		0x11
-+#define HNS3_PMU_FILTER_BW_RCBTX_TXSCH		0x11
-+#define HNS3_PMU_FILTER_BW_WR_FBD		0x1b
-+#define HNS3_PMU_FILTER_BW_WR_EBD		0x11
-+#define HNS3_PMU_FILTER_BW_RD_FBD		0x01
-+#define HNS3_PMU_FILTER_BW_RD_EBD		0x1b
-+#define HNS3_PMU_FILTER_BW_RD_PAY_M0		0x01
-+#define HNS3_PMU_FILTER_BW_RD_PAY_M1		0x01
-+#define HNS3_PMU_FILTER_BW_WR_PAY_M0		0x01
-+#define HNS3_PMU_FILTER_BW_WR_PAY_M1		0x01
-+
-+/* filter mode supported by each packet rate event */
-+#define HNS3_PMU_FILTER_PPS_IGU_SSU		0x07
-+#define HNS3_PMU_FILTER_PPS_SSU_EGU		0x07
-+#define HNS3_PMU_FILTER_PPS_SSU_RPU		0x1f
-+#define HNS3_PMU_FILTER_PPS_SSU_ROCE		0x0f
-+#define HNS3_PMU_FILTER_PPS_ROCE_SSU		0x0f
-+#define HNS3_PMU_FILTER_PPS_TPU_SSU		0x1f
-+#define HNS3_PMU_FILTER_PPS_RPU_RCBRX		0x11
-+#define HNS3_PMU_FILTER_PPS_RCBTX_TPU		0x1f
-+#define HNS3_PMU_FILTER_PPS_RCBTX_TXSCH		0x11
-+#define HNS3_PMU_FILTER_PPS_WR_FBD		0x1b
-+#define HNS3_PMU_FILTER_PPS_WR_EBD		0x11
-+#define HNS3_PMU_FILTER_PPS_RD_FBD		0x01
-+#define HNS3_PMU_FILTER_PPS_RD_EBD		0x1b
-+#define HNS3_PMU_FILTER_PPS_RD_PAY_M0		0x01
-+#define HNS3_PMU_FILTER_PPS_RD_PAY_M1		0x01
-+#define HNS3_PMU_FILTER_PPS_WR_PAY_M0		0x01
-+#define HNS3_PMU_FILTER_PPS_WR_PAY_M1		0x01
-+#define HNS3_PMU_FILTER_PPS_NICROH_TX_PRE	0x01
-+#define HNS3_PMU_FILTER_PPS_NICROH_RX_PRE	0x01
-+
-+/* filter mode supported by each latency event */
-+#define HNS3_PMU_FILTER_DLY_TX_PUSH		0x01
-+#define HNS3_PMU_FILTER_DLY_TX			0x01
-+#define HNS3_PMU_FILTER_DLY_SSU_TX_NIC		0x07
-+#define HNS3_PMU_FILTER_DLY_SSU_TX_ROCE		0x07
-+#define HNS3_PMU_FILTER_DLY_SSU_RX_NIC		0x07
-+#define HNS3_PMU_FILTER_DLY_SSU_RX_ROCE		0x07
-+#define HNS3_PMU_FILTER_DLY_RPU			0x11
-+#define HNS3_PMU_FILTER_DLY_TPU			0x1f
-+#define HNS3_PMU_FILTER_DLY_RPE			0x01
-+#define HNS3_PMU_FILTER_DLY_TPE			0x0b
-+#define HNS3_PMU_FILTER_DLY_TPE_PUSH		0x1b
-+#define HNS3_PMU_FILTER_DLY_WR_FBD		0x1b
-+#define HNS3_PMU_FILTER_DLY_WR_EBD		0x11
-+#define HNS3_PMU_FILTER_DLY_RD_FBD		0x01
-+#define HNS3_PMU_FILTER_DLY_RD_EBD		0x1b
-+#define HNS3_PMU_FILTER_DLY_RD_PAY_M0		0x01
-+#define HNS3_PMU_FILTER_DLY_RD_PAY_M1		0x01
-+#define HNS3_PMU_FILTER_DLY_WR_PAY_M0		0x01
-+#define HNS3_PMU_FILTER_DLY_WR_PAY_M1		0x01
-+#define HNS3_PMU_FILTER_DLY_MSIX_WRITE		0x01
-+
-+/* filter mode supported by each interrupt rate event */
-+#define HNS3_PMU_FILTER_INTR_MSIX_NIC		0x01
-+
-+enum hns3_pmu_hw_filter_mode {
-+	HNS3_PMU_HW_FILTER_GLOBAL,
-+	HNS3_PMU_HW_FILTER_PORT,
-+	HNS3_PMU_HW_FILTER_PORT_TC,
-+	HNS3_PMU_HW_FILTER_FUNC,
-+	HNS3_PMU_HW_FILTER_FUNC_QUEUE,
-+	HNS3_PMU_HW_FILTER_FUNC_INTR,
-+};
-+
-+struct hns3_pmu_event_attr {
-+	u32 event;
-+	u16 filter_support;
-+};
-+
-+struct hns3_pmu {
-+	struct perf_event *hw_events[HNS3_PMU_MAX_HW_EVENTS];
-+	struct hlist_node node;
-+	struct pci_dev *pdev;
-+	struct pmu pmu;
-+	void __iomem *base;
-+	int irq;
-+	int on_cpu;
-+	u32 identifier;
-+	u32 hw_clk_freq; /* hardware clock frequency of PMU */
-+	/* maximum and minimum bdf allowed by PMU */
-+	u16 bdf_min;
-+	u16 bdf_max;
-+};
-+
-+#define to_hns3_pmu(p)  (container_of((p), struct hns3_pmu, pmu))
-+
-+#define GET_PCI_DEVFN(bdf)  ((bdf) & 0xff)
-+
-+#define FILTER_CONDITION_PORT(port) ((1 << (port)) & 0xff)
-+#define FILTER_CONDITION_PORT_TC(port, tc) (((port) << 3) | ((tc) & 0x07))
-+#define FILTER_CONDITION_FUNC_INTR(func, intr) (((intr) << 8) | (func))
-+
-+#define HNS3_PMU_FILTER_ATTR(_name, _config, _start, _end)            \
-+	static inline u64 hns3_get_##_name(struct perf_event *event)  \
-+	{                                                             \
-+		return FIELD_GET(GENMASK_ULL(_end, _start),           \
-+				 event->attr._config);                \
-+	}
-+
-+HNS3_PMU_FILTER_ATTR(event, config, 0, 16);
-+HNS3_PMU_FILTER_ATTR(subevent, config, 0, 7);
-+HNS3_PMU_FILTER_ATTR(event_type, config, 8, 15);
-+HNS3_PMU_FILTER_ATTR(ext_counter_used, config, 16, 16);
-+HNS3_PMU_FILTER_ATTR(real_event, config, 0, 15);
-+HNS3_PMU_FILTER_ATTR(port, config1, 0, 3);
-+HNS3_PMU_FILTER_ATTR(tc, config1, 4, 7);
-+HNS3_PMU_FILTER_ATTR(bdf, config1, 8, 23);
-+HNS3_PMU_FILTER_ATTR(queue, config1, 24, 39);
-+HNS3_PMU_FILTER_ATTR(intr, config1, 40, 51);
-+HNS3_PMU_FILTER_ATTR(global, config1, 52, 52);
-+
-+#define HNS3_BW_EVT_BYTE_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_BW_##_name##_BYTE_NUM,				\
-+	HNS3_PMU_FILTER_BW_##_name})
-+#define HNS3_BW_EVT_TIME(_name)		(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_BW_##_name##_TIME,					\
-+	HNS3_PMU_FILTER_BW_##_name})
-+#define HNS3_PPS_EVT_PACKET_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_PPS_##_name##_PACKET_NUM,				\
-+	HNS3_PMU_FILTER_PPS_##_name})
-+#define HNS3_PPS_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_PPS_##_name##_TIME,				\
-+	HNS3_PMU_FILTER_PPS_##_name})
-+#define HNS3_DLY_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_DLY_##_name##_TIME,				\
-+	HNS3_PMU_FILTER_DLY_##_name})
-+#define HNS3_DLY_EVT_PACKET_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_DLY_##_name##_PACKET_NUM,				\
-+	HNS3_PMU_FILTER_DLY_##_name})
-+#define HNS3_INTR_EVT_INTR_NUM(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_PPS_##_name##_INTR_NUM,				\
-+	HNS3_PMU_FILTER_INTR_##_name})
-+#define HNS3_INTR_EVT_TIME(_name)	(&(struct hns3_pmu_event_attr) {\
-+	HNS3_PMU_EVT_PPS_##_name##_TIME,				\
-+	HNS3_PMU_FILTER_INTR_##_name})
-+
-+static ssize_t hns3_pmu_format_show(struct device *dev,
-+				    struct device_attribute *attr, char *buf)
-+{
-+	struct dev_ext_attribute *eattr;
-+
-+	eattr = container_of(attr, struct dev_ext_attribute, attr);
-+
-+	return sysfs_emit(buf, "%s\n", (char *)eattr->var);
-+}
-+
-+static ssize_t hns3_pmu_event_show(struct device *dev,
-+				   struct device_attribute *attr, char *buf)
-+{
-+	struct hns3_pmu_event_attr *event;
-+	struct dev_ext_attribute *eattr;
-+
-+	eattr = container_of(attr, struct dev_ext_attribute, attr);
-+	event = eattr->var;
-+
-+	return sysfs_emit(buf, "config=0x%05x\n", event->event);
-+}
-+
-+static ssize_t hns3_pmu_filter_mode_show(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
-+{
-+	struct hns3_pmu_event_attr *event;
-+	struct dev_ext_attribute *eattr;
-+	int len;
-+
-+	eattr = container_of(attr, struct dev_ext_attribute, attr);
-+	event = eattr->var;
-+
-+	len = sysfs_emit_at(buf, 0, "filter mode supported: ");
-+	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_GLOBAL)
-+		len += sysfs_emit_at(buf, len, "global ");
-+	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT)
-+		len += sysfs_emit_at(buf, len, "port ");
-+	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT_TC)
-+		len += sysfs_emit_at(buf, len, "port-tc ");
-+	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC)
-+		len += sysfs_emit_at(buf, len, "func ");
-+	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_QUEUE)
-+		len += sysfs_emit_at(buf, len, "func-queue ");
-+	if (event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_INTR)
-+		len += sysfs_emit_at(buf, len, "func-intr");
-+
-+	len += sysfs_emit_at(buf, len, "\n");
-+
-+	return len;
-+}
-+
-+#define HNS3_PMU_ATTR(_name, _func, _config)				\
-+	(&((struct dev_ext_attribute[]) {				\
-+		{ __ATTR(_name, 0444, _func, NULL), (void *)_config }	\
-+	})[0].attr.attr)
-+
-+#define HNS3_PMU_FORMAT_ATTR(_name, _format) \
-+	HNS3_PMU_ATTR(_name, hns3_pmu_format_show, (void *)_format)
-+#define HNS3_PMU_EVENT_ATTR(_name, _event) \
-+	HNS3_PMU_ATTR(_name, hns3_pmu_event_show, (void *)_event)
-+#define HNS3_PMU_FLT_MODE_ATTR(_name, _event) \
-+	HNS3_PMU_ATTR(_name, hns3_pmu_filter_mode_show, (void *)_event)
-+
-+#define HNS3_PMU_BW_EVT_PAIR(_name, _macro) \
-+	HNS3_PMU_EVENT_ATTR(_name##_byte_num, HNS3_BW_EVT_BYTE_NUM(_macro)), \
-+	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_BW_EVT_TIME(_macro))
-+#define HNS3_PMU_PPS_EVT_PAIR(_name, _macro) \
-+	HNS3_PMU_EVENT_ATTR(_name##_packet_num, HNS3_PPS_EVT_PACKET_NUM(_macro)), \
-+	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_PPS_EVT_TIME(_macro))
-+#define HNS3_PMU_DLY_EVT_PAIR(_name, _macro) \
-+	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_DLY_EVT_TIME(_macro)), \
-+	HNS3_PMU_EVENT_ATTR(_name##_packet_num, HNS3_DLY_EVT_PACKET_NUM(_macro))
-+#define HNS3_PMU_INTR_EVT_PAIR(_name, _macro) \
-+	HNS3_PMU_EVENT_ATTR(_name##_intr_num, HNS3_INTR_EVT_INTR_NUM(_macro)), \
-+	HNS3_PMU_EVENT_ATTR(_name##_time, HNS3_INTR_EVT_TIME(_macro))
-+
-+#define HNS3_PMU_BW_FLT_MODE_PAIR(_name, _macro) \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_byte_num, HNS3_BW_EVT_BYTE_NUM(_macro)), \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_BW_EVT_TIME(_macro))
-+#define HNS3_PMU_PPS_FLT_MODE_PAIR(_name, _macro) \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_packet_num, HNS3_PPS_EVT_PACKET_NUM(_macro)), \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_PPS_EVT_TIME(_macro))
-+#define HNS3_PMU_DLY_FLT_MODE_PAIR(_name, _macro) \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_DLY_EVT_TIME(_macro)), \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_packet_num, HNS3_DLY_EVT_PACKET_NUM(_macro))
-+#define HNS3_PMU_INTR_FLT_MODE_PAIR(_name, _macro) \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_intr_num, HNS3_INTR_EVT_INTR_NUM(_macro)), \
-+	HNS3_PMU_FLT_MODE_ATTR(_name##_time, HNS3_INTR_EVT_TIME(_macro))
-+
-+static u8 hns3_pmu_hw_filter_modes[] = {
-+	HNS3_PMU_HW_FILTER_GLOBAL,
-+	HNS3_PMU_HW_FILTER_PORT,
-+	HNS3_PMU_HW_FILTER_PORT_TC,
-+	HNS3_PMU_HW_FILTER_FUNC,
-+	HNS3_PMU_HW_FILTER_FUNC_QUEUE,
-+	HNS3_PMU_HW_FILTER_FUNC_INTR,
-+};
-+
-+#define HNS3_PMU_SET_HW_FILTER(_hwc, _mode) \
-+	((_hwc)->addr_filters = (void *)&hns3_pmu_hw_filter_modes[(_mode)])
-+
-+static ssize_t identifier_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
-+
-+	return sysfs_emit(buf, "0x%x\n", hns3_pmu->identifier);
-+}
-+static DEVICE_ATTR_RO(identifier);
-+
-+static ssize_t cpumask_show(struct device *dev, struct device_attribute *attr,
-+			    char *buf)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
-+
-+	return sysfs_emit(buf, "%d\n", hns3_pmu->on_cpu);
-+}
-+static DEVICE_ATTR_RO(cpumask);
-+
-+static ssize_t bdf_min_show(struct device *dev, struct device_attribute *attr,
-+			    char *buf)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
-+
-+	return sysfs_emit(buf, "0x%4x\n", hns3_pmu->bdf_min);
-+}
-+static DEVICE_ATTR_RO(bdf_min);
-+
-+static ssize_t bdf_max_show(struct device *dev, struct device_attribute *attr,
-+			    char *buf)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
-+
-+	return sysfs_emit(buf, "0x%4x\n", hns3_pmu->bdf_max);
-+}
-+static DEVICE_ATTR_RO(bdf_max);
-+
-+static ssize_t hw_clk_freq_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(dev_get_drvdata(dev));
-+
-+	return sysfs_emit(buf, "%u\n", hns3_pmu->hw_clk_freq);
-+}
-+static DEVICE_ATTR_RO(hw_clk_freq);
-+
-+static struct attribute *hns3_pmu_events_attr[] = {
-+	/* bandwidth events */
-+	HNS3_PMU_BW_EVT_PAIR(bw_ssu_egu, SSU_EGU),
-+	HNS3_PMU_BW_EVT_PAIR(bw_ssu_rpu, SSU_RPU),
-+	HNS3_PMU_BW_EVT_PAIR(bw_ssu_roce, SSU_ROCE),
-+	HNS3_PMU_BW_EVT_PAIR(bw_roce_ssu, ROCE_SSU),
-+	HNS3_PMU_BW_EVT_PAIR(bw_tpu_ssu, TPU_SSU),
-+	HNS3_PMU_BW_EVT_PAIR(bw_rpu_rcbrx, RPU_RCBRX),
-+	HNS3_PMU_BW_EVT_PAIR(bw_rcbtx_txsch, RCBTX_TXSCH),
-+	HNS3_PMU_BW_EVT_PAIR(bw_wr_fbd, WR_FBD),
-+	HNS3_PMU_BW_EVT_PAIR(bw_wr_ebd, WR_EBD),
-+	HNS3_PMU_BW_EVT_PAIR(bw_rd_fbd, RD_FBD),
-+	HNS3_PMU_BW_EVT_PAIR(bw_rd_ebd, RD_EBD),
-+	HNS3_PMU_BW_EVT_PAIR(bw_rd_pay_m0, RD_PAY_M0),
-+	HNS3_PMU_BW_EVT_PAIR(bw_rd_pay_m1, RD_PAY_M1),
-+	HNS3_PMU_BW_EVT_PAIR(bw_wr_pay_m0, WR_PAY_M0),
-+	HNS3_PMU_BW_EVT_PAIR(bw_wr_pay_m1, WR_PAY_M1),
-+
-+	/* packet rate events */
-+	HNS3_PMU_PPS_EVT_PAIR(pps_igu_ssu, IGU_SSU),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_ssu_egu, SSU_EGU),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_ssu_rpu, SSU_RPU),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_ssu_roce, SSU_ROCE),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_roce_ssu, ROCE_SSU),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_tpu_ssu, TPU_SSU),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rpu_rcbrx, RPU_RCBRX),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rcbtx_tpu, RCBTX_TPU),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rcbtx_txsch, RCBTX_TXSCH),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_wr_fbd, WR_FBD),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_wr_ebd, WR_EBD),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rd_fbd, RD_FBD),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rd_ebd, RD_EBD),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rd_pay_m0, RD_PAY_M0),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_rd_pay_m1, RD_PAY_M1),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_wr_pay_m0, WR_PAY_M0),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_wr_pay_m1, WR_PAY_M1),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_intr_nicroh_tx_pre, NICROH_TX_PRE),
-+	HNS3_PMU_PPS_EVT_PAIR(pps_intr_nicroh_rx_pre, NICROH_RX_PRE),
-+
-+	/* latency events */
-+	HNS3_PMU_DLY_EVT_PAIR(dly_tx_push_to_mac, TX_PUSH),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_tx_normal_to_mac, TX),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_ssu_tx_th_nic, SSU_TX_NIC),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_ssu_tx_th_roce, SSU_TX_ROCE),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_ssu_rx_th_nic, SSU_RX_NIC),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_ssu_rx_th_roce, SSU_RX_ROCE),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_rpu, RPU),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_tpu, TPU),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_rpe, RPE),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_tpe_normal, TPE),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_tpe_push, TPE_PUSH),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_wr_fbd, WR_FBD),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_wr_ebd, WR_EBD),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_rd_fbd, RD_FBD),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_rd_ebd, RD_EBD),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_rd_pay_m0, RD_PAY_M0),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_rd_pay_m1, RD_PAY_M1),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_wr_pay_m0, WR_PAY_M0),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_wr_pay_m1, WR_PAY_M1),
-+	HNS3_PMU_DLY_EVT_PAIR(dly_msix_write, MSIX_WRITE),
-+
-+	/* interrupt rate events */
-+	HNS3_PMU_INTR_EVT_PAIR(pps_intr_msix_nic, MSIX_NIC),
-+
-+	NULL
-+};
-+
-+static struct attribute *hns3_pmu_filter_mode_attr[] = {
-+	/* bandwidth events */
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_ssu_egu, SSU_EGU),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_ssu_rpu, SSU_RPU),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_ssu_roce, SSU_ROCE),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_roce_ssu, ROCE_SSU),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_tpu_ssu, TPU_SSU),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_rpu_rcbrx, RPU_RCBRX),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_rcbtx_txsch, RCBTX_TXSCH),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_wr_fbd, WR_FBD),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_wr_ebd, WR_EBD),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_rd_fbd, RD_FBD),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_rd_ebd, RD_EBD),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_rd_pay_m0, RD_PAY_M0),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_rd_pay_m1, RD_PAY_M1),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_wr_pay_m0, WR_PAY_M0),
-+	HNS3_PMU_BW_FLT_MODE_PAIR(bw_wr_pay_m1, WR_PAY_M1),
-+
-+	/* packet rate events */
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_igu_ssu, IGU_SSU),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_ssu_egu, SSU_EGU),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_ssu_rpu, SSU_RPU),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_ssu_roce, SSU_ROCE),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_roce_ssu, ROCE_SSU),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_tpu_ssu, TPU_SSU),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rpu_rcbrx, RPU_RCBRX),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rcbtx_tpu, RCBTX_TPU),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rcbtx_txsch, RCBTX_TXSCH),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_wr_fbd, WR_FBD),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_wr_ebd, WR_EBD),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rd_fbd, RD_FBD),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rd_ebd, RD_EBD),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rd_pay_m0, RD_PAY_M0),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_rd_pay_m1, RD_PAY_M1),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_wr_pay_m0, WR_PAY_M0),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_wr_pay_m1, WR_PAY_M1),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_intr_nicroh_tx_pre, NICROH_TX_PRE),
-+	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_intr_nicroh_rx_pre, NICROH_RX_PRE),
-+
-+	/* latency events */
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tx_push_to_mac, TX_PUSH),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tx_normal_to_mac, TX),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_ssu_tx_th_nic, SSU_TX_NIC),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_ssu_tx_th_roce, SSU_TX_ROCE),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_ssu_rx_th_nic, SSU_RX_NIC),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_ssu_rx_th_roce, SSU_RX_ROCE),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_rpu, RPU),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tpu, TPU),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_rpe, RPE),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tpe_normal, TPE),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tpe_push, TPE_PUSH),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_wr_fbd, WR_FBD),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_wr_ebd, WR_EBD),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_rd_fbd, RD_FBD),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_rd_ebd, RD_EBD),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_rd_pay_m0, RD_PAY_M0),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_rd_pay_m1, RD_PAY_M1),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_wr_pay_m0, WR_PAY_M0),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_wr_pay_m1, WR_PAY_M1),
-+	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_msix_write, MSIX_WRITE),
-+
-+	/* interrupt rate events */
-+	HNS3_PMU_INTR_FLT_MODE_PAIR(pps_intr_msix_nic, MSIX_NIC),
-+
-+	NULL
-+};
-+
-+static struct attribute_group hns3_pmu_events_group = {
-+	.name = "events",
-+	.attrs = hns3_pmu_events_attr,
-+};
-+
-+static struct attribute_group hns3_pmu_filter_mode_group = {
-+	.name = "filtermode",
-+	.attrs = hns3_pmu_filter_mode_attr,
-+};
-+
-+static struct attribute *hns3_pmu_format_attr[] = {
-+	HNS3_PMU_FORMAT_ATTR(event, "config:0-16"),
-+	HNS3_PMU_FORMAT_ATTR(port, "config1:0-3"),
-+	HNS3_PMU_FORMAT_ATTR(tc, "config1:4-7"),
-+	HNS3_PMU_FORMAT_ATTR(bdf, "config1:8-23"),
-+	HNS3_PMU_FORMAT_ATTR(queue, "config1:24-39"),
-+	HNS3_PMU_FORMAT_ATTR(intr, "config1:40-51"),
-+	HNS3_PMU_FORMAT_ATTR(global, "config1:52-52"),
-+	NULL
-+};
-+
-+static struct attribute_group hns3_pmu_format_group = {
-+	.name = "format",
-+	.attrs = hns3_pmu_format_attr,
-+};
-+
-+static struct attribute *hns3_pmu_cpumask_attrs[] = {
-+	&dev_attr_cpumask.attr,
-+	NULL
-+};
-+
-+static struct attribute_group hns3_pmu_cpumask_attr_group = {
-+	.attrs = hns3_pmu_cpumask_attrs,
-+};
-+
-+static struct attribute *hns3_pmu_identifier_attrs[] = {
-+	&dev_attr_identifier.attr,
-+	NULL
-+};
-+
-+static struct attribute_group hns3_pmu_identifier_attr_group = {
-+	.attrs = hns3_pmu_identifier_attrs,
-+};
-+
-+static struct attribute *hns3_pmu_bdf_range_attrs[] = {
-+	&dev_attr_bdf_min.attr,
-+	&dev_attr_bdf_max.attr,
-+	NULL
-+};
-+
-+static struct attribute_group hns3_pmu_bdf_range_attr_group = {
-+	.attrs = hns3_pmu_bdf_range_attrs,
-+};
-+
-+static struct attribute *hns3_pmu_hw_clk_freq_attrs[] = {
-+	&dev_attr_hw_clk_freq.attr,
-+	NULL
-+};
-+
-+static struct attribute_group hns3_pmu_hw_clk_freq_attr_group = {
-+	.attrs = hns3_pmu_hw_clk_freq_attrs,
-+};
-+
-+static const struct attribute_group *hns3_pmu_attr_groups[] = {
-+	&hns3_pmu_events_group,
-+	&hns3_pmu_filter_mode_group,
-+	&hns3_pmu_format_group,
-+	&hns3_pmu_cpumask_attr_group,
-+	&hns3_pmu_identifier_attr_group,
-+	&hns3_pmu_bdf_range_attr_group,
-+	&hns3_pmu_hw_clk_freq_attr_group,
-+	NULL
-+};
-+
-+static u32 hns3_pmu_get_offset(u32 offset, u32 idx)
-+{
-+	return offset + HNS3_PMU_REG_EVENT_OFFSET +
-+	       HNS3_PMU_REG_EVENT_SIZE * idx;
-+}
-+
-+static u32 hns3_pmu_readl(struct hns3_pmu *hns3_pmu, u32 reg_offset, u32 idx)
-+{
-+	u32 offset = hns3_pmu_get_offset(reg_offset, idx);
-+
-+	return readl(hns3_pmu->base + offset);
-+}
-+
-+static void hns3_pmu_writel(struct hns3_pmu *hns3_pmu, u32 reg_offset, u32 idx,
-+			    u32 val)
-+{
-+	u32 offset = hns3_pmu_get_offset(reg_offset, idx);
-+
-+	writel(val, hns3_pmu->base + offset);
-+}
-+
-+static u64 hns3_pmu_readq(struct hns3_pmu *hns3_pmu, u32 reg_offset, u32 idx)
-+{
-+	u32 offset = hns3_pmu_get_offset(reg_offset, idx);
-+
-+	return readq(hns3_pmu->base + offset);
-+}
-+
-+static void hns3_pmu_writeq(struct hns3_pmu *hns3_pmu, u32 reg_offset, u32 idx,
-+			    u64 val)
-+{
-+	u32 offset = hns3_pmu_get_offset(reg_offset, idx);
-+
-+	writeq(val, hns3_pmu->base + offset);
-+}
-+
-+static bool hns3_pmu_cmp_event(struct perf_event *target,
-+			       struct perf_event *event)
-+{
-+	return hns3_get_real_event(target) == hns3_get_real_event(event);
-+}
-+
-+static int hns3_pmu_find_related_event_idx(struct hns3_pmu *hns3_pmu,
-+					   struct perf_event *event)
-+{
-+	struct perf_event *sibling;
-+	int hw_event_used = 0;
-+	int idx;
-+
-+	for (idx = 0; idx < HNS3_PMU_MAX_HW_EVENTS; idx++) {
-+		sibling = hns3_pmu->hw_events[idx];
-+		if (!sibling)
-+			continue;
-+
-+		hw_event_used++;
-+
-+		if (!hns3_pmu_cmp_event(sibling, event))
-+			continue;
-+
-+		/* Related events is used in group */
-+		if (sibling->group_leader == event->group_leader)
-+			return idx;
-+	}
-+
-+	/* No related event and all hardware events are used up */
-+	if (hw_event_used >= HNS3_PMU_MAX_HW_EVENTS)
-+		return -EBUSY;
-+
-+	/* No related event and there is extra hardware events can be use */
-+	return -ENOENT;
-+}
-+
-+static int hns3_pmu_get_event_idx(struct hns3_pmu *hns3_pmu)
-+{
-+	int idx;
-+
-+	for (idx = 0; idx < HNS3_PMU_MAX_HW_EVENTS; idx++) {
-+		if (!hns3_pmu->hw_events[idx])
-+			return idx;
-+	}
-+
-+	return -EBUSY;
-+}
-+
-+static bool hns3_pmu_valid_bdf(struct hns3_pmu *hns3_pmu, u16 bdf)
-+{
-+	struct pci_dev *pdev;
-+
-+	if (bdf < hns3_pmu->bdf_min || bdf > hns3_pmu->bdf_max) {
-+		pci_err(hns3_pmu->pdev, "Invalid EP device: %#x!\n", bdf);
-+		return false;
-+	}
-+
-+	pdev = pci_get_domain_bus_and_slot(pci_domain_nr(hns3_pmu->pdev->bus),
-+					   PCI_BUS_NUM(bdf),
-+					   GET_PCI_DEVFN(bdf));
-+	if (!pdev) {
-+		pci_err(hns3_pmu->pdev, "Nonexistent EP device: %#x!\n", bdf);
-+		return false;
-+	}
-+
-+	pci_dev_put(pdev);
-+	return true;
-+}
-+
-+static void hns3_pmu_set_qid_para(struct hns3_pmu *hns3_pmu, u32 idx, u16 bdf,
-+				  u16 queue)
-+{
-+	u32 val;
-+
-+	val = GET_PCI_DEVFN(bdf);
-+	val |= (u32)queue << HNS3_PMU_QID_PARA_QUEUE_S;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_QID_PARA, idx, val);
-+}
-+
-+static bool hns3_pmu_qid_req_start(struct hns3_pmu *hns3_pmu, u32 idx)
-+{
-+	bool queue_id_valid = false;
-+	u32 reg_qid_ctrl, val;
-+	int err;
-+
-+	/* enable queue id request */
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_QID_CTRL, idx,
-+			HNS3_PMU_QID_CTRL_REQ_ENABLE);
-+
-+	reg_qid_ctrl = hns3_pmu_get_offset(HNS3_PMU_REG_EVENT_QID_CTRL, idx);
-+	err = readl_poll_timeout(hns3_pmu->base + reg_qid_ctrl, val,
-+				 val & HNS3_PMU_QID_CTRL_DONE, 1, 1000);
-+	if (err == -ETIMEDOUT) {
-+		pci_err(hns3_pmu->pdev, "QID request timeout!\n");
-+		goto out;
-+	}
-+
-+	queue_id_valid = !(val & HNS3_PMU_QID_CTRL_MISS);
-+
-+out:
-+	/* disable qid request and clear status */
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_QID_CTRL, idx, 0);
-+
-+	return queue_id_valid;
-+}
-+
-+static bool hns3_pmu_valid_queue(struct hns3_pmu *hns3_pmu, u32 idx, u16 bdf,
-+				 u16 queue)
-+{
-+	hns3_pmu_set_qid_para(hns3_pmu, idx, bdf, queue);
-+
-+	return hns3_pmu_qid_req_start(hns3_pmu, idx);
-+}
-+
-+static struct hns3_pmu_event_attr *hns3_pmu_get_pmu_event(u32 event)
-+{
-+	struct hns3_pmu_event_attr *pmu_event;
-+	struct dev_ext_attribute *eattr;
-+	struct device_attribute *dattr;
-+	struct attribute *attr;
-+	u32 i;
-+
-+	for (i = 0; i < ARRAY_SIZE(hns3_pmu_events_attr) - 1; i++) {
-+		attr = hns3_pmu_events_attr[i];
-+		dattr = container_of(attr, struct device_attribute, attr);
-+		eattr = container_of(dattr, struct dev_ext_attribute, attr);
-+		pmu_event = eattr->var;
-+
-+		if (event == pmu_event->event)
-+			return pmu_event;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int hns3_pmu_set_func_mode(struct perf_event *event,
-+				  struct hns3_pmu *hns3_pmu)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+	u16 bdf = hns3_get_bdf(event);
-+
-+	if (!hns3_pmu_valid_bdf(hns3_pmu, bdf))
-+		return -ENOENT;
-+
-+	HNS3_PMU_SET_HW_FILTER(hwc, HNS3_PMU_HW_FILTER_FUNC);
-+
-+	return 0;
-+}
-+
-+static int hns3_pmu_set_func_queue_mode(struct perf_event *event,
-+					struct hns3_pmu *hns3_pmu)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+	u16 queue_id = hns3_get_queue(event);
-+	u16 bdf = hns3_get_bdf(event);
-+
-+	if (!hns3_pmu_valid_bdf(hns3_pmu, bdf))
-+		return -ENOENT;
-+
-+	if (!hns3_pmu_valid_queue(hns3_pmu, hwc->idx, bdf, queue_id)) {
-+		pci_err(hns3_pmu->pdev, "Invalid queue: %u\n", queue_id);
-+		return -ENOENT;
-+	}
-+
-+	HNS3_PMU_SET_HW_FILTER(hwc, HNS3_PMU_HW_FILTER_FUNC_QUEUE);
-+
-+	return 0;
-+}
-+
-+static bool
-+hns3_pmu_is_enabled_global_mode(struct perf_event *event,
-+				struct hns3_pmu_event_attr *pmu_event)
-+{
-+	u8 global = hns3_get_global(event);
-+
-+	if (!(pmu_event->filter_support & HNS3_PMU_FILTER_SUPPORT_GLOBAL))
-+		return false;
-+
-+	return global;
-+}
-+
-+static bool hns3_pmu_is_enabled_func_mode(struct perf_event *event,
-+					  struct hns3_pmu_event_attr *pmu_event)
-+{
-+	u16 queue_id = hns3_get_queue(event);
-+	u16 bdf = hns3_get_bdf(event);
-+
-+	if (!(pmu_event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC))
-+		return false;
-+	else if (queue_id != HNS3_PMU_FILTER_ALL_QUEUE)
-+		return false;
-+
-+	return bdf;
-+}
-+
-+static bool
-+hns3_pmu_is_enabled_func_queue_mode(struct perf_event *event,
-+				    struct hns3_pmu_event_attr *pmu_event)
-+{
-+	u16 queue_id = hns3_get_queue(event);
-+	u16 bdf = hns3_get_bdf(event);
-+
-+	if (!(pmu_event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_QUEUE))
-+		return false;
-+	else if (queue_id == HNS3_PMU_FILTER_ALL_QUEUE)
-+		return false;
-+
-+	return bdf;
-+}
-+
-+static bool hns3_pmu_is_enabled_port_mode(struct perf_event *event,
-+					  struct hns3_pmu_event_attr *pmu_event)
-+{
-+	u8 tc_id = hns3_get_tc(event);
-+
-+	if (!(pmu_event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT))
-+		return false;
-+
-+	return tc_id == HNS3_PMU_FILTER_ALL_TC;
-+}
-+
-+static bool
-+hns3_pmu_is_enabled_port_tc_mode(struct perf_event *event,
-+				 struct hns3_pmu_event_attr *pmu_event)
-+{
-+	u8 tc_id = hns3_get_tc(event);
-+
-+	if (!(pmu_event->filter_support & HNS3_PMU_FILTER_SUPPORT_PORT_TC))
-+		return false;
-+
-+	return tc_id != HNS3_PMU_FILTER_ALL_TC;
-+}
-+
-+static bool
-+hns3_pmu_is_enabled_func_intr_mode(struct perf_event *event,
-+				   struct hns3_pmu *hns3_pmu,
-+				   struct hns3_pmu_event_attr *pmu_event)
-+{
-+	u16 bdf = hns3_get_bdf(event);
-+
-+	if (!(pmu_event->filter_support & HNS3_PMU_FILTER_SUPPORT_FUNC_INTR))
-+		return false;
-+
-+	return hns3_pmu_valid_bdf(hns3_pmu, bdf);
-+}
-+
-+static int hns3_pmu_select_filter_mode(struct perf_event *event,
-+				       struct hns3_pmu *hns3_pmu)
-+{
-+	struct hns3_pmu_event_attr *pmu_event;
-+	struct hw_perf_event *hwc = &event->hw;
-+	u32 event_id = hns3_get_event(event);
-+
-+	pmu_event = hns3_pmu_get_pmu_event(event_id);
-+	if (!pmu_event) {
-+		pci_err(hns3_pmu->pdev, "Invalid pmu event\n");
-+		return -ENOENT;
-+	}
-+
-+	if (hns3_pmu_is_enabled_global_mode(event, pmu_event)) {
-+		HNS3_PMU_SET_HW_FILTER(hwc, HNS3_PMU_HW_FILTER_GLOBAL);
-+		return 0;
-+	}
-+
-+	if (hns3_pmu_is_enabled_func_mode(event, pmu_event))
-+		return hns3_pmu_set_func_mode(event, hns3_pmu);
-+
-+	if (hns3_pmu_is_enabled_func_queue_mode(event, pmu_event))
-+		return hns3_pmu_set_func_queue_mode(event, hns3_pmu);
-+
-+	if (hns3_pmu_is_enabled_port_mode(event, pmu_event)) {
-+		HNS3_PMU_SET_HW_FILTER(hwc, HNS3_PMU_HW_FILTER_PORT);
-+		return 0;
-+	}
-+
-+	if (hns3_pmu_is_enabled_port_tc_mode(event, pmu_event)) {
-+		HNS3_PMU_SET_HW_FILTER(hwc, HNS3_PMU_HW_FILTER_PORT_TC);
-+		return 0;
-+	}
-+
-+	if (hns3_pmu_is_enabled_func_intr_mode(event, hns3_pmu, pmu_event)) {
-+		HNS3_PMU_SET_HW_FILTER(hwc, HNS3_PMU_HW_FILTER_FUNC_INTR);
-+		return 0;
-+	}
-+
-+	return -ENOENT;
-+}
-+
-+static bool hns3_pmu_validate_event_group(struct perf_event *event)
-+{
-+	struct perf_event *sibling, *leader = event->group_leader;
-+	struct perf_event *event_group[HNS3_PMU_MAX_HW_EVENTS];
-+	int counters = 1;
-+	int num;
-+
-+	event_group[0] = leader;
-+	if (!is_software_event(leader)) {
-+		if (leader->pmu != event->pmu)
-+			return false;
-+
-+		if (leader != event && !hns3_pmu_cmp_event(leader, event))
-+			event_group[counters++] = event;
-+	}
-+
-+	for_each_sibling_event(sibling, event->group_leader) {
-+		if (is_software_event(sibling))
-+			continue;
-+
-+		if (sibling->pmu != event->pmu)
-+			return false;
-+
-+		for (num = 0; num < counters; num++) {
-+			if (hns3_pmu_cmp_event(event_group[num], sibling))
-+				break;
-+		}
-+
-+		if (num == counters)
-+			event_group[counters++] = sibling;
-+	}
-+
-+	return counters <= HNS3_PMU_MAX_HW_EVENTS;
-+}
-+
-+static u32 hns3_pmu_get_filter_condition(struct perf_event *event)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+	u16 intr_id = hns3_get_intr(event);
-+	u8 port_id = hns3_get_port(event);
-+	u16 bdf = hns3_get_bdf(event);
-+	u8 tc_id = hns3_get_tc(event);
-+	u8 filter_mode;
-+	u32 filter = 0;
-+
-+	filter_mode = *(u8 *)hwc->addr_filters;
-+	switch (filter_mode) {
-+	case HNS3_PMU_HW_FILTER_PORT:
-+		filter = FILTER_CONDITION_PORT(port_id);
-+		break;
-+	case HNS3_PMU_HW_FILTER_PORT_TC:
-+		filter = FILTER_CONDITION_PORT_TC(port_id, tc_id);
-+		break;
-+	case HNS3_PMU_HW_FILTER_FUNC:
-+	case HNS3_PMU_HW_FILTER_FUNC_QUEUE:
-+		filter = GET_PCI_DEVFN(bdf);
-+		break;
-+	case HNS3_PMU_HW_FILTER_FUNC_INTR:
-+		filter = FILTER_CONDITION_FUNC_INTR(GET_PCI_DEVFN(bdf),
-+						    intr_id);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return filter;
-+}
-+
-+static void hns3_pmu_config_filter(struct perf_event *event)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	u8 event_type = hns3_get_event_type(event);
-+	u8 subevent_id = hns3_get_subevent(event);
-+	struct hw_perf_event *hwc = &event->hw;
-+	u8 filter_mode = *(u8 *)hwc->addr_filters;
-+	u16 queue_id = hns3_get_queue(event);
-+	u16 bdf = hns3_get_bdf(event);
-+	u32 idx = hwc->idx;
-+	u32 val;
-+
-+	val = event_type;
-+	val |= subevent_id << HNS3_PMU_CTRL_SUBEVENT_S;
-+	val |= filter_mode << HNS3_PMU_CTRL_FILTER_MODE_S;
-+	val |= HNS3_PMU_EVENT_OVERFLOW_RESTART;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx, val);
-+
-+	val = hns3_pmu_get_filter_condition(event);
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_HIGH, idx, val);
-+
-+	if (filter_mode == HNS3_PMU_HW_FILTER_FUNC_QUEUE)
-+		hns3_pmu_set_qid_para(hns3_pmu, idx, bdf, queue_id);
-+}
-+
-+static void hns3_pmu_enable_counter(struct hns3_pmu *hns3_pmu,
-+				    struct hw_perf_event *hwc)
-+{
-+	u32 idx = hwc->idx;
-+	u32 val;
-+
-+	val = hns3_pmu_readl(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx);
-+	val |= HNS3_PMU_EVENT_EN;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx, val);
-+}
-+
-+static void hns3_pmu_disable_counter(struct hns3_pmu *hns3_pmu,
-+				     struct hw_perf_event *hwc)
-+{
-+	u32 idx = hwc->idx;
-+	u32 val;
-+
-+	val = hns3_pmu_readl(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx);
-+	val &= ~HNS3_PMU_EVENT_EN;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx, val);
-+}
-+
-+static void hns3_pmu_enable_intr(struct hns3_pmu *hns3_pmu,
-+				 struct hw_perf_event *hwc)
-+{
-+	u32 idx = hwc->idx;
-+	u32 val;
-+
-+	val = hns3_pmu_readl(hns3_pmu, HNS3_PMU_REG_EVENT_INTR_MASK, idx);
-+	val &= ~HNS3_PMU_INTR_MASK_OVERFLOW;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_INTR_MASK, idx, val);
-+}
-+
-+static void hns3_pmu_disable_intr(struct hns3_pmu *hns3_pmu,
-+				  struct hw_perf_event *hwc)
-+{
-+	u32 idx = hwc->idx;
-+	u32 val;
-+
-+	val = hns3_pmu_readl(hns3_pmu, HNS3_PMU_REG_EVENT_INTR_MASK, idx);
-+	val |= HNS3_PMU_INTR_MASK_OVERFLOW;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_INTR_MASK, idx, val);
-+}
-+
-+static void hns3_pmu_clear_intr_status(struct hns3_pmu *hns3_pmu, u32 idx)
-+{
-+	u32 val;
-+
-+	val = hns3_pmu_readl(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx);
-+	val |= HNS3_PMU_EVENT_STATUS_RESET;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx, val);
-+
-+	val = hns3_pmu_readl(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx);
-+	val &= ~HNS3_PMU_EVENT_STATUS_RESET;
-+	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_CTRL_LOW, idx, val);
-+}
-+
-+static u64 hns3_pmu_read_counter(struct perf_event *event)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+
-+	return hns3_pmu_readq(hns3_pmu, event->hw.event_base, event->hw.idx);
-+}
-+
-+static void hns3_pmu_write_counter(struct perf_event *event, u64 value)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	u32 idx = event->hw.idx;
-+
-+	hns3_pmu_writeq(hns3_pmu, HNS3_PMU_REG_EVENT_COUNTER, idx, value);
-+	hns3_pmu_writeq(hns3_pmu, HNS3_PMU_REG_EVENT_EXT_COUNTER, idx, value);
-+}
-+
-+static void hns3_pmu_init_counter(struct perf_event *event)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+
-+	local64_set(&hwc->prev_count, 0);
-+	hns3_pmu_write_counter(event, 0);
-+}
-+
-+static int hns3_pmu_event_init(struct perf_event *event)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	struct hw_perf_event *hwc = &event->hw;
-+	int idx;
-+	int ret;
-+
-+	if (event->attr.type != event->pmu->type)
-+		return -ENOENT;
-+
-+	/* Sampling is not supported */
-+	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
-+		return -EOPNOTSUPP;
-+
-+	event->cpu = hns3_pmu->on_cpu;
-+
-+	idx = hns3_pmu_get_event_idx(hns3_pmu);
-+	if (idx < 0) {
-+		pci_err(hns3_pmu->pdev, "Up to %u events are supported!\n",
-+			HNS3_PMU_MAX_HW_EVENTS);
-+		return -EBUSY;
-+	}
-+
-+	hwc->idx = idx;
-+
-+	ret = hns3_pmu_select_filter_mode(event, hns3_pmu);
-+	if (ret) {
-+		pci_err(hns3_pmu->pdev, "Invalid filter, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	if (!hns3_pmu_validate_event_group(event)) {
-+		pci_err(hns3_pmu->pdev, "Invalid event group.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (hns3_get_ext_counter_used(event))
-+		hwc->event_base = HNS3_PMU_REG_EVENT_EXT_COUNTER;
-+	else
-+		hwc->event_base = HNS3_PMU_REG_EVENT_COUNTER;
-+
-+	return 0;
-+}
-+
-+static void hns3_pmu_read(struct perf_event *event)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+	u64 new_cnt, prev_cnt, delta;
-+
-+	do {
-+		prev_cnt = local64_read(&hwc->prev_count);
-+		new_cnt = hns3_pmu_read_counter(event);
-+	} while (local64_cmpxchg(&hwc->prev_count, prev_cnt, new_cnt) !=
-+		 prev_cnt);
-+
-+	delta = new_cnt - prev_cnt;
-+	local64_add(delta, &event->count);
-+}
-+
-+static void hns3_pmu_start(struct perf_event *event, int flags)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	struct hw_perf_event *hwc = &event->hw;
-+
-+	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
-+		return;
-+
-+	WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
-+	hwc->state = 0;
-+
-+	hns3_pmu_config_filter(event);
-+	hns3_pmu_init_counter(event);
-+	hns3_pmu_enable_intr(hns3_pmu, hwc);
-+	hns3_pmu_enable_counter(hns3_pmu, hwc);
-+
-+	perf_event_update_userpage(event);
-+}
-+
-+static void hns3_pmu_stop(struct perf_event *event, int flags)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	struct hw_perf_event *hwc = &event->hw;
-+
-+	hns3_pmu_disable_counter(hns3_pmu, hwc);
-+	hns3_pmu_disable_intr(hns3_pmu, hwc);
-+
-+	WARN_ON_ONCE(hwc->state & PERF_HES_STOPPED);
-+	hwc->state |= PERF_HES_STOPPED;
-+
-+	if (hwc->state & PERF_HES_UPTODATE)
-+		return;
-+
-+	/* Read hardware counter and update the perf counter statistics */
-+	hns3_pmu_read(event);
-+	hwc->state |= PERF_HES_UPTODATE;
-+}
-+
-+static int hns3_pmu_add(struct perf_event *event, int flags)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	struct hw_perf_event *hwc = &event->hw;
-+	int idx;
-+
-+	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
-+
-+	/* Check all working events to find a related event. */
-+	idx = hns3_pmu_find_related_event_idx(hns3_pmu, event);
-+	if (idx < 0 && idx != -ENOENT)
-+		return idx;
-+
-+	/* Current event shares an enabled hardware event with related event */
-+	if (idx >= 0 && idx < HNS3_PMU_MAX_HW_EVENTS) {
-+		hwc->idx = idx;
-+		goto start_count;
-+	}
-+
-+	idx = hns3_pmu_get_event_idx(hns3_pmu);
-+	if (idx < 0)
-+		return idx;
-+
-+	hwc->idx = idx;
-+	hns3_pmu->hw_events[idx] = event;
-+
-+start_count:
-+	if (flags & PERF_EF_START)
-+		hns3_pmu_start(event, PERF_EF_RELOAD);
-+
-+	return 0;
-+}
-+
-+static void hns3_pmu_del(struct perf_event *event, int flags)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(event->pmu);
-+	struct hw_perf_event *hwc = &event->hw;
-+
-+	hns3_pmu_stop(event, PERF_EF_UPDATE);
-+	hns3_pmu->hw_events[hwc->idx] = NULL;
-+	perf_event_update_userpage(event);
-+}
-+
-+static void hns3_pmu_enable(struct pmu *pmu)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(pmu);
-+	u32 val;
-+
-+	val = readl(hns3_pmu->base + HNS3_PMU_REG_GLOBAL_CTRL);
-+	val |= HNS3_PMU_GLOBAL_START;
-+	writel(val, hns3_pmu->base + HNS3_PMU_REG_GLOBAL_CTRL);
-+}
-+
-+static void hns3_pmu_disable(struct pmu *pmu)
-+{
-+	struct hns3_pmu *hns3_pmu = to_hns3_pmu(pmu);
-+	u32 val;
-+
-+	val = readl(hns3_pmu->base + HNS3_PMU_REG_GLOBAL_CTRL);
-+	val &= ~HNS3_PMU_GLOBAL_START;
-+	writel(val, hns3_pmu->base + HNS3_PMU_REG_GLOBAL_CTRL);
-+}
-+
-+static int hns3_pmu_alloc_pmu(struct pci_dev *pdev, struct hns3_pmu *hns3_pmu)
-+{
-+	u16 device_id;
-+	char *name;
-+	u32 val;
-+
-+	hns3_pmu->base = pcim_iomap_table(pdev)[BAR_2];
-+	if (!hns3_pmu->base) {
-+		pci_err(pdev, "ioremap failed for hns3_pmu resource\n");
-+		return -ENOMEM;
-+	}
-+
-+	hns3_pmu->hw_clk_freq = readl(hns3_pmu->base + HNS3_PMU_REG_CLOCK_FREQ);
-+
-+	val = readl(hns3_pmu->base + HNS3_PMU_REG_BDF);
-+	hns3_pmu->bdf_min = val & 0xffff;
-+	hns3_pmu->bdf_max = val >> 16;
-+
-+	val = readl(hns3_pmu->base + HNS3_PMU_REG_DEVICE_ID);
-+	device_id = val & 0xffff;
-+	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hns3_pmu_sicl_%u", device_id);
-+	if (!name)
-+		return -ENOMEM;
-+
-+	hns3_pmu->pdev = pdev;
-+	hns3_pmu->on_cpu = -1;
-+	hns3_pmu->identifier = readl(hns3_pmu->base + HNS3_PMU_REG_VERSION);
-+	hns3_pmu->pmu = (struct pmu) {
-+		.name		= name,
-+		.module		= THIS_MODULE,
-+		.event_init	= hns3_pmu_event_init,
-+		.pmu_enable	= hns3_pmu_enable,
-+		.pmu_disable	= hns3_pmu_disable,
-+		.add		= hns3_pmu_add,
-+		.del		= hns3_pmu_del,
-+		.start		= hns3_pmu_start,
-+		.stop		= hns3_pmu_stop,
-+		.read		= hns3_pmu_read,
-+		.task_ctx_nr	= perf_invalid_context,
-+		.attr_groups	= hns3_pmu_attr_groups,
-+		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-+	};
-+
-+	return 0;
-+}
-+
-+static irqreturn_t hns3_pmu_irq(int irq, void *data)
-+{
-+	struct hns3_pmu *hns3_pmu = data;
-+	u32 intr_status, idx;
-+
-+	for (idx = 0; idx < HNS3_PMU_MAX_HW_EVENTS; idx++) {
-+		intr_status = hns3_pmu_readl(hns3_pmu,
-+					     HNS3_PMU_REG_EVENT_INTR_STATUS,
-+					     idx);
-+
-+		/*
-+		 * As each counter will restart from 0 when it is overflowed,
-+		 * extra processing is no need, just clear interrupt status.
-+		 */
-+		if (intr_status)
-+			hns3_pmu_clear_intr_status(hns3_pmu, idx);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int hns3_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
-+{
-+	struct hns3_pmu *hns3_pmu;
-+
-+	hns3_pmu = hlist_entry_safe(node, struct hns3_pmu, node);
-+	if (!hns3_pmu)
-+		return -ENODEV;
-+
-+	if (hns3_pmu->on_cpu == -1) {
-+		hns3_pmu->on_cpu = cpu;
-+		irq_set_affinity(hns3_pmu->irq, cpumask_of(cpu));
-+	}
-+
-+	return 0;
-+}
-+
-+static int hns3_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
-+{
-+	struct hns3_pmu *hns3_pmu;
-+	unsigned int target;
-+
-+	hns3_pmu = hlist_entry_safe(node, struct hns3_pmu, node);
-+	if (!hns3_pmu)
-+		return -ENODEV;
-+
-+	/* Nothing to do if this CPU doesn't own the PMU */
-+	if (hns3_pmu->on_cpu != cpu)
-+		return 0;
-+
-+	/* Choose a new CPU from all online cpus */
-+	target = cpumask_any_but(cpu_online_mask, cpu);
-+	if (target >= nr_cpu_ids)
-+		return 0;
-+
-+	perf_pmu_migrate_context(&hns3_pmu->pmu, cpu, target);
-+	hns3_pmu->on_cpu = target;
-+	irq_set_affinity(hns3_pmu->irq, cpumask_of(target));
-+
-+	return 0;
-+}
-+
-+static void hns3_pmu_free_irq(void *data)
-+{
-+	struct pci_dev *pdev = data;
-+
-+	pci_free_irq_vectors(pdev);
-+}
-+
-+static int hns3_pmu_irq_register(struct pci_dev *pdev,
-+				 struct hns3_pmu *hns3_pmu)
-+{
-+	int irq, ret;
-+
-+	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI);
-+	if (ret < 0) {
-+		pci_err(pdev, "failed to enable MSI vectors, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = devm_add_action(&pdev->dev, hns3_pmu_free_irq, pdev);
-+	if (ret) {
-+		pci_err(pdev, "failed to add free irq action, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	irq = pci_irq_vector(pdev, 0);
-+	ret = devm_request_irq(&pdev->dev, irq, hns3_pmu_irq, 0,
-+			       hns3_pmu->pmu.name, hns3_pmu);
-+	if (ret) {
-+		pci_err(pdev, "failed to register irq, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	hns3_pmu->irq = irq;
-+
-+	return 0;
-+}
-+
-+static int hns3_pmu_init_pmu(struct pci_dev *pdev, struct hns3_pmu *hns3_pmu)
-+{
-+	int ret;
-+
-+	ret = hns3_pmu_alloc_pmu(pdev, hns3_pmu);
-+	if (ret)
-+		return ret;
-+
-+	ret = hns3_pmu_irq_register(pdev, hns3_pmu);
-+	if (ret)
-+		return ret;
-+
-+	ret = cpuhp_state_add_instance(CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE,
-+				       &hns3_pmu->node);
-+	if (ret) {
-+		pci_err(pdev, "failed to register hotplug, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = perf_pmu_register(&hns3_pmu->pmu, hns3_pmu->pmu.name, -1);
-+	if (ret) {
-+		pci_err(pdev, "failed to register perf PMU, ret = %d.\n", ret);
-+		cpuhp_state_remove_instance(CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE,
-+					    &hns3_pmu->node);
-+	}
-+
-+	return ret;
-+}
-+
-+static void hns3_pmu_uninit_pmu(struct pci_dev *pdev)
-+{
-+	struct hns3_pmu *hns3_pmu = pci_get_drvdata(pdev);
-+
-+	perf_pmu_unregister(&hns3_pmu->pmu);
-+	cpuhp_state_remove_instance(CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE,
-+				    &hns3_pmu->node);
-+}
-+
-+static int hns3_pmu_init_dev(struct pci_dev *pdev)
-+{
-+	int ret;
-+
-+	ret = pcim_enable_device(pdev);
-+	if (ret) {
-+		pci_err(pdev, "failed to enable pci device, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = pcim_iomap_regions(pdev, BIT(BAR_2), "hns3_pmu");
-+	if (ret < 0) {
-+		pci_err(pdev, "failed to request pci region, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	pci_set_master(pdev);
-+
-+	return 0;
-+}
-+
-+static int hns3_pmu_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct hns3_pmu *hns3_pmu;
-+	int ret;
-+
-+	hns3_pmu = devm_kzalloc(&pdev->dev, sizeof(*hns3_pmu), GFP_KERNEL);
-+	if (!hns3_pmu)
-+		return -ENOMEM;
-+
-+	ret = hns3_pmu_init_dev(pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = hns3_pmu_init_pmu(pdev, hns3_pmu);
-+	if (ret) {
-+		pci_clear_master(pdev);
-+		return ret;
-+	}
-+
-+	pci_set_drvdata(pdev, hns3_pmu);
-+
-+	return ret;
-+}
-+
-+static void hns3_pmu_remove(struct pci_dev *pdev)
-+{
-+	hns3_pmu_uninit_pmu(pdev);
-+	pci_clear_master(pdev);
-+	pci_set_drvdata(pdev, NULL);
-+}
-+
-+static const struct pci_device_id hns3_pmu_ids[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, 0xa22b) },
-+	{ 0, }
-+};
-+MODULE_DEVICE_TABLE(pci, hns3_pmu_ids);
-+
-+static struct pci_driver hns3_pmu_driver = {
-+	.name = "hns3_pmu",
-+	.id_table = hns3_pmu_ids,
-+	.probe = hns3_pmu_probe,
-+	.remove = hns3_pmu_remove,
-+};
-+
-+static int __init hns3_pmu_module_init(void)
-+{
-+	int ret;
-+
-+	ret = cpuhp_setup_state_multi(CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE,
-+				      "AP_PERF_ARM_HNS3_PMU_ONLINE",
-+				      hns3_pmu_online_cpu,
-+				      hns3_pmu_offline_cpu);
-+	if (ret) {
-+		pr_err("failed to setup HNS3 PMU hotplug, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = pci_register_driver(&hns3_pmu_driver);
-+	if (ret) {
-+		pr_err("failed to register pci driver, ret = %d.\n", ret);
-+		cpuhp_remove_multi_state(CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE);
-+	}
-+
-+	return ret;
-+}
-+module_init(hns3_pmu_module_init);
-+
-+static void __exit hns3_pmu_module_exit(void)
-+{
-+	pci_unregister_driver(&hns3_pmu_driver);
-+	cpuhp_remove_multi_state(CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE);
-+}
-+module_exit(hns3_pmu_module_exit);
-+
-+MODULE_DESCRIPTION("HNS3 PMU driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 411a428ace4d..9c2cb0600740 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -226,6 +226,7 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_ARM_HISI_PA_ONLINE,
- 	CPUHP_AP_PERF_ARM_HISI_SLLC_ONLINE,
- 	CPUHP_AP_PERF_ARM_HISI_PCIE_PMU_ONLINE,
-+	CPUHP_AP_PERF_ARM_HNS3_PMU_ONLINE,
- 	CPUHP_AP_PERF_ARM_L2X0_ONLINE,
- 	CPUHP_AP_PERF_ARM_QCOM_L2_ONLINE,
- 	CPUHP_AP_PERF_ARM_QCOM_L3_ONLINE,
--- 
-2.33.0
-
+W1B1YmxpY10NCg0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGlt
+b25jaWVsbG8sIE1hcmlvDQo+IFNlbnQ6IFN1bmRheSwgQXByaWwgMTcsIDIwMjIgMjM6MzUNCj4g
+VG86IGZpcmV3NGxrZXIgPGZpcmV3NGxrZXJAZ21haWwuY29tPjsgTGludXMgV2FsbGVpag0KPiA8
+bGludXMud2FsbGVpakBsaW5hcm8ub3JnPjsgQmFydG9zeiBHb2xhc3pld3NraSA8YnJnbEBiZ2Rl
+di5wbD47IEFuZHkNCj4gU2hldmNoZW5rbyA8YW5keS5zaGV2Y2hlbmtvQGdtYWlsLmNvbT47IFNo
+cmVleWEgUGF0ZWwNCj4gPHNocmVleWEucGF0ZWxAY29sbGFib3JhLmNvbT47IG9wZW4gbGlzdDpH
+UElPIFNVQlNZU1RFTSA8bGludXgtDQo+IGdwaW9Admdlci5rZXJuZWwub3JnPjsgb3BlbiBsaXN0
+IDxsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnPg0KPiBDYzogTmF0aWthciwgQmFzYXZhcmFq
+IDxCYXNhdmFyYWouTmF0aWthckBhbWQuY29tPjsgR29uZywgUmljaGFyZA0KPiA8UmljaGFyZC5H
+b25nQGFtZC5jb20+OyBzdGFibGVAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFU
+Q0hdIGdwaW86IFJlcXVlc3QgaW50ZXJydXB0cyBhZnRlciBJUlEgaXMgaW5pdGlhbGl6ZWQNCj4g
+DQo+IE9uIDQvMTcvMjIgMDc6MjQsIGZpcmV3NGxrZXIgd3JvdGU6DQo+ID4gT24gNC8xNC8yMiAw
+NTo1NywgTWFyaW8gTGltb25jaWVsbG8gd3JvdGU6DQo+ID4+IGNvbW1pdCA1NDY3ODAxZjFmY2Ig
+KCJncGlvOiBSZXN0cmljdCB1c2FnZSBvZiBHUElPIGNoaXAgaXJxIG1lbWJlcnMNCj4gPj4gYmVm
+b3JlDQo+ID4+IGluaXRpYWxpemF0aW9uIikgYXR0ZW1wdGVkIHRvIGZpeCBhIHJhY2UgY29uZGl0
+aW9uIHRoYXQgbGVhZCB0byBhIE5VTEwNCj4gPj4gcG9pbnRlciwgYnV0IGluIHRoZSBwcm9jZXNz
+IGNhdXNlZCBhIHJlZ3Jlc3Npb24gZm9yIF9BRUkvX0VWVCBkZWNsYXJlZA0KPiA+PiBHUElPcy4g
+VGhpcyBtYW5pZmVzdHMgaW4gbWVzc2FnZXMgc2hvd2luZyBkZWZlcnJlZCBwcm9iaW5nIHdoaWxl
+IHRyeWluZw0KPiA+PiB0byBhbGxvY2F0ZSBJUlFzIGxpa2Ugc286DQo+ID4+DQo+ID4+IFvCoMKg
+wqAgMC42ODgzMThdIGFtZF9ncGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQ
+SU8gcGluDQo+ID4+IDB4MDAwMCB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42ODgz
+MzddIGFtZF9ncGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGluDQo+
+ID4+IDB4MDAyQyB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42ODgzNDhdIGFtZF9n
+cGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGluDQo+ID4+IDB4MDAz
+RCB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42ODgzNTldIGFtZF9ncGlvIEFNREkw
+MDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGluDQo+ID4+IDB4MDAzRSB0byBJUlEs
+IGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42ODgzNjldIGFtZF9ncGlvIEFNREkwMDMwOjAwOiBG
+YWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGluDQo+ID4+IDB4MDAzQSB0byBJUlEsIGVyciAtNTE3
+DQo+ID4+IFvCoMKgwqAgMC42ODgzNzldIGFtZF9ncGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8g
+dHJhbnNsYXRlIEdQSU8gcGluDQo+ID4+IDB4MDAzQiB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvC
+oMKgwqAgMC42ODgzODldIGFtZF9ncGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRl
+IEdQSU8gcGluDQo+ID4+IDB4MDAwMiB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42
+ODgzOTldIGFtZF9ncGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGlu
+DQo+ID4+IDB4MDAxMSB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42ODg0MTBdIGFt
+ZF9ncGlvIEFNREkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGluDQo+ID4+IDB4
+MDAxMiB0byBJUlEsIGVyciAtNTE3DQo+ID4+IFvCoMKgwqAgMC42ODg0MjBdIGFtZF9ncGlvIEFN
+REkwMDMwOjAwOiBGYWlsZWQgdG8gdHJhbnNsYXRlIEdQSU8gcGluDQo+ID4+IDB4MDAwNyB0byBJ
+UlEsIGVyciAtNTE3DQo+ID4+DQo+ID4+IFRoZSBjb2RlIGZvciB3YWxraW5nIF9BRUkgZG9lc24n
+dCBoYW5kbGUgZGVmZXJyZWQgcHJvYmluZyBhbmQgc28gdGhpcw0KPiA+PiBsZWFkcw0KPiA+PiB0
+byBub24tZnVuY3Rpb25hbCBHUElPIGludGVycnVwdHMuDQo+ID4+DQo+ID4+IEZpeCB0aGlzIGlz
+c3VlIGJ5IG1vdmluZyB0aGUgY2FsbCB0bw0KPiA+PiBgYWNwaV9ncGlvY2hpcF9yZXF1ZXN0X2lu
+dGVycnVwdHNgIHRvDQo+ID4+IG9jY3VyIGFmdGVyIGdjLT5pcmMuaW5pdGlhbGl6ZWQgaXMgc2V0
+Lg0KPiA+Pg0KPiA+PiBDYzogU2hyZWV5YSBQYXRlbCA8c2hyZWV5YS5wYXRlbEBjb2xsYWJvcmEu
+Y29tPg0KPiA+PiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KPiA+PiBGaXhlczogNTQ2Nzgw
+MWYxZmNiICgiZ3BpbzogUmVzdHJpY3QgdXNhZ2Ugb2YgR1BJTyBjaGlwIGlycSBtZW1iZXJzDQo+
+ID4+IGJlZm9yZSBpbml0aWFsaXphdGlvbiIpDQo+ID4+IFJlcG9ydGVkLWJ5OiBNYXJpbyBMaW1v
+bmNpZWxsbyA8bWFyaW8ubGltb25jaWVsbG9AYW1kLmNvbT4NCj4gPj4gTGluazoNCj4gPj4NCj4g
+aHR0cHM6Ly9uYW0xMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBz
+JTNBJTJGJTJGbG9yZS4NCj4ga2VybmVsLm9yZyUyRmxpbnV4LQ0KPiBncGlvJTJGQkwxUFIxMk1C
+NTE1NzdBNzdGMDAwQTAwOEFBNjk0Njc1RTJFRjklNDBCTDFQUjEyTUI1MTU3Lg0KPiBuYW1wcmQx
+Mi5wcm9kLm91dGxvb2suY29tJTJGVCUyRiUyM3UmYW1wO2RhdGE9MDQlN0MwMSU3Q21hcmlvLmxp
+DQo+IG1vbmNpZWxsbyU0MGFtZC5jb20lN0M5NmVjMzljNzg0ODg0OTNmZDVjYTA4ZGEyMDZkM2M3
+YiU3QzNkZDg5NjENCj4gZmU0ODg0ZTYwOGUxMWE4MmQ5OTRlMTgzZCU3QzAlN0MwJTdDNjM3ODU3
+OTUxMjA0NjUwNzU0JTdDVW5rbm8NCj4gd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3
+TURBaUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMQ0KPiBoYVd3aUxDSlhWQ0k2TW4wJTNEJTdD
+MzAwMCZhbXA7c2RhdGE9eFpiTkMlMkY1MEpxbE53Y1RZQXRHTG42DQo+IHowJTJGRVBiZkNLS09j
+JTJCbFpsTWgwRVElM0QmYW1wO3Jlc2VydmVkPTANCj4gPj4NCj4gPj4gU2lnbmVkLW9mZi1ieTog
+TWFyaW8gTGltb25jaWVsbG8gPG1hcmlvLmxpbW9uY2llbGxvQGFtZC5jb20+DQo+ID4+IC0tLQ0K
+PiA+PiDCoCBkcml2ZXJzL2dwaW8vZ3Bpb2xpYi5jIHwgNCArKy0tDQo+ID4+IMKgIDEgZmlsZSBj
+aGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+ID4+DQo+ID4+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL2dwaW8vZ3Bpb2xpYi5jIGIvZHJpdmVycy9ncGlvL2dwaW9saWIuYw0K
+PiA+PiBpbmRleCAwODUzNDhlMDg5ODYuLmI3Njk0MTcxNjU1YyAxMDA2NDQNCj4gPj4gLS0tIGEv
+ZHJpdmVycy9ncGlvL2dwaW9saWIuYw0KPiA+PiArKysgYi9kcml2ZXJzL2dwaW8vZ3Bpb2xpYi5j
+DQo+ID4+IEBAIC0xNjAxLDggKzE2MDEsNiBAQCBzdGF0aWMgaW50IGdwaW9jaGlwX2FkZF9pcnFj
+aGlwKHN0cnVjdCBncGlvX2NoaXANCj4gPj4gKmdjLA0KPiA+PiDCoMKgwqDCoMKgIGdwaW9jaGlw
+X3NldF9pcnFfaG9va3MoZ2MpOw0KPiA+PiAtwqDCoMKgIGFjcGlfZ3Bpb2NoaXBfcmVxdWVzdF9p
+bnRlcnJ1cHRzKGdjKTsNCj4gPj4gLQ0KPiA+PiDCoMKgwqDCoMKgIC8qDQo+ID4+IMKgwqDCoMKg
+wqDCoCAqIFVzaW5nIGJhcnJpZXIoKSBoZXJlIHRvIHByZXZlbnQgY29tcGlsZXIgZnJvbSByZW9y
+ZGVyaW5nDQo+ID4+IMKgwqDCoMKgwqDCoCAqIGdjLT5pcnEuaW5pdGlhbGl6ZWQgYmVmb3JlIGlu
+aXRpYWxpemF0aW9uIG9mIGFib3ZlDQo+ID4+IEBAIC0xNjEyLDYgKzE2MTAsOCBAQCBzdGF0aWMg
+aW50IGdwaW9jaGlwX2FkZF9pcnFjaGlwKHN0cnVjdCBncGlvX2NoaXANCj4gPj4gKmdjLA0KPiA+
+PiDCoMKgwqDCoMKgIGdjLT5pcnEuaW5pdGlhbGl6ZWQgPSB0cnVlOw0KPiA+PiArwqDCoMKgIGFj
+cGlfZ3Bpb2NoaXBfcmVxdWVzdF9pbnRlcnJ1cHRzKGdjKTsNCj4gPj4gKw0KPiA+PiDCoMKgwqDC
+oMKgIHJldHVybiAwOw0KPiA+PiDCoCB9DQo+ID4NCj4gPiBUZXN0ZWQtQnk6ZmlyZXc0bGtlckBn
+bWFpbC5jb20NCj4gPg0KPiA+IFRoaXMgcGF0Y2ggYWRkcmVzc2VzIHRoZSBpc3N1ZS4gVGVzdGVk
+IG9uIGEgTGVub3ZvIFQxNCB3aXRoIEFNRCBSeXplbiA1DQo+ID4gUFJPIDQ2NTBVIHdpdGggUmFk
+ZW9uIEdyYXBoaWNzIEdyYXBoaWNzLg0KPiA+DQo+ID4gV2l0aG91dCB0aGlzIHBhdGNoIHRoZSBs
+YXB0b3AgaXMgaW1wb3NzaWJsZSB0byB3YWtlIGZyb20gUzMgYW5kIFMwaXguDQo+ID4NCj4gDQo+
+IFRoYW5rcyBmb3IgdGVzdGluZyBpdCENCj4gDQo+IExpbnVzIFdhbGxlaWosDQo+IA0KPiBBcyB0
+aGlzIGlzIGJhY2twb3J0ZWQgdG8gNS4xNS55LCA1LjE2LnksIDUuMTcueSBhbmQgdGhvc2UgYWxs
+IGhhZCBwb2ludA0KPiByZWxlYXNlcyBhIGJ1bmNoIG9mIHBlb3BsZSBhcmUgaGl0dGluZyBpdCBu
+b3cuICBJZiB5b3UgY2hvb3NlIHRvIGFkb3B0DQo+IHRoaXMgcGF0Y2ggaW5zdGVhZCBvZiByZXZl
+cnQgdGhlIGJyb2tlbiBvbmUsIHlvdSBjYW4gYWRkIHRvIHRoZSBjb21taXQNCj4gbWVzc2FnZSB0
+b286DQo+IA0KPiBMaW5rOiBodHRwczovL2dpdGxhYi5mcmVlZGVza3RvcC5vcmcvZHJtL2FtZC8t
+L2lzc3Vlcy8xOTc2DQoNCkhlcmUncyBhIGZldyBtb3JlIGxpbmtzIHRvIGFkZC4NCg0KTGluazog
+aHR0cHM6Ly9naXRsYWIuZnJlZWRlc2t0b3Aub3JnL2RybS9hbWQvLS9pc3N1ZXMvMTk3OQ0KDQpM
+aW5rOiBodHRwczovL2J1Z3ppbGxhLmtlcm5lbC5vcmcvc2hvd19idWcuY2dpP2lkPTIxNTg1MA0K
+DQpUaGFua3MsDQo=
