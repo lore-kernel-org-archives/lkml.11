@@ -2,689 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F29C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55224C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349216AbiDSH4F (ORCPT
+        id S1349645AbiDSH4i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
+        Tue, 19 Apr 2022 03:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349643AbiDSHzz (ORCPT
+        with ESMTP id S237443AbiDSH4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:55:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251FC33A16;
-        Tue, 19 Apr 2022 00:53:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF813B811C0;
-        Tue, 19 Apr 2022 07:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E232BC385A5;
-        Tue, 19 Apr 2022 07:53:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650354790;
-        bh=miS5KDMR30XTAoTHH1EbZsvMMWfUGaOdXlnbKlayQDo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=W7A6GxhdbzGZyaJyJECPu0xxz5W/2vU9XA/7zK7aR6zAX41gqkGONxEMmMZiURljj
-         8UrErbfKmziXUxFWp5wES/iXmn6zsNQQpEZFGpNeRpZbxhES9ASLE32Wpd22Tesk/1
-         DloTBkqeZSFh8HESkVRtGya7HOl78nS7Qptq4HytSn5WWZxSBRtJZznH9D9ayFqrGM
-         4nAm8xWVpV7aa+dCcTv43M5Q0y63YRxxnvXOqwKkPCQfLenZB+jH/ac61SnpQ1fYVh
-         l0kqRyEAyrvqQXZ7HuWQStSYErzwf3aHXbZwJU6bXDsnRdw5zric08FWdKctdYuBur
-         uu5da6ij0ni7w==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Finn Thain <fthain@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH] m68k: coldfire: drop ISA_DMA_API support
-Date:   Tue, 19 Apr 2022 09:52:07 +0200
-Message-Id: <20220419075300.1326745-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Tue, 19 Apr 2022 03:56:34 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10051.outbound.protection.outlook.com [40.107.1.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F332D27B38
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:53:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UFLBYg4YIszi8b/lJy8ufGduYAs8xMvJQZyyFWEd0EhcQ3ydbjZfcrrhB75roC6mDQTD1k13N9oWULnUR/UaDOLyMvLkrpQ1wRusBdxOVqXKaPE3i7K/kaiqwPa3wV2kyEuGsTekOhzGPf358/E5uEhNO7kklT78EOS5VRWo2YJ5jb3Xk61i3UQPN6g6eHC8ZQ6WppJW7vRiHWvTdW/yBGPppn1LrR6EOACY53m2Pr3cm1DA6P8E0Uy92YCo+Nkf50aYqpjOWAIQLdcDsmc/OdL4DMj9SYJseL00QTbz3N73EIMeaut27Hs+LNJxS5rne435le9bdUaQZqJVvfHhlQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dfUOdSyZTu2W9DJ6lAb5pO3CfYXN5sNgyZaRt1QxuFk=;
+ b=Aqbp9o3e7OI50EINdt7lASPpZmY1ed/g5JKAH034SteLx3yh/gMheZiCrovbM9uBrTg6mQR4HmxhXiIa0y+FMF9ZZ/QUjyFvDBmVaUlgcLnOMt/j55TLsK2vyZhPIrs2zDd2II0bsVTx1r3E9vQgoXGjV/wOYl9qyB/TOttlv/BBd6Q26tzS9TCPpQlHCO2/LHjeodc7M3AFZF8zG+epnazE8AZsYpTXRjpcdliRNZfZmT5kZfnyTMVTi9Rfj0zrsB0m0HJE6aMS7hbi7l2F54/ZpgTAzvl+i26ST4ujk7F1nuGo0fnbGz1zlc8eR5nwd/VEIr2bkkiY2eMyTofBRg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dfUOdSyZTu2W9DJ6lAb5pO3CfYXN5sNgyZaRt1QxuFk=;
+ b=CKtCYDGaQDcaIphe4ODvAIW+z6Xz0u36UyR/8uE1nWvDrPjmvK2UZ9DeSxuCcN31zuyGH+34OHj1vQx5Kv+bRjVBOJTm+a3jLh4NxXY5frZsJ0sTuRQYjfl4XbW2mpsmtaxeM9zgtTyxAsTTfPkByXFmf2Qw2GBbKHPNTwb2+P4=
+Received: from VI1PR04MB4333.eurprd04.prod.outlook.com (2603:10a6:803:49::27)
+ by VI1PR04MB5952.eurprd04.prod.outlook.com (2603:10a6:803:cb::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Tue, 19 Apr
+ 2022 07:53:50 +0000
+Received: from VI1PR04MB4333.eurprd04.prod.outlook.com
+ ([fe80::d1b0:5a64:86d7:8a42]) by VI1PR04MB4333.eurprd04.prod.outlook.com
+ ([fe80::d1b0:5a64:86d7:8a42%4]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
+ 07:53:50 +0000
+From:   Jun Li <jun.li@nxp.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "myungjoo.ham@samsung.com" <myungjoo.ham@samsung.com>,
+        "cw00.choi@samsung.com" <cw00.choi@samsung.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Frank Li <frank.li@nxp.com>, Xu Yang <xu.yang_2@nxp.com>
+Subject: RE: [PATCH] extcon: ptn5150: add usb role class support
+Thread-Topic: [PATCH] extcon: ptn5150: add usb role class support
+Thread-Index: AQHYSZwctDdaLIQeZ06BuvStsTM0tqziq1kAgAAXF/CAFC5VkA==
+Date:   Tue, 19 Apr 2022 07:53:50 +0000
+Message-ID: <VI1PR04MB4333585DED292C3AC920B21E89F29@VI1PR04MB4333.eurprd04.prod.outlook.com>
+References: <1649238142-27564-1-git-send-email-jun.li@nxp.com>
+ <4ad9e733-7d8b-a73b-c59e-d9b6d5e58498@linaro.org>
+ <VI1PR04MB4333FE5742667FBE8AAACD2789E79@VI1PR04MB4333.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR04MB4333FE5742667FBE8AAACD2789E79@VI1PR04MB4333.eurprd04.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3ef11c42-cc8f-456f-d184-08da21d9bdce
+x-ms-traffictypediagnostic: VI1PR04MB5952:EE_
+x-microsoft-antispam-prvs: <VI1PR04MB5952D315D9D939A9A8A68A3589F29@VI1PR04MB5952.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: R3bIsiIps0pOGwffiSyMo+cxDz8ITu2lEhzxjOWLIIdIBfSLjv/c34Re+fTx45GtPZ1s91IRYnkafJ8Ugc9rVe9G9UEf3FHaB07u96NT7VFe6wKE85+bPZhiyGVd4IAV9DSTIrV+4iL36fXDvSsGTH+uc9CzSh04DbP4EgcCv6tBdoXezm9DGOWwJwYHRyrJ6FtP2WUchOq7HaMNgt0ce/u/aH2HETdZ88HReDUldcXDeO/fX+eCBR44WKA8QG/Rw9OMUizljsDAVxjMQDo8WBrCyWcsjH2Ymv1X2x22hA5G0ho+ugCsBdy9MQz0iXGniGKvLRtslkr+w8FQwPTF6CViqok/rBgBaQ15IbEaG3U6ufazMNKTo/VUYrNhufaxAu40Q9i/TKinFnMfyAS3qGZdFPutUayCxQwLZEekPcEM7Eqo2o3aT1l16uyjIdUwm3woAuUV4SlhIkGdQMLT228j7f2lcY1KIyOPOa7FJsKYpmk1zAJu4KvYa2I1A06moW4P6eJRP5xRpNP1Hd1qDii/r5NCMreKLowW/2Wb6wtEBXnlcqp/Taf5COftCB4EFrnenh/7mZjOtKSxioUa9p9CZxKleLiriZtX0eCMzqmIFjRU8cZZ3mHJ4oq9GvSRx8CQpSXUslVNnmS3x112IERNVQrxT4Iq17WpK5OpUwqBrETjboVFomlAvUD+OTg+vuKc+2psOZQe/hD0fpkzNw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4333.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(38070700005)(44832011)(5660300002)(55016003)(4326008)(83380400001)(2906002)(122000001)(71200400001)(7696005)(9686003)(52536014)(53546011)(508600001)(26005)(8676002)(186003)(38100700002)(33656002)(64756008)(66556008)(66446008)(316002)(76116006)(54906003)(66476007)(86362001)(110136005)(66946007)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SzN0QkpaSElhLytEZ1ZiZC9GdmxjWU1WTUU0anUyZEorbDBvVXM3ZFhLWFRj?=
+ =?utf-8?B?cnRaek1MU20yZEkyTWtBamdnZktyUURQMlMrQzFmdEdIZkJuaHRBRGxrZ2Jk?=
+ =?utf-8?B?NERxRnc4VFZtUjd0K1RVak5KUlRGOHhQMFRtcFhCR3FWODU1NHlrUWxNV1FC?=
+ =?utf-8?B?RkRmWHNneWdMeXZsRCszbWJOclgxRS9VeGNqMmdPajNYZk5oWS82djlSUG9V?=
+ =?utf-8?B?N0Z4ZkRSS3dZNEJYNVhZOWkvdVV2UmNtckhQTzJ5UU5acVdtTWNRNk96RFVQ?=
+ =?utf-8?B?aithaFJwa29CREw3SU8xN1ExcGlEUEtlUGFWaHY5YzZ5VFhHRzFGMjJ2Wi9R?=
+ =?utf-8?B?QlN6MlhpZ01hUEFiRjJyd2N5SVZXa21RVnEwcWpFVjZReVozRUxkSEVkWFZo?=
+ =?utf-8?B?ay84ZTVoakhvdWVnc2h0enRZckpWZmpoVE8zVDBROE53eXRVc1ZMZDQvQSs3?=
+ =?utf-8?B?cmp1STF3NytjN1owZ2NoeVhybEhNV09uQU5DSi9mUXJ1WGtVSi9qbWN1NUU0?=
+ =?utf-8?B?WDg4aTNpdFBpOW4yUUIxSWM0T3RHZ2ZBRTlMcTRUVjBiU2FtZVhxRzltM0s4?=
+ =?utf-8?B?UlV0MW9nSHRwOXRkUlhuclBtUDJPejFKZjhtaTRsTStGdWVaREZNZnR1WUJS?=
+ =?utf-8?B?YldjZHdNTVBzUWNMWEliUENuUFZoQWxqV2FuOGlIQ2VyMkxsYTZXY1l4OWNr?=
+ =?utf-8?B?WHFzNmNSdmNUajVhN2JzdFpGWFFQMkt1RHg1cUhkRWl0bGNOUGwrRmRTamIv?=
+ =?utf-8?B?bzZZVitxUEdVeFk1MUd4STZEb1YrT0ZjU2pVdXJmQVQ4Y1YzSXArUVFVZEF5?=
+ =?utf-8?B?MkV0UStuNVFySEZ5alF2VVRJYTZzNFVDN0o5R3VrWWFaSFFidStaRUlOTHNM?=
+ =?utf-8?B?YkQreS9YelRsWFh2ZFhjK1h6aFJPdUdBQ2cxeUZOZHh0MFovd2l5V3M2NWtk?=
+ =?utf-8?B?dU9NZVJvektUcEgxeHMrV3pSdkZ5MTJqMGRyN0I0bldXYTVxRkNhQm15blJa?=
+ =?utf-8?B?MWhGTkNMakNIMnpFRzQ1S2ZpTTFtWkFoYjVjRm5PWlhwaVdISzdtS3Q3ekp4?=
+ =?utf-8?B?d002alArcHFDRjY4UzVPcG1zNnhDRHkrNlV0TFBRZ01RbUFXaERZaUZnem9s?=
+ =?utf-8?B?b0pkRnUxMk9lNUVONkszMnJNOGpvekY3R2R0dTJ2WVJUV05GSG4xb1FUUGRh?=
+ =?utf-8?B?TzBEQm9idy9ablFWejVBU2tOT09jSkhCY1MwUUN1MTJvcC80Qm1YWVpSb3JT?=
+ =?utf-8?B?Q0pyUHI2Ny9CTkFsbmVYK0NtMFUzM21VN2xrZEtzclFhaE56VDJqUWlHV3dq?=
+ =?utf-8?B?enI5L2V1SWxhUFFFY0ZtZ2Jmb1RaQkRMVzlCcExVSmhqM2tTamZzUUMwbzFO?=
+ =?utf-8?B?VmRGeUcyellRTldhR21kZXA4WkQ0Y01kSmJRZlpXNTN1YnhmTEM3eHlKSGRv?=
+ =?utf-8?B?QVpub3JqRzM3bkJiQjRMQ3V6Y2VvRWhzV2pSenJrcmJOL1pwT2dTOEpWc2kw?=
+ =?utf-8?B?NkYzdWZKU1JMQUJPUkFVNkN3ZGJscHZKQ05LOTI0emsvU2Q4NnJRWjhBaXFE?=
+ =?utf-8?B?eWZOUkZoZmxOQTlWaTJZNlhGWVJTem0xRVRjL0QraG9mV1VCNFJIRm9WTWpm?=
+ =?utf-8?B?Rk1vRWRuU1dXdW9sNXJOemxaUDZzL2RLanRFaWN3dDdnTm5LSENzeEFPQk10?=
+ =?utf-8?B?bDhKNHdIRG1ORWdMK20vc200N2NMU2FudWxMV1N2MlBzTk5XNTNvcmc1SjdQ?=
+ =?utf-8?B?VDE4ZXRxMTZodHFLSlprNE5kUDIzbE9Od2Z1alZWRlZlbHpKamFoVUFqa3hr?=
+ =?utf-8?B?bC82c1pSR0RFYVJmdnA4ZTFFY05ER3lrSzV5RmxDNHhPUXJ3Y3l0QWN0cjZI?=
+ =?utf-8?B?NTllODdZb2ZLTlVCcTFhSldSODlyRkdiL2xtbzFUTXNEVGtBT0VMMUNDS2ta?=
+ =?utf-8?B?R2pRdFNBTThrNi9CcUxLaGsvN0RUdkJ5Q0JkaW42OENZTEw3SjgyTVluTEpH?=
+ =?utf-8?B?eEYrRHJrd05YV2g1eWljVjN4WHlLbDZYZVF6QUZuc1JmZllMQ0h4bk1wSkRL?=
+ =?utf-8?B?NUsxbkVKNlQwTzJ0cjc0OWRrQUpQTGFwRmFCNFpIbjdKMXdybmRUOVluOUI1?=
+ =?utf-8?B?eFptV1V5MVliS3drQi9IZ0xNRGNUblN3WHdmOGVaNUNMdThOQ1YzUzA4UmVF?=
+ =?utf-8?B?T3hOM0VXRmZWTDZ4WjZ5ZHc4NFovVEg1dlZqTkVEYTl4d1VCMS9qRS81N1dv?=
+ =?utf-8?B?OWFUODZOMTg1S0w4ZXBSZ2dyNDBqbGE0Vmd1U2dSbU1FRFBCYjA5NWgydVpM?=
+ =?utf-8?Q?E6+vfPwHC1vOLZ97sh?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4333.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ef11c42-cc8f-456f-d184-08da21d9bdce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2022 07:53:50.1633
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: f2L2uDsjnJx6Y/kzFHA32xTSeiM7F5AgVpO0uDJd98hTkS1L1TgKkrV5eym2PnWN
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5952
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-
-After a build regression report, I took a look at possible
-users of CONFIG_ISA_DMA_API on m68k and found none, which
-Greg confirmed.
-
-With no reason to keep this, let's just drop the corresponding
-files and prevent the remaining ISA drivers that use this from
-getting built.
-
-The remaining definitions in asm/dma.h are used for PCI
-support.
-
-Link: https://lore.kernel.org/lkml/9e5ee1c3-ca80-f343-a1f5-66f3dd1c0727@linux-m68k.org/
-Cc: Greg Ungerer <gerg@linux-m68k.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/m68k/Kconfig.bus       |   7 -
- arch/m68k/coldfire/dma.c    |  43 ----
- arch/m68k/include/asm/dma.h | 478 ------------------------------------
- arch/m68k/mm/motorola.c     |   1 -
- drivers/mmc/host/Kconfig    |   2 +-
- sound/core/Makefile         |   2 -
- sound/isa/Kconfig           |   2 +-
- 7 files changed, 2 insertions(+), 533 deletions(-)
- delete mode 100644 arch/m68k/coldfire/dma.c
-
-diff --git a/arch/m68k/Kconfig.bus b/arch/m68k/Kconfig.bus
-index d1e93a39cd3b..197b806bfa60 100644
---- a/arch/m68k/Kconfig.bus
-+++ b/arch/m68k/Kconfig.bus
-@@ -62,10 +62,3 @@ config GENERIC_ISA_DMA
- source "drivers/zorro/Kconfig"
- 
- endif
--
--if COLDFIRE
--
--config ISA_DMA_API
--	def_bool !M5272
--
--endif
-diff --git a/arch/m68k/coldfire/dma.c b/arch/m68k/coldfire/dma.c
-deleted file mode 100644
-index c3279f7467d7..000000000000
---- a/arch/m68k/coldfire/dma.c
-+++ /dev/null
-@@ -1,43 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/***************************************************************************/
--
--/*
-- *	dma.c -- Freescale ColdFire DMA support
-- *
-- *	Copyright (C) 2007, Greg Ungerer (gerg@snapgear.com)
-- */
--
--/***************************************************************************/
--
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <asm/dma.h>
--#include <asm/coldfire.h>
--#include <asm/mcfsim.h>
--#include <asm/mcfdma.h>
--
--/***************************************************************************/
--
--/*
-- *      DMA channel base address table.
-- */
--unsigned int dma_base_addr[MAX_M68K_DMA_CHANNELS] = {
--#ifdef MCFDMA_BASE0
--	MCFDMA_BASE0,
--#endif
--#ifdef MCFDMA_BASE1
--	MCFDMA_BASE1,
--#endif
--#ifdef MCFDMA_BASE2
--	MCFDMA_BASE2,
--#endif
--#ifdef MCFDMA_BASE3
--	MCFDMA_BASE3,
--#endif
--};
--EXPORT_SYMBOL(dma_base_addr);
--
--unsigned int dma_device_address[MAX_M68K_DMA_CHANNELS];
--EXPORT_SYMBOL(dma_device_address);
--
--/***************************************************************************/
-diff --git a/arch/m68k/include/asm/dma.h b/arch/m68k/include/asm/dma.h
-index ae2021964e32..2cb361dede24 100644
---- a/arch/m68k/include/asm/dma.h
-+++ b/arch/m68k/include/asm/dma.h
-@@ -2,484 +2,6 @@
- #ifndef _M68K_DMA_H
- #define _M68K_DMA_H 1
- 
--#ifdef CONFIG_COLDFIRE
--/*
-- * ColdFire DMA Model:
-- *   ColdFire DMA supports two forms of DMA: Single and Dual address. Single
-- * address mode emits a source address, and expects that the device will either
-- * pick up the data (DMA READ) or source data (DMA WRITE). This implies that
-- * the device will place data on the correct byte(s) of the data bus, as the
-- * memory transactions are always 32 bits. This implies that only 32 bit
-- * devices will find single mode transfers useful. Dual address DMA mode
-- * performs two cycles: source read and destination write. ColdFire will
-- * align the data so that the device will always get the correct bytes, thus
-- * is useful for 8 and 16 bit devices. This is the mode that is supported
-- * below.
-- *
-- * AUG/22/2000 : added support for 32-bit Dual-Address-Mode (K) 2000
-- *               Oliver Kamphenkel (O.Kamphenkel@tu-bs.de)
-- *
-- * AUG/25/2000 : added support for 8, 16 and 32-bit Single-Address-Mode (K)2000
-- *               Oliver Kamphenkel (O.Kamphenkel@tu-bs.de)
-- *
-- * APR/18/2002 : added proper support for MCF5272 DMA controller.
-- *               Arthur Shipkowski (art@videon-central.com)
-- */
--
--#include <asm/coldfire.h>
--#include <asm/mcfsim.h>
--#include <asm/mcfdma.h>
--
--/*
-- * Set number of channels of DMA on ColdFire for different implementations.
-- */
--#if defined(CONFIG_M5249) || defined(CONFIG_M5307) || defined(CONFIG_M5407) || \
--	defined(CONFIG_M523x) || defined(CONFIG_M527x) || \
--	defined(CONFIG_M528x) || defined(CONFIG_M525x)
--
--#define MAX_M68K_DMA_CHANNELS 4
--#elif defined(CONFIG_M5272)
--#define MAX_M68K_DMA_CHANNELS 1
--#elif defined(CONFIG_M53xx)
--#define MAX_M68K_DMA_CHANNELS 0
--#else
--#define MAX_M68K_DMA_CHANNELS 2
--#endif
--
--extern unsigned int dma_base_addr[MAX_M68K_DMA_CHANNELS];
--extern unsigned int dma_device_address[MAX_M68K_DMA_CHANNELS];
--
--#if !defined(CONFIG_M5272)
--#define DMA_MODE_WRITE_BIT  0x01  /* Memory/IO to IO/Memory select */
--#define DMA_MODE_WORD_BIT   0x02  /* 8 or 16 bit transfers */
--#define DMA_MODE_LONG_BIT   0x04  /* or 32 bit transfers */
--#define DMA_MODE_SINGLE_BIT 0x08  /* single-address-mode */
--
--/* I/O to memory, 8 bits, mode */
--#define DMA_MODE_READ	            0
--/* memory to I/O, 8 bits, mode */
--#define DMA_MODE_WRITE	            1
--/* I/O to memory, 16 bits, mode */
--#define DMA_MODE_READ_WORD          2
--/* memory to I/O, 16 bits, mode */
--#define DMA_MODE_WRITE_WORD         3
--/* I/O to memory, 32 bits, mode */
--#define DMA_MODE_READ_LONG          4
--/* memory to I/O, 32 bits, mode */
--#define DMA_MODE_WRITE_LONG         5
--/* I/O to memory, 8 bits, single-address-mode */
--#define DMA_MODE_READ_SINGLE        8
--/* memory to I/O, 8 bits, single-address-mode */
--#define DMA_MODE_WRITE_SINGLE       9
--/* I/O to memory, 16 bits, single-address-mode */
--#define DMA_MODE_READ_WORD_SINGLE  10
--/* memory to I/O, 16 bits, single-address-mode */
--#define DMA_MODE_WRITE_WORD_SINGLE 11
--/* I/O to memory, 32 bits, single-address-mode */
--#define DMA_MODE_READ_LONG_SINGLE  12
--/* memory to I/O, 32 bits, single-address-mode */
--#define DMA_MODE_WRITE_LONG_SINGLE 13
--
--#else /* CONFIG_M5272 is defined */
--
--/* Source static-address mode */
--#define DMA_MODE_SRC_SA_BIT 0x01
--/* Two bits to select between all four modes */
--#define DMA_MODE_SSIZE_MASK 0x06
--/* Offset to shift bits in */
--#define DMA_MODE_SSIZE_OFF  0x01
--/* Destination static-address mode */
--#define DMA_MODE_DES_SA_BIT 0x10
--/* Two bits to select between all four modes */
--#define DMA_MODE_DSIZE_MASK 0x60
--/* Offset to shift bits in */
--#define DMA_MODE_DSIZE_OFF  0x05
--/* Size modifiers */
--#define DMA_MODE_SIZE_LONG  0x00
--#define DMA_MODE_SIZE_BYTE  0x01
--#define DMA_MODE_SIZE_WORD  0x02
--#define DMA_MODE_SIZE_LINE  0x03
--
--/*
-- * Aliases to help speed quick ports; these may be suboptimal, however. They
-- * do not include the SINGLE mode modifiers since the MCF5272 does not have a
-- * mode where the device is in control of its addressing.
-- */
--
--/* I/O to memory, 8 bits, mode */
--#define DMA_MODE_READ	              ((DMA_MODE_SIZE_BYTE << DMA_MODE_DSIZE_OFF) | (DMA_MODE_SIZE_BYTE << DMA_MODE_SSIZE_OFF) | DMA_SRC_SA_BIT)
--/* memory to I/O, 8 bits, mode */
--#define DMA_MODE_WRITE	            ((DMA_MODE_SIZE_BYTE << DMA_MODE_DSIZE_OFF) | (DMA_MODE_SIZE_BYTE << DMA_MODE_SSIZE_OFF) | DMA_DES_SA_BIT)
--/* I/O to memory, 16 bits, mode */
--#define DMA_MODE_READ_WORD	        ((DMA_MODE_SIZE_WORD << DMA_MODE_DSIZE_OFF) | (DMA_MODE_SIZE_WORD << DMA_MODE_SSIZE_OFF) | DMA_SRC_SA_BIT)
--/* memory to I/O, 16 bits, mode */
--#define DMA_MODE_WRITE_WORD         ((DMA_MODE_SIZE_WORD << DMA_MODE_DSIZE_OFF) | (DMA_MODE_SIZE_WORD << DMA_MODE_SSIZE_OFF) | DMA_DES_SA_BIT)
--/* I/O to memory, 32 bits, mode */
--#define DMA_MODE_READ_LONG	        ((DMA_MODE_SIZE_LONG << DMA_MODE_DSIZE_OFF) | (DMA_MODE_SIZE_LONG << DMA_MODE_SSIZE_OFF) | DMA_SRC_SA_BIT)
--/* memory to I/O, 32 bits, mode */
--#define DMA_MODE_WRITE_LONG         ((DMA_MODE_SIZE_LONG << DMA_MODE_DSIZE_OFF) | (DMA_MODE_SIZE_LONG << DMA_MODE_SSIZE_OFF) | DMA_DES_SA_BIT)
--
--#endif /* !defined(CONFIG_M5272) */
--
--#if !defined(CONFIG_M5272)
--/* enable/disable a specific DMA channel */
--static __inline__ void enable_dma(unsigned int dmanr)
--{
--  volatile unsigned short *dmawp;
--
--#ifdef DMA_DEBUG
--  printk("enable_dma(dmanr=%d)\n", dmanr);
--#endif
--
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--  dmawp[MCFDMA_DCR] |= MCFDMA_DCR_EEXT;
--}
--
--static __inline__ void disable_dma(unsigned int dmanr)
--{
--  volatile unsigned short *dmawp;
--  volatile unsigned char  *dmapb;
--
--#ifdef DMA_DEBUG
--  printk("disable_dma(dmanr=%d)\n", dmanr);
--#endif
--
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--  dmapb = (unsigned char *) dma_base_addr[dmanr];
--
--  /* Turn off external requests, and stop any DMA in progress */
--  dmawp[MCFDMA_DCR] &= ~MCFDMA_DCR_EEXT;
--  dmapb[MCFDMA_DSR] = MCFDMA_DSR_DONE;
--}
--
--/*
-- * Clear the 'DMA Pointer Flip Flop'.
-- * Write 0 for LSB/MSB, 1 for MSB/LSB access.
-- * Use this once to initialize the FF to a known state.
-- * After that, keep track of it. :-)
-- * --- In order to do that, the DMA routines below should ---
-- * --- only be used while interrupts are disabled! ---
-- *
-- * This is a NOP for ColdFire. Provide a stub for compatibility.
-- */
--static __inline__ void clear_dma_ff(unsigned int dmanr)
--{
--}
--
--/* set mode (above) for a specific DMA channel */
--static __inline__ void set_dma_mode(unsigned int dmanr, char mode)
--{
--
--  volatile unsigned char  *dmabp;
--  volatile unsigned short *dmawp;
--
--#ifdef DMA_DEBUG
--  printk("set_dma_mode(dmanr=%d,mode=%d)\n", dmanr, mode);
--#endif
--
--  dmabp = (unsigned char *) dma_base_addr[dmanr];
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--
--  /* Clear config errors */
--  dmabp[MCFDMA_DSR] = MCFDMA_DSR_DONE;
--
--  /* Set command register */
--  dmawp[MCFDMA_DCR] =
--    MCFDMA_DCR_INT |         /* Enable completion irq */
--    MCFDMA_DCR_CS |          /* Force one xfer per request */
--    MCFDMA_DCR_AA |          /* Enable auto alignment */
--    /* single-address-mode */
--    ((mode & DMA_MODE_SINGLE_BIT) ? MCFDMA_DCR_SAA : 0) |
--    /* sets s_rw (-> r/w) high if Memory to I/0 */
--    ((mode & DMA_MODE_WRITE_BIT) ? MCFDMA_DCR_S_RW : 0) |
--    /* Memory to I/O or I/O to Memory */
--    ((mode & DMA_MODE_WRITE_BIT) ? MCFDMA_DCR_SINC : MCFDMA_DCR_DINC) |
--    /* 32 bit, 16 bit or 8 bit transfers */
--    ((mode & DMA_MODE_WORD_BIT)  ? MCFDMA_DCR_SSIZE_WORD :
--     ((mode & DMA_MODE_LONG_BIT) ? MCFDMA_DCR_SSIZE_LONG :
--                                   MCFDMA_DCR_SSIZE_BYTE)) |
--    ((mode & DMA_MODE_WORD_BIT)  ? MCFDMA_DCR_DSIZE_WORD :
--     ((mode & DMA_MODE_LONG_BIT) ? MCFDMA_DCR_DSIZE_LONG :
--                                   MCFDMA_DCR_DSIZE_BYTE));
--
--#ifdef DEBUG_DMA
--  printk("%s(%d): dmanr=%d DSR[%x]=%x DCR[%x]=%x\n", __FILE__, __LINE__,
--         dmanr, (int) &dmabp[MCFDMA_DSR], dmabp[MCFDMA_DSR],
--	 (int) &dmawp[MCFDMA_DCR], dmawp[MCFDMA_DCR]);
--#endif
--}
--
--/* Set transfer address for specific DMA channel */
--static __inline__ void set_dma_addr(unsigned int dmanr, unsigned int a)
--{
--  volatile unsigned short *dmawp;
--  volatile unsigned int   *dmalp;
--
--#ifdef DMA_DEBUG
--  printk("set_dma_addr(dmanr=%d,a=%x)\n", dmanr, a);
--#endif
--
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--
--  /* Determine which address registers are used for memory/device accesses */
--  if (dmawp[MCFDMA_DCR] & MCFDMA_DCR_SINC) {
--    /* Source incrementing, must be memory */
--    dmalp[MCFDMA_SAR] = a;
--    /* Set dest address, must be device */
--    dmalp[MCFDMA_DAR] = dma_device_address[dmanr];
--  } else {
--    /* Destination incrementing, must be memory */
--    dmalp[MCFDMA_DAR] = a;
--    /* Set source address, must be device */
--    dmalp[MCFDMA_SAR] = dma_device_address[dmanr];
--  }
--
--#ifdef DEBUG_DMA
--  printk("%s(%d): dmanr=%d DCR[%x]=%x SAR[%x]=%08x DAR[%x]=%08x\n",
--	__FILE__, __LINE__, dmanr, (int) &dmawp[MCFDMA_DCR], dmawp[MCFDMA_DCR],
--	(int) &dmalp[MCFDMA_SAR], dmalp[MCFDMA_SAR],
--	(int) &dmalp[MCFDMA_DAR], dmalp[MCFDMA_DAR]);
--#endif
--}
--
--/*
-- * Specific for Coldfire - sets device address.
-- * Should be called after the mode set call, and before set DMA address.
-- */
--static __inline__ void set_dma_device_addr(unsigned int dmanr, unsigned int a)
--{
--#ifdef DMA_DEBUG
--  printk("set_dma_device_addr(dmanr=%d,a=%x)\n", dmanr, a);
--#endif
--
--  dma_device_address[dmanr] = a;
--}
--
--/*
-- * NOTE 2: "count" represents _bytes_.
-- */
--static __inline__ void set_dma_count(unsigned int dmanr, unsigned int count)
--{
--  volatile unsigned short *dmawp;
--
--#ifdef DMA_DEBUG
--  printk("set_dma_count(dmanr=%d,count=%d)\n", dmanr, count);
--#endif
--
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--  dmawp[MCFDMA_BCR] = (unsigned short)count;
--}
--
--/*
-- * Get DMA residue count. After a DMA transfer, this
-- * should return zero. Reading this while a DMA transfer is
-- * still in progress will return unpredictable results.
-- * Otherwise, it returns the number of _bytes_ left to transfer.
-- */
--static __inline__ int get_dma_residue(unsigned int dmanr)
--{
--  volatile unsigned short *dmawp;
--  unsigned short count;
--
--#ifdef DMA_DEBUG
--  printk("get_dma_residue(dmanr=%d)\n", dmanr);
--#endif
--
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--  count = dmawp[MCFDMA_BCR];
--  return((int) count);
--}
--#else /* CONFIG_M5272 is defined */
--
--/*
-- * The MCF5272 DMA controller is very different than the controller defined above
-- * in terms of register mapping.  For instance, with the exception of the 16-bit
-- * interrupt register (IRQ#85, for reference), all of the registers are 32-bit.
-- *
-- * The big difference, however, is the lack of device-requested DMA.  All modes
-- * are dual address transfer, and there is no 'device' setup or direction bit.
-- * You can DMA between a device and memory, between memory and memory, or even between
-- * two devices directly, with any combination of incrementing and non-incrementing
-- * addresses you choose.  This puts a crimp in distinguishing between the 'device
-- * address' set up by set_dma_device_addr.
-- *
-- * Therefore, there are two options.  One is to use set_dma_addr and set_dma_device_addr,
-- * which will act exactly as above in -- it will look to see if the source is set to
-- * autoincrement, and if so it will make the source use the set_dma_addr value and the
-- * destination the set_dma_device_addr value.  Otherwise the source will be set to the
-- * set_dma_device_addr value and the destination will get the set_dma_addr value.
-- *
-- * The other is to use the provided set_dma_src_addr and set_dma_dest_addr functions
-- * and make it explicit.  Depending on what you're doing, one of these two should work
-- * for you, but don't mix them in the same transfer setup.
-- */
--
--/* enable/disable a specific DMA channel */
--static __inline__ void enable_dma(unsigned int dmanr)
--{
--  volatile unsigned int  *dmalp;
--
--#ifdef DMA_DEBUG
--  printk("enable_dma(dmanr=%d)\n", dmanr);
--#endif
--
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--  dmalp[MCFDMA_DMR] |= MCFDMA_DMR_EN;
--}
--
--static __inline__ void disable_dma(unsigned int dmanr)
--{
--  volatile unsigned int   *dmalp;
--
--#ifdef DMA_DEBUG
--  printk("disable_dma(dmanr=%d)\n", dmanr);
--#endif
--
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--
--  /* Turn off external requests, and stop any DMA in progress */
--  dmalp[MCFDMA_DMR] &= ~MCFDMA_DMR_EN;
--  dmalp[MCFDMA_DMR] |= MCFDMA_DMR_RESET;
--}
--
--/*
-- * Clear the 'DMA Pointer Flip Flop'.
-- * Write 0 for LSB/MSB, 1 for MSB/LSB access.
-- * Use this once to initialize the FF to a known state.
-- * After that, keep track of it. :-)
-- * --- In order to do that, the DMA routines below should ---
-- * --- only be used while interrupts are disabled! ---
-- *
-- * This is a NOP for ColdFire. Provide a stub for compatibility.
-- */
--static __inline__ void clear_dma_ff(unsigned int dmanr)
--{
--}
--
--/* set mode (above) for a specific DMA channel */
--static __inline__ void set_dma_mode(unsigned int dmanr, char mode)
--{
--
--  volatile unsigned int   *dmalp;
--  volatile unsigned short *dmawp;
--
--#ifdef DMA_DEBUG
--  printk("set_dma_mode(dmanr=%d,mode=%d)\n", dmanr, mode);
--#endif
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--  dmawp = (unsigned short *) dma_base_addr[dmanr];
--
--  /* Clear config errors */
--  dmalp[MCFDMA_DMR] |= MCFDMA_DMR_RESET;
--
--  /* Set command register */
--  dmalp[MCFDMA_DMR] =
--    MCFDMA_DMR_RQM_DUAL |         /* Mandatory Request Mode setting */
--    MCFDMA_DMR_DSTT_SD  |         /* Set up addressing types; set to supervisor-data. */
--    MCFDMA_DMR_SRCT_SD  |         /* Set up addressing types; set to supervisor-data. */
--    /* source static-address-mode */
--    ((mode & DMA_MODE_SRC_SA_BIT) ? MCFDMA_DMR_SRCM_SA : MCFDMA_DMR_SRCM_IA) |
--    /* dest static-address-mode */
--    ((mode & DMA_MODE_DES_SA_BIT) ? MCFDMA_DMR_DSTM_SA : MCFDMA_DMR_DSTM_IA) |
--    /* burst, 32 bit, 16 bit or 8 bit transfers are separately configurable on the MCF5272 */
--    (((mode & DMA_MODE_SSIZE_MASK) >> DMA_MODE_SSIZE_OFF) << MCFDMA_DMR_DSTS_OFF) |
--    (((mode & DMA_MODE_SSIZE_MASK) >> DMA_MODE_SSIZE_OFF) << MCFDMA_DMR_SRCS_OFF);
--
--  dmawp[MCFDMA_DIR] |= MCFDMA_DIR_ASCEN;   /* Enable completion interrupts */
--
--#ifdef DEBUG_DMA
--  printk("%s(%d): dmanr=%d DMR[%x]=%x DIR[%x]=%x\n", __FILE__, __LINE__,
--	 dmanr, (int) &dmalp[MCFDMA_DMR], dmalp[MCFDMA_DMR],
--	 (int) &dmawp[MCFDMA_DIR], dmawp[MCFDMA_DIR]);
--#endif
--}
--
--/* Set transfer address for specific DMA channel */
--static __inline__ void set_dma_addr(unsigned int dmanr, unsigned int a)
--{
--  volatile unsigned int   *dmalp;
--
--#ifdef DMA_DEBUG
--  printk("set_dma_addr(dmanr=%d,a=%x)\n", dmanr, a);
--#endif
--
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--
--  /* Determine which address registers are used for memory/device accesses */
--  if (dmalp[MCFDMA_DMR] & MCFDMA_DMR_SRCM) {
--    /* Source incrementing, must be memory */
--    dmalp[MCFDMA_DSAR] = a;
--    /* Set dest address, must be device */
--    dmalp[MCFDMA_DDAR] = dma_device_address[dmanr];
--  } else {
--    /* Destination incrementing, must be memory */
--    dmalp[MCFDMA_DDAR] = a;
--    /* Set source address, must be device */
--    dmalp[MCFDMA_DSAR] = dma_device_address[dmanr];
--  }
--
--#ifdef DEBUG_DMA
--  printk("%s(%d): dmanr=%d DMR[%x]=%x SAR[%x]=%08x DAR[%x]=%08x\n",
--	__FILE__, __LINE__, dmanr, (int) &dmalp[MCFDMA_DMR], dmalp[MCFDMA_DMR],
--	(int) &dmalp[MCFDMA_DSAR], dmalp[MCFDMA_DSAR],
--	(int) &dmalp[MCFDMA_DDAR], dmalp[MCFDMA_DDAR]);
--#endif
--}
--
--/*
-- * Specific for Coldfire - sets device address.
-- * Should be called after the mode set call, and before set DMA address.
-- */
--static __inline__ void set_dma_device_addr(unsigned int dmanr, unsigned int a)
--{
--#ifdef DMA_DEBUG
--  printk("set_dma_device_addr(dmanr=%d,a=%x)\n", dmanr, a);
--#endif
--
--  dma_device_address[dmanr] = a;
--}
--
--/*
-- * NOTE 2: "count" represents _bytes_.
-- *
-- * NOTE 3: While a 32-bit register, "count" is only a maximum 24-bit value.
-- */
--static __inline__ void set_dma_count(unsigned int dmanr, unsigned int count)
--{
--  volatile unsigned int *dmalp;
--
--#ifdef DMA_DEBUG
--  printk("set_dma_count(dmanr=%d,count=%d)\n", dmanr, count);
--#endif
--
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--  dmalp[MCFDMA_DBCR] = count;
--}
--
--/*
-- * Get DMA residue count. After a DMA transfer, this
-- * should return zero. Reading this while a DMA transfer is
-- * still in progress will return unpredictable results.
-- * Otherwise, it returns the number of _bytes_ left to transfer.
-- */
--static __inline__ int get_dma_residue(unsigned int dmanr)
--{
--  volatile unsigned int *dmalp;
--  unsigned int count;
--
--#ifdef DMA_DEBUG
--  printk("get_dma_residue(dmanr=%d)\n", dmanr);
--#endif
--
--  dmalp = (unsigned int *) dma_base_addr[dmanr];
--  count = dmalp[MCFDMA_DBCR];
--  return(count);
--}
--
--#endif /* !defined(CONFIG_M5272) */
--#endif /* CONFIG_COLDFIRE */
--
- /* it's useless on the m68k, but unfortunately needed by the new
-    bootmem allocator (but this should do it for this) */
- #define MAX_DMA_ADDRESS PAGE_OFFSET
-diff --git a/arch/m68k/mm/motorola.c b/arch/m68k/mm/motorola.c
-index ecbe948f4c1a..df7f797c908a 100644
---- a/arch/m68k/mm/motorola.c
-+++ b/arch/m68k/mm/motorola.c
-@@ -27,7 +27,6 @@
- #include <asm/pgalloc.h>
- #include <asm/machdep.h>
- #include <asm/io.h>
--#include <asm/dma.h>
- #ifdef CONFIG_ATARI
- #include <asm/atari_stram.h>
- #endif
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index af6c3c329076..d6144978e32d 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -508,7 +508,7 @@ config MMC_OMAP_HS
- 
- config MMC_WBSD
- 	tristate "Winbond W83L51xD SD/MMC Card Interface support"
--	depends on ISA_DMA_API && !M68K
-+	depends on ISA_DMA_API
- 	help
- 	  This selects the Winbond(R) W83L51xD Secure digital and
- 	  Multimedia card Interface.
-diff --git a/sound/core/Makefile b/sound/core/Makefile
-index 350d704ced98..2762f03d9b7b 100644
---- a/sound/core/Makefile
-+++ b/sound/core/Makefile
-@@ -9,9 +9,7 @@ ifneq ($(CONFIG_SND_PROC_FS),)
- snd-y += info.o
- snd-$(CONFIG_SND_OSSEMUL) += info_oss.o
- endif
--ifneq ($(CONFIG_M68K),y)
- snd-$(CONFIG_ISA_DMA_API) += isadma.o
--endif
- snd-$(CONFIG_SND_OSSEMUL) += sound_oss.o
- snd-$(CONFIG_SND_VMASTER) += vmaster.o
- snd-$(CONFIG_SND_JACK)	  += ctljack.o jack.o
-diff --git a/sound/isa/Kconfig b/sound/isa/Kconfig
-index 570b88e0b201..6ffa48dd5983 100644
---- a/sound/isa/Kconfig
-+++ b/sound/isa/Kconfig
-@@ -22,7 +22,7 @@ config SND_SB16_DSP
- menuconfig SND_ISA
- 	bool "ISA sound devices"
- 	depends on ISA || COMPILE_TEST
--	depends on ISA_DMA_API && !M68K
-+	depends on ISA_DMA_API
- 	default y
- 	help
- 	  Support for sound devices connected via the ISA bus.
--- 
-2.29.2
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSnVuIExpDQo+IFNlbnQ6
+IFdlZG5lc2RheSwgQXByaWwgNiwgMjAyMiA3OjQ5IFBNDQo+IFRvOiBLcnp5c3p0b2YgS296bG93
+c2tpIDxrcnp5c3p0b2Yua296bG93c2tpQGxpbmFyby5vcmc+Ow0KPiBteXVuZ2pvby5oYW1Ac2Ft
+c3VuZy5jb207IGN3MDAuY2hvaUBzYW1zdW5nLmNvbQ0KPiBDYzogbGludXgta2VybmVsQHZnZXIu
+a2VybmVsLm9yZzsgRnJhbmsgTGkgPGZyYW5rLmxpQG54cC5jb20+OyBYdSBZYW5nDQo+IDx4dS55
+YW5nXzJAbnhwLmNvbT4NCj4gU3ViamVjdDogUkU6IFtQQVRDSF0gZXh0Y29uOiBwdG41MTUwOiBh
+ZGQgdXNiIHJvbGUgY2xhc3Mgc3VwcG9ydA0KPiANCj4gDQo+IA0KPiA+IC0tLS0tT3JpZ2luYWwg
+TWVzc2FnZS0tLS0tDQo+ID4gRnJvbTogS3J6eXN6dG9mIEtvemxvd3NraSA8a3J6eXN6dG9mLmtv
+emxvd3NraUBsaW5hcm8ub3JnPg0KPiA+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgNiwgMjAyMiA2
+OjE2IFBNDQo+ID4gVG86IEp1biBMaSA8anVuLmxpQG54cC5jb20+OyBteXVuZ2pvby5oYW1Ac2Ft
+c3VuZy5jb207DQo+ID4gY3cwMC5jaG9pQHNhbXN1bmcuY29tDQo+ID4gQ2M6IGxpbnV4LWtlcm5l
+bEB2Z2VyLmtlcm5lbC5vcmc7IEZyYW5rIExpIDxmcmFuay5saUBueHAuY29tPjsgWHUgWWFuZw0K
+PiA+IDx4dS55YW5nXzJAbnhwLmNvbT4NCj4gPiBTdWJqZWN0OiBSZTogW1BBVENIXSBleHRjb246
+IHB0bjUxNTA6IGFkZCB1c2Igcm9sZSBjbGFzcyBzdXBwb3J0DQo+ID4NCj4gPiBPbiAwNi8wNC8y
+MDIyIDExOjQyLCBMaSBKdW4gd3JvdGU6DQo+ID4gPiBBZGQgc3VwcG9ydCBvZiB1c2Igcm9sZSBj
+bGFzcyBjb25zdW1lciB0byBkbyByb2xlIHN3aXRjaC4NCj4gPg0KPiA+IFBsZWFzZSBtZW50aW9u
+IGFsc28gd2h5IHlvdSBhcmUgZG9pbmcgdGhpcy4NCj4gDQo+IFdpbGwgaW1wcm92ZSBpbiB2Mi4N
+Cj4gDQo+ID4NCj4gPiA+DQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBMaSBKdW4gPGp1bi5saUBueHAu
+Y29tPg0KPiA+ID4gLS0tDQo+ID4gPiAgZHJpdmVycy9leHRjb24vS2NvbmZpZyAgICAgICAgICB8
+ICAxICsNCj4gPiA+ICBkcml2ZXJzL2V4dGNvbi9leHRjb24tcHRuNTE1MC5jIHwgMzkNCj4gPiA+
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ID4gIDIgZmlsZXMgY2hhbmdl
+ZCwgNDAgaW5zZXJ0aW9ucygrKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2V4
+dGNvbi9LY29uZmlnIGIvZHJpdmVycy9leHRjb24vS2NvbmZpZyBpbmRleA0KPiA+ID4gMGQ0MmU0
+OTEwNWRkLi45ODI4YWRlNzg3YTggMTAwNjQ0DQo+ID4gPiAtLS0gYS9kcml2ZXJzL2V4dGNvbi9L
+Y29uZmlnDQo+ID4gPiArKysgYi9kcml2ZXJzL2V4dGNvbi9LY29uZmlnDQo+ID4gPiBAQCAtMTMy
+LDYgKzEzMiw3IEBAIGNvbmZpZyBFWFRDT05fUFRONTE1MA0KPiA+ID4gIAl0cmlzdGF0ZSAiTlhQ
+IFBUTjUxNTAgQ0MgTE9HSUMgVVNCIEVYVENPTiBzdXBwb3J0Ig0KPiA+ID4gIAlkZXBlbmRzIG9u
+IEkyQyAmJiAoR1BJT0xJQiB8fCBDT01QSUxFX1RFU1QpDQo+ID4gPiAgCXNlbGVjdCBSRUdNQVBf
+STJDDQo+ID4gPiArCXNlbGVjdCBVU0JfUk9MRV9TV0lUQ0gNCj4gPg0KPiA+IFlvdSBkbyBub3Qg
+bmVlZCB0byBzZWxlY3QgaXQuIERyaXZlciB3aWxsIHdvcmsgd2l0aG91dCByb2xlIHN3aXRjaCwN
+Cj4gPiB3b24ndCBpdD8gSWYgaXQgd29ya3MsIHRoZW4gcHJvYmFibHkgaXQgc2hvdWxkIGJlIGp1
+c3QgaW1wbHkuDQo+IA0KPiBPa2F5LCB1c2Igcm9sZSBjbGFzcyBwcm92aWRlciBzaG91bGQgZW5h
+YmxlIHRoaXMgZm9yIG1lLCB3aWxsIGRyb3AgaXQuDQoNCkEgc2Vjb25kIGNoZWNrIG9uIHRoaXMg
+YW5kIEkgdGhpbmsgSSBzdGlsbCBuZWVkIHRoaXMsIHRoZXJlDQptYXliZSBzb21lIHVzYiBjb250
+cm9sbGVyIGRyaXZlciB3aXRob3V0IHVzYiByb2xlIHN3aXRjaA0KKyBwdG41MTUwIHZpYSBleHRj
+b24sIHNvIG5vIG5lZWQgVVNCX1JPTEVfU1dJVENILCBJIG5lZWQNCnNlbGVjdCBpdCB0byBhdm9p
+ZCBidWlsZCBicmVhay4NCg0KTGkgSnVuDQo=
