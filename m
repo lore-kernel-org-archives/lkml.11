@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 648F8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 867F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234798AbiDSS3D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        id S1357015AbiDSSa1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 14:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357185AbiDSSWw (ORCPT
+        with ESMTP id S1357526AbiDSSX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F9A427EC;
-        Tue, 19 Apr 2022 11:15:26 -0700 (PDT)
+        Tue, 19 Apr 2022 14:23:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A882443EA;
+        Tue, 19 Apr 2022 11:16:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B907960FEB;
-        Tue, 19 Apr 2022 18:15:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B72EC385A5;
-        Tue, 19 Apr 2022 18:15:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FCEAB818E0;
+        Tue, 19 Apr 2022 18:16:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4625C385A9;
+        Tue, 19 Apr 2022 18:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392125;
-        bh=P4wHU4paOkXJSzIawgcr2zWj4eVddDDxzhzoHnGO/ik=;
+        s=k20201202; t=1650392184;
+        bh=LTIk+BewzmBSh7pAoPNG18+KANDWdN2aFVAPw4R09uU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=scmqm6bj4czQwK8Rb3E9D09OQG8peX7g7+7SYFKgmaLHQkx0pHLEids4EjV/BDYpC
-         wmFq8a7RyRtIJAMXlPCqmMqkZS4tmE0H5W+d5cKGA3ldUFI9a1Yo2M5sC1/69xRMzx
-         MjLRa1x9w715gWDxJ+ZxWmnDvfprJHKnpHBqitAcnw+uED3dTobQouTZRfIdQNNyJ7
-         w1fZ1HAHfOGRmocCvUPqcF6uAtcpZPQm6q6WhzlTVMQ91ivIfyi2r+ccNQZqnyeeJv
-         yxMOfp1fcMe5K47OaetzJYfTpCGX4spYHMpH87EHufWLPHgNbj5TmVnJli+BINE5MZ
-         ifNBEpCRIpVqg==
+        b=S9MQquMQ/YGxGBLluMMWSLDKRwXxV7+MgVqTIhUL9/seTaRtGE2OCybbvvv2mg7r3
+         n3rwTrtTcu/tP09uDvkrGL8Ik9cXnW6Vk2rLylNTicOIWmkOMs+HzTM4/PwkcfI0oc
+         nL4HdBMChHvdQYinDAfFl3+b+g7WzNAIy6G2C2LRctwRQIokJ/uoS5FHWORhy5uj5x
+         70JlaMW86/DqH8smgFItFEsZgJzbTZi+R8yobmGC9HyyEQWePsix8L3Gqz9P3rEi+e
+         xisAa/RKN3oJs+NM8vFhb6qV2iUIGZn8FmdvVzTpVhQiKdfBZdXFTWc2UJ2OMfT0CH
+         SpEZT1SVA312g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Mikulas Patocka <mpatocka@redhat.com>,
@@ -42,14 +43,14 @@ Cc:     Mikulas Patocka <mpatocka@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, viro@zeniv.linux.org.uk, arnd@arndb.de,
-        akpm@linux-foundation.org, davem@davemloft.net,
+        davem@davemloft.net, akpm@linux-foundation.org,
         linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 14/14] stat: fix inconsistency between struct stat and struct compat_stat
-Date:   Tue, 19 Apr 2022 14:14:43 -0400
-Message-Id: <20220419181444.485959-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 9/9] stat: fix inconsistency between struct stat and struct compat_stat
+Date:   Tue, 19 Apr 2022 14:15:57 -0400
+Message-Id: <20220419181557.486336-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181444.485959-1-sashal@kernel.org>
-References: <20220419181444.485959-1-sashal@kernel.org>
+In-Reply-To: <20220419181557.486336-1-sashal@kernel.org>
+References: <20220419181557.486336-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -99,11 +100,11 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 12 insertions(+), 13 deletions(-)
 
 diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
-index 22c4dfe65992..b4dd6ab0fdfc 100644
+index 2cbd75dd2fd3..ea142936bf11 100644
 --- a/arch/x86/include/asm/compat.h
 +++ b/arch/x86/include/asm/compat.h
-@@ -31,15 +31,13 @@ typedef s64 __attribute__((aligned(4))) compat_s64;
- typedef u64 __attribute__((aligned(4))) compat_u64;
+@@ -57,15 +57,13 @@ struct compat_timeval {
+ };
  
  struct compat_stat {
 -	compat_dev_t	st_dev;
@@ -121,10 +122,10 @@ index 22c4dfe65992..b4dd6ab0fdfc 100644
  	u32		st_blksize;
  	u32		st_blocks;
 diff --git a/fs/stat.c b/fs/stat.c
-index c38e4c2e1221..268c9eb89656 100644
+index 873785dae022..0fda4b6b8fb2 100644
 --- a/fs/stat.c
 +++ b/fs/stat.c
-@@ -290,9 +290,6 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd, struct __old_kernel_stat __user *, stat
+@@ -286,9 +286,6 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd, struct __old_kernel_stat __user *, stat
  #  define choose_32_64(a,b) b
  #endif
  
@@ -134,7 +135,7 @@ index c38e4c2e1221..268c9eb89656 100644
  #ifndef INIT_STRUCT_STAT_PADDING
  #  define INIT_STRUCT_STAT_PADDING(st) memset(&st, 0, sizeof(st))
  #endif
-@@ -301,7 +298,9 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
+@@ -297,7 +294,9 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
  {
  	struct stat tmp;
  
@@ -145,7 +146,7 @@ index c38e4c2e1221..268c9eb89656 100644
  		return -EOVERFLOW;
  #if BITS_PER_LONG == 32
  	if (stat->size > MAX_NON_LFS)
-@@ -309,7 +308,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
+@@ -305,7 +304,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
  #endif
  
  	INIT_STRUCT_STAT_PADDING(tmp);
@@ -154,7 +155,7 @@ index c38e4c2e1221..268c9eb89656 100644
  	tmp.st_ino = stat->ino;
  	if (sizeof(tmp.st_ino) < sizeof(stat->ino) && tmp.st_ino != stat->ino)
  		return -EOVERFLOW;
-@@ -319,7 +318,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
+@@ -315,7 +314,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
  		return -EOVERFLOW;
  	SET_UID(tmp.st_uid, from_kuid_munged(current_user_ns(), stat->uid));
  	SET_GID(tmp.st_gid, from_kgid_munged(current_user_ns(), stat->gid));
@@ -163,7 +164,7 @@ index c38e4c2e1221..268c9eb89656 100644
  	tmp.st_size = stat->size;
  	tmp.st_atime = stat->atime.tv_sec;
  	tmp.st_mtime = stat->mtime.tv_sec;
-@@ -593,11 +592,13 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
+@@ -582,11 +581,13 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
  {
  	struct compat_stat tmp;
  
@@ -179,7 +180,7 @@ index c38e4c2e1221..268c9eb89656 100644
  	tmp.st_ino = stat->ino;
  	if (sizeof(tmp.st_ino) < sizeof(stat->ino) && tmp.st_ino != stat->ino)
  		return -EOVERFLOW;
-@@ -607,7 +608,7 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
+@@ -596,7 +597,7 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
  		return -EOVERFLOW;
  	SET_UID(tmp.st_uid, from_kuid_munged(current_user_ns(), stat->uid));
  	SET_GID(tmp.st_gid, from_kgid_munged(current_user_ns(), stat->gid));
