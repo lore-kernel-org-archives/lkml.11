@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE79EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4778C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349495AbiDSO3O (ORCPT
+        id S1353291AbiDSO3U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        Tue, 19 Apr 2022 10:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349238AbiDSO2R (ORCPT
+        with ESMTP id S1353479AbiDSO2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:28:17 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E555F5C;
-        Tue, 19 Apr 2022 07:25:34 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id u5-20020a17090a6a8500b001d0b95031ebso2023203pjj.3;
-        Tue, 19 Apr 2022 07:25:34 -0700 (PDT)
+        Tue, 19 Apr 2022 10:28:10 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514A36345;
+        Tue, 19 Apr 2022 07:25:23 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id s17so5074290plg.9;
+        Tue, 19 Apr 2022 07:25:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=SoTHaiJJheo7KKQ2FMLM7Z79POojCIJETOG/5UiPeO4=;
-        b=V1vTAndmeibZH8iE/xUMcoNeVacWGBTAOMJw52hjd+IQn34XUQ0Vr+qKvVDGPPNbsU
-         J6NL8lpVUZpF02yLXkD0LcVC2oBs6sz4NAI8UF6hOaERvtegVftT42eIDoBoxzG9YnqF
-         Tyb77CQ7OeUD7la/TABkJfvmQGoW6kSM5SOfuTX2yZu4dcPWjpjzHlr7BB2LgX3TIJ+A
-         hKZECvd+znVtutkiAHbqiXrt9cwM82cK4M/0aXyMDQmljP8010bmEslMnEMVS71iLNVZ
-         6dqu9W+FTPyBMNHI7k4tVOIqotsqXjSiC+71Oc6b5+XrDLxcedZ2mtMSlZ99Cvjuc1V0
-         M6Dw==
+        bh=Ko/RssBDPm1apKVmyb31rJH5PtKu0iktDyD8GjzienE=;
+        b=AT2LD2z4usldjQEHGaIpPjWPfjU9OZMRl09tD0hS0EaToAraJXPQua9Haqj0VoMo17
+         vXioYK5qeLGVdpsdqNR+Di4KC8QhGFTvzCf1gBPbboMcemT9cwbyllpsDdUVVjnCyFhA
+         E52vTt1jFJNJc/GG4DxYIgIwt7J0dL4jVrWz/JI/y4v/S0prJu/P8KxEVQUzk38ztV9z
+         qxsXxvY6K7ptmYJXgzb/dUEQHxN9/hjz3oqLn2aiaQ6473Y86JUkHXl/hYcn50+6wkKa
+         U4yCWD1xftl2lTANYLUC3y4JSZ0DLh4x/kuL3AipfKvcNGfUnVU5HgliTP34zkBQEN4T
+         gatw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SoTHaiJJheo7KKQ2FMLM7Z79POojCIJETOG/5UiPeO4=;
-        b=fPimG5jYf1FE/FrD+pnVwKpPu6YXGIiq8afGbtLJJz2lfQ9sF6PjBkE3nPe2YN3lsQ
-         F2HcRJRlAaNSMKxAeUMCZjrKpNGIdtXSjrme1coyqGWYySj9xluq52FRWbIPzgNraMmg
-         TLxdBcw3/JNBROik4BOMbjhaJJ2yWSpVcCrOMcv0RbE9qYjI2283Be4vR0AejihdOxCq
-         M/TWdXdIzv3W7t7d0l8F3yHOAdLUI6Dy4dwEp7B5us3ztASAjeoMZU50WJxQxctlfPI9
-         om53+i/yRb62VTBPXsMdQ07RwI7bfJ5VMM5n+RDJeq0eioKjJ8waY+UpJfVDBkzwtsIT
-         4PxQ==
-X-Gm-Message-State: AOAM5322DMj5wCI7nZ/B1f3+SVicYY9B1p8HSzvRCh87PV0OoDQImK8S
-        CX/PeOLBxPawcTVIAWjNxl8=
-X-Google-Smtp-Source: ABdhPJzIR/QVqB4iKQvO54+pVWntm8Sf6vHurqT14unSImicnbUcPLibJds9V+DwtFyGr/DYZjd+Kg==
-X-Received: by 2002:a17:902:bc86:b0:151:ec83:4a8b with SMTP id bb6-20020a170902bc8600b00151ec834a8bmr15747008plb.69.1650378334039;
-        Tue, 19 Apr 2022 07:25:34 -0700 (PDT)
+        bh=Ko/RssBDPm1apKVmyb31rJH5PtKu0iktDyD8GjzienE=;
+        b=S8tXXNoKIEOkAKr2OE6OCP5Y856wMw+56WfY3VISJRGKrnRo0bRjDsKDJ2zM45oKWK
+         z61iNMjK6Tin5u62SZhnh9UJZDh2l1ZLDJ41JzAn/icEFCGqhA6y6Ojnl3LJevKY02hD
+         VApjumFEUZlTucDyQwQ7dW30f0XNjHbIdSaHYodIUcl3ZzO3gkUTGY4HJI0nNLd9OZ7K
+         JlhP+9l6fMsatjM1P2hOvz6f28NUaj6taoiaByDGbZHCBHFHROO9n2m2tIp5nANYOhPI
+         oqiY+lAM/7vh8AWCoVjmBuDxKMlHwq59URT/hiorDRQSOWpM+SimAkawiJyc+SEbI9q2
+         uCpQ==
+X-Gm-Message-State: AOAM531HAJPDyD1sfHaIarMh4dU0ubRKYNQWjZrUVwZWLyzV+VQ0Ac80
+        VsLqrVg8G6l480+cLWjcvV4=
+X-Google-Smtp-Source: ABdhPJx3KnWme64jL4M8cSukpB6sV7smnMw5GpIQzO+Er8bsgY/GODLnxMENZ9W1UtDjW5lVXdJb+A==
+X-Received: by 2002:a17:902:bb94:b0:157:2ce:fac1 with SMTP id m20-20020a170902bb9400b0015702cefac1mr15999688pls.25.1650378322949;
+        Tue, 19 Apr 2022 07:25:22 -0700 (PDT)
 Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.30
+        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:25:33 -0700 (PDT)
+        Tue, 19 Apr 2022 07:25:22 -0700 (PDT)
 From:   Cixi Geng <gengcixi@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
@@ -56,9 +56,9 @@ To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         yuming.zhu1@unisoc.com
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V4 5/7] iio: adc: refactor some functions for support more PMiCs
-Date:   Tue, 19 Apr 2022 22:24:56 +0800
-Message-Id: <20220419142458.884933-6-gengcixi@gmail.com>
+Subject: [PATCH V4 2/7] iio: adc: sc27xx: fix read big scale voltage not right
+Date:   Tue, 19 Apr 2022 22:24:53 +0800
+Message-Id: <20220419142458.884933-3-gengcixi@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220419142458.884933-1-gengcixi@gmail.com>
 References: <20220419142458.884933-1-gengcixi@gmail.com>
@@ -70,115 +70,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Cixi Geng <cixi.geng1@unisoc.com>
 
-Refactor the common adc_nvmem_cell_calib_data,adc_to_volt and call
-these in the origin sc27xx_adc_scale_calibration,sc27xx_adc_to_volt
+Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
+SC27XX_ADC_SCALE_SHIFT by spec documetation.
+Fixes: 5df362a6cf49c (iio: adc: Add Spreadtrum SC27XX PMICs ADC support)
 
 Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
 ---
- drivers/iio/adc/sc27xx_adc.c | 56 +++++++++++++++++++++++++-----------
- 1 file changed, 40 insertions(+), 16 deletions(-)
+ drivers/iio/adc/sc27xx_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index a8906ffd85bf..27fab579a281 100644
+index 00098caf6d9e..aee076c8e2b1 100644
 --- a/drivers/iio/adc/sc27xx_adc.c
 +++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -138,16 +138,41 @@ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
- 	return ((calib_data & 0xff) + calib_adc - 128) * 4;
- }
+@@ -36,8 +36,8 @@
  
-+/* get the adc nvmem cell calibration data */
-+static int adc_nvmem_cell_calib_data(struct sc27xx_adc_data *data, const char *cell_name)
-+{
-+	struct nvmem_cell *cell;
-+	void *buf;
-+	u32 origin_calib_data = 0;
-+	size_t len;
-+
-+	if (!data)
-+		return -EINVAL;
-+
-+	cell = nvmem_cell_get(data->dev, cell_name);
-+	if (IS_ERR(cell))
-+		return PTR_ERR(cell);
-+
-+	buf = nvmem_cell_read(cell, &len);
-+	if (IS_ERR(buf)) {
-+		nvmem_cell_put(cell);
-+		return PTR_ERR(buf);
-+	}
-+
-+	memcpy(&origin_calib_data, buf, min(len, sizeof(u32)));
-+
-+	kfree(buf);
-+	nvmem_cell_put(cell);
-+	return origin_calib_data;
-+}
-+
- static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 					bool big_scale)
- {
- 	const struct sc27xx_adc_linear_graph *calib_graph;
- 	struct sc27xx_adc_linear_graph *graph;
--	struct nvmem_cell *cell;
- 	const char *cell_name;
- 	u32 calib_data = 0;
--	void *buf;
--	size_t len;
+ /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+ #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
+-#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
+-#define SC27XX_ADC_SCALE_SHIFT		8
++#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
++#define SC27XX_ADC_SCALE_SHIFT		9
  
- 	if (big_scale) {
- 		calib_graph = data->var_data->bscale_cal;
-@@ -159,24 +184,13 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 		cell_name = "small_scale_calib";
- 	}
- 
--	cell = nvmem_cell_get(data->dev, cell_name);
--	if (IS_ERR(cell))
--		return PTR_ERR(cell);
--
--	buf = nvmem_cell_read(cell, &len);
--	nvmem_cell_put(cell);
--
--	if (IS_ERR(buf))
--		return PTR_ERR(buf);
--
--	memcpy(&calib_data, buf, min(len, sizeof(u32)));
-+	calib_data = adc_nvmem_cell_calib_data(data, cell_name);
- 
- 	/* Only need to calibrate the adc values in the linear graph. */
- 	graph->adc0 = sc27xx_adc_get_calib_data(calib_data, calib_graph->adc0);
- 	graph->adc1 = sc27xx_adc_get_calib_data(calib_data >> 8,
- 						calib_graph->adc1);
- 
--	kfree(buf);
- 	return 0;
- }
- 
-@@ -312,7 +326,7 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
- 	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
- }
- 
--static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
-+static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
- 			      int raw_adc)
- {
-	int tmp;
-@@ -321,6 +335,16 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
- 	tmp /= (graph->adc0 - graph->adc1);
- 	tmp += graph->volt1;
- 
-+	return tmp;
-+}
-+
-+static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
-+			      int raw_adc)
-+{
-+	int tmp;
-+
-+	tmp = adc_to_volt(graph, raw_adc);
-+
- 	return tmp < 0 ? 0 : tmp;
- }
- 
+ /* Bits definitions for SC27XX_ADC_INT_EN registers */
+ #define SC27XX_ADC_IRQ_EN		BIT(0)
 -- 
 2.25.1
 
