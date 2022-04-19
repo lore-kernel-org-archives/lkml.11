@@ -2,153 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDD4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51CBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354342AbiDSQIB (ORCPT
+        id S1354432AbiDSQIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
+        Tue, 19 Apr 2022 12:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354393AbiDSQHx (ORCPT
+        with ESMTP id S1354390AbiDSQIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:07:53 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1A017A8A;
-        Tue, 19 Apr 2022 09:05:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650384306; x=1681920306;
-  h=from:to:cc:subject:date:message-id;
-  bh=wTaXARG76bTc7Xk8fzK/DUZQvwtaVFIYOuxxY4pKMbc=;
-  b=J+d6qLmYx+tgG0jjdDIHFVYedZIDSFDbnRv8ilsm2NJikbICvT7sSH23
-   5iJsdAvFCcvTsoLSME33MdyuJbj/S+1pPsK8hN9cOHaDs3hNTc+W/HUUF
-   T8Fj5TT4p4W+Bb7QM5xUXcKeboR7f0I/ayNvDcbOFDAIqPnccWRREqvYn
-   RdYnYH0wDzsn73AzWo6fCekjgl1ql6LCPyjZebL5eKEMjhy6cRoOx9cwH
-   KWKaPNwvuSJBjtVMY/ixlc7JlCzBfGf7JKbyaTfY5dd6zDFlM5H7al1Y7
-   xLJUAh7LeBhOk1fgP4wFo3OhuQyC2wZPLszui+rutXB1BrgwILbon+2OR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="245694441"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="245694441"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:05:05 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="529369855"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:04:59 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Robert Hoo <robert.hu@linux.intel.com>
-Subject: [PATCH v9 2/9] KVM: VMX: Extend BUILD_CONTROLS_SHADOW macro to support 64-bit variation
-Date:   Tue, 19 Apr 2022 23:33:18 +0800
-Message-Id: <20220419153318.11595-1-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 19 Apr 2022 12:08:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A207713F9F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:05:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650384321;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sr2Ym9hi3FIE3E+IMnlmi7HV0lVpM9KeC2p4CZB6abk=;
+        b=EgJaTsRE08LvueNEMdqxagQIkiuv01gTw2x7LFZwZ0N0wHx4oA7u+YHodGoZUoPYQAq2H7
+        EM/4rdqCE6a3Bf4nieIqbk7h/GHXlxXfnSalvOxOaptudwZHcf8DY4TuLStleKAz1eG4yW
+        qkTeo7Bh4Zj63AB7vs60YTaw2ujztAg=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-317-c0-ZtdEbPdmGdUP529XHDQ-1; Tue, 19 Apr 2022 12:05:19 -0400
+X-MC-Unique: c0-ZtdEbPdmGdUP529XHDQ-1
+Received: by mail-qt1-f197.google.com with SMTP id d18-20020ac81192000000b002ebdd6ef307so10754340qtj.20
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:05:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sr2Ym9hi3FIE3E+IMnlmi7HV0lVpM9KeC2p4CZB6abk=;
+        b=4wQpmUMj4jDVMcmIfbW7ibUVEyb7RP0YXNvtMH7pAd+44URkWyr4AY9R/DxxzMfxPH
+         SGFWkieHUmenzFaZAU69T5DEjOao6X9aa1rVMVNzLnFfDTLzXblQsK1wlOdzp0sGctN4
+         3a5lEk3Wc+S10BwzMyAlGKDVGBm5VARLYOvIoE6bCC5GAtGMZc/iKdQ3j/SIEtpPEASL
+         aaBwWr6QNkt8ATkyXlpta2ysoWgcSA/WF+7gE1EsybFr4vPdyncOT3o82v4AiZFuGh5Q
+         PzHqOyHxXjtGO0txVl5fbRrt0BQjExZKqXUydAtZjG7uspd6YTatGGvP1smpgx80aG+5
+         C1SA==
+X-Gm-Message-State: AOAM533Adh6W4BHya2yZJIOaDRwf97zOKHyvV635C6tliarZTO3xJ+vU
+        +XxtY7IFbch+P7pMxDZ+rhHCa86moXEXq7hhV4/KuYYKXyCl4dsEF/d16k8x7xM3qc5Pgz5iDBA
+        YxQFCHLKznRbLmBBDazA7A6hw
+X-Received: by 2002:ac8:5c84:0:b0:2f1:f250:d8d2 with SMTP id r4-20020ac85c84000000b002f1f250d8d2mr10806191qta.101.1650384318415;
+        Tue, 19 Apr 2022 09:05:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVOspozxBG8j5+XeC3VIzeIS3fAxz+VTZQHkh6PIcIX9CWfQOg/d0HGiU0K6DhAUoQ234yQg==
+X-Received: by 2002:ac8:5c84:0:b0:2f1:f250:d8d2 with SMTP id r4-20020ac85c84000000b002f1f250d8d2mr10806163qta.101.1650384318183;
+        Tue, 19 Apr 2022 09:05:18 -0700 (PDT)
+Received: from treble.redhat.com ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id s19-20020a05622a179300b002e1ceeb21d0sm207251qtk.97.2022.04.19.09.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 09:05:17 -0700 (PDT)
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH] objtool: Add CONFIG_HAVE_UACCESS_VALIDATION
+Date:   Tue, 19 Apr 2022 09:05:09 -0700
+Message-Id: <d393d5e2fe73aec6e8e41d5c24f4b6fe8583f2d8.1650384225.git.jpoimboe@redhat.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hoo <robert.hu@linux.intel.com>
+Allow an arch specify that it has objtool uaccess validation with
+CONFIG_HAVE_UACCESS_VALIDATION.  For now, doing so unconditionally
+selects CONFIG_OBJTOOL.
 
-The Tertiary VM-Exec Control, different from previous control fields, is 64
-bit. So extend BUILD_CONTROLS_SHADOW() by adding a 'bit' parameter, to
-support both 32 bit and 64 bit fields' auxiliary functions building.
-
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Robert Hoo <robert.hu@linux.intel.com>
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- arch/x86/kvm/vmx/vmx.h | 56 +++++++++++++++++++++---------------------
- 1 file changed, 28 insertions(+), 28 deletions(-)
+ arch/Kconfig            | 4 ++++
+ arch/x86/Kconfig        | 1 +
+ scripts/Makefile.build  | 2 +-
+ scripts/link-vmlinux.sh | 4 +++-
+ 4 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 9c6bfcd84008..122fdbf85a02 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -455,35 +455,35 @@ static inline u8 vmx_get_rvi(void)
- 	return vmcs_read16(GUEST_INTR_STATUS) & 0xff;
- }
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 1e19da774e55..694e0c2bc369 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1041,6 +1041,10 @@ config HAVE_NOINSTR_HACK
+ config HAVE_NOINSTR_VALIDATION
+ 	bool
  
--#define BUILD_CONTROLS_SHADOW(lname, uname)				    \
--static inline void lname##_controls_set(struct vcpu_vmx *vmx, u32 val)	    \
--{									    \
--	if (vmx->loaded_vmcs->controls_shadow.lname != val) {		    \
--		vmcs_write32(uname, val);				    \
--		vmx->loaded_vmcs->controls_shadow.lname = val;		    \
--	}								    \
--}									    \
--static inline u32 __##lname##_controls_get(struct loaded_vmcs *vmcs)	    \
--{									    \
--	return vmcs->controls_shadow.lname;				    \
--}									    \
--static inline u32 lname##_controls_get(struct vcpu_vmx *vmx)		    \
--{									    \
--	return __##lname##_controls_get(vmx->loaded_vmcs);		    \
--}									    \
--static inline void lname##_controls_setbit(struct vcpu_vmx *vmx, u32 val)   \
--{									    \
--	lname##_controls_set(vmx, lname##_controls_get(vmx) | val);	    \
--}									    \
--static inline void lname##_controls_clearbit(struct vcpu_vmx *vmx, u32 val) \
--{									    \
--	lname##_controls_set(vmx, lname##_controls_get(vmx) & ~val);	    \
-+#define BUILD_CONTROLS_SHADOW(lname, uname, bits)				\
-+static inline void lname##_controls_set(struct vcpu_vmx *vmx, u##bits val)	\
-+{										\
-+	if (vmx->loaded_vmcs->controls_shadow.lname != val) {			\
-+		vmcs_write##bits(uname, val);					\
-+		vmx->loaded_vmcs->controls_shadow.lname = val;			\
-+	}									\
-+}										\
-+static inline u##bits __##lname##_controls_get(struct loaded_vmcs *vmcs)	\
-+{										\
-+	return vmcs->controls_shadow.lname;					\
-+}										\
-+static inline u##bits lname##_controls_get(struct vcpu_vmx *vmx)		\
-+{										\
-+	return __##lname##_controls_get(vmx->loaded_vmcs);			\
-+}										\
-+static inline void lname##_controls_setbit(struct vcpu_vmx *vmx, u##bits val)	\
-+{										\
-+	lname##_controls_set(vmx, lname##_controls_get(vmx) | val);		\
-+}										\
-+static inline void lname##_controls_clearbit(struct vcpu_vmx *vmx, u##bits val)	\
-+{										\
-+	lname##_controls_set(vmx, lname##_controls_get(vmx) & ~val);		\
- }
--BUILD_CONTROLS_SHADOW(vm_entry, VM_ENTRY_CONTROLS)
--BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS)
--BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL)
--BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL)
--BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL)
-+BUILD_CONTROLS_SHADOW(vm_entry, VM_ENTRY_CONTROLS, 32)
-+BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS, 32)
-+BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL, 32)
-+BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL, 32)
-+BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL, 32)
++config HAVE_UACCESS_VALIDATION
++	bool
++	select OBJTOOL
++
+ config HAVE_STACK_VALIDATION
+ 	bool
+ 	help
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f1320d9a3da3..1a207a805102 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -257,6 +257,7 @@ config X86
+ 	select HAVE_PREEMPT_DYNAMIC_CALL
+ 	select HAVE_RSEQ
+ 	select HAVE_SYSCALL_TRACEPOINTS
++	select HAVE_UACCESS_VALIDATION		if HAVE_OBJTOOL
+ 	select HAVE_UNSTABLE_SCHED_CLOCK
+ 	select HAVE_USER_RETURN_NOTIFIER
+ 	select HAVE_GENERIC_VDSO
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index f89d3fcff39f..de0d88f32f58 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -236,7 +236,7 @@ objtool_args =								\
+ 	$(if $(CONFIG_SLS), --sls)					\
+ 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
+ 	$(if $(CONFIG_HAVE_STATIC_CALL_INLINE), --static-call)		\
+-	--uaccess							\
++	$(if $(CONFIG_HAVE_UACCESS_VALIDATION), --uaccess)		\
+ 	$(if $(linked-object), --link)					\
+ 	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index d7f26f02f142..3e23a1babad4 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -153,7 +153,9 @@ objtool_link()
+ 			objtoolopt="${objtoolopt} --static-call"
+ 		fi
  
- /*
-  * VMX_REGS_LAZY_LOAD_SET - The set of registers that will be updated in the
+-		objtoolopt="${objtoolopt} --uaccess"
++		if is_enabled CONFIG_HAVE_UACCESS_VALIDATION; then
++			objtoolopt="${objtoolopt} --uaccess"
++		fi
+ 	fi
+ 
+ 	if is_enabled CONFIG_NOINSTR_VALIDATION; then
 -- 
-2.27.0
+2.34.1
 
