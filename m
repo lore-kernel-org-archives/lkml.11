@@ -2,205 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A9ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 02:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4713C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 02:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345074AbiDSCp2 (ORCPT
+        id S1345138AbiDSCtF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 22:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
+        Mon, 18 Apr 2022 22:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbiDSCpZ (ORCPT
+        with ESMTP id S1345110AbiDSCtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 22:45:25 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2041DA65
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 19:42:43 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id b19so20548886wrh.11
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 19:42:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NaZKghXfb3DoOx4eVJC6+gBDrMqsAj++iAp6qrZ51XE=;
-        b=IOIawwuxeBpnPEW4muE+XmTP8tzJk+lOOZEPTVzGnnqkLERhpykUDERNuCeJW3dVWg
-         F2fDXw4eW11ZRZ5O9TthYSN0mD67aAmgu8DVvp2E9JLQVJqa1jgm9s4vfF5w9amWFiWr
-         s6v5e19V488KeCa61wXdMxsctCCtoRmaenKJKaPPlloMlSrxMXlwzDzmYDtQY5C2YsxM
-         4lW/gEU1+nWPyqqg0ks5HwcAeQj/MpcAdfDy4UUFPpvKuahhdYdPjab3mvGFWVEMK0ne
-         kAKhEeDMA20ZxRhIwrufTTknIPRk3Qf+MDIXPC46uwTSUxq7HP/4e023CZey2PT8PFSp
-         iLNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NaZKghXfb3DoOx4eVJC6+gBDrMqsAj++iAp6qrZ51XE=;
-        b=E/TtAU9AwuMNeUxGuzvX0bujHqS4aC5AY5O3g0mykurQrhU5v3cYnuIRqgYOBi7x9J
-         JXsfm21yXV8AEd7HdsUnlSwfMScocBKLy2NU2hO9WcKMHFLYsS57NDLNt+qKFuk/1HTp
-         2dpMU5uGSGfxX4/zPpKiBS0QyIvLQWxHv/y6gWJdbbgHh76nYgpksaDm55shUbLASegI
-         n750ZDc/PS67fn2DsEV1j3PjJ3rrgfOoAbjkpUcI1ZmuSyj75uUxH5ftAFEYaybo7KOt
-         VYVYyZZ7ie1UpstWQNPcczLgAo5L/btw9YivVYLyLH6r2pYJBWZIFrMNsv643h4w8n/4
-         287g==
-X-Gm-Message-State: AOAM531TBUi72IiFlFqZBEt63HDlsmIFhHEdsAdep8CTimJzmMZm5AKi
-        hW6GpT4JpasW3VXqLbxJQ8lrj8n8WaAN01QkyJkuXg==
-X-Google-Smtp-Source: ABdhPJwlJs4gJ4Ap7DqcjRwmKIBky5cw2JqOihJw3PpLKISM9MLa1vtSULvwejGmcmEXeoX04fS0XL9k/bB0wj9zdrM=
-X-Received: by 2002:a5d:5487:0:b0:20a:8f45:8f34 with SMTP id
- h7-20020a5d5487000000b0020a8f458f34mr7573081wrv.699.1650336162246; Mon, 18
- Apr 2022 19:42:42 -0700 (PDT)
+        Mon, 18 Apr 2022 22:49:01 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAED2229C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 19:46:18 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 2E3142C0775;
+        Tue, 19 Apr 2022 02:46:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1650336376;
+        bh=IapzqfmOH6ZkWiJ7DCEzdYzOLcumquaJvcJruZwLsXk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GvZ5/lQvZqhDBAHHKorwLnPovC7yXOMlGZeb68nez7MOyvuf2xlEt+okvQC0AXH/x
+         e9B7OOHiLWuFIv+QPA5OHmJ3yI31G/8kJac8TMbUTxIdvxiBQF8YyJxa2HhZfCVT4w
+         1HQcbJdsJ1+9LUJe9abSYa1lKGXWQ0Jrje2jubw1Mwj6xVER7X7qvlwIUf5WCW36Q9
+         pfc9EOX10grEqHGPxxgbZfDmdDjGU6qKkmrpfeDndoa40lXPjvFni9ql6LoXSvEKdm
+         5gineOesOJ6rX+zIIJ8OmrfcZI3iwv1sA0R63q4PdRXjVew1vGZP+LWJ2H6RWk9CkF
+         Mev6UeOsuMGrA==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B625e22780000>; Tue, 19 Apr 2022 14:46:16 +1200
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id 0C35713EE37;
+        Tue, 19 Apr 2022 14:46:16 +1200 (NZST)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id 666612A2679; Tue, 19 Apr 2022 14:46:14 +1200 (NZST)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        andrew@lunn.ch, gregory.clement@bootlin.com,
+        sebastian.hesselbarth@gmail.com, adrian.hunter@intel.com,
+        nico@fluxnic.net
+Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v2 2/4] ARM: dts: dove: Update sdio-host node names to match schema
+Date:   Tue, 19 Apr 2022 14:46:09 +1200
+Message-Id: <20220419024611.1327525-3-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
+References: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-References: <20220408200349.1529080-1-kaleshsingh@google.com>
- <20220408200349.1529080-7-kaleshsingh@google.com> <87tuaqae7h.wl-maz@kernel.org>
-In-Reply-To: <87tuaqae7h.wl-maz@kernel.org>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Mon, 18 Apr 2022 19:42:31 -0700
-Message-ID: <CAC_TJvfZD0KAM9z3+GEpNDJxanePuq+xFgauaMyYabGhPPuvQA@mail.gmail.com>
-Subject: Re: [PATCH v7 6/6] KVM: arm64: Symbolize the nVHE HYP addresses
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Will Deacon <will@kernel.org>, Quentin Perret <qperret@google.com>,
-        Fuad Tabba <tabba@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Jones <drjones@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Changbin Du <changbin.du@intel.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm <kvmarm@lists.cs.columbia.edu>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=RL7N4Lq+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=9fF3QZy3S0T7Ev_h1A0A:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 3:16 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Fri, 08 Apr 2022 21:03:29 +0100,
-> Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > Reintroduce the __kvm_nvhe_ symbols in kallsyms, ignoring the local
-> > symbols in this namespace. The local symbols are not informative and
-> > can cause aliasing issues when symbolizing the addresses.
-> >
-> > With the necessary symbols now in kallsyms we can symbolize nVHE
-> > addresses using the %p print format specifier:
-> >
-> > [   98.916444][  T426] kvm [426]: nVHE hyp panic at: [<ffffffc0096156fc=
->] __kvm_nvhe_overflow_stack+0x8/0x34!
-> >
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > Tested-by: Fuad Tabba <tabba@google.com>
-> > Reviewed-by: Fuad Tabba <tabba@google.com>
-> > ---
-> >
-> > Changes in v6:
-> >   - Add Fuad's Reviewed-by and Tested-by tags.
-> >
-> > Changes in v2:
-> >   - Fix printk warnings - %p expects (void *)
-> >
-> >
-> >  arch/arm64/kvm/handle_exit.c | 13 +++++--------
-> >  scripts/kallsyms.c           |  2 +-
-> >  2 files changed, 6 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.=
-c
-> > index 97fe14aab1a3..a377b871bf58 100644
-> > --- a/arch/arm64/kvm/handle_exit.c
-> > +++ b/arch/arm64/kvm/handle_exit.c
-> > @@ -295,13 +295,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 =
-esr, u64 spsr,
-> >       u64 elr_in_kimg =3D __phys_to_kimg(elr_phys);
-> >       u64 hyp_offset =3D elr_in_kimg - kaslr_offset() - elr_virt;
-> >       u64 mode =3D spsr & PSR_MODE_MASK;
-> > +     u64 panic_addr =3D elr_virt + hyp_offset;
-> >
-> > -     /*
-> > -      * The nVHE hyp symbols are not included by kallsyms to avoid iss=
-ues
-> > -      * with aliasing. That means that the symbols cannot be printed w=
-ith the
-> > -      * "%pS" format specifier, so fall back to the vmlinux address if
-> > -      * there's no better option.
-> > -      */
-> >       if (mode !=3D PSR_MODE_EL2t && mode !=3D PSR_MODE_EL2h) {
-> >               kvm_err("Invalid host exception to nVHE hyp!\n");
-> >       } else if (ESR_ELx_EC(esr) =3D=3D ESR_ELx_EC_BRK64 &&
-> > @@ -321,9 +316,11 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 =
-esr, u64 spsr,
-> >               if (file)
-> >                       kvm_err("nVHE hyp BUG at: %s:%u!\n", file, line);
-> >               else
-> > -                     kvm_err("nVHE hyp BUG at: %016llx!\n", elr_virt +=
- hyp_offset);
-> > +                     kvm_err("nVHE hyp BUG at: [<%016llx>] %pB!\n", pa=
-nic_addr,
-> > +                                     (void *)panic_addr);
-> >       } else {
-> > -             kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_o=
-ffset);
-> > +             kvm_err("nVHE hyp panic at: [<%016llx>] %pB!\n", panic_ad=
-dr,
-> > +                             (void *)panic_addr);
-> >       }
-> >
-> >       /*
-> > diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-> > index 8caabddf817c..ad2c93640a92 100644
-> > --- a/scripts/kallsyms.c
-> > +++ b/scripts/kallsyms.c
-> > @@ -111,7 +111,7 @@ static bool is_ignored_symbol(const char *name, cha=
-r type)
-> >               ".L",                   /* local labels, .LBB,.Ltmpxxx,.L=
-__unnamed_xx,.LASANPC, etc. */
-> >               "__crc_",               /* modversions */
-> >               "__efistub_",           /* arm64 EFI stub namespace */
-> > -             "__kvm_nvhe_",          /* arm64 non-VHE KVM namespace */
-> > +             "__kvm_nvhe_$",         /* arm64 local symbols in non-VHE=
- KVM namespace */
-> >               "__AArch64ADRPThunk_",  /* arm64 lld */
-> >               "__ARMV5PILongThunk_",  /* arm lld */
-> >               "__ARMV7PILongThunk_",
->
-> If you are sanitising this, shouldn'tt you also apply the same rules
-> as the rest of the kernel for non-'__-kvm_nvhe_' symbols? For example,
-> I see a long list of .L* symbols:
->
-> 0000000000000000 r __kvm_nvhe_.L144721
-> 0000000000000090 r __kvm_nvhe_.L144721
-> 00000000000000b4 r __kvm_nvhe_.L144721
-> 00000000000004b0 r __kvm_nvhe_.L144721
-> 000000000000051c r __kvm_nvhe_.L144721
-> 0000000000000650 r __kvm_nvhe_.L144721
-> 0000000000000694 r __kvm_nvhe_.L144721
-> 0000000000000761 r __kvm_nvhe_.L144721
-> 00000000000007a7 r __kvm_nvhe_.L144721
-> 00000000000007c7 r __kvm_nvhe_.L144721
-> 0000000000000814 r __kvm_nvhe_.L144721
-> 0000000000000b08 r __kvm_nvhe_.L144721
-> 0000000000003200 r __kvm_nvhe_.L144721
->
-> (83 of them in total on a local build) that I think should also be
-> trimmed.
+Update the node names of the sdio-host@ interfaces to be mmc@ to match
+the node name enforced by the mmc-controller.yaml schema.
 
-Good catch. I=E2=80=99ll fix it in the next version along with your other
-comments. Thanks for the reviews Mark.
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+---
 
--Kalesh
+Notes:
+    Changes in v2:
+    - None
 
->
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+ arch/arm/boot/dts/dove.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/dove.dtsi b/arch/arm/boot/dts/dove.dtsi
+index 89e0bdaf3a85..d81562eac7aa 100644
+--- a/arch/arm/boot/dts/dove.dtsi
++++ b/arch/arm/boot/dts/dove.dtsi
+@@ -337,7 +337,7 @@ channel1 {
+ 				};
+ 			};
+=20
+-			sdio1: sdio-host@90000 {
++			sdio1: mmc@90000 {
+ 				compatible =3D "marvell,dove-sdhci";
+ 				reg =3D <0x90000 0x100>;
+ 				interrupts =3D <36>, <38>;
+@@ -380,7 +380,7 @@ ethphy: ethernet-phy {
+ 				};
+ 			};
+=20
+-			sdio0: sdio-host@92000 {
++			sdio0: mmc@92000 {
+ 				compatible =3D "marvell,dove-sdhci";
+ 				reg =3D <0x92000 0x100>;
+ 				interrupts =3D <35>, <37>;
+--=20
+2.35.1
+
