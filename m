@@ -2,242 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B794C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349001AbiDSGp7 (ORCPT
+        id S1348963AbiDSGqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 02:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
+        Tue, 19 Apr 2022 02:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348963AbiDSGpv (ORCPT
+        with ESMTP id S1348997AbiDSGqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 02:45:51 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607D32D1FF;
-        Mon, 18 Apr 2022 23:43:09 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KjDfC1XhTzCrYM;
-        Tue, 19 Apr 2022 14:38:43 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 14:43:07 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 14:43:05 +0800
-From:   Wupeng Ma <mawupeng1@huawei.com>
-To:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <corbet@lwn.net>
-CC:     <ardb@kernel.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
-        <paulmck@kernel.org>, <peterz@infradead.org>, <jroedel@suse.de>,
-        <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
-        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
-        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
-        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
-        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
-        <wangkefeng.wang@huawei.com>, <mawupeng1@huawei.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
-Subject: [PATCH 1/2] arm64/boot/KASLR: Add support to relocate kernel image to mirrored region
-Date:   Tue, 19 Apr 2022 15:01:49 +0800
-Message-ID: <20220419070150.254377-2-mawupeng1@huawei.com>
+        Tue, 19 Apr 2022 02:46:02 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB12131343;
+        Mon, 18 Apr 2022 23:43:20 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id s4so12844773qkh.0;
+        Mon, 18 Apr 2022 23:43:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lCEwVctplujUVn3aWOAAg060aVQwyGc3JDb5YqPzLpg=;
+        b=Rzglu8dkVnAtjM3wsCn4uI2jtekslQMjTbEJx6z7NujF2SDSfpEQ3ciQusg6iNqU59
+         8zoSmSPXvCWtQJltyu6jFPICGvVHe9dAOQZQ81REw1ngzRrpLog+mysa/uQvNgztaZdb
+         aaNZwpRefsRzWzDV6afIn6EyiEhTl61d4iaJWVr17o3W/CRdTUUtFxkcAtiwJBvAjIn4
+         3ZRe5nFNhRmKXg3MEIfjHwj+ty0BcTf7mo81kH/xuO1hixP2RuCwGQgVihc+6utd/iOv
+         /smycl11fjB9zATTnVkEGUmduXr3pgBxuOgM52aSL6M8H8RcoTCn7i3OaVCkUE3dLAER
+         WM4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lCEwVctplujUVn3aWOAAg060aVQwyGc3JDb5YqPzLpg=;
+        b=YrQ0rL5jWSN6gBn1/rvKL1G8d+39vl8z0u+7ZDTUa8hNmk4WyzHiX6VHSPBiwz9f7s
+         E7fiLJovZOI7KpyxSUdRLvDRLL5PW/As98HLKeIxPgLBfGYVPAs2kIcaMY6jbkMexecC
+         Rh7kf9eTPZ3qaxRT+xzqoRnec36EUuoYoxkgS1r1nWSnVF7swnhj7sh5OXQ1A8jqk7EV
+         ODz044pQcWb+NqfQl9pQwmrfrSXwBubp5X8fmRicksH02i3WfS3GoGzhY8Eta5khlY0k
+         aywVcVQvH66j8uW/8TAsGl3orRYuJqrqPYSrPp3j0zUwN+f8RAuEtxHrsgmqNyA8/B5D
+         5U3Q==
+X-Gm-Message-State: AOAM532dBcXhj/x274AAUaFYSDe2ZDPd3AGDnbCgpnpq/e5Ieq//ctof
+        vVo+/SNwDol+76eLhVWaxo/Qavzwb0U=
+X-Google-Smtp-Source: ABdhPJyIqAjVWapfZuf+9IuFP0bQM4o+OeOppDY7/+9kKdQpTnNAiKVXqMjz6QBSKvLb9KBH0M5t3Q==
+X-Received: by 2002:a05:620a:2456:b0:69e:9fa0:6479 with SMTP id h22-20020a05620a245600b0069e9fa06479mr4744407qkn.414.1650350599703;
+        Mon, 18 Apr 2022 23:43:19 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 2-20020ac84e82000000b002f1f95ce5fbsm4559081qtp.3.2022.04.18.23.43.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 23:43:19 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: deng.changcheng@zte.com.cn
+To:     dmitry.torokhov@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] Input: Remove unneeded variable
+Date:   Tue, 19 Apr 2022 06:42:55 +0000
+Message-Id: <20220419064255.2563333-1-deng.changcheng@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220419070150.254377-1-mawupeng1@huawei.com>
-References: <CAMj1kXGSStDgj9ABmUaTLnBmpQFksh3wx4tx=mJohum4GQe3Gg@mail.gmail.com>
- <20220419070150.254377-1-mawupeng1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ma Wupeng <mawupeng1@huawei.com>
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-Add support to relocate kernel image to mirrored regions if KASLR is
-enabled.
+Remove unneeded variable used to store return value.
 
-If a suiable mirrored slot if found, iterate EFI memory map and pick the
-mirrored region to process for adding candidate of randomization slot. If
-no suitable mirrored region found, alloc memory from non-mirrored regions.
-
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
 ---
- drivers/firmware/efi/libstub/arm64-stub.c  | 52 +++++++++++++++++++++-
- drivers/firmware/efi/libstub/efistub.h     |  7 ++-
- drivers/firmware/efi/libstub/randomalloc.c | 13 +++++-
- 3 files changed, 68 insertions(+), 4 deletions(-)
+ drivers/input/input.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/firmware/efi/libstub/arm64-stub.c b/drivers/firmware/efi/libstub/arm64-stub.c
-index 9cc556013d08..39b774853b93 100644
---- a/drivers/firmware/efi/libstub/arm64-stub.c
-+++ b/drivers/firmware/efi/libstub/arm64-stub.c
-@@ -79,6 +79,51 @@ static bool check_image_region(u64 base, u64 size)
- 	return ret;
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index e5a668ce884d..1365c9dfb5f2 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -1793,8 +1793,6 @@ EXPORT_SYMBOL(input_reset_device);
+ 
+ static int input_inhibit_device(struct input_dev *dev)
+ {
+-	int ret = 0;
+-
+ 	mutex_lock(&dev->mutex);
+ 
+ 	if (dev->inhibited)
+@@ -1816,7 +1814,7 @@ static int input_inhibit_device(struct input_dev *dev)
+ 
+ out:
+ 	mutex_unlock(&dev->mutex);
+-	return ret;
++	return 0;
  }
  
-+/* check if system has suitable for kernel to relocate */
-+static bool check_mirror_suitable(unsigned long size,
-+				   unsigned long align)
-+{
-+	unsigned long map_size, desc_size;
-+	unsigned long buff_size;
-+	efi_status_t status;
-+	efi_memory_desc_t *memory_map;
-+	int map_offset;
-+	struct efi_boot_memmap map;
-+	bool found = false;
-+
-+	map.map = &memory_map;
-+	map.map_size = &map_size;
-+	map.desc_size = &desc_size;
-+	map.desc_ver = NULL;
-+	map.key_ptr = NULL;
-+	map.buff_size = &buff_size;
-+
-+	status = efi_get_memory_map(&map);
-+	if (status != EFI_SUCCESS)
-+		return false;
-+
-+	if (align < EFI_ALLOC_ALIGN)
-+		align = EFI_ALLOC_ALIGN;
-+
-+	size = round_up(size, EFI_ALLOC_ALIGN);
-+
-+	for (map_offset = 0; map_offset < map_size; map_offset += desc_size) {
-+		efi_memory_desc_t *md = (void *)memory_map + map_offset;
-+		unsigned long slots;
-+
-+		/* system has suiable mirrored area */
-+		slots = get_entry_num_slots(md, size, ilog2(align));
-+		if (slots > 0 && md->attribute & EFI_MEMORY_MORE_RELIABLE) {
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	efi_bs_call(free_pool, memory_map);
-+
-+	return found;
-+}
-+
- efi_status_t handle_kernel_image(unsigned long *image_addr,
- 				 unsigned long *image_size,
- 				 unsigned long *reserve_addr,
-@@ -88,6 +133,7 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
- 	efi_status_t status;
- 	unsigned long kernel_size, kernel_memsize = 0;
- 	u32 phys_seed = 0;
-+	bool efi_mirror_found;
- 
- 	/*
- 	 * Although relocatable kernels can fix up the misalignment with
-@@ -127,13 +173,16 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
- 	kernel_memsize = kernel_size + (_end - _edata);
- 	*reserve_size = kernel_memsize;
- 
-+	efi_mirror_found = check_mirror_suitable(*reserve_size, min_kimg_align);
-+
- 	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE) && phys_seed != 0) {
- 		/*
- 		 * If KASLR is enabled, and we have some randomness available,
- 		 * locate the kernel at a randomized offset in physical memory.
- 		 */
- 		status = efi_random_alloc(*reserve_size, min_kimg_align,
--					  reserve_addr, phys_seed);
-+					  reserve_addr, phys_seed,
-+					  efi_mirror_found);
- 		if (status != EFI_SUCCESS)
- 			efi_warn("efi_random_alloc() failed: 0x%lx\n", status);
- 	} else {
-@@ -163,6 +212,7 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
- 		}
- 	}
- 
-+out:
- 	*image_addr = *reserve_addr;
- 	memcpy((void *)*image_addr, _text, kernel_size);
- 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index edb77b0621ea..0cf2e25cb7d0 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -790,7 +790,8 @@ void efi_get_virtmap(efi_memory_desc_t *memory_map, unsigned long map_size,
- efi_status_t efi_get_random_bytes(unsigned long size, u8 *out);
- 
- efi_status_t efi_random_alloc(unsigned long size, unsigned long align,
--			      unsigned long *addr, unsigned long random_seed);
-+			      unsigned long *addr, unsigned long random_seed,
-+			      bool efi_has_mirror);
- 
- efi_status_t check_platform_features(void);
- 
-@@ -875,6 +876,10 @@ void efi_handle_post_ebs_state(void);
- 
- enum efi_secureboot_mode efi_get_secureboot(void);
- 
-+extern unsigned long get_entry_num_slots(efi_memory_desc_t *md,
-+					 unsigned long size,
-+					 unsigned long align_shift);
-+
- #ifdef CONFIG_RESET_ATTACK_MITIGATION
- void efi_enable_reset_attack_mitigation(void);
- #else
-diff --git a/drivers/firmware/efi/libstub/randomalloc.c b/drivers/firmware/efi/libstub/randomalloc.c
-index 724155b9e10d..dd81d6c3c406 100644
---- a/drivers/firmware/efi/libstub/randomalloc.c
-+++ b/drivers/firmware/efi/libstub/randomalloc.c
-@@ -14,7 +14,7 @@
-  * addresses it covers that are suitably aligned and supply enough room
-  * for the allocation.
-  */
--static unsigned long get_entry_num_slots(efi_memory_desc_t *md,
-+unsigned long get_entry_num_slots(efi_memory_desc_t *md,
- 					 unsigned long size,
- 					 unsigned long align_shift)
- {
-@@ -53,7 +53,8 @@ static unsigned long get_entry_num_slots(efi_memory_desc_t *md,
- efi_status_t efi_random_alloc(unsigned long size,
- 			      unsigned long align,
- 			      unsigned long *addr,
--			      unsigned long random_seed)
-+			      unsigned long random_seed,
-+			      bool efi_mirror_found)
- {
- 	unsigned long map_size, desc_size, total_slots = 0, target_slot;
- 	unsigned long buff_size;
-@@ -83,6 +84,10 @@ efi_status_t efi_random_alloc(unsigned long size,
- 		efi_memory_desc_t *md = (void *)memory_map + map_offset;
- 		unsigned long slots;
- 
-+		if (efi_mirror_found &&
-+		    !(md->attribute & EFI_MEMORY_MORE_RELIABLE))
-+			continue;
-+
- 		slots = get_entry_num_slots(md, size, ilog2(align));
- 		MD_NUM_SLOTS(md) = slots;
- 		total_slots += slots;
-@@ -112,6 +117,10 @@ efi_status_t efi_random_alloc(unsigned long size,
- 			continue;
- 		}
- 
-+		if (efi_mirror_found &&
-+		    !(md->attribute & EFI_MEMORY_MORE_RELIABLE))
-+			continue;
-+
- 		target = round_up(md->phys_addr, align) + target_slot * align;
- 		pages = size / EFI_PAGE_SIZE;
- 
+ static int input_uninhibit_device(struct input_dev *dev)
 -- 
 2.25.1
 
