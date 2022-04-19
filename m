@@ -2,90 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 423C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA46C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350940AbiDSLSs (ORCPT
+        id S1350957AbiDSLUM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        Tue, 19 Apr 2022 07:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240937AbiDSLSq (ORCPT
+        with ESMTP id S240937AbiDSLUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:18:46 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41CB15813
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:16:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=+T7NqF6/cRpeqLTjnKQGsYUj/qWAJ0JiGzVJuAqgZKc=; b=NLM0J+iuLWHKNpKCGCeEkDju3W
-        PDkQdkbLIlBXas0Nakn3n7fSu48s5ZDUW6QpOBpQ6DdbQnS19dC9nv8GF14cw5CS13mZ5qjd7dK60
-        8w7HFmptfY6DZ9Va/WAG6CzJUVpVeQKJ1Rgx0Z4q6njNtL1jTXYEJhSvOjt634deH72Kw/UbZXmgu
-        VZpe3Rlf8E7pJvdyyRuIQLuU8q1x5A118h1rUTeAoLMTGt6ZyP/VOCFZZPujBtsq3WNC8K9vG6abi
-        MkFWdAAID7AWh+CaFqYcwr2N+807tAUYKQrYBSrBlWwztjAcy0NN9WBQrObTgZfb0mtr9FV9wVIT0
-        CLTLh7Zg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nglpt-006nyQ-BA; Tue, 19 Apr 2022 11:15:57 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 36DC7986195; Tue, 19 Apr 2022 13:15:55 +0200 (CEST)
-Date:   Tue, 19 Apr 2022 13:15:55 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH v2 13/25] scripts: Create objdump-func helper script
-Message-ID: <20220419111555.GR2731@worktop.programming.kicks-ass.net>
-References: <cover.1650300597.git.jpoimboe@redhat.com>
- <ab37c23d28a8b9cf7a6707cc5af5e1aef80ba4a3.1650300597.git.jpoimboe@redhat.com>
+        Tue, 19 Apr 2022 07:20:08 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59C915813;
+        Tue, 19 Apr 2022 04:17:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650367046; x=1681903046;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DNFtwZIckgL0QZPQuSkrgXsqWRjXbTAPZ5br4vRPNtA=;
+  b=Un9vi5Rb7aAHPCqWrPMUUIcsfzzY3KU194H7coyRPvciLZPosXTJJqGa
+   rZD688vtoS5PyBJKAjCtXBw7gjUHdkVezUu3W9AiPmOUOgKmOpvv2QlBp
+   ckDmWYnzoJVSY4B7LN9k00/00F74FMQQwBo1MVQ0SP4uU69WhCJ73GaWY
+   tPmKrZvZ40LFLB9GSvECxyzxXi6QqQEi6rmlkQSdKtFVFWoHfXdZ4gg4F
+   pOTxgh+PkexJHCevYyvF6Y6jJk7LgLrL+HE4eRk21d+nToiK8rOwl8bXg
+   ZONDuZ/2+qEGwTiXhyCzuDA0qriHQWIV9sVBar+TlDY9+lXh1mwFwCuuw
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="350189750"
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="350189750"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 04:17:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="554683731"
+Received: from csambran-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.58.20])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 04:17:12 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     kvm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, pbonzini@redhat.com,
+        seanjc@google.com, vkuznets@redhat.com, jmattson@google.com,
+        joro@8bytes.org, wanpengli@tencent.com
+Subject: [PATCH 0/3] Include MKTME KeyID bits to MMU shadow_zero_check
+Date:   Tue, 19 Apr 2022 23:17:01 +1200
+Message-Id: <cover.1650363789.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab37c23d28a8b9cf7a6707cc5af5e1aef80ba4a3.1650300597.git.jpoimboe@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 09:50:32AM -0700, Josh Poimboeuf wrote:
-> Add a simple script which disassembles a single function from an object
-> file.  Comes in handy for objtool warnings and kernel stack traces.
-> 
-> Originally-by: Peter Zijlstra <peterz@infradead.org>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  scripts/objdump-func | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->  create mode 100755 scripts/objdump-func
-> 
-> diff --git a/scripts/objdump-func b/scripts/objdump-func
-> new file mode 100755
-> index 000000000000..140646c456fc
-> --- /dev/null
-> +++ b/scripts/objdump-func
-> @@ -0,0 +1,18 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +#
-> +# Disassemble a single function.
-> +#
-> +# usage: objdump-func <file> <func>
-> +
-> +set -o errexit
-> +set -o nounset
-> +
-> +OBJDUMP="${CROSS_COMPILE:-}objdump"
-> +
-> +command -v awk >/dev/null 2>&1 || die "awk isn't installed"
-> +
-> +OBJ=$1; shift
-> +FUNC=$1; shift
-> +
-> +${OBJDUMP} -wdr $@ $OBJ | awk "/^\$/ { P=0; } /$FUNC[^>]*>:\$/ { P=1; O=strtonum(\"0x\" \$1); } { if (P) { o=strtonum(\"0x\" \$1); printf(\"%04x \", o-O); print \$0; } }"
-> -- 
-> 2.34.1
-> 
+Host kernel never sets any Intel MKTME KeyID bits (including TDX KeyID
+bits) in any mapping.  KVM should not set any of them to MMU's SPTE which
+maps to guest memory either.  KVM MMU has shadow_zero_check which
+contains those bits must be 0 for SPTE.  This series adds MKTME bits to
+shadow_zero_check.  The first patch is not directly needed but looks
+better to have IMHO.  Patch 02/03 actually do the job.
 
-This might rely on awk being gawk, I'm never very careful about those
-things.
+Sanity tested by creating normal VMs on TDX capable machine (with TDX
+turned on).  However this is not tested on AMD machine since I don't have
+access to any, though the risk should be very small I suppose.
+
+Kai Huang (3):
+  KVM: x86/mmu: Rename reset_rsvds_bits_mask()
+  KVM: x86/mmu: Add shadow_me_value and repurpose shadow_me_mask
+  KVM: VMX: Include MKTME KeyID bits to shadow_zero_check
+
+ arch/x86/kvm/mmu.h      | 20 ++++++++++++++++++++
+ arch/x86/kvm/mmu/mmu.c  | 22 +++++++++++++++-------
+ arch/x86/kvm/mmu/spte.c | 40 ++++++++++++++++------------------------
+ arch/x86/kvm/mmu/spte.h |  1 +
+ arch/x86/kvm/svm/svm.c  |  3 +++
+ arch/x86/kvm/vmx/vmx.c  | 31 +++++++++++++++++++++++++++++++
+ 6 files changed, 86 insertions(+), 31 deletions(-)
+
+-- 
+2.35.1
+
