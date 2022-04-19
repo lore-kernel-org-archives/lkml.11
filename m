@@ -2,91 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39862C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357251AbiDSSfa (ORCPT
+        id S1356840AbiDSSec (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:35:30 -0400
+        Tue, 19 Apr 2022 14:34:32 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357310AbiDSSfF (ORCPT
+        with ESMTP id S1356949AbiDSSbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:35:05 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF6D4131C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:26:38 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id r189so12876736ybr.6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:26:38 -0700 (PDT)
+        Tue, 19 Apr 2022 14:31:44 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5621419B3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:22:38 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id y129so6243888qkb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:22:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1mruETChJ0+tCEUKHTvZNud81HPLW0aPJc6Xrf5tnGg=;
-        b=DsydkwpauFoZTteJsIEF/bGMn90fgQ9Nl47j1EELbxIjezLoZaBSF1/6UiUAJ0xmTZ
-         /rj1G5jk60dBo4UVM2DgPIR6Vvan/PqzmeB6xOVwQeeE8PYz2WtSq1McY6N65diPpefa
-         nAXHC1F8wbCTiYkwaIc8RZnhHY25UEX7C0bnrr/xJ95MNOXRvlc0YXBKz0duc1XPV+dW
-         44AkXitfLvlHw2fzAtfAmQe+hCRMaIfProSkZ1Ok1LmTPwUfIZwFjyenRj6afmw4QjFs
-         QE2OTQDnzWvTe1fb7XOp93EUJvVWXPYnf62b/6t+FzTu61oqhNT2ln41XNrxF0swOiHJ
-         bP1A==
+        bh=uM6URlo64vnwT75675dXokv0If7L93kTHHH/DSCpiRA=;
+        b=p5pblPpvv/dx+BYsJ0n/CU+vZGLz041NM4OHGR3IOFAJr2tNP7tnDoYqG2Hmavhfq+
+         TPH+XpDFtFcRNlrn+WnrFkhUQuPwaemAAm8du0tUB9fXniHmfaxN//jZ4U25mxci9xFJ
+         rfnJMXBzqE7KzLDcqpXZWHYikpgMVCM80IxdU2og3/rfcpInlcCMZgA3xyY1GFR5+srV
+         DRSjgJgk717ezoVhByaiAk4iEz1/YQnJ0ljWdB3W35WbUw5vE2Nl3fXrablTcuackhfu
+         r8Eq8AU94Of1Sld5lXdf7AEXyY+toRtscrAWY1SF/hvior+w19ycCwiCauMGlgYwXpeg
+         CUiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1mruETChJ0+tCEUKHTvZNud81HPLW0aPJc6Xrf5tnGg=;
-        b=MarIjsZS7cdziRrRbr6ZbvP/KMfmSOGvJsCzVGj0q1Kb5QoQS5jJSmIsIlCAFANgkJ
-         qjh1jKNiP7roCrTmMCCpAaONkpNpZ52nnUunT2UV+64BF6gS8SWkgIJdIgVk5FjGPCQQ
-         6+p5+SPwNQcjRsiWYeeVBm7wnBnjt0suW+YrYbS05vHB05JQ8sEvuOIuVJEarCU9PVBA
-         mvNIpCcwgeL9CIvEDkeI9X43BW07MxyQ4kkV2nDz3giAERINcmyVoqXBTQ2YWksjKWC8
-         uKo9mAvZAcFeicvQQDXMD93+25xImuv0gxwv0QDFYZ0PdnwJqEiT2SIPV+U3rs9/FJCw
-         x9bw==
-X-Gm-Message-State: AOAM532NwrVIzlkoQC+OL/O+4Y5QB2q9YOaXkK0NcZ21um/dyZjzei4M
-        eq4nksw6qzx8aj5Hg2/SEZFR8iREYrtwXAdJcTDHTQ==
-X-Google-Smtp-Source: ABdhPJwIvBSWGeaTpciFQdI7H/y4cHsr0V/oV6NhWT9Ndt5EVDGgE7d9NetVo5AN6D6ckF93iOwY98PK6jBB0w1E5J0=
-X-Received: by 2002:a25:d08a:0:b0:641:daac:ff82 with SMTP id
- h132-20020a25d08a000000b00641daacff82mr16009141ybg.643.1650392797011; Tue, 19
- Apr 2022 11:26:37 -0700 (PDT)
+        bh=uM6URlo64vnwT75675dXokv0If7L93kTHHH/DSCpiRA=;
+        b=e3BliVzjGRkMjIcjRH0X2NomXs/5U5DGa+F844TCjRy8TPoI8yJOm4jzTQlSAu/1qG
+         GJG5hx7A5DhjBkKBw9XqVu6/mD7udB9HxXMdRYL9j4PNc3dV9a9/N9CPzCQF4DW3TqWp
+         jIcEu6zfXKwklLBpJHv5/FNfxnwhuZrKUjdai7/3FL5NpD4c4Xh7q5N1Hou7SBavO0fk
+         cGcQJVsgIji2wokHUvs785azZGNIrMjjkHYSGndAHFz+eUK5X0LGEqzAVok7ByqMTWn7
+         VKM2w/SuO9lfqHEvilHcKICjzLi1Mp5R+qV2kkI8z9V83c1jS7hJVi82YRYWS01z1nsw
+         Ph6Q==
+X-Gm-Message-State: AOAM532yBm11NSsKhJBsKvd9ibM/FJvtJuIBdug5pkxeZXd8y/3kesIG
+        PGAVbRw90C9KllcRCFuujKEwjlmSCsROXjh/kWZbIM+s
+X-Google-Smtp-Source: ABdhPJwEmH+FhLPpk7EiRdNdOXL4ysHgnCorcXqTqHB1jkWn107SpWCjumv1tTCp1XUVJ2Di7M3p0yFIt80KW8d88Co=
+X-Received: by 2002:a05:620a:2804:b0:67d:1e7b:b528 with SMTP id
+ f4-20020a05620a280400b0067d1e7bb528mr10454138qkp.193.1650392556242; Tue, 19
+ Apr 2022 11:22:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220419000408.3202635-1-swboyd@chromium.org> <Yl4Au/O/am/ZbX9J@chromium.org>
- <CAE-0n507D9W5BFfG2vXqN1cqvnrQKLbLw7YejGb5_kH+7X62sw@mail.gmail.com> <CACeCKac83uiwdAf2RWqc9DxEft2+BSBn5Kp5PMR23UGKJyk5KQ@mail.gmail.com>
-In-Reply-To: <CACeCKac83uiwdAf2RWqc9DxEft2+BSBn5Kp5PMR23UGKJyk5KQ@mail.gmail.com>
-From:   Daisuke Nojiri <dnojiri@google.com>
-Date:   Tue, 19 Apr 2022 11:26:25 -0700
-Message-ID: <CAC0y+Ajf2GTG=ir=gu9T5Q1TXBHMC5qzzA_MEzWAvW5D71Yv8g@mail.gmail.com>
-Subject: Re: [PATCH v2] mfd: cros_ec_dev: Only register PCHG device if present
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        patches@lists.linux.dev, Tzung-Bi Shih <tzungbi@kernel.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev
+References: <5ae22b2e-97de-6680-50a3-887ab87b3b87@gmail.com>
+In-Reply-To: <5ae22b2e-97de-6680-50a3-887ab87b3b87@gmail.com>
+From:   Jeff Kirsher <tarbal@gmail.com>
+Date:   Tue, 19 Apr 2022 11:22:25 -0700
+Message-ID: <CAL3LdT4gohtJk7s2V1j+_KhL_NuWg6_siJiaFQuELFL=ODnHzg@mail.gmail.com>
+Subject: Re: kernel LAN : Intel 2.5GbE LAN : support
+To:     hanasaki@gmail.com,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The patch v2 looks good to me.
-
-
-On Tue, Apr 19, 2022 at 7:59 AM Prashant Malani <pmalani@chromium.org> wrote:
+On Tue, Apr 19, 2022 at 8:39 AM hanasaki-gmail <hanasaki@gmail.com> wrote:
 >
-> On Tue, Apr 19, 2022 at 7:55 AM Stephen Boyd <swboyd@chromium.org> wrote:
-> >
-> > Quoting Prashant Malani (2022-04-18 17:22:19)
-> > > On Apr 18 17:04, Stephen Boyd wrote:
-> > > > +             retval = mfd_add_hotplug_devices(ec->dev,
-> > > > +                                     cros_ec_pchg_cells,
-> > > > +                                     ARRAY_SIZE(cros_ec_pchg_cells));
-> > > > +             if (retval)
-> > > > +                     dev_warn(ec->dev, "failed to add pchg: %d\n",
-> > > > +                              retval);
-> > > Tiny nit: Can this fit in 1 line (100 chars[1])?
-> > >
-> >
-> > I'm matching the style of other lines in this file (this is copy
-> > pasta). I'll let the maintainer decide what to do.
+> kernel LAN : Intel 2.5GbE LAN  : support
+> Intel 2.5GbE LAN chip (2.5 Gbps/1 Gbps/100 Mbps)
 >
-> Quite a bit of that code predates the char limit update, but OK.
+> Looking at the below motherboard.
+> what .config option and kernel module supports
+> this ethernet LAN chip and at 2.5GB?
+>
+> What is the first kernel version having support?
+>
+> ref:
+> X570SI AORUS PRO AX (rev. 1.1)
+> https://www.gigabyte.com/us/Motherboard/X570SI-AORUS-PRO-AX-rev-11
+
+Adding intel-wired-lan mailing list, which has all the Intel wired
+Ethernet developers to answer your questions.
+
+-- 
+Cheers,
+Jeff
