@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F931C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE7CC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240764AbiDSAkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        id S240839AbiDSAk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236145AbiDSAkv (ORCPT
+        with ESMTP id S240756AbiDSAkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:40:51 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B6D27162
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:38:09 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id a5so12086938qvx.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:38:09 -0700 (PDT)
+        Mon, 18 Apr 2022 20:40:53 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1051B27162
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:38:13 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id x24so2789065qtq.11
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:38:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:from:subject
          :content-language:to:disposition-notification-to
          :content-transfer-encoding;
-        bh=uiFoHM8fg7GA8a/WXLByn0nuswD0G/yVMmEm89BScm4=;
-        b=d5PTFUU1nuAE659Hd/r+dPbro1Dsu1FpNYFqg9BqrI5Sk5xeq9pYqe1g8rZ6S8aaaK
-         iSoCy0/I2dq6z6laMklNO0FOorVrhNogXF90P43gr13SXULxX13H7vaoxSKofxjsq708
-         y3MZIJDClQTxNG2ogPz1X91f3Ez9n3bDMbZQt7XSyuzgJNpUTdGvtf16jydEL2XmID0J
-         YczUq5+TOwxo+QqiKColq8ILIFLPmspXx4qs4ABkDEU5YbSAvTih96D4vzVES7zIe8Fy
-         DUxnyBdsqS+cajxrN6I2liLUnFaAB2S+mSKcBqJTuFqe/ULAHD8z6mmKAqYBl4fRlLD2
-         ZOrA==
+        bh=lFL4HqTDYSqVDYG3taiQXJ8IaYIwL8oENCGIfaheEGw=;
+        b=Nn2fzfo4bJBsygDsTEHg0RzOUeQAnO3GIs27r+IfFPydMO6zLEiiPz+H7DuhQAfWW7
+         zH5xwfcEayhWl3MplVI6gD16aKiJwX9Qq/3en/v29hNwBcVASGF9Fq+4Al2SegNJsw0k
+         LuR8FtbWCbxv0PVT5QG8xBTsksmQprGmCu7u3D6f8K8WnOpPsz+FIl2ljv37mJVAle1W
+         WzZpcXAYqWIWfgzdxl+Vylw6cVDR2B7xL1ydvHLHO6XmqaTtPqGryjEzXqfTk7MMXzu3
+         ysQP6J122RjvbPZvPLY4HXN8lJwgFxGyL4ao2bJq8AGR+Hcss8hn2du8iSDg1iEwwEsO
+         U4Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:from
          :subject:content-language:to:disposition-notification-to
          :content-transfer-encoding;
-        bh=uiFoHM8fg7GA8a/WXLByn0nuswD0G/yVMmEm89BScm4=;
-        b=cp+FdUgFyOudR2iSKV4Z7SOWUywMg/o+C0D37v4ppxAzKkhh4LqrDL6qG4ka7Rc+kF
-         Dk+rBPrlyRYQXKjjXruqssTBFtvNNkqmbSJ6g1hrv7EI6ulwCuvmAhdLqdT3eZQaWJQS
-         haQ7Llv+2mORmDFHAdJjIQ3uskVJAyKH1jMEMgG+QkHN0C2dl9T/H10bzvujUO4lYe5s
-         ubunTfWA2ZUVIct8CiRf4TxoWRvyyxcsTnFAi0ic4mtWDT7ChQQBftquOroPq7e1Agfe
-         /vYVB62cqhkQkoc72EgRBimaI2g6aVnyyYCx2VB29BPVFXnzsdDF3JCSUCrl7fPceUDz
-         6bCw==
-X-Gm-Message-State: AOAM531wi73xJUF4JHvdWcJatei68t11qhEFnR3NpdznkBhpFK+RSrMU
-        6ZNBjtxX/yxmTuRc5RbH2jeZb3JwqiM=
-X-Google-Smtp-Source: ABdhPJzwm48wylBwimOWVl55dmWEBbiBMxo3m0f9gmq0b3YAEVHJf+INXSen0RsSoKPyrW5BJU/7mQ==
-X-Received: by 2002:a05:6214:20ac:b0:446:20b9:f918 with SMTP id 12-20020a05621420ac00b0044620b9f918mr9821142qvd.126.1650328688365;
-        Mon, 18 Apr 2022 17:38:08 -0700 (PDT)
+        bh=lFL4HqTDYSqVDYG3taiQXJ8IaYIwL8oENCGIfaheEGw=;
+        b=Cj4lbORtCHN0SJ1WqEbxbv7Df6C/ofiQzdMeV9LmJpTnHGuzpdphhwcMK0Wlcz0XPf
+         4PZJHMCcZyflMT/KbBdVjweKAaH4vcC3RVg5zzJfRqTV+Q2YhsFxsC+iqVliOxuk66Dn
+         dCSOXjLnGvDHMNeEBmLW5+4JpTQ4eRbRVrLEuc2lCQz8wBACTcIdkXYbUOjumbK52r07
+         wzFMIH84B/ZpUFDxYCIY1asvguwIt12xUXLVaFNFLStmk9rOdUKJdF1FdQ6EGEoPsMeD
+         dBizKU5stgEOPGtHWTYreE50iLdjqQ7H5pUnMr8uNtbUwBISkNY3lElXoFuYcAtEyUl7
+         UN0A==
+X-Gm-Message-State: AOAM533ulviQrBzuKYm9btK3XhGvYsEUagDbiKIMfzGQu5bL5StOcd6r
+        Q2MKUUZFvDQOxGJTS6ADfi9GjTQ1e0E=
+X-Google-Smtp-Source: ABdhPJwurX/O3cGN+tb+0dbTcNaHgguJyUPvrq3JQCXQaDShnp/qgOFqP98ikwlZrzU82ILx93iMpg==
+X-Received: by 2002:a05:622a:1210:b0:2f2:2620:8562 with SMTP id y16-20020a05622a121000b002f226208562mr2412924qtx.118.1650328692012;
+        Mon, 18 Apr 2022 17:38:12 -0700 (PDT)
 Received: from [10.1.1.117] (pool-71-121-149-202.bltmmd.fios.verizon.net. [71.121.149.202])
-        by smtp.gmail.com with ESMTPSA id h27-20020ac8777b000000b002eff87a2c42sm8376624qtu.4.2022.04.18.17.38.07
+        by smtp.gmail.com with ESMTPSA id c79-20020ae9ed52000000b0069e9bfecd6esm2410895qkg.98.2022.04.18.17.38.11
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 17:38:07 -0700 (PDT)
-Message-ID: <ffb3b044-f38f-c35f-ebbe-4e89aab0f38f@gmail.com>
-Date:   Mon, 18 Apr 2022 20:37:45 -0400
+        Mon, 18 Apr 2022 17:38:11 -0700 (PDT)
+Message-ID: <e59bebc7-ecfb-cd43-4914-a772acc35ca7@gmail.com>
+Date:   Mon, 18 Apr 2022 20:37:56 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:100.0) Gecko/20100101
  Thunderbird/100.0
 From:   hanasaki-gmail <hanasaki@gmail.com>
-Subject: kernel wifi + BT5.1 chipset : AMD Wi-Fi 6E RZ608 (MT7921K) : wifi
- 802.11ax support
+Subject: Kernel audio : Realtek ALC1220-VB : support
 Content-Language: en-US
 To:     linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8; format=flowed
@@ -67,18 +66,13 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel wifi + BT5.1 chipset
-AMD Wi-Fi 6E RZ608 (MT7921K) : wifi 802.11ax support
+Kernel audio : Realtek ALC1220-VB  : support
 
 Looking at the below motherboard.
-What supports the chipset wifi ax and bluetooth?
+what .config option and kernel module supports
+this ethernet sound chip?
 
 What is the first kernel version having support?
-
-I see:
-   /kernel/drivers/net/wireless/mediatek/mt76/mt7921/mt7921e.ko
-but not the MT7921K
-also checked the 5.17.x source
 
 ref:
 X570SI AORUS PRO AX (rev. 1.1)
