@@ -2,119 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FC6C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1D8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351876AbiDSNLP (ORCPT
+        id S1351930AbiDSNMH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
+        Tue, 19 Apr 2022 09:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242828AbiDSNLN (ORCPT
+        with ESMTP id S239259AbiDSNMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:11:13 -0400
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D140E2C12C;
-        Tue, 19 Apr 2022 06:08:30 -0700 (PDT)
-Received: by mail-oi1-f179.google.com with SMTP id z2so13628150oic.6;
-        Tue, 19 Apr 2022 06:08:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kuw11tGbCexpzngTq2n6w2uUJ2OJTLDgpBrRZMyM3vc=;
-        b=WPdfGsBtyz+O+dNCEYCLC11sPSoTlS9iQh4q5F8enKE0by0V524LXJYdoghn2kCa7X
-         ARxg+TB+ussQC0cqFcsIuISeVrruVUCAtapjEX44vyCnESNIAdFhGqn9Rq95oPU5xIPU
-         uGCMf6MzZQJAyHkTf6MoDqO/QP3WSOZOtOGwWgfJrAMwE/KY2MejXWXLKiPiZgFI6eet
-         IZbaG8VvzNhHlvm+T1HnXhM1JFLU7QDt82IIhLB++c5ejVa1M1B0wj1DoTrfnkKwdOt2
-         qGIDUTfWkoEX3963e0TbrC9lakHBliWNzdIeoTSj55M/Sb/afdMR7uLAdqSChXuG5a6w
-         AfCg==
-X-Gm-Message-State: AOAM531Mkt0bBhzGO8j9tY9spuLiXzHyyTB6snVhCGCROhIkwytJdpNI
-        HmIOAo8uQh1IPy4AUiOJIw==
-X-Google-Smtp-Source: ABdhPJzKxCN4i5eFMnIKtOQ8QW2GVwLNNO3fUffnNK/ceEOGTPpqRQ66KT732cWRNDIJThK8kAbbKw==
-X-Received: by 2002:a54:439a:0:b0:2ef:9bf6:e702 with SMTP id u26-20020a54439a000000b002ef9bf6e702mr9631818oiv.105.1650373710086;
-        Tue, 19 Apr 2022 06:08:30 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 64-20020aca0643000000b002f9b8a6ca98sm5117722oig.4.2022.04.19.06.08.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 06:08:29 -0700 (PDT)
-Received: (nullmailer pid 2258727 invoked by uid 1000);
-        Tue, 19 Apr 2022 13:08:28 -0000
-Date:   Tue, 19 Apr 2022 08:08:28 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v3 2/4] dt-bindings: media: sun6i-a31-csi: Add ISP output
- port
-Message-ID: <Yl60TLYX+Cgkvb00@robh.at.kernel.org>
-References: <20220415153708.637804-1-paul.kocialkowski@bootlin.com>
- <20220415153708.637804-3-paul.kocialkowski@bootlin.com>
+        Tue, 19 Apr 2022 09:12:05 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB58335DC3;
+        Tue, 19 Apr 2022 06:09:22 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92A48106F;
+        Tue, 19 Apr 2022 06:09:22 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.75.72])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4A73B3F766;
+        Tue, 19 Apr 2022 06:09:19 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 14:09:14 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     He Zhe <zhe.he@windriver.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, dave.hansen@linux.intel.com, keescook@chromium.org,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, benh@kernel.crashing.org, paulus@samba.org,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com, hpa@zytor.com,
+        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC 1/8] stacktrace: Change callback prototype to pass
+ more information
+Message-ID: <Yl60euwfis+u92cA@FVFF77S0Q05N>
+References: <20220418132217.1573072-1-zhe.he@windriver.com>
+ <20220418132217.1573072-2-zhe.he@windriver.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220415153708.637804-3-paul.kocialkowski@bootlin.com>
+In-Reply-To: <20220418132217.1573072-2-zhe.he@windriver.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 05:37:06PM +0200, Paul Kocialkowski wrote:
-> Some Allwinner devices come with an Image Signal Processor (ISP) that
-> allows processing camera data to produce good-looking images,
-> especially from raw bayer representations.
+On Mon, Apr 18, 2022 at 09:22:10PM +0800, He Zhe wrote:
+> Currently stack_trace_consume_fn can only have pc of each frame of the
+> stack. Copying-beyond-the-frame-detection also needs fp of current and
+> previous frame. Other detection algorithm in the future may need more
+> information of the frame.
 > 
-> The ISP does not have a dedicated capture path: it is fed directly by
-> one of the CSI controllers, which can be selected at run-time.
+> We define a frame_info to include them all.
 > 
-> Represent this possibility as a graph connection between the CSI
-> controller and the ISP in the device-tree bindings.
 > 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Signed-off-by: He Zhe <zhe.he@windriver.com>
 > ---
->  .../bindings/media/allwinner,sun6i-a31-csi.yaml    | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+>  include/linux/stacktrace.h |  9 ++++++++-
+>  kernel/stacktrace.c        | 10 +++++-----
+>  2 files changed, 13 insertions(+), 6 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
-> index 53aa6dbe8e2c..1b41a6008195 100644
-> --- a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
-> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
-> @@ -87,6 +87,20 @@ properties:
+> diff --git a/include/linux/stacktrace.h b/include/linux/stacktrace.h
+> index 97455880ac41..5a61bfafe6f0 100644
+> --- a/include/linux/stacktrace.h
+> +++ b/include/linux/stacktrace.h
+> @@ -10,15 +10,22 @@ struct pt_regs;
 >  
->          additionalProperties: false
+>  #ifdef CONFIG_ARCH_STACKWALK
 >  
-> +      port@2:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +struct frame_info {
+> +	unsigned long pc;
+> +	unsigned long fp;
+> +	unsigned long prev_fp;
+> +};
 
-If there are not any custom properties, then use 
-'/schemas/graph.yaml#/properties/port' and drop the 'properties' below.
+I don't think this should be exposed through a generic interface; the `fp` and
+`prev_fp` values are only meaningful with arch-specific knowledge, and they're
+*very* easy to misuse (e.g. when transitioning from one stack to another).
+There's also a bunch of other information one may or may not want, depending on
+what you're trying to achieve.
 
-> +        description: ISP output port
+I am happy to have an arch-specific internal unwinder where we can access this
+information, and *maybe* it makes sense to have a generic API that passes some
+opaque token, but I don't think we should make the structure generic.
+
+Thanks,
+Mark.
+
 > +
-> +        properties:
-> +          reg:
-> +            const: 2
-> +
-> +          endpoint:
-> +            $ref: /schemas/graph.yaml#/$defs/endpoint-base
-> +            unevaluatedProperties: false
-> +
-> +        additionalProperties: false
-> +
->      anyOf:
->        - required:
->            - port@0
+>  /**
+>   * stack_trace_consume_fn - Callback for arch_stack_walk()
+>   * @cookie:	Caller supplied pointer handed back by arch_stack_walk()
+>   * @addr:	The stack entry address to consume
+> + * @fi:	The frame information to consume
+>   *
+>   * Return:	True, if the entry was consumed or skipped
+>   *		False, if there is no space left to store
+>   */
+> -typedef bool (*stack_trace_consume_fn)(void *cookie, unsigned long addr);
+> +typedef bool (*stack_trace_consume_fn)(void *cookie, struct frame_info *fi);
+>  /**
+>   * arch_stack_walk - Architecture specific function to walk the stack
+>   * @consume_entry:	Callback which is invoked by the architecture code for
+> diff --git a/kernel/stacktrace.c b/kernel/stacktrace.c
+> index 9ed5ce989415..2d0a2812e92b 100644
+> --- a/kernel/stacktrace.c
+> +++ b/kernel/stacktrace.c
+> @@ -79,7 +79,7 @@ struct stacktrace_cookie {
+>  	unsigned int	len;
+>  };
+>  
+> -static bool stack_trace_consume_entry(void *cookie, unsigned long addr)
+> +static bool stack_trace_consume_entry(void *cookie, struct frame_info *fi)
+>  {
+>  	struct stacktrace_cookie *c = cookie;
+>  
+> @@ -90,15 +90,15 @@ static bool stack_trace_consume_entry(void *cookie, unsigned long addr)
+>  		c->skip--;
+>  		return true;
+>  	}
+> -	c->store[c->len++] = addr;
+> +	c->store[c->len++] = fi->pc;
+>  	return c->len < c->size;
+>  }
+>  
+> -static bool stack_trace_consume_entry_nosched(void *cookie, unsigned long addr)
+> +static bool stack_trace_consume_entry_nosched(void *cookie, struct frame_info *fi)
+>  {
+> -	if (in_sched_functions(addr))
+> +	if (in_sched_functions(fi->pc))
+>  		return true;
+> -	return stack_trace_consume_entry(cookie, addr);
+> +	return stack_trace_consume_entry(cookie, fi);
+>  }
+>  
+>  /**
 > -- 
-> 2.35.2
-> 
+> 2.25.1
 > 
