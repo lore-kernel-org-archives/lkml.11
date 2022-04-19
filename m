@@ -2,102 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B60B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB73C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357197AbiDSSbb (ORCPT
+        id S1353292AbiDSSeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        Tue, 19 Apr 2022 14:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357364AbiDSS2D (ORCPT
+        with ESMTP id S1358169AbiDSSd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:28:03 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CE6101C
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:19:50 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id x24so4477498qtq.11
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:19:50 -0700 (PDT)
+        Tue, 19 Apr 2022 14:33:58 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082A546662
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:24:27 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id c15so21587182ljr.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:24:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zAEWfiSxwr2Il19zyqW+S8ONLOaXBz+c5Ud0bIaAXWg=;
-        b=IxLrn3O0wpui7HsyiCQ+VSsXdeY4MZ3MV2nsNb6ykBxKxnQTRond47N06Nn/FFNwsD
-         nMIA1MmhCc01FPfh1wQLL50iq/cDc9lGGGAgd/xCFqsw33CCu1LR3AVaO5aLrYK9e8EZ
-         IQ0hQ/DqZ1m8+bIN4qDI8h3ohDnQiZU09EURm+m8TrwJqN2Cog19Jrm6ovFmOWKmmiEQ
-         o77/l8blGpVO1bbfxN8nkqj4S9+EM1E4D6E/rjN5CcXMcBJ1UMvTEFw12fW4Im2+o42U
-         0KQPBDPaHp64UvPO7gkR34+aJY92TOeNMR6/uC5/rMjs2lRfZELEA4WYS3yRUe7l1Kub
-         ajwA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AsTN3hKy53tOQ0yC6mN5UWrEJyNRzz9niRjTVy3QZo8=;
+        b=pLPd3Ud5SWGgyZg65CkOgH1iVO3cAmCL0kj8iFG9FTiRUu1PjX6hIL2HCpjxtKjEW6
+         f0HISjf8DaCWmjJ6C2W/4soMJmEMMQvn4AeMwkrPVwUWyF+eJNc5RzGhBLGkvQI6HJwk
+         Ss9ScSdwcNCyt8Kp5C9pZwO5IMEeeGT/s/inSL2aFCr+ITKFgFK0BarvG8qkYXS77p/f
+         80DI5NUs/0BpOHda6Ip1uI2afHAhUKp56WAGjX4pgF6mhfLDA5jVZ0cRBdUufkMDzrYo
+         PeLKJfifrdlxsM5NKxHdVBiZKWu94hRx68UUJRLgg0O5XLz0e1ggBmzpCwdrE5Bqf1xq
+         UmUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zAEWfiSxwr2Il19zyqW+S8ONLOaXBz+c5Ud0bIaAXWg=;
-        b=uKjYoE+htMLyMKhJjxn0PCxxMzpLfNjC0JuX2+sySUrViEegOWnJ8A9bqKAoYztVnu
-         Ck6OV4P8jB5JcNu/iYZxHh9mtNwp0aXSxeKB0gxmBw/aNTtM6kjabKCjTvwBJGESAKZj
-         nTEaegShtCWyefuqAkjEyVnYVYs2dCUrh/uTuifXTSZtLLxJhI84jKyfBfQTYMdM+HxL
-         p1OPloZ2NuCz0WMkkhzOpYwk/T3n2mSKcJcIq98mWNBf5XxwIipuVB5kria64Vg3XYDD
-         J9Y8rHrCYsvkmQC2VrfbADqG+nVKTatkylmnloGHtGXxQl8DKgSAUc8xwaagap7Faj3j
-         Dvyw==
-X-Gm-Message-State: AOAM531oRS45qfzhKVaab0MbZM3WgC0KJ+hWO0tOGlX8sHDAR6LIrUdu
-        vylCNnBCSms1oJcOd6KHXM4=
-X-Google-Smtp-Source: ABdhPJyCQuDGwrjDv5Mynk98pWFI0CjX4ZZdb9g3WEcuWhKRC7H6R2h+Y3gBstV0smAuwS3n9aGr5w==
-X-Received: by 2002:ac8:7e89:0:b0:2f1:e3b4:d596 with SMTP id w9-20020ac87e89000000b002f1e3b4d596mr11701645qtj.432.1650392389685;
-        Tue, 19 Apr 2022 11:19:49 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme.wework.com ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id e126-20020a376984000000b0069c86b28524sm373334qkc.19.2022.04.19.11.19.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 11:19:49 -0700 (PDT)
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     Larry.Finger@lwfinger.net
-Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev, jhpark1013@gmail.com,
-        Alison Schofield <alison.schofield@intel.com>
-Subject: [PATCH v3 3/7] staging: r8188eu: remove 'added by' author comments
-Date:   Tue, 19 Apr 2022 14:19:34 -0400
-Message-Id: <dca590fd83ccf81b2ad2980eb00819e78ab0580e.1650392020.git.jhpark1013@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1650392020.git.jhpark1013@gmail.com>
-References: <cover.1650392020.git.jhpark1013@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AsTN3hKy53tOQ0yC6mN5UWrEJyNRzz9niRjTVy3QZo8=;
+        b=JNaSZ5Xo5uoSRIFJ+Vgg2plfh6N+xsy7O05qSmx8D+bgVaXFjvwB/C5BRkv0CrWIRY
+         ad76NjRHhqQPme87k8TmeZYdMDc2YlG0yDtmSz/OfS4DlQwgoSWnU+DbgdsO0echfuNQ
+         WiwTNbb903xokbWJAUfyawUzGtGIF+UZhl3PvwrplDQuiirM4kTxQ0OhaAavXvpsQEaA
+         ZC+JkDHaEQjo7yAy5jquzA6/nIHYXhdrKqXT6pAy34A6tNOgMNGyujHPa9KRXYaaPWcz
+         xPSnYYGvK4xhcDCb1/vfI6yiIJB9f0bwYt8amgRlKsaDipHtYsgTpEBy8vtOCF6dqFeS
+         RjJQ==
+X-Gm-Message-State: AOAM531zZa3x6Khq0o4AF8eTT/PMnMuoO7QbcgyLZJ9JLjku2lH3O0kI
+        iMPGt+2h2bJBr9Xwijtxs2+yE4hUpEDkkuqI3UHmGw==
+X-Google-Smtp-Source: ABdhPJwkSfr9pP2nwB9541Zh+TriNUNVh/fdYmxFU+HUUdAzi/nkK2G5Tx3EnrgDlc3XvoRpt4dfIepSPQxY6mOuYTw=
+X-Received: by 2002:a2e:9345:0:b0:24b:451:7ce1 with SMTP id
+ m5-20020a2e9345000000b0024b04517ce1mr10844943ljh.258.1650392665301; Tue, 19
+ Apr 2022 11:24:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220325232454.2210817-1-cmllamas@google.com>
+In-Reply-To: <20220325232454.2210817-1-cmllamas@google.com>
+From:   Todd Kjos <tkjos@google.com>
+Date:   Tue, 19 Apr 2022 11:24:13 -0700
+Message-ID: <CAHRSSEwC9hO-BPdYUGz_QF77bDJLWMJexaGV5+VhFYdrW-H64w@mail.gmail.com>
+Subject: Re: [PATCH] binder: hold fd_install until allocating fds first
+To:     Carlos Llamas <cmllamas@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Author comments "Added by Albert" and "Added by Annie" are sprinkled
-through the file. These comments are not useful and can be removed.
+On Fri, Mar 25, 2022 at 4:25 PM Carlos Llamas <cmllamas@google.com> wrote:
+>
+> Al noted in [1] that fd_install can't be undone, so it must come last in
+> the fd translation sequence, only after we've successfully reserved all
+> descriptors and copied them into the transaction buffer.
+>
+> This patch takes Al's proposed fix in [2] and makes a few tweaks to fold
+> the traversal of t->fd_fixups during release.
+>
+> [1] https://lore.kernel.org/driverdev-devel/YHnJwRvUhaK3IM0l@zeniv-ca.linux.org.uk
+> [2] https://lore.kernel.org/driverdev-devel/YHo6Ln9VI1T7RmLK@zeniv-ca.linux.org.uk
+>
+> Cc: Christian Brauner <christian.brauner@ubuntu.com>
+> Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+> Signed-off-by: Carlos Llamas <cmllamas@google.com>
 
-Suggested-by: Alison Schofield <alison.schofield@intel.com>
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_mlme.c | 4 ----
- 1 file changed, 4 deletions(-)
+Acked-by: Todd Kjos <tkjos@google.com>
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index 72963ed7b665..47f528c14b25 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -891,7 +891,6 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct adapter *padapter, str
- 			memset((u8 *)&psta->dot11txpn, 0, sizeof(union pn48));
- 			memset((u8 *)&psta->dot11rxpn, 0, sizeof(union pn48));
- 		}
--		/*	Commented by Albert 2012/07/21 */
- 		/*	When doing the WPS, the wps_ie_len won't equal to 0 */
- 		/*	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
- 		if (padapter->securitypriv.wps_ie_len != 0) {
-@@ -1610,9 +1609,6 @@ int rtw_restruct_wmm_ie(struct adapter *adapter, u8 *in_ie, u8 *out_ie, uint in_
- 	return ielength;
- }
- 
--/*  */
--/*  Ported from 8185: IsInPreAuthKeyList(). (Renamed from SecIsInPreAuthKeyList(), 2006-10-13.) */
--/*  Added by Annie, 2006-05-07. */
- /*  */
- /*  Search by BSSID, */
- /*  Return Value: */
--- 
-2.25.1
-
+> ---
+>  drivers/android/binder.c          | 34 ++++++++++++-------------------
+>  drivers/android/binder_internal.h |  2 ++
+>  2 files changed, 15 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> index 8351c5638880..bfadc0c4a442 100644
+> --- a/drivers/android/binder.c
+> +++ b/drivers/android/binder.c
+> @@ -1481,6 +1481,8 @@ static void binder_free_txn_fixups(struct binder_transaction *t)
+>
+>         list_for_each_entry_safe(fixup, tmp, &t->fd_fixups, fixup_entry) {
+>                 fput(fixup->file);
+> +               if (fixup->target_fd >= 0)
+> +                       put_unused_fd(fixup->target_fd);
+>                 list_del(&fixup->fixup_entry);
+>                 kfree(fixup);
+>         }
+> @@ -2220,6 +2222,7 @@ static int binder_translate_fd(u32 fd, binder_size_t fd_offset,
+>         }
+>         fixup->file = file;
+>         fixup->offset = fd_offset;
+> +       fixup->target_fd = -1;
+>         trace_binder_transaction_fd_send(t, fd, fixup->offset);
+>         list_add_tail(&fixup->fixup_entry, &t->fd_fixups);
+>
+> @@ -4067,10 +4070,9 @@ static int binder_wait_for_work(struct binder_thread *thread,
+>   * Now that we are in the context of the transaction target
+>   * process, we can allocate and install fds. Process the
+>   * list of fds to translate and fixup the buffer with the
+> - * new fds.
+> + * new fds first and only then install the files.
+>   *
+> - * If we fail to allocate an fd, then free the resources by
+> - * fput'ing files that have not been processed and ksys_close'ing
+> + * If we fail to allocate an fd, skip the install and release
+>   * any fds that have already been allocated.
+>   */
+>  static int binder_apply_fd_fixups(struct binder_proc *proc,
+> @@ -4087,41 +4089,31 @@ static int binder_apply_fd_fixups(struct binder_proc *proc,
+>                                      "failed fd fixup txn %d fd %d\n",
+>                                      t->debug_id, fd);
+>                         ret = -ENOMEM;
+> -                       break;
+> +                       goto err;
+>                 }
+>                 binder_debug(BINDER_DEBUG_TRANSACTION,
+>                              "fd fixup txn %d fd %d\n",
+>                              t->debug_id, fd);
+>                 trace_binder_transaction_fd_recv(t, fd, fixup->offset);
+> -               fd_install(fd, fixup->file);
+> -               fixup->file = NULL;
+> +               fixup->target_fd = fd;
+>                 if (binder_alloc_copy_to_buffer(&proc->alloc, t->buffer,
+>                                                 fixup->offset, &fd,
+>                                                 sizeof(u32))) {
+>                         ret = -EINVAL;
+> -                       break;
+> +                       goto err;
+>                 }
+>         }
+>         list_for_each_entry_safe(fixup, tmp, &t->fd_fixups, fixup_entry) {
+> -               if (fixup->file) {
+> -                       fput(fixup->file);
+> -               } else if (ret) {
+> -                       u32 fd;
+> -                       int err;
+> -
+> -                       err = binder_alloc_copy_from_buffer(&proc->alloc, &fd,
+> -                                                           t->buffer,
+> -                                                           fixup->offset,
+> -                                                           sizeof(fd));
+> -                       WARN_ON(err);
+> -                       if (!err)
+> -                               binder_deferred_fd_close(fd);
+> -               }
+> +               fd_install(fixup->target_fd, fixup->file);
+>                 list_del(&fixup->fixup_entry);
+>                 kfree(fixup);
+>         }
+>
+>         return ret;
+> +
+> +err:
+> +       binder_free_txn_fixups(t);
+> +       return ret;
+>  }
+>
+>  static int binder_thread_read(struct binder_proc *proc,
+> diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
+> index d6b6b8cb7346..cf70a104594d 100644
+> --- a/drivers/android/binder_internal.h
+> +++ b/drivers/android/binder_internal.h
+> @@ -515,6 +515,7 @@ struct binder_thread {
+>   * @fixup_entry:          list entry
+>   * @file:                 struct file to be associated with new fd
+>   * @offset:               offset in buffer data to this fixup
+> + * @target_fd:            fd to use by the target to install @file
+>   *
+>   * List element for fd fixups in a transaction. Since file
+>   * descriptors need to be allocated in the context of the
+> @@ -525,6 +526,7 @@ struct binder_txn_fd_fixup {
+>         struct list_head fixup_entry;
+>         struct file *file;
+>         size_t offset;
+> +       int target_fd;
+>  };
+>
+>  struct binder_transaction {
+> --
+> 2.35.1.1021.g381101b075-goog
+>
