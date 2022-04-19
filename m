@@ -2,109 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC70C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59204C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350102AbiDSMii (ORCPT
+        id S1351560AbiDSMil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
+        Tue, 19 Apr 2022 08:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbiDSMig (ORCPT
+        with ESMTP id S1348310AbiDSMii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:38:36 -0400
-X-Greylist: delayed 1387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 05:35:51 PDT
-Received: from ppsw-41.csi.cam.ac.uk (ppsw-41.csi.cam.ac.uk [131.111.8.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC4E1573B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:35:51 -0700 (PDT)
-X-Cam-AntiVirus: no malware found
-X-Cam-ScannerInfo: https://help.uis.cam.ac.uk/email-scanner-virus
-Received: from hades.srcf.societies.cam.ac.uk ([131.111.179.67]:56344)
-        by ppsw-41.csi.cam.ac.uk (ppsw.cam.ac.uk [131.111.8.139]:25)
-        with esmtps (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        id 1ngmiN-000usy-QF (Exim 4.95)
-        (return-path <amc96@srcf.net>);
-        Tue, 19 Apr 2022 13:12:15 +0100
-Received: from [192.168.1.10] (host-92-26-109-251.as13285.net [92.26.109.251])
-        (Authenticated sender: amc96)
-        by hades.srcf.societies.cam.ac.uk (Postfix) with ESMTPSA id 7565F1FAD5;
-        Tue, 19 Apr 2022 13:12:14 +0100 (BST)
-Message-ID: <8fbbd4ca-54b1-8c1c-19bc-3d0e6044ff5d@srcf.net>
-Date:   Tue, 19 Apr 2022 13:12:14 +0100
+        Tue, 19 Apr 2022 08:38:38 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C31C2E9D2;
+        Tue, 19 Apr 2022 05:35:52 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id bv19so32619508ejb.6;
+        Tue, 19 Apr 2022 05:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BaNLhQu+QWWvZbpDFGtXSt3/5W9s0AKclZhaLjx4Bo8=;
+        b=F7wPvxjsI3taT1eprbvJq5aN0oQ/3ONZTdNjhmhmAq9MYhceoNcHAeXrl2o7mHbafY
+         bTZYbVi1qbJ9TFn3DtwyH540d6Ps+YRQxT4hlakrN/dkb6lKuWVS9cLgKO/ta6qLHn/a
+         i2yF31VlQKf3hYHa6NOehBJNkgm00T3oUfJsOTkeAD8d8xGaYOsHy0Ax59P8OU74xTMe
+         dsAJKkJ87Y5ugq0p3INoX8datsKRKAJ5Od1zeqb0RDifG8E03ApGz1uuU3CVnnfHbZ/P
+         VYxSvN/vdOkoknlTL/c7CeKvMvaPmXKa6/8pK9tqimsRgBkp6Oey8IXVil+H6r4PsW5K
+         zvDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BaNLhQu+QWWvZbpDFGtXSt3/5W9s0AKclZhaLjx4Bo8=;
+        b=NRzUSVHR+7ziG/EcHZjlx6xonv3VwJKPKlcu/1bgZYYfq1u9CByTkbwP4JGwx8tmhS
+         /h1tLFqf/VPhiJw8wPjuPtdcWxzIrdykCEw30i86zU7IvdPjEbaZuupTnsBqEt4ARX5j
+         8y9og/DWt217WpGrJmiKQIIYV1KL4QAxDJXRFUNerBPZnrCp1qq1+F0ugK1Vwhjdjrsa
+         WtEnVaDURj1baOMJav57mwDtpgSZXL+Aw0+iqwRxGKNl8tCuULlHr36T/QYh/XFxpDAH
+         8KBRLWnTRM97S1FoTZxAWZwF8iwrc5sgXzbHNurr315DxgbQAFs8jGc/ULKSH6WGhHvg
+         ihVA==
+X-Gm-Message-State: AOAM530CFEwgm/8qZrw1+iQ+nyYpEp7Vu9ZoV7mvuI6fcg5VexfwL1YN
+        x38iK1M7hIDz53G/5fODM7Q=
+X-Google-Smtp-Source: ABdhPJzMKqFT9NsTEuV6XDc1/i5YPbX23EMYYcdpp9FAwsphV2nOFI2phUGBoYRO1oH977BD5TSmSg==
+X-Received: by 2002:a17:907:1c2a:b0:6ef:e251:1611 with SMTP id nc42-20020a1709071c2a00b006efe2511611mr2186451ejc.532.1650371750557;
+        Tue, 19 Apr 2022 05:35:50 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id fq6-20020a1709069d8600b006e891c0b7e0sm5568898ejc.129.2022.04.19.05.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 05:35:49 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        SeongJae Park <sj@kernel.org>,
+        Jiajian Ye <yejiajian2018@email.szu.edu.cn>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        outreachy@lists.linux.dev, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Documentation/vm: Include kernel-doc from highmem-internal.h
+Date:   Tue, 19 Apr 2022 14:35:48 +0200
+Message-ID: <2824835.e9J7NaK4W3@leap>
+In-Reply-To: <Yl3Z8Qll+zGo4v/D@iweiny-desk3>
+References: <20220418081740.21001-1-fmdefrancesco@gmail.com> <Yl3Z8Qll+zGo4v/D@iweiny-desk3>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 06/25] x86/xen: Add ANNOTATE_ENDBR to startup_xen()
-Content-Language: en-GB
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-References: <cover.1650300597.git.jpoimboe@redhat.com>
- <a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com>
- <b94cbac6-0a4d-8e4a-ec58-bbd46e385d45@citrix.com>
- <20220419115737.GU2731@worktop.programming.kicks-ass.net>
-From:   Andrew Cooper <amc96@srcf.net>
-In-Reply-To: <20220419115737.GU2731@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/04/2022 12:57, Peter Zijlstra wrote:
-> On Tue, Apr 19, 2022 at 11:42:12AM +0000, Andrew Cooper wrote:
->> On 18/04/2022 17:50, Josh Poimboeuf wrote:
->>> The startup_xen() kernel entry point is referenced by the ".note.Xen"
->>> section, but is presumably not indirect-branched to.
->> It's the real entrypoint of the VM.  It's "got to" by setting %rip
->> during vcpu setup.
->>
->> We could in principle support starting a PV VM with CET active, but that
->> sounds like an enormous quantity of effort for very little gain.  CET
->> for Xen PV requires paravirt anyway (because the kernel runs in CPL!=0)
->> so decisions like this can wait until someone feels like doing the work.
->>
->>>   Add ANNOTATE_ENDBR
->>> to silence future objtool warnings.
->>>
->>> Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
->>> Cc: Juergen Gross <jgross@suse.com>
->>> Cc: Stefano Stabellini <sstabellini@kernel.org>
->>> Cc: xen-devel@lists.xenproject.org
->>> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
->> FWIW, Reviewed-by: Andrew Cooper <andrew.cooper3@citrix.com>, preferably
->> with the commit message tweaked to remove the uncertainty.
-> Something like so then?
->
-> ---
-> Subject: x86/xen: Add ANNOTATE_ENDBR to startup_xen()
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
-> Date: Mon, 18 Apr 2022 09:50:25 -0700
->
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
->
-> The startup_xen() kernel entry point is referenced by the ".note.Xen"
-> section, and is the real entry point of the VM. It *will* be
-> indirectly branched to, *however* currently Xen doesn't support PV VM
-> with CET active.
+On luned=C3=AC 18 aprile 2022 23:36:49 CEST Ira Weiny wrote:
+> On Mon, Apr 18, 2022 at 10:17:40AM +0200, Fabio M. De Francesco wrote:
+> > In Documentation/vm/highmem.rst the kernel-doc comments are missing,
+> > therefore kunmap_local() and kunmap_atomic() are yet undocumented.
+> >=20
+> > Add a kernel-doc directive to include the above-mentioned kernel-doc
+> > comments in highmem.rst.
+> >=20
+> > Cc: Jonathan Corbet <corbet@lwn.net>
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Ira Weiny <ira.weiny@intel.com>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+>=20
+> I thought I saw a patch fly by which changed the comment of=20
+kunmap_atomic() in
+> include/linux/highmem-internal.h?  Did I miss that somewhere?
 
-Technically it's always IRET'd to, but the point is that it's never
-"branched to" by the execution context of the VM.
+Sorry, in my other email I responded after misunderstanding your question=20
+because I had just noticed a typo so that I had something else in my mind.
 
-So it would be better to say that it's never indirectly branched to. 
-That's what the IBT checks care about.
+It looks that you are talking about the following patch and, if so, you saw=
+=20
+it correctly:
 
->
-> Add ANNOTATE_ENDBR to silence future objtool warnings.
+"[PATCH v2] mm/highmem: Fix kernel-doc warnings in highmem*.h" at=20
+https://lore.kernel.org/lkml/20220418175638.30018-1-fmdefrancesco@gmail.com/
 
-Only just spotted.  All text in the subject and commit message needs
-s/ENDBR/NOENDBR/
+I forgot to send it to the Outreachy list. I'm about to resend it only to=20
+this list in order to make Outreachy's organizers to know about it. For v1=
+=20
+already had an "Acked-by:" tag from Mike Rapoport.
 
-~Andrew
+Thanks,
+
+=46abio M. De Francesco
+
+
