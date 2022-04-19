@@ -2,61 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F17C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356438AbiDSSPQ (ORCPT
+        id S1356418AbiDSSPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50882 "EHLO
+        Tue, 19 Apr 2022 14:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356372AbiDSSO5 (ORCPT
+        with ESMTP id S1356409AbiDSSPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D556D3DDCF;
-        Tue, 19 Apr 2022 11:11:56 -0700 (PDT)
+        Tue, 19 Apr 2022 14:15:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549E63E0D2;
+        Tue, 19 Apr 2022 11:12:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E26DB818E0;
-        Tue, 19 Apr 2022 18:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CD87C385A7;
-        Tue, 19 Apr 2022 18:11:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD81460C87;
+        Tue, 19 Apr 2022 18:12:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C567C385A9;
+        Tue, 19 Apr 2022 18:11:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650391914;
-        bh=VZzwy19iC7YJm1kTY0EyD2FLrXjSzogP6pPLimC+ZCM=;
+        s=k20201202; t=1650391921;
+        bh=qmlk7RokZF/lJHMgXkXxFzwtYZ21SxX7MjgtQRqnqr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E2LRF0lTQF5SU+33fCdEosYrVKk2i7H6MNqQFYFxBeTSAmvN52kaHG76sgizTA3vN
-         TQZ7+2/O+p3M4cKm5ECXuUTxadXN5r1IbxS3tdwCOw28C66iXN5kjH5iCn1oo2rmVb
-         q1gZTRi/GzKXagOtPTx6Y2YBDgoic20AEFczPzDv6n+FhQ/XBPZfUmpNflZTnM7CYB
-         fRFhA+ChFhmwvEiYpezINeZ0qLfFJWyZxiLZCJrZcw0lRmlH3u/1m4j2cYMjWFxvvr
-         1W/5vUSwJaVulTA+Q7FRcZZRqam4NHl5xq6Ry/SC25XKp8+RcAYmupDl6mXeaSXydB
-         T7ieb0mwM1HVQ==
+        b=mdRrhcdqSPYJXZCooCxECQpKENP85LmVSmiDwpMvKOzsnkXLuov557W+tFy+3HDsf
+         8B38zxjwrz9Ji6i1QvR6WDdRnArPk9VrUHHb+Vpw+5oJTSh3mBlmQhT5XWvscwjeru
+         IGBapjKTTLGvGztD8FIXln7+l4Fp9CCiOUbdEGjvSiKjRjXp53ebmu67QN4OcN0buE
+         OV6v0LysYickXqjesYC2ATvQXEUY2qMNKOJuZMa3J65hhWQdMXmxIL8oFwMvcSPvqw
+         UOHZl5YRffigTNSfZpS/tPmFAf/8H0M83LAgK+VF+nBENOOApY981eZc5gY6xVmd84
+         JSFgfY7hh80rQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>, lorenzo@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        christophe.jaillet@wanadoo.fr,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 15/34] mt76: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 19 Apr 2022 14:10:42 -0400
-Message-Id: <20220419181104.484667-15-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 17/34] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
+Date:   Tue, 19 Apr 2022 14:10:44 -0400
+Message-Id: <20220419181104.484667-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
 References: <20220419181104.484667-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -64,51 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit dbc2b1764734857d68425468ffa8486e97ab89df ]
+[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
 
-Fix:
+Both of of_get_parent() and of_parse_phandle() return node pointer with
+refcount incremented, use of_node_put() on it to decrease refcount
+when done.
 
-  drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function ‘mt76x2e_probe’:
-  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_946’ \
-	declared with attribute error: FIELD_PREP: mask is not constant
-    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>
-Cc: Shayne Chen <shayne.chen@mediatek.com>
-Cc: Sean Wang <sean.wang@mediatek.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-index 8a22ee581674..df85ebc6e1df 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+index 763d2c7b5fb1..5750f9a56393 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
+ 	info->phc_index = -1;
  
- 	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
--	mt76_rmw_field(dev, 0x15a0c, 0xf << 28, 0xf);
-+	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
+ 	fman_node = of_get_parent(mac_node);
+-	if (fman_node)
++	if (fman_node) {
+ 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
++		of_node_put(fman_node);
++	}
  
- 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
- 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
+-	if (ptp_node)
++	if (ptp_node) {
+ 		ptp_dev = of_find_device_by_node(ptp_node);
++		of_node_put(ptp_node);
++	}
+ 
+ 	if (ptp_dev)
+ 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
