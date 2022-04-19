@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3EBC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357433AbiDSS2I (ORCPT
+        id S1344565AbiDSS3H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
+        Tue, 19 Apr 2022 14:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357560AbiDSSXa (ORCPT
+        with ESMTP id S1356877AbiDSSWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:23:30 -0400
+        Tue, 19 Apr 2022 14:22:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA6944762;
-        Tue, 19 Apr 2022 11:16:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7CA3EB98;
+        Tue, 19 Apr 2022 11:14:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45C50B818CE;
-        Tue, 19 Apr 2022 18:16:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D11C385A7;
-        Tue, 19 Apr 2022 18:16:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FC01B81983;
+        Tue, 19 Apr 2022 18:14:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F79C385B0;
+        Tue, 19 Apr 2022 18:14:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392192;
-        bh=j0gl3vwHeaKb2MMhrqnV3OYaEofGRoT5zWN/DeGK2dI=;
+        s=k20201202; t=1650392065;
+        bh=l9uC7Jd/JtduUprt9DTiagtw6UvvCPakC11dX7OhYYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KDeN35OwyXzfUo43pXNVd1WyPvRnH7SIX5slNqiZKALZAS+bdbAkDm8Ry+J2Gp5Ja
-         70hq/NiKu5r+6r87ZiOtfIbAwXnNpNMiCD7b90nKObMdiH7z4aroCmpw/nb3eQeSNQ
-         HgxRAMXPVLrzLfbvhhseGvvRyrRFXIW1wt4pP1orvvQCaAuAZztClHPK44sRRJXeuX
-         p3krHp+3rta2+WV1wKp9gA49el/9yOjDRZt870dZIBwfJil3nAqzZu6aqPGgLANgWh
-         nMFA9UsNs3rG5AH50B/oFwtnmduBUKtkW8o9VmN2lC7/NXZ5cIB4GNSnKUD5bGuk3O
-         XsEnLJr3ctpZw==
+        b=Gn4ckzZxCo8iov6EBz/bn/K81vr0ZYNC3W2kdQmmsUG3FpWCyH/b6fPahyTbC4aAg
+         qwBPqllT3SoT0gVxi0qVtC5KAU6r21oOhvmmGZ7yqE1uyu+W7b/r0kWLrplpnLLjkd
+         KlKXcJr059N7PUI/Pn5RKBtirkqBqOBoZLT1t9jaYs4E8PPbpWtvEKe557mWMLExlX
+         fCBBb2PHd772bT2ehlJ6tMJqihCBs/914+psJJGdMYmUSOVgCtk5vjswawthBlo4BR
+         fpeb65vwrUq19TYlt0VYL+ZuTlgqNbFqB8wi1S5XckrZNemR++yKjv+hhHaUK4DzFS
+         ktXHY83Nwp7eQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 3/7] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 19 Apr 2022 14:16:21 -0400
-Message-Id: <20220419181625.486476-3-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 11/18] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
+Date:   Tue, 19 Apr 2022 14:13:45 -0400
+Message-Id: <20220419181353.485719-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181625.486476-1-sashal@kernel.org>
-References: <20220419181625.486476-1-sashal@kernel.org>
+In-Reply-To: <20220419181353.485719-1-sashal@kernel.org>
+References: <20220419181353.485719-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,43 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
+[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
 
-Fix:
+Both of of_get_parent() and of_parse_phandle() return node pointer with
+refcount incremented, use of_node_put() on it to decrease refcount
+when done.
 
-  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
-  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
-    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
-    ^~~~
-
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-[ A slight correction with parentheses around the argument by tiwai ]
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/usbaudio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
-index 62456a806bb4..4b8f1c46420d 100644
---- a/sound/usb/usbaudio.h
-+++ b/sound/usb/usbaudio.h
-@@ -22,7 +22,7 @@
-  */
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+index 1268996b7030..2f9075429c43 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
+ 	info->phc_index = -1;
  
- /* handling of USB vendor/product ID pairs as 32-bit numbers */
--#define USB_ID(vendor, product) (((vendor) << 16) | (product))
-+#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
- #define USB_ID_VENDOR(id) ((id) >> 16)
- #define USB_ID_PRODUCT(id) ((u16)(id))
+ 	fman_node = of_get_parent(mac_node);
+-	if (fman_node)
++	if (fman_node) {
+ 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
++		of_node_put(fman_node);
++	}
  
+-	if (ptp_node)
++	if (ptp_node) {
+ 		ptp_dev = of_find_device_by_node(ptp_node);
++		of_node_put(ptp_node);
++	}
+ 
+ 	if (ptp_dev)
+ 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
