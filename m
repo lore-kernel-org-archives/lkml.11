@@ -2,73 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C86C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6777C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347512AbiDSMN3 (ORCPT
+        id S1349847AbiDSMOa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        Tue, 19 Apr 2022 08:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349864AbiDSMMS (ORCPT
+        with ESMTP id S1352435AbiDSMNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:12:18 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF0636150;
-        Tue, 19 Apr 2022 05:07:00 -0700 (PDT)
-Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id DBDDD25B;
-        Tue, 19 Apr 2022 14:06:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1650370018;
-        bh=0Xeowu0RhaZtA8PPIHf6S0q1sgEvMK0EbPNkXmVElWU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=QD4vRkbtdEt/jjwbeO5ht1/C2/Ay4r7c43mTcue5NwcNvy/ZCkIqsSWtGB2es2ScJ
-         F6CXO/c1XKEcqcsHT4DxDsRJ9e/GgFFw10M+JTRAiGlG6QEQP2bNWV0GR8vvGTVMkI
-         1AtdzPj6b2AfYmbhkEJ83H1Vi0wtF56c9pbxCrdc=
-Message-ID: <9e848e84-a31f-98ec-ed6b-c1dce022723b@ideasonboard.com>
-Date:   Tue, 19 Apr 2022 15:06:54 +0300
+        Tue, 19 Apr 2022 08:13:11 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050401025;
+        Tue, 19 Apr 2022 05:09:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=p1qe2cc9fGQ4Cq/TIt8sYh6UO6XH4bt91ZJ+fYPid2I=; b=xTFxj9ItrBXoR9UauJlfU24V50
+        sC/t7rVLFKj05mTK2Pz+TlpuOMffirrHAnl2wWTtGcg6mOd11bt+33zEmM7xdJHA2AQbTl0he3CJx
+        dz6H3kZYOzYhBNykq4jwoUn5v6K6fc0bVYiVYLEURCZcBc5ZklD1CZPlMW1fSVrNsaB0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ngmfC-00GUbO-54; Tue, 19 Apr 2022 14:08:58 +0200
+Date:   Tue, 19 Apr 2022 14:08:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, nico@fluxnic.net,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/4] ARM: dts: mvebu: Update mvsdio node names to
+ match schema
+Message-ID: <Yl6mWsiGJVYh6m4l@lunn.ch>
+References: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
+ <20220419024611.1327525-2-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/2] Update register & interrupt info in am65x DSS
-Content-Language: en-US
-To:     Aradhya Bhatia <a-bhatia1@ti.com>, Jyri Sarha <jyri.sarha@iki.fi>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Devicetree <devicetree@vger.kernel.org>,
-        Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Nikhil Devshatwar <nikhil.nd@ti.com>
-References: <20220419070302.16502-1-a-bhatia1@ti.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <20220419070302.16502-1-a-bhatia1@ti.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419024611.1327525-2-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/04/2022 10:03, Aradhya Bhatia wrote:
-> The Display SubSystem IP on the ti's am65x soc has an additional
-> register space "common1" and services a maximum of 2 interrupts.
+On Tue, Apr 19, 2022 at 02:46:08PM +1200, Chris Packham wrote:
+> Update the node names of the mvsdio@ interfaces to be mmc@ to match the
+> node name enforced by the mmc-controller.yaml schema.
 > 
-> The first patch in the series adds the required updates to the yaml
-> file. The second patch then reflects the yaml updates in the DSS DT
-> node of am65x soc.
-> 
-> Aradhya Bhatia (2):
->    dt-bindings: display: ti,am65x-dss: Add missing register & interrupt
->    arm64: dts: ti: k3-am65: Add missing register & interrupt in DSS node
-> 
->   .../devicetree/bindings/display/ti/ti,am65x-dss.yaml   | 10 +++++++---
->   arch/arm64/boot/dts/ti/k3-am65-main.dtsi               |  6 ++++--
->   2 files changed, 11 insertions(+), 5 deletions(-)
-> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 
-Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-How are you planning to use the common1 area?
-
-  Tomi
+    Andrew
