@@ -2,123 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346012AbiDSMpR (ORCPT
+        id S1345459AbiDSMqz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        Tue, 19 Apr 2022 08:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352366AbiDSMpM (ORCPT
+        with ESMTP id S234437AbiDSMqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:45:12 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1BC36E0E;
-        Tue, 19 Apr 2022 05:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=VPo0pGY4v9eEQhd6+pxXM+SOE4qpAR3z9n5HKjXfKDE=; b=1YC9dPEOG1ouCNKKEVBfcZyuyO
-        fVooB6ee9AScE7UxtvnYu5aGqovywK9m/tKd6O8hBmWHR12uFwxlFwiKzstkBlZy8zd87/i/F/ZxK
-        JW11PdX61X4EGBhdIDPsmT8hZaKeHnFY+haCbtOlY5IX4mCMqCLBlcsVslTOCuRGg/4k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ngnBV-00GUvG-GS; Tue, 19 Apr 2022 14:42:21 +0200
-Date:   Tue, 19 Apr 2022 14:42:21 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, UNGLinuxDriver@microchip.com,
-        richardcochran@gmail.com
-Subject: Re: [RFC PATCH net-next 2/2] net: phy: micrel: Implement
- set/get_adj_latency for lan8814
-Message-ID: <Yl6uLbhB4tNhN/Ld@lunn.ch>
-References: <20220419083704.48573-1-horatiu.vultur@microchip.com>
- <20220419083704.48573-3-horatiu.vultur@microchip.com>
+        Tue, 19 Apr 2022 08:46:52 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17FE369FD
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:44:09 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 621125C01E6;
+        Tue, 19 Apr 2022 08:44:09 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 19 Apr 2022 08:44:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1650372249; x=1650458649; bh=Qq/UOm8yAY
+        qIo9R+oNyskcDN1bISCRnifsESqPXRXqM=; b=p201mqdZqtHqRbdRbaJon0PCjT
+        k613N+9JcNU/LhVygOZYbe9uIAU/pWoy+Df0P0Dvo/ji4gOdH9yV0GmAzgG5lbFF
+        PIPPFNZlQWr8wUFZpE8IlxVnT8ki7pLitSaewxBY2h4mzccKEI/GjzViXSd8A87w
+        jK/HB63MA75DZvaNZRxdsqGq//p7PFYZEXBSg9L/9rwdmA+wiNLjw4I5PbJkPzUz
+        QpDEcBIxcsiqVMjotwfaw66uzbZe0uVgxrFzoe07beC8cbffvysix9S9wj6Q7EB5
+        zu7fSd2qc//onBm+0DCz9y7M4PvY8U7edMoYnadT8Dxd4sywx8uaFnrnol/A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1650372249; x=
+        1650458649; bh=Qq/UOm8yAYqIo9R+oNyskcDN1bISCRnifsESqPXRXqM=; b=n
+        MnCkWXihgtITSTFysFLOA/Ux9ur3YAH8S8JC1BPrZv0Y4vzRIwEZkPMpTbPj60mD
+        vHtHOuX4Rc36Ht8UlqEmE1COTknqJosV2B2b4CFzgaFgXpIHimqVpq1UDIiRWvqr
+        YLW1nSBH0k3E7EwBVk7Tm6NuM6fDVDwBHbXlpLwxVZUbjeivsp2bMaoRqMSN+H3I
+        mTy8T2NTbITbynyj5pmzl4NidsO0Se19dDjo6nooyg1E2awWuZBVgyx/nFtugkHP
+        pJrXsiCSpqGuZaJYsKvVWpP8VAy1DznsZQs7jmFbt23Pl0ZzDkUL82P2Dl/CXhti
+        1Mn7avsNW8gL+SHHeRxaQ==
+X-ME-Sender: <xms:ma5eYuBZy-kbm24E2L5IYoMA4bzvzR0D_CJ1GEa8AcNUjz7chOMSOQ>
+    <xme:ma5eYoigyqC1RLcSnfvfcXi9ieSDhgkxd7EpLQ5o0Pe4FXmW-DdiEc8964y_5Za1j
+    AP2v1qcMMWLEU3GNIw>
+X-ME-Received: <xmr:ma5eYhniQGdlSDqdeXmlHv84otLLEISPeeZXA23eW1QbXvfYEtO8_Sud473U8WblnibJ70yvW-ya1jBIlRkjnq70ij7l70lm7bhdKrs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvddtfedgheehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:ma5eYswmsqMerwBfeqoxyNzAoX-GE28LukokYsP8VAwR-Qh59YgTLg>
+    <xmx:ma5eYjSRCapQpog9ZJhJhUh5q48xI1JaRJL17AdNi-C8lPArJCfegQ>
+    <xmx:ma5eYnYnXnOVYcAhios0YM2lhCnGzqerDHmReWdh1n_RTL-MSfHheA>
+    <xmx:ma5eYkKe1iqeSbGxt4zlNZx2b0jt3K3TJTsDwL5K-D7h8uXRiaEAWQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 19 Apr 2022 08:44:08 -0400 (EDT)
+Date:   Tue, 19 Apr 2022 14:44:07 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Eric Anholt <eric@anholt.net>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm/vc4: Fix pm_runtime_get_sync() error checking
+Message-ID: <20220419124407.ugzl7hknsytbhrmr@houat>
+References: <20220412070458.21819-1-linmq006@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uztsba55upz7amoc"
 Content-Disposition: inline
-In-Reply-To: <20220419083704.48573-3-horatiu.vultur@microchip.com>
+In-Reply-To: <20220412070458.21819-1-linmq006@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 10:37:04AM +0200, Horatiu Vultur wrote:
-> The lan8814 driver supports adjustments of the latency in the silicon
-> based on the speed and direction, therefore implement set/get_adj_latency
-> to adjust the HW.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+
+--uztsba55upz7amoc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Tue, Apr 12, 2022 at 07:04:57AM +0000, Miaoqian Lin wrote:
+> If the device is already in a runtime PM enabled state
+> pm_runtime_get_sync() will return 1, so a test for negative
+> value should be used to check for errors.
+>=20
+> Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 > ---
->  drivers/net/phy/micrel.c | 87 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 87 insertions(+)
-> 
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index 96840695debd..099d1ecd6dad 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -120,6 +120,15 @@
->  #define PTP_TIMESTAMP_EN_PDREQ_			BIT(2)
->  #define PTP_TIMESTAMP_EN_PDRES_			BIT(3)
->  
-> +#define PTP_RX_LATENCY_1000			0x0224
-> +#define PTP_TX_LATENCY_1000			0x0225
-> +
-> +#define PTP_RX_LATENCY_100			0x0222
-> +#define PTP_TX_LATENCY_100			0x0223
-> +
-> +#define PTP_RX_LATENCY_10			0x0220
-> +#define PTP_TX_LATENCY_10			0x0221
-> +
->  #define PTP_TX_PARSE_L2_ADDR_EN			0x0284
->  #define PTP_RX_PARSE_L2_ADDR_EN			0x0244
->  
-> @@ -208,6 +217,16 @@
->  #define PTP_TSU_INT_STS_PTP_RX_TS_OVRFL_INT_	BIT(1)
->  #define PTP_TSU_INT_STS_PTP_RX_TS_EN_		BIT(0)
->  
-> +/* Represents the reset value of the latency registers,
-> + * The values are express in ns
-> + */
-> +#define LAN8814_RX_10_LATENCY			8874
-> +#define LAN8814_TX_10_LATENCY			11850
-> +#define LAN8814_RX_100_LATENCY			2346
-> +#define LAN8814_TX_100_LATENCY			705
-> +#define LAN8814_RX_1000_LATENCY			429
-> +#define LAN8814_TX_1000_LATENCY			201
-> +
->  /* PHY Control 1 */
->  #define MII_KSZPHY_CTRL_1			0x1e
->  #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
-> @@ -2657,6 +2676,72 @@ static int lan8804_config_init(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int lan8814_set_adj_latency(struct phy_device *phydev,
-> +				   enum ethtool_link_mode_bit_indices link_mode,
-> +				   s32 rx, s32 tx)
-> +{
-> +	switch (link_mode) {
-> +	case ETHTOOL_LINK_MODE_10baseT_Half_BIT:
-> +	case ETHTOOL_LINK_MODE_10baseT_Full_BIT:
-> +		rx += LAN8814_RX_10_LATENCY;
-> +		tx += LAN8814_TX_10_LATENCY;
-> +		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_10, rx);
-> +		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_10, tx);
+>  drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+> index 752f921735c6..26aa7d1fa421 100644
+> --- a/drivers/gpu/drm/vc4/vc4_dsi.c
+> +++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+> @@ -847,7 +847,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder=
+ *encoder)
+>  	int ret;
+> =20
+>  	ret =3D pm_runtime_get_sync(dev);
+> -	if (ret) {
+> +	if (ret < 0) {
+>  		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->variant->port=
+);
+>  		return;
+>  	}
 
-It is not ideal that the user sees an entry for both link modes X and
-X+1 in your file, and that writing to link mode X magically also
-changes X+1.
+We also don't put back our reference after an error. I think a better
+fix would be to switch to pm_runtime_resume_and_get.
 
-I'm not sure there is anything you can do about this in a generic
-implementation, so you at least need to document it in sysfs.
+Maxime
 
-What about range checks? I can pass 32764 as an rx delay, which when
-added to PTP_RX_LATENCY_10=0x0220 is going to wrap around and be
-negative.
+--uztsba55upz7amoc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-		Andrew
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYl6ulwAKCRDj7w1vZxhR
+xWMdAP0VKWdkPdp6eRfSc4/lPac9MGFErgPN7HCtHcYKnTtV6AEA7oCtUCIDSMHJ
+mfz5mdgSRKw8zc3op1i2em3Vr8h6kgQ=
+=Lm9X
+-----END PGP SIGNATURE-----
+
+--uztsba55upz7amoc--
