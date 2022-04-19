@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA69C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D034C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355687AbiDSRLB (ORCPT
+        id S1355902AbiDSRLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
+        Tue, 19 Apr 2022 13:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355643AbiDSRJ4 (ORCPT
+        with ESMTP id S1355655AbiDSRJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 13:09:56 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE02E0F7
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006F611A30
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1650388030; x=1681924030;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=qf9xNshiJlT4pUpMy4BR/enTPIkN1TfITI3Rx0+jKd0=;
-  b=eU0hVwuKY2MekCinKD7zEdlmMrN5s4AKXw5y67VrkWMwlbgtL5RKugqV
-   odBmctpfwvElPdgZqw9WF42RuDTjh0FPz/qPGUcJP9vu9EC0flyyt6sxL
-   ZEOZTVbalLMaedVClcxjZeulX+JisiP76xjGhm5RzQ6reRK0dohI6loQ4
-   r6GHtTDd2NNnDgjFJ0v9N69ztqY5nToS+pI56YTvdCHCy6h0mBBrvm58y
-   tw9ZgR+hRej6wR54L8S2tmIdxKnOBOiR5xrY2LdisVk66lCxaNRh5lMOZ
-   W+97+hcvNSvdRFG4nfiKazaygOY+uOI358DNhxuKTU8ZcblrdoIcHBHVm
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991859"
+  bh=99E8DhfEk0Ekd5my6kcIYaxIlJz7qBZKJBWjSrZUA94=;
+  b=N+RwRk573jPr9h/dhD2px3bnJdJm5iKkO9dtX0u2FQa4MXAqAULgfbY2
+   +J5e7ABfWZIsgqH3qetCl2Z3QO9QHireuEGnBlpRSI6VF69xrtmjUvfy2
+   5SAdVO1iPHnS7YyylX+Iwq7p150PSqwpn1LlvcBay82hXtp5l8LqvOT5K
+   HkdgmBcwmAfnlpQaLh/A+cLjbKrkeLPZBF19KzKwzIbODT/NyGR2A3Mci
+   Z5+MPR0iIPG2oUqGEsWmugqYCfLyGZfKH0jUuYXe5KrVqDply9YcmXHNl
+   FR7ww7dFVinAZvPYrZNdXXDXOr9AE+gh29UTJPY+IKr4YrsVxYrFztu5C
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261420786"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263991859"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:10 -0700
+   d="scan'208";a="261420786"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:01 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="529397236"
+   d="scan'208";a="657714575"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:09 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:01 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 23/44] mm/pkeys: Introduce pks_update_exception()
-Date:   Tue, 19 Apr 2022 10:06:28 -0700
-Message-Id: <20220419170649.1022246-24-ira.weiny@intel.com>
+Subject: [PATCH V10 12/44] x86/pkeys: Introduce pks_write_pkrs()
+Date:   Tue, 19 Apr 2022 10:06:17 -0700
+Message-Id: <20220419170649.1022246-13-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,165 +60,114 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Some PKS use cases will want to catch permissions violations with the
-fault callback mechanism and optionally allow the access.
+Writing to MSR's is inefficient.  Even though the underlying PKS
+register, MSR_IA32_PKRS, is not serializing; writing to the MSR should
+be avoided if possible.  Especially when updates are made in critical
+paths such as the scheduler or the entry code.
 
-The pks_set_*() calls update the protection of the current running
-context.  They will not work to change the protections of a thread which
-has been interrupted.  Therefore updating a thread from within an
-exception requires a different method.
+Introduce pks_write_pkrs().  pks_write_pkrs() avoids writing
+MSR_IA32_PKRS if the pkrs value has not changed for the current CPU.
+Most of the callers are in a non-preemptable code path.  Therefore,
+avoid calling preempt_{disable,enable}() to protect the per-cpu cache
+and instead rely on outer calls for this protection.  Do the same with
+checks to X86_FEATURE_PKS.
 
-Introduce pks_update_exception() which updates the faulted threads
-protections in addition to the current context.
+On startup, while unlikely, the PKS_INIT_VALUE may be 0.  This would
+prevent pks_write_pkrs() from updating the MSR because of the initial
+value of the per-cpu cache.  Therefore, keep the MSR write in
+pks_setup() to ensure the MSR is initialized at least one time.
 
-Add documentation
-
+Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
 Changes for V9
-	Add preemption disable around pkrs per cpu cache
-	Update commit message
-	Change pkey type to u8
-	s/pks_saved_pkrs/pkrs
+	From Dave Hansen
+		Update commit message with a bit more detail about why
+			this optimization is needed
+		Update the code comments as well.
 
 Changes for V8
-	Remove the concept of abandoning a pkey in favor of using the
-		custom fault handler via this new pks_update_exception()
-		call
-	Without an abandon call there is no need for an abandon mask on
-		sched in, new thread creation, or within exceptions...
-	This now lets all invalid access' fault
-	Ensure that all entry points into the pks has feature checks...
-	Place abandon fault check before the test callback to ensure
-		testing does not detect the double fault of the abandon
-		code and flag it incorrectly as a fault.
-	Change return type of pks_handle_abandoned_pkeys() to bool
----
- Documentation/core-api/protection-keys.rst |  3 ++
- arch/x86/mm/pkeys.c                        | 58 +++++++++++++++++++---
- include/linux/pks.h                        |  5 ++
- 3 files changed, 58 insertions(+), 8 deletions(-)
+	From Thomas
+		Remove get/put_cpu_ptr() and make this a 'lower level
+		call.  This makes it preemption unsafe but it is called
+		mostly where preemption is already disabled.  Add this
+		as a predicate of the call and those calls which need to
+		can disable preemption.
+		Add lockdep assert for preemption
+	Ensure MSR gets written even if the PKS_INIT_VALUE is 0.
+	Completely re-write the commit message.
+	s/write_pkrs/pks_write_pkrs/
+	Split this off into a singular patch
 
-diff --git a/Documentation/core-api/protection-keys.rst b/Documentation/core-api/protection-keys.rst
-index f309cecc3915..c5f0f5d39929 100644
---- a/Documentation/core-api/protection-keys.rst
-+++ b/Documentation/core-api/protection-keys.rst
-@@ -149,6 +149,9 @@ Changing permissions of individual keys
- .. kernel-doc:: include/linux/pks.h
-         :identifiers: pks_set_readwrite pks_set_noaccess
- 
-+.. kernel-doc:: arch/x86/mm/pkeys.c
-+        :identifiers: pks_update_exception
-+
- Overriding Default Fault Behavior
- ---------------------------------
- 
+Changes for V7
+	Create a dynamic pkrs_initial_value in early init code.
+	Clean up comments
+	Add comment to macro guard
+---
+ arch/x86/mm/pkeys.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
 diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index a993c9b23815..975ed206d957 100644
+index f904376570f4..10521f1a292e 100644
 --- a/arch/x86/mm/pkeys.c
 +++ b/arch/x86/mm/pkeys.c
-@@ -405,6 +405,18 @@ void pks_setup(void)
- 	cr4_set_bits(X86_CR4_PKS);
- }
+@@ -213,15 +213,56 @@ u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
  
-+static void __pks_update_protection(u8 pkey, u8 protection)
+ #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
+ 
++static DEFINE_PER_CPU(u32, pkrs_cache);
++
++/*
++ * pks_write_pkrs() - Write the pkrs of the current CPU
++ * @new_pkrs: New value to write to the current CPU register
++ *
++ * Optimizes the MSR writes by maintaining a per cpu cache.
++ *
++ * Context: must be called with preemption disabled
++ * Context: must only be called if PKS is enabled
++ *
++ * It should also be noted that the underlying WRMSR(MSR_IA32_PKRS) is not
++ * serializing but still maintains ordering properties similar to WRPKRU.
++ * The current SDM section on PKRS needs updating but should be the same as
++ * that of WRPKRU.  Quote from the WRPKRU text:
++ *
++ *     WRPKRU will never execute transiently. Memory accesses
++ *     affected by PKRU register will not execute (even transiently)
++ *     until all prior executions of WRPKRU have completed execution
++ *     and updated the PKRU register.
++ */
++static inline void pks_write_pkrs(u32 new_pkrs)
 +{
-+	u32 pkrs;
++	u32 pkrs = __this_cpu_read(pkrs_cache);
 +
-+	pkrs = current->thread.pkrs;
-+	current->thread.pkrs = pkey_update_pkval(pkrs, pkey, protection);
++	lockdep_assert_preemption_disabled();
 +
-+	preempt_disable();
-+	pks_write_pkrs(current->thread.pkrs);
-+	preempt_enable();
++	if (pkrs != new_pkrs) {
++		__this_cpu_write(pkrs_cache, new_pkrs);
++		wrmsrl(MSR_IA32_PKRS, new_pkrs);
++	}
 +}
 +
  /*
-  * Do not call this directly, see pks_set*().
-  *
-@@ -418,21 +430,51 @@ void pks_setup(void)
+  * PKS is independent of PKU and either or both may be supported on a CPU.
++ *
++ * Context: must be called with preemption disabled
   */
- void pks_update_protection(u8 pkey, u8 protection)
+ void pks_setup(void)
  {
--	u32 pkrs;
--
  	if (!cpu_feature_enabled(X86_FEATURE_PKS))
  		return;
  
- 	if (WARN_ON_ONCE(pkey >= PKS_KEY_MAX))
- 		return;
- 
--	pkrs = current->thread.pkrs;
--	current->thread.pkrs = pkey_update_pkval(pkrs, pkey,
--						 protection);
--	preempt_disable();
--	pks_write_pkrs(current->thread.pkrs);
--	preempt_enable();
-+	__pks_update_protection(pkey, protection);
++	/*
++	 * If the PKS_INIT_VALUE is 0 then pks_write_pkrs() will fail to
++	 * initialize the MSR.  Do a single write here to ensure the MSR is
++	 * written at least one time.
++	 */
+ 	wrmsrl(MSR_IA32_PKRS, PKS_INIT_VALUE);
++	pks_write_pkrs(PKS_INIT_VALUE);
+ 	cr4_set_bits(X86_CR4_PKS);
  }
- EXPORT_SYMBOL_GPL(pks_update_protection);
- 
-+/**
-+ * pks_update_exception() - Update the protections of a faulted thread
-+ *
-+ * @regs: Faulting thread registers
-+ * @pkey: pkey to update
-+ * @protection: protection bits to use.
-+ *
-+ * CONTEXT: Exception
-+ *
-+ * pks_update_exception() updates the faulted threads protections in addition
-+ * to the protections within the exception.
-+ *
-+ * This is useful because the pks_set_*() functions will not work to change the
-+ * protections of a thread which has been interrupted.  Only the current
-+ * context is updated by those functions.  Therefore, if a PKS fault callback
-+ * wants to update the faulted threads protections it must call
-+ * pks_update_exception().
-+ */
-+void pks_update_exception(struct pt_regs *regs, u8 pkey, u8 protection)
-+{
-+	struct pt_regs_extended *ept_regs;
-+	u32 old;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	if (WARN_ON_ONCE(pkey >= PKS_KEY_MAX))
-+		return;
-+
-+	__pks_update_protection(pkey, protection);
-+
-+	ept_regs = to_extended_pt_regs(regs);
-+	old = ept_regs->aux.pkrs;
-+	ept_regs->aux.pkrs = pkey_update_pkval(old, pkey, protection);
-+}
-+EXPORT_SYMBOL_GPL(pks_update_exception);
-+
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
-diff --git a/include/linux/pks.h b/include/linux/pks.h
-index d0d8bf1aaa1d..2ea5fb57f2dc 100644
---- a/include/linux/pks.h
-+++ b/include/linux/pks.h
-@@ -9,6 +9,7 @@
- #include <uapi/asm-generic/mman-common.h>
- 
- void pks_update_protection(u8 pkey, u8 protection);
-+void pks_update_exception(struct pt_regs *regs, u8 pkey, u8 protection);
- 
- /**
-  * pks_set_noaccess() - Disable all access to the domain
-@@ -41,6 +42,10 @@ typedef bool (*pks_key_callback)(struct pt_regs *regs, unsigned long address,
- 
- static inline void pks_set_noaccess(u8 pkey) {}
- static inline void pks_set_readwrite(u8 pkey) {}
-+static inline void pks_update_exception(struct pt_regs *regs,
-+					u8 pkey,
-+					u8 protection)
-+{ }
- 
- #endif /* CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS */
  
 -- 
 2.35.1
