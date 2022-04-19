@@ -2,166 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B81D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA04C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356475AbiDSSQJ (ORCPT
+        id S1356312AbiDSSQM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
+        Tue, 19 Apr 2022 14:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356444AbiDSSPX (ORCPT
+        with ESMTP id S1356270AbiDSSPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:15:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5673D1EB;
-        Tue, 19 Apr 2022 11:12:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 243AC600BE;
-        Tue, 19 Apr 2022 18:12:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39916C385A9;
-        Tue, 19 Apr 2022 18:12:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650391935;
-        bh=X7qBUUgV1LaOs2vD6Ys+38lRH+s//Ob0CYGiP9aS3nI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EvxlHskw2MiBZpnYcSA5MlKJbxkt7h/FIKxiw7PCn9MbyhrEw5Euen+W8vy2psicK
-         L0IHr6kHQGj4MLJmh6QGitmBHRK6B7OHzkzfPQcaf7ceJKLvYWiRV9yf8gGJNZwQnF
-         mToG0WNGZwS5yymKA/h0O8/UBQuSenuKgHEdi2d94hrtyGwUaPKTVngL2+eIr3ilhX
-         Vrih+YSr6s3/kfQB6n5K9RxTzAsFqHEKZYRvNBnjo6a6JnC2uGMy0VxkCvrgaM0DMA
-         PSBy2wGViejfjdJUewv9Mz72UwnAG9TcofkI4xZZnub9+X4ex9ERrCtriY7wV5DvTL
-         NOmUJQDGf2hWQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        Manish Rangankar <mrangankar@marvell.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        open-iscsi@googlegroups.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 23/34] scsi: iscsi: Fix offload conn cleanup when iscsid restarts
-Date:   Tue, 19 Apr 2022 14:10:50 -0400
-Message-Id: <20220419181104.484667-23-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
-References: <20220419181104.484667-1-sashal@kernel.org>
+        Tue, 19 Apr 2022 14:15:25 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEAF3DA6E;
+        Tue, 19 Apr 2022 11:12:21 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id 21so22392083edv.1;
+        Tue, 19 Apr 2022 11:12:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cy8TdUV8x3iwzNlE2xZ7cx5RS0sHcFrbbwckLVw+J9Q=;
+        b=Hz0RP0xrJqEH7bYt7u6u/Kbq4MM3XxIJAahRbexVTlW/TNeAPFKMAEoowQ6mtL60Sm
+         mH88jfbb69ULYKULr4eVODbzYBxoKva1nnBL428n1zoJenqgBca2iuezxRPcyB7gS1Wj
+         rUjwwCUiKZ1cUtkCVuwbmHldhx6z3z7IDmMryeyNVVmVLq8lTIFcRcDv/5zAfccfxojK
+         UeP1mFmWR6GhP3fT7zp1q9tnjQfvRTqzYVJMN1JUPLU7TrLRyGm2RDpJjAbvcwA29Fun
+         /AKxmC3cudsURoZYiT+KzIlBW1PEpNH8g6MPlKJwAq9l9HhBy0pyIds6T/9N0GOsW7Ag
+         wk6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cy8TdUV8x3iwzNlE2xZ7cx5RS0sHcFrbbwckLVw+J9Q=;
+        b=gtELGaEV+mfjOZevU4QBTLO0d14yLWf8Qh995jXLv27svOIzOhZoEFl90RXGS/YsvF
+         Lf0x+sTy8deXWTzC7XkGMM9GC5Ixg1aHKN//z9zRjLNHDYn8w+O5eraHqSVc6ZN7tf75
+         4FbGlc3l0GmK2oQU5+NBMCZbJOrnBV9b0zzq46j1rx016gmlV8h3zyK3rn5CSWKBKdw7
+         uP/aMYSB1TjbPsF4cz4dNioM/ElwtUEm/9PXK7/9agVKgCdwZQPne/ZGtQ0ag+wm3xPT
+         nC2Jn8U0eE2Asi8kLR1+JDj+9BpU2IhhmB0VnAZXxNG18makCZ47XAayA/feUESgvVPk
+         msRw==
+X-Gm-Message-State: AOAM530zFk4IC31skQqnmUaFuLTjRUQ5rj3EXist1BZ+CxFDSagxO2gX
+        ai3q59fqZ5YNE3Zp9wCx+w8=
+X-Google-Smtp-Source: ABdhPJzLpBirEv7DlSCYKQ+4N5y6Aw9ZMFDpfBRmkgmJYrEZ7quf1Kt6VRVcCBpuJ+wOWapmcAdFFQ==
+X-Received: by 2002:a05:6402:5207:b0:423:fcbe:ceff with SMTP id s7-20020a056402520700b00423fcbeceffmr5516393edd.387.1650391939833;
+        Tue, 19 Apr 2022 11:12:19 -0700 (PDT)
+Received: from localhost.localdomain ([212.102.35.230])
+        by smtp.gmail.com with ESMTPSA id b20-20020a1709063f9400b006e12836e07fsm5930614ejj.154.2022.04.19.11.12.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 11:12:19 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Sam Shih <sam.shih@mediatek.com>, Stephen Boyd <sboyd@kernel.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] dt-bindings: arm: mediatek: Convert some docs to DT schema
+Date:   Tue, 19 Apr 2022 22:09:36 +0400
+Message-Id: <20220419180938.19397-1-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-[ Upstream commit cbd2283aaf47fef4ded4b29124b1ef3beb515f3a ]
+This series includes DT schema conversions for topckgen, apmixedsys
+and infracfg bindings.
 
-When userspace restarts during boot or upgrades it won't know about the
-offload driver's endpoint and connection mappings. iscsid will start by
-cleaning up the old session by doing a stop_conn call. Later, if we are
-able to create a new connection, we clean up the old endpoint during the
-binding stage. The problem is that if we do stop_conn before doing the
-ep_disconnect call offload, drivers can still be executing I/O. We then
-might free tasks from the under the card/driver.
+Yassine Oudjana (3):
+  dt-bindings: arm: mediatek: topckgen: Convert to DT schema
+  dt-bindings: arm: mediatek: apmixedsys: Convert to DT schema
+  dt-bindings: arm: mediatek: infracfg: Convert to DT schema
 
-This moves the ep_disconnect call to before we do the stop_conn call for
-this case. It will then work and look like a normal recovery/cleanup
-procedure from the driver's point of view.
+ .../arm/mediatek/mediatek,apmixedsys.txt      | 35 --------
+ .../arm/mediatek/mediatek,apmixedsys.yaml     | 60 ++++++++++++++
+ .../arm/mediatek/mediatek,infracfg.txt        | 42 ----------
+ .../arm/mediatek/mediatek,infracfg.yaml       | 79 +++++++++++++++++++
+ .../arm/mediatek/mediatek,topckgen.txt        | 35 --------
+ .../arm/mediatek/mediatek,topckgen.yaml       | 60 ++++++++++++++
+ 6 files changed, 199 insertions(+), 112 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.yaml
 
-Link: https://lore.kernel.org/r/20220408001314.5014-3-michael.christie@oracle.com
-Tested-by: Manish Rangankar <mrangankar@marvell.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Reviewed-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/scsi_transport_iscsi.c | 48 +++++++++++++++++------------
- 1 file changed, 28 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 126f6f23bffa..03cda2da80ef 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2255,6 +2255,23 @@ static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
- 	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
- }
- 
-+static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
-+					 struct iscsi_endpoint *ep,
-+					 bool is_active)
-+{
-+	/* Check if this was a conn error and the kernel took ownership */
-+	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
-+		iscsi_ep_disconnect(conn, is_active);
-+	} else {
-+		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
-+		mutex_unlock(&conn->ep_mutex);
-+
-+		flush_work(&conn->cleanup_work);
-+
-+		mutex_lock(&conn->ep_mutex);
-+	}
-+}
-+
- static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 			      struct iscsi_uevent *ev)
- {
-@@ -2275,6 +2292,16 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 		cancel_work_sync(&conn->cleanup_work);
- 		iscsi_stop_conn(conn, flag);
- 	} else {
-+		/*
-+		 * For offload, when iscsid is restarted it won't know about
-+		 * existing endpoints so it can't do a ep_disconnect. We clean
-+		 * it up here for userspace.
-+		 */
-+		mutex_lock(&conn->ep_mutex);
-+		if (conn->ep)
-+			iscsi_if_disconnect_bound_ep(conn, conn->ep, true);
-+		mutex_unlock(&conn->ep_mutex);
-+
- 		/*
- 		 * Figure out if it was the kernel or userspace initiating this.
- 		 */
-@@ -3003,16 +3030,7 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
- 	}
- 
- 	mutex_lock(&conn->ep_mutex);
--	/* Check if this was a conn error and the kernel took ownership */
--	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
--		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
--		mutex_unlock(&conn->ep_mutex);
--
--		flush_work(&conn->cleanup_work);
--		goto put_ep;
--	}
--
--	iscsi_ep_disconnect(conn, false);
-+	iscsi_if_disconnect_bound_ep(conn, ep, false);
- 	mutex_unlock(&conn->ep_mutex);
- put_ep:
- 	iscsi_put_endpoint(ep);
-@@ -3723,16 +3741,6 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
- 
- 	switch (nlh->nlmsg_type) {
- 	case ISCSI_UEVENT_BIND_CONN:
--		if (conn->ep) {
--			/*
--			 * For offload boot support where iscsid is restarted
--			 * during the pivot root stage, the ep will be intact
--			 * here when the new iscsid instance starts up and
--			 * reconnects.
--			 */
--			iscsi_ep_disconnect(conn, true);
--		}
--
- 		session = iscsi_session_lookup(ev->u.b_conn.sid);
- 		if (!session) {
- 			err = -EINVAL;
 -- 
-2.35.1
+2.35.3
 
