@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B4DC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C928BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356146AbiDSRNA (ORCPT
+        id S1356065AbiDSRMc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
+        Tue, 19 Apr 2022 13:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355648AbiDSRJ4 (ORCPT
+        with ESMTP id S1355636AbiDSRKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:09:56 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DF1BC2E
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:10 -0700 (PDT)
+        Tue, 19 Apr 2022 13:10:02 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC9121B9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388030; x=1681924030;
+  t=1650388039; x=1681924039;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8vcs5ki3Ih9PXx6ZkRzoktwKq0Lv/OaVdzmdmV9hSGs=;
-  b=j0DCvUreKiiTsgTPf2kQiXjjqygzxfZJ4jAe8Cv8zBXWj8Ht9utRxNPX
-   cpHr7a/Cyfw/oydzaZJXjwl9F/wg28JLKwfqmV2oNslHCqkOiVvMJ2+Ly
-   LlhhfucHehvhsRQuCA3L7X06uHWwxOjugqNouwzDKewMp/cFOzrdQHWNW
-   LGh8gogQ0sfvvkOzkrqVkyuMt9PkcBxu7u88rDGd/pSaYHSMJ/UIJZ2J5
-   kaa2UgzZFSbgCq6EOaDpSUiJYxdWsJy/9VZUVxhlV3J19mWdDeCYoDj+V
-   CFiTJoW/EuJoGEzOVXPVujCu02HGUib2ALcqUTyBUnDwRrgQC5ttf8/oW
+  bh=5sapg/ecq+xu8Oubfcjw4YPepAu8QZrx7Lb+rmPQxjM=;
+  b=JPqlf9jqlpc9DFuWyF9l+X+b7YtxyeDonYLSrLMmdccnOGZLyr5jXafg
+   SjZRHJDBFhxpQwvdBKg6isxujK9YP4uZNAK9EQmWsGwJxi4Ze8owtG7Ap
+   AaaiuNAD0idKXa/b2T8Q3G985SIyXI5GdTlVef4VnwOY/D3wHNe71na+c
+   x/MLWm7e7khHet7WoHMbnFC8CBTqpaGMcm+4sRI8JQgl+NpPYC9Q+rVVH
+   HSoD9EUy2q13lFYQY/VmMHVXdtbT6czTwL367RPE0P6n9Juf2rXqA3SB6
+   FnrFDdtUu2Nb8LmX/Fe3UKcH5ZJ1a8p4jyop9KLraguFh39mmR0bqMchi
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350267605"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991916"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="350267605"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:09 -0700
+   d="scan'208";a="263991916"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:19 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="510207175"
+   d="scan'208";a="529397323"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:08 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:18 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 22/44] x86/fault: Print PKS MSR on fault
-Date:   Tue, 19 Apr 2022 10:06:27 -0700
-Message-Id: <20220419170649.1022246-23-ira.weiny@intel.com>
+Subject: [PATCH V10 33/44] kmap: Make kmap work for devmap protected pages
+Date:   Tue, 19 Apr 2022 10:06:38 -0700
+Message-Id: <20220419170649.1022246-34-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,150 +60,111 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-If a PKS fault occurs it will be easier to debug if the PKS MSR value at
-the time of the fault is known.
+Today, kmap_{local_page,atomic}() handle granting access to HIGHMEM
+pages without the caller needing to know if the page is HIGHMEM, or not.
+Use that existing infrastructure to grant access to PGMAP (PKS)
+protected pages.
 
-Add pks_show_regs() to __show_regs() to show the PKRS MSR on fault if
-enabled.
+kmap_{local_page,atomic}() are both thread local mappings so they work
+well with the thread specific protections available within PKS.
 
-An 'executive summary' of the pt_regs are saved in __die_header() which
-ensures that the first registers are saved in the event of multiple
-faults.  Teach this code about the extended pt_registers such that the
-PKS code can get to the original pkrs value as well.
+On the other hand, the kmap() call is not changed.  kmap() allows for a
+mapping to be shared with other threads, while PKS protections operate
+on a thread local basis.  For this reason, and the desire to move away
+from mappings like this, kmap() is left unsupported.
 
-Suggested-by: Andy Lutomirski <luto@kernel.org>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+This behavior is safe because neither of the 2 current DAX-capable
+filesystems (ext4 and xfs) perform such global mappings.  And known
+device drivers that would handle devmap pages are not using kmap().  Any
+future filesystems that gain DAX support, or device drivers wanting to
+support devmap protected pages will need to use kmap_local_page().
+
+Note: HIGHMEM support is mutually exclusive with PGMAP protection.  The
+rationale is mainly to reduce complexity, but also because direct-map
+exposure is already mitigated by default on HIGHMEM systems because
+by definition HIGHMEM systems do not have large capacities of memory
+in the direct map.
+
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
+Changes for V10
+	Include memremap.h because of upstream rework
+
 Changes for V9
-	From Dave Hansen
-		Move this output to __show_regs() next to the PKRU
-			register dump
+	From Dan Williams
+		Update commit message
+			Clarify why kmap is not 'compatible' with PKS
+			Explain the HIGHMEM system exclusion more
+	Remove pgmap_protection_flag_invalid() from kmap
+	s/pks_mk*/pks_set*/
 
 Changes for V8
-	Split this into it's own patch.
+	Reword commit message
 ---
- arch/x86/include/asm/pks.h   |  3 +++
- arch/x86/kernel/dumpstack.c  | 32 ++++++++++++++++++++++++++++++--
- arch/x86/kernel/process_64.c |  1 +
- arch/x86/mm/pkeys.c          | 11 +++++++++++
- 4 files changed, 45 insertions(+), 2 deletions(-)
+ include/linux/highmem-internal.h | 6 ++++++
+ mm/Kconfig                       | 1 +
+ 2 files changed, 7 insertions(+)
 
-diff --git a/arch/x86/include/asm/pks.h b/arch/x86/include/asm/pks.h
-index b69e03a141fe..de67d5b5a2af 100644
---- a/arch/x86/include/asm/pks.h
-+++ b/arch/x86/include/asm/pks.h
-@@ -8,6 +8,7 @@ void pks_setup(void);
- void x86_pkrs_load(struct thread_struct *thread);
- void pks_save_pt_regs(struct pt_regs *regs);
- void pks_restore_pt_regs(struct pt_regs *regs);
-+void pks_show_regs(struct pt_regs *regs, const char *log_lvl);
+diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
+index a77be5630209..32ed07c2994b 100644
+--- a/include/linux/highmem-internal.h
++++ b/include/linux/highmem-internal.h
+@@ -151,6 +151,8 @@ static inline void totalhigh_pages_add(long count)
  
- bool pks_handle_key_fault(struct pt_regs *regs, unsigned long hw_error_code,
- 			  unsigned long address);
-@@ -18,6 +19,8 @@ static inline void pks_setup(void) { }
- static inline void x86_pkrs_load(struct thread_struct *thread) { }
- static inline void pks_save_pt_regs(struct pt_regs *regs) { }
- static inline void pks_restore_pt_regs(struct pt_regs *regs) { }
-+static inline void pks_show_regs(struct pt_regs *regs,
-+				 const char *log_lvl) { }
+ #else /* CONFIG_HIGHMEM */
  
- static inline bool pks_handle_key_fault(struct pt_regs *regs,
- 					unsigned long hw_error_code,
-diff --git a/arch/x86/kernel/dumpstack.c b/arch/x86/kernel/dumpstack.c
-index afae4dd77495..5fae75113def 100644
---- a/arch/x86/kernel/dumpstack.c
-+++ b/arch/x86/kernel/dumpstack.c
-@@ -27,8 +27,36 @@ int panic_on_unrecovered_nmi;
- int panic_on_io_nmi;
- static int die_counter;
- 
-+#ifdef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
++#include <linux/memremap.h>
 +
-+static struct pt_regs_extended exec_summary_regs;
-+
-+static void save_exec_summary(struct pt_regs *regs)
-+{
-+	exec_summary_regs = *(to_extended_pt_regs(regs));
-+}
-+
-+static struct pt_regs *retrieve_exec_summary(void)
-+{
-+	return &exec_summary_regs.pt_regs;
-+}
-+
-+#else /* !CONFIG_ARCH_HAS_PTREGS_AUXILIARY */
-+
- static struct pt_regs exec_summary_regs;
- 
-+static void save_exec_summary(struct pt_regs *regs)
-+{
-+	exec_summary_regs = *regs;
-+}
-+
-+static struct pt_regs *retrieve_exec_summary(void)
-+{
-+	return &exec_summary_regs;
-+}
-+
-+#endif /* CONFIG_ARCH_HAS_PTREGS_AUXILIARY */
-+
- bool noinstr in_task_stack(unsigned long *stack, struct task_struct *task,
- 			   struct stack_info *info)
+ static inline struct page *kmap_to_page(void *addr)
  {
-@@ -363,7 +391,7 @@ void oops_end(unsigned long flags, struct pt_regs *regs, int signr)
- 	oops_exit();
+ 	return virt_to_page(addr);
+@@ -174,6 +176,7 @@ static inline void kunmap(struct page *page)
  
- 	/* Executive summary in case the oops scrolled away */
--	__show_regs(&exec_summary_regs, SHOW_REGS_ALL, KERN_DEFAULT);
-+	__show_regs(retrieve_exec_summary(), SHOW_REGS_ALL, KERN_DEFAULT);
- 
- 	if (!signr)
- 		return;
-@@ -390,7 +418,7 @@ static void __die_header(const char *str, struct pt_regs *regs, long err)
- 
- 	/* Save the regs of the first oops for the executive summary later. */
- 	if (!die_counter)
--		exec_summary_regs = *regs;
-+		save_exec_summary(regs);
- 
- 	if (IS_ENABLED(CONFIG_PREEMPTION))
- 		pr = IS_ENABLED(CONFIG_PREEMPT_RT) ? " PREEMPT_RT" : " PREEMPT";
-diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 5cfa1f8c8465..cd8f362a83c4 100644
---- a/arch/x86/kernel/process_64.c
-+++ b/arch/x86/kernel/process_64.c
-@@ -140,6 +140,7 @@ void __show_regs(struct pt_regs *regs, enum show_regs_mode mode,
- 
- 	if (cpu_feature_enabled(X86_FEATURE_OSPKE))
- 		printk("%sPKRU: %08x\n", log_lvl, read_pkru());
-+	pks_show_regs(regs, log_lvl);
+ static inline void *kmap_local_page(struct page *page)
+ {
++	pgmap_set_readwrite(page);
+ 	return page_address(page);
  }
  
- void release_thread(struct task_struct *dead_task)
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index dd02e76d0359..a993c9b23815 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -374,6 +374,17 @@ void pks_restore_pt_regs(struct pt_regs *regs)
- 	pks_write_pkrs(current->thread.pkrs);
+@@ -197,6 +200,7 @@ static inline void __kunmap_local(void *addr)
+ #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
+ 	kunmap_flush_on_unmap(addr);
+ #endif
++	pgmap_set_noaccess(kmap_to_page(addr));
  }
  
-+void pks_show_regs(struct pt_regs *regs, const char *log_lvl)
-+{
-+	struct pt_regs_auxiliary *aux_pt_regs;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_PKS))
-+		return;
-+
-+	aux_pt_regs = &to_extended_pt_regs(regs)->aux;
-+	printk("%sPKRS: 0x%x\n", log_lvl, aux_pt_regs->pkrs);
-+}
-+
- /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
-  *
+ static inline void *kmap_atomic(struct page *page)
+@@ -206,6 +210,7 @@ static inline void *kmap_atomic(struct page *page)
+ 	else
+ 		preempt_disable();
+ 	pagefault_disable();
++	pgmap_set_readwrite(page);
+ 	return page_address(page);
+ }
+ 
+@@ -224,6 +229,7 @@ static inline void __kunmap_atomic(void *addr)
+ #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
+ 	kunmap_flush_on_unmap(addr);
+ #endif
++	pgmap_set_noaccess(kmap_to_page(addr));
+ 	pagefault_enable();
+ 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
+ 		migrate_enable();
+diff --git a/mm/Kconfig b/mm/Kconfig
+index fe1752e6e76c..616baee3f62d 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -800,6 +800,7 @@ config ZONE_DEVICE
+ config DEVMAP_ACCESS_PROTECTION
+ 	bool "Access protection for memremap_pages()"
+ 	depends on NVDIMM_PFN
++	depends on !HIGHMEM
+ 	depends on ARCH_HAS_SUPERVISOR_PKEYS
+ 	select ARCH_ENABLE_PKS_CONSUMER
+ 	default n
 -- 
 2.35.1
 
