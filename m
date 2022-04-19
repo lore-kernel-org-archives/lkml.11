@@ -2,127 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6095C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346426AbiDSO0t (ORCPT
+        id S1353441AbiDSO2B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        Tue, 19 Apr 2022 10:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347442AbiDSO0d (ORCPT
+        with ESMTP id S1344451AbiDSO1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:26:33 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9676A2AE11;
-        Tue, 19 Apr 2022 07:23:47 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KjQyf1Kt1zhXZm;
-        Tue, 19 Apr 2022 22:23:38 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 22:23:45 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 22:23:44 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <pulehui@huawei.com>
-Subject: [PATCH v2 bpf-next 1/2] libbpf: Fix usdt_cookie being cast to 32 bits
-Date:   Tue, 19 Apr 2022 22:52:37 +0800
-Message-ID: <20220419145238.482134-2-pulehui@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220419145238.482134-1-pulehui@huawei.com>
-References: <20220419145238.482134-1-pulehui@huawei.com>
+        Tue, 19 Apr 2022 10:27:24 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737DF35A86;
+        Tue, 19 Apr 2022 07:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=QRN4/34OFqUjwLHam1sFiw9iJlUmkM8QPvj7xrCnYKs=; b=olpZeZuG5vSaCR29KjZHMIppT6
+        FeO8oEu8HcPLPnM2qKvmF8aQVzYcU+VFlUfyEHGZyllGDnfBqN1UtpiMNOqp68KpIqmaUmAe7Y0vd
+        wiYSW5g8uQfb8GyQxtQT9Mg8Q3XSi5gfDx7b3qEFPrLWkfmY9F68qIt28bA5/8f9E8IP2BLraSkng
+        djkAdiBj7/gNr7y5NHeJvNzx0eHAO8rEI0fvzU41LwqBFO99RTzCPyMLSpm7GHvx9o3OQLVwAsnbu
+        llDNy2hAkOJmqF9s5X8kQHX8VY+zpDQCX+mjVRrVv1pq05FDExXUjOnW8nxE7+uTckqMhCztzvlnr
+        P+LGj+kw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ngomU-003B5N-2j; Tue, 19 Apr 2022 14:24:38 +0000
+Message-ID: <f07a0403-0c8a-f099-cb6d-2c53294204ab@infradead.org>
+Date:   Tue, 19 Apr 2022 07:24:32 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: Build regressions/improvements in v5.18-rc3
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-kernel@vger.kernel.org
+Cc:     sparclinux@vger.kernel.org
+References: <CAHk-=wgBR6P8EseYMjfMjxQ_oTpoQmL0qvKpAw04kP-HBgSGFg@mail.gmail.com>
+ <20220419072058.4015664-1-geert@linux-m68k.org>
+ <alpine.DEB.2.22.394.2204190925230.302265@ramsan.of.borg>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <alpine.DEB.2.22.394.2204190925230.302265@ramsan.of.borg>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The usdt_cookie is defined as __u64, which should not be
-used as a long type because it will be cast to 32 bits
-in 32-bit platforms.
 
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
----
- tools/lib/bpf/libbpf.c          | 2 +-
- tools/lib/bpf/libbpf_internal.h | 2 +-
- tools/lib/bpf/usdt.c            | 8 ++++----
- 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index bf4f7ac54..33d21ed7c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10982,7 +10982,7 @@ struct bpf_link *bpf_program__attach_usdt(const struct bpf_program *prog,
- 	char resolved_path[512];
- 	struct bpf_object *obj = prog->obj;
- 	struct bpf_link *link;
--	long usdt_cookie;
-+	__u64 usdt_cookie;
- 	int err;
- 
- 	if (!OPTS_VALID(opts, bpf_uprobe_opts))
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 080272421..054cd8e93 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -571,6 +571,6 @@ struct bpf_link * usdt_manager_attach_usdt(struct usdt_manager *man,
- 					   const struct bpf_program *prog,
- 					   pid_t pid, const char *path,
- 					   const char *usdt_provider, const char *usdt_name,
--					   long usdt_cookie);
-+					   __u64 usdt_cookie);
- 
- #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
-index 934c25301..8e77a7260 100644
---- a/tools/lib/bpf/usdt.c
-+++ b/tools/lib/bpf/usdt.c
-@@ -557,10 +557,10 @@ static int parse_usdt_note(Elf *elf, const char *path, long base_addr,
- 			   GElf_Nhdr *nhdr, const char *data, size_t name_off, size_t desc_off,
- 			   struct usdt_note *usdt_note);
- 
--static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, long usdt_cookie);
-+static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, __u64 usdt_cookie);
- 
- static int collect_usdt_targets(struct usdt_manager *man, Elf *elf, const char *path, pid_t pid,
--				const char *usdt_provider, const char *usdt_name, long usdt_cookie,
-+				const char *usdt_provider, const char *usdt_name, __u64 usdt_cookie,
- 				struct usdt_target **out_targets, size_t *out_target_cnt)
- {
- 	size_t off, name_off, desc_off, seg_cnt = 0, lib_seg_cnt = 0, target_cnt = 0;
-@@ -939,7 +939,7 @@ static int allocate_spec_id(struct usdt_manager *man, struct hashmap *specs_hash
- struct bpf_link *usdt_manager_attach_usdt(struct usdt_manager *man, const struct bpf_program *prog,
- 					  pid_t pid, const char *path,
- 					  const char *usdt_provider, const char *usdt_name,
--					  long usdt_cookie)
-+					  __u64 usdt_cookie)
- {
- 	int i, fd, err, spec_map_fd, ip_map_fd;
- 	LIBBPF_OPTS(bpf_uprobe_opts, opts);
-@@ -1141,7 +1141,7 @@ static int parse_usdt_note(Elf *elf, const char *path, long base_addr,
- 
- static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg);
- 
--static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, long usdt_cookie)
-+static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, __u64 usdt_cookie)
- {
- 	const char *s;
- 	int len;
+On 4/19/22 00:26, Geert Uytterhoeven wrote:
+> On Tue, 19 Apr 2022, Geert Uytterhoeven wrote:
+>> JFYI, when comparing v5.18-rc3[1] to v5.18-rc2[3], the summaries are:
+>>  - build errors: +3/-6
+> 
+>   + /kisskb/src/arch/sparc/include/asm/cacheflush_32.h: error: 'struct page' declared inside parameter list will not be visible outside of this definition or declaration [-Werror]:  => 38:37
+> 
+> sparc64/sparc-allmodconfig
+> sparc64-gcc11/sparc-allmodconfig
+
+I have posted a patch for this one. Don't know when it will be merged.
+
+https://lore.kernel.org/sparclinux/YlIxJWek5a4wB8Jt@gondor.apana.org.au/T/#t
+
+
 -- 
-2.25.1
-
+~Randy
