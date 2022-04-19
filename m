@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D800BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351122AbiDSLWK (ORCPT
+        id S1351148AbiDSLW6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
+        Tue, 19 Apr 2022 07:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351060AbiDSLV2 (ORCPT
+        with ESMTP id S1351106AbiDSLVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:21:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0783B25EB9;
-        Tue, 19 Apr 2022 04:18:18 -0700 (PDT)
+        Tue, 19 Apr 2022 07:21:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCF402654C;
+        Tue, 19 Apr 2022 04:18:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 337B3CE1838;
-        Tue, 19 Apr 2022 11:18:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA77C385A8;
-        Tue, 19 Apr 2022 11:18:11 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 296BCCE1838;
+        Tue, 19 Apr 2022 11:18:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40082C385A5;
+        Tue, 19 Apr 2022 11:18:21 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LOxH7J36"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WMRyA3CF"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1650367089;
+        t=1650367100;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0AODITKYyJtEle+S4cX8w6pvyuCOHjrS7aFRmGybDo8=;
-        b=LOxH7J36MYF+Nm4lGWmal0/cEG8CwU3l9arno1POotRNbP696zlCNTeZilUdVYo/8Cxpk2
-        z4TmJi1mqWp23mUur53Zx/V9Yu17M1OsGhIWnMZvh8lrueF6EXAiU0usu7CBjDRXqX4PdE
-        p2SJ97pP2MMoOIsyeOb0iJA9GKbEPSA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cff62030 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 19 Apr 2022 11:18:09 +0000 (UTC)
+        bh=gMuiTScdp7c+tPntikHvEFRo+YYqSeslWu8YJFI7ND8=;
+        b=WMRyA3CFNbdyp34FeludSbEser62S5VAE1An7x3hl/B7AX1FxzRgKvDjyTyuyVftZeN1GH
+        IQeMKMQgOEzCGyrwqxQU6QfgVwxbKflb65cSTLDyvOjWU+vPMi5u9W6iGPRopjpQgIu5aT
+        2gJrkjy25rRhXz54zTJAnGQERvAq+c8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e99bdedc (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 19 Apr 2022 11:18:20 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
         tglx@linutronix.de, arnd@arndb.de
@@ -66,9 +66,9 @@ Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
         linux-um@lists.infradead.org, x86@kernel.org,
         linux-xtensa@linux-xtensa.org
-Subject: [PATCH v5 08/11] um: use fallback for random_get_entropy() instead of zero
-Date:   Tue, 19 Apr 2022 13:16:47 +0200
-Message-Id: <20220419111650.1582274-9-Jason@zx2c4.com>
+Subject: [PATCH v5 10/11] xtensa: use fallback for random_get_entropy() instead of zero
+Date:   Tue, 19 Apr 2022 13:16:49 +0200
+Message-Id: <20220419111650.1582274-11-Jason@zx2c4.com>
 In-Reply-To: <20220419111650.1582274-1-Jason@zx2c4.com>
 References: <20220419111650.1582274-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -92,34 +92,34 @@ function here.
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- arch/um/include/asm/timex.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ arch/xtensa/include/asm/timex.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/um/include/asm/timex.h b/arch/um/include/asm/timex.h
-index e392a9a5bc9b..9f27176adb26 100644
---- a/arch/um/include/asm/timex.h
-+++ b/arch/um/include/asm/timex.h
-@@ -2,13 +2,8 @@
- #ifndef __UM_TIMEX_H
- #define __UM_TIMEX_H
+diff --git a/arch/xtensa/include/asm/timex.h b/arch/xtensa/include/asm/timex.h
+index 233ec75e60c6..3f2462f2d027 100644
+--- a/arch/xtensa/include/asm/timex.h
++++ b/arch/xtensa/include/asm/timex.h
+@@ -29,10 +29,6 @@
  
--typedef unsigned long cycles_t;
+ extern unsigned long ccount_freq;
+ 
+-typedef unsigned long long cycles_t;
 -
--static inline cycles_t get_cycles (void)
--{
--	return 0;
--}
+-#define get_cycles()	(0)
 -
- #define CLOCK_TICK_RATE (HZ)
+ void local_timer_setup(unsigned cpu);
+ 
+ /*
+@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsigned long ccompare)
+ 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
+ }
  
 +#include <asm-generic/timex.h>
 +
- #endif
+ #endif	/* _XTENSA_TIMEX_H */
 -- 
 2.35.1
 
