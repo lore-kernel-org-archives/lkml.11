@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 21:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7690C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 21:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358079AbiDSVv3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 17:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
+        id S234477AbiDSVvd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 17:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357619AbiDSVvV (ORCPT
+        with ESMTP id S1357635AbiDSVvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 17:51:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C00DD3FD8F
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:48:37 -0700 (PDT)
+        Tue, 19 Apr 2022 17:51:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FB8A3FDA1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:48:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650404916;
+        s=mimecast20190719; t=1650404917;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=iUv2NTJ7gTBOf8GrxhIvtx/g2bgEnpVi/9pLqch7VAA=;
-        b=VAc087nz99Y925uSR4rvXGTDEnKwQUXWBKgGwHpdnJDD522VTqz6CpLKJYxHiKQHXeNAEZ
-        aVbwZcDEvejfl+hGhDiPnMpYs5Mp1wLwVkt32F6ufh3XLq2XqX5aM6lF6TPkDAKaqQJA7V
-        iV9MPRxqGvSH2+FrFDWQOnknxvUG4Js=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xVLLH9C759FHMpXQwwKHJScD/DCbIHfB8SwIPo2nJQ0=;
+        b=L8qntPQQoD/x1hXShQOnkCNfrFIv3sWUWBgbk4a5g2asVttKOH8mIfwjTibOQ/SM3Z8xDv
+        ctPWP7ObzCqyatfdGbTh/LTlUsDKL0viHGmcuQUJkA/aT6By2HyutHGRMQk6JN14WIEqcx
+        Sc6xZfk6LCUDoaZNajdC5H2q4gye3tk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-543-_pnMZ80vNhavdSGMjCHVGw-1; Tue, 19 Apr 2022 17:48:32 -0400
-X-MC-Unique: _pnMZ80vNhavdSGMjCHVGw-1
-Received: by mail-wr1-f70.google.com with SMTP id s13-20020adfa28d000000b00205e049cff2so2127291wra.17
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:48:31 -0700 (PDT)
+ us-mta-672-EmQMZfQUOaeajES1avP6eg-1; Tue, 19 Apr 2022 17:48:36 -0400
+X-MC-Unique: EmQMZfQUOaeajES1avP6eg-1
+Received: by mail-wm1-f69.google.com with SMTP id r204-20020a1c44d5000000b0038eaca2b8c9so1939766wma.7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:48:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iUv2NTJ7gTBOf8GrxhIvtx/g2bgEnpVi/9pLqch7VAA=;
-        b=A1vWIQ1O5YuxB+dQTYaiGoUKctjFP/RBqFGXCEEYEtzUa1C8zwEvPQD9nUmxZmsutt
-         K7Juh7VWQqTDp2MQI2xPPHd9AW0TMrgIDnwyroLCqKk/nMbV3cBtavMyhKXupBv5D/hM
-         xvJbMo70a+iYkSvE+gwTIgTdj8wr3/zkGvjPYEakltKQV2Spc2qPYFhgGH0rfuqo4cf8
-         gZHozFo78d/alblWvl+vS++T/mRrM7JmgutvQmDHkdJuAungRlvHixxLwhSbNwI5Zbq/
-         SGPGjmnZYbR4LDnFAi9LxlwKiJo0fa4XzFqfSe4hnblH/2mIRpHH+2aEMgcW7DE5U4yP
-         FeZA==
-X-Gm-Message-State: AOAM530T7xRrHGwMCQGoTAPHy6sloY/YspKOcGtQ5VaCBSZeYLCwWNUc
-        ugFDF91RVeCvs8SFnWFfsHZChQxlqXdgZWzhW9zDxlu5+usBmd4/gG6nQ+h0lEY3pTPcb7QuaIV
-        iNmimFiBs4XR9WbgWgNriGTlZl3wMJ/3HDzFHC5FTO2zHy/NzeS1gKuQLQ3qKHdKlrjA6WFXwX/
-        E=
-X-Received: by 2002:a05:6000:156e:b0:20a:9665:ca9d with SMTP id 14-20020a056000156e00b0020a9665ca9dmr9055420wrz.172.1650404910492;
-        Tue, 19 Apr 2022 14:48:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzzTCCp+DmpxwaENdM0BASbGg3Ig10/xv8vgQpwOiaUtPU5pBeDOUif9F+KNHopbNeaYjdzPw==
-X-Received: by 2002:a05:6000:156e:b0:20a:9665:ca9d with SMTP id 14-20020a056000156e00b0020a9665ca9dmr9055390wrz.172.1650404910137;
-        Tue, 19 Apr 2022 14:48:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xVLLH9C759FHMpXQwwKHJScD/DCbIHfB8SwIPo2nJQ0=;
+        b=Nn0OhHhKzHVaLoZ+aBD7zr99GV9+spjMtR4z5lPr2fjxtxSInl1hRTvj+CQanQR8OX
+         xhsxY6q+gdzXqLY3Idh8dMUlOoezu59s+PkcGtTlz1+3GkR2hKh/58JzQQYYwVGE0zdB
+         3JUj97D1ZVDj8gJr6m8EoYbT+v8iA6IFevp5WAjDy6hTR6RKGXtDwajsZKDF+VL+nVrJ
+         TdfLd7uJ4nCvA9WGS8HG4hq1l9E2vcgW0sVHabEEGnt3fIxxfDJfkkB8twq6rSM7FQen
+         h5wvhF2unBPqa8B5fH8R+jEJoYYyUBdZWPRBM7gk81XK+zls4Y0CLSKxhdakF3mRlPol
+         P+eg==
+X-Gm-Message-State: AOAM5300c1PCQrxNuco1Bvccjz9euVkph3ROpsT9dRFL6R1r3VlGqWCH
+        q90EheauAr2ATNbGBbl3WGsXa6pY+1eqfzim56EZGWkYtCEO0cGVIDA8NEcfeu28OOMJi+DzU57
+        wYJFE9dHKqcCS6Nmx3BFPAAQS1eoY4gdW4qW8KJZkYPEeA1+1mEmS4kZ9q3kzrIhByF16TaGa5r
+        8=
+X-Received: by 2002:a5d:588b:0:b0:20a:9570:de77 with SMTP id n11-20020a5d588b000000b0020a9570de77mr9040559wrf.27.1650404915052;
+        Tue, 19 Apr 2022 14:48:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzatn+dYelnkGoOsI6bvv8PKpP08+CPJhO0Hu57/jsMjYH4dmAtg8p9Rd0YiNjJRCa9cn9xbg==
+X-Received: by 2002:a5d:588b:0:b0:20a:9570:de77 with SMTP id n11-20020a5d588b000000b0020a9570de77mr9040539wrf.27.1650404914803;
+        Tue, 19 Apr 2022 14:48:34 -0700 (PDT)
 Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id i7-20020a5d5587000000b00207a8cde900sm13333699wrv.19.2022.04.19.14.48.29
+        by smtp.gmail.com with ESMTPSA id i7-20020a5d5587000000b00207a8cde900sm13333699wrv.19.2022.04.19.14.48.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 14:48:29 -0700 (PDT)
+        Tue, 19 Apr 2022 14:48:34 -0700 (PDT)
 From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
@@ -65,101 +65,237 @@ Cc:     dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Javier Martinez Canillas <javierm@redhat.com>,
-        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>, devicetree@vger.kernel.org
-Subject: [PATCH v5 0/5] drm/solomon: Add SSD130x OLED displays SPI support
-Date:   Tue, 19 Apr 2022 23:48:18 +0200
-Message-Id: <20220419214824.335075-1-javierm@redhat.com>
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: [PATCH v5 4/5] drm/solomon: Move device info from ssd130x-i2c to the core driver
+Date:   Tue, 19 Apr 2022 23:48:22 +0200
+Message-Id: <20220419214824.335075-5-javierm@redhat.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419214824.335075-1-javierm@redhat.com>
+References: <20220419214824.335075-1-javierm@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+These are declared in the ssd130x-i2c transport driver but the information
+is not I2C specific, and could be used by other SSD130x transport drivers.
 
-This series adds a ssd130x-spi driver that provides a 4-wire SPI transport
-support for SSD130x OLED controllers that can be accessed over a SPI bus.
+Move them to the ssd130x core driver and just set the OF device entries to
+an ID that could be used to lookup the correct device info from an array.
 
-The driver is quite similar to existing ssd130x-i2c driver that is used by
-I2C controllers, but there is a difference in the protocol used by SSD130x
-depending on the transport used. The details are in patch #4 description.
+While being there, also move the SSD130X_DATA and SSD130X_COMMAND control
+bytes. Since even though they are used by the I2C interface, they could
+also be useful for other transport protocols such as SPI.
 
-Patch #1 just makes the current ssd130x-i2c compatible strings in the DT
-binding to be deprecated, and add new ones that don't have an "fb-i2c".
-
-Patch #2 extends the DT binding with the properties needed to support SPI.
-
-Patch #3 adds the new compatible strings to the OF device ID table in the
-ssd130x-i2c DRM driver and deprecate the old ones.
-
-Patch #4 moves the device info for the different SSD130x variants from
-the ssd130x-i2c transport driver to the ssd130x core driver.
-
-Finally patch #5 adds the ssd130x-spi DRM driver for the OLED controllers
-that come with a 4-wire SPI interface, instead of an I2C interface.
-
-This is a v5 that addresses the issues pointed out in v4.
-
-Best regards,
-Javier
+Suggested-by: Chen-Yu Tsai <wens@kernel.org>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
 
 Changes in v5:
 - Remove unnecessary blank line added by mistake in v4 (Andy Shevchenko).
-- Remove cast by just using u8 *reg instead of void *data (Geert Uytterhoeven).
-- Add Geert Uytterhoeven's Reviewed-by tag to patch 5/5.
 
 Changes in v4:
-- Add a description for the dc-gpios property for SPI (Geert Uytterhoeven)
 - Export ssd13x_variants array using EXPORT_SYMBOL_NS_GPL() (Andy Shevchenko)
 - Use MODULE_IMPORT_NS(DRM_SSD130X) in the ssd130x-i2c driver (Andy Shevchenko)
-- Use MODULE_IMPORT_NS(DRM_SSD130X) in the ssd130x-spi driver (Andy Shevchenko)
 
 Changes in v3:
-- Drop the "sinowealth,sh1106-i2c", wasn't in a released version (Chen-Yu Tsai)
-- Continue enforcing required properties for deprecated strings (Maxime Ripard)
-- Add a comment to the properties required for SPI (Geert Uytterhoeven)
-- Drop the "sinowealth,sh1106-i2c", wasn't in a released version (Chen-Yu Tsai)
 - s/it/they in the commit description (Geert Uytterhoeven)
 - Drop unnecessary blank line (Geert Uytterhoeven)
 - Export variants array and use &info[ID] in device table (Andy Shevchenko)
-- Drop ssd130x_spi_get_dc() helper and open code it (Geert Uytterhoeven)
-- Export variants array and use &info[ID] in device table (Andy Shevchenko)
-- Add Geert Uytterhoeven's Reviewed-by tag to patches.
 
 Changes in v2:
-- Drop the -i2c suffixes from the compatible strings too (Geert Uytterhoeven)
-- Don't add compatible strings with an "-spi" suffix (Geert Uytterhoeven)
-- Use the compatible strings that don't have "fb-i2c" (Geert Uytterhoeven).
 - Drop ssd13x_variant_to_info() and just use the array index (Neil Armstrong).
-- Add the same compatible strings than I2C (Geert Uytterhoeven)
-- Add Mark Brown's Acked-by tag to all patches.
 
-Javier Martinez Canillas (5):
-  dt-bindings: display: ssd1307fb: Deprecate "-i2c" compatible strings
-  dt-bindings: display: ssd1307fb: Extend schema for SPI controllers
-  drm/solomon: Add ssd130x new compatible strings and deprecate old
-    ones.
-  drm/solomon: Move device info from ssd130x-i2c to the core driver
-  drm/solomon: Add SSD130x OLED displays SPI support
+ drivers/gpu/drm/solomon/ssd130x-i2c.c | 52 ++++++---------------------
+ drivers/gpu/drm/solomon/ssd130x.c     | 35 ++++++++++++++++--
+ drivers/gpu/drm/solomon/ssd130x.h     | 14 ++++++++
+ 3 files changed, 56 insertions(+), 45 deletions(-)
 
- .../bindings/display/solomon,ssd1307fb.yaml   |  86 +++++++--
- drivers/gpu/drm/solomon/Kconfig               |   9 +
- drivers/gpu/drm/solomon/Makefile              |   1 +
- drivers/gpu/drm/solomon/ssd130x-i2c.c         |  63 +++----
- drivers/gpu/drm/solomon/ssd130x-spi.c         | 178 ++++++++++++++++++
- drivers/gpu/drm/solomon/ssd130x.c             |  35 +++-
- drivers/gpu/drm/solomon/ssd130x.h             |  14 ++
- 7 files changed, 329 insertions(+), 57 deletions(-)
- create mode 100644 drivers/gpu/drm/solomon/ssd130x-spi.c
-
+diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+index 45867ef2bc8b..d6835ec71c39 100644
+--- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
++++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+@@ -53,76 +53,43 @@ static void ssd130x_i2c_shutdown(struct i2c_client *client)
+ 	ssd130x_shutdown(ssd130x);
+ }
+ 
+-static struct ssd130x_deviceinfo ssd130x_sh1106_deviceinfo = {
+-	.default_vcomh = 0x40,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 5,
+-	.page_mode_only = 1,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
+-	.default_vcomh = 0x34,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 7,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
+-	.default_vcomh = 0x20,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 8,
+-	.need_chargepump = 1,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
+-	.default_vcomh = 0x20,
+-	.default_dclk_div = 2,
+-	.default_dclk_frq = 12,
+-	.need_pwm = 1,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
+-	.default_vcomh = 0x34,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 10,
+-};
+-
+ static const struct of_device_id ssd130x_of_match[] = {
+ 	{
+ 		.compatible = "sinowealth,sh1106",
+-		.data = &ssd130x_sh1106_deviceinfo,
++		.data = &ssd130x_variants[SH1106_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1305",
+-		.data = &ssd130x_ssd1305_deviceinfo,
++		.data = &ssd130x_variants[SSD1305_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1306",
+-		.data = &ssd130x_ssd1306_deviceinfo,
++		.data = &ssd130x_variants[SSD1306_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1307",
+-		.data = &ssd130x_ssd1307_deviceinfo,
++		.data = &ssd130x_variants[SSD1307_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1309",
+-		.data = &ssd130x_ssd1309_deviceinfo,
++		.data = &ssd130x_variants[SSD1309_ID],
+ 	},
+ 	/* Deprecated but kept for backward compatibility */
+ 	{
+ 		.compatible = "solomon,ssd1305fb-i2c",
+-		.data = &ssd130x_ssd1305_deviceinfo,
++		.data = &ssd130x_variants[SSD1305_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1306fb-i2c",
+-		.data = &ssd130x_ssd1306_deviceinfo,
++		.data = &ssd130x_variants[SSD1306_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1307fb-i2c",
+-		.data = &ssd130x_ssd1307_deviceinfo,
++		.data = &ssd130x_variants[SSD1307_ID],
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1309fb-i2c",
+-		.data = &ssd130x_ssd1309_deviceinfo,
++		.data = &ssd130x_variants[SSD1309_ID],
+ 	},
+ 	{ /* sentinel */ }
+ };
+@@ -142,3 +109,4 @@ module_i2c_driver(ssd130x_i2c_driver);
+ MODULE_DESCRIPTION(DRIVER_DESC);
+ MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(DRM_SSD130X);
+diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
+index a7e784518c69..ba2de93d00f0 100644
+--- a/drivers/gpu/drm/solomon/ssd130x.c
++++ b/drivers/gpu/drm/solomon/ssd130x.c
+@@ -39,9 +39,6 @@
+ #define DRIVER_MAJOR	1
+ #define DRIVER_MINOR	0
+ 
+-#define SSD130X_DATA				0x40
+-#define SSD130X_COMMAND				0x80
+-
+ #define SSD130X_PAGE_COL_START_LOW		0x00
+ #define SSD130X_PAGE_COL_START_HIGH		0x10
+ #define SSD130X_SET_ADDRESS_MODE		0x20
+@@ -94,6 +91,38 @@
+ 
+ #define MAX_CONTRAST 255
+ 
++const struct ssd130x_deviceinfo ssd130x_variants[] = {
++	[SH1106_ID] = {
++		.default_vcomh = 0x40,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 5,
++		.page_mode_only = 1,
++	},
++	[SSD1305_ID] = {
++		.default_vcomh = 0x34,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 7,
++	},
++	[SSD1306_ID] = {
++		.default_vcomh = 0x20,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 8,
++		.need_chargepump = 1,
++	},
++	[SSD1307_ID] = {
++		.default_vcomh = 0x20,
++		.default_dclk_div = 2,
++		.default_dclk_frq = 12,
++		.need_pwm = 1,
++	},
++	[SSD1309_ID] = {
++		.default_vcomh = 0x34,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 10,
++	}
++};
++EXPORT_SYMBOL_NS_GPL(ssd130x_variants, DRM_SSD130X);
++
+ static inline struct ssd130x_device *drm_to_ssd130x(struct drm_device *drm)
+ {
+ 	return container_of(drm, struct ssd130x_device, drm);
+diff --git a/drivers/gpu/drm/solomon/ssd130x.h b/drivers/gpu/drm/solomon/ssd130x.h
+index f5b062576fdf..d14f78c2eb07 100644
+--- a/drivers/gpu/drm/solomon/ssd130x.h
++++ b/drivers/gpu/drm/solomon/ssd130x.h
+@@ -18,6 +18,18 @@
+ 
+ #include <linux/regmap.h>
+ 
++#define SSD130X_DATA				0x40
++#define SSD130X_COMMAND				0x80
++
++enum ssd130x_variants {
++	SH1106_ID,
++	SSD1305_ID,
++	SSD1306_ID,
++	SSD1307_ID,
++	SSD1309_ID,
++	NR_SSD130X_VARIANTS
++};
++
+ struct ssd130x_deviceinfo {
+ 	u32 default_vcomh;
+ 	u32 default_dclk_div;
+@@ -71,6 +83,8 @@ struct ssd130x_device {
+ 	u8 page_end;
+ };
+ 
++extern const struct ssd130x_deviceinfo ssd130x_variants[];
++
+ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap);
+ int ssd130x_remove(struct ssd130x_device *ssd130x);
+ void ssd130x_shutdown(struct ssd130x_device *ssd130x);
 -- 
 2.35.1
 
