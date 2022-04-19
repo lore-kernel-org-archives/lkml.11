@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C64C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C744C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 03:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348087AbiDSDgL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 23:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
+        id S244823AbiDSDgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 23:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347661AbiDSDfl (ORCPT
+        with ESMTP id S1347297AbiDSDfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 23:35:41 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A40C2BB09;
-        Mon, 18 Apr 2022 20:32:55 -0700 (PDT)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Wg2DwFzhXw1;
-        Tue, 19 Apr 2022 11:32:47 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4460D2BB0E;
+        Mon, 18 Apr 2022 20:32:56 -0700 (PDT)
+Received: from kwepemi500004.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Wj6GFSzdZnb;
+        Tue, 19 Apr 2022 11:32:49 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
+ kwepemi500004.china.huawei.com (7.221.188.17) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:54 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:54 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 2/9] net: hns3: refactor hns3_set_ringparam()
-Date:   Tue, 19 Apr 2022 11:27:02 +0800
-Message-ID: <20220419032709.15408-3-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 6/9] net: hns3: update the comment of function hclgevf_get_mbx_resp
+Date:   Tue, 19 Apr 2022 11:27:06 +0800
+Message-ID: <20220419032709.15408-7-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220419032709.15408-1-huangguangbin2@huawei.com>
 References: <20220419032709.15408-1-huangguangbin2@huawei.com>
@@ -49,144 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Peng Li <lipeng321@huawei.com>
 
-Use struct hns3_ring_param to replace variable new/old_xxx and
-add hns3_is_ringparam_changed() to judge them if is changed to
-improve code readability.
+The param of function hclgevf_get_mbx_resp has been changed but the
+comments not upodated. This patch updates it.
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Peng Li<lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 65 ++++++++++++-------
- .../ethernet/hisilicon/hns3/hns3_ethtool.h    |  6 ++
- 2 files changed, 49 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 8663ba5d41d8..e647751e9054 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1106,6 +1106,36 @@ static int hns3_check_ringparam(struct net_device *ndev,
- 	return 0;
- }
- 
-+static bool
-+hns3_is_ringparam_changed(struct net_device *ndev,
-+			  struct ethtool_ringparam *param,
-+			  struct kernel_ethtool_ringparam *kernel_param,
-+			  struct hns3_ring_param *old_ringparam,
-+			  struct hns3_ring_param *new_ringparam)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(ndev);
-+	struct hnae3_handle *h = priv->ae_handle;
-+	u16 queue_num = h->kinfo.num_tqps;
-+
-+	new_ringparam->tx_desc_num = ALIGN(param->tx_pending,
-+					   HNS3_RING_BD_MULTIPLE);
-+	new_ringparam->rx_desc_num = ALIGN(param->rx_pending,
-+					   HNS3_RING_BD_MULTIPLE);
-+	old_ringparam->tx_desc_num = priv->ring[0].desc_num;
-+	old_ringparam->rx_desc_num = priv->ring[queue_num].desc_num;
-+	old_ringparam->rx_buf_len = priv->ring[queue_num].buf_size;
-+	new_ringparam->rx_buf_len = kernel_param->rx_buf_len;
-+
-+	if (old_ringparam->tx_desc_num == new_ringparam->tx_desc_num &&
-+	    old_ringparam->rx_desc_num == new_ringparam->rx_desc_num &&
-+	    old_ringparam->rx_buf_len == new_ringparam->rx_buf_len) {
-+		netdev_info(ndev, "ringparam not changed\n");
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
- static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
- {
- 	struct hns3_nic_priv *priv = netdev_priv(ndev);
-@@ -1151,14 +1181,11 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 			      struct kernel_ethtool_ringparam *kernel_param,
- 			      struct netlink_ext_ack *extack)
- {
-+	struct hns3_ring_param old_ringparam, new_ringparam;
- 	struct hns3_nic_priv *priv = netdev_priv(ndev);
- 	struct hnae3_handle *h = priv->ae_handle;
- 	struct hns3_enet_ring *tmp_rings;
- 	bool if_running = netif_running(ndev);
--	u32 old_tx_desc_num, new_tx_desc_num;
--	u32 old_rx_desc_num, new_rx_desc_num;
--	u16 queue_num = h->kinfo.num_tqps;
--	u32 old_rx_buf_len;
- 	int ret, i;
- 
- 	ret = hns3_check_ringparam(ndev, param, kernel_param);
-@@ -1169,15 +1196,8 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	if (ret)
- 		return ret;
- 
--	/* Hardware requires that its descriptors must be multiple of eight */
--	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
--	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
--	old_tx_desc_num = priv->ring[0].desc_num;
--	old_rx_desc_num = priv->ring[queue_num].desc_num;
--	old_rx_buf_len = priv->ring[queue_num].buf_size;
--	if (old_tx_desc_num == new_tx_desc_num &&
--	    old_rx_desc_num == new_rx_desc_num &&
--	    kernel_param->rx_buf_len == old_rx_buf_len)
-+	if (!hns3_is_ringparam_changed(ndev, param, kernel_param,
-+				       &old_ringparam, &new_ringparam))
- 		return 0;
- 
- 	tmp_rings = hns3_backup_ringparam(priv);
-@@ -1188,24 +1208,25 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	}
- 
- 	netdev_info(ndev,
--		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len from %d to %d\n",
--		    old_tx_desc_num, old_rx_desc_num,
--		    new_tx_desc_num, new_rx_desc_num,
--		    old_rx_buf_len, kernel_param->rx_buf_len);
-+		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len from %u to %u\n",
-+		    old_ringparam.tx_desc_num, old_ringparam.rx_desc_num,
-+		    new_ringparam.tx_desc_num, new_ringparam.rx_desc_num,
-+		    old_ringparam.rx_buf_len, new_ringparam.rx_buf_len);
- 
- 	if (if_running)
- 		ndev->netdev_ops->ndo_stop(ndev);
- 
--	hns3_change_all_ring_bd_num(priv, new_tx_desc_num, new_rx_desc_num);
--	hns3_change_rx_buf_len(ndev, kernel_param->rx_buf_len);
-+	hns3_change_all_ring_bd_num(priv, new_ringparam.tx_desc_num,
-+				    new_ringparam.rx_desc_num);
-+	hns3_change_rx_buf_len(ndev, new_ringparam.rx_buf_len);
- 	ret = hns3_init_all_ring(priv);
- 	if (ret) {
- 		netdev_err(ndev, "set ringparam fail, revert to old value(%d)\n",
- 			   ret);
- 
--		hns3_change_rx_buf_len(ndev, old_rx_buf_len);
--		hns3_change_all_ring_bd_num(priv, old_tx_desc_num,
--					    old_rx_desc_num);
-+		hns3_change_rx_buf_len(ndev, old_ringparam.rx_buf_len);
-+		hns3_change_all_ring_bd_num(priv, old_ringparam.tx_desc_num,
-+					    old_ringparam.rx_desc_num);
- 		for (i = 0; i < h->kinfo.num_tqps * 2; i++)
- 			memcpy(&priv->ring[i], &tmp_rings[i],
- 			       sizeof(struct hns3_enet_ring));
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-index 822d6fcbc73b..da207d1d9aa9 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
-@@ -28,4 +28,10 @@ struct hns3_ethtool_link_ext_state_mapping {
- 	u8 link_ext_substate;
- };
- 
-+struct hns3_ring_param {
-+	u32 tx_desc_num;
-+	u32 rx_desc_num;
-+	u32 rx_buf_len;
-+};
-+
- #endif
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+index d5e0a3f762f7..4761dceccea5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+@@ -32,8 +32,10 @@ static void hclgevf_reset_mbx_resp_status(struct hclgevf_dev *hdev)
+ /* hclgevf_get_mbx_resp: used to get a response from PF after VF sends a mailbox
+  * message to PF.
+  * @hdev: pointer to struct hclgevf_dev
+- * @resp_msg: pointer to store the original message type and response status
+- * @len: the resp_msg data array length.
++ * @code0: the message opcode VF send to PF.
++ * @code1: the message sub-opcode VF send to PF.
++ * @resp_data: pointer to store response data from PF to VF.
++ * @resp_len: the length of resp_data from PF to VF.
+  */
+ static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
+ 				u8 *resp_data, u16 resp_len)
 -- 
 2.33.0
 
