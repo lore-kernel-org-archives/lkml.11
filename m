@@ -2,155 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18947C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357446AbiDSTEb (ORCPT
+        id S1357500AbiDSTEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
+        Tue, 19 Apr 2022 15:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357501AbiDSTC0 (ORCPT
+        with ESMTP id S1357548AbiDSTEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 15:02:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AC303FBC8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:59:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650394772;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dFH0T0pXpNETbaNFYRkeQO7JMN8WlaRMY9DPSUKwh6Q=;
-        b=QFWJGM+vabnL/ZiPd9Np6Ykm8P9O9x7c+cKDxXz+z603LxvKFtYp3XWek3FfbQ5u0BiGYk
-        nQuicCB6M5cQy0dMU+cyrjlILdnf7PfJMRD0jWDRdaMZOAJsWOxa5vco3/w9XoO9YH1MJY
-        IaVk9Het/ks/MnmshB0Emjph8FA2YMQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-625-vJUDlclwOgKtzQjnvyfezQ-1; Tue, 19 Apr 2022 14:59:21 -0400
-X-MC-Unique: vJUDlclwOgKtzQjnvyfezQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1B00486B8A8;
-        Tue, 19 Apr 2022 18:59:21 +0000 (UTC)
-Received: from thuth.com (unknown [10.39.192.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D3B66572321;
-        Tue, 19 Apr 2022 18:59:16 +0000 (UTC)
-From:   Thomas Huth <thuth@redhat.com>
-To:     kvm@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v2 4/4] KVM: s390: selftests: Use TAP interface in the reset test
-Date:   Tue, 19 Apr 2022 20:58:57 +0200
-Message-Id: <20220419185857.128351-5-thuth@redhat.com>
-In-Reply-To: <20220419185857.128351-1-thuth@redhat.com>
-References: <20220419185857.128351-1-thuth@redhat.com>
+        Tue, 19 Apr 2022 15:04:42 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBA73FD8E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id n33-20020a17090a5aa400b001d28f5ee3f9so2828745pji.4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
+         :from:to;
+        bh=0/oQDgWDKgmKaJrohYsI3DhqEyHGwnTiXQyc5afVPxU=;
+        b=r5Y6BdrIe60BFSIxEfcbpjb2XAlOTSE0R1Gd/KjZFYaR5clMDpg9XmTgaUarTL2xCf
+         u577kG8fTcWM1vjuNJsgQ2naUeIXRmpDGHBr9oSiOjFm9tEoBHv+KBYxFdhAWDPPMzfr
+         Y9MeVh52Ce5Pwq9lzMpf2/pEMU2HFOYFcycgNxh6uPQEkXGkuf4amhrqR9bdZZRHE8H1
+         F1nJ802dr8vIKkounGPtZanpsIWBE/7nBiWMGKeTcZf2w2ymg/kpPjFt9+DjpLGV2wG5
+         vUbcA6rnXwSMFzI1RnAFBlyQQdWCXRQSEPIbs64J0gCesJNmy8WCOTP/15zDExEAeTy0
+         wK0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:date:message-id:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=0/oQDgWDKgmKaJrohYsI3DhqEyHGwnTiXQyc5afVPxU=;
+        b=01igysysAvJgo7dQikt8/ZQ9WPASaE7w7rwDx+t/CB4l88xZQFGP2dN5zjEXdQDcxf
+         Klg1uOx0/h65/paWd+g84f7oBGXLm3Fs3cKeW0gWeUXs2Z8rvY4Ue8El4f1hT/Ph7MCN
+         1+/UFvLUZnghN0cuV3aHKecxRCm/g88LBMU2QejLUYWV9vR3O7Pke/2Q0TV2bYfHeb3C
+         GWGAtXoiOGco5gimzG/fEOGCb61FRCOGb0sceMqaHRKlCgH9Aw6ATZ8/925quRUtROv4
+         edd5UCsmTDrJct6Q3ZRyXBXjXQNJZFhcszIfB+cF8xmbudMKHzUCHhxcWjwNbGbZKT/W
+         r21A==
+X-Gm-Message-State: AOAM533D1dO7mZ4vYyhjRKchiuXQYPcC7/1FPjEH+Q+tatEO0vl63LUo
+        UosJtUCtlyW5JmaPa3tOulneqg==
+X-Google-Smtp-Source: ABdhPJyqsNP5BMD+uH1qubeFi/1H7/73bMXcJyq80BvSra40EaQLV770b0HPc/I1NLsyTe5OCWknyA==
+X-Received: by 2002:a17:902:c7c4:b0:158:f139:29d8 with SMTP id r4-20020a170902c7c400b00158f13929d8mr14690808pla.166.1650394890419;
+        Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id d16-20020a056a00245000b004f7728a4346sm18336865pfj.79.2022.04.19.12.01.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
+Subject: [PATCH v1] RISC-V: Move the "Call Trace" to dump_backtrace()
+Date:   Tue, 19 Apr 2022 10:48:42 -0700
+Message-Id: <20220419174842.488-1-palmer@rivosinc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+        peterz@infradead.org, keescook@chromium.org, jszhang@kernel.org,
+        geert@linux-m68k.org, chenhuang5@huawei.com, changbin.du@intel.com,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmer@rivosinc.com>
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     dvyukov@google.com, nogikh@google.com, syzkaller@googlegroups.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's standardize the s390x KVM selftest output to the TAP output
-generated via the kselftests.h interface.
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-Signed-off-by: Thomas Huth <thuth@redhat.com>
+Our oopses include "Call Trace:", but in a different place than some
+other targets do.  This is breaking at least syzkaller, and likely other
+bits of tooling that are trying to parse kernel stack traces.
+
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+
 ---
- tools/testing/selftests/kvm/s390x/resets.c | 38 +++++++++++++++++-----
- 1 file changed, 30 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/s390x/resets.c b/tools/testing/selftests/kvm/s390x/resets.c
-index b143db6d8693..1d649ec77260 100644
---- a/tools/testing/selftests/kvm/s390x/resets.c
-+++ b/tools/testing/selftests/kvm/s390x/resets.c
-@@ -12,6 +12,7 @@
- 
- #include "test_util.h"
- #include "kvm_util.h"
-+#include "kselftest.h"
- 
- #define VCPU_ID 3
- #define LOCAL_IRQS 32
-@@ -202,7 +203,7 @@ static void inject_irq(int cpu_id)
- 
- static void test_normal(void)
+I'm sort of just dead-reckoning this one based on the syzkaller issues
+being reported in
+<CACT4Y+ZA7CRNfYgPmi6jHTKD9rwvaJy=nh5Gz_c-PFHq3tuziQ@mail.gmail.com>, I
+haven't tested this at all.  There's a lot of other stuff here that
+arm64 is doing, much of which seems like it could be pulled out into
+generic code.  I seem to remember having said that before, though...
+
+I've left this as "Call Trace:" after seeing some patches to convert the
+arm/ print from "Call trace:" to "Call Trace:".  I can't find it again
+and I remember it sounding like that wasn't necessary, but since we've
+already got the capital I see no reason to change it.  That looks to be
+the more popular way.
+
+Presumably this will break any tools parsing the current log format, but
+given that we've changed it a handful of times and it looks like it's
+just blowing up for folks as-is.
+---
+ arch/riscv/kernel/stacktrace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrace.c
+index 08d11a53f39e..d5b91c0d1881 100644
+--- a/arch/riscv/kernel/stacktrace.c
++++ b/arch/riscv/kernel/stacktrace.c
+@@ -108,12 +108,12 @@ static bool print_trace_address(void *arg, unsigned long pc)
+ noinline void dump_backtrace(struct pt_regs *regs, struct task_struct *task,
+ 		    const char *loglvl)
  {
--	pr_info("Testing normal reset\n");
-+	ksft_print_msg("Testing normal reset\n");
- 	/* Create VM */
- 	vm = vm_create_default(VCPU_ID, 0, guest_code_initial);
- 	run = vcpu_state(vm, VCPU_ID);
-@@ -225,7 +226,7 @@ static void test_normal(void)
- 
- static void test_initial(void)
- {
--	pr_info("Testing initial reset\n");
-+	ksft_print_msg("Testing initial reset\n");
- 	vm = vm_create_default(VCPU_ID, 0, guest_code_initial);
- 	run = vcpu_state(vm, VCPU_ID);
- 	sync_regs = &run->s.regs;
-@@ -247,7 +248,7 @@ static void test_initial(void)
- 
- static void test_clear(void)
- {
--	pr_info("Testing clear reset\n");
-+	ksft_print_msg("Testing clear reset\n");
- 	vm = vm_create_default(VCPU_ID, 0, guest_code_initial);
- 	run = vcpu_state(vm, VCPU_ID);
- 	sync_regs = &run->s.regs;
-@@ -266,14 +267,35 @@ static void test_clear(void)
- 	kvm_vm_free(vm);
++	pr_cont("%sCall Trace:\n", loglvl);
+ 	walk_stackframe(task, regs, print_trace_address, (void *)loglvl);
  }
  
-+struct testdef {
-+	const char *name;
-+	void (*test)(void);
-+	bool needs_cap;
-+} testlist[] = {
-+	{ "initial", test_initial, false },
-+	{ "normal", test_normal, true },
-+	{ "clear", test_clear, true },
-+};
-+
- int main(int argc, char *argv[])
+ void show_stack(struct task_struct *task, unsigned long *sp, const char *loglvl)
  {
-+	bool has_s390_vcpu_resets = kvm_check_cap(KVM_CAP_S390_VCPU_RESETS);
-+	int idx;
-+
- 	setbuf(stdout, NULL);	/* Tell stdout not to buffer its content */
- 
--	test_initial();
--	if (kvm_check_cap(KVM_CAP_S390_VCPU_RESETS)) {
--		test_normal();
--		test_clear();
-+	ksft_print_header();
-+	ksft_set_plan(ARRAY_SIZE(testlist));
-+
-+	for (idx = 0; idx < ARRAY_SIZE(testlist); idx++) {
-+		if (!testlist[idx].needs_cap || has_s390_vcpu_resets) {
-+			testlist[idx].test();
-+			ksft_test_result_pass("%s\n", testlist[idx].name);
-+		} else {
-+			ksft_test_result_skip("%s - no VCPU_RESETS capability\n",
-+					      testlist[idx].name);
-+		}
- 	}
--	return 0;
-+
-+	ksft_finished();
+-	pr_cont("%sCall Trace:\n", loglvl);
+ 	dump_backtrace(NULL, task, loglvl);
  }
+ 
 -- 
-2.27.0
+2.34.1
 
