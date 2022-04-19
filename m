@@ -2,73 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 172B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4855DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240710AbiDSMQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
+        id S1352020AbiDSMQO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 08:16:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352059AbiDSMP4 (ORCPT
+        with ESMTP id S1352113AbiDSMP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 08:15:56 -0400
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6595B1C138;
-        Tue, 19 Apr 2022 05:12:49 -0700 (PDT)
-Received: by mail-ot1-f45.google.com with SMTP id r14-20020a9d750e000000b00605446d683eso5544460otk.10;
-        Tue, 19 Apr 2022 05:12:49 -0700 (PDT)
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE077205DC;
+        Tue, 19 Apr 2022 05:12:46 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e5c42b6e31so7259998fac.12;
+        Tue, 19 Apr 2022 05:12:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=YeAeQ+jnrOWAEKYx6yVLIhj6nj1MTrMjb3kCp0yvejM=;
-        b=5BnJudefPH60ydU7i0kARXfEtiaio/bBDebFBW0CYjPigyL3KuTpEBI518hO0iMJDm
-         R7BG+XQeC5s++0/297h5+JkRuZJMozZw1vCCjrE4/zOMipsRMLyAy52BEXmJCIJdUO7Z
-         klYcb+fE5E6gUyhI2DTE8XJ87vYQSQXJNRn9B+0MwCecmMxLZiLQG0Xw2BnmccFcvk55
-         yEbYhEPpvXGm7kH6iwcEvWX9QX9yGsoVYVbbMTLxWnpWIOEofkVyb5uKBagiMIXEdaF5
-         id9S7aePnug6bI5HY7QDo8RlekMOzltOoVFG+UBeJQpOck/3AYv7DPfjigz98D+W+ENI
-         XRKQ==
-X-Gm-Message-State: AOAM531alC6T1bpQfCsXl73F9nuurAYgPpDW1qEkBMakCd5towmzAVi4
-        h0T4RbO5vBY1wx+NbxhKBA==
-X-Google-Smtp-Source: ABdhPJwg4yHDT6X1rpfqMAom9LqkVyPVB09XL0HDMP6yioLKul+fCnEZLuA8Ej0AcX2iP5IaEGiPdQ==
-X-Received: by 2002:a9d:1928:0:b0:604:13d5:b114 with SMTP id j40-20020a9d1928000000b0060413d5b114mr5557181ota.6.1650370368668;
-        Tue, 19 Apr 2022 05:12:48 -0700 (PDT)
+        bh=0569YfmtjdqJ+2hyukw09AFuvfwmKEbwEGbKGweOpvI=;
+        b=mU+GuPAI/15nGvzXSSBRrx85MX8MX49a39LXE31Muk7yi89zlEy5E+vnEf+eR+vczy
+         dVNbtM07pnfWYH8mbwRLA/+WO0ntPLUrN10Syu9ZDnzrR1rCYbzV7DeQL5bfsasvfqZS
+         5K3n1K1k1+WiPzgwgwRnl9m+ttCY9xux+i2y1edgV5lR9CsOdmlItRLxY+tDopdjVjAy
+         mYeQx/GKNRbY3e3Cal2b4HN4pUSkSzBpXEcN6pot87bajBzCBxHw1ja6Yg2bHZJf1ZZ5
+         SUApIaowHrfVkYj1ZU1vRLh5Rb+91+hu14sR5u+FgWNGQzP0/gYmrxR7Y4h2Tq9/Migr
+         9Hqg==
+X-Gm-Message-State: AOAM533QpWOLA4hfKhers+70PevwGGXqMgAJv1qFFM2q9BSdAEbphf9D
+        Xh756HpbjK0MlT6/2LuWAQ==
+X-Google-Smtp-Source: ABdhPJx8LiBK0K4XkLwgCXtqriBYjWmQ7YGCbPJHV61zXAKBySQssJNDd/Khvosb+uQCNv6rnPT75g==
+X-Received: by 2002:a05:6870:9611:b0:df:200f:a6dd with SMTP id d17-20020a056870961100b000df200fa6ddmr6047417oaq.299.1650370366071;
+        Tue, 19 Apr 2022 05:12:46 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x2-20020a4a2a42000000b0033a3c4392c3sm2302555oox.26.2022.04.19.05.12.47
+        by smtp.gmail.com with ESMTPSA id g25-20020a544f99000000b002da70c710b8sm5082428oiy.54.2022.04.19.05.12.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 05:12:48 -0700 (PDT)
-Received: (nullmailer pid 1977870 invoked by uid 1000);
+        Tue, 19 Apr 2022 05:12:45 -0700 (PDT)
+Received: (nullmailer pid 1977866 invoked by uid 1000);
         Tue, 19 Apr 2022 12:12:43 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Aradhya Bhatia <a-bhatia1@ti.com>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Tomi Valkeinen <tomba@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nikhil Devshatwar <nikhil.nd@ti.com>,
-        Jyri Sarha <jyri.sarha@iki.fi>,
-        Devicetree <devicetree@vger.kernel.org>
-In-Reply-To: <20220419070302.16502-2-a-bhatia1@ti.com>
-References: <20220419070302.16502-1-a-bhatia1@ti.com> <20220419070302.16502-2-a-bhatia1@ti.com>
-Subject: Re: [PATCH 1/2] dt-bindings: display: ti,am65x-dss: Add missing register & interrupt
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     krzysztof.kozlowski+dt@linaro.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        nancy.lin@mediatek.com, angelogioacchino.delregno@collabora.com,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        airlied@linux.ie, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, jason-jh.lin@mediatek.com,
+        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        robh+dt@kernel.org
+In-Reply-To: <20220419033237.23405-4-rex-bc.chen@mediatek.com>
+References: <20220419033237.23405-1-rex-bc.chen@mediatek.com> <20220419033237.23405-4-rex-bc.chen@mediatek.com>
+Subject: Re: [PATCH 3/5] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
 Date:   Tue, 19 Apr 2022 07:12:43 -0500
-Message-Id: <1650370363.583109.1977869.nullmailer@robh.at.kernel.org>
+Message-Id: <1650370363.539386.1977865.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 12:33:01 +0530, Aradhya Bhatia wrote:
-> The DSS IP on the ti-am65x soc supports an additional register space,
-> named "common1". Further. the IP services a maximum number of 2
-> interrupts.
+On Tue, 19 Apr 2022 11:32:35 +0800, Rex-BC Chen wrote:
+> From: "Nancy.Lin" <nancy.lin@mediatek.com>
 > 
-> Add the missing register space "common1" and the additional interrupt.
+> Add vdosys1 RDMA definition.
 > 
-> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
+> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  .../devicetree/bindings/display/ti/ti,am65x-dss.yaml   | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>  .../display/mediatek/mediatek,mdp-rdma.yaml   | 86 +++++++++++++++++++
+>  1 file changed, 86 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -77,9 +79,13 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/display/ti/ti,am65x-dss.example.dts:30.17-18 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/ti/ti,am65x-dss.example.dtb] Error 1
+./Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml#
+Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dts:27:18: fatal error: dt-bindings/memory/mt8195-memory-port.h: No such file or directory
+   27 |         #include <dt-bindings/memory/mt8195-memory-port.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dtb] Error 1
 make[1]: *** Waiting for unfinished jobs....
 make: *** [Makefile:1401: dt_binding_check] Error 2
 
