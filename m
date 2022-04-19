@@ -2,1468 +2,460 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 04:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8584BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 04:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348471AbiDSEw7 (ORCPT
+        id S1348538AbiDSEza (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 00:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
+        Tue, 19 Apr 2022 00:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348361AbiDSEve (ORCPT
+        with ESMTP id S1348544AbiDSEzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 00:51:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E865D2F3B6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 21:48:51 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ngfmt-0002ua-FW; Tue, 19 Apr 2022 06:48:27 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ngfmr-0047RO-R0; Tue, 19 Apr 2022 06:48:25 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
-Cc:     David Jander <david@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v2 11/17] ARM: dts: imx6dl-victgo.dts: Factor out common parts to imx6qdl-victgo.dtsi
-Date:   Tue, 19 Apr 2022 06:48:18 +0200
-Message-Id: <20220419044824.981747-12-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220419044824.981747-1-o.rempel@pengutronix.de>
-References: <20220419044824.981747-1-o.rempel@pengutronix.de>
+        Tue, 19 Apr 2022 00:55:19 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 444AF32ED5;
+        Mon, 18 Apr 2022 21:50:52 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AS4O/QqzrlJQiZeqjENJ6t+chxyrEfRIJ4+MujC/?=
+ =?us-ascii?q?XYbTApGwl0DQPzWMaWWvXOa6LY2L0Lo93b96y9k0H7ZfTyIIxHQtv/xmBbVoQ9?=
+ =?us-ascii?q?5OdWo7xwmQcns+qBpSaChohtq3yU/GYRCwPZiKa9kfF3oTJ9yEmj/nSHuOkUYY?=
+ =?us-ascii?q?oBwgqLeNaYHZ44f5cs75h6mJYqYDR7zKl4bsekeWGULOW82Ic3lYv1k62gEgHU?=
+ =?us-ascii?q?MIeF98vlgdWifhj5DcynpSOZX4VDfnZw3DQGuG4EgMmLtsvwo1V/kuBl/ssIti?=
+ =?us-ascii?q?j1LjmcEwWWaOUNg+L4pZUc/H6xEEc+WppieBmXBYfQR4/ZzGhhc14zs5c85K2U?=
+ =?us-ascii?q?hsBMLDOmfgGTl9TFCQW0ahuoeWcfyfm7pDOp6HBWz62qxl0N2k6NJMZ9s55G2Z?=
+ =?us-ascii?q?L8uYSKSxLZReG78q2y7KTS+9inM0vIcDneoQFtRlIwTjfS/RgXpHHQqzP/vdZ2?=
+ =?us-ascii?q?is9goZFGvO2T8YQb3xtKgvBZxlOM1IMIJM4gOqswHL4dlVwpFCKoqw4y2ve1gp?=
+ =?us-ascii?q?81P7qKtW9UtiLQ9hF20OdjmHY9m/6RBYAO7S3zySJ83epruvOhj/gHoYTEqCos?=
+ =?us-ascii?q?PJnnjW7xmcTIBkNSR23rJGRiEe4VpRUK1E8/TAnpqw/skesS7HVWxy+vW7BsAU?=
+ =?us-ascii?q?QVsRdF8Uk5wyXjKnZ+QCUAi4DVDEpQNgnstImAD8nzFmEm/v3CjF19r6YU3SQ8?=
+ =?us-ascii?q?vGTtzzaESwUK3ISID8KViMb7NT55oI+lBTCSpBkCqHdszFfMVkc2BjT9G5n2ep?=
+ =?us-ascii?q?V1pVNis2GEZn8q2rEjvD0osQdum07hl6Y0z4=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A01yh56DW1zFs147lHelI55DYdb4zR+YMi2TC?=
+ =?us-ascii?q?1yhKJyC9Ffbo8fxG/c5rrCMc5wxwZJhNo7y90ey7MBbhHP1OkO4s1NWZLWrbUQ?=
+ =?us-ascii?q?KTRekIh+bfKn/baknDH4VmtJuIHZIQNDSJNykZsS/l2njEL/8QhMmA7LuzhfrT?=
+ =?us-ascii?q?i1NkTQRRYalm6AtjYzzraXFedU1XA4YjDpqA6o5irzqkQ34eacO2HT0rRO7Gzu?=
+ =?us-ascii?q?e77q7OUFoXAQI98gmSgXeN4L7+KRKR2RATSHdu7N4ZgBD4rzA=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="123671745"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 19 Apr 2022 12:50:48 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id 6122B4D17172;
+        Tue, 19 Apr 2022 12:50:48 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 19 Apr 2022 12:50:47 +0800
+Received: from irides.mr.mr (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Tue, 19 Apr 2022 12:50:45 +0800
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-fsdevel@vger.kernel.org>
+CC:     <djwong@kernel.org>, <dan.j.williams@intel.com>,
+        <david@fromorbit.com>, <hch@infradead.org>, <jane.chu@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.wiliams@intel.com>
+Subject: [PATCH v13 1/7] dax: Introduce holder for dax_device
+Date:   Tue, 19 Apr 2022 12:50:39 +0800
+Message-ID: <20220419045045.1664996-2-ruansy.fnst@fujitsu.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419045045.1664996-1-ruansy.fnst@fujitsu.com>
+References: <20220419045045.1664996-1-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 6122B4D17172.A12BE
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jander <david@protonic.nl>
+To easily track filesystem from a pmem device, we introduce a holder for
+dax_device structure, and also its operation.  This holder is used to
+remember who is using this dax_device:
+ - When it is the backend of a filesystem, the holder will be the
+   instance of this filesystem.
+ - When this pmem device is one of the targets in a mapped device, the
+   holder will be this mapped device.  In this case, the mapped device
+   has its own dax_device and it will follow the first rule.  So that we
+   can finally track to the filesystem we needed.
 
-These parts are common to imx6qdl-vicut1.dtsi.
+The holder and holder_ops will be set when filesystem is being mounted,
+or an target device is being activated.
 
-This patch is preparation to unify victgo and vicut1 DTs.
-
-Signed-off-by: David Jander <david@protonic.nl>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Dan Williams <dan.j.wiliams@intel.com>
 ---
- arch/arm/boot/dts/imx6dl-victgo.dts   | 649 +------------------------
- arch/arm/boot/dts/imx6qdl-victgo.dtsi | 658 ++++++++++++++++++++++++++
- 2 files changed, 659 insertions(+), 648 deletions(-)
- create mode 100644 arch/arm/boot/dts/imx6qdl-victgo.dtsi
+ drivers/dax/super.c | 67 ++++++++++++++++++++++++++++++++++++++++++++-
+ drivers/md/dm.c     |  2 +-
+ fs/erofs/super.c    | 10 ++++---
+ fs/ext2/super.c     |  7 +++--
+ fs/ext4/super.c     |  9 +++---
+ fs/xfs/xfs_buf.c    |  5 ++--
+ include/linux/dax.h | 33 ++++++++++++++++------
+ 7 files changed, 110 insertions(+), 23 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
-index 7fc5bb499cbc..6d61e87405f4 100644
---- a/arch/arm/boot/dts/imx6dl-victgo.dts
-+++ b/arch/arm/boot/dts/imx6dl-victgo.dts
-@@ -5,76 +5,13 @@
+diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+index 0211e6f7b47a..5ddb159c4653 100644
+--- a/drivers/dax/super.c
++++ b/drivers/dax/super.c
+@@ -22,6 +22,8 @@
+  * @private: dax driver private data
+  * @flags: state and boolean properties
+  * @ops: operations for this device
++ * @holder_data: holder of a dax_device: could be filesystem or mapped device
++ * @holder_ops: operations for the inner holder
   */
- 
- /dts-v1/;
--#include <dt-bindings/display/sdtv-standards.h>
--#include <dt-bindings/gpio/gpio.h>
--#include <dt-bindings/input/input.h>
--#include <dt-bindings/leds/common.h>
--#include <dt-bindings/media/tvp5150.h>
--#include <dt-bindings/sound/fsl-imx-audmux.h>
- #include "imx6dl.dtsi"
-+#include "imx6qdl-victgo.dtsi"
- 
- / {
- 	model = "Kverneland TGO";
- 	compatible = "kvg,victgo", "fsl,imx6dl";
- 
--	chosen {
--		stdout-path = &uart4;
--	};
--
--	backlight_lcd: backlight {
--		compatible = "pwm-backlight";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_backlight>;
--		pwms = <&pwm1 0 5000000 0>;
--		brightness-levels = <0 16 64 255>;
--		num-interpolated-steps = <16>;
--		default-brightness-level = <48>;
--		power-supply = <&reg_3v3>;
--		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
--	};
--
--	backlight_led: backlight_led {
--		compatible = "pwm-backlight";
--		pwms = <&pwm3 0 5000000 0>;
--		brightness-levels = <0 16 64 255>;
--		num-interpolated-steps = <16>;
--		default-brightness-level = <48>;
--		power-supply = <&reg_3v3>;
--	};
--
--	connector {
--		compatible = "composite-video-connector";
--		label = "Composite0";
--		sdtv-standards = <SDTV_STD_PAL_B>;
--
--		port {
--			comp0_out: endpoint {
--				remote-endpoint = <&tvp5150_comp0_in>;
--			};
--		};
--	};
--
--	counter-0 {
--		compatible = "interrupt-counter";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_counter0>;
--		gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
--	};
--
--	counter-1 {
--		compatible = "interrupt-counter";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_counter1>;
--		gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
--	};
--
--	counter-2 {
--		compatible = "interrupt-counter";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_counter2>;
--		gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
--	};
--
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 		pinctrl-names = "default";
-@@ -101,33 +38,6 @@ iio-hwmon {
- 		io-channels = <&vdiv_vaccu>, <&vdiv_hitch_pos>;
- 	};
- 
--	leds {
--		compatible = "gpio-leds";
--		pinctrl-names = "default";
--		pinctrl-0 = <&pinctrl_leds>;
--
--		led-0 {
--			label = "debug0";
--			function = LED_FUNCTION_HEARTBEAT;
--			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
--			linux,default-trigger = "heartbeat";
--		};
--
--		led-1 {
--			label = "debug1";
--			function = LED_FUNCTION_DISK;
--			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
--			linux,default-trigger = "disk-activity";
--		};
--
--		led-2 {
--			label = "power_led";
--			function = LED_FUNCTION_POWER;
--			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
--			default-state = "on";
--		};
--	};
--
- 	panel {
- 		compatible = "lg,lb070wv8";
- 		backlight = <&backlight_lcd>;
-@@ -146,29 +56,6 @@ clk50m_phy: phy-clock {
- 		clock-frequency = <50000000>;
- 	};
- 
--	reg_1v8: regulator-1v8 {
--		compatible = "regulator-fixed";
--		regulator-name = "1v8";
--		regulator-min-microvolt = <1800000>;
--		regulator-max-microvolt = <1800000>;
--	};
--
--	reg_3v3: regulator-3v3 {
--		compatible = "regulator-fixed";
--		regulator-name = "3v3";
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
--	};
--
--	reg_otg_vbus: regulator-otg-vbus {
--		compatible = "regulator-fixed";
--		regulator-name = "otg-vbus";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		gpio = <&gpio3 22 GPIO_ACTIVE_HIGH>;
--		enable-active-high;
--	};
--
- 	rotary-encoder {
- 		compatible = "rotary-encoder";
- 		pinctrl-0 = <&pinctrl_rotary_ch>;
-@@ -181,33 +68,6 @@ rotary-encoder {
- 		wakeup-source;
- 	};
- 
--	sound {
--		compatible = "simple-audio-card";
--		simple-audio-card,name = "prti6q-sgtl5000";
--		simple-audio-card,format = "i2s";
--		simple-audio-card,widgets =
--			"Microphone", "Microphone Jack",
--			"Line", "Line In Jack",
--			"Headphone", "Headphone Jack",
--			"Speaker", "External Speaker";
--		simple-audio-card,routing =
--			"MIC_IN", "Microphone Jack",
--			"LINE_IN", "Line In Jack",
--			"Headphone Jack", "HP_OUT",
--			"External Speaker", "LINE_OUT";
--
--		simple-audio-card,cpu {
--			sound-dai = <&ssi1>;
--			system-clock-frequency = <0>;
--		};
--
--		simple-audio-card,codec {
--			sound-dai = <&codec>;
--			bitclock-master;
--			frame-master;
--		};
--	};
--
- 	thermal-zones {
- 		chassis-thermal {
- 			polling-delay = <20000>;
-@@ -275,63 +135,6 @@ vdiv_hitch_pos: voltage-divider-hitch-pos {
- 	};
+ struct dax_device {
+ 	struct inode inode;
+@@ -29,6 +31,8 @@ struct dax_device {
+ 	void *private;
+ 	unsigned long flags;
+ 	const struct dax_operations *ops;
++	void *holder_data;
++	const struct dax_holder_operations *holder_ops;
  };
  
--&audmux {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_audmux>;
--	status = "okay";
--
--	mux-ssi1 {
--		fsl,audmux-port = <0>;
--		fsl,port-config = <
--			IMX_AUDMUX_V2_PTCR_SYN		0
--			IMX_AUDMUX_V2_PTCR_TFSEL(2)	0
--			IMX_AUDMUX_V2_PTCR_TCSEL(2)	0
--			IMX_AUDMUX_V2_PTCR_TFSDIR	0
--			IMX_AUDMUX_V2_PTCR_TCLKDIR	IMX_AUDMUX_V2_PDCR_RXDSEL(2)
--		>;
--	};
--
--	mux-pins3 {
--		fsl,audmux-port = <2>;
--		fsl,port-config = <
--			IMX_AUDMUX_V2_PTCR_SYN		IMX_AUDMUX_V2_PDCR_RXDSEL(0)
--			0				IMX_AUDMUX_V2_PDCR_TXRXEN
--		>;
--	};
--};
--
--&can1 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_can1>;
--	termination-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
--	termination-ohms = <150>;
--	status = "okay";
--};
--
--&can2 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_can2>;
--	status = "okay";
--};
--
--&clks {
--	assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>;
--	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>;
--};
--
--&ecspi1 {
--	cs-gpios = <&gpio3 19 GPIO_ACTIVE_LOW>;
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_ecspi1>;
--	status = "okay";
--
--	flash@0 {
--		compatible = "jedec,spi-nor";
--		reg = <0>;
--		spi-max-frequency = <20000000>;
--	};
--};
--
- &ecspi2 {
- 	cs-gpios = <&gpio5 12 GPIO_ACTIVE_LOW>;
- 	pinctrl-names = "default";
-@@ -412,25 +215,6 @@ &gpio1 {
- 		"", "", "", "", "", "", "", "ETH_MDC";
- };
+ static dev_t dax_devt;
+@@ -71,8 +75,11 @@ EXPORT_SYMBOL_GPL(dax_remove_host);
+  * fs_dax_get_by_bdev() - temporary lookup mechanism for filesystem-dax
+  * @bdev: block device to find a dax_device for
+  * @start_off: returns the byte offset into the dax_device that @bdev starts
++ * @holder: filesystem or mapped device inside the dax_device
++ * @ops: operations for the inner holder
+  */
+-struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev, u64 *start_off)
++struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev, u64 *start_off,
++		void *holder, const struct dax_holder_operations *ops)
+ {
+ 	struct dax_device *dax_dev;
+ 	u64 part_size;
+@@ -92,11 +99,26 @@ struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev, u64 *start_off)
+ 	dax_dev = xa_load(&dax_hosts, (unsigned long)bdev->bd_disk);
+ 	if (!dax_dev || !dax_alive(dax_dev) || !igrab(&dax_dev->inode))
+ 		dax_dev = NULL;
++	else if (holder) {
++		if (!cmpxchg(&dax_dev->holder_data, NULL, holder))
++			dax_dev->holder_ops = ops;
++		else
++			dax_dev = NULL;
++	}
+ 	dax_read_unlock(id);
  
--&gpio2 {
--	gpio-line-names =
--		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
--		"", "LED_PWM", "", "", "",
--			"", "", "",
--		"", "", "", "", "", "ISB_IN2", "ISB_nIN1", "ON_SWITCH",
--		"POWER_LED", "", "", "", "", "", "", "";
--};
--
--&gpio3 {
--	gpio-line-names =
--		"", "", "", "", "", "", "", "",
--		"", "", "", "", "", "", "", "",
--		"ECSPI1_SCLK", "ECSPI1_MISO", "ECSPI1_MOSI", "ECSPI1_SS1",
--			"CPU_ON1_FB", "USB_OTG_OC", "USB_OTG_PWR", "YACO_IRQ",
--		"TSS_TXD", "TSS_RXD", "", "", "", "", "YACO_BOOT0",
--			"YACO_RESET";
--};
--
- &gpio4 {
- 	gpio-line-names =
- 		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
-@@ -462,55 +246,7 @@ &gpio6 {
- 		"", "", "", "", "", "", "", "";
- };
+ 	return dax_dev;
+ }
+ EXPORT_SYMBOL_GPL(fs_dax_get_by_bdev);
++
++void fs_put_dax(struct dax_device *dax_dev, void *holder)
++{
++	if (dax_dev && holder &&
++	    cmpxchg(&dax_dev->holder_data, holder, NULL) == holder)
++		dax_dev->holder_ops = NULL;
++	put_dax(dax_dev);
++}
++EXPORT_SYMBOL_GPL(fs_put_dax);
+ #endif /* CONFIG_BLOCK && CONFIG_FS_DAX */
  
--&gpio7 {
--	gpio-line-names =
--		"EMMC_DAT5", "EMMC_DAT4", "EMMC_CMD", "EMMC_CLK", "EMMC_DAT0",
--			"EMMC_DAT1", "EMMC_DAT2", "EMMC_DAT3",
--		"EMMC_RST", "", "", "", "CAM_DETECT", "", "", "",
--		"", "EMMC_DAT7", "EMMC_DAT6", "", "", "", "", "",
--		"", "", "", "", "", "", "", "";
--};
--
- &i2c1 {
--	clock-frequency = <100000>;
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_i2c1>;
--	status = "okay";
--
--	codec: audio-codec@a {
--		compatible = "fsl,sgtl5000";
--		reg = <0xa>;
--		#sound-dai-cells = <0>;
--		clocks = <&clks 201>;
--		VDDA-supply = <&reg_3v3>;
--		VDDIO-supply = <&reg_3v3>;
--		VDDD-supply = <&reg_1v8>;
--	};
--
--	video-decoder@5c {
--		compatible = "ti,tvp5150";
--		reg = <0x5c>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		port@0 {
--			reg = <0>;
--
--			tvp5150_comp0_in: endpoint {
--				remote-endpoint = <&comp0_out>;
--			};
--		};
--
--		/* Output port 2 is video output pad */
--		port@2 {
--			reg = <2>;
--
--			tvp5151_to_ipu1_csi0_mux: endpoint {
--				remote-endpoint = <&ipu1_csi0_mux_from_parallel_sensor>;
--			};
--		};
--	};
--
- 	keypad@70 {
- 		compatible = "holtek,ht16k33";
- 		pinctrl-names = "default";
-@@ -534,236 +270,9 @@ MATRIX_KEY(5, 1, KEY_F3)
- 			MATRIX_KEY(6, 1, KEY_F1)
- 		      >;
- 	};
--
--	/* additional i2c devices are added automatically by the boot loader */
--};
--
--&i2c3 {
--	clock-frequency = <100000>;
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_i2c3>;
--	status = "okay";
--
--	adc@49 {
--		compatible = "ti,ads1015";
--		reg = <0x49>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		channel@4 {
--			reg = <4>;
--			ti,gain = <3>;
--			ti,datarate = <3>;
--		};
--
--		channel@5 {
--			reg = <5>;
--			ti,gain = <3>;
--			ti,datarate = <3>;
--		};
--
--		channel@6 {
--			reg = <6>;
--			ti,gain = <3>;
--			ti,datarate = <3>;
--		};
--
--		channel@7 {
--			reg = <7>;
--			ti,gain = <3>;
--			ti,datarate = <3>;
--		};
--	};
--
--	rtc@51 {
--		compatible = "nxp,pcf8563";
--		reg = <0x51>;
--	};
--
--	tsens0: temperature-sensor@70 {
--		compatible = "ti,tmp103";
--		reg = <0x70>;
--		#thermal-sensor-cells = <0>;
--	};
--};
--
--&ipu1_csi0 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_ipu1_csi0>;
--	status = "okay";
--};
--
--&ipu1_csi0_mux_from_parallel_sensor {
--	remote-endpoint = <&tvp5151_to_ipu1_csi0_mux>;
--};
--
--&ldb {
--	status = "okay";
--
--	lvds-channel@0 {
--		status = "okay";
--
--		port@4 {
--			reg = <4>;
--
--			lvds0_out: endpoint {
--				remote-endpoint = <&panel_in>;
--			};
--		};
--	};
--};
--
--&pwm1 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_pwm1>;
--	status = "okay";
--};
--
--&pwm3 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_pwm3>;
--	status = "okay";
--};
--
--&ssi1 {
--	#sound-dai-cells = <0>;
--	fsl,mode = "ac97-slave";
--	status = "okay";
--};
--
--&uart1 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart1>;
--	status = "okay";
--};
--
--&uart3 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart3>;
--	status = "okay";
--};
--
--&uart4 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart4>;
--	status = "okay";
--};
--
--&uart5 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_uart5>;
--	status = "okay";
--};
--
--&usbh1 {
--	pinctrl-names = "default";
--	phy_type = "utmi";
--	dr_mode = "host";
--	status = "okay";
--};
--
--&usbotg {
--	vbus-supply = <&reg_otg_vbus>;
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_usbotg>;
--	phy_type = "utmi";
--	dr_mode = "host";
--	disable-over-current;
--	status = "okay";
--};
--
--&usdhc1 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_usdhc1>;
--	cd-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
--	no-1-8-v;
--	disable-wp;
--	cap-sd-highspeed;
--	no-mmc;
--	no-sdio;
--	status = "okay";
--};
--
--&usdhc3 {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_usdhc3>;
--	bus-width = <8>;
--	no-1-8-v;
--	non-removable;
--	no-sd;
--	no-sdio;
--	status = "okay";
- };
+ enum dax_device_flags {
+@@ -194,6 +216,29 @@ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+ }
+ EXPORT_SYMBOL_GPL(dax_zero_page_range);
  
- &iomuxc {
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_hog>;
--
--	pinctrl_audmux: audmuxgrp {
--		fsl,pins = <
--			/* SGTL5000 sys_mclk */
--			MX6QDL_PAD_CSI0_MCLK__CCM_CLKO1			0x030b0
--			MX6QDL_PAD_CSI0_DAT7__AUD3_RXD			0x130b0
--			MX6QDL_PAD_CSI0_DAT4__AUD3_TXC			0x130b0
--			MX6QDL_PAD_CSI0_DAT5__AUD3_TXD			0x110b0
--			MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS			0x130b0
--		>;
--	};
--
--	pinctrl_backlight: backlightgrp {
--		fsl,pins = <
--			MX6QDL_PAD_DISP0_DAT7__GPIO4_IO28		0x1b0b0
--		>;
--	};
--
--	pinctrl_can1: can1grp {
--		fsl,pins = <
--			MX6QDL_PAD_KEY_ROW2__FLEXCAN1_RX		0x1b000
--			MX6QDL_PAD_KEY_COL2__FLEXCAN1_TX		0x3008
--			/* CAN1_SR */
--			MX6QDL_PAD_KEY_COL3__GPIO4_IO12			0x13008
--			/* CAN1_TERM */
--			MX6QDL_PAD_GPIO_0__GPIO1_IO00			0x1b088
--		>;
--	};
--
--	pinctrl_can2: can2grp {
--		fsl,pins = <
--			MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX		0x1b000
--			MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX		0x3008
--			/* CAN2_SR */
--			MX6QDL_PAD_KEY_ROW3__GPIO4_IO13			0x13008
--		>;
--	};
--
--	pinctrl_counter0: counter0grp {
--		fsl,pins = <
--			MX6QDL_PAD_NANDF_D0__GPIO2_IO00			0x1b000
--		>;
--	};
--
--	pinctrl_counter1: counter1grp {
--		fsl,pins = <
--			MX6QDL_PAD_NANDF_D1__GPIO2_IO01			0x1b000
--		>;
--	};
--
--	pinctrl_counter2: counter2grp {
--		fsl,pins = <
--			MX6QDL_PAD_NANDF_D2__GPIO2_IO02			0x1b000
--		>;
--	};
--
--	pinctrl_ecspi1: ecspi1grp {
--		fsl,pins = <
--			MX6QDL_PAD_EIM_D17__ECSPI1_MISO			0x100b1
--			MX6QDL_PAD_EIM_D18__ECSPI1_MOSI			0x100b1
--			MX6QDL_PAD_EIM_D16__ECSPI1_SCLK			0x100b1
--			/* CS */
--			MX6QDL_PAD_EIM_D19__GPIO3_IO19			0x000b1
--		>;
--	};
--
- 	pinctrl_ecspi2: ecspi2grp {
- 		fsl,pins = <
- 			MX6QDL_PAD_DISP0_DAT16__ECSPI2_MOSI		0x100b1
-@@ -802,102 +311,12 @@ MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
- 		>;
- 	};
++int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off,
++			      u64 len, int mf_flags)
++{
++	int rc, id;
++
++	id = dax_read_lock();
++	if (!dax_alive(dax_dev)) {
++		rc = -ENXIO;
++		goto out;
++	}
++
++	if (!dax_dev->holder_ops) {
++		rc = -EOPNOTSUPP;
++		goto out;
++	}
++
++	rc = dax_dev->holder_ops->notify_failure(dax_dev, off, len, mf_flags);
++out:
++	dax_read_unlock(id);
++	return rc;
++}
++EXPORT_SYMBOL_GPL(dax_holder_notify_failure);
++
+ #ifdef CONFIG_ARCH_HAS_PMEM_API
+ void arch_wb_cache_pmem(void *addr, size_t size);
+ void dax_flush(struct dax_device *dax_dev, void *addr, size_t size)
+@@ -267,8 +312,15 @@ void kill_dax(struct dax_device *dax_dev)
+ 	if (!dax_dev)
+ 		return;
  
--	pinctrl_hog: hoggrp {
--		fsl,pins = <
--			/* ITU656_nRESET */
--			MX6QDL_PAD_GPIO_2__GPIO1_IO02			0x1b0b0
--			/* CAM1_MIRROR */
--			MX6QDL_PAD_GPIO_3__GPIO1_IO03			0x130b0
--			/* CAM2_MIRROR */
--			MX6QDL_PAD_GPIO_4__GPIO1_IO04			0x130b0
--			/* CAM_nDETECT */
--			MX6QDL_PAD_GPIO_17__GPIO7_IO12			0x1b0b0
--			/* ISB_IN1 */
--			MX6QDL_PAD_EIM_A16__GPIO2_IO22			0x130b0
--			/* ISB_nIN2 */
--			MX6QDL_PAD_EIM_A17__GPIO2_IO21			0x1b0b0
--			/* WARN_LIGHT */
--			MX6QDL_PAD_EIM_A19__GPIO2_IO19			0x100b0
--			/* ON2_FB */
--			MX6QDL_PAD_EIM_A25__GPIO5_IO02			0x100b0
--			/* YACO_nIRQ */
--			MX6QDL_PAD_EIM_D23__GPIO3_IO23			0x1b0b0
--			/* YACO_BOOT0 */
--			MX6QDL_PAD_EIM_D30__GPIO3_IO30			0x130b0
--			/* YACO_nRESET */
--			MX6QDL_PAD_EIM_D31__GPIO3_IO31			0x1b0b0
--			/* FORCE_ON1 */
--			MX6QDL_PAD_EIM_EB2__GPIO2_IO30			0x1b0b0
--			/* AUDIO_nRESET */
--			MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21		0x1f0b0
--			/* ITU656_nPDN */
--			MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		0x1b0b0
--
--			/* New in HW revision 1 */
--			/* ON1_FB */
--			MX6QDL_PAD_EIM_D20__GPIO3_IO20			0x100b0
--			/* DIP1_FB */
--			MX6QDL_PAD_DI0_PIN2__GPIO4_IO18			0x1b0b0
--		>;
--	};
--
--	pinctrl_i2c1: i2c1grp {
--		fsl,pins = <
--			MX6QDL_PAD_CSI0_DAT8__I2C1_SDA		0x4001f8b1
--			MX6QDL_PAD_CSI0_DAT9__I2C1_SCL		0x4001f8b1
--		>;
--	};
--
--	pinctrl_i2c3: i2c3grp {
--		fsl,pins = <
--			MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001b8b1
--			MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001b8b1
--		>;
--	};
--
--	pinctrl_ipu1_csi0: ipu1csi0grp {
--		fsl,pins = <
--			MX6QDL_PAD_CSI0_DAT12__IPU1_CSI0_DATA12		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT13__IPU1_CSI0_DATA13		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT14__IPU1_CSI0_DATA14		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT15__IPU1_CSI0_DATA15		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT16__IPU1_CSI0_DATA16		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT17__IPU1_CSI0_DATA17		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT18__IPU1_CSI0_DATA18		0x1b0b0
--			MX6QDL_PAD_CSI0_DAT19__IPU1_CSI0_DATA19		0x1b0b0
--			MX6QDL_PAD_CSI0_PIXCLK__IPU1_CSI0_PIXCLK	0x1b0b0
--		>;
--	};
--
- 	pinctrl_keypad: keypadgrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_GPIO_19__GPIO4_IO05			0x1b0b0
- 		>;
- 	};
++	if (dax_dev->holder_data != NULL)
++		dax_holder_notify_failure(dax_dev, 0, U64_MAX, 0);
++
+ 	clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
+ 	synchronize_srcu(&dax_srcu);
++
++	/* clear holder data */
++	dax_dev->holder_ops = NULL;
++	dax_dev->holder_data = NULL;
+ }
+ EXPORT_SYMBOL_GPL(kill_dax);
  
--	pinctrl_leds: ledsgrp {
--		fsl,pins = <
--			/* DEBUG0 */
--			MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16		0x1b0b0
--			/* DEBUG1 */
--			MX6QDL_PAD_DI0_PIN15__GPIO4_IO17		0x1b0b0
--			/* POWER_LED */
--			MX6QDL_PAD_EIM_CS1__GPIO2_IO24			0x1b0b0
--		>;
--	};
--
--	pinctrl_pwm1: pwm1grp {
--		fsl,pins = <
--			MX6QDL_PAD_DISP0_DAT8__PWM1_OUT			0x1b0b0
--		>;
--	};
--
--	pinctrl_pwm3: pwm3grp {
--		fsl,pins = <
--			MX6QDL_PAD_SD4_DAT1__PWM3_OUT			0x1b0b0
--		>;
--	};
--
- 	pinctrl_rotary_ch: rotarychgrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_NANDF_D3__GPIO2_IO03			0x1b0b0
-@@ -911,70 +330,4 @@ MX6QDL_PAD_DISP0_DAT14__GPIO5_IO08		0x1b0b0
- 			MX6QDL_PAD_DISP0_DAT15__GPIO5_IO09		0x1b0b0
- 		>;
- 	};
--
--	/* YaCO AUX Uart */
--	pinctrl_uart1: uart1grp {
--		fsl,pins = <
--			MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA		0x1b0b1
--			MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA		0x1b0b1
--		>;
--	};
--
--	/* YaCO Touchscreen UART */
--	pinctrl_uart3: uart3grp {
--		fsl,pins = <
--			MX6QDL_PAD_EIM_D24__UART3_TX_DATA		0x1b0b1
--			MX6QDL_PAD_EIM_D25__UART3_RX_DATA		0x1b0b1
--		>;
--	};
--
--	pinctrl_uart4: uart4grp {
--		fsl,pins = <
--			MX6QDL_PAD_KEY_COL0__UART4_TX_DATA		0x1b0b1
--			MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA		0x1b0b1
--		>;
--	};
--
--	pinctrl_uart5: uart5grp {
--		fsl,pins = <
--			MX6QDL_PAD_KEY_COL1__UART5_TX_DATA		0x1b0b1
--			MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA		0x1b0b1
--		>;
--	};
--
--	pinctrl_usbotg: usbotggrp {
--		fsl,pins = <
--			MX6QDL_PAD_EIM_D21__USB_OTG_OC			0x1b0b0
--			/* power enable, high active */
--			MX6QDL_PAD_EIM_D22__GPIO3_IO22			0x1b0b0
--		>;
--	};
--
--	pinctrl_usdhc1: usdhc1grp {
--		fsl,pins = <
--			MX6QDL_PAD_SD1_CMD__SD1_CMD			0x170f9
--			MX6QDL_PAD_SD1_CLK__SD1_CLK			0x100f9
--			MX6QDL_PAD_SD1_DAT0__SD1_DATA0			0x170f9
--			MX6QDL_PAD_SD1_DAT1__SD1_DATA1			0x170f9
--			MX6QDL_PAD_SD1_DAT2__SD1_DATA2			0x170f9
--			MX6QDL_PAD_SD1_DAT3__SD1_DATA3			0x170f9
--			MX6QDL_PAD_GPIO_1__GPIO1_IO01			0x1b0b0
--		>;
--	};
--
--	pinctrl_usdhc3: usdhc3grp {
--		fsl,pins = <
--			MX6QDL_PAD_SD3_CMD__SD3_CMD			0x17099
--			MX6QDL_PAD_SD3_CLK__SD3_CLK			0x10099
--			MX6QDL_PAD_SD3_DAT0__SD3_DATA0			0x17099
--			MX6QDL_PAD_SD3_DAT1__SD3_DATA1			0x17099
--			MX6QDL_PAD_SD3_DAT2__SD3_DATA2			0x17099
--			MX6QDL_PAD_SD3_DAT3__SD3_DATA3			0x17099
--			MX6QDL_PAD_SD3_DAT4__SD3_DATA4			0x17099
--			MX6QDL_PAD_SD3_DAT5__SD3_DATA5			0x17099
--			MX6QDL_PAD_SD3_DAT6__SD3_DATA6			0x17099
--			MX6QDL_PAD_SD3_DAT7__SD3_DATA7			0x17099
--			MX6QDL_PAD_SD3_RST__SD3_RESET			0x1b0b1
--		>;
--	};
- };
-diff --git a/arch/arm/boot/dts/imx6qdl-victgo.dtsi b/arch/arm/boot/dts/imx6qdl-victgo.dtsi
-new file mode 100644
-index 000000000000..386e2ca39424
---- /dev/null
-+++ b/arch/arm/boot/dts/imx6qdl-victgo.dtsi
-@@ -0,0 +1,658 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Copyright (c) 2016 Protonic Holland
-+ * Copyright (c) 2020 Oleksij Rempel <kernel@pengutronix.de>, Pengutronix
+@@ -410,6 +462,19 @@ void put_dax(struct dax_device *dax_dev)
+ }
+ EXPORT_SYMBOL_GPL(put_dax);
+ 
++/**
++ * dax_holder() - obtain the holder of a dax device
++ * @dax_dev: a dax_device instance
++
++ * Return: the holder's data which represents the holder if registered,
++ * otherwize NULL.
 + */
++void *dax_holder(struct dax_device *dax_dev)
++{
++	return dax_dev->holder_data;
++}
++EXPORT_SYMBOL_GPL(dax_holder);
 +
-+#include <dt-bindings/display/sdtv-standards.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
-+#include <dt-bindings/media/tvp5150.h>
-+#include <dt-bindings/sound/fsl-imx-audmux.h>
-+
-+/ {
-+	chosen {
-+		stdout-path = &uart4;
-+	};
-+
-+	backlight_lcd: backlight {
-+		compatible = "pwm-backlight";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_backlight>;
-+		pwms = <&pwm1 0 5000000 0>;
-+		brightness-levels = <0 16 64 255>;
-+		num-interpolated-steps = <16>;
-+		default-brightness-level = <48>;
-+		power-supply = <&reg_3v3>;
-+		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
-+	};
-+
-+	backlight_led: backlight_led {
-+		compatible = "pwm-backlight";
-+		pwms = <&pwm3 0 5000000 0>;
-+		brightness-levels = <0 16 64 255>;
-+		num-interpolated-steps = <16>;
-+		default-brightness-level = <48>;
-+		power-supply = <&reg_3v3>;
-+	};
-+
-+	connector {
-+		compatible = "composite-video-connector";
-+		label = "Composite0";
-+		sdtv-standards = <SDTV_STD_PAL_B>;
-+
-+		port {
-+			comp0_out: endpoint {
-+				remote-endpoint = <&tvp5150_comp0_in>;
-+			};
-+		};
-+	};
-+
-+	counter-0 {
-+		compatible = "interrupt-counter";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_counter0>;
-+		gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	counter-1 {
-+		compatible = "interrupt-counter";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_counter1>;
-+		gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	counter-2 {
-+		compatible = "interrupt-counter";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_counter2>;
-+		gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_leds>;
-+
-+		led-0 {
-+			label = "debug0";
-+			function = LED_FUNCTION_HEARTBEAT;
-+			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "heartbeat";
-+		};
-+
-+		led-1 {
-+			label = "debug1";
-+			function = LED_FUNCTION_DISK;
-+			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "disk-activity";
-+		};
-+
-+		led-2 {
-+			label = "power_led";
-+			function = LED_FUNCTION_POWER;
-+			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
-+	};
-+
-+	reg_1v8: regulator-1v8 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "1v8";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+	};
-+
-+	reg_3v3: regulator-3v3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "3v3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+	};
-+
-+	reg_otg_vbus: regulator-otg-vbus {
-+		compatible = "regulator-fixed";
-+		regulator-name = "otg-vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&gpio3 22 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
-+	sound {
-+		compatible = "simple-audio-card";
-+		simple-audio-card,name = "prti6q-sgtl5000";
-+		simple-audio-card,format = "i2s";
-+		simple-audio-card,widgets =
-+			"Microphone", "Microphone Jack",
-+			"Line", "Line In Jack",
-+			"Headphone", "Headphone Jack",
-+			"Speaker", "External Speaker";
-+		simple-audio-card,routing =
-+			"MIC_IN", "Microphone Jack",
-+			"LINE_IN", "Line In Jack",
-+			"Headphone Jack", "HP_OUT",
-+			"External Speaker", "LINE_OUT";
-+
-+		simple-audio-card,cpu {
-+			sound-dai = <&ssi1>;
-+			system-clock-frequency = <0>; /* Do NOT call fsl_ssi_set_dai_sysclk! */
-+		};
-+
-+		simple-audio-card,codec {
-+			sound-dai = <&codec>;
-+			bitclock-master;
-+			frame-master;
-+		};
-+	};
+ /**
+  * inode_dax: convert a public inode into its dax_dev
+  * @inode: An inode with i_cdev pointing to a dax_dev
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 3c5fad7c4ee6..5906b4efc767 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -721,7 +721,7 @@ static int open_table_device(struct table_device *td, dev_t dev,
+ 	}
+ 
+ 	td->dm_dev.bdev = bdev;
+-	td->dm_dev.dax_dev = fs_dax_get_by_bdev(bdev, &part_off);
++	td->dm_dev.dax_dev = fs_dax_get_by_bdev(bdev, &part_off, NULL, NULL);
+ 	return 0;
+ }
+ 
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 0c4b41130c2f..d0eab646ef94 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -267,7 +267,8 @@ static int erofs_init_devices(struct super_block *sb,
+ 			break;
+ 		}
+ 		dif->bdev = bdev;
+-		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
++		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off,
++						  NULL, NULL);
+ 		dif->blocks = le32_to_cpu(dis->blocks);
+ 		dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
+ 		sbi->total_blocks += dif->blocks;
+@@ -597,7 +598,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 
+ 	sb->s_fs_info = sbi;
+ 	sbi->opt = ctx->opt;
+-	sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off);
++	sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off,
++					  NULL, NULL);
+ 	sbi->devs = ctx->devs;
+ 	ctx->devs = NULL;
+ 
+@@ -687,7 +689,7 @@ static int erofs_release_device_info(int id, void *ptr, void *data)
+ {
+ 	struct erofs_device_info *dif = ptr;
+ 
+-	fs_put_dax(dif->dax_dev);
++	fs_put_dax(dif->dax_dev, NULL);
+ 	if (dif->bdev)
+ 		blkdev_put(dif->bdev, FMODE_READ | FMODE_EXCL);
+ 	kfree(dif->path);
+@@ -756,7 +758,7 @@ static void erofs_kill_sb(struct super_block *sb)
+ 		return;
+ 
+ 	erofs_free_dev_context(sbi->devs);
+-	fs_put_dax(sbi->dax_dev);
++	fs_put_dax(sbi->dax_dev, NULL);
+ 	kfree(sbi);
+ 	sb->s_fs_info = NULL;
+ }
+diff --git a/fs/ext2/super.c b/fs/ext2/super.c
+index f6a19f6d9f6d..4638946251b9 100644
+--- a/fs/ext2/super.c
++++ b/fs/ext2/super.c
+@@ -171,7 +171,7 @@ static void ext2_put_super (struct super_block * sb)
+ 	brelse (sbi->s_sbh);
+ 	sb->s_fs_info = NULL;
+ 	kfree(sbi->s_blockgroup_lock);
+-	fs_put_dax(sbi->s_daxdev);
++	fs_put_dax(sbi->s_daxdev, NULL);
+ 	kfree(sbi);
+ }
+ 
+@@ -835,7 +835,8 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
+ 	}
+ 	sb->s_fs_info = sbi;
+ 	sbi->s_sb_block = sb_block;
+-	sbi->s_daxdev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->s_dax_part_off);
++	sbi->s_daxdev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->s_dax_part_off,
++					   NULL, NULL);
+ 
+ 	spin_lock_init(&sbi->s_lock);
+ 	ret = -EINVAL;
+@@ -1204,7 +1205,7 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
+ failed_mount:
+ 	brelse(bh);
+ failed_sbi:
+-	fs_put_dax(sbi->s_daxdev);
++	fs_put_dax(sbi->s_daxdev, NULL);
+ 	sb->s_fs_info = NULL;
+ 	kfree(sbi->s_blockgroup_lock);
+ 	kfree(sbi);
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index f5f4f2606ab2..59d5b2e8f838 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1300,7 +1300,7 @@ static void ext4_put_super(struct super_block *sb)
+ 	if (sbi->s_chksum_driver)
+ 		crypto_free_shash(sbi->s_chksum_driver);
+ 	kfree(sbi->s_blockgroup_lock);
+-	fs_put_dax(sbi->s_daxdev);
++	fs_put_dax(sbi->s_daxdev, NULL);
+ 	fscrypt_free_dummy_policy(&sbi->s_dummy_enc_policy);
+ #if IS_ENABLED(CONFIG_UNICODE)
+ 	utf8_unload(sb->s_encoding);
+@@ -4351,7 +4351,7 @@ static void ext4_free_sbi(struct ext4_sb_info *sbi)
+ 		return;
+ 
+ 	kfree(sbi->s_blockgroup_lock);
+-	fs_put_dax(sbi->s_daxdev);
++	fs_put_dax(sbi->s_daxdev, NULL);
+ 	kfree(sbi);
+ }
+ 
+@@ -4363,7 +4363,8 @@ static struct ext4_sb_info *ext4_alloc_sbi(struct super_block *sb)
+ 	if (!sbi)
+ 		return NULL;
+ 
+-	sbi->s_daxdev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->s_dax_part_off);
++	sbi->s_daxdev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->s_dax_part_off,
++					   NULL, NULL);
+ 
+ 	sbi->s_blockgroup_lock =
+ 		kzalloc(sizeof(struct blockgroup_lock), GFP_KERNEL);
+@@ -4375,7 +4376,7 @@ static struct ext4_sb_info *ext4_alloc_sbi(struct super_block *sb)
+ 	sbi->s_sb = sb;
+ 	return sbi;
+ err_out:
+-	fs_put_dax(sbi->s_daxdev);
++	fs_put_dax(sbi->s_daxdev, NULL);
+ 	kfree(sbi);
+ 	return NULL;
+ }
+diff --git a/fs/xfs/xfs_buf.c b/fs/xfs/xfs_buf.c
+index e1afb9e503e1..f9ca08398d32 100644
+--- a/fs/xfs/xfs_buf.c
++++ b/fs/xfs/xfs_buf.c
+@@ -1911,7 +1911,7 @@ xfs_free_buftarg(
+ 	list_lru_destroy(&btp->bt_lru);
+ 
+ 	blkdev_issue_flush(btp->bt_bdev);
+-	fs_put_dax(btp->bt_daxdev);
++	fs_put_dax(btp->bt_daxdev, NULL);
+ 
+ 	kmem_free(btp);
+ }
+@@ -1964,7 +1964,8 @@ xfs_alloc_buftarg(
+ 	btp->bt_mount = mp;
+ 	btp->bt_dev =  bdev->bd_dev;
+ 	btp->bt_bdev = bdev;
+-	btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off);
++	btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off, NULL,
++					    NULL);
+ 
+ 	/*
+ 	 * Buffer IO error rate limiting. Limit it to no more than 10 messages
+diff --git a/include/linux/dax.h b/include/linux/dax.h
+index 9fc5f99a0ae2..9c426a207ba8 100644
+--- a/include/linux/dax.h
++++ b/include/linux/dax.h
+@@ -32,8 +32,21 @@ struct dax_operations {
+ 	int (*zero_page_range)(struct dax_device *, pgoff_t, size_t);
+ };
+ 
++struct dax_holder_operations {
++	/*
++	 * notify_failure - notify memory failure into inner holder device
++	 * @dax_dev: the dax device which contains the holder
++	 * @offset: offset on this dax device where memory failure occurs
++	 * @len: length of this memory failure event
++	 * @flags: action flags for memory failure handler
++	 */
++	int (*notify_failure)(struct dax_device *dax_dev, u64 offset,
++			u64 len, int mf_flags);
 +};
 +
-+&audmux {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_audmux>;
-+	status = "okay";
-+
-+	mux-ssi1 {
-+		fsl,audmux-port = <0>;
-+		fsl,port-config = <
-+			IMX_AUDMUX_V2_PTCR_SYN		0
-+			IMX_AUDMUX_V2_PTCR_TFSEL(2)	0
-+			IMX_AUDMUX_V2_PTCR_TCSEL(2)	0
-+			IMX_AUDMUX_V2_PTCR_TFSDIR	0
-+			IMX_AUDMUX_V2_PTCR_TCLKDIR	IMX_AUDMUX_V2_PDCR_RXDSEL(2)
-+		>;
-+	};
-+
-+	mux-pins3 {
-+		fsl,audmux-port = <2>;
-+		fsl,port-config = <
-+			IMX_AUDMUX_V2_PTCR_SYN		IMX_AUDMUX_V2_PDCR_RXDSEL(0)
-+			0				IMX_AUDMUX_V2_PDCR_TXRXEN
-+		>;
-+	};
-+};
-+
-+&can1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_can1>;
-+	termination-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
-+	termination-ohms = <150>;
-+	status = "okay";
-+};
-+
-+&can2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_can2>;
-+	status = "okay";
-+};
-+
-+&clks {
-+	assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>;
-+	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>;
-+};
-+
-+&ecspi1 {
-+	cs-gpios = <&gpio3 19 GPIO_ACTIVE_LOW>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_ecspi1>;
-+	status = "okay";
-+
-+	flash@0 {
-+		compatible = "jedec,spi-nor";
-+		reg = <0>;
-+		spi-max-frequency = <20000000>;
-+	};
-+};
-+
-+&gpio2 {
-+	gpio-line-names =
-+		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
-+		"", "LED_PWM", "", "", "",
-+			"", "", "",
-+		"", "", "", "", "", "ISB_IN2", "ISB_nIN1", "ON_SWITCH",
-+		"POWER_LED", "", "", "", "", "", "", "";
-+};
-+
-+&gpio3 {
-+	gpio-line-names =
-+		"", "", "", "", "", "", "", "",
-+		"", "", "", "", "", "", "", "",
-+		"ECSPI1_SCLK", "ECSPI1_MISO", "ECSPI1_MOSI", "ECSPI1_SS1",
-+			"CPU_ON1_FB", "USB_OTG_OC", "USB_OTG_PWR", "YACO_IRQ",
-+		"TSS_TXD", "TSS_RXD", "", "", "", "", "YACO_BOOT0",
-+			"YACO_RESET";
-+};
-+
-+&gpio7 {
-+	gpio-line-names =
-+		"EMMC_DAT5", "EMMC_DAT4", "EMMC_CMD", "EMMC_CLK", "EMMC_DAT0",
-+			"EMMC_DAT1", "EMMC_DAT2", "EMMC_DAT3",
-+		"EMMC_RST", "", "", "", "CAM_DETECT", "", "", "",
-+		"", "EMMC_DAT7", "EMMC_DAT6", "", "", "", "", "",
-+		"", "", "", "", "", "", "", "";
-+};
-+
-+&i2c1 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c1>;
-+	status = "okay";
-+
-+	codec: audio-codec@a {
-+		compatible = "fsl,sgtl5000";
-+		reg = <0xa>;
-+		#sound-dai-cells = <0>;
-+		clocks = <&clks 201>;
-+		VDDA-supply = <&reg_3v3>;
-+		VDDIO-supply = <&reg_3v3>;
-+		VDDD-supply = <&reg_1v8>;
-+	};
-+
-+	video-decoder@5c {
-+		compatible = "ti,tvp5150";
-+		reg = <0x5c>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		port@0 {
-+			reg = <0>;
-+
-+			tvp5150_comp0_in: endpoint {
-+				remote-endpoint = <&comp0_out>;
-+			};
-+		};
-+
-+		/* Output port 2 is video output pad */
-+		port@2 {
-+			reg = <2>;
-+
-+			tvp5151_to_ipu1_csi0_mux: endpoint {
-+				remote-endpoint = <&ipu1_csi0_mux_from_parallel_sensor>;
-+			};
-+		};
-+	};
-+
-+	/* additional i2c devices are added automatically by the boot loader */
-+};
-+
-+&i2c3 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c3>;
-+	status = "okay";
-+
-+	adc@49 {
-+		compatible = "ti,ads1015";
-+		reg = <0x49>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		channel@4 {
-+			reg = <4>;
-+			ti,gain = <3>;
-+			ti,datarate = <3>;
-+		};
-+
-+		channel@5 {
-+			reg = <5>;
-+			ti,gain = <3>;
-+			ti,datarate = <3>;
-+		};
-+
-+		channel@6 {
-+			reg = <6>;
-+			ti,gain = <3>;
-+			ti,datarate = <3>;
-+		};
-+
-+		channel@7 {
-+			reg = <7>;
-+			ti,gain = <3>;
-+			ti,datarate = <3>;
-+		};
-+	};
-+
-+	rtc@51 {
-+		compatible = "nxp,pcf8563";
-+		reg = <0x51>;
-+	};
-+
-+	tsens0: temperature-sensor@70 {
-+		compatible = "ti,tmp103";
-+		reg = <0x70>;
-+		#thermal-sensor-cells = <0>;
-+	};
-+};
-+
-+&ipu1_csi0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_ipu1_csi0>;
-+	status = "okay";
-+};
-+
-+&ipu1_csi0_mux_from_parallel_sensor {
-+	remote-endpoint = <&tvp5151_to_ipu1_csi0_mux>;
-+};
-+
-+&ldb {
-+	status = "okay";
-+
-+	lvds-channel@0 {
-+		status = "okay";
-+
-+		port@4 {
-+			reg = <4>;
-+
-+			lvds0_out: endpoint {
-+				remote-endpoint = <&panel_in>;
-+			};
-+		};
-+	};
-+};
-+
-+&pwm1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pwm1>;
-+	status = "okay";
-+};
-+
-+&pwm3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pwm3>;
-+	status = "okay";
-+};
-+
-+&ssi1 {
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart1>;
-+	status = "okay";
-+};
-+
-+&uart3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart3>;
-+	status = "okay";
-+};
-+
-+&uart4 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart4>;
-+	status = "okay";
-+};
-+
-+&uart5 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart5>;
-+	status = "okay";
-+};
-+
-+&usbh1 {
-+	pinctrl-names = "default";
-+	phy_type = "utmi";
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usbotg {
-+	vbus-supply = <&reg_otg_vbus>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usbotg>;
-+	phy_type = "utmi";
-+	dr_mode = "host";
-+	disable-over-current;
-+	status = "okay";
-+};
-+
-+&usdhc1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usdhc1>;
-+	cd-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
-+	no-1-8-v;
-+	disable-wp;
-+	cap-sd-highspeed;
-+	no-mmc;
-+	no-sdio;
-+	status = "okay";
-+};
-+
-+&usdhc3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usdhc3>;
-+	bus-width = <8>;
-+	no-1-8-v;
-+	non-removable;
-+	no-sd;
-+	no-sdio;
-+	status = "okay";
-+};
-+
-+&iomuxc {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_hog>;
-+
-+	pinctrl_audmux: audmuxgrp {
-+		fsl,pins = <
-+			/* SGTL5000 sys_mclk */
-+			MX6QDL_PAD_CSI0_MCLK__CCM_CLKO1			0x030b0
-+			MX6QDL_PAD_CSI0_DAT7__AUD3_RXD			0x130b0
-+			MX6QDL_PAD_CSI0_DAT4__AUD3_TXC			0x130b0
-+			MX6QDL_PAD_CSI0_DAT5__AUD3_TXD			0x110b0
-+			MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS			0x130b0
-+		>;
-+	};
-+
-+	pinctrl_backlight: backlightgrp {
-+		fsl,pins = <
-+			MX6QDL_PAD_DISP0_DAT7__GPIO4_IO28		0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_can1: can1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_KEY_ROW2__FLEXCAN1_RX		0x1b000
-+			MX6QDL_PAD_KEY_COL2__FLEXCAN1_TX		0x3008
-+			/* CAN1_SR */
-+			MX6QDL_PAD_KEY_COL3__GPIO4_IO12			0x13008
-+			/* CAN1_TERM */
-+			MX6QDL_PAD_GPIO_0__GPIO1_IO00			0x1b088
-+		>;
-+	};
-+
-+	pinctrl_can2: can2grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX		0x1b000
-+			MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX		0x3008
-+			/* CAN2_SR */
-+			MX6QDL_PAD_KEY_ROW3__GPIO4_IO13			0x13008
-+		>;
-+	};
-+
-+	pinctrl_counter0: counter0grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_NANDF_D0__GPIO2_IO00			0x1b000
-+		>;
-+	};
-+
-+	pinctrl_counter1: counter1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_NANDF_D1__GPIO2_IO01			0x1b000
-+		>;
-+	};
-+
-+	pinctrl_counter2: counter2grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_NANDF_D2__GPIO2_IO02			0x1b000
-+		>;
-+	};
-+
-+	pinctrl_ecspi1: ecspi1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_EIM_D17__ECSPI1_MISO			0x100b1
-+			MX6QDL_PAD_EIM_D18__ECSPI1_MOSI			0x100b1
-+			MX6QDL_PAD_EIM_D16__ECSPI1_SCLK			0x100b1
-+			/* CS */
-+			MX6QDL_PAD_EIM_D19__GPIO3_IO19			0x000b1
-+		>;
-+	};
-+
-+	pinctrl_hog: hoggrp {
-+		fsl,pins = <
-+			/* ITU656_nRESET */
-+			MX6QDL_PAD_GPIO_2__GPIO1_IO02			0x1b0b0
-+			/* CAM1_MIRROR */
-+			MX6QDL_PAD_GPIO_3__GPIO1_IO03			0x130b0
-+			/* CAM2_MIRROR */
-+			MX6QDL_PAD_GPIO_4__GPIO1_IO04			0x130b0
-+			/* CAM_nDETECT */
-+			MX6QDL_PAD_GPIO_17__GPIO7_IO12			0x1b0b0
-+			/* ISB_IN1 */
-+			MX6QDL_PAD_EIM_A16__GPIO2_IO22			0x130b0
-+			/* ISB_nIN2 */
-+			MX6QDL_PAD_EIM_A17__GPIO2_IO21			0x1b0b0
-+			/* WARN_LIGHT */
-+			MX6QDL_PAD_EIM_A19__GPIO2_IO19			0x100b0
-+			/* ON2_FB */
-+			MX6QDL_PAD_EIM_A25__GPIO5_IO02			0x100b0
-+			/* YACO_nIRQ */
-+			MX6QDL_PAD_EIM_D23__GPIO3_IO23			0x1b0b0
-+			/* YACO_BOOT0 */
-+			MX6QDL_PAD_EIM_D30__GPIO3_IO30			0x130b0
-+			/* YACO_nRESET */
-+			MX6QDL_PAD_EIM_D31__GPIO3_IO31			0x1b0b0
-+			/* FORCE_ON1 */
-+			MX6QDL_PAD_EIM_EB2__GPIO2_IO30			0x1b0b0
-+			/* AUDIO_nRESET */
-+			MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21		0x1f0b0
-+			/* ITU656_nPDN */
-+			MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		0x1b0b0
-+
-+			/* New in HW revision 1 */
-+			/* ON1_FB */
-+			MX6QDL_PAD_EIM_D20__GPIO3_IO20			0x100b0
-+			/* DIP1_FB */
-+			MX6QDL_PAD_DI0_PIN2__GPIO4_IO18			0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_i2c1: i2c1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_CSI0_DAT8__I2C1_SDA		0x4001f8b1
-+			MX6QDL_PAD_CSI0_DAT9__I2C1_SCL		0x4001f8b1
-+		>;
-+	};
-+
-+	pinctrl_i2c3: i2c3grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001b8b1
-+			MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001b8b1
-+		>;
-+	};
-+
-+	pinctrl_ipu1_csi0: ipu1csi0grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_CSI0_DAT12__IPU1_CSI0_DATA12		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT13__IPU1_CSI0_DATA13		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT14__IPU1_CSI0_DATA14		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT15__IPU1_CSI0_DATA15		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT16__IPU1_CSI0_DATA16		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT17__IPU1_CSI0_DATA17		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT18__IPU1_CSI0_DATA18		0x1b0b0
-+			MX6QDL_PAD_CSI0_DAT19__IPU1_CSI0_DATA19		0x1b0b0
-+			MX6QDL_PAD_CSI0_PIXCLK__IPU1_CSI0_PIXCLK	0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_leds: ledsgrp {
-+		fsl,pins = <
-+			/* DEBUG0 */
-+			MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16		0x1b0b0
-+			/* DEBUG1 */
-+			MX6QDL_PAD_DI0_PIN15__GPIO4_IO17		0x1b0b0
-+			/* POWER_LED */
-+			MX6QDL_PAD_EIM_CS1__GPIO2_IO24			0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_pwm1: pwm1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_DISP0_DAT8__PWM1_OUT			0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_pwm3: pwm3grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_SD4_DAT1__PWM3_OUT			0x1b0b0
-+		>;
-+	};
-+
-+	/* YaCO AUX Uart */
-+	pinctrl_uart1: uart1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA		0x1b0b1
-+			MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA		0x1b0b1
-+		>;
-+	};
-+
-+	/* YaCO Touchscreen UART */
-+	pinctrl_uart3: uart3grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_EIM_D24__UART3_TX_DATA		0x1b0b1
-+			MX6QDL_PAD_EIM_D25__UART3_RX_DATA		0x1b0b1
-+		>;
-+	};
-+
-+	pinctrl_uart4: uart4grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_KEY_COL0__UART4_TX_DATA		0x1b0b1
-+			MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA		0x1b0b1
-+		>;
-+	};
-+
-+	pinctrl_uart5: uart5grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_KEY_COL1__UART5_TX_DATA		0x1b0b1
-+			MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA		0x1b0b1
-+		>;
-+	};
-+
-+	pinctrl_usbotg: usbotggrp {
-+		fsl,pins = <
-+			MX6QDL_PAD_EIM_D21__USB_OTG_OC			0x1b0b0
-+			/* power enable, high active */
-+			MX6QDL_PAD_EIM_D22__GPIO3_IO22			0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_usdhc1: usdhc1grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_SD1_CMD__SD1_CMD			0x170f9
-+			MX6QDL_PAD_SD1_CLK__SD1_CLK			0x100f9
-+			MX6QDL_PAD_SD1_DAT0__SD1_DATA0			0x170f9
-+			MX6QDL_PAD_SD1_DAT1__SD1_DATA1			0x170f9
-+			MX6QDL_PAD_SD1_DAT2__SD1_DATA2			0x170f9
-+			MX6QDL_PAD_SD1_DAT3__SD1_DATA3			0x170f9
-+			MX6QDL_PAD_GPIO_1__GPIO1_IO01			0x1b0b0
-+		>;
-+	};
-+
-+	pinctrl_usdhc3: usdhc3grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_SD3_CMD__SD3_CMD			0x17099
-+			MX6QDL_PAD_SD3_CLK__SD3_CLK			0x10099
-+			MX6QDL_PAD_SD3_DAT0__SD3_DATA0			0x17099
-+			MX6QDL_PAD_SD3_DAT1__SD3_DATA1			0x17099
-+			MX6QDL_PAD_SD3_DAT2__SD3_DATA2			0x17099
-+			MX6QDL_PAD_SD3_DAT3__SD3_DATA3			0x17099
-+			MX6QDL_PAD_SD3_DAT4__SD3_DATA4			0x17099
-+			MX6QDL_PAD_SD3_DAT5__SD3_DATA5			0x17099
-+			MX6QDL_PAD_SD3_DAT6__SD3_DATA6			0x17099
-+			MX6QDL_PAD_SD3_DAT7__SD3_DATA7			0x17099
-+			MX6QDL_PAD_SD3_RST__SD3_RESET			0x1b0b1
-+		>;
-+	};
-+};
+ #if IS_ENABLED(CONFIG_DAX)
+ struct dax_device *alloc_dax(void *private, const struct dax_operations *ops);
++void *dax_holder(struct dax_device *dax_dev);
+ void put_dax(struct dax_device *dax_dev);
+ void kill_dax(struct dax_device *dax_dev);
+ void dax_write_cache(struct dax_device *dax_dev, bool wc);
+@@ -53,6 +66,10 @@ static inline bool daxdev_mapping_supported(struct vm_area_struct *vma,
+ 	return dax_synchronous(dax_dev);
+ }
+ #else
++static inline void *dax_holder(struct dax_device *dax_dev)
++{
++	return NULL;
++}
+ static inline struct dax_device *alloc_dax(void *private,
+ 		const struct dax_operations *ops)
+ {
+@@ -96,12 +113,9 @@ struct writeback_control;
+ #if defined(CONFIG_BLOCK) && defined(CONFIG_FS_DAX)
+ int dax_add_host(struct dax_device *dax_dev, struct gendisk *disk);
+ void dax_remove_host(struct gendisk *disk);
+-struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev,
+-		u64 *start_off);
+-static inline void fs_put_dax(struct dax_device *dax_dev)
+-{
+-	put_dax(dax_dev);
+-}
++struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev, u64 *start_off,
++		void *holder, const struct dax_holder_operations *ops);
++void fs_put_dax(struct dax_device *dax_dev, void *holder);
+ #else
+ static inline int dax_add_host(struct dax_device *dax_dev, struct gendisk *disk)
+ {
+@@ -111,11 +125,12 @@ static inline void dax_remove_host(struct gendisk *disk)
+ {
+ }
+ static inline struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev,
+-		u64 *start_off)
++		u64 *start_off, void *holder,
++		const struct dax_holder_operations *ops)
+ {
+ 	return NULL;
+ }
+-static inline void fs_put_dax(struct dax_device *dax_dev)
++static inline void fs_put_dax(struct dax_device *dax_dev, void *holder)
+ {
+ }
+ #endif /* CONFIG_BLOCK && CONFIG_FS_DAX */
+@@ -185,6 +200,8 @@ size_t dax_copy_to_iter(struct dax_device *dax_dev, pgoff_t pgoff, void *addr,
+ 		size_t bytes, struct iov_iter *i);
+ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+ 			size_t nr_pages);
++int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off, u64 len,
++		int mf_flags);
+ void dax_flush(struct dax_device *dax_dev, void *addr, size_t size);
+ 
+ ssize_t dax_iomap_rw(struct kiocb *iocb, struct iov_iter *iter,
 -- 
-2.30.2
+2.35.1
+
+
 
