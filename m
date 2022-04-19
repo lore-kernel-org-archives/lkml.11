@@ -2,116 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3DBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E15C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353225AbiDSOW0 (ORCPT
+        id S1349674AbiDSOZu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
+        Tue, 19 Apr 2022 10:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353076AbiDSOVt (ORCPT
+        with ESMTP id S242701AbiDSOZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:21:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3821900C;
-        Tue, 19 Apr 2022 07:19:05 -0700 (PDT)
+        Tue, 19 Apr 2022 10:25:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A462A279;
+        Tue, 19 Apr 2022 07:23:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69AB7B819EB;
-        Tue, 19 Apr 2022 14:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ACF6C385AD;
-        Tue, 19 Apr 2022 14:19:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9939160A75;
+        Tue, 19 Apr 2022 14:23:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E5EC385A5;
+        Tue, 19 Apr 2022 14:23:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650377943;
-        bh=tJvSyYshW26j5siNkBNgQg3cRVt6d+7DxHaeBiQOvXo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FfY5L0VOuX+LVyyGtaVjdNIa515Lqxx3f69/HqI0Fdt5M6zqySwTGRYePfyqFJe2O
-         26H5WPR6j9j8CJ+GK+eeVkd8ecMci/yalwvtp1hd+W7299YJNuzTX3AxOq4wV7VU29
-         cV0gRRMGfrTvqkh31KZF339f2xGKzUA1sp9a9k/eVe+XUN0S0qcxNWQnJoth57U67V
-         y6wAFoVOGobG7tr0StxiuB8fgmGs9z46ZE3vPo7YMxZFxswGzORIW6hX5d7Z1eCv/i
-         M6Q1emDXjN21j4VVrHLvsnnZT01cguWqMowtD9/M/eVEn4GFjKtXlPYnqGTz5PUqbf
-         LfU3oNhc8HOSg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1ngoh3-005MFS-4m; Tue, 19 Apr 2022 15:19:01 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, kernel-team@android.com
-Subject: [PATCH v3 09/10] gpio: Update TODO to mention immutable irq_chip structures
-Date:   Tue, 19 Apr 2022 15:18:45 +0100
-Message-Id: <20220419141846.598305-10-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220419141846.598305-1-maz@kernel.org>
-References: <20220419141846.598305-1-maz@kernel.org>
+        s=k20201202; t=1650378186;
+        bh=r+/LbAXLgUeTEiq7rAEkH2u3ARXKg3d+g9o5geQA7ow=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=rGaFFQnM7jDwpPyilC+EndIxcEW5O9KgQtOIfWZq9Kp1HLbd1Bx0v6KSfEwEqBFzv
+         c+7OkPywHq/0smkIS3wxMkgbbNQL/9wpgOk+a/OK08dedIAKGbsF9fYS5+VBksMJIh
+         EJRVA0oWTdshkjdFBRKDL/l6XlG21KJfRecZ/vvG1LaGbQwzYL/YaAmujsQiMCGKdp
+         v9fX8nEaY/uPh+HVUjhmYZhP2JFQWsZsYj62KmiJPngzO/UmA4VNv5DxvVA/TyRi6n
+         oJug6JoayyRp87EKEdR5r7ZipEpbCTGPMVO/Bg31knG+1W42DcJru7Xb12T8/NLrmp
+         hzi8ZRFItXj8Q==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 9AF6E5C031F; Tue, 19 Apr 2022 07:23:05 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 07:23:05 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org
+Subject: Re: [PATCH rcu 0/2] Documentation updates for v5.19
+Message-ID: <20220419142305.GI4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220418225004.GA3944767@paulmck-ThinkPad-P17-Gen-1>
+ <371488b0-1baf-8cea-628f-83c9b0383c88@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <371488b0-1baf-8cea-628f-83c9b0383c88@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-5 drivers are converted, a few hundred to go. Definitely worth of
-a TODO entry, in the hope that someone will notice it and do
-a bulk update.
+On Tue, Apr 19, 2022 at 02:08:48PM +0700, Bagas Sanjaya wrote:
+> On 4/19/22 05:50, Paul E. McKenney wrote:
+> > Hello!
+> > 
+> > This series contains a couple of documentation updates:
+> > 
+> > 1.	Add documentation for rude and trace RCU flavors.
+> > 
+> > 2.	Update RCU cross-references as suggested in doc-guide, courtesy
+> > 	of Akira Yokosawa.
+> > 
+> 
+> Bulding htmldocs with this series, no new warnings found.
+> 
+> Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/gpio/TODO | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+Thank you for testing!  I will apply your Tested-by on the next
+rebase.
 
-diff --git a/drivers/gpio/TODO b/drivers/gpio/TODO
-index b8b1473a5b1e..f87ff3fa8a53 100644
---- a/drivers/gpio/TODO
-+++ b/drivers/gpio/TODO
-@@ -178,3 +178,22 @@ discussed but the idea is to provide a low-level access point
- for debugging and hacking and to expose all lines without the
- need of any exporting. Also provide ample ammunition to shoot
- oneself in the foot, because this is debugfs after all.
-+
-+
-+Moving over to immutable irq_chip structures
-+
-+Most of the gpio chips implementing interrupt support rely on gpiolib
-+intercepting some of the irq_chip callbacks, preventing the structures
-+from being made read-only and forcing duplication of structures that
-+should otherwise be unique.
-+
-+The solution is to call into the gpiolib code when needed (resource
-+management, enable/disable or unmask/mask callbacks), and to let the
-+core code know about that by exposing a flag (IRQCHIP_IMMUTABLE) in
-+the irq_chip structure. The irq_chip structure can then be made unique
-+and const.
-+
-+A small number of drivers have been converted (pl061, tegra186, msm,
-+amd, apple), and can be used as examples of how to proceed with this
-+conversion. Note that drivers using the generic irqchip framework
-+cannot be converted yet, but watch this space!
--- 
-2.34.1
+> -- 
+> An old man doll... just what I always wanted! - Clara
 
+Nutcracker?
+
+							Thanx, Paul
