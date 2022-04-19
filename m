@@ -2,220 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 08:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350171AbiDSIzc (ORCPT
+        id S1350178AbiDSI4v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51702 "EHLO
+        Tue, 19 Apr 2022 04:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235265AbiDSIz3 (ORCPT
+        with ESMTP id S1345296AbiDSI4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:55:29 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC44193EF
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:52:46 -0700 (PDT)
-Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KjHc014LhzfZDR;
-        Tue, 19 Apr 2022 16:52:00 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500024.china.huawei.com (7.221.188.100) with Microsoft SMTP Server
+        Tue, 19 Apr 2022 04:56:49 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8180220D5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 01:54:06 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KjHbT6Y5vzFqSY;
+        Tue, 19 Apr 2022 16:51:33 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 16:52:43 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ 15.1.2375.24; Tue, 19 Apr 2022 16:54:03 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 16:52:42 +0800
-Message-ID: <be7043f9-e9fb-d444-4ffd-9f3e7e83cf86@huawei.com>
-Date:   Tue, 19 Apr 2022 16:52:41 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 16:54:03 +0800
+Message-ID: <477dcc83-4298-b7e4-3a6a-c8fa23b27d01@huawei.com>
+Date:   Tue, 19 Apr 2022 16:54:02 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH -next v4 3/4] arm64: mm: add support for page table check
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-riscv@lists.infradead.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220418034444.520928-1-tongtiangen@huawei.com>
- <20220418034444.520928-4-tongtiangen@huawei.com>
- <1c314feb-cd78-2bb3-462e-4ea3cefe122e@arm.com>
- <ca13a4ec-17a6-8e29-e29e-39f9b47e78df@huawei.com>
- <88a70fa7-b1c8-6f5c-1018-df673949785c@arm.com>
-From:   Tong Tiangen <tongtiangen@huawei.com>
-In-Reply-To: <88a70fa7-b1c8-6f5c-1018-df673949785c@arm.com>
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3 1/4] hugetlb: Fix wrong use of nr_online_nodes
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     Peng Liu <liupeng256@huawei.com>, <mike.kravetz@oracle.com>,
+        <david@redhat.com>, <yaozhenguo1@gmail.com>,
+        <baolin.wang@linux.alibaba.com>, <songmuchun@bytedance.com>,
+        <liuyuntao10@huawei.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220413032915.251254-1-liupeng256@huawei.com>
+ <20220413032915.251254-2-liupeng256@huawei.com>
+ <20220415020927.x7ylevbd5uaevfyt@offworld>
+ <08896d0c-8821-000e-4cc2-9e64beda167f@huawei.com>
+ <1407c3bb-89c4-ae11-7b09-d42115ab693e@huawei.com>
+ <20220418214040.419a2e17254eb33f68f94b59@linux-foundation.org>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <20220418214040.419a2e17254eb33f68f94b59@linux-foundation.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600017.china.huawei.com (7.193.23.234)
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-在 2022/4/19 15:10, Anshuman Khandual 写道:
-> 
-> 
-> On 4/18/22 21:17, Tong Tiangen wrote:
->>
->>
->> 在 2022/4/18 17:28, Anshuman Khandual 写道:
->>> On 4/18/22 09:14, Tong Tiangen wrote:
->>>> From: Kefeng Wang <wangkefeng.wang@huawei.com>
-[...]
+On 2022/4/19 12:40, Andrew Morton wrote:
+> On Sat, 16 Apr 2022 09:21:45 +0800 Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+>
+>> On 2022/4/15 13:41, Kefeng Wang wrote:
+>>> On 2022/4/15 10:09, Davidlohr Bueso wrote:
+>>>> On Wed, 13 Apr 2022, Peng Liu wrote:
+>>>>
+>>>>> Certain systems are designed to have sparse/discontiguous nodes. In
+>>>>> this case, nr_online_nodes can not be used to walk through numa node.
+>>>>> Also, a valid node may be greater than nr_online_nodes.
+>>>>>
+>>>>> However, in hugetlb, it is assumed that nodes are contiguous. Recheck
+>>>>> all the places that use nr_online_nodes, and repair them one by one.
+>>>>>
+>>>>> Suggested-by: David Hildenbrand <david@redhat.com>
+>>>>> Fixes: 4178158ef8ca ("hugetlbfs: fix issue of preallocation of
+>>>>> gigantic pages can't work")
+>>>>> Fixes: b5389086ad7b ("hugetlbfs: extend the definition of hugepages
+>>>>> parameter to support node allocation")
+>>>>> Fixes: e79ce9832316 ("hugetlbfs: fix a truncation issue in hugepages
+>>>>> parameter")
+>>>>> Fixes: f9317f77a6e0 ("hugetlb: clean up potential spectre issue
+>>>>> warnings")
+>>>>> Signed-off-by: Peng Liu <liupeng256@huawei.com>
+>>>>> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>>>>> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+>>>> Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+>>>>
+>>>> ... but
+>>>>
+>>>>> ---
+>>>>> mm/hugetlb.c | 12 ++++++------
+>>>>> 1 file changed, 6 insertions(+), 6 deletions(-)
+>>>>>
+>>>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>>>> index b34f50156f7e..5b5a2a5a742f 100644
+>>>>> --- a/mm/hugetlb.c
+>>>>> +++ b/mm/hugetlb.c
+>>>>> @@ -2979,7 +2979,7 @@ int __alloc_bootmem_huge_page(struct hstate
+>>>>> *h, int nid)
+>>>>>      struct huge_bootmem_page *m = NULL; /* initialize for clang */
+>>>>>      int nr_nodes, node;
+>>>>>
+>>>>> -    if (nid != NUMA_NO_NODE && nid >= nr_online_nodes)
+>>>>> +    if (nid != NUMA_NO_NODE && !node_online(nid))
+>>>> afaict null_blk could also use this, actually the whole thing wants a
+>>>> helper - node_valid()?
+>>>>
+>>> This one should be unnecessary, and this patch looks has a bug,
 >>>
->>> Could you explain what was expected during pmdp_collapse_flush() which when
->>> failed, triggered this BUG_ON() ? This counter seems to be page table check
->>> specific, could it just go wrong ? I have not looked into the details about
->>> page table check mechanism.
+>>> if a very nid passed to node_online(), it may crash,  could you
+>>> re-check it,
 >>>
->>> - Anshuman
->>> .
+>>> see my changes below,
+>>>
+>>> 1) add tmp check against MAX_NUMNODES before node_online() check,
+>>>
+>>>      and move it after get tmp in hugepages_setup() , this could cover
+>>> both per-node alloc and normal alloc
+>> sorry，for normal alloc, tmp is the number of huge pages, we don't  need
+>> the movement,   only add tmp >= MAX_NUMNODES is ok
 >>
->> Hi Anshuman:
->>
->> Thanks for your job.
->>
->> Let me briefly explain the principle of page table check(PTC).
->>
->> PTC introduces the following struct for page mapping type count:
->> struct page_table_check {
->>          atomic_t anon_map_count;
->>          atomic_t file_map_count;
->> };
->> This structure can be obtained by "lookup_page_ext(page)"
-> 
-> 
-> Right.
-> 
->>
->> When page table entries are set(pud/pmd/pte), page_table_check_set()  is called to increase the page mapping count, Also check for errors (eg:if a page is used for anonymous mapping, then the page cannot be used for file mapping at the same time).
->>
->> When page table entries are clear(pud/pmd/pte), page_table_check_clear()  is called to decrease the page mapping count, Also check for errors.
->>
->> The error check rules are described in the following documents: Documentation/vm/page_table_check.rst
-> 
-> Snippet from that document.
-> 
-> +-------------------+-------------------+-------------------+------------------+
-> | Current Mapping   | New mapping       | Permissions       | Rule             |
-> +===================+===================+===================+==================+
-> | Anonymous         | Anonymous         | Read              | Allow            |
-> +-------------------+-------------------+-------------------+------------------+
-> | Anonymous         | Anonymous         | Read / Write      | Prohibit         |
-> +-------------------+-------------------+-------------------+------------------+
-> | Anonymous         | Named             | Any               | Prohibit         |
-> +-------------------+-------------------+-------------------+------------------+
-> | Named             | Anonymous         | Any               | Prohibit         |
-> +-------------------+-------------------+-------------------+------------------+
-> | Named             | Named             | Any               | Allow            |
-> +-------------------+-------------------+-------------------+------------------+
-> 
-> Does 'Named' refer to file mapping ? Also what does 'Prohibit' imply here ? The
-> check will call out a BUG_ON() in such cases ?
-
-Right， Named means file mapping,  Prohibit here trigger BUG_ON.
-
-> 
-> page_table_check_clear()
-> {
-> 
->                  if (anon) {
->                          BUG_ON(atomic_read(&ptc->file_map_count));
->                          BUG_ON(atomic_dec_return(&ptc->anon_map_count) < 0);
->                  } else {
->                          BUG_ON(atomic_read(&ptc->anon_map_count));
->                          BUG_ON(atomic_dec_return(&ptc->file_map_count) < 0);
->                  }
-> }
-> 
-> So in the clear path, there are two checks
-> 
-> - If the current mapping is Anon, file_map_count cannot be positive and other way
-> - Decrement the applicable counter ensuring that it does not turn negative
-> 
-> page_table_check_set()
-> {
->                  if (anon) {
->                          BUG_ON(atomic_read(&ptc->file_map_count));
->                          BUG_ON(atomic_inc_return(&ptc->anon_map_count) > 1 && rw);
->                  } else {
->                          BUG_ON(atomic_read(&ptc->anon_map_count));
->                          BUG_ON(atomic_inc_return(&ptc->file_map_count) < 0);
->                  }
-> }
-> 
-> So in the set path, there are two checks
-> 
-> - If the current mapping is anon, file_map_count cannot be positive and other way
-> - Anon mapping cannot be RW if the page has been mapped more than once
-> - But then why check for negative values for file_map_count after increment ?
-
-Check for negative after increment is logically OK and <=0 should be 
-more reasonable.
-
-> 
-> Is there any other checks, which this test ensures, that I might be missing ?
-
-The following checks are performed when page table entry are 
-allocated/released:
-__page_table_check_zero()
-{
-	BUG_ON(atomic_read(&ptc->anon_map_count));
-	BUG_ON(atomic_read(&ptc->file_map_count));
-}
-
-> 
->>
->> The setting and clearing of page table entries are symmetrical.
-> 
-> This assumption should be true for any user accessible mapping, for this test to work ?
-
-Right, if not, here is BUG_ON.
-
-However, as Pasha said:
-"this being new on ARM64, it is possible that the bug is in 
-PTC/khugepaged itself."
-
-> 
-> Also why PUD_PAGE_SIZE/PMD_PAGE_SIZE are being used here instead of directly using
-> generic macros such as PUD_SIZE/PMD_SIZE ? Is there a specific reason ?
-
-I did code optimization for this, in patch 1/4 of this patchset:
-
-+#ifndef PMD_PAGE_SIZE
-+#define PMD_PAGE_SIZE	PMD_SIZE
-+#endif
-+
-+#ifndef PUD_PAGE_SIZE
-+#define PUD_PAGE_SIZE	PUD_SIZE
-+#endif
-
-
-Thank you.
-Tong.
-
-> 
->>
->> Here __page_table_check_pmd_clear() trigger BUGON which indicates that the pmd entry file mapping count has become negative.
->>
->> I guess if PTC didn't detect this exception, would there have been any problems?
-> 
-> I am looking into this, not sure for now.
+> Does the v4 patch address the issues which were raised in this thread?
+Yes， v4 has fix this.
+>
+>
+> --- a/mm/hugetlb.c~hugetlb-fix-wrong-use-of-nr_online_nodes-v4
+> +++ a/mm/hugetlb.c
+> @@ -2986,8 +2986,6 @@ int __alloc_bootmem_huge_page(struct hst
+>   	struct huge_bootmem_page *m = NULL; /* initialize for clang */
+>   	int nr_nodes, node;
+>   
+> -	if (nid != NUMA_NO_NODE && !node_online(nid))
+> -		return 0;
+>   	/* do node specific alloc */
+>   	if (nid != NUMA_NO_NODE) {
+>   		m = memblock_alloc_try_nid_raw(huge_page_size(h), huge_page_size(h),
+> @@ -4174,7 +4172,7 @@ static int __init hugepages_setup(char *
+>   				pr_warn("HugeTLB: architecture can't support node specific alloc, ignoring!\n");
+>   				return 0;
+>   			}
+> -			if (!node_online(tmp))
+> +			if (tmp >= MAX_NUMNODES || !node_online(tmp))
+>   				goto invalid;
+>   			node = array_index_nospec(tmp, MAX_NUMNODES);
+>   			p += count + 1;
+> _
+>
 > .
