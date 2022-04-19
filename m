@@ -2,229 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6546EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF30FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351998AbiDSMEV (ORCPT
+        id S1351979AbiDSMFb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
+        Tue, 19 Apr 2022 08:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351961AbiDSMCR (ORCPT
+        with ESMTP id S1351975AbiDSMD0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:02:17 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1492316A;
-        Tue, 19 Apr 2022 04:58:50 -0700 (PDT)
+        Tue, 19 Apr 2022 08:03:26 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20F528982;
+        Tue, 19 Apr 2022 04:59:14 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id s25so20467524edi.13;
+        Tue, 19 Apr 2022 04:59:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650369530; x=1681905530;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tBgvWdaivKxPupWluH3aaPmc9RwgWxsFZBbdngJpiVA=;
-  b=JcjUbGWeMsDFfx1rbGnrA6cMcVZ/L1jo5VFc6WkYse2CP0pkNToMfpqA
-   p22zFlq6IZrU+6u75ltiJnEQHY/lIsr993DehZp/+7/uDI9/gTk31D3e7
-   FIIUWKhi0E16bMKkT0QDPX5FNs8E+8ew/SLjcdXujMSnVFOoSFqtadCEW
-   4=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 19 Apr 2022 04:58:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 04:58:49 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 19 Apr 2022 04:58:48 -0700
-Received: from [10.79.142.210] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 19 Apr
- 2022 04:58:44 -0700
-Message-ID: <07b820e5-87e7-37ea-734d-df3e994c9698@quicinc.com>
-Date:   Tue, 19 Apr 2022 17:28:17 +0530
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Nke0HHcm55q7ZWg7KNIaQeK9cBWmjw2n9HY63k1pdI0=;
+        b=qitSMZa/gzmYJvc0wtUSmri9mXcQvVE05LwgF+gp11f/Ll9YV/2FqbHdxbcYIaVItL
+         RA/+2mhOCK1v650zNp6x87vcyaZvx+3V8Hdz1SFcA11QspFDlNV/YhUfrxv73+64VEDe
+         FRpunRGX37zofmTMs+GYOWdhPPaKHz8R7ein1VDlbuEpGhVbFFGEIHYz6mKxLBxswJec
+         ogVxSBFtEN1L/LnI2zaLoD7jMEEfjCrak0RBKLnlHJ3QbtIiHIQygfUT2Gj+jgUn/fxG
+         p5Vu3PwP2YSw2UEAFXgd3SXrVGgC03ckSmBMvBPWbXkgS/VxqkC5BSCoYRbt55Sk43tv
+         7c8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Nke0HHcm55q7ZWg7KNIaQeK9cBWmjw2n9HY63k1pdI0=;
+        b=W9NqFuoe0WCWTWKKxo4Up1VFv+TzBnUJ+MmgnJ76TO2CVXTn5t1iw83dtJLhZL91bt
+         Dj1zVw/SUROg842mGErw8OasOhBcBAkW6HiG57EzLmDuLVmVMdlXIHUJMJe8g6wLcWV7
+         wdt3mOxPtzgeilFFELI4K3O8/1lbTFDCcm6huHWEAnpmBeAuvjhAZFrjqBmFhc/N1aJY
+         +r/wEEfWsBiYVS9ixpeGYv5hxY4b3Wrktczs79CQk15D544oT1sOTY6xpSYlKbSPuXuu
+         +E+sehRECxJYZfRgiDQ88/gGXV6TTOMXwv8o5fNW8GtU8efGfmkGqQHmSox3ctuJEXhh
+         xMZQ==
+X-Gm-Message-State: AOAM533wX+DWNtMIonTJAAUuIydMNHkNPLym8A1mRzLJA3IexRDFoKbb
+        +KlCesrzY8jKPKUK7CKLA0Y=
+X-Google-Smtp-Source: ABdhPJwC+kRxxlh7ja6yWcyvetpOISZ6zaYfBGlnmVoNx/vMlCHfW1uXDfa6mZ281Sq+VYUqHCwHYg==
+X-Received: by 2002:a05:6402:2689:b0:422:15c4:e17e with SMTP id w9-20020a056402268900b0042215c4e17emr17368136edd.33.1650369553437;
+        Tue, 19 Apr 2022 04:59:13 -0700 (PDT)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id n6-20020aa7c786000000b00410d2403ccfsm8395084eds.21.2022.04.19.04.59.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 04:59:13 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 12:59:11 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/32] 4.19.239-rc1 review
+Message-ID: <Yl6kD7jIYKaxAF3K@debian>
+References: <20220418121127.127656835@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH V7 0/7] Add driver support for Data Capture and Compare
- Engine(DCC) for SM8150,SC7280,SC7180,SDM845
-Content-Language: en-CA
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Alex Elder <elder@ieee.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        "Sai Prakash Ranjan" <quic_saipraka@quicinc.com>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        Rajendra Nayak <quic_rjendra@codeaurora.org>,
-        <vkoul@kernel.org>
-References: <cover.1646285069.git.quic_schowdhu@quicinc.com>
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-In-Reply-To: <cover.1646285069.git.quic_schowdhu@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Greg,
 
-On 3/3/2022 11:57 AM, Souradeep Chowdhury wrote:
-> DCC(Data Capture and Compare) is a DMA engine designed for debugging purposes.
-> In case of a system crash or manual software triggers by the user the DCC hardware
-> stores the value at the register addresses which can be used for debugging purposes.
-> The DCC driver provides the user with debugfs interface to configure the register
-> addresses. The options that the DCC hardware provides include reading from registers,
-> writing to registers, first reading and then writing to registers and looping
-> through the values of the same register.
->
-> In certain cases a register write needs to be executed for accessing the rest of the
-> registers, also the user might want to record the changing values of a register with
-> time for which he has the option to use the loop feature.
->
-> The options mentioned above are exposed to the user by debugfs files once the driver
-> is probed. The details and usage of this debugfs files are documented in
-> Documentation/ABI/testing/debugfs-driver-dcc.
->
-> As an example let us consider a couple of debug scenarios where DCC has been proved to be
-> effective for debugging purposes:-
->
-> i)TimeStamp Related Issue
->
-> On SC7180, there was a coresight timestamp issue where it would occasionally be all 0
-> instead of proper timestamp values.
->
-> Proper timestamp:
-> Idx:3373; ID:10; I_TIMESTAMP : Timestamp.; Updated val = 0x13004d8f5b7aa; CC=0x9e
->
-> Zero timestamp:
-> Idx:3387; ID:10; I_TIMESTAMP : Timestamp.; Updated val = 0x0; CC=0xa2
->
-> Now this is a non-fatal issue and doesn't need a system reset, but still needs
-> to be rootcaused and fixed for those who do care about coresight etm traces.
-> Since this is a timestamp issue, we would be looking for any timestamp related
-> clocks and such.
->
-> We get all the clk register details from IP documentation and configure it
-> via DCC config_read debugfs node. Before that we set the current linked list.
->
-> /* Set the current linked list */
-> echo 3 > /sys/kernel/debug/dcc/../curr_list
->
-> /* Program the linked list with the addresses */
-> echo 0x10c004 > /sys/kernel/debug/dcc/../config_read
-> echo 0x10c008 > /sys/kernel/debug/dcc/../config_read
-> echo 0x10c00c > /sys/kernel/debug/dcc/../config_read
-> echo 0x10c010 > /sys/kernel/debug/dcc/../config_read
-> ..... and so on for other timestamp related clk registers
->
-> /* Other way of specifying is in "addr len" pair, in below case it
-> specifies to capture 4 words starting 0x10C004 */
->
-> echo 0x10C004 4 > /sys/kernel/debug/dcc/../config_read
->
-> /* Enable DCC */
-> echo 1 > /sys/kernel/debug/dcc/../enable
->
-> /* Run the timestamp test for working case */
->
-> /* Send SW trigger */
-> echo 1 > /sys/kernel/debug/dcc/../trigger
->
-> /* Read SRAM */
-> cat /dev/dcc_sram > dcc_sram1.bin
->
-> /* Run the timestamp test for non-working case */
->
-> /* Send SW trigger */
-> echo 1 > /sys/kernel/debug/dcc/../trigger
->
-> /* Read SRAM */
-> cat /dev/dcc_sram > dcc_sram2.bin
->
-> Get the parser from [1] and checkout the latest branch.
->
-> /* Parse the SRAM bin */
-> python dcc_parser.py -s dcc_sram1.bin --v2 -o output/
-> python dcc_parser.py -s dcc_sram2.bin --v2 -o output/
->
-> Sample parsed output of dcc_sram1.bin:
->
-> <hwioDump version="1">
->          <timestamp>03/14/21</timestamp>
->              <generator>Linux DCC Parser</generator>
->                  <chip name="None" version="None">
->                  <register address="0x0010c004" value="0x80000000" />
->                  <register address="0x0010c008" value="0x00000008" />
->                  <register address="0x0010c00c" value="0x80004220" />
->                  <register address="0x0010c010" value="0x80000000" />
->              </chip>
->      <next_ll_offset>next_ll_offset : 0x1c </next_ll_offset>
-> </hwioDump>
->
-> ii)NOC register errors
->
-> A particular class of registers called NOC which are functional registers was reporting
-> errors while logging the values.To trace these errors the DCC has been used effectively.
-> The steps followed were similar to the ones mentioned above.
-> In addition to NOC registers a few other dependent registers were configured in DCC to
-> monitor it's values during a crash. A look at the dependent register values revealed that
-> the crash was happening due to a secured access to one of these dependent registers.
-> All these debugging activity and finding the root cause was achieved using DCC.
->
-> DCC parser is available at the following open source location
->
-> https://source.codeaurora.org/quic/la/platform/vendor/qcom-opensource/tools/tree/dcc_parser
->
-> Changes in V7
->
-> *The DCC interface has been shifted from sysfs to debugfs. The new interface
->   details are documented in Documentation/ABI/testing/debugfs-driver-dcc.
->
-> *All the rest of the  comments from previous versions have been implemented.
->
->
-> Souradeep Chowdhury (7):
->    dt-bindings: Added the yaml bindings for DCC
->    soc: qcom: dcc:Add driver support for Data Capture and Compare
->      unit(DCC)
->    MAINTAINERS: Add the entry for DCC(Data Capture and Compare) driver
->      support
->    arm64: dts: qcom: sm8150: Add Data Capture and Compare(DCC) support
->      node
->    arm64: dts: qcom: sc7280: Add Data Capture and Compare(DCC) support
->      node
->    arm64: dts: qcom: sc7180: Add Data Capture and Compare(DCC) support
->      node
->    arm64: dts: qcom: sdm845: Add Data Capture and Compare(DCC) support
->      node
->
->   Documentation/ABI/testing/debugfs-driver-dcc       |  124 ++
->   .../devicetree/bindings/arm/msm/qcom,dcc.yaml      |   43 +
->   MAINTAINERS                                        |    8 +
->   arch/arm64/boot/dts/qcom/sc7180.dtsi               |    6 +
->   arch/arm64/boot/dts/qcom/sc7280.dtsi               |    6 +
->   arch/arm64/boot/dts/qcom/sdm845.dtsi               |    6 +
->   arch/arm64/boot/dts/qcom/sm8150.dtsi               |    6 +
->   drivers/soc/qcom/Kconfig                           |    8 +
->   drivers/soc/qcom/Makefile                          |    1 +
->   drivers/soc/qcom/dcc.c                             | 1465 ++++++++++++++++++++
->   10 files changed, 1673 insertions(+)
->   create mode 100644 Documentation/ABI/testing/debugfs-driver-dcc
->   create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,dcc.yaml
->   create mode 100644 drivers/soc/qcom/dcc.c
->
-> --
-> 2.7.4
+On Mon, Apr 18, 2022 at 02:13:40PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.239 release.
+> There are 32 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
+> Anything received after that time might be too late.
 
-Hi,
+Build test:
+mips (gcc version 11.2.1 20220314): 63 configs -> no failure
+arm (gcc version 11.2.1 20220314): 116 configs -> no new failure
+arm64 (gcc version 11.2.1 20220314): 2 configs -> no failure
+x86_64 (gcc version 11.2.1 20220314): 4 configs -> no failure
 
-Gentle Ping
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
 
-  Let me know if there is any feedback regarding this patch
+[1]. https://openqa.qa.codethink.co.uk/tests/1035
 
-Thanks,
 
-Souradeep
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
 
