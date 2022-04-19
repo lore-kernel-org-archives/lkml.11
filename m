@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 497ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C0DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351548AbiDSLiu (ORCPT
+        id S1346918AbiDSLiz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
+        Tue, 19 Apr 2022 07:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351455AbiDSLhn (ORCPT
+        with ESMTP id S1351505AbiDSLhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:37:43 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C3E14039
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:00 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id g18so32240148ejc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:00 -0700 (PDT)
+        Tue, 19 Apr 2022 07:37:48 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0051A835
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:05 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id k23so32263619ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TqdyAx2hKeSTzZvT1XZ7Yq5gael+ofTQxaoTtQ8gQMM=;
-        b=hKtmLd1kRNuBSXB4Y7mNdjpReUDXku+irhd3zFAz4Ubd8SwaqokXDkdCB7GIdLbryC
-         L5stcsj3hpBSraDpJqv7BG2O3Juzg/3EfXdjMZx8tIRDDKWLJOmn5wykqM0KVif5PYqp
-         +fbosiRSyUUjDpvOJI0DDaXlJMdCEf054dEGpQoaLz8IrPX9Zzhk7Sdkp8zNYMq5cX+Z
-         8lspMfQWfQIiZdDfVA4rWW44DdE2e4HYXE6T/UJCOpqm1oRwWHdeKhpVttS9B/fTWkB5
-         pqEJAMzXa2pi405ICk55ytJCWuteAq9boASuNBt2ImF9uXS9tCWG8SQsjL+Xex8Ef3Lx
-         WY1g==
+        bh=za2ChgFa2MAb73hYI38RRAcoAzGnc/qyPQX8xgHdvQM=;
+        b=zVkWhAv51DVC1p4aJpiAjPCoWQril/21gAKuMsm6z+0NXkTbr3mNaIqUaZFcjR39cY
+         v4OMQBXlR/2rhpUCTx0VbESTsmsehL0V/OOEUkWQRkkVnA5m6023KnbBO9lJSa8rsIY2
+         /tvt+ZeGz8iYq05ODrVkPfPZK8t74hDar82Awg+fciFFk2Qd2NRV/6z2dC+Ds9ob3PSI
+         mNw5Vt41Pgcg5nBS6798wd5iqS4jiUWHQ3/NMJ/nlbxPJyi3xKd5m7ZfgU/xleQBIUs/
+         ITljrACLgzODper1Rl5lTvuiSCAyj79YAn5Qn9t2W7PwalGl5eAtA378B8fj3iSS5XxU
+         x/Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TqdyAx2hKeSTzZvT1XZ7Yq5gael+ofTQxaoTtQ8gQMM=;
-        b=TvE7E7qlSfrK4yPvUstwqzJsF288jxFg2Q33Jqb8UmhJTb5IfUDyKpm5kBZUpU6xqd
-         LghG0CG0++OYCMDKq3EPpk3og6RNBvJ0H57aIhE1fbKnF2JLtYNwvkiJvJYlaBndToo3
-         IqLWZ5E757eJvSptlpynFPhxDlmP3uK7Bh64aw39lBKPvLCKLr8iTGcMT69MV/iaGK6O
-         8Lf/ITGN2zKir90Zox9gmPSj/dp+CJLIqheoRbPeWD3i3tAw5pyUZsj+N+N9N2UHk/sk
-         lsHHxpR7LWA/hT2XJu8biAwtq6LC3hPf7LcA96bSLxu0+LzgorUin374/OfDpD5SoYYv
-         WDug==
-X-Gm-Message-State: AOAM532BdbQdKUA+xyiwhLVuJPdGTTwM94MPg3ZaoAt57YCKK6ZEqW9v
-        nk+Px4d4BUiJmGcSneh+jnCSbQ==
-X-Google-Smtp-Source: ABdhPJx88ZEAuzCMecJkvkFceLyooIkm16aVnjPesB1obT9t7K00kc35hC5MHq7VHsp1INz4DWoreQ==
-X-Received: by 2002:a17:906:d555:b0:6da:ac8c:f66b with SMTP id cr21-20020a170906d55500b006daac8cf66bmr12918155ejc.107.1650368098510;
-        Tue, 19 Apr 2022 04:34:58 -0700 (PDT)
+        bh=za2ChgFa2MAb73hYI38RRAcoAzGnc/qyPQX8xgHdvQM=;
+        b=y+deylfaqZYO2Q/fGiX3hQx3HyNB0NKK8BIXIwtHGZxT85mn5Rk+7UlHv2hsNCTllf
+         tBaSB4rWHFkKps2WUipZWt3hNJBUsWobY3BdyuBI42NVv+9hi+M0UIeLXgOWNeDvt+g6
+         RG8jqcFLI5JhfmIS5qbcWxB/7WxukqK0mz0uOg25MZT38wWDJrYT1c3a7WApI3pwvFZH
+         07AVledT+4MkRUxQV4GLtZ4nwY9z7aOLpvOeBtk7rzjMSBF/bdCUZ9CNtU1XiOj1ODTV
+         2IuEKYc9lfJbINVHOBHvMCyvJaZ+Iu7nRRTjfKns/zUvQhzk8Px+VciPL3t/TNWXxzSs
+         86Ow==
+X-Gm-Message-State: AOAM532dGccPze3zfTFMWg+b4ElJlC0x6FWUFOvqAiOvvAgTDsJsv7GY
+        p8M21jQFxjJp0WJq8WKc31ayJw==
+X-Google-Smtp-Source: ABdhPJykXBXYimpAeumTHTNdPOwvvfUNc2rfx1d0CpWSKysWkExiziY11QDQTp0Hk2gdb+t7K6B5eQ==
+X-Received: by 2002:a17:907:2d0f:b0:6e8:b710:a68 with SMTP id gs15-20020a1709072d0f00b006e8b7100a68mr12790234ejc.510.1650368103349;
+        Tue, 19 Apr 2022 04:35:03 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.34.57
+        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.35.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 04:34:58 -0700 (PDT)
+        Tue, 19 Apr 2022 04:35:02 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>
@@ -78,10 +78,10 @@ Cc:     Stuart Yoder <stuyoder@gmail.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH v7 07/12] spi: Use helper for safer setting of driver_override
-Date:   Tue, 19 Apr 2022 13:34:30 +0200
-Message-Id: <20220419113435.246203-8-krzysztof.kozlowski@linaro.org>
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH v7 10/12] slimbus: qcom-ngd: Fix kfree() of static memory on setting driver_override
+Date:   Tue, 19 Apr 2022 13:34:33 +0200
+Message-Id: <20220419113435.246203-11-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
 References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
@@ -91,67 +91,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a helper to set driver_override to the reduce amount of duplicated
-code.
+The driver_override field from platform driver should not be initialized
+from static memory (string literal) because the core later kfree() it,
+for example when driver_override is set via sysfs.
 
+Use dedicated helper to set driver_override properly.
+
+Fixes: 917809e2280b ("slimbus: ngd: Add qcom SLIMBus NGD driver")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- drivers/spi/spi.c       | 26 ++++----------------------
- include/linux/spi/spi.h |  2 ++
- 2 files changed, 6 insertions(+), 22 deletions(-)
+ drivers/slimbus/qcom-ngd-ctrl.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 890ff46c784a..be8f1a1e21b2 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -71,29 +71,11 @@ static ssize_t driver_override_store(struct device *dev,
- 				     const char *buf, size_t count)
- {
- 	struct spi_device *spi = to_spi_device(dev);
--	const char *end = memchr(buf, '\n', count);
--	const size_t len = end ? end - buf : count;
--	const char *driver_override, *old;
--
--	/* We need to keep extra room for a newline when displaying value */
--	if (len >= (PAGE_SIZE - 1))
--		return -EINVAL;
--
--	driver_override = kstrndup(buf, len, GFP_KERNEL);
--	if (!driver_override)
--		return -ENOMEM;
+diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
+index 0f29a08b4c09..0aa8408464ad 100644
+--- a/drivers/slimbus/qcom-ngd-ctrl.c
++++ b/drivers/slimbus/qcom-ngd-ctrl.c
+@@ -1434,6 +1434,7 @@ static int of_qcom_slim_ngd_register(struct device *parent,
+ 	const struct of_device_id *match;
+ 	struct device_node *node;
+ 	u32 id;
 +	int ret;
  
--	device_lock(dev);
--	old = spi->driver_override;
--	if (len) {
--		spi->driver_override = driver_override;
--	} else {
--		/* Empty string, disable driver override */
--		spi->driver_override = NULL;
--		kfree(driver_override);
--	}
--	device_unlock(dev);
--	kfree(old);
-+	ret = driver_set_override(dev, &spi->driver_override, buf, count);
-+	if (ret)
-+		return ret;
+ 	match = of_match_node(qcom_slim_ngd_dt_match, parent->of_node);
+ 	data = match->data;
+@@ -1455,7 +1456,17 @@ static int of_qcom_slim_ngd_register(struct device *parent,
+ 		}
+ 		ngd->id = id;
+ 		ngd->pdev->dev.parent = parent;
+-		ngd->pdev->driver_override = QCOM_SLIM_NGD_DRV_NAME;
++
++		ret = driver_set_override(&ngd->pdev->dev,
++					  &ngd->pdev->driver_override,
++					  QCOM_SLIM_NGD_DRV_NAME,
++					  strlen(QCOM_SLIM_NGD_DRV_NAME));
++		if (ret) {
++			platform_device_put(ngd->pdev);
++			kfree(ngd);
++			of_node_put(node);
++			return ret;
++		}
+ 		ngd->pdev->dev.of_node = node;
+ 		ctrl->ngd = ngd;
  
- 	return count;
- }
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index 5f8c063ddff4..f0177f9b6e13 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -138,6 +138,8 @@ extern int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer);
-  *	for driver coldplugging, and in uevents used for hotplugging
-  * @driver_override: If the name of a driver is written to this attribute, then
-  *	the device will bind to the named driver and only the named driver.
-+ *	Do not set directly, because core frees it; use driver_set_override() to
-+ *	set or clear it.
-  * @cs_gpiod: gpio descriptor of the chipselect line (optional, NULL when
-  *	not using a GPIO line)
-  * @word_delay: delay to be inserted between consecutive
 -- 
 2.32.0
 
