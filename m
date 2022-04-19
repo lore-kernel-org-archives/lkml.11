@@ -2,94 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C89C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70554C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348782AbiDSGbT (ORCPT
+        id S1348798AbiDSGbW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 02:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        Tue, 19 Apr 2022 02:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiDSGbS (ORCPT
+        with ESMTP id S1348777AbiDSGbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 02:31:18 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B617A23BFC;
-        Mon, 18 Apr 2022 23:28:36 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 08:28:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650349714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cv5jZ7dxFa/VdklP7GQ+1SDL4Zimqvxof2UzYY6p/Wc=;
-        b=mHK1iN4FuDQg3xyFJqGihvPpO4jB0fgLE4VuB3fzQPzFmlAYZu0xZDXxHSWivi1nCNYYRq
-        ESEdOmUPzgRe/ET7oxLrcPEz6w/d9T9SP+clONnapWqMuu+CJVLe6jP+s8cQ5OB/krn1ei
-        x4DWGw/ykTygrtRH/VtUgEJIXD/VXdd8CglAVmgkqM52X4zQzYN9SUYVfPgMXUdQX/Gg0B
-        YGm3vNE5Czv29w1xYhpayoHSpFuZMG1jg4U7SUhIlBhO4h2jds0hwMGpriwCom9qpOC8uS
-        NFtIUVWpXBIiNLryTQCrwxR2ziuk8lMZS2ptQ6uUi7UrXK1Uv/o679gL1X1FOQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650349714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cv5jZ7dxFa/VdklP7GQ+1SDL4Zimqvxof2UzYY6p/Wc=;
-        b=F9mAbriKsor1oJ3Mm1r4bUufvShI/FarerqXwSeFS6c9pEclkwRermJcB1rnpeVnNUBA2E
-        Gi1whjlB7rzyz6Bw==
-From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-cc:     linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Benedikt Spranger <b.spranger@linutronix.de>
-Subject: Re: [PATCH] rcu/torture: Change order of warning and trace dump
-In-Reply-To: <20220418185042.GA2420391@paulmck-ThinkPad-P17-Gen-1>
-Message-ID: <alpine.DEB.2.21.2204190826500.1508@somnus>
-References: <20220411151903.28167-1-anna-maria@linutronix.de> <20220411180915.GY4285@paulmck-ThinkPad-P17-Gen-1> <20220418185042.GA2420391@paulmck-ThinkPad-P17-Gen-1>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A1E24083;
+        Mon, 18 Apr 2022 23:28:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650349718; x=1681885718;
+  h=from:to:cc:subject:date:message-id;
+  bh=M+iVN4fwQTn36HnCCg+Xt3JEcDHOc7j1oA7S7p6wcZ0=;
+  b=xn9p/nRQLlCHbw8/Q9xAtHsjqDPOQz7PGqfa4epO92FSR+WeFh23uwKi
+   +83YdyaKKVfyZobWyj+C8lVJGyhW3zRhBPJkP8y4djqAVM7w0/IjqvisK
+   ncGHYe0X2EpKoXTp7usQQ1jEmPcE9fhk7Ki87m9j6DEPghr5f3wE7okge
+   Q=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 18 Apr 2022 23:28:37 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 18 Apr 2022 23:28:35 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 19 Apr 2022 11:58:23 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 8ACD53C01; Tue, 19 Apr 2022 11:58:21 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V4 0/2] arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
+Date:   Tue, 19 Apr 2022 11:58:15 +0530
+Message-Id: <1650349697-13540-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Apr 2022, Paul E. McKenney wrote:
+WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+Change pinctrl configuration to handle same.
 
-> On Mon, Apr 11, 2022 at 11:09:15AM -0700, Paul E. McKenney wrote:
-> > On Mon, Apr 11, 2022 at 05:19:03PM +0200, Anna-Maria Behnsen wrote:
-> > > Dumping a big ftrace buffer could lead to a RCU stall. So there is the
-> > > ftrace buffer and the stall information which needs to be printed. When
-> > > there is additionaly a WARN_ON() which describes the reason for the ftrace
-> > > buffer dump and the WARN_ON() is executed _after_ ftrace buffer dump, the
-> > > information get lost in the middle of the RCU stall information.
-> > > 
-> > > Therefore print WARN_ON() message before dumping the ftrace buffer in
-> > > rcu_torture_writer().
-> > > 
-> > > Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
-> > > Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
-> > 
-> > Hello, Anna-Maria!
-> > 
-> > Good point, but we get caught out either way.  Either we take the chance
-> > of losing the WARN() message as you say, or we take the chance of the
-> > activity in the WARN() message overwriting needed information in the
-> > trace buffer.
-> > 
-> > Would it work to shut off tracing, do the WARN(), and only then do the
-> > rcu_ftrace_dump()?
-> 
-> For example, as shown the the updated patch below currently queued on -rcu
-> for further review and testing?
-> 
-> If this is problematic, please let me know!
-> 
+---
+v4: modify subject of each patch to indicate what it is applying to
+v3: apply same change to active state and other sc7280*.dts* as well
+v2: used bias-bus-hold as per review comments
+v1: intial patch used bias-disable for sleep pinctrl in sc7280-idp only
+---
 
-Hi Paul,
+Vijaya Krishna Nivarthi (2):
+  arch: arm64: dts: qcom: sc7280-idp: Configure cts pinctrl to
+    bias-bus-hold
+  arch: arm64: dts: qcom: sc7280-qcard: Configure cts pinctrl to
+    bias-bus-hold
 
-sorry for the late reply - I was busy with other things last week...
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi   | 12 ++++++------
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 13 ++++++++-----
+ 2 files changed, 14 insertions(+), 11 deletions(-)
 
-This solution is totally fine for me!
-
-Thanks,
-
-	Anna-Maria
+-- 
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
