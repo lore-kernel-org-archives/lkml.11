@@ -2,118 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA436C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351690AbiDSLom (ORCPT
+        id S1351944AbiDSLpD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
+        Tue, 19 Apr 2022 07:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352299AbiDSLnJ (ORCPT
+        with ESMTP id S1351729AbiDSLoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:43:09 -0400
-Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEC16386;
-        Tue, 19 Apr 2022 04:39:49 -0700 (PDT)
-Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
-        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 23JBdbSx005118
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Apr 2022 04:39:37 -0700
-Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.182) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Tue, 19 Apr 2022 04:39:34 -0700
-From:   Dragos-Marian Panait <dragos.panait@windriver.com>
-To:     <stable@vger.kernel.org>
-CC:     <dragos.panait@windriver.com>, <wg@grandegger.com>,
-        <mkl@pengutronix.de>, <davem@davemloft.net>,
-        <paskripkin@gmail.com>, <gregkh@linuxfoundation.org>,
-        <hbh25y@gmail.com>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 4.14 1/1] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
-Date:   Tue, 19 Apr 2022 14:38:34 +0300
-Message-ID: <20220419113834.3116927-2-dragos.panait@windriver.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220419113834.3116927-1-dragos.panait@windriver.com>
-References: <20220419113834.3116927-1-dragos.panait@windriver.com>
+        Tue, 19 Apr 2022 07:44:54 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781F5286F8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:41:58 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id v15so20830480edb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mz6256umYnJ6/XrXcKE+m1J6RVixvH/4RBMuyWcIJUE=;
+        b=S4doEUnE6q0/vBhSuORLNPtL6SAOla7FEKdUb58Go419RsC6UGSn1Wcou09FwfKh0Y
+         oYWfyCNw4bvbVbeZ0ZKzisRW93fvEGhEGC4gPGR+aF2If70tJtGHCbYjrfHjqCGW0oN6
+         OH6o/URIeAbM8oGu8s7svV/Yw3XPrYbRLFJweo+agMHGv9M5L8J/xPn/b22k3nX8aYVD
+         ljPMs1epziRXlLpINToZNJW3L1i1VmczO+FSkYbaxEbNcjBuAkVTk6iAplDBLm8beRRB
+         Rn/xkp7L7m8qi43snZ29g1VqcdQFO94E2WvNUpnCvWu0VBOciz/cQ9iqaDo/u6P+jigh
+         vzuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mz6256umYnJ6/XrXcKE+m1J6RVixvH/4RBMuyWcIJUE=;
+        b=NF93qiyubWNV1HUJlKioOa+kzszTO43c1in553HsVoU7bvHhLofvj2gkKWOLS1kAo1
+         IPS1qf8bO/rk0rahcdaeckE4p3VbHXhGbvRPj6iQ2p3e6RvSeXtoO+PxGch9GFvIpdIz
+         i2mO8FQmy2Vq6rntkRovYrtVA5UN/Cih+/Vwuvcg0spS3YVJHfFKW/qrhFtWezD1N5XV
+         CXqAURj0nG3YhVzu9pTgF1f+JH1LnVnxPSnTSUTX/xVnnDjeKdnDJUhaO6xw3vP5nub4
+         mwWiqnxphXm7t/EqqKKgNrphZWHR3HFVBnhDvIhEkFarjaw747qVGw9BE83lAbP3qnzj
+         SMpA==
+X-Gm-Message-State: AOAM531XOhbwNaaCxFG4KNlL60vGRiKuYxtr3rPQ3widaPpM8+7WCdFj
+        7JspICZ+Io0frydpIENpj39riw==
+X-Google-Smtp-Source: ABdhPJxCwl7ZZc/DFYxnfjnS+b9hh7Ohq0rQIW6yXiUph37f723DPEp580QZPIm1X5UkXrboZJBB9Q==
+X-Received: by 2002:a50:8d8a:0:b0:423:d77b:a683 with SMTP id r10-20020a508d8a000000b00423d77ba683mr14081863edh.138.1650368517058;
+        Tue, 19 Apr 2022 04:41:57 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id fq2-20020a1709069d8200b006efdd9baaa7sm652738ejc.196.2022.04.19.04.41.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 04:41:56 -0700 (PDT)
+Message-ID: <c644122d-25b1-918b-6c9f-ea331c4da3da@linaro.org>
+Date:   Tue, 19 Apr 2022 13:41:55 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [128.224.125.182]
-X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
- ala-exchng01.corp.ad.wrs.com (147.11.82.252)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v8 01/13] arm64: dts: freescale: Add the top level dtsi
+ support for imx8dxl
+Content-Language: en-US
+To:     Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Jacky Bai <ping.bai@nxp.com>
+References: <20220419113516.1827863-1-abel.vesa@nxp.com>
+ <20220419113516.1827863-2-abel.vesa@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220419113516.1827863-2-abel.vesa@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+On 19/04/2022 13:35, Abel Vesa wrote:
+> From: Jacky Bai <ping.bai@nxp.com>
+> 
+> The i.MX8DXL is a device targeting the automotive and industrial
+> market segments. The flexibility of the architecture allows for
+> use in a wide variety of general embedded applications. The chip
+> is designed to achieve both high performance and low power consumption.
+> The chip relies on the power efficient dual (2x) Cortex-A35 cluster.
+> 
+> Add the reserved memory node property for dsp reserved memory,
+> the wakeup-irq property for SCU node, the rpmsg and the cm4 rproc
+> support.
+> 
+> Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 
-commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-because can_put_echo_skb() deletes original skb and
-can_free_echo_skb() deletes the cloned skb.
+(...)
 
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
-Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-[DP: adjusted params of can_free_echo_skb() for 4.14 stable]
-Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
----
- drivers/net/can/usb/usb_8dev.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+> +	thermal_zones: thermal-zones {
+> +		cpu-thermal0 {
 
-diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
-index df99354ec12a..232f45f722f0 100644
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -681,9 +681,20 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
- 	atomic_inc(&priv->active_tx_urbs);
- 
- 	err = usb_submit_urb(urb, GFP_ATOMIC);
--	if (unlikely(err))
--		goto failed;
--	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
-+	if (unlikely(err)) {
-+		can_free_echo_skb(netdev, context->echo_index);
-+
-+		usb_unanchor_urb(urb);
-+		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
-+
-+		atomic_dec(&priv->active_tx_urbs);
-+
-+		if (err == -ENODEV)
-+			netif_device_detach(netdev);
-+		else
-+			netdev_warn(netdev, "failed tx_urb %d\n", err);
-+		stats->tx_dropped++;
-+	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
- 		/* Slow down tx path */
- 		netif_stop_queue(netdev);
- 
-@@ -702,19 +713,6 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
- 
- 	return NETDEV_TX_BUSY;
- 
--failed:
--	can_free_echo_skb(netdev, context->echo_index);
--
--	usb_unanchor_urb(urb);
--	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
--
--	atomic_dec(&priv->active_tx_urbs);
--
--	if (err == -ENODEV)
--		netif_device_detach(netdev);
--	else
--		netdev_warn(netdev, "failed tx_urb %d\n", err);
--
- nomembuf:
- 	usb_free_urb(urb);
- 
--- 
-2.17.1
+Same concerns as you DTS.
 
+> +			polling-delay-passive = <250>;
+> +			polling-delay = <2000>;
+> +			thermal-sensors = <&tsens IMX_SC_R_SYSTEM>;
+> +
+> +			trips {
+> +				cpu_alert0: trip0 {
+> +					temperature = <107000>;
+> +					hysteresis = <2000>;
+> +					type = "passive";
+> +				};
+> +
+> +				cpu_crit0: trip1 {
+> +					temperature = <127000>;
+> +					hysteresis = <2000>;
+> +					type = "critical";
+> +				};
+> +			};
+> +
+> +			cooling-maps {
+> +				map0 {
+> +					trip = <&cpu_alert0>;
+> +					cooling-device =
+> +					<&A35_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+> +					<&A35_1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+> +				};
+> +			};
+> +		};
+> +	};
+> +
+> +	clk_dummy: clock-dummy {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <0>;
+> +		clock-output-names = "clk_dummy";
+> +	};
+> +
+> +	xtal32k: clock-xtal32k {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <32768>;
+> +		clock-output-names = "xtal_32KHz";
+> +	};
+> +
+> +	xtal24m: clock-xtal24m {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <24000000>;
+> +		clock-output-names = "xtal_24MHz";
+> +	};
+> +
+> +	/* sorted in register address */
+> +	#include "imx8-ss-adma.dtsi"
+> +	#include "imx8-ss-conn.dtsi"
+> +	#include "imx8-ss-ddr.dtsi"
+> +	#include "imx8-ss-lsio.dtsi"
+> +};
+> +
+> +#include "imx8dxl-ss-adma.dtsi"
+
+There is no such file. Your changes are not bisectable.
+
+> +#include "imx8dxl-ss-conn.dtsi"
+> +#include "imx8dxl-ss-lsio.dtsi"
+> +#include "imx8dxl-ss-ddr.dtsi"
+
+
+Best regards,
+Krzysztof
