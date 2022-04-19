@@ -2,128 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 518A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 04:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B664C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 04:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348241AbiDSEcQ (ORCPT
+        id S1348252AbiDSEdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 00:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
+        Tue, 19 Apr 2022 00:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234140AbiDSEcO (ORCPT
+        with ESMTP id S234140AbiDSEdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 00:32:14 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EA12612A;
-        Mon, 18 Apr 2022 21:29:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kj9n45PDlz4xXS;
-        Tue, 19 Apr 2022 14:29:28 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1650342568;
-        bh=ITI+nY4YiSnD87tRCkgMBczmbC3NDUN1L1tJAuE4NhY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=E6ggjHuRqXV88aEJBZXacPQdcqG95uPyVh4xBwet8V5ES1OrynWyKpitEUnZTXH7V
-         EW4mikpFYz2Cv89R9ZDTp248H04AQTNQJVA19OLJsREREaGJghlaxhbYW2AitpjmPR
-         cgvHHgoZBQlOzao+o+M3g+vsRJE2WJfUApp9w5lNRQacUBMsa00dH4zP1goD3pSajz
-         jcsDbmyjsV3dl3I4Oj5qI87e0Qud9UQ4SqRvztBN9s4RHX2RgRAs47rAkI2QjuozF9
-         bOGHAArf8uXvWBczeujAnFwEC18fNOpsz1YOOoSyCFE5En7oT3e9CenOtpu2/HTrR1
-         2Avi1u/Sr1xwQ==
-Date:   Tue, 19 Apr 2022 14:29:27 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the bitmap tree
-Message-ID: <20220419142927.4c99ba50@canb.auug.org.au>
+        Tue, 19 Apr 2022 00:33:08 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D2221E0C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 21:30:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650342626; x=1681878626;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qySfP5zH9EMGVRLCovLYQaW1W68FxTzitWV5nZA27Cs=;
+  b=RMa/c43iIS8qxt49CSNuJucd5Xrl4fGTir7mR61TTs92y7bUsAsExP15
+   gVH28TZu27iZtsQSSVvVhA+kJ4OudnJN50pN/w7/ABfpbbyqeVdB/iF6B
+   icTMgPTvtyKU43/nvKPbZdpUq0RuFhzBiT7IwUfEabd1WWKt6GSTu4UQm
+   Rkn4Fas3MrBuZah3nQ6KQz2h199lhLCHMI1LN34GFBnm1Pr6jB27RRPQ+
+   LO+wh2AzLc+IsjuMg2qpBS3TWA+xX5QTmVY1RU0yLipPgVZiFe7Y52Cpx
+   sI1ZOIIaEb0aUP72HIIGz6chDgzE/N6FWIxpBIlMA/K33RhhnAJYdTkRr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="262531824"
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="262531824"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 21:30:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="665770647"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 18 Apr 2022 21:30:24 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngfVP-0005L8-Mv;
+        Tue, 19 Apr 2022 04:30:23 +0000
+Date:   Tue, 19 Apr 2022 12:30:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Suman Anna <s-anna@ti.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: drivers/remoteproc/ti_k3_dsp_remoteproc.c:432:17: sparse: sparse:
+ cast removes address space '__iomem' of expression
+Message-ID: <202204191250.9zqeCPVs-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/QjmMTZHC8xiUbBR3cciggFS";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/QjmMTZHC8xiUbBR3cciggFS
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b2d229d4ddb17db541098b83524d901257e93845
+commit: b8431920391d36c273f63a29eab0dfc7e884dd17 remoteproc: k3-dsp: Add support for IPC-only mode for all K3 DSPs
+date:   5 weeks ago
+config: arm64-randconfig-s031-20220419 (https://download.01.org/0day-ci/archive/20220419/202204191250.9zqeCPVs-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b8431920391d36c273f63a29eab0dfc7e884dd17
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout b8431920391d36c273f63a29eab0dfc7e884dd17
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/remoteproc/
 
-Hi all,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-After merging the bitmap tree, today's linux-next build (native powerpcle
-perf) failed like this:
 
-../lib/bitmap.c:21:5: error: conflicting types for '__bitmap_weight_cmp'; h=
-ave 'int(const long unsigned int *, unsigned int,  int)'
-   21 | int __bitmap_weight_cmp(const unsigned long *bitmap, unsigned int b=
-its, int num)
-      |     ^~~~~~~~~~~~~~~~~~~
-In file included from ../lib/bitmap.c:6:
-tools/include/linux/bitmap.h:15:5: note: previous declaration of '__bitmap_=
-weight_cmp' with type 'int(const long unsigned int *, unsigned int,  unsign=
-ed int)'
-   15 | int __bitmap_weight_cmp(const unsigned long *bitmap, unsigned int b=
-its,
-      |     ^~~~~~~~~~~~~~~~~~~
-../lib/bitmap.c: In function '__bitmap_weight_cmp':
-../lib/bitmap.c:26:50: error: comparison of integer expressions of differen=
-t signedness: 'unsigned int' and 'int' [-Werror=3Dsign-compare]
-   26 |                 if (w + bits - k * BITS_PER_LONG < num)
-      |                                                  ^
-../lib/bitmap.c:31:23: error: comparison of integer expressions of differen=
-t signedness: 'unsigned int' and 'int' [-Werror=3Dsign-compare]
-   31 |                 if (w > num)
-      |                       ^
-cc1: all warnings being treated as errors
-tools/perf/../lib/bitmap.c:21:5: error: conflicting types for '__bitmap_wei=
-ght_cmp'; have 'int(const long unsigned int *, unsigned int,  int)'
-   21 | int __bitmap_weight_cmp(const unsigned long *bitmap, unsigned int b=
-its, int num)
-      |     ^~~~~~~~~~~~~~~~~~~
-In file included from tools/perf/../lib/bitmap.c:6:
-tools/include/linux/bitmap.h:15:5: note: previous declaration of '__bitmap_=
-weight_cmp' with type 'int(const long unsigned int *, unsigned int,  unsign=
-ed int)'
-   15 | int __bitmap_weight_cmp(const unsigned long *bitmap, unsigned int b=
-its,
-      |     ^~~~~~~~~~~~~~~~~~~
-tools/perf/../lib/bitmap.c: In function '__bitmap_weight_cmp':
-tools/perf/../lib/bitmap.c:26:50: error: comparison of integer expressions =
-of different signedness: 'unsigned int' and 'int' [-Werror=3Dsign-compare]
-   26 |                 if (w + bits - k * BITS_PER_LONG < num)
-      |                                                  ^
-tools/perf/../lib/bitmap.c:31:23: error: comparison of integer expressions =
-of different signedness: 'unsigned int' and 'int' [-Werror=3Dsign-compare]
-   31 |                 if (w > num)
-      |                       ^
-cc1: all warnings being treated as errors
+sparse warnings: (new ones prefixed by >>)
+>> drivers/remoteproc/ti_k3_dsp_remoteproc.c:432:17: sparse: sparse: cast removes address space '__iomem' of expression
 
-Caused by commit
+vim +/__iomem +432 drivers/remoteproc/ti_k3_dsp_remoteproc.c
 
-  bf04367e90b2 ("tools: bitmap: sync bitmap_weight")
+   402	
+   403	/*
+   404	 * This function implements the .get_loaded_rsc_table() callback and is used
+   405	 * to provide the resource table for a booted DSP in IPC-only mode. The K3 DSP
+   406	 * firmwares follow a design-by-contract approach and are expected to have the
+   407	 * resource table at the base of the DDR region reserved for firmware usage.
+   408	 * This provides flexibility for the remote processor to be booted by different
+   409	 * bootloaders that may or may not have the ability to publish the resource table
+   410	 * address and size through a DT property. This callback is invoked only in
+   411	 * IPC-only mode.
+   412	 */
+   413	static struct resource_table *k3_dsp_get_loaded_rsc_table(struct rproc *rproc,
+   414								  size_t *rsc_table_sz)
+   415	{
+   416		struct k3_dsp_rproc *kproc = rproc->priv;
+   417		struct device *dev = kproc->dev;
+   418	
+   419		if (!kproc->rmem[0].cpu_addr) {
+   420			dev_err(dev, "memory-region #1 does not exist, loaded rsc table can't be found");
+   421			return ERR_PTR(-ENOMEM);
+   422		}
+   423	
+   424		/*
+   425		 * NOTE: The resource table size is currently hard-coded to a maximum
+   426		 * of 256 bytes. The most common resource table usage for K3 firmwares
+   427		 * is to only have the vdev resource entry and an optional trace entry.
+   428		 * The exact size could be computed based on resource table address, but
+   429		 * the hard-coded value suffices to support the IPC-only mode.
+   430		 */
+   431		*rsc_table_sz = 256;
+ > 432		return (struct resource_table *)kproc->rmem[0].cpu_addr;
+   433	}
+   434	
 
-I have dropped the bitmap tree for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/QjmMTZHC8xiUbBR3cciggFS
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJeOqcACgkQAVBC80lX
-0GwipQgAnkmoONSEQgPi4CTpqgf0d/2929Zhc8Kbp5y9vDqbbqr+gVutUFyTVOcg
-C2HJ/aoASmYIJV1Wvygf367p5MKH+APGxBlKpBHyaDBZLvPycnWgjZUoVm/ek1zL
-fA0+32p31+xlw0WxYCGo5iEJM53iXjkZlhm0brun6lAZK/g8fURB/z39MNCHJ+55
-xdLY7ENQSq6Rl3Kl5OrAqQspEoKFYShMqwcSYLYCJ8DREFz3WWBnasLS8Up/rCu9
-ZnPzy37YxQqwCPAsREk6p39k13JC4zNIevH35PMXQ5yG5Jkji9HQhSqoS2Li8HCC
-38dxSqsMqTBc7RDF9s8dV7xyuWS0sA==
-=ktts
------END PGP SIGNATURE-----
-
---Sig_/QjmMTZHC8xiUbBR3cciggFS--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
