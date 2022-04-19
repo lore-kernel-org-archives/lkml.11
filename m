@@ -2,102 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADE8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90352C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353389AbiDSOiY (ORCPT
+        id S1353456AbiDSOid (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
+        Tue, 19 Apr 2022 10:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353508AbiDSOhx (ORCPT
+        with ESMTP id S1353415AbiDSOib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:37:53 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A2EB859
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:35:10 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-e5e8523fcbso6142071fac.10
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:35:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0Y1kTXqtM0V/qhN0BJh+ustQ16GMNyceftqiFoXkOJo=;
-        b=LKsrOa3nuP9NAcR8rarfjiNYcdHWNAGtZnJnexbhZXdC2BWsvnu2TlCnxPKl6u5Vj9
-         Ve+GfJftnqI6Dw/kI2fvUr1sq+wn+NVcjYTWTM+3PQsmGlonuaOWJW2zsaPsusolhRyb
-         Qtx1ps6ipjUss6V5UAEwmrcem2Y7xetfKYPQyGmy71RxKN1MpsWo6SXtKNe1529sbOtK
-         VzXmYI9RR/zER2Vb6p1pOjC6VlZH1PGlD1sfA7OqzhCfOYhKosTy3+kJLZgvRsJ8FrvK
-         IrBfsnJ05Se7Ng1T6bHk1yWeizt/Yr6RvX8UHUhNi+lD81yGxFSSftfMtsdrDV7w0fNc
-         NNYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0Y1kTXqtM0V/qhN0BJh+ustQ16GMNyceftqiFoXkOJo=;
-        b=ZBS5u+/Lte7ZqtAlH7sj/LeoJ8usbNwrQL9bLFtNvwG/BdGi7NhGUEK7AiQwkdNqBy
-         vdXnstNHgmclnDNjZ5NCRWRQIUgnE0qUGo0wlQUfg+/qmKtHSwr/NGobkxoXfSbU8vAP
-         eakUfAF99G9uBNZaX59sgs+m+boReDUlyranZRBs83Oe/8OLAbNP4gQMCzixmyYid+wR
-         +KpIKfSL+RRpTybUsKaeUK8AzYzM43RtuhmDiZgmKLfQuXNEZDY+LXEVc0uOF06WS9EH
-         cFXZ0NOBr/WeSy+41FG2WI5zzjOR5+FZLIb8lSp9zXFjGD5lP8WM2dPCSO4koJsYxPtn
-         eILA==
-X-Gm-Message-State: AOAM530Ta+g1L3TQqudbAsx8d2+s+9IUbedCWxxzgOAbRX+MRdilDiwJ
-        ryMErGuyRVWWBQseJQtrCDp3iEXeKzhoscAvSHw=
-X-Google-Smtp-Source: ABdhPJylz4Pe9jC88ome39PtLEkLwVqavuFbKl5Z+pnkPi4nxGJ15u5Pjxe998bBVBnUSyvu2UCMWVsYF5ENcONVNUg=
-X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
- v29-20020a056870311d00b000de9b6c362bmr8023506oaa.200.1650378909464; Tue, 19
- Apr 2022 07:35:09 -0700 (PDT)
+        Tue, 19 Apr 2022 10:38:31 -0400
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C32C20182;
+        Tue, 19 Apr 2022 07:35:47 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 4BFCF3C56FF;
+        Tue, 19 Apr 2022 10:35:46 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id R-VnQ2zxcchr; Tue, 19 Apr 2022 10:35:45 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id A522F3C53DD;
+        Tue, 19 Apr 2022 10:35:45 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com A522F3C53DD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1650378945;
+        bh=633pQxxAWd4+mVGElSVB2wU4Sye2IG1UF5utL7p1Dgc=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=R3sE6GhItWuYLql2uY0aAmuhV+/PQ9OW2IiW5iv3B9ErZm2vXI0CE83vlPXsmRpts
+         Pn49ntvqG+jlIK9iVxp0csKdQy+AK0lyskyeBvAKPefIp59JIZXc37weBZbeIssSAs
+         izuwiMeBFGbSClXT1xNkAUbGQ7mSzNQuOTRCvoED3yqAOh2O9FsSD1XZ5atKJyx6JY
+         v6llS0In4AglWGW/4MRkLGJmMCzsoofaSRTvuBbFPLCJ4vlj4elKmu9HWycYR5KS+a
+         MONTULd35JDGz0dVWjEByWsZBaIar90weJPqi9O0+QFlJb9SZ2M6Q97xgF9PGpWpjy
+         U/o0QciyKc+6w==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id CLySuEcIvIqG; Tue, 19 Apr 2022 10:35:45 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 98BDD3C5747;
+        Tue, 19 Apr 2022 10:35:45 -0400 (EDT)
+Date:   Tue, 19 Apr 2022 10:35:45 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Beau Belgrave <beaub@linux.microsoft.com>
+Cc:     rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Message-ID: <337584634.26921.1650378945485.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20220401234309.21252-7-beaub@linux.microsoft.com>
+References: <20220401234309.21252-1-beaub@linux.microsoft.com> <20220401234309.21252-7-beaub@linux.microsoft.com>
+Subject: Re: [PATCH 6/7] tracing/user_events: Use bits vs bytes for enabled
+ status page data
 MIME-Version: 1.0
-References: <20220415182014.278652-1-tales.aparecida@gmail.com>
-In-Reply-To: <20220415182014.278652-1-tales.aparecida@gmail.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 19 Apr 2022 10:34:58 -0400
-Message-ID: <CADnq5_NmOxp08Xf_P1Ljq94O2RYa_Ld4cVRtF=fmRqV_DAgDqg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd/display: make hubp1_wait_pipe_read_start() static
-To:     Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>, andrealmeid@riseup.net
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4257 (ZimbraWebClient - FF99 (Linux)/8.8.15_GA_4257)
+Thread-Topic: tracing/user_events: Use bits vs bytes for enabled status page data
+Thread-Index: 3mhe0Mcep7c7n2Jzj66zR4QLGQO38A==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied with minor change to drop the prototype in dcn10_hubp.h.  Thanks!
+----- On Apr 1, 2022, at 7:43 PM, Beau Belgrave beaub@linux.microsoft.com wrote:
 
-Alex
+> User processes may require many events and when they do the cache
+> performance of a byte index status check is less ideal than a bit index.
+> The previous event limit per-page was 4096, the new limit is 32,768.
+> 
+> This change adds a mask property to the user_reg struct. Programs check
+> that the byte at status_index has a bit set by ANDing the status_mask.
+> 
+> Link:
+> https://lore.kernel.org/all/2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com/
+> 
+> Suggested-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 
-On Fri, Apr 15, 2022 at 2:21 PM Tales Lelo da Aparecida
-<tales.aparecida@gmail.com> wrote:
->
-> It's a local function, let's make it static.
->
-> Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-> ---
->  drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c
-> index fbff6beb78be..3a7f76e2c598 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c
-> @@ -1316,7 +1316,7 @@ void hubp1_set_flip_int(struct hubp *hubp)
->   *
->   * @hubp: hubp struct reference.
->   */
-> -void hubp1_wait_pipe_read_start(struct hubp *hubp)
-> +static void hubp1_wait_pipe_read_start(struct hubp *hubp)
->  {
->         struct dcn10_hubp *hubp1 = TO_DCN10_HUBP(hubp);
->
-> --
-> 2.35.1
->
+Hi Beau,
+
+Considering this will be used in a fast-path, why choose bytewise
+loads for the byte at status_index and the status_mask ?
+
+I'm concerned about the performance penalty associated with partial
+register stalls when working with bytewise ALU operations rather than
+operations using the entire registers.
+
+Ideally I would be tempted to use "unsigned long" type (32-bit on 32-bit
+binaries and 64-bit on 64-bit binaries) for both the array access
+and the status mask, but this brings extra complexity for 32-bit compat
+handling.
+
+Thanks,
+
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
