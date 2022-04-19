@@ -2,157 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE3AC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E79CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355639AbiDSRHJ (ORCPT
+        id S1350623AbiDSRHM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
+        Tue, 19 Apr 2022 13:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355727AbiDSRGz (ORCPT
+        with ESMTP id S1355729AbiDSRGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 13:06:55 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B94A12AED
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:00:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1650387293; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N3keMFx7626/px/N5I87eyXv+dAR6bGNhk8NPvdrTME=;
-        b=Qf+J0eiBHYh8QxF1W/WnuHYdLzVtpgzVnCWC+xqIpQRsAulRAHQWbxTdONnbeGAc5CL8YT
-        Fh7Kbnq1s2IgEjk5Jj1ho3w4Dk3u8x7bnwRNfcoQ//WJ/DBPMUz1zWcRgiMx6ic0afX9Lk
-        2Jzg99jYUGHcLpBMbn0cr8w+qUokBRM=
-Date:   Tue, 19 Apr 2022 17:54:43 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: drm: of: Improve error handling in bridge/panel detection
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jagan Teki <jagan@amarulasolutions.com>
-Message-Id: <7ZILAR.B5RI26D3L60Y1@crapouillou.net>
-In-Reply-To: <20220407093408.1478769-1-paul.kocialkowski@bootlin.com>
-References: <20220407093408.1478769-1-paul.kocialkowski@bootlin.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD3513CC5;
+        Tue, 19 Apr 2022 10:00:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0116EB81C0E;
+        Tue, 19 Apr 2022 17:00:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 922D3C385A7;
+        Tue, 19 Apr 2022 17:00:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650387647;
+        bh=8IybAGIoEFhxdFIoViUdHi9R1OLP0LV7n7ET52ewC2Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qdjUxUzOK47L0cZIifXSz7UsJ/T7pNWT1lav0S4UTA8SkRPMr6OdjuoKmjjzSRWfJ
+         c3Xc1N3dEddrAcMeEEi8qeX5V5sR4mj5H2pl/GqHbzIrg/5uen4eHooQ7QK27CxD93
+         /bgTlksGlnGhbtU2K/wLZ1TtfMwjR2bY2Me8a/6EsoJHYJe7AmE3j9jK687/wZjmYG
+         FwBmVqne5WOPD1xmA8Jr7ZwOKbe2EMNx954jbcxWcC/YLLogTiVNzqEv5qZ5QH87AW
+         0EyiQAOimaazn0wf9dDUIUWArgmFqwLHtciNhvT+xOtcx+skhmwvBV8+TgAnsie9I7
+         dQNvu8BfrMzDA==
+Date:   Tue, 19 Apr 2022 18:00:41 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Zhou Yanjie <zhouyanjie@wanyeetech.com>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-spi@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, contact@artur-rojek.eu,
+        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
+        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
+        zhenwenjin@gmail.com, reimu@sudomaker.com
+Subject: Re: [PATCH 1/3] SPI: Ingenic: Add support for use GPIO as chip
+ select line.
+Message-ID: <Yl7quUXmEEPHfTfC@sirena.org.uk>
+References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1650032528-118220-2-git-send-email-zhouyanjie@wanyeetech.com>
+ <61ZDAR.SD20HFTWMIBH3@crapouillou.net>
+ <d7926a1d-c5e3-6519-6a52-1bd3ca3cf773@wanyeetech.com>
+ <A5YFAR.5U5RNX82OXJY1@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="TPbCuVtMSsnBjIIh"
+Content-Disposition: inline
+In-Reply-To: <A5YFAR.5U5RNX82OXJY1@crapouillou.net>
+X-Cookie: That's what she said.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
 
-Le jeu., avril 7 2022 at 11:34:08 +0200, Paul Kocialkowski=20
-<paul.kocialkowski@bootlin.com> a =E9crit :
-> With the previous rework of drm_of_find_panel_or_bridge only
-> -EPROBE_DEFER is returned while previous behavior allowed -ENODEV
-> to be returned when the port/endpoint is either missing or=20
-> unavailable.
->=20
-> Make the default return code of the function -ENODEV to handle this=20
-> and
-> only return -EPROBE_DEFER in find_panel_or_bridge when the of device=20
-> is
-> available but not yet registered. Also return the error code whenever
-> the remote node exists to avoid checking for child nodes.
->=20
-> Checking child nodes could result in -EPROBE_DEFER returned by
-> find_panel_or_bridge with an unrelated child node that would overwrite
-> a legitimate -ENODEV from find_panel_or_bridge if the remote node from
-> the of graph is unavailable. This happens because find_panel_or_bridge
-> has no way to distinguish between a legitimate panel/bridge node that
-> isn't yet registered and an unrelated node.
->=20
-> Add comments around to clarify this behavior.
->=20
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> Fixes: 67bae5f28c89 ("drm: of: Properly try all possible cases for=20
-> bridge/panel detection")
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
+--TPbCuVtMSsnBjIIh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This fixes the ingenic-drm driver, which was broken by the commit this=20
-patch addresses.
+On Sat, Apr 16, 2022 at 05:36:46PM +0100, Paul Cercueil wrote:
+> Le sam., avril 16 2022 at 19:55:13 +0800, Zhou Yanjie
+> > On 2022/4/15 =E4=B8=8B=E5=8D=8811:00, Paul Cercueil wrote:
 
-So:
-Tested-by: Paul Cercueil <paul@crapouillou.net>
+> > > > -    ctlr->num_chipselect =3D 2;
+> > > > +    ctlr->use_gpio_descriptors =3D true;
 
-Cheers,
--Paul
+> > > I wonder if this should be set conditionally instead. Maybe set it
+> > > to =7F"true" if the "num-cs" property exists?
 
-> ---
->  drivers/gpu/drm/drm_of.c | 23 ++++++++++++++++++-----
->  1 file changed, 18 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-> index 8716da6369a6..97ea9d2016ff 100644
-> --- a/drivers/gpu/drm/drm_of.c
-> +++ b/drivers/gpu/drm/drm_of.c
-> @@ -223,6 +223,9 @@ static int find_panel_or_bridge(struct=20
-> device_node *node,
->  				struct drm_panel **panel,
->  				struct drm_bridge **bridge)
->  {
-> +	if (!of_device_is_available(node))
-> +		return -ENODEV;
-> +
->  	if (panel) {
->  		*panel =3D of_drm_find_panel(node);
->  		if (!IS_ERR(*panel))
-> @@ -265,7 +268,7 @@ int drm_of_find_panel_or_bridge(const struct=20
-> device_node *np,
->  				struct drm_bridge **bridge)
->  {
->  	struct device_node *node;
-> -	int ret;
-> +	int ret =3D -ENODEV;
->=20
->  	if (!panel && !bridge)
->  		return -EINVAL;
-> @@ -282,8 +285,12 @@ int drm_of_find_panel_or_bridge(const struct=20
-> device_node *np,
->  			ret =3D find_panel_or_bridge(node, panel, bridge);
->  			of_node_put(node);
->=20
-> -			if (!ret)
-> -				return 0;
-> +			/*
-> +			 * If the graph/remote node is present we consider it
-> +			 * to be the legitimate candidate here and return
-> +			 * whatever code we got from find_panel_or_bridge.
-> +			 */
-> +			return ret;
->  		}
->  	}
->=20
-> @@ -296,12 +303,18 @@ int drm_of_find_panel_or_bridge(const struct=20
-> device_node *np,
->  		ret =3D find_panel_or_bridge(node, panel, bridge);
->  		of_node_put(node);
->=20
-> -		/* Stop at the first found occurrence. */
-> +		/*
-> +		 * Note that an unrelated (available) child node will cause
-> +		 * find_panel_or_bridge to return -EPROBE_DEFER because there
-> +		 * is no way to distinguish the node from a legitimate
-> +		 * panel/bridge that didn't register yet. Keep iterating nodes
-> +		 * and only return on the first found occurrence.
-> +		 */
->  		if (!ret)
->  			return 0;
->  	}
->=20
-> -	return -EPROBE_DEFER;
-> +	return ret;
->  }
->  EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
+> > I'm not too sure, but it seems some other drivers like "spi-sun6i.c",
+> > "spi-stm32.c", "spi-s3c64xx.c", "spi-pic32.c", etc. set it
+> > unconditionally.
 
+> Ok, maybe Mark can enlighten us here.
 
+use_gpio_descriptions is just selecting which version of the GPIO APIs
+we should use if we're handling GPIOs rather than if we should handle
+them.  We've got one last driver using the numerical GPIO APIs, once
+that one is converted we should just be able to drop the flag since
+everything will be using descriptors.
+
+--TPbCuVtMSsnBjIIh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJe6rgACgkQJNaLcl1U
+h9AHLwf9E2iqsfV37dO0NFH186Odz4Z0j8xceQsmNj3PyljXnw7Lbtdei5aoZuwM
+sZXNQuwleO6VDzrjN5Wo7SapZyL520L0HOXQPZG+hMk97RiHFMO5olCkJyOZet6S
+Ypu4loL1Qh+HZp1OWU824dxjQqthLJoCDMHdH0PVPqIAceXjX3MFw64eQrQy+MG8
++EPD7uM0Zlun8NJ2h/i/7ufTnblDAXvxGb4XJah8Pl1KBTvHGy8C8Agiv6fKJxZW
+v+4qI1x+OP/DczQ3JK2TGW9q3a7QiekvFpFoMgx7GEl/c2UEYd9VvhGJF2biZRD+
+720Kf278lwoaPdTexlUFU91unE2XuQ==
+=syA4
+-----END PGP SIGNATURE-----
+
+--TPbCuVtMSsnBjIIh--
