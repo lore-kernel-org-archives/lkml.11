@@ -2,137 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 04:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA660C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 04:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348291AbiDSEgQ (ORCPT
+        id S1348304AbiDSEgV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 00:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
+        Tue, 19 Apr 2022 00:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241287AbiDSEgJ (ORCPT
+        with ESMTP id S1348274AbiDSEgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 00:36:09 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C7927CD9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 21:33:28 -0700 (PDT)
+        Tue, 19 Apr 2022 00:36:11 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC95122BE5;
+        Mon, 18 Apr 2022 21:33:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650342808; x=1681878808;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=yqgEaacmiI1pt6jr6PJUeWBZacRPPc+PyFzOb1qFXZ8=;
-  b=ZYa7NVvjLjRa3Shpm5LI7aI1Nup36wVwnORmc7pejlOpSc3/ZqtZiRf/
-   D1lAjeI4yTa8O2aAVj/3J6ZsHhbtA5foH7Z/VyqlXTvMUotlm11PGNhBR
-   E9bIVKVcRU9rxDxWIOG10+slUywMViCsuSwq28lnxZp/7u0G5ehY+ip27
-   tI6ISB3+BaE2xDJb1RkD2mHk/hs6pPL/lHsa4FEtTHr/4BxZ0YSkjnC2D
-   Lv/ONMbgd3lQTD86oq88BbDkTWrviDaBMdXsj31bJlWH/1V6rUFTBykcE
-   zOFiX4C4o4mme4fyilMRlsW9OJpGj2qCycbVBL++HqJaQmNzZHaZvcR1R
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="262532178"
+  t=1650342809; x=1681878809;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OPOfSS2uDyN/dVKScHcoTabGQVho8Vlfn+KbkTmz7eY=;
+  b=gtKb7TAXgqcVKeRTPBw369lk82iKf9bfi91hsmfEiLiScnllyBsTnYXC
+   F80/McEcaQ8QQx8Gq6Lzt2AoQdvln9vdnVMkx03Bxqet4WaoOlnFX9Sla
+   92E607CuEBMrd1/t2IUGNG5wvUH5+jS8HJTwQdTlpQAoiTHSVs1M5SiuK
+   yGbXe3VCnqO1FTkGoLuyP4xbGCmco1WNRx+s/07QjNeEknWhe2Am3Dz0f
+   o3WdlncHINpl9GhGktOIWLNlqudaZVJ+jY5M5OcGFkoOCNWV/JPtcs3/Q
+   qjmIn23mfBpx3gYbhQBgkS3rigdK0WfhGDV5Urp3Wo+qwpHYCxV9tjmC8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="244256897"
 X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="262532178"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 21:33:25 -0700
+   d="scan'208";a="244256897"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 21:33:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="561574691"
+   d="scan'208";a="665771758"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 18 Apr 2022 21:33:24 -0700
+  by orsmga004.jf.intel.com with ESMTP; 18 Apr 2022 21:33:24 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1ngfYK-0005Lk-1U;
-        Tue, 19 Apr 2022 04:33:24 +0000
-Date:   Tue, 19 Apr 2022 12:32:46 +0800
+        id 1ngfYJ-0005Lb-UD;
+        Tue, 19 Apr 2022 04:33:23 +0000
+Date:   Tue, 19 Apr 2022 12:32:37 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1496/2356]
- drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_process.c:956:22: warning:
- assignment to 'struct task_struct *' from 'int' makes pointer from integer
- without a cast
-Message-ID: <202204191227.MN9RvyB5-lkp@intel.com>
+To:     Paul Cercueil <paul@crapouillou.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     kbuild-all@lists.01.org, list@opendingux.net,
+        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 5/5] rtc: jz4740: Support for fine-tuning the RTC clock
+Message-ID: <202204191251.t9r8gFyI-lkp@intel.com>
+References: <20220418184933.13172-6-paul@crapouillou.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220418184933.13172-6-paul@crapouillou.net>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   af93551cf39027d176f30b9beafc60a4c130998a
-commit: 87052c4c3bbc437e628c8d687fd5133d135333d0 [1496/2356] headers/deps: fs: Optimize <linux/fs.h> header dependencies
-config: x86_64-randconfig-a001-20220418 (https://download.01.org/0day-ci/archive/20220419/202204191227.MN9RvyB5-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+Hi Paul,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on abelloni/rtc-next]
+[also build test ERROR on v5.18-rc3 next-20220414]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Cercueil/rtc-ingenic-various-updates/20220419-025341
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git rtc-next
+config: sparc64-randconfig-r024-20220418 (https://download.01.org/0day-ci/archive/20220419/202204191251.t9r8gFyI-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=87052c4c3bbc437e628c8d687fd5133d135333d0
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 87052c4c3bbc437e628c8d687fd5133d135333d0
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/ba459adc8c83dbdc469d0c6b5d57fd95d834513a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Paul-Cercueil/rtc-ingenic-various-updates/20220419-025341
+        git checkout ba459adc8c83dbdc469d0c6b5d57fd95d834513a
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/ arch/x86/kernel/cpu/mtrr/ drivers/bus/mhi/host/ drivers/gpu/drm/amd/amdgpu/ drivers/gpu/drm/amd/amdkfd/ drivers/hwmon/pmbus/ drivers/infiniband/sw/siw/ drivers/net/can/spi/mcp251xfd/ drivers/spi/ mm/ sound/soc/codecs/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc64 SHELL=/bin/bash drivers/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_chardev.c: In function 'criu_resume':
-   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_chardev.c:2458:15: error: implicit declaration of function 'find_get_pid'; did you mean 'find_get_page'? [-Werror=implicit-function-declaration]
-    2458 |         pid = find_get_pid(args->pid);
-         |               ^~~~~~~~~~~~
-         |               find_get_page
->> drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_chardev.c:2458:13: warning: assignment to 'struct pid *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-    2458 |         pid = find_get_pid(args->pid);
-         |             ^
-   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_chardev.c:2467:9: error: implicit declaration of function 'put_pid'; did you mean 'put_pid_ns'? [-Werror=implicit-function-declaration]
-    2467 |         put_pid(pid);
-         |         ^~~~~~~
-         |         put_pid_ns
-   cc1: some warnings being treated as errors
---
-   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_process.c: In function 'kfd_lookup_process_by_pid':
-   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_process.c:956:24: error: implicit declaration of function 'get_pid_task'; did you mean 'get_cpu_mask'? [-Werror=implicit-function-declaration]
-     956 |                 task = get_pid_task(pid, PIDTYPE_PID);
-         |                        ^~~~~~~~~~~~
-         |                        get_cpu_mask
->> drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_process.c:956:22: warning: assignment to 'struct task_struct *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     956 |                 task = get_pid_task(pid, PIDTYPE_PID);
-         |                      ^
-   cc1: some warnings being treated as errors
+   In file included from <command-line>:
+   drivers/rtc/rtc-jz4740.c: In function 'jz4740_rtc_set_offset':
+>> include/linux/compiler_types.h:346:45: error: call to '__compiletime_assert_229' declared with attribute error: FIELD_PREP: value too large for the field
+     346 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                             ^
+   include/linux/compiler_types.h:327:25: note: in definition of macro '__compiletime_assert'
+     327 |                         prefix ## suffix();                             \
+         |                         ^~~~~~
+   include/linux/compiler_types.h:346:9: note: in expansion of macro '_compiletime_assert'
+     346 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/bitfield.h:65:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+      65 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
+         |                 ^~~~~~~~~~~~~~~~
+   include/linux/bitfield.h:111:17: note: in expansion of macro '__BF_FIELD_CHECK'
+     111 |                 __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
+         |                 ^~~~~~~~~~~~~~~~
+   drivers/rtc/rtc-jz4740.c:261:17: note: in expansion of macro 'FIELD_PREP'
+     261 |         nc1hz = FIELD_PREP(JZ_RTC_REGULATOR_NC1HZ_MASK, nc1hz);
+         |                 ^~~~~~~~~~
 
 
-vim +956 drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_process.c
+vim +/__compiletime_assert_229 +346 include/linux/compiler_types.h
 
-abb208a8d490ba Felix Kuehling    2017-11-27  945  
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  946  /* This increments the process->ref counter. */
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  947  struct kfd_process *kfd_lookup_process_by_pid(struct pid *pid)
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  948  {
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  949  	struct task_struct *task = NULL;
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  950  	struct kfd_process *p    = NULL;
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  951  
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  952  	if (!pid) {
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  953  		task = current;
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  954  		get_task_struct(task);
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  955  	} else {
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11 @956  		task = get_pid_task(pid, PIDTYPE_PID);
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  957  	}
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  958  
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  959  	if (task) {
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  960  		p = find_process(task, true);
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  961  		put_task_struct(task);
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  962  	}
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  963  
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  964  	return p;
-011bbb03024f5a Rajneesh Bhardwaj 2021-01-11  965  }
-6ae2784114c037 Alex Sierra       2020-04-01  966  
-
-:::::: The code at line 956 was first introduced by commit
-:::::: 011bbb03024f5a22dc04eba370f9296f0cb83502 drm/amdkfd: CRIU Implement KFD resume ioctl
-
-:::::: TO: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
-:::::: CC: Alex Deucher <alexander.deucher@amd.com>
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  332  
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  333  #define _compiletime_assert(condition, msg, prefix, suffix) \
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  334  	__compiletime_assert(condition, msg, prefix, suffix)
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  335  
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  336  /**
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  337   * compiletime_assert - break build and emit msg if condition is false
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  338   * @condition: a compile-time constant condition to check
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  339   * @msg:       a message to emit if condition is false
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  340   *
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  341   * In tradition of POSIX assert, this macro will break the build if the
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  342   * supplied condition is *false*, emitting the supplied error message if the
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  343   * compiler has support to do so.
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  344   */
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  345  #define compiletime_assert(condition, msg) \
+eb5c2d4b45e3d2 Will Deacon 2020-07-21 @346  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  347  
 
 -- 
 0-DAY CI Kernel Test Service
