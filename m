@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9F1C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:41:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D17C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238667AbiDSNnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S1352777AbiDSNnz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352514AbiDSNmE (ORCPT
+        with ESMTP id S1352797AbiDSNmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:42:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0DE37BF2;
-        Tue, 19 Apr 2022 06:39:17 -0700 (PDT)
+        Tue, 19 Apr 2022 09:42:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A6737BF6;
+        Tue, 19 Apr 2022 06:40:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7101616A8;
-        Tue, 19 Apr 2022 13:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A81EFC385AC;
-        Tue, 19 Apr 2022 13:39:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7289CB81984;
+        Tue, 19 Apr 2022 13:40:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC917C385AE;
+        Tue, 19 Apr 2022 13:39:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650375556;
-        bh=f9Y/96hrDNAN/+YDT6y/IETuuHURcMDkd3mR04iG5MY=;
+        s=k20201202; t=1650375600;
+        bh=zW9EXgIwrT6e9se5HepqxV0X/iuSevgZPTTCehW8dB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ebr5utca6XgjB3tSpUqlgAxa1J/VO+5Up3W225Ck2Y1KV0kHl25WxqiLaxQnTrrDP
-         o4ZMRT5uiqJlbasFReJEEjIucMAj0DIkjrh7yNwei7KTqUAxhrCrbIU9vS1MWfztjT
-         pnZZDXwYX8Bp58oIwWuMxVkm3t1lAwr40PquGM25WMYWoQU4zuhNhfylYnCyYIm7KS
-         AxbhGnhgw8s8/7Sp0BNcsDkI0IMc9J8IbULGpS4rd/U42TIh6dRRUrDsawrsOWc7ZZ
-         Lnc4CsAY2Xr00xDadJHWFy5+sqJIjPU+QvQwa5Q0tAKRS7Lo54LfD5qNiWFtBeJuUY
-         ATdlp/KQHWVdA==
+        b=vHI0qQByX+c/7bvvFxsJDZg8Rk3Tmicri/PsugtdLSnLPggMHo6v2ctc+djyVus3N
+         ui0ORHPtKfuy3WL0CumRMeBMzGHFm0UT+AP+rOrkATXgVT5fIgx6GErLIT2RrsL1Ec
+         IZnzmJ8Dnh78euRrjLA7zfaPZJirZjn2+Ns06Fju3HP4p2eONLIleIC49bfNsZO5hd
+         z5fjeKu5u4euWVq8Y01KsxQPT+uo12m/zcR2VMTIGaMdkSl1elVAK6Ja0/bpG1+umE
+         1lBMBmTCxncgj2s+VWFf/59RsmLfL2r5TKijMH37jw/Ys1Zb+TJYoC5rYrhTKbwaRm
+         wVS3j8bExN97Q==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
         jmkrzyszt@gmail.com
@@ -57,11 +58,10 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
         linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH 13/41] clocksource: ti-dmtimer: avoid using mach/hardware.h
-Date:   Tue, 19 Apr 2022 15:36:55 +0200
-Message-Id: <20220419133723.1394715-14-arnd@kernel.org>
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [PATCH 19/41] ARM: omap: dma: make usb support optional
+Date:   Tue, 19 Apr 2022 15:37:01 +0200
+Message-Id: <20220419133723.1394715-20-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
 References: <20220419133723.1394715-1-arnd@kernel.org>
@@ -73,29 +73,154 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-As a preparation for future omap1 multiplatform support, stop
-using mach/hardware.h and instead include the omap1-io.h
-for low-level register access to MOD_CONF_CTRL_1.
+Most of the plat-omap/dma.c code is specific to the USB
+driver. Hide that code when it is not in use, to make it
+clearer which parts are actually still required.
 
-Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/clocksource/timer-ti-dm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/plat-omap/dma.c       | 45 +++++++++++++++++-----------------
+ drivers/usb/gadget/udc/Kconfig |  2 +-
+ include/linux/omap-dma.h       |  5 +++-
+ 3 files changed, 27 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
-index 3e52c5226c4d..df4a73ea6651 100644
---- a/drivers/clocksource/timer-ti-dm.c
-+++ b/drivers/clocksource/timer-ti-dm.c
-@@ -433,7 +433,7 @@ int omap_dm_timer_get_irq(struct omap_dm_timer *timer)
+diff --git a/arch/arm/plat-omap/dma.c b/arch/arm/plat-omap/dma.c
+index 700ba9b600e7..b7757864d0aa 100644
+--- a/arch/arm/plat-omap/dma.c
++++ b/arch/arm/plat-omap/dma.c
+@@ -66,7 +66,6 @@ enum { DMA_CHAIN_STARTED, DMA_CHAIN_NOTSTARTED };
+ 
+ static struct omap_system_dma_plat_info *p;
+ static struct omap_dma_dev_attr *d;
+-static void omap_clear_dma(int lch);
+ static int enable_1510_mode;
+ static u32 errata;
+ 
+@@ -90,19 +89,16 @@ static int omap_dma_reserve_channels;
+ static DEFINE_SPINLOCK(dma_chan_lock);
+ static struct omap_dma_lch *dma_chan;
+ 
+-static inline void disable_lnk(int lch);
+-static void omap_disable_channel_irq(int lch);
+-static inline void omap_enable_channel_irq(int lch);
+-
+-#ifdef CONFIG_ARCH_OMAP15XX
+-/* Returns 1 if the DMA module is in OMAP1510-compatible mode, 0 otherwise */
+-static int omap_dma_in_1510_mode(void)
++static inline void omap_disable_channel_irq(int lch)
+ {
+-	return enable_1510_mode;
++	/* disable channel interrupts */
++	p->dma_write(0, CICR, lch);
++	/* Clear CSR */
++	if (dma_omap1())
++		p->dma_read(CSR, lch);
++	else
++		p->dma_write(OMAP2_DMA_CSR_CLEAR_MASK, CSR, lch);
+ }
+-#else
+-#define omap_dma_in_1510_mode()		0
+-#endif
+ 
+ #ifdef CONFIG_ARCH_OMAP1
+ static inline void set_gdma_dev(int req, int dev)
+@@ -169,6 +165,17 @@ void omap_set_dma_priority(int lch, int dst_port, int priority)
+ #endif
+ EXPORT_SYMBOL(omap_set_dma_priority);
+ 
++#if IS_ENABLED(CONFIG_USB_OMAP)
++#ifdef CONFIG_ARCH_OMAP15XX
++/* Returns 1 if the DMA module is in OMAP1510-compatible mode, 0 otherwise */
++static int omap_dma_in_1510_mode(void)
++{
++	return enable_1510_mode;
++}
++#else
++#define omap_dma_in_1510_mode()		0
++#endif
++
+ void omap_set_dma_transfer_params(int lch, int data_type, int elem_count,
+ 				  int frame_count, int sync_mode,
+ 				  int dma_trigger, int src_or_dst_synch)
+@@ -418,17 +425,6 @@ static inline void omap_enable_channel_irq(int lch)
+ 	p->dma_write(dma_chan[lch].enabled_irqs, CICR, lch);
  }
  
- #if defined(CONFIG_ARCH_OMAP1)
--#include <mach/hardware.h>
-+#include <linux/soc/ti/omap1-io.h>
- 
- static struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer)
+-static inline void omap_disable_channel_irq(int lch)
+-{
+-	/* disable channel interrupts */
+-	p->dma_write(0, CICR, lch);
+-	/* Clear CSR */
+-	if (dma_omap1())
+-		p->dma_read(CSR, lch);
+-	else
+-		p->dma_write(OMAP2_DMA_CSR_CLEAR_MASK, CSR, lch);
+-}
+-
+ void omap_disable_dma_irq(int lch, u16 bits)
  {
+ 	dma_chan[lch].enabled_irqs &= ~bits;
+@@ -473,6 +469,7 @@ static inline void disable_lnk(int lch)
+ 	p->dma_write(l, CLNK_CTRL, lch);
+ 	dma_chan[lch].flags &= ~OMAP_DMA_ACTIVE;
+ }
++#endif
+ 
+ int omap_request_dma(int dev_id, const char *dev_name,
+ 		     void (*callback)(int lch, u16 ch_status, void *data),
+@@ -572,6 +569,7 @@ static void omap_clear_dma(int lch)
+ 	local_irq_restore(flags);
+ }
+ 
++#if IS_ENABLED(CONFIG_USB_OMAP)
+ void omap_start_dma(int lch)
+ {
+ 	u32 l;
+@@ -792,6 +790,7 @@ int omap_get_dma_active_status(int lch)
+ 	return (p->dma_read(CCR, lch) & OMAP_DMA_CCR_EN) != 0;
+ }
+ EXPORT_SYMBOL(omap_get_dma_active_status);
++#endif
+ 
+ int omap_dma_running(void)
+ {
+diff --git a/drivers/usb/gadget/udc/Kconfig b/drivers/usb/gadget/udc/Kconfig
+index cee934dce4f0..69394dc1cdfb 100644
+--- a/drivers/usb/gadget/udc/Kconfig
++++ b/drivers/usb/gadget/udc/Kconfig
+@@ -128,7 +128,7 @@ config USB_GR_UDC
+ 
+ config USB_OMAP
+ 	tristate "OMAP USB Device Controller"
+-	depends on ARCH_OMAP1 || (ARCH_OMAP && COMPILE_TEST)
++	depends on ARCH_OMAP1
+ 	depends on ISP1301_OMAP || !(MACH_OMAP_H2 || MACH_OMAP_H3)
+ 	help
+ 	   Many Texas Instruments OMAP processors have flexible full
+diff --git a/include/linux/omap-dma.h b/include/linux/omap-dma.h
+index 5e228428fda1..07fa58ae9902 100644
+--- a/include/linux/omap-dma.h
++++ b/include/linux/omap-dma.h
+@@ -299,8 +299,9 @@ extern void omap_set_dma_priority(int lch, int dst_port, int priority);
+ extern int omap_request_dma(int dev_id, const char *dev_name,
+ 			void (*callback)(int lch, u16 ch_status, void *data),
+ 			void *data, int *dma_ch);
+-extern void omap_disable_dma_irq(int ch, u16 irq_bits);
+ extern void omap_free_dma(int ch);
++#if IS_ENABLED(CONFIG_USB_OMAP)
++extern void omap_disable_dma_irq(int ch, u16 irq_bits);
+ extern void omap_start_dma(int lch);
+ extern void omap_stop_dma(int lch);
+ extern void omap_set_dma_transfer_params(int lch, int data_type,
+@@ -326,6 +327,8 @@ extern void omap_set_dma_dest_burst_mode(int lch,
+ extern dma_addr_t omap_get_dma_src_pos(int lch);
+ extern dma_addr_t omap_get_dma_dst_pos(int lch);
+ extern int omap_get_dma_active_status(int lch);
++#endif
++
+ extern int omap_dma_running(void);
+ 
+ #if IS_ENABLED(CONFIG_FB_OMAP)
 -- 
 2.29.2
 
