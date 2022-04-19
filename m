@@ -2,103 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8916CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 134F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344216AbiDSSB3 (ORCPT
+        id S1349070AbiDSSEs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39652 "EHLO
+        Tue, 19 Apr 2022 14:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356158AbiDSSBX (ORCPT
+        with ESMTP id S239074AbiDSSEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:01:23 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8610613D61
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:58:40 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 10:58:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650391118;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LwMEsoXiVBDMMlTnWr1tF9A5/2DsUEfBfNSdTUYTpLQ=;
-        b=GSeP4KlZhPpf+uMxHvjav5FPXp0dJ579TdtR8KLfaXlePkdpBE1fC+WWHOtb/f2Y2ujT0C
-        wGB6njWc6l5pB8jXYw9Nrrp5C0Rgiq2pRexIanJAIBeZm7haDbH/jW8fuz7j7gtkze/8yP
-        JULqwDoS/c8b/+WlglVpvr6YOWVyYJU=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH rfc 0/5] mm: introduce shrinker sysfs interface
-Message-ID: <Yl74SeTY68zs8ziL@carbon>
-References: <20220416002756.4087977-1-roman.gushchin@linux.dev>
- <Yl0vCDE44VeU8qxC@kernel.org>
- <Yl2fhgcW5pL66nPK@carbon>
- <Yl5XzCjqKbKYdvrC@kernel.org>
+        Tue, 19 Apr 2022 14:04:44 -0400
+Received: from nibbler.cm4all.net (nibbler.cm4all.net [IPv6:2001:8d8:970:e500:82:165:145:151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50D63B3EC
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:02:00 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by nibbler.cm4all.net (Postfix) with ESMTP id 42AF5C00E1
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:01:59 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at nibbler.cm4all.net
+Received: from nibbler.cm4all.net ([127.0.0.1])
+        by localhost (nibbler.cm4all.net [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id 1UwKaoVAu4mX for <linux-kernel@vger.kernel.org>;
+        Tue, 19 Apr 2022 20:01:52 +0200 (CEST)
+Received: from zero.intern.cm-ag (zero.intern.cm-ag [172.30.16.10])
+        by nibbler.cm4all.net (Postfix) with SMTP id 266D3C00DA
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:01:52 +0200 (CEST)
+Received: (qmail 2504 invoked from network); 19 Apr 2022 23:51:54 +0200
+Received: from unknown (HELO rabbit.intern.cm-ag) (172.30.3.1)
+  by zero.intern.cm-ag with SMTP; 19 Apr 2022 23:51:54 +0200
+Received: by rabbit.intern.cm-ag (Postfix, from userid 1023)
+        id E6D21460F1C; Tue, 19 Apr 2022 20:01:51 +0200 (CEST)
+Date:   Tue, 19 Apr 2022 20:01:51 +0200
+From:   Max Kellermann <mk@cm4all.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Max Kellermann <mk@cm4all.com>, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: fscache corruption in Linux 5.17?
+Message-ID: <Yl75D02pXj71kQBx@rabbit.intern.cm-ag>
+References: <Yl7d++G25sNXIR+p@rabbit.intern.cm-ag>
+ <YlWWbpW5Foynjllo@rabbit.intern.cm-ag>
+ <507518.1650383808@warthog.procyon.org.uk>
+ <509961.1650386569@warthog.procyon.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yl5XzCjqKbKYdvrC@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <509961.1650386569@warthog.procyon.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 09:33:48AM +0300, Mike Rapoport wrote:
-> On Mon, Apr 18, 2022 at 10:27:34AM -0700, Roman Gushchin wrote:
-> > On Mon, Apr 18, 2022 at 12:27:36PM +0300, Mike Rapoport wrote:
-> > > On Fri, Apr 15, 2022 at 05:27:51PM -0700, Roman Gushchin wrote:
-> > > > There are 50+ different shrinkers in the kernel, many with their own bells and
-> > > > whistles. Under the memory pressure the kernel applies some pressure on each of
-> > > > them in the order of which they were created/registered in the system. Some
-> > > > of them can contain only few objects, some can be quite large. Some can be
-> > > > effective at reclaiming memory, some not.
-> > > > 
-> > > > The only existing debugging mechanism is a couple of tracepoints in
-> > > > do_shrink_slab(): mm_shrink_slab_start and mm_shrink_slab_end. They aren't
-> > > > covering everything though: shrinkers which report 0 objects will never show up,
-> > > > there is no support for memcg-aware shrinkers. Shrinkers are identified by their
-> > > > scan function, which is not always enough (e.g. hard to guess which super
-> > > > block's shrinker it is having only "super_cache_scan"). They are a passive
-> > > > mechanism: there is no way to call into counting and scanning of an individual
-> > > > shrinker and profile it.
-> > > > 
-> > > > To provide a better visibility and debug options for memory shrinkers
-> > > > this patchset introduces a /sys/kernel/shrinker interface, to some extent
-> > > > similar to /sys/kernel/slab.
-> > > 
-> > > Wouldn't debugfs better fit the purpose of shrinker debugging?
-> > 
-> > I think sysfs fits better, but not a very strong opinion.
-> > 
-> > Even though the interface is likely not very useful for the general
-> > public, big cloud instances might wanna enable it to gather statistics
-> > (and it's certainly what we gonna do at Facebook) and to provide
-> > additional data when something is off.  They might not have debugfs
-> > mounted. And it's really similar to /sys/kernel/slab.
-> 
-> And there is also similar /proc/vmallocinfo so why not /proc/shrinker? ;-)
-> 
-> I suspect slab ended up in sysfs because nobody suggested to use debugfs
-> back then. I've been able to track the transition from /proc/slabinfo to
-> /proc/slubinfo to /sys/kernel/slab, but could not find why Christoph chose
-> sysfs in the end.
->
-> > Are there any reasons why debugfs is preferable?
-> 
-> debugfs is more flexible because it's not stable kernel ABI so if there
-> will be need/desire to change the layout and content of the files with
-> debugfs it can be done more easily.
-> 
-> Is this a real problem for Facebook to mount debugfs? ;-)
+On 2022/04/19 18:42, David Howells <dhowells@redhat.com> wrote:
+> Could the file have been modified by a third party?
 
-Fair enough, switching to debugfs in the next version.
+According to our support tickets, the customers used WordPress's
+built-in updater, which resulted in corrupt PHP sources.
 
-Thanks!
+We have configured stickiness in the load balancer; HTTP requests to
+one website always go through the same web server.  Which implies that
+the same web server that saw the corrupt files was the very same one
+that wrote the new file contents.  This part surprises me, because
+writing a page to the NFS server should update (or flush/invalidate)
+the old cache page.  It would be easy for a *different* NFS client to
+miss out on updated file contents, but this is not what happened.
+
+On 2022/04/19 18:47, David Howells <dhowells@redhat.com> wrote:
+> Do the NFS servers change the files that are being served - or is it
+> just WordPress pushing the changes to the NFS servers for the web
+> servers to then export?
+
+I'm not sure if I understand this question correctly.  The NFS server
+(a NetApp, btw.) sees the new file contents correctly; all other web
+servers also see non-corrupt new files.  Only the one web server which
+performed the update saw broken files.
+
+Max
