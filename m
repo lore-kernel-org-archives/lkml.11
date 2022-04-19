@@ -2,102 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49168C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC43FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350440AbiDSJzS (ORCPT
+        id S1350445AbiDSJzo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 05:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52912 "EHLO
+        Tue, 19 Apr 2022 05:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350431AbiDSJzP (ORCPT
+        with ESMTP id S1350442AbiDSJzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 05:55:15 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8876C20BFC;
-        Tue, 19 Apr 2022 02:52:33 -0700 (PDT)
-Received: from mail-wr1-f50.google.com ([209.85.221.50]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MG90u-1nhuC32jIy-00GcBq; Tue, 19 Apr 2022 11:52:31 +0200
-Received: by mail-wr1-f50.google.com with SMTP id t1so21684582wra.4;
-        Tue, 19 Apr 2022 02:52:31 -0700 (PDT)
-X-Gm-Message-State: AOAM532JHFHrFKxAxcbMMCGIHGqaZiIfNYD84DnPtjvVv3f90mdSz7ks
-        lTv3KHO3+fVZZiN45Ydt22aiWdYrdcEDZA/YaqM=
-X-Google-Smtp-Source: ABdhPJzCXBI+RcttLx9ypMCYJp26DkP98+kkPTFl+n5n/hcn08b2tUYxS4vgAQ33NEwseKjHf7Qbovh8TXElWM6kX8E=
-X-Received: by 2002:a5d:6983:0:b0:207:a226:df4b with SMTP id
- g3-20020a5d6983000000b00207a226df4bmr11097055wru.192.1650361951213; Tue, 19
- Apr 2022 02:52:31 -0700 (PDT)
+        Tue, 19 Apr 2022 05:55:43 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5476920BFD;
+        Tue, 19 Apr 2022 02:53:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650361981; x=1681897981;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jfHt7wB5XGMSPzgSoV7ck75X/YUam3lD2caa7ddZDys=;
+  b=jJzixJYZOk7IjXnWaZ0RrcNxJO4WRWe9lKOMXYok23NrNoYV30sVbZPZ
+   OqYErJyYRPhjn6NqwCCxiIb07MKCprWDazrJg0E4WuaRTYkOARmm02+bs
+   HBMuz7s6l33lRfPXRmlRt5r1CqByQ4vhJmUXBJQMFBxAAuVPDkc3ZQov/
+   ycIw2cdsmw8rUJC2k9h7XVfO5kHKH5nSj99C5VexZdgMBNjV/l7qW6Eom
+   Y5th6TrbDCaX2puUBcoI0pqUYvEDHQgO7WrnFgkFcJWfz/5X6fNMelrj7
+   sP3uPh3VonlnzJKBqw+bw/8NzYunePizqxCbf78CfnnQTWcafTI4wI1Oe
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="263485752"
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="263485752"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 02:53:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="576022673"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 19 Apr 2022 02:52:57 -0700
+Date:   Tue, 19 Apr 2022 17:45:21 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <navam@xilinx.com>
+Cc:     Joe Perches <joe@perches.com>, "mdf@kernel.org" <mdf@kernel.org>,
+        "hao.wu@intel.com" <hao.wu@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>, git <git@xilinx.com>
+Subject: Re: [PATCH v4 2/5] fpga: fix for coding style issues
+Message-ID: <20220419094521.GA322948@yilunxu-OptiPlex-7050>
+References: <20220416133719.3382895-1-nava.manne@xilinx.com>
+ <20220416133719.3382895-3-nava.manne@xilinx.com>
+ <ac22068dad06fd61f2e82c0bf7c0f58a4e5df050.camel@perches.com>
+ <SN6PR02MB45763D1B949353F99AAFE7D8C2F39@SN6PR02MB4576.namprd02.prod.outlook.com>
+ <d56ad1bc0ef918cc8395b7c0ec7bdd10baf4c1f6.camel@perches.com>
+ <SN6PR02MB45761359B029B065092F8691C2F29@SN6PR02MB4576.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220415142055.30873-1-sven@svenpeter.dev> <20220415142055.30873-7-sven@svenpeter.dev>
- <20220419053157.GA31530@lst.de> <866f79b1-6c02-4248-ac98-594829fed204@www.fastmail.com>
-In-Reply-To: <866f79b1-6c02-4248-ac98-594829fed204@www.fastmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 19 Apr 2022 11:52:15 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2CWZb3vdHQvseJZQwPbUFDRo5Z9aGb7iVgodT1YeB5Yw@mail.gmail.com>
-Message-ID: <CAK8P3a2CWZb3vdHQvseJZQwPbUFDRo5Z9aGb7iVgodT1YeB5Yw@mail.gmail.com>
-Subject: Re: [PATCH v2 6/6] nvme-apple: Add initial Apple SoC NVMe driver
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     "hch@lst.de" <hch@lst.de>, Keith Busch <kbusch@kernel.org>,
-        "axboe@fb.com" <axboe@fb.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org, linux-spdx@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:XMo+Fxs8ep4V8fBgB6R2KXUs6/FrFBHsYrJiuM+O+N73W005nxm
- ZidcQpb9RWcLf+btE5VXWD67zeP58eHKK/fufL2CoQlw5KAD+rKPSJyKrpMgSnMnsdOYjMb
- 0Ep31UvS9QRBeRRh62v1LxRypbUoRYVTQGkpeQ237KxH6k7BEgSBRy969Nla2JUn0ika/gy
- /wmtMpCUWYYdF7bXwUmqw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:WRARO1r46tU=:u1RlMeIaeFSmOBlNuwDqPT
- D9N7/nRjz57oeMY7TMX55x7aoMOQ3j1OA+/+WcNlpLdqJxYMoPWk+VNwHgAYbayKdBdjXo61w
- 310E3DzxUcZh6H/cbXWMzjNbbVbUzwqcn+zoBJTMFN78pRB/FncRo2heV75fWhMBOgCxUtmDB
- KyOKFxWF0l68nfRk/0f68L6OtfGQibaaMc3ah64qnBs3kVSQZmelAkVrtEtQ2lVWsId0ZrbE0
- bXUiwdn2izEsxN3QIRLyZSGsD5tprP3lk8zm+zCBSGim31lIN770kyrWSN5hNS4hbkMKKYVkY
- RfHQMu5bVt+qTKp+4TJBvovDsuJI8DRYd3ocoK8u2qa5flwcOIWuyGywBKC/s1TBO5L0Ts8OX
- GeuMDxVdsSMwJbzMB/xlXgZnp0k1o1qEvW6jGEqTLYs5EcGNN/1z+JQXvi/bgBFRZHggSxOhs
- aOfftIxwHiHFeqsGUWH/JkGHxC82pOAtfSmBbYOcCu2YuPbQbpne6Ew14IK6UA6HVaXkpe6Hi
- 7cP4DBlTtkIFk0OdJ834ee2btH+W5lXmHGecdRRHO5Ce9cnQ3wC8NW15th68kQTrCcDTjwXaB
- zpx1xBBLNvZ9HsZv4e3ajHJwfhK9F19mF+57wiZ5S4H1RAl005BImtYDLoBxl8hA3I6txeG2J
- UYR9/wgHBeMMYVYiowRkDe+NhtFsm+Hh9CUxA4o2AiJEeOyI16a2TBmInZvazFeIoCYG9kdiz
- VqTJOWicssnsUwj0DjSISUoflnKel2Rv+cSdlwlnsspvCy4EtGS0/TzP0XBfSg6iplECjRB6u
- cc5a+tLB8fu05Kndsz5mG/3Rfu5T0zblisotT6SkHVEpoQ2mrk=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB45761359B029B065092F8691C2F29@SN6PR02MB4576.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 11:47 AM Sven Peter <sven@svenpeter.dev> wrote:
-> On Tue, Apr 19, 2022, at 07:31, Christoph Hellwig wrote:
-> > On Fri, Apr 15, 2022 at 04:20:55PM +0200, Sven Peter wrote:
-> >> +++ b/drivers/nvme/host/apple.c
-> >> @@ -0,0 +1,1597 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +/*
-> >> + * Apple ANS NVM Express device driver
-> >> + * Copyright The Asahi Linux Contributors
-> >
-> > Is that actually a valid legal entity?
-> >
-> >> +#include <linux/io-64-nonatomic-lo-hi.h>
-> >
-> > Does this controller still not support 64-bit MMIO accesses like
-> > the old Apple PCIe controllers or is this just a leftover?
->
-> I just checked again and 64-bit accesses seem to work fine.
-> I'll remove the lo_hi_* calls and this include.
+On Tue, Apr 19, 2022 at 08:15:57AM +0000, Nava kishore Manne wrote:
+> Hi Joe,
+> 
+> 	Please find my response inline.
+> 
+> > -----Original Message-----
+> > From: Joe Perches <joe@perches.com>
+> > Sent: Monday, April 18, 2022 6:04 PM
+> > To: Nava kishore Manne <navam@xilinx.com>; mdf@kernel.org;
+> > hao.wu@intel.com; yilun.xu@intel.com; trix@redhat.com; Michal Simek
+> > <michals@xilinx.com>; linux-fpga@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org; git
+> > <git@xilinx.com>
+> > Subject: Re: [PATCH v4 2/5] fpga: fix for coding style issues
+> > 
+> > On Mon, 2022-04-18 at 09:54 +0000, Nava kishore Manne wrote:
+> > > Hi Joe,
+> > >
+> > > 	Please find my response inline.
+> > >
+> > > > -----Original Message-----
+> > > > From: Joe Perches <joe@perches.com>
+> > > > Sent: Saturday, April 16, 2022 10:29 PM
+> > 
+> > > > On Sat, 2022-04-16 at 19:07 +0530, Nava kishore Manne wrote:
+> > > > > fixes the below checks reported by checkpatch.pl Lines should not
+> > > > > end with a '('
+> > > > > Alignment should match open parenthesis
+> > > >
+> > > > in fpga-mgr:
+> > > > 	Another possibillty would be to change the function arguments
+> > > >
+> 
+> This API is there for a long back. Not sure changing the function arguments is fine or Not.
+> @yilun: Is it ok to change the function arguments?
 
-If you remove the #include, it is no longer possible to compile-test
-this on all 32-bit architectures, though that is probably fine as long
-as the Kconfig file has the right dependencies, like
+Joe's example code below doesn't actually change any function definition.
+It just tries to store the value of 'min(mgr->mops->initial_header_size, count)'
+in 'count', thus to reduce the length of the 'fpga_mgr_write_init(...)'
+expression.
 
-      depends on ARCH_APPLE || (COMPILE_TEST && 64BIT)
+So I think it is OK.
 
-I'd prefer to keep the #include here, but I don't mind the dependency
-if Christoph prefers it that way.
+Thanks,
+Yilun
 
-       Arnd
+> 
+> > > > and
+> > > >
+> > > > in fpga-region:
+> > > > 	Ideally keep the include declaration and definition styles synced
+> > >
+> 
+> Will fix it in next version.
+> 
+> Regards,
+> Navakishore.
