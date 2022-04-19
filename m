@@ -2,144 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB399C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A7DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354083AbiDSSkZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        id S243852AbiDSSl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 14:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357425AbiDSSkH (ORCPT
+        with ESMTP id S239603AbiDSSls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:40:07 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126983D1EB
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650393440; x=1681929440;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7EnDri+rzzXdbwBNvqibLC0OTDCudKYbxio2FvHLIN8=;
-  b=Nhj+xTsA1igDFXeoK1lNJr5KjBvpS+aSpGVOQhkQlM4wDtbdy9FPiUiB
-   oD+Vk1SEbfxg+hZ6quXiR6X1D4JwnpARRrGEqv/reJziL6LZ0NH0LbZ+Z
-   dtCl9k7TA4DFh2FnXN8QM8H+U6SNM8USQiimjV+qZGsEOsqevltBJk7Lw
-   EjhDwBkmbJgyM9Ar5EOKJJMzf0FZaeNPGtsKkkuDLdGl2qv6Hi/OhQTKv
-   uG5J9K+mUkN/0D8nPB/q5JP9P784QmVhGmzOk+aa+K2Cd5mez/zSE1uPm
-   in3zL8pJ/bKzwYe9FGQfK6nkvoOsxbkIOl845fHFY0NjuZm5fb6/ciMCI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261445155"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="261445155"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 11:37:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="727176861"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 19 Apr 2022 11:37:18 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngsiz-00065I-Eo;
-        Tue, 19 Apr 2022 18:37:17 +0000
-Date:   Wed, 20 Apr 2022 02:36:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>
-Subject: [broonie-ci:file4opaUI 20/24] drivers/spi/spi-intel.c:808:38: error:
- passing argument 2 of 'iop->exec_op' from incompatible pointer type
-Message-ID: <202204200200.q7QlOOQc-lkp@intel.com>
+        Tue, 19 Apr 2022 14:41:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019F73DA63;
+        Tue, 19 Apr 2022 11:39:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADB9EB818EF;
+        Tue, 19 Apr 2022 18:39:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFC5DC385AB;
+        Tue, 19 Apr 2022 18:39:01 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WgQ517dZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1650393535;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VyT5yFR69WOgQEnV8/wlLftu+VkDei1XdPwIV0Ddyb0=;
+        b=WgQ517dZX1PkFikA0L8FPb1E5zZ61UG62xNcWSc9UuoM3uhaahS5lSMbJjp6NBVxW2smNZ
+        XnxIYBGqtD0eCNni+N4rT2sXqBm06tC7JHcYO+Uci8tNBzLRljtYUYgYAau9RiQ2piR/CJ
+        E+QXa6ZL9kEC6+5pOvVTUf1UTlUCDa8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 612e3564 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 19 Apr 2022 18:38:55 +0000 (UTC)
+Received: by mail-yb1-f178.google.com with SMTP id r189so12936660ybr.6;
+        Tue, 19 Apr 2022 11:38:54 -0700 (PDT)
+X-Gm-Message-State: AOAM533A6oTYzaYk83nt4tthXv9ctCUIH6blM5o6QHHL8ImZat1O1aTn
+        EQ73NgBstxwX65dIrY8POvHD5yYdBmFNj1Bc5+0=
+X-Google-Smtp-Source: ABdhPJygDGhFZIcjwzbmxEAjC5M4INHOWHqlOEzmD5UKXJ5M3M4pBOw2NrPU2pCGLpW8o7rnLG0GwAkXiG41Hu3MclU=
+X-Received: by 2002:a25:d88c:0:b0:645:570:72d2 with SMTP id
+ p134-20020a25d88c000000b00645057072d2mr11051453ybg.373.1650393531955; Tue, 19
+ Apr 2022 11:38:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220419111650.1582274-1-Jason@zx2c4.com> <20220419111650.1582274-8-Jason@zx2c4.com>
+ <Yl78gLLcSb3EHv0B@zn.tnic>
+In-Reply-To: <Yl78gLLcSb3EHv0B@zn.tnic>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 19 Apr 2022 20:38:41 +0200
+X-Gmail-Original-Message-ID: <CAHmME9q03Je-ROzzHCgZC0vy1n=y8bsGBOAs8U_K_r3ebLNHbw@mail.gmail.com>
+Message-ID: <CAHmME9q03Je-ROzzHCgZC0vy1n=y8bsGBOAs8U_K_r3ebLNHbw@mail.gmail.com>
+Subject: Re: [PATCH v5 07/11] x86: use fallback for random_get_entropy()
+ instead of zero
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, "Theodore Ts'o" <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-um@lists.infradead.org, X86 ML <x86@kernel.org>,
+        linux-xtensa@linux-xtensa.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git file4opaUI
-head:   64ef86292800d770fcd8916cf07b1bea58559680
-commit: 246bb4cbc6a55a247e5e0afd57c91e0dec0c77c3 [20/24] spi: intel: Implement dirmap hooks
-config: powerpc-randconfig-r022-20220419 (https://download.01.org/0day-ci/archive/20220420/202204200200.q7QlOOQc-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git/commit/?id=246bb4cbc6a55a247e5e0afd57c91e0dec0c77c3
-        git remote add broonie-ci https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git
-        git fetch --no-tags broonie-ci file4opaUI
-        git checkout 246bb4cbc6a55a247e5e0afd57c91e0dec0c77c3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/spi/
+Hi Borislav,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Tue, Apr 19, 2022 at 8:16 PM Borislav Petkov <bp@alien8.de> wrote:
+> > +static inline unsigned long random_get_entropy(void)
+> > +{
+> > +#ifndef CONFIG_X86_TSC
+> > +     if (!boot_cpu_has(X86_FEATURE_TSC))
+>
+> cpu_feature_enabled() pls.
 
-All errors (new ones prefixed by >>):
+This function began as a carbon copy of get_cycles(), which reads:
 
-   In file included from include/linux/mtd/spi-nor.h:10,
-                    from drivers/spi/spi-intel.c:13:
-   include/linux/mtd/cfi.h:62:2: warning: #warning No CONFIG_MTD_CFI_Ix selected. No NOR chip support can work. [-Wcpp]
-      62 | #warning No CONFIG_MTD_CFI_Ix selected. No NOR chip support can work.
-         |  ^~~~~~~
-   drivers/spi/spi-intel.c: In function 'intel_spi_dirmap_read':
->> drivers/spi/spi-intel.c:808:38: error: passing argument 2 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     808 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
-         |                                  ~~~~^~~~~
-         |                                      |
-         |                                      struct spi_mem *
-   drivers/spi/spi-intel.c:808:38: note: expected 'const struct intel_spi_mem_op *' but argument is of type 'struct spi_mem *'
-   drivers/spi/spi-intel.c:808:45: error: passing argument 3 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     808 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
-         |                                             ^~~
-         |                                             |
-         |                                             const struct intel_spi_mem_op *
-   drivers/spi/spi-intel.c:808:45: note: expected 'const struct spi_mem_op *' but argument is of type 'const struct intel_spi_mem_op *'
->> drivers/spi/spi-intel.c:808:15: error: too many arguments to function 'iop->exec_op'
-     808 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
-         |               ^~~
-   drivers/spi/spi-intel.c: In function 'intel_spi_dirmap_write':
-   drivers/spi/spi-intel.c:824:38: error: passing argument 2 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     824 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
-         |                                  ~~~~^~~~~
-         |                                      |
-         |                                      struct spi_mem *
-   drivers/spi/spi-intel.c:824:38: note: expected 'const struct intel_spi_mem_op *' but argument is of type 'struct spi_mem *'
-   drivers/spi/spi-intel.c:824:45: error: passing argument 3 of 'iop->exec_op' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     824 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
-         |                                             ^~~
-         |                                             |
-         |                                             const struct intel_spi_mem_op *
-   drivers/spi/spi-intel.c:824:45: note: expected 'const struct spi_mem_op *' but argument is of type 'const struct intel_spi_mem_op *'
-   drivers/spi/spi-intel.c:824:15: error: too many arguments to function 'iop->exec_op'
-     824 |         ret = iop->exec_op(ispi, desc->mem, iop, &op);
-         |               ^~~
-   cc1: some warnings being treated as errors
+static inline cycles_t get_cycles(void)
+{
+#ifndef CONFIG_X86_TSC
+       if (!boot_cpu_has(X86_FEATURE_TSC))
+               return 0;
+#endif
 
+       return rdtsc();
+}
 
-vim +808 drivers/spi/spi-intel.c
+As you see, random_get_entropy() is the same function, but with that
+zero replaced with the fallback. (Using the fallback in get_cycles()
+wouldn't be appropriate.)
 
-   794	
-   795	static ssize_t intel_spi_dirmap_read(struct spi_mem_dirmap_desc *desc, u64 offs,
-   796					     size_t len, void *buf)
-   797	{
-   798		struct intel_spi *ispi = spi_master_get_devdata(desc->mem->spi->master);
-   799		const struct intel_spi_mem_op *iop = desc->priv;
-   800		struct spi_mem_op op = desc->info.op_tmpl;
-   801		int ret;
-   802	
-   803		/* Fill in the gaps */
-   804		op.addr.val = offs;
-   805		op.data.nbytes = len;
-   806		op.data.buf.in = buf;
-   807	
- > 808		ret = iop->exec_op(ispi, desc->mem, iop, &op);
-   809		return ret ? ret : len;
-   810	}
-   811	
+So, your options are:
+a) We keep this patch as-is, using boot_cpu_has(); or
+b) I make an unrelated change inside of this same patch to change
+get_cycles() to use cpu_feature_enabled() (in addition to the new
+random_get_entropy()).
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I think I prefer doing (a), and leaving (b) for another time when you
+or another x86 maintainer can do so. But I'll do whichever you say.
+Which would you like?
+
+Jason
