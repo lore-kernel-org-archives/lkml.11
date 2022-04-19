@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80599C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66253C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 11:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351460AbiDSLii (ORCPT
+        id S1351493AbiDSLim (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 07:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        Tue, 19 Apr 2022 07:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351406AbiDSLhi (ORCPT
+        with ESMTP id S1351479AbiDSLhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 07:37:38 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E29B7F9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:55 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id lc2so32211669ejb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:34:55 -0700 (PDT)
+        Tue, 19 Apr 2022 07:37:46 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F9614039
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:03 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bv19so32283675ejb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 04:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Keg7xeXtq8amo+bPOPiY0urtb62UU+nYY2PydP0Pktc=;
-        b=DTuv34MQ33JHfqETATQCEFdNozHmI35rAUQVc6olY52FJAiDXlsoudP958Slrb5wG1
-         DSPsGtDvlTAOkorBlo5mTDEsuc4ydyQ5Yf8AxUenxXPtL5w79pnDU8388VAXjO9mEVD+
-         vEeppQOWxBuT/F1c/tirPFrwshVkv0IzHeXlVS3TRoe5HUqVwgpCDZbGYEjlScL0+6Vr
-         hyS9XdBBr+bjvGu2LzcODR5O9YGPdmzXSE/BE4YQKhkbj4iyXXTmW7nwSDUIvjxekh2b
-         pFhW9CQNJbOpAdevGaap0fwJd6ED38/k91U2fka9puKnEErIFBBucAn4aACWqEK20wY+
-         fNow==
+        bh=KCOFhD4+rlVNZRDw2Wohm1cF4JuH6iXwMNcg8BbQ2EU=;
+        b=AYH2hChvUIAZzE5RbrvoO27rgVFPlPgb3N7BdmuGnv+dXGQObVH8yVqymZuILpzO7Y
+         bkDoMy1A7h8GAPQurW62zwXow+AozGNnbwzPotN5lL7nJ9doCOcW+XeLkfJptmzu7YgD
+         zbxheimturxJlu/l0jyWKS3bNOrwNKWep1odA0rMJ3SVftjqaHSNYz138OFhZehV5LB0
+         3OGVzXJiirBRAXeY62ufi6Mz148sg5ejozM8ZsRp1Yzb4XIc0H5QcBGK206K80tjEDdr
+         GIRJIkeFxhn4JuGEn9auK3iyW3gL9phUwZTqkAxjyWQzPk1MJj6rUPzVHx+JQ0Dc6gJ5
+         wgKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Keg7xeXtq8amo+bPOPiY0urtb62UU+nYY2PydP0Pktc=;
-        b=FimCwi9d1vMnk0jFLAhGxh5ceal+2pyTVTQUF1unSFSjdoY9NuWGHruDhppD46WJJ6
-         i0wXd0qfQzvkTgzJEjrZSYDaHDv1TQWsPrZlEkXKw0PEjzdvGIYMyv8ZLBsyY4kW66ou
-         /UQKC8/Vu5KOpQpdRIhO2jUFcaHFO+i+/1n7hqh4iI+59yPRE/co48WR+u5uHpWVFEwV
-         x9/dQgeV6/R1CoHIe4Rb8Djc9lgfojiDRF/ThOaOfWKtSh6X1aT2/o3lHGAJdHHq3wZ0
-         o6m6T9/l3AQ4bqtwd4TVRCoEsT0oTR39se0/031TX+3EF83Xqn/iQ9V2WcTGDF3GzaWV
-         Syxg==
-X-Gm-Message-State: AOAM533DeaHC4wk8wy5+WQpHwdF6WyHhYL75FZj4S16hg4WbS7ZCzcs0
-        ljiONEJdS8cKNKilKjMwgg+TfA==
-X-Google-Smtp-Source: ABdhPJyVt0cgXUYUeGSEzHKPEQtYs3Qh+dbqLbNajfqREgpBOjCU9zh7evNxJ42COX+bjxL2ovpv7Q==
-X-Received: by 2002:a17:906:d552:b0:6ef:c5a2:7e01 with SMTP id cr18-20020a170906d55200b006efc5a27e01mr5528474ejc.568.1650368093944;
-        Tue, 19 Apr 2022 04:34:53 -0700 (PDT)
+        bh=KCOFhD4+rlVNZRDw2Wohm1cF4JuH6iXwMNcg8BbQ2EU=;
+        b=LGDK6+lvrm2R5qVd1kFDCADc437KyTEbTMhT7EwkUzYzRGAYRCS84blPPb2QJspQXf
+         YgLapmyLRrTGBUw48GJI54sB7l0Sou32ixZEvrEH/cXnoCVJJyNtQGxAeaVlxzhLRO8m
+         TIrf03oeJffmB2SVE+KpwFryEpIoJ7S6XEIHvi90rK4VCKn5rILMBBUjv6sfpbwwPpFL
+         8Lh2rUTvDbLioRDhJVevW5GQeGrJg1+CBLeLR1aoo90oAGZNoMV+eWvvmUha55yIQSod
+         RQyNR/rYjnS73B4Er6g6gsNVitGVgC/6F2uGUeWlogRRf7Ya3z0I/zaVtRUfy8KKjrOb
+         KW9g==
+X-Gm-Message-State: AOAM5321Hp7vFn4jipLOoi74+3eWMwICfhmU3oqZnJf6tDCWCwRjxkK6
+        kH6c1yQ1NGuhVvKx6vH0iW/UIQ==
+X-Google-Smtp-Source: ABdhPJw6wuVTlMl7cBqDd3vRX3OHQB0VzWpmNYx+bcp3YaVGC5PiJJHzMz42CL0W7WUhn1V2riWvyQ==
+X-Received: by 2002:a17:907:3e9b:b0:6e7:f58a:9b91 with SMTP id hs27-20020a1709073e9b00b006e7f58a9b91mr1179180ejc.291.1650368101608;
+        Tue, 19 Apr 2022 04:35:01 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.34.52
+        by smtp.gmail.com with ESMTPSA id ce21-20020a170906b25500b006e89869cbf9sm5608802ejb.105.2022.04.19.04.35.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 04:34:53 -0700 (PDT)
+        Tue, 19 Apr 2022 04:35:01 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>
@@ -78,10 +78,10 @@ Cc:     Stuart Yoder <stuyoder@gmail.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Michael Kelley <mikelley@microsoft.com>
-Subject: [PATCH v7 04/12] hv: Use driver_set_override() instead of open-coding
-Date:   Tue, 19 Apr 2022 13:34:27 +0200
-Message-Id: <20220419113435.246203-5-krzysztof.kozlowski@linaro.org>
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH v7 09/12] clk: imx: scu: Fix kfree() of static memory on setting driver_override
+Date:   Tue, 19 Apr 2022 13:34:32 +0200
+Message-Id: <20220419113435.246203-10-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
 References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
@@ -91,74 +91,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a helper to set driver_override to the reduce amount of duplicated
-code.  Make the driver_override field const char, because it is not
-modified by the core and it matches other subsystems.
+The driver_override field from platform driver should not be initialized
+from static memory (string literal) because the core later kfree() it,
+for example when driver_override is set via sysfs.
 
+Use dedicated helper to set driver_override properly.
+
+Fixes: 77d8f3068c63 ("clk: imx: scu: add two cells binding support")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
 ---
- drivers/hv/vmbus_drv.c | 28 ++++------------------------
- include/linux/hyperv.h |  6 +++++-
- 2 files changed, 9 insertions(+), 25 deletions(-)
+ drivers/clk/imx/clk-scu.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 14de17087864..607e40aba18e 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -575,31 +575,11 @@ static ssize_t driver_override_store(struct device *dev,
- 				     const char *buf, size_t count)
- {
- 	struct hv_device *hv_dev = device_to_hv_device(dev);
--	char *driver_override, *old, *cp;
--
--	/* We need to keep extra room for a newline */
--	if (count >= (PAGE_SIZE - 1))
--		return -EINVAL;
--
--	driver_override = kstrndup(buf, count, GFP_KERNEL);
--	if (!driver_override)
--		return -ENOMEM;
--
--	cp = strchr(driver_override, '\n');
--	if (cp)
--		*cp = '\0';
--
--	device_lock(dev);
--	old = hv_dev->driver_override;
--	if (strlen(driver_override)) {
--		hv_dev->driver_override = driver_override;
--	} else {
--		kfree(driver_override);
--		hv_dev->driver_override = NULL;
--	}
--	device_unlock(dev);
-+	int ret;
+diff --git a/drivers/clk/imx/clk-scu.c b/drivers/clk/imx/clk-scu.c
+index ed3c01d2e8ae..4996f1d94657 100644
+--- a/drivers/clk/imx/clk-scu.c
++++ b/drivers/clk/imx/clk-scu.c
+@@ -683,7 +683,12 @@ struct clk_hw *imx_clk_scu_alloc_dev(const char *name,
+ 		return ERR_PTR(ret);
+ 	}
  
--	kfree(old);
-+	ret = driver_set_override(dev, &hv_dev->driver_override, buf, count);
-+	if (ret)
-+		return ret;
+-	pdev->driver_override = "imx-scu-clk";
++	ret = driver_set_override(&pdev->dev, &pdev->driver_override,
++				  "imx-scu-clk", strlen("imx-scu-clk"));
++	if (ret) {
++		platform_device_put(pdev);
++		return ERR_PTR(ret);
++	}
  
- 	return count;
- }
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index fe2e0179ed51..12e2336b23b7 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -1257,7 +1257,11 @@ struct hv_device {
- 	u16 device_id;
- 
- 	struct device device;
--	char *driver_override; /* Driver name to force a match */
-+	/*
-+	 * Driver name to force a match.  Do not set directly, because core
-+	 * frees it.  Use driver_set_override() to set or clear it.
-+	 */
-+	const char *driver_override;
- 
- 	struct vmbus_channel *channel;
- 	struct kset	     *channels_kset;
+ 	ret = imx_clk_scu_attach_pd(&pdev->dev, rsrc_id);
+ 	if (ret)
 -- 
 2.32.0
 
