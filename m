@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18129C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242999AbiDSAsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S242815AbiDSAsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241353AbiDSApR (ORCPT
+        with ESMTP id S241298AbiDSApQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:45:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1EB29CBE
+        Mon, 18 Apr 2022 20:45:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521272DA88
         for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD65761423
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B332C6143D
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39274C385D9;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48117C340EC;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=oepFIishKrkOeUnkt79DFJwu+yfbGonUhjPMazu3u90=;
+        bh=zlEwoSJGl9lOz3BHLKNNT2oKRiWb3/1DVwxpQdPd5eg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MIqczG8CmyWZ23hWcM7zcJbSONbHWzlGBR46Tgjm2vZyhJAB6ONd7z5GEnGFOAA9H
-         MTSOOOIFHDturjTsd4rTnjbd0gW0UcUhwgZ46Ryp/1bn6vQRzQx8FkO4SMkWfzkQVE
-         ZEhcZY4m2DWfKQGoygYTlh9TSKSzd1qt31ylvLo7u9rVf36sff1/1VUQSRIb3IBoK1
-         MEJkVMmK7Mzh1rLbrWY2WQzCDURijIm4rPI/xN5/f+K02Igjg4WYvBhApiHELyUiES
-         q8MW/ParDjvj7dVdFcCQAvwsQ3R2PCwwwCa23ggILD649uG0Hy5oB2gJTlllEV7f+X
-         ipYkPXT1gUMyA==
+        b=Lsm0TZoJ5KRjHZvlQKIGxubXi5wJfHK+bKx12mFT+DmaJ6rC+GDRo+NWkMIgskdmx
+         87TxD5baUCK6kE5IDbxo/m8h0itxcKgYdh53Ov2R46hU+rTQRMmQnU5/9lCRSwfGzi
+         abCTjT3XweZMnVZ6VvIQqIEVYMJ0vw8OxVJ8/Rqqr+LC8BCM2fNXZDwgOe8/b+AmJp
+         sahEp2nzhsdzNidr6Uw3J3DeM6JgjjvCUIoKBQuVrUO2Ue281Sab+WEAN6t9qm9t+q
+         kw06Ehttuz1kliSCJFyDwpb9AnWpfkNOehDIdylf73Qsv9ptQvR44rELKDXY0M3hs/
+         C5dl0WEMuZeWg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 3DE2C5C3102; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 4327F5C3112; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 30/61] tools/nolibc/string: add strncpy() and strlcpy()
-Date:   Mon, 18 Apr 2022 17:41:54 -0700
-Message-Id: <20220419004225.3952530-30-paulmck@kernel.org>
+Subject: [PATCH nolibc 33/61] tools/nolibc/arch: mark the _start symbol as weak
+Date:   Mon, 18 Apr 2022 17:41:57 -0700
+Message-Id: <20220419004225.3952530-33-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,59 +53,92 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-These are minimal variants. strncpy() always fills the destination for
-<size> chars, while strlcpy() copies no more than <size> including the
-zero and returns the source's length. The respective sizes on various
-archs are:
-
-  strncpy(): x86:0x1f mips:0x30 arm:0x20
-  strlcpy(): x86:0x17 mips:0x34 arm:0x1a
+By doing so we can link together multiple C files that have been compiled
+with nolibc and which each have a _start symbol.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/string.h | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ tools/include/nolibc/arch-aarch64.h | 1 +
+ tools/include/nolibc/arch-arm.h     | 1 +
+ tools/include/nolibc/arch-i386.h    | 1 +
+ tools/include/nolibc/arch-mips.h    | 1 +
+ tools/include/nolibc/arch-riscv.h   | 1 +
+ tools/include/nolibc/arch-x86_64.h  | 1 +
+ 6 files changed, 6 insertions(+)
 
-diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
-index b831a02de83f..7c274efcdfae 100644
---- a/tools/include/nolibc/string.h
-+++ b/tools/include/nolibc/string.h
-@@ -121,6 +121,34 @@ size_t nolibc_strlen(const char *str)
- 		nolibc_strlen((str));           \
- })
+diff --git a/tools/include/nolibc/arch-aarch64.h b/tools/include/nolibc/arch-aarch64.h
+index 443de5fb7f54..87d9e434820c 100644
+--- a/tools/include/nolibc/arch-aarch64.h
++++ b/tools/include/nolibc/arch-aarch64.h
+@@ -183,6 +183,7 @@ struct sys_stat_struct {
  
-+static __attribute__((unused))
-+size_t strlcpy(char *dst, const char *src, size_t size)
-+{
-+	size_t len;
-+	char c;
-+
-+	for (len = 0;;) {
-+		c = src[len];
-+		if (len < size)
-+			dst[len] = c;
-+		if (!c)
-+			break;
-+		len++;
-+	}
-+	return len;
-+}
-+
-+static __attribute__((unused))
-+char *strncpy(char *dst, const char *src, size_t size)
-+{
-+	size_t len;
-+
-+	for (len = 0; len < size; len++)
-+		if ((dst[len] = *src))
-+			src++;
-+	return dst;
-+}
-+
- static __attribute__((unused))
- char *strrchr(const char *s, int c)
- {
+ /* startup code */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     "ldr x0, [sp]\n"              // argc (x0) was in the stack
+diff --git a/tools/include/nolibc/arch-arm.h b/tools/include/nolibc/arch-arm.h
+index 66f687ad987f..001a3c8c9ad5 100644
+--- a/tools/include/nolibc/arch-arm.h
++++ b/tools/include/nolibc/arch-arm.h
+@@ -176,6 +176,7 @@ struct sys_stat_struct {
+ 
+ /* startup code */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+ #if defined(__THUMBEB__) || defined(__THUMBEL__)
+diff --git a/tools/include/nolibc/arch-i386.h b/tools/include/nolibc/arch-i386.h
+index 32f42e2cee26..d7e4d53325a3 100644
+--- a/tools/include/nolibc/arch-i386.h
++++ b/tools/include/nolibc/arch-i386.h
+@@ -175,6 +175,7 @@ struct sys_stat_struct {
+  *
+  */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %eax\n"                // argc   (first arg, %eax)
+diff --git a/tools/include/nolibc/arch-mips.h b/tools/include/nolibc/arch-mips.h
+index e330201dde6a..c9a6aac87c6d 100644
+--- a/tools/include/nolibc/arch-mips.h
++++ b/tools/include/nolibc/arch-mips.h
+@@ -190,6 +190,7 @@ struct sys_stat_struct {
+ 
+ /* startup code, note that it's called __start on MIPS */
+ asm(".section .text\n"
++    ".weak __start\n"
+     ".set nomips16\n"
+     ".global __start\n"
+     ".set    noreorder\n"
+diff --git a/tools/include/nolibc/arch-riscv.h b/tools/include/nolibc/arch-riscv.h
+index 9d5ff78f606b..bc10b7b5706d 100644
+--- a/tools/include/nolibc/arch-riscv.h
++++ b/tools/include/nolibc/arch-riscv.h
+@@ -184,6 +184,7 @@ struct sys_stat_struct {
+ 
+ /* startup code */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     ".option push\n"
+diff --git a/tools/include/nolibc/arch-x86_64.h b/tools/include/nolibc/arch-x86_64.h
+index 83c4b458ada7..fe517c16cd4d 100644
+--- a/tools/include/nolibc/arch-x86_64.h
++++ b/tools/include/nolibc/arch-x86_64.h
+@@ -198,6 +198,7 @@ struct sys_stat_struct {
+  *
+  */
+ asm(".section .text\n"
++    ".weak _start\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %rdi\n"                // argc   (first arg, %rdi)
 -- 
 2.31.1.189.g2e36527f23
 
