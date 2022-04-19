@@ -2,112 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD095C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC254C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 16:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354393AbiDSQKf (ORCPT
+        id S1354408AbiDSQL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
+        Tue, 19 Apr 2022 12:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244081AbiDSQKe (ORCPT
+        with ESMTP id S232437AbiDSQLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 12:10:34 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73F7381A8;
-        Tue, 19 Apr 2022 09:07:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650384471; x=1681920471;
-  h=from:to:cc:subject:date:message-id;
-  bh=fdubxdHgoQUUeVvOw4eAWUS9eh70LgX2k0wAmWAjbnI=;
-  b=dXN91BdIWABZY1r1Sx77XGP0EB3QIkbxZKtBkcKG6M5Q0g+txVR7Nphu
-   zLNfrGzQlGvlMEF0IWxsv6cVBeeFUeLYauxduUGojwVE4qPF4ZNeeGqns
-   hjJJVXYJmG9Hyxw9JcqJwiS6rmAAQ2j+UgbYheNoxoTQWPinf3aB1f87i
-   GE28ZarNAUmBDgBugv2sIijVqeCmLA3vkZUkEYhIa80lqSa+h+2vJmNAT
-   y1pXq71VihEwACgwHhk25LlK950Tokg0mEn3pXIn1Tgrzuj4jNUiaGLVt
-   ORkcxe4DlmFOkFdvHy6i9NeY8j3CyMS1GnVTWQer8zVfY5x2/amugkJBa
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261405680"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="261405680"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:07:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="529370957"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 09:07:46 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
+        Tue, 19 Apr 2022 12:11:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21ECA1FCF7
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650384552;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QjO9zZCHyHzmC89BeesJw6bj4mjc3AQKTs5k6ZcDG5Q=;
+        b=QsFsg4zgiCJfIoGiIvU4oWs5c3FQw1Wup+Y23qU8O8QsLZPkr49FLhrPIZrG7doeMDRxHu
+        d+hrg9wqYUW6c+Tx5GZpC5gERXcaIfUaQt7qYIYXu1NhXTwzR4Q2QKvFdsx1wBBpINJilj
+        hyxJgejtbjKJWf4wBFEIMZsvLD31bw8=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-675-T7adfZiMNrGmlZeWpkZ84w-1; Tue, 19 Apr 2022 12:09:05 -0400
+X-MC-Unique: T7adfZiMNrGmlZeWpkZ84w-1
+Received: by mail-qk1-f198.google.com with SMTP id v14-20020a05620a0f0e00b00699f4ea852cso12766195qkl.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 09:09:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QjO9zZCHyHzmC89BeesJw6bj4mjc3AQKTs5k6ZcDG5Q=;
+        b=ZgeEwpZ66bB5iydWK34Z5ngnQ5O6SznC78gigmhqTtld/TpQTGOxIvafJrUgeeb9pw
+         uJuLUx0Z2MQu7MDgOf59WCH6KwcwApIgPWaVAPqKle6Nk1FKh4YfU66Yjkv4iHelPfh0
+         cSSxS4YB0jgB/zrzJsF1irIPdnkl6WQBRLKnyFR0fOCJQrG8C+ZCUCgQz7IomNJRw7EN
+         v7irjI1ydjGxCpeVsOMqA3E/NYWukBLhM/WwkAwCc/uYUNNnS4iQi1PT7uK10+/cHBdZ
+         uP1EBIz/SwfTmlm6vMrkJI/SOyXqsyrE1p4Fj+3yZEmdw+TAm+N3t79kWBZKWXCMCkhn
+         wuaA==
+X-Gm-Message-State: AOAM533dXCxydOdFnD1nSB2DxgS6+cuvQaKOdTEMQHYRjgd885Uqwyr1
+        DHaDfx+N0nQVTEU9Mg9vQjSh+iOP2CbTjDcu71kq8Pegsy9338+J/Kdl0qphyN5HBiDJI/GHWhI
+        vPdsRAyq8EIMrNtG3eRIDJQoC
+X-Received: by 2002:a05:620a:25cf:b0:699:bbc6:9e58 with SMTP id y15-20020a05620a25cf00b00699bbc69e58mr10316583qko.64.1650384543639;
+        Tue, 19 Apr 2022 09:09:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8dlQKXYLkLZqpht+RsMtbyTiQevbAbgNRNLox9DzH3ZmLhYrpq2QEWFF4oUpzdt/NutnGVA==
+X-Received: by 2002:a05:620a:25cf:b0:699:bbc6:9e58 with SMTP id y15-20020a05620a25cf00b00699bbc69e58mr10316560qko.64.1650384543400;
+        Tue, 19 Apr 2022 09:09:03 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id c20-20020a05622a059400b002e1d59e68f3sm244823qtb.48.2022.04.19.09.09.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 09:09:02 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 09:09:00 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v9 6/9] KVM: VMX: Clean up vmx_refresh_apicv_exec_ctrl()
-Date:   Tue, 19 Apr 2022 23:36:04 +0800
-Message-Id: <20220419153604.11786-1-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH v2 13/25] scripts: Create objdump-func helper script
+Message-ID: <20220419160900.2clkkvpit7zyu2o6@treble>
+References: <cover.1650300597.git.jpoimboe@redhat.com>
+ <ab37c23d28a8b9cf7a6707cc5af5e1aef80ba4a3.1650300597.git.jpoimboe@redhat.com>
+ <20220419111555.GR2731@worktop.programming.kicks-ass.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220419111555.GR2731@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the condition check cpu_has_secondary_exec_ctrls(). Calling
-vmx_refresh_apicv_exec_ctrl() premises secondary controls activated
-and VMCS fields related to APICv valid as well. If it's invoked in
-wrong circumstance at the worst case, VMX operation will report
-VMfailValid error without further harmful impact and just functions
-as if all the secondary controls were 0.
+On Tue, Apr 19, 2022 at 01:15:55PM +0200, Peter Zijlstra wrote:
+> On Mon, Apr 18, 2022 at 09:50:32AM -0700, Josh Poimboeuf wrote:
+> > Add a simple script which disassembles a single function from an object
+> > file.  Comes in handy for objtool warnings and kernel stack traces.
+> > 
+> > Originally-by: Peter Zijlstra <peterz@infradead.org>
+> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > ---
+> >  scripts/objdump-func | 18 ++++++++++++++++++
+> >  1 file changed, 18 insertions(+)
+> >  create mode 100755 scripts/objdump-func
+> > 
+> > diff --git a/scripts/objdump-func b/scripts/objdump-func
+> > new file mode 100755
+> > index 000000000000..140646c456fc
+> > --- /dev/null
+> > +++ b/scripts/objdump-func
+> > @@ -0,0 +1,18 @@
+> > +#!/bin/bash
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +#
+> > +# Disassemble a single function.
+> > +#
+> > +# usage: objdump-func <file> <func>
+> > +
+> > +set -o errexit
+> > +set -o nounset
+> > +
+> > +OBJDUMP="${CROSS_COMPILE:-}objdump"
+> > +
+> > +command -v awk >/dev/null 2>&1 || die "awk isn't installed"
+> > +
+> > +OBJ=$1; shift
+> > +FUNC=$1; shift
+> > +
+> > +${OBJDUMP} -wdr $@ $OBJ | awk "/^\$/ { P=0; } /$FUNC[^>]*>:\$/ { P=1; O=strtonum(\"0x\" \$1); } { if (P) { o=strtonum(\"0x\" \$1); printf(\"%04x \", o-O); print \$0; } }"
+> > -- 
+> > 2.34.1
+> > 
+> 
+> This might rely on awk being gawk, I'm never very careful about those
+> things.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- arch/x86/kvm/vmx/vmx.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+True, running with --posix I get
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index f439abd52bad..c6ad82116804 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4194,16 +4194,15 @@ static void vmx_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 
- 	pin_controls_set(vmx, vmx_pin_based_exec_ctrl(vmx));
--	if (cpu_has_secondary_exec_ctrls()) {
--		if (kvm_vcpu_apicv_active(vcpu))
--			secondary_exec_controls_setbit(vmx,
--				      SECONDARY_EXEC_APIC_REGISTER_VIRT |
--				      SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
--		else
--			secondary_exec_controls_clearbit(vmx,
--					SECONDARY_EXEC_APIC_REGISTER_VIRT |
--					SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
--	}
-+
-+	if (kvm_vcpu_apicv_active(vcpu))
-+		secondary_exec_controls_setbit(vmx,
-+					       SECONDARY_EXEC_APIC_REGISTER_VIRT |
-+					       SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
-+	else
-+		secondary_exec_controls_clearbit(vmx,
-+						 SECONDARY_EXEC_APIC_REGISTER_VIRT |
-+						 SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
- 
- 	vmx_update_msr_bitmap_x2apic(vcpu);
- }
+  awk: cmd. line:1: (FILENAME=- FNR=17142) fatal: function `strtonum' not defined
+
+The non-gawk users always ruin the party.
+
 -- 
-2.27.0
+Josh
 
