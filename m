@@ -2,111 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357707AbiDSUl7 (ORCPT
+        id S1357712AbiDSUmq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
+        Tue, 19 Apr 2022 16:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357702AbiDSUlz (ORCPT
+        with ESMTP id S1357702AbiDSUmZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:41:55 -0400
+        Tue, 19 Apr 2022 16:42:25 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9019C40E78
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:39:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1957A41981
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 13:39:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=cjz7wKFAsfBMVGPmGUS52OFwFiDPm56/BfR12W6kk4U=; b=N170i8NmuK3H7TF4S48xKXCGg2
-        MBDSwfkzfTB9UKpyejYSlI06Evm7PW8/lwrSlvOogIyFd2skJKVL1K5weSkS21/4VjDtuzD1lavmA
-        I44a1GEH0e2oW5qPxF0kPHmrJURna8ysOP6byJOFDnE/CUQBk1igAlWEM/txwznnMQCSSBdojkBMN
-        Xv1pXJJmdNT5hn2P8YUropp4QOOa1LaUwUcFw4XJJ3+UevHeTfC/1etXl189VFxWHo20sjxoz6YgR
-        eBFVKhXdNECGvZG08DKNstStDyzbelWVBnELCrVABah/yJfBUFCh4VMqLeqM60/tcaSuI/UiSBsYW
-        Na3oj/dQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To;
+        bh=7J6l86YgmhW+adRF5XGzfa7mk02W/0pkDVJc+asyeGs=; b=EbY4OFP1CCZ6LayJc0a09lOaCV
+        BJxDmmvDg2RSYgW4QfpxycVWoNCrrDSpusxELsk/I7EOaEycpBIC+VPSx607kYb+b+R96Byw/2ltX
+        nVBcdnpPxrgWRi6jMk2wjLaSyIoVvlxD6NGw0BJ0aVtaJsis62t5cueIDtan6Gn2onh4Tfb4DWLlg
+        9Lajao7cbxVrsbWmKlX2cLGQjZcI8TkzaxCJ2buQz3o1esFNfsg17OqGCNhkq01fEyZGnwxf1HDSv
+        Z+/4tXzlS1NoRuh5/xsMyq59nvegwrXO7RKUyhu7TmfEuij11lkGVfPpwRa6bT5AcCq+NPfdxhLOA
+        EzW1MNcg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nguca-003U9J-LS; Tue, 19 Apr 2022 20:38:48 +0000
-Message-ID: <814ae1e7-297f-102f-972f-ae6130128e7a@infradead.org>
-Date:   Tue, 19 Apr 2022 13:38:42 -0700
+        id 1ngudM-003UC2-O8; Tue, 19 Apr 2022 20:39:36 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A86A430031E;
+        Tue, 19 Apr 2022 22:39:34 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 75C302B526F01; Tue, 19 Apr 2022 22:39:34 +0200 (CEST)
+Message-ID: <20220419203807.596871927@infradead.org>
+User-Agent: quilt/0.66
+Date:   Tue, 19 Apr 2022 22:32:55 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, jpoimboe@redhat.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, mbenes@suse.cz
+Subject: [PATCH 1/2] objtool: Fix type of reloc::addend
+References: <20220419203254.034493341@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1] RISC-V: Add braces around an empty if statement bodies
-Content-Language: en-US
-To:     Palmer Dabbelt <palmer@rivosinc.com>, panqinglin2020@iscas.ac.cn
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        alexandre.ghiti@canonical.com, jszhang@kernel.org,
-        wangkefeng.wang@huawei.com, mick@ics.forth.gr,
-        vitaly.wool@konsulko.com, rppt@kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-References: <20220419194846.18318-1-palmer@rivosinc.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220419194846.18318-1-palmer@rivosinc.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Elf{32,64}_Rela::r_addend is of type: Elf{32,64}_Sword, that means
+that our reloc::addend needs to be long or face tuncation issues when
+we do elf_rebuild_reloc_section():
 
-On 4/19/22 12:48, Palmer Dabbelt wrote:
-> From: Palmer Dabbelt <palmer@rivosinc.com>
-> 
-> This triggers -Wempty-body, which will cause the next statement (eventually
-> create_pmd_mapping) to be dropped.  Both of these were introduced by the same
-> commit.  This is safe for the reporting config (which is 32-bit), but IIUC
-> could result in breakages for 64-bit configs without 4/5 level paging like the
-> XIP configs.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 677b9eb8810e ("riscv: mm: Prepare pt_ops helper functions for sv57")
-> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-> ---
-> Might be better to define these to functions that are empty, but that's
-> slightly different than just fixing the commit/warning in question.
+  - 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt+0x80000067
+  + 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt-0x7fffff99
 
-Yes, we usually fix this type of problem by changing these to have empty bodies:
+Fixes: 627fce14809b ("objtool: Add ORC unwind table generation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ tools/objtool/check.c               |    8 ++++----
+ tools/objtool/elf.c                 |    2 +-
+ tools/objtool/include/objtool/elf.h |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-#else
-...
-#define create_pud_mapping(__pmdp, __va, __pa, __sz, __prot)
-#define create_pmd_mapping(__pmdp, __va, __pa, __sz, __prot)
-#endif /* __PAGETABLE_PMD_FOLDED */
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -560,12 +560,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%x",
++				WARN("can't find unreachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%x",
++			WARN("can't find unreachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -595,12 +595,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%x",
++				WARN("can't find reachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%x",
++			WARN("can't find reachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -546,7 +546,7 @@ static struct section *elf_create_reloc_
+ 						int reltype);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend)
++		  unsigned int type, struct symbol *sym, long addend)
+ {
+ 	struct reloc *reloc;
+ 
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -73,7 +73,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	int addend;
++	long addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend);
++		  unsigned int type, struct symbol *sym, long addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
 
-etc.
 
-> ---
->  arch/riscv/mm/init.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-> index 9535bea8688c..637916857c4d 100644
-> --- a/arch/riscv/mm/init.c
-> +++ b/arch/riscv/mm/init.c
-> @@ -798,13 +798,15 @@ static void __init create_fdt_early_page_table(pgd_t *pgdir, uintptr_t dtb_pa)
->  			   PGDIR_SIZE,
->  			   IS_ENABLED(CONFIG_64BIT) ? PAGE_TABLE : PAGE_KERNEL);
->  
-> -	if (pgtable_l5_enabled)
-> +	if (pgtable_l5_enabled) {
->  		create_p4d_mapping(early_dtb_p4d, DTB_EARLY_BASE_VA,
->  				   (uintptr_t)early_dtb_pud, P4D_SIZE, PAGE_TABLE);
-> +	}
->  
-> -	if (pgtable_l4_enabled)
-> +	if (pgtable_l4_enabled) {
->  		create_pud_mapping(early_dtb_pud, DTB_EARLY_BASE_VA,
->  				   (uintptr_t)early_dtb_pmd, PUD_SIZE, PAGE_TABLE);
-> +	}
->  
->  	if (IS_ENABLED(CONFIG_64BIT)) {
->  		create_pmd_mapping(early_dtb_pmd, DTB_EARLY_BASE_VA,
-
--- 
-~Randy
