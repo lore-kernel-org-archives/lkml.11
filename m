@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25071C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED07C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356743AbiDSSTy (ORCPT
+        id S1356678AbiDSSUB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
+        Tue, 19 Apr 2022 14:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356727AbiDSSTW (ORCPT
+        with ESMTP id S1356738AbiDSSTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:19:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047803F88D;
-        Tue, 19 Apr 2022 11:13:32 -0700 (PDT)
+        Tue, 19 Apr 2022 14:19:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D5D3F8A3;
+        Tue, 19 Apr 2022 11:13:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4E047CE18A1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43B66B81185;
+        Tue, 19 Apr 2022 18:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8853C385AE;
         Tue, 19 Apr 2022 18:13:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88619C385AC;
-        Tue, 19 Apr 2022 18:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392009;
-        bh=dzVjioPkyw1/WFLU5VKNi3YYW0V1cEYT1JMw1y3d9TI=;
+        s=k20201202; t=1650392013;
+        bh=X7qBUUgV1LaOs2vD6Ys+38lRH+s//Ob0CYGiP9aS3nI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXzxbHhgr50U/rnvYxHdLE5GQCIwqBobf5uluGuGVlcAH1PkICS4ei3PzhwlCYrCJ
-         0vwowbzstp+VVALI9V9KiCHRUMdH7yIJYA0cslyPt3PGd9HHWsz/5EoEp1EJqjtLBT
-         LmX+XLVS2uBRfxdrNdf2//M6j7Ywfs4aROfStaqW7p6E6KO5U6vZOWzTNFCfTCkjKS
-         xeXwEu11F79m3eBTG/ZByUnJyyRKfMV+o9lmgnSIZWE0HSGEaTnzlxtLu55NTNqRuI
-         dmlxtXY3GOn12q52DbQGHp27wTln8OGkB3z7LaeeY7Q53a4GRZAVDfBcdziHoP/L9D
-         VhTvws8DD7YyQ==
+        b=ulHzuyr935xjdwyfh5+U5fUb6I5pyeUWJsPrFhuKdFtu+5bluQwNt1zzzpTtQsZ/x
+         3ITziFqtDietWbG35GtqvhKARZ1x93Wf44hEk3oXFDqc28cQZM9dPtjcpe44UI8DiP
+         3abDbEYCmHbbkpMD/Tb7ac+f/y9yK75bbg/Fk3wZyDBr2YyKYPGecEJyQgnHIpZuzP
+         D8GcCye5DKFiMB8XHqu6l8jfDSjAUQUyynqaKJo45egP+cLaJGLLcxEL7tRhLeICfh
+         0kh9nxmxxiovwWbi9fE2ZEaRo4IN/0U77MecvZfvzz9NL+ptkQrcrGisKvlF0DGICY
+         czJgNrXUp7ZVA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tomas Melin <tomas.melin@vaisala.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
-        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/27] net: macb: Restart tx only if queue pointer is lagging
-Date:   Tue, 19 Apr 2022 14:12:31 -0400
-Message-Id: <20220419181242.485308-16-sashal@kernel.org>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        open-iscsi@googlegroups.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 18/27] scsi: iscsi: Fix offload conn cleanup when iscsid restarts
+Date:   Tue, 19 Apr 2022 14:12:33 -0400
+Message-Id: <20220419181242.485308-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181242.485308-1-sashal@kernel.org>
 References: <20220419181242.485308-1-sashal@kernel.org>
@@ -54,62 +55,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Melin <tomas.melin@vaisala.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
+[ Upstream commit cbd2283aaf47fef4ded4b29124b1ef3beb515f3a ]
 
-commit 4298388574da ("net: macb: restart tx after tx used bit read")
-added support for restarting transmission. Restarting tx does not work
-in case controller asserts TXUBR interrupt and TQBP is already at the end
-of the tx queue. In that situation, restarting tx will immediately cause
-assertion of another TXUBR interrupt. The driver will end up in an infinite
-interrupt loop which it cannot break out of.
+When userspace restarts during boot or upgrades it won't know about the
+offload driver's endpoint and connection mappings. iscsid will start by
+cleaning up the old session by doing a stop_conn call. Later, if we are
+able to create a new connection, we clean up the old endpoint during the
+binding stage. The problem is that if we do stop_conn before doing the
+ep_disconnect call offload, drivers can still be executing I/O. We then
+might free tasks from the under the card/driver.
 
-For cases where TQBP is at the end of the tx queue, instead
-only clear TX_USED interrupt. As more data gets pushed to the queue,
-transmission will resume.
+This moves the ep_disconnect call to before we do the stop_conn call for
+this case. It will then work and look like a normal recovery/cleanup
+procedure from the driver's point of view.
 
-This issue was observed on a Xilinx Zynq-7000 based board.
-During stress test of the network interface,
-driver would get stuck on interrupt loop within seconds or minutes
-causing CPU to stall.
-
-Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220408001314.5014-3-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/scsi/scsi_transport_iscsi.c | 48 +++++++++++++++++------------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 9705c49655ad..217c1a0f8940 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1689,6 +1689,7 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	unsigned int head = queue->tx_head;
- 	unsigned int tail = queue->tx_tail;
- 	struct macb *bp = queue->bp;
-+	unsigned int head_idx, tbqp;
- 
- 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
- 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
-@@ -1696,6 +1697,13 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	if (head == tail)
- 		return;
- 
-+	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
-+	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
-+	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
-+
-+	if (tbqp == head_idx)
-+		return;
-+
- 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 126f6f23bffa..03cda2da80ef 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2255,6 +2255,23 @@ static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
+ 	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
  }
  
++static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
++					 struct iscsi_endpoint *ep,
++					 bool is_active)
++{
++	/* Check if this was a conn error and the kernel took ownership */
++	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		iscsi_ep_disconnect(conn, is_active);
++	} else {
++		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
++		mutex_unlock(&conn->ep_mutex);
++
++		flush_work(&conn->cleanup_work);
++
++		mutex_lock(&conn->ep_mutex);
++	}
++}
++
+ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 			      struct iscsi_uevent *ev)
+ {
+@@ -2275,6 +2292,16 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		cancel_work_sync(&conn->cleanup_work);
+ 		iscsi_stop_conn(conn, flag);
+ 	} else {
++		/*
++		 * For offload, when iscsid is restarted it won't know about
++		 * existing endpoints so it can't do a ep_disconnect. We clean
++		 * it up here for userspace.
++		 */
++		mutex_lock(&conn->ep_mutex);
++		if (conn->ep)
++			iscsi_if_disconnect_bound_ep(conn, conn->ep, true);
++		mutex_unlock(&conn->ep_mutex);
++
+ 		/*
+ 		 * Figure out if it was the kernel or userspace initiating this.
+ 		 */
+@@ -3003,16 +3030,7 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
+ 	}
+ 
+ 	mutex_lock(&conn->ep_mutex);
+-	/* Check if this was a conn error and the kernel took ownership */
+-	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
+-		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
+-		mutex_unlock(&conn->ep_mutex);
+-
+-		flush_work(&conn->cleanup_work);
+-		goto put_ep;
+-	}
+-
+-	iscsi_ep_disconnect(conn, false);
++	iscsi_if_disconnect_bound_ep(conn, ep, false);
+ 	mutex_unlock(&conn->ep_mutex);
+ put_ep:
+ 	iscsi_put_endpoint(ep);
+@@ -3723,16 +3741,6 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
+ 
+ 	switch (nlh->nlmsg_type) {
+ 	case ISCSI_UEVENT_BIND_CONN:
+-		if (conn->ep) {
+-			/*
+-			 * For offload boot support where iscsid is restarted
+-			 * during the pivot root stage, the ep will be intact
+-			 * here when the new iscsid instance starts up and
+-			 * reconnects.
+-			 */
+-			iscsi_ep_disconnect(conn, true);
+-		}
+-
+ 		session = iscsi_session_lookup(ev->u.b_conn.sid);
+ 		if (!session) {
+ 			err = -EINVAL;
 -- 
 2.35.1
 
