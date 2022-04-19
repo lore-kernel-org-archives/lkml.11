@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C060C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB337C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356777AbiDSSTp (ORCPT
+        id S1356792AbiDSSTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        Tue, 19 Apr 2022 14:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356586AbiDSSTF (ORCPT
+        with ESMTP id S1356627AbiDSSTW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:19:05 -0400
+        Tue, 19 Apr 2022 14:19:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502D93D4B6;
-        Tue, 19 Apr 2022 11:13:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4746A3DA68;
+        Tue, 19 Apr 2022 11:13:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C594861158;
-        Tue, 19 Apr 2022 18:13:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60DEC385A5;
-        Tue, 19 Apr 2022 18:13:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D860B60C34;
+        Tue, 19 Apr 2022 18:13:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21DB7C385B4;
+        Tue, 19 Apr 2022 18:13:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392006;
-        bh=rgM8kfe5zD9EZNfO/4CiOhR5Q/c5QFs9MDQG24jIl1Q=;
+        s=k20201202; t=1650392011;
+        bh=M6RhXLMmz2S6qMvA0PcSqI2yybCtTdtl2N6YoFyDWec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h1KCsVGpb1x9AmbRG7tRHHwtKYkDofWTPyhbQZdASHGuIYvoI0rR+9ATG0NFxRXky
-         x94GG10MV5cX2SAOlxeoQOvIWfOe4b7EVNCA64yG2oMdvhb/jE6jgi5Ur1cJAtuqJS
-         nApSVZI0pB0rhEdWHe+CEIAtYiyIPt99zrYdUavEaYbkK7nCczWWhgyyFcj3dxp1mt
-         M/2VCZpH6QSy/MzhiaFrZxw8drrV4yHaoulE9knlFKrSn8yFCR/awbdH6yDggUiqFk
-         0HAdnN0N47wHzp9bmgrEtvNe5jt9oR5Dsau7mMk2AyqX1Amu+mXQD89sxMgnvaPL9y
-         uolfzDBvebRAg==
+        b=rpanCawZPTMdyzMahPixTeqPmaOriL/fnNWSLB3H2wONf0PE37l6U1DuoG4HKnXEe
+         AoVuZdlJctM6lf8H3qkJ9JjKu8EpSAukHhDXaCGWQ3r0V0JI8KM+b43VyRSFGwkRlF
+         tZ9OwufTGV6toSp3ORWRCtlF/2yUpL7ep1yqj2S6BzXlKGJqPuqLTNZo2MKmSNvU07
+         sANroIMVnZeRHNcAl3SejYfa/RPuCXPXZA1Nt1lUaAE4MelwQz9+WJ50pkW6Xwoyik
+         JY5DuAJA4wEBR8eDY+c3FOcrTahJRKs0g6wVYfEppksVfOqm5zbwU7J2ndm7qaTnHy
+         kxMX4+5GsQwvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
-        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch,
-        maxime@cerno.tech, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 14/27] drm/msm/mdp5: check the return of kzalloc()
-Date:   Tue, 19 Apr 2022 14:12:29 -0400
-Message-Id: <20220419181242.485308-14-sashal@kernel.org>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        open-iscsi@googlegroups.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 17/27] scsi: iscsi: Move iscsi_ep_disconnect()
+Date:   Tue, 19 Apr 2022 14:12:32 -0400
+Message-Id: <20220419181242.485308-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181242.485308-1-sashal@kernel.org>
 References: <20220419181242.485308-1-sashal@kernel.org>
@@ -56,43 +55,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
+[ Upstream commit c34f95e98d8fb750eefd4f3fe58b4f8b5e89253b ]
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+This patch moves iscsi_ep_disconnect() so it can be called earlier in the
+next patch.
 
-Besides, since mdp5_plane_reset() is void type, so we should better
-set `plane-state` to NULL after releasing it.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/481055/
-Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220408001314.5014-2-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/scsi_transport_iscsi.c | 38 ++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-index c6b69afcbac8..50e854207c70 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-@@ -90,7 +90,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
- 		__drm_atomic_helper_plane_destroy_state(plane->state);
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 554b6f784223..126f6f23bffa 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2236,6 +2236,25 @@ static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
+ 	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn done.\n");
+ }
  
- 	kfree(to_mdp5_plane_state(plane->state));
-+	plane->state = NULL;
- 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
-+	if (!mdp5_state)
++static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
++{
++	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
++	struct iscsi_endpoint *ep;
++
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
++	conn->state = ISCSI_CONN_FAILED;
++
++	if (!conn->ep || !session->transport->ep_disconnect)
 +		return;
++
++	ep = conn->ep;
++	conn->ep = NULL;
++
++	session->transport->unbind_conn(conn, is_active);
++	session->transport->ep_disconnect(ep);
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
++}
++
+ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 			      struct iscsi_uevent *ev)
+ {
+@@ -2276,25 +2295,6 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 	return 0;
+ }
  
- 	if (plane->type == DRM_PLANE_TYPE_PRIMARY)
- 		mdp5_state->base.zpos = STAGE_BASE;
+-static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
+-{
+-	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
+-	struct iscsi_endpoint *ep;
+-
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
+-	conn->state = ISCSI_CONN_FAILED;
+-
+-	if (!conn->ep || !session->transport->ep_disconnect)
+-		return;
+-
+-	ep = conn->ep;
+-	conn->ep = NULL;
+-
+-	session->transport->unbind_conn(conn, is_active);
+-	session->transport->ep_disconnect(ep);
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
+-}
+-
+ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
+ {
+ 	struct iscsi_cls_conn *conn = container_of(work, struct iscsi_cls_conn,
 -- 
 2.35.1
 
