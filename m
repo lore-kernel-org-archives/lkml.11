@@ -2,54 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8546C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16372C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349463AbiDSHki (ORCPT
+        id S1349473AbiDSHlX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
+        Tue, 19 Apr 2022 03:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349460AbiDSHkd (ORCPT
+        with ESMTP id S241773AbiDSHlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:40:33 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CF923155
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vjOnXjNPEqRmHx/BeXVW6346i3KEjyA9mSSIl0BRIaU=; b=P7lbS84w0PHNRblktdOPrgpRCo
-        rd1P4AnGxndKibk7wYydSXu65UqO1XhLTvbfIdNPPv/717lqErU7EG4v9RJdgtoxHb9HF+7E+CG1/
-        vB0k3zVCigrIRTx6mdFT37tRTvIxdQqSiY0UkjmNI23r1CTXLNKORuVRd6cKwLdqOyyhn1JCuXDUN
-        hoROoKKVoxggMmTvGRHboIyYIN9IuNE8LwPRoMFZCvMoS1ropYg/HC7RLD8vmZ78DCNhtUwEyMxBG
-        xDK6l+B4KEeNCNc87YZRg4Jh6CgBzASCyNO2YkZXnEZZAV2S602yMNEyllsUKqqQLZ0nEC2A32GWE
-        HfMLtnnQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ngiQY-006khl-LL; Tue, 19 Apr 2022 07:37:35 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9703298618A; Tue, 19 Apr 2022 09:37:32 +0200 (CEST)
-Date:   Tue, 19 Apr 2022 09:37:32 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     liqiong <liqiong@nfschina.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, yuzhe@nfschina.com,
-        renyu@nfschina.com
-Subject: Re: [PATCH] arch/x86: use 'NULL' insteadof '0' as null pointer
-Message-ID: <20220419073732.GJ2731@worktop.programming.kicks-ass.net>
-References: <20220417154148.541485-1-liqiong@nfschina.com>
+        Tue, 19 Apr 2022 03:41:21 -0400
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C94323155;
+        Tue, 19 Apr 2022 00:38:40 -0700 (PDT)
+Received: by mail-ed1-f49.google.com with SMTP id 21so20185212edv.1;
+        Tue, 19 Apr 2022 00:38:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cMIQtXBcL0LX2Xu0lItqcQNjpRN4Lxw6ZeFSuk932VI=;
+        b=KNfBwPtL9gAWJtrwVTyI7Xz5sgDN6pWxksXVxeTaI5t4LG96f//Htz8DfpkhjQjfoe
+         E9J3G9lh+7h+pRJ4p+7CXQcVugcOLO17fVToup2v0MOQMYiI/iSY8DyZg82tA7n7bRjq
+         mM0buaiqLpQnThx91jxrPMUUZ6FRcMjXMR7wRqOsy5cvUReQBkc0a8GAZufqBVujMF2f
+         xsDzdQJ42p0TspgKyb8a1CuO7VlnGOq4uVN2+gnpu9Lgcv5FOzyl5k0juvn3l9ZajPSj
+         To+FmAymd+gcPw68geaKAuyhE1TFqYiIE2vdxDkP/Yg1kSE39bo+enXx6caBlsDfHv9r
+         6mvQ==
+X-Gm-Message-State: AOAM533OFrkWvhc+0UBFy+S3n5q+5Eaw9/r+dvt4QtF3W4jNF7Q4B1TB
+        AcMpQMhj+ZFGR7Y51risLl4=
+X-Google-Smtp-Source: ABdhPJx9uF7mg6dncUt7CC20Ri+ArabDBoEQkVzbHd/rqPriMfROsVzMkJEP2rCKSX2QYiazZ8y76A==
+X-Received: by 2002:a05:6402:22c4:b0:41d:78b1:349 with SMTP id dm4-20020a05640222c400b0041d78b10349mr16239817edb.365.1650353918802;
+        Tue, 19 Apr 2022 00:38:38 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id p9-20020a05640243c900b0041facb9ac9esm7807362edc.1.2022.04.19.00.38.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 00:38:38 -0700 (PDT)
+Message-ID: <9af92c78-73a7-d524-182c-3ebffa69b08a@kernel.org>
+Date:   Tue, 19 Apr 2022 09:38:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220417154148.541485-1-liqiong@nfschina.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2 1/2] tty: serial: meson: Add a 12MHz internal clock
+ rate to calculate baud rate in order to meet the baud rate requirements of
+ special BT modules
+Content-Language: en-US
+To:     Yu Tu <yu.tu@amlogic.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220418053202.24528-1-yu.tu@amlogic.com>
+ <20220418053202.24528-2-yu.tu@amlogic.com>
+ <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
+ <d10e27ff-e674-87bd-2c98-63c7040baeb1@amlogic.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <d10e27ff-e674-87bd-2c98-63c7040baeb1@amlogic.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 17, 2022 at 11:41:48PM +0800, liqiong wrote:
-> Sparse warns: "Using plain integer as NULL pointer".
+Hi,
 
-What's wrong with that?
+On 19. 04. 22, 9:29, Yu Tu wrote:
+> Hi Andy,
+>      Thank you for your advice.
+> 
+> On 2022/4/18 20:09, Andy Shevchenko wrote:
+>> [ EXTERNAL EMAIL ]
+>>
+>> On Mon, Apr 18, 2022 at 8:50 AM Yu Tu <yu.tu@amlogic.com> wrote:
+>>>
+>>> A /2 divider over XTAL was introduced since G12A, and is preferred
+>>> to be used over the still present /3 divider since it provides much
+>>> closer frequencies vs the request baudrate.Especially the BT module
+>>
+>> 'e. E' (mind the space)
+> My statement is a whole. There should be no spaces.
+
+Period should be followed by a space, of course.
+
+>>> uses 3Mhz baud rate. 8Mhz calculations can lead to baud rate bias,
+>>> causing some problems.
+>>
+>> ...
+>>
+>>> +struct meson_uart_data {
+>>> +       bool has_xtal_div2;
+>>
+>> I would prefer to see this as an unsigned int and with a less
+>> particular name, e.g. xtal_div would suffice.
+> I don't have a problem with your suggestion.Let's see What Neil has to say.
+
+Actually why uint provided it's a boolean value? Or do you mean to store 
+the divisor directly in this member, Andy?
+
+thanks,
+-- 
+js
+suse labs
