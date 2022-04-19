@@ -2,106 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA776C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 15:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353980AbiDSPo0 (ORCPT
+        id S1353992AbiDSPrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
+        Tue, 19 Apr 2022 11:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354298AbiDSPnW (ORCPT
+        with ESMTP id S240723AbiDSPrt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:43:22 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B43BA9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:40:39 -0700 (PDT)
-Received: from mail-wr1-f54.google.com ([209.85.221.54]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MkEdF-1oMoU03lnd-00kiSf for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022
- 17:40:37 +0200
-Received: by mail-wr1-f54.google.com with SMTP id w4so22970378wrg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 08:40:37 -0700 (PDT)
-X-Gm-Message-State: AOAM5323waBhnuy+fNFd9m111wyEUkyiJqah1LbswKqla13g5bpfQnqK
-        TB6THLQpVxevAfnfkMAzHM//cG6tFycoxsX6z/U=
-X-Google-Smtp-Source: ABdhPJx2j14opnoXVu+zRZ4O7R0W4B6Te+BYkmuTotpIld2KFF5dVZxiMPz0Ry5HHgFRVQndxUG068ioQAMMaGHobtE=
-X-Received: by 2002:a5d:6983:0:b0:207:a226:df4b with SMTP id
- g3-20020a5d6983000000b00207a226df4bmr12156987wru.192.1650382837528; Tue, 19
- Apr 2022 08:40:37 -0700 (PDT)
+        Tue, 19 Apr 2022 11:47:49 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B8BB1FE;
+        Tue, 19 Apr 2022 08:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650383106; x=1681919106;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=goZhZYJnHZgkuOSCSMHvvNP6QQJ/z1kYcKpHaLYnoeA=;
+  b=J0sKk9YNIfwLSFY1GOxY7jitz4OKbkfIIaoyQPHwe6JsuViEnTXb2XsO
+   bAVKWY+gOfHP0O9pMGjpIC/H+bEWNwKayWCleSHi+lf1Yi4PP1/UmStwk
+   9YfDKvIXF8PUrlgxr6xDbUX0g7AUCWRlSwM7/mcbPxf8OjNx0Pa/z2ZKH
+   2bWReroCwjUmOfc9U/aFmxdfiAwfDtP2d5WnMQUCqbnDUahSkiGj0NtIm
+   7jq1xVTbfvHBa8baLDw6IauYLHLizk9LwTTveOXDaqtSAMn/j32BSZtSv
+   xwXS684ePJGfMmIRj8bWP2WoBx7H/cfkyO2BU1fhx3nYWkGcXphJlWOI4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="326696215"
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="326696215"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 08:45:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
+   d="scan'208";a="614044552"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 19 Apr 2022 08:45:03 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngq2J-0005v4-Ap;
+        Tue, 19 Apr 2022 15:45:03 +0000
+Date:   Tue, 19 Apr 2022 23:44:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h:35:6:
+ warning: no previous prototype for function
+ 'fimc_isp_video_device_unregister'
+Message-ID: <202204192315.ZHbOex51-lkp@intel.com>
 MIME-Version: 1.0
-References: <20191018154052.1276506-1-arnd@arndb.de> <20191018154201.1276638-21-arnd@arndb.de>
- <87o8y0lgs1.fsf@belgarion.home>
-In-Reply-To: <87o8y0lgs1.fsf@belgarion.home>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 19 Apr 2022 17:40:21 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0Rwh-+483nxgWhmst8VdEByb8HCE8H-mEhb=Laq9qc4w@mail.gmail.com>
-Message-ID: <CAK8P3a0Rwh-+483nxgWhmst8VdEByb8HCE8H-mEhb=Laq9qc4w@mail.gmail.com>
-Subject: Re: [PATCH 21/46] ARM: pxa: spitz: use gpio descriptors for audio
-To:     Robert Jarzmik <robert.jarzmik@free.fr>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:B4KkuJO4O6p7OV9tY+r5w5ZQaXiO8EgcHvCXb7uRux5s14U8in4
- EyOQyl0VWSOPyzI5Jwfg0HNTTEFV7nYnmdWrhOTIbMCOfF8mdMm8msY/pf43tS+bPioZcnZ
- a9eELn/8HgNN1BWmsOPRirYZjhMKL8hTOeNiVPfw2VExNRVPi2ZWzz0BIxoVaMzgcXPJ4gN
- NRnVG4uuBVlswLaDwRNbg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oMNwgFhYYLA=:dz/tndUjM0DwM7UljviixW
- dmzrfmFJnpCHlkO5+7Ht2VTlf4w2ce9MOdZ3c/GzFAEp0ULPah8wK7y0clV4CbGsg7bp63Qfw
- 8dyLF2D9vDjqSMcjvPe8VgG4ghfg+35hJMw2G73dyX/lIkfxMnEKjmBAAfOjvBfGDQl06D91g
- 18OfHw0SCDxM6UrnkhBwaYPvPo6yCmeLAnj4YIFqE5Q7HiOoY/4UK4ZsgOrcftwu2U/o5qgtP
- f2tu1ui76WU9/55cEmXlt3gjzorO8ACMWvC1NgUG6nhq9FE3kFyjip2jwXQMVbWdAINj2nMzm
- Ez9zNkjhfugtrXw3cWocHK/5ZBI3CXlWwHGzs5u7DLPyHBCmLlDQgt+ZC4RBWmCVwdXXGfXXq
- tp8df2nDpX3S2l0TdOVBkFZVp+w72eUxofzha46S+X0WgDYl9ig139s41T6Od0T8ebHkApMVm
- nM9GdqkrdZ/swEP8VXPDBDLh3g6agw3GXwq8isZkF0gCfLx19pS8N00q6ewksWYNISntikqkE
- f42cCX2x2a1ST16E6ZEqO+KjiAUeOUXhpfZZVGTB3fwxgVIs/h2kgr8+n3Lzysik5r+Q53ub/
- xggqm0TAaxL/H9gJSdGF264bhcdBSM3fhS1yg+sHy6YSxwKCGSmKGX66ZllA57Fmq0qSKgFiv
- goS88iKxB4vxheWcQHUY8lEx17M7j6Q5NUbMgX/IJJokVLwHetX1IlgCWRNIQ+Hf1B2A=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 10:08 PM Robert Jarzmik <robert.jarzmik@free.fr> wrote:
+Hi Mauro,
 
-> > +static struct gpiod_lookup_table akita_audio_gpio_table = {
-> > +     .dev_id = "spitz-audio",
-> > +     .table = {
-> > +             GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_L - SPITZ_SCP_GPIO_BASE,
-> > +                         "mute-l", GPIO_ACTIVE_HIGH),
-> > +             GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_R - SPITZ_SCP_GPIO_BASE,
-> > +                         "mute-r", GPIO_ACTIVE_HIGH),
-> > +             GPIO_LOOKUP("gpio-pxa", AKITA_GPIO_MIC_BIAS - AKITA_IOEXP_GPIO_BASE,
-> > +                         "mic", GPIO_ACTIVE_HIGH),
-> This last one looks a bit dubious, as it looks like a gpio on a gpio expander,
-> could you cross-check that "gpio-pxa" shouldn't be an I2C expander gpio please ?
+FYI, the error/warning still remains.
 
-I'm revisiting this older patch series now, this was clearly a mistake
-in my original
-version, changed it now to
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b2d229d4ddb17db541098b83524d901257e93845
+commit: 238c84f71120f41c45301359902a912a19370f3d media: platform: rename exynos4-is/ to samsung/exynos4-is/
+date:   5 weeks ago
+config: mips-randconfig-c004-20220418 (https://download.01.org/0day-ci/archive/20220419/202204192315.ZHbOex51-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 429cbac0390654f90bba18a41799464adf31a5ec)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=238c84f71120f41c45301359902a912a19370f3d
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 238c84f71120f41c45301359902a912a19370f3d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/
 
-@@ -982,7 +982,7 @@ static struct gpiod_lookup_table akita_audio_gpio_table = {
-                            "mute-l", GPIO_ACTIVE_HIGH),
-                GPIO_LOOKUP("sharp-scoop.0", SPITZ_GPIO_MUTE_R -
-SPITZ_SCP_GPIO_BASE,
-                            "mute-r", GPIO_ACTIVE_HIGH),
--               GPIO_LOOKUP("gpio-pxa", AKITA_GPIO_MIC_BIAS -
-AKITA_IOEXP_GPIO_BASE,
-+               GPIO_LOOKUP("i2c-max7310", AKITA_GPIO_MIC_BIAS -
-AKITA_IOEXP_GPIO_BASE,
-                            "mic", GPIO_ACTIVE_HIGH),
-                { },
-        },
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I'm not 100% sure this is the correct name, as I don't fully
-understand how i2c device
-names are constructed. I see that Linus added a device name in commit
-32d1544880aa ("ARM: pxa: Add gpio descriptor lookup tables for MMC CD/WP"),
-and I guess I could do the same here, but I think that was only needed
-to disambiguate
-two instances of the same device in zylonite, which is not needed for spitz.
+All warnings (new ones prefixed by >>):
 
-       Arnd
+   In file included from drivers/media/platform/samsung/exynos4-is/fimc-isp.c:25:
+>> drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h:35:6: warning: no previous prototype for function 'fimc_isp_video_device_unregister' [-Wmissing-prototypes]
+   void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+        ^
+   drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h:35:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/fimc_isp_video_device_unregister +35 drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h
+
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20  34  
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20 @35  void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20  36  				enum v4l2_buf_type type)
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20  37  {
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20  38  }
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20  39  #endif /* !CONFIG_VIDEO_EXYNOS4_ISP_DMA_CAPTURE */
+34947b8aebe3f2 drivers/media/platform/exynos4-is/fimc-isp-video.h Sylwester Nawrocki 2013-12-20  40  
+
+:::::: The code at line 35 was first introduced by commit
+:::::: 34947b8aebe3f2d4eceb65fceafa92bf8dc97d96 [media] exynos4-is: Add the FIMC-IS ISP capture DMA driver
+
+:::::: TO: Sylwester Nawrocki <s.nawrocki@samsung.com>
+:::::: CC: Mauro Carvalho Chehab <m.chehab@samsung.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
