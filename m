@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242188AbiDSAsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:48:50 -0400
+        id S242865AbiDSAsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:48:54 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241368AbiDSApR (ORCPT
+        with ESMTP id S241104AbiDSApN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:45:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2944929C8F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:35 -0700 (PDT)
+        Mon, 18 Apr 2022 20:45:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2D22A240
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7413761411
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B362B8114A
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F13AC340EE;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3FEC34112;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=pMKUJxlDgyiXIIz3wbUuGb7SHTK9BL3YRmJvgpewhGQ=;
+        bh=XLKBxPeaInH970fnLFsn9FT6XVtggYy2fpWAQ09hhFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4bePUxgdvbBE5xvfLjASHBuNGihlfWy/j0HEAIEHjVrKYU/eF1/aLPkXVQ5YRPFN
-         Dz43ClJGP2UI0uA4GlINSdYeX18iVLDs/Vn2AXtvyIYAZzhyugnl0WK9qsHt7ugDj6
-         2/nsQHyOsRQ/u9wrhrMYglYe5VAdeAc9WHEpaim1mKuLnM9SYn/suRB6RnV9/zMuQo
-         +clR4rxh0tx8fBLJADEeTPRYAey+AG617T5SwuDRXaSOK0svAiBkQAAT4yga7cEVSd
-         MEZ2WENnV2NYm990sS7mI18R0FLXNMarMobg1jHaEecXOjZgViZoL7yMzTAy+qpzdr
-         PmGE7GX9/g3iQ==
+        b=NaMunXNl2EybZgBMjva+gQRnb8G4orTtUuAI/XsrzIRCia0SOk18uERQSg+lz2x5U
+         Bc9MbdcXNJHd6e8o4or1YuCfT9Cy1jxc9TOfIbaC0PkiEHf6kiFYaomfcwMQmAFkYr
+         v8iaB2wJYZEpkm//rqDb+kvFohyqi7BzoyocFSPKRgnINtyVFrMdT8q4Pj0QSdw0so
+         AQ8b4M8HzFh2bPKf4w+TrFZDFdgCk1PRYebVGvus2TXpCNzmY07Ep8JH9CFW9+Vnbj
+         B96GGB481PwHB1oWCJOBRW7aOzkE2vHwGWNcdyiA4Q7OHNBbC9RJogJiI+T0opUiJV
+         38BkBqjyza1jg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 44F455C3132; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 4E1945C322A; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 34/61] tools/nolibc/types: define PATH_MAX and MAXPATHLEN
-Date:   Mon, 18 Apr 2022 17:41:58 -0700
-Message-Id: <20220419004225.3952530-34-paulmck@kernel.org>
+Subject: [PATCH nolibc 39/61] tools/nolibc/signal: move raise() to signal.h
+Date:   Mon, 18 Apr 2022 17:42:03 -0700
+Message-Id: <20220419004225.3952530-39-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,38 +53,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-These ones are often used and commonly set by applications to fallback
-values. Let's fix them both to agree on PATH_MAX=4096 by default, as is
-already present in linux/limits.h.
+This function is normally found in signal.h, and providing the file
+eases porting of existing programs. Let's move it there.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/types.h | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ tools/include/nolibc/nolibc.h |  1 +
+ tools/include/nolibc/signal.h | 22 ++++++++++++++++++++++
+ tools/include/nolibc/stdlib.h |  7 -------
+ 3 files changed, 23 insertions(+), 7 deletions(-)
+ create mode 100644 tools/include/nolibc/signal.h
 
-diff --git a/tools/include/nolibc/types.h b/tools/include/nolibc/types.h
-index e0749dc0bd06..e4026e740b56 100644
---- a/tools/include/nolibc/types.h
-+++ b/tools/include/nolibc/types.h
-@@ -49,6 +49,17 @@
- #define FD_SETSIZE     256
- #endif
- 
-+/* PATH_MAX and MAXPATHLEN are often used and found with plenty of different
-+ * values.
+diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
+index 686726518431..0f375e901a36 100644
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -88,6 +88,7 @@
+ #include "types.h"
+ #include "sys.h"
+ #include "ctype.h"
++#include "signal.h"
+ #include "stdio.h"
+ #include "stdlib.h"
+ #include "string.h"
+diff --git a/tools/include/nolibc/signal.h b/tools/include/nolibc/signal.h
+new file mode 100644
+index 000000000000..ef47e71e2be3
+--- /dev/null
++++ b/tools/include/nolibc/signal.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
++/*
++ * signal function definitions for NOLIBC
++ * Copyright (C) 2017-2022 Willy Tarreau <w@1wt.eu>
 + */
-+#ifndef PATH_MAX
-+#define PATH_MAX       4096
-+#endif
 +
-+#ifndef MAXPATHLEN
-+#define MAXPATHLEN     (PATH_MAX)
-+#endif
++#ifndef _NOLIBC_SIGNAL_H
++#define _NOLIBC_SIGNAL_H
 +
- /* Special FD used by all the *at functions */
- #ifndef AT_FDCWD
- #define AT_FDCWD       (-100)
++#include "std.h"
++#include "arch.h"
++#include "types.h"
++#include "sys.h"
++
++/* This one is not marked static as it's needed by libgcc for divide by zero */
++__attribute__((weak,unused,section(".text.nolibc_raise")))
++int raise(int signal)
++{
++	return sys_kill(sys_getpid(), signal);
++}
++
++#endif /* _NOLIBC_SIGNAL_H */
+diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+index 0e6bca4ee089..b46bebd48ba2 100644
+--- a/tools/include/nolibc/stdlib.h
++++ b/tools/include/nolibc/stdlib.h
+@@ -300,11 +300,4 @@ char *u64toa(uint64_t in)
+ 	return itoa_buffer;
+ }
+ 
+-/* This one is not marked static as it's needed by libgcc for divide by zero */
+-__attribute__((weak,unused,section(".text.nolibc_raise")))
+-int raise(int signal)
+-{
+-	return sys_kill(sys_getpid(), signal);
+-}
+-
+ #endif /* _NOLIBC_STDLIB_H */
 -- 
 2.31.1.189.g2e36527f23
 
