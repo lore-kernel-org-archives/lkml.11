@@ -2,120 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35911C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F360C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 09:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241708AbiDSJp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 05:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
+        id S1345594AbiDSJrD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 05:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241820AbiDSJpJ (ORCPT
+        with ESMTP id S241722AbiDSJrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 05:45:09 -0400
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D7B19016;
-        Tue, 19 Apr 2022 02:42:27 -0700 (PDT)
-Received: by mail-qv1-f52.google.com with SMTP id n11so12745756qvl.0;
-        Tue, 19 Apr 2022 02:42:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AKA9OdpVAxszLmhE22toGS/7VP7U4z/nzrtw9SumhDU=;
-        b=fbodEKP9lT212pX7fFgrAjNBNLyJqR++z/uk0Vhs8OVo/6GEJlOWTWC4GxdAIcj9ur
-         faHmiRp/7ALh1RITuAmFivYHYkgRUiC/OqJpgrA5xwszlQIxVyGprQB8CT2HozulFnV8
-         BtHixaaxA86WxP6LQH0Dr16gTmSR++UN/x6QGh9LrUJPfLs6mywZ7doIdcApTVXs7Z8P
-         dAx5xjbGdwVNINvpBgRfESarm7QJRMwTCzfnJM/9Yta8HKT9hQF7is/3T5t04AcIIf1f
-         AAYGGjSIGS5EOMFjco7o+p4+3OrVNtMvJdYbLKP5P2zn4qE0TDgUf3Q2s+3so3PQJEZl
-         rDGg==
-X-Gm-Message-State: AOAM533N45/JyiEQ9A13C+US/uTVk7T+7aouZL0u74e4S171oXpY95y9
-        crTSg1f/ksrRVihZ/9mVote4YM5UkV3JDA==
-X-Google-Smtp-Source: ABdhPJxxCsOLiwmWOVaTS6Y3isjoTFD1/C8+bko4CHQ+tFMt4LKWDFowFuGbpAlpw3HeLspIqkpb6g==
-X-Received: by 2002:a05:6214:2627:b0:446:6577:6ef8 with SMTP id gv7-20020a056214262700b0044665776ef8mr4606923qvb.85.1650361346310;
-        Tue, 19 Apr 2022 02:42:26 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id 21-20020ac85715000000b002e1ce9605ffsm9187148qtw.65.2022.04.19.02.42.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 02:42:25 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id d19so1597711ybc.5;
-        Tue, 19 Apr 2022 02:42:25 -0700 (PDT)
-X-Received: by 2002:a25:9e89:0:b0:63c:ad37:a5de with SMTP id
- p9-20020a259e89000000b0063cad37a5demr13915294ybq.342.1650361345280; Tue, 19
- Apr 2022 02:42:25 -0700 (PDT)
+        Tue, 19 Apr 2022 05:47:02 -0400
+X-Greylist: delayed 203 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 02:44:19 PDT
+Received: from lithium.sammserver.com (lithium.sammserver.com [168.119.122.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529C922B28;
+        Tue, 19 Apr 2022 02:44:19 -0700 (PDT)
+Received: from mail.sammserver.com (sammserver.wg [10.32.40.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by lithium.sammserver.com (Postfix) with ESMTPS id 496A331181E2;
+        Tue, 19 Apr 2022 11:40:54 +0200 (CEST)
+Received: from mail.sammserver.com (localhost.localdomain [127.0.0.1])
+        by mail.sammserver.com (Postfix) with ESMTP id D753441F32;
+        Tue, 19 Apr 2022 11:40:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cavoj.net; s=email;
+        t=1650361253; bh=FiIViUHrFRwZkM13AuWCuKWDSKKH/CAkIfoO4iiRyfk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DnTiafivrAjTJsKoHVBGX03OCf6WFR+8yVXcgY3DvCvc0Q9QkizrO8vol8/gXs5by
+         PG6510meHeznig0kl2WDEWzB/FMP0+lJ8vdrfi4G+H2OyOr44mZFIRdT+j3Mejk0fF
+         RSWTQQMX7mCbZU8l7WRjG7kRJAIXcml0z8wVPe9A=
 MIME-Version: 1.0
-References: <20220414081257.1487499-1-vincent.whitchurch@axis.com> <76a7b33d-6f8b-e660-c64d-027b1bc8e308@landley.net>
-In-Reply-To: <76a7b33d-6f8b-e660-c64d-027b1bc8e308@landley.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 19 Apr 2022 11:42:14 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW-8HaQip+DT5W2Owq8M8kbYwHsf8_Zd-5rRfSjSjK0=g@mail.gmail.com>
-Message-ID: <CAMuHMdW-8HaQip+DT5W2Owq8M8kbYwHsf8_Zd-5rRfSjSjK0=g@mail.gmail.com>
-Subject: Re: [PATCH] sh: make !MMU iounmap an inline function
-To:     Rich Felker <dalias@libc.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>, kernel@axis.com,
-        Christoph Hellwig <hch@lst.de>,
-        kernel test robot <lkp@intel.com>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Tue, 19 Apr 2022 11:40:53 +0200
+From:   =?UTF-8?Q?Samuel_=C4=8Cavoj?= <samuel@cavoj.net>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Basavaraj.Natikar@amd.com, Richard.Gong@amd.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
+In-Reply-To: <20220414025705.598-1-mario.limonciello@amd.com>
+References: <20220414025705.598-1-mario.limonciello@amd.com>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <932104ce8d454cfded85d1f65095510a@cavoj.net>
+X-Sender: samuel@cavoj.net
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rich, Sato-san,
+Thanks,
 
-On Sat, Apr 16, 2022 at 12:01 AM Rob Landley <rob@landley.net> wrote:
-> On 4/14/22 03:12, Vincent Whitchurch wrote:
-> > The current definition of sh's !MMU iounmap makes it unusable in certain
-> > kinds of code, such as this instance caught by 0day on a patch posted to
-> > the mailing lists:
-> >
-> >  In file included from include/linux/io.h:13,
-> >                   from drivers/mtd/devices/phram.c:21:
-> >  drivers/mtd/devices/phram.c: In function 'register_device':
-> >  arch/sh/include/asm/io.h:274:33: error: expected expression before 'do'
-> >    274 | #define iounmap(addr)           do { } while (0)
-> >        |                                 ^~
-> >  drivers/mtd/devices/phram.c:150:44: note: in expansion of macro 'iounmap'
-> >    150 |         cached ? memunmap(new->mtd.priv) : iounmap(new->mtd.priv);
-> >        |                                            ^~~~~~~
-> >
-> > Make it an inline function as it was earlier.
-> >
-> > Link: https://lore.kernel.org/lkml/202204131446.omJ5mC54-lkp@intel.com/
-> > Fixes: 13f1fc870dd747131 ("sh: move the ioremap implementation out of line")
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
->
-> Tested-by: Rob Landley <rob@landley.net>
->
-> Worked For Me.
+this fixes the issue on an ASUS UM325 laptop.
 
-Can we please get any of [1], [2], [3], or [4] applied and sent
-upstream, so people can stop wasting time on recreating and
-resubmitting similar patches all the time?
+On 2022-04-14 04:57, Mario Limonciello wrote:
+> commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members 
+> before
+> initialization") attempted to fix a race condition that lead to a NULL
+> pointer, but in the process caused a regression for _AEI/_EVT declared
+> GPIOs. This manifests in messages showing deferred probing while trying
+> to allocate IRQs like so:
+> 
+> [    0.688318] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x0000 to IRQ, err -517
+> [    0.688337] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x002C to IRQ, err -517
+> [    0.688348] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x003D to IRQ, err -517
+> [    0.688359] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x003E to IRQ, err -517
+> [    0.688369] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x003A to IRQ, err -517
+> [    0.688379] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x003B to IRQ, err -517
+> [    0.688389] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x0002 to IRQ, err -517
+> [    0.688399] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x0011 to IRQ, err -517
+> [    0.688410] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x0012 to IRQ, err -517
+> [    0.688420] amd_gpio AMDI0030:00: Failed to translate GPIO pin
+> 0x0007 to IRQ, err -517
+> 
+> The code for walking _AEI doesn't handle deferred probing and so this 
+> leads
+> to non-functional GPIO interrupts.
+> 
+> Fix this issue by moving the call to `acpi_gpiochip_request_interrupts` 
+> to
+> occur after gc->irc.initialized is set.
+> 
+> Cc: Shreeya Patel <shreeya.patel@collabora.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members
+> before initialization")
+> Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+> Link:
+> https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/T/#u
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-Thank you!
+Tested-By: Samuel Čavoj <samuel@cavoj.net>
 
-[1] PATCH] sh: Fix set but not used warnings with !CONFIG_MMU
-    https://lore.kernel.org/r/20201208182117.163642-2-sam@ravnborg.org
-[2] [PATCH] sh: make iounmap() a static inline again
-    https://lore.kernel.org/r/20220105085746.1116726-1-mkl@pengutronix.de
-[3] [PATCH] sh: Convert nommu io{re,un}map() to static inline functions
-    https://lore.kernel.org/r/4ed0a7a0d3fa912a5b44c451884818f2c138ef42.1644914600.git.geert+renesas@glider.be/
-[4] [PATCH] sh: make !MMU iounmap an inline function
-    https://lore.kernel.org/r/20220414081257.1487499-1-vincent.whitchurch@axis.com/
+> ---
+>  drivers/gpio/gpiolib.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+> index 085348e08986..b7694171655c 100644
+> --- a/drivers/gpio/gpiolib.c
+> +++ b/drivers/gpio/gpiolib.c
+> @@ -1601,8 +1601,6 @@ static int gpiochip_add_irqchip(struct gpio_chip 
+> *gc,
+> 
+>  	gpiochip_set_irq_hooks(gc);
+> 
+> -	acpi_gpiochip_request_interrupts(gc);
+> -
+>  	/*
+>  	 * Using barrier() here to prevent compiler from reordering
+>  	 * gc->irq.initialized before initialization of above
+> @@ -1612,6 +1610,8 @@ static int gpiochip_add_irqchip(struct gpio_chip 
+> *gc,
+> 
+>  	gc->irq.initialized = true;
+> 
+> +	acpi_gpiochip_request_interrupts(gc);
+> +
+>  	return 0;
+>  }
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Sam
