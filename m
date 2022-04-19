@@ -2,95 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00051C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1699AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353458AbiDSOca (ORCPT
+        id S1353509AbiDSOcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
+        Tue, 19 Apr 2022 10:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353351AbiDSObw (ORCPT
+        with ESMTP id S1353355AbiDSObw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 10:31:52 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEAD36E00
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B18137A0A
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:09 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id u18so21520321eda.3
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:29:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6s86ztZ9i4gltSTfmmUOVyO/MGpMN4qkvOmSz3AXdzw=;
-        b=yR5vGZwXVsBJoNIX63D+VCdWL5RJu4muJ1qC3RlsisXdrCXpHZ7wG/ag4NCcNPkq3g
-         X16rqQ+cZans+oIxR974kvdYxeXyG80fGUlF8u4uWN7uG4WZ9A1xeBjZqbKU22LydNz6
-         LVZzZVJJdw+wpd2J3RqAJbvmeoihVhpgao0DBQ9gWNbDFKAl7vpjB2V6PW7H7rKdROL/
-         xxO2xfycGca+G6V/q+bCHhq7fh/y7bn5WKyovaod4dauPezkoHAe2nquJ0XMzb4qwhOE
-         WO5Zq/+Qxw65Kyclyff/WFUDjBbxSN8A3T1KrPkoly6yBgauK2oPH9r7Y/W4ucrlvBRM
-         iCrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6s86ztZ9i4gltSTfmmUOVyO/MGpMN4qkvOmSz3AXdzw=;
-        b=v+0lYer/w+jjNq9IEwcqtDJDMCtZ+HGcDYSNnmlS4PVtU2PBXUnSRsYE5UXGwyeyZ6
-         Owd7cs1PzR+2qLGX2skM6o9LSFBPJGpndB36SAaUmChdkH/BqwG7/EGG9nzi4mi27xaq
-         gVr/Yo8bD8DElhHUJb3KOtnyNPRce8bqolLFu/CjReMdEAPe+KujORuuerKj6WXRnApL
-         hwCTcD8Y30gaplX3or0og7YOwlP76AjVZ6PmBD1iDdU1/XP+ym5lkQxKhZfBNfTmiHco
-         Et0LNVFSU/g8rDrXGq7KZx6s+e++QQXS4dfpbA1arxHxqrpQiXgQdxuYcBQfzFHiITlQ
-         A1sQ==
-X-Gm-Message-State: AOAM532BtvNUmWLFuHwU38wxpyIMvlOAaFOOW3vUbIXJMpKBGk44F2oB
-        6Siq0wlFzLWQZ6JrsKL1a14g5w==
-X-Google-Smtp-Source: ABdhPJwTSq4nyJkaO1GJYSQFpLEjq/23ZwGJlORTN7uwO0J7XP1+AtB4AGKFfzY2vcHpRLpabgtqtw==
-X-Received: by 2002:a50:9e61:0:b0:419:d8e5:6236 with SMTP id z88-20020a509e61000000b00419d8e56236mr17660959ede.327.1650378547924;
-        Tue, 19 Apr 2022 07:29:07 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm5761884ejy.93.2022.04.19.07.29.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:29:07 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Markus Mayer <mmayer@broadcom.com>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH 1/7] memory: da8xx-ddrctl: simplify platform_get_resource()
-Date:   Tue, 19 Apr 2022 16:28:53 +0200
-Message-Id: <20220419142859.380566-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+Date:   Tue, 19 Apr 2022 14:29:01 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650378547;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BzvR37mlV3B7k6htjXXR4S3n+fQZgR/HItfdGCY9zsg=;
+        b=MikBT1Y1GUkdPAlew4Q6HsFGMgmHy/Ds34lSTXZLeuhytbU2yaLwG84e0iiNOsgCzPiF85
+        6p6J8l5ZOdDXIBNCyETPPYWjprhs4xXYsabFdhE4EakPsUF2LN8XoUSLLCXp2VqWoFXuvh
+        bQEfFkcWibOkyA/GkICZseIvCl+xm/7GJCEYL68H8q6TB86j6UF4+6vQ+u0H/7S+zIQzzW
+        jiHzdaxmGGyronSY3Xk0NSeQSIlzJZxNX8RUswzRmCEyyT6LwlRoNfgn22aUqeLr61bZOc
+        I/9Ro6nL1k/7BKwXUGp5joWBA2aLxSX+bg/ifSSHQu+8HXn7APfXvjFb3cp1bg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650378547;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BzvR37mlV3B7k6htjXXR4S3n+fQZgR/HItfdGCY9zsg=;
+        b=L2BHChPQ/qjjAgMYjLzR33S2Fv4tOC82nAA2xYt7pSQVzXZqkdhyOrINAktBRJ/r5oKFG+
+        u5Dqqw5ICGXid8CA==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-next] pinctrl: apple-gpio: Make the irqchip immutable
+Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220419141846.598305-7-maz@kernel.org>
+References: <20220419141846.598305-7-maz@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <165037854188.4207.17354413029616065792.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_platform_get_and_ioremap_resource() instead of
-platform_get_resource() and devm_ioremap_resource().
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Commit-ID:     374b87a0fcf9fa5dd1379271337ae19f95682956
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/374b87a0fcf9fa5dd1379271337ae19f95682956
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Tue, 19 Apr 2022 15:18:42 +01:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Tue, 19 Apr 2022 15:22:26 +01:00
+
+pinctrl: apple-gpio: Make the irqchip immutable
+
+Prevent gpiolib from messing with the irqchip by advertising
+the irq_chip structure as immutable, making it const, and adding
+the various calls that gpiolib relies upon.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220419141846.598305-7-maz@kernel.org
 ---
- drivers/memory/da8xx-ddrctl.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/pinctrl/pinctrl-apple-gpio.c | 29 ++++++++++++++-------------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/memory/da8xx-ddrctl.c b/drivers/memory/da8xx-ddrctl.c
-index 872addd0ec60..b32005bf269c 100644
---- a/drivers/memory/da8xx-ddrctl.c
-+++ b/drivers/memory/da8xx-ddrctl.c
-@@ -115,8 +115,7 @@ static int da8xx_ddrctl_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
+diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
+index 72f4dd2..5e61084 100644
+--- a/drivers/pinctrl/pinctrl-apple-gpio.c
++++ b/drivers/pinctrl/pinctrl-apple-gpio.c
+@@ -36,7 +36,6 @@ struct apple_gpio_pinctrl {
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ddrctl = devm_ioremap_resource(dev, res);
-+	ddrctl = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(ddrctl)) {
- 		dev_err(dev, "unable to map memory controller registers\n");
- 		return PTR_ERR(ddrctl);
--- 
-2.32.0
-
+ 	struct pinctrl_desc pinctrl_desc;
+ 	struct gpio_chip gpio_chip;
+-	struct irq_chip irq_chip;
+ 	u8 irqgrps[];
+ };
+ 
+@@ -275,17 +274,21 @@ static unsigned int apple_gpio_irq_type(unsigned int type)
+ 
+ static void apple_gpio_irq_mask(struct irq_data *data)
+ {
+-	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(irq_data_get_irq_chip_data(data));
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(gc);
+ 
+ 	apple_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_MODE,
+ 	                   FIELD_PREP(REG_GPIOx_MODE, REG_GPIOx_IN_IRQ_OFF));
++	gpiochip_disable_irq(gc, data->hwirq);
+ }
+ 
+ static void apple_gpio_irq_unmask(struct irq_data *data)
+ {
+-	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(irq_data_get_irq_chip_data(data));
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct apple_gpio_pinctrl *pctl = gpiochip_get_data(gc);
+ 	unsigned int irqtype = apple_gpio_irq_type(irqd_get_trigger_type(data));
+ 
++	gpiochip_enable_irq(gc, data->hwirq);
+ 	apple_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_MODE,
+ 	                   FIELD_PREP(REG_GPIOx_MODE, irqtype));
+ }
+@@ -343,13 +346,15 @@ static void apple_gpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_exit(chip, desc);
+ }
+ 
+-static struct irq_chip apple_gpio_irqchip = {
+-	.name		= "Apple-GPIO",
+-	.irq_startup	= apple_gpio_irq_startup,
+-	.irq_ack	= apple_gpio_irq_ack,
+-	.irq_mask	= apple_gpio_irq_mask,
+-	.irq_unmask	= apple_gpio_irq_unmask,
+-	.irq_set_type	= apple_gpio_irq_set_type,
++static const struct irq_chip apple_gpio_irqchip = {
++	.name			= "Apple-GPIO",
++	.irq_startup		= apple_gpio_irq_startup,
++	.irq_ack		= apple_gpio_irq_ack,
++	.irq_mask		= apple_gpio_irq_mask,
++	.irq_unmask		= apple_gpio_irq_unmask,
++	.irq_set_type		= apple_gpio_irq_set_type,
++	.flags			= IRQCHIP_IMMUTABLE,
++	GPIOCHIP_IRQ_RESOURCE_HELPERS,
+ };
+ 
+ /* Probe & register */
+@@ -360,8 +365,6 @@ static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
+ 	void **irq_data = NULL;
+ 	int ret;
+ 
+-	pctl->irq_chip = apple_gpio_irqchip;
+-
+ 	pctl->gpio_chip.label = dev_name(pctl->dev);
+ 	pctl->gpio_chip.request = gpiochip_generic_request;
+ 	pctl->gpio_chip.free = gpiochip_generic_free;
+@@ -377,7 +380,7 @@ static int apple_gpio_register(struct apple_gpio_pinctrl *pctl)
+ 	if (girq->num_parents) {
+ 		int i;
+ 
+-		girq->chip = &pctl->irq_chip;
++		gpio_irq_chip_set_chip(girq, &apple_gpio_irqchip);
+ 		girq->parent_handler = apple_gpio_irq_handler;
+ 
+ 		girq->parents = kmalloc_array(girq->num_parents,
