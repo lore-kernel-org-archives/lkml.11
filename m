@@ -2,119 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F669C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351457AbiDSNG5 (ORCPT
+        id S1351553AbiDSNG7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
+        Tue, 19 Apr 2022 09:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241707AbiDSNGx (ORCPT
+        with ESMTP id S1351393AbiDSNGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:06:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A32377F7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:04:09 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650373447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eupx91ipHUfoNRi4brayBvoybEh9b09e5p2b6SLiofg=;
-        b=cI4CmBORYShGFfnHSNBz9VGYvmJmfBwTLETF0Z+PuDFf2wTU9JTPwNPBirPKGGFshg//ha
-        hEm01DvI077mODBNvpXZmwmvGGMWqAmdNMd/4/ZU7LkaGNK+MH4oMc1HsdrR2A2y9ToDN9
-        dfvQYeRyQlJUbZY4c55MJJWGX3LXUKGf9VYOGlL0TsqvacsFbZhO1FhClqBpnu2SGWmCvc
-        7lSq2jkCKicVMT+fSn4X3fajQycGrcV+2XuHYsXNYlQ5/Qqc33b1GqObujveM64Ce16zdH
-        ATr4Od3B9zAyALcKk5CEKccPtc3Ysh6p38t04yUemeqV4CmuHDWqLziruWEyPQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650373447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eupx91ipHUfoNRi4brayBvoybEh9b09e5p2b6SLiofg=;
-        b=rZwxEQnkdn25xC4vmQ1vWWlUtUGc2zX9kYvqyN9BrZ3mVG/9Iy+L5nK7KWr1dF4b/jpdj5
-        d8tqyF7f42zAWYBA==
-To:     Dave Hansen <dave.hansen@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     x86@kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Subject: Re: [patch 2/3] x86/fpu/xsave: Prepare for optimized compaction
-In-Reply-To: <d2f927c9-187a-906c-e1f3-33541b3b5a84@intel.com>
-References: <20220404103741.809025935@linutronix.de>
- <20220404104820.656881574@linutronix.de>
- <d2f927c9-187a-906c-e1f3-33541b3b5a84@intel.com>
-Date:   Tue, 19 Apr 2022 14:39:36 +0200
-Message-ID: <87k0bl9rhz.ffs@tglx>
+        Tue, 19 Apr 2022 09:06:54 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177C3377D1;
+        Tue, 19 Apr 2022 06:04:11 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23J9NQDU015687;
+        Tue, 19 Apr 2022 15:03:56 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=NgPcRaYcvXPNkANqF3dRBBWX+Q6eKswfsITricOij1Q=;
+ b=8U9WERhD2Y+eA5c0qWpk1ByAAKR1yOMD9TXK0xbfz0J0CcWXxyLAjZT6WDYXwrbc3niP
+ OVSKHEcowed9p7kTD0x+fru0ZDuhjM2SOYFHaeUXauxPawIhPs1kVaNLFR/TKSiLIWOo
+ 7fS65M+51bnNCToNlzzmFuBUrXM6/g6exhSBGu8/zhXSjoRCvz/7l7cD/q62fNAHL0Fu
+ voiMCqlwcnaj8Td6sAefv99Y0H19Km2BzK7HA5EAFfi6H9bvJD3inZrHYw6uCN+jd7+t
+ TSv8DUiZv7sCLeYSWYIwP+hgrRMYisIkJj0zcZTIt/NTF93+364LBGpQJ7S7TZdvid4G Ew== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ffpqdpagd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 15:03:56 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 87D7A10002A;
+        Tue, 19 Apr 2022 15:03:55 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 692972122EA;
+        Tue, 19 Apr 2022 15:03:55 +0200 (CEST)
+Received: from [10.48.0.142] (10.75.127.46) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 19 Apr
+ 2022 15:03:54 +0200
+Message-ID: <d0d9c16f-4668-1263-49fa-e51648c8c098@foss.st.com>
+Date:   Tue, 19 Apr 2022 15:03:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] ARM: dts: align SPI NOR node name with dtschema
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
+        <soc@kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+CC:     <arm@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>
+References: <20220407143027.294678-1-krzysztof.kozlowski@linaro.org>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220407143027.294678-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_05,2022-04-15_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14 2022 at 08:46, Dave Hansen wrote:
-> On 4/4/22 05:11, Thomas Gleixner wrote:
-> Any interest in doing something like the attached to make
-> copy_uabi_to_xstate() easier to read?
+Hi Krzysztof
 
-Yeah. I've picked it up.
+On 4/7/22 16:30, Krzysztof Kozlowski wrote:
+> The node names should be generic and SPI NOR dtschema expects "flash".
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>   arch/arm/boot/dts/da850-evm.dts                  | 2 +-
+>   arch/arm/boot/dts/dm8168-evm.dts                 | 2 +-
+>   arch/arm/boot/dts/spear1310-evb.dts              | 2 +-
+>   arch/arm/boot/dts/spear1340-evb.dts              | 2 +-
+>   arch/arm/boot/dts/stm32mp157c-emstamp-argon.dtsi | 2 +-
+>   arch/arm/boot/dts/stm32mp157c-ev1.dts            | 4 ++--
+>   6 files changed, 7 insertions(+), 7 deletions(-)
 
->> +static void xsave_adjust_xcomp(struct fpstate *fpstate, u64 xuser)
->> +{
->> +	struct xregs_state *xsave = &fpstate->regs.xsave;
->> +	u64 xtmp, xall, xbv, xcur = xsave->header.xfeatures;
->> +	int i;
->> +
->> +	/* Nothing to do if optimized compaction is not in use */
->> +	if (!xsave_use_xgetbv1())
->> +		return;
->
-> The comment makes me wonder if we need a more descriptive name for
-> xsave_use_xgetbv1(), like:
->
-> 	if (!xsave_do_optimized_compaction())
-> 		return;
+Thanks for your patch. Is it possible to split it per vendor 
+(TI/STM32/SPEAR) ?
 
-Makes sense.
+Thanks
+Alex
 
->> +	/*
->> +	 * No more optimizations. Set the user features and move the
->> +	 * supervisor state(s). If the new user feature is past
->> +	 * the supervisor state, then the loop is moving nothing.
->> +	 */
->> +	xtmp = xbv & XFEATURE_MASK_SUPERVISOR_ALL;
->> +	xall = xbv | xuser;
->
->
-> I'd probably at least comment why the loop is backwards:
->
-> 	/*
-> 	 * Features are only be moved up in the buffer.  Start with
-> 	 * high features to avoid overwriting them with a lower ones.
-> 	 */
->
-> I know this is a very typical way to implement non-destructive moves,
-> but my stupid brain seems to default to assuming that for loops only go
-> forward.
 
-:)
+> diff --git a/arch/arm/boot/dts/da850-evm.dts b/arch/arm/boot/dts/da850-evm.dts
+> index 87c517d65f62..e9aecac4f5b5 100644
+> --- a/arch/arm/boot/dts/da850-evm.dts
+> +++ b/arch/arm/boot/dts/da850-evm.dts
+> @@ -278,7 +278,7 @@ &spi1 {
+>   	status = "okay";
+>   	pinctrl-names = "default";
+>   	pinctrl-0 = <&spi1_pins &spi1_cs0_pin>;
+> -	flash: m25p80@0 {
+> +	flash: flash@0 {
+>   		#address-cells = <1>;
+>   		#size-cells = <1>;
+>   		compatible = "jedec,spi-nor";
+> diff --git a/arch/arm/boot/dts/dm8168-evm.dts b/arch/arm/boot/dts/dm8168-evm.dts
+> index 5126e2d72ed7..778796c10af8 100644
+> --- a/arch/arm/boot/dts/dm8168-evm.dts
+> +++ b/arch/arm/boot/dts/dm8168-evm.dts
+> @@ -177,7 +177,7 @@ &mcspi1 {
+>   	pinctrl-names = "default";
+>   	pinctrl-0 = <&mcspi1_pins>;
+>   
+> -	m25p80@0 {
+> +	flash@0 {
+>   		compatible = "w25x32";
+>   		spi-max-frequency = <48000000>;
+>   		reg = <0>;
+> diff --git a/arch/arm/boot/dts/spear1310-evb.dts b/arch/arm/boot/dts/spear1310-evb.dts
+> index 4cbadcb41084..ddd1cf4d0554 100644
+> --- a/arch/arm/boot/dts/spear1310-evb.dts
+> +++ b/arch/arm/boot/dts/spear1310-evb.dts
+> @@ -379,7 +379,7 @@ stmpe_touchscreen {
+>   					};
+>   				};
+>   
+> -				m25p80@1 {
+> +				flash@1 {
+>   					compatible = "st,m25p80";
+>   					reg = <1>;
+>   					spi-max-frequency = <12000000>;
+> diff --git a/arch/arm/boot/dts/spear1340-evb.dts b/arch/arm/boot/dts/spear1340-evb.dts
+> index fd194ebeedc9..3a51a41eb5e4 100644
+> --- a/arch/arm/boot/dts/spear1340-evb.dts
+> +++ b/arch/arm/boot/dts/spear1340-evb.dts
+> @@ -439,7 +439,7 @@ spi0: spi@e0100000 {
+>   				cs-gpios = <&gpiopinctrl 80 0>, <&gpiopinctrl 24 0>,
+>   					   <&gpiopinctrl 85 0>;
+>   
+> -				m25p80@0 {
+> +				flash@0 {
+>   					compatible = "m25p80";
+>   					reg = <0>;
+>   					spi-max-frequency = <12000000>;
+> diff --git a/arch/arm/boot/dts/stm32mp157c-emstamp-argon.dtsi b/arch/arm/boot/dts/stm32mp157c-emstamp-argon.dtsi
+> index 33ae5e0590df..ac53ee3c496b 100644
+> --- a/arch/arm/boot/dts/stm32mp157c-emstamp-argon.dtsi
+> +++ b/arch/arm/boot/dts/stm32mp157c-emstamp-argon.dtsi
+> @@ -398,7 +398,7 @@ &qspi {
+>   	#size-cells = <0>;
+>   	status = "okay";
+>   
+> -	flash0: is25lp016d@0 {
+> +	flash0: flash@0 {
+>   		compatible = "jedec,spi-nor";
+>   		reg = <0>;
+>   		spi-max-frequency = <133000000>;
+> diff --git a/arch/arm/boot/dts/stm32mp157c-ev1.dts b/arch/arm/boot/dts/stm32mp157c-ev1.dts
+> index e222d2d2cb44..d142dd30e16b 100644
+> --- a/arch/arm/boot/dts/stm32mp157c-ev1.dts
+> +++ b/arch/arm/boot/dts/stm32mp157c-ev1.dts
+> @@ -262,7 +262,7 @@ &qspi {
+>   	#size-cells = <0>;
+>   	status = "okay";
+>   
+> -	flash0: mx66l51235l@0 {
+> +	flash0: flash@0 {
+>   		compatible = "jedec,spi-nor";
+>   		reg = <0>;
+>   		spi-rx-bus-width = <4>;
+> @@ -271,7 +271,7 @@ flash0: mx66l51235l@0 {
+>   		#size-cells = <1>;
+>   	};
+>   
+> -	flash1: mx66l51235l@1 {
+> +	flash1: flash@1 {
+>   		compatible = "jedec,spi-nor";
+>   		reg = <1>;
+>   		spi-rx-bus-width = <4>;
 
->> +	for (i = fls64(xtmp) - 1; i >= FIRST_EXTENDED_XFEATURE;
->> +	     i = fls64(xtmp) - 1) {
->> +		unsigned int to, from;
->
-> Is it worth a check here like:
->
-> 		/* Do not move features in their init state: */
-> 		if (!(xcur & BIT_ULL(i))) {
-> 			xtmp &= ~BIT_ULL(i);
-> 			continue;
-> 		}
-
-That would also require to clear the bit in xall, but we can't do that
-in the loop as that affects offsets. Let me think about that.
-
-Thanks,
-
-        tglx
