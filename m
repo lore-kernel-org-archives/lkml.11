@@ -2,119 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18947C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97009C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357500AbiDSTEr (ORCPT
+        id S1345081AbiDSTOX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
+        Tue, 19 Apr 2022 15:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357548AbiDSTEm (ORCPT
+        with ESMTP id S229772AbiDSTOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 15:04:42 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBA73FD8E
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id n33-20020a17090a5aa400b001d28f5ee3f9so2828745pji.4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
+        Tue, 19 Apr 2022 15:14:19 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59083A72B;
+        Tue, 19 Apr 2022 12:11:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
-         :from:to;
-        bh=0/oQDgWDKgmKaJrohYsI3DhqEyHGwnTiXQyc5afVPxU=;
-        b=r5Y6BdrIe60BFSIxEfcbpjb2XAlOTSE0R1Gd/KjZFYaR5clMDpg9XmTgaUarTL2xCf
-         u577kG8fTcWM1vjuNJsgQ2naUeIXRmpDGHBr9oSiOjFm9tEoBHv+KBYxFdhAWDPPMzfr
-         Y9MeVh52Ce5Pwq9lzMpf2/pEMU2HFOYFcycgNxh6uPQEkXGkuf4amhrqR9bdZZRHE8H1
-         F1nJ802dr8vIKkounGPtZanpsIWBE/7nBiWMGKeTcZf2w2ymg/kpPjFt9+DjpLGV2wG5
-         vUbcA6rnXwSMFzI1RnAFBlyQQdWCXRQSEPIbs64J0gCesJNmy8WCOTP/15zDExEAeTy0
-         wK0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=0/oQDgWDKgmKaJrohYsI3DhqEyHGwnTiXQyc5afVPxU=;
-        b=01igysysAvJgo7dQikt8/ZQ9WPASaE7w7rwDx+t/CB4l88xZQFGP2dN5zjEXdQDcxf
-         Klg1uOx0/h65/paWd+g84f7oBGXLm3Fs3cKeW0gWeUXs2Z8rvY4Ue8El4f1hT/Ph7MCN
-         1+/UFvLUZnghN0cuV3aHKecxRCm/g88LBMU2QejLUYWV9vR3O7Pke/2Q0TV2bYfHeb3C
-         GWGAtXoiOGco5gimzG/fEOGCb61FRCOGb0sceMqaHRKlCgH9Aw6ATZ8/925quRUtROv4
-         edd5UCsmTDrJct6Q3ZRyXBXjXQNJZFhcszIfB+cF8xmbudMKHzUCHhxcWjwNbGbZKT/W
-         r21A==
-X-Gm-Message-State: AOAM533D1dO7mZ4vYyhjRKchiuXQYPcC7/1FPjEH+Q+tatEO0vl63LUo
-        UosJtUCtlyW5JmaPa3tOulneqg==
-X-Google-Smtp-Source: ABdhPJyqsNP5BMD+uH1qubeFi/1H7/73bMXcJyq80BvSra40EaQLV770b0HPc/I1NLsyTe5OCWknyA==
-X-Received: by 2002:a17:902:c7c4:b0:158:f139:29d8 with SMTP id r4-20020a170902c7c400b00158f13929d8mr14690808pla.166.1650394890419;
-        Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id d16-20020a056a00245000b004f7728a4346sm18336865pfj.79.2022.04.19.12.01.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 12:01:30 -0700 (PDT)
-Subject: [PATCH v1] RISC-V: Move the "Call Trace" to dump_backtrace()
-Date:   Tue, 19 Apr 2022 10:48:42 -0700
-Message-Id: <20220419174842.488-1-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650395496; x=1681931496;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=vBORQz77RThbETo+puUUWcHVCJQc7CVNPdVtOfH4Hu4=;
+  b=Uh8OWS6mMhgg7GSKMOO3MHHy7U4pjQxnpDpdhb5/dJ3gqVSWakWt1BjB
+   QtfLDxVfZF25dZ5jrIgLD/0su6YuX0ik4ed15OmziM0EQEo5TiwRRRMfN
+   Klv4rSeLy0Xk/73dQVEchnEwy3AwOVmkg2inOzbD5FzZvt+fQaAcNZ7/h
+   E=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 19 Apr 2022 12:11:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 12:11:34 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 19 Apr 2022 12:11:33 -0700
+Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 19 Apr 2022 12:11:27 -0700
+From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>
+CC:     <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_kriskura@quicinc.com>,
+        <quic_vpulyala@quicinc.com>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Subject: [PATCH v14 0/7] USB DWC3 host wake up support from system suspend
+Date:   Wed, 20 Apr 2022 00:41:03 +0530
+Message-ID: <1650395470-31333-1-git-send-email-quic_c_sanm@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        peterz@infradead.org, keescook@chromium.org, jszhang@kernel.org,
-        geert@linux-m68k.org, chenhuang5@huawei.com, changbin.du@intel.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     dvyukov@google.com, nogikh@google.com, syzkaller@googlegroups.com
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+Avoiding phy powerdown in host mode when wakeup capable devices are 
+connected, so that it can be wake up by devices.
+Keep usb30_prim gdsc active to retain controller status
+during suspend/resume.
 
-Our oopses include "Call Trace:", but in a different place than some
-other targets do.  This is breaking at least syzkaller, and likely other
-bits of tooling that are trying to parse kernel stack traces.
+Changes in v14:
+Added patch for device_children_wakeup_capable.
+Used device_children_wakeup_capable instead of usb_wakeup_enabled_descendants.
+Fixed minor nit picks in v13 reported by Matthias.
 
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Changes in v13:
+Moved the dt bindings patch to start.
+Changed dwc3_set_phy_speed_mode to dwc3_check_phy_speed_mode.
+Check wakep-source property for dwc3 core node to set the
+wakeup capability. Drop the device_init_wakeup call from
+runtime suspend and resume.
+Added GENPD_FLAG_RPM_ALWAYS_ON and set GENPD_FLAG_ALWAYS_ON if
+wakeup is supported.
 
----
+Changes in v12:
+Squashed PATCH 1/5 and 2/5 of v11.
+Added dt bindings and device tree entry for wakeup-source property
+for dwc3 core node.
+Dropped redundant phy_set_mode call.
 
-I'm sort of just dead-reckoning this one based on the syzkaller issues
-being reported in
-<CACT4Y+ZA7CRNfYgPmi6jHTKD9rwvaJy=nh5Gz_c-PFHq3tuziQ@mail.gmail.com>, I
-haven't tested this at all.  There's a lot of other stuff here that
-arm64 is doing, much of which seems like it could be pulled out into
-generic code.  I seem to remember having said that before, though...
 
-I've left this as "Call Trace:" after seeing some patches to convert the
-arm/ print from "Call trace:" to "Call Trace:".  I can't find it again
-and I remember it sounding like that wasn't necessary, but since we've
-already got the capital I see no reason to change it.  That looks to be
-the more popular way.
+Changes in v11:
+Moving back to v8 version
+https://patchwork.kernel.org/project/linux-arm-msm/cover/1624882097-23265-1-git-send-email-sanm@codeaurora.org
+as we are getting interrupts during suspend
+when enabling both DP hs phy irq and DM hs phy irq.
+Moved the set phy mode function to dwc3/core.c from xhci-plat.c
+We didn't find any other option other than accessing xhci from dwc.
 
-Presumably this will break any tools parsing the current log format, but
-given that we've changed it a handful of times and it looks like it's
-just blowing up for folks as-is.
----
- arch/riscv/kernel/stacktrace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v10:
+PATCH 1/6: Change device_set_wakeup_capable to device_set_wakeup_enable
+PATCH 2/6: Remove redundant else part in dwc3_resume_common
+PATCH 4/6: Change the irg flags
+PATCH 5/6: Set flag GENPD_FLAG_ALWAYS_ON
+PATCH 6/6: Remove disable interrupts function and enable
+interrupts in probe.
 
-diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrace.c
-index 08d11a53f39e..d5b91c0d1881 100644
---- a/arch/riscv/kernel/stacktrace.c
-+++ b/arch/riscv/kernel/stacktrace.c
-@@ -108,12 +108,12 @@ static bool print_trace_address(void *arg, unsigned long pc)
- noinline void dump_backtrace(struct pt_regs *regs, struct task_struct *task,
- 		    const char *loglvl)
- {
-+	pr_cont("%sCall Trace:\n", loglvl);
- 	walk_stackframe(task, regs, print_trace_address, (void *)loglvl);
- }
- 
- void show_stack(struct task_struct *task, unsigned long *sp, const char *loglvl)
- {
--	pr_cont("%sCall Trace:\n", loglvl);
- 	dump_backtrace(NULL, task, loglvl);
- }
- 
+
+Changes in v9:
+Checking with device_may_makeup property instead of phy_power_off flag.
+Changed the IRQ flags and removed hs_phy_mode variable.
+
+Changes in v8:
+Moved the dwc3 suspend quirk code in dwc3/host.c to xhci-plat.c
+Checking phy_power_off flag instead of usb_wakeup_enabled_descendants 
+to keep gdsc active.
+
+Changes in v7:
+Change in commit text and message in PATCH 1/5 and PATCH 5/5
+as per Matthias suggestion.
+Added curly braces for if and else if sections in PATCH 4/5.
+
+Changes in v6:
+Addressed comments in host.c and core.c
+Separated the patches in dwc3-qcom.c to make it simple.
+Dropped wakeup-source change as it is not related to this series.
+
+Changes in v5:
+Added phy_power_off flag to check presence of wakeup capable devices.
+Dropped patch[v4,4/5] as it is present linux-next.
+Addressed comments in host.c and dwc3-qcom.c.
+
+Changes in v4:
+Addressed Matthias comments raised in v3.
+
+Changes in v3:
+Removed need_phy_for_wakeup flag and by default avoiding phy powerdown.
+Addressed Matthias comments and added entry for DEV_SUPERSPEED.
+Added suspend_quirk in dwc3 host and moved the dwc3_set_phy_speed_flags.
+Added wakeup-source dt entry and reading in dwc-qcom.c glue driver.
+
+Changes in v2:
+Dropped the patch in clock to set GENPD_FLAG_ACTIVE_WAKEUP flag and 
+setting in usb dwc3 driver.
+Separated the core patch and glue driver patch.
+Made need_phy_for_wakeup flag part of dwc structure and 
+hs_phy_flags as unsgined int.
+Adrressed the comment on device_init_wakeup call.
+Corrected offset for reading portsc register.
+Added pacth to support wakeup in xo shutdown case.
+
+Matthias Kaehlcke (1):
+  PM / wakeup: Add device_children_wakeup_capable()
+
+Sandeep Maheswaram (6):
+  dt-bindings: usb: dwc3: Add wakeup-source property support
+  usb: dwc3: core: Host wake up support from system suspend
+  usb: dwc3: qcom: Add helper functions to enable,disable wake irqs
+  usb: dwc3: qcom: Configure wakeup interrupts during suspend
+  usb: dwc3: qcom: Keep power domain on to retain controller status
+  arm64: dts: qcom: sc7280: Add wakeup-source property for USB node
+
+ .../devicetree/bindings/usb/snps,dwc3.yaml         |  5 ++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi               |  1 +
+ drivers/base/power/wakeup.c                        | 18 +++++
+ drivers/usb/dwc3/core.c                            | 33 ++++----
+ drivers/usb/dwc3/core.h                            |  4 +
+ drivers/usb/dwc3/dwc3-qcom.c                       | 91 +++++++++++++---------
+ drivers/usb/dwc3/host.c                            | 24 ++++++
+ include/linux/pm_wakeup.h                          |  7 ++
+ 8 files changed, 133 insertions(+), 50 deletions(-)
+
 -- 
-2.34.1
+2.7.4
 
