@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3929EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67311C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357133AbiDSSZs (ORCPT
+        id S1357147AbiDSSZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
+        Tue, 19 Apr 2022 14:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357007AbiDSSWf (ORCPT
+        with ESMTP id S1356992AbiDSSWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10FA1901A;
-        Tue, 19 Apr 2022 11:14:59 -0700 (PDT)
+        Tue, 19 Apr 2022 14:22:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B1513DC6;
+        Tue, 19 Apr 2022 11:14:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78E36B818E0;
-        Tue, 19 Apr 2022 18:14:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35C4EC385AB;
-        Tue, 19 Apr 2022 18:14:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F52C60DBC;
+        Tue, 19 Apr 2022 18:14:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 945D5C385A9;
+        Tue, 19 Apr 2022 18:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392097;
-        bh=288k9DnEcV4ejGaEJ796PXFMibFI/0Co3swJzfncqIU=;
+        s=k20201202; t=1650392092;
+        bh=kJ2xY2WZgC5zmpjwAqT8+oSDGHDnpl9nTFmzZW9q5wU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RbkGs36UBh/nWgqVBDwJAIjrLaBdwjFUliMuOCKBvYlNC2MeLcb6P2RPlejvLy4kh
-         wa0OVglCKGrZtLKMXgJhMfJDfVjIzN1wc5KL/rrbUK8CXw5bvbdI/JsCu0B0/uZrzG
-         EJGjzATogpDRqe+otqUAhfQ27EFRo0qPw2rmQaf+GN99EwScjBEwI/jyOCM3Yicdfr
-         meV/C/QmC2CCR52Dr0bwQygVP/7xm+zmybPCrwdjsPDpTu9AR+0B+cRv9iGdcFGYtk
-         WMqnanFyWUWHXK1emmm2w95NwPgJFW1t4dB3J4Yvw2BxkApn9+IErGnYPImP81O8jA
-         bafVrGMILIMQQ==
+        b=c91cNeTz/iKsQ1pv05+ZtK1unl7+3myySUYum8tYeXAf1kAhtZ7cl884OI1jJ203f
+         Z/lN89FR0uQj4srWh69tFPTgaRpGPohqbpWdhMKcTiG8J1XwHCrY7qf12hmRlWM0E3
+         G3YndofG6Y80iieeCWckjZbwU542OUU0b1Jes2XOUpeHeGrNTB6l5wsRvevdXejIrQ
+         imk0E6+/E7K4wmzYSs6ikpfXMuXQUc/MEyI2Y2025iQATJe9Lj28gJw2hn2lqB0NMJ
+         5/oi8Q7mA0jPbunbRsevEDUC9NTZMVXfKh6ltrm6MofRVajcL8jyslPNJ8VqXxAehO
+         qGBKGsjGq+JbA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hongbin Wang <wh_bin@126.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 05/14] vxlan: fix error return code in vxlan_fdb_append
-Date:   Tue, 19 Apr 2022 14:14:34 -0400
-Message-Id: <20220419181444.485959-5-sashal@kernel.org>
+Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, corentin.chary@gmail.com,
+        markgross@kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 03/14] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
+Date:   Tue, 19 Apr 2022 14:14:32 -0400
+Message-Id: <20220419181444.485959-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181444.485959-1-sashal@kernel.org>
 References: <20220419181444.485959-1-sashal@kernel.org>
@@ -53,38 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
+[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
 
-When kmalloc and dst_cache_init failed,
-should return ENOMEM rather than ENOBUFS.
+Eliminate the follow smatch warnings:
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
+'value' is never less than zero.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/samsung-laptop.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index c5991e31c557..f4869b1836f3 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -679,11 +679,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
+diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
+index 9b6a93ff41ff..91e468fcaf7c 100644
+--- a/drivers/platform/x86/samsung-laptop.c
++++ b/drivers/platform/x86/samsung-laptop.c
+@@ -1121,8 +1121,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
  
- 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
- 	if (rd == NULL)
--		return -ENOBUFS;
-+		return -ENOMEM;
+ 	if (value > samsung->kbd_led.max_brightness)
+ 		value = samsung->kbd_led.max_brightness;
+-	else if (value < 0)
+-		value = 0;
  
- 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
- 		kfree(rd);
--		return -ENOBUFS;
-+		return -ENOMEM;
- 	}
- 
- 	rd->remote_ip = *ip;
+ 	samsung->kbd_led_wk = value;
+ 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
 -- 
 2.35.1
 
