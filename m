@@ -2,114 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D655AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5053EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 07:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348259AbiDSHCX (ORCPT
+        id S1349167AbiDSHGu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45952 "EHLO
+        Tue, 19 Apr 2022 03:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349209AbiDSHCN (ORCPT
+        with ESMTP id S237092AbiDSHGq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:02:13 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8190031520
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 23:59:18 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id r189so9656839ybr.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 23:59:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KLIrmWP9mXkLIC9iIHIn3XCQoyxe5sOSyoG//x2aOB8=;
-        b=ThTeM3jBhBi2PiZY4yzkoSbixU5AkEHN0BKQVu2jZHDget4O3JgkMf9IsR5Zh8cPWZ
-         Kh6IPc3MfXo81VDJ8zu2NXays2VI1Py8TNWRih6cW/zMfTr1eYTM/cE1+8DgVcbkWAqO
-         B57yNQW8rfX0tdpnq9btq3LQ/72k6jMszPNeI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KLIrmWP9mXkLIC9iIHIn3XCQoyxe5sOSyoG//x2aOB8=;
-        b=I/E1Z62+1sHchmyyax3+m7Qhto7cb2xAKMoErqjuW63O7x73IaPyG8L2xb6zQWm4Tg
-         yS54nNSYNc54Y5T0+Cu6l+XTpyfNh3Xy6DIvImNoUpnMLvhg4o4+vktiR15BnhXDA/ky
-         Bvhkm+hNkcgEEZQSLx99Zj/WyT97gFASfgcubucj9hhSbBqlIVBlMlbMQOqmj4EC6oaJ
-         KxunU3StdW5J+fRMdHhSaknoPzONDlMEu+875JNh4rBape7mJfSlkngYe1F0IQoaNsl9
-         DnepWO03kgNMR+onka9AUqXqBC0bSmLS66JbT3KB4eWWmccHPPwt+E8vjkN+PuWQWIQ/
-         yjDw==
-X-Gm-Message-State: AOAM530AuNixIyohcJup11ws4I+gubxL5W3WN3/CyajuwsdgvdhEyZkn
-        Mpr7MnrcZa0zqhrgKm4PlDwjm82ImVX3ayukXhmDuQ==
-X-Google-Smtp-Source: ABdhPJzek0zDeLDFbfPQO12QrLbP1YaoyRNgh912u/LHMLJKfU2u0znkiciiHGBZwK1caQDmdSb5GTb/aZ7aUwEgMjg=
-X-Received: by 2002:a25:2ac3:0:b0:645:36f4:2db3 with SMTP id
- q186-20020a252ac3000000b0064536f42db3mr2136588ybq.189.1650351557830; Mon, 18
- Apr 2022 23:59:17 -0700 (PDT)
+        Tue, 19 Apr 2022 03:06:46 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29E62AC6C;
+        Tue, 19 Apr 2022 00:04:04 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23J73fM2025664;
+        Tue, 19 Apr 2022 02:03:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650351821;
+        bh=GE9Plw/ZKj9bf211DOprV0mgq6L7hEDBT4cWIq5E0yo=;
+        h=From:To:CC:Subject:Date;
+        b=InXJW5fgW56RZTOTSJOaNefKs8N4t9eaDYTxjKpyQDRbZDmUJY+5qFprIY8HGzJy2
+         a9SI59m3xiw4ImJBwTMXF77AR9088y+WS+aGceTSJPcN8zb1NYanEMZE8La3s1hY41
+         XJIU5CRPOxgHvELgIssaOuh50ThCEXbIXxcuFLHg=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23J73fcX120926
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 19 Apr 2022 02:03:41 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 19
+ Apr 2022 02:03:40 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 19 Apr 2022 02:03:40 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23J73euZ005625;
+        Tue, 19 Apr 2022 02:03:40 -0500
+From:   Aradhya Bhatia <a-bhatia1@ti.com>
+To:     Jyri Sarha <jyri.sarha@iki.fi>, Tomi Valkeinen <tomba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Nishanth Menon <nm@ti.com>
+CC:     DRI Development <dri-devel@lists.freedesktop.org>,
+        Devicetree <devicetree@vger.kernel.org>,
+        Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Nikhil Devshatwar <nikhil.nd@ti.com>,
+        Aradhya Bhatia <a-bhatia1@ti.com>
+Subject: [PATCH 0/2] Update register & interrupt info in am65x DSS
+Date:   Tue, 19 Apr 2022 12:33:00 +0530
+Message-ID: <20220419070302.16502-1-a-bhatia1@ti.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220418132154.7401-1-rex-bc.chen@mediatek.com>
- <20220418132154.7401-3-rex-bc.chen@mediatek.com> <CAGXv+5F027EsJCG4zQarcoqCR8S4tew1n1DjeqU7_+HOzmZs2Q@mail.gmail.com>
- <a5da87dbed150b8de4495da4a7f9b98d88e176a8.camel@mediatek.com>
-In-Reply-To: <a5da87dbed150b8de4495da4a7f9b98d88e176a8.camel@mediatek.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Tue, 19 Apr 2022 14:59:06 +0800
-Message-ID: <CAGXv+5FSfF=vEx71MUhpw+80baHaAYcw9cWTsQD6BfMx-p6WWw@mail.gmail.com>
-Subject: Re: [PATCH 2/7] clk: mediatek: reset: Rename reset function
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, angelogioacchino.delregno@collabora.com,
-        chun-jie.chen@mediatek.com, yong.liang@mediatek.com,
-        runyang.chen@mediatek.com, linux-kernel@vger.kernel.org,
-        allen-kh.cheng@mediatek.com, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 2:37 PM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
->
-> On Tue, 2022-04-19 at 13:57 +0800, Chen-Yu Tsai wrote:
-> > On Mon, Apr 18, 2022 at 9:22 PM Rex-BC Chen <rex-bc.chen@mediatek.com
-> > > wrote:
-> > >
-> > > There are two version for clock reset register control of MediaTek
-> > > SoCs.
-> > > Since MT8183, the version 2 is adopted.
-> > >
-> > > To make the driver more readable,
-> > > - Rename them to v2 for MT8183 and v1 for previous SoCs.
-> > > - Adjust the fuinction order in reset.c.
-> >
-> > I'm not sure that the renaming actually helps, since it is not given
-> > that
-> > people outside of MediaTek would know which chip use which version.
-> > The
-> > original name of "_set_clr" at least relays how the hardware works,
-> > which
-> > coupled with the register naming in the datasheets make it quite
-> > obvious
-> > if the hardware is using the "set/clr" variant.
-> >
-> > On a different note, the v1 hardware, where a hardware bit represents
-> > the
-> > state, is quite common, and there is a common reset driver that
-> > handles it.
-> > Perhaps that could be reused instead of code duplicated?
-> > See drivers/reset/reset-simple.c.
-> >
-> >
-> > Thanks
-> > ChenYu
->
-> Hello ChenYu,
->
-> Thanks for your review.
-> I will use reset_simple_ops to replace v1 in next version.
->
-> What do you think the proper name of v2?
-> Or I just use mtk_reset_assert for v2?
+The Display SubSystem IP on the ti's am65x soc has an additional 
+register space "common1" and services a maximum of 2 interrupts.
 
-I would just keep the current name.
+The first patch in the series adds the required updates to the yaml
+file. The second patch then reflects the yaml updates in the DSS DT
+node of am65x soc.
 
+Aradhya Bhatia (2):
+  dt-bindings: display: ti,am65x-dss: Add missing register & interrupt
+  arm64: dts: ti: k3-am65: Add missing register & interrupt in DSS node
 
-ChenYu
+ .../devicetree/bindings/display/ti/ti,am65x-dss.yaml   | 10 +++++++---
+ arch/arm64/boot/dts/ti/k3-am65-main.dtsi               |  6 ++++--
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+-- 
+2.35.3
+
