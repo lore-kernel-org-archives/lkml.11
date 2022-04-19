@@ -2,94 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19632C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A59C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352937AbiDSN5P (ORCPT
+        id S1343692AbiDSN7W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        Tue, 19 Apr 2022 09:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344219AbiDSN5N (ORCPT
+        with ESMTP id S240005AbiDSN7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:57:13 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F64FC8;
-        Tue, 19 Apr 2022 06:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650376471; x=1681912471;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=h8Z+PjLHQQIwzYm6YM3AVAlGFVl+kGFKlyja/ixPPxE=;
-  b=hIkUnG6wwIcFi/al60jF5Tty1sxeD+PbF1oWUEeXbJGKEoBfUsDLJGM0
-   TfVsxrFikWom4mia0cYNm8KmVEsoDm6nzRh7xCn4UDL13ogvc+LrVA1m8
-   TPtxnGEJKxw7L3ZVo4Z34bV37lxZEFkDNG8T3fl+QKJx0S4Ktt7lOw1/g
-   WheJesiBGws8rxIWFWyI2O7+0fsehWMo/w6ccaOkEIUWPxW8VPC9Om2yk
-   IrVU/6WUsnuxnaQoi3Axi5/rfbH2c0d4TDSO8W5/+A0p1PD8RuR5vWHvi
-   Z0JgWUJIWwNQ3H01EozqlURbNHvF74QM32Df+I22LIujCeMTbXZ0o0YQC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="288866668"
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="288866668"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:54:31 -0700
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="576109589"
-Received: from majiangy-mobl.ccr.corp.intel.com ([10.249.173.141])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:54:28 -0700
-Message-ID: <df7e04d86dd64dc85125d536434d93bab3d6314d.camel@intel.com>
-Subject: Re: [PATCH v1] thermal/core: change mm alloc method to avoid kernel
- warning
-From:   Zhang Rui <rui.zhang@intel.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Junwen Wu <wudaemon@163.com>, rafael@kernel.org,
-        amitk@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Date:   Tue, 19 Apr 2022 21:54:26 +0800
-In-Reply-To: <01f72a07-6adc-4854-eae2-286786d33aab@linaro.org>
-References: <20220417125601.18535-1-wudaemon@163.com>
-         <a7861e9a6a311f09c03b2e6e47dd4d3283cb58e2.camel@intel.com>
-         <01f72a07-6adc-4854-eae2-286786d33aab@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
+        Tue, 19 Apr 2022 09:59:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 414AF38BEA;
+        Tue, 19 Apr 2022 06:56:30 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 047E31063;
+        Tue, 19 Apr 2022 06:56:30 -0700 (PDT)
+Received: from [10.32.36.25] (e121896.Emea.Arm.com [10.32.36.25])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EC7023F766;
+        Tue, 19 Apr 2022 06:56:26 -0700 (PDT)
+Message-ID: <d73b0dbf-9878-2c1f-5246-79de08da97d4@arm.com>
+Date:   Tue, 19 Apr 2022 14:56:25 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V5 2/8] perf: Extend branch type classification
+Content-Language: en-US
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, acme@kernel.org
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+References: <20220404045046.634522-1-anshuman.khandual@arm.com>
+ <20220404045046.634522-3-anshuman.khandual@arm.com>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <20220404045046.634522-3-anshuman.khandual@arm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC Viresh.
 
-On Tue, 2022-04-19 at 11:14 +0200, Daniel Lezcano wrote:
-> On 19/04/2022 10:48, Zhang Rui wrote:
-> > On Sun, 2022-04-17 at 12:56 +0000, Junwen Wu wrote:
-> > > Very high cooling device max state value makes cooling device
-> > > stats
-> > > buffer allocation fails,like below.Using kzvalloc instead of
-> > > kzalloc
-> > > can avoid this issue.
-> > 
-> > When a cooling device has big max_state, this patch can get ride of
-> > the
-> > warning here, but still we end up with the read failure of the
-> > trans_table in sysfs because it is larger than PAGE_SIZE.
-> > 
-> > $ cat /sys/class/thermal/cooling_device8/stats/trans_table
-> > cat: /sys/class/thermal/cooling_device8/stats/trans_table: File too
-> > large
-> > 
-> > IMO, unless we can fix both places, I'd suggest we skip allocating
-> > and
-> > creating the broken trans_table attr. Like a prototype patch below
+
+On 04/04/2022 05:50, Anshuman Khandual wrote:
+> branch_entry.type now has ran out of space to accommodate more branch types
+> classification. This will prevent perf branch stack implementation on arm64
+> (via BRBE) to capture all available branch types. Extending this bit field
+> i.e branch_entry.type [4 bits] is not an option as it will break user space
+> ABI both for little and big endian perf tools.
 > 
-> Why not create a thermal debugfs with real useful information and
-> get 
-> rid of this broken code ?
+> Extend branch classification with a new field branch_entry.new_type via a
+> new branch type PERF_BR_EXTEND_ABI in branch_entry.type. Perf tools which
+> could decode PERF_BR_EXTEND_ABI, will then parse branch_entry.new_type as
+> well.
+> 
+> branch_entry.new_type is a 4 bit field which can hold upto 16 branch types.
+> The first three branch types will hold various generic page faults followed
+> by five architecture specific branch types, which can be overridden by the
+> platform for specific use cases. These architecture specific branch types
+> gets overridden on arm64 platform for BRBE implementation.
+> 
+> New generic branch types
+> 
+> - PERF_BR_NEW_FAULT_ALGN
+> - PERF_BR_NEW_FAULT_DATA
+> - PERF_BR_NEW_FAULT_INST
+> 
+> New arch specific branch types
+> 
+> - PERF_BR_NEW_ARCH_1
+> - PERF_BR_NEW_ARCH_2
+> - PERF_BR_NEW_ARCH_3
+> - PERF_BR_NEW_ARCH_4
+> - PERF_BR_NEW_ARCH_5
+> 
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+> Cc: Jiri Olsa <jolsa@redhat.com>
+> Cc: Namhyung Kim <namhyung@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-perf-users@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-The idea looks good to me.
+Reviewed-by: James Clark <james.clark@arm.com>
 
-thanks,
-rui
-
+> ---
+>  include/uapi/linux/perf_event.h | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+> index 26d8f0b5ac0d..d29280adc3c4 100644
+> --- a/include/uapi/linux/perf_event.h
+> +++ b/include/uapi/linux/perf_event.h
+> @@ -255,9 +255,22 @@ enum {
+>  	PERF_BR_IRQ		= 12,	/* irq */
+>  	PERF_BR_SERROR		= 13,	/* system error */
+>  	PERF_BR_NO_TX		= 14,	/* not in transaction */
+> +	PERF_BR_EXTEND_ABI	= 15,	/* extend ABI */
+>  	PERF_BR_MAX,
+>  };
+>  
+> +enum {
+> +	PERF_BR_NEW_FAULT_ALGN		= 0,    /* Alignment fault */
+> +	PERF_BR_NEW_FAULT_DATA		= 1,    /* Data fault */
+> +	PERF_BR_NEW_FAULT_INST		= 2,    /* Inst fault */
+> +	PERF_BR_NEW_ARCH_1		= 3,    /* Architecture specific */
+> +	PERF_BR_NEW_ARCH_2		= 4,    /* Architecture specific */
+> +	PERF_BR_NEW_ARCH_3		= 5,    /* Architecture specific */
+> +	PERF_BR_NEW_ARCH_4		= 6,    /* Architecture specific */
+> +	PERF_BR_NEW_ARCH_5		= 7,    /* Architecture specific */
+> +	PERF_BR_NEW_MAX,
+> +};
+> +
+>  #define PERF_SAMPLE_BRANCH_PLM_ALL \
+>  	(PERF_SAMPLE_BRANCH_USER|\
+>  	 PERF_SAMPLE_BRANCH_KERNEL|\
+> @@ -1372,7 +1385,8 @@ struct perf_branch_entry {
+>  		abort:1,    /* transaction abort */
+>  		cycles:16,  /* cycle count to last branch */
+>  		type:4,     /* branch type */
+> -		reserved:40;
+> +		new_type:4, /* additional branch type */
+> +		reserved:36;
+>  };
+>  
+>  union perf_sample_weight {
