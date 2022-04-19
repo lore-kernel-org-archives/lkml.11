@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81289C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 20:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357574AbiDSULh (ORCPT
+        id S1357578AbiDSULm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 16:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
+        Tue, 19 Apr 2022 16:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356926AbiDSULW (ORCPT
+        with ESMTP id S1356895AbiDSULV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 16:11:22 -0400
+        Tue, 19 Apr 2022 16:11:21 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605723B017;
-        Tue, 19 Apr 2022 13:08:39 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 20:08:36 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A433915B;
+        Tue, 19 Apr 2022 13:08:37 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 20:08:35 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650398918;
+        s=2020; t=1650398916;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KGixIIVK11UN71F9hsjipeVRAdDqQ6PbGBA5GynwXF0=;
-        b=QF7ONBLk6nCHTCgpcArUDjj+8G7kv3pN75z0+FQ0NDIUM0j3inQNAUCuqTqO0sd2R6RoOX
-        HMEiTbQ1WFggsSRvfSJpz0Krj4wd/QbEfy3705tpCKTFE2jnK+CNwT1nOcOsEDRVMmsPCI
-        L8Jy3kd+DW9C0yGr6DJVHTIp5zMZcGKypvY+NyiIpWPhTA5ZpMdBfobwQ0A2Q3xoBmJ8b7
-        XmGRsGQLAWBf0fkEdxoGxXb3NvTWCqq4eB6Di0N4pYP+JRc+5VvtKAJPOPQVbyHBTOPG31
-        FARM90Hj9KMtT3hgiF4wkye+BYxvcVIi3HmzQxEZdAJNoziMpYWajo1kei5KGw==
+        bh=oSzpPAtevF2FdGrZBozZZn3Y/G/z3LHQd+B4A9qveaU=;
+        b=y1trgAHXYQCTIJl5rgPZyRYjlHnHHABqCayk95nZwsodvxotPMBunUt1s4WpttgeusRYRB
+        82RPkEztkJhOetCLkcFJ2Tm+vR03VcPKb/eRyaRobgr/deqwEs/d5bTudr8FJY/x+Grhzy
+        4LksJU30ZK6CDBzom1LYXkooUuIqDx7GRiTpuZkZV6XQFk4sFoA00VHHE6XWCxIUzidyWl
+        b64dX0vNMrotzN1nOK2bXU+QRNLfqtQn3tRL6tU9KArTRFqGP9kWFY00fTakxwIzKUBU3c
+        VOWhqmyRpe14TL6R+hizG9/Mthui1gTp9HeR6e94w2J1lVGdATwF2sT9JozdYA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650398918;
+        s=2020e; t=1650398916;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KGixIIVK11UN71F9hsjipeVRAdDqQ6PbGBA5GynwXF0=;
-        b=qfxQ8/aeYhEAbJ+Q658fC3jy2i7Fv5p3oVZVy1gOMMXb7OSmPBwttadD6+Vkqda9/QtDNo
-        +TjBqT3vRBlnpKAA==
+        bh=oSzpPAtevF2FdGrZBozZZn3Y/G/z3LHQd+B4A9qveaU=;
+        b=Qc9aJGpazNPbiHRCKCX8yOawh+MfXcqrjzIKnP2sjFuLcPX31135LzTTWRaLX9haIImRJU
+        1Qjw8WpEAhiyqpCQ==
 From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/xen: Add ANNOTATE_NOENDBR to startup_xen()
+Subject: [tip: x86/urgent] objtool: Use offstr() to print address of missing ENDBR
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Andrew Cooper <andrew.cooper3@citrix.com>, x86@kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com>
-References: <a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <95d12e800c736a3f7d08d61dabb760b2d5251a8e.1650300597.git.jpoimboe@redhat.com>
+References: <95d12e800c736a3f7d08d61dabb760b2d5251a8e.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165039891679.4207.9559148503286018502.tip-bot2@tip-bot2>
+Message-ID: <165039891504.4207.6288189756775964296.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,40 +62,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     1ab80a0da4c4a4dd496fc14faabbc8bde61a605c
-Gitweb:        https://git.kernel.org/tip/1ab80a0da4c4a4dd496fc14faabbc8bde61a605c
+Commit-ID:     1d08b92fa2c41c43e4efe9787413e9ac9a434f83
+Gitweb:        https://git.kernel.org/tip/1d08b92fa2c41c43e4efe9787413e9ac9a434f83
 Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:25 -07:00
+AuthorDate:    Mon, 18 Apr 2022 09:50:30 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 19 Apr 2022 21:58:49 +02:00
+CommitterDate: Tue, 19 Apr 2022 21:58:50 +02:00
 
-x86/xen: Add ANNOTATE_NOENDBR to startup_xen()
+objtool: Use offstr() to print address of missing ENDBR
 
-The startup_xen() kernel entry point is referenced by the ".note.Xen"
-section, and is the real entry point of the VM. Control transfer is
-through IRET, which *could* set NEED_ENDBR, however Xen currently does
-no such thing.
-
-Add ANNOTATE_NOENDBR to silence future objtool warnings.
-
-Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
+Fixes: 89bc853eae4a ("objtool: Find unused ENDBR instructions")
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Andrew Cooper <andrew.cooper3@citrix.com>
-Link: https://lkml.kernel.org/r/a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com
+Link: https://lkml.kernel.org/r/95d12e800c736a3f7d08d61dabb760b2d5251a8e.1650300597.git.jpoimboe@redhat.com
 ---
- arch/x86/xen/xen-head.S | 1 +
- 1 file changed, 1 insertion(+)
+ tools/objtool/check.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
-index ac17196..3a2cd93 100644
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -45,6 +45,7 @@ SYM_CODE_END(hypercall_page)
- 	__INIT
- SYM_CODE_START(startup_xen)
- 	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR
- 	cld
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index b822a6d..5285edd 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3211,9 +3211,8 @@ validate_ibt_reloc(struct objtool_file *file, struct reloc *reloc)
+ static void warn_noendbr(const char *msg, struct section *sec, unsigned long offset,
+ 			 struct instruction *dest)
+ {
+-	WARN_FUNC("%srelocation to !ENDBR: %s+0x%lx", sec, offset, msg,
+-		  dest->func ? dest->func->name : dest->sec->name,
+-		  dest->func ? dest->offset - dest->func->offset : dest->offset);
++	WARN_FUNC("%srelocation to !ENDBR: %s", sec, offset, msg,
++		  offstr(dest->sec, dest->offset));
+ }
  
- 	/* Clear .bss */
+ static void validate_ibt_dest(struct objtool_file *file, struct instruction *insn,
