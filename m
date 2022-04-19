@@ -2,193 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C97C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 977CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350034AbiDSO27 (ORCPT
+        id S1353289AbiDSO3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
+        Tue, 19 Apr 2022 10:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349510AbiDSO2K (ORCPT
+        with ESMTP id S1349562AbiDSO11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:28:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E506259;
-        Tue, 19 Apr 2022 07:25:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A46E6128E;
-        Tue, 19 Apr 2022 14:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DECC385A5;
-        Tue, 19 Apr 2022 14:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650378323;
-        bh=385UWGPgJs8E8vVjk7sIvSsiYikdStn+sRLPZRWRDow=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=E/ykLEj2ASgMS2kC3AVCamcUKmdEQ3BGq3ek12FMf7etNH/zW0qSObFZDn/iM9eDi
-         devv0LJZNKPEg4CJXphoPHaze2/29SG7ZBrHamEYMLO2Ppgzm14NBrP0yPEvPihZ2O
-         Lzo0bG1Lpbui4EZpWo0bg3y2zRrkwdxLMdDi/zvieX1ckFeU7LNsRM3D8qSBj78xWr
-         1ZFvy1u87/gD03jp6Q2GoSt3fld14S/Eb1o4DPx1sgxOJ4cFuuacvybqSAjUBTSQ1k
-         Y9SOQncaFAao8ONb51Ynl6cD1KNE4Z6aVr376tvxjEBatKGo+2vK5n0fs8Y+ow3syH
-         r/xZTcLU+YAuQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 29A3B5C031F; Tue, 19 Apr 2022 07:25:23 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 07:25:23 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, rostedt@goodmis.org,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: Re: [PATCH rcu 02/12] rcu: Make the TASKS_RCU Kconfig option be
- selected
-Message-ID: <20220419142523.GJ4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220419001123.GA3949851@paulmck-ThinkPad-P17-Gen-1>
- <20220419001233.3950188-2-paulmck@kernel.org>
- <20220419231358.2a0517ee265296a25b4305be@kernel.org>
+        Tue, 19 Apr 2022 10:27:27 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB5835A86;
+        Tue, 19 Apr 2022 07:24:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650378285; x=1681914285;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=S/AnCfZB2POHJ489DdjypzBOnhx3vZSBUI8TEc0qIJI=;
+  b=CqPZLWOe+A78Wk+FwsEcLBVERF48br7drCngxW6KoCRdoVhqGzDLhbtb
+   PG/eI5Gs6TVWfli+/eZ2Tdrr5rn7VD4CTH/THi54vaftjOLagxXJ31Tk0
+   XS5NySOFQtHcTcoQ6GaOc+C9cwLb1hN61UHVtXJHLkBubYaLJ+co1J5c0
+   rbIy9SGIrmCFO00zISvMOf6lsE4rrBt0Bw0aI4qNSLEBFT05+8KrV0sHc
+   Iaxv4o3sDiLV7AjuRq0azNksRXAK4Ag0cGNjl2VY7PB4dcdrqu4Qglqa9
+   QqeI7/YxNXGwgJkgsbpN5cL1SEVBg6eli7lpvvALPYV3R85vSqEe020NC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="324219231"
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="324219231"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 07:24:44 -0700
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="657656324"
+Received: from aislaslo-mobl.amr.corp.intel.com (HELO [10.212.57.245]) ([10.212.57.245])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 07:24:43 -0700
+Message-ID: <72205a7a-faf2-4322-02cd-303ee8252abb@intel.com>
+Date:   Tue, 19 Apr 2022 07:24:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419231358.2a0517ee265296a25b4305be@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <bd83067542a3519ee4c91f9d50e9bd4fac27e4bb.camel@intel.com>
+ <975b5050-2108-9ace-cc71-46f17db0a731@intel.com>
+ <4875ea9c-593a-e669-889a-1e809a50a570@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+In-Reply-To: <4875ea9c-593a-e669-889a-1e809a50a570@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 11:13:58PM +0900, Masami Hiramatsu wrote:
-> On Mon, 18 Apr 2022 17:12:23 -0700
-> "Paul E. McKenney" <paulmck@kernel.org> wrote:
+On 4/19/22 07:19, Sathyanarayanan Kuppuswamy wrote:
+> On 4/19/22 7:13 AM, Dave Hansen wrote:
+>>> >From this perspective, I am not sure what's the value of having a
+>>> dedicated
+>>> INTEL_TDX_ATTESTATION Kconfig.  The attestation support code should
+>>> be turned on
+>>> unconditionally when CONFIG_INTEL_TDX_GUEST is on.  The code can also
+>>> be just
+>>> under arch/x86/coco/tdx/ I guess?
+>> How much code are we talking about?  What's the difference in the size
+>> of the binaries with this compiled in?
 > 
-> > Currently, any kernel built with CONFIG_PREEMPTION=y also gets
-> > CONFIG_TASKS_RCU=y, which is not helpful to people trying to build
-> > preemptible kernels of minimal size.
-> > 
-> > Because CONFIG_TASKS_RCU=y is needed only in kernels doing tracing of
-> > one form or another, this commit moves from TASKS_RCU deciding when it
-> > should be enabled to the tracing Kconfig options explicitly selecting it.
-> > This allows building preemptible kernels without TASKS_RCU, if desired.
-> > 
-> > This commit also updates the SRCU-N and TREE09 rcutorture scenarios
-> > in order to avoid Kconfig errors that would otherwise result from
-> > CONFIG_TASKS_RCU being selected without its CONFIG_RCU_EXPERT dependency
-> > being met.
-> 
-> Thanks for fixing this dependency.
-> 
-> This looks good to me (for kprobe part)
-> 
-> Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Current driver size is ~300 lines. It adds ~500 bytes to the kernel
+> binary if it is built-in.
 
-Thank you!  I will apply this on my next rebase.
+That doesn't sound like good use of a Kconfig option to me.  Just
+explain in the cover letter:
 
-							Thanx, Paul
-
-> Thank you,
-> 
-> > 
-> > [ paulmck: Apply BPF_SYSCALL feedback from Andrii Nakryiko. ]
-> > 
-> > Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> > Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> > Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > Cc: Andrii Nakryiko <andrii@kernel.org>
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > Cc: Masami Hiramatsu <mhiramat@kernel.org>
-> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > 
-> > --- Update SRCU-N and TREE09 to avoid Kconfig errors.
-> > 
-> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > ---
-> >  arch/Kconfig                                          | 1 +
-> >  kernel/bpf/Kconfig                                    | 1 +
-> >  kernel/rcu/Kconfig                                    | 3 ++-
-> >  kernel/trace/Kconfig                                  | 1 +
-> >  tools/testing/selftests/rcutorture/configs/rcu/SRCU-N | 2 ++
-> >  tools/testing/selftests/rcutorture/configs/rcu/TREE09 | 2 ++
-> >  6 files changed, 9 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/Kconfig b/arch/Kconfig
-> > index 29b0167c088b..1bf29ce754af 100644
-> > --- a/arch/Kconfig
-> > +++ b/arch/Kconfig
-> > @@ -35,6 +35,7 @@ config KPROBES
-> >  	depends on MODULES
-> >  	depends on HAVE_KPROBES
-> >  	select KALLSYMS
-> > +	select TASKS_RCU if PREEMPTION
-> >  	help
-> >  	  Kprobes allows you to trap at almost any kernel address and
-> >  	  execute a callback function.  register_kprobe() establishes
-> > diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-> > index d56ee177d5f8..2dfe1079f772 100644
-> > --- a/kernel/bpf/Kconfig
-> > +++ b/kernel/bpf/Kconfig
-> > @@ -27,6 +27,7 @@ config BPF_SYSCALL
-> >  	bool "Enable bpf() system call"
-> >  	select BPF
-> >  	select IRQ_WORK
-> > +	select TASKS_RCU if PREEMPTION
-> >  	select TASKS_TRACE_RCU
-> >  	select BINARY_PRINTF
-> >  	select NET_SOCK_MSG if NET
-> > diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-> > index f559870fbf8b..4f665ae0cf55 100644
-> > --- a/kernel/rcu/Kconfig
-> > +++ b/kernel/rcu/Kconfig
-> > @@ -78,7 +78,8 @@ config TASKS_RCU_GENERIC
-> >  	  task-based RCU implementations.  Not for manual selection.
-> >  
-> >  config TASKS_RCU
-> > -	def_bool PREEMPTION
-> > +	def_bool 0
-> > +	select IRQ_WORK
-> >  	help
-> >  	  This option enables a task-based RCU implementation that uses
-> >  	  only voluntary context switch (not preemption!), idle, and
-> > diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-> > index 2c43e327a619..bf5da6c4e999 100644
-> > --- a/kernel/trace/Kconfig
-> > +++ b/kernel/trace/Kconfig
-> > @@ -144,6 +144,7 @@ config TRACING
-> >  	select BINARY_PRINTF
-> >  	select EVENT_TRACING
-> >  	select TRACE_CLOCK
-> > +	select TASKS_RCU if PREEMPTION
-> >  
-> >  config GENERIC_TRACER
-> >  	bool
-> > diff --git a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N
-> > index 2da8b49589a0..07f5e0a70ae7 100644
-> > --- a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N
-> > +++ b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-N
-> > @@ -6,3 +6,5 @@ CONFIG_PREEMPT_NONE=y
-> >  CONFIG_PREEMPT_VOLUNTARY=n
-> >  CONFIG_PREEMPT=n
-> >  #CHECK#CONFIG_RCU_EXPERT=n
-> > +CONFIG_KPROBES=n
-> > +CONFIG_FTRACE=n
-> > diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TREE09 b/tools/testing/selftests/rcutorture/configs/rcu/TREE09
-> > index 8523a7515cbf..fc45645bb5f4 100644
-> > --- a/tools/testing/selftests/rcutorture/configs/rcu/TREE09
-> > +++ b/tools/testing/selftests/rcutorture/configs/rcu/TREE09
-> > @@ -13,3 +13,5 @@ CONFIG_DEBUG_LOCK_ALLOC=n
-> >  CONFIG_RCU_BOOST=n
-> >  CONFIG_DEBUG_OBJECTS_RCU_HEAD=n
-> >  #CHECK#CONFIG_RCU_EXPERT=n
-> > +CONFIG_KPROBES=n
-> > +CONFIG_FTRACE=n
-> > -- 
-> > 2.31.1.189.g2e36527f23
-> > 
-> 
-> 
-> -- 
-> Masami Hiramatsu <mhiramat@kernel.org>
+	Any distribution enabling TDX is also expected to need
+	attestation.  The compiled size is quite small (500 bytes).
