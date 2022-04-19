@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE84CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED008C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243284AbiDSAre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
+        id S241274AbiDSAsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241325AbiDSApQ (ORCPT
+        with ESMTP id S241343AbiDSApR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:45:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBD922BE2
+        Mon, 18 Apr 2022 20:45:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCAD25EB2
         for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7411F6140D
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FF3B613F5
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 517F8C340F3;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12F46C385CC;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=bdy13tgqOx3aSuE/ziig4w/6vZsrF8Cx81UBzLocFqE=;
+        bh=DoH+DKwtnZi++mxO5o84y/4hk/LGEST5iJ6GyK18UC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ngMK4RG/mCsFW5Rhj5gwV+/w0d6yoz4YV7c3ip2QKBApPQqzguS5cw+ZloQtpjzff
-         VERR2/XIrEx3Mhelw9NG76ZLydDF22OIqxeMaKCZ4f2FdO8nKPFVFXJ72mc08+UCVj
-         y8brA/clq7yOnSc2xwDkiBxBhObs4fYxfQdX46qeVgwxUjytgXb5cRwMuktdu3KmmC
-         zTlr7KB+3kyLcZ7O5EQQof/HOO99DtPfleIUn+STNoPPnJiVj1FJRuP8rr+3TPKbzP
-         j1l2ajrXL5dErB+lRvISDc/pko57SsqVdRzbJD50r3yrXwCxnJ5+wy05ab/iqE56pS
-         X/5qn0kYJSlbQ==
+        b=h63Eitfcg4e8pOwZFt7DTfsSJ06uSIXYE5YLL40O/JKSKrMo0oeXARlrP8MmY3RcM
+         a/OXGBGzhITZ+Ox8v8UdLnY/SoGf2x5PmIu9djzhmCn1RQosGyoW+BPoqU7Ecm5osq
+         6HqRwQlR0NXHu6/w3yrJN6D6CBjcLReGpVrwd0BwXW/hr7H1USutuCDYSnIhGzAcUW
+         VSkpj30ZcRiGxWsCqvVlXA3vAbgjAZHXlB84P4PEi+0vsoJyjSsW0+KQvH4yUwhS0B
+         qSje/CfKP/BoGhR3mZ9aEgNN+1tqFUTZkbUYJXv2qezI04Mk1eEPZqXyAzdg0T+uxy
+         s0Ifd5R8PZbTg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 46BF15C313C; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 2DB155C30EA; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 35/61] tools/nolibc/string: export memset() and memmove()
-Date:   Mon, 18 Apr 2022 17:41:59 -0700
-Message-Id: <20220419004225.3952530-35-paulmck@kernel.org>
+Subject: [PATCH nolibc 21/61] tools/nolibc/stdio: add a minimal [vf]printf() implementation
+Date:   Mon, 18 Apr 2022 17:41:45 -0700
+Message-Id: <20220419004225.3952530-21-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,48 +53,167 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-"clang -Os" and "gcc -Ofast" without -ffreestanding may ignore memset()
-and memmove(), hoping to provide their builtin equivalents, and finally
-not find them. Thus we must export these functions for these rare cases.
-Note that as they're set in their own sections, they will be eliminated
-by the linker if not used. In addition, they do not prevent gcc from
-identifying them and replacing them with the shorter "rep movsb" or
-"rep stosb" when relevant.
+This adds a minimal vfprintf() implementation as well as the commonly
+used fprintf() and printf() that rely on it.
+
+For now the function supports:
+  - formats: %s, %c, %u, %d, %x
+  - modifiers: %l and %ll
+  - unknown chars are considered as modifiers and are ignored
+
+It is designed to remain minimalist, despite this printf() is 549 bytes
+on x86_64. It would be wise not to add too many formats.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/string.h | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ tools/include/nolibc/stdio.h | 128 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
 
-diff --git a/tools/include/nolibc/string.h b/tools/include/nolibc/string.h
-index c1661589cb3c..4554b6fcb400 100644
---- a/tools/include/nolibc/string.h
-+++ b/tools/include/nolibc/string.h
-@@ -47,7 +47,10 @@ void *_nolibc_memcpy_down(void *dst, const void *src, size_t len)
- 	return dst;
+diff --git a/tools/include/nolibc/stdio.h b/tools/include/nolibc/stdio.h
+index 996bf89a30d2..a73cf24cb68d 100644
+--- a/tools/include/nolibc/stdio.h
++++ b/tools/include/nolibc/stdio.h
+@@ -7,6 +7,8 @@
+ #ifndef _NOLIBC_STDIO_H
+ #define _NOLIBC_STDIO_H
+ 
++#include <stdarg.h>
++
+ #include "std.h"
+ #include "arch.h"
+ #include "types.h"
+@@ -158,4 +160,130 @@ char *fgets(char *s, int size, FILE *stream)
+ 	return ofs ? s : NULL;
  }
  
--static __attribute__((unused))
-+/* might be ignored by the compiler without -ffreestanding, then found as
-+ * missing.
++
++/* minimal vfprintf(). It supports the following formats:
++ *  - %[l*]{d,u,c,x}
++ *  - %s
++ *  - unknown modifiers are ignored.
 + */
-+__attribute__((weak,unused,section(".text.nolibc_memmove")))
- void *memmove(void *dst, const void *src, size_t len)
- {
- 	size_t dir, pos;
-@@ -75,7 +78,10 @@ void *memcpy(void *dst, const void *src, size_t len)
- 	return _nolibc_memcpy_up(dst, src, len);
- }
- 
--static __attribute__((unused))
-+/* might be ignored by the compiler without -ffreestanding, then found as
-+ * missing.
-+ */
-+__attribute__((weak,unused,section(".text.nolibc_memset")))
- void *memset(void *dst, int b, size_t len)
- {
- 	char *p = dst;
++static __attribute__((unused))
++int vfprintf(FILE *stream, const char *fmt, va_list args)
++{
++	char escape, lpref, c;
++	unsigned long long v;
++	unsigned int written;
++	size_t len, ofs;
++	char tmpbuf[21];
++	const char *outstr;
++
++	written = ofs = escape = lpref = 0;
++	while (1) {
++		c = fmt[ofs++];
++
++		if (escape) {
++			/* we're in an escape sequence, ofs == 1 */
++			escape = 0;
++			if (c == 'c' || c == 'd' || c == 'u' || c == 'x') {
++				if (lpref) {
++					if (lpref > 1)
++						v = va_arg(args, unsigned long long);
++					else
++						v = va_arg(args, unsigned long);
++				} else
++					v = va_arg(args, unsigned int);
++
++				if (c == 'd') {
++					/* sign-extend the value */
++					if (lpref == 0)
++						v = (long long)(int)v;
++					else if (lpref == 1)
++						v = (long long)(long)v;
++				}
++
++				switch (c) {
++				case 'd':
++					i64toa_r(v, tmpbuf);
++					break;
++				case 'u':
++					u64toa_r(v, tmpbuf);
++					break;
++				case 'x':
++					u64toh_r(v, tmpbuf);
++					break;
++				default: /* 'c' */
++					tmpbuf[0] = v;
++					tmpbuf[1] = 0;
++					break;
++				}
++				outstr = tmpbuf;
++			}
++			else if (c == 's') {
++				outstr = va_arg(args, char *);
++			}
++			else if (c == '%') {
++				/* queue it verbatim */
++				continue;
++			}
++			else {
++				/* modifiers or final 0 */
++				if (c == 'l') {
++					/* long format prefix, maintain the escape */
++					lpref++;
++				}
++				escape = 1;
++				goto do_escape;
++			}
++			len = strlen(outstr);
++			goto flush_str;
++		}
++
++		/* not an escape sequence */
++		if (c == 0 || c == '%') {
++			/* flush pending data on escape or end */
++			escape = 1;
++			lpref = 0;
++			outstr = fmt;
++			len = ofs - 1;
++		flush_str:
++			if (_fwrite(outstr, len, stream) != 0)
++				break;
++
++			written += len;
++		do_escape:
++			if (c == 0)
++				break;
++			fmt += ofs;
++			ofs = 0;
++			continue;
++		}
++
++		/* literal char, just queue it */
++	}
++	return written;
++}
++
++static __attribute__((unused))
++int fprintf(FILE *stream, const char *fmt, ...)
++{
++	va_list args;
++	int ret;
++
++	va_start(args, fmt);
++	ret = vfprintf(stream, fmt, args);
++	va_end(args);
++	return ret;
++}
++
++static __attribute__((unused))
++int printf(const char *fmt, ...)
++{
++	va_list args;
++	int ret;
++
++	va_start(args, fmt);
++	ret = vfprintf(stdout, fmt, args);
++	va_end(args);
++	return ret;
++}
++
+ #endif /* _NOLIBC_STDIO_H */
 -- 
 2.31.1.189.g2e36527f23
 
