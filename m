@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D034C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355902AbiDSRLF (ORCPT
+        id S1355912AbiDSRLJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
+        Tue, 19 Apr 2022 13:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355655AbiDSRJ4 (ORCPT
+        with ESMTP id S1355657AbiDSRJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 19 Apr 2022 13:09:56 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006F611A30
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:10 -0700 (PDT)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95728EA5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388030; x=1681924030;
+  t=1650388032; x=1681924032;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=99E8DhfEk0Ekd5my6kcIYaxIlJz7qBZKJBWjSrZUA94=;
-  b=N+RwRk573jPr9h/dhD2px3bnJdJm5iKkO9dtX0u2FQa4MXAqAULgfbY2
-   +J5e7ABfWZIsgqH3qetCl2Z3QO9QHireuEGnBlpRSI6VF69xrtmjUvfy2
-   5SAdVO1iPHnS7YyylX+Iwq7p150PSqwpn1LlvcBay82hXtp5l8LqvOT5K
-   HkdgmBcwmAfnlpQaLh/A+cLjbKrkeLPZBF19KzKwzIbODT/NyGR2A3Mci
-   Z5+MPR0iIPG2oUqGEsWmugqYCfLyGZfKH0jUuYXe5KrVqDply9YcmXHNl
-   FR7ww7dFVinAZvPYrZNdXXDXOr9AE+gh29UTJPY+IKr4YrsVxYrFztu5C
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261420786"
+  bh=8HY8BDua6BN4XkwHxR01tuvztdYTdoms4hurcP8Ocpo=;
+  b=U6qi3nPgQlvWwHsJBPyCKGZ8EofngQ1XOE7OJmb7mH2+kzbVocAl6DmN
+   rT9+sYjxZhaMldriTek4uZoqm6szYSe/O0i79U3mWa6FZuJCSzZdqgnij
+   TF7tEXAAGWSvzFgFefCqFY8XxQzicIc8prhsWvuwFnMCCA9cKLuB1zL/m
+   9wHEnZcx6CkgCfM+6Sy1G3/YNXDvYjpp7MftpQ6OP/2Yxz4/WrcTb3gSc
+   3W1VBHTvnX+ZXRMMB9KuktVABofp+AviJrJTT2lBVA2M6oBta7fGVRCUC
+   knzrc6Qlhvq/vrO//Cir670VKGO+Tp41tUKp4m24p98aNz8+3Qfkkis+e
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350267610"
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="261420786"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:01 -0700
+   d="scan'208";a="350267610"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:12 -0700
 X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="657714575"
+   d="scan'208";a="510207192"
 Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:01 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:11 -0700
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
@@ -46,9 +46,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V10 12/44] x86/pkeys: Introduce pks_write_pkrs()
-Date:   Tue, 19 Apr 2022 10:06:17 -0700
-Message-Id: <20220419170649.1022246-13-ira.weiny@intel.com>
+Subject: [PATCH V10 26/44] memremap_pages: Introduce pgmap_protection_available()
+Date:   Tue, 19 Apr 2022 10:06:31 -0700
+Message-Id: <20220419170649.1022246-27-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
 References: <20220419170649.1022246-1-ira.weiny@intel.com>
@@ -60,115 +60,70 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Writing to MSR's is inefficient.  Even though the underlying PKS
-register, MSR_IA32_PKRS, is not serializing; writing to the MSR should
-be avoided if possible.  Especially when updates are made in critical
-paths such as the scheduler or the entry code.
+PMEM will flag additional dev_pagemap protection through (struct
+dev_pagemap)->flags.  However, it is more efficient to know if that
+protection is available prior to requesting it and failing the mapping.
 
-Introduce pks_write_pkrs().  pks_write_pkrs() avoids writing
-MSR_IA32_PKRS if the pkrs value has not changed for the current CPU.
-Most of the callers are in a non-preemptable code path.  Therefore,
-avoid calling preempt_{disable,enable}() to protect the per-cpu cache
-and instead rely on outer calls for this protection.  Do the same with
-checks to X86_FEATURE_PKS.
+Define pgmap_protection_available() to check if protection is available
+prior to being requested.  The name of pgmap_protection_available() was
+specifically chosen to isolate the implementation of the protection from
+higher level users.
 
-On startup, while unlikely, the PKS_INIT_VALUE may be 0.  This would
-prevent pks_write_pkrs() from updating the MSR because of the initial
-value of the per-cpu cache.  Therefore, keep the MSR write in
-pks_setup() to ensure the MSR is initialized at least one time.
-
-Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
 ---
+Changes for V10
+	Move code from mm.h to memremap.h
+		Upstream separated memremap.h functionality from mm.h
+		dc90f0846df4 ("mm: don't include <linux/memremap.h> in <linux/mm.h>")
+
 Changes for V9
-	From Dave Hansen
-		Update commit message with a bit more detail about why
-			this optimization is needed
-		Update the code comments as well.
+	Clean up commit message
+	From Dan Williams
+		make call stack static inline throughout this call and
+			pks_available() such that callers calls
+			cpu_feature_enabled() directly
 
 Changes for V8
-	From Thomas
-		Remove get/put_cpu_ptr() and make this a 'lower level
-		call.  This makes it preemption unsafe but it is called
-		mostly where preemption is already disabled.  Add this
-		as a predicate of the call and those calls which need to
-		can disable preemption.
-		Add lockdep assert for preemption
-	Ensure MSR gets written even if the PKS_INIT_VALUE is 0.
-	Completely re-write the commit message.
-	s/write_pkrs/pks_write_pkrs/
-	Split this off into a singular patch
-
-Changes for V7
-	Create a dynamic pkrs_initial_value in early init code.
-	Clean up comments
-	Add comment to macro guard
+	Split this out to it's own patch.
+	s/pgmap_protection_enabled/pgmap_protection_available
 ---
- arch/x86/mm/pkeys.c | 41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ include/linux/memremap.h | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
-index f904376570f4..10521f1a292e 100644
---- a/arch/x86/mm/pkeys.c
-+++ b/arch/x86/mm/pkeys.c
-@@ -213,15 +213,56 @@ u32 pkey_update_pkval(u32 pkval, u8 pkey, u32 accessbits)
+diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+index 8af304f6b504..7980d0db8617 100644
+--- a/include/linux/memremap.h
++++ b/include/linux/memremap.h
+@@ -6,6 +6,7 @@
+ #include <linux/range.h>
+ #include <linux/ioport.h>
+ #include <linux/percpu-refcount.h>
++#include <linux/pks.h>
  
- #ifdef CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
- 
-+static DEFINE_PER_CPU(u32, pkrs_cache);
-+
-+/*
-+ * pks_write_pkrs() - Write the pkrs of the current CPU
-+ * @new_pkrs: New value to write to the current CPU register
-+ *
-+ * Optimizes the MSR writes by maintaining a per cpu cache.
-+ *
-+ * Context: must be called with preemption disabled
-+ * Context: must only be called if PKS is enabled
-+ *
-+ * It should also be noted that the underlying WRMSR(MSR_IA32_PKRS) is not
-+ * serializing but still maintains ordering properties similar to WRPKRU.
-+ * The current SDM section on PKRS needs updating but should be the same as
-+ * that of WRPKRU.  Quote from the WRPKRU text:
-+ *
-+ *     WRPKRU will never execute transiently. Memory accesses
-+ *     affected by PKRU register will not execute (even transiently)
-+ *     until all prior executions of WRPKRU have completed execution
-+ *     and updated the PKRU register.
-+ */
-+static inline void pks_write_pkrs(u32 new_pkrs)
-+{
-+	u32 pkrs = __this_cpu_read(pkrs_cache);
-+
-+	lockdep_assert_preemption_disabled();
-+
-+	if (pkrs != new_pkrs) {
-+		__this_cpu_write(pkrs_cache, new_pkrs);
-+		wrmsrl(MSR_IA32_PKRS, new_pkrs);
-+	}
-+}
-+
- /*
-  * PKS is independent of PKU and either or both may be supported on a CPU.
-+ *
-+ * Context: must be called with preemption disabled
-  */
- void pks_setup(void)
- {
- 	if (!cpu_feature_enabled(X86_FEATURE_PKS))
- 		return;
- 
-+	/*
-+	 * If the PKS_INIT_VALUE is 0 then pks_write_pkrs() will fail to
-+	 * initialize the MSR.  Do a single write here to ensure the MSR is
-+	 * written at least one time.
-+	 */
- 	wrmsrl(MSR_IA32_PKRS, PKS_INIT_VALUE);
-+	pks_write_pkrs(PKS_INIT_VALUE);
- 	cr4_set_bits(X86_CR4_PKS);
+ struct resource;
+ struct device;
+@@ -214,4 +215,20 @@ static inline void put_dev_pagemap(struct dev_pagemap *pgmap)
+ 		percpu_ref_put(&pgmap->ref);
  }
  
++#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
++
++static inline bool pgmap_protection_available(void)
++{
++	return pks_available();
++}
++
++#else
++
++static inline bool pgmap_protection_available(void)
++{
++	return false;
++}
++
++#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
++
+ #endif /* _LINUX_MEMREMAP_H_ */
 -- 
 2.35.1
 
