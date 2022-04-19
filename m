@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F296C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B526C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242623AbiDSAqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
+        id S242431AbiDSAqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241150AbiDSApO (ORCPT
+        with ESMTP id S241051AbiDSApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 20:45:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993A82AC56
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E329D2B27C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21EF4613C5
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A821613F9
         for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 00:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27212C385D5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A22C385CA;
         Tue, 19 Apr 2022 00:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650328948;
-        bh=r3jA59cd78DZiQe3/m4vv1s+CMiCUg02JEu8FamNgzk=;
+        bh=UZUZd3XUKazCR3gnl766Ne/BmjRCGIHbkqdHS487CK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vHJ7Twj57EBxawQeOg+4XnTL0PtQ6KkJ6Q3ptAZSsLqO9nFLx6NAxxr+/Z0w0WMZY
-         Gkdb9d/fm6YthBy6egiX0s9A2MA9ByQlppcXbpL2q8YRyVmq2PJJA2iBi52sWrEEt/
-         qSkqZLmo1mAG25QS4B/vVqz6vHwCWjgCfj2ZjyhD0rg+OejIyRGgF4YrNwW/RDfavL
-         JjaQfOlSfkYGRI1KdBLoK9zV7LN2MFF1G6DVe2rCRz7EgZqRHpt5nuEsJDRGfnJgGC
-         QeVGdqBGo3CDL/Anjv3ozaJ5+O5R853Cdg9q4lH4VGzdAUKKa6LRjHeATMXRs1dh+U
-         IAkp3cx3YW02g==
+        b=GFaNfUAv05Znx/ADLckjJAPkzWVT74iFbUQPxrFv/icolazD3YGDaScRyuj9TiwGQ
+         5FpISCd+T4UXUPryCzu9aOeRHDc34Dq7Pw65m7+6nsFVRRCu2KvNWYv1zzN98R2vlM
+         fhDbKD61N6w1Nd/89KhnWHQMOTIA25p8HOH01aO0CtaQInVV0dBeTGfVOQnHIDMJVQ
+         sklmiD8hYMcyIQ9wV7Z4SJS68mDxLR2B2bEnOynI3KmMEzB8GWZl0O6QBRr+jC0YMF
+         mkdvvxrRU3q12Ua9j2BclnOos8fjKkU5pP0UNByy6w/FNBXHm+sq3jB0fQbfFfHE6/
+         K4x/2XgnZz8XQ==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 331B85C30F7; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
+        id 27BE85C30DF; Mon, 18 Apr 2022 17:42:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 24/61] tools/nolibc/sys: make open() take a vararg on the 3rd argument
-Date:   Mon, 18 Apr 2022 17:41:48 -0700
-Message-Id: <20220419004225.3952530-24-paulmck@kernel.org>
+Subject: [PATCH nolibc 18/61] tools/nolibc/stdio: add a minimal set of stdio functions
+Date:   Mon, 18 Apr 2022 17:41:42 -0700
+Message-Id: <20220419004225.3952530-18-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
 References: <20220419004219.GA3952301@paulmck-ThinkPad-P17-Gen-1>
@@ -53,63 +53,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-Let's pass a vararg to open() so that it remains compatible with existing
-code. The arg is only dereferenced when flags contain O_CREAT. The function
-is generally not inlined anymore, causing an extra call (total 16 extra
-bytes) but it's still optimized for constant propagation, limiting the
-excess to no more than 16 bytes in practice when open() is called without
-O_CREAT, and ~40 with O_CREAT, which remains reasonable.
+This only provides getchar(), putchar(), and puts().
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/include/nolibc/sys.h | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ tools/include/nolibc/nolibc.h |  1 +
+ tools/include/nolibc/stdio.h  | 57 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+)
+ create mode 100644 tools/include/nolibc/stdio.h
 
-diff --git a/tools/include/nolibc/sys.h b/tools/include/nolibc/sys.h
-index 98689f668ed3..539af457a91b 100644
---- a/tools/include/nolibc/sys.h
-+++ b/tools/include/nolibc/sys.h
-@@ -7,6 +7,7 @@
- #ifndef _NOLIBC_SYS_H
- #define _NOLIBC_SYS_H
+diff --git a/tools/include/nolibc/nolibc.h b/tools/include/nolibc/nolibc.h
+index a349c88c45ff..7eaa09fe9f4d 100644
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -88,6 +88,7 @@
+ #include "types.h"
+ #include "sys.h"
+ #include "ctype.h"
++#include "stdio.h"
+ #include "stdlib.h"
+ #include "string.h"
  
-+#include <stdarg.h>
- #include "std.h"
- 
- /* system includes */
-@@ -719,7 +720,7 @@ int mount(const char *src, const char *tgt,
- 
- 
- /*
-- * int open(const char *path, int flags, mode_t mode);
-+ * int open(const char *path, int flags[, mode_t mode]);
-  */
- 
- static __attribute__((unused))
-@@ -735,9 +736,20 @@ int sys_open(const char *path, int flags, mode_t mode)
- }
- 
- static __attribute__((unused))
--int open(const char *path, int flags, mode_t mode)
-+int open(const char *path, int flags, ...)
- {
--	int ret = sys_open(path, flags, mode);
-+	mode_t mode = 0;
-+	int ret;
+diff --git a/tools/include/nolibc/stdio.h b/tools/include/nolibc/stdio.h
+new file mode 100644
+index 000000000000..4c6af3016e2e
+--- /dev/null
++++ b/tools/include/nolibc/stdio.h
+@@ -0,0 +1,57 @@
++/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
++/*
++ * minimal stdio function definitions for NOLIBC
++ * Copyright (C) 2017-2021 Willy Tarreau <w@1wt.eu>
++ */
 +
-+	if (flags & O_CREAT) {
-+		va_list args;
++#ifndef _NOLIBC_STDIO_H
++#define _NOLIBC_STDIO_H
 +
-+		va_start(args, flags);
-+		mode = va_arg(args, mode_t);
-+		va_end(args);
++#include "std.h"
++#include "arch.h"
++#include "types.h"
++#include "sys.h"
++#include "stdlib.h"
++#include "string.h"
++
++#ifndef EOF
++#define EOF (-1)
++#endif
++
++static __attribute__((unused))
++int getchar(void)
++{
++	unsigned char ch;
++
++	if (read(0, &ch, 1) <= 0)
++		return EOF;
++	return ch;
++}
++
++static __attribute__((unused))
++int putchar(int c)
++{
++	unsigned char ch = c;
++
++	if (write(1, &ch, 1) <= 0)
++		return EOF;
++	return ch;
++}
++
++static __attribute__((unused))
++int puts(const char *s)
++{
++	size_t len = strlen(s);
++	ssize_t ret;
++
++	while (len > 0) {
++		ret = write(1, s, len);
++		if (ret <= 0)
++			return EOF;
++		s += ret;
++		len -= ret;
 +	}
++	return putchar('\n');
++}
 +
-+	ret = sys_open(path, flags, mode);
- 
- 	if (ret < 0) {
- 		SET_ERRNO(-ret);
++#endif /* _NOLIBC_STDIO_H */
 -- 
 2.31.1.189.g2e36527f23
 
