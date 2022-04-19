@@ -2,225 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E68C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B925C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356452AbiDSSR4 (ORCPT
+        id S1356298AbiDSSSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        Tue, 19 Apr 2022 14:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238262AbiDSSQi (ORCPT
+        with ESMTP id S1356389AbiDSSQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:16:38 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4DE3E5CC;
+        Tue, 19 Apr 2022 14:16:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D787D3E5D3;
         Tue, 19 Apr 2022 11:12:42 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id k23so34593070ejd.3;
-        Tue, 19 Apr 2022 11:12:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=T8WZXYOCLzRkmpLF9jgUFJORJhr+qxoHhiRi9zpd0ak=;
-        b=KKC135UwYK8aFfg6KnPB2uae0AGzdqsE2qCEZfPPQkakgr3W9ZpC0gS7cAyPJCSZgu
-         iAfkP/W64GRzTOJAbKKbTWbUcfQg4azyTFIdj4PCl9eqHuIeCIdcXiT1u4Wu/CRNwqHC
-         8rglGa0q4v0eHNhHItJ5efTBi2aCewf9I4HhHG1S12AMZg06omh4WmT7kuQKBy0CUgZn
-         8lp3foWbTEMGMBert1cn+XCAaMlUAn4titeD1M6GCN6cdnq5ImqOJBuSCg6U/H1xxlTi
-         n3G2TCkSTLgrz+JMDOJBbW7tz1GL8rLePx22kNZiiQdN4Ahov2irzEFvoSRbULcuDydX
-         0s/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T8WZXYOCLzRkmpLF9jgUFJORJhr+qxoHhiRi9zpd0ak=;
-        b=aWt3hRR98EvQqcepwuJqZ+iS+lAC4dc8U4YXyFveV2YFpDufwgiCbJdrjNQ/vqzQKJ
-         KiA5OZZD6KTupV0aFL2qJgsMMbtMAdjPIuGJnzIU10jiYmEQfF0zsa19kXNnY9X69y0S
-         k5KWsUm4j5wH1Rk9Ok7/OLBzx5v77Mx/g3oCMxoDCJNxp318ix5DKmwPAPPCCxAviI1n
-         HWB5zY477/1Ktp66FYB/ze3SUjwcdPwHe63VbN8XcLkwRaRigIe6714P/YhGy63dfV3q
-         gxm2e+bkIPwefHEtvcEMubv1cjRSJyA7d9At4rLvcRdY4lvraY6O5wIgd6swPiarccSk
-         Dpdw==
-X-Gm-Message-State: AOAM532MzROdH7eMWD2BKqyEb7hhFpGyb5vZYMos6M3QF18k3zcoTm3K
-        JXv70yo5NdS7ySoTVGrsMqU=
-X-Google-Smtp-Source: ABdhPJySoL89++QqvT+oP9zBi5KoJWlUpMj4I7Bj+2B8C2b9jxLYAeVHWiypffHVq3yANRc52Hhwgw==
-X-Received: by 2002:a17:906:c1d6:b0:6d6:e0a3:bbc7 with SMTP id bw22-20020a170906c1d600b006d6e0a3bbc7mr14665249ejb.484.1650391961210;
-        Tue, 19 Apr 2022 11:12:41 -0700 (PDT)
-Received: from localhost.localdomain ([212.102.35.230])
-        by smtp.gmail.com with ESMTPSA id b20-20020a1709063f9400b006e12836e07fsm5930614ejj.154.2022.04.19.11.12.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 11:12:40 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Sam Shih <sam.shih@mediatek.com>, Stephen Boyd <sboyd@kernel.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] dt-bindings: arm: mediatek: infracfg: Convert to DT schema
-Date:   Tue, 19 Apr 2022 22:09:39 +0400
-Message-Id: <20220419180938.19397-4-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220419180938.19397-1-y.oudjana@protonmail.com>
-References: <20220419180938.19397-1-y.oudjana@protonmail.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 586CA60AC0;
+        Tue, 19 Apr 2022 18:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5511DC385A7;
+        Tue, 19 Apr 2022 18:12:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650391961;
+        bh=9Vd9VfQI/r2lx1eeK2qA6QkTXF4Wdp/LKCeS7dSW+2M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IsjY8cREktoVTVqzqVwHOG6BTqbPRlIb9O4VpBt0EsukFwAtrxhB3db+WhkzJjVWL
+         FikOa31FnDXFJfuKvdTItgrh8KBT94ccLLND0gQ1BpBLp5gwOQP/zkRdjB2JGUY6WN
+         Z1OU6xvB8PXLjv489Aj3TecZFW4NSGIQtesnpcWdAz+/zNJ0ISuK5KFNFRLRxE/hv5
+         hLt1pTw/wK/NsNWUbxcWnkYXtiUWdefW++klBA0JFt3rlA6mBHpFQTUzQCOFKVVo/g
+         nrLMI+a36owQkKJzlC6H+Z8O6xbAzqCSrF4lYPIHaX8ByZJUxuCDR4riNC1D1+mGzU
+         zzq2oVYm3zC4w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zqiang <qiang1.zhang@intel.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, peterz@infradead.org,
+        bigeasy@linutronix.de
+Subject: [PATCH AUTOSEL 5.17 34/34] irq_work: use kasan_record_aux_stack_noalloc() record callstack
+Date:   Tue, 19 Apr 2022 14:11:01 -0400
+Message-Id: <20220419181104.484667-34-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
+References: <20220419181104.484667-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+From: Zqiang <qiang1.zhang@intel.com>
 
-Convert infracfg bindings to DT schema format. Not all drivers
-currently implement resets, so #reset-cells is made a required
-property only for those that do. Using power-controller in the
-example node name makes #power-domain-cells required causing
-a dt_binding_check error. To solve this, the node is renamed to
-syscon@10001000.
+[ Upstream commit 25934fcfb93c4687ad32fd3d062bcf03457129d4 ]
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+On PREEMPT_RT kernel and KASAN is enabled.  the kasan_record_aux_stack()
+may call alloc_pages(), and the rt-spinlock will be acquired, if currently
+in atomic context, will trigger warning:
+
+  BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+  in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 239, name: bootlogd
+  Preemption disabled at:
+  [<ffffffffbab1a531>] rt_mutex_slowunlock+0xa1/0x4e0
+  CPU: 3 PID: 239 Comm: bootlogd Tainted: G        W 5.17.1-rt17-yocto-preempt-rt+ #105
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
+  Call Trace:
+     __might_resched.cold+0x13b/0x173
+     rt_spin_lock+0x5b/0xf0
+     get_page_from_freelist+0x20c/0x1610
+     __alloc_pages+0x25e/0x5e0
+     __stack_depot_save+0x3c0/0x4a0
+     kasan_save_stack+0x3a/0x50
+     __kasan_record_aux_stack+0xb6/0xc0
+     kasan_record_aux_stack+0xe/0x10
+     irq_work_queue_on+0x6a/0x1c0
+     pull_rt_task+0x631/0x6b0
+     do_balance_callbacks+0x56/0x80
+     __balance_callbacks+0x63/0x90
+     rt_mutex_setprio+0x349/0x880
+     rt_mutex_slowunlock+0x22a/0x4e0
+     rt_spin_unlock+0x49/0x80
+     uart_write+0x186/0x2b0
+     do_output_char+0x2e9/0x3a0
+     n_tty_write+0x306/0x800
+     file_tty_write.isra.0+0x2af/0x450
+     tty_write+0x22/0x30
+     new_sync_write+0x27c/0x3a0
+     vfs_write+0x3f7/0x5d0
+     ksys_write+0xd9/0x180
+     __x64_sys_write+0x43/0x50
+     do_syscall_64+0x44/0x90
+     entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fix it by using kasan_record_aux_stack_noalloc() to avoid the call to
+alloc_pages().
+
+Link: https://lkml.kernel.org/r/20220402142555.2699582-1-qiang1.zhang@intel.com
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../arm/mediatek/mediatek,infracfg.txt        | 42 ----------
- .../arm/mediatek/mediatek,infracfg.yaml       | 79 +++++++++++++++++++
- 2 files changed, 79 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+ kernel/irq_work.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
-deleted file mode 100644
-index f66bd720571d..000000000000
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--Mediatek infracfg controller
--============================
--
--The Mediatek infracfg controller provides various clocks and reset
--outputs to the system.
--
--Required Properties:
--
--- compatible: Should be one of:
--	- "mediatek,mt2701-infracfg", "syscon"
--	- "mediatek,mt2712-infracfg", "syscon"
--	- "mediatek,mt6765-infracfg", "syscon"
--	- "mediatek,mt6779-infracfg_ao", "syscon"
--	- "mediatek,mt6797-infracfg", "syscon"
--	- "mediatek,mt7622-infracfg", "syscon"
--	- "mediatek,mt7623-infracfg", "mediatek,mt2701-infracfg", "syscon"
--	- "mediatek,mt7629-infracfg", "syscon"
--	- "mediatek,mt7986-infracfg", "syscon"
--	- "mediatek,mt8135-infracfg", "syscon"
--	- "mediatek,mt8167-infracfg", "syscon"
--	- "mediatek,mt8173-infracfg", "syscon"
--	- "mediatek,mt8183-infracfg", "syscon"
--	- "mediatek,mt8516-infracfg", "syscon"
--- #clock-cells: Must be 1
--- #reset-cells: Must be 1
--
--The infracfg controller uses the common clk binding from
--Documentation/devicetree/bindings/clock/clock-bindings.txt
--The available clocks are defined in dt-bindings/clock/mt*-clk.h.
--Also it uses the common reset controller binding from
--Documentation/devicetree/bindings/reset/reset.txt.
--The available reset outputs are defined in
--dt-bindings/reset/mt*-resets.h
--
--Example:
--
--infracfg: power-controller@10001000 {
--	compatible = "mediatek,mt8173-infracfg", "syscon";
--	reg = <0 0x10001000 0 0x1000>;
--	#clock-cells = <1>;
--	#reset-cells = <1>;
--};
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-new file mode 100644
-index 000000000000..4f43fe9f103e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,infracfg.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: MediaTek Infrastructure System Configuration Controller
-+
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+
-+description:
-+  The Mediatek infracfg controller provides various clocks and reset outputs
-+  to the system.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-infracfg
-+              - mediatek,mt2712-infracfg
-+              - mediatek,mt6765-infracfg
-+              - mediatek,mt6779-infracfg_ao
-+              - mediatek,mt6797-infracfg
-+              - mediatek,mt7622-infracfg
-+              - mediatek,mt7629-infracfg
-+              - mediatek,mt7986-infracfg
-+              - mediatek,mt8135-infracfg
-+              - mediatek,mt8167-infracfg
-+              - mediatek,mt8173-infracfg
-+              - mediatek,mt8183-infracfg
-+              - mediatek,mt8516-infracfg
-+          - const: syscon
-+      - items:
-+          - const: mediatek,mt7623-infracfg
-+          - const: mediatek,mt2701-infracfg
-+          - const: syscon
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 1
-+
-+  '#reset-cells':
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#clock-cells'
-+
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - mediatek,mt2701-infracfg
-+          - mediatek,mt2712-infracfg
-+          - mediatek,mt7622-infracfg
-+          - mediatek,mt7986-infracfg
-+          - mediatek,mt8135-infracfg
-+          - mediatek,mt8173-infracfg
-+          - mediatek,mt8183-infracfg
-+then:
-+  required:
-+    - '#reset-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    infracfg: syscon@10001000 {
-+        compatible = "mediatek,mt8173-infracfg", "syscon";
-+        reg = <0x10001000 0x1000>;
-+        #clock-cells = <1>;
-+        #reset-cells = <1>;
-+    };
+diff --git a/kernel/irq_work.c b/kernel/irq_work.c
+index f7df715ec28e..7afa40fe5cc4 100644
+--- a/kernel/irq_work.c
++++ b/kernel/irq_work.c
+@@ -137,7 +137,7 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
+ 	if (!irq_work_claim(work))
+ 		return false;
+ 
+-	kasan_record_aux_stack(work);
++	kasan_record_aux_stack_noalloc(work);
+ 
+ 	preempt_disable();
+ 	if (cpu != smp_processor_id()) {
 -- 
-2.35.3
+2.35.1
 
