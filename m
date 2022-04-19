@@ -2,161 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2959AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5420DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 19:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355981AbiDSTqG (ORCPT
+        id S1356049AbiDSTrn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        Tue, 19 Apr 2022 15:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243888AbiDSTqA (ORCPT
+        with ESMTP id S1356257AbiDSTrj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 15:46:00 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE6B41603
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:43:16 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id i27so35013060ejd.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:43:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=go6T1fc0TY6wvIhs3nqLqYh80BHNHvnkKYmeIA/Ug5g=;
-        b=FnR/UqpbQcZweANaWULrc5vOPvEyZDiktgqeeWVBZHnhccMdR712M18FDpAcMnkzc9
-         jlIzR3B1e/LNOoK5HMJlQlmrOl3Z/jkhxV/vDRG77/gB3QgeFkd64O2w8FuOg6c11TNG
-         pW2tLHdyOLcF6AJxmmnySnf0KTu8HES9wkSp1p6MFrgy4ap4GlnqcvMDc9ejHtObHWQG
-         NH3Uut2wV5oTdC3mkmcQUxSW/XATXf1hONToXNyoaZQeLbX7b6UTQZqbUttPvFrD2+bC
-         6smkt4/zN1pAbos6YHgDf2ICLsvX2KEwNSZFcaodRGabXBG7f889U53Xu3G6OcHux3I+
-         cVTA==
+        Tue, 19 Apr 2022 15:47:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54D34558A
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:44:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650397495;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5vCwuSK/712FB8g0Zizwg2pJoMPCopbwmLWH0e6BsO4=;
+        b=cmHsWLuZ0aPURHI7DNAq9XRA13+1gCEM7qz9HCLl73rejjcMbCnr6mWlpAuu9KbEkP0aB3
+        zMxQFVV+6Y+veAHDVrK1SeI6pXQQBU7qlprFk8mnOkf/y+VHA1Dt2Aa0D3605JRlGwED2t
+        SfxA06clc4sIM0J4qrcKw4y+hJ4JnqA=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-418-Wn9R-qWiPMq4MnPHbBDOcQ-1; Tue, 19 Apr 2022 15:44:54 -0400
+X-MC-Unique: Wn9R-qWiPMq4MnPHbBDOcQ-1
+Received: by mail-il1-f198.google.com with SMTP id j4-20020a92c204000000b002caad37af3fso10135079ilo.22
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:44:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=go6T1fc0TY6wvIhs3nqLqYh80BHNHvnkKYmeIA/Ug5g=;
-        b=B+ZDuckeecLtnXFnFherQ8CVkRH+SpcUmlYL96ytIyRTC/XGSIShbWDE1sXoTGKyKl
-         CHDZ6715WwjFzJYT/ccPXOiYQLsgcL6TbDv8xEKIRVzIavyXMj6nawpwPYkmb/+T2fFV
-         Xe2MZBTsMe8UnbKHWB7SxUNsHUBDReHk6nR4L36CAvQ18JXgjFQ3Or9IreRCk/2DoCfr
-         Bw0YeE3A0Vtp3gD+GZxlMESXIgRG0RL2dMlE50rNLAEqjj2hDteVon2oN6exBDbRVVLv
-         sh9I5VbpfKtNl/GdLpWsJny621I28Sc9WMcHfaghsg35cRBVoqahRRghAhU4KccARmMU
-         DVBw==
-X-Gm-Message-State: AOAM530BUZkh+mx6jbHn0tEtv28kvrTe1Bn9TPx8XBivMsZuKDxAz7Rw
-        Q5OL2zXJ86ASboO5HoVa1t8P6Q==
-X-Google-Smtp-Source: ABdhPJxN+zqmAT7T1BJC0xIRHgTKTkUJwlFx08wQXWb7+EHLMa/kEqxDmWxHQi8JY5CwtSTfjM3hCg==
-X-Received: by 2002:a17:906:fa8f:b0:6e4:de0d:45f with SMTP id lt15-20020a170906fa8f00b006e4de0d045fmr14839252ejb.235.1650397395281;
-        Tue, 19 Apr 2022 12:43:15 -0700 (PDT)
-Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id f5-20020a1709067f8500b006da68bfdfc7sm5999584ejr.12.2022.04.19.12.43.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 12:43:14 -0700 (PDT)
-Message-ID: <fce0337a-0c71-a040-0a01-f20b55eb568b@linaro.org>
-Date:   Tue, 19 Apr 2022 21:43:13 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5vCwuSK/712FB8g0Zizwg2pJoMPCopbwmLWH0e6BsO4=;
+        b=O5ZjFnPABas3bTOQvmNJHe3sqH69R2M3t1NeLT9sAJZIAnVkwBg0SXVw6XTgsOKaiL
+         q134Muq6uCzHCbdMC6wRWkFNI+saqOk0axo1z9HNVwtx0zxqFaHN7FkPEyyxYDQIOvTQ
+         HqE6HifAbMVUl5bH+iExjoZVCK1CrVDh6w2OU2WU/EghwopqZJebNA9b8JUVSW3WOt4m
+         5h7KgB/R5vS41utHa+MoEJeFQRGu862znsLEWtzn2qCL6H4uuIdn2w1GQZ98xFK+kHC2
+         C2YNUykpXU0kCrfRNn+AcHCJnrGMSxM7KmQBlrFPMw3tbxoWDSzP4TefcNAXmPUxuZ+T
+         dlNw==
+X-Gm-Message-State: AOAM532fhCFydVuGxFj/Cm/36cqjIEqzNyYo91RKaLBW+aE8JJkUnobI
+        V+vdT0IEsZ3Hzq0EWqHoVh7CLw52sJLhSm2+/ASCP8Nl4o5bSRsQSxAhTVs1dk61OqE/X6K3bqf
+        nHkFYfzvL9KSve3ZJU1KtkCnI
+X-Received: by 2002:a5d:85d2:0:b0:5ed:a17c:a25c with SMTP id e18-20020a5d85d2000000b005eda17ca25cmr7435269ios.85.1650397493141;
+        Tue, 19 Apr 2022 12:44:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzBLdhTL+ZNpa9L5wyZ5vSYwDFzzRA9HFCZfgMNAwtPqtegu+snbmrfU3mWAijR65esmn175w==
+X-Received: by 2002:a5d:85d2:0:b0:5ed:a17c:a25c with SMTP id e18-20020a5d85d2000000b005eda17ca25cmr7435248ios.85.1650397492575;
+        Tue, 19 Apr 2022 12:44:52 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id q13-20020a056e020c2d00b002caa365b43bsm9585490ilg.76.2022.04.19.12.44.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 12:44:52 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 15:44:50 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Alistair Popple <apopple@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: Re: [PATCH v8 01/23] mm: Introduce PTE_MARKER swap entry
+Message-ID: <Yl8RMjgIoW0r2TFM@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405014646.13522-2-peterx@redhat.com>
+ <87o80xjwvd.fsf@nvdebian.thelocal>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Aw: Re: [RFC/RFT 1/6] dt-bindings: phy: rockchip: add pcie3 phy
-Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org
-References: <20220416135458.104048-1-linux@fw-web.de>
- <20220416135458.104048-2-linux@fw-web.de>
- <38e60bb2-123b-09cf-d6ef-3a07c6984108@linaro.org>
- <trinity-597cf8a3-2ad4-41e6-b3c9-b949f8610533-1650390552136@3c-app-gmx-bap70>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <trinity-597cf8a3-2ad4-41e6-b3c9-b949f8610533-1650390552136@3c-app-gmx-bap70>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87o80xjwvd.fsf@nvdebian.thelocal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/04/2022 19:49, Frank Wunderlich wrote:
->> The list should be strictly ordered (defined), so:
->>   items:
->>     - const: ...
->>     - const: ...
->>     - const: ...
->>   minItems: 1
->>
->> However the question is - why the clocks have different amount? Is it
->> per different SoC implementation?
-> 
-> i only know the rk3568, which needs the clocks defined here, don't know about rk3588 yet.
-> in rk3568 TPM i have the pcie-part seems missing (at least the specific register definition), so i had used the driver as i got it from the downstream kernel.
-> 
-> not yet looked if i find a rk3588 TPM and if this part is there as i cannot test it (one of the reasons this is a rfc/rft).
+On Tue, Apr 19, 2022 at 06:25:31PM +1000, Alistair Popple wrote:
+> Hi Peter,
 
-You can skip RK3588 compatible or define it this strictly also for that
-chip.
+Hi, Alistair,
 
 > 
->>> +
->>> +  "#phy-cells":
->>> +    const: 0
->>> +
->>> +  resets:
->>> +    maxItems: 1
->>> +
->>> +  reset-names:
->>> +    const: phy
->>> +
->>> +  rockchip,phy-grf:
->>> +    $ref: /schemas/types.yaml#/definitions/phandle
->>> +    description: phandle to the syscon managing the phy "general register files"
->>> +
->>> +  rockchip,pipe-grf:
->>> +    $ref: /schemas/types.yaml#/definitions/phandle
->>> +    description: phandle to the syscon managing the pipe "general register files"
->>> +
->>> +  rockchip,pcie30-phymode:
->>> +    $ref: '/schemas/types.yaml#/definitions/uint32'
->>> +    description: |
->>> +      use PHY_MODE_PCIE_AGGREGATION if not defined
->>
->> I don't understand the description. Do you mean here a case when the
->> variable is missing?
-> 
-> yes, if the property is not set, then value is PHY_MODE_PCIE_AGGREGATION = 4
+> Is there something I have missed that means PTE markers can only be used with
+> file-backed memory? Obviously that's all you care about for this patch series,
+> but if we needed to mark some anonymous PTE for special processing is there
+> anything that would prevent us using a PTE marker? Specifically I was thinking
+> about it in relation to this series:
+> <https://lore.kernel.org/linux-mm/87pmldjxiq.fsf@nvdebian.thelocal/>
 
-Then just use "default: 4"
+It's not necessarily to be restricted to file-backed.  All the file-backed
+check here in this series was just for safety purpose and nothing else.
 
-> 
->>> +    minimum: 0x0
->>> +    maximum: 0x4
->>
->> Please explain these values. Register values should not be part of
->> bindings, but instead some logical behavior of hardware or its logic.
-> 
-> it's a bitmask, so maybe
-> 
->     description: |
->       bit0: bifurcation for port 0
->       bit1: bifurcation for port 1
->       bit2: aggregation
+I think it's a very good example of that swap-read-error case that pte
+marker does sound like a great fit, but let's see whether people would
+still like to stick with hwpoison which makes some sense too.  Then let's
+keep the discussion in that thread.
 
-That's good. I got impression you have a header with these values. If
-yes - mention it here.
+Thanks for the pointer!
 
->       use PHY_MODE_PCIE_AGGREGATION (4) as default
+-- 
+Peter Xu
 
-Just use default as I wrote above.
-
-Best regards,
-Krzysztof
