@@ -2,183 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB6DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE980C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352774AbiDSNtG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
+        id S233452AbiDSNtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353132AbiDSNr7 (ORCPT
+        with ESMTP id S1352818AbiDSNrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:47:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2D139829;
-        Tue, 19 Apr 2022 06:42:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 452BDB81984;
-        Tue, 19 Apr 2022 13:42:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E3AC385B2;
-        Tue, 19 Apr 2022 13:42:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650375736;
-        bh=ICLjpcLGmyRuFirMful6PPWmOkZPtiGZzfFqAVH/t+Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hvhVwA0NzLazBIGSe0oT0p3Um3CHpAVWQS3Ak93wRIZbI7fSuj4m8N5nOBDcUeqPR
-         gg6oecruNrCF+lKyJ22gDsDgeD4f58TkcrVcOJhpEfQKq0l9fXJUZDysrlPaAYrYdy
-         HM2+bS3l9baDro+/uv1y7gBVl8ayYnO98JhJ4qhRzGc7g0eh0bUu4K1jPLqmuVD72I
-         Tta1ve3oS40cpTyjsSDol1Hce510U2JEw+ghqj9X7GZYYmv/pk7FjMOMYyKc88H2iq
-         raBSAsmMH65yZss3CrvJXSegF1I1GYazdtvupzXRVR7szoVBxpQBB73wWmN7W1YYGv
-         JDzzUYpxD+HAw==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
-        jmkrzyszt@gmail.com
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH 37/41] [MERGED] video: fbdev: omap: Make it CCF clk API compatible
-Date:   Tue, 19 Apr 2022 15:37:19 +0200
-Message-Id: <20220419133723.1394715-38-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
-References: <20220419133723.1394715-1-arnd@kernel.org>
+        Tue, 19 Apr 2022 09:47:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E251C393F8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650375712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4adwg8hqyIITyJy5pTSFAx9A6BPYS26atLWx7A9LjPk=;
+        b=HAfNlYPBJVU1n11d39HCAlDOdOwoQY2cFUuTOPPHjrBONyn2++PVLrGizvV4CL7yeBUcYM
+        2LPcWyirKwnY3VnqVO4rfgz3YamsXJ3UTGyCCWbiEwqYnL5AvqEcVYA58KyRR+2gGRTs19
+        5+ry1N/5B7KsYePsWizphCWJB1vdlpY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-278-flcKIT3CPwmra1Qpkovq4g-1; Tue, 19 Apr 2022 09:41:51 -0400
+X-MC-Unique: flcKIT3CPwmra1Qpkovq4g-1
+Received: by mail-wm1-f69.google.com with SMTP id bh11-20020a05600c3d0b00b003928fe7ba07so1241851wmb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:41:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=4adwg8hqyIITyJy5pTSFAx9A6BPYS26atLWx7A9LjPk=;
+        b=4glhh5R21YPxxQR3PoR04QfBhHG/EONXJwLDWnHVsUaCmWxkjboRLnLHlDsWDqHpRD
+         sK5lNPw25BHg/f92wrgZEhULL9bBTi3+JBah7s+55iIUV4FTmeo+WnCm/WqAWzrsV16b
+         bMV5AsdGwaF5O4xYMjQC8y3gcSRK2DGM6lE2BuLgh+de1ehCxBZ+qs/0wP32GyD+Rg+V
+         N4wc7ZxBro3bum/96O15WgipIkWvnSoE14lKkTu0snI51cIU+h2szNoI8rQodJdIQBbV
+         lgpiolRNZl2FBoxCQX/DxO9xdaTStbiyag0IvUWFI08UXVv1ro68bxI4kYHtgHrzK/PP
+         Rp5g==
+X-Gm-Message-State: AOAM530AY6ZQaU7LNnspz8O34hG29W8wCGYGzB4KawAQWj60qTrwYcOK
+        0AY0rZ76HG3hl71ZpnC5qniPNAe6xCIQ2RScrN8DV8rddDX6I8aTunljCGsetJOOU+V3lj1qXjV
+        OJcTXbTFLjyR07rx510uoLRo0
+X-Received: by 2002:a05:600c:1c1f:b0:38e:c425:5b1a with SMTP id j31-20020a05600c1c1f00b0038ec4255b1amr16136726wms.69.1650375706941;
+        Tue, 19 Apr 2022 06:41:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyJvuZb+R54rr0s1wGva1v/Xk2FzPsygVQ3HcW3SsZOhzm7AK+wn4DeO9p0yN2bc4xhS4J72A==
+X-Received: by 2002:a05:600c:1c1f:b0:38e:c425:5b1a with SMTP id j31-20020a05600c1c1f00b0038ec4255b1amr16136712wms.69.1650375706746;
+        Tue, 19 Apr 2022 06:41:46 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
+        by smtp.gmail.com with ESMTPSA id i27-20020a1c541b000000b003928e866d32sm9069716wmb.37.2022.04.19.06.41.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 06:41:46 -0700 (PDT)
+Message-ID: <f6335341633b8af9bcbc1d410b2e6ae1b864c4e3.camel@redhat.com>
+Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
+ errors
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
+Cc:     syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
+        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com,
+        arnd@arndb.de, dan.carpenter@oracle.com
+Date:   Tue, 19 Apr 2022 15:41:45 +0200
+In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
+References: <20220416074817.571160-1-k.kahurani@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+On Sat, 2022-04-16 at 10:48 +0300, David Kahurani wrote:
+> Reads that are lesser than the requested size lead to uninit-value bugs.
+> In this particular case a variable which was supposed to be initialized
+> after a read is left uninitialized after a partial read.
+> 
+> Qualify such reads as errors and handle them correctly and while at it
+> convert the reader functions to return zero on success for easier error
+> handling.
+> 
+> Fixes: e2ca90c276e1 ("ax88179_178a: ASIX AX88179_178A USB 3.0/2.0 to
+> gigabit ethernet adapter driver")
 
-OMAP1 LCDC drivers now omit clk_prepare/unprepare() steps, not supported
-by OMAP1 custom implementation of clock API.  However, non-CCF stubs of
-those functions exist for use on such platforms until converted to CCF.
+In the next version, please additionally fix the above tag: it must use
+a single line, even if that means exceeding the 72 chars length limit.
 
-Update the drivers to be compatible with CCF implementation of clock API.
+Thanks!
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/video/fbdev/omap/hwa742.c | 6 +++---
- drivers/video/fbdev/omap/lcdc.c   | 6 +++---
- drivers/video/fbdev/omap/sossi.c  | 5 +++--
- 3 files changed, 9 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/video/fbdev/omap/hwa742.c b/drivers/video/fbdev/omap/hwa742.c
-index b191bef22d98..9d9fe5c3a7a1 100644
---- a/drivers/video/fbdev/omap/hwa742.c
-+++ b/drivers/video/fbdev/omap/hwa742.c
-@@ -964,7 +964,7 @@ static int hwa742_init(struct omapfb_device *fbdev, int ext_mode,
- 	if ((r = calc_extif_timings(ext_clk, &extif_mem_div)) < 0)
- 		goto err3;
- 	hwa742.extif->set_timings(&hwa742.reg_timings);
--	clk_enable(hwa742.sys_ck);
-+	clk_prepare_enable(hwa742.sys_ck);
- 
- 	calc_hwa742_clk_rates(ext_clk, &sys_clk, &pix_clk);
- 	if ((r = calc_extif_timings(sys_clk, &extif_mem_div)) < 0)
-@@ -1023,7 +1023,7 @@ static int hwa742_init(struct omapfb_device *fbdev, int ext_mode,
- 
- 	return 0;
- err4:
--	clk_disable(hwa742.sys_ck);
-+	clk_disable_unprepare(hwa742.sys_ck);
- err3:
- 	hwa742.extif->cleanup();
- err2:
-@@ -1037,7 +1037,7 @@ static void hwa742_cleanup(void)
- 	hwa742_set_update_mode(OMAPFB_UPDATE_DISABLED);
- 	hwa742.extif->cleanup();
- 	hwa742.int_ctrl->cleanup();
--	clk_disable(hwa742.sys_ck);
-+	clk_disable_unprepare(hwa742.sys_ck);
- }
- 
- struct lcd_ctrl hwa742_ctrl = {
-diff --git a/drivers/video/fbdev/omap/lcdc.c b/drivers/video/fbdev/omap/lcdc.c
-index 4c9091bd936d..e7ce783e5215 100644
---- a/drivers/video/fbdev/omap/lcdc.c
-+++ b/drivers/video/fbdev/omap/lcdc.c
-@@ -713,7 +713,7 @@ static int omap_lcdc_init(struct omapfb_device *fbdev, int ext_mode,
- 		dev_err(fbdev->dev, "failed to adjust LCD rate\n");
- 		goto fail1;
- 	}
--	clk_enable(lcdc.lcd_ck);
-+	clk_prepare_enable(lcdc.lcd_ck);
- 
- 	r = request_irq(fbdev->int_irq, lcdc_irq_handler, 0, MODULE_NAME, fbdev);
- 	if (r) {
-@@ -748,7 +748,7 @@ static int omap_lcdc_init(struct omapfb_device *fbdev, int ext_mode,
- fail3:
- 	free_irq(fbdev->int_irq, lcdc.fbdev);
- fail2:
--	clk_disable(lcdc.lcd_ck);
-+	clk_disable_unprepare(lcdc.lcd_ck);
- fail1:
- 	clk_put(lcdc.lcd_ck);
- fail0:
-@@ -762,7 +762,7 @@ static void omap_lcdc_cleanup(void)
- 	free_fbmem();
- 	omap_free_lcd_dma();
- 	free_irq(lcdc.fbdev->int_irq, lcdc.fbdev);
--	clk_disable(lcdc.lcd_ck);
-+	clk_disable_unprepare(lcdc.lcd_ck);
- 	clk_put(lcdc.lcd_ck);
- }
- 
-diff --git a/drivers/video/fbdev/omap/sossi.c b/drivers/video/fbdev/omap/sossi.c
-index 6b99d89fbe6e..c90eb8ca58af 100644
---- a/drivers/video/fbdev/omap/sossi.c
-+++ b/drivers/video/fbdev/omap/sossi.c
-@@ -600,7 +600,7 @@ static int sossi_init(struct omapfb_device *fbdev)
- 	l &= ~CONF_SOSSI_RESET_R;
- 	omap_writel(l, MOD_CONF_CTRL_1);
- 
--	clk_enable(sossi.fck);
-+	clk_prepare_enable(sossi.fck);
- 	l = omap_readl(ARM_IDLECT2);
- 	l &= ~(1 << 8);			/* DMACK_REQ */
- 	omap_writel(l, ARM_IDLECT2);
-@@ -651,7 +651,7 @@ static int sossi_init(struct omapfb_device *fbdev)
- 	return 0;
- 
- err:
--	clk_disable(sossi.fck);
-+	clk_disable_unprepare(sossi.fck);
- 	clk_put(sossi.fck);
- 	return r;
- }
-@@ -659,6 +659,7 @@ static int sossi_init(struct omapfb_device *fbdev)
- static void sossi_cleanup(void)
- {
- 	omap_lcdc_free_dma_callback();
-+	clk_unprepare(sossi.fck);
- 	clk_put(sossi.fck);
- 	iounmap(sossi.base);
- }
--- 
-2.29.2
+Paolo
 
