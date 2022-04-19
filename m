@@ -2,169 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C928BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56545C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 17:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356065AbiDSRMc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 13:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        id S231651AbiDSROc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 13:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355636AbiDSRKC (ORCPT
+        with ESMTP id S244868AbiDSRNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 13:10:02 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC9121B9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 10:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650388039; x=1681924039;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5sapg/ecq+xu8Oubfcjw4YPepAu8QZrx7Lb+rmPQxjM=;
-  b=JPqlf9jqlpc9DFuWyF9l+X+b7YtxyeDonYLSrLMmdccnOGZLyr5jXafg
-   SjZRHJDBFhxpQwvdBKg6isxujK9YP4uZNAK9EQmWsGwJxi4Ze8owtG7Ap
-   AaaiuNAD0idKXa/b2T8Q3G985SIyXI5GdTlVef4VnwOY/D3wHNe71na+c
-   x/MLWm7e7khHet7WoHMbnFC8CBTqpaGMcm+4sRI8JQgl+NpPYC9Q+rVVH
-   HSoD9EUy2q13lFYQY/VmMHVXdtbT6czTwL367RPE0P6n9Juf2rXqA3SB6
-   FnrFDdtUu2Nb8LmX/Fe3UKcH5ZJ1a8p4jyop9KLraguFh39mmR0bqMchi
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263991916"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263991916"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:19 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="529397323"
-Received: from ajacosta-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.11.4])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:07:18 -0700
-From:   ira.weiny@intel.com
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V10 33/44] kmap: Make kmap work for devmap protected pages
-Date:   Tue, 19 Apr 2022 10:06:38 -0700
-Message-Id: <20220419170649.1022246-34-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220419170649.1022246-1-ira.weiny@intel.com>
-References: <20220419170649.1022246-1-ira.weiny@intel.com>
+        Tue, 19 Apr 2022 13:13:43 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080C33465F;
+        Tue, 19 Apr 2022 10:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1650388258; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+jHHqMT3ZNJyXA6M3ybRSFsTHCa1a0GBz5I5GGvIb6E=;
+        b=dx2HRl6oBoNgzvk39RvHvRVwUZSRIH5DOFtd4lqBrWOJ0j5jkENLlVzLcxN7Xx3y2Sk6Nf
+        cTEn5cHY9n4ZoqGGx0nZYRRsUV39x04Iur3rItBvLzcWsst7tZ2YWQYbCFTwoQL0bI2TQC
+        JbhHjo3PXhenPiPPYkhDlIBQLmF5skg=
+Date:   Tue, 19 Apr 2022 18:10:47 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 1/3] SPI: Ingenic: Add support for use GPIO as chip select
+ line.
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Zhou Yanjie <zhouyanjie@wanyeetech.com>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-spi@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, contact@artur-rojek.eu,
+        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
+        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
+        zhenwenjin@gmail.com, reimu@sudomaker.com
+Message-Id: <ZPJLAR.DZVBSGKZUPVI3@crapouillou.net>
+In-Reply-To: <Yl7quUXmEEPHfTfC@sirena.org.uk>
+References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
+        <1650032528-118220-2-git-send-email-zhouyanjie@wanyeetech.com>
+        <61ZDAR.SD20HFTWMIBH3@crapouillou.net>
+        <d7926a1d-c5e3-6519-6a52-1bd3ca3cf773@wanyeetech.com>
+        <A5YFAR.5U5RNX82OXJY1@crapouillou.net> <Yl7quUXmEEPHfTfC@sirena.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+Hi,
 
-Today, kmap_{local_page,atomic}() handle granting access to HIGHMEM
-pages without the caller needing to know if the page is HIGHMEM, or not.
-Use that existing infrastructure to grant access to PGMAP (PKS)
-protected pages.
+Le mar., avril 19 2022 at 18:00:41 +0100, Mark Brown=20
+<broonie@kernel.org> a =C3=A9crit :
+> On Sat, Apr 16, 2022 at 05:36:46PM +0100, Paul Cercueil wrote:
+>>  Le sam., avril 16 2022 at 19:55:13 +0800, Zhou Yanjie
+>>  > On 2022/4/15 =E4=B8=8B=E5=8D=8811:00, Paul Cercueil wrote:
+>=20
+>>  > > > -    ctlr->num_chipselect =3D 2;
+>>  > > > +    ctlr->use_gpio_descriptors =3D true;
+>=20
+>>  > > I wonder if this should be set conditionally instead. Maybe set=20
+>> it
+>>  > > to =7F"true" if the "num-cs" property exists?
+>=20
+>>  > I'm not too sure, but it seems some other drivers like=20
+>> "spi-sun6i.c",
+>>  > "spi-stm32.c", "spi-s3c64xx.c", "spi-pic32.c", etc. set it
+>>  > unconditionally.
+>=20
+>>  Ok, maybe Mark can enlighten us here.
+>=20
+> use_gpio_descriptions is just selecting which version of the GPIO APIs
+> we should use if we're handling GPIOs rather than if we should handle
+> them.  We've got one last driver using the numerical GPIO APIs, once
+> that one is converted we should just be able to drop the flag since
+> everything will be using descriptors.
 
-kmap_{local_page,atomic}() are both thread local mappings so they work
-well with the thread specific protections available within PKS.
+Thank you Mark.
 
-On the other hand, the kmap() call is not changed.  kmap() allows for a
-mapping to be shared with other threads, while PKS protections operate
-on a thread local basis.  For this reason, and the desire to move away
-from mappings like this, kmap() is left unsupported.
+Cheers,
+-Paul
 
-This behavior is safe because neither of the 2 current DAX-capable
-filesystems (ext4 and xfs) perform such global mappings.  And known
-device drivers that would handle devmap pages are not using kmap().  Any
-future filesystems that gain DAX support, or device drivers wanting to
-support devmap protected pages will need to use kmap_local_page().
-
-Note: HIGHMEM support is mutually exclusive with PGMAP protection.  The
-rationale is mainly to reduce complexity, but also because direct-map
-exposure is already mitigated by default on HIGHMEM systems because
-by definition HIGHMEM systems do not have large capacities of memory
-in the direct map.
-
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: Dave Hansen <dave.hansen@intel.com>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-
----
-Changes for V10
-	Include memremap.h because of upstream rework
-
-Changes for V9
-	From Dan Williams
-		Update commit message
-			Clarify why kmap is not 'compatible' with PKS
-			Explain the HIGHMEM system exclusion more
-	Remove pgmap_protection_flag_invalid() from kmap
-	s/pks_mk*/pks_set*/
-
-Changes for V8
-	Reword commit message
----
- include/linux/highmem-internal.h | 6 ++++++
- mm/Kconfig                       | 1 +
- 2 files changed, 7 insertions(+)
-
-diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
-index a77be5630209..32ed07c2994b 100644
---- a/include/linux/highmem-internal.h
-+++ b/include/linux/highmem-internal.h
-@@ -151,6 +151,8 @@ static inline void totalhigh_pages_add(long count)
- 
- #else /* CONFIG_HIGHMEM */
- 
-+#include <linux/memremap.h>
-+
- static inline struct page *kmap_to_page(void *addr)
- {
- 	return virt_to_page(addr);
-@@ -174,6 +176,7 @@ static inline void kunmap(struct page *page)
- 
- static inline void *kmap_local_page(struct page *page)
- {
-+	pgmap_set_readwrite(page);
- 	return page_address(page);
- }
- 
-@@ -197,6 +200,7 @@ static inline void __kunmap_local(void *addr)
- #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
- 	kunmap_flush_on_unmap(addr);
- #endif
-+	pgmap_set_noaccess(kmap_to_page(addr));
- }
- 
- static inline void *kmap_atomic(struct page *page)
-@@ -206,6 +210,7 @@ static inline void *kmap_atomic(struct page *page)
- 	else
- 		preempt_disable();
- 	pagefault_disable();
-+	pgmap_set_readwrite(page);
- 	return page_address(page);
- }
- 
-@@ -224,6 +229,7 @@ static inline void __kunmap_atomic(void *addr)
- #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
- 	kunmap_flush_on_unmap(addr);
- #endif
-+	pgmap_set_noaccess(kmap_to_page(addr));
- 	pagefault_enable();
- 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
- 		migrate_enable();
-diff --git a/mm/Kconfig b/mm/Kconfig
-index fe1752e6e76c..616baee3f62d 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -800,6 +800,7 @@ config ZONE_DEVICE
- config DEVMAP_ACCESS_PROTECTION
- 	bool "Access protection for memremap_pages()"
- 	depends on NVDIMM_PFN
-+	depends on !HIGHMEM
- 	depends on ARCH_HAS_SUPERVISOR_PKEYS
- 	select ARCH_ENABLE_PKS_CONSUMER
- 	default n
--- 
-2.35.1
 
