@@ -2,120 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE39C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0836C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352093AbiDSMQ3 (ORCPT
+        id S1352049AbiDSMRt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
+        Tue, 19 Apr 2022 08:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352199AbiDSMP4 (ORCPT
+        with ESMTP id S241035AbiDSMRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:15:56 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB6B20BFF;
-        Tue, 19 Apr 2022 05:12:53 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-e5bdd14b59so7703532fac.11;
-        Tue, 19 Apr 2022 05:12:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=j1rFkwOvIXBO+3tCwlNTqd0pjl7npLIdFzpaL7V+7n0=;
-        b=1/WEyvX7aOy9r0Qwh/1wevCsdA3PXUh9kizXIkiMq4gWQPuP8kj2YZI/NeFax19TYj
-         hUbrjfIeBUxBmWtEbowlqCrEcXbp+v8NeL/AbOk5XCQNxasAFsDzoM26jhjnwUIeOu4D
-         13aFHWWK/exuOwKmgvMixSgNumHTaj1JHYiqmpXE+XpfqB4F6CJkzPPVstAWTKgvZ6Z2
-         ua0DU95YKw4aSaZKJMd+Yz5MXXhP2lIINHdit1s9pcJ8VUEEY8Ag6JKplSxT4MucMqMi
-         ZTW+19dTLX7t3ltot3hF2pCaBS4NC98+evKzO7rzxXD7aBjNCF6H2o4G0YUPtfWo8XOo
-         JfTg==
-X-Gm-Message-State: AOAM531DhQRcroqGrjQ3lU54fJE35e7sBXAM0+4+h/fHn61HssmTjOfC
-        rsfSnFzhcvn5dJU8SZaZTQ==
-X-Google-Smtp-Source: ABdhPJw8+O8iy7OvXQDZqJ9fQ+HdQxBCCcLs+j8+1ctB3j5c9rN8Bw97hQrBsEse2DgYT7wYOAAbyQ==
-X-Received: by 2002:a05:6870:2310:b0:da:b3f:2b76 with SMTP id w16-20020a056870231000b000da0b3f2b76mr8021407oao.277.1650370369925;
-        Tue, 19 Apr 2022 05:12:49 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id ay9-20020a056808300900b0032272231c25sm2994238oib.40.2022.04.19.05.12.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 05:12:49 -0700 (PDT)
-Received: (nullmailer pid 1977874 invoked by uid 1000);
-        Tue, 19 Apr 2022 12:12:43 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, vkoul@kernel.org,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        bhupesh.linux@gmail.com, bjorn.andersson@linaro.org,
-        agross@kernel.org
-In-Reply-To: <20220418205509.1102109-2-bhupesh.sharma@linaro.org>
-References: <20220418205509.1102109-1-bhupesh.sharma@linaro.org> <20220418205509.1102109-2-bhupesh.sharma@linaro.org>
-Subject: Re: [PATCH v3 1/4] dt-bindings: phy: qcom,qmp: Mark '#clock-cells' as a 'optional' property
-Date:   Tue, 19 Apr 2022 07:12:43 -0500
-Message-Id: <1650370363.629686.1977873.nullmailer@robh.at.kernel.org>
+        Tue, 19 Apr 2022 08:17:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8D21FA5D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:15:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B13A614E9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 12:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51361C385A7;
+        Tue, 19 Apr 2022 12:15:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650370503;
+        bh=egk3NV7ZTPANDM1QUGV3BN2ZMc0MwzdTAMdoUxfarx0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fpm43+mezkvM6YP/nwkJWU6CBtHl+xZ4KAgQrH6K1vUjE/GyQA70B0fhT9keBk58y
+         NvLd6s7NIbwO0Ofi0TRXxQDRzLeO91x26/8dYnfLweVVkCcHSN7Gzkrj7LqdhaWmrU
+         m7zRgCASPhbodzPxWwKB8N864xdfxNoxC9RyzLrM=
+Date:   Tue, 19 Apr 2022 14:14:59 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tom Rix <trix@redhat.com>
+Cc:     nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        stefan.wahren@i2se.com, gascoar@gmail.com, ojaswin98@gmail.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: vchiq_arm: change vchiq_platform_init from
+ global to static
+Message-ID: <Yl6nw6jbfVsVXG0c@kroah.com>
+References: <20220418164356.3532969-1-trix@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418164356.3532969-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 02:25:06 +0530, Bhupesh Sharma wrote:
-> '#clock-cells' is not a required property for qmp-phy(s) in the
-> '/' node, but it should be is used in 'phy@' subnode (where it is
-> actually a 'required' property). Fix the same.
+On Mon, Apr 18, 2022 at 12:43:56PM -0400, Tom Rix wrote:
+> Smatch reports this issue
+> vchiq_arm.c:466:5: warning: symbol 'vchiq_platform_init'
+>   was not declared. Should it be static?
+
+Error messages can all go on one line.
+
+> vchiq_platform_init is only used in vchiq_arm.c.  Single
+> file variables should not be global so change
+> vchiq_platform_init's storage-class specifier to static.
+
+You have a full 72 columns, please use them.
+
 > 
-> This also fixes the following 'make dtbs_check' warning(s):
-> 
-> sm8350-microsoft-surface-duo2.dt.yaml: phy@1d87000:
->   '#clock-cells' is a required property
-> 
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> Signed-off-by: Tom Rix <trix@redhat.com>
 > ---
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
+>  drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> index 0596ac61e286..7de98655e8ec 100644
+> --- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> +++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+> @@ -463,7 +463,7 @@ free_pagelist(struct vchiq_pagelist_info *pagelistinfo,
+>  	cleanup_pagelistinfo(pagelistinfo);
+>  }
+>  
+> -int vchiq_platform_init(struct platform_device *pdev, struct vchiq_state *state)
+> +static int vchiq_platform_init(struct platform_device *pdev, struct vchiq_state *state)
+>  {
+>  	struct device *dev = &pdev->dev;
+>  	struct vchiq_drvdata *drvdata = platform_get_drvdata(pdev);
+> -- 
+> 2.27.0
+> 
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Always test build your patches.  To not do so is a bit rude, don't you
+think?
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-phy@1c07000: 'lanes@1c06000' does not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	arch/arm/boot/dts/qcom-sdx55-mtp.dtb
-	arch/arm/boot/dts/qcom-sdx55-t55.dtb
-	arch/arm/boot/dts/qcom-sdx55-telit-fn980-tlb.dtb
-
-phy@1c0e000: 'lanes@1c0e200' does not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
-
-phy@1d87000: 'lanes@1d87400', 'vdda-max-microamp', 'vdda-pll-max-microamp' do not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/sm8450-hdk.dtb
-	arch/arm64/boot/dts/qcom/sm8450-qrd.dtb
-
-phy@1d87000: 'vdda-max-microamp', 'vdda-pll-max-microamp' do not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/sm8350-microsoft-surface-duo2.dtb
-
-phy@627000: 'vdda-phy-max-microamp', 'vdda-pll-max-microamp', 'vddp-ref-clk-always-on', 'vddp-ref-clk-max-microamp' do not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/msm8996-xiaomi-gemini.dtb
-	arch/arm64/boot/dts/qcom/msm8996-xiaomi-scorpio.dtb
-
-phy-wrapper@88e9000: 'vdda-phy-supply' is a required property
-	arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx214.dtb
-	arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dtb
-
-phy-wrapper@88e9000: 'vdda-pll-supply' is a required property
-	arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx214.dtb
-	arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dtb
-
-ssphy@78000: '#clock-cells', 'lane@78200' do not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dtb
-
+{sigh}
