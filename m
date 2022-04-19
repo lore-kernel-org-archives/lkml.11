@@ -2,105 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA83EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240153AbiDSATJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46818 "EHLO
+        id S239478AbiDSAWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239478AbiDSASM (ORCPT
+        with ESMTP id S240468AbiDSAWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:18:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09AC140C0;
-        Mon, 18 Apr 2022 17:15:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ABC6B81136;
-        Tue, 19 Apr 2022 00:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26776C385AE;
-        Tue, 19 Apr 2022 00:15:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650327327;
-        bh=dOetzT2hWmKf0ZVCajjiu0ZALSsbbVr5tC3LfTOHRL4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qnjm44LbV0sGS/H8GhrrpoHTpqTUknEOU7L7oODl85SETld2qx6nf8yXtT2TmKTCD
-         xxg8Cnx1MWfCeziTzK/j0jhiuA28FlwUdD/C/Qy7e2qqltpm2Q2z1qnXQj8lsnZ1t9
-         260oifser+uFbnqeCa56vxNtAw0mALjOQTowmPE7qUwjiygW6waSgLmwxBHlhR8vxw
-         978vUdJVwNXJlRNJ6ByuK3ow7w5YllAk9bEKc4Oav8wQ9FJSsYMhoIgr44RWqVRaaM
-         3Z/6G22MH5WYzwfrPCx/dsiClgSv4IUSA58V308Bu8rYs3GWv8J8EUYsbz7MrM7Lco
-         30K5ggQvuaZfA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id C8CDB5C0A0D; Mon, 18 Apr 2022 17:15:26 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 04/12] torture: Make thread detection more robust by using lspcu
-Date:   Mon, 18 Apr 2022 17:15:17 -0700
-Message-Id: <20220419001525.3950505-4-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220419001519.GA3950405@paulmck-ThinkPad-P17-Gen-1>
-References: <20220419001519.GA3950405@paulmck-ThinkPad-P17-Gen-1>
+        Mon, 18 Apr 2022 20:22:40 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08A6E0D5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:19:57 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id b21so26680247lfb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:19:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z3DkPb6o1PzrEfvEQlx3KBWUoes3B0+AA9beFlBvYSQ=;
+        b=An99LtRG1FkYexpgla3X1/qDm/a/1F14+Uyfx1jAIJ+b6+p6WWVMOIRBbd0541Y35s
+         XQHp97t02HymcG61QlrTgCaxBCa+4iY645k3FtZ/oJP1sPWneO1lNg2IJOIzk+sHoBww
+         T00CdrYB+oxTVXOnHlRLu3/eV0usgOhJwixlY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z3DkPb6o1PzrEfvEQlx3KBWUoes3B0+AA9beFlBvYSQ=;
+        b=OHj0LGs6P5A+dhrR1hPZQ95SlyTR7ZUV5kVa7yw2p4/DGlYh5wZ4RlMSRlv8rTil6c
+         a/FWOZu62uBS4ikZq2p57mG5Uv8EHv8Si4cliYoP9ScuN1zNkKgoc1Ns1+ruZDtDItr+
+         ozkeRS9bCNka1IJy8BU3URFh9OHJnWYAHrMaBhGM6MUwAviLOkHMcF5K4SX40n8oM+6Q
+         4bNwV1iO3X90H3pftViRyuGnAqm2iV0lDQ7JfiPSIZq2wTlNFe3zBQs/35uq8xtXGTHP
+         IpLusjyoVX/jUBkGRE25tkkN4YkOFSvIvUxeCJQR4BK6UWvX3WzShz9dXsSZZGpjc0Xp
+         yNoA==
+X-Gm-Message-State: AOAM533isLMglpVOF2HEm5Qc8RGki9pAaUY6sBFUY3aEm1aTXRgpbmQ3
+        +qlPEhRpwg5zEL7vhioMkKVTbQ9lf0v1HRuqKFc=
+X-Google-Smtp-Source: ABdhPJwxDN8TR0P/6fXgJcnKlYQsqJGNrEnwHWGbZenUTCWgy4VMAbyT1NF6Rot5HM/S5pdzl/REQw==
+X-Received: by 2002:a05:6512:308d:b0:471:88d8:5798 with SMTP id z13-20020a056512308d00b0047188d85798mr6358820lfd.154.1650327595669;
+        Mon, 18 Apr 2022 17:19:55 -0700 (PDT)
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com. [209.85.167.45])
+        by smtp.gmail.com with ESMTPSA id s1-20020ac24641000000b0046d10a0bba2sm1349942lfo.176.2022.04.18.17.19.53
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 17:19:54 -0700 (PDT)
+Received: by mail-lf1-f45.google.com with SMTP id p10so26640729lfa.12
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:19:53 -0700 (PDT)
+X-Received: by 2002:a05:6512:3c93:b0:44b:4ba:c334 with SMTP id
+ h19-20020a0565123c9300b0044b04bac334mr9452554lfv.27.1650327593699; Mon, 18
+ Apr 2022 17:19:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220418092824.3018714-1-chengzhihao1@huawei.com>
+ <CAHk-=wh7CqEu+34=jUsSaMcMHe4Uiz7JrgYjU+eE-SJ3MPS-Gg@mail.gmail.com>
+ <587c1849-f81b-13d6-fb1a-f22588d8cc2d@kernel.dk> <CAHk-=wjmFw1EBOVAN8vffPDHKJH84zZOtwZrLpE=Tn2MD6kEgQ@mail.gmail.com>
+ <df4853fb-0e10-4d50-75cd-ee9b06da5ab1@kernel.dk>
+In-Reply-To: <df4853fb-0e10-4d50-75cd-ee9b06da5ab1@kernel.dk>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 18 Apr 2022 17:19:37 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wg6s5gHCc-JngKFfOS7uZUrT9cqzNDKqUQZON6Txfa_rQ@mail.gmail.com>
+Message-ID: <CAHk-=wg6s5gHCc-JngKFfOS7uZUrT9cqzNDKqUQZON6Txfa_rQ@mail.gmail.com>
+Subject: =?UTF-8?Q?Re=3A_=5BPATCH_v2=5D_fs=2Dwriteback=3A_writeback=5Fsb=5Finodes=EF=BC=9AR?=
+        =?UTF-8?Q?ecalculate_=27wrote=27_according_skipped_pages?=
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Zhihao Cheng <chengzhihao1@huawei.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        yukuai3@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Menzel <pmenzel@molgen.mpg.de>
+On Mon, Apr 18, 2022 at 3:12 PM Jens Axboe <axboe@kernel.dk> wrote:
+>
+> Hmm yes. But doesn't preemption imply a full barrier? As long as we
+> assign the plug at the end, we should be fine. And just now looking that
+> up, there's even already a comment to that effect in blk_start_plug().
+> So barring any weirdness with that, maybe that's the solution.
 
-For consecutive numbers the lscpu command collapses the output and just
-shows the range with start and end. The processors are numbered that
-way on POWER8.
+My worry is more about the code that adds new cb_list entries to the
+plug, racing with then some random preemption event that flushes the
+plug.
 
-    $ sudo ppc64_cpu --smt=8
-    $ lscpu | grep '^NUMA node'
-    NUMA node(s):                    2
-    NUMA node0 CPU(s):               0-79
-    NUMA node8 CPU(s):               80-159
+preemption itself is perfectly fine wrt any per-thread data updates
+etc, but if preemption then also *changes* the data that is updated,
+that's not great.
 
-This causes the heuristic to detect the number threads per core, looking
-for the number after the first comma, to fail, and QEMU aborts because of
-invalid arguments.
+So that worries me.
 
-    $ lscpu | grep '^NUMA node0' | sed -e 's/^[^,-]*(,|\-)\([0-9]*\),.*$/\1/'
-    NUMA node0 CPU(s):               0-79
-
-But the lscpu command shows the number of threads per core:
-
-    $ sudo ppc64_cpu --smt=8
-    $ lscpu | grep 'Thread(s) per core'
-    Thread(s) per core:              8
-    $ sudo ppc64_cpu --smt=off
-    $ lscpu | grep 'Thread(s) per core'
-    Thread(s) per core:              1
-
-This commit therefore directly uses that value and replaces use of grep
-with "sed -n" and its "p" command.
-
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- tools/testing/selftests/rcutorture/bin/functions.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/rcutorture/bin/functions.sh b/tools/testing/selftests/rcutorture/bin/functions.sh
-index c35ba24f994c..66d0414d8e4b 100644
---- a/tools/testing/selftests/rcutorture/bin/functions.sh
-+++ b/tools/testing/selftests/rcutorture/bin/functions.sh
-@@ -301,7 +301,7 @@ specify_qemu_cpus () {
- 			echo $2 -smp $3
- 			;;
- 		qemu-system-ppc64)
--			nt="`lscpu | grep '^NUMA node0' | sed -e 's/^[^,]*,\([0-9]*\),.*$/\1/'`"
-+			nt="`lscpu | sed -n 's/^Thread(s) per core:\s*//p'`"
- 			echo $2 -smp cores=`expr \( $3 + $nt - 1 \) / $nt`,threads=$nt
- 			;;
- 		esac
--- 
-2.31.1.189.g2e36527f23
-
+             Linus
