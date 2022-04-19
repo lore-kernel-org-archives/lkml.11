@@ -2,84 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46396C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD78C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357283AbiDSSwy (ORCPT
+        id S1353732AbiDSSxi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        Tue, 19 Apr 2022 14:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357404AbiDSSwn (ORCPT
+        with ESMTP id S231906AbiDSSxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:52:43 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4451BEA8
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:49:59 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so2834286pjf.0
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:49:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZVIfCvJe76JPXouw6J0teDaTd4qb/xUX4pOTmZB88fc=;
-        b=AhjTfur0oMD5aZaVQP//Sfl0Fp2JzFUPrB86dpbEjxYpUjdrkY0WBU+Ib/4x+Yxpo2
-         2y5vzDnsAYqpITBwbq1KWHK8fwpGH5zJAZggDz+HPVakwestPT4QWiVSaBHcqQ5q4U+9
-         JkrgZQoyBXsHzeQdQ/foC0Xwat/0ZJRmXG7Awi+5tcFVcqCv6IL7Yq7163VEYllUGL+8
-         PgZkw+KC2q2CfaIp6WN7haigCmOm/CcuqZ6Iy7IUGw6YpAhs0w5c03ibHYLeqJkGhcpg
-         +MWuMdCOGSSXR0qCpvzcaHKRljgVWyi1oRNpndyYmukBqEoSPbVks665VYyItFdEf/T7
-         fTWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZVIfCvJe76JPXouw6J0teDaTd4qb/xUX4pOTmZB88fc=;
-        b=jiYBJA1WUCcl2PIgExAHyazTiq1Co77F4svW/5QZBMh0wxYaPfmeEKKZZpnBDGpfSz
-         PScmUuEMmOCrYR3MxoE4HQuHH4yqbtmonBzQYgVBH8TwSx6BTW+A9EQ81po59uGdb8/0
-         rpwGAUAeyHo85xRmPwW7zlvkdvbXqiu20yRjhNBWBRcHOARB/CUV//Q8UOEYfUu/xVNP
-         efGS/PK4IKndypU9tm3ME5/sWUjCQmOvdtdR1D2EbtlF+xtxYchNBC2VSz4kbZlU7kIg
-         jWeS5skfngZZXuNVfqvIZTBXBd9nZ6fqm+fJqjOh8vHlaDm3IrVmSfGBHbzX0cmiYuoH
-         pd/w==
-X-Gm-Message-State: AOAM533qXm7eTHfskeHBcOi5woy4UtgZedU6XnuG8ytG5rQ5vdoo1YHm
-        NFV1RSkbjMNMRV3PuD67aXU=
-X-Google-Smtp-Source: ABdhPJxDzlu8UYfooUXqBXloj+gfbMc5s1buTGWtpmuTq/orefNFW3FhiGxWE9zzN1N5thveY9ZBfg==
-X-Received: by 2002:a17:902:ce02:b0:153:bd65:5c0e with SMTP id k2-20020a170902ce0200b00153bd655c0emr16932994plg.160.1650394198501;
-        Tue, 19 Apr 2022 11:49:58 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id p12-20020a63ab0c000000b00381f7577a5csm16737697pgf.17.2022.04.19.11.49.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 11:49:57 -0700 (PDT)
-Message-ID: <6d5d53d4-659d-b46e-55fd-2a05aabbeda4@gmail.com>
-Date:   Tue, 19 Apr 2022 11:49:56 -0700
+        Tue, 19 Apr 2022 14:53:36 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BB13D4B4
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:50:52 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 11:50:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650394251;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z5GW4a8wABiS59/ZTgTPVQRXCf8XswJ73zIFmnBfAHI=;
+        b=mwg+Z8nz95vbDEBX04x0Sh0igz6CXGr3uet+JlRjb3o5as9hAg+g/KqOEucZbMB+ttb8JC
+        2jFNWMEFHQj6UpiSuxEv/j5dKVgkdMbVQUWWejzzIjutqzfNOQoCZK7oTR7xOCx4g2wnJu
+        DyxVCTpkDBrZfj7Ct+fcDgx9g21E/i0=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH rfc 0/5] mm: introduce shrinker sysfs interface
+Message-ID: <Yl8EhZIbePmlmJ6D@carbon>
+References: <20220416002756.4087977-1-roman.gushchin@linux.dev>
+ <20220419183654.axbxcjehs6fpqg4z@moria.home.lan>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] drivers/bus/brcmstb_gisb.c : Remove the
- suppress_bind_attrs attribute of the driver
-Content-Language: en-US
-To:     lizhe <sensor1010@163.com>, f.fainelli@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220320064529.12827-1-sensor1010@163.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220320064529.12827-1-sensor1010@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419183654.axbxcjehs6fpqg4z@moria.home.lan>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 3/19/2022 11:45 PM, lizhe wrote:
-> Even if platform_driver does not set suppress_bind_attrs attribute,
-> when registering with platform_driver_probe,  the value of
-> suppress_bind_attrs is still true, see __platform_driver_probe()
+On Tue, Apr 19, 2022 at 02:36:54PM -0400, Kent Overstreet wrote:
+> On Fri, Apr 15, 2022 at 05:27:51PM -0700, Roman Gushchin wrote:
+> > 7) Don't display cgroups with less than 500 attached objects
+> >   $ echo 500 > count_memcg
+> >   $ cat count_memcg
+> >     53 817
+> >     1868 886
+> >     2396 799
+> >     2462 861
+> > 
+> > 8) Don't display cgroups with less than 500 attached objects (sum over all nodes)
+> >   $ echo "500" > count_memcg_node
+> >   $ cat count_memcg_node
+> >     53 810 7
+> >     1868 886 0
+> >     2396 799 0
+> >     2462 861 0
+> > 
+> > 9) Scan system/root shrinker
+> >   $ cat count
+> >     212
+> >   $ echo 100 > scan
+> >   $ cat scan
+> >     97
+> >   $ cat count
+> >     115
 > 
-> Signed-off-by: lizhe <sensor1010@163.com>
+> This part seems entirely overengineered though and a really bad idea - can we
+> please _not_ store query state in the kernel? It's not thread safe, and it seems
+> like overengineering before we've done the basics (just getting this stuff in
+> sysfs is a major improvement!).
 
-Applied with a revised subject, thanks!
--- 
-Florian
+Yes, it's not great, but I don't have a better idea yet. How to return the number
+of freed objects? Do you suggest to drop this functionality at all or there are
+other options I'm not seeing?
+
+Counting again isn't a good option either: new object could have been added to
+the list during the scan.
+
+Thanks!
