@@ -2,116 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345937AbiDSPAo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 11:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S245189AbiDSPBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 11:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244673AbiDSPAi (ORCPT
+        with ESMTP id S243937AbiDSPBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 11:00:38 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224343B026;
-        Tue, 19 Apr 2022 07:57:54 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so1675626wmn.1;
-        Tue, 19 Apr 2022 07:57:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VSfNNxCMPbot3TUeMFQDYDmYhnDExeycdgTmMkPBSiw=;
-        b=K89+PXfaCFu09OY7bsgh+7qQX9SHhTwwKvG8GnMvsy4nm507xqyK3sHZ67MuOBouWK
-         4rkUK91/51WwE/E/BbtbqNlYpk2W+/m+3Chgf1DgQ/4ZxSP0s1wqpSXNl7+UdgoWj+Xs
-         DJy4bCzYn6/vlOL+ZNY9yNQOs/kv50OdjLzRncPuI5wSrw+ftTvwxvHd1FHSO3Lksu+l
-         gBhsZjxwGFJya6sN2Lt1XOMX7olBrNleXGG5RLgiKeUMjp6130k6KNYzjV95UMRI84s7
-         H+NLnzuto2Whpp86h7jTvQ96wMZQqVnrQDa2fWzSRA2L9LVCV6/K5Tlwf7tuM/Cl+x+g
-         jazw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VSfNNxCMPbot3TUeMFQDYDmYhnDExeycdgTmMkPBSiw=;
-        b=PYHIOx0iUuZUYCAZGjcjEN1S97gv7502HEsoozFCy41M+raaeUg1aMFGV5UXUW58WJ
-         TsmiBIHM2hSODmaUSt7quLt+qQZ/7mcxp9SDvX0vUbz+IMS/kckEO4HUJEathddwEBK+
-         ZNNkNORH4N9E1GCmHKwsbMDLbZgAF7Mkdy1cSBpqom/I2lXkiar3CwVdfUbaTa16XdRX
-         3JccoShIuUt+PgblZyleWaTgvWhp+2MZ3sQOUv1cPyC+U5X2mNgvhlEj8xGIcyDuRnGN
-         7qxpwEDwykf+tT15GOyU+HNi2D4r3LpY5pyTrWYWyfOKeFlHRSryB4SCcd56eaTxP11O
-         /t8A==
-X-Gm-Message-State: AOAM530LYwcQ6FHPFJz9V3gzT1QkKt44YJ88OqoB72iiW5exWO1ql0Uo
-        emedofRjXZzqm86VWTu4KlsKaYg6gDo=
-X-Google-Smtp-Source: ABdhPJwGtnkzLvabPxjsO/IdFw1I83x6czWqIQw5VNsuYzxUmENRbL2f1OWVQ5C8fTTybXwA29UdQg==
-X-Received: by 2002:a05:600c:2197:b0:38e:b80c:526a with SMTP id e23-20020a05600c219700b0038eb80c526amr19889290wme.76.1650380272642;
-        Tue, 19 Apr 2022 07:57:52 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id o10-20020a5d47ca000000b0020a992ce36esm4933973wrc.1.2022.04.19.07.57.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 07:57:51 -0700 (PDT)
-Message-ID: <db521557-09ea-2c34-24e5-3bf71961b4fe@gmail.com>
-Date:   Tue, 19 Apr 2022 16:57:50 +0200
+        Tue, 19 Apr 2022 11:01:04 -0400
+Received: from m228-13.mailgun.net (m228-13.mailgun.net [159.135.228.13])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 76BBC3B01D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:58:21 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
+ s=smtp; t=1650380301; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Subject: To: To: From: From: Date:
+ Sender: Sender; bh=uM5EMjf3NP4QzCk0UqXPKFMY+n748Cl/JUdN11a6lQk=; b=rqgjvnsaKP7ZGtPWI1xZTeXyk3SS/yhhQg+uYCfajA7a8COb3LwOG0By8iQWV0NwMl9SYGDc
+ kb7EYByNnzTg2RWcFuaq9qC+H/whE+bAw3/e40iPkY4+fcs4djp8RWXcQIsKL2c4+pg10n+R
+ ecq6O7oAsAZqL5uf68CCaRPwetvZT7Z4dqat162w8s4ZMAmU3Yp6/1MTTuaF0bHvOHTtuc36
+ UY8KbuRiV/Kj76FB52Y2nehkk+gJv7Qi3/nM7K+CSKuv8V/xe0D2wkfaKRslfdtrUrpfbPEH
+ 7TGCEiSzW/kyZmDrLRy/345Bnra6KZhaMlwrSMV+oSete+nzaxByCg==
+X-Mailgun-Sending-Ip: 159.135.228.13
+X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
+Received: from AN5Bruno (dynamic-user.170.84.57.33.mhnet.com.br
+ [170.84.57.33]) by smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 625ecbb3c172fc5066005442 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
+ Tue, 19 Apr 2022 14:48:19 GMT
+Sender: codeagain@codeagain.dev
+Date:   Tue, 19 Apr 2022 11:48:15 -0300
+From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev,
+        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
+Subject: [PATCH v2 1/2] Docs: Add cpio requirement to changes.rst
+Message-ID: <16abd8eb6a5c8398a030ae5d8919d5c8e92e2af1.1650376049.git.codeagain@codeagain.dev>
+References: <cover.1650376049.git.codeagain@codeagain.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/5] dt-bindings: arm: mediatek: mmsys: add mt8195 SoC
- binding
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
-        jason-jh.lin@mediatek.com, nancy.lin@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220419033237.23405-1-rex-bc.chen@mediatek.com>
- <20220419033237.23405-3-rex-bc.chen@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220419033237.23405-3-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ro2gw6s6psca55fi"
+Content-Disposition: inline
+In-Reply-To: <cover.1650376049.git.codeagain@codeagain.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--ro2gw6s6psca55fi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 19/04/2022 05:32, Rex-BC Chen wrote:
-> From: "jason-jh.lin" <jason-jh.lin@mediatek.com>
-> 
-> In the SoC before, such as mt8173, it has 2 pipelines binding to one
-> mmsys with the same clock driver and the same power domain.
-> 
-> In mt8195, there are 4 pipelines binding to 4 different mmsys, such as
-> vdosys0, vdosys1, vppsys0 and vppsys1.
-> Each mmsys uses different clock drivers and different power domain.
-> 
-> Since each mmsys has its own mmio base address, they could be identified
-> by their different address during probe time.
-> 
-> Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-> Reviewed-by: CK Hu <ck.hu@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+The install target requires cpio to run the `kernel/gen_kheaders.sh`
+script, but it's missing in the requirements list at
+'Documentation/process/changes.rst'. This patch adds it to the list.
 
-Applied, thanks
+Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+---
+ Documentation/process/changes.rst | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> ---
->   .../devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml         | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-> index 6c2c3edcd443..6ad023eec193 100644
-> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-> @@ -31,6 +31,7 @@ properties:
->                 - mediatek,mt8183-mmsys
->                 - mediatek,mt8186-mmsys
->                 - mediatek,mt8192-mmsys
-> +              - mediatek,mt8195-mmsys
->                 - mediatek,mt8365-mmsys
->             - const: syscon
->         - items:
+diff --git a/Documentation/process/changes.rst b/Documentation/process/chan=
+ges.rst
+index a337e8eabfe1..41a44e5f47e6 100644
+--- a/Documentation/process/changes.rst
++++ b/Documentation/process/changes.rst
+@@ -56,6 +56,7 @@ iptables               1.4.2            iptables -V
+ openssl & libcrypto    1.0.0            openssl version
+ bc                     1.06.95          bc --version
+ Sphinx\ [#f1]_         1.7              sphinx-build --version
++cpio                   any              cpio --version
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+=20
+ .. [#f1] Sphinx is needed only to build the Kernel documentation
+@@ -458,6 +459,11 @@ mcelog
+=20
+ - <http://www.mcelog.org/>
+=20
++cpio
++----
++
++- <https://www.gnu.org/software/cpio/>
++
+ Networking
+ **********
+=20
+--=20
+2.35.3
+
+
+--ro2gw6s6psca55fi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYl7LrwAKCRAZtd3tyEY2
+khKiAPwMG6OI0lpf1AqUjruuyLLHmrs28B7fL3Coejgkddt3ywEAlONSYrtnoWbg
+xSXIjuZTI63w/6yE6VW9SjVVJ1KOFws=
+=juu4
+-----END PGP SIGNATURE-----
+
+--ro2gw6s6psca55fi--
