@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E31CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352030AbiDSOo3 (ORCPT
+        id S1353513AbiDSOp1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
+        Tue, 19 Apr 2022 10:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351049AbiDSOne (ORCPT
+        with ESMTP id S1353523AbiDSOpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:43:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4978E21273
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:40:52 -0700 (PDT)
+        Tue, 19 Apr 2022 10:45:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C88329B8
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:42:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC6EAB81A31
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:40:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7148C385A7;
-        Tue, 19 Apr 2022 14:40:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 212EBB81A3C
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E94C2C385A7;
+        Tue, 19 Apr 2022 14:42:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650379249;
-        bh=Odi8T0lKvsQl0jnz2foSSFYzVl+S20L3qwLS1xH/7sM=;
+        s=k20201202; t=1650379334;
+        bh=8U3kOAkP8r3tY5esyIBlcm2h6NMZv9H6akvf7zELYMc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rSnqvlxlX/BIuR7YrwvP9faodWrQ4zMTWlogOqkPjoxlSyX+YWrngYqr5os6Op2Oo
-         QssVb/+81BkFtPjkdzMQX49Ws48Qm6LvwpgrHBxsW7kyu5cAaMSwfoNGK8M3B4ZqKM
-         8igvaSFwZ8u9Fj+8QqLEQ2gGxCqPeUIiSdh+LvNSpdt7YRHVQKNmzDRUao6hh0cjoe
-         /3ExFvfm2U/MRwGMRsc9JVuIqk6HGgfJ4D0DRQQIfGk12CenNIiebP1vDGC2m0XhSK
-         3dOVdOi9jd8GKR71avgLQ1AImPdYIHVLlwVEYtv1rGQBc5oOCg62H4Y3cGL5WmNVs7
-         8eowSPCNLadxg==
-Date:   Tue, 19 Apr 2022 15:40:42 +0100
+        b=WS1kZShIt+dmp/9oGVSwk8nSf3Iw3FCqZ8foPjBQyglkkYKSV4P+xNqXGCmJ/F0kL
+         YIuwELlsokI8JHK5+R0hpc/1R2SMAMT9utdQGJJfOfb3DuqVQlwPb1lP2jQqwG4Cec
+         o5QIEOeMxhoxOfnh4j6sjSvav36p77IypYkuXgvDv9marwj+XNQDCHDfcDB3ITl++S
+         7jIpEpORO8XtUbchC7jmN1eHH6EOOcqchG+pOcWmcqE3c8KM7z9oEKAiJdjHAQltzr
+         C9Qf/WO6G5hJ2tANjbrf7xWZcPA+iE8G/680dD9yBUyePB75nEj6MPZDcZiYBn5UJr
+         C3QDeywlaYbFg==
+Date:   Tue, 19 Apr 2022 15:42:08 +0100
 From:   Will Deacon <will@kernel.org>
 To:     Robin Murphy <robin.murphy@arm.com>
 Cc:     joro@8bytes.org, iommu@lists.linux-foundation.org,
@@ -43,32 +43,27 @@ Cc:     joro@8bytes.org, iommu@lists.linux-foundation.org,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/13] iommu/arm-smmu: Clean up bus_set_iommu()
-Message-ID: <20220419144042.GA6186@willie-the-truck>
+Subject: Re: [PATCH 05/13] iommu/arm-smmu-v3: Clean up bus_set_iommu()
+Message-ID: <20220419144207.GB6186@willie-the-truck>
 References: <cover.1649935679.git.robin.murphy@arm.com>
- <2e59602d982fd4941ec923571940fa3c628b2188.1649935679.git.robin.murphy@arm.com>
+ <4c55ff48992ee8c2a81a38c859dc817ecacd8517.1649935679.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2e59602d982fd4941ec923571940fa3c628b2188.1649935679.git.robin.murphy@arm.com>
+In-Reply-To: <4c55ff48992ee8c2a81a38c859dc817ecacd8517.1649935679.git.robin.murphy@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 01:42:33PM +0100, Robin Murphy wrote:
-> Stop calling bus_set_iommu() since it's now unnecessary. With device
-> probes now replayed for every IOMMU instance registration, the whole
-> sorry ordering workaround for legacy DT bindings goes too, hooray!
-
-Ha, I hope you tested this!
-
+On Thu, Apr 14, 2022 at 01:42:34PM +0100, Robin Murphy wrote:
+> Stop calling bus_set_iommu() since it's now unnecessary, and simplify
+> the probe failure path accordingly.
+> 
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c | 84 +--------------------------
->  1 file changed, 2 insertions(+), 82 deletions(-)
-
-Assuming it works,
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 53 +--------------------
+>  1 file changed, 2 insertions(+), 51 deletions(-)
 
 Acked-by: Will Deacon <will@kernel.org>
 
