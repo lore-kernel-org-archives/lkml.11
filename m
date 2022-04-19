@@ -2,113 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E31CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 14:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351666AbiDSOoI (ORCPT
+        id S1352030AbiDSOo3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
+        Tue, 19 Apr 2022 10:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351508AbiDSOoF (ORCPT
+        with ESMTP id S1351049AbiDSOne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 10:44:05 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3DB7D24BCA
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:41:22 -0700 (PDT)
-Received: (qmail 594199 invoked by uid 1000); 19 Apr 2022 10:41:21 -0400
-Date:   Tue, 19 Apr 2022 10:41:21 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Evan Green <evgreen@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Rajat Jain <rajatja@chromium.org>,
-        Razvan Heghedus <heghedus.razvan@gmail.com>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] USB: core: Disable remote wakeup for
- freeze/quiesce
-Message-ID: <Yl7KEX++hJac8T6I@rowland.harvard.edu>
-References: <20220418210046.2060937-1-evgreen@chromium.org>
- <20220418135819.v2.1.I2c636c4decc358f5e6c27b810748904cc69beada@changeid>
+        Tue, 19 Apr 2022 10:43:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4978E21273
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 07:40:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC6EAB81A31
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 14:40:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7148C385A7;
+        Tue, 19 Apr 2022 14:40:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650379249;
+        bh=Odi8T0lKvsQl0jnz2foSSFYzVl+S20L3qwLS1xH/7sM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rSnqvlxlX/BIuR7YrwvP9faodWrQ4zMTWlogOqkPjoxlSyX+YWrngYqr5os6Op2Oo
+         QssVb/+81BkFtPjkdzMQX49Ws48Qm6LvwpgrHBxsW7kyu5cAaMSwfoNGK8M3B4ZqKM
+         8igvaSFwZ8u9Fj+8QqLEQ2gGxCqPeUIiSdh+LvNSpdt7YRHVQKNmzDRUao6hh0cjoe
+         /3ExFvfm2U/MRwGMRsc9JVuIqk6HGgfJ4D0DRQQIfGk12CenNIiebP1vDGC2m0XhSK
+         3dOVdOi9jd8GKR71avgLQ1AImPdYIHVLlwVEYtv1rGQBc5oOCg62H4Y3cGL5WmNVs7
+         8eowSPCNLadxg==
+Date:   Tue, 19 Apr 2022 15:40:42 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     joro@8bytes.org, iommu@lists.linux-foundation.org,
+        sven@svenpeter.dev, robdclark@gmail.com, m.szyprowski@samsung.com,
+        baolu.lu@linux.intel.com, yong.wu@mediatek.com,
+        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
+        jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 04/13] iommu/arm-smmu: Clean up bus_set_iommu()
+Message-ID: <20220419144042.GA6186@willie-the-truck>
+References: <cover.1649935679.git.robin.murphy@arm.com>
+ <2e59602d982fd4941ec923571940fa3c628b2188.1649935679.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220418135819.v2.1.I2c636c4decc358f5e6c27b810748904cc69beada@changeid>
+In-Reply-To: <2e59602d982fd4941ec923571940fa3c628b2188.1649935679.git.robin.murphy@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 02:00:45PM -0700, Evan Green wrote:
-> The PM_EVENT_FREEZE and PM_EVENT_QUIESCE messages should cause the
-> device to stop generating interrupts. USB core was previously allowing
-> devices that were already runtime suspended to keep remote wakeup
-> enabled if they had gone down that way. This violates the contract with
-> pm, and can potentially cause MSI interrupts to be lost.
-> 
-> Change that so that if a device is runtime suspended with remote wakeups
-> enabled, it will be resumed to ensure remote wakeup is always disabled
-> across a freeze.
-> 
-> Signed-off-by: Evan Green <evgreen@chromium.org>
+On Thu, Apr 14, 2022 at 01:42:33PM +0100, Robin Murphy wrote:
+> Stop calling bus_set_iommu() since it's now unnecessary. With device
+> probes now replayed for every IOMMU instance registration, the whole
+> sorry ordering workaround for legacy DT bindings goes too, hooray!
+
+Ha, I hope you tested this!
+
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
-> 
-> (no changes since v1)
-> 
->  drivers/usb/core/driver.c | 20 +++++++++-----------
->  1 file changed, 9 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
-> index 355ed33a21792b..93c8cf66adccec 100644
-> --- a/drivers/usb/core/driver.c
-> +++ b/drivers/usb/core/driver.c
-> @@ -1533,20 +1533,18 @@ static void choose_wakeup(struct usb_device *udev, pm_message_t msg)
->  {
->  	int	w;
->  
-> -	/* Remote wakeup is needed only when we actually go to sleep.
-> -	 * For things like FREEZE and QUIESCE, if the device is already
-> -	 * autosuspended then its current wakeup setting is okay.
-> +	/* For FREEZE/QUIESCE, disable remote wakeups so no interrupts get generated
-> +	 * by the device.
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 84 +--------------------------
+>  1 file changed, 2 insertions(+), 82 deletions(-)
 
-You mean "by the host controller".  USB devices don't generate 
-interrupts; they generate wakeup requests (which can cause a host 
-controller to generate an interrupt).
+Assuming it works,
 
->  	 */
->  	if (msg.event == PM_EVENT_FREEZE || msg.event == PM_EVENT_QUIESCE) {
-> -		if (udev->state != USB_STATE_SUSPENDED)
-> -			udev->do_remote_wakeup = 0;
-> -		return;
-> -	}
-> +		w = 0;
->  
-> -	/* Enable remote wakeup if it is allowed, even if no interface drivers
-> -	 * actually want it.
-> -	 */
-> -	w = device_may_wakeup(&udev->dev);
-> +	} else {
-> +		/* Enable remote wakeup if it is allowed, even if no interface drivers
-> +		 * actually want it.
-> +		 */
-> +		w = device_may_wakeup(&udev->dev);
-> +	}
->  
->  	/* If the device is autosuspended with the wrong wakeup setting,
->  	 * autoresume now so the setting can be changed.
-> -- 
+Acked-by: Will Deacon <will@kernel.org>
 
-I would prefer it if you reformatted the comments to agree with the 
-current style:
-
-	/*
-	 * Blah blah blah
-	 */
-
-and to avoid line wrap beyond 80 columns.  Apart from that:
-
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-
-Alan Stern
+Will
