@@ -2,95 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45167C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 01:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F04C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 01:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245542AbiDSBkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 21:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
+        id S245559AbiDSBk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 21:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235649AbiDSBkC (ORCPT
+        with ESMTP id S245585AbiDSBkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 21:40:02 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C392201BE;
-        Mon, 18 Apr 2022 18:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650332242; x=1681868242;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=tmgwZkvCV2R6IyuCglak7yhL3N9zBgqGkPbpA6ubX9c=;
-  b=JzyHl3yLWykIOmzk0BxiSjdnYx+7WcT9SiV2Kdbx6jxZw+xeOK+xqAIf
-   5kBqdoVLVqtg8BXEDaWKlLSY3XOPCsVsU2rpyQkr4NAWnasRnG0yRmoj1
-   X0q2LCUdkFymsrm5Hu3fT3RXoZ00ePQMNrL7k1cb0i4/o3pucDb3A2umO
-   A=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Apr 2022 18:37:21 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 18:37:21 -0700
-Received: from stor-berry.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 18:37:20 -0700
-From:   "Bao D. Nguyen" <quic_nguyenb@quicinc.com>
-To:     <quic_cang@quicinc.com>, <quic_asutoshd@quicinc.com>,
-        <martin.petersen@oracle.com>, <linux-scsi@vger.kernel.org>
-CC:     "Bao D. Nguyen" <quic_nguyenb@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        "Avri Altman" <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bean Huo <beanhuo@micron.com>,
-        "Daejun Park" <daejun7.park@samsung.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Can Guo" <cang@codeaurora.org>,
-        Asutosh Das <asutoshd@codeaurora.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 1/1] scsi: ufs: Increase the UIC command timeout to 5 seconds
-Date:   Mon, 18 Apr 2022 18:36:05 -0700
-Message-ID: <55bd9cf4216e80e73e63cf25c042d60e67592b44.1650331167.git.quic_nguyenb@quicinc.com>
+        Mon, 18 Apr 2022 21:40:22 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999D123145;
+        Mon, 18 Apr 2022 18:37:39 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 19 Apr
+ 2022 09:37:39 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 19 Apr
+ 2022 09:37:37 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Pontus Fuchs <pontus.fuchs@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] ar5523: Use kzalloc instead of kmalloc/memset
+Date:   Tue, 19 Apr 2022 09:37:31 +0800
+Message-ID: <1650332252-4994-1-git-send-email-baihaowen@meizu.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Increase the UIC command timeout to avoid false and unnecessary
-UFS errors printout. There are increasing number of false UIC command
-timeout error events where the actual cause of the issues is interrupt
-starvation. When looking into these issues closely, it was clear that
-the UIC command completed successfully, but the CPUs were hogged by other
-subsystems for more than 500ms, causing a false UIC command timeout.
+Use kzalloc rather than duplicating its implementation, which
+makes code simple and easy to understand.
 
-Increase the UIC command timeout to 5 seconds to avoid false and
-time consuming support calls so that we can shift the focus to where
-the real issue would be.
-
-Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/scsi/ufs/ufshcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ar5523/ar5523.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 3f9caaf..806acf4 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -35,7 +35,7 @@
- 				 UTP_TASK_REQ_COMPL |\
- 				 UFSHCD_ERROR_MASK)
- /* UIC command timeout, unit: ms */
--#define UIC_CMD_TIMEOUT	500
-+#define UIC_CMD_TIMEOUT	5000
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index 00ddeee123c2..9f84a6fde0c2 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -1500,7 +1500,7 @@ static int ar5523_load_firmware(struct usb_device *dev)
+ 		return -ENOENT;
+ 	}
  
- /* NOP OUT retries waiting for NOP IN response */
- #define NOP_OUT_RETRIES    10
+-	txblock = kmalloc(sizeof(*txblock), GFP_KERNEL);
++	txblock = kzalloc(sizeof(*txblock), GFP_KERNEL);
+ 	if (!txblock)
+ 		goto out;
+ 
+@@ -1512,7 +1512,6 @@ static int ar5523_load_firmware(struct usb_device *dev)
+ 	if (!fwbuf)
+ 		goto out_free_rxblock;
+ 
+-	memset(txblock, 0, sizeof(struct ar5523_fwblock));
+ 	txblock->flags = cpu_to_be32(AR5523_WRITE_BLOCK);
+ 	txblock->total = cpu_to_be32(fw->size);
+ 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.7.4
 
