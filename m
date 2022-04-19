@@ -2,58 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D573BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352050AbiDSMPG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S240710AbiDSMQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 08:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352443AbiDSMNL (ORCPT
+        with ESMTP id S1352059AbiDSMP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:13:11 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CA610A9;
-        Tue, 19 Apr 2022 05:09:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8gQWXQgd27+7MjvZ/x9NAZsP0RMarQtIN5a8js2NhjY=; b=mzKoH3TXs2ckA/NQw7+zgkNA5K
-        8p0VVw0yWNiUHQ3Ohv+7MbWluGIHQO7uu0pzi4wrKVM53wXY1XHgpaGYN6WEwNXK/+MRUY4CBBGFV
-        SAIjxVSGcE6bRlBATcYyxrWoQ8cbfSrZhpLStIiS4JSOlavyI01sMEL7eWzSHfs3oTFQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ngmfg-00GUco-Kr; Tue, 19 Apr 2022 14:09:28 +0200
-Date:   Tue, 19 Apr 2022 14:09:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        adrian.hunter@intel.com, nico@fluxnic.net,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 2/4] ARM: dts: dove: Update sdio-host node names to
- match schema
-Message-ID: <Yl6meIXs9C6Z6AsA@lunn.ch>
-References: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz>
- <20220419024611.1327525-3-chris.packham@alliedtelesis.co.nz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419024611.1327525-3-chris.packham@alliedtelesis.co.nz>
+        Tue, 19 Apr 2022 08:15:56 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6595B1C138;
+        Tue, 19 Apr 2022 05:12:49 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id r14-20020a9d750e000000b00605446d683eso5544460otk.10;
+        Tue, 19 Apr 2022 05:12:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=YeAeQ+jnrOWAEKYx6yVLIhj6nj1MTrMjb3kCp0yvejM=;
+        b=5BnJudefPH60ydU7i0kARXfEtiaio/bBDebFBW0CYjPigyL3KuTpEBI518hO0iMJDm
+         R7BG+XQeC5s++0/297h5+JkRuZJMozZw1vCCjrE4/zOMipsRMLyAy52BEXmJCIJdUO7Z
+         klYcb+fE5E6gUyhI2DTE8XJ87vYQSQXJNRn9B+0MwCecmMxLZiLQG0Xw2BnmccFcvk55
+         yEbYhEPpvXGm7kH6iwcEvWX9QX9yGsoVYVbbMTLxWnpWIOEofkVyb5uKBagiMIXEdaF5
+         id9S7aePnug6bI5HY7QDo8RlekMOzltOoVFG+UBeJQpOck/3AYv7DPfjigz98D+W+ENI
+         XRKQ==
+X-Gm-Message-State: AOAM531alC6T1bpQfCsXl73F9nuurAYgPpDW1qEkBMakCd5towmzAVi4
+        h0T4RbO5vBY1wx+NbxhKBA==
+X-Google-Smtp-Source: ABdhPJwg4yHDT6X1rpfqMAom9LqkVyPVB09XL0HDMP6yioLKul+fCnEZLuA8Ej0AcX2iP5IaEGiPdQ==
+X-Received: by 2002:a9d:1928:0:b0:604:13d5:b114 with SMTP id j40-20020a9d1928000000b0060413d5b114mr5557181ota.6.1650370368668;
+        Tue, 19 Apr 2022 05:12:48 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x2-20020a4a2a42000000b0033a3c4392c3sm2302555oox.26.2022.04.19.05.12.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 05:12:48 -0700 (PDT)
+Received: (nullmailer pid 1977870 invoked by uid 1000);
+        Tue, 19 Apr 2022 12:12:43 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Aradhya Bhatia <a-bhatia1@ti.com>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Tomi Valkeinen <tomba@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Nikhil Devshatwar <nikhil.nd@ti.com>,
+        Jyri Sarha <jyri.sarha@iki.fi>,
+        Devicetree <devicetree@vger.kernel.org>
+In-Reply-To: <20220419070302.16502-2-a-bhatia1@ti.com>
+References: <20220419070302.16502-1-a-bhatia1@ti.com> <20220419070302.16502-2-a-bhatia1@ti.com>
+Subject: Re: [PATCH 1/2] dt-bindings: display: ti,am65x-dss: Add missing register & interrupt
+Date:   Tue, 19 Apr 2022 07:12:43 -0500
+Message-Id: <1650370363.583109.1977869.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 02:46:09PM +1200, Chris Packham wrote:
-> Update the node names of the sdio-host@ interfaces to be mmc@ to match
-> the node name enforced by the mmc-controller.yaml schema.
+On Tue, 19 Apr 2022 12:33:01 +0530, Aradhya Bhatia wrote:
+> The DSS IP on the ti-am65x soc supports an additional register space,
+> named "common1". Further. the IP services a maximum number of 2
+> interrupts.
 > 
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> Add the missing register space "common1" and the additional interrupt.
+> 
+> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
+> ---
+>  .../devicetree/bindings/display/ti/ti,am65x-dss.yaml   | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-    Andrew
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/display/ti/ti,am65x-dss.example.dts:30.17-18 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/display/ti/ti,am65x-dss.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
