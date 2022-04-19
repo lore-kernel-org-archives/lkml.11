@@ -2,105 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E58C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C056C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 13:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349733AbiDSNNg (ORCPT
+        id S1352127AbiDSNNu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
+        Tue, 19 Apr 2022 09:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347234AbiDSNNc (ORCPT
+        with ESMTP id S1347234AbiDSNNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:13:32 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3492ED57
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 06:10:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=DmKV20mrS057BFjgATIFfZZcbYOc9ROzIdfK5243MKM=; b=mjrfG+wkWhTeI0dI2U3/RqSdqu
-        JoEaZ6bbl++VC4ETSUfRnKxCv6dr1hOw+XrwTv4Ait7LcnTbVcAEtrFWMRnh9yoRhKXY4frfOgGbb
-        WRNdWc0IHmp5CpK7GWAYLZbVXP/vtkU1UBtssh2G+cjh5mO1i6RnyjK8A83skYrT65Rhysx/LXvre
-        CUahQjroG2a0As//v7wBm/gJiP24DK5hQMeHT1FrRe7hbWNQSh1xrTHR30i0eFoZYgiF46/PMslHf
-        4VaCpC3D9WOKP5xaWO72w1gsnZ2ld22v3EacVlCoKir72iUhhezdGKMRAHBZjDpa8mBgcJVydYGV4
-        f/URuBWw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ngncl-006pDV-GG; Tue, 19 Apr 2022 13:10:31 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 3704A986195; Tue, 19 Apr 2022 15:10:29 +0200 (CEST)
-Date:   Tue, 19 Apr 2022 15:10:29 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andrew Cooper <amc96@srcf.net>
-Cc:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Subject: Re: [PATCH v2 06/25] x86/xen: Add ANNOTATE_ENDBR to startup_xen()
-Message-ID: <20220419131029.GV2731@worktop.programming.kicks-ass.net>
-References: <cover.1650300597.git.jpoimboe@redhat.com>
- <a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com>
- <b94cbac6-0a4d-8e4a-ec58-bbd46e385d45@citrix.com>
- <20220419115737.GU2731@worktop.programming.kicks-ass.net>
- <8fbbd4ca-54b1-8c1c-19bc-3d0e6044ff5d@srcf.net>
+        Tue, 19 Apr 2022 09:13:46 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73D53122E;
+        Tue, 19 Apr 2022 06:11:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A224B21118;
+        Tue, 19 Apr 2022 13:11:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650373862;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b/3K0pRlotaEfeU4+3K4eR5b2A9Pz6oNCQOD+UvB+zk=;
+        b=Mwrfi3PuJtG3lF8zpNdohOuLyeCfFp0GdoKSmNwoxeFSgYwqo4zURKNJzPEVbz6voetTPp
+        3yJkioCD3xtKVzBGaG4/gxc7sXRIO+IZp7sPtdwF7xDe8694fLmmBUVGEMcpnknsnSTk3R
+        8Rpx29y+aqnwcAqss4uxns5R4MGMiHA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650373862;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b/3K0pRlotaEfeU4+3K4eR5b2A9Pz6oNCQOD+UvB+zk=;
+        b=YNXpRNTTh2slhKeGK8LbdSeunWutxGvrv/T/jdT76Q6855uZJBZ+0jj151T8EGr7laxjQu
+        noHeFvTDSKLuxABg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 65ADB139BE;
+        Tue, 19 Apr 2022 13:11:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +voeGOa0XmJ8fwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Tue, 19 Apr 2022 13:11:02 +0000
+Date:   Tue, 19 Apr 2022 15:06:59 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Josef Bacik <josef@toxicpanda.com>, linux-doc@vger.kernel.org,
+        Matthew Wilcox <willy@infradead.org>, Chris Mason <clm@fb.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, Schspa Shi <schspa@gmail.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] btrfs: zstd: remove extraneous asterix at the head of
+ zstd_reclaim_timer_fn() comment
+Message-ID: <20220419130659.GD2348@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Bagas Sanjaya <bagasdotme@gmail.com>,
+        Josef Bacik <josef@toxicpanda.com>, linux-doc@vger.kernel.org,
+        Matthew Wilcox <willy@infradead.org>, Chris Mason <clm@fb.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        Schspa Shi <schspa@gmail.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220418125934.566647-1-bagasdotme@gmail.com>
+ <Yl2Dx+jefYs1Un+8@localhost.localdomain>
+ <b5b42b49-9d0c-c745-f355-89900b53f6e1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8fbbd4ca-54b1-8c1c-19bc-3d0e6044ff5d@srcf.net>
+In-Reply-To: <b5b42b49-9d0c-c745-f355-89900b53f6e1@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 01:12:14PM +0100, Andrew Cooper wrote:
-
-> > Subject: x86/xen: Add ANNOTATE_ENDBR to startup_xen()
-> > From: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Date: Mon, 18 Apr 2022 09:50:25 -0700
-> >
-> > From: Josh Poimboeuf <jpoimboe@redhat.com>
-> >
-> > The startup_xen() kernel entry point is referenced by the ".note.Xen"
-> > section, and is the real entry point of the VM. It *will* be
-> > indirectly branched to, *however* currently Xen doesn't support PV VM
-> > with CET active.
+On Tue, Apr 19, 2022 at 12:19:44PM +0700, Bagas Sanjaya wrote:
+> On 4/18/22 22:29, Josef Bacik wrote:
+> > Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+> > 
+> > Thanks,
+> > 
+> > Josef
 > 
-> Technically it's always IRET'd to, but the point is that it's never
-> "branched to" by the execution context of the VM.
-> 
-> So it would be better to say that it's never indirectly branched to. 
-> That's what the IBT checks care about.
+> Thanks for the review. Should I send v2 with your Reviewed-by
+> tag?
 
-Right, so I was thinking the IRET could set the NEED_ENDBR bit, but
-yeah, that might be stretching the definition of an indirect-branch a
-wee bit.
-
-How about so then?
-
----
-Subject: x86/xen: Add ANNOTATE_NOENDBR to startup_xen()
-From: Josh Poimboeuf <jpoimboe@redhat.com>
-Date: Mon, 18 Apr 2022 09:50:25 -0700
-
-From: Josh Poimboeuf <jpoimboe@redhat.com>
-
-The startup_xen() kernel entry point is referenced by the ".note.Xen"
-section, and is the real entry point of the VM. Control transfer is
-through IRET, which *could* set NEED_ENDBR, however Xen currently does
-no such thing.
-
-Add ANNOTATE_NOENDBR to silence future objtool warnings.
-
-Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Andrew Cooper <andrew.cooper3@citrix.com>
-Link: https://lkml.kernel.org/r/a87bd48b06d11ec4b98122a429e71e489b4e48c3.1650300597.git.jpoimboe@redhat.com
-
+No, and please don't send fixes for the kdoc formats, the script does
+not have the same preferences as we who actually have to read the code.
+The kdoc format is convenient for more thnigs than just generating
+public documentation.
