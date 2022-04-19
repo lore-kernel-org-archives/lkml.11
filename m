@@ -2,172 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 621F4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 22:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5293FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 22:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358162AbiDSWD2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 18:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
+        id S242118AbiDSWEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 18:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232898AbiDSWD0 (ORCPT
+        with ESMTP id S231766AbiDSWEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 18:03:26 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020025.outbound.protection.outlook.com [52.101.61.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7AF3BF96;
-        Tue, 19 Apr 2022 15:00:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FDg4yN1IR6ZYYFJv+U8Mlsf1WHhrjRqlJQUmiSU+ROpnMnrJfP2Op4rAOOg+mqDaXnaiFjvUXjYrj7ixkIAYO2dqPlJZoIU5g3kYm6XhjtN/amSOxiM0ecmYa+ggAfdg3OXFTme4Pi0A6VJ8fbbjmQGOLWSbtF7wmYfKyrB7eHFU5TdS24SybsKPEvUtNq2t18zNOJGRrS8vCs44XHWQrMR7hpj4uU7RJ8nGBmyiMNvXEk9GF13cE9++nMZ33H+xiPZqzOotLnGtepYzxVN8DoNpiKgtIfR+lwjKR/z5GPs/Ls19Ol9FsQLNHGCLkCqZoFwcPL9iF91XccOeKC4XLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NsatelTigLxf0TzDixsIBDWSmTj5M5+XJXRPpldBrAA=;
- b=SG9gG+cPcXOCuObl82Pr5E2RTeWwWENnkhr03544KhKEhb71BuY5p3nMGo9F28vmgcSySfc1RksqGoNc4S+/D9IsOcbbtYK2q9XiAk7BmHrHVFu0w+nfBFS0AXDcW3shwHpUGLr8QEuXOH4hpVAw14WMfjqmEhYC1BpjvU1HqjNR4H5XftqWrCSmk0/Mr6o2OHDM7DZQjWHO8DH3kMcPIiV6Ki6+1GpYy05A66q/nZyg4FiMy1IfWS6ghdqKfPtGwKLGbvS4WkFvsq5Dsy3dkly/i2A6tJF9v2yhjix0zKkIhB7G4bcn9eaUqWxpiR7W2QvQYKCi5SM0x/EpchWIAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NsatelTigLxf0TzDixsIBDWSmTj5M5+XJXRPpldBrAA=;
- b=jTiWaSkD8qfhzodS7uUj43oBc0gFZEVS1kDBw3dVrzAY8q9QbpuBgY1A/ysap7toumzS/p4eZfXcMgaTa4HakXo8JtX5CNqr+jGql39WsR/Hb8GKho5D933p/0Lv3OXgdTRDHrq68ku/qimojHAJErhfKkJn8rP7kYVwjZDnbFY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from BL0PR2101MB1092.namprd21.prod.outlook.com
- (2603:10b6:207:37::26) by MN2PR21MB1485.namprd21.prod.outlook.com
- (2603:10b6:208:205::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.4; Tue, 19 Apr
- 2022 22:00:39 +0000
-Received: from BL0PR2101MB1092.namprd21.prod.outlook.com
- ([fe80::c45a:9279:12d9:eca1]) by BL0PR2101MB1092.namprd21.prod.outlook.com
- ([fe80::c45a:9279:12d9:eca1%7]) with mapi id 15.20.5206.004; Tue, 19 Apr 2022
- 22:00:39 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, lorenzo.pieralisi@arm.com,
-        bhelgaas@google.com, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mikelley@microsoft.com, robh@kernel.org, kw@linux.com
-Cc:     jakeo@microsoft.com, Dexuan Cui <decui@microsoft.com>
-Subject: [PATCH] PCI: hv: Do not set PCI_COMMAND_MEMORY to reduce VM boot time
-Date:   Tue, 19 Apr 2022 15:00:07 -0700
-Message-Id: <20220419220007.26550-1-decui@microsoft.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR04CA0317.namprd04.prod.outlook.com
- (2603:10b6:303:82::22) To BL0PR2101MB1092.namprd21.prod.outlook.com
- (2603:10b6:207:37::26)
+        Tue, 19 Apr 2022 18:04:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 874EF3DDFD
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 15:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650405679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZOf+5gwAGn9Ts5LxNHedJ7Kx9vDnu9lMiJ3VpD8HDhA=;
+        b=MI+89Dk4S2HZ/xEYp25hYi784sd9K5hvGzODaIbfCcTIk2lYNZuPVvpOv5bHGr8ZwpxyDc
+        xVlnt2jFI/M3RSG57W1CcMjJfEWIKrhen0U/Y77g3rsKpaKtf3SV6iaxA9OSDTOYmqM6u4
+        r+7hm8mgIzX/3CbB2BRXeMDan8KkZ0M=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-205-JfSZzH6IPm6YoEwZL5UmBQ-1; Tue, 19 Apr 2022 18:01:18 -0400
+X-MC-Unique: JfSZzH6IPm6YoEwZL5UmBQ-1
+Received: by mail-il1-f199.google.com with SMTP id h1-20020a056e021b8100b002cbec2c4261so7620619ili.16
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 15:01:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZOf+5gwAGn9Ts5LxNHedJ7Kx9vDnu9lMiJ3VpD8HDhA=;
+        b=xcep2sqdV4R2bgo6geIaCO39jHgpPh3pQ7StMEVgKAnoEhAngq44i9TpPp9kEBlcoI
+         nFdv8PAWoUfuasW3Cwj18E7I6AzAkjCmeeY/bd3KwyEAUn5kcTMT64ANl75RsNjEKTFd
+         IwB2nKaGrUWPjvLtV8KjJsDa5VB9nii94jeaZXMTBwvEdUuQ+zdrSWlk4hufvNMIngi8
+         vj05JYd518hUJxQ9MATgXTdJ1DwYCUlGxPaPuX6YHCf7gKOLHCLLHaTU4ssrcu/4WQN/
+         wOaHDV/iekCDknyMHY53bY4XuFwJGGh/mud/TNHJEicy1jqkXU35smy/WF159KU+1gDc
+         VQBw==
+X-Gm-Message-State: AOAM5327qFQqw7SyrCkqn62C+qsUEwL58KIWUkU2n95XtZo5Q75r9qfT
+        hrfI0k3jQrmvV9bIcPIgmeP1mtksXtFMV9SpQAxI5rq4KlEXFH/ZvQi9JJUz9re+e+BK72pYO3b
+        7MKLwjjj6wyiCtdHEVMmbeqxM
+X-Received: by 2002:a05:6638:22c6:b0:328:71e2:82ae with SMTP id j6-20020a05663822c600b0032871e282aemr6878465jat.53.1650405677507;
+        Tue, 19 Apr 2022 15:01:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJysIQX/isqxiYMJbIumIYuEy9U9dE8+h3bDbqGUIUbOg8yZ0lTGpnjp1xu/9nv2HyYaRHJhwA==
+X-Received: by 2002:a05:6638:22c6:b0:328:71e2:82ae with SMTP id j6-20020a05663822c600b0032871e282aemr6878446jat.53.1650405677186;
+        Tue, 19 Apr 2022 15:01:17 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id x186-20020a6bc7c3000000b00648deae6630sm10979284iof.54.2022.04.19.15.01.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 15:01:16 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 18:01:14 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Alistair Popple <apopple@nvidia.com>
+Subject: Re: [PATCH v8 22/23] mm: Enable PTE markers by default
+Message-ID: <Yl8xKh9Dc+nPr30a@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405014929.15158-1-peterx@redhat.com>
+ <Yl7RrKV5mXtNAAzi@cmpxchg.org>
+ <Yl8UmWQodLX+JkZ7@xz-m1.local>
+ <Yl8YE+w+OWz5RNOL@cmpxchg.org>
+ <Yl8bYKOJGW2py7Q0@xz-m1.local>
+ <Yl8ojDwxsD/wqWM4@cmpxchg.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5bed6b83-ae7e-45b2-21af-08da225009ef
-X-MS-TrafficTypeDiagnostic: MN2PR21MB1485:EE_
-X-MS-Exchange-AtpMessageProperties: SA|SL
-X-Microsoft-Antispam-PRVS: <MN2PR21MB1485E551B0AF0D0AAD741767BFF29@MN2PR21MB1485.namprd21.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +fAGT2coUpk/ABhJ1/IPovAiStoMy1OuP77oMpj/iVjCDq7PXiAu1cUVj/7Uc7zCw4IL7lbNW/xFVrG6u9Fd1q62bM2Y5R9BFPALRgp2lvsP83WQ618VoYxbqIEcQ1++YOxi8HasMw0U2HQwugkpr1kzhBO14td8eXqZnMDSS6PuHypBcYmv4K64pHMroD3dbwh6pFYxEaUoMM3G6ef+qENbkrOYdjRwU0WQW0Pp5kYsMsSq+EqaZMD3exrfofdt/VBU7JKaOUBfG4wPtjnWpENSjC1IW8vuOnmQXtDo2XE4In+yNTC06CBqvhYycI/xmteu5p6b9GeBEX4W8QcmTp0WR5dPobFCK7FW27zeX443OhTX8yDpZbWDdh2qviiHyYLZFnwKgEBddIFvg8Irct+vdP7eNFSDEFFtLVvPFTdqUmcI2hUAyOLZ2pMZ/CQat72J6mAAI0+ly+u+i5xDUJ5D6eLh8gXyMNjWqGM2O46UnaPiPi0jQ4dBSSph0qJM//5P1kGrHznuXLf7448yFaLW/5X2Vui6E7pFnv/i9ZcY2hiIyPD6O+IH4FBex30vomcjDykfLpvy3jg/k1Viw1P1Ii6YVGT2v7LRyeLyxPcXCECwsxTrzSMk42afxMSXtGf7ybLN5F6FYtVtrxhurCmpiXJHJ6New0M7l5g6HjBcN2zX/uqrsaBa+JZZ/u4pdCLKUUxPGq4r6fu6tgeArQL9c7nUFkh7LhVU3OUSE8+3qDOcK5WqMg5zydv23SB2
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB1092.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(66946007)(66556008)(921005)(36756003)(6506007)(38100700002)(2906002)(6486002)(508600001)(6512007)(4326008)(8676002)(52116002)(8936002)(66476007)(5660300002)(186003)(6666004)(2616005)(316002)(86362001)(82960400001)(83380400001)(82950400001)(10290500003)(107886003)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sZ03qNpPw63zjQGCF0s6kaCsWRJV6RCEVZ+G8LBpiNzVhW2LtLn5LxwI1fEu?=
- =?us-ascii?Q?Xr8oKYqZGdQOkj/WM4Js78UGhrhr3gmP/iqjkWlHegQAublu8FXMq0Q/zhnd?=
- =?us-ascii?Q?D7JoqbNus9Ri8xkFmiL/Fb45vQiH2o8oi3OP7AdoopwkL/12bl3ALkng0scP?=
- =?us-ascii?Q?X5P1EZnyJotcARS4cVqg/4u2gd7e1bYNIbUtsjhn3yc847eEO6dasPaP1c2f?=
- =?us-ascii?Q?A+MSJbIKO8zeP6w3RIqNVbHn9Rb5OE6jDNNuhaqzxeBSHsvpHKBw7XLpcL78?=
- =?us-ascii?Q?J8iU7qRYx5UvivKU2BYSbj+bJlxEYjI1pJA/PnxcTTdSRZrgcLpoxeUVtjFs?=
- =?us-ascii?Q?xlPaLCj6JmKiEB02B8LpfCXVLsP+uQADp8yVGldXr9DGT1lh4GI7Tb8cdJBp?=
- =?us-ascii?Q?97FPJiR2xL8DkdBJBsmkwtfNDWjJo1vENilkVbJt20S9pWHAkkHaeE0s34gW?=
- =?us-ascii?Q?juCD2YXsRvbojwC7eKhK1VAR3/dAzmtBGiHxl+xw81w4dzKpPQ131aGwN/AQ?=
- =?us-ascii?Q?8sM3QXXWz4DRQ9mJtB5CLlSY+9eWSdgbvOYS0N8ax3OfE/uWNfvm0aboblHr?=
- =?us-ascii?Q?5W77ojVPlMd1sWT/aEcgOQNQ0g6zy0Jmd0KwaebPgtDaN2EOfJnkW9290say?=
- =?us-ascii?Q?LW+qwAtItift8b9MlZ8ZOqPdG2m7hD1HdIuxMyfqUfzGfSD8nECC0vWnMEOk?=
- =?us-ascii?Q?4FVX2oHTpMFKiwT8PYuXNs2HlLFcjGzyOS5LBHb0DG2Wm3hWwNgdTuKZ31q1?=
- =?us-ascii?Q?dMwToL0ZZUjj3TCtV/Nec88Rlz0frZjYeqoDRPSe/ZJMsvDAY7Sgx31K3Au6?=
- =?us-ascii?Q?+ypjVImiqG9A3WdF7Q4JKP8IBvtpbsmWUUItSYQz3xbm2p1C39e3VHhvo3ZL?=
- =?us-ascii?Q?DzNwEUZMFblBM6tMQuQckKhgeE9dtlyZKzX9hlrgIeMSbKjWmT+UfS2Mraqh?=
- =?us-ascii?Q?yhKGtDMM1rfUWC8wiXOt13MQfv8xwpj2AXRfIhbbNUbCGI+1PxjbMcKj3WEd?=
- =?us-ascii?Q?LnftlgGBoj3UMltN0qY4TANW7zFOKJjvn1K7QFv2t9c35JMNiq6RwFmyVWYZ?=
- =?us-ascii?Q?2o1Ow7+P/zTf1dcywKLGeyFXVxla6MVRIS54ylLuPgs+elbmNZVAan/uK4br?=
- =?us-ascii?Q?+XyORGHZpfjM0Y6otyW927CHNd91AoRrjmso17we2I+umFWZQcucw0LRz+R/?=
- =?us-ascii?Q?lmPTuXLdG9WnU/JJae16HXgEIbZOYsyx+gw0o/m8/lwDyh7Fvxq/d+apvl6A?=
- =?us-ascii?Q?dQF4H6fZIaauczaMWxspgzkzM6RM02qDbgnHUwzQFwM69XuTeXkqz3A+W2NP?=
- =?us-ascii?Q?nqGH977N/s/sP/AmxUc5OJ4irMLuygfFUS7rjznIyX03UqV4e2XBLGgxDGhq?=
- =?us-ascii?Q?CxgVZ/Gn6ORcyk4oxpuxZ5O5zWSrg01iQPQPcqCzBDMazr7uqqsjQYGWOuxX?=
- =?us-ascii?Q?UBCkkLP90ib0zC9w/nzZbP0vdyMyfMZGXcpbuikKvHAhWIjOh/mLn0MuoGAD?=
- =?us-ascii?Q?3WPaioeVEgkoF6L6VT79o9HrBJW32UzsEcSvrkDemciwVWthTka2//awo2LL?=
- =?us-ascii?Q?LcOoQvwx6Mf2NyPGrHAQMQbtKBiYUL2OIqoLRajEgxpp2JK+qrQTR+Z/oc+R?=
- =?us-ascii?Q?Vr9nhkx1lXodWjfkjLPIE8q3DtHYde/HQP1DKGE3nWoAw69zvGduAbbgvafU?=
- =?us-ascii?Q?FdR8jbcNgZpd5Zysj6DnlxOJWnCZVuMSkLQae/uoKGUDGRtS5nMxbxDe0EAY?=
- =?us-ascii?Q?IXvf5HFw7OLaE0M4QxjKsOh6tllvvLUvdLIxmaZ+2MSKQZla5F9H3ZGj7Ebb?=
-X-MS-Exchange-AntiSpam-MessageData-1: FBabgacrsblaew==
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5bed6b83-ae7e-45b2-21af-08da225009ef
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB1092.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2022 22:00:39.0135
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gCj8S+30zi2YGojWem99u0A4CrAvBUEB6Ysvo4joCMW70XUhxkRNzd2J+eDdRPvfpQgd/c6tHVc36dXPqcOgzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1485
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yl8ojDwxsD/wqWM4@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A VM on Azure can have 14 GPUs, and each GPU may have a huge MMIO BAR,
-e.g. 128 GB. Currently the boot time of such a VM can be 4+ minutes, and
-most of the time is used by the host to unmap/map the vBAR from/to pBAR
-when the VM clears and sets the PCI_COMMAND_MEMORY bit: each unmap/map
-operation for a 128GB BAR needs about 1.8 seconds, and the pci-hyperv
-driver and the Linux PCI subsystem flip the PCI_COMMAND_MEMORY bit
-eight times (see pci_setup_device() -> pci_read_bases() and
-pci_std_update_resource()), increasing the boot time by 1.8 * 8 = 14.4
-seconds per GPU, i.e. 14.4 * 14 = 201.6 seconds in total.
+On Tue, Apr 19, 2022 at 05:24:28PM -0400, Johannes Weiner wrote:
+> On Tue, Apr 19, 2022 at 04:28:16PM -0400, Peter Xu wrote:
+> > On Tue, Apr 19, 2022 at 04:14:11PM -0400, Johannes Weiner wrote:
+> > > On Tue, Apr 19, 2022 at 03:59:21PM -0400, Peter Xu wrote:
+> > > > @@ -910,16 +910,16 @@ config ANON_VMA_NAME
+> > > Btw, this doesn't do much without userfaultfd being enabled in
+> > > general, right?
+> > 
+> > So far yes, but I'm thinking there can be potential other users of
+> > PTE_MARKERS from mm world.  The most close discussion is on the swap read
+> > failures and this patch proposed by Miaohe:
+> > 
+> > https://lore.kernel.org/lkml/20220416030549.60559-1-linmiaohe@huawei.com/
+> >
+> > So I hope we can still keep them around here under mm/ if possible, and
+> > from the gut feeling it really should..
+> 
+> Agreed, mm/ seems a good fit for PTE_MARKER.
+> 
+> If it's invisible and gets selected as needed, it's less of a concern,
+> IMO. I'm somewhat worried about when and how the user-visible options
+> show up right now, though...
+> 
+> > > Would it make sense to have it next to 'config USERFAULTFD' as a
+> > > sub-option?
+> > 
+> > Yes another good question. :)
+> > 
+> > IIUC CONFIG_USERFAULTFD resides in init/Kconfig because it introduces a new
+> > syscall.  Same to the rest of the bits for uffd since then, namely:
+> > 
+> >   - USERFAULTFD_WP
+> >   - USERFAULTFD_MINOR
+> > 
+> > What I am thinking now is the other way round of your suggestion: whether
+> > we should move most of them out, at least the _WP and _MINOR configs into
+> > mm/?  Because IMHO they are really pure mm ideas and they're irrelevant to
+> > syscalls and init.
+> 
+> I'm thinking the MM submenu would probably be a better fit for all
+> user-visible userfaultfd options, including the syscall. Like you say,
+> it's an MM concept.
+> 
+> But if moving the syscall knob out from init isn't popular, IMO it
+> would be better to add the new WP option to init as well. This ensures
+> that when somebody selects userfaultfd, they also see the relevant
+> suboptions and don't have to chase them down across multiple submenus.
+> 
+> Conversely, they should also have the necessary depend clauses so that
+> suboptions aren't visible without the main feature. E.g. it asked me
+> for userfaultd options even though I have CONFIG_USERFAULTFD=n.
 
-Fix the slowness by not turning on the PCI_COMMAND_MEMORY in pci-hyperv.c,
-so the bit stays in the off state before the PCI device driver calls
-pci_enable_device(): when the bit is off, pci_read_bases() and
-pci_std_update_resource() don't cause Hyper-V to unmap/map the vBARs.
-With this change, the boot time of such a VM is reduced by
-1.8 * (8-1) * 14 = 176.4 seconds.
+Hmm, this is a bit weird... since we do have that dependency chain for
+PTE_MARKER_UFFD_WP -> HAVE_ARCH_USERFAULTFD_WP -> USERFAULTFD:
 
-Tested-by: Boqun Feng (Microsoft) <boqun.feng@gmail.com>
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Cc: Jake Oshins <jakeo@microsoft.com>
----
- drivers/pci/controller/pci-hyperv.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+  in arch/x86/Kconfig:
+  config X86
+          ...
+          select HAVE_ARCH_USERFAULTFD_WP         if X86_64 && USERFAULTFD
 
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index d270a204324e..f9fbbd8d94db 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -2082,12 +2082,17 @@ static void prepopulate_bars(struct hv_pcibus_device *hbus)
- 				}
- 			}
- 			if (high_size <= 1 && low_size <= 1) {
--				/* Set the memory enable bit. */
--				_hv_pcifront_read_config(hpdev, PCI_COMMAND, 2,
--							 &command);
--				command |= PCI_COMMAND_MEMORY;
--				_hv_pcifront_write_config(hpdev, PCI_COMMAND, 2,
--							  command);
-+				/*
-+				 * No need to set the PCI_COMMAND_MEMORY bit as
-+				 * the core PCI driver doesn't require the bit
-+				 * to be pre-set. Actually here we intentionally
-+				 * keep the bit off so that the PCI BAR probing
-+				 * in the core PCI driver doesn't cause Hyper-V
-+				 * to unnecessarily unmap/map the virtual BARs
-+				 * from/to the physical BARs multiple times.
-+				 * This reduces the VM boot time significantly
-+				 * if the BAR sizes are huge.
-+				 */
- 				break;
- 			}
- 		}
+  in mm/Kconfig (with/without the "mm/uffd: Hide PTE_MARKER" patch applied):
+  config PTE_MARKER_UFFD_WP
+          ...
+          depends on HAVE_ARCH_USERFAULTFD_WP
+
+So logically if !USERFAULTFD we shouldn't see PTE_MARKER_UFFD_WP at all?
+
+That's also what I got when I tried it out for either !USERFAULTFD on x86,
+or any non-x86 platforms (because there we have !HAVE_ARCH_USERFAULTFD_WP
+constantly irrelevant of USERFAULTFD).  Though I could have missed
+something..
+
+> 
+> What do you think?
+
+I don't have a strong preference here, I think it's okay if it's preferred
+that we only put user-visible configs into mm/Kconfig.  It's just that I
+see we have tons of user-invisible configs already in mm/Kconfig, to list
+some:
+
+        config ARCH_HAS_HUGEPD
+        config MAPPING_DIRTY_HELPERS
+        config KMAP_LOCAL
+        config KMAP_LOCAL_NON_LINEAR_PTE_ARRAY
+
+But I'm not sure whether it's a rule of thumb somewhere else.
+
+At the meantime, I also looked at whether syscall configs are always and
+only be put under init/, and funnily I got:
+
+$ find . -name Kconfig | xargs grep --color -E "\".*syscall.*\""
+./init/Kconfig: bool "Enable process_vm_readv/writev syscalls"
+./init/Kconfig: bool "uselib syscall"
+./init/Kconfig: bool "sgetmask/ssetmask syscalls support" if EXPERT
+./init/Kconfig: bool "Sysfs syscall support" if EXPERT
+./init/Kconfig: bool "open by fhandle syscalls" if EXPERT
+./init/Kconfig: bool "Enable madvise/fadvise syscalls" if EXPERT
+./arch/xtensa/Kconfig:  bool "Enable fast atomic syscalls"
+./arch/xtensa/Kconfig:  bool "Enable spill registers syscall"
+./arch/powerpc/Kconfig: bool "Support setting protections for 4k subpages (subpage_prot syscall)"
+./arch/powerpc/Kconfig: bool "Enable filtering of RTAS syscalls"
+./arch/Kconfig: bool "Support for randomizing kernel stack offset on syscall entry" if EXPERT
+./arch/s390/Kconfig:    bool "Verify kernel signature during kexec_file_load() syscall"
+./arch/sh/mm/Kconfig:   bool "Support vsyscall page"
+./arch/x86/Kconfig:     bool "Enable vsyscall emulation" if EXPERT
+./arch/x86/Kconfig:     bool "Verify kernel signature during kexec_file_load() syscall"
+./arch/x86/Kconfig:     bool "Require a valid signature in kexec_file_load() syscall"
+./arch/x86/Kconfig:     prompt "vsyscall table for legacy applications"
+./arch/arm64/Kconfig:   bool "Verify kernel signature during kexec_file_load() syscall"
+./arch/arm64/Kconfig:   bool "Enable the tagged user addresses syscall ABI"
+./kernel/trace/Kconfig: bool "Trace syscalls"
+./kernel/trace/Kconfig: bool "Run selftest on syscall events"
+
+So let's put aside arch specific lines, ftrace does have FTRACE_SYSCALLS
+that lies in the kernel/trace/ dir.. not sure whether we could move
+USERFAULTFD and all the rest into mm/ as well?  Or perhaps that's just a
+bad example? :)
+
+Thanks,
+
 -- 
-2.17.1
+Peter Xu
 
