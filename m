@@ -2,77 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C74C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C89C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 06:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348773AbiDSGaa (ORCPT
+        id S1348782AbiDSGbT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 02:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
+        Tue, 19 Apr 2022 02:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348769AbiDSGa3 (ORCPT
+        with ESMTP id S237262AbiDSGbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 02:30:29 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D24240A2;
-        Mon, 18 Apr 2022 23:27:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650349665; x=1681885665;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iOqdApx4bR1Mpbme/Zm3fofbE/saRcmdrI2mEPKRRB4=;
-  b=fz+rsWUPKNDCL7DFcEvyXAt+re4M/uj9JPzoHjlh86ccXcxNs/hiWbQ0
-   ypoORsNo6F7euYHIheGacBNQ2wgMxyN2Zhs80fcBbW26GhOPgdwNEG71h
-   9yJvxxjwyeNo7vSlLiI0JkNu9Eqz+cXx6/3lgoCsL5q3V10hmJbwjO59M
-   WDDKYnzCzX2Fyoi8FVPYVr2Z/O5+j/wi2jr+pczve/Ztch2MJ/piwkQvy
-   UmiijqBRptseH850QfxREnCVLbsyU5MR9XAu8ViJGCDbLnq0l4Z3wrb/9
-   8JE+TJIo2lpSaoYcQhpov3YL0J+1K5Oc2lu+HzHvVU/QMWV73qLM5wpDF
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,272,1643698800"; 
-   d="scan'208";a="92757492"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Apr 2022 23:27:44 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 18 Apr 2022 23:27:43 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 18 Apr 2022 23:27:43 -0700
-Date:   Tue, 19 Apr 2022 08:30:57 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <pabeni@redhat.com>
-Subject: Re: [PATCH net] net: lan966x: Make sure to release ptp interrupt
-Message-ID: <20220419063057.gv262tcgq3kvlqc7@soft-dev3-1.localhost>
-References: <20220413195716.3796467-1-horatiu.vultur@microchip.com>
- <20220415210139.2d338f4b@kernel.org>
+        Tue, 19 Apr 2022 02:31:18 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B617A23BFC;
+        Mon, 18 Apr 2022 23:28:36 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 08:28:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650349714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cv5jZ7dxFa/VdklP7GQ+1SDL4Zimqvxof2UzYY6p/Wc=;
+        b=mHK1iN4FuDQg3xyFJqGihvPpO4jB0fgLE4VuB3fzQPzFmlAYZu0xZDXxHSWivi1nCNYYRq
+        ESEdOmUPzgRe/ET7oxLrcPEz6w/d9T9SP+clONnapWqMuu+CJVLe6jP+s8cQ5OB/krn1ei
+        x4DWGw/ykTygrtRH/VtUgEJIXD/VXdd8CglAVmgkqM52X4zQzYN9SUYVfPgMXUdQX/Gg0B
+        YGm3vNE5Czv29w1xYhpayoHSpFuZMG1jg4U7SUhIlBhO4h2jds0hwMGpriwCom9qpOC8uS
+        NFtIUVWpXBIiNLryTQCrwxR2ziuk8lMZS2ptQ6uUi7UrXK1Uv/o679gL1X1FOQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650349714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cv5jZ7dxFa/VdklP7GQ+1SDL4Zimqvxof2UzYY6p/Wc=;
+        b=F9mAbriKsor1oJ3Mm1r4bUufvShI/FarerqXwSeFS6c9pEclkwRermJcB1rnpeVnNUBA2E
+        Gi1whjlB7rzyz6Bw==
+From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+cc:     linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Benedikt Spranger <b.spranger@linutronix.de>
+Subject: Re: [PATCH] rcu/torture: Change order of warning and trace dump
+In-Reply-To: <20220418185042.GA2420391@paulmck-ThinkPad-P17-Gen-1>
+Message-ID: <alpine.DEB.2.21.2204190826500.1508@somnus>
+References: <20220411151903.28167-1-anna-maria@linutronix.de> <20220411180915.GY4285@paulmck-ThinkPad-P17-Gen-1> <20220418185042.GA2420391@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220415210139.2d338f4b@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 04/15/2022 21:01, Jakub Kicinski wrote:
-> 
-> On Wed, 13 Apr 2022 21:57:16 +0200 Horatiu Vultur wrote:
-> > When the lan966x driver is removed make sure to remove also the ptp_irq
-> > IRQ.
-> 
-> I presume it's because you want to disable the IRQ so it doesn't fire
-> during / after remove? Would be good to have such justifications
-> spelled out in the commit message in the future!
+On Mon, 18 Apr 2022, Paul E. McKenney wrote:
 
-Sorry about this. I will improve the commit messages in the future.
-
+> On Mon, Apr 11, 2022 at 11:09:15AM -0700, Paul E. McKenney wrote:
+> > On Mon, Apr 11, 2022 at 05:19:03PM +0200, Anna-Maria Behnsen wrote:
+> > > Dumping a big ftrace buffer could lead to a RCU stall. So there is the
+> > > ftrace buffer and the stall information which needs to be printed. When
+> > > there is additionaly a WARN_ON() which describes the reason for the ftrace
+> > > buffer dump and the WARN_ON() is executed _after_ ftrace buffer dump, the
+> > > information get lost in the middle of the RCU stall information.
+> > > 
+> > > Therefore print WARN_ON() message before dumping the ftrace buffer in
+> > > rcu_torture_writer().
+> > > 
+> > > Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
+> > > Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
+> > 
+> > Hello, Anna-Maria!
+> > 
+> > Good point, but we get caught out either way.  Either we take the chance
+> > of losing the WARN() message as you say, or we take the chance of the
+> > activity in the WARN() message overwriting needed information in the
+> > trace buffer.
+> > 
+> > Would it work to shut off tracing, do the WARN(), and only then do the
+> > rcu_ftrace_dump()?
 > 
-> > Fixes: e85a96e48e3309 ("net: lan966x: Add support for ptp interrupts")
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> For example, as shown the the updated patch below currently queued on -rcu
+> for further review and testing?
+> 
+> If this is problematic, please let me know!
+> 
 
--- 
-/Horatiu
+Hi Paul,
+
+sorry for the late reply - I was busy with other things last week...
+
+This solution is totally fine for me!
+
+Thanks,
+
+	Anna-Maria
+
