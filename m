@@ -2,201 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB73C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4786AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353292AbiDSSeZ (ORCPT
+        id S1357309AbiDSSfF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
+        Tue, 19 Apr 2022 14:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358169AbiDSSd6 (ORCPT
+        with ESMTP id S1357222AbiDSSeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:33:58 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082A546662
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:24:27 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id c15so21587182ljr.9
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:24:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AsTN3hKy53tOQ0yC6mN5UWrEJyNRzz9niRjTVy3QZo8=;
-        b=pLPd3Ud5SWGgyZg65CkOgH1iVO3cAmCL0kj8iFG9FTiRUu1PjX6hIL2HCpjxtKjEW6
-         f0HISjf8DaCWmjJ6C2W/4soMJmEMMQvn4AeMwkrPVwUWyF+eJNc5RzGhBLGkvQI6HJwk
-         Ss9ScSdwcNCyt8Kp5C9pZwO5IMEeeGT/s/inSL2aFCr+ITKFgFK0BarvG8qkYXS77p/f
-         80DI5NUs/0BpOHda6Ip1uI2afHAhUKp56WAGjX4pgF6mhfLDA5jVZ0cRBdUufkMDzrYo
-         PeLKJfifrdlxsM5NKxHdVBiZKWu94hRx68UUJRLgg0O5XLz0e1ggBmzpCwdrE5Bqf1xq
-         UmUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AsTN3hKy53tOQ0yC6mN5UWrEJyNRzz9niRjTVy3QZo8=;
-        b=JNaSZ5Xo5uoSRIFJ+Vgg2plfh6N+xsy7O05qSmx8D+bgVaXFjvwB/C5BRkv0CrWIRY
-         ad76NjRHhqQPme87k8TmeZYdMDc2YlG0yDtmSz/OfS4DlQwgoSWnU+DbgdsO0echfuNQ
-         WiwTNbb903xokbWJAUfyawUzGtGIF+UZhl3PvwrplDQuiirM4kTxQ0OhaAavXvpsQEaA
-         ZC+JkDHaEQjo7yAy5jquzA6/nIHYXhdrKqXT6pAy34A6tNOgMNGyujHPa9KRXYaaPWcz
-         xPSnYYGvK4xhcDCb1/vfI6yiIJB9f0bwYt8amgRlKsaDipHtYsgTpEBy8vtOCF6dqFeS
-         RjJQ==
-X-Gm-Message-State: AOAM531zZa3x6Khq0o4AF8eTT/PMnMuoO7QbcgyLZJ9JLjku2lH3O0kI
-        iMPGt+2h2bJBr9Xwijtxs2+yE4hUpEDkkuqI3UHmGw==
-X-Google-Smtp-Source: ABdhPJwkSfr9pP2nwB9541Zh+TriNUNVh/fdYmxFU+HUUdAzi/nkK2G5Tx3EnrgDlc3XvoRpt4dfIepSPQxY6mOuYTw=
-X-Received: by 2002:a2e:9345:0:b0:24b:451:7ce1 with SMTP id
- m5-20020a2e9345000000b0024b04517ce1mr10844943ljh.258.1650392665301; Tue, 19
- Apr 2022 11:24:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220325232454.2210817-1-cmllamas@google.com>
-In-Reply-To: <20220325232454.2210817-1-cmllamas@google.com>
-From:   Todd Kjos <tkjos@google.com>
-Date:   Tue, 19 Apr 2022 11:24:13 -0700
-Message-ID: <CAHRSSEwC9hO-BPdYUGz_QF77bDJLWMJexaGV5+VhFYdrW-H64w@mail.gmail.com>
-Subject: Re: [PATCH] binder: hold fd_install until allocating fds first
-To:     Carlos Llamas <cmllamas@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 19 Apr 2022 14:34:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EECB32F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:25:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECA8D6143D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 18:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035D2C385A7;
+        Tue, 19 Apr 2022 18:25:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1650392750;
+        bh=XBqfyP6KAmo9qr7LY908MPyc4H5JRUEObbvlWE0N1lw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SExyzxBJW/aJrKEv8PfofSGkAceFkWaTn0TAvCJdsehvc3ELLrV8xQGZcTpDRubMP
+         1PAHZyeAERbvHGu7b5Cq8QRqcK0urD9SbbrI7nM5m+EsBESE3icZae6kmQv36JB5Y9
+         tBDEetP+qDzXvVUKdlmrWg5sPODpMx4hQh5mdXp4=
+Date:   Tue, 19 Apr 2022 11:25:49 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     linux-mm@kvack.org, Dave Chinner <dchinner@redhat.com>,
+        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yang Shi <shy828301@gmail.com>
+Subject: Re: [PATCH rfc 0/5] mm: introduce shrinker sysfs interface
+Message-Id: <20220419112549.a42f1d86b025112d3a3aaf8c@linux-foundation.org>
+In-Reply-To: <Yl727M1Dxm+vC/R1@carbon>
+References: <20220416002756.4087977-1-roman.gushchin@linux.dev>
+        <20220418212709.42f2ba15e00999bb57086b27@linux-foundation.org>
+        <Yl727M1Dxm+vC/R1@carbon>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 4:25 PM Carlos Llamas <cmllamas@google.com> wrote:
->
-> Al noted in [1] that fd_install can't be undone, so it must come last in
-> the fd translation sequence, only after we've successfully reserved all
-> descriptors and copied them into the transaction buffer.
->
-> This patch takes Al's proposed fix in [2] and makes a few tweaks to fold
-> the traversal of t->fd_fixups during release.
->
-> [1] https://lore.kernel.org/driverdev-devel/YHnJwRvUhaK3IM0l@zeniv-ca.linux.org.uk
-> [2] https://lore.kernel.org/driverdev-devel/YHo6Ln9VI1T7RmLK@zeniv-ca.linux.org.uk
->
-> Cc: Christian Brauner <christian.brauner@ubuntu.com>
-> Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
-> Signed-off-by: Carlos Llamas <cmllamas@google.com>
+On Tue, 19 Apr 2022 10:52:44 -0700 Roman Gushchin <roman.gushchin@linux.dev> wrote:
 
-Acked-by: Todd Kjos <tkjos@google.com>
+> > Unclear.  At the end of what output?
+> 
+> This is how it looks like when the output is too long:
+> 
+> [root@eth50-1 sb-btrfs-24]# cat count_memcg
+> 1 226
+> 20 96
+> 53 811
+> 2429 2
+> 218 13
+> 581 29
+> 911 124
+> 1010 3
+> 1043 1
+> 1076 1
+> 1241 60
+> 1274 7
+> 1307 39
+> 1340 3
+> 1406 14
+> 1439 63
+> 1472 54
+> 1505 8
+> 1538 1
+> 1571 6
+> 1604 39
+> 1637 9
+> 1670 8
+> 1703 4
+> 1736 1094
+> 1802 2
+> 1868 2
+> 1901 52
+> 1934 592
+> 1967 32
+> 			< CUT >
+> 18797 1
+> 18830 1
 
-> ---
->  drivers/android/binder.c          | 34 ++++++++++++-------------------
->  drivers/android/binder_internal.h |  2 ++
->  2 files changed, 15 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-> index 8351c5638880..bfadc0c4a442 100644
-> --- a/drivers/android/binder.c
-> +++ b/drivers/android/binder.c
-> @@ -1481,6 +1481,8 @@ static void binder_free_txn_fixups(struct binder_transaction *t)
->
->         list_for_each_entry_safe(fixup, tmp, &t->fd_fixups, fixup_entry) {
->                 fput(fixup->file);
-> +               if (fixup->target_fd >= 0)
-> +                       put_unused_fd(fixup->target_fd);
->                 list_del(&fixup->fixup_entry);
->                 kfree(fixup);
->         }
-> @@ -2220,6 +2222,7 @@ static int binder_translate_fd(u32 fd, binder_size_t fd_offset,
->         }
->         fixup->file = file;
->         fixup->offset = fd_offset;
-> +       fixup->target_fd = -1;
->         trace_binder_transaction_fd_send(t, fd, fixup->offset);
->         list_add_tail(&fixup->fixup_entry, &t->fd_fixups);
->
-> @@ -4067,10 +4070,9 @@ static int binder_wait_for_work(struct binder_thread *thread,
->   * Now that we are in the context of the transaction target
->   * process, we can allocate and install fds. Process the
->   * list of fds to translate and fixup the buffer with the
-> - * new fds.
-> + * new fds first and only then install the files.
->   *
-> - * If we fail to allocate an fd, then free the resources by
-> - * fput'ing files that have not been processed and ksys_close'ing
-> + * If we fail to allocate an fd, skip the install and release
->   * any fds that have already been allocated.
->   */
->  static int binder_apply_fd_fixups(struct binder_proc *proc,
-> @@ -4087,41 +4089,31 @@ static int binder_apply_fd_fixups(struct binder_proc *proc,
->                                      "failed fd fixup txn %d fd %d\n",
->                                      t->debug_id, fd);
->                         ret = -ENOMEM;
-> -                       break;
-> +                       goto err;
->                 }
->                 binder_debug(BINDER_DEBUG_TRANSACTION,
->                              "fd fixup txn %d fd %d\n",
->                              t->debug_id, fd);
->                 trace_binder_transaction_fd_recv(t, fd, fixup->offset);
-> -               fd_install(fd, fixup->file);
-> -               fixup->file = NULL;
-> +               fixup->target_fd = fd;
->                 if (binder_alloc_copy_to_buffer(&proc->alloc, t->buffer,
->                                                 fixup->offset, &fd,
->                                                 sizeof(u32))) {
->                         ret = -EINVAL;
-> -                       break;
-> +                       goto err;
->                 }
->         }
->         list_for_each_entry_safe(fixup, tmp, &t->fd_fixups, fixup_entry) {
-> -               if (fixup->file) {
-> -                       fput(fixup->file);
-> -               } else if (ret) {
-> -                       u32 fd;
-> -                       int err;
-> -
-> -                       err = binder_alloc_copy_from_buffer(&proc->alloc, &fd,
-> -                                                           t->buffer,
-> -                                                           fixup->offset,
-> -                                                           sizeof(fd));
-> -                       WARN_ON(err);
-> -                       if (!err)
-> -                               binder_deferred_fd_close(fd);
-> -               }
-> +               fd_install(fixup->target_fd, fixup->file);
->                 list_del(&fixup->fixup_entry);
->                 kfree(fixup);
->         }
->
->         return ret;
-> +
-> +err:
-> +       binder_free_txn_fixups(t);
-> +       return ret;
->  }
->
->  static int binder_thread_read(struct binder_proc *proc,
-> diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
-> index d6b6b8cb7346..cf70a104594d 100644
-> --- a/drivers/android/binder_internal.h
-> +++ b/drivers/android/binder_internal.h
-> @@ -515,6 +515,7 @@ struct binder_thread {
->   * @fixup_entry:          list entry
->   * @file:                 struct file to be associated with new fd
->   * @offset:               offset in buffer data to this fixup
-> + * @target_fd:            fd to use by the target to install @file
->   *
->   * List element for fd fixups in a transaction. Since file
->   * descriptors need to be allocated in the context of the
-> @@ -525,6 +526,7 @@ struct binder_txn_fd_fixup {
->         struct list_head fixup_entry;
->         struct file *file;
->         size_t offset;
-> +       int target_fd;
->  };
->
->  struct binder_transaction {
-> --
-> 2.35.1.1021.g381101b075-goog
->
+We do that in-kernel?  Why?  That just makes parsers harder to write?
+If someone has issues then direct them at /usr/bin/less?
