@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3404DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357034AbiDSS1P (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 14:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S234035AbiDSS1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 14:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357201AbiDSSWx (ORCPT
+        with ESMTP id S1357284AbiDSSXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 14:22:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A029942A3C;
-        Tue, 19 Apr 2022 11:15:29 -0700 (PDT)
+        Tue, 19 Apr 2022 14:23:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF3E433B4;
+        Tue, 19 Apr 2022 11:15:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C0A061453;
-        Tue, 19 Apr 2022 18:15:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDC8C385A7;
-        Tue, 19 Apr 2022 18:15:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 566AFB81185;
+        Tue, 19 Apr 2022 18:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 250D2C385AB;
+        Tue, 19 Apr 2022 18:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392128;
-        bh=e4G0xTSYBF2+KO/eQLTax+MxgRIrhCoscGPppvkspR0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=amb9DUFDEOTupAc9roFt1KoS7uwfsVpRr4DEVk2ieeLV2Oz++u+6ytIrS/7NPU5n0
-         LYRgv72PGGV9/2dNnbqumxqUBYWmCLMBMSw9icD6JeEV3gzyUgJc0DVNMdCRKp5MXL
-         ZQfqGn3cEcMi3/RSka9r7Jn9avK9KWFbaAYczvCAhl5D2kEYs/Kqns62YvKhoFMr4k
-         PR5x0hXzG4z2vEFcu+Hz2RwXSreeub0K0bGXy35rv9FKnXtuL5ivm+vclzcDPwhDj0
-         meczRdoa++3AHo6igf/Ny4qA5RCwO1N2zTqS7dZpIZF0fL5acA8H5QwdG6Nw3F0eTK
-         bmMnbbZg8RjfA==
+        s=k20201202; t=1650392139;
+        bh=q+LJfLznKrQkXW0e24IKQ9gcKHtINcDcGkYCosa7MkM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mBeeJAMNh4j1M2yl16vTQVxhT8WVHPyXM2doCKi9DeZ1MbgGgA2r1gJdtBZ+f6fiJ
+         MN8/5Ebw+T0SouUXuB72IbcdJDQsL5DFSpO18z6PpVCxeOVgQI0nxeiS8ukoUSsvFY
+         v0LOpa30v3+0LH/cXOK8oEvwzkCO0jTRf5k50xzbpOf+0h4p7maXIsdqvo9J2rEjqF
+         QOla9SWW7Se9JT4mGjwkSJZnlbEVP44bh5BEEVXlHfZK3jT3UKI+0gxTf3isBG/VFQ
+         RUx9kAoMztV0+Sdg1DUnaDJXKGdG5eRKFizybdW6GJ0y6hAPYlVIKxCzewyGZxJRHj
+         57TBkAO+MiCjg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 01/12] ARM: vexpress/spc: Avoid negative array index when !SMP
-Date:   Tue, 19 Apr 2022 14:15:14 -0400
-Message-Id: <20220419181525.486166-1-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Steve French <sfrench@samba.org>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Rohith Surabattula <rohiths.msft@gmail.com>,
+        linux-cifs@vger.kernel.org, Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 4.19 06/12] cifs: Check the IOCB_DIRECT flag, not O_DIRECT
+Date:   Tue, 19 Apr 2022 14:15:19 -0400
+Message-Id: <20220419181525.486166-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
+References: <20220419181525.486166-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,56 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
+[ Upstream commit 994fd530a512597ffcd713b0f6d5bc916c5698f0 ]
 
-When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
-a couple negative array index accesses:
+Use the IOCB_DIRECT indicator flag on the I/O context rather than checking to
+see if the file was opened O_DIRECT.
 
-arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
-arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
-  583 |   if (init_opp_table[cluster])
-      |       ~~~~~~~~~~~~~~^~~~~~~~~
-arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
-  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
-      |       ^~~~~~~~~~~~~~
-arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
-  592 |    init_opp_table[cluster] = true;
-      |    ~~~~~~~~~~~~~~^~~~~~~~~
-arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
-  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
-      |       ^~~~~~~~~~~~~~
-
-Skip this logic when built !SMP.
-
-Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
-Cc: Liviu Dudau <liviu.dudau@arm.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-arm-kernel@lists.infradead.org
-Acked-by: Liviu Dudau <liviu.dudau@arm.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <sfrench@samba.org>
+cc: Shyam Prasad N <nspmangalore@gmail.com>
+cc: Rohith Surabattula <rohiths.msft@gmail.com>
+cc: linux-cifs@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-vexpress/spc.c | 2 +-
+ fs/cifs/cifsfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
-index 55bbbc3b328f..e65c04be86cc 100644
---- a/arch/arm/mach-vexpress/spc.c
-+++ b/arch/arm/mach-vexpress/spc.c
-@@ -580,7 +580,7 @@ static int __init ve_spc_clk_init(void)
- 		}
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index baa1713d6695..52b1524b40cd 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -813,7 +813,7 @@ cifs_loose_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+ 	ssize_t rc;
+ 	struct inode *inode = file_inode(iocb->ki_filp);
  
- 		cluster = topology_physical_package_id(cpu_dev->id);
--		if (init_opp_table[cluster])
-+		if (cluster < 0 || init_opp_table[cluster])
- 			continue;
+-	if (iocb->ki_filp->f_flags & O_DIRECT)
++	if (iocb->ki_flags & IOCB_DIRECT)
+ 		return cifs_user_readv(iocb, iter);
  
- 		if (ve_init_opp_table(cpu_dev))
+ 	rc = cifs_revalidate_mapping(inode);
 -- 
 2.35.1
 
