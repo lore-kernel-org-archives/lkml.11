@@ -2,82 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13488C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E54C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 18:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354906AbiDSTA5 (ORCPT
+        id S1355355AbiDSTBc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 15:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        Tue, 19 Apr 2022 15:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiDSTAw (ORCPT
+        with ESMTP id S232860AbiDSTB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 15:00:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490D03EF0A;
-        Tue, 19 Apr 2022 11:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Bp4bwe3H7WczeFj56jWpI8QBoijIjdBXfNXBKn0bveA=; b=BnjvFkL1Ut5niN1GJU9Qqiqxk6
-        bSPHAiXL02AryU4BQbQpKlkwkXIt6mnpaGai1EkMfb0N77GoGMiPu82Wt1d4/+QTWXcjmBV6Ku7ag
-        5hFnENghTqRcnVGh//6lZ3HUdy935pKzoa0T5tTd6a06gSHsV+1rn8Io1dCb+FjgCxRGlfV1yw4Y7
-        cXkAHqXV7UtAWVHSPZreuF+Fv6h6X24hK0ekZ6grYTMiEtvlDlP9dUvb31vc66WRUZZTLiANfU0Sd
-        ijIbnGbDawioK8ZKRXJzI4YrOxtoaUSi1Hwf0K71Z6Ka7hBoV/5ziHXVUw7oTmuDiI0mQAuI0pLBc
-        s6mPA9Zw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58334)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ngt2s-0001Sk-I9; Tue, 19 Apr 2022 19:57:50 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ngt2g-00011J-Hx; Tue, 19 Apr 2022 19:57:38 +0100
-Date:   Tue, 19 Apr 2022 19:57:38 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        max.krummenacher@toradex.com, Shawn Guo <shawnguo@kernel.org>,
-        Stefano Stabellini <stefano.stabellini@xilinx.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: Re: [next] arm: boot failed - PC is at cpu_ca15_set_pte_ext
-Message-ID: <Yl8GInPZyl2PqK7D@shell.armlinux.org.uk>
-References: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
+        Tue, 19 Apr 2022 15:01:28 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD26B3EF1F
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:58:45 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d15so16649610pll.10
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 11:58:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5fyf1PTx0yUxmy8QJj6XRdY4JzR19H+LadWdH1OjqpQ=;
+        b=cfhuFASrLgcbhKuiKOEPbDHW+TBXmFYUW7h6Z14sl8+sHax5rf7tppGQp3YtjPADun
+         NJdUU1JZCYebpl/uroO2XURjKcaMlRFsYCnZ3g8BppGbKnucsuU67+bXYVOjXMAwouJE
+         XezHq2FUdU3RrJgCSxieSyIbOwwOTIRwxyBtf4cnt7fDRtXEw2eGQpaNTQX1y8y9Lfkf
+         DgLIh8/3fUcGCkIoz5r4JIQJz4Hkm3v3tp+dRwFrimXx/s98Wguu2HQV7cDve8t7yE5t
+         wR+5LNF0fF5r4qJkUQeqeafVblsSgV2q2cIGLJKuOPhJiCBeLPbt7W/O9weuW7Vww7FI
+         UZJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5fyf1PTx0yUxmy8QJj6XRdY4JzR19H+LadWdH1OjqpQ=;
+        b=lgFpCzBoe+qrlO4HLL9QSal016J1VuS75AOZrvOue139ULW3kEScd1Go0lax+bykpl
+         Y51WS+Sk85B8i87V60DdZx7KHAHOw7FWNWoL1GzK+yxFumpxZfHyr7ba1RdRcc8z7gVE
+         lVPRWu9aoheVagrz6NebCiKeRHyVEqbyWbJqCvwIL/iBIkTOe7cgOR5bOmLf8YQ1Agcl
+         eTWQqJv0Z1R50MjWxFjhzMAuxuEZkvG3Aq7MjKHS5t4vz+H23c7Lp5XgYYEPmz0GHIZN
+         R3+EfKjU9ngaxObp/nQzpELlNa9NRQ57yfnOz7Lg+fXYgQwyvubGAQa0gzgdP0yh9H84
+         11Bw==
+X-Gm-Message-State: AOAM533B/5+TyLivXfOyq5LzfnSfMwmyW4vSyw3Yd5CigP4R8e5QJehv
+        h5kJqbFCXzPziTEh9skJRV4=
+X-Google-Smtp-Source: ABdhPJw46gOyITqEvZVwPP6qrX4qd7JMNWZ9feMKsa0GHPYEScXqVFoswx4aqSD53b7bV+jW0e7EbQ==
+X-Received: by 2002:a17:90b:1b03:b0:1d2:a338:c568 with SMTP id nu3-20020a17090b1b0300b001d2a338c568mr16154pjb.129.1650394725235;
+        Tue, 19 Apr 2022 11:58:45 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y21-20020a631815000000b0039fcedd7bedsm17873525pgl.41.2022.04.19.11.58.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 11:58:44 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>
+Cc:     Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        "Ivan T . Ivanov" <iivanov@suse.de>, linux-kernel@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] MAINTAINERS: add raspberrypi to BCM2835 architecture
+Date:   Tue, 19 Apr 2022 11:58:42 -0700
+Message-Id: <20220419185843.248477-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220409184017.114804-1-stefan.wahren@i2se.com>
+References: <20220409184017.114804-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 04:28:52PM +0530, Naresh Kamboju wrote:
-> Linux next 20220419 boot failed on arm architecture qemu_arm and BeagleBoard
-> x15 device.
+On Sat,  9 Apr 2022 20:40:17 +0200, Stefan Wahren <stefan.wahren@i2se.com> wrote:
+> Recent changes to the firmware clock driver have not be send
+> to the architecture maintainers. So fix this by adding the
+> matching pattern.
+> 
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> ---
 
-Was the immediately previous linux-next behaving correctly?
-
-If so, nothing has changed in the ARM32 kernel tree, so this must be
-someone else's issue - code that someone else has pushed into
-linux-next.
-
-It looks to me like someone is walking the page tables incorrectly,
-somewhere buried in handle_mm_fault(), because the PTE pointer is in
-the upper-2k of a 4k page, which is most definitely illegal on arm32.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Applied to https://github.com/Broadcom/stblinux/commits/maintainers/next, thanks!
+--
+Florian
