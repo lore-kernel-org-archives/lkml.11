@@ -2,233 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 12:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243297AbiDSMow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 08:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34150 "EHLO
+        id S1346012AbiDSMpR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 08:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239819AbiDSMot (ORCPT
+        with ESMTP id S1352366AbiDSMpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 08:44:49 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3576936337
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 05:42:06 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9E1765C0116;
-        Tue, 19 Apr 2022 08:42:03 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 19 Apr 2022 08:42:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1650372123; x=1650458523; bh=2CW91igEwe
-        PZegpDjL9foZp6k13ppbUBF40Tcqf+HVQ=; b=BOiHcyv2jJej6NpzNAjMwylAoo
-        ZICE9iXbu8c3L+1t1WwuFdRwupaoBuSsj2dM56aXt7etOKRmOFN04XQjodC996lG
-        nGwrTZvpEM/DArKXcVIREpjLWDw9b40O3EkVeW4wBU0Yk3dUUp/9Jy9uOq/LuWt8
-        Gg+/4My4WNkClh3UMEVtWv44ihQYqZLGsKW8jONCCmGsuMHjLlFSL8Chf8Q+S8NO
-        zEewGCwaGw2ct8dTBMsTQeGrMtc3KhQbcwlWzFKNLaKVg3qYhdTGOrvW94swIvSo
-        k7xHZuqLCovoIersC8ypsGxnm578xSHd0Ck0CQTVL338q5ZuxNJrD9H5HP0g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1650372123; x=
-        1650458523; bh=2CW91igEwePZegpDjL9foZp6k13ppbUBF40Tcqf+HVQ=; b=O
-        JAR5WklXjDWJmAoYHjaTV+6Jf0iRSd4Xu5ghdjjl/ahAh9ZSTHHhSfl/nR+fK5HZ
-        SesihjpeexQ2SdDo5qlG+wB0Znmex/0RUf1A5LA4PRbAFqYnVuGW0dYC6+7VuJIS
-        iDHIE9O/0mRsivsivm4/BUDWdLB4hY+L3tiaiA2xSgJIXItZ6rltMrWFKcbZTOzB
-        URLEjPOUEXlJ6jnBD8f0vMTuA9C481Y25hXCWZUrhnK48ybu0m+3tQ5UjfNB2Y64
-        kdbyKEeJvCW/t75UQYJ7l/+hpWpGNuvFeRfy34ovfvKonTCulufreAlOLTPFUddg
-        YU94oH5GEoya5eE7AUb2g==
-X-ME-Sender: <xms:G65eYm0T8jxf1CpeIZfxLXG00gR3QaPMHewDOUOxBriebLFvskQeGg>
-    <xme:G65eYpFP-CYJN4OZlpGWCQBZZgZk1c1UiKjeDStgyXyzX_RfcWwINAA4NWt5FYucf
-    fF5-hY75Bzr3fC6tvM>
-X-ME-Received: <xmr:G65eYu5-Qr4PZmLkKNIE_8tuzYeAejKWsFnfa8fxguwf3jG0za7AD6LOMIUIM66CiTSVu-9c21VTiiojlySt2NH-OgII1omn7CtHCBg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvddtfedgheegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepuddvudfhkeekhefgffetffelgffftdehffduffegveetffehueeivddvjedv
-    gfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:G65eYn1LpWxGBED7QHhmyp7tFREdm3Y_NqcoAXAJGLphHBRCAdLAKQ>
-    <xmx:G65eYpE2s_24hYdR44fMvc1ZlUJKWjJEy5VN2b-Jm2De0a12x2_ryw>
-    <xmx:G65eYg8e55RB7egfaMLsy2ihAB3gcoruDZZ5r7B8C9OQRcESK7pTyg>
-    <xmx:G65eYu4tb7a0I47S3e2vGAbTo15Xm2gphMXFu9nPJ-_TyauOERyBtw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Apr 2022 08:42:02 -0400 (EDT)
-Date:   Tue, 19 Apr 2022 14:41:59 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     emma@anholt.net, laurent.pinchart@ideasonboard.com,
-        airlied@linux.ie, daniel@ffwll.ch, p.zabel@pengutronix.de,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] drm/vc4: hdmi: Remove
- vc4_hdmi_encoder.hdmi_monitor
-Message-ID: <20220419124159.2fjadxdornszocrk@houat>
-References: <20220415154745.170597-1-jose.exposito89@gmail.com>
- <20220415154745.170597-3-jose.exposito89@gmail.com>
+        Tue, 19 Apr 2022 08:45:12 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1BC36E0E;
+        Tue, 19 Apr 2022 05:42:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=VPo0pGY4v9eEQhd6+pxXM+SOE4qpAR3z9n5HKjXfKDE=; b=1YC9dPEOG1ouCNKKEVBfcZyuyO
+        fVooB6ee9AScE7UxtvnYu5aGqovywK9m/tKd6O8hBmWHR12uFwxlFwiKzstkBlZy8zd87/i/F/ZxK
+        JW11PdX61X4EGBhdIDPsmT8hZaKeHnFY+haCbtOlY5IX4mCMqCLBlcsVslTOCuRGg/4k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ngnBV-00GUvG-GS; Tue, 19 Apr 2022 14:42:21 +0200
+Date:   Tue, 19 Apr 2022 14:42:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, UNGLinuxDriver@microchip.com,
+        richardcochran@gmail.com
+Subject: Re: [RFC PATCH net-next 2/2] net: phy: micrel: Implement
+ set/get_adj_latency for lan8814
+Message-ID: <Yl6uLbhB4tNhN/Ld@lunn.ch>
+References: <20220419083704.48573-1-horatiu.vultur@microchip.com>
+ <20220419083704.48573-3-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tlaqz3cdfyvvwz3z"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220415154745.170597-3-jose.exposito89@gmail.com>
+In-Reply-To: <20220419083704.48573-3-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---tlaqz3cdfyvvwz3z
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Fri, Apr 15, 2022 at 05:47:45PM +0200, Jos=E9 Exp=F3sito wrote:
-> The vc4_hdmi_encoder.hdmi_monitor field was used to cache the value
-> returned by drm_detect_hdmi_monitor() in order to avoid calling it
-> multiple times.
->=20
-> Now that drm_detect_hdmi_monitor() has been replaced with
-> drm_display_info.is_hdmi, there is no need to cache it in the driver
-> encoder struct.
->=20
-> Remove vc4_hdmi_encoder.hdmi_monitor and use drm_display_info.is_hdmi
-> instead.
->=20
-> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+On Tue, Apr 19, 2022 at 10:37:04AM +0200, Horatiu Vultur wrote:
+> The lan8814 driver supports adjustments of the latency in the silicon
+> based on the speed and direction, therefore implement set/get_adj_latency
+> to adjust the HW.
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
->  drivers/gpu/drm/vc4/vc4_hdmi.c | 17 ++++++-----------
->  drivers/gpu/drm/vc4/vc4_hdmi.h |  1 -
->  2 files changed, 6 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdm=
-i.c
-> index ecdb1ffc2023..9c73a211ae80 100644
-> --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-> +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-> @@ -107,9 +107,9 @@ static bool vc4_hdmi_mode_needs_scrambling(const stru=
-ct drm_display_mode *mode)
->  static bool vc4_hdmi_is_full_range_rgb(struct vc4_hdmi *vc4_hdmi,
->  				       const struct drm_display_mode *mode)
->  {
-> -	struct vc4_hdmi_encoder *vc4_encoder =3D &vc4_hdmi->encoder;
-> +	struct drm_display_info *display =3D &vc4_hdmi->connector.display_info;
-> =20
-> -	return !vc4_encoder->hdmi_monitor ||
-> +	return !display->is_hdmi ||
->  		drm_default_rgb_quant_range(mode) =3D=3D HDMI_QUANTIZATION_RANGE_FULL;
+>  drivers/net/phy/micrel.c | 87 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 87 insertions(+)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 96840695debd..099d1ecd6dad 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -120,6 +120,15 @@
+>  #define PTP_TIMESTAMP_EN_PDREQ_			BIT(2)
+>  #define PTP_TIMESTAMP_EN_PDRES_			BIT(3)
+>  
+> +#define PTP_RX_LATENCY_1000			0x0224
+> +#define PTP_TX_LATENCY_1000			0x0225
+> +
+> +#define PTP_RX_LATENCY_100			0x0222
+> +#define PTP_TX_LATENCY_100			0x0223
+> +
+> +#define PTP_RX_LATENCY_10			0x0220
+> +#define PTP_TX_LATENCY_10			0x0221
+> +
+>  #define PTP_TX_PARSE_L2_ADDR_EN			0x0284
+>  #define PTP_RX_PARSE_L2_ADDR_EN			0x0244
+>  
+> @@ -208,6 +217,16 @@
+>  #define PTP_TSU_INT_STS_PTP_RX_TS_OVRFL_INT_	BIT(1)
+>  #define PTP_TSU_INT_STS_PTP_RX_TS_EN_		BIT(0)
+>  
+> +/* Represents the reset value of the latency registers,
+> + * The values are express in ns
+> + */
+> +#define LAN8814_RX_10_LATENCY			8874
+> +#define LAN8814_TX_10_LATENCY			11850
+> +#define LAN8814_RX_100_LATENCY			2346
+> +#define LAN8814_TX_100_LATENCY			705
+> +#define LAN8814_RX_1000_LATENCY			429
+> +#define LAN8814_TX_1000_LATENCY			201
+> +
+>  /* PHY Control 1 */
+>  #define MII_KSZPHY_CTRL_1			0x1e
+>  #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
+> @@ -2657,6 +2676,72 @@ static int lan8804_config_init(struct phy_device *phydev)
+>  	return 0;
 >  }
-> =20
-> @@ -216,7 +216,6 @@ vc4_hdmi_connector_detect(struct drm_connector *conne=
-ctor, bool force)
-> =20
->  			if (edid) {
->  				cec_s_phys_addr_from_edid(vc4_hdmi->cec_adap, edid);
-> -				vc4_hdmi->encoder.hdmi_monitor =3D connector->display_info.is_hdmi;
+>  
+> +static int lan8814_set_adj_latency(struct phy_device *phydev,
+> +				   enum ethtool_link_mode_bit_indices link_mode,
+> +				   s32 rx, s32 tx)
+> +{
+> +	switch (link_mode) {
+> +	case ETHTOOL_LINK_MODE_10baseT_Half_BIT:
+> +	case ETHTOOL_LINK_MODE_10baseT_Full_BIT:
+> +		rx += LAN8814_RX_10_LATENCY;
+> +		tx += LAN8814_TX_10_LATENCY;
+> +		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_10, rx);
+> +		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_10, tx);
 
-I think the first patch could be squashed into this one
+It is not ideal that the user sees an entry for both link modes X and
+X+1 in your file, and that writing to link mode X magically also
+changes X+1.
 
->  				kfree(edid);
->  			}
->  		}
-> @@ -242,7 +241,6 @@ static void vc4_hdmi_connector_destroy(struct drm_con=
-nector *connector)
->  static int vc4_hdmi_connector_get_modes(struct drm_connector *connector)
->  {
->  	struct vc4_hdmi *vc4_hdmi =3D connector_to_vc4_hdmi(connector);
-> -	struct vc4_hdmi_encoder *vc4_encoder =3D &vc4_hdmi->encoder;
->  	int ret =3D 0;
->  	struct edid *edid;
-> =20
-> @@ -255,8 +253,6 @@ static int vc4_hdmi_connector_get_modes(struct drm_co=
-nnector *connector)
->  		goto out;
->  	}
-> =20
-> -	vc4_encoder->hdmi_monitor =3D connector->display_info.is_hdmi;
-> -
->  	drm_connector_update_edid_property(connector, edid);
->  	ret =3D drm_add_edid_modes(connector, edid);
->  	kfree(edid);
-> @@ -578,13 +574,12 @@ static void vc4_hdmi_set_infoframes(struct drm_enco=
-der *encoder)
->  static bool vc4_hdmi_supports_scrambling(struct drm_encoder *encoder,
->  					 struct drm_display_mode *mode)
->  {
-> -	struct vc4_hdmi_encoder *vc4_encoder =3D to_vc4_hdmi_encoder(encoder);
->  	struct vc4_hdmi *vc4_hdmi =3D encoder_to_vc4_hdmi(encoder);
->  	struct drm_display_info *display =3D &vc4_hdmi->connector.display_info;
-> =20
->  	lockdep_assert_held(&vc4_hdmi->mutex);
-> =20
-> -	if (!vc4_encoder->hdmi_monitor)
-> +	if (!display->is_hdmi)
->  		return false;
-> =20
->  	if (!display->hdmi.scdc.supported ||
-> @@ -1147,7 +1142,7 @@ static void vc4_hdmi_encoder_post_crtc_enable(struc=
-t drm_encoder *encoder,
->  {
->  	struct vc4_hdmi *vc4_hdmi =3D encoder_to_vc4_hdmi(encoder);
->  	struct drm_display_mode *mode =3D &vc4_hdmi->saved_adjusted_mode;
-> -	struct vc4_hdmi_encoder *vc4_encoder =3D to_vc4_hdmi_encoder(encoder);
-> +	struct drm_display_info *display =3D &vc4_hdmi->connector.display_info;
->  	bool hsync_pos =3D mode->flags & DRM_MODE_FLAG_PHSYNC;
->  	bool vsync_pos =3D mode->flags & DRM_MODE_FLAG_PVSYNC;
->  	unsigned long flags;
-> @@ -1168,7 +1163,7 @@ static void vc4_hdmi_encoder_post_crtc_enable(struc=
-t drm_encoder *encoder,
->  	HDMI_WRITE(HDMI_VID_CTL,
->  		   HDMI_READ(HDMI_VID_CTL) & ~VC4_HD_VID_CTL_BLANKPIX);
-> =20
-> -	if (vc4_encoder->hdmi_monitor) {
-> +	if (display->is_hdmi) {
->  		HDMI_WRITE(HDMI_SCHEDULER_CONTROL,
->  			   HDMI_READ(HDMI_SCHEDULER_CONTROL) |
->  			   VC4_HDMI_SCHEDULER_CONTROL_MODE_HDMI);
-> @@ -1195,7 +1190,7 @@ static void vc4_hdmi_encoder_post_crtc_enable(struc=
-t drm_encoder *encoder,
->  			  "!VC4_HDMI_SCHEDULER_CONTROL_HDMI_ACTIVE\n");
->  	}
-> =20
-> -	if (vc4_encoder->hdmi_monitor) {
-> +	if (display->is_hdmi) {
->  		spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
-> =20
->  		WARN_ON(!(HDMI_READ(HDMI_SCHEDULER_CONTROL) &
-> diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdm=
-i.h
-> index 1076faeab616..44977002445f 100644
-> --- a/drivers/gpu/drm/vc4/vc4_hdmi.h
-> +++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
-> @@ -11,7 +11,6 @@
->  /* VC4 HDMI encoder KMS struct */
->  struct vc4_hdmi_encoder {
->  	struct vc4_encoder base;
-> -	bool hdmi_monitor;
->  };
+I'm not sure there is anything you can do about this in a generic
+implementation, so you at least need to document it in sysfs.
 
-And vc4_hdmi_encoder doesn't hold anything anymore now, so it can be
-removed as well. Doing it in a subsequent patch would probably be the
-most readable.
+What about range checks? I can pass 32764 as an rx delay, which when
+added to PTP_RX_LATENCY_10=0x0220 is going to wrap around and be
+negative.
 
-Thanks!
-Maxime
-
---tlaqz3cdfyvvwz3z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYl6uDAAKCRDj7w1vZxhR
-xb26AP4qmTCMJsoyhGfRmeNGezGrZz1LlSEaEoWXWFeq84ErQQD+LCu2JVg40UH6
-fqYdsSAZzRKTG0er8f0DZNdc6f4DWw4=
-=hGU/
------END PGP SIGNATURE-----
-
---tlaqz3cdfyvvwz3z--
+		Andrew
