@@ -2,193 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0198CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380951AbiDTRPn (ORCPT
+        id S1380964AbiDTRPv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
+        Wed, 20 Apr 2022 13:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380918AbiDTRPl (ORCPT
+        with ESMTP id S1380918AbiDTRPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 13:15:41 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A014578A;
-        Wed, 20 Apr 2022 10:12:54 -0700 (PDT)
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 23KHCZ77026093;
-        Thu, 21 Apr 2022 02:12:35 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 23KHCZ77026093
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1650474755;
-        bh=Fk2/b3chLadxxWYR7TJuggZMmEaTZ15R1Bl8NCeoLQw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ARgD5/tIAHSdmMMtb7NUu93xkSGxzvvKSvM6ViAIAMDlTiFJnxXLs1DOTnQjHuYQ4
-         f2pYiIjxiVXwOySQOeVtE+zncDSKUFsk3I3F66Zsa+BzeuCamPFN7AeieGCiyMvX91
-         75NlsPxWTWMcdTAUwnmV7SbTCasLzoFUiyNfso33DDFqes00T3OG5gNQQzZDFenB8R
-         4JgCnT4NYjgT31bkdl5EVR5gGCzUWaZXuh2hsGc4s6budcsleuEacb8butjFUhogic
-         kDflNYr1obyVpohbCZr1y9tMbNqiebeN+XWiqJx0P0yVjagyG39ldjKCUvjQ2TBX8s
-         fBaumduZXZM6A==
-X-Nifty-SrcIP: [209.85.215.174]
-Received: by mail-pg1-f174.google.com with SMTP id bg9so2168690pgb.9;
-        Wed, 20 Apr 2022 10:12:35 -0700 (PDT)
-X-Gm-Message-State: AOAM532DcY9CgbnpVonKz/gecx+RbuQQxmZZVw2lrS0PcEb2ZgpG3d8U
-        dPRK6beYefLhYS8jG0sGam8z8uk7Ilovw8AnUr0=
-X-Google-Smtp-Source: ABdhPJxOQtBOOzOzHz6j7UNKrhcW2BGLKttRmgmlW//TR+NzqtbsEr8i0spqFRmnkBFUS4Q6boqKGjMOv67/TlpIZao=
-X-Received: by 2002:a63:5212:0:b0:3a9:fb93:462b with SMTP id
- g18-20020a635212000000b003a9fb93462bmr14310900pgb.126.1650474754505; Wed, 20
- Apr 2022 10:12:34 -0700 (PDT)
+        Wed, 20 Apr 2022 13:15:47 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31BA4578F;
+        Wed, 20 Apr 2022 10:12:59 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id r189so4067669ybr.6;
+        Wed, 20 Apr 2022 10:12:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/ASIWAo0HytBTKR5fLcMLGJJVl7MsnssiA8AeEXSjEM=;
+        b=5AqwjLuC7iGEN7nUuMBVNi0hJCU8/mG5z+y0WMduVsnNvQWMvn8DCjbDd8mRCfldDu
+         xOT0qpG1/wAWTrt4RIHkceY33Zhk2+xceQaYubMlX82yphuJKgT9lBrFYt3QbIR8rwC/
+         TIMCVzT50dDnY1sjk/3KvBe/hTNmigvi+hTRrX2rsmpSHtcP0WB0aDAjAZNfasak5Had
+         F6JoJNLBU06nxWbT5a028vhGjtNpKIoBfOvixnNl1z5mRkBBIPQTAt5sgpCaDzeGILJ5
+         gTHeZ8T1j3q74owDJXg0EzMRF7IvP+wqRnhSiawrU5l2Bo2UQ2+0MF8Y6WMdOJOeEFDq
+         qX1w==
+X-Gm-Message-State: AOAM533wLCYbFFPPJ5Twf/Qe3Mi/eSTjJoTfaN0vUojmIqgeOvRC7iFG
+        QIMFQeJq9Ou7qt+jgsefXzQDWr4CqPMxKuCDpLg5t/CkNmk=
+X-Google-Smtp-Source: ABdhPJygxTqwH/fYP8f9/TOx3wegsu6FxX5O1kN/quLL9EMh/cabSnVGqayxP5pVJxnDK33VgIW6Cm39TvZfF3wMYBU=
+X-Received: by 2002:a25:e082:0:b0:641:cf5:b91f with SMTP id
+ x124-20020a25e082000000b006410cf5b91fmr20887561ybg.482.1650474779115; Wed, 20
+ Apr 2022 10:12:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220413144748.84106-1-songmuchun@bytedance.com> <20220413144748.84106-2-songmuchun@bytedance.com>
-In-Reply-To: <20220413144748.84106-2-songmuchun@bytedance.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 21 Apr 2022 02:11:36 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARNyYNMMYcEwU-pVFb-b21cKN+K_jwseLTtoOfscS2Ggw@mail.gmail.com>
-Message-ID: <CAK7LNARNyYNMMYcEwU-pVFb-b21cKN+K_jwseLTtoOfscS2Ggw@mail.gmail.com>
-Subject: Re: [PATCH v8 1/4] mm: hugetlb_vmemmap: introduce CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, mike.kravetz@oracle.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        David Hildenbrand <david@redhat.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org> <20220419113435.246203-2-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220419113435.246203-2-krzysztof.kozlowski@linaro.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 20 Apr 2022 19:12:48 +0200
+Message-ID: <CAJZ5v0ijsLvgeN5y+T1D+iLAkYEOiSTPd0+m5_GMpBnVuqEOKA@mail.gmail.com>
+Subject: Re: [PATCH v7 01/12] driver: platform: Add helper for safer setting
+ of driver_override
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
+        linux-clk <linux-clk@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
+        <alsa-devel@alsa-project.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 11:48 PM Muchun Song <songmuchun@bytedance.com> wrote:
+On Tue, Apr 19, 2022 at 1:34 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 >
-> If the size of "struct page" is not the power of two but with the feature
-> of minimizing overhead of struct page associated with each HugeTLB is
-> enabled, then the vmemmap pages of HugeTLB will be corrupted after
-> remapping (panic is about to happen in theory).  But this only exists when
-> !CONFIG_MEMCG && !CONFIG_SLUB on x86_64.  However, it is not a conventional
-> configuration nowadays.  So it is not a real word issue, just the result
-> of a code review.  But we have to prevent anyone from configuring that
-> combined configurations.  In order to avoid many checks like "is_power_of_2
-> (sizeof(struct page))" through mm/hugetlb_vmemmap.c.  Introduce a new macro
-> CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP to represent the size of struct
-> page is power of two and CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is
-> configured.  Then make the codes of this feature depends on this new macro.
-> Then we could prevent anyone do any unexpected configurations.  A new
-> autoconf_ext.h is introduced as well, which serves as an extension for
-> autoconf.h since those special configurations (e.g.
-> CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP here) are rely on the autoconf.h
-> (generated from Kconfig), so we cannot embed those configurations into
-> Kconfig.  After this change, it would be easy if someone want to do the
-> similar thing (add a new CONFIG) in the future.
+> Several core drivers and buses expect that driver_override is a
+> dynamically allocated memory thus later they can kfree() it.
 >
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> Suggested-by: Luis Chamberlain <mcgrof@kernel.org>
+> However such assumption is not documented, there were in the past and
+> there are already users setting it to a string literal. This leads to
+> kfree() of static memory during device release (e.g. in error paths or
+> during unbind):
+>
+>     kernel BUG at ../mm/slub.c:3960!
+>     Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+>     ...
+>     (kfree) from [<c058da50>] (platform_device_release+0x88/0xb4)
+>     (platform_device_release) from [<c0585be0>] (device_release+0x2c/0x90)
+>     (device_release) from [<c0a69050>] (kobject_put+0xec/0x20c)
+>     (kobject_put) from [<c0f2f120>] (exynos5_clk_probe+0x154/0x18c)
+>     (exynos5_clk_probe) from [<c058de70>] (platform_drv_probe+0x6c/0xa4)
+>     (platform_drv_probe) from [<c058b7ac>] (really_probe+0x280/0x414)
+>     (really_probe) from [<c058baf4>] (driver_probe_device+0x78/0x1c4)
+>     (driver_probe_device) from [<c0589854>] (bus_for_each_drv+0x74/0xb8)
+>     (bus_for_each_drv) from [<c058b48c>] (__device_attach+0xd4/0x16c)
+>     (__device_attach) from [<c058a638>] (bus_probe_device+0x88/0x90)
+>     (bus_probe_device) from [<c05871fc>] (device_add+0x3dc/0x62c)
+>     (device_add) from [<c075ff10>] (of_platform_device_create_pdata+0x94/0xbc)
+>     (of_platform_device_create_pdata) from [<c07600ec>] (of_platform_bus_create+0x1a8/0x4fc)
+>     (of_platform_bus_create) from [<c0760150>] (of_platform_bus_create+0x20c/0x4fc)
+>     (of_platform_bus_create) from [<c07605f0>] (of_platform_populate+0x84/0x118)
+>     (of_platform_populate) from [<c0f3c964>] (of_platform_default_populate_init+0xa0/0xb8)
+>     (of_platform_default_populate_init) from [<c01031f8>] (do_one_initcall+0x8c/0x404)
+>
+> Provide a helper which clearly documents the usage of driver_override.
+> This will allow later to reuse the helper and reduce the amount of
+> duplicated code.
+>
+> Convert the platform driver to use a new helper and make the
+> driver_override field const char (it is not modified by the core).
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  Kbuild                     | 19 +++++++++++++++++++
->  arch/x86/mm/init_64.c      |  2 +-
->  include/linux/hugetlb.h    |  2 +-
->  include/linux/kconfig.h    |  4 ++++
->  include/linux/mm.h         |  2 +-
->  include/linux/page-flags.h |  2 +-
->  kernel/autoconf_ext.c      | 26 ++++++++++++++++++++++++++
->  mm/hugetlb_vmemmap.c       |  8 ++------
->  mm/hugetlb_vmemmap.h       |  4 ++--
->  mm/sparse-vmemmap.c        |  4 ++--
->  scripts/mod/Makefile       |  2 ++
->  11 files changed, 61 insertions(+), 14 deletions(-)
->  create mode 100644 kernel/autoconf_ext.c
+>  drivers/base/driver.c           | 69 +++++++++++++++++++++++++++++++++
+>  drivers/base/platform.c         | 28 ++-----------
+>  include/linux/device/driver.h   |  2 +
+>  include/linux/platform_device.h |  6 ++-
+>  4 files changed, 80 insertions(+), 25 deletions(-)
 >
-> diff --git a/Kbuild b/Kbuild
-> index fa441b98c9f6..83c0d5a418d1 100644
-> --- a/Kbuild
-> +++ b/Kbuild
-> @@ -2,6 +2,12 @@
->  #
->  # Kbuild for top-level directory of the kernel
+> diff --git a/drivers/base/driver.c b/drivers/base/driver.c
+> index 8c0d33e182fd..1b9d47b10bd0 100644
+> --- a/drivers/base/driver.c
+> +++ b/drivers/base/driver.c
+> @@ -30,6 +30,75 @@ static struct device *next_device(struct klist_iter *i)
+>         return dev;
+>  }
 >
-> +# autoconf_ext.h is generated last since it depends on other generated headers,
-> +# however those other generated headers may include autoconf_ext.h. Use the
-> +# following macro to avoid circular dependency.
+> +/**
+> + * driver_set_override() - Helper to set or clear driver override.
+> + * @dev: Device to change
+> + * @override: Address of string to change (e.g. &device->driver_override);
+> + *            The contents will be freed and hold newly allocated override.
+
+I would stick to one-line description here and possibly expand them in
+the body of the comment.
+
+Regardless, I think that the series is an improvement, so please feel
+free to add
+
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+to this patch and
+
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+to the other patches in the series.
+
+> + * @s: NUL-terminated string, new driver name to force a match, pass empty
+> + *     string to clear it ("" or "\n", where the latter is only for sysfs
+> + *     interface).
+> + * @len: length of @s
+> + *
+> + * Helper to set or clear driver override in a device, intended for the cases
+> + * when the driver_override field is allocated by driver/bus code.
+> + *
+> + * Returns: 0 on success or a negative error code on failure.
+> + */
+> +int driver_set_override(struct device *dev, const char **override,
+> +                       const char *s, size_t len)
+> +{
+> +       const char *new, *old;
+> +       char *cp;
 > +
-> +KBUILD_CFLAGS_KERNEL += -D__EXCLUDE_AUTOCONF_EXT_H
+> +       if (!override || !s)
+> +               return -EINVAL;
 > +
->  #####
->  # Generate bounds.h
->
-> @@ -37,6 +43,19 @@ $(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s FORCE
->         $(call filechk,offsets,__ASM_OFFSETS_H__)
->
->  #####
-> +# Generate autoconf_ext.h.
+> +       /*
+> +        * The stored value will be used in sysfs show callback (sysfs_emit()),
+> +        * which has a length limit of PAGE_SIZE and adds a trailing newline.
+> +        * Thus we can store one character less to avoid truncation during sysfs
+> +        * show.
+> +        */
+> +       if (len >= (PAGE_SIZE - 1))
+> +               return -EINVAL;
 > +
-> +autoconf_ext-file := include/generated/autoconf_ext.h
+> +       if (!len) {
+> +               /* Empty string passed - clear override */
+> +               device_lock(dev);
+> +               old = *override;
+> +               *override = NULL;
+> +               device_unlock(dev);
+> +               kfree(old);
 > +
-> +always-y += $(autoconf_ext-file)
-> +targets += kernel/autoconf_ext.s
+> +               return 0;
+> +       }
 > +
-> +kernel/autoconf_ext.s: $(bounds-file) $(timeconst-file) $(offsets-file)
+> +       cp = strnchr(s, len, '\n');
+> +       if (cp)
+> +               len = cp - s;
 > +
-> +$(autoconf_ext-file): kernel/autoconf_ext.s FORCE
-> +       $(call filechk,offsets,__LINUX_AUTOCONF_EXT_H__)
+> +       new = kstrndup(s, len, GFP_KERNEL);
+> +       if (!new)
+> +               return -ENOMEM;
 > +
-> +#####
->  # Check for missing system calls
->
->  always-y += missing-syscalls
-> diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
-> index 4b9e0012bbbf..9b8dfa6e4da8 100644
-> --- a/arch/x86/mm/init_64.c
-> +++ b/arch/x86/mm/init_64.c
-> @@ -1268,7 +1268,7 @@ static struct kcore_list kcore_vsyscall;
->
->  static void __init register_page_bootmem_info(void)
+> +       device_lock(dev);
+> +       old = *override;
+> +       if (cp != s) {
+> +               *override = new;
+> +       } else {
+> +               /* "\n" passed - clear override */
+> +               kfree(new);
+> +               *override = NULL;
+> +       }
+> +       device_unlock(dev);
+> +
+> +       kfree(old);
+> +
+> +       return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(driver_set_override);
+> +
+>  /**
+>   * driver_for_each_device - Iterator for devices bound to a driver.
+>   * @drv: Driver we're iterating.
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index 8cc272fd5c99..b684157b7f2f 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -1275,31 +1275,11 @@ static ssize_t driver_override_store(struct device *dev,
+>                                      const char *buf, size_t count)
 >  {
-> -#if defined(CONFIG_NUMA) || defined(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP)
-> +#if defined(CONFIG_NUMA) || defined(CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP)
->         int i;
+>         struct platform_device *pdev = to_platform_device(dev);
+> -       char *driver_override, *old, *cp;
+> -
+> -       /* We need to keep extra room for a newline */
+> -       if (count >= (PAGE_SIZE - 1))
+> -               return -EINVAL;
+> -
+> -       driver_override = kstrndup(buf, count, GFP_KERNEL);
+> -       if (!driver_override)
+> -               return -ENOMEM;
+> -
+> -       cp = strchr(driver_override, '\n');
+> -       if (cp)
+> -               *cp = '\0';
+> -
+> -       device_lock(dev);
+> -       old = pdev->driver_override;
+> -       if (strlen(driver_override)) {
+> -               pdev->driver_override = driver_override;
+> -       } else {
+> -               kfree(driver_override);
+> -               pdev->driver_override = NULL;
+> -       }
+> -       device_unlock(dev);
+> +       int ret;
 >
->         for_each_online_node(i)
-> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-> index ac2ece9e9c79..d42de8abd2b6 100644
-> --- a/include/linux/hugetlb.h
-> +++ b/include/linux/hugetlb.h
-> @@ -623,7 +623,7 @@ struct hstate {
->         unsigned int nr_huge_pages_node[MAX_NUMNODES];
->         unsigned int free_huge_pages_node[MAX_NUMNODES];
->         unsigned int surplus_huge_pages_node[MAX_NUMNODES];
-> -#ifdef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-> +#ifdef CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP
->         unsigned int optimize_vmemmap_pages;
->  #endif
->  #ifdef CONFIG_CGROUP_HUGETLB
-> diff --git a/include/linux/kconfig.h b/include/linux/kconfig.h
-> index 20d1079e92b4..00796794f177 100644
-> --- a/include/linux/kconfig.h
-> +++ b/include/linux/kconfig.h
-> @@ -4,6 +4,10 @@
+> -       kfree(old);
+> +       ret = driver_set_override(dev, &pdev->driver_override, buf, count);
+> +       if (ret)
+> +               return ret;
 >
->  #include <generated/autoconf.h>
+>         return count;
+>  }
+> diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+> index 15e7c5e15d62..700453017e1c 100644
+> --- a/include/linux/device/driver.h
+> +++ b/include/linux/device/driver.h
+> @@ -151,6 +151,8 @@ extern int __must_check driver_create_file(struct device_driver *driver,
+>  extern void driver_remove_file(struct device_driver *driver,
+>                                const struct driver_attribute *attr);
 >
-> +#if defined(__KERNEL__) && !defined(__EXCLUDE_AUTOCONF_EXT_H)
-> +#include <generated/autoconf_ext.h>
-> +#endif
-> +
-
-
-Please do not do this either.
-
-When autoconf_ext.h is updated, the kernel tree
-would be rebuilt entirely.
-
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+> +int driver_set_override(struct device *dev, const char **override,
+> +                       const char *s, size_t len);
+>  extern int __must_check driver_for_each_device(struct device_driver *drv,
+>                                                struct device *start,
+>                                                void *data,
+> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+> index 7c96f169d274..582d83ed9a91 100644
+> --- a/include/linux/platform_device.h
+> +++ b/include/linux/platform_device.h
+> @@ -31,7 +31,11 @@ struct platform_device {
+>         struct resource *resource;
+>
+>         const struct platform_device_id *id_entry;
+> -       char *driver_override; /* Driver name to force a match */
+> +       /*
+> +        * Driver name to force a match.  Do not set directly, because core
+> +        * frees it.  Use driver_set_override() to set or clear it.
+> +        */
+> +       const char *driver_override;
+>
+>         /* MFD cell pointer */
+>         struct mfd_cell *mfd_cell;
+> --
+> 2.32.0
+>
