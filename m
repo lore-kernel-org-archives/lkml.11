@@ -2,95 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10526C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377912AbiDTLHj (ORCPT
+        id S1377891AbiDTLJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        Wed, 20 Apr 2022 07:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377925AbiDTLHc (ORCPT
+        with ESMTP id S1345841AbiDTLJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 07:07:32 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24BF40922;
-        Wed, 20 Apr 2022 04:04:45 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id bg9so1287441pgb.9;
-        Wed, 20 Apr 2022 04:04:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=istBcC3E+ZfmnTVNwIQY13Lw4u8eYbcp2nzpLROkbBI=;
-        b=OICJCxQMDwd1vs4XzPMekvCpmXwSxW2ZGh51UdQuKK/laHpnboXnd0SWvXxloUdK5y
-         +ldYsum6A30rGWFxEi907juiG+AU3JoYb7T9UzB7RhD4FF3XZlFxm6MW9jGxhJL5SCiU
-         C6nTPo+4cBm3t4p4D3HrfUa+QKqvs4EMa8prxdIYrcscyIcZikoyumtnyH/Kp32CMuk8
-         jOuHOSguzTe8kn9qSavT+2/90JqzW/30wNyzROD/bTYWoT5Mj5yK90G1KDHcNExT/JNG
-         Z8hJiJcJ6kJvPwxW8KqjZFxRgo1NeCzZapnMPxBXFi0Qf+PYp7oj/LucgPDY6uFWPoim
-         DLSw==
+        Wed, 20 Apr 2022 07:09:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0C70289B5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:06:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650452816;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nAoKseYG0ZFXZ4TIIvPqFWraz/lYMRREh5HCpMpt4SA=;
+        b=Da2jmX2GOFjOwzsQlyquc1OxhNKXyHyz3OPUXP/Oy2lyC41HALtzaXxMxNo7s6FFUrc3Rf
+        33LL+24+onHMeHiwgZ2VpcGUn5c3cG2meNW+VwozMA7v58KoxMDxCE5bcXcJ6ZvilF4Zbp
+        WE2s805cpfpoIb9bO4GS2II1/GvvbN4=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-372-mmW3oFlXOPusIZm1zMpDdw-1; Wed, 20 Apr 2022 07:06:55 -0400
+X-MC-Unique: mmW3oFlXOPusIZm1zMpDdw-1
+Received: by mail-ed1-f71.google.com with SMTP id w8-20020a50d788000000b00418e6810364so958317edi.13
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:06:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=istBcC3E+ZfmnTVNwIQY13Lw4u8eYbcp2nzpLROkbBI=;
-        b=DzgeH8V229NKlaoa+nbiw6pXmMHDhjfJ5IaOLSCJRUy9I3WIdX+jiFVkaF+OZ5I1uJ
-         G05aWslkZmZp13Ou5nGa10EDBLWgNZighVkjUOV+W+lqVN8lHwIxCymqAnJ2mLoMjkXM
-         7j2Df2az8k9OOCm10qtHoz+iBy5egehxRMAbH3NrlAIPqIHJvvRVkDGaJObXotd0tAxr
-         AS8izVabhrKOrTNRlSzeQxCyYDRrzNBQMRV9y5L7UNxyhKbTxnNYnw+g5LyGGRimINey
-         p8F3BwSOnrH7fRAcvm7cNQ6x8vP8nGtio4kQOeTS/sFpvOOgmsMCMQr1GDQtv4Y16j+l
-         02LA==
-X-Gm-Message-State: AOAM530JNCvUnDfZSllwYTD2M7cj6hRwxbBz9+g3TsxLKzN0jyXJbA5x
-        9xLns5q6kj7sGiCmSlj0t6o7J4mUjWxzCtw2J7Q=
-X-Google-Smtp-Source: ABdhPJxn8fjBrGRORfApKRIdrWwb1dxLHKva9lU9NPKnQthxOu1OcjREgtVL0Rwq5+NTxtjogYlfQA==
-X-Received: by 2002:a62:87c5:0:b0:50a:9380:3d26 with SMTP id i188-20020a6287c5000000b0050a93803d26mr8746908pfe.27.1650452685208;
-        Wed, 20 Apr 2022 04:04:45 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id b11-20020a621b0b000000b00505c6892effsm19660658pfb.26.2022.04.20.04.04.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 04:04:44 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] net: dsa: Add missing of_node_put() in dsa_port_link_register_of
-Date:   Wed, 20 Apr 2022 19:04:08 +0800
-Message-Id: <20220420110413.17828-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nAoKseYG0ZFXZ4TIIvPqFWraz/lYMRREh5HCpMpt4SA=;
+        b=7KLU1vXi7XK8d8HGH/bNlvUQ3QcuVbkb2GUSkHSDMGnISKMCPRNAW/RYe6A1mXmXRd
+         I5ZwU0x55vkiJjadeDAgmzf0lCkBOPER7bH+q/+BgDM55dc1biUcBEtQ8+oH9sroPLOd
+         tq+bHRief2GWtfA76Fr/izAAxta6vQJfoISIOOzQ64Cgu+/nAJMbrUxT4RKdz7dQAtQN
+         wG8o39rHjYnjWe8oECEm10muxEsovj7I/3U2GeU2u4gDFSjpagqqPun3dung/MACNFpa
+         n9of8jbg0MPk4kePCV3KeJYJYVcnqms4iDLE4XAiCvQX3gNka3jIa4gX81CocLWnNPl1
+         Ar5w==
+X-Gm-Message-State: AOAM533J74a4MCg18IqRDFXF0xzRY3hukggfG5KZeSiczxo0m/HVANk9
+        3dB4xYUoyRLtb+zx3nQ7j/s4pbV9TPL/y/xVeVZcg6MzCwQzMbpuPngRLAu3fdA2RDHcDFlcRuX
+        IIstnRkLWWco6ZN8k/1PHOjsv
+X-Received: by 2002:aa7:d553:0:b0:416:4dfc:126d with SMTP id u19-20020aa7d553000000b004164dfc126dmr22214672edr.213.1650452813009;
+        Wed, 20 Apr 2022 04:06:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw4lQnFeV1UHw8eIKZeNMMfyCfsjkXPEdIsO3tYie3sWTmFFwMJD3/SNL1PcBjG6qYKpen0OQ==
+X-Received: by 2002:aa7:d553:0:b0:416:4dfc:126d with SMTP id u19-20020aa7d553000000b004164dfc126dmr22214651edr.213.1650452812873;
+        Wed, 20 Apr 2022 04:06:52 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id yy18-20020a170906dc1200b006d6e5c75029sm6477872ejb.187.2022.04.20.04.06.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 04:06:52 -0700 (PDT)
+Message-ID: <b0aed731-b56f-4378-b50e-fc0cbccbdb84@redhat.com>
+Date:   Wed, 20 Apr 2022 13:06:51 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] staging: media: atomisp: Convert kmap() to
+ kmap_local_page()
+Content-Language: en-US
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Martiros Shakhzadyan <vrzh@vrzh.net>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
+References: <20220408223129.3844-1-fmdefrancesco@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220408223129.3844-1-fmdefrancesco@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
-of_node_put() will check for NULL value.
+Hi,
 
-Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- net/dsa/port.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 4/9/22 00:31, Fabio M. De Francesco wrote:
+> The use of kmap() is being deprecated in favor of kmap_local_page() where
+> it is feasible. With kmap_local_page(), the mapping is per thread, CPU
+> local and not globally visible.
+> 
+> load_and_flush_by_kmap() is a function where the use of kmap_local_page()
+> in place of kmap() is correctly suited.
+> 
+> Convert load_and_flush_by_kmap() from kmap() to kmap_local_page().
+> 
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 32d472a82241..cdc56ba11f52 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -1620,8 +1620,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
- 			if (ds->ops->phylink_mac_link_down)
- 				ds->ops->phylink_mac_link_down(ds, port,
- 					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-+			of_node_put(phy_np);
- 			return dsa_port_phylink_register(dp);
- 		}
-+		of_node_put(phy_np);
- 		return 0;
- 	}
- 
--- 
-2.17.1
+I've successfully tested this on both the front and back cams
+of a chuwi hi8 tablet:
+
+Tested-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
+
+
+
+> ---
+>  drivers/staging/media/atomisp/pci/hmm/hmm.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
+> index c1cda16f2dc0..6394385b6637 100644
+> --- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
+> +++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
+> @@ -350,7 +350,7 @@ static int load_and_flush_by_kmap(ia_css_ptr virt, void *data,
+>  		idx = (virt - bo->start) >> PAGE_SHIFT;
+>  		offset = (virt - bo->start) - (idx << PAGE_SHIFT);
+>  
+> -		src = (char *)kmap(bo->page_obj[idx].page) + offset;
+> +		src = (char *)kmap_local_page(bo->page_obj[idx].page) + offset;
+>  
+>  		if ((bytes + offset) >= PAGE_SIZE) {
+>  			len = PAGE_SIZE - offset;
+> @@ -369,7 +369,7 @@ static int load_and_flush_by_kmap(ia_css_ptr virt, void *data,
+>  
+>  		clflush_cache_range(src, len);
+>  
+> -		kunmap(bo->page_obj[idx].page);
+> +		kunmap_local(src);
+>  	}
+>  
+>  	return 0;
 
