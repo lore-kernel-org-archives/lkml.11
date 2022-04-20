@@ -2,91 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 059F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 18:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F01C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 18:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240150AbiDTSCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 14:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48992 "EHLO
+        id S1381395AbiDTSC5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Apr 2022 14:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381404AbiDTSCg (ORCPT
+        with ESMTP id S1381459AbiDTSCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 14:02:36 -0400
+        Wed, 20 Apr 2022 14:02:37 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5A64706C;
-        Wed, 20 Apr 2022 10:59:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B15BED
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:59:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650477587; x=1682013587;
+  t=1650477590; x=1682013590;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=N62cvOlKD0daSm/0St1yA0uiCTqXXL1RTNMqabzw2jQ=;
-  b=k/40XO9tt96f7ahN59xMssjmm2KXnzw6wRsYQg9+v0JtamaBSOFYTrw3
-   oXYhrEGp+4ePb4bvagRYOdZnr8UOer0Rc+4atKc3nMCoGJc9m1uvVyuFR
-   fBQDB0c8tIHM/Gg3uCW7bLfQtiUAEzFHIp6dfOlqduTKEsRFLLLjdI+oE
-   GfIbhUFzZsOQU1NfsRzjToASmUgWkFii36UFQ5E7FcNjEFPmSsLdnRxXQ
-   eilRDHIWZPUSQWBiIbSLeNlwpJn+v0DxmvdR+8Sn94r6V55g2MPpppVel
-   N5sagRZo706dJz3g+hDM4Jy8C2ZHqq6WA7rNNdkhPSGGP1+BRpJ+b5pKg
+  bh=ZPYh6ii3d6sit1IsGVPNN+fvydkX/ToCt0Ocqq0aUxE=;
+  b=Xv+wy1P94wmB670kpEO70Am6mGM5aUl/wiAhOr0O8trgMs5v7Yiora6D
+   p+O0ESMHuL2r7eqSROoe4JG8goXqhy5NyK91oRYGgJh6jQ3WsH3UcQb/D
+   3SMYRr0Ay0LyhHCWbRDQgtEqrDmF5z1/Cq7MbTZrquCFOhgRUnlPrPD4E
+   4wvceK9e4p4UafhY4ourdUaiKNt2oltuRKAnDwbY5lGmJqtqe9cKFl6ZR
+   plGqe8R/UCeUu3UwopqtfazFWf4A4PwFNVeOlmOtBG2dVsY94IbTADHKx
+   s4rBOxIl698q2Bhdz3pcdOjdPKFnF9P/oX4PmrogOd1N4ZJg4ccHLlM02
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="327013172"
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="327013175"
 X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="327013172"
+   d="scan'208";a="327013175"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:59:46 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:59:47 -0700
 X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="576721817"
+   d="scan'208";a="576721826"
 Received: from sbidasar-mobl.amr.corp.intel.com (HELO [10.209.100.171]) ([10.209.100.171])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:59:45 -0700
-Message-ID: <80503ba6-5a84-9481-11fc-6f0c4303331b@linux.intel.com>
-Date:   Wed, 20 Apr 2022 12:53:10 -0500
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:59:46 -0700
+Message-ID: <b1b0a8b9-5fc2-bfe1-dfde-692a0a7ac34a@linux.intel.com>
+Date:   Wed, 20 Apr 2022 12:59:12 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/3] soundwire: qcom: add runtime pm support
+Subject: Re: [PATCH v4] ASoC: codecs: wsa881x: add runtime pm support
 Content-Language: en-US
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com, Mark Brown <broonie@kernel.org>
-Cc:     devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
-References: <20220228172528.3489-1-srinivas.kandagatla@linaro.org>
- <20220228172528.3489-2-srinivas.kandagatla@linaro.org>
- <10eb3973-03c4-74cd-d28a-014fc280cdf8@linux.intel.com>
- <e8ac9fab-85af-8f3c-eb68-c2d4d2f7f046@linaro.org>
+        broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com,
+        linux-kernel@vger.kernel.org, tiwai@suse.com,
+        quic_srivasam@quicinc.com
+References: <20220228144235.24208-1-srinivas.kandagatla@linaro.org>
 From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <e8ac9fab-85af-8f3c-eb68-c2d4d2f7f046@linaro.org>
+In-Reply-To: <20220228144235.24208-1-srinivas.kandagatla@linaro.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Srini,
 
->>> @@ -1197,12 +1224,23 @@ static int qcom_swrm_get_port_config(struct qcom_swrm_ctrl *ctrl)
->>>   static int swrm_reg_show(struct seq_file *s_file, void *data)
->>>   {
->>>       struct qcom_swrm_ctrl *swrm = s_file->private;
->>> -    int reg, reg_val;
->>> +    int reg, reg_val, ret;
->>> +
->>> +    ret = pm_runtime_get_sync(swrm->dev);
->>> +    if (ret < 0 && ret != -EACCES) {
->>> +        dev_err_ratelimited(swrm->dev,
->>> +                    "pm_runtime_get_sync failed in %s, ret %d\n",
->>> +                    __func__, ret);
->>> +        pm_runtime_put_noidle(swrm->dev);
->> ... here it's missing?
->>
->> I have a fix ready but thought I would check first if this was intentional
-> 
-> Its not intentional.
-> 
-> 
->>
->> https://github.com/thesofproject/linux/pull/3602/commits/6353eec8dc971c5f0fda0166ae1777f71784ea32
-> 
-> Fix looks good.
+> +static int __maybe_unused wsa881x_runtime_resume(struct device *dev)
+> +{
+> +	struct sdw_slave *slave = dev_to_sdw_dev(dev);
+> +	struct regmap *regmap = dev_get_regmap(dev, NULL);
+> +	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
+> +
+> +	gpiod_direction_output(wsa881x->sd_n, 1);
+> +
+> +	wait_for_completion_timeout(&slave->initialization_complete,
+> +				    msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
 
-Thanks Srini, I'll add Fixes tags and share on alsa-devel.
+while I was revisiting pm_runtime support, I also saw that this codec driver is the only one that doesn't check for errors
 
-I guess we need to thank Mark Brown for his guidance to use pm_runtime_resume_and_get(), that's how I saw those two cases :-)
+max98373-sdw.c: time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt1308-sdw.c:   time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt1316-sdw.c:   time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt5682-sdw.c:   time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt5682.c:                       &slave->initialization_complete,
+
+rt700-sdw.c:    time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt711-sdca-sdw.c:       time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt711-sdw.c:    time = wait_for_completion_timeout(&slave->initialization_complete,
+
+rt715-sdw.c:    time = wait_for_completion_timeout(&slave->initialization_complete,
+
+wsa881x.c:      wait_for_completion_timeout(&slave->initialization_complete,
+
+
+If the attachment fails for some reason, you probably want to avoid starting regmap syncs that will fail by construction, no?
+
+> +
+> +	regcache_cache_only(regmap, false);
+> +	regcache_sync(regmap);
+> +
+> +	return 0;
+> +}
