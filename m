@@ -2,295 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0586FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1909BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379345AbiDTOJQ (ORCPT
+        id S1379396AbiDTOKX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        Wed, 20 Apr 2022 10:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379326AbiDTOJH (ORCPT
+        with ESMTP id S1379363AbiDTOKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:09:07 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB14443AC6
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:06:17 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id bo5so2032441pfb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8kekJI/xbhVTaB0kWCa/VXYzAzzmU1o9FoYB/mXUI7s=;
-        b=oYwbEOQe3RG3YD7tEJ1vNhordyA4jyaj/hIJyCJXfkscClBDkhAXoZoRX3OE99jkZe
-         FXNJKnEfJnNhV9NTJLLrtERwb3ZnZ+hRb/wqE/nj1wLZu4nMVn/8swXpSvjjN3Jrw5P5
-         57khmj4petaztDIt1vvOYdk7XDOJKbRNJIH3KXdOFCsq6vnF8bWZL2pjJvti1FBAJglF
-         fRBa1MY9kVlsfrUrWrdDnr/j3CZSKITATHWub2ShsXclVUubtEEf/QZxsSQ2rCE0CcFv
-         0rkk38WAvR+kGTLonyzHgSi1Svzn8PVnrSVZgl2cqXag1V0lbS6Qt8Ny+Uap5YIuQJ/L
-         ir8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8kekJI/xbhVTaB0kWCa/VXYzAzzmU1o9FoYB/mXUI7s=;
-        b=L5lPqq2d6w2Cbdm0edmnQOQBZjJvk2URdu7LJqf1IpPyq2Q7Vh0FJHa+1Em7GVCE6d
-         qSe5HPCfOcHxzOW8BxKEzB1RMdlL6aFmO0yzyhKS3LtdBiBKFKSNpbHrXWrls4THUCel
-         IR64epNUzObiyO1ul4LzcH/LZ2M+fP41KSSkQIrj2Cpla1JdMHkmf0uzh77d8gA8eM0X
-         1MOQh8Tx1i7YVocw9h7VvhjjDmSJAryj86PeVEjAW9KnFjxW5o7odcDrAGN5GpYwXhSD
-         bPPyAbLDAQmi8pAVHuU0vWskzUxg5c+iWi30qhbnlUfWAA2RDLDBe70ZVYmRzJLc3xvV
-         X2gg==
-X-Gm-Message-State: AOAM531UnLUqM9aWPEeh0laIZu5dnoCmxQeCSW90tBWgKyU3FCeEWI0D
-        e/Aa4WHp94IknUqSPuhgGDw/iqzWhA==
-X-Google-Smtp-Source: ABdhPJzDeaoK+nUWkm2wsgxu8+uqir0BvHca0X3kMC/cLo9ATnXiu06q4nx0CSdeyWcy2X7HYpAnsw==
-X-Received: by 2002:a05:6a00:14cb:b0:50a:7e08:e1fc with SMTP id w11-20020a056a0014cb00b0050a7e08e1fcmr14317925pfu.12.1650463577110;
-        Wed, 20 Apr 2022 07:06:17 -0700 (PDT)
-Received: from piliu.users.ipa.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id br10-20020a056a00440a00b0050a777cd10csm10959178pfb.91.2022.04.20.07.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 07:06:16 -0700 (PDT)
-From:   Pingfan Liu <kernelfans@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Pingfan Liu <kernelfans@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Steven Price <steven.price@arm.com>
-Subject: [PATCH 9/9] irq/irqdesc: rename sparse_irq_lock to bitmap_lock
-Date:   Wed, 20 Apr 2022 22:05:21 +0800
-Message-Id: <20220420140521.45361-10-kernelfans@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220420140521.45361-1-kernelfans@gmail.com>
-References: <20220420140521.45361-1-kernelfans@gmail.com>
+        Wed, 20 Apr 2022 10:10:09 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A1543ED0;
+        Wed, 20 Apr 2022 07:07:14 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23KCVH0K024554;
+        Wed, 20 Apr 2022 14:06:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=BfTEp153fWrGaCJepdQKZ+n0s+PGj2bnofihA+uJby0=;
+ b=aDjnKyMMGYGDna8FctEzNhKYArP/k+x3IFkg4953+h67FdvO9h5C6HWu7AhEaRkxO55X
+ TKA/hgvl4oi39XFGIAy4EUOfo9TOHvqSO2W+NFKeQ5MlSZcgcZ19b4EOPlqOOXOtCWKo
+ eKrSQGTV1dAPMdaXJqHllooptllcIGbvddNViZeJuYSnIBQ8PprNMPw16VwjZO53+GJG
+ pf/jSpybreTujvR8xgj2pyVLml0tcApbPzJVvE1gWN/TGjkL9nJmcj4/LVPtZj6lV519
+ TT5KLTeB2mY6QFfNyrHobcoEa/E8pFLm9pss3GfvDWqvwG02wkD/7g8s+3/BWzgMLDA2 HQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjff2wtme-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 14:06:45 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23KDurvd020313;
+        Wed, 20 Apr 2022 14:06:44 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjff2wtkx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 14:06:44 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23KE31ro020617;
+        Wed, 20 Apr 2022 14:06:43 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma02dal.us.ibm.com with ESMTP id 3ffneabv4r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 14:06:43 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23KE6gud21758450
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Apr 2022 14:06:42 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 24709AE060;
+        Wed, 20 Apr 2022 14:06:42 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 05A41AE064;
+        Wed, 20 Apr 2022 14:06:42 +0000 (GMT)
+Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 20 Apr 2022 14:06:41 +0000 (GMT)
+From:   Stefan Berger <stefanb@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org
+Cc:     zohar@linux.ibm.com, serge@hallyn.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        jpenumak@redhat.com, Stefan Berger <stefanb@linux.ibm.com>
+Subject: [PATCH v12 09/26] ima: Move ima_lsm_policy_notifier into ima_namespace
+Date:   Wed, 20 Apr 2022 10:06:16 -0400
+Message-Id: <20220420140633.753772-10-stefanb@linux.ibm.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220420140633.753772-1-stefanb@linux.ibm.com>
+References: <20220420140633.753772-1-stefanb@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: muvPtEq-rclwyL0rmeUgUcEcZ7Y9azCh
+X-Proofpoint-ORIG-GUID: ZieNZtwF-YBrEl-ldIe-SNhpnVFFAPM2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 clxscore=1015 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204200081
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that sparse_irq_lock serves for both sparse and non-sparse purpose,
-it is better to rename it as bitmap_lock. Corresponding, rename
-irq_lock_sparse() as irq_lock_bitmap().
+Move the ima_lsm_policy_notifier into the ima_namespace. Each IMA
+namespace can now register its own LSM policy change notifier callback.
+The policy change notifier for the init_ima_ns still remains in init_ima()
+and therefore handle the registration of the callback for all other
+namespaces in init_ima_namespace().
 
-Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Pingfan Liu <kernelfans@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Qais Yousef <qais.yousef@arm.com>
-Cc: Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Dongli Zhang <dongli.zhang@oracle.com>
-Cc: YueHaibing <yuehaibing@huawei.com>
-Cc: Steven Price <steven.price@arm.com>
-To: linux-kernel@vger.kernel.org
+Rate-limit the kernel warning 'rule for LSM <label> is undefined` for
+IMA namespace to avoid flooding the kernel log with this type of message.
+
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+
 ---
- include/linux/irqdesc.h |  4 ++--
- kernel/cpu.c            |  4 ++--
- kernel/irq/cpuhotplug.c |  4 ++--
- kernel/irq/debugfs.c    |  4 ++--
- kernel/irq/irqdesc.c    | 26 +++++++++++++-------------
- kernel/irq/pm.c         |  4 ++--
- 6 files changed, 23 insertions(+), 23 deletions(-)
+v11:
+ - Renamed 'rc' to 'ret'
+ - Use pr_warn_ratelimited('rule for LSM...') for IMA namespaces
 
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index 6c01231fec00..8301653fc2b2 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -104,8 +104,8 @@ struct irq_desc {
- 	const char		*name;
- } ____cacheline_internodealigned_in_smp;
+v10:
+ - Only call pr_warn('rule for LSM <label> is undefined`) for init_ima_ns
+---
+ security/integrity/ima/ima.h             |  2 ++
+ security/integrity/ima/ima_init_ima_ns.c | 14 +++++++++++++
+ security/integrity/ima/ima_main.c        |  6 +-----
+ security/integrity/ima/ima_policy.c      | 26 ++++++++++++++++--------
+ 4 files changed, 35 insertions(+), 13 deletions(-)
+
+diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+index b35c8504ef87..c68b5117d034 100644
+--- a/security/integrity/ima/ima.h
++++ b/security/integrity/ima/ima.h
+@@ -144,6 +144,8 @@ struct ima_namespace {
+ 	int valid_policy;
  
--extern void irq_lock_sparse(void);
--extern void irq_unlock_sparse(void);
-+extern void irq_lock_bitmap(void);
-+extern void irq_unlock_bitmap(void);
+ 	struct dentry *ima_policy;
++
++	struct notifier_block ima_lsm_policy_notifier;
+ } __randomize_layout;
+ extern struct ima_namespace init_ima_ns;
  
- #ifndef CONFIG_SPARSE_IRQ
- extern struct irq_desc irq_desc[NR_IRQS];
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 94a6b512c26d..8874f0242893 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -601,11 +601,11 @@ static int bringup_cpu(unsigned int cpu)
- 	 * setup the vector space for the cpu which comes online.
- 	 * Prevent irq alloc/free across the bringup.
- 	 */
--	irq_lock_sparse();
-+	irq_lock_bitmap();
+diff --git a/security/integrity/ima/ima_init_ima_ns.c b/security/integrity/ima/ima_init_ima_ns.c
+index 425eed1c6838..c4fe8f3e9a73 100644
+--- a/security/integrity/ima/ima_init_ima_ns.c
++++ b/security/integrity/ima/ima_init_ima_ns.c
+@@ -10,6 +10,8 @@
  
- 	/* Arch-specific enabling code. */
- 	ret = __cpu_up(cpu, idle);
--	irq_unlock_sparse();
-+	irq_unlock_bitmap();
- 	if (ret)
- 		return ret;
- 	return bringup_wait_for_ap(cpu);
-diff --git a/kernel/irq/cpuhotplug.c b/kernel/irq/cpuhotplug.c
-index 1ed2b1739363..84547b5781be 100644
---- a/kernel/irq/cpuhotplug.c
-+++ b/kernel/irq/cpuhotplug.c
-@@ -220,14 +220,14 @@ int irq_affinity_online_cpu(unsigned int cpu)
- 	struct irq_desc *desc;
- 	unsigned int irq;
+ static int ima_init_namespace(struct ima_namespace *ns)
+ {
++	int ret;
++
+ 	INIT_LIST_HEAD(&ns->ima_default_rules);
+ 	INIT_LIST_HEAD(&ns->ima_policy_rules);
+ 	INIT_LIST_HEAD(&ns->ima_temp_rules);
+@@ -30,6 +32,15 @@ static int ima_init_namespace(struct ima_namespace *ns)
+ 	ns->valid_policy = 1;
+ 	ns->ima_fs_flags = 0;
  
--	irq_lock_sparse();
-+	irq_lock_bitmap();
- 	for_each_active_irq(irq) {
- 		desc = irq_to_desc(irq);
- 		raw_spin_lock_irq(&desc->lock);
- 		irq_restore_affinity_of_irq(desc, cpu);
- 		raw_spin_unlock_irq(&desc->lock);
- 	}
--	irq_unlock_sparse();
-+	irq_unlock_bitmap();
- 
++	if (ns != &init_ima_ns) {
++		ns->ima_lsm_policy_notifier.notifier_call =
++						ima_lsm_policy_change;
++		ret = register_blocking_lsm_notifier
++						(&ns->ima_lsm_policy_notifier);
++		if (ret)
++			return ret;
++	}
++
  	return 0;
  }
-diff --git a/kernel/irq/debugfs.c b/kernel/irq/debugfs.c
-index 2b43f5f5033d..af4bd2ca2372 100644
---- a/kernel/irq/debugfs.c
-+++ b/kernel/irq/debugfs.c
-@@ -251,10 +251,10 @@ static int __init irq_debugfs_init(void)
  
- 	irq_dir = debugfs_create_dir("irqs", root_dir);
- 
--	irq_lock_sparse();
-+	irq_lock_bitmap();
- 	for_each_active_irq(irq)
- 		irq_add_debugfs_entry(irq, irq_to_desc(irq));
--	irq_unlock_sparse();
-+	irq_unlock_bitmap();
- 
- 	return 0;
+@@ -39,5 +50,8 @@ int __init ima_ns_init(void)
  }
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index a5cefd7c9ef7..acd80cb8a511 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -130,7 +130,7 @@ static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
- int nr_irqs = NR_IRQS;
- EXPORT_SYMBOL_GPL(nr_irqs);
  
--static DEFINE_MUTEX(sparse_irq_lock);
-+static DEFINE_MUTEX(bitmap_lock);
- static DECLARE_BITMAP(allocated_irqs, IRQ_BITMAP_BITS);
+ struct ima_namespace init_ima_ns = {
++	.ima_lsm_policy_notifier = {
++		.notifier_call = ima_lsm_policy_change,
++	},
+ };
+ EXPORT_SYMBOL(init_ima_ns);
+diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+index 005f9e784e7b..d44faf1c065d 100644
+--- a/security/integrity/ima/ima_main.c
++++ b/security/integrity/ima/ima_main.c
+@@ -38,10 +38,6 @@ int ima_appraise;
+ int __ro_after_init ima_hash_algo = HASH_ALGO_SHA1;
+ static int hash_setup_done;
  
- #ifdef CONFIG_SPARSE_IRQ
-@@ -318,12 +318,12 @@ static int __init irq_sysfs_init(void)
- 	}
- 
- 	/* Prevent concurrent irq alloc/free */
--	irq_lock_sparse();
-+	irq_lock_bitmap();
- 
- 	/* Add the already allocated interrupts */
- 	for_each_irq_desc(irq, desc)
- 		irq_sysfs_add(irq, desc);
--	irq_unlock_sparse();
-+	irq_unlock_bitmap();
- 
- 	return 0;
- }
-@@ -607,9 +607,9 @@ static int irq_expand_nr_irqs(unsigned int nr)
- 
- void irq_mark_irq(unsigned int irq)
+-static struct notifier_block ima_lsm_policy_notifier = {
+-	.notifier_call = ima_lsm_policy_change,
+-};
+-
+ static int __init hash_setup(char *str)
  {
--	mutex_lock(&sparse_irq_lock);
-+	mutex_lock(&bitmap_lock);
- 	bitmap_set(allocated_irqs, irq, 1);
--	mutex_unlock(&sparse_irq_lock);
-+	mutex_unlock(&bitmap_lock);
+ 	struct ima_template_desc *template_desc = ima_template_desc_current();
+@@ -1089,7 +1085,7 @@ static int __init init_ima(void)
+ 	if (error)
+ 		return error;
+ 
+-	error = register_blocking_lsm_notifier(&ima_lsm_policy_notifier);
++	error = register_blocking_lsm_notifier(&ns->ima_lsm_policy_notifier);
+ 	if (error)
+ 		pr_warn("Couldn't register LSM notifier, error %d\n", error);
+ 
+diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
+index 0a7c61ca3265..23c559c8fae9 100644
+--- a/security/integrity/ima/ima_policy.c
++++ b/security/integrity/ima/ima_policy.c
+@@ -368,7 +368,8 @@ static void ima_free_rule(struct ima_rule_entry *entry)
+ 	kfree(entry);
  }
  
- #ifdef CONFIG_GENERIC_IRQ_LEGACY
-@@ -711,14 +711,14 @@ int generic_handle_domain_nmi(struct irq_domain *domain, unsigned int hwirq)
- }
- #endif
- 
--void irq_lock_sparse(void)
-+void irq_lock_bitmap(void)
+-static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_rule_entry *entry)
++static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_namespace *ns,
++						struct ima_rule_entry *entry)
  {
--	mutex_lock(&sparse_irq_lock);
-+	mutex_lock(&bitmap_lock);
+ 	struct ima_rule_entry *nentry;
+ 	int i;
+@@ -399,18 +400,25 @@ static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_rule_entry *entry)
+ 		ima_filter_rule_init(nentry->lsm[i].type, Audit_equal,
+ 				     nentry->lsm[i].args_p,
+ 				     &nentry->lsm[i].rule);
+-		if (!nentry->lsm[i].rule)
+-			pr_warn("rule for LSM \'%s\' is undefined\n",
+-				nentry->lsm[i].args_p);
++		if (!nentry->lsm[i].rule) {
++			if (ns == &init_ima_ns)
++				pr_warn("rule for LSM \'%s\' is undefined\n",
++					nentry->lsm[i].args_p);
++			else
++				pr_warn_ratelimited
++					("rule for LSM \'%s\' is undefined\n",
++					 nentry->lsm[i].args_p);
++		}
+ 	}
+ 	return nentry;
  }
  
--void irq_unlock_sparse(void)
-+void irq_unlock_bitmap(void)
+-static int ima_lsm_update_rule(struct ima_rule_entry *entry)
++static int ima_lsm_update_rule(struct ima_namespace *ns,
++			       struct ima_rule_entry *entry)
  {
--	mutex_unlock(&sparse_irq_lock);
-+	mutex_unlock(&bitmap_lock);
+ 	struct ima_rule_entry *nentry;
+ 
+-	nentry = ima_lsm_copy_rule(entry);
++	nentry = ima_lsm_copy_rule(ns, entry);
+ 	if (!nentry)
+ 		return -ENOMEM;
+ 
+@@ -453,7 +461,7 @@ static void ima_lsm_update_rules(struct ima_namespace *ns)
+ 		if (!ima_rule_contains_lsm_cond(entry))
+ 			continue;
+ 
+-		result = ima_lsm_update_rule(entry);
++		result = ima_lsm_update_rule(ns, entry);
+ 		if (result) {
+ 			pr_err("lsm rule update error %d\n", result);
+ 			return;
+@@ -464,12 +472,14 @@ static void ima_lsm_update_rules(struct ima_namespace *ns)
+ int ima_lsm_policy_change(struct notifier_block *nb, unsigned long event,
+ 			  void *lsm_data)
+ {
+-	struct ima_namespace *ns = &init_ima_ns;
++	struct ima_namespace *ns;
+ 
+ 	if (event != LSM_POLICY_CHANGE)
+ 		return NOTIFY_DONE;
+ 
++	ns = container_of(nb, struct ima_namespace, ima_lsm_policy_notifier);
+ 	ima_lsm_update_rules(ns);
++
+ 	return NOTIFY_OK;
  }
- 
- /* Dynamic interrupt handling */
-@@ -735,12 +735,12 @@ void irq_free_descs(unsigned int from, unsigned int cnt)
- 	if (from >= nr_irqs || (from + cnt) > nr_irqs)
- 		return;
- 
--	mutex_lock(&sparse_irq_lock);
-+	mutex_lock(&bitmap_lock);
- 	for (i = 0; i < cnt; i++)
- 		free_desc(from + i);
- 
- 	bitmap_clear(allocated_irqs, from, cnt);
--	mutex_unlock(&sparse_irq_lock);
-+	mutex_unlock(&bitmap_lock);
- }
- EXPORT_SYMBOL_GPL(irq_free_descs);
- 
-@@ -779,7 +779,7 @@ __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
- 		from = arch_dynirq_lower_bound(from);
- 	}
- 
--	mutex_lock(&sparse_irq_lock);
-+	mutex_lock(&bitmap_lock);
- 
- 	start = bitmap_find_next_zero_area(allocated_irqs, IRQ_BITMAP_BITS,
- 					   from, cnt, 0);
-@@ -794,7 +794,7 @@ __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
- 	}
- 	ret = alloc_descs(start, cnt, node, affinity, owner);
- unlock:
--	mutex_unlock(&sparse_irq_lock);
-+	mutex_unlock(&bitmap_lock);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(__irq_alloc_descs);
-diff --git a/kernel/irq/pm.c b/kernel/irq/pm.c
-index 4b67a4c7de3c..9b81a738d84f 100644
---- a/kernel/irq/pm.c
-+++ b/kernel/irq/pm.c
-@@ -133,7 +133,7 @@ void suspend_device_irqs(void)
- 	struct irq_desc *desc;
- 	int irq;
- 
--	irq_lock_sparse();
-+	irq_lock_bitmap();
- 	for_each_irq_desc(irq, desc) {
- 		unsigned long flags;
- 		bool sync;
-@@ -147,7 +147,7 @@ void suspend_device_irqs(void)
- 		if (sync)
- 			synchronize_irq(irq);
- 	}
--	irq_unlock_sparse();
-+	irq_unlock_bitmap();
- }
- EXPORT_SYMBOL_GPL(suspend_device_irqs);
  
 -- 
-2.31.1
+2.34.1
 
