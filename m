@@ -2,158 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76820C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 01:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B18C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 01:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358732AbiDTBar (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 21:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
+        id S242650AbiDTBfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 21:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358727AbiDTBai (ORCPT
+        with ESMTP id S229685AbiDTBfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 21:30:38 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13EC24F0E;
-        Tue, 19 Apr 2022 18:27:54 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-e5ca5c580fso486552fac.3;
-        Tue, 19 Apr 2022 18:27:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sLw0H6R3WlK1bcOpwRAGg46brAmczPbRTJQlw64+BQ8=;
-        b=ignMrrjTawt+RSJ85pYU7pXLiyjs3Ks/hQyy+Go6XWmeKMgb/NaIB461stfVcxPrP4
-         cdZvnpkvayzPNy+rlxYER67Xx+obKhbVtiGtE2izGTJtB5EJmCjVQABAtaAB0srcu/ry
-         drprU5w2y0gyfR8HOGUsxKIG1X/0qf99a4hH0YGqeyEYT/g04lNZ8bA7oYvx8jPU7V8l
-         0x63eDNKr1euZoW6py3M/o63QlfaCqNmZTDajJ5xHKMh+KMyQBYYsAImc+K2+Y5nIAJS
-         wahqAuPRHf+UYJGyFINaUf+mutvjhiR3t8ysGopcxDS+QZLxnKgbdeAFmqkXrkJUVVee
-         ni9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=sLw0H6R3WlK1bcOpwRAGg46brAmczPbRTJQlw64+BQ8=;
-        b=cw8bHzs28sUw+9FfJpN37AnvXBNZ9HqV71RFFUJv1mHDntmn29/IsiPgzhbV1WYrDK
-         DGNdbpZAbqnw60Olbm7dn+SucGeefb0bWInbbC4L3H0vddEEJdA7wWpW8iSNJnIGti6K
-         xIeSKr3sLKqxCF2KCRAskrtv4KLTvCBwpDl6Ar7UnDtfMLDm/qbtj4wrXQg9rygsQTzX
-         VcxSXfKl+WwzUGi0+z2YTJRHIk1Zy0Vvw3cCJ/vd/BIwBQBSJ4iotv7xlH5iWBq5lwWk
-         ZIonLRvvOkXUGcKehnN0sj7RA0mKa1wKeeBWodpgqqq3RrtWO0lxBI8/WZk+N4f6IyUU
-         lpmw==
-X-Gm-Message-State: AOAM530rq9+k38cRToMLKPVCXUzWRELD9sJtpxhGF3m7ULtKxDiDAC83
-        G2ebor25vYqaOXHxptvDTjs=
-X-Google-Smtp-Source: ABdhPJyWXSgaXneeXdK00kRCm4zrorvjleC1IZX7daIwNfz00gwfZryMocgkAbGgY7JP06Gy/3n8vg==
-X-Received: by 2002:a05:6870:f624:b0:e1:c071:121b with SMTP id ek36-20020a056870f62400b000e1c071121bmr594369oab.182.1650418073912;
-        Tue, 19 Apr 2022 18:27:53 -0700 (PDT)
-Received: from toe.qscaudio.com ([65.113.122.35])
-        by smtp.gmail.com with ESMTPSA id i26-20020a4a929a000000b0033a29c8d564sm4284530ooh.3.2022.04.19.18.27.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 18:27:53 -0700 (PDT)
-From:   jeff.evanson@gmail.com
-X-Google-Original-From: jeff.evanson@qsc.com
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Andre Guedes <andre.guedes@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     Jeff Evanson <jeff.evanson@qsc.com>
-Subject: [PATCH v2 2/2] igc: Trigger proper interrupts in igc_xsk_wakeup
-Date:   Tue, 19 Apr 2022 19:26:35 -0600
-Message-Id: <20220420012635.13733-3-jeff.evanson@qsc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220420012635.13733-1-jeff.evanson@qsc.com>
-References: <20220420012635.13733-1-jeff.evanson@qsc.com>
+        Tue, 19 Apr 2022 21:35:36 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E632B264
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 18:32:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650418372; x=1681954372;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uiX9HvvMr1I4Z6NfuE4V81mO9FtzpDQslKd7JE3l+Ls=;
+  b=Sf++R7KivdMzs2LOgNhWyJYbofXgim+u7pDIKSshX3dlCx1qLVZPEXv7
+   oXKOet2ejpax1NlIfAzo2WrfA21jzGRRxM76haeQPcmRgD762KgfzPQfC
+   7vnWF66TqnU4qtK1ixdxh2lHY92PmN7/JEGtRknywFZU933Q1NkjFzGTS
+   YXEvwe1Ohi5BxAAlx9U8B36c8C+NUjc/QUXK1OhD/+ltc5YRWvl7r7t1R
+   QbpWTnenwtgEQMsGxN+w0D1B4O8E5wd6Gk+XnWwPzuYNpiasqlUCkoXX+
+   jvooijLSSepGgHtnNtr7BkU6ImTUW43IKk/FyYzTZk32+u49FcKP8GuLs
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="262770337"
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="262770337"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 18:32:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="625868983"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Apr 2022 18:32:50 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngzD8-0006PR-Bh;
+        Wed, 20 Apr 2022 01:32:50 +0000
+Date:   Wed, 20 Apr 2022 09:32:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [bvanassche:scsi-gap-zone 10/10] include/linux/kern_levels.h:5:25:
+ warning: format '%u' expects argument of type 'unsigned int', but argument 3
+ has type 'sector_t' {aka 'long long unsigned int'}
+Message-ID: <202204200933.JyliDZWf-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Evanson <jeff.evanson@qsc.com>
+tree:   https://github.com/bvanassche/linux scsi-gap-zone
+head:   8a37a38282a57095a4a3ff6e6c68f2481234ad10
+commit: 8a37a38282a57095a4a3ff6e6c68f2481234ad10 [10/10] scsi-debug-dbg
+config: arc-randconfig-r032-20220419 (https://download.01.org/0day-ci/archive/20220420/202204200933.JyliDZWf-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/bvanassche/linux/commit/8a37a38282a57095a4a3ff6e6c68f2481234ad10
+        git remote add bvanassche https://github.com/bvanassche/linux
+        git fetch --no-tags bvanassche scsi-gap-zone
+        git checkout 8a37a38282a57095a4a3ff6e6c68f2481234ad10
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/scsi/
 
-In igc_xsk_wakeup, trigger the proper interrupt based on whether flags
-contains XDP_WAKEUP_RX and/or XDP_WAKEUP_TX.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Consider a scenario where the transmit queue interrupt is mapped to a
-different irq from the receive queue. If XDP_WAKEUP_TX is set in the
-flags argument, the interrupt for transmit queue must be triggered,
-otherwise the transmit queue's napi_struct will never be scheduled.
+All warnings (new ones prefixed by >>):
 
-In the case where both XDP_WAKEUP_TX and XDP_WAKEUP_RX are both set,
-the receive interrupt should always be triggered, but the transmit
-interrupt should only be triggered if its q_vector differs from the
-receive queue's interrupt.
+   In file included from include/linux/kernel.h:29,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from drivers/scsi/scsi_debug.c:18:
+   drivers/scsi/scsi_debug.c: In function 'sdebug_device_create_zones':
+>> include/linux/kern_levels.h:5:25: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'sector_t' {aka 'long long unsigned int'} [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:519:9: note: in expansion of macro 'printk'
+     519 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
+      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+         |                         ^~~~~~~~
+   include/linux/printk.h:519:16: note: in expansion of macro 'KERN_INFO'
+     519 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~~
+   drivers/scsi/scsi_debug.c:5100:25: note: in expansion of macro 'pr_info'
+    5100 |                         pr_info("adding a gap zone; start %u; size %u\n",
+         |                         ^~~~~~~
 
-Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
----
- drivers/net/ethernet/intel/igc/igc_main.c | 40 ++++++++++++++++++-----
- 1 file changed, 31 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index a36a18c84aeb..41b5d1ac8bc1 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -6072,8 +6072,8 @@ static void igc_trigger_rxtxq_interrupt(struct igc_adapter *adapter,
- 
- int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
- {
-+	struct igc_q_vector *txq_vector = NULL, *rxq_vector = NULL;
- 	struct igc_adapter *adapter = netdev_priv(dev);
--	struct igc_q_vector *q_vector;
- 	struct igc_ring *ring;
- 
- 	if (test_bit(__IGC_DOWN, &adapter->state))
-@@ -6082,17 +6082,39 @@ int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
- 	if (!igc_xdp_is_enabled(adapter))
- 		return -ENXIO;
- 
--	if (queue_id >= adapter->num_rx_queues)
--		return -EINVAL;
-+	if (flags & XDP_WAKEUP_RX) {
-+		if (queue_id >= adapter->num_rx_queues)
-+			return -EINVAL;
- 
--	ring = adapter->rx_ring[queue_id];
-+		ring = adapter->rx_ring[queue_id];
-+		if (!ring->xsk_pool)
-+			return -ENXIO;
- 
--	if (!ring->xsk_pool)
--		return -ENXIO;
-+		rxq_vector = ring->q_vector;
-+	}
-+
-+	if (flags & XDP_WAKEUP_TX) {
-+		if (queue_id >= adapter->num_tx_queues)
-+			return -EINVAL;
-+
-+		ring = adapter->tx_ring[queue_id];
-+		if (!ring->xsk_pool)
-+			return -ENXIO;
-+
-+		txq_vector = ring->q_vector;
-+	}
-+
-+	if (rxq_vector != NULL &&
-+	    !napi_if_scheduled_mark_missed(&rxq_vector->napi))
-+		igc_trigger_rxtxq_interrupt(adapter, rxq_vector);
- 
--	q_vector = adapter->q_vector[queue_id];
--	if (!napi_if_scheduled_mark_missed(&q_vector->napi))
--		igc_trigger_rxtxq_interrupt(adapter, q_vector);
-+	/* only trigger tx interrupt if the receive interrupt was not
-+	 * triggered or if its irq differs from the receive queue's irq
-+	 */
-+	if (txq_vector != NULL &&
-+            txq_vector != rxq_vector &&
-+	    !napi_if_scheduled_mark_missed(&txq_vector->napi))
-+		igc_trigger_rxtxq_interrupt(adapter, txq_vector);
- 
- 	return 0;
- }
+vim +5 include/linux/kern_levels.h
+
+314ba3520e513a Joe Perches 2012-07-30  4  
+04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
+04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
+04d2c8c83d0e3a Joe Perches 2012-07-30  7  
+
+:::::: The code at line 5 was first introduced by commit
+:::::: 04d2c8c83d0e3ac5f78aeede51babb3236200112 printk: convert the format for KERN_<LEVEL> to a 2 byte pattern
+
+:::::: TO: Joe Perches <joe@perches.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
