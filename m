@@ -2,90 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04427C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376616AbiDTIGD (ORCPT
+        id S1376619AbiDTIJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        Wed, 20 Apr 2022 04:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354761AbiDTIGC (ORCPT
+        with ESMTP id S1376695AbiDTIIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:06:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085B83C4BE
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:03:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86E5161940
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:03:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1BEC385A1;
-        Wed, 20 Apr 2022 08:03:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650441795;
-        bh=eJ22co4YXPeheBisTZeaKDQNgzTMwiJ682WlMNgjrMw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CPp1bswq1MXlGs4vMlwy3hdFk1zvYmIo1+vFiHBBmS9BvjLp/lhNp4gg077eVvpo5
-         8KKz1e1r9miGzQNuN7dP72FD/Hg/9c2nkEYNecQ4HSV9f4HAjPiWy6NTQjiVEJ5jPt
-         ea/f1SwhesdMFsppkIghiUGGUGSc2yK1uOvNt5sMWBPRk8vDGmNt91whyV6Zp6406C
-         3LRTmSnq4nPaJ3xJi9vryCqOeXFYjtvg3eQn23VUT14Pc9C4MKhjhBll2X2DoTVM1d
-         hLjLbdrPc0oAO68n0s1Pj3/FsnQlWFrkf542C3wDbLFGv50WOfyV67lPmFt6NC5Q2F
-         122uag/+SO4XA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nh5Iq-0006dz-D3; Wed, 20 Apr 2022 10:03:08 +0200
-Date:   Wed, 20 Apr 2022 10:03:08 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] gnss: Use pm_runtime_resume_and_get instead of
- pm_runtime_get_sync
-Message-ID: <Yl++PMZWWwZkbVUg@hovoldconsulting.com>
-References: <20220419110642.2574612-1-chi.minghao@zte.com.cn>
+        Wed, 20 Apr 2022 04:08:46 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3B9C16
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:05:41 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id j8so1096456pll.11
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VJvWJPipJHgyfcIiSRVr/9+92NOFrMY62eI57j6ONHM=;
+        b=eElVku/lXRj5TNoEgMrlC4V4RxNI2mlNrAa9/FIK4ITD9l6EbTmL9iexMMBYFrKfVZ
+         IslU9ZhkZcElVrTPzIaD71hnmB/or5KvGOZr5EP29vDn3EmwQ16vU8IokKSXEdbksf9R
+         UXlW+7wyTDdcaEN0Hzz+WSFnQ28AvijGNL4uiPyBCvvE+irC81iDfs9C1SURc8/QQ/0D
+         ilH+LFnIXN9e6gvQpRW3CP2CttkaDspJ3V72h9noxjPYQpJ+MWxnnKg4H6P1hBMaGnrt
+         6yZmv08vUquiFonc+o21ceFlbSkelwmv1ICyw/DYRH63tXRcPTUQSp8AHuIKD5DyHNGt
+         w0Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VJvWJPipJHgyfcIiSRVr/9+92NOFrMY62eI57j6ONHM=;
+        b=BQf7+i8TNTerDh/exQGMkld9NXLepNJRpUSHNNJxM5axckxTrTxT5WzLZIM58UI5Fv
+         GYkpnTs+N5yH7wTMLUDhihDaiJ6ckcbxYN6QZxnbrd7Xbh43q9gf0n8O7o61lVdbqs39
+         E5IMHURs9qn87t1LUD30gGkp1OLmz35o6M0N5A+Xa4gPa83ZcHLl45VxXXy71wBTOETd
+         3Mw+V7S7Jkf7NPKtcikOA9G9i+PZUZVMceWdKw6VB+bLdo7xLnDFzsyw6rUqg2EK5Wxx
+         9ATMnAYV2e8YdldS6CXUldFPtQYSBrnR2cuMbiCEYOV8h5Sddapwjbg1pRmmpF/tx8CB
+         w/oQ==
+X-Gm-Message-State: AOAM530iZpE4wul8Gfo/ah4JvB4SGhjMPnKTnq0+Jf7D32jP6twDbnAY
+        Lb9OMrtOlsFY3LccywXi5NES0iOQv1YXn6kJ
+X-Google-Smtp-Source: ABdhPJzk0weKl78YNFVL165GqBuD7AaxSEu7AdBAJT4DJwASOnYKRTq/tqmUp4CBXgx/fW/PllS9ew==
+X-Received: by 2002:a17:90a:db08:b0:1c9:7cf3:6363 with SMTP id g8-20020a17090adb0800b001c97cf36363mr3033125pjv.35.1650441940309;
+        Wed, 20 Apr 2022 01:05:40 -0700 (PDT)
+Received: from [192.168.1.100] ([159.226.95.33])
+        by smtp.gmail.com with ESMTPSA id z1-20020a17090a014100b001d2eb7fe951sm3339335pje.13.2022.04.20.01.05.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 01:05:40 -0700 (PDT)
+Message-ID: <96d27d1f-55e4-578a-75e5-686362c05dcf@gmail.com>
+Date:   Wed, 20 Apr 2022 16:05:35 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419110642.2574612-1-chi.minghao@zte.com.cn>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] drm/vc4: Fix pm_runtime_get_sync() usage
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Eric Anholt <eric@anholt.net>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220419124407.ugzl7hknsytbhrmr@houat>
+ <20220420004949.20508-1-linmq006@gmail.com>
+ <20220420075108.xm5ujthootlpayy2@houat>
+From:   Miaoqian Lin <linmq006@gmail.com>
+In-Reply-To: <20220420075108.xm5ujthootlpayy2@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 11:06:42AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-> pm_runtime_put_noidle. This change is just to simplify the code, no
-> actual functional changes.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->  drivers/gnss/serial.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gnss/serial.c b/drivers/gnss/serial.c
-> index 5d8e9bfb24d0..afa7a08d718e 100644
-> --- a/drivers/gnss/serial.c
-> +++ b/drivers/gnss/serial.c
-> @@ -32,11 +32,9 @@ static int gnss_serial_open(struct gnss_device *gdev)
->  	serdev_device_set_baudrate(serdev, gserial->speed);
->  	serdev_device_set_flow_control(serdev, false);
->  
-> -	ret = pm_runtime_get_sync(&serdev->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(&serdev->dev);
-> +	ret = pm_runtime_resume_and_get(&serdev->dev);
-> +	if (ret < 0)
->  		goto err_close;
-> -	}
->  
->  	return 0;
 
-Same comments apply here:
+On 2022/4/20 15:51, Maxime Ripard wrote:
+> On Wed, Apr 20, 2022 at 12:49:48AM +0000, Miaoqian Lin wrote:
+>> If the device is already in a runtime PM enabled state
+>> pm_runtime_get_sync() will return 1, so a test for negative
+>> value should be used to check for errors.
+>>
+>> Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
+>> fails, so use pm_runtime_resume_and_get() instead. this function
+>> will handle this.
+>>
+>> Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+>> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+>> ---
+>> change in v2:
+>> - switch to pm_runtime_resume_and_get() to fix refcount leak.
+>> ---
+>>  drivers/gpu/drm/vc4/vc4_dsi.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+>> index 752f921735c6..9d7ffaf6bc70 100644
+>> --- a/drivers/gpu/drm/vc4/vc4_dsi.c
+>> +++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+>> @@ -846,8 +846,8 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+>>  	unsigned long phy_clock;
+>>  	int ret;
+>>  
+>> -	ret = pm_runtime_get_sync(dev);
+>> -	if (ret) {
+>> +	ret = pm_runtime_resume_and_get(dev);
+>> +	if (ret < 0) {
+> pm_runtime_resume_and_get will return 0 on success, so the previous check was correct
 
-	https://lore.kernel.org/lkml/Yl+948unOoDFdLe2@hovoldconsulting.com/T/#t
+previous check is for pm_runtime_get_sync() not for pm_runtime_resume_and_get (),
 
-Johan
+I switch to pm_runtime_resume_and_get() to fix the refcount leak bug at the same time.
+
+Sure it's ok to use check if(ret) to check the retval, I just follow a more common way
+
+for usage of pm_runtime_resume_and_get() in the codebase—— check ret<0
+
+Since pm_runtime_resume_and_get() return negative error code.
+
+> Maxime
