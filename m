@@ -2,97 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E49A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376546AbiDTH5X (ORCPT
+        id S1376551AbiDTH5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
+        Wed, 20 Apr 2022 03:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348806AbiDTH5Q (ORCPT
+        with ESMTP id S1376579AbiDTH52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:57:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7373C4AA;
-        Wed, 20 Apr 2022 00:54:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650441268; x=1681977268;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bWFEfGitKdMdgdAQmadBNZq/Q/gzOOJXd/nmAVkjgXU=;
-  b=ogFIotafdHIMt2uD3LEg2IPZwU2YNmwxh2x2lDLDKBYmmp6t/maSPdNR
-   kVFsb9WxaK8o474oyx6cGDZxou5caaupWnymD/d+8AbgHEp//7d79qC0I
-   gzQjCpruP7tHnsg2YUMfuSByowsGm9lTl+86JeEWl2JZjEMUODCpXXhIo
-   Nxrwc3VQD5gs96y0c3p+PKZZ2kJnWbA3OKe/eFVT1j50hGL/CfPz6+GLQ
-   yNtd3PemM8dyOa3Qfmc6Kx8MM8LEyTDlajh86Zaa70wXjWwn8qVWwHmAb
-   YozGbZthGj4xm5ZZPeYst6Ecnk9D1uVzI4fLaGEje6AW2KGmMW1SWZTd/
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,275,1643698800"; 
-   d="scan'208";a="160657894"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2022 00:54:28 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 20 Apr 2022 00:54:27 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 20 Apr 2022 00:54:27 -0700
-Date:   Wed, 20 Apr 2022 09:57:43 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>
-Subject: Re: [RFC PATCH net-next 0/2] net: phy: Extend sysfs to adjust PHY
- latency.
-Message-ID: <20220420075743.zlragdh525vpzgkz@soft-dev3-1.localhost>
-References: <20220419083704.48573-1-horatiu.vultur@microchip.com>
- <Yl6oZLIaBnPVkeqN@lunn.ch>
+        Wed, 20 Apr 2022 03:57:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235B23BBDC;
+        Wed, 20 Apr 2022 00:54:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C243B81D71;
+        Wed, 20 Apr 2022 07:54:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EE4C385A9;
+        Wed, 20 Apr 2022 07:54:37 +0000 (UTC)
+Message-ID: <2732e2ad-03bb-b30a-c649-08898419185b@xs4all.nl>
+Date:   Wed, 20 Apr 2022 09:54:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <Yl6oZLIaBnPVkeqN@lunn.ch>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 0/5] Visconti: Add Toshiba Visconti Video Input
+ Interface driver
+Content-Language: en-US
+To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220414053528.31460-1-yuji2.ishikawa@toshiba.co.jp>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220414053528.31460-1-yuji2.ishikawa@toshiba.co.jp>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 04/19/2022 14:17, Andrew Lunn wrote:
+Hi Yuji,
 
-Hi Andrew,
+On 14/04/2022 07:35, Yuji Ishikawa wrote:
+> This series is the Video Input Interface driver for Toshiba's ARM SoC, Visconti[0].
+> This provides DT binding documentation, device driver, MAINTAINER fiels.
+> 
+> Best regards,
+> Yuji
+> 
+> [0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
+> 
+> 
+>   dt-bindings: media: platform: visconti: Add Toshiba Visconti Video Input Interface bindings
+>     v1 -> v2:
+>       - No update
+> 
+>   media: platform: visconti: Add Toshiba Visconti Video Input Interface driver headers
+>     v1 -> v2:
+>       - moved driver headers to an individual patch
+> 
+>   media: platform: visconti: Add Toshiba Visconti Video Input Interface driver body
+>     v1 -> v2:
+>       - moved driver sources to an individual patch
+>    
+>   media: platform: visconti: Add Toshiba VIIF image signal processor driver
+>     v1 -> v2:
+>       - moved image signal processor driver to an individual patch
+> 
+>   MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
+>     v1 -> v2:
+>       - No update
+> 
+> Change in V2:
+>   - moved files into individual patches to decrease patch size
+
+Thank you for your patch series.
+
+However, there are quite a few things that need more work. I'll make some
+high level guidelines here, and go into a bit more detail in some of the
+patches.
+
+First of all, run your patches through 'scripts/checkpatch.pl --strict' and
+fix the many warnings, errors and checks. Use common sense, sometimes a
+check or warning isn't actually valid, but the vast majority of what
+checkpatch spits out appears reasonable.
+
+Another thing I noticed is code like this:
+
++		if (param->r_cr_in_offset > HWD_VIIF_CSC_MAX_OFFSET)
++			return -EINVAL;
++
++		if (param->g_y_in_offset > HWD_VIIF_CSC_MAX_OFFSET)
++			return -EINVAL;
++
++		if (param->b_cb_in_offset > HWD_VIIF_CSC_MAX_OFFSET)
++			return -EINVAL;
++
++		if (param->r_cr_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
++			return -EINVAL;
++
++		if (param->g_y_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
++			return -EINVAL;
++
++		if (param->b_cb_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
++			return -EINVAL;
+
+This can easily be combined into a single if:
+
+		if (param->r_cr_in_offset > HWD_VIIF_CSC_MAX_OFFSET ||
+		    param->g_y_in_offset > HWD_VIIF_CSC_MAX_OFFSET ||
+		    param->b_cb_in_offset > HWD_VIIF_CSC_MAX_OFFSET ||
+		    param->r_cr_out_offset > HWD_VIIF_CSC_MAX_OFFSET ||
+		    param->g_y_out_offset > HWD_VIIF_CSC_MAX_OFFSET ||
+		    param->b_cb_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
+			return -EINVAL;
+
+Easier to read and a lot shorter.
+
+Another thing to avoid is mixing lower and upper case in function names.
+A lot of functions have this prefix: 'hwd_VIIF_'. Just change that to
+'hwd_viif_': that's much easier on the eyes.
+
+I also see a fair amount of code that is indented very far to the right.
+Often due to constructs like this:
+
+	if (test) {
+		// lots of code
+	}
+	return ret;
+
+Which can be changed to:
+
+	if (!test)
+		return ret;
+	// lots of code
+	return ret;
+
+The same can also happen in a for/while loop where you can just 'continue'
+instead of 'return'.
+
+This makes the code easier to read and review.
+
+It doesn't look like this driver uses the media controller API. This is
+probably something you want to look into, esp. in combination with libcamera
+support (https://libcamera.org/). I've added Laurent to this, since he's
+the expert on this.
+
+Regards,
+
+	Hans
 
 > 
-> On Tue, Apr 19, 2022 at 10:37:02AM +0200, Horatiu Vultur wrote:
-> > The previous try of setting the PHY latency was here[1]. But this approach
-> > could not work for multiple reasons:
-> > - the interface was not generic enough so it would be hard to be extended
-> >   in the future
-> > - if there were multiple time stamper in the system then it was not clear
-> >   to which one should adjust these values.
-> >
-> > So the next try is to extend sysfs and configure exactly the desired PHY.
+> Yuji Ishikawa (5):
+>   dt-bindings: media: platform: visconti: Add Toshiba Visconti Video
+>     Input Interface bindings
+>   media: platform: visconti: Add Toshiba Visconti Video Input Interface
+>     driver headers
+>   media: platform: visconti: Add Toshiba Visconti Video Input Interface
+>     driver body
+>   media: platform: visconti: Add Toshiba VIIF image signal processor
+>     driver
+>   MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
 > 
-> What about timestampers which are not PHYs? Ideally you want one
-> interface which will work for any sort of stamper, be it MAC, PHY, or
-> a bump in the wire between the MAC and the PHY.
-
-My initial idea was that each of the timestampers will need to extend
-the sysfs to add this file or multiple files. But from what I can see
-this approach will not fly.
-
-If we want an interface to be used by any sort of stamper, we could
-create a new generic class (eth_tunable/eth_obj). Then each driver will
-register a device that will use this generic class.
-We will continue to use sysfs to expose all the modes supported by the
-driver. But this time create a file for each mode.
-The entire approach should be something similar with the ptp clocks.
-What do you think, is this the right approach?
-
+>  .../bindings/media/toshiba,visconti-viif.yaml |  103 +
+>  MAINTAINERS                                   |    2 +
+>  drivers/media/platform/Kconfig                |    2 +
+>  drivers/media/platform/Makefile               |    4 +
+>  drivers/media/platform/visconti/Kconfig       |    9 +
+>  drivers/media/platform/visconti/Makefile      |    9 +
+>  drivers/media/platform/visconti/hwd_viif.c    | 2233 ++++++++++
+>  drivers/media/platform/visconti/hwd_viif.h    | 1776 ++++++++
+>  .../media/platform/visconti/hwd_viif_csi2rx.c |  767 ++++
+>  .../platform/visconti/hwd_viif_internal.h     |  361 ++
+>  .../media/platform/visconti/hwd_viif_l1isp.c  | 3769 +++++++++++++++++
+>  .../media/platform/visconti/hwd_viif_reg.h    | 2802 ++++++++++++
+>  drivers/media/platform/visconti/viif.c        | 2384 +++++++++++
+>  drivers/media/platform/visconti/viif.h        |  134 +
+>  include/uapi/linux/visconti_viif.h            | 1683 ++++++++
+>  15 files changed, 16038 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+>  create mode 100644 drivers/media/platform/visconti/Kconfig
+>  create mode 100644 drivers/media/platform/visconti/Makefile
+>  create mode 100644 drivers/media/platform/visconti/hwd_viif.c
+>  create mode 100644 drivers/media/platform/visconti/hwd_viif.h
+>  create mode 100644 drivers/media/platform/visconti/hwd_viif_csi2rx.c
+>  create mode 100644 drivers/media/platform/visconti/hwd_viif_internal.h
+>  create mode 100644 drivers/media/platform/visconti/hwd_viif_l1isp.c
+>  create mode 100644 drivers/media/platform/visconti/hwd_viif_reg.h
+>  create mode 100644 drivers/media/platform/visconti/viif.c
+>  create mode 100644 drivers/media/platform/visconti/viif.h
+>  create mode 100644 include/uapi/linux/visconti_viif.h
 > 
->   Andrew
 
--- 
-/Horatiu
