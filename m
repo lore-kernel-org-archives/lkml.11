@@ -2,99 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E499C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FAFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376393AbiDTIrH (ORCPT
+        id S1376923AbiDTIsJ convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
+        Wed, 20 Apr 2022 04:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244150AbiDTIrD (ORCPT
+        with ESMTP id S1350981AbiDTIsB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:47:03 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DBB3B3DA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:44:18 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id B70663200953;
-        Wed, 20 Apr 2022 04:44:16 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 20 Apr 2022 04:44:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1650444256; x=
-        1650530656; bh=t7DoobfDMY7dUicjX+qlluqPD7Zao8qnodbFi7wyI5A=; b=t
-        ygCaxN0wtkpwICLP3YBCcWZFOQ4IbeDTJ8em3/45AGOJ6ytwCMYqq/oG24e0QZHQ
-        549yvDtJMZgSjAvEV9MHcf7kN8tTO0Kh4dNGmrXOEcbzdu9cm2Me7iPKjBSfc0Mq
-        r6zLomXir+eHc0dCBaKgC4XtiY4QRke/BF7JHUQQJF4pYVl31V4Np895UBik6753
-        HrhSuPYG9x7SYY6rCGoPp2r+qQ6AJAsmcPr39gy3ELrmEoqmhntiHT9vPKFDiEvW
-        qsLpPo3hQ5vCwT3BBQhwEs3rsFzjii90Ap7s/8cfg8tY0pgMXATz51rVqHYQO8VN
-        hdMx+U3dqQ3Snhq0lYurw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1650444256; x=1650530656; bh=t7DoobfDMY7dU
-        icjX+qlluqPD7Zao8qnodbFi7wyI5A=; b=DQczOr0mdxvfH63u3aRSvK33yUvkg
-        hwVbbAnAuu6w71U03yBmgffc5IPBWtEWYaqFWIIpYcBI5gFRfYcxxz3IvpAabkZp
-        BRSCYNaHOjdylO6Nit0AfRBpUxqgiJkAbyAk9cZSl841k5QXDSL8MkPXh6p9Muui
-        h6VG5/zm4gGr8A0rYKfZdnI31WUiaxIvNxUivA4c0jb8kv43g7X+q4w+1SZiORJZ
-        HWx9qyxkxJZ4JdS2ayxEkQN+/lhSZrKrjC02hq1xeo21uvj5bmo7CMHjlFZnuDl8
-        Ux0FvlppZhBiL0FQ0ysyNunFaTfM1g03gHiupkqO4q8sG7FEKr+iPsC3A==
-X-ME-Sender: <xms:4MdfYrIMOf7vpJZ6IzW6U5gk0MbuYJ-apbWZY8i_1_cu7yCvsBk2ow>
-    <xme:4MdfYvJvwNfQXpTgDqqES-TroPLS1t6QdhnHmMd-li4hm97Hapt4kUI39EsDAocuK
-    tI365fdUBKRHhy8hgc>
-X-ME-Received: <xmr:4MdfYjtu-8dtpKX3Xr2T7ZCN73WjGcNifmV0f2_6bLijrK_mODM7zJYV-5mhdFSHAQHRsjkrHehz2IyCooDQwcDEsQlIOWe8CRGsYN8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvddthedgtdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeejuefggeekfffgueevtddvudffhfejffejjedvvdduudethefhfefhfeeg
-    ieekkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:4MdfYkZdXhgiPBHJe1laeM8vkDWI63we8zrIoe3Dpn8oLgQkM7Y-1w>
-    <xmx:4MdfYiZfxhSel47962QfHcz05I3V0iuPfT-dpHJcIbvREVj88ssr9w>
-    <xmx:4MdfYoBD4T0JUPARMGR5f15Shu6XU6f2pWg7DUJDHdNk1RferhAjfw>
-    <xmx:4MdfYq7azbT0uE5736JSIsiMJfWp3EO8iPivYieFh11DLk5Ygpt8Cg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 20 Apr 2022 04:44:15 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     mripard@kernel.org, emma@anholt.net, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, Zheng Bin <zhengbin13@huawei.com>,
-        airlied@linux.ie, linux-kernel@vger.kernel.org
-Cc:     Maxime Ripard <maxime@cerno.tech>, tangyizhou@huawei.com
-Subject: Re: (subset) [PATCH v3 -next] drm/vc4: Fix build error when CONFIG_DRM_VC4=y && CONFIG_RASPBERRYPI_FIRMWARE=m
-Date:   Wed, 20 Apr 2022 10:44:13 +0200
-Message-Id: <165044423683.307255.11242921417617655496.b4-ty@cerno.tech>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411024325.3968413-1-zhengbin13@huawei.com>
-References: <20220411024325.3968413-1-zhengbin13@huawei.com>
+        Wed, 20 Apr 2022 04:48:01 -0400
+X-Greylist: delayed 390 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 01:45:15 PDT
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F6964ED;
+        Wed, 20 Apr 2022 01:45:14 -0700 (PDT)
+Received: (Authenticated sender: hadess@hadess.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2A92B60002;
+        Wed, 20 Apr 2022 08:45:10 +0000 (UTC)
+Message-ID: <4439d19b13e2acf4c6b7f917eef590035460b06a.camel@hadess.net>
+Subject: Re: [PATCH] HID: wacom: Correct power_supply type
+From:   Bastien Nocera <hadess@hadess.net>
+To:     Jason Gerecke <killertofu@gmail.com>
+Cc:     Linux Input <linux-input@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Ping Cheng <pinglinux@gmail.com>
+Date:   Wed, 20 Apr 2022 10:45:10 +0200
+In-Reply-To: <CANRwn3QSx=FpCT0=E1y88W0zuFLmChqmYe_y7uSs0bANNk4rvw@mail.gmail.com>
+References: <20220407115406.115112-1-hadess@hadess.net>
+         <CANRwn3QSx=FpCT0=E1y88W0zuFLmChqmYe_y7uSs0bANNk4rvw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 10:43:25 +0800, Zheng Bin wrote:
-> If CONFIG_DRM_VC4=y, CONFIG_RASPBERRYPI_FIRMWARE=m, CONFIG_COMPILE_TEST=n,
-> bulding fails:
-> 
-> drivers/gpu/drm/vc4/vc4_drv.o: In function `vc4_drm_bind':
-> vc4_drv.c:(.text+0x320): undefined reference to `rpi_firmware_get'
-> vc4_drv.c:(.text+0x320): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_get'
-> vc4_drv.c:(.text+0x34c): undefined reference to `rpi_firmware_property'
-> vc4_drv.c:(.text+0x34c): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_property'
-> vc4_drv.c:(.text+0x354): undefined reference to `rpi_firmware_put'
-> vc4_drv.c:(.text+0x354): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_put'
-> 
-> [...]
+On Mon, 2022-04-11 at 11:51 -0700, Jason Gerecke wrote:
+> It seems that the USB type was chosen to fit into a upower heuristic
+> that still exists (see [1], [2]).
 
-Applied to drm/drm-misc (drm-misc-fixes).
+This heuristic was introduced in a commit that reads:
+"
+Hardcode wacom battery devices as not power-supply devices
+    
+We'll switch to a kernel property when the power_supply interface is
+fixed.
+"
 
-Thanks!
-Maxime
+Might be time :)
+
+>  Looking at the upower code I suspect
+> that swapping to the Battery type will at least cause
+> "UP_DEVICE_KIND_TABLET" to no longer be used for our dongle-based
+> wireless devices (Bluetooth-based might still be fine though). We
+> haven't sold dongle-based devices in a while, but they're definitely
+> still out there. If the batteries in those devices are seen as system
+> batteries that could cause a problem -- e.g. triggering hibernation
+> when the tablet battery gets low.
+
+Whatever the type of "power_supply", the device will never be detected
+as supplying the system, as the "scope" is correct.
+
+> I think it would be wise to test this first to see if there's any
+> obvious real-world fallout from the change...
+
+Worse case scenario, the tablet is detected as something other than a
+tablet. If that happens, please file a bug against upower and attach
+the output of "udevadm info --export-db" and CC: me on the issue, and
+I'll fix the detection.
+
+Cheers
+
+> 
+> [1]:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=96983296281507f049425b84f0d244c40d506eba
+> [2]:
+> https://cgit.freedesktop.org/upower/tree/src/linux/up-device-supply.c
+> 
+> Jason
+> ---
+> Now instead of four in the eights place /
+> you’ve got three, ‘Cause you added one  /
+> (That is to say, eight) to the two,     /
+> But you can’t take seven from three,    /
+> So you look at the sixty-fours....
+> 
+> 
+> 
+> On Thu, Apr 7, 2022 at 1:52 PM Bastien Nocera <hadess@hadess.net>
+> wrote:
+> > 
+> > POWER_SUPPLY_TYPE_USB seems to only ever be used by USB ports that
+> > are
+> > used to charge the machine itself (so a "system" scope), like the
+> > single USB port on a phone, rather than devices.
+> > 
+> > The wacom_sys driver is the only driver that sets its device
+> > battery as
+> > being a USB type, which doesn't seem correct based on its usage, so
+> > switch it to be a battery type like all the other USB-connected
+> > devices.
+> > 
+> > Signed-off-by: Bastien Nocera <hadess@hadess.net>
+> > ---
+> >  drivers/hid/wacom_sys.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/hid/wacom_sys.c b/drivers/hid/wacom_sys.c
+> > index 066c567dbaa2..620fe74f5676 100644
+> > --- a/drivers/hid/wacom_sys.c
+> > +++ b/drivers/hid/wacom_sys.c
+> > @@ -1777,7 +1777,7 @@ static int __wacom_initialize_battery(struct
+> > wacom *wacom,
+> >         bat_desc->get_property = wacom_battery_get_property;
+> >         sprintf(battery->bat_name, "wacom_battery_%ld", n);
+> >         bat_desc->name = battery->bat_name;
+> > -       bat_desc->type = POWER_SUPPLY_TYPE_USB;
+> > +       bat_desc->type = POWER_SUPPLY_TYPE_BATTERY;
+> >         bat_desc->use_for_apm = 0;
+> > 
+> >         ps_bat = devm_power_supply_register(dev, bat_desc,
+> > &psy_cfg);
+> > --
+> > 2.35.1
+> > 
+
