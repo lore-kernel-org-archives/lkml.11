@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A42B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA36DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359189AbiDTDJJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 23:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
+        id S240024AbiDTDJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 23:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359167AbiDTDIr (ORCPT
+        with ESMTP id S234346AbiDTDJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 23:08:47 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4411C2AFE;
-        Tue, 19 Apr 2022 20:05:51 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id e128so361183qkd.7;
-        Tue, 19 Apr 2022 20:05:51 -0700 (PDT)
+        Tue, 19 Apr 2022 23:09:50 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E459A2603
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:07:05 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id a186so350602qkc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:07:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jXVd4JyYt+RLNj/hac0Knj+pNB+a1zaGjepppWkJ+bY=;
-        b=ZFxLZ3jbqwA5VN/V3U/Sorl04NGsIMy+K76HC0ts1VMujTqraPtXgbpy5j38Vr9y25
-         P03eTzrb5j+T55kQJmLGL0oTfrJhhIKMehj4M43TrxjbvCUE5i2lnBnXedwhUB0Hrg8T
-         Km317NMpdTpDEDCNWEwmM0UIdwDiGLeChlukAexTd1u+qP0rZqP16/WcVoKDON3/vYwq
-         i7vFxRBZmRhliRki+IgBDiztCxmLGNoxw7Zgao2S8BI1opGRiguZJh9M5gUsCVwo9kNR
-         f9HEzFx1zQc5GciqiPzoiVb8snwF2//GFjEDjuvFlX95ZL3WxdzAKWNBqKf/cpmMIev2
-         lQyQ==
+        bh=LM+R8F9f5IgEgs7eRlVM40Gk0INro2H615+Nbx4F7ZA=;
+        b=AM0cmwEFMxtoHtYuPdZJHmPizAC3xPDy9MhGdcWzUknn/k1IAH1/CkfCBrwmMqMGU5
+         Op9Zhr4loojsszKqfNWt4bDt3iTTGaKM9D9Cr/7M2u7KnTsX8LzACQsmUl5kwnPAjETn
+         DiqvoCu7uatWoMKscC6RcE/9094nyKbknbu5JyhdzOzDRryDv/kp0+cX7okT0Cp1QG6W
+         FV2ustpw+3X670x2N3ZHxaqNt5t2Go2E/jRIVSRzVzBZGkCfG36EpZSyw01CsvDPpBQA
+         sX/XNqDnoqf+9TtrBud0Z3rClxNnCiFO7Geis+W3mixcT3rprV5sdMYqRjjeaaYuxFvD
+         HJ7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jXVd4JyYt+RLNj/hac0Knj+pNB+a1zaGjepppWkJ+bY=;
-        b=8Eljv12YMj5RIK5MCsL1cuuuqrB/L6iIRM5Y0KR9Uf7ju+5cdfSmLRQVie6OlEb8At
-         SKJIr2eGfJHL0QaLQwl+2MiLFWKcHomakDggYnfLvX0O9zqRu9BVKxQpze71BVoigkby
-         9x2EeKMlmMkMiCoWI3OL1bUyCRRmJWHu+PThMRrAtapczbxv+XY9H2FSFzhaTfEFDUQB
-         G1rIOtoBOjtR8j1s87U9jXL/zfOJDOzpMF5dKxoeoBEfi16BX4wN6R+dtT4E+RKYi8Nc
-         +vuPfPrtr2gCTW3G98j5D4u5FbFTBKIOBVtQ9GEHy7pxdpQU/had2vNUSvVr/M15tWV6
-         NfVA==
-X-Gm-Message-State: AOAM530iiGOZNPxlxqcCj15y0rMiDhHrMRKR5cVKfMCVuDg5PAlapLRi
-        YLVb2w90ZRRkE0AXTMErGAM=
-X-Google-Smtp-Source: ABdhPJzL0eDkXCbFY6rkISzDtHZ8674iDU2OWn1mphdzKQERD2iJuHbptDQuf4Brr0rJp8/htPELXg==
-X-Received: by 2002:a37:b502:0:b0:69a:ca1:298 with SMTP id e2-20020a37b502000000b0069a0ca10298mr11469168qkf.133.1650423950492;
-        Tue, 19 Apr 2022 20:05:50 -0700 (PDT)
+        bh=LM+R8F9f5IgEgs7eRlVM40Gk0INro2H615+Nbx4F7ZA=;
+        b=d+HMK3QD6toDYdCdICUBasZvyuzLfVYz4/b++7XC7oolpUmmaAJGOqPhyBvOI9Cex/
+         JcHnV0ShoqHR6m2L8WlgGOP1t6JLZ5mNtqyuIQHz3KQiX+VW6M9iU4d/TC1JzNYWALrG
+         8q0O3PB5dKXIPBYgNGzPqwSjJ3f4BDEOYobgiJzJDBPt4ZeDbT0vuNvCB/z97DufA844
+         H0eiS+EgIiCTMnIpqusOb4kh3qThVi+d9r/rzvq4tE/Y42m933t2xYAETRlUCPhAfIMn
+         KjsyRB4u4SY7bdRt4tSxAhdh9/Cm1ppMylU+zuCaBiDUPHzX49JotnnvVLd4wvC2Zuj5
+         jYeQ==
+X-Gm-Message-State: AOAM5309jFvmzKBE7rbs9NX0bz2iD7yjlIi5PgA6ngtsR8sCMoe/gkpp
+        0e+hLa/PA5xJCKxBwUbckwY=
+X-Google-Smtp-Source: ABdhPJzjCuHLUi3jZowxZwNoFfPIn/5TAOu8OYoPIQjIC007jckvE0naRuD1/7B5aS0+InQCz5/Q4w==
+X-Received: by 2002:a37:b984:0:b0:67f:64a2:313e with SMTP id j126-20020a37b984000000b0067f64a2313emr11220711qkf.3.1650424025131;
+        Tue, 19 Apr 2022 20:07:05 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s16-20020ac85cd0000000b002e1ed82f1e5sm1157252qta.75.2022.04.19.20.05.47
+        by smtp.gmail.com with ESMTPSA id u13-20020a05622a010d00b002f0c6664db1sm1020726qtw.49.2022.04.19.20.07.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 20:05:50 -0700 (PDT)
+        Tue, 19 Apr 2022 20:07:04 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     agross@kernel.org
-Cc:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+To:     johan@kernel.org
+Cc:     elder@kernel.org, gregkh@linuxfoundation.org,
+        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] remoteproc: qcom: using pm_runtime_resume_and_get to simplify the code
-Date:   Wed, 20 Apr 2022 03:05:11 +0000
-Message-Id: <20220420030511.2575880-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] greybus: using pm_runtime_resume_and_get to simplify the code
+Date:   Wed, 20 Apr 2022 03:06:58 +0000
+Message-Id: <20220420030658.2575942-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -75,27 +74,27 @@ actual functional changes.
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/remoteproc/qcom_wcnss.c | 6 ++----
+ drivers/greybus/core.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index 9a223d394087..2c471c763b5b 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -228,11 +228,9 @@ static int wcnss_start(struct rproc *rproc)
+diff --git a/drivers/greybus/core.c b/drivers/greybus/core.c
+index e546c6431877..434aa5d9dd47 100644
+--- a/drivers/greybus/core.c
++++ b/drivers/greybus/core.c
+@@ -174,11 +174,9 @@ static int greybus_probe(struct device *dev)
+ 	if (!id)
+ 		return -ENODEV;
  
- 	for (i = 0; i < wcnss->num_pds; i++) {
- 		dev_pm_genpd_set_performance_state(wcnss->pds[i], INT_MAX);
--		ret = pm_runtime_get_sync(wcnss->pds[i]);
--		if (ret < 0) {
--			pm_runtime_put_noidle(wcnss->pds[i]);
-+		ret = pm_runtime_resume_and_get(wcnss->pds[i]);
-+		if (ret < 0)
- 			goto disable_pds;
--		}
- 	}
+-	retval = pm_runtime_get_sync(&bundle->intf->dev);
+-	if (retval < 0) {
+-		pm_runtime_put_noidle(&bundle->intf->dev);
++	retval = pm_runtime_resume_and_get(&bundle->intf->dev);
++	if (retval < 0)
+ 		return retval;
+-	}
  
- 	ret = regulator_bulk_enable(wcnss->num_vregs, wcnss->vregs);
+ 	retval = gb_control_bundle_activate(bundle->intf->control, bundle->id);
+ 	if (retval) {
 -- 
 2.25.1
 
