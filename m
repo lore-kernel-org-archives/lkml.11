@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB51C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351531AbiDTJFt (ORCPT
+        id S1351415AbiDTJGZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 05:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        Wed, 20 Apr 2022 05:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235701AbiDTJFk (ORCPT
+        with ESMTP id S1351414AbiDTJGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 05:05:40 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBD71CFD7;
-        Wed, 20 Apr 2022 02:02:54 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id b189so733319qkf.11;
-        Wed, 20 Apr 2022 02:02:54 -0700 (PDT)
+        Wed, 20 Apr 2022 05:06:20 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD9B237CB;
+        Wed, 20 Apr 2022 02:03:26 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id a10so866256qvm.8;
+        Wed, 20 Apr 2022 02:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7vkbjr0KsMnyoLFY4TxzFtnA38MiyiwfdDW2hTdx3F0=;
-        b=RlRagmqTZiLIP38XTW4bcnrQWAodzYi9SfXvUF4tfXHpakpxAXQUxjaEYtQMI/RvhI
-         MMFxluFkgQiRX/k6+TZOgsPoKH5kVdRZVPQUeWXjhRDJ8G5VUI9ShkUQRyT2Y5nRgdmb
-         zceZyZNj3+GH+8R4LjKEgaf5zyt3d4Rl8DK6gQ5heEKIQV067EXFDEqCtlDP/NP9qOVX
-         t8LnSff6nuHapDQywycWsW/DNKPK5/jRkgxVoB5jIDggDDMd26SsAiAyYMPAbC8bVmIm
-         XM1SWrZXiQjSsx71vxhHfHFYEYLu2PGawYXzTYtMXn+2tpMZdwSTXbO0zJO+mRSGqDYi
-         1OLQ==
+        bh=NnFxtwRRJ1hmS1nIOnNEgnSU72d6SNowHDJpVfEGbmg=;
+        b=qELw7eNtgoerIzK6DFQqUH/yXRLuhxRa48XKr32rEV9ZJekXNSEHvOhf/L9pf8VtsM
+         W1hXo3L23/LA9S3kD8An1OzwknHO7tFjAHQogOAtP9MbivLuOhH7CBY5Vu6rpV1a4pnQ
+         6vczdpsgMgTNQGdzYziHw34pZcIdgdCZwmSUB+9wYj937uYwgBSmX8qgz9LWuMu/h9Ok
+         JnB+PkFE87TN/lMnXNC4nrV/Iesv9OKdfwJNUWt3uKHT6t0S57OmVYU5/D8xL8qcpVsg
+         2EoHGA6UG/lLQSecYHOu6dZGpmLyFHbC5P4ESSGVxOP6Hju0aWTN7iVzUFBZx/zaLj4j
+         5bSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7vkbjr0KsMnyoLFY4TxzFtnA38MiyiwfdDW2hTdx3F0=;
-        b=qY3Etp5m4MmMSBBESm4i8IVVW+MWYkwhY9H6sgQ8hfUrckBfySbz5j3LLZvo4Zu6mW
-         Y5AMbqRDWaE7vo4kU3ZweZSp96I2Kh5Ms293zo0qIQfm6DLjKRikDOquc9etmJSvT9p0
-         IYdjjm5wJk4IUQRmXVkaZZtMZCCXzKK30sblkDLMnUoVPh0o2MC+/VS2nj96I4cBhJRg
-         53x87D7sDOXkM0zTYLJsWa6f8PoAXY9+b2vZO1EYSwNI72ewBYbvBzKu/FsLAzbpJEbh
-         imnDpDgU5Lfy8Bk5Bk8t5uulXLzFrfRM43ljcoTBJbes+m7oWMJfEuusMQ0oyLUrd6eY
-         6mkw==
-X-Gm-Message-State: AOAM531fRyA5KRZnyHAk25IaxRPlcAjjMPIxvtdB4bJTbByX7CA/kOZP
-        3wEz60iO88bUMoZqNpimbx0=
-X-Google-Smtp-Source: ABdhPJwEdrKOFX+icFTFSsUd4MMDKCmj3gGNeSQjB45kob95CuAbUaZJ13FIjLEYNABilnIb/deNpg==
-X-Received: by 2002:a05:620a:4621:b0:67e:cc42:42f0 with SMTP id br33-20020a05620a462100b0067ecc4242f0mr12099772qkb.131.1650445373960;
-        Wed, 20 Apr 2022 02:02:53 -0700 (PDT)
+        bh=NnFxtwRRJ1hmS1nIOnNEgnSU72d6SNowHDJpVfEGbmg=;
+        b=Y0iCN8Pg02hRotSlYunfDj4cldIBEoddujhmmm5IBG7EmQmT/BpJjpspS/C9i78K68
+         mbqGrf+xs4pyIw9XyQ5SbQZXAznr3tz+ejYDxIzfqx+BOkyA93cAuPJ81YqPF+OrmXZ4
+         BXJdS7p8rvDv5EwKK6qPPsFhByR9Tv12tQzSmHVq+6klcjt8mZ+pHSsouVu/xOpS90xr
+         BPZ76P49/WFbvaSxgSAYBpWFEH1nA1j3tqMKBEElPSjCJFiwTgPXgUKWrQODllkRBFyY
+         BRXQIIjl+dF+hR/82mFRmjEwCzLechP8uXhDwAFyOd0Tp2RMjNVyemKLgw3tc5BT5Sqy
+         u+eg==
+X-Gm-Message-State: AOAM531iBDT6iWG89Z4PYQevd0QMbDYJkWq4DtAKoFoUtd25z6Ejzelg
+        9QrAiVyez9LpKknhdNi2qyE=
+X-Google-Smtp-Source: ABdhPJwldVtKiFVgIYqhTFdpdxu00eMoOmeOJGylcIMm6/A3WyY2U+4MVMxqyMReppoUpW1MjBVO8g==
+X-Received: by 2002:a05:6214:5189:b0:446:7268:f127 with SMTP id kl9-20020a056214518900b004467268f127mr5361855qvb.114.1650445405673;
+        Wed, 20 Apr 2022 02:03:25 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id a76-20020ae9e84f000000b0069e80daa17asm1276731qkg.113.2022.04.20.02.02.51
+        by smtp.gmail.com with ESMTPSA id k20-20020a05622a03d400b002ec16d2694fsm1413163qtx.39.2022.04.20.02.03.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 02:02:53 -0700 (PDT)
+        Wed, 20 Apr 2022 02:03:25 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     b-liu@ti.com
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wl12xx: scan: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Wed, 20 Apr 2022 09:02:47 +0000
-Message-Id: <20220420090247.2588680-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] usb: musb: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Wed, 20 Apr 2022 09:03:20 +0000
+Message-Id: <20220420090320.2588742-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -75,28 +74,27 @@ actual functional changes.
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/net/wireless/ti/wlcore/scan.c | 6 ++----
+ drivers/usb/musb/musb_core.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ti/wlcore/scan.c b/drivers/net/wireless/ti/wlcore/scan.c
-index 29fa51c37e88..b414305acc32 100644
---- a/drivers/net/wireless/ti/wlcore/scan.c
-+++ b/drivers/net/wireless/ti/wlcore/scan.c
-@@ -53,11 +53,9 @@ void wl1271_scan_complete_work(struct work_struct *work)
- 	wl->scan.req = NULL;
- 	wl->scan_wlvif = NULL;
+diff --git a/drivers/usb/musb/musb_core.c b/drivers/usb/musb/musb_core.c
+index f7b1d5993f8c..6f7b37f5fccc 100644
+--- a/drivers/usb/musb/musb_core.c
++++ b/drivers/usb/musb/musb_core.c
+@@ -2828,11 +2828,9 @@ static int musb_suspend(struct device *dev)
+ 	unsigned long	flags;
+ 	int ret;
  
--	ret = pm_runtime_get_sync(wl->dev);
+-	ret = pm_runtime_get_sync(dev);
 -	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
+-		pm_runtime_put_noidle(dev);
++	ret = pm_runtime_resume_and_get(dev);
 +	if (ret < 0)
- 		goto out;
+ 		return ret;
 -	}
  
- 	if (test_bit(WLVIF_FLAG_STA_ASSOCIATED, &wlvif->flags)) {
- 		/* restore hardware connection monitoring template */
+ 	musb_platform_disable(musb);
+ 	musb_disable_interrupts(musb);
 -- 
 2.25.1
-
 
