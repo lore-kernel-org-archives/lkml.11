@@ -2,125 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F66C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378174AbiDTLfY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        id S244785AbiDTLia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Apr 2022 07:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378151AbiDTLfU (ORCPT
+        with ESMTP id S234663AbiDTLi0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 07:35:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA4F419A3;
-        Wed, 20 Apr 2022 04:32:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D8E4FCE1D78;
-        Wed, 20 Apr 2022 11:32:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EAF9C385AC;
-        Wed, 20 Apr 2022 11:32:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650454351;
-        bh=SVJ1k2v3tWdUGg+iydyQsi4Bq8zjjEYtWiKbWgwFaLw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sQ6L9Sz7HsTeFplAqNVVqZ6QvDLXO7taCfdy4bCI083iKPBu4Tu1W3tAjRXjBMJP+
-         vEnLCGH51YORxEsFGOcZi/zoMsoYQoogO656Bx3dJCN3iokeUHMcZ/sRdJXG/FEfPy
-         OVbCsNPPUvMBA4ygYO3ABwIPljbcDkM69w6wy8bq4hi0dZRIAMv8YMoKSdGB49RoPV
-         7T06gmGwLx2hqcDTbF36X1GFj0Gux2+ukzAt7yv7JaGdNy5Qv43jNDhgQacW6a+5lC
-         7ziU5CwWVIqq9dL54xJaRWmMjZZOJMF8J98DaHAPKZKsUB+PqhqrA4wPmQhlfKvBIW
-         qSWfkWYIEhJww==
-Received: by mail-wr1-f42.google.com with SMTP id x18so1882237wrc.0;
-        Wed, 20 Apr 2022 04:32:31 -0700 (PDT)
-X-Gm-Message-State: AOAM530NWB0Xph9prkK8MhpzZZvtjev6lzNibywcjlBDFqkXONBxzEmC
-        BAB2nVGC+z7kHjbSFQYnKjVNHwqTkjcmslDX/Zg=
-X-Google-Smtp-Source: ABdhPJyiDPtmjdTUE7gVl98mXVlPUP43tSlAHIUMCCxTRsYmEILlWV1BOcaVw3t9k0Uq80bvmC166gAUNNWM192dlCo=
-X-Received: by 2002:a5d:64a3:0:b0:20a:7931:5b84 with SMTP id
- m3-20020a5d64a3000000b0020a79315b84mr15873027wrp.407.1650454349319; Wed, 20
- Apr 2022 04:32:29 -0700 (PDT)
+        Wed, 20 Apr 2022 07:38:26 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130085.outbound.protection.outlook.com [40.107.13.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC75A15A28;
+        Wed, 20 Apr 2022 04:35:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VH3+DoOND4XBX/hBjskImz3t9rswCKP+rBDI40QVHn4is4SZe0JLbJU2mW4sGGfKrGNTYVDywaWcKgtD9jvnFPGwds2eH1N881ojz6e82tDEjcefvVIuB9SeWtEQu573omxvjD9LmduiCLwejbxwQJUAsOkx2aLc/Wzvi3MTjlVUmh2nv3UT7VochPxmLay63datCmw3itASBC+UwEXBhjwqWPcDXWs0BMmZRlBgSQnekmA2CEM8wMt5L4bcyodoKJ2eJpzBfkurqEB+IT3q/nWIcQ0Io+k6Bai/QH+X3KNlmyASIYiu7pvUjjT2DJTzs+zXBZyHlaQP1TF6kG+iKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b+I9FEztKWd4Bwr+DteqvAJpkrWIAnN6WtfEbArW0aI=;
+ b=f9By44c6py18v2BasvOClioVN50zexg6ie19gFx7JqKgE2F/f3oO9qzEeRIuDlKcDd7wY8LN9fQaB2tL8fhnUr1gYezoC5btAA+zFn9nZvPk8A8T4pAodcR611emgk1Ks/YbQV8tTjNvqFxztobMO8a+BgpZ6y60aLPAlqjlGx5DKIpZbHv6Uoqe0h7LOpcKio90QyUEgtDxlD3Xvf15G9QYTYZ8uUQbBu4AhwkaJy6hoL2iSgbsrtYQUUp9NmAB8iwn6uHSrgZadZHBFz6PFXSTqTbZ4XEEMPS7nLzviE9NviKvjYrpdUIQGvPhMaax2S789gG3B4TrplJDpbF4Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b+I9FEztKWd4Bwr+DteqvAJpkrWIAnN6WtfEbArW0aI=;
+ b=VpJHxJ39LghWcAtXdGSA2eEqQ5BC0aLn0QzhdHdajX91GjLFlSU452mpma++GI6x9z1tlLL/t+BiOT6A5chAWmyPdBnT/mL/qEvIFYda6OQhRv8ovWkgdZv0ORTtTgWGXUKSiy0e1Dt66eAurHn+ZUxvEqDPIHE/IChxfST8BxQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by VI1PR04MB5376.eurprd04.prod.outlook.com (2603:10a6:803:cd::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
+ 2022 11:35:34 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::d8b5:5914:5189:ffa5]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::d8b5:5914:5189:ffa5%6]) with mapi id 15.20.5186.014; Wed, 20 Apr 2022
+ 11:35:34 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org
+Cc:     hverkuil-cisco@xs4all.nl, robh+dt@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, aisheng.dong@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 0/2] media: amphion: copy timestamp from output to
+Date:   Wed, 20 Apr 2022 19:34:52 +0800
+Message-Id: <cover.1650453924.git.ming.qian@nxp.com>
+X-Mailer: git-send-email 2.35.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0029.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::8) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
-References: <20220419133723.1394715-1-arnd@kernel.org> <20220419133723.1394715-2-arnd@kernel.org>
- <ddaf112d-f997-84b7-2c57-bab3d0cca382@gmail.com>
-In-Reply-To: <ddaf112d-f997-84b7-2c57-bab3d0cca382@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 20 Apr 2022 13:32:13 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3+5p5i2Nxy6AxH5qDsVqqxwSR_5ufjoYCALProSLNspg@mail.gmail.com>
-Message-ID: <CAK8P3a3+5p5i2Nxy6AxH5qDsVqqxwSR_5ufjoYCALProSLNspg@mail.gmail.com>
-Subject: Re: [PATCH 01/41] video: fbdev: omapfb: lcd_ams_delta: fix unused
- variable warning
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     linux-omap <linux-omap@vger.kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        dmaengine@vger.kernel.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 833b259f-148d-4c99-7f15-08da22c1e20c
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5376:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5376CDBC8A7D12C25022BA5AE7F59@VI1PR04MB5376.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UOuuwn1p/7doBjef5FV9FNscYg3rY/ZuRGJyK3BeDy9vYZt67YqpdtyFSGyaaMaS12kLRGp3ZqitMo8JtPFF1aZwxOgF8GtatKS5O8KLxKKmWB5/cHWNREhuy58v4ztn4/Aa43SuQCxIj6wVtefUxZM+EVQ9YjLhG2Mm5xt7CM2/6PKe2GRhjoF4SCdU/mhPhWhYIw6l+SvaIcJeL8vHxFrCmtZUsqcA0l5TQ5nyFYQbHL/YQpyZBsz0E7Aa/ef2w5CAX8MtgGZj7R813p7KqE6ZrxTH/bOVauRov5yX/iLJPw9z9wAzAcMFBdMWrzac5zLVsh2pLLZKtUd3OEkSjXewz097G5EJItJHXR/G3pC/b4CfB6ql43gWaqqHBTjuT24ULj9FVJoVPhX45drwg+eK3OXvVoKZm48vfAeRwAEJXT+sCFpYZYzvU62mD/ldNeZx3pnzCDL5R8//4b+w/LKCuTT29loFWniZ8CPTNY06RRpMXKeDcLzYS55fnRRoqInTWXewuWA9MRkXAlXEqKEYDGniR8aX7oNrjz5meK+jbGeElWF9sw4gauXn2/pAcqVH1L5hrFgeTMHPGTSzmnqVqf9Dfqs4RZ58qEMilAyExtM3fTw4UjGjM17kXH3AnQib8bukYtLjTPREn5Agc9WcLkqzc1Ty3ilBTFnUobjfx8gNDB9h5ToUvzppm5S6tkZ1hA8RZu0cfilrOhaRUA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(6506007)(6486002)(508600001)(86362001)(2906002)(6666004)(38350700002)(38100700002)(316002)(26005)(186003)(2616005)(36756003)(7416002)(5660300002)(66946007)(8676002)(4326008)(83380400001)(44832011)(66556008)(8936002)(6512007)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oSc58la1Ii3OPrag4NjSRTVQWLZeGYU3C4AkBUAmVQ8VobTpFsCux+0HEiSv?=
+ =?us-ascii?Q?OX4ogTcZYmGPIWWJPPlqOIBStvYY12CDsdGUvTP+4gyG5FAQPWBgaMm/k1fh?=
+ =?us-ascii?Q?MDD06J1wmMOJiBy/Hgwak79iz4i2/b+UVsWov40PrSA6KO07pYxkhJgrK0FE?=
+ =?us-ascii?Q?l5aAcH9jn1P1uRp8wzZlMAZKP6KDxdmO+weI5pdxEbXH9Re6xkzynAwtBVnH?=
+ =?us-ascii?Q?hh8Td6nxojqNefU6DGIYQ7xNwcb33IMn0ePaPoq7w8XOjHItJ5ZxJwcdQItD?=
+ =?us-ascii?Q?EyarDGluHcWXIA+k1RJL89UJB8+zmCsD3SJ3wdp9MPe8QltfYc1vIe+gOFPB?=
+ =?us-ascii?Q?804lvxIafYG0nVZ5NAEOCOerIlFw12YQwjOEa67mmp2lnwp7KuKr2qXsCkfx?=
+ =?us-ascii?Q?FziWSi+RkYj61XSKNAz3PkbaQ80wUNBRnGUybrAmKfeH5UDx9wET41/UL8L7?=
+ =?us-ascii?Q?Zg+3pTtXDLv8rzzaRFmUmgyekM9eB7xW/+L+BWQKaeIsSZDodcjDM6sDdFu6?=
+ =?us-ascii?Q?D2GoZkA4TPBi/JvhcoQcPgx3ephoyAGCvpua/Vt/mTsVV/0HV+qB+Fpa1+Ix?=
+ =?us-ascii?Q?Xpse7EAiaAGL4uY4vVtC9mLhH9A3uUaOaPT2lBiBFhmiD86Tsak3j/8V3loV?=
+ =?us-ascii?Q?6M4HYef2k8YMOhupJ5ZiJMZIO87rrRq17hwBR8YbxofNuwjJWkqXvU4vsyIl?=
+ =?us-ascii?Q?1h390kFXAI52iNnp4syp0GzWdNWMPu355QuVHT9l5J+uEM14WJ24TKKWMJX8?=
+ =?us-ascii?Q?liggk1fL9Du0pGs4WaCzfGuoTo+Mim89lkq84pxO+X+r+IWumgsX58nrpZRb?=
+ =?us-ascii?Q?J55EosFqNGbvweN09QEBiJ6sopKqKWRVR0K5WH6bBiha/vkGlvFPnLcMQv5C?=
+ =?us-ascii?Q?maeYFCe9CMEroGY2qTZN22Qw9pD8gVpP4T3jTLiWiaim02SjQCsgl+zUhoRJ?=
+ =?us-ascii?Q?EnZlwmleB8y1yXcGM3ZHIAy8+ccCw9ofnatHsc2N312lLJ7XKrol0NbvTBSf?=
+ =?us-ascii?Q?QABV4w0wFabfcBwdu7zZzs2Ja4jcCnlKiiGWsPA38fzYY6prOIB5adG8j1yW?=
+ =?us-ascii?Q?shEoMctJQ5Fah0TefYpZMjenwpdhtyF3HCP31ZyGBqveHf4ED3qZJEOWRjYE?=
+ =?us-ascii?Q?vt5Fu2UZ4VdhHvZDJ3pf6zYgOFrrVsn/vM/QtGvEpxlW+m8mYP0D2gzBaXxm?=
+ =?us-ascii?Q?Nc4ZFbgacqUrFx/WGrCTFjeue+9iAlK8LKQZdDLeFxWRg5vx8MxVFAFY4VWf?=
+ =?us-ascii?Q?W54JOnpqV1ySNwH4RkoanI9yOepmnXElU7SU3jMWpEZkReFIALX5wos4kh/1?=
+ =?us-ascii?Q?qTPTgslegiaOd66NGXdu9s41KbBX/PGuuckBiydin7n/RGOoxVM73A1Gt6Xp?=
+ =?us-ascii?Q?xGbjdyLg/LKgwQnDa6yhOQjN2D54JGSN5K8ABdBQEMFB9eVic2aYBu8eN+Dq?=
+ =?us-ascii?Q?0XFlc7WGglT7NYtZ4rEeadQPwdDOgGcXqx3SSoTVWfemFFLhGsA8czQaWobo?=
+ =?us-ascii?Q?8r6GVg7rZEyDAAVsqO+On9EGSvL7ef4m+m4KnL7zrCw/KR0imh4Ktm7G7zxO?=
+ =?us-ascii?Q?AUNA+ZVv3U108HqDtkYpVGzaIOQCpgk7CC41lLyGHWDouw0+HRx61P3cQYq5?=
+ =?us-ascii?Q?eJ3ZGLzD41/NgjgDB4EbEUGDPG48kF1JL3x8PKGeygEodQc+kPflTO1RxyxB?=
+ =?us-ascii?Q?ODqFGhwx5YhdxEuzQ1JYRGMgLQtrykIfHn7wgoH2MVYk1gjFdhMRavQkWcc8?=
+ =?us-ascii?Q?0Cu5Y++b3w=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 833b259f-148d-4c99-7f15-08da22c1e20c
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 11:35:34.4567
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T4gMFZRu1ruBNCfN3T2gTJ4jdWD/GEN9tp/X4NPFyz6CW1Mu1w83jJTeH7DKqezkJKFp4Jf1r1Ga+SiXw21YnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5376
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 11:24 AM Sergei Shtylyov
-<sergei.shtylyov@gmail.com> wrote:
-> On 4/19/22 4:36 PM, Arnd Bergmann wrote:
->
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > A recent cleanup patch removed the only reference to a local variable
-> > in some configurations.
-> >
-> > Move the variable into the one block it is still used in, inside
-> > of an #ifdef, to avoid this warning.
-> >
-> > Fixes: 9d773f103b89 ("video: fbdev: omapfb: lcd_ams_delta: Make use of the helper function dev_err_probe()")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > ---
-> >  drivers/video/fbdev/omap/lcd_ams_delta.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/video/fbdev/omap/lcd_ams_delta.c b/drivers/video/fbdev/omap/lcd_ams_delta.c
-> > index bbf871f9d862..01944ce46aa1 100644
-> > --- a/drivers/video/fbdev/omap/lcd_ams_delta.c
-> > +++ b/drivers/video/fbdev/omap/lcd_ams_delta.c
-> [...]
-> > @@ -145,7 +144,7 @@ static int ams_delta_panel_probe(struct platform_device *pdev)
-> >                                               &ams_delta_lcd_ops);
-> >
-> >       if (IS_ERR(lcd_device)) {
-> > -             ret = PTR_ERR(lcd_device);
-> > +             int ret = PTR_ERR(lcd_device);
->
->    How about inserting an empty line after declaration?
+v3
+- add helper function vpu_skip_frame() and vpu_next_src_buf()
 
-Ok, done.
+v2
+- reduce the min buffers count
 
-        Arnd
+There is a timestamp manager in firmware,
+so in previous, driver will pass the timestamp to firmware,
+and when a frame is decoded or encoded,
+firmware will pass the timestamp to driver,
+then driver set the timestamp to the capture vb2_buffer.
+
+But there is problem that the timestamp manager will ensure that the
+timestamps are monotonically increasing.
+So if there are reorder frames, the capture buffer's timestamp is
+inconsistent with the timestamp of the corresponding output buffer.
+
+It goes against the description of V4L2_BUF_FLAG_TIMESTAMP_COPY in the
+specification
+
+In order to comply with the specification, driver should copy timestamp
+from output buffer to capture buffer, and there is an helper function
+v4l2_m2m_buf_copy_metadata to handle it.
+
+Ming Qian (2):
+  media: amphion: decoder copy timestamp from output to capture
+  media: amphion: encoder copy timestamp from output to capture
+
+ drivers/media/platform/amphion/vdec.c       | 76 ++++++++-------------
+ drivers/media/platform/amphion/venc.c       | 47 +++++--------
+ drivers/media/platform/amphion/vpu_malone.c |  2 +-
+ drivers/media/platform/amphion/vpu_v4l2.c   | 56 +++++++++++++++
+ drivers/media/platform/amphion/vpu_v4l2.h   |  3 +
+ 5 files changed, 103 insertions(+), 81 deletions(-)
+
+-- 
+2.35.1
+
