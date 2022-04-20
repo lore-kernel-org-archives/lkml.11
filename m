@@ -2,222 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD1AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 21:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 017C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 21:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382711AbiDTV74 (ORCPT
+        id S1382714AbiDTWAc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 17:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
+        Wed, 20 Apr 2022 18:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236516AbiDTV7x (ORCPT
+        with ESMTP id S236516AbiDTWAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 17:59:53 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFBC3BBC2;
-        Wed, 20 Apr 2022 14:57:05 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id o132so1438804vko.11;
-        Wed, 20 Apr 2022 14:57:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XV35Uhu02nhpc/+S29bQrcl9X0sx9xBTyC1cMcdAS0s=;
-        b=LEBmYdStR/8Bi3o9F1wTA7JXqWfejnTtHV7VFQdsVGTF7bYv9Dt3LOfHyoKU64TyfO
-         d/aXaMmspy4+NEm7Aa8Ctz6WE8EmC5fe3H7vRBBP2jA75fAHZGPTP8eedjfUyAtEI7Kd
-         oQZx+4vlwIP/Nt8ePNk4+y/3b3UsUh0h7HFEgIzEgiv9fzQQbJILWZavjiatsHL62CBy
-         YovP3WmFBekWBd47GvLm5zJOMB1BooXf3UqLtFV9WjA87wRuP6OqmfBudJXbzENLRoPQ
-         Huu8H2FvoRrffbOHbhB8fl8KdqSkvV9rAYOc6U4R7wg1XKZJH8PvXVbo3e2bl3SZojiC
-         8MkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XV35Uhu02nhpc/+S29bQrcl9X0sx9xBTyC1cMcdAS0s=;
-        b=eG4iOQwLJ/ax3EedKZYQDF1YonLzCTXO9ToMd4c3V2GuNL1OU6mvIX6gWeSJbael9t
-         xWR760TSSqLmnrC+D9Zp6/B3zKNGY7LCJtRgHCmS8IksT4wlLfDqXunvkENxRLvhD3Gj
-         1I382DBvIdYh9Q8+AXMEez71KBOcBIYorEU1OftBVCBBa4NAAjn3tIvmVmrYrNIJp6db
-         ZcDTGClpHzh+4wogIos/RoNuDQn492HDbkrK503r6Xq8Xvl2CsHjXKlUIldwx9S9BSuB
-         ricMfsa/b/Mvm7UPsn+Z4aEFy+addko+g6Rj/BReh9tOpPaVF1EZuLrXWZSH8h9gv0Ta
-         NASg==
-X-Gm-Message-State: AOAM533yZHRE5h7RoWdbn7rpcioqDXAVazsYUU/6nl6lWDQT6aPdn3o9
-        unC4xP231mSNwx22uiynHcs5WAJrO4tCCOE5FaM=
-X-Google-Smtp-Source: ABdhPJyQrA5iKhRxkhWVa13LFirIDjHKiG+P5vHxgIV322/EvSZCLYGcooTZswfDe58+Pp+eCyxbrpi2LGbJ0Jq6JCA=
-X-Received: by 2002:ac5:cd88:0:b0:32c:5497:6995 with SMTP id
- i8-20020ac5cd88000000b0032c54976995mr6630525vka.33.1650491824683; Wed, 20 Apr
- 2022 14:57:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220418124834.829064-1-jolsa@kernel.org> <20220418124834.829064-5-jolsa@kernel.org>
-In-Reply-To: <20220418124834.829064-5-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Apr 2022 14:56:53 -0700
-Message-ID: <CAEf4BzYuvLgVtxbtz7pjCmtSp0hEKJd0peCnbX0E_-Tqy5g4dw@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf-next 4/4] selftests/bpf: Add attach bench test
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 20 Apr 2022 18:00:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9F43D489
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 14:57:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBED5B821B0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:57:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 665F3C385A0;
+        Wed, 20 Apr 2022 21:57:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1650491860;
+        bh=vmNtN9e9H1hSyHfV0BVf2/UBMQJeK+7vsMOQz3vywEM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QGuPO28joxCzaeenSatWUy6HeYYIZDwI2mgdBaQKHG1cES9xrTr1CYefq2EuB2xWr
+         8lRPDj+HJCpxZlLF1AO9J79kC+CcwvHHrjcusBjdk9JLoLh3yapcIU47NEjw3EOOIH
+         2Yw8VyfI8aaRT01Vp/Sx/fNLypSYGTT1MN0bGRns=
+Date:   Wed, 20 Apr 2022 14:57:39 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     lipeifeng@oppo.com
+Cc:     peifeng55@gmail.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, 21cnbao@gmail.com,
+        zhangshiming@oppo.com
+Subject: Re: [PATCH] mm: modify the method to search addr in unmapped_area
+Message-Id: <20220420145739.425c01603a6f63e550e556ed@linux-foundation.org>
+In-Reply-To: <20220420084039.1431-1-lipeifeng@oppo.com>
+References: <20220420084039.1431-1-lipeifeng@oppo.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 5:49 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding test that reads all functions from ftrace available_filter_functions
-> file and attach them all through kprobe_multi API.
->
-> It also prints stats info with -v option, like on my setup:
->
->   test_bench_attach: found 48712 functions
->   test_bench_attach: attached in   1.069s
->   test_bench_attach: detached in   0.373s
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  .../bpf/prog_tests/kprobe_multi_test.c        | 136 ++++++++++++++++++
->  .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
->  2 files changed, 148 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-> index b9876b55fc0c..05f0fab8af89 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-> @@ -2,6 +2,9 @@
->  #include <test_progs.h>
->  #include "kprobe_multi.skel.h"
->  #include "trace_helpers.h"
-> +#include "kprobe_multi_empty.skel.h"
-> +#include "bpf/libbpf_internal.h"
-> +#include "bpf/hashmap.h"
->
->  static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
->  {
-> @@ -301,6 +304,137 @@ static void test_attach_api_fails(void)
->         kprobe_multi__destroy(skel);
->  }
->
-> +static inline __u64 get_time_ns(void)
-> +{
-> +       struct timespec t;
-> +
-> +       clock_gettime(CLOCK_MONOTONIC, &t);
-> +       return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
-> +}
-> +
-> +static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
-> +{
-> +       return str_hash((const char *) key);
-> +}
-> +
-> +static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
-> +{
-> +       return strcmp((const char *) key1, (const char *) key2) == 0;
-> +}
-> +
-> +#define DEBUGFS "/sys/kernel/debug/tracing/"
-> +
-> +static int get_syms(char ***symsp, size_t *cntp)
-> +{
-> +       size_t cap = 0, cnt = 0, i;
-> +       char *name, **syms = NULL;
-> +       struct hashmap *map;
-> +       char buf[256];
-> +       FILE *f;
-> +       int err;
-> +
-> +       /*
-> +        * The available_filter_functions contains many duplicates,
-> +        * but other than that all symbols are usable in kprobe multi
-> +        * interface.
-> +        * Filtering out duplicates by using hashmap__add, which won't
-> +        * add existing entry.
-> +        */
-> +       f = fopen(DEBUGFS "available_filter_functions", "r");
+On Wed, 20 Apr 2022 16:40:39 +0800 lipeifeng@oppo.com wrote:
 
-nit: DEBUGFS "constant" just makes it harder to follow the code and
-doesn't add anything, please just use the full path here directly
+> The old method will firstly find the space in len(info->length
+> + info->align_mask), and get address at the desired alignment.
+> 
+> Sometime, addr  would be failed if there are enough
+> addr space in kernel by above method, e.g., you can't get a
+> addr sized in 1Mbytes, align_mask 1Mbytes successfully although
+> there are still (2M-1)bytes space in kernel.
+> 
+> This patch would fix thr problem above by the new method: find the
+> space in info->length and judge if at the desired info->align_mask
+> at the same time.
+> 
+> Do a simple test in TIF_32BIT with unmapped_area:
+> - Try to take addr (size:1M align:2M) until allocation fails;
+> - Try to take addr (size:1M align:1M) and account how to space can
+> be alloced successfully.
+> 
+> Before optimization: alloced 0     bytes.
+> After  optimization: alloced 1.9+G bytes.
 
-> +       if (!f)
-> +               return -EINVAL;
-> +
-> +       map = hashmap__new(symbol_hash, symbol_equal, NULL);
-> +       err = libbpf_get_error(map);
+Thanks.
 
-hashmap__new() is an internal API, so please use IS_ERR() directly
-here. libbpf_get_error() should be used for public libbpf APIs, and
-preferably not in libbpf 1.0 mode
+Unfortunately this part of the code is undergoing a lot of change
+lately.  How serious is this problem?  Please tell us how often the
+problem is being observed, under what circumstances, etc.
 
-> +       if (err)
-> +               goto error;
-> +
-> +       while (fgets(buf, sizeof(buf), f)) {
-> +               /* skip modules */
-> +               if (strchr(buf, '['))
-> +                       continue;
-
-[...]
-
-> +       attach_delta = (attach_end_ns - attach_start_ns) / 1000000000.0;
-> +       detach_delta = (detach_end_ns - detach_start_ns) / 1000000000.0;
-> +
-> +       fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
-> +       fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta);
-> +       fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta);
-
-
-why stderr? just do printf() and let test_progs handle output
-
-
-> +
-> +cleanup:
-> +       kprobe_multi_empty__destroy(skel);
-> +       if (syms) {
-> +               for (i = 0; i < cnt; i++)
-> +                       free(syms[i]);
-> +               free(syms);
-> +       }
-> +}
-> +
->  void test_kprobe_multi_test(void)
->  {
->         if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
-> @@ -320,4 +454,6 @@ void test_kprobe_multi_test(void)
->                 test_attach_api_syms();
->         if (test__start_subtest("attach_api_fails"))
->                 test_attach_api_fails();
-> +       if (test__start_subtest("bench_attach"))
-> +               test_bench_attach();
->  }
-> diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-> new file mode 100644
-> index 000000000000..be9e3d891d46
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-> @@ -0,0 +1,12 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +char _license[] SEC("license") = "GPL";
-> +
-> +SEC("kprobe.multi/*")
-
-use SEC("kprobe.multi") to make it clear that we are attaching it "manually"?
-
-> +int test_kprobe_empty(struct pt_regs *ctx)
-> +{
-> +       return 0;
-> +}
-> --
-> 2.35.1
->
