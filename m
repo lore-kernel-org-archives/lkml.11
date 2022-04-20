@@ -2,132 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 06:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 407EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 06:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350525AbiDTGo1 (ORCPT
+        id S1351112AbiDTGrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 02:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        Wed, 20 Apr 2022 02:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244956AbiDTGoZ (ORCPT
+        with ESMTP id S233571AbiDTGq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 02:44:25 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10E3340DA
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 23:41:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650436900; x=1681972900;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vxykZxzH8oZ0y8aC/wNv+t6K1cQ/j1YSAfUR65oTco4=;
-  b=HLq6OvgqjO7zXhtQCR0koptqKHiTn3Pmbkh8ok0bp2vNytJlFoSDHk/R
-   bzR7h/O/Eu8hmR+bw3l6FWmoaM7QMDieaG6ANC0keeyFshwkS8PIVgjX3
-   hTxe2tj6JKYW12Bd9ABYYG+zkWP7CkZoY18jvN+8HLPEqR2O44vifj/MT
-   ZomwyWfoqAef8FQbL9wlyzsKvCsoATX2IT91DrkhnjKOI5WY7W9WGma1Q
-   YkGb2hrcO61JXBsOiGkyhrtqbZXlcEvj3CX1hGYUPDR59Q9JgQyzsmlEB
-   TL7UEs9kguPWZc3LNO34UI/QdupI49K/z8HtTbcw7/r0EOc8wEUs+Kroc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263417181"
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="263417181"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 23:41:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="576448341"
-Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 23:41:35 -0700
-Date:   Wed, 20 Apr 2022 14:39:38 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     kernel test robot <lkp@intel.com>, Peter Xu <peterx@redhat.com>,
-        llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
-        dhowells@redhat.com, neilb@suse.de, david@redhat.com,
-        apopple@nvidia.com, surenb@google.com, minchan@kernel.org,
-        sfr@canb.auug.org.au, rcampbell@nvidia.com,
-        naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [kbuild-all] Re: [PATCH] mm/swap: Fix lost swap bits in
- unuse_pte()
-Message-ID: <Yl+qqmH19VxwgK4C@rli9-dbox>
-References: <Yl8rZkhU/B0iE2ob@xz-m1.local>
- <202204201313.QYiDBRbL-lkp@intel.com>
- <c14c0865-867c-ca14-8b2c-7e6e94ee7c85@huawei.com>
+        Wed, 20 Apr 2022 02:46:56 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA3D340E3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 23:44:11 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id g18so1427577ejc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 23:44:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lCPDSBuRx99bdPRKV0DA2Ne3h3IqfDww706PlGIaKNA=;
+        b=z0lTP7wfOWeks/ETyhcRw5d4t0RYRW95K5a58W0vv1OdzYVwprkSSj4qRhtd1X8+RO
+         GDGFKUuGiDCvKdxNLuy0EmgiJRSwVQnZ3sTqNGhRnM0eGo28/32FxjkI4B0FHPy514Xx
+         bfSyrLqbr0gCItN8MzAx8A8Gkzy1i/4KsTZHL4dr6FsbsuRMCiWgF1A/pX3zzkHZyo9b
+         9vCuJgV77ISLFILolXfnWkEZfrkpkGdp89QmBIKgL6F93d70me8/S0YR2s4uxhO3XJUP
+         OtDuMoUiA4q+pTGu176qLEfrG41GTxnjptu+9i9Is5mpZRcmqct+yLoQ+YTJ+glfwa6e
+         n/Rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lCPDSBuRx99bdPRKV0DA2Ne3h3IqfDww706PlGIaKNA=;
+        b=iq5qJjYyN40EFvS6/2cEz3dt8AShu9KmlsII0Kb/Vuc/wCTAnnCksWqUmBhf0urP7Z
+         Vo8O+mtbidvLeCxoEr0LhbF+X7NZ3RzpCj88Ra80tVjkpNxPO/O+mNtE+JsNvjtAS9yk
+         dL4NnoprmXNr/xjL9LlaucVZNrECKjDzB67AiNTcnVA2dENRdgDFyNy+rVDgaLvh03qw
+         d9KnbPRarAWHBGKJbbE6yTgHNnEtR4L1hMTab3VKX5kM6mjTorhqjLFHUUGKuCTXEnV/
+         UD1Kwrgv7LPe19p2Ovt5No6v6lPIwmmn79YstMIhDTwzK8CPU0Dr8mLYGZry7inDpdx2
+         1lzw==
+X-Gm-Message-State: AOAM532n2l0CLMe1nHwxdZsHRZyjuiU+q8nYdb/AWa+xHyu6um5PPmLY
+        npNiwpPfEuv95mTyqFoThRz4hg==
+X-Google-Smtp-Source: ABdhPJxFja0g1iU3jiCg+96esLZdek4m4gACGDSOQT0b3hykC6q7EHXs4+tTlgNjRoxz9Fb2YDZa9A==
+X-Received: by 2002:a17:907:3f18:b0:6e8:9332:542e with SMTP id hq24-20020a1709073f1800b006e89332542emr16595678ejc.633.1650437049620;
+        Tue, 19 Apr 2022 23:44:09 -0700 (PDT)
+Received: from [192.168.0.222] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id u4-20020aa7db84000000b004136c2c357csm9676471edt.70.2022.04.19.23.44.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 23:44:09 -0700 (PDT)
+Message-ID: <3a84fe50-cef5-8da3-65f5-8f939e07753c@linaro.org>
+Date:   Wed, 20 Apr 2022 08:44:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c14c0865-867c-ca14-8b2c-7e6e94ee7c85@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v9 4/6] dt-bindings: mfd: sensehat: Add Raspberry Pi Sense
+ HAT schema
+Content-Language: en-US
+To:     Charles Mirabile <cmirabil@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
+        linux-input@vger.kernel.org, Mwesigwa Guma <mguma@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>
+References: <20220419205158.28088-1-cmirabil@redhat.com>
+ <20220419205158.28088-5-cmirabil@redhat.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220419205158.28088-5-cmirabil@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 02:23:27PM +0800, Miaohe Lin wrote:
-> On 2022/4/20 13:56, kernel test robot wrote:
-> > Hi Peter,
-> > 
-> > Thank you for the patch! Yet something to improve:
-> > 
-> > [auto build test ERROR on hnaz-mm/master]
-> > 
-> > url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Xu/mm-swap-Fix-lost-swap-bits-in-unuse_pte/20220420-053845
-> > base:   https://github.com/hnaz/linux-mm master
-> > config: s390-randconfig-r023-20220420 (https://download.01.org/0day-ci/archive/20220420/202204201313.QYiDBRbL-lkp@intel.com/config)
-> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install s390 cross compiling tool for clang build
-> >         # apt-get install binutils-s390x-linux-gnu
-> >         # https://github.com/intel-lab-lkp/linux/commit/355ac3eb45402f7aab25b76af029d4390af05238
-> >         git remote add linux-review https://github.com/intel-lab-lkp/linux
-> >         git fetch --no-tags linux-review Peter-Xu/mm-swap-Fix-lost-swap-bits-in-unuse_pte/20220420-053845
-> >         git checkout 355ac3eb45402f7aab25b76af029d4390af05238
-> >         # save the config file
-> >         mkdir build_dir && cp config build_dir/.config
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
+On 19/04/2022 22:51, Charles Mirabile wrote:
+> This patch adds the device tree bindings for the Sense HAT
+> and each of its children devices in yaml form.
 > 
-> The variable name is newpte. But it's written as new_pte latter. Many thanks for report!
-> 
-> BTW: Since this is not a formal patch (no compile tested). Is Reported-by tag still needed?
+> Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
+> Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
+> Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+> Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+> Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
+> ---
 
-thanks, this is not needed. It mostly needed for already upstreamed one
-and actually not mandatory from 0-day ci perspective.
 
-> 
-> Thanks!
-> 
-> > All errors (new ones prefixed by >>):
-> > 
-> >>> mm/swapfile.c:1824:2: error: use of undeclared identifier 'new_pte'; did you mean 'newpte'?
-> >            new_pte = pte_mkold(mk_pte(page, vma->vm_page_prot));
-> >            ^~~~~~~
-> >            newpte
-> >    mm/swapfile.c:1786:14: note: 'newpte' declared here
-> >            pte_t *pte, newpte;
-> >                        ^
-> >    mm/swapfile.c:1826:26: error: use of undeclared identifier 'new_pte'
-> >                    pte = pte_mksoft_dirty(new_pte);
-> >                                           ^
-> >    mm/swapfile.c:1828:23: error: use of undeclared identifier 'new_pte'
-> >                    pte = pte_mkuffd_wp(new_pte);
-> >                                        ^
-> >    mm/swapfile.c:1829:36: error: use of undeclared identifier 'new_pte'; did you mean 'newpte'?
-> >            set_pte_at(vma->vm_mm, addr, pte, new_pte);
-> >                                              ^~~~~~~
-> >                                              newpte
-> >    mm/swapfile.c:1786:14: note: 'newpte' declared here
-> >            pte_t *pte, newpte;
-> >                        ^
-> >    4 errors generated.
-> ...
-> >   1839	
-> > 
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
