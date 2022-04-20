@@ -2,108 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2104C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379878AbiDTPCz (ORCPT
+        id S1379893AbiDTPC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
+        Wed, 20 Apr 2022 11:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379899AbiDTPCq (ORCPT
+        with ESMTP id S1379913AbiDTPCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:02:46 -0400
+        Wed, 20 Apr 2022 11:02:48 -0400
 Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6366EB851
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:59:59 -0700 (PDT)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23K8dPgt020693;
-        Wed, 20 Apr 2022 14:59:56 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AD2BC05
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:00:01 -0700 (PDT)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KERNxD001436;
+        Wed, 20 Apr 2022 14:59:51 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version; s=pps0720;
- bh=okdmmBVzMoe5zexkeVH8AQxVR3ywQ2EOlHX9EfmGBRI=;
- b=A1eiNN4SVeIJ3qqlrSpgKfsGRBEzPIaeM7I15I9qVCTKQ6r7xZrUrq2g/lalqytkGuXK
- DrAnEMVN0Fipr2gpKXAuqF1ZxyrWesAvxmih3bAIpT5Vcn0fsrIm3wyQsz1zhoXkfWfx
- N5s4YxoDT4FWCB3f35hCYKxTcU0l+GZwbdz6UfScGSHjkVbmR/9LnQ4JPBeO0d+CrfQd
- F9+IZ91fclRNahj7szaunpz63YPMUFJS5GWN+RfwYQG7i/CpDuiAY16oGloqRJD877QN
- ttD17km1xeqV7pJvY1EnmnL2/OqpVLU3phW7aMd7FJhrY4zuzt90exoI3qDeXmDFULPx ug== 
-Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fjeujkake-1
+ : date : message-id; s=pps0720;
+ bh=6EVzzWw3rbj9GSV1LKyai+gYVjSZk7leRknLcBfEe9s=;
+ b=l4/slpp2U+2GoRPgu5qG/B2OHjc3WWFc+MqXscpC278eJmu1KtEmlb6xucaTUHuhSmhK
+ Uy83Ald8LeESdeGdolMuvztvmy5ldYV6nbcYRfrTlhbVH5ezJF5MLke+oYmFqbraapgY
+ jQICQnQ9LSI03gBr72HP8aWoqfK86RPoIAP08svddZMJ+b+TQptij8vCmoxfhzlrex+t
+ vy6y5udyfez2Y+/aPl/+ID+jGvcNl6dJbzW7bxDjU79ft3Glhh+uWU/U4HGa7FYOQ3pi
+ DzHLprY0Vb8fxkj15i6Dtjd/E2pJdAJZt+utd2KrNJBOgxbqLKkYjcgzXXTqaEmTYPpb VA== 
+Received: from g2t2352.austin.hpe.com (g2t2352.austin.hpe.com [15.233.44.25])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fjky1g9ut-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:59:56 +0000
+        Wed, 20 Apr 2022 14:59:51 +0000
 Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
-        by g2t2354.austin.hpe.com (Postfix) with ESMTP id 0510983;
-        Wed, 20 Apr 2022 14:59:56 +0000 (UTC)
+        by g2t2352.austin.hpe.com (Postfix) with ESMTP id 8150062;
+        Wed, 20 Apr 2022 14:59:50 +0000 (UTC)
 Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id C69AB3F;
-        Wed, 20 Apr 2022 14:59:55 +0000 (UTC)
+        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id ABFA339;
+        Wed, 20 Apr 2022 14:59:49 +0000 (UTC)
 From:   nick.hawkins@hpe.com
 To:     verdun@hpe.com, nick@hpe.com, joel@jms.id.au, arnd@arndb.de
-Cc:     Nick Hawkins <nick.hawkins@hpe.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 11/11] maintainers: Introduce HPE GXP Architecture
-Date:   Wed, 20 Apr 2022 10:01:55 -0500
-Message-Id: <20220420150156.47405-11-nick.hawkins@hpe.com>
+Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 01/11] arch: arm: mach-hpe: Introduce the HPE GXP architecture
+Date:   Wed, 20 Apr 2022 10:01:45 -0500
+Message-Id: <20220420150156.47405-1-nick.hawkins@hpe.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220420150156.47405-1-nick.hawkins@hpe.com>
-References: <20220420150156.47405-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: rjBHqp0LjC4TSuTES7FEg5HVbFpf2rBx
-X-Proofpoint-ORIG-GUID: rjBHqp0LjC4TSuTES7FEg5HVbFpf2rBx
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-ORIG-GUID: 4qIB7juVVhcG3vJ--lShEnkS0ZVVj76l
+X-Proofpoint-GUID: 4qIB7juVVhcG3vJ--lShEnkS0ZVVj76l
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
- phishscore=0 spamscore=0 adultscore=0 malwarescore=0 clxscore=1015
- priorityscore=1501 mlxlogscore=849 lowpriorityscore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204200089
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 clxscore=1015 phishscore=0 spamscore=0
+ suspectscore=0 adultscore=0 impostorscore=0 mlxlogscore=999
+ lowpriorityscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204200089
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Create a section in MAINTAINERS for the GXP HPE
-architecture.
+The GXP is the HPE BMC SoC that is used in the majority
+of HPE Generation 10 servers. Traditionally the asic will
+last multiple generations of server before being replaced.
+In gxp.c we reset the EHCI controller early to boot the asic.
+
+Info about SoC:
+
+HPE GXP is the name of the HPE Soc. This SoC is used to implement
+many BMC features at HPE. It supports ARMv7 architecture based on
+the Cortex A9 core. It is capable of using an AXI bus to which
+a memory controller is attached. It has multiple SPI interfaces
+to connect boot flash and BIOS flash. It uses a 10/100/1000 MAC
+for network connectivity. It has multiple i2c engines to drive
+connectivity with a host infrastructure. The initial patches
+enable the watchdog and timer enabling the host to be able to
+boot.
 
 Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
 ---
 v4:
-*Added ARM/ before HPE Title
-*Changed MAINTAINED to Maintained
-*Renamed gxp-timer.c to timer-gxp.c
-*Renamed gxp.yaml to hpe,gxp.yaml
+* Removed unecessary code: restart, iomap, init_machine
+* Reordered Kconfig so depends
+* Removed SPARSE_IRQ, MULTI_IRQ_HANDLER, IRQ_DOMAIN, PINCTL from
+  Kconfig
 ---
- MAINTAINERS | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/arm/Kconfig           |  2 ++
+ arch/arm/Makefile          |  1 +
+ arch/arm/mach-hpe/Kconfig  | 17 +++++++++++++++++
+ arch/arm/mach-hpe/Makefile |  1 +
+ arch/arm/mach-hpe/gxp.c    | 16 ++++++++++++++++
+ 5 files changed, 37 insertions(+)
+ create mode 100644 arch/arm/mach-hpe/Kconfig
+ create mode 100644 arch/arm/mach-hpe/Makefile
+ create mode 100644 arch/arm/mach-hpe/gxp.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6db79f3b209e..c3164a527747 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2062,6 +2062,19 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kristoffer/linux-hpc.git
- F:	arch/arm/mach-sa1100/include/mach/jornada720.h
- F:	arch/arm/mach-sa1100/jornada720.c
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4c97cb40eebb..6998b5b5f59e 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -618,6 +618,8 @@ source "arch/arm/mach-highbank/Kconfig"
  
-+ARM/HPE GXP ARCHITECTURE
-+M:	Jean-Marie Verdun <verdun@hpe.com>
-+M:	Nick Hawkins <nick.hawkins@hpe.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/arm/hpe,gxp.yaml
-+F:	Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
-+F:	Documentation/devicetree/bindings/wdt/hpe,gxp-wdt.yaml
-+F:	arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-+F:	arch/arm/boot/dts/hpe-gxp.dtsi
-+F:	arch/arm/mach-hpe/gxp.c
-+F:	drivers/clocksource/timer-gxp.c
-+F:	drivers/watchdog/gxp-wdt.c
+ source "arch/arm/mach-hisi/Kconfig"
+ 
++source "arch/arm/mach-hpe/Kconfig"
 +
- ARM/IGEP MACHINE SUPPORT
- M:	Enric Balletbo i Serra <eballetbo@gmail.com>
- M:	Javier Martinez Canillas <javier@dowhile0.org>
+ source "arch/arm/mach-imx/Kconfig"
+ 
+ source "arch/arm/mach-integrator/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 77172d555c7e..1cc0523d0a0a 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -178,6 +178,7 @@ machine-$(CONFIG_ARCH_FOOTBRIDGE)	+= footbridge
+ machine-$(CONFIG_ARCH_GEMINI)		+= gemini
+ machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
+ machine-$(CONFIG_ARCH_HISI)		+= hisi
++machine-$(CONFIG_ARCH_HPE)		+= hpe
+ machine-$(CONFIG_ARCH_INTEGRATOR)	+= integrator
+ machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
+ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+diff --git a/arch/arm/mach-hpe/Kconfig b/arch/arm/mach-hpe/Kconfig
+new file mode 100644
+index 000000000000..c075248b259e
+--- /dev/null
++++ b/arch/arm/mach-hpe/Kconfig
+@@ -0,0 +1,17 @@
++menuconfig ARCH_HPE
++	bool "HPE SoC support"
++	depends on ARCH_MULTI_V7
++	help
++	  This enables support for HPE ARM based SoC chips
++if ARCH_HPE
++
++config ARCH_HPE_GXP
++	bool "HPE GXP SoC"
++	depends on ARCH_MULTI_V7
++	select ARM_VIC
++	select GENERIC_IRQ_CHIP
++	select CLKSRC_MMIO
++	help
++	  Support for GXP SoCs
++
++endif
+diff --git a/arch/arm/mach-hpe/Makefile b/arch/arm/mach-hpe/Makefile
+new file mode 100644
+index 000000000000..8b0a91234df4
+--- /dev/null
++++ b/arch/arm/mach-hpe/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_ARCH_HPE_GXP) += gxp.o
+diff --git a/arch/arm/mach-hpe/gxp.c b/arch/arm/mach-hpe/gxp.c
+new file mode 100644
+index 000000000000..e2f0c3ae6bd8
+--- /dev/null
++++ b/arch/arm/mach-hpe/gxp.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.*/
++
++#include <linux/of_platform.h>
++#include <asm/mach/arch.h>
++
++static const char * const gxp_board_dt_compat[] = {
++	"hpe,gxp",
++	NULL,
++};
++
++DT_MACHINE_START(GXP_DT, "HPE GXP")
++	.dt_compat	= gxp_board_dt_compat,
++	.l2c_aux_val = 0,
++	.l2c_aux_mask = 0,
++MACHINE_END
 -- 
 2.17.1
 
