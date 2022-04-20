@@ -2,119 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3211EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B31FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379499AbiDTO0A (ORCPT
+        id S1379561AbiDTO0V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48740 "EHLO
+        Wed, 20 Apr 2022 10:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379523AbiDTOZv (ORCPT
+        with ESMTP id S241491AbiDTO0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:25:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A9F144744
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:23:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650464584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=H5xScA/klqo/u2bg+Qb9rc2tvwNY2OP4Zj405m1vetA=;
-        b=ifPI8ASZbFljsWeausZUTod3EkVVr2FqLksWj7zNbLHKVWZiSRR9UsmnZQbaXw5UW92v4S
-        Z8FSQTkQORwfN6g1gSyqEqSwII/dz54oaQaFQ9amAOtdnBFzgT2METnsRZ6T9JIaITKT+J
-        aY0MPvn90EIJuP8uDGSjd9cibD2LqM8=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-10-d77FXXA6NlSe-sOeplm_Mw-1; Wed, 20 Apr 2022 10:23:01 -0400
-X-MC-Unique: d77FXXA6NlSe-sOeplm_Mw-1
-Received: by mail-qk1-f198.google.com with SMTP id v14-20020a05620a0f0e00b00699f4ea852cso1311483qkl.9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:22:59 -0700 (PDT)
+        Wed, 20 Apr 2022 10:26:17 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382C1443FA
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:23:30 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u3so2511713wrg.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:23:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Q4ICN+uplSPdvGzH7XT6MD7Lj+r+l4r7Aw1jgqTK1xg=;
+        b=YuPYp1/vkulQWuNjscoR6ov4eYyDCDdWFdEmNih+P5bjMyCOArq7rlpPL7GvKpZSf7
+         bUwMFpVfLpwBZMWYlF8+vFrxHzEYPvcp6YLKhOHwCzDkyqrmqKCludlyLfJhV7dl4p1S
+         3uvHkKIKiMMgucctgeerdfXgl37GQDv/6jGW46zLAPeQ61EMJYCEpaEiGfn0us0eAIC3
+         dxpUKk1AgTWiBMPB3gOTW1t31OgDlNvs57iT4fVu/Erjab1VXj9ehyZUY1Ff6XYPBWkW
+         9SQGhFIuWadqUbkgpTYEYo72z87IVN7UV265NEfw7QHrknL4j/NX4fUSxWjOGchfkFab
+         eIug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H5xScA/klqo/u2bg+Qb9rc2tvwNY2OP4Zj405m1vetA=;
-        b=jjmeLTBo0qN5BjsGRKdNnvrPkyZ4mhRc/qjWOtpXaeYqLZSuaN+llACzVxncyI1613
-         wEBEKKBoQL9OCkYgd9uTN8rVVvhx2VFoFAUXBcOK7+vNGaLTNg1W5G933bzIfpzIIhRD
-         EzoQ92sY3u9FaWVn14Vwo7FTBhCEdiofQZtzkoO9yHprWGGc1v4dxLKqlcXQ3mIgeLFJ
-         sp9a6BXy//UrWxgXpX5XRvJbrF8oBssLGuaY91yVWXUerCbE+QrMdErE+mi4+oIgQdgD
-         qiCm3OB2Tq5JpsxRU0zc3RuuAxHaQCAsJXNueBYIBeuc5UYLMWf93NSm9j2p8hKOOE1p
-         U7aQ==
-X-Gm-Message-State: AOAM533E6n4RvtID66RVkmI4ElDadNScD1xEbhT2OH08K2+y064mW6pr
-        i/QIQSap0xIm2G2k9E2TtTc6IY2G4zJCX7PPrkAKxikAGZE+o52nq+UGW4XQOtA1vmBEA/1HSJQ
-        Ta3tzHFdhFgMfNV+c1uZOOFMv
-X-Received: by 2002:a05:620a:46a9:b0:69e:dbf1:8200 with SMTP id bq41-20020a05620a46a900b0069edbf18200mr1414625qkb.670.1650464579366;
-        Wed, 20 Apr 2022 07:22:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzPnhmx5uMU62htWmb7eF6KV5baHZL/w/x0SphhFaGsOOzt0id4ABiRpToBMijTlalYfJhhLQ==
-X-Received: by 2002:a05:620a:46a9:b0:69e:dbf1:8200 with SMTP id bq41-20020a05620a46a900b0069edbf18200mr1414611qkb.670.1650464579164;
-        Wed, 20 Apr 2022 07:22:59 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id s12-20020a05622a018c00b002f2017d5652sm1788170qtw.40.2022.04.20.07.22.58
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Q4ICN+uplSPdvGzH7XT6MD7Lj+r+l4r7Aw1jgqTK1xg=;
+        b=DPxFsSdGA2r9DnvWKiELviUiP9523WsFOxge+fKaRyzfv3JvjE4jcajfFg8RzyEZup
+         HNaNOHneG8rlDdEYffH4MaNUN7hfQKqG550eAMn/kz688cs6bHGr+4NGhyv5o6CLjksW
+         mk/ePVcFgBTPMhBb7UUHAynWZPSPjPeIPrRxnEPdKRCfPi9f+PS8ojFCEzbYY+sChif7
+         YmtU0wg1bIt5OoeURg0E+jAog5gSmRlqi7ZtrDBOC5064SWs7x9khpsGdQ0gsnAA/DDL
+         DVKkfoCSWWkSKzFHMb2lkHwSuC5GVqHwetSbZ4sP8DWwB7UvHaNVItacbPi7vlCm926i
+         WYPg==
+X-Gm-Message-State: AOAM530cRk7x9Shg8o9Jr+hu7iCET8kE0gA6CoeblKQHaSXmZoUvEi2N
+        MjFsPQr+HsMQISu6oxyr1romikj5/tjY0Q==
+X-Google-Smtp-Source: ABdhPJxCEtMmJdzYe/vDyF4dRCvKm/dwPZZEFAqFS8g2ACD7OoBg1jJu7Tud+8ICpB4W4QdPbjZjTw==
+X-Received: by 2002:a5d:610d:0:b0:207:b141:a5fe with SMTP id v13-20020a5d610d000000b00207b141a5femr16115906wrt.463.1650464608433;
+        Wed, 20 Apr 2022 07:23:28 -0700 (PDT)
+Received: from lmecxl0524.lme.st.com ([2a04:cec0:11d9:822a:59f9:7282:b43a:bacc])
+        by smtp.gmail.com with ESMTPSA id f8-20020a5d64c8000000b0020784359295sm23771wri.54.2022.04.20.07.23.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 07:22:58 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     basavaraj.natikar@amd.com, jikos@kernel.org,
-        benjamin.tissoires@redhat.com, nehal-bakulchandra.shah@amd.com,
-        Shyam-sundar.S-k@amd.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] HID: amd_sfh: change global variables to static
-Date:   Wed, 20 Apr 2022 10:22:44 -0400
-Message-Id: <20220420142244.556429-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 20 Apr 2022 07:23:27 -0700 (PDT)
+From:   Etienne Carriere <etienne.carriere@linaro.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Etienne Carriere <etienne.carriere@linaro.org>
+Subject: [PATCH] firmware: arm_scmi: support optee shared memory in optee transport
+Date:   Wed, 20 Apr 2022 16:23:23 +0200
+Message-Id: <20220420142323.2078-1-etienne.carriere@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports this representative issue
-amd_sfh_hid_report_desc.h:182:10: warning: symbol 'gyro3_report_descriptor' was not declared. Should it be static?
-Similar issues for comp3_report_descriptor and als_report_descriptor.
+Adds support for tee shared memory in optee scmi transport. When using
+tee shared memory, scmi optee transport manages SCMI messages using
+msg protocol (from msg.c) in shared memory, whereas smt (from shmem.c)
+protocol is used with static IOMEM shared buffers.
 
-Global variables should not be defined in header files.
-This only works because amd_sfh_hid_report_desc.h in only included by
-amd_sfh_hid_desc.c so change the storage-class specifiers to static.
-
-Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Etienne Carriere <etienne.carriere@linaro.org>
 ---
- .../amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h    | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/firmware/arm_scmi/optee.c | 133 ++++++++++++++++++++++++------
+ 1 file changed, 109 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h
-index b07dc4bbb858..7a2b4e434e4f 100644
---- a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h
-+++ b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h
-@@ -179,7 +179,7 @@ static const u8 accel3_report_descriptor[] = {
- 0xC0			/* HID end collection */
+diff --git a/drivers/firmware/arm_scmi/optee.c b/drivers/firmware/arm_scmi/optee.c
+index 8302a2b4aeeb..6ff51b750b7b 100644
+--- a/drivers/firmware/arm_scmi/optee.c
++++ b/drivers/firmware/arm_scmi/optee.c
+@@ -64,6 +64,22 @@ enum scmi_optee_pta_cmd {
+ 	 * [in]     value[0].b: Requested capabilities mask (enum pta_scmi_caps)
+ 	 */
+ 	PTA_SCMI_CMD_GET_CHANNEL = 3,
++
++	/*
++	 * PTA_SCMI_CMD_PROCESS_MSG_CHANNEL - Process SCMI message in a MSG
++	 * buffer pointed by memref parameters
++	 *
++	 * [in]     value[0].a: Channel handle
++	 * [in]     memref[1]: Message buffer (MSG and SCMI payload)
++	 * [out]    memref[2]: Response buffer (MSG and SCMI payload)
++	 *
++	 * Shared memories used for SCMI message/response are MSG buffers
++	 * referenced by param[1] and param[2]. MSG transport protocol
++	 * uses a 32bit header to carry SCMI meta-data (protocol ID and
++	 * protocol message ID) followed by the effective SCMI message
++	 * payload.
++	 */
++	PTA_SCMI_CMD_PROCESS_MSG_CHANNEL = 4,
  };
  
--const u8 gyro3_report_descriptor[] = {
-+static const u8 gyro3_report_descriptor[] = {
- 0x05, 0x20,		/* Usage page */
- 0x09, 0x76,		/* Motion type Gyro3D */
- 0xA1, 0x00,		/* HID Collection (Physical) */
-@@ -340,7 +340,7 @@ const u8 gyro3_report_descriptor[] = {
- 0xC0,			/* HID end collection */
- };
+ /*
+@@ -72,9 +88,17 @@ enum scmi_optee_pta_cmd {
+  * PTA_SCMI_CAPS_SMT_HEADER
+  * When set, OP-TEE supports command using SMT header protocol (SCMI shmem) in
+  * shared memory buffers to carry SCMI protocol synchronisation information.
++ *
++ * PTA_SCMI_CAPS_MSG_HEADER
++ * When set, OP-TEE supports command using MSG header protocol in an OP-TEE
++ * shared memory to carry SCMI protocol synchronisation information and SCMI
++ * message payload.
+  */
+ #define PTA_SCMI_CAPS_NONE		0
+ #define PTA_SCMI_CAPS_SMT_HEADER	BIT(0)
++#define PTA_SCMI_CAPS_MSG_HEADER	BIT(1)
++#define PTA_SCMI_CAPS_MASK		(PTA_SCMI_CAPS_SMT_HEADER | \
++					 PTA_SCMI_CAPS_MSG_HEADER)
  
--const u8 comp3_report_descriptor[] = {
-+static const u8 comp3_report_descriptor[] = {
- 0x05, 0x20,		/* Usage page */
- 0x09, 0x83,		/* Motion type Orientation compass 3D */
- 0xA1, 0x00,		/* HID Collection (Physical) */
-@@ -512,7 +512,7 @@ const u8 comp3_report_descriptor[] = {
- 0xC0				/* HID end collection */
+ /**
+  * struct scmi_optee_channel - Description of an OP-TEE SCMI channel
+@@ -85,7 +109,8 @@ enum scmi_optee_pta_cmd {
+  * @mu: Mutex protection on channel access
+  * @cinfo: SCMI channel information
+  * @shmem: Virtual base address of the shared memory
+- * @tee_shm: Reference to TEE shared memory or NULL if using static shmem
++ * @req: Shared memory protocol handle for SCMI request and synchronous response
++ * @tee_shm: TEE shared memory handle @req or NULL if using IOMEM shmem
+  * @link: Reference in agent's channel list
+  */
+ struct scmi_optee_channel {
+@@ -94,7 +119,10 @@ struct scmi_optee_channel {
+ 	u32 caps;
+ 	struct mutex mu;
+ 	struct scmi_chan_info *cinfo;
+-	struct scmi_shared_mem __iomem *shmem;
++	union {
++		struct scmi_shared_mem __iomem *shmem;
++		struct scmi_msg_payld *msg;
++	} req;
+ 	struct tee_shm *tee_shm;
+ 	struct list_head link;
  };
+@@ -178,8 +206,8 @@ static int get_capabilities(struct scmi_optee_agent *agent)
  
--const u8 als_report_descriptor[] = {
-+static const u8 als_report_descriptor[] = {
- 0x05, 0x20,	/* HID usage page sensor */
- 0x09, 0x41,	/* HID usage sensor type Ambientlight  */
- 0xA1, 0x00,	/* HID Collection (Physical) */
+ 	caps = param[0].u.value.a;
+ 
+-	if (!(caps & PTA_SCMI_CAPS_SMT_HEADER)) {
+-		dev_err(agent->dev, "OP-TEE SCMI PTA doesn't support SMT\n");
++	if (!(caps & (PTA_SCMI_CAPS_SMT_HEADER | PTA_SCMI_CAPS_MSG_HEADER))) {
++		dev_err(agent->dev, "OP-TEE SCMI PTA doesn't support SMT and MSG\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -193,9 +221,14 @@ static int get_channel(struct scmi_optee_channel *channel)
+ 	struct device *dev = scmi_optee_private->dev;
+ 	struct tee_ioctl_invoke_arg arg = { };
+ 	struct tee_param param[1] = { };
+-	unsigned int caps = PTA_SCMI_CAPS_SMT_HEADER;
++	unsigned int caps = 0;
+ 	int ret;
+ 
++	if (channel->tee_shm)
++		caps = PTA_SCMI_CAPS_MSG_HEADER;
++	else
++		caps = PTA_SCMI_CAPS_SMT_HEADER;
++
+ 	arg.func = PTA_SCMI_CMD_GET_CHANNEL;
+ 	arg.session = channel->tee_session;
+ 	arg.num_params = 1;
+@@ -249,6 +282,37 @@ static int invoke_process_smt_channel(struct scmi_optee_channel *channel)
+ 	return 0;
+ }
+ 
++static int invoke_process_msg_channel(struct scmi_optee_channel *channel, size_t msg_size)
++{
++	struct tee_ioctl_invoke_arg arg = {
++		.func = PTA_SCMI_CMD_PROCESS_MSG_CHANNEL,
++		.session = channel->tee_session,
++		.num_params = 3,
++	};
++	struct tee_param param[3] = { };
++	int ret;
++
++	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT;
++	param[0].u.value.a = channel->channel_id;
++
++	param[1].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INPUT;
++	param[1].u.memref.shm = channel->tee_shm;
++	param[1].u.memref.size = msg_size;
++
++	param[2].attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_OUTPUT;
++	param[2].u.memref.shm = channel->tee_shm;
++	param[2].u.memref.size = SCMI_OPTEE_MAX_MSG_SIZE;
++
++	ret = tee_client_invoke_func(scmi_optee_private->tee_ctx, &arg, param);
++	if (ret < 0 || arg.ret) {
++		dev_err(scmi_optee_private->dev, "Can't invoke channel %u: %d / %#x\n",
++			channel->channel_id, ret, arg.ret);
++		return -EIO;
++	}
++
++	return 0;
++}
++
+ static int scmi_optee_link_supplier(struct device *dev)
+ {
+ 	if (!scmi_optee_private) {
+@@ -279,7 +343,26 @@ static void scmi_optee_clear_channel(struct scmi_chan_info *cinfo)
+ {
+ 	struct scmi_optee_channel *channel = cinfo->transport_info;
+ 
+-	shmem_clear_channel(channel->shmem);
++	if (!channel->tee_shm)
++		shmem_clear_channel(channel->req.shmem);
++}
++
++static int setup_dynamic_shmem(struct device *dev, struct scmi_optee_channel *channel)
++{
++	const size_t msg_size = SCMI_OPTEE_MAX_MSG_SIZE;
++	void *shbuf;
++
++	channel->tee_shm = tee_shm_alloc_kernel_buf(scmi_optee_private->tee_ctx, msg_size);
++	if (IS_ERR(channel->tee_shm)) {
++		dev_err(channel->cinfo->dev, "shmem allocation failed\n");
++		return -ENOMEM;
++	}
++
++	shbuf = tee_shm_get_va(channel->tee_shm, 0);
++	memset(shbuf, 0, msg_size);
++	channel->req.msg = shbuf;
++
++	return 0;
+ }
+ 
+ static int setup_static_shmem(struct device *dev, struct scmi_chan_info *cinfo,
+@@ -304,8 +387,8 @@ static int setup_static_shmem(struct device *dev, struct scmi_chan_info *cinfo,
+ 
+ 	size = resource_size(&res);
+ 
+-	channel->shmem = devm_ioremap(dev, res.start, size);
+-	if (!channel->shmem) {
++	channel->req.shmem = devm_ioremap(dev, res.start, size);
++	if (!channel->req.shmem) {
+ 		dev_err(dev, "Failed to ioremap SCMI Tx shared memory\n");
+ 		ret = -EADDRNOTAVAIL;
+ 		goto out;
+@@ -325,7 +408,7 @@ static int setup_shmem(struct device *dev, struct scmi_chan_info *cinfo,
+ 	if (of_find_property(cinfo->dev->of_node, "shmem", NULL))
+ 		return setup_static_shmem(dev, cinfo, channel);
+ 	else
+-		return -ENOMEM;
++		return setup_dynamic_shmem(dev, channel);
+ }
+ 
+ static int scmi_optee_chan_setup(struct scmi_chan_info *cinfo, struct device *dev, bool tx)
+@@ -405,27 +488,27 @@ static int scmi_optee_chan_free(int id, void *p, void *data)
+ 	return 0;
+ }
+ 
+-static struct scmi_shared_mem __iomem *
+-get_channel_shm(struct scmi_optee_channel *chan, struct scmi_xfer *xfer)
+-{
+-	if (!chan)
+-		return NULL;
+-
+-	return chan->shmem;
+-}
+-
+-
+ static int scmi_optee_send_message(struct scmi_chan_info *cinfo,
+ 				   struct scmi_xfer *xfer)
+ {
+ 	struct scmi_optee_channel *channel = cinfo->transport_info;
+-	struct scmi_shared_mem __iomem *shmem = get_channel_shm(channel, xfer);
++	u32 scmi_msg_hdr;
+ 	int ret;
+ 
+ 	mutex_lock(&channel->mu);
+-	shmem_tx_prepare(shmem, xfer);
+ 
+-	ret = invoke_process_smt_channel(channel);
++	if (channel->tee_shm) {
++		msg_tx_prepare(channel->req.msg, xfer);
++		ret = invoke_process_msg_channel(channel, msg_command_size(xfer));
++		scmi_msg_hdr = msg_read_header(channel->req.msg);
++	} else {
++		shmem_tx_prepare(channel->req.shmem, xfer);
++		ret = invoke_process_smt_channel(channel);
++		scmi_msg_hdr = shmem_read_header(channel->req.shmem);
++	}
++
++	scmi_rx_callback(cinfo, scmi_msg_hdr, NULL);
++
+ 	if (ret)
+ 		mutex_unlock(&channel->mu);
+ 
+@@ -436,9 +519,11 @@ static void scmi_optee_fetch_response(struct scmi_chan_info *cinfo,
+ 				      struct scmi_xfer *xfer)
+ {
+ 	struct scmi_optee_channel *channel = cinfo->transport_info;
+-	struct scmi_shared_mem __iomem *shmem = get_channel_shm(channel, xfer);
+ 
+-	shmem_fetch_response(shmem, xfer);
++	if (channel->tee_shm)
++		msg_fetch_response(channel->req.msg, SCMI_OPTEE_MAX_MSG_SIZE, xfer);
++	else
++		shmem_fetch_response(channel->req.shmem, xfer);
+ }
+ 
+ static void scmi_optee_mark_txdone(struct scmi_chan_info *cinfo, int ret,
 -- 
-2.27.0
+2.17.1
 
