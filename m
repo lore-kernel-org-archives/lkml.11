@@ -2,102 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 18:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43475C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 18:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381614AbiDTSvS (ORCPT
+        id S1381611AbiDTSv7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 14:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
+        Wed, 20 Apr 2022 14:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381592AbiDTSvC (ORCPT
+        with ESMTP id S1345869AbiDTSv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 14:51:02 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4C642EEC
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 11:48:16 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id c23so2653205plo.0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 11:48:16 -0700 (PDT)
+        Wed, 20 Apr 2022 14:51:57 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3E144A06
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 11:49:10 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id n33-20020a17090a5aa400b001d28f5ee3f9so2860874pji.4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 11:49:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=LErP8U/PzejnwsS9KxvOA1A5d+doq+yW06k2+06H9yw=;
-        b=SrUq1R9xL5OZEC4Ze67UAVTlCaR8u01nNPPk8oP1eppqz7PD0gBzsRZXnuhDevMwsl
-         JKPcgMqhBle7UJ1lQpjq81l3IaPYq1YfYIuc22hlfQe+sJEpAGeTpitbhg0M9FoMS6Eb
-         JWh7O5Qk/dz8TgOSvZTVv8rfk+D9uarBySHEo1zK+XMILDSzBxe93kfQ/D3iNRSmWyHv
-         MrUz5aeweAEgbOxEYUVYklujxkRgWZAP2UNLy2aImjJR3QZW2LwyKanqf0piJX1tCQxW
-         p6gg7IVLhUVllO4RYluFhedDiovafl5YmzL0213rDk5ywouSLj4h86NRtxyqUbjVmbcm
-         hyGQ==
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nk2NSwsu8i6rTINc46A+r9NE/5YNi7JyHO9FbngN7p8=;
+        b=TYs6nRRwUQOFf0gtOjWDh1j18vGSYUtK/5FrQeZVyfc+LVCQdKOhbVjQZZHNUsscec
+         GNgdiEnj4ZM4kRz7ic/Mul+yJsrVlfaOlC4WQKe6QJtGkXCpWSlpSlLeXhOo44sehCZj
+         5zmAUgRw3YmXiB9ErQ5mzGNIBs/39+GtIY4gL3nMYDeExzMHPqq8rvAcU6RbK5le3vAg
+         AlrUwjB5dfhamDuwH6PjpxKTkmH3/+SIo6HuuJrQ5k/pLSyczcEChBfZnzVNh8MlDH23
+         3u/2w+5bV/Ff9W1CVHbLsENkaR69HAvIXR1yC4dKEli4yiyIkGeEkf3FouQDwP7zixfV
+         bTEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding:cc:from:to;
-        bh=LErP8U/PzejnwsS9KxvOA1A5d+doq+yW06k2+06H9yw=;
-        b=by3P9Idk5D24rIN1lbkIozgGrkUEUMx7EfJf2h5KX1fYfJDATwZuJ8v8PSZ7tDy3K3
-         Sq0YFcEuvUp/mJFcpSGNoK3VjneMvdTdHHJoGXvLbD7f1EeoH6KkMFxMYNfcH8Fxcp88
-         IIG7XPlhlM2zOIXcprBhkHY/7F5pc283pDWGrxlOQEdbCvRW1IOutLUYkcXkunX+Qles
-         AOkZwZ067bu2k5S1ZW2hQlvQUE1mD3gh4ul3LznMYOUfvD6BUuX8fcwbtQNAkh4ySX5f
-         eJmjRR/hlGeUJp1xC+qzT0xonhxLlc4KypppffiSSdvNyAo5tRrn99MJrhey5IoyRXBv
-         QHJQ==
-X-Gm-Message-State: AOAM530uSmK4rHvTTG52aWkFTqZk/epanrEVHom6EmY6rdqrJO3mPxxO
-        9/CL8noGTgV+LOXU4H6XAZ9QjDvhCQgpZw==
-X-Google-Smtp-Source: ABdhPJwMcgsPdT/Mfw3ofmgGrcnyzn6fQu1hFzXbYaHfj+5RimVQrPpgk9LKR0TuPR+a5veVzb58Yg==
-X-Received: by 2002:a17:902:b590:b0:153:a243:3331 with SMTP id a16-20020a170902b59000b00153a2433331mr22836465pls.129.1650480495784;
-        Wed, 20 Apr 2022 11:48:15 -0700 (PDT)
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Nk2NSwsu8i6rTINc46A+r9NE/5YNi7JyHO9FbngN7p8=;
+        b=f6/uI5quRm7ubLN+SD39zD0rJahDmspgSeSGuAXtvZ+GLBPGsIhTzp3k1z8p1ezB59
+         x1/5vjIaiJa1Kv84UjG4Yi79ZB9EYQBq1g6Ox2rW10/NcUNxvsa/DSXpXsntCnX95pOc
+         M3VXM2lSQTX3CQ4WMl7Bd/NDnJ/XsyTOxiKmBlU7O24GI6Q2PF3TsV+6MF//6rb3qT0f
+         HILKV8NiKI0RpoO2SsdYWCYwTzFX/LTzqywe+wNDfkSxncu+o3JHeB6k9HeTQ4ew6mMc
+         6BfKe4P1pBpWUzdqzax4hLX4ZxTbww0moFytRVUAiz7+uWPSYaMEqfkEkgZsGcATfo3/
+         2I5w==
+X-Gm-Message-State: AOAM532JMMG9cZ2jiQszDMULYdVV7G2MXKiCT9SDlKg15gig6aXOCM2X
+        yQoXg9u6Wg6ypNqV6+Yf3mNtcA==
+X-Google-Smtp-Source: ABdhPJyBGG/7rUjTp4Rg2EZ9aERkWzpgr4mXMyWyplzUjaZ3YGB+GbK8sEX3Uh8uTKo/s29LimuFgA==
+X-Received: by 2002:a17:902:a581:b0:154:8c7d:736a with SMTP id az1-20020a170902a58100b001548c7d736amr21954623plb.74.1650480549886;
+        Wed, 20 Apr 2022 11:49:09 -0700 (PDT)
 Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id g14-20020a63200e000000b0039d9816238fsm20335794pgg.81.2022.04.20.11.48.15
+        by smtp.gmail.com with ESMTPSA id d16-20020a056a00245000b004f771b48736sm22080232pfj.194.2022.04.20.11.49.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 11:48:15 -0700 (PDT)
-Subject: [PATCH v2 4/4] RISC-V: Fix the XIP build
-Date:   Wed, 20 Apr 2022 11:40:56 -0700
-Message-Id: <20220420184056.7886-5-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220420184056.7886-1-palmer@rivosinc.com>
-References: <20220420184056.7886-1-palmer@rivosinc.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        anup@brainfault.org, vincent.chen@sifive.com, guoren@kernel.org,
-        Atish Patra <atishp@rivosinc.com>,
-        alexandre.ghiti@canonical.com, jszhang@kernel.org,
-        vitaly.wool@konsulko.com, gatecat@ds0.me,
-        wangkefeng.wang@huawei.com, mick@ics.forth.gr,
-        panqinglin2020@iscas.ac.cn, rppt@kernel.org,
+        Wed, 20 Apr 2022 11:49:09 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 11:49:09 -0700 (PDT)
+X-Google-Original-Date: Wed, 20 Apr 2022 11:49:06 PDT (-0700)
+Subject:     Re: [PATCH v1] RISC-V: Add braces around an empty if statement bodies
+In-Reply-To: <814ae1e7-297f-102f-972f-ae6130128e7a@infradead.org>
+CC:     panqinglin2020@iscas.ac.cn,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, alexandre.ghiti@canonical.com,
+        jszhang@kernel.org, wangkefeng.wang@huawei.com, mick@ics.forth.gr,
+        vitaly.wool@konsulko.com, rppt@kernel.org,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@rivosinc.com, Palmer Dabbelt <palmer@rivosinc.com>
+        lkp@intel.com
 From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:         linux-riscv@lists.infradead.org, rdunlap@infradead.org
+To:     rdunlap@infradead.org
+Message-ID: <mhng-9b719623-5ae6-4f10-bb76-58d42260bd03@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+On Tue, 19 Apr 2022 13:38:42 PDT (-0700), rdunlap@infradead.org wrote:
+> Hi,
+>
+> On 4/19/22 12:48, Palmer Dabbelt wrote:
+>> From: Palmer Dabbelt <palmer@rivosinc.com>
+>>
+>> This triggers -Wempty-body, which will cause the next statement (eventually
+>> create_pmd_mapping) to be dropped.  Both of these were introduced by the same
+>> commit.  This is safe for the reporting config (which is 32-bit), but IIUC
+>> could result in breakages for 64-bit configs without 4/5 level paging like the
+>> XIP configs.
+>>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Fixes: 677b9eb8810e ("riscv: mm: Prepare pt_ops helper functions for sv57")
+>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> ---
+>> Might be better to define these to functions that are empty, but that's
+>> slightly different than just fixing the commit/warning in question.
+>
+> Yes, we usually fix this type of problem by changing these to have empty bodies:
+>
+> #else
+> ...
+> #define create_pud_mapping(__pmdp, __va, __pa, __sz, __prot)
+> #define create_pmd_mapping(__pmdp, __va, __pa, __sz, __prot)
+> #endif /* __PAGETABLE_PMD_FOLDED */
+>
+> etc.
 
-A handful of functions unused functions were enabled during XIP builds,
-which themselves didn't build correctly.  This just disables the
-functions entirely.
+Ya, that's the right way to do it -- not sure why I was being lazy here.  
+Turns out there was a bunch of other XIP breakage, I sent a v2 that's a 
+whole series.
 
-Fixes: e8a62cc26ddf ("riscv: Implement sv48 support")
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- arch/riscv/mm/init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
 
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 7bc9a21e29fb..d2054a6cd791 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -660,7 +660,7 @@ static __init pgprot_t pgprot_from_va(uintptr_t va)
- }
- #endif /* CONFIG_STRICT_KERNEL_RWX */
- 
--#ifdef CONFIG_64BIT
-+#if defined(CONFIG_64BIT) && !defined(CONFIG_XIP_KERNEL)
- static void __init disable_pgtable_l5(void)
- {
- 	pgtable_l5_enabled = false;
--- 
-2.34.1
-
+>
+>> ---
+>>  arch/riscv/mm/init.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+>> index 9535bea8688c..637916857c4d 100644
+>> --- a/arch/riscv/mm/init.c
+>> +++ b/arch/riscv/mm/init.c
+>> @@ -798,13 +798,15 @@ static void __init create_fdt_early_page_table(pgd_t *pgdir, uintptr_t dtb_pa)
+>>  			   PGDIR_SIZE,
+>>  			   IS_ENABLED(CONFIG_64BIT) ? PAGE_TABLE : PAGE_KERNEL);
+>>
+>> -	if (pgtable_l5_enabled)
+>> +	if (pgtable_l5_enabled) {
+>>  		create_p4d_mapping(early_dtb_p4d, DTB_EARLY_BASE_VA,
+>>  				   (uintptr_t)early_dtb_pud, P4D_SIZE, PAGE_TABLE);
+>> +	}
+>>
+>> -	if (pgtable_l4_enabled)
+>> +	if (pgtable_l4_enabled) {
+>>  		create_pud_mapping(early_dtb_pud, DTB_EARLY_BASE_VA,
+>>  				   (uintptr_t)early_dtb_pmd, PUD_SIZE, PAGE_TABLE);
+>> +	}
+>>
+>>  	if (IS_ENABLED(CONFIG_64BIT)) {
+>>  		create_pmd_mapping(early_dtb_pmd, DTB_EARLY_BASE_VA,
