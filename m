@@ -2,104 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17710C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376593AbiDTIEh (ORCPT
+        id S1376605AbiDTIFZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
+        Wed, 20 Apr 2022 04:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376433AbiDTIEe (ORCPT
+        with ESMTP id S1376433AbiDTIFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:04:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57333C4B0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:01:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86DB8B81D71
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:01:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 477A7C385A0;
-        Wed, 20 Apr 2022 08:01:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650441707;
-        bh=Ge7E9HICwWwQG131Jf3ckANSQzLOy8iKlQ7ubnvSwOE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JeS89kslXNeoe/14aNyZVhJNwoHZm7zO/0Qe4YxeS5ihEUYcUZBsaCF4mp/zu44jS
-         ndMvssJfmJ9NDK3dZYYBR2uHzoWQOOY3BQK2lHTPNY16I9OODhd0H9ueB77dYkYesM
-         vH1SrAc4BF/gJE0NjoJuulld6oUXfnmCDexHnc2NyK/Np+2O7Mw9mmbFFW2vrTNqVL
-         lgBKnwj46pTrvcJTRbGkt8VrN5Lkdr3a23ezVilfISqvfnZ0iVJG67QhRqXy7xw9Gj
-         iwr2og4EHlQ1GjqAQ6g/AAGaaM3zjh/K4yaaUtp7jZvSHD1tkoBYWccyyH7JWBwy0I
-         COxD2cbd1Qt4A==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nh5HP-0006ca-HS; Wed, 20 Apr 2022 10:01:39 +0200
-Date:   Wed, 20 Apr 2022 10:01:39 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     elder@kernel.org, gregkh@linuxfoundation.org,
-        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] greybus: using pm_runtime_resume_and_get to simplify the
- code
-Message-ID: <Yl+948unOoDFdLe2@hovoldconsulting.com>
-References: <20220420030658.2575942-1-chi.minghao@zte.com.cn>
+        Wed, 20 Apr 2022 04:05:22 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9603C4B2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:02:33 -0700 (PDT)
+X-UUID: 570eca2f66e644ad9aad45a2d6a723d6-20220420
+X-UUID: 570eca2f66e644ad9aad45a2d6a723d6-20220420
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <jason-jh.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 633776647; Wed, 20 Apr 2022 16:02:25 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 20 Apr 2022 16:02:24 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 20 Apr
+ 2022 16:02:24 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 20 Apr 2022 16:02:23 +0800
+Message-ID: <2fb273bc4ba8a7571d00da1d7bbea1e8d731b84f.camel@mediatek.com>
+Subject: Re: [RESEND PATCH] soc: mediatek: cmdq: Use mailbox rx_callback
+ instead of cmdq_task_cb
+From:   Jason-JH Lin <jason-jh.lin@mediatek.com>
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <roy-cw.yeh@mediatek.com>, <moudy.ho@mediatek.com>,
+        <nancy.lin@medaitek.com>, <singo.chang@mediatek.com>
+Date:   Wed, 20 Apr 2022 16:02:23 +0800
+In-Reply-To: <1650102868-26219-1-git-send-email-chunkuang.hu@kernel.org>
+References: <1650102868-26219-1-git-send-email-chunkuang.hu@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420030658.2575942-1-chi.minghao@zte.com.cn>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 03:06:58AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+Hi Chun-Kuang,
 
-Why are you sending patches from a random non-personal gmail address?
+Reviewed-by: jason-jh.lin <jason-jh.lin@mediatek.com>
+and
+Tested-by: jason-jh.lin <jason-jh.lin@mediatek.com>
 
-> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-> pm_runtime_put_noidle. This change is just to simplify the code, no
-> actual functional changes.
+
+Hi Roy, Moudy,
+
+Please aware of this modification for MDP on-going patch.
+
+You can refer to this patch on DRM:
+
+https://patchwork.kernel.org/project/linux-mediatek/patch/20211028101912.4624-2-jason-jh.lin@mediatek.com/
+
+
+Thanks.
+
+Regard,
+Jason-JH.Lin
+
+On Sat, 2022-04-16 at 17:54 +0800, Chun-Kuang Hu wrote:
+> rx_callback is a standard mailbox callback mechanism and could cover
+> the
+> function of proprietary cmdq_task_cb, so use the standard one instead
+> of
+> the proprietary one. Client has changed to use the standard callback
+> machanism and sync dma buffer in client driver, so remove the
+> proprietary
+> callback in cmdq helper.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-
-And why is this here?
-
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 > ---
->  drivers/greybus/core.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  drivers/soc/mediatek/mtk-cmdq-helper.c | 25 +-----------------------
+> -
+>  include/linux/soc/mediatek/mtk-cmdq.h  |  5 +----
+>  2 files changed, 2 insertions(+), 28 deletions(-)
 > 
-> diff --git a/drivers/greybus/core.c b/drivers/greybus/core.c
-> index e546c6431877..434aa5d9dd47 100644
-> --- a/drivers/greybus/core.c
-> +++ b/drivers/greybus/core.c
-> @@ -174,11 +174,9 @@ static int greybus_probe(struct device *dev)
->  	if (!id)
->  		return -ENODEV;
+> diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c
+> b/drivers/soc/mediatek/mtk-cmdq-helper.c
+> index 3c8e421..c1837a4 100644
+> --- a/drivers/soc/mediatek/mtk-cmdq-helper.c
+> +++ b/drivers/soc/mediatek/mtk-cmdq-helper.c
+> @@ -425,34 +425,11 @@ int cmdq_pkt_finalize(struct cmdq_pkt *pkt)
+>  }
+>  EXPORT_SYMBOL(cmdq_pkt_finalize);
 >  
-> -	retval = pm_runtime_get_sync(&bundle->intf->dev);
-> -	if (retval < 0) {
-> -		pm_runtime_put_noidle(&bundle->intf->dev);
-> +	retval = pm_runtime_resume_and_get(&bundle->intf->dev);
-> +	if (retval < 0)
->  		return retval;
+> -static void cmdq_pkt_flush_async_cb(struct cmdq_cb_data data)
+> -{
+> -	struct cmdq_pkt *pkt = (struct cmdq_pkt *)data.data;
+> -	struct cmdq_task_cb *cb = &pkt->cb;
+> -	struct cmdq_client *client = (struct cmdq_client *)pkt->cl;
+> -
+> -	dma_sync_single_for_cpu(client->chan->mbox->dev, pkt->pa_base,
+> -				pkt->cmd_buf_size, DMA_TO_DEVICE);
+> -	if (cb->cb) {
+> -		data.data = cb->data;
+> -		cb->cb(data);
 > -	}
+> -}
+> -
+> -int cmdq_pkt_flush_async(struct cmdq_pkt *pkt, cmdq_async_flush_cb
+> cb,
+> -			 void *data)
+> +int cmdq_pkt_flush_async(struct cmdq_pkt *pkt)
+>  {
+>  	int err;
+>  	struct cmdq_client *client = (struct cmdq_client *)pkt->cl;
+>  
+> -	pkt->cb.cb = cb;
+> -	pkt->cb.data = data;
+> -	pkt->async_cb.cb = cmdq_pkt_flush_async_cb;
+> -	pkt->async_cb.data = pkt;
+> -
+> -	dma_sync_single_for_device(client->chan->mbox->dev, pkt-
+> >pa_base,
+> -				   pkt->cmd_buf_size, DMA_TO_DEVICE);
+> -
+>  	err = mbox_send_message(client->chan, pkt);
+>  	if (err < 0)
+>  		return err;
+> diff --git a/include/linux/soc/mediatek/mtk-cmdq.h
+> b/include/linux/soc/mediatek/mtk-cmdq.h
+> index ac6b5f3..2b498f4 100644
+> --- a/include/linux/soc/mediatek/mtk-cmdq.h
+> +++ b/include/linux/soc/mediatek/mtk-cmdq.h
+> @@ -268,8 +268,6 @@ int cmdq_pkt_finalize(struct cmdq_pkt *pkt);
+>   * cmdq_pkt_flush_async() - trigger CMDQ to asynchronously execute
+> the CMDQ
+>   *                          packet and call back at the end of done
+> packet
+>   * @pkt:	the CMDQ packet
+> - * @cb:		called at the end of done packet
+> - * @data:	this data will pass back to cb
+>   *
+>   * Return: 0 for success; else the error code is returned
+>   *
+> @@ -277,7 +275,6 @@ int cmdq_pkt_finalize(struct cmdq_pkt *pkt);
+>   * at the end of done packet. Note that this is an ASYNC function.
+> When the
+>   * function returned, it may or may not be finished.
+>   */
+> -int cmdq_pkt_flush_async(struct cmdq_pkt *pkt, cmdq_async_flush_cb
+> cb,
+> -			 void *data);
+> +int cmdq_pkt_flush_async(struct cmdq_pkt *pkt);
+>  
+>  #endif	/* __MTK_CMDQ_H__ */
+-- 
+Jason-JH Lin <jason-jh.lin@mediatek.com>
 
-NAK.
-
-Greybus is using the pm_runtime_get_sync() consistently and mixing it up
-with the new helper that uses a different naming scheme is just
-confusing.
-
-Use the new helper for your own code if you prefer, but there's really
-no need to go around submitting this automatic conversions for code
-that's already in the tree.
-
->  	retval = gb_control_bundle_activate(bundle->intf->control, bundle->id);
->  	if (retval) {
-
-Johan
