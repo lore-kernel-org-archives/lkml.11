@@ -2,104 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA1E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377855AbiDTKzU (ORCPT
+        id S1377841AbiDTK4x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
+        Wed, 20 Apr 2022 06:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359695AbiDTKzM (ORCPT
+        with ESMTP id S1344742AbiDTK4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:55:12 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A01C403C6;
-        Wed, 20 Apr 2022 03:52:26 -0700 (PDT)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 5BC4061CCD786;
-        Wed, 20 Apr 2022 12:52:23 +0200 (CEST)
-Message-ID: <c8f5ada2-c5cc-fe1b-bdeb-8b7d134250ee@molgen.mpg.de>
-Date:   Wed, 20 Apr 2022 12:52:23 +0200
+        Wed, 20 Apr 2022 06:56:50 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98694403F0;
+        Wed, 20 Apr 2022 03:54:04 -0700 (PDT)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KjyB56Bxnz6F9Dq;
+        Wed, 20 Apr 2022 18:50:21 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Apr 2022 12:54:02 +0200
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 20 Apr
+ 2022 11:54:01 +0100
+Date:   Wed, 20 Apr 2022 11:54:00 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Message-ID: <20220420115400.00005c48@Huawei.com>
+In-Reply-To: <20220419154555.24191-3-ddrokosov@sberdevices.ru>
+References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
+        <20220419154555.24191-3-ddrokosov@sberdevices.ru>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] tpm: cr50: Add new device/vendor ID 0x504a6666
-Content-Language: en-US
-To:     "Jes B. Klinke" <jbk@chromium.org>
-Cc:     linux-integrity@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Peter Huewe <peterhuewe@gmx.de>, linux-kernel@vger.kernel.org
-References: <20220419163749.1.Ica39bd8d1494f750a70a668e5929f6e5e63241f2@changeid>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220419163749.1.Ica39bd8d1494f750a70a668e5929f6e5e63241f2@changeid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml717-chm.china.huawei.com (10.201.108.68) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Jes,
+On Tue, 19 Apr 2022 15:45:55 +0000
+Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru> wrote:
 
-
-Am 20.04.22 um 01:37 schrieb Jes B. Klinke:
-> Accept one additional numerical value of DID:VID for next generation
-> Google TPM with new firmware, to be used in future Chromebooks.
+> MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
+> sensitivity consumer applications. It has dynamical user selectable full
+> scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
+> with output data rates from 1Hz to 1000Hz.
 > 
-> The TPM with the new firmware has the code name TI50, and is going to
-> use the same interfaces.
+> This driver supports following MSA311 features:
+>     - IIO interface
+>     - Different power modes: NORMAL, SUSPEND and LOW (using pm_runtime)
+>     - ODR (Output Data Rate) selection
+>     - Scale and samp_freq selection
+>     - IIO triggered buffer, IIO reg access
+>     - NEW_DATA interrupt + trigger
 > 
-> Signed-off-by: Jes B. Klinke <jbk@chromium.org>
-> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> ---
+> Below features to be done:
+>     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
 > 
->   drivers/char/tpm/tpm_tis_i2c_cr50.c | 7 ++++---
->   1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-> index f6c0affbb4567..4ddb8ff3a8569 100644
-> --- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
-> +++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-> @@ -31,6 +31,7 @@
->   #define TPM_CR50_TIMEOUT_SHORT_MS	2		/* Short timeout during transactions */
->   #define TPM_CR50_TIMEOUT_NOIRQ_MS	20		/* Timeout for TPM ready without IRQ */
->   #define TPM_CR50_I2C_DID_VID		0x00281ae0L	/* Device and vendor ID reg value */
-> +#define TPM_TI50_I2C_DID_VID		0x504a6666L	/* Device and vendor ID reg value */
->   #define TPM_CR50_I2C_MAX_RETRIES	3		/* Max retries due to I2C errors */
->   #define TPM_CR50_I2C_RETRY_DELAY_LO	55		/* Min usecs between retries on I2C */
->   #define TPM_CR50_I2C_RETRY_DELAY_HI	65		/* Max usecs between retries on I2C */
-> @@ -742,15 +743,15 @@ static int tpm_cr50_i2c_probe(struct i2c_client *client)
->   	}
->   
->   	vendor = le32_to_cpup((__le32 *)buf);
-> -	if (vendor != TPM_CR50_I2C_DID_VID) {
-> +	if (vendor != TPM_CR50_I2C_DID_VID && vendor != TPM_TI50_I2C_DID_VID) {
->   		dev_err(dev, "Vendor ID did not match! ID was %08x\n", vendor);
->   		tpm_cr50_release_locality(chip, true);
->   		return -ENODEV;
->   	}
->   
-> -	dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
-> +	dev_info(dev, "%s TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
-> +		 vendor == TPM_TI50_I2C_DID_VID ? "ti50" : "cr50",
->   		 client->addr, client->irq, vendor >> 16);
-> -
 
-Remove this blank line wasn’t needed, I gues.
+Forgot to mention. Please add a Datasheet: tag to this patch as it's
+the one introducing the actual driver.
 
->   	return tpm_chip_register(chip);
->   }
->   
-
-Thank for addressing the other comments, and congratulations on getting 
-your first commit into the Linux kernel.
-
-
-Kind regards,
-
-Paul
+> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
