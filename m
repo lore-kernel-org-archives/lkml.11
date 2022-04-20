@@ -2,148 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D09F1C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379146AbiDTNtS (ORCPT
+        id S1379157AbiDTNtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
+        Wed, 20 Apr 2022 09:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379139AbiDTNtJ (ORCPT
+        with ESMTP id S1376677AbiDTNte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:49:09 -0400
-Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2575A21E0D;
-        Wed, 20 Apr 2022 06:46:22 -0700 (PDT)
-Received: from darkstar.musicnaut.iki.fi (85-76-69-216-nat.elisa-mobile.fi [85.76.69.216])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: aaro.koskinen)
-        by meesny.iki.fi (Postfix) with ESMTPSA id AD3B7205A6;
-        Wed, 20 Apr 2022 16:46:17 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
-        t=1650462379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hPdeBaZ6eVr/qRTevscI2sSHgl9RZPmaXc8iV1TPOYQ=;
-        b=TWxI7Ho2RtsaPS6MDuk2M+E+sq1KJYxSGS4DmJDZp6BP1taIQkAU15m6enkHBtGqJiUXvp
-        lXQHG+v4JXQrypyUiMgoBHrh9vRs0uJa78N5cmw1Dkb39AobNvcLF22yj6OlonUngPVdl9
-        hg/zZ4gRXP0aP/DTuM9FEXSAfDl6JAk=
-Date:   Wed, 20 Apr 2022 16:46:15 +0300
-From:   Aaro Koskinen <aaro.koskinen@iki.fi>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-omap@vger.kernel.org, tony@atomide.com, jmkrzyszt@gmail.com,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 26/41] ARM: omap1: relocate static I/O mapping
-Message-ID: <20220420134615.GA1947@darkstar.musicnaut.iki.fi>
-References: <20220419133723.1394715-1-arnd@kernel.org>
- <20220419133723.1394715-27-arnd@kernel.org>
+        Wed, 20 Apr 2022 09:49:34 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5123BBD7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:46:47 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id x80so1994216pfc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:46:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q6jrkZFlCbwn0WTvEVs0btNJ3ts6C00LvQRtxh2AOjE=;
+        b=DPZDNn9sPB8FUXiCbQR8I5Tb2hCJdcWYPSTUnivCRb+iBRy5aKJvOxdYXzwyAbyuw+
+         q2xTmlz38+4CW7dNvBdxku+UmYgu/sJtNfsoVCgjPjHm/pOs80TmckFLvB/DRQv++AIQ
+         tKLB1JkYGNVSE1vEVAqroOsTo/aCdpuaCtDzDKp+e4mUHQqm71wNu8+HoC4c3/BvonoK
+         uQIDV0XYEmM3jalKUW7A2S8fZDA9uUQBMt8Jk1WLAaLO7zrpfm7PNDiifZ+pq1oTSuaa
+         XJN2utWzmD/F5BdJGqFxaB+cONpwsWUIjBjla1dakkFxCNWpiH1MWjWK0fyYUxMLt5Ma
+         T4PA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q6jrkZFlCbwn0WTvEVs0btNJ3ts6C00LvQRtxh2AOjE=;
+        b=2XWsTS9jSAMaJxWYHgP4dYldFVK3Z3ukAqKqJsw+IZ2jNvlR7odwTy6dptMT7TWGqy
+         PCh2B61ktcmENwMSbxFyaK4nMth9nAWBPsil3EOh7zvFnqIqoGfK371d9+dfvsaFwgu5
+         rt6lf6ShdVDO0+pCUqSBu8D+/hyH2JHR0VAMrw7/GJfFDgEjIkBUbnCVr+fNVnfM946y
+         8qpCIDMFx6HIubOEo7CQOFPSwITWEsXCmBUQUXUroIaTFkrG+5DmT+uOpaUwIDdyfU8o
+         VFZ01fR+H8lccLMg90DrO+q8e/qeOyQGrF5bv8e0OyJpdvADyo7sDKx/ztljNb2NL0/H
+         /4SA==
+X-Gm-Message-State: AOAM530flc/PjXsPp6SZ1sqmyXgOdB+KKqr8pB4Kk3o3HI0lDGM3f3tu
+        u3AW4GgNg/m6G5I3hkfL2QU=
+X-Google-Smtp-Source: ABdhPJyvRpVgkmJHIJdX4ski3xEdOk/1vExt5dfNhj+zxHR/wDP4IVTdMND8YtovToQ0YOxhDZTipw==
+X-Received: by 2002:a63:2d4:0:b0:3aa:7a8b:25ba with SMTP id 203-20020a6302d4000000b003aa7a8b25bamr969322pgc.251.1650462407068;
+        Wed, 20 Apr 2022 06:46:47 -0700 (PDT)
+Received: from [172.16.10.243] ([106.39.150.10])
+        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b004fe3d6c1731sm20222786pfo.175.2022.04.20.06.45.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 06:46:46 -0700 (PDT)
+Message-ID: <7d99fb81-d799-8785-8fe4-44772e26408a@gmail.com>
+Date:   Wed, 20 Apr 2022 21:45:27 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419133723.1394715-27-arnd@kernel.org>
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-        s=meesny; t=1650462379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hPdeBaZ6eVr/qRTevscI2sSHgl9RZPmaXc8iV1TPOYQ=;
-        b=H/ymb4ClmH02P6z9wJPj5hwDvA4ML4CAqvyTrTXpyzakXMrwIF7fhncpTt2p+tyb+n415S
-        rXswuQZfImMNpPXfbjLG2A2bYft152C7y10qe9zeKLi8GlOcXPiCV9y/0Eijq+J6KgXV6K
-        JExPxjG2F+njcVYYdJlNrzaNBE0jppU=
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
-ARC-Seal: i=1; s=meesny; d=iki.fi; t=1650462379; a=rsa-sha256; cv=none;
-        b=CVy72ecIkI6wF0iqwa+Xy91DJU3aDMoxGNfzuIx9Vt1gzOxFw+Q04asMI9whLP3P8s501X
-        P2eVWVYDpVAr6tfbV1PJEm52Z8VQMrb77N573CgDjOg+UHf97HnYPA9FH0wGgHHkmeXpu6
-        wtihpIfPU1zC4kkQJy4ZZuJBXIgiXlA=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] ASoC: fsl: Fix error handling in pcm030_fabric_probe
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <Yh90u+E3RTuGEDWU@sirena.org.uk>
+ <20220420021855.8224-1-linmq006@gmail.com> <YmAD6MIuKdjgm7Yu@sirena.org.uk>
+ <4e3309d9-879f-3385-3e8e-0fa1a31ddd9a@gmail.com>
+ <YmANgcO9BMxp8PLC@sirena.org.uk>
+From:   Miaoqian Lin <linmq006@gmail.com>
+In-Reply-To: <YmANgcO9BMxp8PLC@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Tue, Apr 19, 2022 at 03:37:08PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The address range 0xfee00000-0xfeffffff is used for PCI and
-> PCMCIA I/O port mappings, but OMAP1 has its static mappings
-> there as well.
-> 
-> Move the OMAP1 addresses a little higher to avoid crashing
-> at boot.
+On 2022/4/20 21:41, Mark Brown wrote:
+> On Wed, Apr 20, 2022 at 09:35:55PM +0800, Miaoqian Lin wrote:
+>> On 2022/4/20 21:00, Mark Brown wrote:
+>>>> - rebase on top of commit 559089e0a93d ("vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP")
+>>> Why rebase on top of that seemingly random commit?  Is there some sort
+>>> of dependency here?
+>> Hi, it the head of master in when I made this patch. It's because you pointed out
+>> that patch v1 doesn't apply against current code. But I am not sure what's the problem.
+>> So I ensure the codebase is up-to-date. If this patch have no conflict, you can ignore it.
+> Current code here is my git tree (-next is often a fair approximation) -
+> if people have been making changes since the merge window then often
+> code written against mainline won't apply and things need to be based on
+> people's current work.  You're looking for
+>
+>    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-This has the same problem I reported in 2019, with earlyprintk the
-system no longer boots:
+I get it, thanks for your kindly reminder.
 
-	https://marc.info/?t=156530014200005&r=1&w=2
-
-Tested on OSK and SX1/qemu.
-
-A.
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/arm/Kconfig.debug                      | 6 +++---
->  arch/arm/mach-omap1/include/mach/hardware.h | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-> index 0c9497d549e3..f57b449000f7 100644
-> --- a/arch/arm/Kconfig.debug
-> +++ b/arch/arm/Kconfig.debug
-> @@ -1837,9 +1837,9 @@ config DEBUG_UART_VIRT
->  	default 0xfec00000 if ARCH_IXP4XX && !CPU_BIG_ENDIAN
->  	default 0xfec00003 if ARCH_IXP4XX && CPU_BIG_ENDIAN
->  	default 0xfef36000 if DEBUG_HIGHBANK_UART
-> -	default 0xfefb0000 if DEBUG_OMAP1UART1 || DEBUG_OMAP7XXUART1
-> -	default 0xfefb0800 if DEBUG_OMAP1UART2 || DEBUG_OMAP7XXUART2
-> -	default 0xfefb9800 if DEBUG_OMAP1UART3 || DEBUG_OMAP7XXUART3
-> +	default 0xff000000 if DEBUG_OMAP1UART1 || DEBUG_OMAP7XXUART1
-> +	default 0xff000800 if DEBUG_OMAP1UART2 || DEBUG_OMAP7XXUART2
-> +	default 0xff009800 if DEBUG_OMAP1UART3 || DEBUG_OMAP7XXUART3
->  	default 0xffd01000 if DEBUG_HIP01_UART
->  	default DEBUG_UART_PHYS if !MMU
->  	depends on DEBUG_LL_UART_8250 || DEBUG_LL_UART_PL01X || \
-> diff --git a/arch/arm/mach-omap1/include/mach/hardware.h b/arch/arm/mach-omap1/include/mach/hardware.h
-> index 05c5cd3e95f4..e3522e601ccd 100644
-> --- a/arch/arm/mach-omap1/include/mach/hardware.h
-> +++ b/arch/arm/mach-omap1/include/mach/hardware.h
-> @@ -63,7 +63,7 @@ static inline u32 omap_cs3_phys(void)
->  
->  #endif	/* ifndef __ASSEMBLER__ */
->  
-> -#define OMAP1_IO_OFFSET		0x01000000	/* Virtual IO = 0xfefb0000 */
-> +#define OMAP1_IO_OFFSET		0x00fb0000	/* Virtual IO = 0xff000000 */
->  #define OMAP1_IO_ADDRESS(pa)	IOMEM((pa) - OMAP1_IO_OFFSET)
->  
->  #include <mach/serial.h>
-> -- 
-> 2.29.2
-> 
