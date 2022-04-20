@@ -2,154 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5275DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 809D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378975AbiDTN0b (ORCPT
+        id S1347982AbiDTN17 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41292 "EHLO
+        Wed, 20 Apr 2022 09:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356684AbiDTN03 (ORCPT
+        with ESMTP id S1379033AbiDTN1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:26:29 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E511442A2D
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:23:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650461023; x=1681997023;
-  h=from:to:cc:subject:date:message-id;
-  bh=bFw9jBOeodp0zCARNf/d8JtgIIyNELjWMG7lzca9XA4=;
-  b=krgLlgf1DnoLEA8dnR81xc45UXPseGoJzQlm5+A79Nh37YIyM6t2mRKj
-   IsIJgq3GKVDVlPQeXBfHGV3F3sl4KyxjY66LCMs1IcUpR71jkJPfoZ7Ck
-   KAWFswth+RAC/im3UytMG6Vir5QTOU/pJ4GAhAB7HyD3Qieu28AZ4WnWn
-   t9l+3xbj+rWsOQoiIgsZ+bKI8ieve3hZBUali5n69AOPPkoYeA7nz8Tth
-   xXmusVNfrwoGyFJY2SZuGNJ8B1v9sgK0hXkq7ZlJGBB+hpqucvcqaqWNU
-   edI4HqEayyLlI5kTCcUr5l2vuwYDhLoiYt+JRdk/mDt3DnBqEhuQrXilA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="244606005"
-X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
-   d="scan'208";a="244606005"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 06:23:23 -0700
-X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
-   d="scan'208";a="555191349"
-Received: from qiuxu-clx.sh.intel.com ([10.239.53.12])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 06:23:20 -0700
-From:   Qiuxu Zhuo <qiuxu.zhuo@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc:     Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        linux-mm@kvack.org (open list:HWPOISON MEMORY FAILURE HANDLING),
-        linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND
-        64-BIT))
-Subject: [PATCH 1/1] x86/mm: Forbid the zero page once it has uncorrectable errors
-Date:   Wed, 20 Apr 2022 17:00:09 -0400
-Message-Id: <20220420210009.65666-1-qiuxu.zhuo@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 20 Apr 2022 09:27:48 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DC72ACA;
+        Wed, 20 Apr 2022 06:25:01 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-e656032735so650585fac.0;
+        Wed, 20 Apr 2022 06:25:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=WRdWfSi+1sG2KdTR7O9gGMtklLx/TqYIp/Pa2T6eLoc=;
+        b=GDwpn5XZGJluUeTqroiCc62FSLIveUwlQfWyFQPEx/HMvx9HAGMCm+9mIsWStjai5U
+         tyMG5Ip7w79SdJM9cH88WSRVmwqxRxNn3PUGPTpARUA1U6gwPuZCyoJdfXT5W3O5V5ni
+         y4jHJDFFYCH6O4hU9STLapCftge+L8pruDz9HAVxnvK8ctTDv+yYNR7H/8loDFK3wg5H
+         ILgE/R2Ud+va+9Cn3xeCsstBgXBnfCL2qKIfbapc0eUHpVhUcAi+nANMZR7+49TcOy2C
+         Af2TWHOO8WM61ljNX7PU4s8mwriH5uXs6dj3S6pSFvK7HscsLf3JcmXwc6OJbq795+04
+         dh0A==
+X-Gm-Message-State: AOAM53087NTvusEclWKQIeoo8R1Jmp7Oazqye57mSKCcowGMKUSuGRPO
+        hL1i8esjwQHLi92Z65xVp2ZeVfOHaw==
+X-Google-Smtp-Source: ABdhPJwYthaBVW4OLOo5KMUT4jqoFd7LEF5hP00id1qgTvfJFswDcuqE5YofCT+RwIiybfHmHygosQ==
+X-Received: by 2002:a05:6870:339d:b0:e1:e7e9:dfb2 with SMTP id w29-20020a056870339d00b000e1e7e9dfb2mr1590921oae.67.1650461100728;
+        Wed, 20 Apr 2022 06:25:00 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q17-20020a9d7c91000000b0060542dc13d5sm4997869otn.68.2022.04.20.06.24.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 06:25:00 -0700 (PDT)
+Received: (nullmailer pid 1161723 invoked by uid 1000);
+        Wed, 20 Apr 2022 13:24:59 -0000
+Date:   Wed, 20 Apr 2022 08:24:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: Re: [PATCH v2 3/8] dt-bindings: PCI: renesas-pci-usb: Allow multiple
+ clocks
+Message-ID: <YmAJq+qUF34IvfiZ@robh.at.kernel.org>
+References: <20220414074011.500533-1-herve.codina@bootlin.com>
+ <20220414074011.500533-4-herve.codina@bootlin.com>
+ <CAMuHMdWZyuNQJhxkhzs5H8+8DFGDS95nvptrO-s9RC4QL5kibA@mail.gmail.com>
+ <20220420150759.713fcd02@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220420150759.713fcd02@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Accessing to the zero page with uncorrectable errors causes unexpected
-machine checks. So forbid the zero page from being used by user-space
-processes once it has uncorrectable errors. Processes that have already
-mapped the zero page with uncorrectable errors will get killed once they
-access to it. New processes will not use the zero page.
+On Wed, Apr 20, 2022 at 03:07:59PM +0200, Herve Codina wrote:
+> Hi Geert, Rob,
+> 
+> On Thu, 14 Apr 2022 10:35:07 +0200
+> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> 
+> > Hi Hervé,
+> > 
+> > On Thu, Apr 14, 2022 at 9:40 AM Herve Codina <herve.codina@bootlin.com> wrote:
+> > > Define that multiple clocks can be present at clocks property.
+> > >
+> > > Signed-off-by: Herve Codina <herve.codina@bootlin.com>  
+> > 
+> > Thanks for your patch!
+> > 
+> > > --- a/Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml
+> > > +++ b/Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml
+> > > @@ -54,7 +54,8 @@ properties:
+> > >        Standard property that helps to define the interrupt mapping.
+> > >
+> > >    clocks:
+> > > -    description: The reference to the device clock.
+> > > +    description:
+> > > +      The references to the device clocks (several clocks can be referenced).  
+> > 
+> > Please describe the clocks, and add the missing "clock-names" property.
+> > 
+> > >
+> > >    bus-range:
+> > >      description: |  
+> > 
+> > I think it would be better to combine this with [PATCH v2 4/8], as the
+> > additional clocks are only present on RZ/N1.
+> > 
+> > Then you can easily add json-schema logic to enforce the correct
+> > number of clocks, depending on the compatible value.
+> 
+> Sure.
+> 
+> Is there a way to have the clocks description depending on the compatible value.
+> I mean something like:
+> --- 8< ---
+> properties:
+>   clocks:
+>     maxItems: 1
 
-Signed-off-by: Qiuxu Zhuo <qiuxu.zhuo@intel.com>
----
-1) Processes that have already mapped the zero page with uncorrectable
-   errors could be recovered by attaching a new zeroed anonymous page.
-   But this may need to walk all page tables for all such processes to
-   update the PTEs pointing to the zero page. Looks like a big modification
-   for a rare problem?
+This would need to cover both cases:
 
-2) Some validation tests that sometimes pick up the virtual address
-   mapped to the zero page to inject errors get themself killed and can't
-   run anymore until reboot the system. To avoid injecting errors to the
-   zero page, please refer to the path:
+minItems: 1
+maxItems: 3
 
-   https://lore.kernel.org/all/20220419211921.2230752-1-tony.luck@intel.com/
+> 
+> if:
+>   properties:
+>     compatible:
+>       contains:
+>         enum:
+>           - renesas,pci-r9a06g032
+>           - renesas,pci-rzn1
+> 
+> then:
+>   properties:
+>     clocks:
+>       items:
+>         - description: Internal bus clock (AHB) for HOST
+>         - description: Internal bus clock (AHB) Power Management
+>         - description: PCI clock for USB subsystem
+>       minItems: 3
+>       maxItems: 3
 
- arch/x86/include/asm/pgtable.h | 3 +++
- arch/x86/kernel/cpu/mce/core.c | 6 ++++++
- arch/x86/mm/pgtable.c          | 2 ++
- mm/memory-failure.c            | 2 +-
- 4 files changed, 12 insertions(+), 1 deletion(-)
+Don't need minItems or maxItems here. 3 is the default size based on 
+'items' length.
 
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index 62ab07e24aef..d4b8693452e5 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -55,6 +55,9 @@ extern unsigned long empty_zero_page[PAGE_SIZE / sizeof(unsigned long)]
- 	__visible;
- #define ZERO_PAGE(vaddr) ((void)(vaddr),virt_to_page(empty_zero_page))
- 
-+extern bool __read_mostly forbids_zeropage;
-+#define mm_forbids_zeropage(x)	forbids_zeropage
-+
- extern spinlock_t pgd_lock;
- extern struct list_head pgd_list;
- 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 981496e6bc0e..5b3af27cc8fa 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -44,6 +44,7 @@
- #include <linux/sync_core.h>
- #include <linux/task_work.h>
- #include <linux/hardirq.h>
-+#include <linux/pgtable.h>
- 
- #include <asm/intel-family.h>
- #include <asm/processor.h>
-@@ -1370,6 +1371,11 @@ static void queue_task_work(struct mce *m, char *msg, void (*func)(struct callba
- 	if (count > 1)
- 		return;
- 
-+	if (is_zero_pfn(current->mce_addr >> PAGE_SHIFT) && !forbids_zeropage) {
-+		pr_err("Forbid user-space process from using zero page\n");
-+		forbids_zeropage = true;
-+	}
-+
- 	task_work_add(current, &current->mce_kill_me, TWA_RESUME);
- }
- 
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 3481b35cb4ec..c0c56bce3acc 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -28,6 +28,8 @@ void paravirt_tlb_remove_table(struct mmu_gather *tlb, void *table)
- 
- gfp_t __userpte_alloc_gfp = GFP_PGTABLE_USER | PGTABLE_HIGHMEM;
- 
-+bool __read_mostly forbids_zeropage;
-+
- pgtable_t pte_alloc_one(struct mm_struct *mm)
- {
- 	return __pte_alloc_one(mm, __userpte_alloc_gfp);
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index dcb6bb9cf731..30ad7bdeb89f 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1744,7 +1744,7 @@ int memory_failure(unsigned long pfn, int flags)
- 		goto unlock_mutex;
- 	}
- 
--	if (TestSetPageHWPoison(p)) {
-+	if (TestSetPageHWPoison(p) || is_zero_pfn(pfn)) {
- 		pr_err("Memory failure: %#lx: already hardware poisoned\n",
- 			pfn);
- 		res = -EHWPOISON;
--- 
-2.17.1
+> 
+> else:
+>   properties:
+>     items:
 
+I think you meant for this to be under 'clocks'.
+
+>        - description: Device clock
+>     clocks:
+>       minItems: 1
+>       maxItems: 1
+
+Just 'maxItems' is enough.
+
+> --- 8< ---
+> 
+> In fact, I would like to describe the 3 clocks only for the r9a06g032 SOC
+> and the rzn1 family and have an other description for the other 'compatible'.
+> 
+> I cannot succeed to do it.
+> 
+> The only thing I can do is to leave the description of the 3 clocks out of the
+> conditional part. This leads to :
+> 
+> --- 8< ---
+> properties:
+>   clocks:
+>     items:
+>       - description: Internal bus clock (AHB) for HOST
+>       - description: Internal bus clock (AHB) Power Management
+>       - description: PCI clock for USB subsystem
+>     minItems: 1
+> 
+> if:
+>   properties:
+>     compatible:
+>       contains:
+>         enum:
+>           - renesas,pci-r9a06g032
+>           - renesas,pci-rzn1
+> 
+> then:
+>   properties:
+>     clocks:
+>       minItems: 3
+>       maxItems: 3
+
+minItems is enough.
+
+> 
+> else:
+>   properties:
+>     clocks:
+>       minItems: 1
+>       maxItems: 1
+
+This doesn't seem right as the description of the first clock is wrong 
+for this case.
+
+I would go with the first way.
+
+Rob
