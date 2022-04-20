@@ -2,110 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A04AFC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F27D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381285AbiDTRsu (ORCPT
+        id S1381292AbiDTRs4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        Wed, 20 Apr 2022 13:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243437AbiDTRsq (ORCPT
+        with ESMTP id S1380246AbiDTRss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 13:48:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C12C945AF1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650476757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=W3NAe+4do7OzwFXlslJ1yxbsun/Vq+K/0OpwWY5c86Y=;
-        b=LbMromMblwqh32MhnadJ0rXgb9q6AVDRY/AhinJ12X+qoc/bMDFLCNrG6JBA1LnkON67ku
-        L67CB50CZxiHswm+uA1outhgDBlNslIurbHLRrq/WXIsv8+2W4RntzTzcmjWDJ+Av16HLc
-        z8IRo5zwR1cfBmQ2C2+laiVj2XhfgWU=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-e_KNliv9NKS4afXVA19Y6Q-1; Wed, 20 Apr 2022 13:45:56 -0400
-X-MC-Unique: e_KNliv9NKS4afXVA19Y6Q-1
-Received: by mail-qv1-f70.google.com with SMTP id ke23-20020a056214301700b0044bba34469eso963834qvb.17
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:45:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W3NAe+4do7OzwFXlslJ1yxbsun/Vq+K/0OpwWY5c86Y=;
-        b=OcB924CHIDZTmaAogzcKfDVlhRJLaJRYSW0sysTkXww3yPvmFRaJ9jTvh9STsteL54
-         SPyQz+E/2fEfrrgJ//eCBAWDakjBEr2ml5fORKIsvKPbQyO1hZ8/HiLMSUjSgY0JjP3i
-         243gOTvZb7fugteYyYNquAZKJiNL2RTYt3BqTj9SyLTLK0XKy0WX8iGZpgLT68+00iVM
-         2eERak6dimcXLtvYAbp/LdfdadUJ2MepdG39g9vVplDCf2R2qb+QZle0OM/aEU9cWwW8
-         xDvMbM4k7jp9vxdGE9TpwHaGt1Mz1wp3O8/CxoHp7T2pmuk0yjGmpR/6ZZ6BgrP8dd0D
-         L2IQ==
-X-Gm-Message-State: AOAM530lIjL0bG1hYI+LCqQ0naEBwEVJ7VCmf9QkRqz9voza1V0Xdfqw
-        laXxTmFtCkVpaDzeTOj2njehuLELLHRJJK87DU4bx27+YrhJTGvlaAfYrG6vRcThpwBhqirClfE
-        WpknhNW8obne609ABZmUJYZYI
-X-Received: by 2002:a05:6214:5185:b0:443:a821:31fc with SMTP id kl5-20020a056214518500b00443a82131fcmr16587285qvb.129.1650476755311;
-        Wed, 20 Apr 2022 10:45:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzYAEQ1WmpR2JrVhqp2P3DD9igLq38fXCUMcnoHblogOvHnqs0AXZEApIUEBRvAIyTJ3afR3w==
-X-Received: by 2002:a05:6214:5185:b0:443:a821:31fc with SMTP id kl5-20020a056214518500b00443a82131fcmr16587273qvb.129.1650476755110;
-        Wed, 20 Apr 2022 10:45:55 -0700 (PDT)
-Received: from fedora.redhat.com (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
-        by smtp.gmail.com with ESMTPSA id s15-20020a05620a29cf00b00680ca4b3755sm1867721qkp.119.2022.04.20.10.45.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 10:45:54 -0700 (PDT)
-From:   Adrien Thierry <athierry@redhat.com>
-To:     Maxime Ripard <mripard@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc:     Adrien Thierry <athierry@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] staging: bcm2835-audio: delete TODO
-Date:   Wed, 20 Apr 2022 13:44:00 -0400
-Message-Id: <20220420174401.305964-1-athierry@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 20 Apr 2022 13:48:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7EC45AFD;
+        Wed, 20 Apr 2022 10:46:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13B86B81EB6;
+        Wed, 20 Apr 2022 17:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AFEC385A4;
+        Wed, 20 Apr 2022 17:45:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650476758;
+        bh=0IQpL7Wg9Mq/y7A3UKLbFuWQ6Lpmm0AsHYlcuGIKTnQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hEaP/ZkMcPr/FLQVEXXLW8MN/yKztzZ2AiYNM2IuCxtEIh8aE8FNZ3D9GQWtp/fA5
+         TtPGbmrGpjXaEQj0HRw62q8BxcaSVulsv02HdrUX47CkSufe2JmP4puPGvcpiaDQwP
+         iMFChnjCgtnkZ2AGt8bfRw3xmml/dgWEwCZBtyAOGdGgFUi5IaUOVDcaSXI/IvXF3a
+         k6pru5d2tI/zkEtjYUUr8OlID89SP74vaiAa/NntqvUSEHEoPl0WlWacSMoDKR5Rmn
+         ukYkeuSrNQOulKMe49AKTTml9kUo6clqFab7LYnDX/AmShAKXwh50aNPa3zhWS91LD
+         0A1CuoZzkbMVA==
+Date:   Wed, 20 Apr 2022 10:45:58 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, dan.j.williams@intel.com,
+        david@fromorbit.com, hch@infradead.org, jane.chu@oracle.com,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v13 3/7] pagemap,pmem: Introduce ->memory_failure()
+Message-ID: <20220420174558.GW17025@magnolia>
+References: <20220419045045.1664996-1-ruansy.fnst@fujitsu.com>
+ <20220419045045.1664996-4-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419045045.1664996-4-ruansy.fnst@fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete TODO since all tasks were completed:
+On Tue, Apr 19, 2022 at 12:50:41PM +0800, Shiyang Ruan wrote:
+> When memory-failure occurs, we call this function which is implemented
+> by each kind of devices.  For the fsdax case, pmem device driver
+> implements it.  Pmem device driver will find out the filesystem in which
+> the corrupted page located in.
+> 
+> With dax_holder notify support, we are able to notify the memory failure
+> from pmem driver to upper layers.  If there is something not support in
+> the notify routine, memory_failure will fall back to the generic hanlder.
+> 
+> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 
-1 - fixed here:
-https://lore.kernel.org/all/20220408150359.26661-1-athierry@redhat.com/
+Looks good to me now that we've ironed out the earlier unit questions,
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 
-2 - there are no remaining checkpatch.pl errors or warnings
+--D
 
-Signed-off-by: Adrien Thierry <athierry@redhat.com>
----
- drivers/staging/vc04_services/bcm2835-audio/TODO | 10 ----------
- 1 file changed, 10 deletions(-)
- delete mode 100644 drivers/staging/vc04_services/bcm2835-audio/TODO
-
-diff --git a/drivers/staging/vc04_services/bcm2835-audio/TODO b/drivers/staging/vc04_services/bcm2835-audio/TODO
-deleted file mode 100644
-index b85451255db0..000000000000
---- a/drivers/staging/vc04_services/bcm2835-audio/TODO
-+++ /dev/null
-@@ -1,10 +0,0 @@
--*****************************************************************************
--*                                                                           *
--*                           TODO: BCM2835-AUDIO                             *
--*                                                                           *
--*****************************************************************************
--
--1) Revisit multi-cards options and PCM route mixer control (as per comment
--https://lore.kernel.org/lkml/s5hd0to5598.wl-tiwai@suse.de)
--
--2) Fix the remaining checkpatch.pl errors and warnings.
--- 
-2.35.1
-
+> ---
+>  drivers/nvdimm/pmem.c    | 17 +++++++++++++++++
+>  include/linux/memremap.h | 12 ++++++++++++
+>  mm/memory-failure.c      | 14 ++++++++++++++
+>  3 files changed, 43 insertions(+)
+> 
+> diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+> index 58d95242a836..bd502957cfdf 100644
+> --- a/drivers/nvdimm/pmem.c
+> +++ b/drivers/nvdimm/pmem.c
+> @@ -366,6 +366,21 @@ static void pmem_release_disk(void *__pmem)
+>  	blk_cleanup_disk(pmem->disk);
+>  }
+>  
+> +static int pmem_pagemap_memory_failure(struct dev_pagemap *pgmap,
+> +		unsigned long pfn, unsigned long nr_pages, int mf_flags)
+> +{
+> +	struct pmem_device *pmem =
+> +			container_of(pgmap, struct pmem_device, pgmap);
+> +	u64 offset = PFN_PHYS(pfn) - pmem->phys_addr - pmem->data_offset;
+> +	u64 len = nr_pages << PAGE_SHIFT;
+> +
+> +	return dax_holder_notify_failure(pmem->dax_dev, offset, len, mf_flags);
+> +}
+> +
+> +static const struct dev_pagemap_ops fsdax_pagemap_ops = {
+> +	.memory_failure		= pmem_pagemap_memory_failure,
+> +};
+> +
+>  static int pmem_attach_disk(struct device *dev,
+>  		struct nd_namespace_common *ndns)
+>  {
+> @@ -427,6 +442,7 @@ static int pmem_attach_disk(struct device *dev,
+>  	pmem->pfn_flags = PFN_DEV;
+>  	if (is_nd_pfn(dev)) {
+>  		pmem->pgmap.type = MEMORY_DEVICE_FS_DAX;
+> +		pmem->pgmap.ops = &fsdax_pagemap_ops;
+>  		addr = devm_memremap_pages(dev, &pmem->pgmap);
+>  		pfn_sb = nd_pfn->pfn_sb;
+>  		pmem->data_offset = le64_to_cpu(pfn_sb->dataoff);
+> @@ -440,6 +456,7 @@ static int pmem_attach_disk(struct device *dev,
+>  		pmem->pgmap.range.end = res->end;
+>  		pmem->pgmap.nr_range = 1;
+>  		pmem->pgmap.type = MEMORY_DEVICE_FS_DAX;
+> +		pmem->pgmap.ops = &fsdax_pagemap_ops;
+>  		addr = devm_memremap_pages(dev, &pmem->pgmap);
+>  		pmem->pfn_flags |= PFN_MAP;
+>  		bb_range = pmem->pgmap.range;
+> diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+> index ad6062d736cd..bcfb6bf4ce5a 100644
+> --- a/include/linux/memremap.h
+> +++ b/include/linux/memremap.h
+> @@ -79,6 +79,18 @@ struct dev_pagemap_ops {
+>  	 * the page back to a CPU accessible page.
+>  	 */
+>  	vm_fault_t (*migrate_to_ram)(struct vm_fault *vmf);
+> +
+> +	/*
+> +	 * Handle the memory failure happens on a range of pfns.  Notify the
+> +	 * processes who are using these pfns, and try to recover the data on
+> +	 * them if necessary.  The mf_flags is finally passed to the recover
+> +	 * function through the whole notify routine.
+> +	 *
+> +	 * When this is not implemented, or it returns -EOPNOTSUPP, the caller
+> +	 * will fall back to a common handler called mf_generic_kill_procs().
+> +	 */
+> +	int (*memory_failure)(struct dev_pagemap *pgmap, unsigned long pfn,
+> +			      unsigned long nr_pages, int mf_flags);
+>  };
+>  
+>  #define PGMAP_ALTMAP_VALID	(1 << 0)
+> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> index 7c8c047bfdc8..a40e79e634a4 100644
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -1741,6 +1741,20 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
+>  	if (!pgmap_pfn_valid(pgmap, pfn))
+>  		goto out;
+>  
+> +	/*
+> +	 * Call driver's implementation to handle the memory failure, otherwise
+> +	 * fall back to generic handler.
+> +	 */
+> +	if (pgmap->ops->memory_failure) {
+> +		rc = pgmap->ops->memory_failure(pgmap, pfn, 1, flags);
+> +		/*
+> +		 * Fall back to generic handler too if operation is not
+> +		 * supported inside the driver/device/filesystem.
+> +		 */
+> +		if (rc != -EOPNOTSUPP)
+> +			goto out;
+> +	}
+> +
+>  	rc = mf_generic_kill_procs(pfn, flags, pgmap);
+>  out:
+>  	/* drop pgmap ref acquired in caller */
+> -- 
+> 2.35.1
+> 
+> 
+> 
