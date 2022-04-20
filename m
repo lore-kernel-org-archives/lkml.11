@@ -2,256 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F536C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359461AbiDTF4R (ORCPT
+        id S1349919AbiDTF7o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 01:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        Wed, 20 Apr 2022 01:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359443AbiDTFzy (ORCPT
+        with ESMTP id S232098AbiDTF7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 01:55:54 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3659DED7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 22:53:08 -0700 (PDT)
-Received: from epcas3p4.samsung.com (unknown [182.195.41.22])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220420055302epoutp02b86766413fba097997de3607fbf94b40~nhPaQRNCo1974519745epoutp02I
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 05:53:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220420055302epoutp02b86766413fba097997de3607fbf94b40~nhPaQRNCo1974519745epoutp02I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1650433983;
-        bh=RFg2GFARn3OEAPm61BfWvSGMJNe57DN3zV3e1mXnTJg=;
-        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-        b=duPI7ypXhXqQTdxhz2tzd4XNrS+YgYhUvu77d8747C4kIjz5ISbgRVpi4/Da/jG3K
-         k+O6qh8Qid4kkjphTi7ScWS0Vf5YJofOl0qyd0i+6ejNz99Pk2OuhcZA9/314sTxRD
-         oW5rTtG08hei/pEKW2Kk9FQzl+4lkhNFBCMRo3r4=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas3p3.samsung.com (KnoxPortal) with ESMTP id
-        20220420055302epcas3p312c7c243e82ca629daaad8b747b44216~nhPZySKAr0579705797epcas3p3S;
-        Wed, 20 Apr 2022 05:53:02 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp1.localdomain
-        (Postfix) with ESMTP id 4Kjqb232LYz4x9QW; Wed, 20 Apr 2022 05:53:02 +0000
-        (GMT)
-Mime-Version: 1.0
-Subject: RE: [PATCH v2 4/5] scsi: ufshpb: Add handing of device reset HPB
- regions Infos in HPB device mode
-Reply-To: keosung.park@samsung.com
-Sender: Keoseong Park <keosung.park@samsung.com>
-From:   Keoseong Park <keosung.park@samsung.com>
-To:     Bean Huo <huobean@gmail.com>,
-        ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "tomas.winkler@intel.com" <tomas.winkler@intel.com>,
-        "cang@codeaurora.org" <cang@codeaurora.org>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "powen.kao@mediatek.com" <powen.kao@mediatek.com>,
-        "peter.wang@mediatek.com" <peter.wang@mediatek.com>,
-        cpgsproxy3 <cpgsproxy3@samsung.com>
-CC:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <20220419183044.789065-5-huobean@gmail.com>
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <1381713434.41650433982422.JavaMail.epsvc@epcpadp4>
-Date:   Wed, 20 Apr 2022 14:31:17 +0900
-X-CMS-MailID: 20220420053117epcms2p72dd1a5dfcc6ab4ba72d46f84998259f6
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220419183934epcas2p28272bfd9167253c2d9136c60f9050c5f
-References: <20220419183044.789065-5-huobean@gmail.com>
-        <20220419183044.789065-1-huobean@gmail.com>
-        <CGME20220419183934epcas2p28272bfd9167253c2d9136c60f9050c5f@epcms2p7>
+        Wed, 20 Apr 2022 01:59:40 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2088.outbound.protection.outlook.com [40.107.220.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D033C3702F;
+        Tue, 19 Apr 2022 22:56:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ldNlSj3vnr+mtsmSRC+X0Bl8WKY0CC4/j3Uv9g7u3IuMSuI8dOoEveNpcmCGXKe5M4BGHwnjutI5JzvJXlbLFaSdGt53NJ1J4pdm+ZpkxZ2pgpwHYfGG9xBHCQvTg+JZgxY6ZL8p+fhyIdkvP0HasHWM+o1r9VkeCTjAAz9R0dIcj6vAO3VEFAdd4ee/A/H/P7GmjetaSdpO2xd3Ut0Ifa+j9jivaPg28CbyCl1CqQp9ofXVC8M4H78yPRgFmG3NvqVfn0/CuvJT4QBMQipbeyBfY4JigcFBPbGxKgpe81/ODjcc9k+4yiv9l9pbGcU0j5ADnIiSzACoLazSEuXowQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4aD/QcWgLaVJRTUwjn5DgqKgt8EyWDDdanWlMDpeqt0=;
+ b=OCy2EnsITZIwf4yscWtXpgVtjdekVQFbtNnPyJo4YsMhf0P0G7rWhzTuMAP3vEvi9vycvXl+kcgPC36ustjMlfzfXxpOGoC83ZFtg5v1osoMJMQC7aVchJ/qBX5fXHgO4yniDOs5mwpVrNE2wsqGXEEbRziesOcJ/hipsDairiSxsVQoFmLgcBV1YoAKKgtwNbNuYokh6bb4zu6Foi6nXgAeUS30ogWN5KNcEdUadfqDTfs5U1xMDkTePsCW1wQGZKsiPBJROHzVb7aSvN709mfIV8MIrjEb+d75ZzfgSbH7ivFL5BqpmBbXGXlXFkwGA/p3uQj1RjcZxoTCP5vqkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=nxp.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4aD/QcWgLaVJRTUwjn5DgqKgt8EyWDDdanWlMDpeqt0=;
+ b=l7L4/YleDu8Ec6H7u2/s6QtYnLOU4X/E8VcOuNf7DpTs5tizegpUktBwvc7Gu++iRqXqxr8ueLjFgXV7pQ8yKDTqkd3uDzAQVM7u3m8Jy29mk0a/IhO3Ec9x57tyKsYb+cG/6pxNkfNKZK/Q5wwk4p1Oz1w+77L4dYOf3vvj9w8=
+Received: from SN6PR04CA0106.namprd04.prod.outlook.com (2603:10b6:805:f2::47)
+ by SA2PR02MB7770.namprd02.prod.outlook.com (2603:10b6:806:14e::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
+ 2022 05:56:51 +0000
+Received: from SN1NAM02FT0039.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:805:f2:cafe::49) by SN6PR04CA0106.outlook.office365.com
+ (2603:10b6:805:f2::47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
+ Transport; Wed, 20 Apr 2022 05:56:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0039.mail.protection.outlook.com (10.97.5.35) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 05:56:51 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 19 Apr 2022 22:56:48 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 19 Apr 2022 22:56:48 -0700
+Envelope-to: sherry.sun@nxp.com,
+ bp@alien8.de,
+ mchehab@kernel.org,
+ tony.luck@intel.com,
+ james.morse@arm.com,
+ rric@kernel.org,
+ linux-edac@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-imx@nxp.com
+Received: from [10.254.241.50] (port=50380)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1nh3KZ-0007Fw-RR; Tue, 19 Apr 2022 22:56:48 -0700
+Message-ID: <8c49091c-5bba-47fe-6479-8a2af69c7340@xilinx.com>
+Date:   Wed, 20 Apr 2022 07:56:44 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/2] EDAC: synopsys: Add disable_intr support for V3.X
+ Synopsys EDAC DDR
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, <bp@alien8.de>,
+        <mchehab@kernel.org>, <michal.simek@xilinx.com>,
+        <tony.luck@intel.com>, <james.morse@arm.com>, <rric@kernel.org>
+CC:     <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-imx@nxp.com>
+References: <20220318111742.15730-1-sherry.sun@nxp.com>
+ <20220318111742.15730-2-sherry.sun@nxp.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+In-Reply-To: <20220318111742.15730-2-sherry.sun@nxp.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 98846b92-634c-48a5-8827-08da229290ac
+X-MS-TrafficTypeDiagnostic: SA2PR02MB7770:EE_
+X-Microsoft-Antispam-PRVS: <SA2PR02MB777097345C9BC65F212E8042C6F59@SA2PR02MB7770.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3mwa0+LzXsPexlpmZzLuk20D1QxLSvjLscDYOmp3KxMt7DaqwEO0GB+97GbKYusUMuKDFNWNMWeAPQyi4pTd13vv0fD0Nl4X44jMO9vS33sbRG1Bnc/n7qgmMu2EYXfa0yim+/sfeBFNnVplWnRngzmdZ1loBs3jO6Tm0q/23N0tw4ygyizr4NNQ9hv0O1N8yHptdfwAVTK5hUj4JzxwpxObUC+y2xNugMbnrsCCPlBwikaqZ8JbeotP/JDMzeY87S62BiSBOJrNF6O2sFvYiiEtLWzDXev8UbTtVfT+kjoXKrQfAad8OfLcoPGfFqe3yKxR1R1npCulOtq0nGXhKT2nRoLXp9sfVTEARr3x8NtVe+AOjJKTAMHpTHDL2unLmKvqk3H+xuzpn52Y4FXTFlT30ir+6gASJPdmzrYrTGOHpAYCBYB2uVelA0qHxr7aFlzn1CTqEqfVZWvReZpgq94fb+nscRx+k71nzRfL3J20pMdvYZZt1gYFkjtlZ4HjTs1np2WympjB6kyvtlNF3tiQ5wEZJqbosJYW8J3tk9x3mfvzSdRjecOgFemgq4LZnXKLS+ke0G6A0Ugq/qoCBNa6532MShCWXzkcFCVk0jl74qEFn9V4YjzOeyXlS8HG7zPogC4ADLxbzZ9KmysgoeF4jRefUTlvRsDrfi2jDvxDB16+APA80HoYr7F1btPZ6vNSKx/p/N7fpDrRk5IHX4rGXMvNNPbgHmwDzT7Zphv7oT/H9kVGLsq7P9cC0kB4
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(26005)(9786002)(508600001)(186003)(8936002)(2616005)(44832011)(2906002)(6666004)(40460700003)(53546011)(7416002)(31696002)(5660300002)(83380400001)(70206006)(47076005)(70586007)(336012)(426003)(7636003)(4326008)(8676002)(31686004)(110136005)(54906003)(82310400005)(36756003)(36860700001)(316002)(356005)(50156003)(43740500002)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 05:56:51.3361
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98846b92-634c-48a5-8827-08da229290ac
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0039.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR02MB7770
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bean,
 
->From: Bean Huo <beanhuo@micron.com>
->=20
->In UFS HPB Spec JESD220-3A,
->=20
->"5.8. Active and inactive information upon power cycle
->...
->When the device is powered off by the host, the device may restore L2P map=
- data
->upon power up or build from the host=E2=80=99s HPB READ command. In case d=
-evice powered
->up and lost HPB information, device can signal to the host through HPB Sen=
-se data,
->by setting HPB Operation as =E2=80=982=E2=80=99 which will inform the host=
- that device reset HPB
->information."
->=20
->Therefore, for HPB device control mode, if the UFS device is reset via the=
- RST_N
->pin, the active region information in the device will be reset. If the hos=
-t side
->receives this notification from the device side, it is recommended to inac=
-tivate
->all active regions in the host's HPB cache.
->=20
->Signed-off-by: Bean Huo <beanhuo@micron.com>
->---
-> drivers/scsi/ufs/ufshpb.c | 73 ++++++++++++++++++++++++++++-----------
-> 1 file changed, 53 insertions(+), 20 deletions(-)
->=20
->diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
->index 4538164fc493..4b15fa862beb 100644
->--- a/drivers/scsi/ufs/ufshpb.c
->+++ b/drivers/scsi/ufs/ufshpb.c
->@@ -1143,6 +1143,39 @@ static int ufshpb_add_region(struct ufshpb_lu *hpb,=
- struct ufshpb_region *rgn)
->         spin_unlock_irqrestore(&hpb->rgn_state_lock, flags);
->         return ret;
-> }
->+/**
->+ *ufshpb_submit_region_inactive() - submit a region to be inactivated lat=
-er
->+ *@hpb: per-LU HPB instance
->+ *@region_index: the index associated with the region that will be inacti=
-vated later
->+ */
->+static void ufshpb_submit_region_inactive(struct ufshpb_lu *hpb, int regi=
-on_index)
->+{
->+        int subregion_index;
->+        struct ufshpb_region *rgn;
->+        struct ufshpb_subregion *srgn;
->+
->+        /*
->+         * Remove this region from active region list and add it to inact=
-ive list
->+         */
->+        spin_lock(&hpb->rsp_list_lock);
->+        ufshpb_update_inactive_info(hpb, region_index);
-How about separating the "hpb->stats.rb_inactive_cnt++" code from ufshpb_up=
-date_inactive_info()?
-Because I think this code should only be used in ufshpb_rsp_req_region_upda=
-te().
 
->+        spin_unlock(&hpb->rsp_list_lock);
->+
->+        rgn =3D hpb->rgn_tbl + region_index;
->+
->+        /*
->+         * Set subregion state to be HPB_SRGN_INVALID, there will no HPB =
-read on this subregion
->+         */
->+        spin_lock(&hpb->rgn_state_lock);
->+        if (rgn->rgn_state !=3D HPB_RGN_INACTIVE) {
->+                for (subregion_index =3D 0; subregion_index < rgn->srgn_c=
-nt; subregion_index++) {
->+                        srgn =3D rgn->srgn_tbl + subregion_index;
->+                        if (srgn->srgn_state =3D=3D HPB_SRGN_VALID)
->+                                srgn->srgn_state =3D HPB_SRGN_INVALID;
->+                }
->+        }
->+        spin_unlock(&hpb->rgn_state_lock);
->+}
->=20
-> static void ufshpb_rsp_req_region_update(struct ufshpb_lu *hpb,
->                                          struct utp_hpb_rsp *rsp_field)
->@@ -1202,25 +1235,8 @@ static void ufshpb_rsp_req_region_update(struct ufs=
-hpb_lu *hpb,
->=20
->         for (i =3D 0; i < rsp_field->inactive_rgn_cnt; i++) {
->                 rgn_i =3D be16_to_cpu(rsp_field->hpb_inactive_field[i]);
->-                dev_dbg(&hpb->sdev_ufs_lu->sdev_dev,
->-                        "inactivate(%d) region %d\n", i, rgn_i);
->-
->-                spin_lock(&hpb->rsp_list_lock);
->-                ufshpb_update_inactive_info(hpb, rgn_i);
->-                spin_unlock(&hpb->rsp_list_lock);
->-
->-                rgn =3D hpb->rgn_tbl + rgn_i;
->-
->-                spin_lock(&hpb->rgn_state_lock);
->-                if (rgn->rgn_state !=3D HPB_RGN_INACTIVE) {
->-                        for (srgn_i =3D 0; srgn_i < rgn->srgn_cnt; srgn_i=
-++) {
->-                                srgn =3D rgn->srgn_tbl + srgn_i;
->-                                if (srgn->srgn_state =3D=3D HPB_SRGN_VALI=
-D)
->-                                        srgn->srgn_state =3D HPB_SRGN_INV=
-ALID;
->-                        }
->-                }
->-                spin_unlock(&hpb->rgn_state_lock);
->-
->+                dev_dbg(&hpb->sdev_ufs_lu->sdev_dev, "inactivate(%d) regi=
-on %d\n", i, rgn_i);
->+                ufshpb_submit_region_inactive(hpb, rgn_i);
->         }
->=20
-> out:
->@@ -1255,7 +1271,10 @@ static void ufshpb_dev_reset_handler(struct ufs_hba=
- *hba)
->=20
->         __shost_for_each_device(sdev, hba->host) {
->                 hpb =3D ufshpb_get_hpb_data(sdev);
->-                if (hpb && hpb->is_hcm)
->+                if (!hpb)
->+                        continue;
->+
->+                if (hpb->is_hcm) {
->                         /*
->                          * For the HPB host mode, in case device powered =
-up and lost HPB
-For the HPB host control mode, ...
+On 3/18/22 12:17, Sherry Sun wrote:
+> V3.X Synopsys EDAC DDR doesn't have the QOS Interrupt register, need
+> to change to use the ECC Clear Register to disable the interrupts.
+> 
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>   drivers/edac/synopsys_edac.c | 7 +++++--
+>   1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
+> index f05ff02c0656..1b630f0be119 100644
+> --- a/drivers/edac/synopsys_edac.c
+> +++ b/drivers/edac/synopsys_edac.c
+> @@ -859,8 +859,11 @@ static void enable_intr(struct synps_edac_priv *priv)
+>   static void disable_intr(struct synps_edac_priv *priv)
+>   {
+>   	/* Disable UE/CE Interrupts */
+> -	writel(DDR_QOSUE_MASK | DDR_QOSCE_MASK,
+> -			priv->baseaddr + DDR_QOS_IRQ_DB_OFST);
+> +	if (priv->p_data->quirks & DDR_ECC_INTR_SELF_CLEAR)
+> +		writel(0x0, priv->baseaddr + ECC_CLR_OFST);
+> +	else
+> +		writel(DDR_QOSUE_MASK | DDR_QOSCE_MASK,
+> +		       priv->baseaddr + DDR_QOS_IRQ_DB_OFST);
+>   }
+>   
+>   static int setup_irq(struct mem_ctl_info *mci,
 
->                          * information, we will set the region flag to be=
- RGN_FLAG_UPDATE,
->@@ -1263,6 +1282,20 @@ static void ufshpb_dev_reset_handler(struct ufs_hba=
- *hba)
->                          * in the UFS device).
->                          */
->                         ufshpb_set_regions_update(hpb);
->+                } else {
->+                        /*
->+                         * For the HPB device mode, we add all active reg=
-ions to inactive list,
-For the HPB device control mode, ...
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 
->+                         * they will be inactivated later in ufshpb_map_w=
-ork_handler()
->+                         */
->+                        struct victim_select_info *lru_info =3D &hpb->lru=
-_info;
->+                        struct ufshpb_region *rgn;
->+
->+                        list_for_each_entry(rgn, &lru_info->lh_lru_rgn, l=
-ist_lru_rgn)
->+                                ufshpb_submit_region_inactive(hpb, rgn->r=
-gn_idx);
->+
->+                        if (ufshpb_get_state(hpb) =3D=3D HPB_PRESENT)
->+                                queue_work(ufshpb_wq, &hpb->map_work);
->+                }
->         }
-> }
->=20
->--=20
->2.34.1
->=20
->=20
-
-Best Regards,
-Keoseong Park
+Thanks,
+Michal
