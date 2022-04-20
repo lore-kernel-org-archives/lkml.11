@@ -2,120 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 20:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86507C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 20:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381958AbiDTUOj (ORCPT
+        id S1350960AbiDTUPk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 16:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
+        Wed, 20 Apr 2022 16:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351344AbiDTUOh (ORCPT
+        with ESMTP id S233033AbiDTUPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 16:14:37 -0400
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B1A4615B;
-        Wed, 20 Apr 2022 13:11:49 -0700 (PDT)
-Received: by mail-lj1-f179.google.com with SMTP id r18so3271117ljp.0;
-        Wed, 20 Apr 2022 13:11:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kituK6OBdqTi+kxAeHHv4yFs1BiJnSRSgcn1u3Ell74=;
-        b=iiBTwI/x1GL+h0uosviF8NDkpNvDIKwbQie12nqQrfFob9vxSGJzNHzl5YJPCpif4U
-         dTamnNBzcBFi9MQKZ+DCzrBc904Dmw80scj2s2rr5pQ8ruwuOgnWesEgtbH2FUVSPnTO
-         5wcvIljHDLeU2EL7nmqffRp2wyhaKSDpCBUof3qqWYxcakoXttCQAjfwO4Ali58vckyd
-         HAbyaHzQGnNJZQSGNhlRAp5I9aYHNoqSH8vRKOQGw1yflzI77+3xUm4kqdX3iPeovKhF
-         grC6ch6eT93zFGfEVCILGIra51bVqeALCnZpB+vKU17YjeSCR9o+Fr/YhB0tG5ixqTP9
-         BvIg==
-X-Gm-Message-State: AOAM531ZYrJNKUBNArre6MjJynQczBj/t7uE5q869GE93hRYdDplL9Y2
-        O0lkJSW+SsmhvQ2f9mPRmIVHWwY6eylzZKpfgLY=
-X-Google-Smtp-Source: ABdhPJybRBIjDP+5BAIib8bSg9t516qHkD6xvIc7IexyqYv45hzQlZwIieiIhem1fSD/qEfR01uOTg==
-X-Received: by 2002:a2e:9ecb:0:b0:24b:4e2a:a555 with SMTP id h11-20020a2e9ecb000000b0024b4e2aa555mr14496285ljk.149.1650485506839;
-        Wed, 20 Apr 2022 13:11:46 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id k10-20020a19560a000000b0046d1707fcbdsm1927162lfb.215.2022.04.20.13.11.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 13:11:43 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id b21so4963738lfb.5;
-        Wed, 20 Apr 2022 13:11:39 -0700 (PDT)
-X-Received: by 2002:a05:6512:b0e:b0:44a:a5a0:f60e with SMTP id
- w14-20020a0565120b0e00b0044aa5a0f60emr15727328lfu.669.1650485498400; Wed, 20
- Apr 2022 13:11:38 -0700 (PDT)
+        Wed, 20 Apr 2022 16:15:38 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B43BC3EAB5;
+        Wed, 20 Apr 2022 13:12:51 -0700 (PDT)
+Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 1F0CB20E2D0B;
+        Wed, 20 Apr 2022 13:12:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1F0CB20E2D0B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1650485571;
+        bh=MDhA/ZAoV0EVezZuKhr9gsvqOEuaEbb4xLsvMqvOxYk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b9QaK7FfpU3QnoJikpUobgKHlvcfDJUYyp4GP3095vq1/lELGBZsJaBik0L6Y7nXt
+         Mw+D7+4q1eJ4iO/bLo0spFBGwzeM1nCUY+t7m7JNXLPGXicQPHjfzuNwqsNIjYco4L
+         paUJUC9J8a4RrKhiVB+R+66XsBpoE5dNqCh92M5Q=
+Date:   Wed, 20 Apr 2022 13:12:42 -0700
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Subject: Re: [PATCH 6/7] tracing/user_events: Use bits vs bytes for enabled
+ status page data
+Message-ID: <20220420201242.GA2091@kbox>
+References: <20220401234309.21252-1-beaub@linux.microsoft.com>
+ <20220401234309.21252-7-beaub@linux.microsoft.com>
+ <337584634.26921.1650378945485.JavaMail.zimbra@efficios.com>
+ <20220419185708.GA1908@kbox>
+ <1722727424.27500.1650403580798.JavaMail.zimbra@efficios.com>
+ <20220419234845.GA1805@kbox>
+ <580163630.28705.1650477227106.JavaMail.zimbra@efficios.com>
 MIME-Version: 1.0
-References: <20220330154024.112270-1-phil.edworthy@renesas.com>
-In-Reply-To: <20220330154024.112270-1-phil.edworthy@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 20 Apr 2022 22:11:24 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVV=PBfboHUk-wi1coAy7rcpDngKGSTqDWh-5vnSc91pg@mail.gmail.com>
-Message-ID: <CAMuHMdVV=PBfboHUk-wi1coAy7rcpDngKGSTqDWh-5vnSc91pg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/14] Add new Renesas RZ/V2M SoC and Renesas RZ/V2M
- EVK support
-To:     Phil Edworthy <phil.edworthy@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <580163630.28705.1650477227106.JavaMail.zimbra@efficios.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Phil,
+On Wed, Apr 20, 2022 at 01:53:47PM -0400, Mathieu Desnoyers wrote:
+> 
+> 
+> ----- On Apr 19, 2022, at 7:48 PM, Beau Belgrave beaub@linux.microsoft.com wrote:
+> 
+> > On Tue, Apr 19, 2022 at 05:26:20PM -0400, Mathieu Desnoyers wrote:
+> >> ----- On Apr 19, 2022, at 2:57 PM, Beau Belgrave beaub@linux.microsoft.com
+> >> wrote:
+> >> 
+> >> > On Tue, Apr 19, 2022 at 10:35:45AM -0400, Mathieu Desnoyers wrote:
+> >> >> ----- On Apr 1, 2022, at 7:43 PM, Beau Belgrave beaub@linux.microsoft.com wrote:
+> >> >> 
+> >> >> > User processes may require many events and when they do the cache
+> >> >> > performance of a byte index status check is less ideal than a bit index.
+> >> >> > The previous event limit per-page was 4096, the new limit is 32,768.
+> >> >> > 
+> >> >> > This change adds a mask property to the user_reg struct. Programs check
+> >> >> > that the byte at status_index has a bit set by ANDing the status_mask.
+> >> >> > 
+> >> >> > Link:
+> >> >> > https://lore.kernel.org/all/2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com/
+> >> >> > 
+> >> >> > Suggested-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> >> >> > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+> >> >> 
+> >> >> Hi Beau,
+> >> >> 
+> >> >> Considering this will be used in a fast-path, why choose bytewise
+> >> >> loads for the byte at status_index and the status_mask ?
+> >> >> 
+> >> > 
+> >> > First, thanks for the review!
+> >> > 
+> >> > Which loads are you concerned about? The user programs can store the
+> >> > index and mask in another type after registration instead of an int.
+> >> 
+> >> I'm concerned about the loads from user-space, considering that
+> >> those are on the fast-path.
+> >> 
+> >> Indeed user programs will need to copy the status index and mask
+> >> returned in struct user_reg, so adapting the indexing and mask to
+> >> deal with an array of unsigned long rather than bytes can be done
+> >> at that point, but I wonder how many users will go through that
+> >> extra trouble unless there are helpers to convert the status index
+> >> from byte-wise to long-wise, and convert the status mask from a
+> >> byte-wise mask to a long-wise mask (and associated documentation).
+> >> 
+> > 
+> > Yeah, do you think it's wise to maybe add inline functions in
+> > user_events.h to do this conversion? I could then add them to our
+> > documentation.
+> > 
+> > Hopefully this would make more APIs/people do the better approach?
+> > 
+> >> 
+> >> > 
+> >> > However, you may be referring to something on the kernel side?
+> >> 
+> >> No.
+> >> 
+> > 
+> > [..]
+> > 
+> >> >> Ideally I would be tempted to use "unsigned long" type (32-bit on 32-bit
+> >> >> binaries and 64-bit on 64-bit binaries) for both the array access
+> >> >> and the status mask, but this brings extra complexity for 32-bit compat
+> >> >> handling.
+> >> >> 
+> >> > 
+> >> > User programs can store the index and mask returned into better value
+> >> > types for their architecture.
+> >> > 
+> >> > I agree it will cause compat handling issues if it's put into the user
+> >> > facing header as a long.
+> >> > 
+> >> > I was hoping APIs, like libtracefs, could abstract many callers from how
+> >> > best to use the returned values. For example, it could save the index
+> >> > and mask as unsigned long for the callers and use those for the
+> >> > enablement checks.
+> >> > 
+> >> > Do you think there is a way to enable these native types in the ABI
+> >> > without causing compat handling issues? I used ints to prevent compat
+> >> > issues between 32-bit user mode and 64-bit kernel mode.
+> >> 
+> >> I think you are right: this is not an ABI issue, but rather a usability
+> >> issue that can be solved by implementing and documenting user-space library
+> >> helpers to help user applications index the array and apply the mask to an
+> >> unsigned long type.
+> >> 
+> > 
+> > Great. Let me know if updating user_events.h to do the conversion is a
+> > good idea or not, or if you have other thoughts how to make more people
+> > do the best thing.
+> 
+> Usually uapi headers are reserved for exposing the kernel ABI to user-space.
+> I think the helpers we are discussing here do not belong to the uapi because they
+> do not define the ABI, and should probably sit elsewhere in a proper library.
+> 
 
-On Wed, Mar 30, 2022 at 5:40 PM Phil Edworthy <phil.edworthy@renesas.com> wrote:
-> RZ/V2M has a dual-core Cortex-A53 (1.0 GHz) CPU and built-in AI
-> accelerator "DRP-AI" for vision, which is Renesas' original technology.
-> It also has a 32-bit LPDDR4 interface and video codec (H.264).
->
-> The RZ/V2M is used with ISP firmware that runs on one of the Cortex-A53
-> cores. The firmware is an integral part of the SoC such that the HW
-> User's Manual documents which of the peripheral modules are used by the
-> firmware.
->
-> Initial patches enables minimal peripherals on Renesas RZ/V2M EVK board
-> and booted via nfs. Ethernet is broadly compatible with the
-> etheravb-rcar-gen3 driver, but interrupts need some work so it's not
-> been included in this patch set.
->
-> Below blocks are enabled on Renesas RZ/V2M EVK board:
-> - memory
-> - External input clock
-> - CPG
-> - UART
+Makes sense.
 
-Thanks for your series!
+That likely means I should remove the enablement helper check from
+user_events.h, right?
 
-> v2:
->  * Removed SYS dt-bindings patch and corresponding SoC identification
->    as we only used the LSI version register. This can be dealt with
->    later on.
+> If the status_mask is meant to be modified in some ways by user-space before it can
+> be used as a mask, I wonder why it is exposed as a byte-wise mask at all ?
+> 
+> Rather than exposing a byte-wise index and single-byte mask as ABI, the kernel could
+> simply expose a bit-wise index, which can then be used by the application to calculate
+> index and mask, which it should interpret in little endian if it wants to apply the
+> mask on types larger than a single byte.
+> 
+> Thoughts ?
+> 
 
-That patch[1] also introduced the ARCH_R9A09G011 config symbol,
-without which none of the new code in this series is built.
+Yeah, you're right, we can just expose out the bit-wise index at the
+ABI.
 
-[1] [PATCH 07/14] soc: renesas: Identify RZ/V2M SoC
-    https://lore.kernel.org/all/20220321154232.56315-8-phil.edworthy@renesas.com/
+I'll switch over to that model in the next version.
 
-Gr{oetje,eeting}s,
+Thanks,
+-Beau
 
-                        Geert
+> Thanks,
+> 
+> Mathieu
+> 
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+[..]
