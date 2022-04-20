@@ -2,268 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D726EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379947AbiDTPD1 (ORCPT
+        id S1379961AbiDTPDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
+        Wed, 20 Apr 2022 11:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379871AbiDTPCz (ORCPT
+        with ESMTP id S1379875AbiDTPCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Apr 2022 11:02:55 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD2AFD1B;
-        Wed, 20 Apr 2022 08:00:06 -0700 (PDT)
-Received: from pps.filterd (m0148664.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KEXKZw028897;
-        Wed, 20 Apr 2022 14:59:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pps0720;
- bh=FThOS7HgbypSTpDCD5OKTFFor5T4+jTmD4Iwx6tYZX0=;
- b=lIOfWNcxZfehIAUKpbhFrc0w6F2ZkcMkwmAvvUR0wBT60XXB6RcZqzQyxa5AL5b0UU0W
- qMYBvmba9173YouY8XGvDF6zmG02RJJJhhnaE0goyATaeHzUCwE+Qtuk+2Wzz45l3KN8
- zSO3l47CNG5z1Go5fbZzwj9A5ARnMRGWbRv6DriyiDIcfYaGDF2gbS8ac2eJKuGRofV/
- DwSRleckCJM0CtamyuXEaD+FSGfvT8DZ3V2DSVP6M6JZ3ByvLXz0S5ye/8lZouAbdhGj
- 2GsYP+h/srVk+eZZNFcj8r3RweyGLZmFxIwzsvo2oDowfH6kGqJQOMBhKuaulUGI2FZ/ fQ== 
-Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fjm1k88cm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:59:56 +0000
-Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
-        by g2t2354.austin.hpe.com (Postfix) with ESMTP id 9C3D281;
-        Wed, 20 Apr 2022 14:59:55 +0000 (UTC)
-Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id 4B52D37;
-        Wed, 20 Apr 2022 14:59:55 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     verdun@hpe.com, nick@hpe.com, joel@jms.id.au, arnd@arndb.de
-Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
-        Olof Johansson <olof@lixom.net>, soc@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1428110FC6;
+        Wed, 20 Apr 2022 08:00:07 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id x3so1382967wmj.5;
+        Wed, 20 Apr 2022 08:00:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=OxqISZ3PhyCe5pZOlEZIasOqnMsXsO76KKiBjnHunxA=;
+        b=lFQcgrWobsgpW7viU3ZTb9wdOFGUZDGqwSyg0cV7Kli9Azkgk7Cpjo1qsoJzvkwAoI
+         OAde/6iSG5xnggIrmJRXGXr0qAG2EDMbUPGxEvXLJz4KJu9jqH4WBYDbpyquK/JZ64bF
+         r5+Z532/g0SeC8v+uvJj230tK5OegzCd0pag9kU3Q0QRLnskAnksihWeFsAQjmFSTFb5
+         BZ6NV7HCgHb7Bw2OFCQ5YE/xXkXAE9rn9w4hRkfvalPy40nF12xAO2g5Za09Z91PdStH
+         krV6lG9NUkAZFHhP/Q4fqvrVvilDEq3uHlsRU4AJvMYQcXzO6S+V4iRuATH4jzffpgCz
+         R76g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=OxqISZ3PhyCe5pZOlEZIasOqnMsXsO76KKiBjnHunxA=;
+        b=ovBAlsWWWX2AFGYLe/8wRMG3qkYVl2tLRduEzVU/bQppeeK8F/aa95rwH258DUVUd4
+         fau081hE68l17XdbGjj+PdAz7I3qFIjkNvpQcppMbR9m4wIcypcVsqqRT/+c/ftPcC7g
+         kU6XY4tyzWGgDqx5hodJOkbTGcqQ/W7k3eKUN07PIZXA415TdYCaR6ciorojEbmBugNW
+         M3WY55KwaEAEJW+gWtg+i85IVQmOU/amxBtDYygWapYkpdyl7QzW1pwVOiRLNRwKLq7/
+         p40Rtz67DW7rVD2fJnc592To5y6zq5iBx2zY43QbObQ9iLvy2mKpXW05aaAyHqlJ/LGP
+         zscw==
+X-Gm-Message-State: AOAM532wZqo5n0/c4qOlHdayDW8YsnW4OclbaIa1FKrrCmlY5oizkpQP
+        7ujud1+77Mp8UPAVNmZGeCI=
+X-Google-Smtp-Source: ABdhPJwnr4sQBBSJEglycv2Tu5vNhaI8eNnAP0123HsG2diJW30WuE7yrKnypB1R6AEhTkpqKqV15g==
+X-Received: by 2002:a05:600c:4ed4:b0:392:90a5:b7e6 with SMTP id g20-20020a05600c4ed400b0039290a5b7e6mr4255941wmq.33.1650466805548;
+        Wed, 20 Apr 2022 08:00:05 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id e16-20020a05600c2dd000b0038ed449cbdbsm114678wmh.3.2022.04.20.08.00.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 08:00:04 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <4505b43d-5c33-4199-1259-6d4e8ebac1ec@redhat.com>
+Date:   Wed, 20 Apr 2022 17:00:01 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 10/11] arch: arm: boot: dts: Introduce HPE GXP Device tree
-Date:   Wed, 20 Apr 2022 10:01:54 -0500
-Message-Id: <20220420150156.47405-10-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220420150156.47405-1-nick.hawkins@hpe.com>
-References: <20220420150156.47405-1-nick.hawkins@hpe.com>
-X-Proofpoint-ORIG-GUID: VbaIKAmvfJ-MdR-4g8vWqyoWrBSrwhy-
-X-Proofpoint-GUID: VbaIKAmvfJ-MdR-4g8vWqyoWrBSrwhy-
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- malwarescore=0 impostorscore=0 clxscore=1015 mlxscore=0 lowpriorityscore=0
- phishscore=0 spamscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204200089
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-2-seanjc@google.com>
+ <112c2108-7548-f5bd-493d-19b944701f1b@maciej.szmigiero.name>
+ <YkspIjFMwpMYWV05@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH 1/8] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
+In-Reply-To: <YkspIjFMwpMYWV05@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+On 4/4/22 19:21, Sean Christopherson wrote:
+> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+>>> @@ -1606,7 +1622,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+>>>    	nested_copy_vmcb_control_to_cache(svm, ctl);
+>>>    	svm_switch_vmcb(svm, &svm->nested.vmcb02);
+>>> -	nested_vmcb02_prepare_control(svm);
+>>> +	nested_vmcb02_prepare_control(svm, save->rip);
+>>
+>> 					   ^
+>> I guess this should be "svm->vmcb->save.rip", since
+>> KVM_{GET,SET}_NESTED_STATE "save" field contains vmcb01 data,
+>> not vmcb{0,1}2 (in contrast to the "control" field).
+> 
+> Argh, yes.  Is userspace required to set L2 guest state prior to KVM_SET_NESTED_STATE?
+> If not, this will result in garbage being loaded into vmcb02.
+> 
 
-The HPE SoC is new to linux. This patch
-creates the basic device tree layout with minimum required
-for linux to boot. This includes timer and watchdog
-support.
+Let's just require X86_FEATURE_NRIPS, either in general or just to
+enable nested virtualiazation, i.e.:
 
-The dts file is empty at this point but will be
-updated in subsequent updates as board specific features
-are enabled.
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index fc1725b7d05f..f8fc8a1b09f1 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4904,10 +4904,12 @@ static __init int svm_hardware_setup(void)
+  			goto err;
+  	}
+  
+-	if (nrips) {
+-		if (!boot_cpu_has(X86_FEATURE_NRIPS))
+-			nrips = false;
+-	}
++	if (!boot_cpu_has(X86_FEATURE_NRIPS))
++		nrips = false;
++	if (nested & !nrips) {
++		pr_warn("Next RIP Save not available, disabling nested virtualization\n");
++		nested = false;
++	}
+  
+  	enable_apicv = avic = avic && npt_enabled && (boot_cpu_has(X86_FEATURE_AVIC) || force_avic);
+  
 
-Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+If I looked it up correctly it was introduced around 2010-2011.
 
----
-v4:
-* Removed hpe,gxp-cpu-init as it was no longer necessary
-* Removed bootargs as requested
-* Removed empty ahb node
-* Moved reg after compatible, everywhere
-* Removed osc and memclk
-* Removed syscon@c00000f8 as it was not necessary for boot
-* Fixed Alphabetical issue in dts/Makefile
-* Added specific board binding for dl360gen10
-* Removed empty node
-* Added Accurate Clock Architecture
----
- arch/arm/boot/dts/Makefile               |   2 +
- arch/arm/boot/dts/hpe-bmc-dl360gen10.dts |  13 +++
- arch/arm/boot/dts/hpe-gxp.dtsi           | 128 +++++++++++++++++++++++
- 3 files changed, 143 insertions(+)
- create mode 100644 arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
- create mode 100644 arch/arm/boot/dts/hpe-gxp.dtsi
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index e41eca79c950..a217c403c819 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -250,6 +250,8 @@ dtb-$(CONFIG_ARCH_HISI) += \
- 	hi3519-demb.dtb
- dtb-$(CONFIG_ARCH_HIX5HD2) += \
- 	hisi-x5hd2-dkb.dtb
-+dtb-$(CONFIG_ARCH_HPE_GXP) += \
-+	hpe-bmc-dl360gen10.dtb
- dtb-$(CONFIG_ARCH_INTEGRATOR) += \
- 	integratorap.dtb \
- 	integratorap-im-pd1.dtb \
-diff --git a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-new file mode 100644
-index 000000000000..69e9c6672ea8
---- /dev/null
-+++ b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree file for HPE DL360Gen10
-+ */
-+
-+/include/ "hpe-gxp.dtsi"
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+	compatible = "hpe,gxp-dl360gen10","hpe,gxp";
-+	model = "Hewlett Packard Enterprise ProLiant dl360 Gen10";
-+};
-diff --git a/arch/arm/boot/dts/hpe-gxp.dtsi b/arch/arm/boot/dts/hpe-gxp.dtsi
-new file mode 100644
-index 000000000000..e0b77f4a799a
---- /dev/null
-+++ b/arch/arm/boot/dts/hpe-gxp.dtsi
-@@ -0,0 +1,128 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree file for HPE GXP
-+ */
-+
-+/dts-v1/;
-+/ {
-+	model = "Hewlett Packard Enterprise GXP BMC";
-+	compatible = "hpe,gxp","hpe,gxp-dl360gen10";
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			compatible = "arm,cortex-a9";
-+			reg = <0>;
-+			device_type = "cpu";
-+		};
-+	};
-+
-+	clocks {
-+
-+		pll: pll {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <1600000000>;
-+		};
-+
-+		iopclk: iopclk {
-+			compatible = "fixed-factor-clock";
-+			#clock-cells = <0>;
-+			clock-div = <4>;
-+			clock-mult = <1>;
-+			clocks = <&pll>;
-+		};
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0x40000000 0x20000000>;
-+	};
-+
-+	axi {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+		dma-ranges;
-+
-+		ahb@c0000000 {
-+			compatible = "simple-bus";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xc0000000 0x30000000>;
-+
-+			vic0: interrupt-controller@eff0000 {
-+				compatible = "arm,pl192-vic";
-+				reg = <0xeff0000 0x1000>;
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+			};
-+
-+			vic1: interrupt-controller@80f00000 {
-+				compatible = "arm,pl192-vic";
-+				reg = <0x80f00000 0x1000>;
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+			};
-+
-+			uarta: serial@e0 {
-+				compatible = "ns16550a";
-+				reg = <0xe0 0x8>;
-+				interrupts = <17>;
-+				interrupt-parent = <&vic0>;
-+				clock-frequency = <1846153>;
-+				reg-shift = <0>;
-+			};
-+
-+			uartb: serial@e8 {
-+				compatible = "ns16550a";
-+				reg = <0xe8 0x8>;
-+				interrupts = <18>;
-+				interrupt-parent = <&vic0>;
-+				clock-frequency = <1846153>;
-+				reg-shift = <0>;
-+			};
-+
-+			uartc: serial@f0 {
-+				compatible = "ns16550a";
-+				reg = <0xf0 0x8>;
-+				interrupts = <19>;
-+				interrupt-parent = <&vic0>;
-+				clock-frequency = <1846153>;
-+				reg-shift = <0>;
-+			};
-+
-+			usb0: usb@efe0000 {
-+				compatible = "hpe,gxp-echi","generic-ehci";
-+				reg = <0xefe0000 0x100>;
-+				interrupts = <7>;
-+				interrupt-parent = <&vic0>;
-+			};
-+
-+			st: timer@80 {
-+				compatible = "hpe,gxp-timer","simple-mfd";
-+				reg = <0x80 0x16>;
-+				interrupts = <0>;
-+				interrupt-parent = <&vic0>;
-+				clocks = <&iopclk>;
-+				clock-names = "iopclk";
-+				watchdog {
-+					compatible = "hpe,gxp-wdt";
-+				};
-+			};
-+
-+			usb1: usb@efe0100 {
-+				compatible = "hpe,gxp-ohci","generic-ohci";
-+				reg = <0xefe0100 0x110>;
-+				interrupts = <6>;
-+				interrupt-parent = <&vic0>;
-+			};
-+		};
-+	};
-+
-+};
--- 
-2.17.1
-
+Paolo
