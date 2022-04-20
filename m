@@ -2,206 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A52CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B085C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377018AbiDTI4Y (ORCPT
+        id S1377008AbiDTI5M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        Wed, 20 Apr 2022 04:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376988AbiDTI4K (ORCPT
+        with ESMTP id S1349589AbiDTI5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:56:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E00B23B2B3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650444804;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9ipOD+iHYz0MO8ka3xCh5rdeCaG6XqtVDndckQG+34g=;
-        b=WfPG58N5W/AdXe6wDUzdwU8YXKrG5BKzcL8i7trEGqdIZR/hOT7WsYfJBxP4PaQjEjhi8g
-        vnrRMp4gOhAy8W0//+31zw9MUuCxVysleUdzUpbOLHBWvCqIY/NUOaSC3Etvvec0wI2jok
-        Hf5G/Fni41co/57y2pg1EvidwT8Qthw=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-C37LzPl2M3WdgnszaOyyaA-1; Wed, 20 Apr 2022 04:53:23 -0400
-X-MC-Unique: C37LzPl2M3WdgnszaOyyaA-1
-Received: by mail-wr1-f69.google.com with SMTP id a12-20020a5d6cac000000b002079e81d09eso192442wra.4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:53:22 -0700 (PDT)
+        Wed, 20 Apr 2022 04:57:10 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2713B3E6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:54:24 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2f16645872fso10795017b3.4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wLb6JbYsWBBApP0Mc9bUp5iLpj1TLGjQFNYgA4f58jY=;
+        b=Z5uO5aHIflhbnOadvmxDtFLCizKRo1UqS7cTKCrhpc4fG4g6SUUUMFIKuoHkr+Num2
+         n07blE0e5TZu46EsQ1SS0MUjLsKnU21sr2iJIV2WHWoDFF63kyvIch+not84gEOjExGr
+         0IbUg8b/5jSjlcTPry4Ila/roGc69AVBSeE7Ukh7ph+ub9oBZCGntsoXfYSCzQifN+B2
+         rqQbVyFMw08on2jkL5R7HavrzQMK8WFn9yzYOBleSYdCGypDe/5C6CeEROqEFF5pC5xe
+         PyEjGcuor5dZd+V3sp8HqwDjp6OgM5kPSra2+hkFvBBMCcmJXjz2AOFGP9zYlkvjET4h
+         ZbAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9ipOD+iHYz0MO8ka3xCh5rdeCaG6XqtVDndckQG+34g=;
-        b=MJEFsPHlm5YRJatgdh1En1l+aI7pB/6odWCDHa2scJEpnFzKIKCPL+abgBoU0wSXrN
-         4rGfFrLpqHEM9JJPAjhuTIIebXCVDzNO9Cn3Tx6HNKZRPusgb5zeNCdKpnwz24Eraw5G
-         4ooFOnTWZ8km/vPxz7AcPacNKgUctNx9j9IfZ3FEAgPGBWnYYz6wAHcMZGPs3f5ZQspN
-         SlFgazGbVQl4HeTL9mquF3m4txn55knvv4wiGUwqe3XtIDs7NTPzpieevQNFr0fC/UIM
-         FRWKonedqPyG+jQ13VIQuToLMIk4ICBEUu4lGlq26XVW4yf6FBkX3sQH/mn6Bd+iJ62N
-         w0Eg==
-X-Gm-Message-State: AOAM532nOjTDhkLQbGEHCd4q7jTWY1ZHIVbuSJFJGXtZouOQ8D7JGMmz
-        NNcjCmQWj7JgymQ4/pJz8OmEPBiu1YC4WBnjofxbTniWzTwe1TGD3TH1qpkhcQLze9K4e5uenz8
-        8/3XfH2szkFRsLkx4eWZvK6CnL3TzxQT/KCdqvqN4aFf6dleq4RB0cgmeGP4Hh+0fiv844vzgZX
-        I=
-X-Received: by 2002:a5d:5392:0:b0:207:aaca:9bd8 with SMTP id d18-20020a5d5392000000b00207aaca9bd8mr14859681wrv.615.1650444800409;
-        Wed, 20 Apr 2022 01:53:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyZbvPSUyZXNVpsoDxEqgIOir/+9fpJtKe5GQ7jt7d1nsakg7f78pMNvQTiKbTLOPgE1YW8kA==
-X-Received: by 2002:a5d:5392:0:b0:207:aaca:9bd8 with SMTP id d18-20020a5d5392000000b00207aaca9bd8mr14859645wrv.615.1650444800067;
-        Wed, 20 Apr 2022 01:53:20 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id i14-20020a0560001ace00b0020aac00f862sm1895343wry.98.2022.04.20.01.53.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 01:53:19 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Yizhuo Zhai <yzhai003@ucr.edu>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH v3 4/5] fbdev: Fix some race conditions between fbmem and sysfb
-Date:   Wed, 20 Apr 2022 10:53:02 +0200
-Message-Id: <20220420085303.100654-5-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220420085303.100654-1-javierm@redhat.com>
-References: <20220420085303.100654-1-javierm@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wLb6JbYsWBBApP0Mc9bUp5iLpj1TLGjQFNYgA4f58jY=;
+        b=BUfLSPrtVJk2rnJXiq0nV4trzpWI09r1ntg+eviMiDoJU8qbPG75K5sHPMexQ9G/B2
+         iYWPlASARk7aar5FklrP7P5kldpLfNTr7ncBFF5zb8m6kCGpIWQsgYDLBGkTEg1dln8i
+         bDNw61tGbMGRyzzkykwAvYFWMeQESOc9WSfm8QwLwzgLZmVamPfxDva53pgYrGjJQY25
+         o/Dnrc6gQaMhUatf4nVzJcKr+h6k64cqW5gBS25WCZHDiloU1f6wPdmBlq+m8RZ7aVD2
+         ZSUonCXmjg/xUqVGeAjmQjGYllxSd2OAnKyreGfrDQvG2dqD6WhxyCXdymHsYzSfdpUk
+         umzw==
+X-Gm-Message-State: AOAM531gXxviuTbedBtUjhXjI9+oaYCMmipM+obhaNPbzvjLZChPb3pd
+        lyZ+FHI6/l/CXXJDs/kBz3MMOj1aWtfuMO11pUEN6A==
+X-Google-Smtp-Source: ABdhPJxqWslF3f2CGWOJcNab6oG/sR2XviNs/WLvatn0fSI5Dx9gYNvanGHc1PAgK+WrJakb5fgu0yUuCX9H2BE5UBQ=
+X-Received: by 2002:a81:6dc7:0:b0:2f1:c5bf:8f64 with SMTP id
+ i190-20020a816dc7000000b002f1c5bf8f64mr8609703ywc.120.1650444863090; Wed, 20
+ Apr 2022 01:54:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
+ <CAMj1kXFKzi14UCoiDOMwS5jyNz61_UzxGXm+ke0EWEt4nn6E1g@mail.gmail.com>
+In-Reply-To: <CAMj1kXFKzi14UCoiDOMwS5jyNz61_UzxGXm+ke0EWEt4nn6E1g@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 20 Apr 2022 14:24:11 +0530
+Message-ID: <CA+G9fYtv8D2eR4dME6Ecx4sPpBcBtKerdZxcxsqfaCJdKVa3VQ@mail.gmail.com>
+Subject: Re: [next] arm: boot failed - PC is at cpu_ca15_set_pte_ext
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        max.krummenacher@toradex.com, Shawn Guo <shawnguo@kernel.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The platform devices registered in sysfb match with a firmware-based fbdev
-or DRM driver, that are used to have early graphics using framebuffers set
-up by the system firmware.
+On Wed, 20 Apr 2022 at 13:01, Ard Biesheuvel <ardb@kernel.org> wrote:
+>
+> On Tue, 19 Apr 2022 at 12:59, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> >
+> > Linux next 20220419 boot failed on arm architecture qemu_arm and BeagleBoard
+> > x15 device.
+> >
+> > kernel crash log from x15:
+> > -----------------
+> > [    6.866516] 8<--- cut here ---
+> > [    6.869598] Unable to handle kernel paging request at virtual
+> > address f000e62c
+> > [    6.876861] [f000e62c] *pgd=82935811, *pte=00000000, *ppte=00000000
+> > [    6.883209] Internal error: Oops: 807 [#3] SMP ARM
+> > [    6.888000] Modules linked in:
+> > [    6.891082] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G      D W
+> >   5.18.0-rc3-next-20220419 #1
+> > [    6.899993] Hardware name: Generic DRA74X (Flattened Device Tree)
+> > [    6.906127] PC is at cpu_ca15_set_pte_ext+0x4c/0x58
+> > [    6.911041] LR is at handle_mm_fault+0x60c/0xed0
+> > [    6.915679] pc : [<c031f26c>]    lr : [<c04cfeb8>]    psr: 40000013
+> > [    6.921966] sp : f000dde8  ip : f000de44  fp : a0000013
+> > [    6.927215] r10: 00000000  r9 : 00000000  r8 : c1e95194
+> > [    6.932464] r7 : c3c95000  r6 : befffff1  r5 : 00000081  r4 : c29d8000
+> > [    6.939025] r3 : 00000000  r2 : 00000000  r1 : 00000040  r0 : f000de2c
+> > [    6.945587] Flags: nZcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> > [    6.952758] Control: 10c5387d  Table: 8020406a  DAC: 00000051
+> > [    6.958526] Register r0 information: 2-page vmalloc region starting
+> > at 0xf000c000 allocated at kernel_clone+0x94/0x3b0
+> > [    6.969299] Register r1 information: non-paged memory
+> > [    6.974365] Register r2 information: NULL pointer
+> > [    6.979095] Register r3 information: NULL pointer
+> > [    6.983825] Register r4 information: slab task_struct start
+> > c29d8000 pointer offset 0
+> > [    6.991729] Register r5 information: non-paged memory
+> > [    6.996795] Register r6 information: non-paged memory
+> > [    7.001861] Register r7 information: slab vm_area_struct start
+> > c3c95000 pointer offset 0
+> > [    7.010009] Register r8 information: non-slab/vmalloc memory
+> > [    7.015716] Register r9 information: NULL pointer
+> > [    7.020446] Register r10 information: NULL pointer
+> > [    7.025238] Register r11 information: non-paged memory
+> > [    7.030426] Register r12 information: 2-page vmalloc region
+> > starting at 0xf000c000 allocated at kernel_clone+0x94/0x3b0
+> > [    7.041259] Process swapper/0 (pid: 1, stack limit = 0xfaff0077)
+> > [    7.047302] Stack: (0xf000dde8 to 0xf000e000)
+> > [    7.051696] dde0:                   c29d8000 00000cc0 c20a1108
+> > c2065fa0 c1e09f50 b6db6db7
+> > [    7.059906] de00: c195bf0c 17c0f572 c29d8000 c3c95000 00000cc0
+> > 000befff befff000 befffff1
+> > [    7.068115] de20: 00000081 c3c3afb8 c3c3afb8 00000000 00000000
+> > 00000000 00000000 00000000
+> > [    7.076324] de40: 00000000 17c0f572 befff000 c3c95000 00002017
+> > befffff1 00002017 00002fb8
+> > [    7.084564] de60: c2d04000 00000081 c29d8000 c04c6790 c20d01d4
+> > 00000000 00000001 c20ce440
+> > [    7.092773] de80: c1e10bcc fffff000 00000000 c2a45680 eeb33cc0
+> > c29d8000 00000000 c2d04000
+> > [    7.100982] dea0: befffff1 f000df18 00000000 00002017 c20661a0
+> > c04c77e8 f000df18 00000000
+> > [    7.109222] dec0: 00000000 c1d95c40 00000002 c20661e0 00000000
+> > 00000001 00000000 c04c7ad0
+> > [    7.117431] dee0: 00000011 c2d02a00 00000001 befffff1 c29d8000
+> > 00000000 00000011 c2a30010
+> > [    7.125640] df00: c29d8000 c0524c24 f000df18 00000000 00000000
+> > 2cd9e000 c1d95c40 17c0f572
+> > [    7.133850] df20: 00000000 c2d02a00 0000000b 00000ffc 00000000
+> > befffff1 00000000 c0524f74
+> > [    7.142089] df40: c1e0e394 c2d02a00 c209a71c 38e38e39 c29d8000
+> > bee00008 c2d02a00 c2a30000
+> > [    7.150299] df60: c1e0e394 c1e0e420 00000000 00000000 00000000
+> > c05266bc c209a000 c1944c60
+> > [    7.158508] df80: 00000000 00000000 00000000 c129d2b4 c209a000
+> > c1e0e394 00000000 c12b5600
+> > [    7.166748] dfa0: 00000000 c12b5518 00000000 c0300168 00000000
+> > 00000000 00000000 00000000
+> > [    7.174957] dfc0: 00000000 00000000 00000000 00000000 00000000
+> > 00000000 00000000 00000000
+> > [    7.183166] dfe0: 00000000 00000000 00000000 00000000 00000013
+> > 00000000 00000000 00000000
+> > [    7.191406] Code: 13110001 12211b02 13110b02 03a03000 (e5a03800)
+>
+> This decodes to
+>
+>    0: 13110001 tstne r1, #1
+>    4: 12211b02 eorne r1, r1, #2048 ; 0x800
+>    8: 13110b02 tstne r1, #2048 ; 0x800
+>    c: 03a03000 moveq r3, #0
+>   10:* e5a03800 str r3, [r0, #2048]! ; 0x800 <-- trapping instruction
+>
+> and R0 points into the stack. So we are updating a PTE that is located
+> on the stack rather than in a page table somewhere, which seems very
+> odd. However, this could be a latent bug that got uncovered by the
+> VMAP stacks changes.
+>
+> Unfortunately, the vmlinux.xz file I downloaded from the link below
+> seems to be different from the one that produced the crash, given that
+> the LR address of c04cfeb8 does not seem to correspond with
+> handle_mm_fault+0x60c/0xed0.
+> Can you please double check the artifacts?
 
-Real DRM drivers later are probed and remove all conflicting framebuffers,
-leading to these platform devices for generic drivers to be unregistered.
+You can find the vmlinux.xz for the trace log I have pasted.
 
-But the current solution has two issues that this patch fixes:
+vmlinux.xz : https://builds.tuxbuild.com/280TS8MuM6sYWk5aUtrvWIw0RQ7/vmlinux.xz
+artifact-location: https://builds.tuxbuild.com/280TS8MuM6sYWk5aUtrvWIw0RQ7
 
-1) It is a layering violation for the fbdev core to unregister a device
-   that was registered by sysfb.
-
-   Instead, the sysfb_try_unregister() helper function can be called for
-   sysfb to attempt unregistering the device if is the one registered.
-
-2) The sysfb_init() function could be called after a DRM driver is probed
-   and requested to unregister devices for drivers with a conflicting fb.
-
-   To prevent this, disable any future sysfb platform device registration
-   by calling sysfb_disable(), if a driver requested to remove conflicting
-   framebuffers with remove_conflicting_framebuffers().
-
-There are video drivers (e.g: vga16fb) that register their own device and
-don't use the sysfb infrastructure for that, so an unregistration has to
-be forced by fbmem if sysfb_try_unregister() fails to do the unregister.
-
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
----
-
-(no changes since v2)
-
-Changes in v2:
-- Explain in the commit message that fbmem has to unregister the device
-  as fallback if a driver registered the device itself (Daniel Vetter).
-- Also explain that fallback in a comment in the code (Daniel Vetter).
-- Don't encode in fbmem the assumption that sysfb will always register
-  platform devices (Daniel Vetter).
-- Add a FIXME comment about drivers registering devices (Daniel Vetter).
-
- drivers/video/fbdev/core/fbmem.c | 42 ++++++++++++++++++++++++++++----
- 1 file changed, 37 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 0bb459258df3..8098305879f8 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- #include <linux/major.h>
- #include <linux/slab.h>
-+#include <linux/sysfb.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
- #include <linux/vt.h>
-@@ -1585,18 +1586,38 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
- 			if (!device) {
- 				pr_warn("fb%d: no device set\n", i);
- 				do_unregister_framebuffer(registered_fb[i]);
--			} else if (dev_is_platform(device)) {
-+			} else {
- 				/*
- 				 * Drop the lock because if the device is unregistered, its
- 				 * driver will call to unregister_framebuffer(), that takes
- 				 * this lock.
- 				 */
- 				mutex_unlock(&registration_lock);
--				platform_device_unregister(to_platform_device(device));
-+				/*
-+				 * First attempt the device to be unregistered by sysfb.
-+				 */
-+				if (!sysfb_try_unregister(device)) {
-+					if (dev_is_platform(device)) {
-+						/*
-+						 * FIXME: sysfb didn't register this device, is a platform
-+						 * device registered by a video driver (e.g: vga16fb), so
-+						 * force its unregistration here. A proper fix would be to
-+						 * move all device registration to the sysfb infrastructure
-+						 * or platform code.
-+						 */
-+						platform_device_unregister(to_platform_device(device));
-+					} else {
-+						/*
-+						 * If is not a platform device, at least print a warning. A
-+						 * fix would add to make the code that registered the device
-+						 * to also unregister it.
-+						 */
-+						pr_warn("fb%d: cannot remove device\n", i);
-+						/* call unregister_framebuffer() since the lock was dropped */
-+						unregister_framebuffer(registered_fb[i]);
-+					}
-+				}
- 				mutex_lock(&registration_lock);
--			} else {
--				pr_warn("fb%d: cannot remove device\n", i);
--				do_unregister_framebuffer(registered_fb[i]);
- 			}
- 			/*
- 			 * Restart the removal loop now that the device has been
-@@ -1762,6 +1783,17 @@ int remove_conflicting_framebuffers(struct apertures_struct *a,
- 		do_free = true;
- 	}
- 
-+	/*
-+	 * If a driver asked to unregister a platform device registered by
-+	 * sysfb, then can be assumed that this is a driver for a display
-+	 * that is set up by the system firmware and has a generic driver.
-+	 *
-+	 * Drivers for devices that don't have a generic driver will never
-+	 * ask for this, so let's assume that a real driver for the display
-+	 * was already probed and prevent sysfb to register devices later.
-+	 */
-+	sysfb_disable();
-+
- 	mutex_lock(&registration_lock);
- 	do_remove_conflicting_framebuffers(a, name, primary);
- 	mutex_unlock(&registration_lock);
--- 
-2.35.1
-
+- Naresh
