@@ -2,108 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C419C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359212AbiDTDT2 (ORCPT
+        id S1359230AbiDTDUY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 23:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
+        Tue, 19 Apr 2022 23:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349010AbiDTDTZ (ORCPT
+        with ESMTP id S238897AbiDTDUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 23:19:25 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7109FD6;
-        Tue, 19 Apr 2022 20:16:41 -0700 (PDT)
+        Tue, 19 Apr 2022 23:20:21 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB139FD6;
+        Tue, 19 Apr 2022 20:17:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650424601; x=1681960601;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xjxCuPU1wDXGLoKd2DsY+kJ78tcX02C4AYF3wxGy00A=;
-  b=XZ+VoGmTr0oSig5pJ7UGumJicNTfgzbIZWi1RZqQxnAoV7YCgLPXJx6t
-   innQiSHAMWp4KoG6ixP8OeOD4X+n7hzaKmpqDUeY8RWQS6D3SMBuWN32i
-   m6aal5PlbjItJUw0N42yblmqKLxMd9LTesMaVAGLvkcHTlA86xzx7HTtC
-   BInTI4BOrraqPdoNouJPtGRCDXAE4D1uHw8taT56loZu8ebV62uh+FNOl
-   Ck9oHUTbZqTBS/cduzyAeRnNb/d7UD9hCrfL6fdxKIdInusirr1+Y/VrE
-   uXgFdMCpmRUkXXcCGM5LaQ2mafFGxib/CJjTxV4Xm8IDT2Gsmh+8jSJio
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="289029155"
+  t=1650424656; x=1681960656;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=aSlmWYo67979bXI+8rgE6ppMUFAAUoPR5mX4oC2meD8=;
+  b=QzBDTsvB3pu732uwEag5dKe9Z5E4wa2OBJsOu4qRT8u9ak/Jwj8wDepy
+   hrvclFPbcUWUmVpyOIRKUJ8ybBNU+dDgHMzBKzKMHRieiGfcMVXiuUPcK
+   C2sLPXkWyP6AHeM9M2kvB1CAXL9fvOdyyhvl3Wd2lgnUCV05eaq//irld
+   m8PEQd3mOZkWzJz1N1+Z2OFBWt77Zrrg4/PzhZWQgWyfEVsMHLR90TyXQ
+   4u8juvKqF0fiNsgu+RiS4oFwTOXNqcuYX4uCRG1zbcGO2HHwyVJreDvR8
+   6vVg458hdAiLnQrEOfMRCgSCO/rfRpkqXnF1n1Zirg0JHrclmKisYCgVb
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350375126"
 X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="289029155"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 20:16:40 -0700
+   d="scan'208";a="350375126"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 20:17:36 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="529566305"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 20:16:40 -0700
-Message-ID: <b78bd722081baa4db571c0360559f105d0a7d175.camel@linux.intel.com>
-Subject: Re: [PATCH v2 0/4] tools/thermal: thermal library and tools
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Date:   Tue, 19 Apr 2022 20:16:40 -0700
-In-Reply-To: <51d63f20-4834-184b-2ac2-30c399bd9988@linaro.org>
-References: <20220330100444.3846661-1-daniel.lezcano@linaro.org>
-         <f526d227-ffbb-4ac0-ceb6-c793ab912559@linaro.org>
-         <5380fef6d45f2f7a0b8a5f681934f02943d5e138.camel@linux.intel.com>
-         <9ccb342b-2f20-6efd-a668-96d593aa921e@linaro.org>
-         <CAJZ5v0hrRuVz8pgD6-m7EhVdHPPn67O4ajx_7vkOOOYdTkv2BQ@mail.gmail.com>
-         <0181977f5843fb9df4eae7d397d96c890846a0db.camel@linux.intel.com>
-         <f1d2b1c7a9691c64ece07fbc1fc5a2d4e70aa00a.camel@linux.intel.com>
-         <916d2e4c-7224-f824-f3cf-5c1dee411ed1@linaro.org>
-         <dc9b317f88f7d43cd30141376156c0f3eec687d8.camel@linux.intel.com>
-         <ba3cbf3d-938b-1530-1178-68b447f20a9c@linaro.org>
-         <f7e4f4604f122dfab4aa5e589d68eb2c8773e00d.camel@linux.intel.com>
-         <51d63f20-4834-184b-2ac2-30c399bd9988@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+   d="scan'208";a="667588846"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by orsmga004.jf.intel.com with ESMTP; 19 Apr 2022 20:17:27 -0700
+Date:   Wed, 20 Apr 2022 11:17:18 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Vishal Annapurve <vannapurve@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Jun Nakajima <jun.nakajima@intel.com>, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 11/13] KVM: Zap existing KVM mappings when pages
+ changed in the private fd
+Message-ID: <20220420031718.GA39591@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-12-chao.p.peng@linux.intel.com>
+ <CAGtprH-qTB2sehidF7xkSvR3X4D5cUOLpMBXf4mhTEh0BUR-mQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGtprH-qTB2sehidF7xkSvR3X4D5cUOLpMBXf4mhTEh0BUR-mQ@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Tue, Apr 19, 2022 at 03:43:56PM -0700, Vishal Annapurve wrote:
+> On Thu, Mar 10, 2022 at 6:11 AM Chao Peng <chao.p.peng@linux.intel.com> wrote:
+> >
+> > KVM gets notified when memory pages changed in the memory backing store.
+> > When userspace allocates the memory with fallocate() or frees memory
+> > with fallocate(FALLOC_FL_PUNCH_HOLE), memory backing store calls into
+> > KVM fallocate/invalidate callbacks respectively. To ensure KVM never
+> > maps both the private and shared variants of a GPA into the guest, in
+> > the fallocate callback, we should zap the existing shared mapping and
+> > in the invalidate callback we should zap the existing private mapping.
+> >
+> > In the callbacks, KVM firstly converts the offset range into the
+> > gfn_range and then calls existing kvm_unmap_gfn_range() which will zap
+> > the shared or private mapping. Both callbacks pass in a memslot
+> > reference but we need 'kvm' so add a reference in memslot structure.
+> >
+> > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > ---
+> >  include/linux/kvm_host.h |  3 ++-
+> >  virt/kvm/kvm_main.c      | 36 ++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 38 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> > index 9b175aeca63f..186b9b981a65 100644
+> > --- a/include/linux/kvm_host.h
+> > +++ b/include/linux/kvm_host.h
+> > @@ -236,7 +236,7 @@ bool kvm_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+> >  int kvm_async_pf_wakeup_all(struct kvm_vcpu *vcpu);
+> >  #endif
+> >
+> > -#ifdef KVM_ARCH_WANT_MMU_NOTIFIER
+> > +#if defined(KVM_ARCH_WANT_MMU_NOTIFIER) || defined(CONFIG_MEMFILE_NOTIFIER)
+> >  struct kvm_gfn_range {
+> >         struct kvm_memory_slot *slot;
+> >         gfn_t start;
+> > @@ -568,6 +568,7 @@ struct kvm_memory_slot {
+> >         loff_t private_offset;
+> >         struct memfile_pfn_ops *pfn_ops;
+> >         struct memfile_notifier notifier;
+> > +       struct kvm *kvm;
+> >  };
+> >
+> >  static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index 67349421eae3..52319f49d58a 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -841,8 +841,43 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+> >  #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+> >
+> >  #ifdef CONFIG_MEMFILE_NOTIFIER
+> > +static void kvm_memfile_notifier_handler(struct memfile_notifier *notifier,
+> > +                                        pgoff_t start, pgoff_t end)
+> > +{
+> > +       int idx;
+> > +       struct kvm_memory_slot *slot = container_of(notifier,
+> > +                                                   struct kvm_memory_slot,
+> > +                                                   notifier);
+> > +       struct kvm_gfn_range gfn_range = {
+> > +               .slot           = slot,
+> > +               .start          = start - (slot->private_offset >> PAGE_SHIFT),
+> > +               .end            = end - (slot->private_offset >> PAGE_SHIFT),
+> > +               .may_block      = true,
+> > +       };
+> > +       struct kvm *kvm = slot->kvm;
+> > +
+> > +       gfn_range.start = max(gfn_range.start, slot->base_gfn);
+> 
+> gfn_range.start seems to be page offset within the file. Should this rather be:
+> gfn_range.start = slot->base_gfn + min(gfn_range.start, slot->npages);
 
-On Tue, 2022-04-19 at 22:26 +0200, Daniel Lezcano wrote:
+Right. For start we don't really need care about the uppper bound
+here (will check below), so this should be enough:
+	gfn_range.start = slot->base_gfn + gfn_range.start;
+
 > 
-> Hi Srinivas,
+> > +       gfn_range.end = min(gfn_range.end, slot->base_gfn + slot->npages);
+> > +
 > 
-> 
-> On 18/04/2022 05:36, srinivas pandruvada wrote:
-> > Hi Daniel,
-> > 
-> > The attached diff fixes the crash,
-> > 
-> > Also when you run in daemon mode, you need to use some pid lock
-> > file.
-> > Otherwise it launches multiple daemons.
-> 
-> I've been thinking about it and I don't think it is a problem to have
-> multiple instances of the daemon. The netlink allows multicast and
-> can 
-> be run as non-root user.
-> 
-> If the finality of the thermal engine is to manage the system and has
-> some code making actions on the system with the root privilege, the
-> init 
-> scripts can take care of the pid lock
-> 
-If there is use case, then this is fine otherwise wasting system
-resources.
+> Similar to previous comment, should this rather be:
+> gfn_range.end = slot->base_gfn + min(gfn_range.end, slot->npages);
+
+This is correct.
 
 Thanks,
-Srinivas
-
-
-
-
-
+Chao
 > 
-> 
-
-
+> > +       if (gfn_range.start >= gfn_range.end)
+> > +               return;
+> > +
+> > +       idx = srcu_read_lock(&kvm->srcu);
+> > +       KVM_MMU_LOCK(kvm);
+> > +       kvm_unmap_gfn_range(kvm, &gfn_range);
+> > +       kvm_flush_remote_tlbs(kvm);
+> > +       KVM_MMU_UNLOCK(kvm);
+> > +       srcu_read_unlock(&kvm->srcu, idx);
+> > +}
+> > +
+> > +static struct memfile_notifier_ops kvm_memfile_notifier_ops = {
+> > +       .invalidate = kvm_memfile_notifier_handler,
+> > +       .fallocate = kvm_memfile_notifier_handler,
+> > +};
+> > +
+> >  static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
+> >  {
+> > +       slot->notifier.ops = &kvm_memfile_notifier_ops;
+> >         return memfile_register_notifier(file_inode(slot->private_file),
+> >                                          &slot->notifier,
+> >                                          &slot->pfn_ops);
+> > @@ -1963,6 +1998,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
+> >         new->private_file = file;
+> >         new->private_offset = mem->flags & KVM_MEM_PRIVATE ?
+> >                               region_ext->private_offset : 0;
+> > +       new->kvm = kvm;
+> >
+> >         r = kvm_set_memslot(kvm, old, new, change);
+> >         if (!r)
+> > --
+> > 2.17.1
+> >
