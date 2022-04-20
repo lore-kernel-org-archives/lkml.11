@@ -2,150 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7807C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381652AbiDTTKw (ORCPT
+        id S1381658AbiDTTLK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 15:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
+        Wed, 20 Apr 2022 15:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381646AbiDTTKs (ORCPT
+        with ESMTP id S1381649AbiDTTLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 15:10:48 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965FB40E4E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:08:00 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id x17so4650763lfa.10
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:08:00 -0700 (PDT)
+        Wed, 20 Apr 2022 15:11:08 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B90403CD
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:08:21 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id bg9so2483466pgb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:08:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sj1hpM6fhreP1iTRqHBcccNvHMl3eVbILQpQDiy86Bg=;
-        b=QzUWblAxmNFHwz7gBQ5mv2wfEez79gBQE22yrImImPbRmppWXhJuGUEA8GG1SwIb2j
-         3AdwbIwtIqCat62TgPw/zqu47T4G6DhQjMSnw6HF3XQ6764iEgGyB3DSLZHYoAKHv0cF
-         GshykrSLOxfylLxpl4kmvX8+DgY1hj+x80djs=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RadBw9TnGKHb+r+fDSXV2TygRfs0ByPhIe2F4r3TF0c=;
+        b=IDkxaISVk3SUWOfbx+6bVOy7mRc1IVLHC770O/5XdOZpiT8SRL8Gnf5TyoprEbVqZY
+         pg4mCHFqQaAHKDb47gttBgPA6Dg7EgGGMCOrdnrsV9B86MbbOHkJhGV5bTK2oSCNduwq
+         YkugE3XoA2k77uq4E9qSiLZa4Glsmnjn2KipkU1kU9ao18KnEY6TAoXFub54/r80eP6I
+         iU9tAINcD2P5is2llPFIIQP23o5CvDZ+Yp4FuHSjCD05z3BJCD9JaqVckxfenMapdFik
+         oAzqNFLWEQtTrgJ7xbXHEz5F1OCXVgH8842lGCPb8d2rKWN10rnI5jF+U+LZ46QQ/w5R
+         eYfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sj1hpM6fhreP1iTRqHBcccNvHMl3eVbILQpQDiy86Bg=;
-        b=MqbPrYDMJFexWbA6GtjYZn68nRV7xNAtRAeQTLemLkf475s3AgIzjl+2YgcWPLZLPN
-         2ypMvMNLHcnAhYlYK1DKEuvFrnHFhlKai9PYzt5YlVwhyuEx5ho7wWYRi+Hbdz/N+ZQn
-         nFj1oNkAJqipk0BcfjsTJu5Edg72N72Qth24ufQAA0MUmjDEi68H9q3qD4wutewnDWoJ
-         QHcJLrBZPfD+F47exrYmVIrmiCzXyHTEH5uyDIbqxhC4J2j9GJLEK3BDxst1OA437Fpg
-         oKAq7qFEGvcst3kdVP/ncS72plsXcoX1nBKSisPg4CiW3Xc1nAgmJroduF0cMQEX6e7I
-         5qQw==
-X-Gm-Message-State: AOAM531ymL5swozP52F4yHzfLVjxKXyWnkiUUl4zSKIjtCq+N45NcYU5
-        nuZiXWJXs1M5iD881XSthjKXooUZOzL3ACjTuas=
-X-Google-Smtp-Source: ABdhPJxNvGYagDj6ozb8C82j95aa319LBtTvXNRCsP6BpL7WQzUXkrBPiAI1QZy4NpD1GgHnBl70VA==
-X-Received: by 2002:a05:6512:10c5:b0:471:a703:bca4 with SMTP id k5-20020a05651210c500b00471a703bca4mr6797389lfg.581.1650481678625;
-        Wed, 20 Apr 2022 12:07:58 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id a3-20020a195f43000000b0044a997dea6bsm1911014lfj.288.2022.04.20.12.07.56
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 12:07:56 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id t25so4669773lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:07:56 -0700 (PDT)
-X-Received: by 2002:a05:6512:b12:b0:44a:ba81:f874 with SMTP id
- w18-20020a0565120b1200b0044aba81f874mr15978126lfu.449.1650481676314; Wed, 20
- Apr 2022 12:07:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RadBw9TnGKHb+r+fDSXV2TygRfs0ByPhIe2F4r3TF0c=;
+        b=qQXKyYunlip4gGpTd332SdCnTwqcdVf/k8wpf8soS6iGMQfBppsXeGK2LEQ2RQbhRY
+         5bqLl//ojEr09mQ/UPQGqXCaVvbdpD9hPzB5zETTOIMlT/upPCRRYzFH7WxQQlAlILLh
+         GaILR6qVJElTbVlMaq1OqVCqtnBpr78gVWYf13amJA1PpX7ApuDG/1vS0xpENJ9Neotm
+         JAab3vdI8ceFQUEM7A7gkMrARulI+5sTyGdfh7Hj9dA05ZejVt6x7vAi1GQOq/QJed3q
+         gfoAJguScQ1JxqBRSrISqSvLg/rP0PQRV7a3WUUi1kA/U/XfIIGCsprZQEgLaeSfTYyM
+         tplQ==
+X-Gm-Message-State: AOAM532lj/JaRUNu3Bg6nV3XUTW0mKngjr/kdmjUAHq0cHXGKS7O8BLe
+        403Ba57yrEnEgEYooXW0PfA=
+X-Google-Smtp-Source: ABdhPJzw1rqj/LW/kXZsZnZslHvtT9sak9FRpKjjM0AKIQVKs2olDv+lfCvqPIzZV9PIB5dMkbJYAQ==
+X-Received: by 2002:a63:8bc7:0:b0:3aa:7a8b:cf67 with SMTP id j190-20020a638bc7000000b003aa7a8bcf67mr2185090pge.402.1650481700643;
+        Wed, 20 Apr 2022 12:08:20 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:daec:60d:88f6:798a])
+        by smtp.gmail.com with ESMTPSA id u8-20020a62ed08000000b0050a90fd59d5sm8263004pfh.50.2022.04.20.12.08.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 12:08:20 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-xtensa@linux-xtensa.org
+Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH v2] xtensa: enable KCSAN
+Date:   Wed, 20 Apr 2022 12:08:05 -0700
+Message-Id: <20220420190805.152533-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220420073717.GD16310@xsang-OptiPlex-9020>
-In-Reply-To: <20220420073717.GD16310@xsang-OptiPlex-9020>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 20 Apr 2022 12:07:40 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi6pJhsWLd7t9wEtq5tWh_2O61cSLk-wCgLwFrjW6+jbw@mail.gmail.com>
-Message-ID: <CAHk-=wi6pJhsWLd7t9wEtq5tWh_2O61cSLk-wCgLwFrjW6+jbw@mail.gmail.com>
-Subject: Re: [fs/pipe] 5a519c8fe4: WARNING:at_mm/page_alloc.c:#__alloc_pages
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Andrei Vagin <avagin@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 12:37 AM kernel test robot
-<oliver.sang@intel.com> wrote:
->
-> commit: 5a519c8fe4d6 ("fs/pipe: use kvcalloc to allocate a pipe_buffer array")
->
-> [   32.170781][ T3729] WARNING: The mand mount option has been deprecated and
-> [   32.170781][ T3729]          and is ignored by this kernel. Remove the mand
-> [   32.170781][ T3729]          option from the mount to silence this warning.
+Prefix arch-specific barrier macros with '__' to make use of instrumented
+generic macros.
+Prefix arch-specific bitops with 'arch_' to make use of instrumented
+generic functions.
+Provide stubs for 64-bit atomics when building with KCSAN.
+Disable KCSAN instrumentation in arch/xtensa/boot.
 
-Heh. Not that warning.
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+Changes v1->v2:
 
-This warning:
+- fix __wmb definition to use __mb instead of mb
+- provide __smp_{,r,w}mb definitions because definitions from the
+  asm-generic use mb/rmb/wmb instead of __mb/__rmb/__wmb, thus
+  doubling KCSAN instrumentation.
 
-> [ 224.552771][ T3730] WARNING: CPU: 1 PID: 3730 at mm/page_alloc.c:5364 __alloc_pages (mm/page_alloc.c:5364)
+  Both changes fix a few failures in the KCSAN testsuite.
 
-That's just the
+ arch/xtensa/Kconfig               |  1 +
+ arch/xtensa/boot/lib/Makefile     |  1 +
+ arch/xtensa/include/asm/barrier.h | 12 +++++--
+ arch/xtensa/include/asm/bitops.h  | 10 +++---
+ arch/xtensa/lib/Makefile          |  2 ++
+ arch/xtensa/lib/kcsan-stubs.c     | 54 +++++++++++++++++++++++++++++++
+ 6 files changed, 73 insertions(+), 7 deletions(-)
+ create mode 100644 arch/xtensa/lib/kcsan-stubs.c
 
-  5363          if (unlikely(order >= MAX_ORDER)) {
-  5364                  WARN_ON_ONCE(!(gfp & __GFP_NOWARN));
-  5365                  return NULL;
-  5366          }
+diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+index 797355c142b3..c87f5ab493d9 100644
+--- a/arch/xtensa/Kconfig
++++ b/arch/xtensa/Kconfig
+@@ -29,6 +29,7 @@ config XTENSA
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL
+ 	select HAVE_ARCH_KASAN if MMU && !XIP_KERNEL
++	select HAVE_ARCH_KCSAN
+ 	select HAVE_ARCH_SECCOMP_FILTER
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_CONTEXT_TRACKING
+diff --git a/arch/xtensa/boot/lib/Makefile b/arch/xtensa/boot/lib/Makefile
+index e3d717c7bfa1..162d10af36f3 100644
+--- a/arch/xtensa/boot/lib/Makefile
++++ b/arch/xtensa/boot/lib/Makefile
+@@ -16,6 +16,7 @@ CFLAGS_REMOVE_inffast.o = -pg
+ endif
+ 
+ KASAN_SANITIZE := n
++KCSAN_SANITIZE := n
+ 
+ CFLAGS_REMOVE_inflate.o += -fstack-protector -fstack-protector-strong
+ CFLAGS_REMOVE_zmem.o += -fstack-protector -fstack-protector-strong
+diff --git a/arch/xtensa/include/asm/barrier.h b/arch/xtensa/include/asm/barrier.h
+index d6f8d4ddc2bc..898ea397e9bc 100644
+--- a/arch/xtensa/include/asm/barrier.h
++++ b/arch/xtensa/include/asm/barrier.h
+@@ -11,9 +11,15 @@
+ 
+ #include <asm/core.h>
+ 
+-#define mb()  ({ __asm__ __volatile__("memw" : : : "memory"); })
+-#define rmb() barrier()
+-#define wmb() mb()
++#define __mb()  ({ __asm__ __volatile__("memw" : : : "memory"); })
++#define __rmb() barrier()
++#define __wmb() __mb()
++
++#ifdef CONFIG_SMP
++#define __smp_mb() __mb()
++#define __smp_rmb() __rmb()
++#define __smp_wmb() __wmb()
++#endif
+ 
+ #if XCHAL_HAVE_S32C1I
+ #define __smp_mb__before_atomic()		barrier()
+diff --git a/arch/xtensa/include/asm/bitops.h b/arch/xtensa/include/asm/bitops.h
+index cd225896c40f..e02ec5833389 100644
+--- a/arch/xtensa/include/asm/bitops.h
++++ b/arch/xtensa/include/asm/bitops.h
+@@ -99,7 +99,7 @@ static inline unsigned long __fls(unsigned long word)
+ #if XCHAL_HAVE_EXCLUSIVE
+ 
+ #define BIT_OP(op, insn, inv)						\
+-static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
++static inline void arch_##op##_bit(unsigned int bit, volatile unsigned long *p)\
+ {									\
+ 	unsigned long tmp;						\
+ 	unsigned long mask = 1UL << (bit & 31);				\
+@@ -119,7 +119,7 @@ static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
+ 
+ #define TEST_AND_BIT_OP(op, insn, inv)					\
+ static inline int							\
+-test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)	\
++arch_test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)	\
+ {									\
+ 	unsigned long tmp, value;					\
+ 	unsigned long mask = 1UL << (bit & 31);				\
+@@ -142,7 +142,7 @@ test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)	\
+ #elif XCHAL_HAVE_S32C1I
+ 
+ #define BIT_OP(op, insn, inv)						\
+-static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
++static inline void arch_##op##_bit(unsigned int bit, volatile unsigned long *p)\
+ {									\
+ 	unsigned long tmp, value;					\
+ 	unsigned long mask = 1UL << (bit & 31);				\
+@@ -163,7 +163,7 @@ static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
+ 
+ #define TEST_AND_BIT_OP(op, insn, inv)					\
+ static inline int							\
+-test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)	\
++arch_test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)	\
+ {									\
+ 	unsigned long tmp, value;					\
+ 	unsigned long mask = 1UL << (bit & 31);				\
+@@ -205,6 +205,8 @@ BIT_OPS(change, "xor", )
+ #undef BIT_OP
+ #undef TEST_AND_BIT_OP
+ 
++#include <asm-generic/bitops/instrumented-atomic.h>
++
+ #include <asm-generic/bitops/le.h>
+ 
+ #include <asm-generic/bitops/ext2-atomic-setbit.h>
+diff --git a/arch/xtensa/lib/Makefile b/arch/xtensa/lib/Makefile
+index 5848c133f7ea..d4e9c397e3fd 100644
+--- a/arch/xtensa/lib/Makefile
++++ b/arch/xtensa/lib/Makefile
+@@ -8,3 +8,5 @@ lib-y	+= memcopy.o memset.o checksum.o \
+ 	   divsi3.o udivsi3.o modsi3.o umodsi3.o mulsi3.o \
+ 	   usercopy.o strncpy_user.o strnlen_user.o
+ lib-$(CONFIG_PCI) += pci-auto.o
++lib-$(CONFIG_KCSAN) += kcsan-stubs.o
++KCSAN_SANITIZE_kcsan-stubs.o := n
+diff --git a/arch/xtensa/lib/kcsan-stubs.c b/arch/xtensa/lib/kcsan-stubs.c
+new file mode 100644
+index 000000000000..2b08faa62b86
+--- /dev/null
++++ b/arch/xtensa/lib/kcsan-stubs.c
+@@ -0,0 +1,54 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bug.h>
++#include <linux/types.h>
++
++void __atomic_store_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++u64 __atomic_load_8(const volatile void *p, int i)
++{
++	BUG();
++}
++
++u64 __atomic_exchange_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++bool __atomic_compare_exchange_8(volatile void *p1, void *p2, u64 v, bool b, int i1, int i2)
++{
++	BUG();
++}
++
++u64 __atomic_fetch_add_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++u64 __atomic_fetch_sub_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++u64 __atomic_fetch_and_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++u64 __atomic_fetch_or_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++u64 __atomic_fetch_xor_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
++
++u64 __atomic_fetch_nand_8(volatile void *p, u64 v, int i)
++{
++	BUG();
++}
+-- 
+2.30.2
 
-so somebody is doing a big allocation that will fail, and doesn't use
-__GFP_NOWARN.
-
-That someone being iter_file_splice_write():
-
-> [ 224.567299][ T3730] kmalloc_order (include/linux/gfp.h:572 include/linux/gfp.h:595 include/linux/gfp.h:609 mm/slab_common.c:944)
-> [ 224.567707][ T3730] kmalloc_order_trace (mm/slab_common.c:960)
-> [ 224.568173][ T3730] __kmalloc (include/linux/slab.h:510 mm/slub.c:4413)
-> [ 224.568571][ T3730] iter_file_splice_write (include/linux/slab.h:? include/linux/slab.h:652 fs/splice.c:628)
-> [ 224.570060][ T3730] do_splice (fs/splice.c:767 fs/splice.c:1079)
-> [ 224.572386][ T3730] __ia32_sys_splice (fs/splice.c:1144 fs/splice.c:1350 fs/splice.c:1332 fs/splice.c:1332)
-
-and that's the
-
-        int nbufs = pipe->max_usage;
-        struct bio_vec *array = kcalloc(nbufs, sizeof(struct bio_vec),
-                                        GFP_KERNEL);
-
-thing, and no, using __GFP_NOWARN here isn't what we'd want to do,
-because the code in question has no fallback (it will just return
--ENOMEM).
-
-Now, technically, returning -ENOMEM is a "fallback", but not really.
-It just means the kernel won't crash, it doesn't mean that this is
-acceptable behavior.
-
-Basically, that commit 5a519c8fe4d6 made it possible to create a pipe
-that is effectively "too large to be used". It used to be that such a
-pipe could never be created before, because the 'pipe->bufs' resizing
-allocation used to be
-
-        bufs = kcalloc(nr_slots, sizeof(*bufs),
-                       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
-
-and 'sizeof(struct pipe_buffer)' is bigger than 'sizeof(struct
-bio_vec)', so if the resizing was successful, then the pipe buffer
-count was guaranteed to be smaller than what that file_splice code
-would use.
-
-So it really does look like this whole "allow the pipe size to grow
-almost unlimited" change was a fundamental mistake. It has these kinds
-of subtle issues.
-
-I'm inclined to revert commit 5a519c8fe4d6 - doing multiple iterations
-really shouldn't be so expensive, and this shows that the whole "try
-to do it in one big go" is fundamentally broken.
-
-Could 'iter_file_splice_write()' be changed to limit it some way? Yes.
-
-Could it be changed to use kvcalloc() too? Yes again.
-
-But I'm not convinced that some odd corner-case CRIU optimization is
-worth this kind of pain.
-
-                      Linus
