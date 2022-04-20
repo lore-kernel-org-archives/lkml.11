@@ -2,148 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35337C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 384EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378922AbiDTNWU (ORCPT
+        id S1378936AbiDTNYd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33352 "EHLO
+        Wed, 20 Apr 2022 09:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233914AbiDTNWP (ORCPT
+        with ESMTP id S233144AbiDTNYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:22:15 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1AF42A15;
-        Wed, 20 Apr 2022 06:19:28 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D362D60009;
-        Wed, 20 Apr 2022 13:19:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650460767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2gBVdSWSq3Kx05ZGBgji7QKyco/sOoB/fTj/ec1PlaM=;
-        b=mdDgwMkQSfRFn8KS53atkc9yX7+YFArUgPLKVATkP0/tYIwuNJUX9Laa4RSo4Pnj7p/kRa
-        baSjthpCeMD8cXSlldSJuEBqPNHuyzA04PeoRmE3Hmv8k7qlycTUzqiX4/GYtX1vvSI8++
-        nbsAR1MHM2O/DQ7pT0l8E5M/eWrKqao6y+vDB87sz3bLgMMx6LY/SGx/sOK6ANFJNi+SEp
-        zQIcVjSdWbWx/d7EEFvJ5nAhvd2bP/V8gDFaimXu/6Jx+6YQsfjccCi4HgCgA10OWPjC+p
-        ujftpQ72mI8XUVgEsl6RnPpMtStgFqU/pgdwRNg05jHyYKwTTtHt/akC6joDeQ==
-Date:   Wed, 20 Apr 2022 15:19:23 +0200
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH v2 6/8] ARM: dts: r9a06g032: Add internal PCI bridge
- node
-Message-ID: <20220420151923.1852a681@bootlin.com>
-In-Reply-To: <05c96b4d-313b-1aad-0ee5-61e54672765e@omp.ru>
-References: <20220414074011.500533-1-herve.codina@bootlin.com>
-        <20220414074011.500533-7-herve.codina@bootlin.com>
-        <05c96b4d-313b-1aad-0ee5-61e54672765e@omp.ru>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Wed, 20 Apr 2022 09:24:30 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F04427FF;
+        Wed, 20 Apr 2022 06:21:43 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id z99so2270594ede.5;
+        Wed, 20 Apr 2022 06:21:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=yTrKoeSx5DVhv4GKSGEZu42X2Dj3HZfus9gjzjDWtLo=;
+        b=jZdbFV5860QLbLI4Aa30pkXGVvf+mub3Ozvr8NOYxoqL2q2lY6k1RukB4ekJ9Ge9vE
+         5HusUBWHxsYowhC1HNVmkARaR784eKvj8c8Px5UmFTpgoL6Fo+/iaeVOzrkqLwo9teQV
+         f23FzTjLkEgi/dZpwJZACmP4vgT46hbuJY8Qo+ZlkdLXo9tdGQEnv8ULNf2sdgELeVVO
+         6S/JPmxEcZzYdosOKNEeph3F+ozBkNtZyttgwTpbQekwTLC7Ur7whgHT2bZwEKN0yoXE
+         /z3tLz2NHCZ59F4caRfn5BT4fMk7f0vJY3IiSxMp3gs4y2oWPlwk5ng7YlDYtCaWKFUG
+         wk2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=yTrKoeSx5DVhv4GKSGEZu42X2Dj3HZfus9gjzjDWtLo=;
+        b=ASAXt+JCyQLCmCl4G3UTOZGj556VPVdJS66IYLdsW7i8/unSx6DCIV6Ja53iJS1mq9
+         2hE0sKWzmRYDpccCd8IkSxYkRLFUSePKCBn7lAims+07H+zO4UJBRx/47rUOVK+h4zzh
+         XfGEBB/oBSMFJtS5L2UbUnR04px+BPpAzeptaK30puscpsRrrhbRwafY1LRzsqN3lzVO
+         qJkjDcDsGBRzrkMlLmWWQh4Vksvzu/ic36QYE5ElnqgoYDwaUzhrF6Xgc9ylttuIj78+
+         jQlIoEQToefs0Wf523byGeqvLgELpTc1FdHVemA9XsPH9e/I3aruNn/BDW4/kKAPPvPG
+         7ReA==
+X-Gm-Message-State: AOAM531CTFy9z8LCqZTBoHrUMagP6yE7+g8Ofw7GysKwjVnellIfrUau
+        gbTwp8G0M8cXwvyWQ5EelFE=
+X-Google-Smtp-Source: ABdhPJzcEcvHPxV6MF5NXWWou4veSt8SMjyDNTprQ4qC/0zHlveZsQAso1FXieKDqSDP6jt5ZtjyEg==
+X-Received: by 2002:a05:6402:3592:b0:423:d71e:41dc with SMTP id y18-20020a056402359200b00423d71e41dcmr20806464edc.402.1650460902000;
+        Wed, 20 Apr 2022 06:21:42 -0700 (PDT)
+Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
+        by smtp.googlemail.com with ESMTPSA id g24-20020a056402321800b00423e43ebb60sm4827837eda.61.2022.04.20.06.21.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 06:21:41 -0700 (PDT)
+Message-ID: <d26393a3323dc646df88fb09ee47d712c80eafc9.camel@gmail.com>
+Subject: Re: [PATCH v2 4/5] scsi: ufshpb: Add handing of device reset HPB
+ regions Infos in HPB device mode
+From:   Bean Huo <huobean@gmail.com>
+To:     keosung.park@samsung.com, ALIM AKHTAR <alim.akhtar@samsung.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "tomas.winkler@intel.com" <tomas.winkler@intel.com>,
+        "cang@codeaurora.org" <cang@codeaurora.org>,
+        Daejun Park <daejun7.park@samsung.com>,
+        "powen.kao@mediatek.com" <powen.kao@mediatek.com>,
+        "peter.wang@mediatek.com" <peter.wang@mediatek.com>,
+        cpgsproxy3 <cpgsproxy3@samsung.com>
+Cc:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Wed, 20 Apr 2022 15:21:41 +0200
+In-Reply-To: <1381713434.41650433982422.JavaMail.epsvc@epcpadp4>
+References: <20220419183044.789065-5-huobean@gmail.com>
+         <20220419183044.789065-1-huobean@gmail.com>
+         <CGME20220419183934epcas2p28272bfd9167253c2d9136c60f9050c5f@epcms2p7>
+         <1381713434.41650433982422.JavaMail.epsvc@epcpadp4>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0-1 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sergey,
-
-On Mon, 18 Apr 2022 12:02:52 +0300
-Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
-
-> Hello!
->=20
-> On 4/14/22 10:40 AM, Herve Codina wrote:
->=20
-> > Add the device node for the r9a06g032 internal PCI bridge device.
-> >=20
-> > Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> > ---
-> >  arch/arm/boot/dts/r9a06g032.dtsi | 28 ++++++++++++++++++++++++++++
-> >  1 file changed, 28 insertions(+)
-> >=20
-> > diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06=
-g032.dtsi
-> > index 636a6ab31c58..848dc034bb8c 100644
-> > --- a/arch/arm/boot/dts/r9a06g032.dtsi
-> > +++ b/arch/arm/boot/dts/r9a06g032.dtsi
-> > @@ -211,6 +211,34 @@ gic: interrupt-controller@44101000 {
-> >  			interrupts =3D
-> >  				<GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
-> >  		};
+On Wed, 2022-04-20 at 14:31 +0900, Keoseong Park wrote:
+> > +/**
+> > + *ufshpb_submit_region_inactive() - submit a region to be
+> > inactivated later
+> > + *@hpb: per-LU HPB instance
+> > + *@region_index: the index associated with the region that will be
+> > inactivated later
+> > + */
+> > +static void ufshpb_submit_region_inactive(struct ufshpb_lu *hpb,
+> > int region_index)
+> > +{
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int subregion_index;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ufshpb_region *rgn;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ufshpb_subregion *sr=
+gn;
 > > +
-> > +		pci_usb: pci@40030000 {
-> > +			compatible =3D "renesas,pci-r9a06g032", "renesas,pci-rzn1";
-> > +			device_type =3D "pci";
-> > +			clocks =3D <&sysctrl R9A06G032_HCLK_USBH>,
-> > +				 <&sysctrl R9A06G032_HCLK_USBPM>,
-> > +				 <&sysctrl R9A06G032_CLK_PCI_USB>;
-> > +			clock-names =3D "hclk_usbh", "hclk_usbpm", "clk_pci_usb";
-> > +			reg =3D <0x40030000 0xc00>,
-> > +			      <0x40020000 0x1100>;
-> > +			interrupts =3D <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
-> > +			status =3D "disabled";
-> > +
-> > +			bus-range =3D <0 0>;
-> > +			#address-cells =3D <3>;
-> > +			#size-cells =3D <2>;
-> > +			#interrupt-cells =3D <1>; =20
->=20
->    Really? I don't think this PCI bridge is also an interrupt controller.=
-..
-
-The #interrupt-cells property is required in the binding.
-The #interrupt-cells is needed when we use interrupt-map property.
-
-At least from 'make dtbindings_check':
-	properties: '#interrupt-cells' is a dependency of 'interrupt-map'
-	from schema $id: http://devicetree.org/meta-schemas/interrupts.yaml#
-
-Do I miss something ?
-
-Regards,
-Herv=C3=A9
-
->=20
-> > +			ranges =3D <0x02000000 0 0x40020000 0x40020000 0 0x00010000>;
-> > +			/* Should map all possible DDR as inbound ranges, but
-> > +			 * the IP only supports a 256MB, 512MB, or 1GB window.
-> > +			 * flags, PCI addr (64-bit), CPU addr, PCI size (64-bit)
-> > +			 */
-> > +			dma-ranges =3D <0x42000000 0 0x80000000 0x80000000 0 0x40000000>;
-> > +			interrupt-map-mask =3D <0xf800 0 0 0x7>;
-> > +			interrupt-map =3D <0x0000 0 0 1 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH
-> > +					 0x0800 0 0 1 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH
-> > +					 0x1000 0 0 2 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
-> > +		};
-> >  	};
-> > =20
-> >  	timer { =20
->=20
-> MBR, Sergey
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /*
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Remove this region =
+from active region list and add it
+> > to inactive list
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_lock(&hpb->rsp_list_lo=
+ck);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ufshpb_update_inactive_info=
+(hpb, region_index);
+> How about separating the "hpb->stats.rb_inactive_cnt++" code from
+> ufshpb_update_inactive_info()?
+> Because I think this code should only be used in
+> ufshpb_rsp_req_region_update().
 
 
+based on Documentation/ABI/testing/sysfs-driver-ufs:
 
---=20
-Herv=C3=A9 Codina, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+"What:       /sys/class/scsi_device/*/device/hpb_stats/rb_inactive_cnt
+Date:       June 2021
+Contact:    Daejun Park <daejun7.park@samsung.com>
+Description:    This entry shows the number of inactive regions
+recommended by  response UPIUs."
+
+
+This parameter should be increased only when recieving inactive
+recommended.
+
+I will change it in the next version, thanks.
+
+
+Kind regards,
+Bean
