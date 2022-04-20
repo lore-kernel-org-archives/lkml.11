@@ -2,200 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E49A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 892BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376551AbiDTH5c (ORCPT
+        id S1376580AbiDTH54 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        Wed, 20 Apr 2022 03:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376579AbiDTH52 (ORCPT
+        with ESMTP id S1376586AbiDTH5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:57:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235B23BBDC;
-        Wed, 20 Apr 2022 00:54:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 20 Apr 2022 03:57:50 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4388E1140;
+        Wed, 20 Apr 2022 00:55:02 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C243B81D71;
-        Wed, 20 Apr 2022 07:54:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EE4C385A9;
-        Wed, 20 Apr 2022 07:54:37 +0000 (UTC)
-Message-ID: <2732e2ad-03bb-b30a-c649-08898419185b@xs4all.nl>
-Date:   Wed, 20 Apr 2022 09:54:35 +0200
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KjtHm60KTz4xL3;
+        Wed, 20 Apr 2022 17:55:00 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650441300;
+        bh=7DqJZLk9JJ2luoJ4/Lv5FieQn4ef6HXW5YFKn1HV/j8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=BZDshJ7ODeEiJVB7Or/0tWR7PqG5efI47v1giQX2I5DC35lRLsYYuQQr71vSLcw61
+         CAb50Tfw2ucIEgYIGVrF1mQr0QgAT2DArVWcv2OdkVRLTsrJtLGcXHSkp5qy/fiewV
+         JZS9KlC3Bnx36gc1b7widY/ISEm9clUrkc13bjbRqJbCBoclggv9IXB4dfi644M1JD
+         2eJ9FW/54VbIiF36x1V/ZdD/TlxdDjcwi8jwMFAUghzgNskdE8vx0x283aNTh9r0HV
+         DAmJuNrSjn3hZLoHKGeIS1DS4rrbeEyDSlA9f2HhhsFF7iQvp4YMAl4dztFUGif1Wm
+         Y32PGUGcamsow==
+Date:   Wed, 20 Apr 2022 17:55:00 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the bitmap tree
+Message-ID: <20220420175500.240e4eb3@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/5] Visconti: Add Toshiba Visconti Video Input
- Interface driver
-Content-Language: en-US
-To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220414053528.31460-1-yuji2.ishikawa@toshiba.co.jp>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220414053528.31460-1-yuji2.ishikawa@toshiba.co.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/WYh/yvE9rIn74qrixDodstz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yuji,
+--Sig_/WYh/yvE9rIn74qrixDodstz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On 14/04/2022 07:35, Yuji Ishikawa wrote:
-> This series is the Video Input Interface driver for Toshiba's ARM SoC, Visconti[0].
-> This provides DT binding documentation, device driver, MAINTAINER fiels.
-> 
-> Best regards,
-> Yuji
-> 
-> [0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
-> 
-> 
->   dt-bindings: media: platform: visconti: Add Toshiba Visconti Video Input Interface bindings
->     v1 -> v2:
->       - No update
-> 
->   media: platform: visconti: Add Toshiba Visconti Video Input Interface driver headers
->     v1 -> v2:
->       - moved driver headers to an individual patch
-> 
->   media: platform: visconti: Add Toshiba Visconti Video Input Interface driver body
->     v1 -> v2:
->       - moved driver sources to an individual patch
->    
->   media: platform: visconti: Add Toshiba VIIF image signal processor driver
->     v1 -> v2:
->       - moved image signal processor driver to an individual patch
-> 
->   MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
->     v1 -> v2:
->       - No update
-> 
-> Change in V2:
->   - moved files into individual patches to decrease patch size
+Hi all,
 
-Thank you for your patch series.
+After merging the bitmap tree, today's linux-next build (htmldocs)
+produced this warning:
 
-However, there are quite a few things that need more work. I'll make some
-high level guidelines here, and go into a bit more detail in some of the
-patches.
+Documentation/core-api/kernel-api:87: /home/sfr/next/next/include/linux/bit=
+map.h:425: WARNING: Unexpected indentation.
+Documentation/core-api/kernel-api:87: /home/sfr/next/next/include/linux/bit=
+map.h:426: WARNING: Block quote ends without a blank line; unexpected unind=
+ent.
+Documentation/core-api/kernel-api:87: /home/sfr/next/next/include/linux/bit=
+map.h:431: WARNING: Unexpected indentation.
 
-First of all, run your patches through 'scripts/checkpatch.pl --strict' and
-fix the many warnings, errors and checks. Use common sense, sometimes a
-check or warning isn't actually valid, but the vast majority of what
-checkpatch spits out appears reasonable.
+Introduced by commit
 
-Another thing I noticed is code like this:
+  6f46c24da767 ("bitmap: add bitmap_weight_{cmp, eq, gt, ge, lt, le} functi=
+ons")
 
-+		if (param->r_cr_in_offset > HWD_VIIF_CSC_MAX_OFFSET)
-+			return -EINVAL;
-+
-+		if (param->g_y_in_offset > HWD_VIIF_CSC_MAX_OFFSET)
-+			return -EINVAL;
-+
-+		if (param->b_cb_in_offset > HWD_VIIF_CSC_MAX_OFFSET)
-+			return -EINVAL;
-+
-+		if (param->r_cr_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
-+			return -EINVAL;
-+
-+		if (param->g_y_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
-+			return -EINVAL;
-+
-+		if (param->b_cb_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
-+			return -EINVAL;
+--=20
+Cheers,
+Stephen Rothwell
 
-This can easily be combined into a single if:
+--Sig_/WYh/yvE9rIn74qrixDodstz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-		if (param->r_cr_in_offset > HWD_VIIF_CSC_MAX_OFFSET ||
-		    param->g_y_in_offset > HWD_VIIF_CSC_MAX_OFFSET ||
-		    param->b_cb_in_offset > HWD_VIIF_CSC_MAX_OFFSET ||
-		    param->r_cr_out_offset > HWD_VIIF_CSC_MAX_OFFSET ||
-		    param->g_y_out_offset > HWD_VIIF_CSC_MAX_OFFSET ||
-		    param->b_cb_out_offset > HWD_VIIF_CSC_MAX_OFFSET)
-			return -EINVAL;
+-----BEGIN PGP SIGNATURE-----
 
-Easier to read and a lot shorter.
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJfvFQACgkQAVBC80lX
+0Gw9pggAiyjb08xshT06M1IV8SEaekXyKg+ZHBMWRGynTqR0Iuv/SVlP4j1xMKlN
+9T4J2J4JQbhU+OstBsR3NPZqSaaH/FOfULu1b+VlJLdNKDgZDuvdPua5S5nc+oMj
+WC0Ejf25H4K/ItXBQ3UpMB+uiQ92sI/jCGritMqogUdv3PtI4YxhzNty2SExzJ0b
+AuH0+hp1vKLRfjraVEcxwuJFhFIZZa4akzlulkZNLUNYs0IHLSx3xjMz/OlU0S+B
+iOAIvrRjDg/Sc/ydEzoaJLoLKqbogM3RfZchvUKVBSKQSN12KWBI+IQU4BfS8mA2
+E3xxEI4QPkDoHF8UgJ7MX3LOwJEaGw==
+=PmVI
+-----END PGP SIGNATURE-----
 
-Another thing to avoid is mixing lower and upper case in function names.
-A lot of functions have this prefix: 'hwd_VIIF_'. Just change that to
-'hwd_viif_': that's much easier on the eyes.
-
-I also see a fair amount of code that is indented very far to the right.
-Often due to constructs like this:
-
-	if (test) {
-		// lots of code
-	}
-	return ret;
-
-Which can be changed to:
-
-	if (!test)
-		return ret;
-	// lots of code
-	return ret;
-
-The same can also happen in a for/while loop where you can just 'continue'
-instead of 'return'.
-
-This makes the code easier to read and review.
-
-It doesn't look like this driver uses the media controller API. This is
-probably something you want to look into, esp. in combination with libcamera
-support (https://libcamera.org/). I've added Laurent to this, since he's
-the expert on this.
-
-Regards,
-
-	Hans
-
-> 
-> Yuji Ishikawa (5):
->   dt-bindings: media: platform: visconti: Add Toshiba Visconti Video
->     Input Interface bindings
->   media: platform: visconti: Add Toshiba Visconti Video Input Interface
->     driver headers
->   media: platform: visconti: Add Toshiba Visconti Video Input Interface
->     driver body
->   media: platform: visconti: Add Toshiba VIIF image signal processor
->     driver
->   MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
-> 
->  .../bindings/media/toshiba,visconti-viif.yaml |  103 +
->  MAINTAINERS                                   |    2 +
->  drivers/media/platform/Kconfig                |    2 +
->  drivers/media/platform/Makefile               |    4 +
->  drivers/media/platform/visconti/Kconfig       |    9 +
->  drivers/media/platform/visconti/Makefile      |    9 +
->  drivers/media/platform/visconti/hwd_viif.c    | 2233 ++++++++++
->  drivers/media/platform/visconti/hwd_viif.h    | 1776 ++++++++
->  .../media/platform/visconti/hwd_viif_csi2rx.c |  767 ++++
->  .../platform/visconti/hwd_viif_internal.h     |  361 ++
->  .../media/platform/visconti/hwd_viif_l1isp.c  | 3769 +++++++++++++++++
->  .../media/platform/visconti/hwd_viif_reg.h    | 2802 ++++++++++++
->  drivers/media/platform/visconti/viif.c        | 2384 +++++++++++
->  drivers/media/platform/visconti/viif.h        |  134 +
->  include/uapi/linux/visconti_viif.h            | 1683 ++++++++
->  15 files changed, 16038 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
->  create mode 100644 drivers/media/platform/visconti/Kconfig
->  create mode 100644 drivers/media/platform/visconti/Makefile
->  create mode 100644 drivers/media/platform/visconti/hwd_viif.c
->  create mode 100644 drivers/media/platform/visconti/hwd_viif.h
->  create mode 100644 drivers/media/platform/visconti/hwd_viif_csi2rx.c
->  create mode 100644 drivers/media/platform/visconti/hwd_viif_internal.h
->  create mode 100644 drivers/media/platform/visconti/hwd_viif_l1isp.c
->  create mode 100644 drivers/media/platform/visconti/hwd_viif_reg.h
->  create mode 100644 drivers/media/platform/visconti/viif.c
->  create mode 100644 drivers/media/platform/visconti/viif.h
->  create mode 100644 include/uapi/linux/visconti_viif.h
-> 
-
+--Sig_/WYh/yvE9rIn74qrixDodstz--
