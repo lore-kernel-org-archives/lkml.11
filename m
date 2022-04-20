@@ -2,163 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B67A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F98C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377925AbiDTLKN (ORCPT
+        id S1377939AbiDTLKT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
+        Wed, 20 Apr 2022 07:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377896AbiDTLKG (ORCPT
+        with ESMTP id S1377910AbiDTLKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 07:10:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7328940E68
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:07:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650452840;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TUFhF3hl2SKfIxx89PLl432LqDZkfSZvjeGeXMqsrlg=;
-        b=DlP6HBVAzN85ERZBfKj73Xwblojf2/57/+XM/SD3c6wNy4SGhZq7Gxn+l5f8f9kSbqwFPU
-        E+WTyGEOO3YF2+08YLt1ldp3oWBG+mr9qvaMa1Zc+dVhGrSBOTg2mNWVykhiU5HIABNpEt
-        SbPwc5guF2k5wTDnAj2QHBl2BwHp5RM=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-263-k5nJtn8_OwOZ3rYWdyVWqA-1; Wed, 20 Apr 2022 07:07:19 -0400
-X-MC-Unique: k5nJtn8_OwOZ3rYWdyVWqA-1
-Received: by mail-ed1-f69.google.com with SMTP id bc9-20020a056402204900b0041fe60f6ff9so977103edb.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:07:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TUFhF3hl2SKfIxx89PLl432LqDZkfSZvjeGeXMqsrlg=;
-        b=bl2mdINz4atj7pee7go9B8wEdBlRXlq9dzqTNfO+B/a90/rfKR9L1EmAVsdGYb78Ji
-         4DAzcE6Id2NoO8wGxClli2/NjxqG2XEOqwTBQDmC7klCnb/Ef1cv3kD8df/V/4KNpRum
-         UF8ajIiTCaFOCGZzH2FZfrYuQbgqYBtrjOmqz2wbf+qCyACZu3jq+tsuXVf9zHQsXKR3
-         wXAtMsUunioTFCsbZDjG5OMFZ5/2oXNeqcKSTFYwmOYEdcoiRKmo37KdPkou3ZFcaek2
-         CpvIecvvSDrMn69T26+Krvn8l8yh9y6bdL82GycY02Fg+yRfa3DLycm7nB9Z1ZRbH6oF
-         Oo5g==
-X-Gm-Message-State: AOAM530kd66JF7wIX59q3WhwHUyHEkGM3DPQQvpeWnzUXdao4qBnFz/v
-        FP5wr6UF1bWavN2jtmSfQRVWWiaNSmq9dop2EqLBUdUMilnf2JsPcEozAN3MwWYLLH2ChMalLar
-        mDDFC3uawJBNT6/sEOVU7aUhn
-X-Received: by 2002:aa7:d292:0:b0:41d:7933:1f00 with SMTP id w18-20020aa7d292000000b0041d79331f00mr22321191edq.237.1650452838091;
-        Wed, 20 Apr 2022 04:07:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy4xkdSFzHKfg4PBYhoD0/mOJsBUEzZ2dXQcXai1pQkf6+YZSMmE+Tg6Ubf6jiqCkiDSYI/Sw==
-X-Received: by 2002:aa7:d292:0:b0:41d:7933:1f00 with SMTP id w18-20020aa7d292000000b0041d79331f00mr22321172edq.237.1650452837920;
-        Wed, 20 Apr 2022 04:07:17 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id u6-20020a170906408600b006e87d654270sm6560779ejj.44.2022.04.20.04.07.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 04:07:17 -0700 (PDT)
-Message-ID: <2d096f20-dbaa-1d49-96e9-a7ae6c19f7fe@redhat.com>
-Date:   Wed, 20 Apr 2022 13:07:16 +0200
+        Wed, 20 Apr 2022 07:10:08 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDB02FFD0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650452842; x=1681988842;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=b5LaYQB0C8DdZpq+qMT5IZYjRzmWsg5sTt2s9ZNyBEc=;
+  b=jnFfV6+s1u9YzfblqD319QHGC9HLERRWPrQmkAsfAZTz8eAAqXuakwbN
+   1qur9yY0et/zjWmGAoImITGaahIfHzXDCXJs7Ri/oNSD5VL+Uow4gARJS
+   MMGP3hX5U3yuNXU3Ey7xxGLD1rLIx5I3d+3CJjIFNLTgbOXMwH1Eoyys2
+   mjcXs2v0hLFJfzG2bSZ4d/rs2hUt67a+YUI82zD4/VBafXsbOi2A0x09Z
+   3fuqawqSItz/cFoLXqBCYuUzf+hdgQbfmyAKRQtTb4AgbXqykrprF7qTh
+   e4VPpYP2z93zkCqMK9KNvFdMJ/CjlpOaKfoEQnOospC3tTx8hc+TM6SbX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="251307689"
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="251307689"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 04:07:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="555150432"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 20 Apr 2022 04:07:21 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nh8B6-0006vD-I6;
+        Wed, 20 Apr 2022 11:07:20 +0000
+Date:   Wed, 20 Apr 2022 19:06:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
+ cec83620bfa1e09a5af60b439ddcedae5af1544a
+Message-ID: <625fe92e.Ps3q22sRHfEojmVV%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] staging: media: atomisp: Use kmap_local_page() in
- hmm_store()
-Content-Language: en-US
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Martiros Shakhzadyan <vrzh@vrzh.net>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
-        outreachy@lists.linux.dev
-References: <20220413225531.9425-1-fmdefrancesco@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220413225531.9425-1-fmdefrancesco@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
+branch HEAD: cec83620bfa1e09a5af60b439ddcedae5af1544a  rcu/torture: Change order of warning and trace dump
 
-On 4/14/22 00:55, Fabio M. De Francesco wrote:
-> The use of kmap() is being deprecated in favor of kmap_local_page()
-> where it is feasible. The same is true for kmap_atomic().
-> 
-> In file pci/hmm/hmm.c, function hmm_store() test if we are in atomic
-> context and, if so, it calls kmap_atomic(), if not, it calls kmap().
-> 
-> First of all, in_atomic() shouldn't be used in drivers. This macro
-> cannot always detect atomic context; in particular, it cannot know
-> about held spinlocks in non-preemptible kernels.
-> 
-> Notwithstanding what it is said above, this code doesn't need to care
-> whether or not it is executing in atomic context. It can simply use
-> kmap_local_page() / kunmap_local() that can instead do the mapping /
-> unmapping regardless of the context.
-> 
-> With kmap_local_page(), the mapping is per thread, CPU local and not
-> globally visible. Therefore, hmm_store()() is a function where the use
-> of kmap_local_page() in place of both kmap() and kmap_atomic() is
-> correctly suited.
-> 
-> Convert the calls of kmap() / kunmap() and kmap_atomic() /
-> kunmap_atomic() to kmap_local_page() / kunmap_local() and drop the
-> unnecessary tests which test if the code is in atomic context.
-> 
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+elapsed time: 1858m
 
+configs tested: 155
+configs skipped: 5
 
-I've successfully tested this on both the front and back cams
-of a chuwi hi8 tablet:
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Tested-by: Hans de Goede <hdegoede@redhat.com>
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+mips                 randconfig-c004-20220420
+sh                              ul2_defconfig
+arm                       aspeed_g5_defconfig
+nios2                               defconfig
+powerpc64                           defconfig
+arm                       imx_v6_v7_defconfig
+sh                  sh7785lcr_32bit_defconfig
+powerpc                 mpc85xx_cds_defconfig
+powerpc                       eiger_defconfig
+nios2                         10m50_defconfig
+arm                          pxa910_defconfig
+arm                        cerfcube_defconfig
+arm                         at91_dt_defconfig
+sh                          sdk7786_defconfig
+xtensa                    xip_kc705_defconfig
+h8300                       h8s-sim_defconfig
+powerpc                   motionpro_defconfig
+sh                 kfr2r09-romimage_defconfig
+xtensa                       common_defconfig
+arc                      axs103_smp_defconfig
+ia64                         bigsur_defconfig
+arm                        keystone_defconfig
+powerpc                     redwood_defconfig
+mips                     loongson1b_defconfig
+m68k                         amcore_defconfig
+s390                                defconfig
+powerpc                      makalu_defconfig
+ia64                        generic_defconfig
+mips                            ar7_defconfig
+um                           x86_64_defconfig
+mips                    maltaup_xpa_defconfig
+arm                          lpd270_defconfig
+powerpc                       ppc64_defconfig
+sh                          rsk7201_defconfig
+riscv                            allyesconfig
+sparc                               defconfig
+powerpc                  iss476-smp_defconfig
+ia64                                defconfig
+openrisc                            defconfig
+sh                           se7721_defconfig
+powerpc                 mpc8540_ads_defconfig
+m68k                        mvme16x_defconfig
+arc                            hsdk_defconfig
+mips                       bmips_be_defconfig
+mips                      loongson3_defconfig
+arc                        nsimosci_defconfig
+sh                            hp6xx_defconfig
+arc                           tb10x_defconfig
+arm                          iop32x_defconfig
+sh                        dreamcast_defconfig
+m68k                        mvme147_defconfig
+ia64                             alldefconfig
+sh                   rts7751r2dplus_defconfig
+mips                         cobalt_defconfig
+arc                     nsimosci_hs_defconfig
+arm                           u8500_defconfig
+sh                           sh2007_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220420
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+x86_64                        randconfig-a011
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220419
+arc                  randconfig-r043-20220419
+s390                 randconfig-r044-20220419
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
-Regards,
+clang tested configs:
+riscv                randconfig-c006-20220420
+mips                 randconfig-c004-20220420
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+arm                  randconfig-c002-20220420
+powerpc              randconfig-c003-20220420
+s390                 randconfig-c005-20220420
+mips                        qi_lb60_defconfig
+arm                         s3c2410_defconfig
+arm                       netwinder_defconfig
+arm                     davinci_all_defconfig
+mips                           ip28_defconfig
+mips                       rbtx49xx_defconfig
+powerpc                      obs600_defconfig
+mips                          ath25_defconfig
+powerpc                  mpc885_ads_defconfig
+arm                         mv78xx0_defconfig
+powerpc                    mvme5100_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a013
+i386                          randconfig-a015
+i386                          randconfig-a011
+hexagon              randconfig-r041-20220420
+riscv                randconfig-r042-20220420
+hexagon              randconfig-r045-20220420
+hexagon              randconfig-r045-20220419
+hexagon              randconfig-r041-20220419
 
-Hans
-
-
-
-> ---
->  drivers/staging/media/atomisp/pci/hmm/hmm.c | 14 ++------------
->  1 file changed, 2 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-> index 46ac082cd3f1..54188197c3dc 100644
-> --- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
-> +++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-> @@ -482,10 +482,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
->  		idx = (virt - bo->start) >> PAGE_SHIFT;
->  		offset = (virt - bo->start) - (idx << PAGE_SHIFT);
->  
-> -		if (in_atomic())
-> -			des = (char *)kmap_atomic(bo->page_obj[idx].page);
-> -		else
-> -			des = (char *)kmap(bo->page_obj[idx].page);
-> +		des = (char *)kmap_local_page(bo->page_obj[idx].page);
->  
->  		if (!des) {
->  			dev_err(atomisp_dev,
-> @@ -512,14 +509,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
->  
->  		clflush_cache_range(des, len);
->  
-> -		if (in_atomic())
-> -			/*
-> -			 * Note: kunmap_atomic requires return addr from
-> -			 * kmap_atomic, not the page. See linux/highmem.h
-> -			 */
-> -			kunmap_atomic(des - offset);
-> -		else
-> -			kunmap(bo->page_obj[idx].page);
-> +		kunmap_local(des);
->  	}
->  
->  	return 0;
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
