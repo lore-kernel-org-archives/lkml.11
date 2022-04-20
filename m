@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABECC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380200AbiDTPOY (ORCPT
+        id S1380199AbiDTPO1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
+        Wed, 20 Apr 2022 11:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380102AbiDTPMt (ORCPT
+        with ESMTP id S1380088AbiDTPMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:12:49 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC403EABE
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:10:03 -0700 (PDT)
+        Wed, 20 Apr 2022 11:12:47 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4219B3E5FC
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:10:01 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 870F51F75C;
-        Wed, 20 Apr 2022 15:10:02 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D9190212CA;
+        Wed, 20 Apr 2022 15:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650467402; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1650467399; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QLFILJSyTHZFwq9omiEC/cxiL5bUIoRxF/dV9SsWN+s=;
-        b=fU0EP2NLCoJe8acGsjUQq+tmbjd9EV5kJ837Yvpjtv3R+E+3rdGLFrVs3chlN8uv83+s3P
-        V2mWF1R7X54tVlLdCKJydZmarq3eFTC+1QOhIfPS3iXNwVxAbQaf+CszPw4cSbP+RQi0bK
-        PRYJay9LyAUNVTxOluvKtHQACb11R0A=
+        bh=nqfEAJYikez5yuRaJWQFVEnr7bTvqklH6kJ7XEyZeH4=;
+        b=uZzO2cwIu/sM9Hdm1fFLMi4NNhXH9dzuMEXeAORI9mIENpJgMi0mH8YBRcV8SfzpXm4aCJ
+        mgsKBrn4Aeo/6RKAQb2zKRH4zXldm3hlBxeNEOtRX2j1vJT8fz76y2iMt2w21WFF5SD4De
+        UvfkRO//eO3i1T3ieg9KOtmlKggUaBw=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 602B213AD5;
-        Wed, 20 Apr 2022 15:10:02 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A555313AE0;
+        Wed, 20 Apr 2022 15:09:59 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id 2PBIFkoiYGJILQAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 15:10:02 +0000
+        id iIX9JkciYGJILQAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 15:09:59 +0000
 From:   Juergen Gross <jgross@suse.com>
 To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Subject: [PATCH 18/18] xen/xenbus: eliminate xenbus_grant_ring()
-Date:   Wed, 20 Apr 2022 17:09:42 +0200
-Message-Id: <20220420150942.31235-19-jgross@suse.com>
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
+Subject: [PATCH 06/18] xen/sound: switch xen_snd_front to use INVALID_GRANT_REF
+Date:   Wed, 20 Apr 2022 17:09:30 +0200
+Message-Id: <20220420150942.31235-7-jgross@suse.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220420150942.31235-1-jgross@suse.com>
 References: <20220420150942.31235-1-jgross@suse.com>
@@ -58,118 +59,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no external user of xenbus_grant_ring() left, so merge it into
-the only caller xenbus_setup_ring().
+Instead of using a private macro for an invalid grant reference use
+the common one.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- drivers/xen/xenbus/xenbus_client.c | 64 +++++++++---------------------
- include/xen/xenbus.h               |  2 -
- 2 files changed, 18 insertions(+), 48 deletions(-)
+ sound/xen/xen_snd_front_evtchnl.c | 4 ++--
+ sound/xen/xen_snd_front_evtchnl.h | 9 ---------
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/xen/xenbus/xenbus_client.c b/drivers/xen/xenbus/xenbus_client.c
-index 1a2e0d94ccd1..7b1f7f86b6e5 100644
---- a/drivers/xen/xenbus/xenbus_client.c
-+++ b/drivers/xen/xenbus/xenbus_client.c
-@@ -363,50 +363,6 @@ static void xenbus_switch_fatal(struct xenbus_device *dev, int depth, int err,
- 		__xenbus_switch_state(dev, XenbusStateClosing, 1);
- }
+diff --git a/sound/xen/xen_snd_front_evtchnl.c b/sound/xen/xen_snd_front_evtchnl.c
+index ecbc294fc59a..3e21369c8216 100644
+--- a/sound/xen/xen_snd_front_evtchnl.c
++++ b/sound/xen/xen_snd_front_evtchnl.c
+@@ -167,7 +167,7 @@ static void evtchnl_free(struct xen_snd_front_info *front_info,
+ 		xenbus_free_evtchn(front_info->xb_dev, channel->port);
  
--/**
-- * xenbus_grant_ring
-- * @dev: xenbus device
-- * @vaddr: starting virtual address of the ring
-- * @nr_pages: number of pages to be granted
-- * @grefs: grant reference array to be filled in
-- *
-- * Grant access to the given @vaddr to the peer of the given device.
-- * Then fill in @grefs with grant references.  Return 0 on success, or
-- * -errno on error.  On error, the device will switch to
-- * XenbusStateClosing, and the error will be saved in the store.
+ 	/* End access and free the page. */
+-	if (channel->gref != GRANT_INVALID_REF)
++	if (channel->gref != INVALID_GRANT_REF)
+ 		gnttab_end_foreign_access(channel->gref, page);
+ 	else
+ 		free_page(page);
+@@ -207,7 +207,7 @@ static int evtchnl_alloc(struct xen_snd_front_info *front_info, int index,
+ 	channel->index = index;
+ 	channel->front_info = front_info;
+ 	channel->state = EVTCHNL_STATE_DISCONNECTED;
+-	channel->gref = GRANT_INVALID_REF;
++	channel->gref = INVALID_GRANT_REF;
+ 	page = get_zeroed_page(GFP_KERNEL);
+ 	if (!page) {
+ 		ret = -ENOMEM;
+diff --git a/sound/xen/xen_snd_front_evtchnl.h b/sound/xen/xen_snd_front_evtchnl.h
+index cbe51fd1ec15..3675fba70564 100644
+--- a/sound/xen/xen_snd_front_evtchnl.h
++++ b/sound/xen/xen_snd_front_evtchnl.h
+@@ -15,15 +15,6 @@
+ 
+ struct xen_snd_front_info;
+ 
+-#ifndef GRANT_INVALID_REF
+-/*
+- * FIXME: usage of grant reference 0 as invalid grant reference:
+- * grant reference 0 is valid, but never exposed to a PV driver,
+- * because of the fact it is already in use/reserved by the PV console.
 - */
--int xenbus_grant_ring(struct xenbus_device *dev, void *vaddr,
--		      unsigned int nr_pages, grant_ref_t *grefs)
--{
--	int err;
--	unsigned int i;
--	grant_ref_t gref_head;
+-#define GRANT_INVALID_REF	0
+-#endif
 -
--	err = gnttab_alloc_grant_references(nr_pages, &gref_head);
--	if (err) {
--		xenbus_dev_fatal(dev, err, "granting access to ring page");
--		return err;
--	}
--
--	for (i = 0; i < nr_pages; i++) {
--		unsigned long gfn;
--
--		if (is_vmalloc_addr(vaddr))
--			gfn = pfn_to_gfn(vmalloc_to_pfn(vaddr));
--		else
--			gfn = virt_to_gfn(vaddr);
--
--		grefs[i] = gnttab_claim_grant_reference(&gref_head);
--		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
--						gfn, 0);
--
--		vaddr = vaddr + XEN_PAGE_SIZE;
--	}
--
--	return 0;
--}
--EXPORT_SYMBOL_GPL(xenbus_grant_ring);
--
- /*
-  * xenbus_setup_ring
-  * @dev: xenbus device
-@@ -424,6 +380,7 @@ int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
- 		      unsigned int nr_pages, grant_ref_t *grefs)
- {
- 	unsigned long ring_size = nr_pages * XEN_PAGE_SIZE;
-+	grant_ref_t gref_head;
- 	unsigned int i;
- 	int ret;
+ /* Timeout in ms to wait for backend to respond. */
+ #define VSND_WAIT_BACK_MS	3000
  
-@@ -433,9 +390,24 @@ int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
- 		goto err;
- 	}
- 
--	ret = xenbus_grant_ring(dev, *vaddr, nr_pages, grefs);
--	if (ret)
-+	ret = gnttab_alloc_grant_references(nr_pages, &gref_head);
-+	if (ret) {
-+		xenbus_dev_fatal(dev, ret, "granting access to ring page");
- 		goto err;
-+	}
-+
-+	for (i = 0; i < nr_pages; i++) {
-+		unsigned long gfn;
-+
-+		if (is_vmalloc_addr(*vaddr))
-+			gfn = pfn_to_gfn(vmalloc_to_pfn(vaddr[i]));
-+		else
-+			gfn = virt_to_gfn(vaddr[i]);
-+
-+		grefs[i] = gnttab_claim_grant_reference(&gref_head);
-+		gnttab_grant_foreign_access_ref(grefs[i], dev->otherend_id,
-+						gfn, 0);
-+	}
- 
- 	return 0;
- 
-diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
-index b533b4adc835..eaa932b99d8a 100644
---- a/include/xen/xenbus.h
-+++ b/include/xen/xenbus.h
-@@ -224,8 +224,6 @@ int xenbus_watch_pathfmt(struct xenbus_device *dev, struct xenbus_watch *watch,
- 			 const char *pathfmt, ...);
- 
- int xenbus_switch_state(struct xenbus_device *dev, enum xenbus_state new_state);
--int xenbus_grant_ring(struct xenbus_device *dev, void *vaddr,
--		      unsigned int nr_pages, grant_ref_t *grefs);
- int xenbus_setup_ring(struct xenbus_device *dev, gfp_t gfp, void **vaddr,
- 		      unsigned int nr_pages, grant_ref_t *grefs);
- void xenbus_teardown_ring(void **vaddr, unsigned int nr_pages,
 -- 
 2.34.1
 
