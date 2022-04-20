@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AFAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8520C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358899AbiDTCTs (ORCPT
+        id S1358904AbiDTCVx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
+        Tue, 19 Apr 2022 22:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiDTCTq (ORCPT
+        with ESMTP id S229791AbiDTCVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:19:46 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EE815A39;
-        Tue, 19 Apr 2022 19:16:57 -0700 (PDT)
-X-UUID: 8409fd70d4b3458cb584da2a769e1a0c-20220420
-X-UUID: 8409fd70d4b3458cb584da2a769e1a0c-20220420
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 870627283; Wed, 20 Apr 2022 10:16:51 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 20 Apr 2022 10:16:50 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 20 Apr 2022 10:16:50 +0800
-Message-ID: <dd069ad818e13ab30847d5da93ca4a9ef7c13bf9.camel@mediatek.com>
-Subject: Re: [PATCH 4/7] clk: mediatek: reset: Add reset.h
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
-        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
-        <yong.liang@mediatek.com>, <runyang.chen@mediatek.com>,
-        <linux-kernel@vger.kernel.org>, <allen-kh.cheng@mediatek.com>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 20 Apr 2022 10:16:50 +0800
-In-Reply-To: <20eaaba7-19cb-8f1d-ecf4-bfac14d50f67@collabora.com>
-References: <20220418132154.7401-1-rex-bc.chen@mediatek.com>
-         <20220418132154.7401-5-rex-bc.chen@mediatek.com>
-         <20eaaba7-19cb-8f1d-ecf4-bfac14d50f67@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+        Tue, 19 Apr 2022 22:21:50 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C8B30574
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:19:06 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o5so600914pjr.0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:19:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references;
+        bh=rF0d2fPjjYbYQnGkxkUzLty/3S+O+5X64cLZKZhZO4E=;
+        b=a687CipGVP6S8l+yw3Z2qapCCMGrDznZGl7Hg3EB037BBEABhZ6eF3M10/IylPutLq
+         tQk4PoARW3oQOylOYrHMJUSK816QZrgIdfkSTwwL0QdHAkJVcmKoL9XaORVH2tFZ8bkQ
+         suw0zsEntUJBE2xRXZ3LyV8uwnGt9PxlXtBzTac8aTchaXiMvgmTCOZPXXL6jawi62ut
+         YG/CoFhUJ9DK3+VJLvU6h9rohaJqhLf1gVWx+op8HU8pcClxlOXXbY1WGA2Y41fi03v6
+         q6u8qH5e52PTYTG/EQ2jyxwTOkR9v9EjEuQQpyd1QGp4cAZO59SpZQ1J0naqroyozhTl
+         HKuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references;
+        bh=rF0d2fPjjYbYQnGkxkUzLty/3S+O+5X64cLZKZhZO4E=;
+        b=OAruLsKv41TN5Cbx5WYmnIV7qMzikoysVJqhPieL1V3Z73b+J73V03OCyBbueDoXlA
+         mxqUb6/YLrj1XXJEP69xwzHbAO3YrPjMPkQNbBMasJrRQdOlbCj+qj38luspOSzenYiM
+         IM0kxgGcnH/Ip1RZVXnpgcEfYzLVAZ/Y+d6ostWTM1aVdrXT3Sv+4gBgQkdRiSAWEzYN
+         zK0tROeILjwf2VdQTW5prWB7OoXoIsd5PGIIF/+OP6DHgOnpJ8C1cNiErJBIrzuqjxB5
+         dXHI4xyeBsKf9Kh8MsCPpiYscyD4L+M1odwwizH15Pu90VXkcDdQ7+o0wtIx+SpDKXXZ
+         xeZw==
+X-Gm-Message-State: AOAM530S2BQe2T4siTcHb+s5Nsmo7CgX4oV/wgVYH4rtoFnKf5YfmZA+
+        U6SbCfT8VS9RsGbiNcP2S2E=
+X-Google-Smtp-Source: ABdhPJxbaX8P4DgFAq5AqtRlie8zEQAmzOhdP6082cOtk6bDfu+J7/3gLmB876ENEQEoVEvDJTvcPQ==
+X-Received: by 2002:a17:902:bd06:b0:158:8973:b16b with SMTP id p6-20020a170902bd0600b001588973b16bmr18598380pls.129.1650421145605;
+        Tue, 19 Apr 2022 19:19:05 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id x22-20020aa784d6000000b005082b06cc58sm17015120pfn.215.2022.04.19.19.19.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 19:19:05 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Miaoqian Lin <linmq006@gmail.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] ASoC: fsl: Fix error handling in pcm030_fabric_probe
+Date:   Wed, 20 Apr 2022 02:18:52 +0000
+Message-Id: <20220420021855.8224-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <Yh90u+E3RTuGEDWU@sirena.org.uk>
+References: <Yh90u+E3RTuGEDWU@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-19 at 12:46 +0200, AngeloGioacchino Del Regno wrote:
-> Il 18/04/22 15:21, Rex-BC Chen ha scritto:
-> > Add a new file "reset.h" to place some definitions for clock reset.
-> > 
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >   drivers/clk/mediatek/clk-mtk.h | 10 +---------
-> >   drivers/clk/mediatek/reset.h   | 20 ++++++++++++++++++++
-> >   2 files changed, 21 insertions(+), 9 deletions(-)
-> >   create mode 100644 drivers/clk/mediatek/reset.h
-> > 
-> > diff --git a/drivers/clk/mediatek/clk-mtk.h
-> > b/drivers/clk/mediatek/clk-mtk.h
-> > index dafdf30fe94e..dfb0549ceb6c 100644
-> > --- a/drivers/clk/mediatek/clk-mtk.h
-> > +++ b/drivers/clk/mediatek/clk-mtk.h
-> > @@ -12,6 +12,7 @@
-> >   #include <linux/kernel.h>
-> >   #include <linux/spinlock.h>
-> >   #include <linux/types.h>
-> > +#include <reset.h>
-> 
-> This should be
-> 
-> #include "reset.h"
-> 
-> ...since the header is in the same directory.
-> 
-> 
-Hello Angelo,
+This will call twice platform_device_put()
+if both platform_device_add() and snd_soc_register_card() fails.
+return early on error  to avoid duplicating the error code logic.
 
-I will fix this in next version.
-Thanks!
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+changes in v2:
+- use return statement to return early when fails
+- rebase on top of commit 559089e0a93d ("vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP")
+---
+ sound/soc/fsl/pcm030-audio-fabric.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-BRs,
-Rex
+diff --git a/sound/soc/fsl/pcm030-audio-fabric.c b/sound/soc/fsl/pcm030-audio-fabric.c
+index 83b4a22bf15a..096a37993ad3 100644
+--- a/sound/soc/fsl/pcm030-audio-fabric.c
++++ b/sound/soc/fsl/pcm030-audio-fabric.c
+@@ -89,13 +89,16 @@ static int pcm030_fabric_probe(struct platform_device *op)
+ 		dev_err(&op->dev, "request_module returned: %d\n", ret);
+ 
+ 	pdata->codec_device = platform_device_alloc("wm9712-codec", -1);
+-	if (!pdata->codec_device)
++	if (!pdata->codec_device) {
+ 		dev_err(&op->dev, "platform_device_alloc() failed\n");
++		return -ENOMEM;
++	}
+ 
+ 	ret = platform_device_add(pdata->codec_device);
+ 	if (ret) {
+ 		dev_err(&op->dev, "platform_device_add() failed: %d\n", ret);
+ 		platform_device_put(pdata->codec_device);
++		return ret;
+ 	}
+ 
+ 	ret = snd_soc_register_card(card);
+@@ -103,6 +106,7 @@ static int pcm030_fabric_probe(struct platform_device *op)
+ 		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
+ 		platform_device_del(pdata->codec_device);
+ 		platform_device_put(pdata->codec_device);
++		return ret;
+ 	}
+ 
+ 	platform_set_drvdata(op, pdata);
+-- 
+2.17.1
 
