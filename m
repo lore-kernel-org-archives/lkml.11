@@ -2,88 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75672C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E99BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377806AbiDTKvV (ORCPT
+        id S1377836AbiDTKxB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        Wed, 20 Apr 2022 06:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiDTKvT (ORCPT
+        with ESMTP id S1377797AbiDTKw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:51:19 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18F318381;
-        Wed, 20 Apr 2022 03:48:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650451713; x=1681987713;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yiWtHyh0+dkP7vvS/980PY5qigFMLm0paOIezN2buEA=;
-  b=nydwTQ2fk6jOPIuWHNDYmBHVdpwaaq6aLWjsNMcdRraSAvufjSpRgtM+
-   dJVP13/UjdPMBKV1kgJNW9lT5KIn6c1fAb1BpTEqIIFjbA4Iz8e/DfCdo
-   7DAC1MwKkROXhB5p8GaRdhIn7H6M5Thy6R5mvex4dSB5L8Q2vGZWYm7SF
-   rg5nZpOqiX/+0VhKBZieXFdd2lepK56ALLPJ60G0LtqJBiUYjk/cEOo9H
-   3DusgwqeyjW5AhoFaFLKseK+9CumDFQNA8lhrBvJ4/t+c+fo7O14eVDNU
-   ZpQV4qHiMIYI/h17tCPqWNXfzfNdUNVT2/YHfovqlT8GFNhdQrg9y3MYM
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350446355"
-X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
-   d="scan'208";a="350446355"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 03:48:33 -0700
-X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
-   d="scan'208";a="593132230"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 03:48:30 -0700
-Received: by lahna (sSMTP sendmail emulation); Wed, 20 Apr 2022 13:45:32 +0300
-Date:   Wed, 20 Apr 2022 13:45:32 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Ricardo Ribalda <ribalda@chromium.org>
-Subject: Re: linux-next: manual merge of the kunit-next tree with the
- thunderbolt tree
-Message-ID: <Yl/kTEZxet0fLPj4@lahna>
-References: <20220420151612.117f84b9@canb.auug.org.au>
+        Wed, 20 Apr 2022 06:52:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8D1101FD
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A84216185A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 10D7CC385A8;
+        Wed, 20 Apr 2022 10:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650451812;
+        bh=lDXrcIhmwRkt0SoBQSq31ilCNPvYUV3Ka7JEeaJkBYQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=b8P+jObYZqjxupBrlHKoHEx2qtERNAh5plgNRJggXSWWfBJwv2E3wzWKeUQZJRO83
+         EKCMKgX6gQ+2Rhw087fg/MlKjfFBK0E4tJNVYxtfdM0qLGr5NUm8LhYg3gFKV6k7l0
+         wdSkIYtILMtQ6VYjsAFxOoAuwHUzCbgQmUyuTJ+x4WGZVtiHsrx2uzIxMr3fxIrY8P
+         fbnUe48fEBhAr8cwUF6ZC3jX/ixdwm+Dr2/afaoYx2O4WHJynktovsj+lCHh4R1HW0
+         XcqNVOYT396n/636JeOF2Is36SvDMZls45fBwfwgTp15xCkFtYTI7sppFvhHKrWS/g
+         bGsXTH4gJOOGA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E9F89E8DD85;
+        Wed, 20 Apr 2022 10:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420151612.117f84b9@canb.auug.org.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165045181194.29490.17184763637444609886.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Apr 2022 10:50:11 +0000
+References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
+In-Reply-To: <20220404041101.6276-1-akihiko.odaki@gmail.com>
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        pmalani@chromium.org, bleung@chromium.org, groeck@chromium.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+Hello:
 
-On Wed, Apr 20, 2022 at 03:16:12PM +1000, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the kunit-next tree got a conflict in:
-> 
->   drivers/thunderbolt/test.c
-> 
-> between commit:
-> 
->   9d2d0a5cf0ca ("thunderbolt: Use different lane for second DisplayPort tunnel")
-> 
-> from the thunderbolt tree and commit:
-> 
->   7aadf8433357 ("thunderbolt: test: use NULL macros")
-> 
-> from the kunit-next tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+This patch was applied to chrome-platform/linux.git (for-kernelci)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-The fixup looks good to me, thanks!
+On Mon,  4 Apr 2022 13:11:01 +0900 you wrote:
+> The EC driver may not be initialized when cros_typec_probe is called,
+> particulary when CONFIG_CROS_EC_CHARDEV=m.
+> 
+> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+> ---
+>  drivers/platform/chrome/cros_ec_typec.c | 3 +++
+>  1 file changed, 3 insertions(+)
+
+Here is the summary with links:
+  - platform/chrome: cros_ec_typec: Check for EC driver
+    https://git.kernel.org/chrome-platform/c/cce465a867bc
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
