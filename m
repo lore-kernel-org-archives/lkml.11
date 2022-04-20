@@ -2,119 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E97EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8034DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358883AbiDTCQk (ORCPT
+        id S1358877AbiDTCSy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
+        Tue, 19 Apr 2022 22:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiDTCQj (ORCPT
+        with ESMTP id S229791AbiDTCSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:16:39 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B13C289BC
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650420835; x=1681956835;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8r0tP4tVUtTNBiRI7kELiBfkISrTH3l3zHHdmYedFNY=;
-  b=M5BzQLvYpOICoVuw9HSaTa6csL98AtV1RoFdWnv4wjm7Fa3UuFHLNyy4
-   MOWm49HC23seOPajvaN30tRKR7LQTZI0soxif5FDznQvTpaUGkmiEGU8y
-   P9yQH7FBGgJ3valNWH1a7Q/68n+fID9K43NhQq4yhyJCOjuy/NqGzqwLi
-   btOi65BfypWOVI54djcuaQHnnGeTLR7O8I8Qz98/Ev5tlhMdo0jfQt38a
-   uqEUGNYUc2oPvvya1JjiOl9h4dmSKOPYbhixS2SCgre6wnjqE4KviHH30
-   8GGVe+6kKfC5HLHvleZnGTByfGJjZZ+MlfqeLEp+ZtrRUcSqIh7cV9cBS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="245811969"
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="245811969"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 19:13:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="529550215"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 19 Apr 2022 19:13:53 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngzqq-0006SD-HG;
-        Wed, 20 Apr 2022 02:13:52 +0000
-Date:   Wed, 20 Apr 2022 10:13:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     kbuild-all@lists.01.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v3 14/15] printk: extend console_lock for proper
- kthread support
-Message-ID: <202204201041.ZwRzv18o-lkp@intel.com>
-References: <20220419234637.357112-15-john.ogness@linutronix.de>
+        Tue, 19 Apr 2022 22:18:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0852215A39
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:16:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650420966;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WeWR3XuRtCV+SmnQ0j5vbT57cYudBfkDBtTnd1vmbQ0=;
+        b=By0DsteslAX5pRCtsXKGXe3MCKCkREFGmrtC+XpjGXqvqiWyq7naWGEFrqX8mC8vf+eajs
+        4UAcywxAAGH5FQeLKC8v+xCobvC7nbtf9PWgPF3Aybn9kvRryW1F78KWJ5hQ6HZsC7IHo3
+        7zdNbPp1RkhbOMDGEGRPb5cmMY2iCRo=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-624-fzWxGiDyPpuPiePQR4bpKQ-1; Tue, 19 Apr 2022 22:16:05 -0400
+X-MC-Unique: fzWxGiDyPpuPiePQR4bpKQ-1
+Received: by mail-qk1-f199.google.com with SMTP id ay14-20020a05620a178e00b0069a9c319c64so291253qkb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:16:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WeWR3XuRtCV+SmnQ0j5vbT57cYudBfkDBtTnd1vmbQ0=;
+        b=4o+Va66PpiCU0euXqs+l1eXfATknv0M8vEimcRkKMldVzthO3PkE2UfwOeb0khoRgr
+         0OrpP2X9B27MCUGazaGwR83mssYYTbKhVx+d+gc0EIki9piLEhk+Ra880B2cg9p2/F3n
+         N0GBWO5YjXzLTcLP7CLXGlJ/VDw9Trpz07HipPvhAyW9B/hkxFO+PSdBE5z59NjTpGG0
+         Sx85lP5lGrmy0KAZlda+aGeUbhPsduIJwZTcsBNbizLFf/4lVOhP6FerKpAEP16RIlat
+         8jDZMRrAV4c7ftWoE/qCUPnuRVNmChdqKQ3Vz042dwTJUqrxXZx9T9U/Jj9brigGDiba
+         bbHw==
+X-Gm-Message-State: AOAM530B8oFIINgOcCjj0nXgXXl9a6QSEiSupRBdl3xyDpE50Z/WRiXf
+        dOvEejainu5y/2Tfpfs7VLJ5WTkPGyxX+cC1HoFJ4k7CdnICrV2vp3wUUvnRvJnJcchWesoVBHM
+        LY890q4AYy5fpHbSWK0hNTRTM
+X-Received: by 2002:a05:622a:610a:b0:2f1:d998:319b with SMTP id hg10-20020a05622a610a00b002f1d998319bmr12355278qtb.478.1650420965154;
+        Tue, 19 Apr 2022 19:16:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxNF08kJey/nZHLAoEzUc1glCXv/MzFYlP6AafwehMWYz8RHKIFqAFVUkulmOySqWD67hcEhA==
+X-Received: by 2002:a05:622a:610a:b0:2f1:d998:319b with SMTP id hg10-20020a05622a610a00b002f1d998319bmr12355265qtb.478.1650420964845;
+        Tue, 19 Apr 2022 19:16:04 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id p5-20020ae9f305000000b0069e6dcc4188sm871227qkg.57.2022.04.19.19.16.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 19:16:04 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 19:16:01 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, mbenes@suse.cz
+Subject: Re: [PATCH 2/2] objtool: Fix code relocs vs weak symbols
+Message-ID: <20220420021601.kiughdji3avh2uua@treble>
+References: <20220419203254.034493341@infradead.org>
+ <20220419203807.655552918@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220419234637.357112-15-john.ogness@linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220419203807.655552918@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John,
+On Tue, Apr 19, 2022 at 10:32:56PM +0200, Peter Zijlstra wrote:
+> +	/* XXX create ? */
+> +	if (symtab_shndx) {
 
-I love your patch! Perhaps something to improve:
+Not sure what this comment means?
 
-[auto build test WARNING on 84d7df104dbab9c3dda8f2c5b46f9a6fc256fe02]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/John-Ogness/printk-for-next/20220420-080725
-base:   84d7df104dbab9c3dda8f2c5b46f9a6fc256fe02
-config: openrisc-randconfig-r022-20220419 (https://download.01.org/0day-ci/archive/20220420/202204201041.ZwRzv18o-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5139c5b347088e124f3812a3fa63eb284b14f2dc
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review John-Ogness/printk-for-next/20220420-080725
-        git checkout 5139c5b347088e124f3812a3fa63eb284b14f2dc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash kernel/printk/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> kernel/printk/printk.c:2703:6: warning: no previous prototype for 'console_lock_single_hold' [-Wmissing-prototypes]
-    2703 | void console_lock_single_hold(struct console *con)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/console_lock_single_hold +2703 kernel/printk/printk.c
-
-  2697	
-  2698	/*
-  2699	 * Lock the console_lock, but rather than blocking all the kthread printers,
-  2700	 * lock a specified kthread printer and hold the lock. This is useful if
-  2701	 * console flags for a particular console need to be updated.
-  2702	 */
-> 2703	void console_lock_single_hold(struct console *con)
-  2704	{
-  2705		might_sleep();
-  2706		down_console_sem();
-  2707		mutex_lock(&con->lock);
-  2708		console_locked = 1;
-  2709		console_may_schedule = 1;
-  2710	}
-  2711	
+Otherwise both patches look good to me.  Let me run it through some
+tests.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Josh
+
