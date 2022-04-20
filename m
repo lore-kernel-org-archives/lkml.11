@@ -2,108 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D583BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380800AbiDTQ5K (ORCPT
+        id S1380809AbiDTQ6A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43726 "EHLO
+        Wed, 20 Apr 2022 12:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234342AbiDTQ5H (ORCPT
+        with ESMTP id S1380811AbiDTQ5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:57:07 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D633F3E5C4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:54:20 -0700 (PDT)
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 23KGrnri003946
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:53:49 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 23KGrnri003946
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1650473629;
-        bh=z2vQXfsB4fXcjEsk0DIVaRzap9JiljN6sNWS4DQ1igw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Eg+RtSp9AsBhjhK2prhsGIEj5CN/ry7/pGzK3EqRUOTIPS2v9WskwfE2pEIZqjR4c
-         JQkXaUXv/9E4YZB3mQ6/A8WnZR4y9G4gQTE3rD0iHS/LFQD3eSm6k5Hrmmcb+9c4Ig
-         vtizcyRWVNvXRJeJ01/I1F1dbzVcGf+QkNBIQkUV9bU90tqmchjtSrYs8OLL4PB9pH
-         nPhQyZ9hQHV+tFJ643rUHXietgH6SvTpVv9hm3xGugY6Txvu3QzleHbCaWefufhkw/
-         DZqJ8Vyzkuv/sfzBqBs6CCa6Jzx7b2P41Jf8M0LmzHuNCQy4y59cNE+0vlHq1+TucF
-         e7CiiKrc4gFcw==
-X-Nifty-SrcIP: [209.85.210.180]
-Received: by mail-pf1-f180.google.com with SMTP id p8so2469792pfh.8
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:53:49 -0700 (PDT)
-X-Gm-Message-State: AOAM531NnsMCDwMr+B85LEINAM6A9HcC+Jt6O3VjR/QuZ+BspDpXbIVm
-        bJ7X+VauA4QJYyWGi7/l753JXwTI3QT+WGOLbL8=
-X-Google-Smtp-Source: ABdhPJzE85rGVe/eao0UDw4UZervYHePBzjr5r9QXOwN40U2faUR8iNPFtDsVHL+PTnARoyuO8Iw0LS5/+47oVeY0uQ=
-X-Received: by 2002:a05:6a02:182:b0:374:5a57:cbf9 with SMTP id
- bj2-20020a056a02018200b003745a57cbf9mr19699006pgb.616.1650473628452; Wed, 20
- Apr 2022 09:53:48 -0700 (PDT)
+        Wed, 20 Apr 2022 12:57:32 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2EC3E5C4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:54:45 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id i27so4759303ejd.9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:54:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gfb0eyjgolqCkEqXLQdbBxhQjEK6tSD6hROI1ouv4Mo=;
+        b=ed1XJUWXEKCWmhD+JR9f0O+9SweJMH0appcTJ14UiBN3RxWsSivFSQ5KGAEJ98Fi+N
+         590F5tX5gBVe4QuMuax+YzgCe46XJvMNUmzp9K3TXiSeuhLe32FFfPBSwvpIDY6RYdx7
+         8wikqUKk5L4OG2HOz6Gcu2FUq8oGqxnrGelMVn9IJW1ZY/upwlLSPioTSbpsffBzEwm9
+         h7oJnIfun3x5iRxcufGQ5EZFnh4WeXQMzZ9RuVT+xyQELlmG/pZGYwmMkGzvs+qAz0Sv
+         z7rJrkNxx/cXzTJRTAuQXrIQtJbMwzthYpGWuregJRWrgDBAUIexHK9LgfiROdBwG2+p
+         Qsxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gfb0eyjgolqCkEqXLQdbBxhQjEK6tSD6hROI1ouv4Mo=;
+        b=lYR2H4zgc82NvZfHA+HxbMzytARCbNnKKqh/bpyJjfdDBPufT8escNDHCJn7MwMaD/
+         ezkyXC+arqxwQDVWkUzdcRwh86dVqshDgt6ksquPEg4RmlOEeOesKuXoX+CKyWQgpZQd
+         eaDwsya6rGNj5FzixYpXLzNcuDAr46UXzQf4GXZHVHox6hHoYw7FD4xIcMqStju+asJG
+         N7XWKyp3ldm5kH8nsZ2cLX1Av0JqLteZlVP3xs4qQGlLQS/jgoD+TdaZm1PAXgmj/M4y
+         pSJExNhKJqYVQ/5mEYir1C+I3VDcmvkSXlFythOuNF0jhuniqFijO/tkbwijEWYTd2e8
+         LUKQ==
+X-Gm-Message-State: AOAM533YD7VisYR2W1hn3xtjx/f+yaDhafZjY3PRi7w5z0iJTtp9Crjg
+        LTGfQg1ReL5hQPbasAZrMKiZgdjn86KzPfCcyB6ne5MBoqOZAQ==
+X-Google-Smtp-Source: ABdhPJx0Ve/WR/hieYcsMF1iBeBubzUupE0rJDQPdKddB2ET3tedAmCKBRlepVLhSDPltABkTqw0QgHvvAD3Y0wW/ZI=
+X-Received: by 2002:a17:906:1841:b0:6e8:872d:8999 with SMTP id
+ w1-20020a170906184100b006e8872d8999mr19046949eje.492.1650473684276; Wed, 20
+ Apr 2022 09:54:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220413233649.1394087-1-danielmentz@google.com>
-In-Reply-To: <20220413233649.1394087-1-danielmentz@google.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 21 Apr 2022 01:52:50 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQSeTnaHbsTTaY-2nD8Nb=44nc06EicNMhxh_zze-Tj9g@mail.gmail.com>
-Message-ID: <CAK7LNAQSeTnaHbsTTaY-2nD8Nb=44nc06EicNMhxh_zze-Tj9g@mail.gmail.com>
-Subject: Re: [PATCH] kheaders: Have cpio unconditionally replace files
-To:     Daniel Mentz <danielmentz@google.com>
-Cc:     Alexey Dobriyan <adobriyan@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220420060221.1107736-1-anshuman.khandual@arm.com>
+In-Reply-To: <20220420060221.1107736-1-anshuman.khandual@arm.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Wed, 20 Apr 2022 12:54:08 -0400
+Message-ID: <CA+CK2bARgsgBAgawfAD8-xzDN6+_sg4zrPQnoTFy4b=ZMx_u1g@mail.gmail.com>
+Subject: Re: [PATCH] mm/page_table_check: Drop all redundant EXPORT_SYMBOL()
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-mm <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 8:37 AM Daniel Mentz <danielmentz@google.com> wrote:
+On Wed, Apr 20, 2022 at 2:01 AM Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
 >
-> For out-of-tree builds, this script invokes cpio twice to copy header
-> files from the srctree and subsequently from the objtree. According to a
-> comment in the script, there might be situations in which certain files
-> already exist in the destination directory when header files are copied
-> from the objtree:
+> Function definitions need not be exported via EXPORT_SYMBOL() mechanism. In
+> this case these functions just get called only inside their wrappers. Even
+> __page_table_check_zero() gets called without such an export. Just drop all
+> these redundant EXPORT_SYMBOL().
 >
-> "The second CPIO can complain if files already exist which can happen
-> with out of tree builds having stale headers in srctree. Just silence
-> CPIO for now."
->
-> GNU cpio might simply print a warning like "newer or same age version
-> exists", but toybox cpio exits with a non-zero exit code unless the
-> command line option "-u" is specified.
->
-> To improve compatibility with toybox cpio, add the command line option
-> "-u" to unconditionally replace existing files in the destination
-> directory.
->
-> Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 > ---
-
-Applied to linux-kbuild.
-Thanks.
-
-
->  kernel/gen_kheaders.sh | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This applies on v5.18-rc3
 >
-> diff --git a/kernel/gen_kheaders.sh b/kernel/gen_kheaders.sh
-> index 1966a749e0d9..0c78e64f747d 100755
-> --- a/kernel/gen_kheaders.sh
-> +++ b/kernel/gen_kheaders.sh
-> @@ -74,7 +74,7 @@ fi
->  # of tree builds having stale headers in srctree. Just silence CPIO for now.
->  for f in $dir_list;
->         do find "$f" -name "*.h";
-> -done | cpio --quiet -pd $cpio_dir >/dev/null 2>&1
-> +done | cpio --quiet -pdu $cpio_dir >/dev/null 2>&1
+>  mm/page_table_check.c | 6 ------
+>  1 file changed, 6 deletions(-)
 >
->  # Remove comments except SDPX lines
->  find $cpio_dir -type f -print0 |
-> --
-> 2.36.0.rc0.470.gd361397f0d-goog
+> diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+> index 2458281bff89..5c2a96159832 100644
+> --- a/mm/page_table_check.c
+> +++ b/mm/page_table_check.c
+> @@ -167,7 +167,6 @@ void __page_table_check_pte_clear(struct mm_struct *mm, unsigned long addr,
+>                                        PAGE_SIZE >> PAGE_SHIFT);
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pte_clear);
 >
+>  void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
+>                                   pmd_t pmd)
+> @@ -180,7 +179,6 @@ void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
+>                                        PMD_PAGE_SIZE >> PAGE_SHIFT);
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pmd_clear);
+>
+>  void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+>                                   pud_t pud)
+> @@ -193,7 +191,6 @@ void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+>                                        PUD_PAGE_SIZE >> PAGE_SHIFT);
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pud_clear);
+>
+>  void __page_table_check_pte_set(struct mm_struct *mm, unsigned long addr,
+>                                 pte_t *ptep, pte_t pte)
+> @@ -208,7 +205,6 @@ void __page_table_check_pte_set(struct mm_struct *mm, unsigned long addr,
+>                                      pte_write(pte));
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pte_set);
 
+Hi Anshuman,
 
--- 
-Best Regards
-Masahiro Yamada
+See this:
+https://lore.kernel.org/all/20211124234754.l5co34dUK%25akpm@linux-foundation.org/
+
+The rest of EXPORTs were added to be symmetric, and allow other
+drivers to use set_*p**()/clear_p** calls.
+
+Pasha
