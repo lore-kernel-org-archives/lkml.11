@@ -2,100 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 230FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69303C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357473AbiDTMYh (ORCPT
+        id S1378472AbiDTMYy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 08:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
+        Wed, 20 Apr 2022 08:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353164AbiDTMYc (ORCPT
+        with ESMTP id S1353046AbiDTMYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 08:24:32 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D10E31DC4;
-        Wed, 20 Apr 2022 05:21:46 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id p3so438719pfw.0;
-        Wed, 20 Apr 2022 05:21:46 -0700 (PDT)
+        Wed, 20 Apr 2022 08:24:52 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2B931DC4;
+        Wed, 20 Apr 2022 05:22:06 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id i196so1624489ioa.1;
+        Wed, 20 Apr 2022 05:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PnY2RV2uT4v9sH336lb/RKV9xcdjUoGG2IsZ0A8hZGA=;
-        b=NyxvwoA0HdhUbVFKo9pXR5aK1iHlUBqWbkgmQ9X/YcB5oA/dCnltiFNfCliSGglHp6
-         ZlpzzoQa81EGUrgVeDD0bms5/g0ArBFtf51rRV+AH7cyLWVVl6SSpCS3UCMmS/MNy/p9
-         ABm61uCOBfNfUbIMHvQHzDzBcnr3kF95b27ey6dAYvNa1FIhcg+D+691QyVx5cmO7HHZ
-         +R0eNaw2/KEHmhIpPI5PafYjP4SvkdqTp26+0qE4IGupcJKV4mBQwJk1XCxlZZKj11B6
-         G/LhdFR23rOepiNJH6CShm4EOVt7IKgFOJKymTD0jZLAlUYL840mV3AbrzAL42dactjY
-         fSSw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zIMuGelOwwNQPwE8FTN91rI+ZWWawKZ6vr/oEWb7r+g=;
+        b=L9rw5Zhh1ttkACZ/UGkE41DhurYpDRfwGSN0hXY3lcyM86w4izh9lfYEKMQA2eqfl5
+         2YnZx5keDv1+QJa5V6FjhombQD+A7uRVFdVH5in7N87ElIKD774KuDHwcEVQ3FHUwvY7
+         F1ugXlCzETRdv2V/dHui53j2ZCkbyjbv6M7XT8C859yRfW3GY8ptWYCq7Acj+NHGGDZe
+         Z8TQqJepf7XKTF9shFLSwBQ2fld+kNvCVXZyjXI2PPp2ApIYjJ6CMOsB9ayJfhKXn1E1
+         uKXVJdXz85Rmi4YVg9eRM8nW2tzIdU//ZPnPbffGTfGWcAF4XZqxMBjPaB/4YCto+tdP
+         yBSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PnY2RV2uT4v9sH336lb/RKV9xcdjUoGG2IsZ0A8hZGA=;
-        b=FelATS8AW9UpgzAABW3YKwX7nahHqhh2aOUd6PnKrryRjsezrgWGCn34k4HhJga5Cl
-         ArTYUsftg/k0WaNeUT8n31k+L3vy8Xc0SWn4/NEWho42+VctUj10ys9nBDrMP4TYvp1i
-         zjrM7y4ZThtJ+B9GXkgkjER4svJk9suTzKHAn4zL3akibpOaoDVzjqcPnmeLJE4j/wDT
-         Gl80tVf1r/1xUkXz9T0724VuvMZxzU8lwlI3lW7QQkVzca67KaQyg3aGNTZfbdf085O1
-         g1p2lg43Nxf3bKc87YXo40neSq6UBn/0bWydQb2e+GVr0zfdMF8P3zyYUj0Pt9M/pRwW
-         dQsQ==
-X-Gm-Message-State: AOAM5325SM391jqQ9FbmUOWxV1Zq02H6TdBcpYajrwW3AkpngQk0QPas
-        OVpqdj8c2TI22zK0Tpgy2QybczUlO9shccw=
-X-Google-Smtp-Source: ABdhPJyvCM410O7a/VsEoNc/ZVVieOGoOtu06BpBKyGtxUvTkqN1o9XGktLIG7VFqgBsnMGACXG1yw==
-X-Received: by 2002:a63:224f:0:b0:399:4a1a:b01f with SMTP id t15-20020a63224f000000b003994a1ab01fmr19521638pgm.123.1650457306034;
-        Wed, 20 Apr 2022 05:21:46 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id u7-20020aa78487000000b00505d9277cb3sm19480063pfn.38.2022.04.20.05.21.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 05:21:45 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     s.shtylyov@omp.ru, damien.lemoal@opensource.wdc.com
-Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] ata: pata_marvell: Check the 'bmdma_addr' beforing reading
-Date:   Wed, 20 Apr 2022 20:21:34 +0800
-Message-Id: <20220420122134.430997-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zIMuGelOwwNQPwE8FTN91rI+ZWWawKZ6vr/oEWb7r+g=;
+        b=XWQyAnVUXLbpkmcTd0dIvmj+mFKHD1zwGsqSzja4Iob2ZeQ4RSKySwFoC2XkdsXnsW
+         kpvmKbao+WAPLHjXmfzm/GcSNFGC89YJG+9w/gl3y73Qn3aAkIvJxxAdVQWlN+EXHDCj
+         pebegsUmdE+B5iQK/pf//1K0+d1tI94hx37Xhp3gIhWn8dBt7xZC4EQbAKLvZTXL6IAG
+         oX27Q9750NTchMxmsfR15NDuelwk5IVrskdWHHJWsyqz8gL9VWg77ME/pHs9lXb39RdQ
+         lkINPxFP+qhXHn5INHZpJNLWO2CTeOKOMlNd15se0EmWhiMVJRyHvXPJlxHNU2byLT1W
+         61uA==
+X-Gm-Message-State: AOAM533rAPMYT6vKLS7ojvgTNu51ke74Pd+a2frqmj9HuMAlgXtDwxrm
+        Q74o9KD9qSKpw8epNfMKiMREN6SHWfCkYCWz+30=
+X-Google-Smtp-Source: ABdhPJzTPl3fpisqquEunK202EZu+8nIk8CqPrym6nw4Ij8xrv+W8LHM0AuAQ5fzaPtaanpkSEYPKBd97UXjkMJwTQo=
+X-Received: by 2002:a05:6602:1c6:b0:657:2c41:7d0 with SMTP id
+ w6-20020a05660201c600b006572c4107d0mr94775iot.31.1650457326295; Wed, 20 Apr
+ 2022 05:22:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220330094126.30252-1-alistair@alistair23.me>
+ <20220330094126.30252-2-alistair@alistair23.me> <45acc349-8fea-f755-065c-c561949c45af@roeck-us.net>
+In-Reply-To: <45acc349-8fea-f755-065c-c561949c45af@roeck-us.net>
+From:   Alistair Francis <alistair23@gmail.com>
+Date:   Wed, 20 Apr 2022 22:21:40 +1000
+Message-ID: <CAKmqyKOqjperoku_uOy4sCa6LmCUtfB7SCvhLEKxLtcwDkzRyA@mail.gmail.com>
+Subject: Re: [PATCH v20 1/4] mfd: silergy,sy7636a: Add config option
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Alistair Francis <alistair@alistair23.me>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mark Brown <broonie@kernel.org>, linux-hwmon@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        Zhang Rui <rui.zhang@intel.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Amit Kucheria <amitk@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before detecting the cable type on the dma bar, the driver should check
-whether the 'bmdma_addr' is zero, which means the adapter does not
-support DMA, otherwise we will get the following error:
+On Thu, Mar 31, 2022 at 6:02 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On 3/30/22 02:41, Alistair Francis wrote:
+> > Add a specific MFD_SY7636A config option.
+> >
+> > As part of this change we can use MFD_SY7636A as a dependency for all
+> > SY7636a components and also remove the name from MFD_SIMPLE_MFD_I2C as
+> > it no longer needs to be selectable.
+> >
+> > Signed-off-by: Alistair Francis <alistair@alistair23.me>
+>
+> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-[    5.146634] Bad IO access at port 0x1 (return inb(port))
-[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
-[    5.150856] RIP: 0010:ioread8+0x4a/0x60
-[    5.160238] Call Trace:
-[    5.160470]  <TASK>
-[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
-[    5.161728]  ata_eh_recover+0x3520/0x6cc0
-[    5.168075]  ata_do_eh+0x49/0x3c0
+Any chance of getting this in for 5.18? It would be nice to have the
+configs all sorted before the release
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- drivers/ata/pata_marvell.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Alistair
 
-diff --git a/drivers/ata/pata_marvell.c b/drivers/ata/pata_marvell.c
-index 0c5a51970fbf..d2922699be5e 100644
---- a/drivers/ata/pata_marvell.c
-+++ b/drivers/ata/pata_marvell.c
-@@ -77,7 +77,9 @@ static int marvell_cable_detect(struct ata_port *ap)
- 	switch(ap->port_no)
- 	{
- 	case 0:
--		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
-+		if (!ap->ioaddr.bmdma_addr)
-+			return ATA_CBL_PATA_UNK;
-+		else if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
- 			return ATA_CBL_PATA40;
- 		return ATA_CBL_PATA80;
- 	case 1: /* Legacy SATA port */
--- 
-2.25.1
-
+>
+> > ---
+> >   drivers/hwmon/Kconfig     |  1 +
+> >   drivers/mfd/Kconfig       | 12 +++++++++++-
+> >   drivers/regulator/Kconfig |  1 +
+> >   3 files changed, 13 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> > index 68a8a27ab3b7..74b60d24e740 100644
+> > --- a/drivers/hwmon/Kconfig
+> > +++ b/drivers/hwmon/Kconfig
+> > @@ -1693,6 +1693,7 @@ config SENSORS_SIS5595
+> >
+> >   config SENSORS_SY7636A
+> >       tristate "Silergy SY7636A"
+> > +     depends on MFD_SY7636A
+> >       help
+> >         If you say yes here you get support for the thermistor readout of
+> >         the Silergy SY7636A PMIC.
+> > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> > index 3b59456f5545..c47cb755757b 100644
+> > --- a/drivers/mfd/Kconfig
+> > +++ b/drivers/mfd/Kconfig
+> > @@ -1095,6 +1095,16 @@ config MFD_SPMI_PMIC
+> >         Say M here if you want to include support for the SPMI PMIC
+> >         series as a module.  The module will be called "qcom-spmi-pmic".
+> >
+> > +config MFD_SY7636A
+> > +     tristate "Silergy SY7636A voltage regulator"
+> > +     depends on I2C
+> > +     select MFD_SIMPLE_MFD_I2C
+> > +     help
+> > +       Enable support for Silergy SY7636A voltage regulator.
+> > +
+> > +       To enable support for building sub-devices as modules,
+> > +       choose M here.
+> > +
+> >   config MFD_RDC321X
+> >       tristate "RDC R-321x southbridge"
+> >       select MFD_CORE
+> > @@ -1202,7 +1212,7 @@ config MFD_SI476X_CORE
+> >         module will be called si476x-core.
+> >
+> >   config MFD_SIMPLE_MFD_I2C
+> > -     tristate "Simple Multi-Functional Device support (I2C)"
+> > +     tristate
+> >       depends on I2C
+> >       select MFD_CORE
+> >       select REGMAP_I2C
+> > diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+> > index 5ef2306fce04..c8ce6e5eea24 100644
+> > --- a/drivers/regulator/Kconfig
+> > +++ b/drivers/regulator/Kconfig
+> > @@ -1219,6 +1219,7 @@ config REGULATOR_STW481X_VMMC
+> >
+> >   config REGULATOR_SY7636A
+> >       tristate "Silergy SY7636A voltage regulator"
+> > +     depends on MFD_SY7636A
+> >       help
+> >         This driver supports Silergy SY3686A voltage regulator.
+> >
+>
