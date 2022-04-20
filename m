@@ -2,91 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0553BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380259AbiDTPab (ORCPT
+        id S1355044AbiDTPdD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
+        Wed, 20 Apr 2022 11:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234586AbiDTPa3 (ORCPT
+        with ESMTP id S234586AbiDTPdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:30:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30B3045AC7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:27:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650468462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/8Ka6GvZhFRkfzLxzT1UbmtWFPhhmqZ+X1PdVTRfmEs=;
-        b=AO6VC09n2J6MJ/s9sl/fEswPs/0FYODTaN+8jws6eUCAwvIgjjkXx6rBDVLbMsx61VrrBq
-        mu8RNVKEf+oznrXc0Tue2bPxcR8rN8ot5+JsxPDv26LkwOgmKpRUbO4k0DkeCi3B/4SV1i
-        aqnCDVhsf/2CkML0Knhkf9X79YB0Qps=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-426-XP-iuyOZNwad_uqyqIU4Jg-1; Wed, 20 Apr 2022 11:27:40 -0400
-X-MC-Unique: XP-iuyOZNwad_uqyqIU4Jg-1
-Received: by mail-qk1-f199.google.com with SMTP id ay14-20020a05620a178e00b0069a9c319c64so1461769qkb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:27:40 -0700 (PDT)
+        Wed, 20 Apr 2022 11:33:01 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482FC101D2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:30:15 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so5269164pjn.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:30:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=r4v6+4yKaA3vLKtpzxPE5V66sX8ChIPo+IWH+cRqWOU=;
+        b=TvgdpDxNuQUSckfkeGjOMKYDMxRZd9S6wMyne8ZwUni7ZFidV9VX2xjZlsK+q79DAl
+         S8I9jksjwKYuk0sLoY8GEae2guuwTFb+ZfwrH6TilZ68upNfq3igoagvSpZPn27UJf9n
+         VhmyMqxx1uynilCxU9iMzbdUI1CX7r4ao5qRHCJwbDlEN8yGavrDTwCHTcdqZvT7dcQ2
+         Gi41Zlfn2N1XIEkoiP5zy1qQvXGkBK3z7hHX3vKAxU7eZLVSv/E9RfeHwJOIFWlgWgrt
+         E7Au/KLPYtkaNor5sTpEx2OB/Td64KYaLi9nW/WNDoXhaVHxbUt9CwPdg/ltWXWlUboo
+         tOjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/8Ka6GvZhFRkfzLxzT1UbmtWFPhhmqZ+X1PdVTRfmEs=;
-        b=h707aH821gEIO8J6pDDo0/ljbsiQGl0C9K2W0eWIMxIdCrUvipG7LX4qCZsQvFOeMv
-         9dY0971gM2l65jrlJ290PQvqkj0pPhBdMG2+JQEo5qUSiyHkJ+19PV2YkTL+yJFpZc/m
-         9H/RbEaIhdm3UpsA3jRnpT2js8DMuzvN131OwOk026LQVE5FowOb5dS0o+4q0wIEfDh0
-         FMtcI6USJkUwcwkpDhkFyJ4FM1G9vzyPn1ToLTFmXh8SHZeMmSFzMBRJQ0S3iWFZCmSl
-         vkDooH2nAGrloYumj7MssXwmdVztCfPkVmD38Ifw9ggkEzSqfmDz2MhMcnbtQk88q49E
-         ufqg==
-X-Gm-Message-State: AOAM531rkUG6eGtlxBmVlEaai/ORdPZ3M9VAlHua7wCNnketc+Hdu2Nh
-        kK33Igk//+SvTMjp8DZj2m53xmECO/kZtWnp2GQHfeqY8v3rg205kHlNYNZIDe0zx0TN1sKzeuy
-        x6NYlSPmHmibEwwGrlF+yyICB
-X-Received: by 2002:a05:622a:46:b0:2f2:9b12:5375 with SMTP id y6-20020a05622a004600b002f29b125375mr7452067qtw.625.1650468460271;
-        Wed, 20 Apr 2022 08:27:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwn3nxAFYXT+zwaS7qYVDdc6sBZB4FBKPMFC5LGoK+YCn4oDeo/3RBWzPylWFA333pfcvcIBQ==
-X-Received: by 2002:a05:622a:46:b0:2f2:9b12:5375 with SMTP id y6-20020a05622a004600b002f29b125375mr7452046qtw.625.1650468459998;
-        Wed, 20 Apr 2022 08:27:39 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id c23-20020a05620a201700b0069c7c8d1b9fsm1621839qka.21.2022.04.20.08.27.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 08:27:39 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 08:27:36 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, brgerst@gmail.com, jiangshanlai@gmail.com,
-        Andrew.Cooper3@citrix.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] x86: Simplify Retpoline thunk
-Message-ID: <20220420152736.qzl3nikds6mq5nrr@treble>
-References: <20220419204109.520779286@infradead.org>
- <20220419205241.280037046@infradead.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=r4v6+4yKaA3vLKtpzxPE5V66sX8ChIPo+IWH+cRqWOU=;
+        b=D+irv5gPxo/T6sLcN5727iSzcLjH86BJ/YxWKmVc8GFEnpopmNZE7QWz+ds7ECsSfg
+         cTW/PWf7TPFzrHLpSR6b4/q3rG/RAA1U+378FtSZAlK4e2gjyAc34L8GEkSdZCw172aj
+         0KqFrQTeU3uiGJMT1foe0fek83KpNuyVGC950zmEvJfCYRXeuDT/pz+v2wZ44u0U3YlG
+         YsM86AqnG6AZ1r/8uWkz9oka2gGK5AB7Bg4l5XrdocAbMTMPHO16hWNTgiTc/NguAkQV
+         Ma/yD9KrcjDpZBMM5VGpTxskRpARIHhUZbcM7cdHIQ+q4BRX6h3u+nnEKP09zK7Lb0LA
+         UXbg==
+X-Gm-Message-State: AOAM530/BCxD/zHbAqxhdt5vgUc9lpOXRwedDRRNil0kVfLv88m7eW3m
+        jktImvvhrM0jp9w4m8bpZHcwDQ==
+X-Google-Smtp-Source: ABdhPJz5IBNSApxKctprIxswAH01MWDFRUuF4fgrvBFEa0Xwjf3+NXxDW42WuMLbb3XH+gRkgeSpQw==
+X-Received: by 2002:a17:902:b70c:b0:156:16f0:cbfe with SMTP id d12-20020a170902b70c00b0015616f0cbfemr20911392pls.152.1650468614694;
+        Wed, 20 Apr 2022 08:30:14 -0700 (PDT)
+Received: from ?IPV6:2409:8a28:e66:6380:7568:1633:647:d3a2? ([2409:8a28:e66:6380:7568:1633:647:d3a2])
+        by smtp.gmail.com with ESMTPSA id t17-20020a17090a449100b001d2f09e64b4sm155519pjg.24.2022.04.20.08.30.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 08:30:14 -0700 (PDT)
+Message-ID: <5cf976c4-c555-c546-e82c-7482b50fa14a@bytedance.com>
+Date:   Wed, 20 Apr 2022 23:30:03 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220419205241.280037046@infradead.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [External] Re: [PATCH v4 1/2] ftrace: cleanup ftrace_graph_caller
+ enable and disable
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>, rostedt@goodmis.org
+Cc:     mingo@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+        tglx@linutronix.de, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, broonie@kernel.org, ardb@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com
+References: <20220409153554.14470-1-zhouchengming@bytedance.com>
+ <Yl6f0XKoRxNhgGPv@FVFF77S0Q05N>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <Yl6f0XKoRxNhgGPv@FVFF77S0Q05N>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 10:41:10PM +0200, Peter Zijlstra wrote:
-> Now that we rewrite all the indirect call sites, per commit:
+Hi,
+
+On 2022/4/19 19:41, Mark Rutland wrote:
+> On Sat, Apr 09, 2022 at 11:35:53PM +0800, Chengming Zhou wrote:
+>> The ftrace_[enable,disable]_ftrace_graph_caller() are used to do
+>> special hooks for graph tracer, which are not needed on some ARCHs
+>> that use graph_ops:func function to install return_hooker.
+>>
+>> So introduce the weak version in ftrace core code to cleanup
+>> in x86.
+>>
+>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>> ---
+>> v4:
+>>  - put weak ftrace_enable,disable_ftrace_graph_caller() in
+>>    fgraph.c instead of ftrace.c as suggested by Steve.
+>>
+>> v3:
+>>  - consolidate two #if into a single #if, suggested by Steve. Thanks.
+>> ---
+>>  arch/x86/kernel/ftrace.c | 17 ++---------------
+>>  kernel/trace/fgraph.c    | 18 ++++++++++++++++++
+>>  2 files changed, 20 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+>> index 1e31c7d21597..b09d73c2ba89 100644
+>> --- a/arch/x86/kernel/ftrace.c
+>> +++ b/arch/x86/kernel/ftrace.c
+>> @@ -579,9 +579,7 @@ void arch_ftrace_trampoline_free(struct ftrace_ops *ops)
+>>  
+>>  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+>>  
+>> -#ifdef CONFIG_DYNAMIC_FTRACE
+>> -
+>> -#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+>> +#if defined(CONFIG_DYNAMIC_FTRACE) && !defined(CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS)
+>>  extern void ftrace_graph_call(void);
+>>  static const char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
+>>  {
+>> @@ -610,18 +608,7 @@ int ftrace_disable_ftrace_graph_caller(void)
+>>  
+>>  	return ftrace_mod_jmp(ip, &ftrace_stub);
+>>  }
+>> -#else /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>> -int ftrace_enable_ftrace_graph_caller(void)
+>> -{
+>> -	return 0;
+>> -}
+>> -
+>> -int ftrace_disable_ftrace_graph_caller(void)
+>> -{
+>> -	return 0;
+>> -}
+>> -#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>> -#endif /* !CONFIG_DYNAMIC_FTRACE */
+>> +#endif /* CONFIG_DYNAMIC_FTRACE && !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>>  
+>>  /*
+>>   * Hook the return address and push it in the stack of return addrs
+>> diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
+>> index 8f4fb328133a..289311680c29 100644
+>> --- a/kernel/trace/fgraph.c
+>> +++ b/kernel/trace/fgraph.c
+>> @@ -30,6 +30,24 @@ int ftrace_graph_active;
+>>  /* Both enabled by default (can be cleared by function_graph tracer flags */
+>>  static bool fgraph_sleep_time = true;
+>>  
+>> +/*
+>> + * archs can override this function if they must do something
+>> + * to enable hook for graph tracer.
+>> + */
+>> +int __weak ftrace_enable_ftrace_graph_caller(void)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +/*
+>> + * archs can override this function if they must do something
+>> + * to disable hook for graph tracer.
+>> + */
+>> +int __weak ftrace_disable_ftrace_graph_caller(void)
+>> +{
+>> +	return 0;
+>> +}
 > 
->   750850090081 ("x86/alternative: Implement .retpoline_sites support")
+> IIUC an arch should either:
 > 
-> it doesn't make sense to have the retpoline thunks be an ALTERNATIVE_2
-> that still includes a 'naked' indirect jump.
+> * Have ftrace_graph_call()
 > 
-> (this accidentally 'defunnels' i386 by going back to full retpolines)
+> * Have both ftrace_enable_ftrace_graph_caller() and
+>   ftrace_disable_ftrace_graph_caller()
+> 
+> ... and I can't think of a reason an arch would need both ftrace_graph_call()
+> *and* the enable/disable functions.
 
-So mitigations=off no longer works on i386?
+This way is more precise, but we have to add "#define ftrace_graph_call ftrace_graph_call"
+in all ARCH's asm/ftrace.h correctly.
 
-Is funneling even a concern on i386?  I don't think it has eIBRS anyway,
-or does it?
+Previously we only need to define override ftrace_[enable,disable]_ftrace_graph_caller()
+in ARCH's ftrace.c, looks like a little more complexity?
 
--- 
-Josh
+> 
+> Given that, could we drop the `__weak` and place these within ifdeffery, i.e.
+> make the above:
+> 
+> | #ifndef ftrace_graph_call
+> | int ftrace_enable_ftrace_graph_caller(void) { return 0; }
+> | int ftrace_disable_ftrace_graph_caller(void) { return 0; }
+> | #endif /* ftrace_graph_call *. 
+> 
+> That way we'd catch cases when:
+> 
+> * An architecture meant to provide one of these functions, but forgot (e.g. the
+>   name got typo'd)
+> 
+> * An architecture provides an unnecessary implementation of either of these
+>   functions.
 
+I tried this way today, and it works too. I'm ok with both way. Maybe I should
+send v5 with this patch unchanged first. Looking forward to Steve's opinion.
+
+Thanks.
+
+> 
+> Regardless, this looks ok to me. Steve, are you happy with this? I suspect we'd
+> need to take this via the arm64 tree with the next patch, so we'd need your Ack.
+> 
+> Thanks,
+> Mark.
+> 
+>> +
+>>  /**
+>>   * ftrace_graph_stop - set to permanently disable function graph tracing
+>>   *
+>> -- 
+>> 2.35.1
+>>
