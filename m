@@ -2,77 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43479C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B59C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377045AbiDTI6Z (ORCPT
+        id S1350917AbiDTI7A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
+        Wed, 20 Apr 2022 04:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377079AbiDTI55 (ORCPT
+        with ESMTP id S1377066AbiDTI63 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:57:57 -0400
-X-Greylist: delayed 603 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 01:55:10 PDT
-Received: from extserv.mm-sol.com (ns.mm-sol.com [37.157.136.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949DFBE06;
-        Wed, 20 Apr 2022 01:55:10 -0700 (PDT)
-Received: from [192.168.1.9] (unknown [84.238.208.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: svarbanov@mm-sol.com)
-        by extserv.mm-sol.com (Postfix) with ESMTPSA id C2BA5D292;
-        Wed, 20 Apr 2022 11:45:01 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mm-sol.com; s=201706;
-        t=1650444303; bh=6bT0jwuG1RRbClsvxfltVaKz24VyNwFJJX8CVTUiaSo=;
-        h=Date:Subject:To:Cc:From:From;
-        b=l6hP+1g2Ka6VlfEHgFBBHbXZqkWqgINhQ3/lJCebuInfY7hUIk2nhNrWXQlhX8/OY
-         +fhw3OKdgONAsmEEV3Tt350dNtrpdmiDggzArqUMIh05P5B0fYlG63+zVoofLzjHRe
-         DoEdQjqq56j5lWyoGTNGc3Cxy0KUrTO/QMxNHvjlk+hZziUHj9dCPm+IAiDphdbX7X
-         jITiiC0odu2BnI0Zrln6JBgGSrt9hGR+kL1gT+vAXoYtdXHQdjbUPklLijjqTkMHrO
-         YcYcVCm9ZF6HqUWS3DC0LVOgn2LK4bmuAHSCJdkTm4ipJYWJSCmAG+R+H4eo8kySep
-         NGGxTxYPsLmjQ==
-Message-ID: <d285c6e2-7d9b-1235-d644-bcdef1358835@mm-sol.com>
-Date:   Wed, 20 Apr 2022 11:44:57 +0300
+        Wed, 20 Apr 2022 04:58:29 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301A6275DA
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:55:44 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id f38so1671305ybi.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 01:55:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yg9pk+UetrJINR/IXCMEPG27A8smwJ173reatbpWnAs=;
+        b=RKGpXYNpP24XtTR4/S4cQ942FUxjDpwKFB8z7WktTDA/o5j7xt0+rqLXREu9FZkzh5
+         h8joGkLLcty+NEeVXYtVCA8B6KNC0JQn03vjJ7t8l4RZMr5pGjlcuS3+SHXgepofXzDH
+         /43GRsEvWkC27rdtNg3C0KLSE+LLDHNgiTlueM9ZBiJPL0hg0HAV/wivTDHaifgGqGYz
+         pvixG4ZI+a3ItSUFrI4R4tY5WyGEtT0yU1DqGy5e3O7KfYeJFdmnPm5z6XVnn+BcaaSx
+         RguT/WuPwGMx8tPOX8c+VXnfPpR0ivwrv7xOh/MTiPQv8UN/U09H5d1NPr5XJFIOoDya
+         pesw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yg9pk+UetrJINR/IXCMEPG27A8smwJ173reatbpWnAs=;
+        b=p7U8rN3GYpId0yjAngEqYNQP7bbWGR3eTUeK8IKyYu91HqugMdVNwfM0K+4HsepHSb
+         Ihsc9U9Htx5l6hm0yYNh9/u+jiv8VXkpvq1g8vbsBaTSbne2kjM4/PPVYVTday3L9EEF
+         DtHtVkcLZzxDjTdJhq4J/hyubqmINAbbGtj6P2ttTKbT5KhkgdEOyfD0BD8DR8nc5Ojv
+         7hxni9Y89bj79q8a1ksAsxrpxxKMJU7M2BczCXu6UPbV4a+vUFOVnNQVQkTD5ShA21Gl
+         rVbjLvuOFJx+tstVWt2X84UiGdtyjzJNHbrH0GbMpdE16QnCkEoi/g16oAx81+qee4wb
+         JQHw==
+X-Gm-Message-State: AOAM530hAHM3IRzp6wSkfgXa7Ze5bvfT5u5cJr4PfQ2CWIyniPvguT4M
+        pVsaQZRY+LFl1oXjr9BMMjiP8wPAERrlOXs3IZDQT8urpp7gGLXN
+X-Google-Smtp-Source: ABdhPJxj0m+Aw0X4pkRg4HKI8GUsfzdFulsnkJdqL8oCaQwbEwUCxyM4Tdg93dIlfVARmMSQI9Xv9KtdgoL5ZOXbGss=
+X-Received: by 2002:a25:c094:0:b0:641:10e0:cfd8 with SMTP id
+ c142-20020a25c094000000b0064110e0cfd8mr17714675ybf.88.1650444943184; Wed, 20
+ Apr 2022 01:55:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] PCI: qcom: Remove ddrss_sf_tbu clock from sc8180x
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220331013415.592748-1-bjorn.andersson@linaro.org>
-From:   Stanimir Varbanov <svarbanov@mm-sol.com>
-In-Reply-To: <20220331013415.592748-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
+ <Yl8GInPZyl2PqK7D@shell.armlinux.org.uk>
+In-Reply-To: <Yl8GInPZyl2PqK7D@shell.armlinux.org.uk>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 20 Apr 2022 14:25:32 +0530
+Message-ID: <CA+G9fYvRdg6t6OnoJy62Vte5XnSymyL6B6kARC_1Jao52h6ZYg@mail.gmail.com>
+Subject: Re: [next] arm: boot failed - PC is at cpu_ca15_set_pte_ext
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        max.krummenacher@toradex.com, Shawn Guo <shawnguo@kernel.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 20 Apr 2022 at 00:28, Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Tue, Apr 19, 2022 at 04:28:52PM +0530, Naresh Kamboju wrote:
+> > Linux next 20220419 boot failed on arm architecture qemu_arm and BeagleBoard
+> > x15 device.
+>
+> Was the immediately previous linux-next behaving correctly?
 
+This crash started happening from the next-20220413 tag.
 
-On 3/31/22 04:34, Bjorn Andersson wrote:
-> The Qualcomm SC8180X platform was piggy backing on the SM8250
-> qcom_pcie_cfg, but the platform doesn't have the ddrss_sf_tbu clock, so
-> it now fails to probe due to the missing clock.
-> 
-> Give SC8180X its own qcom_pcie_cfg, without the ddrss_sf_tbu flag set.
-> 
-> Fixes: 0614f98bbb9f ("PCI: qcom: Add ddrss_sf_tbu flag")
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  drivers/pci/controller/dwc/pcie-qcom.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-
--- 
-regards,
-Stan
+- Naresh
