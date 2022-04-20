@@ -2,103 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A55CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2940C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379858AbiDTPBh (ORCPT
+        id S1379863AbiDTPCw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
+        Wed, 20 Apr 2022 11:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236824AbiDTPBf (ORCPT
+        with ESMTP id S1379901AbiDTPCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:01:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A1983CFE8
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650466727;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gVlN8Zg4CYoppK6dzP2BhOdvAfuQF4ICX4dEGXbmFsY=;
-        b=PpRiazzsg3UwxXzGlK00qr1Hn8Z7jmCWHXHNDGEL+vVBR9zlqTOsBTyT9j6XTzPDT0z9Xu
-        IDAr1y3oM9XWZ2+qJPtCRo5+IxEso9O3uhO/C5cg3iPrH7Pc4u3jRDFj9RwN6Mq4S1vDnx
-        JMwsJ7ZazUuK1SWpWmgQa7OE1Jr1aV4=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-185-Jr6eas8WPJOxEPdCViPkwQ-1; Wed, 20 Apr 2022 10:58:45 -0400
-X-MC-Unique: Jr6eas8WPJOxEPdCViPkwQ-1
-Received: by mail-qk1-f200.google.com with SMTP id t3-20020a05620a034300b0069e60a0760cso1364092qkm.20
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:58:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gVlN8Zg4CYoppK6dzP2BhOdvAfuQF4ICX4dEGXbmFsY=;
-        b=O9JOvX5B3GEzLCYaZMr0BZxu5oJUmMcXYbqBKtcuH2GnJApd1FDOYZKAGTc2ZzJAaZ
-         RB3vn/V7hbRLECNrRCxN5bWT+Vq7usUp7SSboz9V37rSYy8WndZwiFqvmLuuB2++DAeI
-         dHD3ykjc4PctzItc69nstK1hY8q0iWW3PccXh/mL88pVz6RPeQFC8r07ePAIc1YqcV1V
-         hcOWL8rLO0vlsT2DnZBo1pDsVmZKQxEySdAd3xwqhbthnM4J/tmxFu16ZAUgrqGF6RwS
-         RPvQ7Fxquoz0zEXi9df1e0gaCU4lwMkbIxUMbcF5kppqyweMiUuhD1Qaf4MGo55u5D6Q
-         EiWQ==
-X-Gm-Message-State: AOAM531UvXLZOdYIXzh2wiFvGwscHiUEjmEly+p2KZ1Dc92wwE0Lw3rm
-        4l1EOwn/HB7RAvoqcEeUcVz6N0tyGq+Lmk66qBy/yH2OU5Fm+zVRc8SJV9lET1iFByaSTYLoQTx
-        OKtiEIsEfyeonhYAzfuD1j9WQ
-X-Received: by 2002:a05:622a:8:b0:2e1:cb36:9244 with SMTP id x8-20020a05622a000800b002e1cb369244mr14013039qtw.93.1650466725043;
-        Wed, 20 Apr 2022 07:58:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxq/ZRQJonnRQsfg4icRnn9DNb+9S7+/UnCmslakhte52WcKz4tNmErjGTi7BcnwZxiDd3Alw==
-X-Received: by 2002:a05:622a:8:b0:2e1:cb36:9244 with SMTP id x8-20020a05622a000800b002e1cb369244mr14013027qtw.93.1650466724829;
-        Wed, 20 Apr 2022 07:58:44 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id c17-20020ac85a91000000b002e1dd8ae44bsm1861775qtc.29.2022.04.20.07.58.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 07:58:44 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 07:58:41 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, brgerst@gmail.com, jiangshanlai@gmail.com,
-        Andrew.Cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        Andy Lutomirski <luto@kernel.org>
-Subject: Re: [PATCH 2/2] x86,entry: Use PUSH_AND_CLEAR_REGS for compat
-Message-ID: <20220420145841.mgt2eya5hhe4abd5@treble>
-References: <20220419204109.520779286@infradead.org>
- <20220419205241.339242797@infradead.org>
- <20220420032123.6c344rjr4poockjr@treble>
- <20220420070730.GB2731@worktop.programming.kicks-ass.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220420070730.GB2731@worktop.programming.kicks-ass.net>
+        Wed, 20 Apr 2022 11:02:46 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9993755AD
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:59:58 -0700 (PDT)
+Received: from pps.filterd (m0134423.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KEWx6T032267;
+        Wed, 20 Apr 2022 14:59:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=Ykj4cszWHOqas1sdtRsDOMTT3R1YCNKROtLHY70yCAM=;
+ b=LytZaCIr3MEGYIk9Qlg30pk6Jp7L2vQ6UdAvw74nQmmtC6ldho40lltQUU2OufntQaKU
+ QHtc85vN+btdJcQRGLImHbZruTBYaXwLq3gdW/UDFyCRwipq9PQqQ2S/AwOXFA5OLNZi
+ +GxQWkD9g09Q0jD+oYyT2h3Y/TFWFa6jz9OI6GUA7lP8TBuNwD9hdjOtgbuGsjFn7hXC
+ GWGDBEN+UVTqRUb3x5xoYV8zHsmS2sr2THFH0hRnu86xTj++nNbZNCRuLPmLX5//FZ0X
+ vxOAgQIn0Om0nqqpvV+36CNjbka7bogK5p51Flo4SS73H4NiJ4YiHsIVyDS9HSBACs0X QQ== 
+Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fjbb0nc2x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 14:59:51 +0000
+Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
+        by g2t2354.austin.hpe.com (Postfix) with ESMTP id CBD8881;
+        Wed, 20 Apr 2022 14:59:50 +0000 (UTC)
+Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
+        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id 8C1B536;
+        Wed, 20 Apr 2022 14:59:50 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     verdun@hpe.com, nick@hpe.com, joel@jms.id.au, arnd@arndb.de
+Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 02/11] arch: arm: configs: multi_v7_defconfig
+Date:   Wed, 20 Apr 2022 10:01:46 -0500
+Message-Id: <20220420150156.47405-2-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220420150156.47405-1-nick.hawkins@hpe.com>
+References: <20220420150156.47405-1-nick.hawkins@hpe.com>
+X-Proofpoint-GUID: RSP2_1RMrafPKPNhXzowOTEc0BkeDqQ5
+X-Proofpoint-ORIG-GUID: RSP2_1RMrafPKPNhXzowOTEc0BkeDqQ5
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 spamscore=0 bulkscore=0 phishscore=0 adultscore=0
+ priorityscore=1501 impostorscore=0 mlxlogscore=584 clxscore=1015
+ suspectscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204200089
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 09:07:30AM +0200, Peter Zijlstra wrote:
-> On Tue, Apr 19, 2022 at 08:21:23PM -0700, Josh Poimboeuf wrote:
-> > On Tue, Apr 19, 2022 at 10:41:11PM +0200, Peter Zijlstra wrote:
-> > > Since the upper regs don't exist for ia32 code, preserving them
-> > > doesn't hurt and it simplifies the code.
-> > 
-> > But an attacker can still control those registers, so clearing them on
-> > the stack is better, as it reduces user control over the kernel stack.
-> > 
-> > 64-bit syscalls *do* have to save those registers to the stack, so
-> > whether it truly matters if compat mode is made equally insecure, I
-> > can't say.  But without evidence to the contrary, my feeling is that we
-> > should err on the side of caution.
-> 
-> Right, so earlier Brian said simpler might be better, and I figured I'd
-> try to see if I could make that stick, because I too like simpler ;-)
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Simple is good.
+Add support for the HPE GXP Processor by modifing the
+multi_v7_defconfig instead. This adds basic HPE and GXP
+architecture as well as enables the watchdog which is part
+of this patch set.
 
-> Also, since int80 already has to do this, attackers already have their
-> attack surface.
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+---
+ arch/arm/configs/multi_v7_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Hm, probably true...
-
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index 8863fa969ede..b93d213b7e60 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -1006,6 +1006,8 @@ CONFIG_QCOM_GSBI=y
+ CONFIG_QCOM_SMD_RPM=m
+ CONFIG_QCOM_WCNSS_CTRL=m
+ CONFIG_ARCH_EMEV2=y
++CONFIG_ARCH_HPE=y
++CONFIG_ARCH_HPE_GXP=y
+ CONFIG_ARCH_R8A7794=y
+ CONFIG_ARCH_R8A7779=y
+ CONFIG_ARCH_R8A7790=y
+@@ -1169,3 +1171,4 @@ CONFIG_CMA_SIZE_MBYTES=64
+ CONFIG_PRINTK_TIME=y
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DEBUG_FS=y
++CONFIG_GXP_WATCHDOG=y
 -- 
-Josh
+2.17.1
 
