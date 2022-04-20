@@ -2,193 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0013C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CEBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348767AbiDTDB7 (ORCPT
+        id S1348853AbiDTDFP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 23:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
+        Tue, 19 Apr 2022 23:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236622AbiDTDB5 (ORCPT
+        with ESMTP id S236622AbiDTDFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 23:01:57 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FCF38BE5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:59:13 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id s25so523859edi.13
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:59:13 -0700 (PDT)
+        Tue, 19 Apr 2022 23:05:11 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2ED39172;
+        Tue, 19 Apr 2022 20:02:26 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id y129so370258qkb.2;
+        Tue, 19 Apr 2022 20:02:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fCO4DZsrcFJvW/h/KDtAy5sw4iMAoyjRegeBhEbbGME=;
-        b=VLMO61q8IHewHYHM+ceMtC79fS4nbOR09SzueO2v0renQPlbKB+sYErCZmDWQISUxq
-         dAy7rjD9ePHa73NGG3vI5tQxYMoyk0NHHFIBrJOgJS0+kcKKkJ+4XVuyxi/wB57xyzf6
-         xfn/dmEBSgJe+n0h0MNuHjf3TY6P2Wzeyoqhf9Lb01rS9b7Z2f2mMCzQj3+i8U0qCoLL
-         JvzcfmEvWj7l8ounT9+YIjpwE2Kt3g3yLS3U5yt1vXMkge1MAgpy0gQna4RtMc68qf3p
-         OfBIy1d/14iISwBl7a1z1hEkRL21Y/FnU140T4UWkdYzTPOvgLtTdK8TtMq9FpC7uHFA
-         NVzA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KavF0KS5KLJOY2dExE8lwinSJ4LN/Ebtbb6yL/bzNzQ=;
+        b=HUVQ9hYwgHZNg5WnRMOni56Ap1MZ70xEe/27UfralAfuzxuhGwVEV7sWnzKU7PE4VI
+         mnKA/Syzu4UHEK8i3A3VZhFq4N884cadqvoFjq9hasIXcxROpbhLDufXszewlNUNUprm
+         SC2zMIdzeDG70E8tfF8MaTn9yYZ+ux+BVsWNxDqT/iWCu961dXsxBo8lhVnJVGd+LblU
+         T6NZM6wNYsriaZFLgU0RhtFvlK0We6tBHyraDAUTUpXFAIzwmBOy+3j6uB9PUncT1aYG
+         pq1v1yQmpd/dhl8kM2xtD7kbhDfM/EB6D63MeBdhvRcguPoJqzVO0LTfo5DlVs2IP3ZV
+         y4GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fCO4DZsrcFJvW/h/KDtAy5sw4iMAoyjRegeBhEbbGME=;
-        b=BQh+crVHZ5BEjGeEVt0QJOMF+bgIwu7fxKtLJiW+AFZrn7MFzcqdLIFKqCqaOt16bz
-         aNGZDpJOsgG+hrLor+8AXpKGTBVfPs0D7NvzKHJgHuCCaGwFUBPLi/fP5uRCn7/SLMC1
-         q+IZFxR51FfUPhg9hulcWxW6ho2R2QxhyXoszYsrcyRWiKplWDBG7GOgkui/w6QgT00d
-         wpS44jaAOOPY8dpqXHSmPukLII8JVvRPgKS6hl7h5YHyFiEQ7cGGW/2By0Y37XHlxd8/
-         ezegMfIGM+G9ZI2S16eIt3F+b8FcffwO5W3BCRnMzcwFT2GsjWy0iqbY8rrbgldFtGOB
-         S6vg==
-X-Gm-Message-State: AOAM531MrK9MGNGBorfsaFKz4G0/ezM9ViFkryUk2d/e9AcAFW3/4dts
-        1ck0noZb82nq8VlZhMazuUe2IlE9sExvafxedhh/Of77Rp1mfg==
-X-Google-Smtp-Source: ABdhPJzR30WrOjJGK0N9yWaNaxGZPKkcmI8ZbZ3Wm+OCJRl0d/iiOBFvtsZCDx9vwKq0k6AJXbyPWUDxshgOKWRGfHo=
-X-Received: by 2002:a05:6402:350a:b0:423:e41e:75cb with SMTP id
- b10-20020a056402350a00b00423e41e75cbmr14422528edd.178.1650423551851; Tue, 19
- Apr 2022 19:59:11 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KavF0KS5KLJOY2dExE8lwinSJ4LN/Ebtbb6yL/bzNzQ=;
+        b=GZ5i7hnWOO+0DMuF88CEewbTUsFzj6oG5bMH4Pl+K0sAvI9lqGPEaajGqYGZvqTM1r
+         x5xzfm3KHufMkUqGHrQrgDLnkh0MMiCpmpmg0TWEuHfSwDkBUge+AHOb6E0eRTkDhX59
+         KRFh94w2tkLPs9+xqUmKuJ1GxxZJ/4GN8IrYyiJLYwGB2j6+ceIxRIPa6CJ/50y5fUgj
+         DoTwbgk49LhpibXoP/ysnm/GvJcOLH+KoTozGZrYbDbLIvVyZPC0YKTuT+CH0tV1inlz
+         YhROBGS6Rj16uyPXUAxCV6TdJVazFZvdtsOGiKjNkydJSNyDoc44Py9GsZG6yn1nq5yn
+         Blbw==
+X-Gm-Message-State: AOAM532FGI+MVmZA3byEu3f5D+5mFkStwqX3kQitYUx19LeRhlIK5kFV
+        L/0yHhSOxjx5mCNSGsYJ1tU=
+X-Google-Smtp-Source: ABdhPJze4x0EooB6fj4coS6yKRAfPwsXGsHPWMbc2mEf9a1fZVmbOKI/UVTTi1Cheg3zVUKCLBbzEw==
+X-Received: by 2002:a37:88c2:0:b0:69b:f243:b5c7 with SMTP id k185-20020a3788c2000000b0069bf243b5c7mr11102150qkd.758.1650423745722;
+        Tue, 19 Apr 2022 20:02:25 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id q139-20020a37a791000000b0069e88513517sm947132qke.91.2022.04.19.20.02.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 20:02:24 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     clabbe.montjoie@gmail.com
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] crypto: sun8i-ce: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Wed, 20 Apr 2022 03:02:18 +0000
+Message-Id: <20220420030218.2575565-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220416081355.2155050-1-jcmvbkbc@gmail.com> <CANpmjNNW0kLf2Ou6i_dNeRLO=Qrru4bOEfJ=be=Dfig4wnQ67g@mail.gmail.com>
-In-Reply-To: <CANpmjNNW0kLf2Ou6i_dNeRLO=Qrru4bOEfJ=be=Dfig4wnQ67g@mail.gmail.com>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Tue, 19 Apr 2022 19:59:00 -0700
-Message-ID: <CAMo8BfJM0JHqh8Nz3LuK7Ccu7WB1Cup0mX+RYvO1yft_K4hyLQ@mail.gmail.com>
-Subject: Re: [PATCH] xtensa: enable KCSAN
-To:     Marco Elver <elver@google.com>
-Cc:     "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, Chris Zankel <chris@zankel.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marco,
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-On Tue, Apr 19, 2022 at 3:16 AM Marco Elver <elver@google.com> wrote:
->
-> Nice to see this happen!
->
-> On Sat, 16 Apr 2022 at 10:14, Max Filippov <jcmvbkbc@gmail.com> wrote:
-> > Provide stubs for 64-bit atomics when building with KCSAN.
->
-> The stubs are the only thing I don't understand. More elaboration on
-> why this is required would be useful (maybe there's another way to
-> solve?).
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
 
-It doesn't build without it, because the compiler left function calls
-in the code:
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/crypto/allwinner/sun8i-ce/sun8i-ce-prng.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic32_compare_exchange_val':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_load_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_load':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_load_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_store_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_store':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_store_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_exchange_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_exchange':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_exchange_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_fetch_add_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_fetch_add':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_fetch_add_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_fetch_sub_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_fetch_sub':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_fetch_sub_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_fetch_and_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_fetch_and':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_fetch_and_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_fetch_or_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_fetch_or':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_fetch_or_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_fetch_xor_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_fetch_xor':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_fetch_xor_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_fetch_nand_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_fetch_nand':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_fetch_nand_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_compare_exchange_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_compare_exchange_strong':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_compare_exchange_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_compare_exchange_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.o: in function
-`__tsan_atomic64_compare_exchange_weak':
-kernel/kcsan/core.c:1262: undefined reference to `__atomic_compare_exchange_8'
-xtensa-de233_fpu-elf-ld: kernel/kcsan/core.c:1262: undefined reference
-to `__atomic_compare_exchange_8'
-
-None of these functions are called because xtensa doesn't have
-64-bit atomic ops.
-
-I guess that another way to fix it would be making
-DEFINE_TSAN_ATOMIC_OPS(64);
-conditional and not enabling it when building for xtensa.
-
-> > Disable KCSAN instrumentation in arch/xtensa/boot.
->
-> Given you went for barrier instrumentation, I assume you tested with a
-> CONFIG_KCSAN_STRICT=y config?
-
-Yes.
-
-> Did the kcsan_test pass?
-
-current results are the following on QEMU:
-
-     # test_missing_barrier: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:1313
-     Expected match_expect to be true, but is false
-     # test_atomic_builtins_missing_barrier: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:1356
-     Expected match_expect to be true, but is false
- # kcsan: pass:27 fail:2 skip:0 total:29
- # Totals: pass:193 fail:4 skip:0 total:197
-
-and the following on the real hardware:
-
-    # test_concurrent_races: EXPECTATION FAILED at kernel/kcsan/kcsan_test.c:762
-    Expected match_expect to be true, but is false
-    # test_write_write_struct_part: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:910
-    Expected match_expect to be true, but is false
-    # test_assert_exclusive_access_writer: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:1077
-    Expected match_expect_access_writer to be true, but is false
-    # test_assert_exclusive_bits_change: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:1098
-    Expected match_expect to be true, but is false
-    # test_assert_exclusive_writer_scoped: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:1136
-    Expected match_expect_start to be true, but is false
-    # test_missing_barrier: EXPECTATION FAILED at kernel/kcsan/kcsan_test.c:1313
-    Expected match_expect to be true, but is false
-    # test_atomic_builtins_missing_barrier: EXPECTATION FAILED at
-kernel/kcsan/kcsan_test.c:1356
-    Expected match_expect to be true, but is false
-# kcsan: pass:22 fail:7 skip:0 total:29
-# Totals: pass:177 fail:20 skip:0 total:197
-
+diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-prng.c b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-prng.c
+index b3a9bbfb8831..b3cc43ea6c8a 100644
+--- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-prng.c
++++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-prng.c
+@@ -108,11 +108,9 @@ int sun8i_ce_prng_generate(struct crypto_rng *tfm, const u8 *src,
+ 		goto err_dst;
+ 	}
+ 
+-	err = pm_runtime_get_sync(ce->dev);
+-	if (err < 0) {
+-		pm_runtime_put_noidle(ce->dev);
++	err = pm_runtime_resume_and_get(ce->dev);
++	if (err < 0)
+ 		goto err_pm;
+-	}
+ 
+ 	mutex_lock(&ce->rnglock);
+ 	chan = &ce->chanlist[flow];
 -- 
-Thanks.
--- Max
+2.25.1
+
+
