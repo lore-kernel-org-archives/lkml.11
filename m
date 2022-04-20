@@ -2,86 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D083C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A89D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359804AbiDTHce convert rfc822-to-8bit (ORCPT
+        id S1359790AbiDTHdG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
+        Wed, 20 Apr 2022 03:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359815AbiDTHc2 (ORCPT
+        with ESMTP id S235056AbiDTHdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:32:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B35D3B03B
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:29:43 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nh4mB-0007Lb-2j; Wed, 20 Apr 2022 09:29:23 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nh4m9-0047V2-BD; Wed, 20 Apr 2022 09:29:19 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nh4m6-0002mx-Pi; Wed, 20 Apr 2022 09:29:18 +0200
-Message-ID: <9ee4e73d0b6c9d1cdf6c9ebe94474e7200240701.camel@pengutronix.de>
-Subject: Re: [RFC/RFT 3/6] phy: rockchip: Support pcie v3
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Date:   Wed, 20 Apr 2022 09:29:18 +0200
-In-Reply-To: <20220416135458.104048-4-linux@fw-web.de>
-References: <20220416135458.104048-1-linux@fw-web.de>
-         <20220416135458.104048-4-linux@fw-web.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Wed, 20 Apr 2022 03:33:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E614E627C;
+        Wed, 20 Apr 2022 00:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F230618AF;
+        Wed, 20 Apr 2022 07:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF1DAC385A0;
+        Wed, 20 Apr 2022 07:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650439816;
+        bh=+EDTmtai/jQZPWiRlzQLKQkboIqyWdx84ej+J0tgCT0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lbzpvm/rXJqIP40ZLzhNxJqSNboD4Hfk+B9K54hBNd9SBa1jZSKJAq2lqjHx5lTiF
+         mHqnxAuKK9c96NUFSxyh9indJmJNNrFm60iDqkFLKpSBXKxorqWucVtDyZ4Rak6JAf
+         tkWpFesOVCPMSmHBmRJgtbWu/RPnPFf4ojkPRdkbJpfkztunS9KhCVQVBBQjtqWM46
+         KCAxxbGuDm+ycKV08gp9I0xd/vBXuTSv3ZScZh4X0VpsBD8Xwnd3TefnrnK+N6O/9B
+         TLysoHxyA4HDXUahRW9izrVaarTquVdArJyMsTK1QHAgD20fmAbYVTFYXIH6hUhaaE
+         K9CmiG516V9AA==
+Date:   Wed, 20 Apr 2022 13:00:12 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
+        robh+dt@kernel.org, krzk+dt@kernel.org, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, robert.foss@linaro.org,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, agx@sigxcpu.org,
+        robert.chiras@nxp.com, martin.kepplinger@puri.sm
+Subject: Re: [PATCH resend v8 0/5] phy: phy-fsl-imx8-mipi-dphy: Add i.MX8qxp
+ LVDS PHY mode support
+Message-ID: <Yl+2hOIcr6CrOv+T@matsya>
+References: <20220419010852.452169-1-victor.liu@nxp.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419010852.452169-1-victor.liu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sa, 2022-04-16 at 15:54 +0200, Frank Wunderlich wrote:
-> From: Frank Wunderlich <frank-w@public-files.de>
+On 19-04-22, 09:08, Liu Ying wrote:
+> Hi,
 > 
-> RK3568 supports PCIe v3 using not Combphy like PCIe v2 on rk3566.
-> It use a dedicated pcie-phy. Add support for this.
+> This is the v8 series to add i.MX8qxp LVDS PHY mode support for the Mixel
+> PHY in the Freescale i.MX8qxp SoC.
 > 
-> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> ---
-> driver was taken from linux 5.10 based on in
-> https://github.com/JeffyCN/mirrors
-> which now has disappeared
-> ---
-[...]
-> +	priv->p30phy = devm_reset_control_get(dev, "phy");
+> The Mixel PHY is MIPI DPHY + LVDS PHY combo, which can works in either
+> MIPI DPHY mode or LVDS PHY mode.  The PHY mode is controlled by i.MX8qxp
+> SCU firmware.  The PHY driver would call a SCU function to configure the
+> mode.
+> 
+> The PHY driver is already supporting the Mixel MIPI DPHY in i.MX8mq SoC,
+> where it appears to be a single MIPI DPHY.
+> 
+> 
+> Patch 1/5 sets PHY mode in the Northwest Logic MIPI DSI host controller
+> bridge driver, since i.MX8qxp SoC embeds this controller IP to support
+> MIPI DSI displays together with the Mixel PHY.
+> 
+> Patch 2/5 allows LVDS PHYs to be configured through the generic PHY functions
+> and through a custom structure added to the generic PHY configuration union.
+> 
+> Patch 3/5 converts mixel,mipi-dsi-phy plain text dt binding to json-schema.
+> 
+> Patch 4/5 adds dt binding support for the Mixel combo PHY in i.MX8qxp SoC.
+> 
+> Patch 5/5 adds the i.MX8qxp LVDS PHY mode support in the Mixel PHY driver.
 
-Please use devm_reset_control_get_exclusive() instead. It is
-functionally identical but makes clear that this driver requires
-exclusive control over the reset line.
+Applied patch 2-5 to phy-next, thanks
 
-regards
-Philipp
+-- 
+~Vinod
