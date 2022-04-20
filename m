@@ -2,125 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76159C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A5DC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377818AbiDTKsW (ORCPT
+        id S1377777AbiDTKtA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        Wed, 20 Apr 2022 06:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378096AbiDTKsM (ORCPT
+        with ESMTP id S1359564AbiDTKsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:48:12 -0400
-X-Greylist: delayed 966 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 03:45:19 PDT
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1117313F66;
-        Wed, 20 Apr 2022 03:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=7ut0Q
-        D0SeAhwHJ2wa4JZOw2v3iSr/i3NVuFHELZO3Hs=; b=iaitjDKGmArIa/RPsuIEE
-        uEdtSERqqRtURhqUx7BHXlYyE0/CAP0PZ3lIF2Min+CujtsfLf9GLnqFDtArgVWa
-        8eU9niGT+Dqr8RGBQ4uQK/Lg2k+mMzVFJs+TmUIim1CjoJV5TpOTYCqEOpkvpWS1
-        mg+3vZYGicnICipA0AZcxY=
-Received: from localhost.localdomain (unknown [112.97.59.179])
-        by smtp4 (Coremail) with SMTP id HNxpCgDX9AlY4F9i69iSAA--.8118S2;
-        Wed, 20 Apr 2022 18:28:42 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     mani@kernel.org, quic_hemantk@quicinc.com
-Cc:     gregkh@linuxfoundation.org, loic.poulain@linaro.org,
-        slark_xiao@163.com, bbhatt@codeaurora.org,
-        christophe.jaillet@wanadoo.fr, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bus: mhi: host: Add support for Cinterion MV32-WA/MV32-WB
-Date:   Wed, 20 Apr 2022 18:28:11 +0800
-Message-Id: <20220420102811.3157-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Apr 2022 06:48:55 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E2718381
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:46:05 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id v4so1719118edl.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:46:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5OVcjGSiJ+nlq65WcsbONfbpSCZlHZow1k2gE+HwcCo=;
+        b=pldrgPUIn2R72Z4tJz+rlp+UluL86LT0jyZUo9kf++27hTM0pzPgHXY+I0M40I9NY+
+         eXHUPwO7vQ/zVAdxzXO9RKovW5dOXy0S5vgPrJugzugD/sq0a2wj43vGseINag5cVdUp
+         buPuCcPXISqc1w3yzNrwnzmOwhtZ0oLxlWmhbyJfxD8UXXjuKPksUTMSoVw5W80s0IQg
+         bVQSOTj2RWia9S9xt0eVOxCzR9YWNhIAy7RyNMVAdlrNb1+wXoVQFsKqBO+PyXd6PNNq
+         Eyk0d+inH3oMBNt0rtRAWn9mTvYqYFsYPUvCQfVRZVk4jEt03BzBm1WDPSE9X25GU3F7
+         y5Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5OVcjGSiJ+nlq65WcsbONfbpSCZlHZow1k2gE+HwcCo=;
+        b=PMMjNFA7KfNrz86w+tV8/TaMGIhJeI2hbs/coK7z+w4VqUax7uvEXsSGqC3ZlVeFkv
+         I3K3tyo3KKGkUpBxtEl6MNih/Yjn5tqsT+qcR1yMQN0mSoBdqqHgk9Eotx14dbAtgG16
+         vp7Wc4NTg5T7vwb4cknuUKusRXwtgGLEZhRoHQjHmrF4xNc75e3Ta9OLJT5m5rbfSW9v
+         3R1RnRnI5y4/JOJVXKOi/C3yepX1xt4bqTednvqhWY9BkUPUAVsrrfJNNeHYbXX4Vxpe
+         oKLG5BLS4nhLTy8hAKvQ2nNi6QPrlAuO3RtTDLneF5Lkejhu+ylPlG9/wlYEkgBv4kn4
+         pRbg==
+X-Gm-Message-State: AOAM533Kn0FIBP0WyvJt4E1VQONhRRamjP/OpfdJGqg/IOHreEqzZtc1
+        QVeJq22jeZFi0G3tqUkQyNbTkQ==
+X-Google-Smtp-Source: ABdhPJw/4gOK7xeclDA9097uwkEU8w5LJ7LCVdGl20UroQC9SxTNcI8HyNfFl0xGksOd2Y3YCOPhbQ==
+X-Received: by 2002:aa7:d059:0:b0:41d:76b4:bcc1 with SMTP id n25-20020aa7d059000000b0041d76b4bcc1mr22299244edo.389.1650451563871;
+        Wed, 20 Apr 2022 03:46:03 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id mv12-20020a170907838c00b006e87c0247f4sm6529912ejc.186.2022.04.20.03.46.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 03:46:03 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nfc: MAINTAINERS: add Bug entry
+Date:   Wed, 20 Apr 2022 12:46:01 +0200
+Message-Id: <20220420104601.106540-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgDX9AlY4F9i69iSAA--.8118S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxGw48JF17ArW8KFyktr4xJFb_yoW5GFWDpF
-        WIvrWYyF4vqayaqanay34qgF98Cw4kG343KrnrKw12ywn0y34kZFykK343tFyYvw4vqrs3
-        tr1vqrW3uF4Dt3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zioGQfUUUUU=
-X-Originating-IP: [112.97.59.179]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdRPoZGBbCtHDJAAAst
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MV32-WA is designed based on Qualcomm SDX62, and
-MV32-WB is designed based on QUalcomm SDX65. Both
-products' enumeration would align with previous
-product MV31-W.
-Add some new items for mv32 to separate it from
-mv31-w, in case we need to do any changes in
-future.
+Add a Bug section, indicating preferred mailing method for bug reports,
+to NFC Subsystem entry.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/bus/mhi/host/pci_generic.c | 41 ++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-index 541ced27d941..a2da40340df7 100644
---- a/drivers/bus/mhi/host/pci_generic.c
-+++ b/drivers/bus/mhi/host/pci_generic.c
-@@ -406,6 +406,41 @@ static const struct mhi_pci_dev_info mhi_mv31_info = {
- 	.mru_default = 32768,
- };
- 
-+static const struct mhi_channel_config mhi_mv32_channels[] = {
-+	MHI_CHANNEL_CONFIG_UL(0, "LOOPBACK", 64, 0),
-+	MHI_CHANNEL_CONFIG_DL(1, "LOOPBACK", 64, 0),
-+	/* MBIM Control Channel */
-+	MHI_CHANNEL_CONFIG_UL(12, "MBIM", 64, 0),
-+	MHI_CHANNEL_CONFIG_DL(13, "MBIM", 64, 0),
-+	/* MBIM Data Channel */
-+	MHI_CHANNEL_CONFIG_HW_UL(100, "IP_HW0_MBIM", 512, 2),
-+	MHI_CHANNEL_CONFIG_HW_DL(101, "IP_HW0_MBIM", 512, 3),
-+};
-+
-+static struct mhi_event_config mhi_mv32_events[] = {
-+	MHI_EVENT_CONFIG_CTRL(0, 256),
-+	MHI_EVENT_CONFIG_DATA(1, 256),
-+	MHI_EVENT_CONFIG_HW_DATA(2, 1024, 100),
-+	MHI_EVENT_CONFIG_HW_DATA(3, 1024, 101),
-+};
-+
-+static const struct mhi_controller_config modem_mv32_config = {
-+	.max_channels = 128,
-+	.timeout_ms = 20000,
-+	.num_channels = ARRAY_SIZE(mhi_mv32_channels),
-+	.ch_cfg = mhi_mv32_channels,
-+	.num_events = ARRAY_SIZE(mhi_mv32_events),
-+	.event_cfg = mhi_mv32_events,
-+};
-+
-+static const struct mhi_pci_dev_info mhi_mv32_info = {
-+	.name = "cinterion-mv32",
-+	.config = &modem_mv32_config,
-+	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
-+	.dma_data_width = 32,
-+	.mru_default = 32768,
-+};
-+
- static const struct mhi_channel_config mhi_sierra_em919x_channels[] = {
- 	MHI_CHANNEL_CONFIG_UL_SBL(2, "SAHARA", 32, 0),
- 	MHI_CHANNEL_CONFIG_DL_SBL(3, "SAHARA", 256, 0),
-@@ -475,6 +510,12 @@ static const struct pci_device_id mhi_pci_id_table[] = {
- 	/* MV31-W (Cinterion) */
- 	{ PCI_DEVICE(0x1269, 0x00b3),
- 		.driver_data = (kernel_ulong_t) &mhi_mv31_info },
-+	/* MV32-WA (Cinterion) */
-+	{ PCI_DEVICE(0x1269, 0x00ba),
-+		.driver_data = (kernel_ulong_t) &mhi_mv32_info },
-+	/* MV32-WB (Cinterion) */
-+	{ PCI_DEVICE(0x1269, 0x00bb),
-+		.driver_data = (kernel_ulong_t) &mhi_mv32_info },
- 	{  }
- };
- MODULE_DEVICE_TABLE(pci, mhi_pci_id_table);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2d746723306a..1786cbdd43a2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13842,6 +13842,7 @@ M:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ L:	linux-nfc@lists.01.org (subscribers-only)
+ L:	netdev@vger.kernel.org
+ S:	Maintained
++B:	mailto:linux-nfc@lists.01.org
+ F:	Documentation/devicetree/bindings/net/nfc/
+ F:	drivers/nfc/
+ F:	include/linux/platform_data/nfcmrvl.h
 -- 
-2.25.1
+2.32.0
 
