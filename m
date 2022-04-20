@@ -2,74 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A854C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244576AbiDTCKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        id S1348554AbiDTCN2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 22:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343625AbiDTCKC (ORCPT
+        with ESMTP id S243081AbiDTCN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:10:02 -0400
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD83111150
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:07:17 -0700 (PDT)
-Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id 7032F22565;
-        Wed, 20 Apr 2022 02:07:16 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 0E06B2002C;
-        Wed, 20 Apr 2022 02:07:14 +0000 (UTC)
-Message-ID: <53b4a92efb83d893230f47ae9988282f3875b355.camel@perches.com>
-Subject: Re: [PATCH] octeon_ep: Remove unnecessary cast
-From:   Joe Perches <joe@perches.com>
-To:     Haowen Bai <baihaowen@meizu.com>,
-        Veerasenareddy Burru <vburru@marvell.com>,
-        Abhijit Ayarekar <aayarekar@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 19 Apr 2022 19:07:14 -0700
-In-Reply-To: <1650419232-7982-1-git-send-email-baihaowen@meizu.com>
-References: <1650419232-7982-1-git-send-email-baihaowen@meizu.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Tue, 19 Apr 2022 22:13:26 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDBC27B2A
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:10:41 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id s17so447319plg.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:10:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=uZGu9RNlkQA5TxlgtGTOVTUwj4eEvcthrzrpgoifV9k=;
+        b=WZhL8aw9yFZMmP9R1VXUsEDGLakvn6P1Xp5YQGN/v0yw5da28V1sHmvbDoiY/lBUqp
+         uCdnjNXZRox8wkubowjn8QgFHLDacFGGrcDnJ6h3PzRhQmE1kQrBV+RklAXsdT/7u5mJ
+         xbTwrlxFAejgYA5jCACvtKfbMtS3YO2BQEtRUhOHGHGPBhRZt8o5sbMynidMCL/LFeDl
+         VTLMPq2Pn2sxJd+P6XIayzcdZy6lJxzdVoBd8GV5vsMtgf5io8G1RUwkJ+/E7Dbhny2b
+         D6sfFH64D9SibJ7mxYEUvNssJOWGSRLaVJ7d7P9YPxn65FHwimER3tHaMC2dUp38mULD
+         OFDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=uZGu9RNlkQA5TxlgtGTOVTUwj4eEvcthrzrpgoifV9k=;
+        b=cfOElrNXDQ1YnE7nKndNkwfyd6dihA+2Frlc+O91TvLgeQINBo0lkjntPbqEpxDqaq
+         v7UBi/Oi9rSIX9+kgZRu7aEPSd8YVhHs6nUmAHPEnQyLirOQG/SYp97N/HckAe9Rfamk
+         0Jn7EDf8ez/K22l0OLc+P2C8sW4Vw8VaYGhZyHEJJ5UQkQbcPkIrPvr7NgEO5nuRN5vM
+         aywLBpn9kahxPtyf0ZM5jhbmB+TFuvlzLhaPfh0z91wkNu/bhEVG/NbLIqhqCIhESMbT
+         2V4eN/t5ufeBRphGXFbVHNp9nt/cKI6k7acDIaVlNSkcEd+eQRoSAjyfX08T86EiVRzr
+         Qxiw==
+X-Gm-Message-State: AOAM530KD5n4gxWT7hxOkV6QXkc4V4hnH4CNeL3ZsqWUEnv9D5BXTTwn
+        FsUi/LshTdE4QP1PPs1UoYTT1gyAf8qu9hZq
+X-Google-Smtp-Source: ABdhPJwUA7+DodBugI4u3AXpqcq2kJK+3iemOUKLhX1NDo2Q8G5TEdc2+E6ouT86C8NQRrNgeNqw4A==
+X-Received: by 2002:a17:90a:cc6:b0:1d2:9a04:d29e with SMTP id 6-20020a17090a0cc600b001d29a04d29emr1765286pjt.136.1650420641309;
+        Tue, 19 Apr 2022 19:10:41 -0700 (PDT)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id i2-20020a17090a138200b001cb6512b579sm17032313pja.44.2022.04.19.19.10.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 19:10:40 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     yukuai3@huawei.com
+Cc:     linux-block@vger.kernel.org, yi.zhang@huawei.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220415035607.1836495-1-yukuai3@huawei.com>
+References: <20220415035607.1836495-1-yukuai3@huawei.com>
+Subject: Re: [PATCH RESEND] blk-mq: fix possible creation failure for 'debugfs_dir'
+Message-Id: <165042064016.532249.4832316049346088891.b4-ty@kernel.dk>
+Date:   Tue, 19 Apr 2022 20:10:40 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: kg541wpz5r8mbtaraiymomu81xh8837f
-X-Rspamd-Server: rspamout06
-X-Rspamd-Queue-Id: 0E06B2002C
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18NG+yv3Q8u1koYHE0CnuBdl8L3tatgtgs=
-X-HE-Tag: 1650420434-864539
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-20 at 09:47 +0800, Haowen Bai wrote:
-> Fix the following coccicheck warning:
+On Fri, 15 Apr 2022 11:56:07 +0800, Yu Kuai wrote:
+> 'q->debugfs_dir' is created in blk_register_queue(), however, it's not
+> removed in blk_unregister_queue() and is delayed to blk_release_queue().
+> Thus it's possible that del_gendisk() is done and blk_release_queue()
+> is not called yet, and in the mean time blk_register_queue() is called
+> for the new device with the same name. In this case, kernel will
+> compalin about creation failure for 'debugfs_dir' like following:
 > 
-> ./drivers/net/ethernet/marvell/octeon_ep/octep_rx.c:161:18-40: WARNING:
-> casting value returned by memory allocation function to (struct
-> octep_rx_buffer *) is useless.
-[]
-> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-[]
-> @@ -158,8 +158,7 @@ static int octep_setup_oq(struct octep_device *oct, int q_no)
->  		goto desc_dma_alloc_err;
->  	}
->  
-> -	oq->buff_info = (struct octep_rx_buffer *)
-> -			vzalloc(oq->max_count * OCTEP_OQ_RECVBUF_SIZE);
-> +	oq->buff_info = vzalloc(oq->max_count * OCTEP_OQ_RECVBUF_SIZE);
->  	if (unlikely(!oq->buff_info)) {
->  		dev_err(&oct->pdev->dev,
->  			"Failed to allocate buffer info for OQ-%d\n", q_no);
+> [...]
 
-probably better to use kvcalloc or maybe vcalloc if oq->max_count is
-always expected to be huge.
+Applied, thanks!
 
-OCTEP_OQ_RECVBUF_SIZE is pretty small (just a pointer and a u64).
+[1/1] blk-mq: fix possible creation failure for 'debugfs_dir'
+      commit: a87c29e1a85e64b28445bb1e80505230bf2e3b4b
+
+Best regards,
+-- 
+Jens Axboe
 
 
