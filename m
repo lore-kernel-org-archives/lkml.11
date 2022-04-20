@@ -2,196 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF5EC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F86C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380980AbiDTRQI (ORCPT
+        id S1380987AbiDTRQg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
+        Wed, 20 Apr 2022 13:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380936AbiDTRQF (ORCPT
+        with ESMTP id S236702AbiDTRQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 13:16:05 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0E1457A6;
-        Wed, 20 Apr 2022 10:13:19 -0700 (PDT)
-Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KFWD28015958;
-        Wed, 20 Apr 2022 17:13:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pps0720;
- bh=VX7De13RZ9wUkXQlwBjWW9g1OYZSEuzcloRpuwXD06c=;
- b=Tjs5tBmWuTCAxjnUohrBNlB1PFTBcFu6o3JV7B60MsZALrtPbR3MYvSC5/ccWkr30JTp
- 4eqX3bVe2gmY1WEB9cmnQc0keLfOwAyZdPvyDV8L6zsgKl+ygIqxhJG0Z4O7tXtFcyGk
- rYrTPep9Se5ew6rwXNNwAgUVFuJmur6xxcqaWLToSduXVEeSkmjWK9Poq9GpF8FbmVBP
- UkLbIGE24wCQG/h92cwtavF7/Mt6eqiccp752jjsUxN6Y5TL4wx5/5wJnDphrCw7wsY4
- qoogRjGhTmK+6TyL1VgvddjwwWQc2iXe1MSpEhi/XX3ypanwamL7vfCdwUmi4xdiwges 7w== 
-Received: from p1lg14881.it.hpe.com (p1lg14881.it.hpe.com [16.230.97.202])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fjmv3gw79-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 17:13:12 +0000
-Received: from p1wg14925.americas.hpqcorp.net (unknown [10.119.18.114])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by p1lg14881.it.hpe.com (Postfix) with ESMTPS id A9FA9805E01;
-        Wed, 20 Apr 2022 17:13:10 +0000 (UTC)
-Received: from p1wg14927.americas.hpqcorp.net (10.119.18.117) by
- p1wg14925.americas.hpqcorp.net (10.119.18.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 20 Apr 2022 05:12:28 -1200
-Received: from p1wg14927.americas.hpqcorp.net (10.119.18.117) by
- p1wg14927.americas.hpqcorp.net (10.119.18.117) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 20 Apr 2022 05:12:28 -1200
-Received: from P1WG14918.americas.hpqcorp.net (16.230.19.121) by
- p1wg14927.americas.hpqcorp.net (10.119.18.117) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
- via Frontend Transport; Wed, 20 Apr 2022 05:12:28 -1200
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (192.58.206.38)
- by edge.it.hpe.com (16.230.19.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 20 Apr 2022 17:12:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IIK8q/a7Cw2KrvnlHJLPYkGL+ixOKNhwag9QaTo+9OAkBofO4mzKJuTDaYOi2Pmawyb77uKTsb+NhKt03nCT3IqL2A2+4+v0ZGiDA91cc2+vGMPw/hdz3eDYj4gv1ACyKTefNDUF5AFKeq6MPABvb23X6Fc7f+1VnjBwAIZZA//xHmAYMSF30baOo8N+KMTtqKIjZfhLhXGbPGOGGTS5raLzG2PGhojofN7zLhM7VmtK1AEAylUxdBMZUPILpBwwUtZxcoTnbCIwsxfmcoX33juVey4gakmf9zWfglAr31T6QelC7XqPylK1DTBQ6ZyCgmy3m9HI6QK+zomVq5Ph7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VX7De13RZ9wUkXQlwBjWW9g1OYZSEuzcloRpuwXD06c=;
- b=oP5Z9+tcyRpwcqns1VTzLM3UkwF2jhHZLlqCH6YnT71H4ob2S9YxwDrVaSQX9VJm/0N2Anf2nmZndQANcbriUSlMDfBGdeSkCOegGHUCZDy/Q0Hdwi1bW1bsfQeKFGC0SDEyUSln7+vZgaUAL9mZoZa/mxnMBVsS3FDdwBnZefXYw4ecfQ+5SEXdHIVHcW3LyYGbmLMvYt+VeAye6NFmYvXr6Y3qMeMS9ElzDuydgMgzrJxujsDbRRdG8jidic9SeuypJAOqO1BeWn7eef8rQHuSeTVT9TXbrIhEhfUsrW0o6PdjaQtJjNcU9rJhuOa+ShSVo2f8Y3ZQqvLEPJCdEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
- header.d=hpe.com; arc=none
-Received: from PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:172::21)
- by PH0PR84MB1672.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:160::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Wed, 20 Apr
- 2022 17:12:26 +0000
-Received: from PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
- ([fe80::6055:1602:5a0a:1562]) by PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
- ([fe80::6055:1602:5a0a:1562%8]) with mapi id 15.20.5164.025; Wed, 20 Apr 2022
- 17:12:26 +0000
-From:   "Hawkins, Nick" <nick.hawkins@hpe.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     "Verdun, Jean-Marie" <verdun@hpe.com>,
-        "Harders, Nick" <nicholas.harders@hpe.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v4 09/11] dt-bindings: usb: generic-ochi: Add HPE GXP ochi
- binding
-Thread-Topic: [PATCH v4 09/11] dt-bindings: usb: generic-ochi: Add HPE GXP
- ochi binding
-Thread-Index: AQHYVNiMFAKLeqxVUEOutPnlBV05zKz5CZtQ
-Date:   Wed, 20 Apr 2022 17:12:26 +0000
-Message-ID: <PH0PR84MB1718D862B41866F0992AB23B88F59@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-References: <20220420150156.47405-1-nick.hawkins@hpe.com>
- <20220420150156.47405-9-nick.hawkins@hpe.com>
- <CAK8P3a0CgyM6Mwo0P-Qqej671PNW2qS6oun6dpQh2VHCCy9yJQ@mail.gmail.com>
-In-Reply-To: <CAK8P3a0CgyM6Mwo0P-Qqej671PNW2qS6oun6dpQh2VHCCy9yJQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6feb8cf4-508d-437f-8b38-08da22f0f19f
-x-ms-traffictypediagnostic: PH0PR84MB1672:EE_
-x-microsoft-antispam-prvs: <PH0PR84MB1672F5B74E14A3D076BE706088F59@PH0PR84MB1672.NAMPRD84.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B6B+tkPF7WpAipf4m0Thuqb2DlLiUQLEeDZlAtf9gGvh4NWAK4S753mXXCMVftZLjipJFfi7tFw/9JAZJiaLgJ/58W+cmimo/cJ+lP4hnv9VQG30n0XFVkUNCLjDEI4e6lpow9b8AhRZXS9MaunccCsbD3zkBXVtTOM9PoJ3KoybhuUltBuKy7ZGECMAkudZcQ2zz0ea5O94nz94Z3/5nO93V5E8hqw9OI/0W4w3WW7y2gFzsA29nCfXaounz7aUg8mzYqg0wPnv1gJfPCogwpShuouZIK0RFo/uGa6ZDXQufaEl4Gp4+q/0d1Pwp5nABUmpLecCpkvioYCGyQY3S++31xMzXI34fVn5jGzFCjV00VC0g6O6LnikaKgrF0ayNvoDcil2BSDyfmMj5Z/X7aRvZrRuKkM2LXfoRET9nPRMbmELMNXAjxMxpmc+l/BVN/5DLZkhwNEYlpsq3YYFyJuyjVf4JJfsxySFwDmKxAzyY2oKkWyO5N7En2SZV4CcuNq1+wvV+AR+FvexgdANIEMAvMcy3ke457039PJq8wy3GzWlfMi1BFM4TeGwoEFHJWTkSAQQwkAaWg/B7AJ/HbVzBloHXeadU1AQnbDWLNUUjhopouKGZyZ7ak8AhdGsgZeFnlmpfzZzIo6SZNTskUi687eSWsbei/Cr2iB9lXb7EYCGIfRUAIKzVVGqMs5vFDpYI+JNVICycHF3wK1F7Qok3IwfHoWNjO+02zCmjzM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(8676002)(6916009)(8936002)(54906003)(86362001)(38070700005)(55016003)(53546011)(9686003)(7696005)(316002)(26005)(6506007)(508600001)(82960400001)(2906002)(71200400001)(38100700002)(66476007)(66556008)(52536014)(122000001)(76116006)(33656002)(66446008)(4326008)(5660300002)(83380400001)(66946007)(64756008)(4744005)(41533002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?clV0WWphM0YyYnRPZU9wV2I2S2RZaWUzOWp6dFNhSjI3ZnZYL2Z5ZTlwWFhV?=
- =?utf-8?B?dVlEeHhwWHY0ZWFjNDVWeVYxQkp5dzdqcWNKa3Ixck9LTm1ld0ZSM2RBb01x?=
- =?utf-8?B?aWRoU01FZ1E3cUtNSkRpSGFocWRPVWRXNUJKMzFqaTBReDFLMTAwRTVtQmFS?=
- =?utf-8?B?RmJBRHZiNERJZ3NKUUdBV1JJdTQraWVzV2k5OFJwYXV6bjE3Uy9qUFhCRFcy?=
- =?utf-8?B?c003cnVibnZreFduYjZaU216cGg1UjRhaEowblFBTG40WDNncXpOZUtEQXZK?=
- =?utf-8?B?bS9USnpabXREY3pNQjJZUnVCL2NYYVhCa0hGV2VqaUZKenI2K0FpUUcwOEFu?=
- =?utf-8?B?WmZIQ2JpVmxCUWpldUFlcXU3UDJSaEQwaGJ6YUdFSHU2V1RmS3cybFRBRUhW?=
- =?utf-8?B?NWxtUHAyTFhBbEVmR25DcU4zc0ZWR0owU2diRXpRQS9MM2VxeTVTV0RoUm5U?=
- =?utf-8?B?L0NoTXZnNTJqcHh3NlJrQXVWUHpJL1pvYlF3S0J0L1dRdElwL0dTU2xncDZx?=
- =?utf-8?B?T2NhVWp0Z2dMVjF5RXZIckp4ZTJRZDM3TWlOQ3ZpdC9aaSt4RDNqQWdYVHNj?=
- =?utf-8?B?WTR4RFlTeGhGNWc5cE81ejJWSzhscDRPZHhQb2ROMS9NYjlTaWk2UDZDWTMr?=
- =?utf-8?B?UEVacjR2VithTFdrOXBLTzM5aHVWbEt0Ym1lNWI1QW9oZ25DMndPY1hXWDkx?=
- =?utf-8?B?dFZOV1JzZ2hQK2xsSXZOTW40NlR4Rkl1NnN6SEZsc2NtaTJDUGxhaTNjYkJJ?=
- =?utf-8?B?L1pIOWM2enk3TDBHak9vK3NFRUJrQ01MOVdtSy84cEVaOUkwWVRnaTZxMzRB?=
- =?utf-8?B?TzMreE96OEkxZmhheTVXd3NvYlpERkl5ZFBDL09OdGVsOHlLajhzQ1FaU29F?=
- =?utf-8?B?ZDFScE5PclltajIzNDlWc2ZzdVg5UnlSeG00c054WW9XYjJsNTVaeFVFUHBI?=
- =?utf-8?B?d3pzdS9uVDBBam5uL05lNU41SXZMdUc1WS9ucWZidXp6cnNzVjVDWVlqUmZ5?=
- =?utf-8?B?ZldBL0RucDlrSG54S1ZwQjBUWHFKMTI2dHFtd3Y3bW1iUmNIREFvajBFSDBI?=
- =?utf-8?B?OXZPaDBFeFhTdVlQd0RsTEx3UytCYjRmQmxKckMySk1Ua1ZGbXFLc293Wmlk?=
- =?utf-8?B?aEE3blZrZFlKNlM2LytZVnJVRnRwa3lPcWNoV2RWREViSnRDeHRVd3h5VUJt?=
- =?utf-8?B?a2ZaZEJ4VDVEUEhEeW9pa2oraEhNellNZUIxVWlraXhSc0FzUmZTZUxUT1p4?=
- =?utf-8?B?SGFxZzYxVStEV1dkLzdEbjU1SURBbCsrbG1jM2ZGcmhlaVRlNEJkdXNlUkh0?=
- =?utf-8?B?UW9VcGNLN3d6U0phUnJKaVdONnpyZmZUVjZZNHBWOE4rNlJ1L05PTDhPTThq?=
- =?utf-8?B?THJOcHdINjJnM0orbVVNZWhvTGxZMHg0cE9KMEpLbEFoQllRTER0TmpKM01K?=
- =?utf-8?B?eDFGSWZzTXJsbDBsMThSS3QrK1FZdHdjL2R1RkxxTDhUNUNtanRkeTVkZ3lN?=
- =?utf-8?B?YUxkZkRLWDNxbGlGQUdjM0xrTW1oUjl5ejZSWmZRbkRMc1dPbjVKMUR0di9B?=
- =?utf-8?B?bEtUdy8wclhKejZUc28rWWx3WDEyZzZ4VWNkaXZGdEZsZE12NXFMVWVzZGpD?=
- =?utf-8?B?V2IwTHh1U3JTMDdEZWt6c1hOOUJDNnd2U0ZvNm1BQS94TTc5ejlQditFSlhN?=
- =?utf-8?B?YXpRM1ZuSU03NW9yVTlVWSt5YmNVY1pZZTM0QzBLUVkrbUEwVUJ2clRaVlRw?=
- =?utf-8?B?VDZ2OTFvMWRTVVJmTGpwdjhlVThFeDg0UkN0ajlBbk0vb1pnbXJmOHJrSENW?=
- =?utf-8?B?bFRGbzh5QVlSS3l3MUxFeGxYVjRTWFNnOElnNWVuN3hQSVhidjRlU3JybXdT?=
- =?utf-8?B?Rm1KaUk4VmRUb001anpBaFdCS2lzYWpNYm1UOGZPMEN4RkVrbzBPMS9PejV2?=
- =?utf-8?B?VStBTEo1SW5QcmVISzFZZVZSVjNUUEp1M3hpTXRSMmRPMDJQYVFGWlJXMGVI?=
- =?utf-8?B?NmdaSm5JRFpudDIvVFRheXdkd2dJaTV5bGQ1aEJOb2ovQWNoMDhOSy9XdTdu?=
- =?utf-8?B?SkRFVmoxTHEyeDN2Ylk0b1RzcnZ5T2kwMUhIeE9qTStXTzcyaDA3NnczbW1S?=
- =?utf-8?B?VzdIS0NlWk5HQnJ4aVJ4bHczNzY2N0lVZnJ0YjhZd3JSWGZDaUVDZk9WYkEy?=
- =?utf-8?B?NU02MjhrWTliQkhjUVk2R3hMWi9xay9MUFhoYytUQ2s0SnYzNm9YMTl0cVFZ?=
- =?utf-8?B?MVZ0OENTbksydW11SDNFQVgxSndXUmtwdEJNMHlKMm10aTdOdHNRTDE2WDQ2?=
- =?utf-8?Q?TNfwpTAEHWPfzJvet8?=
-Content-Type: text/plain; charset="utf-8"
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6feb8cf4-508d-437f-8b38-08da22f0f19f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2022 17:12:26.6033
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EpkzlVsPNC2uMCnEafVTwkzOe9OL/T/vjBD3Woi3K0QymJet8ls/iReDuO/5E/fqIABjTQipcBa6CPnDdccRHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR84MB1672
-X-OriginatorOrg: hpe.com
-X-Proofpoint-GUID: xecTEqTEdd5GTLvzER7uzZRpckWAfXio
-X-Proofpoint-ORIG-GUID: xecTEqTEdd5GTLvzER7uzZRpckWAfXio
-Content-Transfer-Encoding: base64
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 20 Apr 2022 13:16:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAFBF457A9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:13:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650474826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YUXfwOQompnJdIwVAr+ky90k3csgxSJYtFYxvhspJD8=;
+        b=jBl1gmg6wPwLvVy+n5LEz1cBblL+6eeTmypLE3g+NlFdcUvl/JOa1EPCaFqBe0yCLCzuZq
+        ay8nC4fqegacmTvzywG8D1tgPny6+mzYNpOamAhkR4xvjPSskD4zORFWurr4tjLQEVwzc+
+        GWb8sH1K84KTed4ewb07KESHBQ5YDJk=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-417-s8hxY59HP1KhFjzehQSw4w-1; Wed, 20 Apr 2022 13:13:45 -0400
+X-MC-Unique: s8hxY59HP1KhFjzehQSw4w-1
+Received: by mail-wm1-f70.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so1222107wmj.5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:13:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=YUXfwOQompnJdIwVAr+ky90k3csgxSJYtFYxvhspJD8=;
+        b=S6iF1PotjeaRCsk7846OhoojX0yBG9BdKc5WLA5FGTbeQxhfhTMEcGlISLz6/2s+Xb
+         NVfko7g79mD+jebwf8zRW3t6z9mB2c2BpWaPSDHijelsMKyQQ+adIrZCISOfch1Lt5A9
+         egdTVLJA37tbYqt+4JNmQQxMOZD8E3qrIwtFK4SG/t4f9dWsC8fA6upo41uSd/o2qSPG
+         ZqDyyZ6t4Z2M6Z2JemEWKnrIgeag7E1smISNFadfNyajkc3OEUhfrzEaTnKqKTcdfn0u
+         pP+KnpMSBu8FvLSZYPyC3qNtoxO4ebUnyZ5iPgoul7uXg3ZqLtFJm+2nnLB4CkPU2UlQ
+         G5Sg==
+X-Gm-Message-State: AOAM531QW0phYFRp5relCAWD4l8plGOvX5wt7Y+ujJnBTsQe2c9yEXVh
+        fcOZNy66o7nC647HEkz9k1ymSDjx9zRnxVhe8/H8/Km3zJ6u1so75XgPokD/XJp54mRp4hXyg7A
+        nyWMOWp7vJv0xZmBeR9U0WNQE
+X-Received: by 2002:a1c:21c5:0:b0:38e:b464:6a39 with SMTP id h188-20020a1c21c5000000b0038eb4646a39mr4624133wmh.186.1650474824361;
+        Wed, 20 Apr 2022 10:13:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwnxBGE3mnfNhX3DGODQmYyZGAR1i8EPUCCup/XZY5QMpdpdOqavd/9L1y6Dj1QMznlK0qbGA==
+X-Received: by 2002:a1c:21c5:0:b0:38e:b464:6a39 with SMTP id h188-20020a1c21c5000000b0038eb4646a39mr4624108wmh.186.1650474824060;
+        Wed, 20 Apr 2022 10:13:44 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c702:3d00:23e4:4c84:67a5:3ccf? (p200300cbc7023d0023e44c8467a53ccf.dip0.t-ipconnect.de. [2003:cb:c702:3d00:23e4:4c84:67a5:3ccf])
+        by smtp.gmail.com with ESMTPSA id q16-20020adff950000000b00205aa05fa03sm313602wrr.58.2022.04.20.10.13.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 10:13:43 -0700 (PDT)
+Message-ID: <c7e76985-f209-f110-0785-e2849acdd43c@redhat.com>
+Date:   Wed, 20 Apr 2022 19:13:40 +0200
 MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_05,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- mlxlogscore=999 mlxscore=0 priorityscore=1501 spamscore=0 impostorscore=0
- lowpriorityscore=0 bulkscore=0 malwarescore=0 clxscore=1015 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204200102
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v2 1/8] mm/swap: remember PG_anon_exclusive via a swp pte
+ bit
+Content-Language: en-US
+To:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        linux-mm@kvack.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org
+References: <20220329164329.208407-1-david@redhat.com>
+ <20220329164329.208407-2-david@redhat.com>
+ <b49f1b4c-defa-ef32-1984-0273e1fad178@suse.cz>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <b49f1b4c-defa-ef32-1984-0273e1fad178@suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBBcm5kIEJlcmdtYW5uIFttYWls
-dG86YXJuZEBhcm5kYi5kZV0gDQpTZW50OiBXZWRuZXNkYXksIEFwcmlsIDIwLCAyMDIyIDEyOjAz
-IFBNDQpUbzogSGF3a2lucywgTmljayA8bmljay5oYXdraW5zQGhwZS5jb20+DQpDYzogVmVyZHVu
-LCBKZWFuLU1hcmllIDx2ZXJkdW5AaHBlLmNvbT47IEhhcmRlcnMsIE5pY2sgPG5pY2hvbGFzLmhh
-cmRlcnNAaHBlLmNvbT47IEpvZWwgU3RhbmxleSA8am9lbEBqbXMuaWQuYXU+OyBBcm5kIEJlcmdt
-YW5uIDxhcm5kQGFybmRiLmRlPjsgR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3Vu
-ZGF0aW9uLm9yZz47IFJvYiBIZXJyaW5nIDxyb2JoK2R0QGtlcm5lbC5vcmc+OyBVU0IgbGlzdCA8
-bGludXgtdXNiQHZnZXIua2VybmVsLm9yZz47IERUTUwgPGRldmljZXRyZWVAdmdlci5rZXJuZWwu
-b3JnPjsgTGludXggS2VybmVsIE1haWxpbmcgTGlzdCA8bGludXgta2VybmVsQHZnZXIua2VybmVs
-Lm9yZz4NClN1YmplY3Q6IFJlOiBbUEFUQ0ggdjQgMDkvMTFdIGR0LWJpbmRpbmdzOiB1c2I6IGdl
-bmVyaWMtb2NoaTogQWRkIEhQRSBHWFAgb2NoaSBiaW5kaW5nDQoNCk9uIFdlZCwgQXByIDIwLCAy
-MDIyIGF0IDU6MDEgUE0gPG5pY2suaGF3a2luc0BocGUuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZy
-b206IE5pY2sgSGF3a2lucyA8bmljay5oYXdraW5zQGhwZS5jb20+DQo+ID4NCj4gPiBBZGQgaHBl
-LGd4cC1vY2hpIHRvIHRoZSBnZW5lcmljLW9jaGkgbGlzdC4gVGhpcyBpcyB0byBlbmFibGUgdGhl
-IA0KPiA+IGRldmljZSB0cmVlIHN1cHBvcnQuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBOaWNr
-IEhhd2tpbnMgPG5pY2suaGF3a2luc0BocGUuY29tPg0KDQo+IHMvb2NoaS9vaGNpLw0KDQo+IGV2
-ZXJ5d2hlcmUNCg0KSSBoYXZlIGNvcnJlY3RlZCB0aGlzLiBJIG5vdGljZWQgdGhhdCBJIGRpZCB0
-aGUgc2FtZSB0aGluZyB3aXRoIGVjaGkgLT4gZWhjaSBzbyB0aGF0IGhhcyBiZWVuIGNvcnJlY3Rl
-ZCBhcyB3ZWxsLg0KDQpUaGFua3MgZm9yIHRoZSBmZWVkYmFjaywNCg0KLU5pY2sgSGF3a2lucw0K
+On 20.04.22 19:10, Vlastimil Babka wrote:
+> On 3/29/22 18:43, David Hildenbrand wrote:
+>> Currently, we clear PG_anon_exclusive in try_to_unmap() and forget about
+>> it. We do this, to keep fork() logic on swap entries easy and efficient:
+>> for example, if we wouldn't clear it when unmapping, we'd have to lookup
+>> the page in the swapcache for each and every swap entry during fork() and
+>> clear PG_anon_exclusive if set.
+>>
+>> Instead, we want to store that information directly in the swap pte,
+>> protected by the page table lock, similarly to how we handle
+>> SWP_MIGRATION_READ_EXCLUSIVE for migration entries. However, for actual
+>> swap entries, we don't want to mess with the swap type (e.g., still one
+>> bit) because it overcomplicates swap code.
+>>
+>> In try_to_unmap(), we already reject to unmap in case the page might be
+>> pinned, because we must not lose PG_anon_exclusive on pinned pages ever.
+>> Checking if there are other unexpected references reliably *before*
+>> completely unmapping a page is unfortunately not really possible: THP
+>> heavily overcomplicate the situation. Once fully unmapped it's easier --
+>> we, for example, make sure that there are no unexpected references
+>> *after* unmapping a page before starting writeback on that page.
+>>
+>> So, we currently might end up unmapping a page and clearing
+>> PG_anon_exclusive if that page has additional references, for example,
+>> due to a FOLL_GET.
+>>
+>> do_swap_page() has to re-determine if a page is exclusive, which will
+>> easily fail if there are other references on a page, most prominently
+>> GUP references via FOLL_GET. This can currently result in memory
+>> corruptions when taking a FOLL_GET | FOLL_WRITE reference on a page even
+>> when fork() is never involved: try_to_unmap() will succeed, and when
+>> refaulting the page, it cannot be marked exclusive and will get replaced
+>> by a copy in the page tables on the next write access, resulting in writes
+>> via the GUP reference to the page being lost.
+>>
+>> In an ideal world, everybody that uses GUP and wants to modify page
+>> content, such as O_DIRECT, would properly use FOLL_PIN. However, that
+>> conversion will take a while. It's easier to fix what used to work in the
+>> past (FOLL_GET | FOLL_WRITE) remembering PG_anon_exclusive. In addition,
+>> by remembering PG_anon_exclusive we can further reduce unnecessary COW
+>> in some cases, so it's the natural thing to do.
+>>
+>> So let's transfer the PG_anon_exclusive information to the swap pte and
+>> store it via an architecture-dependant pte bit; use that information when
+>> restoring the swap pte in do_swap_page() and unuse_pte(). During fork(), we
+>> simply have to clear the pte bit and are done.
+>>
+>> Of course, there is one corner case to handle: swap backends that don't
+>> support concurrent page modifications while the page is under writeback.
+>> Special case these, and drop the exclusive marker. Add a comment why that
+>> is just fine (also, reuse_swap_page() would have done the same in the
+>> past).
+>>
+>> In the future, we'll hopefully have all architectures support
+>> __HAVE_ARCH_PTE_SWP_EXCLUSIVE, such that we can get rid of the empty
+>> stubs and the define completely. Then, we can also convert
+>> SWP_MIGRATION_READ_EXCLUSIVE. For architectures it's fairly easy to
+>> support: either simply use a yet unused pte bit that can be used for swap
+>> entries, steal one from the arch type bits if they exceed 5, or steal one
+>> from the offset bits.
+>>
+>> Note: R/O FOLL_GET references were never really reliable, especially
+>> when taking one on a shared page and then writing to the page (e.g., GUP
+>> after fork()). FOLL_GET, including R/W references, were never really
+>> reliable once fork was involved (e.g., GUP before fork(),
+>> GUP during fork()). KSM steps back in case it stumbles over unexpected
+>> references and is, therefore, fine.
+>>
+>> Signed-off-by: David Hildenbrand <david@redhat.com>
+> 
+> With the fixup as reportedy by Miaohe Lin
+> 
+> Acked-by: Vlastimil Babka <vbabka@suse.cz>
+> 
+> (sent a separate mm-commits mail to inquire about the fix going missing from
+> mmotm)
+> 
+> https://lore.kernel.org/mm-commits/c3195d8a-2931-0749-973a-1d04e4baec94@suse.cz/T/#m4e98ccae6f747e11f45e4d0726427ba2fef740eb
+
+Yes I saw that, thanks for catching that!
+
+
+-- 
+Thanks,
+
+David / dhildenb
+
