@@ -2,208 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 836C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380247AbiDTPuS (ORCPT
+        id S1380311AbiDTPwU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
+        Wed, 20 Apr 2022 11:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349122AbiDTPuQ (ORCPT
+        with ESMTP id S1380211AbiDTPwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:50:16 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C538E016
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:47:29 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id d23-20020a17090a115700b001d2bde6c234so3723574pje.1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:47:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cqlJftLH7LHu8dCSErsdrnwCHb1OWQ+El5mNGRz6CTM=;
-        b=W0Qzt+Ms8vroIUw71xYpAS+6OEn3MUJEOz6v8iktT067NsTQXfff+TDX3hwl8sNUK4
-         FI9Kelf5oNKVRcSKP2KGDfWGWB33AvEB4xyp54L2ziPXzTTzH7O38P93IaNpjyYISC2x
-         lrspa+IGFFjOTu+lHwI0rk0F1StDPmwlQfg0OfJE7FEzsy9yJAqj/yUBOeyqeZnGxswX
-         x6sVEKpuMpHpAY7INbq/1vP//9SKrhAKI1vBqpO9kic469zTJoR274FDLKiGilFJh6CS
-         B603k99CmO2bi+2w1GeTnKhln9msdGJKA1qRW6YWzJyVDiRdQ3Zv7ybEkOyoq/6nU5KK
-         Ej+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cqlJftLH7LHu8dCSErsdrnwCHb1OWQ+El5mNGRz6CTM=;
-        b=Rx/Wyb4PDtYz6DeMCUC+gJ2vHKwWkuMo2wAbU81rc6H/iCGaz8wxltFazkML82+qQG
-         lsSi2C6yqDZP51Z6C3pQJ24O320+U2Qx7nFjpGA6yH4OQ0rffwpWXq3Gv4ljx5p0+Kcp
-         QfB4k6a+LaFXWcOWiWhCrE0o7rGe5jAL5iiZjClVspmfFDh7THw+nxKEeuEqqTLP5y8p
-         C1HjjpODO8RMET3mpkzKTjz7vwKITDDZgFyQSbAxnXsxAONgkgHbNoBJMMhZyB+Bbw56
-         H+VOlCKdpdnhqBdKnZ6hNbIfyo3ATF1zi2o6J3Q1vdnmuf7axKV+8VAFvg0hbfP26+F8
-         GVLw==
-X-Gm-Message-State: AOAM5319IWWpCrmv+m13KTahcLg+C/vsQ81JNeDhIbbsTG/8SMB4lCt+
-        5aLWnCBSh52uhfXmQbRfAigvWA==
-X-Google-Smtp-Source: ABdhPJwo8kbb/lVSaTjgR1gKI8cyICpyngATTNb6AxQoNPCrkFq2Ln7Mjzv4TKJZsooHBeCBIYiGCg==
-X-Received: by 2002:a17:90a:ee81:b0:1cb:ade8:6c61 with SMTP id i1-20020a17090aee8100b001cbade86c61mr5179240pjz.167.1650469648947;
-        Wed, 20 Apr 2022 08:47:28 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id y21-20020a631815000000b0039fcedd7bedsm21104065pgl.41.2022.04.20.08.47.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 08:47:28 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 15:47:24 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        peterx@redhat.com
-Subject: Re: [PATCH] kvm: selftests: do not use bitfields larger than 32-bits
- for PTEs
-Message-ID: <YmArDFQXF1lA3z8K@google.com>
-References: <20220420103624.1143824-1-pbonzini@redhat.com>
+        Wed, 20 Apr 2022 11:52:16 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED43F40935;
+        Wed, 20 Apr 2022 08:49:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650469770; x=1682005770;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/aT/uybwZGUBqHJAa/El+PMS98PqvKBE4Ru4gZtuJEU=;
+  b=GExNJ8skvIFFdUNpazFAI3vU28MWNL9PCFq3pTMqD5SRILw27b1FZZfx
+   SvEM2A15n6PJP6u9t9lU5bDVaKSDEyVh17XxlStEF29IH9ZdtXGvZXxgA
+   VAYx6PMEJwjrffiUyzuEJ5Wj3jnswTkTG7kvUow9e+SA+9UebvYKt2I+9
+   VUxrDfhA7PwdvSgUyWJMG8j/0zJV20WSxonPhtwY7ykculDfBxlUgysZy
+   Vrqmcs6DQakZ+VoDKz3waogA17dJSktaFV06JHiCPXUU22RmwxJwp/iSi
+   A3jvdOqBc7PXIkUEtxUcKDzJqA+Pop9Nkmdg1mbgJOULl9YALpZVLjZDJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263524837"
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="263524837"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:27:55 -0700
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="647705664"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:27:54 -0700
+Date:   Wed, 20 Apr 2022 08:27:53 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>, markgross@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+Subject: Re: [PATCH v3 03/11] platform/x86/intel/ifs: Create device for Intel
+ IFS (In Field Scan)
+Message-ID: <YmAmebezoc8m6n2E@agluck-desk3.sc.intel.com>
+References: <20220407191347.9681-1-jithu.joseph@intel.com>
+ <20220419163859.2228874-1-tony.luck@intel.com>
+ <20220419163859.2228874-4-tony.luck@intel.com>
+ <Yl7npfrVTPFEIivC@kroah.com>
+ <CAPcyv4jzscs3Dg4QN0+XHRYdekBeqy1=dRX-mWCj1OXo8jS2vQ@mail.gmail.com>
+ <Yl+66oyQhI0AkEDC@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220420103624.1143824-1-pbonzini@redhat.com>
+In-Reply-To: <Yl+66oyQhI0AkEDC@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022, Paolo Bonzini wrote:
-> ---
->  .../selftests/kvm/lib/x86_64/processor.c      | 202 ++++++++----------
->  1 file changed, 89 insertions(+), 113 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-> index 9f000dfb5594..90c3d34ce80b 100644
-> --- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-> +++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-> @@ -20,36 +20,18 @@
->  vm_vaddr_t exception_handlers;
->  
->  /* Virtual translation table structure declarations */
+On Wed, Apr 20, 2022 at 09:48:58AM +0200, Greg KH wrote:
+> Don't write code today for stuff you do not have right now, you all know
+> that.  We can always revisit it in the future.
 
-Stale comment.
+Direction check on the virtual device option. Is this what
+you are asking for in "core.c"?
 
-> -struct pageUpperEntry {
-> -	uint64_t present:1;
-> -	uint64_t writable:1;
-> -	uint64_t user:1;
-> -	uint64_t write_through:1;
-> -	uint64_t cache_disable:1;
-> -	uint64_t accessed:1;
-> -	uint64_t ignored_06:1;
-> -	uint64_t page_size:1;
-> -	uint64_t ignored_11_08:4;
-> -	uint64_t pfn:40;
-> -	uint64_t ignored_62_52:11;
-> -	uint64_t execute_disable:1;
-> -};
-> -
-> -struct pageTableEntry {
-> -	uint64_t present:1;
-> -	uint64_t writable:1;
-> -	uint64_t user:1;
-> -	uint64_t write_through:1;
-> -	uint64_t cache_disable:1;
-> -	uint64_t accessed:1;
-> -	uint64_t dirty:1;
-> -	uint64_t reserved_07:1;
-> -	uint64_t global:1;
-> -	uint64_t ignored_11_09:3;
-> -	uint64_t pfn:40;
-> -	uint64_t ignored_62_52:11;
-> -	uint64_t execute_disable:1;
-> -};
-> +#define PTE_PRESENT_MASK  (1ULL << 0)
-> +#define PTE_WRITABLE_MASK (1ULL << 1)
-> +#define PTE_USER_MASK     (1ULL << 2)
-> +#define PTE_ACCESSED_MASK (1ULL << 5)
-> +#define PTE_DIRTY_MASK    (1ULL << 6)
-> +#define PTE_LARGE_MASK    (1ULL << 7)
-> +#define PTE_GLOBAL_MASK   (1ULL << 8)
-> +#define PTE_NX_MASK       (1ULL << 63)
+The second test type is happening internally right away ... so I
+put in some example code of how it can be added. Upstream submission
+will just have the one test that exists today.
 
-Any objection to using BIT_ULL()?  And tab(s) after the MASK so that there's some
-breathing room in the unlikely scenario we need a new, longer flag?
+Static definition of:
 
-> +#define PTE_PFN_MASK      0xFFFFFFFFFF000ULL
+ static struct ifs_data ifs_data[IFS_NUMTESTS];
 
-GENMASK_ULL(52, 12), or maybe use the PAGE_SHIFT in the generation, though I find
-that more difficult to read for whatever reason.
+keeps the code simpler (no need to have code to
+cleanup if dynamic allocation of this small structure
+fails). But if you feel strongly that all static allocation
+is bad, then I can kzallloc() per enumerated test type.
 
-> +#define PTE_PFN_SHIFT     12
+With this change it is no longer a platform driver. So maybe
+doesn't belong in drivers/platform/x86/intel/ifs/*
 
-Can we use the kernel's nomenclature?  That way if selftests ever find a way to
-pull in arch/x86/include/asm/page_types.h, we don't need to do a bunch of renames.
-And IMO it will make it easier to context switch between KVM and selftests.
+Any thoughts on where I should move it to?
 
+-Tony
 
-#define PTE_PRESENT_MASK	BIT_ULL(0)
-#define PTE_WRITABLE_MASK	BIT_ULL(1)
-#define PTE_USER_MASK		BIT_ULL(2)
-#define PTE_ACCESSED_MASK	BIT_ULL(5)
-#define PTE_DIRTY_MASK		BIT_ULL(6)
-#define PTE_LARGE_MASK		BIT_ULL(7)
-#define PTE_GLOBAL_MASK		BIT_ULL(8)
-#define PTE_NX_MASK		BIT_ULL(63)
+---- core.c ---
 
-#define PAGE_SHIFT		12
-#define PAGE_SIZE		(1ULL << PAGE_SHIFT)
-#define PHYSICAL_PAGE_MASK	GENMASK_ULL(51, 12)
+// SPDX-License-Identifier: GPL-2.0-only
+/* Copyright(c) 2022 Intel Corporation. */
 
-#define PTE_GET_PFN(pte) (((pte) & PHYSICAL_PAGE_MASK) >> PAGE_SHIFT)
+#include <linux/module.h>
+#include <linux/device.h>
+#include <linux/kdev_t.h>
+#include <linux/semaphore.h>
 
+#include <asm/cpu_device_id.h>
 
-I'd also vote to move these (in a different patch) to processor.h so that selftests
-can use PAGE_SIZE in particular.
+#include "ifs.h"
 
-  tools/testing/selftests/kvm/x86_64 $ git grep -E "define\s+PAGE_SIZE" | wc -l
-  6
+enum test_types {
+	IFS_SAF,
+	IFS_ANOTHER,
+	IFS_NUMTESTS
+};
 
-And _vm_get_page_table_entry() has several gross open-coded masks/shifts that can
-be opportunistically converted now
+static struct class *ifs_class;
+static struct ifs_data ifs_data[IFS_NUMTESTS];
 
-@@ -269,8 +270,7 @@ static uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
-        struct kvm_cpuid_entry2 *entry;
-        struct kvm_sregs sregs;
-        int max_phy_addr;
--       /* Set the bottom 52 bits. */
--       uint64_t rsvd_mask = 0x000fffffffffffff;
-+       uint64_t rsvd_mask = PHYSICAL_PAGE_MASK;
- 
-        entry = kvm_get_supported_cpuid_index(0x80000008, 0);
-        max_phy_addr = entry->eax & 0x000000ff;
-@@ -284,9 +284,8 @@ static uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
-         * the XD flag (bit 63) is reserved.
-         */
-        vcpu_sregs_get(vm, vcpuid, &sregs);
--       if ((sregs.efer & EFER_NX) == 0) {
--               rsvd_mask |= (1ull << 63);
--       }
-+       if (!(sregs.efer & EFER_NX))
-+               rsvd_mask |= PTE_NX_MASK;
- 
+#define MSR_IA32_CORE_CAPS_INTEGRITY_BIT	2
+#define MSR_IA32_CORE_CAPS_INTEGRITY		BIT(MSR_IA32_CORE_CAPS_INTEGRITY_BIT)
 
+#define X86_MATCH(model)				\
+	X86_MATCH_VENDOR_FAM_MODEL_FEATURE(INTEL, 6,	\
+		INTEL_FAM6_##model, X86_FEATURE_CORE_CAPABILITIES, NULL)
 
-and even more that can/should be cleaned up in the future, e.g. this pile, though
-that can be left for a different day.
+static const struct x86_cpu_id ifs_cpu_ids[] __initconst = {
+	X86_MATCH(SAPPHIRERAPIDS_X),
+	{}
+};
+MODULE_DEVICE_TABLE(x86cpu, ifs_cpu_ids);
 
-	/*
-	 * Based on the mode check above there are 48 bits in the vaddr, so
-	 * shift 16 to sign extend the last bit (bit-47),
-	 */
-	TEST_ASSERT(vaddr == (((int64_t)vaddr << 16) >> 16),
-		"Canonical check failed.  The virtual address is invalid.");
+static int ifs_device_unregister(struct device *dev, void *data)
+{
+	device_unregister(dev);
 
-	index[0] = (vaddr >> 12) & 0x1ffu;
-	index[1] = (vaddr >> 21) & 0x1ffu;
-	index[2] = (vaddr >> 30) & 0x1ffu;
-	index[3] = (vaddr >> 39) & 0x1ffu;
-  
-> -	return (pte[index[0]].pfn * vm->page_size) + (gva & 0xfffu);
-> +	return (PTE_GET_PFN(pte[index[0]]) * vm->page_size) + (gva & 0xfffu);
+	return 0;
+}
 
-Yeesh, and yet more cleanup.  Probably worth adding
+static int __init ifs_init(void)
+{
+	const struct x86_cpu_id *m;
+	u64 ia32_core_caps;
+	struct device *dev;
+	int ndevices = 0;
+	int ret = 0;
 
-#define PAGE_MASK		(~(PAGE_SIZE-1))
+	m = x86_match_cpu(ifs_cpu_ids);
+	if (!m)
+		return -ENODEV;
 
-and using ~PAGE_MASK here?  Or defining PAGE_OFFSET?  Though that would conflict
-with the kernel's use of PAGE_OFFSET.
+	if (rdmsrl_safe(MSR_IA32_CORE_CAPS, &ia32_core_caps))
+		return -ENODEV;
+
+	ifs_class = class_create(THIS_MODULE, "intel_ifs");
+	if (IS_ERR(ifs_class))
+		return PTR_ERR(ifs_class);
+
+	ret = ifs_setup_wq();
+	if (ret)
+		goto class_cleanup;
+
+	if (ia32_core_caps & MSR_IA32_CORE_CAPS_INTEGRITY) {
+		dev = device_create_with_groups(ifs_class, NULL, MKDEV(0, 0), &ifs_data[IFS_SAF],
+					        plat_ifs_groups, "ifs%d", IFS_SAF);
+		if (dev) {
+			ndevices++;
+
+			down(&ifs_sem);
+			ifs_data[IFS_SAF].loaded = !ifs_load_firmware(dev);
+			up(&ifs_sem);
+		}
+	}
+
+	if (1) { // placeholder to test 2nd test
+		dev = device_create_with_groups(ifs_class, NULL, MKDEV(0, 0), &ifs_data[IFS_ANOTHER],
+					        plat_ifs_groups, "ifs%d", IFS_ANOTHER);
+		if (dev)
+			ndevices++;
+	}
+
+	if (ndevices)
+		goto done;
+
+	ret = -ENODEV;
+
+	class_for_each_device(ifs_class, NULL, NULL, ifs_device_unregister);
+
+class_cleanup:
+	class_destroy(ifs_class);
+done:
+	return ret;
+}
+
+static void __exit ifs_exit(void)
+{
+	class_for_each_device(ifs_class, NULL, NULL, ifs_device_unregister);
+	class_destroy(ifs_class);
+	ifs_destroy_wq();
+}
+
+module_init(ifs_init);
+module_exit(ifs_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Intel In Field Scan (IFS) driver");
