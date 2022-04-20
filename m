@@ -2,131 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A893C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB4AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377194AbiDTJ1I (ORCPT
+        id S1377186AbiDTJ14 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 05:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52810 "EHLO
+        Wed, 20 Apr 2022 05:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377174AbiDTJ06 (ORCPT
+        with ESMTP id S1345685AbiDTJ1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 05:26:58 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD283B039;
-        Wed, 20 Apr 2022 02:24:12 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id w1so1749960lfa.4;
-        Wed, 20 Apr 2022 02:24:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=u55Ek4ovTu93jGC6owGr6QZtrHl98TBOqnvlwoTCUt0=;
-        b=VCx/HeNdAIrVvK22LWtPVkq9Bv1IKELkDsHc9ZDCJpEzPZXiUk1L12Dy+mMZouB4Kb
-         Sm5gqeWiHiAo7O1rqL4fR/FRWrLwV1sxcNCEE/ser/ng6KnPEXuXeI6mJT4hEuhbpkyR
-         CnEwq7dF8XjnevURjfPXlQSPsthUbrMgXmTx0ftPiqNOdHSrKFkOiwbXMIgL4L8pif1x
-         S2OC7crPo4slcyULVJrhskiIc37n3wR0KWOXQ2sj5i0hsb8hGWYGa7c9kFuF9uQx1Lrd
-         PnwrnrwZvh2dBVEvqkQHhB/xuL6v+vJ4eVgGVRgIh8ublrifvFa02qV7bdCp+CMifVZv
-         cETg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=u55Ek4ovTu93jGC6owGr6QZtrHl98TBOqnvlwoTCUt0=;
-        b=55Zz5VXfyuyO9tEV2yEjN8Ldm9TK+io3F/MI5EJqGc/HQ3mH8rXju020y4VXUolXIW
-         bwOoTjeDuH2JlairDwziZgu+vYQvmRPH/kEwoqdiZnNazOyuxEOfph2YCBCvU6+6nzP8
-         3Eq4c6ZMMe7x1040quAHf2M7bz++V5VU+YO8ZycDlz0NIQJfidDzQiWYmxlmQMu7JFhH
-         LISM9zxiezlh5A/wYrjslqwk/J94zCB9qSYkeKsIAAus+7Z80wdpk71wbd6ZviFTUbd3
-         QtVf2T9AYjbwz2QNTW29xs+RR72sBgXZxr5xrEnD/zDw3AyTe0scJ4ODCLTSypD3wFoe
-         ZMXQ==
-X-Gm-Message-State: AOAM533CBkLY+YR3ZKlRpB/NBnnDAvN9wpGQyeRXL0Kuyo1BrncCldyr
-        B24iMJH+xrswkBbCL9WgEF8=
-X-Google-Smtp-Source: ABdhPJwBIjGhPQR/MG3suNBpw+sG1uqlbM+4wIOJy5ZknDOvMCYopGuZbVrLmdXv8OTjIhB4lEs0Kw==
-X-Received: by 2002:a05:6512:168d:b0:471:6cb9:c20f with SMTP id bu13-20020a056512168d00b004716cb9c20fmr11611107lfb.229.1650446651069;
-        Wed, 20 Apr 2022 02:24:11 -0700 (PDT)
-Received: from [192.168.1.103] ([178.176.74.70])
-        by smtp.gmail.com with ESMTPSA id d11-20020a19384b000000b0046bbd144dfesm1760268lfj.125.2022.04.20.02.24.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 02:24:10 -0700 (PDT)
-Subject: Re: [PATCH 01/41] video: fbdev: omapfb: lcd_ams_delta: fix unused
- variable warning
-To:     Arnd Bergmann <arnd@kernel.org>, linux-omap@vger.kernel.org,
-        tony@atomide.com, aaro.koskinen@iki.fi, jmkrzyszt@gmail.com
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-References: <20220419133723.1394715-1-arnd@kernel.org>
- <20220419133723.1394715-2-arnd@kernel.org>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <ddaf112d-f997-84b7-2c57-bab3d0cca382@gmail.com>
-Date:   Wed, 20 Apr 2022 12:24:08 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 20 Apr 2022 05:27:53 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADBE5FCE;
+        Wed, 20 Apr 2022 02:25:07 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3E26E1F385;
+        Wed, 20 Apr 2022 09:25:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650446706; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FZ3HQWGQIijrKpRTy/DK1bE6hLtaRKbTQP99RtUeXZU=;
+        b=GBOI95QQupEY/yQccYl33Wtlr1a8cXyASJI7+AcIPpFSfS+Hy5T/+EXBHU6iBGyur7ZMYs
+        HFjfsesn0AfqHlcz3XvEzyDyhfstb34Ou8C5sYOK47sgScFEljVaKKFXPRdEob/ZE/EC2M
+        9SNwj7ZfHlMsuvXIUmsXkdWVJEKCbK8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0FD7F13A30;
+        Wed, 20 Apr 2022 09:25:06 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id uIeGAnLRX2J1EAAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 09:25:06 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>
+Subject: [PATCH 1/4] xen: update vscsiif.h
+Date:   Wed, 20 Apr 2022 11:25:00 +0200
+Message-Id: <20220420092503.11123-2-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220420092503.11123-1-jgross@suse.com>
+References: <20220420092503.11123-1-jgross@suse.com>
 MIME-Version: 1.0
-In-Reply-To: <20220419133723.1394715-2-arnd@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+Update include/xen/interface/io/vscsiif.h to its newest version.
 
-On 4/19/22 4:36 PM, Arnd Bergmann wrote:
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+ include/xen/interface/io/vscsiif.h | 133 ++++++++++++++++++++++++++++-
+ 1 file changed, 129 insertions(+), 4 deletions(-)
 
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> A recent cleanup patch removed the only reference to a local variable
-> in some configurations.
-> 
-> Move the variable into the one block it is still used in, inside
-> of an #ifdef, to avoid this warning.
-> 
-> Fixes: 9d773f103b89 ("video: fbdev: omapfb: lcd_ams_delta: Make use of the helper function dev_err_probe()")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/video/fbdev/omap/lcd_ams_delta.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/video/fbdev/omap/lcd_ams_delta.c b/drivers/video/fbdev/omap/lcd_ams_delta.c
-> index bbf871f9d862..01944ce46aa1 100644
-> --- a/drivers/video/fbdev/omap/lcd_ams_delta.c
-> +++ b/drivers/video/fbdev/omap/lcd_ams_delta.c
-[...]
-> @@ -145,7 +144,7 @@ static int ams_delta_panel_probe(struct platform_device *pdev)
->  						&ams_delta_lcd_ops);
->  
->  	if (IS_ERR(lcd_device)) {
-> -		ret = PTR_ERR(lcd_device);
-> +		int ret = PTR_ERR(lcd_device);
+diff --git a/include/xen/interface/io/vscsiif.h b/include/xen/interface/io/vscsiif.h
+index 1f6047d3de44..7ea4dc9611c4 100644
+--- a/include/xen/interface/io/vscsiif.h
++++ b/include/xen/interface/io/vscsiif.h
+@@ -43,7 +43,7 @@
+  *
+  *      A string specifying the backend device: either a 4-tuple "h:c:t:l"
+  *      (host, controller, target, lun, all integers), or a WWN (e.g.
+- *      "naa.60014054ac780582").
++ *      "naa.60014054ac780582:0").
+  *
+  * v-dev
+  *      Values:         string
+@@ -87,6 +87,75 @@
+  *      response structures.
+  */
+ 
++/*
++ * Xenstore format in practice
++ * ===========================
++ *
++ * The backend driver uses a single_host:many_devices notation to manage domU
++ * devices. Everything is stored in /local/domain/<backend_domid>/backend/vscsi/.
++ * The xenstore layout looks like this (dom0 is assumed to be the backend_domid):
++ *
++ *     <domid>/<vhost>/feature-host = "0"
++ *     <domid>/<vhost>/frontend = "/local/domain/<domid>/device/vscsi/0"
++ *     <domid>/<vhost>/frontend-id = "<domid>"
++ *     <domid>/<vhost>/online = "1"
++ *     <domid>/<vhost>/state = "4"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/p-dev = "8:0:2:1" or "naa.wwn:lun"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/state = "4"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/v-dev = "0:0:0:0"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/p-dev = "8:0:2:2"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/state = "4"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/v-dev = "0:0:1:0"
++ *
++ * The frontend driver maintains its state in
++ * /local/domain/<domid>/device/vscsi/.
++ *
++ *     <vhost>/backend = "/local/domain/0/backend/vscsi/<domid>/<vhost>"
++ *     <vhost>/backend-id = "0"
++ *     <vhost>/event-channel = "20"
++ *     <vhost>/ring-ref = "43"
++ *     <vhost>/state = "4"
++ *     <vhost>/vscsi-devs/dev-0/state = "4"
++ *     <vhost>/vscsi-devs/dev-1/state = "4"
++ *
++ * In addition to the entries for backend and frontend these flags are stored
++ * for the toolstack:
++ *
++ *     <domid>/<vhost>/vscsi-devs/dev-1/p-devname = "/dev/$device"
++ *     <domid>/<vhost>/libxl_ctrl_index = "0"
++ *
++ *
++ * Backend/frontend protocol
++ * =========================
++ *
++ * To create a vhost along with a device:
++ *     <domid>/<vhost>/feature-host = "0"
++ *     <domid>/<vhost>/frontend = "/local/domain/<domid>/device/vscsi/0"
++ *     <domid>/<vhost>/frontend-id = "<domid>"
++ *     <domid>/<vhost>/online = "1"
++ *     <domid>/<vhost>/state = "1"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/p-dev = "8:0:2:1"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/state = "1"
++ *     <domid>/<vhost>/vscsi-devs/dev-0/v-dev = "0:0:0:0"
++ * Wait for <domid>/<vhost>/state + <domid>/<vhost>/vscsi-devs/dev-0/state become 4
++ *
++ * To add another device to a vhost:
++ *     <domid>/<vhost>/state = "7"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/p-dev = "8:0:2:2"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/state = "1"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/v-dev = "0:0:1:0"
++ * Wait for <domid>/<vhost>/state + <domid>/<vhost>/vscsi-devs/dev-1/state become 4
++ *
++ * To remove a device from a vhost:
++ *     <domid>/<vhost>/state = "7"
++ *     <domid>/<vhost>/vscsi-devs/dev-1/state = "5"
++ * Wait for <domid>/<vhost>/state to become 4
++ * Wait for <domid>/<vhost>/vscsi-devs/dev-1/state become 6
++ * Remove <domid>/<vhost>/vscsi-devs/dev-1/{state,p-dev,v-dev,p-devname}
++ * Remove <domid>/<vhost>/vscsi-devs/dev-1/
++ *
++ */
++
+ /* Requests from the frontend to the backend */
+ 
+ /*
+@@ -117,7 +186,8 @@
+  * (plus the set VSCSIIF_SG_GRANT bit), the number of scsiif_request_segment
+  * elements referencing the target data buffers is calculated from the lengths
+  * of the seg[] elements (the sum of all valid seg[].length divided by the
+- * size of one scsiif_request_segment structure).
++ * size of one scsiif_request_segment structure). The frontend may use a mix of
++ * direct and indirect requests.
+  */
+ #define VSCSIIF_ACT_SCSI_CDB		1
+ 
+@@ -154,12 +224,14 @@
+ 
+ /*
+  * based on Linux kernel 2.6.18, still valid
++ *
+  * Changing these values requires support of multiple protocols via the rings
+  * as "old clients" will blindly use these values and the resulting structure
+  * sizes.
+  */
+ #define VSCSIIF_MAX_COMMAND_SIZE	16
+ #define VSCSIIF_SENSE_BUFFERSIZE	96
++#define VSCSIIF_PAGE_SIZE		4096
+ 
+ struct scsiif_request_segment {
+ 	grant_ref_t gref;
+@@ -167,7 +239,8 @@ struct scsiif_request_segment {
+ 	uint16_t length;
+ };
+ 
+-#define VSCSIIF_SG_PER_PAGE (PAGE_SIZE / sizeof(struct scsiif_request_segment))
++#define VSCSIIF_SG_PER_PAGE	(VSCSIIF_PAGE_SIZE / \
++				 sizeof(struct scsiif_request_segment))
+ 
+ /* Size of one request is 252 bytes */
+ struct vscsiif_request {
+@@ -207,6 +280,58 @@ struct vscsiif_response {
+ 	uint32_t reserved[36];
+ };
+ 
++/* SCSI I/O status from vscsiif_response->rslt */
++#define XEN_VSCSIIF_RSLT_STATUS(x)  ((x) & 0x00ff)
++
++/* Host I/O status from vscsiif_response->rslt */
++#define XEN_VSCSIIF_RSLT_HOST(x)    (((x) & 0x00ff0000) >> 16)
++#define XEN_VSCSIIF_RSLT_HOST_OK                   0
++/* Couldn't connect before timeout */
++#define XEN_VSCSIIF_RSLT_HOST_NO_CONNECT           1
++/* Bus busy through timeout */
++#define XEN_VSCSIIF_RSLT_HOST_BUS_BUSY             2
++/* Timed out for other reason */
++#define XEN_VSCSIIF_RSLT_HOST_TIME_OUT             3
++/* Bad target */
++#define XEN_VSCSIIF_RSLT_HOST_BAD_TARGET           4
++/* Abort for some other reason */
++#define XEN_VSCSIIF_RSLT_HOST_ABORT                5
++/* Parity error */
++#define XEN_VSCSIIF_RSLT_HOST_PARITY               6
++/* Internal error */
++#define XEN_VSCSIIF_RSLT_HOST_ERROR                7
++/* Reset by somebody */
++#define XEN_VSCSIIF_RSLT_HOST_RESET                8
++/* Unexpected interrupt */
++#define XEN_VSCSIIF_RSLT_HOST_BAD_INTR             9
++/* Force command past mid-layer */
++#define XEN_VSCSIIF_RSLT_HOST_PASSTHROUGH         10
++/* Retry requested */
++#define XEN_VSCSIIF_RSLT_HOST_SOFT_ERROR          11
++/* Hidden retry requested */
++#define XEN_VSCSIIF_RSLT_HOST_IMM_RETRY           12
++/* Requeue command requested */
++#define XEN_VSCSIIF_RSLT_HOST_REQUEUE             13
++/* Transport error disrupted I/O */
++#define XEN_VSCSIIF_RSLT_HOST_TRANSPORT_DISRUPTED 14
++/* Transport class fastfailed */
++#define XEN_VSCSIIF_RSLT_HOST_TRANSPORT_FAILFAST  15
++/* Permanent target failure */
++#define XEN_VSCSIIF_RSLT_HOST_TARGET_FAILURE      16
++/* Permanent nexus failure on path */
++#define XEN_VSCSIIF_RSLT_HOST_NEXUS_FAILURE       17
++/* Space allocation on device failed */
++#define XEN_VSCSIIF_RSLT_HOST_ALLOC_FAILURE       18
++/* Medium error */
++#define XEN_VSCSIIF_RSLT_HOST_MEDIUM_ERROR        19
++/* Transport marginal errors */
++#define XEN_VSCSIIF_RSLT_HOST_TRANSPORT_MARGINAL  20
++
++/* Result values of reset operations */
++#define XEN_VSCSIIF_RSLT_RESET_SUCCESS  0x2002
++#define XEN_VSCSIIF_RSLT_RESET_FAILED   0x2003
++
+ DEFINE_RING_TYPES(vscsiif, struct vscsiif_request, struct vscsiif_response);
+ 
+-#endif /*__XEN__PUBLIC_IO_SCSI_H__*/
++
++#endif  /*__XEN__PUBLIC_IO_SCSI_H__*/
+-- 
+2.34.1
 
-   How about inserting an empty line after declaration?
-
->  		dev_err(&pdev->dev, "failed to register device\n");
->  		return ret;
->  	}
-
-MBR, Sergey
