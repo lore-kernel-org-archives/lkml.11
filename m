@@ -2,116 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95243C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3740C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378502AbiDTM0c (ORCPT
+        id S1378481AbiDTM2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 08:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
+        Wed, 20 Apr 2022 08:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376472AbiDTM0a (ORCPT
+        with ESMTP id S1353130AbiDTM2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 08:26:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212363A71A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 05:23:39 -0700 (PDT)
-X-UUID: 63e924ed9ce74d97bf03f3c9ee80405b-20220420
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:f7b8aa47-61bc-4004-a2b8-62bdb08e4030,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:6f1a5cf0-da02-41b4-b6df-58f4ccd36682,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 63e924ed9ce74d97bf03f3c9ee80405b-20220420
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1360268970; Wed, 20 Apr 2022 20:23:33 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 20 Apr 2022 20:23:31 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 20 Apr 2022 20:23:31 +0800
-Message-ID: <91c52b76872e6339cce3bd671f4ae1143251e2c3.camel@mediatek.com>
-Subject: Re: [PATCH v2] drm/mediatek: dpi: Use mt8183 output formats for
- mt8192
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <kernel@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jitao Shi <jitao.shi@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <ck.hu@mediatek.com>
-Date:   Wed, 20 Apr 2022 20:23:31 +0800
-In-Reply-To: <20220408013950.674477-1-nfraprado@collabora.com>
-References: <20220408013950.674477-1-nfraprado@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 20 Apr 2022 08:28:19 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642D61C91D;
+        Wed, 20 Apr 2022 05:25:33 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id h4so853249ilq.8;
+        Wed, 20 Apr 2022 05:25:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hRURk4DN2eZqCTEqfyXp6e+58OlcNywvCaEhVw8AW1k=;
+        b=NhfhqCCs3Hf2EcKb/RtIq/hjv48Ps2GXEYJ25dNCUTbtl1svXYZdaLXsrgj7QWWPdM
+         3oPVrUA81IyvWsn6DwAwMq/wFx4wtiCNIZ4QMETSQs8O1/Ye+puhovoY8VYUq1iH/jXX
+         XrqVbKAbZpXr39qKer3R/EqS37otJinwycoykfbrxTXYCCQpBa/ljq9oFdjT6hziWSS7
+         9D1VG3znG9Hyl+SjpRiJLYwyJ/6/CFz0ltHThGbWLEEy6Bpf4OHCM43Hf1lncvlyeP2v
+         t9bW6z6eQS1zHeK4eOBVQWQoY/2TdPvuLDlrwSEql08qeayxkYpHay7K4KcQoTyPt6vf
+         HlZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hRURk4DN2eZqCTEqfyXp6e+58OlcNywvCaEhVw8AW1k=;
+        b=fifMWz89yuIEqxuYDnpGPu4HwuFKgu3v7UnJ+ANgAwCEsrUUd0d922k/2/YYQfpFwU
+         P48RZYdYZKbhQh7F5YgvQq7NSC8n1uqQh8WXXpnD/unK3s7RZ2dStE0EmpvuH6BvFCsX
+         8hz6xLmb5BjbWnvJcRZkbWwuvNFPhFIFovvpdOSGZYVehaWZ2MYkb/1/P7rzUqEmfzPX
+         KZepdddMAA0A79aOi1AiFDjd+LZurzDzkLKmiesIJSHTQVV6FytknjehsxcaENiwz9VA
+         VpAygZbCqeP48f6Nv46jMQs44wlYI/u0GkbCNcnVUe/ISs9el81aXqNu9f6xqPzyvvP9
+         P+5A==
+X-Gm-Message-State: AOAM533H9j9G9utLPNz7zLKtA3dxhHq/3q0DR+5ruvmuBwYKH7YXaR2A
+        ZKgG2vFCPZw8YGdMQs80L7A59xLPdHwTYzg3INQ=
+X-Google-Smtp-Source: ABdhPJxR05XY11iOWutfHq8oz3L83XIEM/5S8NVV9L7I7mrKegnWO3BlDIq1sHEfoLPpDNiMs/wLF6X1KXkixVdCtjk=
+X-Received: by 2002:a92:6012:0:b0:2bd:fb5f:d627 with SMTP id
+ u18-20020a926012000000b002bdfb5fd627mr8766792ilb.86.1650457532838; Wed, 20
+ Apr 2022 05:25:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+References: <20220323120021.361137-1-alistair@alistair23.me>
+In-Reply-To: <20220323120021.361137-1-alistair@alistair23.me>
+From:   Alistair Francis <alistair23@gmail.com>
+Date:   Wed, 20 Apr 2022 22:25:06 +1000
+Message-ID: <CAKmqyKP5CRDx4acc6yg9SwADaGTNqKmDUrBs2ODXR30OZuunoA@mail.gmail.com>
+Subject: Re: [PATCH v7 0/4] Add support for the Cypress cyttsp5
+To:     Alistair Francis <alistair@alistair23.me>
+Cc:     linux-input <linux-input@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andreas Kemnade <andreas@kemnade.info>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-07 at 21:39 -0400, Nícolas F. R. A. Prado wrote:
-> The configuration for mt8192 was incorrectly using the output formats
-> from mt8173. Since the output formats for mt8192 are instead the same
-> ones as for mt8183, which require two bus samples per pixel, the
-> pixelclock and DDR edge setting were misconfigured. This made
-> external
-> displays unable to show the image.
-> 
-> Fix the issue by correcting the output format for mt8192 to be the
-> same
-> as for mt8183, fixing the usage of external displays for mt8192.
-> 
-> Fixes: be63f6e8601f ("drm/mediatek: dpi: Add output bus formats to
-> driver data")
-> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> ---
-> 
-> Changes in v2:
-> - Added Fixes tag
-> 
->  drivers/gpu/drm/mediatek/mtk_dpi.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> index 4554e2de1430..e61cd67b978f 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> @@ -819,8 +819,8 @@ static const struct mtk_dpi_conf mt8192_conf = {
->  	.cal_factor = mt8183_calculate_factor,
->  	.reg_h_fre_con = 0xe0,
->  	.max_clock_khz = 150000,
-> -	.output_fmts = mt8173_output_fmts,
-> -	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
-> +	.output_fmts = mt8183_output_fmts,
-> +	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
->  };
->  
->  static int mtk_dpi_probe(struct platform_device *pdev)
+On Wed, Mar 23, 2022 at 10:00 PM Alistair Francis
+<alistair@alistair23.me> wrote:
+>
+> This patch series builds on top of [1] and adds support for the cyttsp5
+> touchscreen controller for the reMarkable 2.
+>
+> I first tried to add an I2C HID device. Although the cyttsp5 has some HID
+> looking aspects it is not HID compatible. Just in trying to probe the device
+> I found:
+>  - The HID descriptor has extra padding
+>  - The HID descriptor sets the high bytes of the descriptor length
+>  - The HID descriptor has extra unrecognised tags
+>  - The HID reset command doesn't appear to work
+>
+> I don't think there is a way to use the I2C HID framework with the cyttsp5.
+> For anyone interested you can see the work here [2]. In that branch though I
+> can only obtain a HID descriptor, nothing else works without more core
+> changes.
+>
+> So instead I rebased the series from [1]. Converted to the new yaml DTS
+> documentation, added regulator support and fixed a x/y miscalculation bug.
 
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+The DT bindings have been reviewed, any comments on the driver
+implementation? It has been tested on a few different devices
 
-Hello CK,
+Alistair
 
-Gentle ping for this patch.
-This patch is confirmed by Xinlei and Jitao.
-
-BRs,
-Rex
-
+>
+> 1: https://lwn.net/ml/linux-kernel/20180703094309.18514-1-mylene.josserand@bootlin.com/
+> 2: https://github.com/alistair23/linux/commits/rM2-mainline-cyttsp5-hid
+>
+> v7:
+>  - Fix device tree warnings
+> v6:
+>  - Use reg for the button properties
+> v5:
+>  - Address review comments from v4
+>
+> Alistair Francis (4):
+>   Input: Add driver for Cypress Generation 5 touchscreen
+>   dt-bindings: input: Add Cypress TT2100 touchscreen controller
+>   ARM: imx_v6_v7_defconfig: Enable the cyttsp5 touchscreen
+>   ARM: dts: imx7d-remarkable2: Enable the cyttsp5
+>
+>  .../input/touchscreen/cypress,tt21000.yaml    | 101 ++
+>  arch/arm/boot/dts/imx7d-remarkable2.dts       | 100 ++
+>  arch/arm/configs/imx_v6_v7_defconfig          |   1 +
+>  drivers/input/touchscreen/Kconfig             |  16 +
+>  drivers/input/touchscreen/Makefile            |   1 +
+>  drivers/input/touchscreen/cyttsp5.c           | 902 ++++++++++++++++++
+>  6 files changed, 1121 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
+>  create mode 100644 drivers/input/touchscreen/cyttsp5.c
+>
+> --
+> 2.35.1
+>
