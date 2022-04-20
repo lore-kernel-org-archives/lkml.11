@@ -2,57 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE461C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380013AbiDTPNV (ORCPT
+        id S1380068AbiDTPN1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        Wed, 20 Apr 2022 11:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380096AbiDTPMs (ORCPT
+        with ESMTP id S1380093AbiDTPMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Apr 2022 11:12:48 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759EB13DE6;
-        Wed, 20 Apr 2022 08:10:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06FC3E5F6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:10:01 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id F1572215FE;
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1094E215FC;
         Wed, 20 Apr 2022 15:10:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
         t=1650467400; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aZCkP4ZTIz8L3n5icXJW44l5GxuZEDRnsAjAP0WhQbc=;
-        b=ltchNwiSpdyVnlwL94VdMGg3q9XkNrTd8PU8GecHmmKA2xueh8TSnLik9ju2nQgFdU7jAI
-        fouQD9Ufzdt2SX7rghRnRK21cspyfWJSePo4SMHeff6MNuZopRUi8C1YLrbQaWkDstD8fp
-        lKCwbxP0tpg7NCPGqZst22fehTkYZ20=
+        bh=SPIngja7rfH6/X0ahWtYB7L7nX8NRl4zj/+cjR7xZr0=;
+        b=izW36Q/K4I+x9+ssoIZTIP6kcaOBnqGIAchacXhFrguclN9mlcwDy5Y3j6XIl58RxItKh2
+        yFKJRHgSaBRlN10cFBSOt7Ea7MtSQEgQQW0NFvI/a+0rlT0kNILSRJWUf2qg0/waqA7ALN
+        NEaH3ZeHIDVzSTHBGCrCGbqlRrM0AMs=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B560113AD5;
-        Wed, 20 Apr 2022 15:10:00 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DDE5413AD5;
+        Wed, 20 Apr 2022 15:09:59 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id kMInK0giYGJILQAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 15:10:00 +0000
+        id iEbyNEciYGJILQAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 15:09:59 +0000
 From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 11/18] xen/netfront: use xenbus_setup_ring() and xenbus_teardown_ring()
-Date:   Wed, 20 Apr 2022 17:09:35 +0200
-Message-Id: <20220420150942.31235-12-jgross@suse.com>
+        Stefano Stabellini <sstabellini@kernel.org>
+Subject: [PATCH 07/18] xen/dmabuf: switch gntdev-dmabuf to use INVALID_GRANT_REF
+Date:   Wed, 20 Apr 2022 17:09:31 +0200
+Message-Id: <20220420150942.31235-8-jgross@suse.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220420150942.31235-1-jgross@suse.com>
 References: <20220420150942.31235-1-jgross@suse.com>
@@ -62,97 +58,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify netfront's ring creation and removal via xenbus_setup_ring()
-and xenbus_teardown_ring().
+Instead of using a private macro for an invalid grant reference use
+the common one.
 
 Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- drivers/net/xen-netfront.c | 49 +++++++++-----------------------------
- 1 file changed, 11 insertions(+), 38 deletions(-)
+ drivers/xen/gntdev-dmabuf.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index af3d3de7d9fa..880b10d435d9 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -1921,8 +1921,7 @@ static int setup_netfront(struct xenbus_device *dev,
- 			struct netfront_queue *queue, unsigned int feature_split_evtchn)
- {
- 	struct xen_netif_tx_sring *txs;
--	struct xen_netif_rx_sring *rxs = NULL;
--	grant_ref_t gref;
-+	struct xen_netif_rx_sring *rxs;
- 	int err;
+diff --git a/drivers/xen/gntdev-dmabuf.c b/drivers/xen/gntdev-dmabuf.c
+index d5bfd7b867fc..91073b4e4a20 100644
+--- a/drivers/xen/gntdev-dmabuf.c
++++ b/drivers/xen/gntdev-dmabuf.c
+@@ -24,15 +24,6 @@
  
- 	queue->tx_ring_ref = INVALID_GRANT_REF;
-@@ -1930,34 +1929,22 @@ static int setup_netfront(struct xenbus_device *dev,
- 	queue->rx.sring = NULL;
- 	queue->tx.sring = NULL;
+ MODULE_IMPORT_NS(DMA_BUF);
  
--	txs = (struct xen_netif_tx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
--	if (!txs) {
--		err = -ENOMEM;
--		xenbus_dev_fatal(dev, err, "allocating tx ring page");
-+	err = xenbus_setup_ring(dev, GFP_NOIO | __GFP_HIGH, (void **)&txs,
-+				1, &queue->tx_ring_ref);
-+	if (err)
- 		goto fail;
--	}
-+
- 	SHARED_RING_INIT(txs);
- 	FRONT_RING_INIT(&queue->tx, txs, XEN_PAGE_SIZE);
- 
--	err = xenbus_grant_ring(dev, txs, 1, &gref);
--	if (err < 0)
-+	err = xenbus_setup_ring(dev, GFP_NOIO | __GFP_HIGH, (void **)&rxs,
-+				1, &queue->rx_ring_ref);
-+	if (err)
- 		goto fail;
--	queue->tx_ring_ref = gref;
- 
--	rxs = (struct xen_netif_rx_sring *)get_zeroed_page(GFP_NOIO | __GFP_HIGH);
--	if (!rxs) {
--		err = -ENOMEM;
--		xenbus_dev_fatal(dev, err, "allocating rx ring page");
--		goto fail;
--	}
- 	SHARED_RING_INIT(rxs);
- 	FRONT_RING_INIT(&queue->rx, rxs, XEN_PAGE_SIZE);
- 
--	err = xenbus_grant_ring(dev, rxs, 1, &gref);
--	if (err < 0)
--		goto fail;
--	queue->rx_ring_ref = gref;
+-#ifndef GRANT_INVALID_REF
+-/*
+- * Note on usage of grant reference 0 as invalid grant reference:
+- * grant reference 0 is valid, but never exposed to a driver,
+- * because of the fact it is already in use/reserved by the PV console.
+- */
+-#define GRANT_INVALID_REF	0
+-#endif
 -
- 	if (feature_split_evtchn)
- 		err = setup_netfront_split(queue);
- 	/* setup single event channel if
-@@ -1972,24 +1959,10 @@ static int setup_netfront(struct xenbus_device *dev,
+ struct gntdev_dmabuf {
+ 	struct gntdev_dmabuf_priv *priv;
+ 	struct dma_buf *dmabuf;
+@@ -532,7 +523,7 @@ static void dmabuf_imp_end_foreign_access(u32 *refs, int count)
+ 	int i;
  
- 	return 0;
- 
--	/* If we fail to setup netfront, it is safe to just revoke access to
--	 * granted pages because backend is not accessing it at this point.
--	 */
-  fail:
--	if (queue->rx_ring_ref != INVALID_GRANT_REF) {
--		gnttab_end_foreign_access(queue->rx_ring_ref,
--					  (unsigned long)rxs);
--		queue->rx_ring_ref = INVALID_GRANT_REF;
--	} else {
--		free_page((unsigned long)rxs);
--	}
--	if (queue->tx_ring_ref != INVALID_GRANT_REF) {
--		gnttab_end_foreign_access(queue->tx_ring_ref,
--					  (unsigned long)txs);
--		queue->tx_ring_ref = INVALID_GRANT_REF;
--	} else {
--		free_page((unsigned long)txs);
--	}
-+	xenbus_teardown_ring((void **)&queue->rx.sring, 1, &queue->rx_ring_ref);
-+	xenbus_teardown_ring((void **)&queue->tx.sring, 1, &queue->tx_ring_ref);
-+
- 	return err;
+ 	for (i = 0; i < count; i++)
+-		if (refs[i] != GRANT_INVALID_REF)
++		if (refs[i] != INVALID_GRANT_REF)
+ 			gnttab_end_foreign_access(refs[i], 0UL);
  }
+ 
+@@ -567,7 +558,7 @@ static struct gntdev_dmabuf *dmabuf_imp_alloc_storage(int count)
+ 	gntdev_dmabuf->nr_pages = count;
+ 
+ 	for (i = 0; i < count; i++)
+-		gntdev_dmabuf->u.imp.refs[i] = GRANT_INVALID_REF;
++		gntdev_dmabuf->u.imp.refs[i] = INVALID_GRANT_REF;
+ 
+ 	return gntdev_dmabuf;
  
 -- 
 2.34.1
