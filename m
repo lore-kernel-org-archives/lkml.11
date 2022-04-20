@@ -2,156 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1031EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359011AbiDTCsQ (ORCPT
+        id S1359024AbiDTCs0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42346 "EHLO
+        Tue, 19 Apr 2022 22:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239192AbiDTCsP (ORCPT
+        with ESMTP id S1359014AbiDTCsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:48:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80972F01B
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:45:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73A7D61616
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 02:45:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE93C385A5;
-        Wed, 20 Apr 2022 02:45:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650422729;
-        bh=dqJj8cxS5GfPVVKnznBjD5JCJjlatiZ36UsnvCkAqdU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=t7hyOiEZA5rsal29kufImzA7DtamHpc4g66YlVBPR60X8mdVmNtZmJ0Hqh5VFVosu
-         bhKqxpVCmBmB1Q+prNwfR8uuvz0jp/vdZSyuZYbZLcXfFBiGmJRTEKHb7VtxKY/0D0
-         t3u66PEYuGl1/m2LgpBAy2pVaqxQi9jPj18u0XyD2xgWtONZ/Vqz8dPm91qpDXjSR2
-         mRr42Z96nK7216CHcl8eomJ2StHS7NrJTaOiNk+4H+TMD3E01jmBLSX40LI5JmJjvN
-         X2Ulh88OdGqg7zdT0oS5ZuEmMviajkMyhLY3q9MLmQRxRnRUO5YT5fW/qUaIW1Hl8N
-         jkcJek0od1uRw==
-Message-ID: <47f19561-11a7-9da3-1cf9-78843e0d0ec3@kernel.org>
-Date:   Wed, 20 Apr 2022 10:45:25 +0800
+        Tue, 19 Apr 2022 22:48:20 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EBA32EC3
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:45:34 -0700 (PDT)
+Received: from kwepemi100015.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KjlPr2R1vz1J9nr;
+        Wed, 20 Apr 2022 10:44:48 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100015.china.huawei.com (7.221.188.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Apr 2022 10:45:32 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Apr 2022 10:45:31 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Mark Rutland <mark.rutland@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>
+CC:     <linuxppc-dev@lists.ozlabs.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [PATCH -next v4 0/7]arm64: add machine check safe support
+Date:   Wed, 20 Apr 2022 03:04:11 +0000
+Message-ID: <20220420030418.3189040-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [f2fs-dev] [PATCH 2/2] f2fs: keep io_flags to avoid IO split due
- to different op_flags in two fio holders
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220413154920.2024872-1-jaegeuk@kernel.org>
- <20220413154920.2024872-2-jaegeuk@kernel.org>
- <d22c42f8-525a-a0a6-2fef-a43b2fc3a2c7@kernel.org>
- <Yl88F3RVRMfwyB7+@google.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <Yl88F3RVRMfwyB7+@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/20 6:47, Jaegeuk Kim wrote:
-> On 04/17, Chao Yu wrote:
->> On 2022/4/13 23:49, Jaegeuk Kim wrote:
->>> Let's attach io_flags to bio only, so that we can merge IOs given original
->>> io_flags only.
->>>
->>> Fixes: 64bf0eef0171 ("f2fs: pass the bio operation to bio_alloc_bioset")
->>
->> Nice catch.
->>
->> Wasn't this bug introduced by:
-> 
-> I don't think so.
+With the increase of memory capacity and density, the probability of
+memory error increases. The increasing size and density of server RAM
+in the data center and cloud have shown increased uncorrectable memory
+errors.
 
-Oh, correct, it looks in original patch, we only attach IO flag before
-__submit_bio().
+Currently, the kernel has a mechanism to recover from hardware memory
+errors. This patchset provides an new recovery mechanism.
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+For arm64, the hardware memory error handling is do_sea() which divided
+into two cases:
+ 1. The user state consumed the memory errors, the solution is kill the
+    user process and isolate the error page.
+ 2. The kernel state consumed the memory errors, the solution is panic.
 
-Thanks,
+For case 2, Undifferentiated panic maybe not the optimal choice, it can be
+handled better, in some scenes, we can avoid panic, such as uaccess, if the
+uaccess fails due to memory error, only the user process will be affected,
+kill the user process and isolate the user page with hardware memory errors
+is a better choice.
 
-> 
->>
->> commit da9953b729c1 ("f2fs: introduce sysfs/data_io_flag to attach REQ_META/FUA")
->>
->> static void __attach_data_io_flag(struct f2fs_io_info *fio)
->> {
->> ...
->>         if ((1 << fio->temp) & meta_flag)
->>                 fio->op_flags |= REQ_META;
->>         if ((1 << fio->temp) & fua_flag)
->>                 fio->op_flags |= REQ_FUA;
->> ...
->>
->> Thanks,
->>
->>> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
->>> ---
->>>    fs/f2fs/data.c | 33 +++++++++++++++++++++------------
->>>    1 file changed, 21 insertions(+), 12 deletions(-)
->>>
->>> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
->>> index acc523f893ba..fcf0daa386de 100644
->>> --- a/fs/f2fs/data.c
->>> +++ b/fs/f2fs/data.c
->>> @@ -387,11 +387,23 @@ int f2fs_target_device_index(struct f2fs_sb_info *sbi, block_t blkaddr)
->>>    	return 0;
->>>    }
->>> -static void __attach_io_flag(struct f2fs_io_info *fio, unsigned int io_flag)
->>> +static unsigned int f2fs_io_flags(struct f2fs_io_info *fio)
->>>    {
->>>    	unsigned int temp_mask = (1 << NR_TEMP_TYPE) - 1;
->>> -	unsigned int fua_flag = io_flag & temp_mask;
->>> -	unsigned int meta_flag = (io_flag >> NR_TEMP_TYPE) & temp_mask;
->>> +	unsigned int fua_flag, meta_flag, io_flag;
->>> +	unsigned int op_flags = 0;
->>> +
->>> +	if (fio->op != REQ_OP_WRITE)
->>> +		return 0;
->>> +	if (fio->type == DATA)
->>> +		io_flag = fio->sbi->data_io_flag;
->>> +	else if (fio->type == NODE)
->>> +		io_flag = fio->sbi->node_io_flag;
->>> +	else
->>> +		return 0;
->>> +
->>> +	fua_flag = io_flag & temp_mask;
->>> +	meta_flag = (io_flag >> NR_TEMP_TYPE) & temp_mask;
->>>    	/*
->>>    	 * data/node io flag bits per temp:
->>> @@ -400,9 +412,10 @@ static void __attach_io_flag(struct f2fs_io_info *fio, unsigned int io_flag)
->>>    	 * Cold | Warm | Hot | Cold | Warm | Hot |
->>>    	 */
->>>    	if ((1 << fio->temp) & meta_flag)
->>> -		fio->op_flags |= REQ_META;
->>> +		op_flags |= REQ_META;
->>>    	if ((1 << fio->temp) & fua_flag)
->>> -		fio->op_flags |= REQ_FUA;
->>> +		op_flags |= REQ_FUA;
->>> +	return op_flags;
->>>    }
->>>    static struct bio *__bio_alloc(struct f2fs_io_info *fio, int npages)
->>> @@ -412,14 +425,10 @@ static struct bio *__bio_alloc(struct f2fs_io_info *fio, int npages)
->>>    	sector_t sector;
->>>    	struct bio *bio;
->>> -	if (fio->type == DATA)
->>> -		__attach_io_flag(fio, sbi->data_io_flag);
->>> -	else if (fio->type == NODE)
->>> -		__attach_io_flag(fio, sbi->node_io_flag);
->>> -
->>>    	bdev = f2fs_target_device(sbi, fio->new_blkaddr, &sector);
->>> -	bio = bio_alloc_bioset(bdev, npages, fio->op | fio->op_flags, GFP_NOIO,
->>> -			       &f2fs_bioset);
->>> +	bio = bio_alloc_bioset(bdev, npages,
->>> +				fio->op | fio->op_flags | f2fs_io_flags(fio),
->>> +				GFP_NOIO, &f2fs_bioset);
->>>    	bio->bi_iter.bi_sector = sector;
->>>    	if (is_read_io(fio->op)) {
->>>    		bio->bi_end_io = f2fs_read_end_io;
+This patchset can be divided into three parts:
+ 1. Patch 0/1/4    - make some minor fixes to the associated code.
+ 2. Patch 3      - arm64 add support for machine check safe framework.
+ 3. Pathc 5/6/7  - arm64 add uaccess and cow to machine check safe.
+
+Since V4:
+ 1. According to Robin's suggestion, direct modify user_ldst and
+ user_ldp in asm-uaccess.h and modify mte.S.
+ 2. Add new macro USER_MC in asm-uaccess.h, used in copy_from_user.S
+ and copy_to_user.S.
+ 3. According to Robin's suggestion, using micro in copy_page_mc.S to
+ simplify code.
+ 4. According to KeFeng's suggestion, modify powerpc code in patch1.
+ 5. According to KeFeng's suggestion, modify mm/extable.c and some code
+ optimization.
+
+Since V3:
+ 1. According to Mark's suggestion, all uaccess can be recovered due to
+    memory error.
+ 2. Scenario pagecache reading is also supported as part of uaccess
+    (copy_to_user()) and duplication code problem is also solved. 
+    Thanks for Robin's suggestion.
+ 3. According Mark's suggestion, update commit message of patch 2/5.
+ 4. According Borisllav's suggestion, update commit message of patch 1/5.
+
+Since V2:
+ 1.Consistent with PPC/x86, Using CONFIG_ARCH_HAS_COPY_MC instead of
+   ARM64_UCE_KERNEL_RECOVERY.
+ 2.Add two new scenes, cow and pagecache reading.
+ 3.Fix two small bug(the first two patch).
+
+V1 in here:
+https://lore.kernel.org/lkml/20220323033705.3966643-1-tongtiangen@huawei.com/
+
+Robin Murphy (1):
+  arm64: mte: Clean up user tag accessors
+
+Tong Tiangen (6):
+  x86, powerpc: fix function define in copy_mc_to_user
+  arm64: fix types in copy_highpage()
+  arm64: add support for machine check error safe
+  arm64: add copy_{to, from}_user to machine check safe
+  arm64: add {get, put}_user to machine check safe
+  arm64: add cow to machine check safe
+
+ arch/arm64/Kconfig                   |  1 +
+ arch/arm64/include/asm/asm-extable.h | 33 +++++++++++
+ arch/arm64/include/asm/asm-uaccess.h | 15 +++--
+ arch/arm64/include/asm/extable.h     |  1 +
+ arch/arm64/include/asm/page.h        | 10 ++++
+ arch/arm64/include/asm/uaccess.h     |  4 +-
+ arch/arm64/lib/Makefile              |  2 +
+ arch/arm64/lib/copy_from_user.S      | 18 +++---
+ arch/arm64/lib/copy_page_mc.S        | 86 ++++++++++++++++++++++++++++
+ arch/arm64/lib/copy_to_user.S        | 18 +++---
+ arch/arm64/lib/mte.S                 |  4 +-
+ arch/arm64/mm/copypage.c             | 36 ++++++++++--
+ arch/arm64/mm/extable.c              | 33 +++++++++++
+ arch/arm64/mm/fault.c                | 27 ++++++++-
+ arch/powerpc/include/asm/uaccess.h   |  1 +
+ arch/x86/include/asm/uaccess.h       |  1 +
+ include/linux/highmem.h              |  8 +++
+ include/linux/uaccess.h              |  9 +++
+ mm/memory.c                          |  2 +-
+ 19 files changed, 278 insertions(+), 31 deletions(-)
+ create mode 100644 arch/arm64/lib/copy_page_mc.S
+
+-- 
+2.25.1
+
