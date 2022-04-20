@@ -2,97 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12868C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353822AbiDTFQt (ORCPT
+        id S1350066AbiDTFTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 01:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
+        Wed, 20 Apr 2022 01:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232351AbiDTFQm (ORCPT
+        with ESMTP id S232351AbiDTFTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 01:16:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD9533E3A;
-        Tue, 19 Apr 2022 22:13:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 20 Apr 2022 01:19:00 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEAB33EA2;
+        Tue, 19 Apr 2022 22:16:14 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9659B81244;
-        Wed, 20 Apr 2022 05:13:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9DFC385A0;
-        Wed, 20 Apr 2022 05:13:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650431634;
-        bh=Xl8xanXzGG/XbMPJDPUaNRxh8BraaLlRbxRew5ksBiw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=MWRbUBz9aU0uUj7CU39+2wGmazTXtMvR03ApKZl5oW7EFAVuhS5jKf7sp03Q9r9S/
-         JPPbgcGQiWfrN8OXQ9DsliVf5S5ZV/BvfTSU1BuKOqln8qdq/EypwAvgz1QwP8Xr4d
-         yX1den7jqPZaRgiuM588z3n/dS4IvviSoB7ZmOWeNdMNQMnouRFfgPuz1lRohNclPl
-         15SyuSrsu/1OtpHeV7kDRj4sX7XF31fygnHkVtAGWoX2CwcI/yQoRIkIEkC78tNz1Y
-         rhjcIig2B7J0YCIuF8MPsm06kuInhm56U70+8sBEMyv0DdgArF6Ic73iWHs5WSYV3+
-         9hSf3BfWl3+Tw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jani Nikula <jani.nikula@intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/1] add support for enum module parameters
-References: <20220414123033.654198-1-jani.nikula@intel.com>
-        <YlgfXxjefuxiXjtC@kroah.com> <87a6cneoco.fsf@intel.com>
-Date:   Wed, 20 Apr 2022 08:13:47 +0300
-In-Reply-To: <87a6cneoco.fsf@intel.com> (Jani Nikula's message of "Thu, 14 Apr
-        2022 17:22:47 +0300")
-Message-ID: <87sfq8qqus.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KjpmX5TLjz4xL3;
+        Wed, 20 Apr 2022 15:16:12 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650431773;
+        bh=ohQm0ybDAEeCD6ANA3z5Cyaa8KYCNzq1SGorUbpPK8A=;
+        h=Date:From:To:Cc:Subject:From;
+        b=hZn+sS7jI9Yjvtjs9ZE6kF+WJbGt3JGgIXtKCp5d2myGsXgM3jhpQXvzXku2zOIs5
+         EEdDRzhTHpNM1iAcF3mUCQIt1XpZbBwXgp9ab4oPKsukbSBFbLDgppKWMCqKM6VWWW
+         XTSwq8eATKlGKDD+YB9SvQYywij7+bH8ORtJezjgYClYZ+Qe8NIJs1I2FcKX1LNe0g
+         ZC2nxxj9llELo+kqTUMcL4l0J8P9b9+5PKVuDbBkP61PU00HDEJXiVheaIKB+i9yIo
+         V4jxfrBXdPFJZRCzsP2BTrcXhrcYSsqz7ehTxvDlGELlE8NFVA5nDR9P9ZNt1eH4RP
+         rYzC9YkyXeNUA==
+Date:   Wed, 20 Apr 2022 15:16:12 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Ricardo Ribalda <ribalda@chromium.org>
+Subject: linux-next: manual merge of the kunit-next tree with the
+ thunderbolt tree
+Message-ID: <20220420151612.117f84b9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; boundary="Sig_/HvMgL7h4QdUD.vekO5RYSY0";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ linux-wireless, netdev
+--Sig_/HvMgL7h4QdUD.vekO5RYSY0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Jani Nikula <jani.nikula@intel.com> writes:
+Hi all,
 
-> On Thu, 14 Apr 2022, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
->> On Thu, Apr 14, 2022 at 03:30:32PM +0300, Jani Nikula wrote:
->>> Hey, I've sent this before, ages ago, but haven't really followed
->>> through with it. I still think it would be useful for many scenarios
->>> where a plain number is a clumsy interface for a module param.
->>> 
->>> Thoughts?
->>
->> We should not be adding new module parameters anyway (they operate on
->> code, not data/devices), so what would this be used for?
->
-> I think it's just easier to use names than random values, and this also
-> gives you range check on the input.
->
-> I also keep telling people not to add new module parameters, but it's
-> not like they're going away anytime soon.
->
-> If there's a solution to being able to pass device specific debug
-> parameters at probe time, I'm all ears. At least i915 has a bunch of
-> things which can't really be changed after probe, when debugfs for the
-> device is around. Module parameters aren't ideal, but debugfs doesn't
-> work for this.
+Today's linux-next merge of the kunit-next tree got a conflict in:
 
-Wireless drivers would also desperately need to pass device specific
-parameters at (or before) probe time. And not only debug parameters but
-also configuration parameters, for example firmware memory allocations
-schemes (optimise for features vs number of clients etc) and whatnot.
+  drivers/thunderbolt/test.c
 
-Any ideas how to implement that? Is there any prior work for anything
-like this? This is pretty hard limiting usability of upstream wireless
-drivers and I really want to find a proper solution.
+between commit:
 
+  9d2d0a5cf0ca ("thunderbolt: Use different lane for second DisplayPort tun=
+nel")
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+from the thunderbolt tree and commit:
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+  7aadf8433357 ("thunderbolt: test: use NULL macros")
+
+from the kunit-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/thunderbolt/test.c
+index 66b6e665e96f,be9b1d7e63d2..000000000000
+--- a/drivers/thunderbolt/test.c
++++ b/drivers/thunderbolt/test.c
+@@@ -1348,8 -1348,8 +1348,8 @@@ static void tb_test_tunnel_dp(struct ku
+  	in =3D &host->ports[5];
+  	out =3D &dev->ports[13];
+ =20
+ -	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, tunnel !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
+  	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, out);
+@@@ -1394,8 -1394,8 +1394,8 @@@ static void tb_test_tunnel_dp_chain(str
+  	in =3D &host->ports[5];
+  	out =3D &dev4->ports[14];
+ =20
+ -	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, tunnel !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
+  	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, out);
+@@@ -1444,8 -1444,8 +1444,8 @@@ static void tb_test_tunnel_dp_tree(stru
+  	in =3D &dev2->ports[13];
+  	out =3D &dev5->ports[13];
+ =20
+ -	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, tunnel !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
+  	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, out);
+@@@ -1509,8 -1509,8 +1509,8 @@@ static void tb_test_tunnel_dp_max_lengt
+  	in =3D &dev6->ports[13];
+  	out =3D &dev12->ports[13];
+ =20
+ -	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, tunnel !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
+  	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+  	KUNIT_EXPECT_PTR_EQ(test, tunnel->dst_port, out);
+@@@ -1627,8 -1627,8 +1627,8 @@@ static void tb_test_tunnel_port_on_path
+  	in =3D &dev2->ports[13];
+  	out =3D &dev5->ports[13];
+ =20
+ -	dp_tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	dp_tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, dp_tunnel !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, dp_tunnel);
+ =20
+  	KUNIT_EXPECT_TRUE(test, tb_tunnel_port_on_path(dp_tunnel, in));
+  	KUNIT_EXPECT_TRUE(test, tb_tunnel_port_on_path(dp_tunnel, out));
+@@@ -2009,8 -2009,8 +2009,8 @@@ static void tb_test_credit_alloc_dp(str
+  	in =3D &host->ports[5];
+  	out =3D &dev->ports[14];
+ =20
+ -	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	tunnel =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, tunnel !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, tunnel);
+  	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)3);
+ =20
+  	/* Video (main) path */
+@@@ -2245,8 -2245,8 +2245,8 @@@ static struct tb_tunnel *TB_TEST_DP_TUN
+ =20
+  	in =3D &host->ports[5];
+  	out =3D &dev->ports[13];
+ -	dp_tunnel1 =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	dp_tunnel1 =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, dp_tunnel1 !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, dp_tunnel1);
+  	KUNIT_ASSERT_EQ(test, dp_tunnel1->npaths, (size_t)3);
+ =20
+  	path =3D dp_tunnel1->paths[0];
+@@@ -2282,8 -2282,8 +2282,8 @@@ static struct tb_tunnel *TB_TEST_DP_TUN
+ =20
+  	in =3D &host->ports[6];
+  	out =3D &dev->ports[14];
+ -	dp_tunnel2 =3D tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
+ +	dp_tunnel2 =3D tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+- 	KUNIT_ASSERT_TRUE(test, dp_tunnel2 !=3D NULL);
++ 	KUNIT_ASSERT_NOT_NULL(test, dp_tunnel2);
+  	KUNIT_ASSERT_EQ(test, dp_tunnel2->npaths, (size_t)3);
+ =20
+  	path =3D dp_tunnel2->paths[0];
+
+--Sig_/HvMgL7h4QdUD.vekO5RYSY0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJflxwACgkQAVBC80lX
+0Gzg4wf/aVZoT/xHLpQPZ30rJJ9daCNzl3IO1BWeYcgeR2sMdvSPeYx2mfabcbST
+lhqaC1BxUV6AkWEZjSpUE1BYcVCiDEFY4pfo6XkEvKhIJBWPRXz/k9vEbRSSrlfZ
+VA/hNjWyzWal/Xixt3r1IBFk6+js1wVNtTSosXPFH/w+sXUVGuPJwhSwgDOEaf//
+IZqTS1Y/sqwdICQkJahd7DygYgk3tTufaPh1qMRF4qlgZ+cBzeSuNrDkbNdDjETX
+5sfw0zxqlu688GaTJDL0rM/GCBWu40Fp3KamYDODlPdEjZ+QK6h0/q5Nj5vl5nlu
+TgvpA9bNNuoJ9YJUlEYf7mV8OiCxEg==
+=plfX
+-----END PGP SIGNATURE-----
+
+--Sig_/HvMgL7h4QdUD.vekO5RYSY0--
