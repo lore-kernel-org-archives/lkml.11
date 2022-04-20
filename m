@@ -2,142 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02762C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378987AbiDTN2H (ORCPT
+        id S1379002AbiDTN2R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        Wed, 20 Apr 2022 09:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379023AbiDTN1p (ORCPT
+        with ESMTP id S1378984AbiDTN2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:27:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E014326FF;
-        Wed, 20 Apr 2022 06:24:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A55861A51;
-        Wed, 20 Apr 2022 13:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9748C385A0;
-        Wed, 20 Apr 2022 13:24:56 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ULX6+t9a"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1650461094;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zViedf6BdiM4N8cQIaCXVT7SDe0/tNGlIcqUURYcAYo=;
-        b=ULX6+t9a/xxPf4XzndnIwSFsYT5uvJpuLLc2zAsEzslp56ek1vg8kNusNcqCina89HNUQj
-        tOTWG62irY7DedbldzdwUfOr9vD0oC9i17vTjXdyhH3igO2AuA5KuxdeVenbkDAe3PU24M
-        FaKDQBzUXupl2lyEVh0PsBcUAM0h48U=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 65fa884e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 20 Apr 2022 13:24:54 +0000 (UTC)
-Date:   Wed, 20 Apr 2022 15:24:48 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Jann Horn <jannh@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Colm MacCarthaigh <colmmacc@amazon.com>
-Subject: Re: [PATCH] random: add fork_event sysctl for polling VM forks
-Message-ID: <YmAJoGtqA3PMrZmD@zx2c4.com>
-References: <20220419160407.1740458-1-Jason@zx2c4.com>
- <CAG48ez3amS6=omb8XVDEz9H2bk3MxTEK_XPjD=ZO-cXcDqz-cg@mail.gmail.com>
- <CAHmME9r7Vt1XFzceHhy7O67iVMhtpLJ-d0p8UGgV4Srd4Dt2Hg@mail.gmail.com>
- <CAG48ez2X72XkpxaEDmzykewreuhk8=5t5L5b2Qdr1dn8LcFutw@mail.gmail.com>
- <CAHmME9q+mDw6n3FNJLvoZoD3UsX-G5PvTwb5L7h_M9RFKNemSw@mail.gmail.com>
+        Wed, 20 Apr 2022 09:28:04 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E82015821;
+        Wed, 20 Apr 2022 06:25:18 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id bg9so1603442pgb.9;
+        Wed, 20 Apr 2022 06:25:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Uw7hE+OpDQkdNr0uKGFZJ5vQVWL49z4s2WTRmwaQ05I=;
+        b=YaLiP2hUxSk43v5wycBbgbuw54epFr//EDwKZMZqVaaXkWYBV04u8LyERu3YOAvA4q
+         nBrMMPx7EfraBDUgjCJHCadWlrBtxmwKqtcVZgORyF467eE7wmk4CSOa6O5hyUsPaom5
+         h9meZm536lpbJhAU0YRJJy59jGae3NLgnP3suOoYHjR4uGsxg2E67BkDqATTSwIqH+n2
+         yu/dQKpmD419FSE/SiPJ4Cx+OGvyee/PAhWBOsqr6Q/epp4RSK0vNdXASXUAcAGCkIOq
+         FGjHs/tXaxaslowH3R1o2rCskBwDxNBaMD879H9z8tFYwax1pm1YRFb2wJIyZy1V9ddT
+         tc7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Uw7hE+OpDQkdNr0uKGFZJ5vQVWL49z4s2WTRmwaQ05I=;
+        b=6uaZ8G4lg4Emmq/rjNthLgzo3dMmBhrSCnYXgLhlYc9KWnDB3CnN5bOhjWmwvcWJAJ
+         Cy95J/caZJArvU86sSNqYaB3vHy4nv56lVrnReVi7W6jTp+Ps93FPJAufB1QflK9wWEz
+         VtLBgJtPFM7Pamp0fusYQKDUvJNO0zrDJ45OQ9bax1C+KFO8IcBN2STv4UjKmToLfAj1
+         vlr+Ld+ChAibcHyBptPUtAtKUmgELoDgvz3tRvdBu4HPNJz0DVpG8Uw0gE9e1Dc4FS1m
+         lDarxF5S9FiY94lSx/ZJReS24M4hb38XT0pgK7cnEyz9k99iVlRwhxARmKxiIlkO72dr
+         IF/A==
+X-Gm-Message-State: AOAM530P46r0YOjvK55vq3f31bKKxdcZFYQI/V01CWKc2k6BhLB+NQ0o
+        I9GYp2xHLlHrrcKDE96qNzJbUdSIlsc=
+X-Google-Smtp-Source: ABdhPJySltv7rc/II4M/udcWI3xD4Wa4S92ymS+5C210i7zImcrX8IK2s9pIhTZIBTDu5BRi4DOAxg==
+X-Received: by 2002:a63:780f:0:b0:386:5d6f:2153 with SMTP id t15-20020a63780f000000b003865d6f2153mr18767782pgc.555.1650461117971;
+        Wed, 20 Apr 2022 06:25:17 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id w13-20020a17090a5e0d00b001c7d4099670sm19611329pjf.28.2022.04.20.06.25.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 20 Apr 2022 06:25:17 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: [PATCH 0/7] KVM: X86/MMU: Use one-off special shadow page for special roots
+Date:   Wed, 20 Apr 2022 21:25:58 +0800
+Message-Id: <20220420132605.3813-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHmME9q+mDw6n3FNJLvoZoD3UsX-G5PvTwb5L7h_M9RFKNemSw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey again,
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-On Wed, Apr 20, 2022 at 02:15:45AM +0200, Jason A. Donenfeld wrote:
-> Hi Jann,
-> 
-> On Tue, Apr 19, 2022 at 9:45 PM Jann Horn <jannh@google.com> wrote:
-> > AFAIK this also means that if you make an epoll watch for
-> > /proc/sys/kernel/random/fork_event, and then call poll() *on the epoll
-> > fd* for some reason, that will probably already consume the event; and
-> > if you then try to actually receive the epoll event via epoll_wait(),
-> > it'll already be gone (because epoll tries to re-poll the "ready"
-> > files to figure out what state those files are at now). Similarly if
-> > you try to create an epoll watch for an FD that already has an event
-> > pending: Installing the watch will call the ->poll handler once,
-> > resetting the file's state, and the following epoll_wait() will call
-> > ->poll again and think the event is already gone. See the call paths
-> > to vfs_poll() in fs/eventpoll.c.
-> >
-> > Maybe we don't care about such exotic usage, and are willing to accept
-> > the UAPI inconsistency and slight epoll breakage of plumbing
-> > edge-triggered polling through APIs designed for level-triggered
-> > polling. IDK.
-> 
-> Hmm, I see. The thing is, this is _already_ what's done for
-> domainname/hostname. It's how the sysctl poll handler was "designed".
-> So our options here are:
-> 
-> a) Remove this quirky behavior from domainname/hostname and start
-> over. This would potentially break userspace, but maybe nobody uses
-> this? No idea, but sounds risky.
-> 
-> b) Apply this commit as-is, because it's using the API as the API was
-> designed, and call it a day.
-> 
-> c) Apply this commit as-is, because it's using the API as the API was
-> designed, and then later try to fix up the epoll behavior on this.
-> 
-> Of these, (a) seems like a non-starter. (c) is most appealing, but it
-> sounds like it might not actually be possible?
-> 
-> Jason
+Current code use mmu->pae_root, mmu->pml4_root, and mmu->pml5_root to
+setup special roots.  The initialization code is complex and the roots
+are not associated with struct kvm_mmu_page which causes the code more
+complex.
 
-I actually tried to verify your concern but didn't have success doing
-so.
+So add new special shadow pages to simplify it.
 
-Both of these worked:
+The special shadow pages are associated with struct kvm_mmu_page and
+VCPU-local.
 
-        int efd = epoll_create1(0);
-        assert(efd >= 0);
-        struct epoll_event event = {
-                .data.fd = open("/proc/sys/kernel/random/fork_event", O_RDONLY)
-        };
-        assert(event.data.fd >= 0);
-        assert(epoll_ctl(efd, EPOLL_CTL_ADD, event.data.fd, &event) == 0);
-        for (;;) {
-                assert(epoll_wait(efd, &event, 1, -1) == 1);
-                puts("vm fork detected");
-        }
+The special shadow pages are created and freed when the roots are
+changed (or one-off) which can be optimized but not in the patchset
+since the re-creating is light way (in normal case only the struct
+kvm_mmu_page needs to be re-allocated and sp->spt doens't)
 
-And:
+Lai Jiangshan (7):
+  KVM: X86/MMU: Add using_special_root_page()
+  KVM: X86/MMU: Add special shadow pages
+  KVM: X86/MMU: Link PAE root pagetable with its children
+  KVM: X86/MMU: Activate special shadow pages and remove old logic
+  KVM: X86/MMU: Remove the check of the return value of to_shadow_page()
+  KVM: X86/MMU: Allocate mmu->pae_root for PAE paging on-demand
+  KVM: X86/MMU: Remove mmu_alloc_special_roots()
 
-        int efd = epoll_create1(0);
-        assert(efd >= 0);
-        struct epoll_event event = {
-                .data.fd = open("/proc/sys/kernel/random/fork_event", O_RDONLY)
-        };
-        assert(event.data.fd >= 0);
-        assert(epoll_ctl(efd, EPOLL_CTL_ADD, event.data.fd, &event) == 0);
-        for (;;) {
-                assert(poll(&(struct pollfd){ .fd = efd, .events = POLLIN }, 1, -1) == 1);
-                puts("vm fork detected");
-        }
+ arch/x86/include/asm/kvm_host.h |   3 -
+ arch/x86/kvm/mmu/mmu.c          | 486 ++++++++++----------------------
+ arch/x86/kvm/mmu/mmu_internal.h |  10 -
+ arch/x86/kvm/mmu/paging_tmpl.h  |  15 +-
+ arch/x86/kvm/mmu/spte.c         |   7 +
+ arch/x86/kvm/mmu/spte.h         |   1 +
+ arch/x86/kvm/mmu/tdp_mmu.h      |   7 +-
+ 7 files changed, 179 insertions(+), 350 deletions(-)
 
-It also worked if I added EPOLLET to the epoll_event. It did not work if
-I removed POLLIN from the pollfd event.
+-- 
+2.19.1.6.gb485710b
 
-Maybe I'm missing some subtlety. But what exactly is broken? (Either
-way, it doesn't change the (a) vs (c) calculus in my previous email.)
-
-Jason
