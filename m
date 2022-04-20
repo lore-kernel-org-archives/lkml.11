@@ -2,34 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D557C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381754AbiDTTZu (ORCPT
+        id S1381759AbiDTT0A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 15:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        Wed, 20 Apr 2022 15:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353878AbiDTTZs (ORCPT
+        with ESMTP id S1381756AbiDTTZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 15:25:48 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E0AB3DA46
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:23:01 -0700 (PDT)
+        Wed, 20 Apr 2022 15:25:56 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6903F45AE6;
+        Wed, 20 Apr 2022 12:23:09 -0700 (PDT)
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id D994192009C; Wed, 20 Apr 2022 21:22:59 +0200 (CEST)
+        id 2245092009D; Wed, 20 Apr 2022 21:23:08 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id D24CE92009B;
-        Wed, 20 Apr 2022 20:22:59 +0100 (BST)
-Date:   Wed, 20 Apr 2022 20:22:59 +0100 (BST)
+        by angie.orcam.me.uk (Postfix) with ESMTP id 1BAFC92009C;
+        Wed, 20 Apr 2022 20:23:08 +0100 (BST)
+Date:   Wed, 20 Apr 2022 20:23:08 +0100 (BST)
 From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Jean Delvare <jdelvare@suse.com>
-cc:     linux-kernel@vger.kernel.org
-Subject: [PING^6][PATCH 0/2] firmware: dmi: Avoid (some) empty names in kernel
- log
-In-Reply-To: <alpine.DEB.2.21.2201020127140.56863@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2204202019380.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2201020127140.56863@angie.orcam.me.uk>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+cc:     Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>,
+        David Abdurachmanov <david.abdurachmanov@sifive.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PING^2][PATCH v4] pci: Work around ASMedia ASM2824 PCIe link training
+ failures
+In-Reply-To: <alpine.DEB.2.21.2203310037480.44113@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2204202021100.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2203310037480.44113@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -37,12 +39,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2 Jan 2022, Maciej W. Rozycki wrote:
+On Thu, 31 Mar 2022, Maciej W. Rozycki wrote:
 
->  Resending as this has gone into void.  Original patches still apply in 
-> their original form at the same respective lines.
+> Attempt to handle cases with a downstream port of the ASMedia ASM2824 
+> PCIe switch where link training never completes and the link continues 
+> switching between speeds indefinitely with the data link layer never 
+> reaching the active state.
 
  Ping for:
-<https://lore.kernel.org/lkml/alpine.DEB.2.21.2201020127140.56863@angie.orcam.me.uk/>.
+<https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310037480.44113@angie.orcam.me.uk/>
 
   Maciej
