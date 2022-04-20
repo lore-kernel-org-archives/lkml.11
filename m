@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA95C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378689AbiDTNC5 (ORCPT
+        id S1378701AbiDTNDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        Wed, 20 Apr 2022 09:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353465AbiDTNCw (ORCPT
+        with ESMTP id S1353867AbiDTNCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Apr 2022 09:02:52 -0400
 Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A112313E8F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A139813EB8;
         Wed, 20 Apr 2022 06:00:05 -0700 (PDT)
 Received: from localhost.localdomain (36-229-224-240.dynamic-ip.hinet.net [36.229.224.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 73B6A3FA13;
-        Wed, 20 Apr 2022 12:41:07 +0000 (UTC)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id AE6313F151;
+        Wed, 20 Apr 2022 12:41:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1650458471;
-        bh=IuGCtf3zsB/O4RdOMcLBokmiioeblM6BUDmAgq58MJg=;
+        s=20210705; t=1650458481;
+        bh=VntAryp7pHS3IpGhF1ep2QtdusC6JspGmTfDst4i0T0=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=muLIKpoXBwJKSydkivyRZuCnkKzuV8fu+vL1nKSK5mcu0Vy1xZr0/ve2M3OrxkTTj
-         zMPerWxBgytunUxAT6t05LFZI6CAQJEJGWawlW7VUSInDb/HjCHx2defOP5MqGVAhk
-         +rHf7Mz1NDDk1JLnJAO2bs77Cmi4srGXJaZnRHg4yINLnB6mHlFHxgp9nSeThlYp37
-         wZeaOwfA9aNDnAiu832x9ORIwdc0w/5SOL9ktByRKWC4B9s677nAfQlVj0CTz1itGp
-         +8okbfi7tWECHrZqsMt/vLmJclKGhMIegl4q/l0Gk652iDInsLg/REDO7+9THcIebZ
-         G+MQdgVfizhgw==
+        b=Bcq9fWIS45Ke4/bGsBi2ya90q7vx4PUBxQ0Rb2jKYjZK2ysKAu+z08ubBuQ7nd7tU
+         /zToGHu9RMwbv572gaa6c3ynEDBAW+0iNCR5n8t6UYTx1voSItZt+nshR8/vNDA6My
+         Pt9+p0yfFCla4Xcln9vGb50Gyty0E76uQeqQJApZeT6aHN3Q8zd0mwkptA0h/XZdSK
+         ifDgSlzASR9navM2IbkumU7ixyGMy2Tl1J3z5Aozj0dz+nOdvQdrn3WU98YHG0vn0r
+         1Dokb624F+D2nJfJD0ztHQKTlhm9KRiw+RpydmvAaR8v1QU7cQFCAptn19+4C8+m4h
+         rvoZy4fntC2Ng==
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
@@ -40,9 +40,9 @@ To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         pabeni@redhat.com
 Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] net: mdio: Mask PHY only when its ACPI node is present
-Date:   Wed, 20 Apr 2022 20:40:48 +0800
-Message-Id: <20220420124053.853891-2-kai.heng.feng@canonical.com>
+Subject: [PATCH 3/5] net: phy: Add helpers to save and restore firmware LED
+Date:   Wed, 20 Apr 2022 20:40:50 +0800
+Message-Id: <20220420124053.853891-4-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220420124053.853891-1-kai.heng.feng@canonical.com>
 References: <20220420124053.853891-1-kai.heng.feng@canonical.com>
@@ -52,38 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Not all PHY has an ACPI node, for those nodes auto probing is still
-needed.
+PHY drivers may set hardcoded LED config in phy_init_hw(), so to
+preserve the firmware LED after init or system sleep, it needs to be
+saved before init and be restored after.
 
-So only mask those PHYs with ACPI nodes.
+To do so, create helpers and driver callbacks to access and save LED
+config for the need.
 
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- drivers/net/mdio/acpi_mdio.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/phy/phy_device.c | 22 ++++++++++++++++++++++
+ include/linux/phy.h          |  4 ++++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/drivers/net/mdio/acpi_mdio.c b/drivers/net/mdio/acpi_mdio.c
-index d77c987fda9cd..f9369319ada19 100644
---- a/drivers/net/mdio/acpi_mdio.c
-+++ b/drivers/net/mdio/acpi_mdio.c
-@@ -33,8 +33,15 @@ int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
- 	u32 addr;
- 	int ret;
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 8406ac739def8..33b402279febe 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1154,6 +1154,24 @@ static int phy_poll_reset(struct phy_device *phydev)
+ 	return 0;
+ }
  
--	/* Mask out all PHYs from auto probing. */
--	mdio->phy_mask = GENMASK(31, 0);
-+	/* Loop over the child nodes and mask out PHY from auto probing */
-+	fwnode_for_each_child_node(fwnode, child) {
-+		ret = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &addr);
-+		if (ret || addr >= PHY_MAX_ADDR)
-+			continue;
++static void phy_save_led(struct phy_device *phydev)
++{
++	if (!phydev->use_firmware_led)
++		return;
 +
-+		mdio->phy_mask |= BIT(addr);
-+	}
++	if (phydev->drv->get_led_config)
++		phydev->led_config = phydev->drv->get_led_config(phydev);
++}
 +
- 	ret = mdiobus_register(mdio);
- 	if (ret)
- 		return ret;
++static void phy_restore_led(struct phy_device *phydev)
++{
++	if (!phydev->use_firmware_led)
++		return;
++
++	if (phydev->drv->set_led_config && phydev->led_config)
++		phydev->drv->set_led_config(phydev, phydev->led_config);
++}
++
+ int phy_init_hw(struct phy_device *phydev)
+ {
+ 	int ret = 0;
+@@ -1463,6 +1481,8 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 	if (dev)
+ 		netif_carrier_off(phydev->attached_dev);
+ 
++	phy_save_led(phydev);
++
+ 	/* Do initial configuration here, now that
+ 	 * we have certain key parameters
+ 	 * (dev_flags and interface)
+@@ -1803,6 +1823,8 @@ int __phy_resume(struct phy_device *phydev)
+ 	if (!ret)
+ 		phydev->suspended = false;
+ 
++	phy_restore_led(phydev);
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL(__phy_resume);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 53e693b3430ec..cd9c05ff75ee1 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -657,6 +657,7 @@ struct phy_device {
+ 	u32 eee_broken_modes;
+ 
+ 	bool use_firmware_led;
++	int led_config;
+ #ifdef CONFIG_LED_TRIGGER_PHY
+ 	struct phy_led_trigger *phy_led_triggers;
+ 	unsigned int phy_num_led_triggers;
+@@ -933,6 +934,9 @@ struct phy_driver {
+ 	int (*get_sqi)(struct phy_device *dev);
+ 	/** @get_sqi_max: Get the maximum signal quality indication */
+ 	int (*get_sqi_max)(struct phy_device *dev);
++
++	int (*get_led_config)(struct phy_device *dev);
++	void (*set_led_config)(struct phy_device *dev, int led_config);
+ };
+ #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+ 				      struct phy_driver, mdiodrv)
 -- 
 2.34.1
 
