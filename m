@@ -2,94 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E19FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379157AbiDTNtf (ORCPT
+        id S1376677AbiDTNug (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        Wed, 20 Apr 2022 09:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376677AbiDTNte (ORCPT
+        with ESMTP id S1350241AbiDTNue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:49:34 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5123BBD7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:46:47 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id x80so1994216pfc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:46:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=q6jrkZFlCbwn0WTvEVs0btNJ3ts6C00LvQRtxh2AOjE=;
-        b=DPZDNn9sPB8FUXiCbQR8I5Tb2hCJdcWYPSTUnivCRb+iBRy5aKJvOxdYXzwyAbyuw+
-         q2xTmlz38+4CW7dNvBdxku+UmYgu/sJtNfsoVCgjPjHm/pOs80TmckFLvB/DRQv++AIQ
-         tKLB1JkYGNVSE1vEVAqroOsTo/aCdpuaCtDzDKp+e4mUHQqm71wNu8+HoC4c3/BvonoK
-         uQIDV0XYEmM3jalKUW7A2S8fZDA9uUQBMt8Jk1WLAaLO7zrpfm7PNDiifZ+pq1oTSuaa
-         XJN2utWzmD/F5BdJGqFxaB+cONpwsWUIjBjla1dakkFxCNWpiH1MWjWK0fyYUxMLt5Ma
-         T4PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=q6jrkZFlCbwn0WTvEVs0btNJ3ts6C00LvQRtxh2AOjE=;
-        b=2XWsTS9jSAMaJxWYHgP4dYldFVK3Z3ukAqKqJsw+IZ2jNvlR7odwTy6dptMT7TWGqy
-         PCh2B61ktcmENwMSbxFyaK4nMth9nAWBPsil3EOh7zvFnqIqoGfK371d9+dfvsaFwgu5
-         rt6lf6ShdVDO0+pCUqSBu8D+/hyH2JHR0VAMrw7/GJfFDgEjIkBUbnCVr+fNVnfM946y
-         8qpCIDMFx6HIubOEo7CQOFPSwITWEsXCmBUQUXUroIaTFkrG+5DmT+uOpaUwIDdyfU8o
-         VFZ01fR+H8lccLMg90DrO+q8e/qeOyQGrF5bv8e0OyJpdvADyo7sDKx/ztljNb2NL0/H
-         /4SA==
-X-Gm-Message-State: AOAM530flc/PjXsPp6SZ1sqmyXgOdB+KKqr8pB4Kk3o3HI0lDGM3f3tu
-        u3AW4GgNg/m6G5I3hkfL2QU=
-X-Google-Smtp-Source: ABdhPJyvRpVgkmJHIJdX4ski3xEdOk/1vExt5dfNhj+zxHR/wDP4IVTdMND8YtovToQ0YOxhDZTipw==
-X-Received: by 2002:a63:2d4:0:b0:3aa:7a8b:25ba with SMTP id 203-20020a6302d4000000b003aa7a8b25bamr969322pgc.251.1650462407068;
-        Wed, 20 Apr 2022 06:46:47 -0700 (PDT)
-Received: from [172.16.10.243] ([106.39.150.10])
-        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b004fe3d6c1731sm20222786pfo.175.2022.04.20.06.45.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 06:46:46 -0700 (PDT)
-Message-ID: <7d99fb81-d799-8785-8fe4-44772e26408a@gmail.com>
-Date:   Wed, 20 Apr 2022 21:45:27 +0800
+        Wed, 20 Apr 2022 09:50:34 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAB5366AD
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:47:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1650462467; x=1681998467;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sUJroFoXBzmcyruFohmRbLRJI63W9ZiOK3L36C2txXM=;
+  b=Cy52VSuH91NrluMqbiT/22uDa0fTBrkj2cbzWyS7qC/03+iuVM4YxfeJ
+   vINUi9ft6GZkfNBONhmGur0yeHyYu2AOMKDWjbTzmxAkcZ1Be3pv9C2Zc
+   XtGM7DmrLO/A+S5f61X6y9JqpOvJHnfKektq30y81FLge177e6gmYTxIu
+   epK9/YU6Lq5hFkMcdtHVyCQi5IdgqxnbgWPMWCElw4pCmSMQmKKLh08+5
+   SuiIJUVAhNFy0lacZQY9XchYRm8GEmCnGuY/RSbdZT4a06lhABAlm4jqd
+   8xgJzsZWHJJaXEOJkqxDoDprZtU05YrWl6P5cBL8W8qxvITN56f/sflVO
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,275,1643698800"; 
+   d="scan'208";a="92962328"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2022 06:47:46 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 20 Apr 2022 06:47:46 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 20 Apr 2022 06:47:43 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <alexandre.belloni@bootlin.com>
+CC:     <codrin.ciubotariu@microchip.com>, <eugen.hristev@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Tudor Ambarus" <tudor.ambarus@microchip.com>
+Subject: [PATCH 1/3] ARM: configs: at91: Remove MTD_BLOCK and use MTD_UBI_BLOCK for read only block FS
+Date:   Wed, 20 Apr 2022 16:47:38 +0300
+Message-ID: <20220420134740.193563-1-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] ASoC: fsl: Fix error handling in pcm030_fabric_probe
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-References: <Yh90u+E3RTuGEDWU@sirena.org.uk>
- <20220420021855.8224-1-linmq006@gmail.com> <YmAD6MIuKdjgm7Yu@sirena.org.uk>
- <4e3309d9-879f-3385-3e8e-0fa1a31ddd9a@gmail.com>
- <YmANgcO9BMxp8PLC@sirena.org.uk>
-From:   Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <YmANgcO9BMxp8PLC@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Using mtdblock on raw flashes is generally a bad idea as it lacks
+wear-leveling, bad block handling or power-cut management.
+What happens when you use mtdblock and you change any sector of your
+mtdblockX device, is that it reads the whole corresponding eraseblock into
+the memory, erases the eraseblock, changes the sector in RAM, and writes
+the whole eraseblock back. If you have a power failure when the eraseblock
+is being erased, you lose all the block device sectors in it. The flash
+will likely decay soon because the eraseblocks will wear out.
 
-On 2022/4/20 21:41, Mark Brown wrote:
-> On Wed, Apr 20, 2022 at 09:35:55PM +0800, Miaoqian Lin wrote:
->> On 2022/4/20 21:00, Mark Brown wrote:
->>>> - rebase on top of commit 559089e0a93d ("vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP")
->>> Why rebase on top of that seemingly random commit?  Is there some sort
->>> of dependency here?
->> Hi, it the head of master in when I made this patch. It's because you pointed out
->> that patch v1 doesn't apply against current code. But I am not sure what's the problem.
->> So I ensure the codebase is up-to-date. If this patch have no conflict, you can ignore it.
-> Current code here is my git tree (-next is often a fair approximation) -
-> if people have been making changes since the merge window then often
-> code written against mainline won't apply and things need to be based on
-> people's current work.  You're looking for
->
->    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Remove this archaic tool as its use case should rather be only for debug
+purposes. This means that write-capable block file systems like ext2,
+ext3, FAT, etc. will no longer be addressed with at91 defconfigs. For
+read only block filesystems like SquashFS, use MTD_UBI_BLOCK instead and
+benefit of UBI's bit-flip handling and wear-levelling.
 
-I get it, thanks for your kindly reminder.
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+---
+ arch/arm/configs/at91_dt_defconfig | 2 +-
+ arch/arm/configs/sama5_defconfig   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/configs/at91_dt_defconfig b/arch/arm/configs/at91_dt_defconfig
+index 549d01be0b47..cf79510631ea 100644
+--- a/arch/arm/configs/at91_dt_defconfig
++++ b/arch/arm/configs/at91_dt_defconfig
+@@ -50,13 +50,13 @@ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_MTD=y
+ CONFIG_MTD_TESTS=m
+ CONFIG_MTD_CMDLINE_PARTS=y
+-CONFIG_MTD_BLOCK=y
+ CONFIG_MTD_DATAFLASH=y
+ CONFIG_MTD_RAW_NAND=y
+ CONFIG_MTD_NAND_ATMEL=y
+ CONFIG_MTD_SPI_NOR=y
+ CONFIG_MTD_UBI=y
+ CONFIG_MTD_UBI_FASTMAP=y
++CONFIG_MTD_UBI_BLOCK=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_RAM=y
+ CONFIG_BLK_DEV_RAM_COUNT=4
+diff --git a/arch/arm/configs/sama5_defconfig b/arch/arm/configs/sama5_defconfig
+index 03dd80c2a19e..1c4c5a035518 100644
+--- a/arch/arm/configs/sama5_defconfig
++++ b/arch/arm/configs/sama5_defconfig
+@@ -57,13 +57,13 @@ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_MTD=y
+ CONFIG_MTD_TESTS=m
+ CONFIG_MTD_CMDLINE_PARTS=y
+-CONFIG_MTD_BLOCK=y
+ CONFIG_MTD_CFI=y
+ CONFIG_MTD_RAW_NAND=y
+ CONFIG_MTD_NAND_ATMEL=y
+ CONFIG_MTD_SPI_NOR=y
+ CONFIG_MTD_UBI=y
+ CONFIG_MTD_UBI_FASTMAP=y
++CONFIG_MTD_UBI_BLOCK=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_RAM=y
+ CONFIG_BLK_DEV_RAM_COUNT=4
+-- 
+2.25.1
 
