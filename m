@@ -2,120 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D82DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8550C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380783AbiDTQzA (ORCPT
+        id S1380795AbiDTQ4f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
+        Wed, 20 Apr 2022 12:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234342AbiDTQy5 (ORCPT
+        with ESMTP id S234342AbiDTQ4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:54:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEFB3E0CD;
-        Wed, 20 Apr 2022 09:52:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 20DE3CE1F35;
-        Wed, 20 Apr 2022 16:52:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11BE9C385A1;
-        Wed, 20 Apr 2022 16:52:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650473527;
-        bh=FC490u1W61U7N1WZsU8ZxxqqwdjaPJpwQjP4Ffy5Dec=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VFfeqOvEoJa7DizXqbls1AKo0ueBd7D3h+OuaL+6LTQJFam8KtYRqkFcuYlbVKKs3
-         Nsmg6ZJKnI0dnNOTTNTPgN3OBLub9EknOVzRW+i6Yjh5kuuQjapnVNfx+PbEF+bh/e
-         RYxC4ITKgYEfkW1W7YhLNGi3EKI6jocd7W9sb+Ztxs7jAYa22Uu9TJOgLg8mxxiqOZ
-         102SepDDEHCtoEUJAD6/U9Mici9D056Bk+ocpQl73kvk90lsMYrr8KQQYBKjYGQSES
-         28VViaWhWCpfKX73xWb7RKu4jV4tXiO+5C/gPR+Cdykt4+KI2N/wJBcrsRSw/AtI8H
-         w//6zUTAkBI/A==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 54752400B1; Wed, 20 Apr 2022 13:52:03 -0300 (-03)
-Date:   Wed, 20 Apr 2022 13:52:03 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Thomas Richter <tmricht@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        chengdongli@tencent.com, adrian.hunter@intel.com,
-        svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com,
-        hca@linux.ibm.com
-Subject: Re: [PATCH] perf/test: test case 71 fails on s390
-Message-ID: <YmA6M8mM44Hvv/jI@kernel.org>
-References: <20220420062921.1211825-1-tmricht@linux.ibm.com>
+        Wed, 20 Apr 2022 12:56:31 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8FB3E5C4;
+        Wed, 20 Apr 2022 09:53:43 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id lc2so4733866ejb.12;
+        Wed, 20 Apr 2022 09:53:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Rfm74VEUMWZeXlpuLUyC+UQS6WldzCAHTX0ZUV4DSls=;
+        b=blpgcPwCTkxucUu2qZrWjwcq7sstE9xLRf5AbMMlxE8YZrJ0K0DNZxOq4mCHEiyIyZ
+         XdoMlOsuUf/eyx3g2tt7V7BIGpKZARWCyw1YovPsqhkocExAa58e2kNc0dv0QBaUvZTa
+         ObRRFqQ4FyNMmEiFGHCCqZyPP+x7gzFpMJbnyt2QOVwKfhkFb3cu+p9W2jcva0Vxo2JL
+         lO9F9NUmdDYZfFpt3wm6+UBs1MD6omwNrsa9yUtpOxuAmZ8f7zy3kfQpG3afpx91hIaT
+         XBh/sjnCyaTmpslP6liNlZldDuaPtD9AyVqE2rsH4dciA+m8PBxfVU+bGhG2acy4lRXn
+         OzIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Rfm74VEUMWZeXlpuLUyC+UQS6WldzCAHTX0ZUV4DSls=;
+        b=Ga428sQXnIt8y9TLN9dmCYe7YR4MYziCIzq3hq6bdMmKcZjyn51xtepg9cix9q1RA8
+         pkag3NnZqTrXRckXKQaAMxunTI6ms+d7r+DFWUXPYsFuoi7izJZpaDR5ftEtCEMKvCiX
+         MWlGxUl0BholX0v6rqAxngtSDTAtbsCfYcGs8S1+4lm+WunImFlqgcZ42noHAHKGByPU
+         y63dpo+dMTy5vkjtG5pEfJZSJoWtvrzTcaZCfaVBF1ZPHxU1KaYysuhW5jKs/FaIs6Et
+         a18e+jT6b9HcTy9Pv4Y22CVLcFlyp/hVNjrp7owktUwWiOedrtEZPS5XKE6l/fR7n2C8
+         e3yg==
+X-Gm-Message-State: AOAM533pMuWmFHM8YB4K9t2ki8U9RAy6SevE0cKDGC0pvkmwPvcvu2Ef
+        vET3Dw2uUYnREZoxJil+5dk=
+X-Google-Smtp-Source: ABdhPJxQ3uQH39NmcFzDqchDbenZC7Dj2C9W1dhPLDuReZA2QBfhi5bpkVEuZLM9fty7klo1viKK2g==
+X-Received: by 2002:a17:907:6d96:b0:6e8:d7d9:d573 with SMTP id sb22-20020a1709076d9600b006e8d7d9d573mr19276189ejc.90.1650473621788;
+        Wed, 20 Apr 2022 09:53:41 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id ee17-20020a056402291100b0041fe1e4e342sm10006539edb.27.2022.04.20.09.53.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 09:53:40 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Jaehee Park <jhpark1013@gmail.com>, Kalle Valo <kvalo@kernel.org>
+Cc:     =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, Stefano Brivio <sbrivio@redhat.com>
+Subject: Re: [PATCH] wfx: use container_of() to get vif
+Date:   Wed, 20 Apr 2022 18:53:39 +0200
+Message-ID: <2258432.bcXerOTE6V@leap>
+In-Reply-To: <87y200nf0a.fsf@kernel.org>
+References: <20220418035110.GA937332@jaehee-ThinkPad-X1-Extreme> <87y200nf0a.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420062921.1211825-1-tmricht@linux.ibm.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Apr 20, 2022 at 08:29:21AM +0200, Thomas Richter escreveu:
-> Test case 71 'Convert perf time to TSC' is not supported on s390.
-> Subtest 71.1 is skipped with the correct message, but
-> subtest 71.2 is not skipped and fails.
-> 
-> The root cause is function evlist__open() called from
-> test__perf_time_to_tsc().  evlist__open() returns -ENOENT because the
-> event cycles:u is not supported by the selected PMU, for example 
-> platform s390 on z/VM or an x86_64 virtual machine.
-> The PMU driver returns -ENOENT in this case. This error is leads to
-> the failure.
-> Fix this by returning TEST_SKIP on -ENOENT.
+On mercoled=C3=AC 20 aprile 2022 13:57:57 CEST Kalle Valo wrote:
+> Jaehee Park <jhpark1013@gmail.com> writes:
+>=20
+> > Currently, upon virtual interface creation, wfx_add_interface() stores
+> > a reference to the corresponding struct ieee80211_vif in private data,
+> > for later usage. This is not needed when using the container_of
+> > construct. This construct already has all the info it needs to retrieve
+> > the reference to the corresponding struct from the offset that is
+> > already available, inherent in container_of(), between its type and
+> > member inputs (struct ieee80211_vif and drv_priv, respectively).
+> > Remove vif (which was previously storing the reference to the struct
+> > ieee80211_vif) from the struct wfx_vif, define a function
+> > wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
+> > the newly defined container_of construct.
+> >
+> > Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+>=20
+> [...]
+>=20
+> > +static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
+> > +{
+> > +	return container_of((void *)wvif, struct ieee80211_vif,=20
+drv_priv);
+> > +}
+>=20
+> Why the void pointer cast? Avoid casts as much possible.
 
-Thanks, applied and tested it on x86_64, where it continues to work.
+In a previous email Jaehee wrote that she could compile her changes only by=
+=20
+using that "(void *)" cast.
 
-- Arnaldo
+I replied that probably this is a hint that something is broken, although=20
+my argument is not necessarily a "proof". Might very well be that this cast=
+=20
+was needed in this particular situation but I cannot see why.
 
- 
-> Output before:
->  71: Convert perf time to TSC:
->  71.1: TSC support:             Skip (This architecture does not support)
->  71.2: Perf time to TSC:        FAILED!
-> 
-> Output after:
->  71: Convert perf time to TSC:
->  71.1: TSC support:             Skip (This architecture does not support)
->  71.2: Perf time to TSC:        Skip (perf_read_tsc_conversion is not supported)
-> 
-> This also happens on an x86_64 virtual machine:
->    # uname -m
->    x86_64
->    $ ./perf test -F 71
->     71: Convert perf time to TSC  :
->     71.1: TSC support             : Ok
->     71.2: Perf time to TSC        : FAILED!
->    $ 
-> 
-> Fixes: 290fa68bdc45 ("perf test tsc: Fix error message when not supported")
-> Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-> Acked-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
-> ---
->  tools/perf/tests/perf-time-to-tsc.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
-> index cc6df49a65a1..4ad0dfbc8b21 100644
-> --- a/tools/perf/tests/perf-time-to-tsc.c
-> +++ b/tools/perf/tests/perf-time-to-tsc.c
-> @@ -123,6 +123,10 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
->  		evsel->core.attr.enable_on_exec = 0;
->  	}
->  
-> +	if (evlist__open(evlist) == -ENOENT) {
-> +		err = TEST_SKIP;
-> +		goto out_err;
-> +	}
->  	CHECK__(evlist__open(evlist));
->  
->  	CHECK__(evlist__mmap(evlist, UINT_MAX));
-> -- 
-> 2.35.1
+@Jaehee, please try to explain why this "(void *)" cast is actually=20
+necessary and why your changes cannot avoid it.
 
--- 
+Thanks,
 
-- Arnaldo
+=46abio M. De Francesco
+
+
+
