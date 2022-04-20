@@ -2,105 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380623AbiDTQfv (ORCPT
+        id S1380637AbiDTQgA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
+        Wed, 20 Apr 2022 12:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380628AbiDTQfq (ORCPT
+        with ESMTP id S1380629AbiDTQf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:35:46 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D3643EDC
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:32:54 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b58ed329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:58ed:329c:23ff:fea6:a903])
+        Wed, 20 Apr 2022 12:35:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5709045059;
+        Wed, 20 Apr 2022 09:33:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 631221EC0104;
-        Wed, 20 Apr 2022 18:32:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1650472367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9UyBlcyj9qmPmLqcx+Y9IVqbgazV7crvGV9M069W33g=;
-        b=kiEG+mOgRrJDs9kkDSzfs3HRsquiuc6o84iYCAbyH3h3FzrMTnqNZ0q6kk9yoTRfMqMzbK
-        07895Hkv4GbvryjlB/upmx0ALyblW2kpYs5XqVAGBic4V7EPHZTt75s6QLgHy/DDQbxxD9
-        fWf7k+nbG2V4scjKjixDxI6Kq+LQ/A8=
-Date:   Wed, 20 Apr 2022 18:32:43 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>,
-        =?utf-8?Q?J=C3=BCrgen?= Gross <jgross@suse.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH V5 5/7] x86/entry: Don't call error_entry() for XENPV
-Message-ID: <YmA1q3PyEEWmDtQy@zn.tnic>
-References: <20220412121541.4595-1-jiangshanlai@gmail.com>
- <20220412121541.4595-6-jiangshanlai@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2B6461A15;
+        Wed, 20 Apr 2022 16:33:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D66C385A0;
+        Wed, 20 Apr 2022 16:33:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650472389;
+        bh=wr6KymuokZiq5D+EA0KfoyTNbKFzF4PNNrn62/cCrPE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mXbZZuE7srfXYXLTVeq34k2nN2rLZ277bSG+ipX5oi4lNxHIf9GlRETphFHHdF7Rz
+         ut4E/hh+qS3eTqb2IW39fxbVo7LWJr7eUGVgTFn+AdK6W9PeBbyluLWVFvm2zwl4oG
+         MjZVnZM7S4R+/xCHNDFESDAyYc56jx9gM8by4CNtArOWEbctFYDU8FkC9760MnOl1v
+         UrOHvwChWyEQW/5wAss1SzzoYqpR4EqcVwffzWdNUINLYl9Wm1hQgMCUrs31K/Dgol
+         HVx/wRBHbtWZCtKe69Xj3RbxDHpfInvawiImXdzwEcc6v6mPKkWKUg7P4hPgMl4bFe
+         ipnf81Wu9kvxg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 2A438400B1; Wed, 20 Apr 2022 13:33:06 -0300 (-03)
+Date:   Wed, 20 Apr 2022 13:33:06 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Martin =?utf-8?B?TGnFoWth?= <mliska@suse.cz>
+Cc:     gcc-patches@gcc.gnu.org, linux-perf-users@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] Add HAVE_DEBUGINFOD_SUPPORT to built-in features.
+Message-ID: <YmA1wvsHjKyjK6Mg@kernel.org>
+References: <0d1c5ace-88e8-7102-1565-7c143f01a966@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220412121541.4595-6-jiangshanlai@gmail.com>
+In-Reply-To: <0d1c5ace-88e8-7102-1565-7c143f01a966@suse.cz>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 08:15:39PM +0800, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Em Wed, Apr 20, 2022 at 01:30:09PM +0200, Martin Liška escreveu:
+> The change adds debuginfod to ./perf -vv:
 > 
-> When in XENPV, it is already in the task stack, and it can't fault for
-> native_iret() nor native_load_gs_index() since XENPV uses its own pvops
-> for IRET and load_gs_index().  And it doesn't need to switch the CR3.
-> 
-> So there is no reason to call error_entry() in XENPV.
-> 
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> ---
->  arch/x86/entry/entry_64.S | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-> index 7b6a0f15bb20..3aca7815fe79 100644
-> --- a/arch/x86/entry/entry_64.S
-> +++ b/arch/x86/entry/entry_64.S
-> @@ -328,8 +328,17 @@ SYM_CODE_END(ret_from_fork)
->  	PUSH_AND_CLEAR_REGS
->  	ENCODE_FRAME_POINTER
->  
-> -	call	error_entry
-> -	movq	%rax, %rsp			/* switch to the task stack if from userspace */
-> +	/*
-> +	 * Call error_entry() and switch to the task stack if from userspace.
-> +	 *
-> +	 * When in XENPV, it is already in the task stack, and it can't fault
-> +	 * for native_iret() nor native_load_gs_index() since XENPV uses its
-> +	 * own pvops for IRET and load_gs_index().  And it doesn't need to
-> +	 * switch the CR3.  So it can skip invoking error_entry().
-> +	 */
-> +	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
-> +		"", X86_FEATURE_XENPV
-> +
->  	ENCODE_FRAME_POINTER
->  	UNWIND_HINT_REGS
->  
-> -- 
+> ...
+> debuginfod: [ OFF ]  # HAVE_DEBUGINFOD_SUPPORT
+> ...
 
-This one needs Jürgen. CCed.
+Thanks, applied.
+
+- Arnaldo
+
+ 
+> Signed-off-by: Martin Liska <mliska@suse.cz>
+> ---
+>  tools/perf/builtin-version.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/perf/builtin-version.c b/tools/perf/builtin-version.c
+> index 9cd074a3d825..a71f491224da 100644
+> --- a/tools/perf/builtin-version.c
+> +++ b/tools/perf/builtin-version.c
+> @@ -65,6 +65,7 @@ static void library_status(void)
+>  #endif
+>  	STATUS(HAVE_SYSCALL_TABLE_SUPPORT, syscall_table);
+>  	STATUS(HAVE_LIBBFD_SUPPORT, libbfd);
+> +	STATUS(HAVE_DEBUGINFOD_SUPPORT, debuginfod);
+>  	STATUS(HAVE_LIBELF_SUPPORT, libelf);
+>  	STATUS(HAVE_LIBNUMA_SUPPORT, libnuma);
+>  	STATUS(HAVE_LIBNUMA_SUPPORT, numa_num_possible_cpus);
+> -- 
+> 2.35.3
 
 -- 
-Regards/Gruss,
-    Boris.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+- Arnaldo
