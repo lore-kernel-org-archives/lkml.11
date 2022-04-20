@@ -2,169 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56873C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF46AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379852AbiDTOsK (ORCPT
+        id S1354257AbiDTOtt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        Wed, 20 Apr 2022 10:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379785AbiDTOrj (ORCPT
+        with ESMTP id S242167AbiDTOts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:47:39 -0400
+        Wed, 20 Apr 2022 10:49:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834D9240;
-        Wed, 20 Apr 2022 07:44:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94AA6391;
+        Wed, 20 Apr 2022 07:46:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F371E6176C;
-        Wed, 20 Apr 2022 14:44:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EEC5C385A0;
-        Wed, 20 Apr 2022 14:44:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650465891;
-        bh=uhUfyEvMq+wqDi6kDMjqVy2PHOt/CvPeNGoHGdg5hr4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZIMXDq+kA8YeVTfqhw0qC4fqHVN56HMMHEaEDn/0GQjStW7aOmFByvOIvov2Ol4i
-         iNcGQL//4xEg3r+cQzmkB728AHYHF6CLTT8Dh3mMy38JFkme7CWoW9C8R7pOxj6y7h
-         6EJtlr0+9A0T2m1A44CeFYm75ovrK2R7uRCAdSKTc0V4tUydNNLJGTiMk9PPvgTfxB
-         5S/WU6AGyQnA8opiXLWGC/e0uv4COExuwGq5UPtN5QrwBb8H5ipK4vxBo4grNokhRz
-         U1A6NFo5X0liMzHZGeC8KDCml7sKqAnvt4lyofJjiYNgWMwj0gmIJX3NwX1mwhBRQ/
-         A37xq72Z0v1xA==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, arnd@arndb.de, palmer@dabbelt.com,
-        mark.rutland@arm.com, will@kernel.org, peterz@infradead.org,
-        boqun.feng@gmail.com, dlustig@nvidia.com, parri.andrea@gmail.com
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V3 5/5] riscv: atomic: Add conditional atomic operations' optimization
-Date:   Wed, 20 Apr 2022 22:44:17 +0800
-Message-Id: <20220420144417.2453958-6-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220420144417.2453958-1-guoren@kernel.org>
-References: <20220420144417.2453958-1-guoren@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BD2961755;
+        Wed, 20 Apr 2022 14:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60FF4C385A0;
+        Wed, 20 Apr 2022 14:46:58 +0000 (UTC)
+Date:   Wed, 20 Apr 2022 16:46:56 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
+        jmkrzyszt@gmail.com, Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 14/41] serial: 8250/omap1: include
+ linux/soc/ti/omap1-soc.h
+Message-ID: <YmAc4KTQbgJVT2GY@kroah.com>
+References: <20220419133723.1394715-1-arnd@kernel.org>
+ <20220419133723.1394715-15-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419133723.1394715-15-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Tue, Apr 19, 2022 at 03:36:56PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> As a preparation for cleaning up the omap1 headers, start
+> including linux/soc/ti/omap1-soc.h directly so we can
+> keep calling cpu_is_omap1510().
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Add conditional atomic operations' optimization:
- - arch_atomic_inc_unless_negative
- - arch_atomic_dec_unless_positive
- - arch_atomic64_inc_unless_negative
- - arch_atomic64_dec_unless_positive
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Andrea Parri <parri.andrea@gmail.com>
-Cc: Dan Lustig <dlustig@nvidia.com>
----
- arch/riscv/include/asm/atomic.h | 78 +++++++++++++++++++++++++++++++++
- 1 file changed, 78 insertions(+)
-
-diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
-index 5589e1de2c80..a62c5de71033 100644
---- a/arch/riscv/include/asm/atomic.h
-+++ b/arch/riscv/include/asm/atomic.h
-@@ -374,6 +374,44 @@ ATOMIC_OPS()
- #undef ATOMIC_OPS
- #undef ATOMIC_OP
- 
-+static __always_inline bool arch_atomic_inc_unless_negative(atomic_t *v)
-+{
-+	int prev, rc;
-+
-+	__asm__ __volatile__ (
-+		"0:	lr.w      %[p],  %[c]\n"
-+		"	bltz      %[p],  1f\n"
-+		"	addi      %[rc], %[p], 1\n"
-+		"	sc.w.aqrl %[rc], %[rc], %[c]\n"
-+		"	bnez      %[rc], 0b\n"
-+		"1:\n"
-+		: [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-+		:
-+		: "memory");
-+	return !(prev < 0);
-+}
-+
-+#define arch_atomic_inc_unless_negative arch_atomic_inc_unless_negative
-+
-+static __always_inline bool arch_atomic_dec_unless_positive(atomic_t *v)
-+{
-+	int prev, rc;
-+
-+	__asm__ __volatile__ (
-+		"0:	lr.w      %[p],  %[c]\n"
-+		"	bgtz      %[p],  1f\n"
-+		"	addi      %[rc], %[p], -1\n"
-+		"	sc.w.aqrl %[rc], %[rc], %[c]\n"
-+		"	bnez      %[rc], 0b\n"
-+		"1:\n"
-+		: [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-+		:
-+		: "memory");
-+	return !(prev > 0);
-+}
-+
-+#define arch_atomic_dec_unless_positive arch_atomic_dec_unless_positive
-+
- static __always_inline int arch_atomic_dec_if_positive(atomic_t *v)
- {
-        int prev, rc;
-@@ -394,6 +432,46 @@ static __always_inline int arch_atomic_dec_if_positive(atomic_t *v)
- #define arch_atomic_dec_if_positive arch_atomic_dec_if_positive
- 
- #ifndef CONFIG_GENERIC_ATOMIC64
-+static __always_inline bool arch_atomic64_inc_unless_negative(atomic64_t *v)
-+{
-+	s64 prev;
-+	long rc;
-+
-+	__asm__ __volatile__ (
-+		"0:	lr.d      %[p],  %[c]\n"
-+		"	bltz      %[p],  1f\n"
-+		"	addi      %[rc], %[p], 1\n"
-+		"	sc.d.aqrl %[rc], %[rc], %[c]\n"
-+		"	bnez      %[rc], 0b\n"
-+		"1:\n"
-+		: [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-+		:
-+		: "memory");
-+	return !(prev < 0);
-+}
-+
-+#define arch_atomic64_inc_unless_negative arch_atomic64_inc_unless_negative
-+
-+static __always_inline bool arch_atomic64_dec_unless_positive(atomic64_t *v)
-+{
-+	s64 prev;
-+	long rc;
-+
-+	__asm__ __volatile__ (
-+		"0:	lr.d      %[p],  %[c]\n"
-+		"	bgtz      %[p],  1f\n"
-+		"	addi      %[rc], %[p], -1\n"
-+		"	sc.d.aqrl %[rc], %[rc], %[c]\n"
-+		"	bnez      %[rc], 0b\n"
-+		"1:\n"
-+		: [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-+		:
-+		: "memory");
-+	return !(prev > 0);
-+}
-+
-+#define arch_atomic64_dec_unless_positive arch_atomic64_dec_unless_positive
-+
- static __always_inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
- {
-        s64 prev;
--- 
-2.25.1
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
