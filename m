@@ -2,76 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAFDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 22:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA79C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 22:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353504AbiDTWP2 (ORCPT
+        id S1352014AbiDTWQ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 18:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        Wed, 20 Apr 2022 18:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355967AbiDTWO5 (ORCPT
+        with ESMTP id S229731AbiDTWQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 18:14:57 -0400
-Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671B248E68
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 15:11:49 -0700 (PDT)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4KkFJD0kZCz1r0PY;
-        Thu, 21 Apr 2022 00:11:40 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4KkFJC5Cqvz1qqkB;
-        Thu, 21 Apr 2022 00:11:39 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id 3mtlwbvpiYJD; Thu, 21 Apr 2022 00:11:38 +0200 (CEST)
-X-Auth-Info: 8HbkyrIVus8sGoHUetusB0Obnv7jg/sLKvDsDI9Z4rWZKW80iKNKFlX3jwZgpAnd
-Received: from igel.home (ppp-46-244-167-235.dynamic.mnet-online.de [46.244.167.235])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 21 Apr 2022 00:11:38 +0200 (CEST)
-Received: by igel.home (Postfix, from userid 1000)
-        id B225C2C3AC9; Thu, 21 Apr 2022 00:11:37 +0200 (CEST)
-From:   Andreas Schwab <schwab@linux-m68k.org>
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     linux-riscv@lists.infradead.org, rdunlap@infradead.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        anup@brainfault.org, vincent.chen@sifive.com, guoren@kernel.org,
-        Atish Patra <atishp@rivosinc.com>,
-        alexandre.ghiti@canonical.com, jszhang@kernel.org,
-        vitaly.wool@konsulko.com, gatecat@ds0.me,
-        wangkefeng.wang@huawei.com, mick@ics.forth.gr,
-        panqinglin2020@iscas.ac.cn, rppt@kernel.org,
-        linux-kernel@vger.kernel.org, linux@rivosinc.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 1/4] RISC-V: Avoid empty create_*_mapping definitions
-References: <20220420184056.7886-1-palmer@rivosinc.com>
-        <20220420184056.7886-2-palmer@rivosinc.com>
-X-Yow:  If I am elected, the concrete barriers around the WHITE HOUSE
- will be replaced by tasteful foam replicas of ANN MARGARET!
-Date:   Thu, 21 Apr 2022 00:11:37 +0200
-In-Reply-To: <20220420184056.7886-2-palmer@rivosinc.com> (Palmer Dabbelt's
-        message of "Wed, 20 Apr 2022 11:40:53 -0700")
-Message-ID: <87a6cfh0bq.fsf@igel.home>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
+        Wed, 20 Apr 2022 18:16:55 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086CB20BD4;
+        Wed, 20 Apr 2022 15:14:06 -0700 (PDT)
+Received: (Authenticated sender: joao@overdrivepizza.com)
+        by mail.gandi.net (Postfix) with ESMTPA id 88149100004;
+        Wed, 20 Apr 2022 22:14:02 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain
+Date:   Wed, 20 Apr 2022 15:14:02 -0700
+From:   Joao Moreira <joao@overdrivepizza.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        peterz@infradead.org, jpoimboe@redhat.com,
+        andrew.cooper3@citrix.com, samitolvanen@google.com,
+        mark.rutland@arm.com, hjl.tools@gmail.com,
+        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
+        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
+Subject: Re: [RFC PATCH 10/11] linux/interrupt: Fix prototype matching
+ property
+In-Reply-To: <202204191942.3C273AB@keescook>
+References: <20220420004241.2093-1-joao@overdrivepizza.com>
+ <20220420004241.2093-11-joao@overdrivepizza.com>
+ <202204191942.3C273AB@keescook>
+Message-ID: <2d7e424f13682295f655faf9b8c8f1cf@overdrivepizza.com>
+X-Sender: joao@overdrivepizza.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Apr 20 2022, Palmer Dabbelt wrote:
+>> Fix this CFI policy violation by removing the function pointer union 
+>> in
+>> the tasklet struct.
+> 
+> The good news is that tasklet is on the way out the door[1], so this 
+> may
+> quickly become a non-issue, but also to that end, this fix is hardly a
+> problem for a deprecated API...
 
-> (create_pmd_mpping() ends up skipped on XIP_KERNEL).
+You are right, sorry for the noise. I looked a bit further and the 
+problem I saw was actually caused by a compiler bug fusing similar 
+instructions/basic blocks. It was fixed when I later stumbled on the 
+problem again and added the following lines (668 and 669 in 
+llvm/lib/CodeGen/MachineInstr.cpp) to the compiler, but without properly 
+realizing what was actually behind the previous issue. Hopefully this is 
+at least a good heads-up about possible pitfalls to other people (@Sami) 
+implementing CFI in the compiler.
 
-Does it?  There is always the semicolon left as the body of the
-conditional (which is why you get the empty-body warning in the first
-place).
-
--- 
-Andreas Schwab, schwab@linux-m68k.org
-GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
-"And now for something completely different."
+https://github.com/lvwr/llvm-project/commit/0a22ca42877fd156ce95145b11f29c642092dbb7#diff-92843a1f037a9a1e56f92242c4e1746a1166a6b7044ad47a0b4fd2f4b1c6a359R668-R669
