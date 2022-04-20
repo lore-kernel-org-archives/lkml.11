@@ -2,87 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F58AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 01:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00742C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 01:27:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345037AbiDTB3a (ORCPT
+        id S1346200AbiDTBag (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 21:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
+        Tue, 19 Apr 2022 21:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbiDTB33 (ORCPT
+        with ESMTP id S232010AbiDTBae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 21:29:29 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378AD23BC4;
-        Tue, 19 Apr 2022 18:26:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650418005; x=1681954005;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mbBwslPLaoBfylvW/dhJ1OLBSlP7qYZg3Cvd31qjORE=;
-  b=CGW8trYZ7koQ47kn2LlAg7TkxqunsCuFhU7JYFAjDdaBz3in7He7YYGz
-   GfOlp5+lHQFlk7N5slDxiYDdAxRp63TkJ3qY9FEpw4YlnMnzjCaZDCS7v
-   JZK41CI20P4OcnG+l7T9NLi4Aj9nmjGmO34zstVUtvjgdhgCnxM85BdDq
-   +nLSwP4XsnxvX66ICG+Qug2ELP6OMSThtW9I5szLe1dnx/GvRUESjIKCA
-   LWwTwJyAtTMCqvxFYUcXYTpuG/oV1aFqS6ZrxPxm2ECY3NEnwGI2B2wU+
-   fAg4sn9OO2E1qpsXkqBx2Y10KqpM8lyNqnjqRejlxypsFR6umooMUV2RA
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="244495224"
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="244495224"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 18:26:44 -0700
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="561918375"
-Received: from ktuv-desk2.amr.corp.intel.com (HELO [10.212.227.192]) ([10.212.227.192])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 18:26:43 -0700
-Message-ID: <dd4a2b16-397e-8866-0fd5-b5c5dfd453ab@linux.intel.com>
-Date:   Tue, 19 Apr 2022 18:26:43 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
- attestation interface driver
-Content-Language: en-US
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20220420012032.GA2224031@ls.amr.corp.intel.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20220420012032.GA2224031@ls.amr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 19 Apr 2022 21:30:34 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B350524969;
+        Tue, 19 Apr 2022 18:27:49 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id 12so459220oix.12;
+        Tue, 19 Apr 2022 18:27:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6RZt3pRY2aKwzYWHycI06GL3k6VJx2KQpfieK912YU8=;
+        b=B+cxRY9FhW3qdrJo5zcX6sM27c423HY/NsSxFAgyuclMXAJFwQK1KTll69IMEU19Su
+         20uLodQmfsoLbbRgBO1oFs/wUrRP13lxDSZSt44zqP8G+DteCzjY0ybV5oJgRQL3bgaW
+         oL6afyZgrOEIVVpilc7VdFeRUhRpflx2IH60v0ZaFqjpnzYT4zDNijDaJErUFQR3NdN3
+         rSgBxlNvI0tjgjQb65SZ8gtcqqOyhcT7dUYuSC2fuR8ciQ33E+K2Lbkkd+1+Ew5YtMkM
+         RIw5Z/8GN7/6BzNwJl+EVKneuM2X8FAhSR1jNV6DD1h4OMfBD8bg48zfUH9Vn6N3xFid
+         hUVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6RZt3pRY2aKwzYWHycI06GL3k6VJx2KQpfieK912YU8=;
+        b=0Xdv3h6/I2JlQzxJvtEDT8nZ0lgU9D+SeiHW1hIXEl9e6gulDeG6ew+MgA1RThWvUr
+         BDPB7w662WB1uWpbQKfz5xEG0Jq9Uv27btonTvf0GFuoEpXjQiKcex+ToMDOgKIp9GTY
+         wTGPuaz9S+1drFyEbIFVu/TkQ0J/hMFZK/rr3u4pdfmDu3UU8vPbfWxN7WM6uUodSQHO
+         5pFuUMhs1YHJ5ZzdihJzAFDyuO29oDMzd5lNlMYh+UObtbaljrSeHY8IQaxrfDZ5uF0u
+         9efDr1kFh5DYWUV6gQpSzTg2P1VByCxOS0g1984Y6Df9FB2+4XSKaVKUKzMOnlAirOWd
+         h4Dw==
+X-Gm-Message-State: AOAM530gyR3gVIqQTVCrSX8iVTyydSn+dLtiCslZPegvrk7pxS6OeiqH
+        k8AjWFFP3EXYx8rEMpZXzPWHvIrkttpmWgLi
+X-Google-Smtp-Source: ABdhPJy65y7OiIVCslGTDjTngaUh+H8salM/co/xL+9jxZxE9vPUet2d6AEN2W7VgaiYwaDveYO/zw==
+X-Received: by 2002:aca:d9c3:0:b0:2fa:6f51:7bfe with SMTP id q186-20020acad9c3000000b002fa6f517bfemr639590oig.59.1650418069051;
+        Tue, 19 Apr 2022 18:27:49 -0700 (PDT)
+Received: from toe.qscaudio.com ([65.113.122.35])
+        by smtp.gmail.com with ESMTPSA id i26-20020a4a929a000000b0033a29c8d564sm4284530ooh.3.2022.04.19.18.27.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 18:27:48 -0700 (PDT)
+From:   jeff.evanson@gmail.com
+X-Google-Original-From: jeff.evanson@qsc.com
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Andre Guedes <andre.guedes@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list),
+        bpf@vger.kernel.org (open list:XDP (eXpress Data Path))
+Cc:     Jeff Evanson <jeff.evanson@qsc.com>
+Subject: [PATCH v2 1/2] igc: Fix race in igc_xdp_xmit_zc
+Date:   Tue, 19 Apr 2022 19:26:34 -0600
+Message-Id: <20220420012635.13733-2-jeff.evanson@qsc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220420012635.13733-1-jeff.evanson@qsc.com>
+References: <20220420012635.13733-1-jeff.evanson@qsc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jeff Evanson <jeff.evanson@qsc.com>
 
+In igc_xdp_xmit_zc, initialize next_to_use while holding the netif_tx_lock
+to prevent racing with other users of the tx ring.
 
-On 4/19/22 6:20 PM, Isaku Yamahata wrote:
-> If timeout occurs, the state of adev->tdquote_buf is unknown.  It's not safe
-> to continue to using adev->tdquote_buf.  VMM would continue to processing
-> getquote request with this buffer.  What if TDX_CMD_GEN_QUOTE is issued again,
-> and tdquote_buf is re-used?
+Fixes: 9acf59a752d4 (igc: Enable TX via AF_XDP zero-copy)
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This part is not clearly discussed in the specification. May be spec
-should define some reasonable timeout and teardown details.
-
-Regarding not using this buffer again, what happens if we de-allocate
-it on timeout and the host still updates it?
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 1c00ee310c19..a36a18c84aeb 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2598,7 +2598,7 @@ static void igc_xdp_xmit_zc(struct igc_ring *ring)
+ 	struct netdev_queue *nq = txring_txq(ring);
+ 	union igc_adv_tx_desc *tx_desc = NULL;
+ 	int cpu = smp_processor_id();
+-	u16 ntu = ring->next_to_use;
++	u16 ntu;
+ 	struct xdp_desc xdp_desc;
+ 	u16 budget;
+ 
+@@ -2607,6 +2607,8 @@ static void igc_xdp_xmit_zc(struct igc_ring *ring)
+ 
+ 	__netif_tx_lock(nq, cpu);
+ 
++	ntu = ring->next_to_use;
++
+ 	budget = igc_desc_unused(ring);
+ 
+ 	while (xsk_tx_peek_desc(pool, &xdp_desc) && budget--) {
 -- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+2.17.1
+
