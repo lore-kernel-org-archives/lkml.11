@@ -2,198 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE249C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 00:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06AF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 00:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358305AbiDTA01 (ORCPT
+        id S1347962AbiDTAal (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 20:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
+        Tue, 19 Apr 2022 20:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231793AbiDTA00 (ORCPT
+        with ESMTP id S244305AbiDTAai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 20:26:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD582ED7F
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 17:23:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9D3061492
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E10DC385A7;
-        Wed, 20 Apr 2022 00:23:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650414221;
-        bh=aTlM2Tp8RNtiGc5s4RUzm0VyJsCB1Pdx2yfO4cSCkdc=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=tfupncDT0EfvO8f++UYSaFQrKMOzuqvCcrXXHy3SpGd7juEWTG4XFNQJORuBF3upn
-         GTMddd7Y5y2fFufNEFcH4j4BL4JI/aqzp8egM0yZ47KZYFjiOZw7p00G/hJP1N3ofB
-         ZvQitQoiSPjasTUwbirwIx+uIDRhABEsNPZhHEBIqW/gmTP+Vh0feQTzvOL1ZLksdZ
-         yaGBY+od6Nem/JBq4HAeRXOv2Oaz8Oj+JqvheIGVy8l8g2W8Mv4GPeBcoo/q8zGZZE
-         Osdo5mtijkzRKUtdnWM2P5ZqCXh/Rinoi/0+gXegn9qAhe8G9M0c/xeT4IxPXPTwjx
-         xr5CBnUsA3jvQ==
-Date:   Tue, 19 Apr 2022 17:23:40 -0700 (PDT)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To:     Oleksandr <olekstysh@gmail.com>
-cc:     Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Julien Grall <julien@xen.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [RFC PATCH 6/6] arm/xen: Assign xen-virtio DMA ops for virtio
- devices in Xen guests
-In-Reply-To: <5afb9e61-4164-9cc9-278a-911fc21f4f6c@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204191717020.915916@ubuntu-linux-20-04-desktop>
-References: <1649963973-22879-1-git-send-email-olekstysh@gmail.com> <1649963973-22879-7-git-send-email-olekstysh@gmail.com> <alpine.DEB.2.22.394.2204151305050.915916@ubuntu-linux-20-04-desktop> <YlpdBHKT1bYzZe2e@infradead.org> <f879622e-5656-deb1-1930-f0cd180a4ab1@gmail.com>
- <alpine.DEB.2.22.394.2204181202080.915916@ubuntu-linux-20-04-desktop> <6a04cc34-fbb3-44d8-c1a4-03bda5b3deb1@gmail.com> <b68163be-ad43-7773-22ff-e83191886626@suse.com> <5afb9e61-4164-9cc9-278a-911fc21f4f6c@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-65868541-1650414142=:915916"
-Content-ID: <alpine.DEB.2.22.394.2204191723180.915916@ubuntu-linux-20-04-desktop>
+        Tue, 19 Apr 2022 20:30:38 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65AB034BA5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 17:27:53 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id q1-20020a17090a2dc100b001cba43e127dso100091pjm.9
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 17:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=JVVQnl/KYP++X9fCgwSWz3X+dYjBYA16WR3/C3IIdtI=;
+        b=WPRu2kU0u+hfUVClXeD6/hdwDt9tvMKj7XG+L0pw/m7FKIKxVvsaG2Wv6VXMMC/qAy
+         WC3E/tf23b0jUpr57KGiFmxG5q9ov88HzZjqejfc32g2OJSfcAfhye2W69i7ohQAji9c
+         v7A0fWaG8b+hUC6iN3EXw45zZwB2Xr9yaZzmHBeq0UHdmXrS/8DvFPu5mpcZQFbFXbdh
+         9fr3nu+SSY53Kxya/K60dDdpFVVO/eUwQtfW9cEgs5nmZEyBYCrHfUuNX1JLRjXjaRwY
+         /A52ZqxyiYI93b7U9oe7B+1mTWoN9ghBOXbT3DVJAuvwjwJDrNc7BTEDLYba45mLEOvY
+         yGfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=JVVQnl/KYP++X9fCgwSWz3X+dYjBYA16WR3/C3IIdtI=;
+        b=0On0/XsM57wdqmdXXFnv1RZ955xzXNJ4k3M37xdXdY5/WPPKFzHF83f48cDKpU+hBL
+         s8R7Ch9LT4FdGIu241AQzD5ycz3Q0FrgfYtn0XloHgDiUUwfXgg63QSR6IyC0rl93zq1
+         xIZ7ND+8TyYdkiacfCKY56qX0TiZ2604cOCebDkeN8rAr4iSPBrBWpGhqOZhzpUOLm+i
+         yjBJFtrT/O4QbItEVsrpoG5/Zrm7+bGmOAkkf+/U04wLWqjCt9eZ/H0Ny7oaIsMoyVKl
+         lbiaNHgbYyy2KsIKpPbu4BJBguoC3SrBWo+UkkZzoM1mOFGJbkAhARNUlhFjV5VVO37N
+         CHtw==
+X-Gm-Message-State: AOAM533/t8DQ/90XjxJgWH+T50rgR4br+bV9Qku9cpgWVDl+PvRkGbJF
+        55DVOwFBw5WUEiFjJjXFlIN/h5gAc2I=
+X-Google-Smtp-Source: ABdhPJx5ytIMuPqXDzt5hExFtmr+teWqieLJnqBP1OGfF+HF2diufwCXow16yqBg0nqfSEJemIHGUwk8vuM=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:90b:1e45:b0:1d2:3ef6:18d9 with SMTP id
+ pi5-20020a17090b1e4500b001d23ef618d9mr1345549pjb.221.1650414472927; Tue, 19
+ Apr 2022 17:27:52 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Wed, 20 Apr 2022 00:27:47 +0000
+Message-Id: <20220420002747.3287931-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+Subject: [PATCH] KVM: x86/mmu: Use enable_mmio_caching to track if MMIO
+ caching is enabled
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Kai Huang <kai.huang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Clear enable_mmio_caching if hardware can't support MMIO caching and use
+the dedicated flag to detect if MMIO caching is enabled instead of
+assuming shadow_mmio_value==0 means MMIO caching is disabled.  TDX will
+use a zero value even when caching is enabled, and is_mmio_spte() isn't
+so hot that it needs to avoid an extra memory access, i.e. there's no
+reason to be super clever.  And the clever approach may not even be more
+performant, e.g. gcc-11 lands the extra check on a non-zero value inline,
+but puts the enable_mmio_caching out-of-line, i.e. avoids the few extra
+uops for non-MMIO SPTEs.
 
---8323329-65868541-1650414142=:915916
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-ID: <alpine.DEB.2.22.394.2204191723181.915916@ubuntu-linux-20-04-desktop>
+Cc: Isaku Yamahata <isaku.yamahata@intel.com>
+Cc: Kai Huang <kai.huang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/mmu/mmu.c  | 2 +-
+ arch/x86/kvm/mmu/spte.c | 5 ++++-
+ arch/x86/kvm/mmu/spte.h | 4 +++-
+ 3 files changed, 8 insertions(+), 3 deletions(-)
 
-On Tue, 19 Apr 2022, Oleksandr wrote:
-> On 19.04.22 17:48, Juergen Gross wrote:
-> > On 19.04.22 14:17, Oleksandr wrote:
-> > > 
-> > > Hello Stefano, Juergen
-> > > 
-> > > 
-> > > On 18.04.22 22:11, Stefano Stabellini wrote:
-> > > > On Mon, 18 Apr 2022, Oleksandr wrote:
-> > > > > On 16.04.22 09:07, Christoph Hellwig wrote:
-> > > > > 
-> > > > > Hello Christoph
-> > > > > 
-> > > > > > On Fri, Apr 15, 2022 at 03:02:45PM -0700, Stefano Stabellini wrote:
-> > > > > > > This makes sense overall. Considering that the swiotlb-xen case
-> > > > > > > and the
-> > > > > > > virtio case are mutually exclusive, I would write it like this:
-> > > > > > Curious question:  Why can't the same grant scheme also be used for
-> > > > > > non-virtio devices?  I really hate having virtio hooks in the arch
-> > > > > > dma code.  Why can't Xen just say in DT/ACPI that grants can be used
-> > > > > > for a given device?
-> > > > [...]
-> > > > 
-> > > > > This patch series tries to make things work with "virtio" devices in
-> > > > > Xen
-> > > > > system without introducing any modifications to code under
-> > > > > drivers/virtio.
-> > > > 
-> > > > Actually, I think Christoph has a point.
-> > > > 
-> > > > There is nothing inherently virtio specific in this patch series or in
-> > > > the "xen,dev-domid" device tree binding.
-> > > 
-> > > 
-> > > Although the main intention of this series was to enable using virtio
-> > > devices in Xen guests, I agree that nothing in new DMA ops layer
-> > > (xen-virtio.c) is virtio specific (at least at the moment). Regarding the
-> > > whole patch series I am not quite sure, as it uses
-> > > arch_has_restricted_virtio_memory_access(). >
-> > > >   Assuming a given device is
-> > > > emulated by a Xen backend, it could be used with grants as well.
-> > > > 
-> > > > For instance, we could provide an emulated e1000 NIC with a
-> > > > "xen,dev-domid" property in device tree. Linux could use grants with it
-> > > > and the backend could map the grants. It would work the same way as
-> > > > virtio-net/block/etc. Passthrough devices wouldn't have the
-> > > > "xen,dev-domid" property, so no problems.
-> > > > 
-> > > > So I think we could easily generalize this work and expand it to any
-> > > > device. We just need to hook on the "xen,dev-domid" device tree
-> > > > property.
-> > > > 
-> > > > I think it is just a matter of:
-> > > > - remove the "virtio,mmio" check from xen_is_virtio_device
-> > > > - rename xen_is_virtio_device to something more generic, like
-> > > >    xen_is_grants_device
-> > 
-> > xen_is_grants_dma_device, please. Normal Xen PV devices are covered by
-> > grants, too, and I'd like to avoid the confusion arising from this.
-> 
-> 
-> yes, this definitely makes sense as we need to distinguish
-> 
-> 
-> > 
-> > 
-> > > > - rename xen_virtio_setup_dma_ops to something more generic, like
-> > > >    xen_grants_setup_dma_ops
-> > > > 
-> > > > And that's pretty much it.
-> > > 
-> > > + likely renaming everything in that patch series not to mention virtio
-> > > (mostly related to xen-virtio.c internals).
-> > > 
-> > > 
-> > > Stefano, thank you for clarifying Christoph's point.
-> > > 
-> > > Well, I am not against going this direction. Could we please make a
-> > > decision on this? @Juergen, what is your opinion?
-> > 
-> > Yes, why not.
-> 
-> 
-> ok, thank you for confirming.
-> 
-> 
-> > 
-> > 
-> > Maybe rename xen-virtio.c to grant-dma.c?
-> 
-> 
-> Personally I don't mind.
-> 
-> 
-> > 
-> > I'd keep the XEN_VIRTIO related config option, as this will be the normal
-> > use
-> > case. grant-dma.c should be covered by a new hidden config option
-> > XEN_GRANT_DMA
-> > selected by XEN_VIRTIO.
-> 
-> 
-> I got it, ok
-> 
-> 
-> > 
-> > 
-> > CONFIG_XEN_VIRTIO should still guard
-> > xen_has_restricted_virtio_memory_access().
-> 
-> 
-> ok
-> 
-> 
-> So a few questions to clarify:
-> 
-> 1. What is the best place to keep "xen,dev-domid" binding's description now? I
-> think that proposed in current series place
-> (Documentation/devicetree/bindings/virtio/) is not good fit now.
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 69a30d6d1e2b..01bbe7744342 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -2991,7 +2991,7 @@ static bool handle_abnormal_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fa
+ 		 * touching the shadow page tables as attempting to install an
+ 		 * MMIO SPTE will just be an expensive nop.
+ 		 */
+-		if (unlikely(!shadow_mmio_value)) {
++		if (unlikely(!enable_mmio_caching)) {
+ 			*ret_val = RET_PF_EMULATE;
+ 			return true;
+ 		}
+diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+index 4739b53c9734..eedfc599a457 100644
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -19,7 +19,7 @@
+ #include <asm/memtype.h>
+ #include <asm/vmx.h>
+ 
+-static bool __read_mostly enable_mmio_caching = true;
++bool __read_mostly enable_mmio_caching = true;
+ module_param_named(mmio_caching, enable_mmio_caching, bool, 0444);
+ 
+ u64 __read_mostly shadow_host_writable_mask;
+@@ -351,6 +351,9 @@ void kvm_mmu_set_mmio_spte_mask(u64 mmio_value, u64 mmio_mask, u64 access_mask)
+ 	    WARN_ON(mmio_value && (REMOVED_SPTE & mmio_mask) == mmio_value))
+ 		mmio_value = 0;
+ 
++	if (!mmio_value)
++		enable_mmio_caching = false;
++
+ 	shadow_mmio_value = mmio_value;
+ 	shadow_mmio_mask  = mmio_mask;
+ 	shadow_mmio_access_mask = access_mask;
+diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+index 73f12615416f..ad8ce3c5d083 100644
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -5,6 +5,8 @@
+ 
+ #include "mmu_internal.h"
+ 
++extern bool __read_mostly enable_mmio_caching;
++
+ /*
+  * A MMU present SPTE is backed by actual memory and may or may not be present
+  * in hardware.  E.g. MMIO SPTEs are not considered present.  Use bit 11, as it
+@@ -210,7 +212,7 @@ extern u8 __read_mostly shadow_phys_bits;
+ static inline bool is_mmio_spte(u64 spte)
+ {
+ 	return (spte & shadow_mmio_mask) == shadow_mmio_value &&
+-	       likely(shadow_mmio_value);
++	       likely(enable_mmio_caching);
+ }
+ 
+ static inline bool is_shadow_present_pte(u64 pte)
 
-I would probably add it to the existing
-Documentation/devicetree/bindings/arm/xen.txt.
+base-commit: 150866cd0ec871c765181d145aa0912628289c8a
+-- 
+2.36.0.rc0.470.gd361397f0d-goog
 
-
-> 2. I assume the logic in the current patch will remain the same, I mean we
-> will still assign Xen grant DMA ops from xen_setup_dma_ops() here?
-
-Yes I think so
---8323329-65868541-1650414142=:915916--
