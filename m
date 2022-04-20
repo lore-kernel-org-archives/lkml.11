@@ -2,94 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67982C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C173C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379885AbiDTPEf (ORCPT
+        id S1358061AbiDTPFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
+        Wed, 20 Apr 2022 11:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379904AbiDTPEc (ORCPT
+        with ESMTP id S1354534AbiDTPFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:04:32 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E469440E77;
-        Wed, 20 Apr 2022 08:01:42 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id y21so1398584wmi.2;
-        Wed, 20 Apr 2022 08:01:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XsQiKH6TajJPAJHa8yDpCvGZxUo92/efC5z+5+H0ZlA=;
-        b=QgKJcishop3aV1xXrheRV4qyylb1AI5grf9+ZvrBgbbHio91mGzOh5Sujl1rBYh5HS
-         yPYdO/Rwprg0JLDluwQVIlnxMABdTWOdgiKbnEvQCe6wvGAb7QkRyMrd9c92iPGNZBcc
-         ClsZmZQCDrCbjxPIywrrQ3LHxysH8DgN50f9Hvd8ua+hioe42+3WKdeaAh+71xIMRyAZ
-         v5MMQMNd1zciCw3y/DgAY/GTBvdO2IOsFVbqb0jri9eOFcmqsmRN77dcBnjLUPhXDmFx
-         w3NBnyGr/fqQcCrB2SQFnTD9YULHVm0OLSEWdVaM2QA0fv2RbpJDlVAB5bgfZbKQc+40
-         9Kbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XsQiKH6TajJPAJHa8yDpCvGZxUo92/efC5z+5+H0ZlA=;
-        b=PXZUsEVzujfnYEc7Eof626x4LJ3J6zDQ26H30SnbGPDuLw4xBoYLHXbBydZ6nE8rEQ
-         GhxxXJjd/pZJcQo62xRLY0z/r6Bx0bLkQl+YrDeZcE/aHdLAuxnF8kXmyQPPOIPAtz6e
-         YNR2n6VTevuaNCUlHIm2mNB1gfMH+4yrj1qAjUvCN6NxZgRUEN0pLdGh7fwzXEa+DYkW
-         3G4Hoq4ODfXWY+QBnaywlT27/UGKWK3P9F8ZAhvtTqCdGBmexTb8jIwFuW3Yp7FAwaRT
-         7B7M5lAq2qHvOh6wj/egDYmI5/jWFwk0uek+XO4jKUhSyGnO0rEd1gUbc9XpEGvzWTUb
-         FXfg==
-X-Gm-Message-State: AOAM532vNHep422WMoFV5mVn7Raq99s2WSt2qcjoFeMH0wy5ppc5waUt
-        47lTG0uKuJ4ymyUBAqF+uH+3aRUNBQxdyw==
-X-Google-Smtp-Source: ABdhPJxR8PYfXuaXr7lmmOaz11HRXe8ImqDUmbKI+XvfJWLNFr3Gfkjge/cQEqozYmF/1axP319Q2g==
-X-Received: by 2002:a05:600c:1987:b0:392:90f9:98df with SMTP id t7-20020a05600c198700b0039290f998dfmr4115302wmq.72.1650466901452;
-        Wed, 20 Apr 2022 08:01:41 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id y6-20020a05600015c600b0020a8f950471sm89128wry.115.2022.04.20.08.01.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 08:01:41 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <792073cb-c1ea-2fd0-f05c-3f793a013ce2@redhat.com>
-Date:   Wed, 20 Apr 2022 17:01:38 +0200
+        Wed, 20 Apr 2022 11:05:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE053EABD
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:01:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5FD861856
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 15:01:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F551C385A1;
+        Wed, 20 Apr 2022 15:01:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650466918;
+        bh=2vIiY1L64BcyRyAV+vdLWojloBWckIp6ZU0kUPht5UU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DYTF+ijch4goHtfn6Rz5jPqeV+0zU6CH8r3wCjAM9kkyEXhq22MQWG/L9ryu31j82
+         rnPJM+aLVuNJKZAUmXyxqFZhIrnWoHawjeuf5fAAVwpkGooaKvgjJ6wQgpDQMhhKpm
+         Ul0JX2UVFTpRkhlv3esMcmP8IlNG39tnQB9n40NEnxWxcIjtmEjwXbfkFJup+6sLzX
+         cZcAD/nBriBYgo8SdZi5nKU7eXe32KLpBQTt581FbU4ZngVdK5Bjp0Rd7FPU3+bVNv
+         GfDUmF8A44gHAl1wAFX/+N97vo1WJuQSbVoC/QIuVHkQpDmHLFC9ftF3IOB3i8G77+
+         Zx56gAEKoXayw==
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Kirill Shutemov <kirill.shutemov@intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] x86/mm/ptdump: display page encryption state
+Date:   Wed, 20 Apr 2022 18:01:49 +0300
+Message-Id: <20220420150149.1691573-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 3/8] KVM: SVM: Unwind "speculative" RIP advancement if
- INTn injection "fails"
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-4-seanjc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220402010903.727604-4-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/2/22 03:08, Sean Christopherson wrote:
->   		 * but re-execute the instruction instead. Rewind RIP first
->   		 * if we emulated INT3 before.
->   		 */
-> -		if (kvm_exception_is_soft(vector)) {
-> -			if (vector == BP_VECTOR && int3_injected &&
-> -			    kvm_is_linear_rip(vcpu, svm->int3_rip))
-> -				kvm_rip_write(vcpu,
-> -					      kvm_rip_read(vcpu) - int3_injected);
-> +		if (kvm_exception_is_soft(vector))
->   			break;
-> -		}
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-Stale comment.
+When memory encryption is enabled, for instance in SEV guest, it is useful
+to see what memory ranges are mapped as encrypted in the kernel page tables
+and what ranges are left plain.
 
-Paolo
+Add printing of 'ENC' for the encrypted ranges to the page table dumps.
+
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+---
+
+v2: use cc_is_enc() instead of _PAGE_ENC as Dave suggested for TDX
+compatibility
+
+ arch/x86/include/asm/coco.h   | 10 ++++++++++
+ arch/x86/mm/dump_pagetables.c |  4 ++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
+index 3d98c3a60d34..cfc85a080a22 100644
+--- a/arch/x86/include/asm/coco.h
++++ b/arch/x86/include/asm/coco.h
+@@ -17,6 +17,11 @@ void cc_set_mask(u64 mask);
+ #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+ u64 cc_mkenc(u64 val);
+ u64 cc_mkdec(u64 val);
++
++static inline bool cc_is_enc(u64 prot)
++{
++	return cc_mkdec(prot) != prot;
++}
+ #else
+ static inline u64 cc_mkenc(u64 val)
+ {
+@@ -27,6 +32,11 @@ static inline u64 cc_mkdec(u64 val)
+ {
+ 	return val;
+ }
++
++static inline bool cc_is_enc(u64 prot)
++{
++	return false;
++}
+ #endif
+ 
+ #endif /* _ASM_X86_COCO_H */
+diff --git a/arch/x86/mm/dump_pagetables.c b/arch/x86/mm/dump_pagetables.c
+index e1b599ecbbc2..0eaa0cc0b3b1 100644
+--- a/arch/x86/mm/dump_pagetables.c
++++ b/arch/x86/mm/dump_pagetables.c
+@@ -201,6 +201,10 @@ static void printk_prot(struct seq_file *m, pgprotval_t pr, int level, bool dmsg
+ 			pt_dump_cont_printf(m, dmsg, "PCD ");
+ 		else
+ 			pt_dump_cont_printf(m, dmsg, "    ");
++		if (cc_is_enc(pr))
++			pt_dump_cont_printf(m, dmsg, "ENC ");
++		else
++			pt_dump_cont_printf(m, dmsg, "    ");
+ 
+ 		/* Bit 7 has a different meaning on level 3 vs 4 */
+ 		if (level <= 3 && pr & _PAGE_PSE)
+
+base-commit: b2d229d4ddb17db541098b83524d901257e93845
+-- 
+2.34.1
+
