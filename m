@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86364C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC40C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378005AbiDTL2D (ORCPT
+        id S1378023AbiDTL2O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
+        Wed, 20 Apr 2022 07:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378026AbiDTL1s (ORCPT
+        with ESMTP id S1377995AbiDTL15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 07:27:48 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747D0112E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:25:02 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id t4so1357492pgc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:25:02 -0700 (PDT)
+        Wed, 20 Apr 2022 07:27:57 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A72640A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:25:11 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id i24so1650088pfa.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:25:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tCU3W9mlxHE4TMqBdkjcyOh2bqsvTjlfmzIF3NGnHvE=;
-        b=UfaKu9dbb+wXEjWlLaL6U689AztbKkrzep/TzrQwLKereP5jlihhLW83hYi6pshpQT
-         RC4D0gb86EnOjGNFqbJ+nXqRqcan40eCGd5YJ1poRTncgAmmYSx5Uec1das06uEnA80/
-         kg5zlVNVqWob2/JwFwTcPHKCf50sEyeSvjMGdtnkAfHSNPolkhmSNWqnGq/4CTjBEGYk
-         wYf0srChQ0tX9SB7KjZfNPT+06g3JGsqneDoziL+ZZep2OkoZ/s3RP6yxJrL3M4HsubV
-         /GT1J/EpY3X6v59ZDCMStoygEgUkaFACI9IDAbD/eRKH1tvUvLRvXeYwkcwrcbXndXZ0
-         39tA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TPHPVEhymfv8oSdQwn6KZ7VGPONNXumfRuRVQxny474=;
+        b=PAgsii84VgeZ/Q2oKSCovvB872ig347wVkn4dZtpPKF7+4mn6c/HRZpP4/hStmf1ys
+         T7LVGobfgoMFGbYfMGlLNiU26A0EjUVf7TBM1D4uUq8fUtnZ7cGJDBOhnPhnxVllcU8U
+         45QLawAPuR++SGIfj0ocQyV259l2+NhuJ5HUKagx4sBBd2EvxtvxNxR+DY6De8T70+Nm
+         6+e4rDRHYm1u7+Kyw8yrA9DiCG3qz+3E2IkIalzQRqz+h+p+YsbhfLjtzAEZK7UCPTAo
+         AyQItG5Wqq3QpZIHx5QTwdpHWc6XZ0Z120bW/WuYMO2Jq04oY8moZuS6TiTrIoE+dyvb
+         KP8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tCU3W9mlxHE4TMqBdkjcyOh2bqsvTjlfmzIF3NGnHvE=;
-        b=vMUw0mOLdMVtYQLDRQ+bo6rbTtFykAcLgBj7okfLfLm4bo/4CBoKwELHpWgic4gCO+
-         HF/E8D4oLnh0+aHavrqP1u2F9uV7+4H3oR1biF6Y/CX3t2v6Hud0mdoRVvExPwHO2w8f
-         H4ipjLRekTz/iopXSb06BELwK2tvBRhncHvLWY73U1jtlWMpy54ZJnBj3EwBLa3tU0+6
-         W6LGuWsUri7PHKShcBg+wH7YxJFxEJQF1RG/C89AHg5ud9UzMG86LX99izJQOppIQAMb
-         EU/c0x9gnlRLvQhbKNv/4QEv/QKAymuDVqqh8V8FHi4+tMUS9XZTXPwgVF2ka2/FtDpv
-         fn6g==
-X-Gm-Message-State: AOAM533qVA3CBJ2tfhcYOqXT1G+n8IxX2e0QB8ZpV2WkXwV8KR8uaXxv
-        6ysWl1aiK2BpR9bXLl6F0y0unn47HGMw6A==
-X-Google-Smtp-Source: ABdhPJwWY6A6dVQh0vaMFD3tyaT0I/WyyNN+KyeBTF4LfaCmGbkpzDGXOOHqQQgY5qQgYEDIoTN2kQ==
-X-Received: by 2002:a05:6a00:a94:b0:4fd:c14b:21cb with SMTP id b20-20020a056a000a9400b004fdc14b21cbmr22660388pfl.53.1650453901951;
-        Wed, 20 Apr 2022 04:25:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TPHPVEhymfv8oSdQwn6KZ7VGPONNXumfRuRVQxny474=;
+        b=4bt0w9CnT61BnbHXi0MTGxbK7QiZxf0dZwJM4O5oFey7keFkLHJhifCt+Q2aTM2RfT
+         JAZM6bMs7R7OUqwlW2/VWtbooxv3vjh7Qk6KD1JmZm2abkSYSMZI5kUs9IM20SYtBrvt
+         d7DY7Eq3+gI2+oYgKvzKvfNR54HNu40DzNoWglS3FYmisyPpXBBmY909kKqAI9M8AjsX
+         j+4IVFTv+MIJXxBP9fDqdkzplu9UvO5fLtQa1q9wtCqUt+dylyn7P88uqdeJ2HZbRFFr
+         7xe597d0y33nHLpdSgxW+vk1SAJ1k195WPNQm8m9i+jxdh18cjGATBBf/TwI4X24HVJa
+         d1Ug==
+X-Gm-Message-State: AOAM531qgNihZawt2qT8zjHcg83tg8X+VR7J/hH9M2TuRqxooKXq3Q8N
+        pe0gCVgMLwuT4yvGwjgrgaIapw==
+X-Google-Smtp-Source: ABdhPJzJy+ngC76UER8GeFIwNmkd0eADoMpR8Xk4oDzv3I0PBEHDsejwpsx1pE0ajWmahbSPcXwk3g==
+X-Received: by 2002:a05:6a00:9a2:b0:505:974f:9fd6 with SMTP id u34-20020a056a0009a200b00505974f9fd6mr22641638pfg.12.1650453910832;
+        Wed, 20 Apr 2022 04:25:10 -0700 (PDT)
 Received: from localhost.localdomain ([122.167.88.101])
-        by smtp.gmail.com with ESMTPSA id u12-20020a17090a890c00b001b8efcf8e48sm22529274pjn.14.2022.04.20.04.24.58
+        by smtp.gmail.com with ESMTPSA id u12-20020a17090a890c00b001b8efcf8e48sm22529274pjn.14.2022.04.20.04.25.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 04:25:01 -0700 (PDT)
+        Wed, 20 Apr 2022 04:25:10 -0700 (PDT)
 From:   Anup Patel <apatel@ventanamicro.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Atish Patra <atishp@atishpatra.org>
@@ -58,57 +58,83 @@ Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
         Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
         kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
         linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v2 0/7] KVM RISC-V Sv57x4 support and HFENCE improvements
-Date:   Wed, 20 Apr 2022 16:54:43 +0530
-Message-Id: <20220420112450.155624-1-apatel@ventanamicro.com>
+Subject: [PATCH v2 2/7] RISC-V: KVM: Add Sv57x4 mode support for G-stage
+Date:   Wed, 20 Apr 2022 16:54:45 +0530
+Message-Id: <20220420112450.155624-3-apatel@ventanamicro.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220420112450.155624-1-apatel@ventanamicro.com>
+References: <20220420112450.155624-1-apatel@ventanamicro.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds Sv57x4 support for KVM RISC-V G-stage and various
-HFENCE related improvements.
+Latest QEMU supports G-stage Sv57x4 mode so this patch extends KVM
+RISC-V G-stage handling to detect and use Sv57x4 mode when available.
 
-These patches can also be found in riscv_kvm_sv57_plus_v2 branch at:
-https://github.com/avpatel/linux.git
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+---
+ arch/riscv/include/asm/csr.h |  1 +
+ arch/riscv/kvm/main.c        |  3 +++
+ arch/riscv/kvm/mmu.c         | 11 ++++++++++-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
-Changes since v1:
- - Rebased on Linux-5.18-rc3
- - Drop gstage_tlb_pgsize_bitmap and hfence_update_order() from PATCH4
-   because software is not required to know to page sizes supported by
-   TLB. In fact, it is responsibility of hardware implementation to
-   ensure that S/HFENCE on an address X invalidates all TLB entries
-   created for PTE covering address X.
- - Added PATCH7 to cleanup stale TLB entries when VCPU is moved another
-   host CPU
-
-Anup Patel (7):
-  RISC-V: KVM: Use G-stage name for hypervisor page table
-  RISC-V: KVM: Add Sv57x4 mode support for G-stage
-  RISC-V: KVM: Treat SBI HFENCE calls as NOPs
-  RISC-V: KVM: Introduce range based local HFENCE functions
-  RISC-V: KVM: Reduce KVM_MAX_VCPUS value
-  RISC-V: KVM: Add remote HFENCE functions based on VCPU requests
-  RISC-V: KVM: Cleanup stale TLB entries when host CPU changes
-
- arch/riscv/include/asm/csr.h      |   1 +
- arch/riscv/include/asm/kvm_host.h | 124 ++++++--
- arch/riscv/kvm/main.c             |  11 +-
- arch/riscv/kvm/mmu.c              | 264 +++++++++--------
- arch/riscv/kvm/tlb.S              |  74 -----
- arch/riscv/kvm/tlb.c              | 461 ++++++++++++++++++++++++++++++
- arch/riscv/kvm/vcpu.c             |  45 ++-
- arch/riscv/kvm/vcpu_exit.c        |   6 +-
- arch/riscv/kvm/vcpu_sbi_replace.c |  40 ++-
- arch/riscv/kvm/vcpu_sbi_v01.c     |  35 ++-
- arch/riscv/kvm/vm.c               |   8 +-
- arch/riscv/kvm/vmid.c             |  30 +-
- 12 files changed, 812 insertions(+), 287 deletions(-)
- delete mode 100644 arch/riscv/kvm/tlb.S
- create mode 100644 arch/riscv/kvm/tlb.c
-
+diff --git a/arch/riscv/include/asm/csr.h b/arch/riscv/include/asm/csr.h
+index e935f27b10fd..cc40521e438b 100644
+--- a/arch/riscv/include/asm/csr.h
++++ b/arch/riscv/include/asm/csr.h
+@@ -117,6 +117,7 @@
+ #define HGATP_MODE_SV32X4	_AC(1, UL)
+ #define HGATP_MODE_SV39X4	_AC(8, UL)
+ #define HGATP_MODE_SV48X4	_AC(9, UL)
++#define HGATP_MODE_SV57X4	_AC(10, UL)
+ 
+ #define HGATP32_MODE_SHIFT	31
+ #define HGATP32_VMID_SHIFT	22
+diff --git a/arch/riscv/kvm/main.c b/arch/riscv/kvm/main.c
+index c374dad82eee..1549205fe5fe 100644
+--- a/arch/riscv/kvm/main.c
++++ b/arch/riscv/kvm/main.c
+@@ -105,6 +105,9 @@ int kvm_arch_init(void *opaque)
+ 	case HGATP_MODE_SV48X4:
+ 		str = "Sv48x4";
+ 		break;
++	case HGATP_MODE_SV57X4:
++		str = "Sv57x4";
++		break;
+ 	default:
+ 		return -ENODEV;
+ 	}
+diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+index dc0520792e31..8823eb32dcde 100644
+--- a/arch/riscv/kvm/mmu.c
++++ b/arch/riscv/kvm/mmu.c
+@@ -751,14 +751,23 @@ void kvm_riscv_gstage_update_hgatp(struct kvm_vcpu *vcpu)
+ void kvm_riscv_gstage_mode_detect(void)
+ {
+ #ifdef CONFIG_64BIT
++	/* Try Sv57x4 G-stage mode */
++	csr_write(CSR_HGATP, HGATP_MODE_SV57X4 << HGATP_MODE_SHIFT);
++	if ((csr_read(CSR_HGATP) >> HGATP_MODE_SHIFT) == HGATP_MODE_SV57X4) {
++		gstage_mode = (HGATP_MODE_SV57X4 << HGATP_MODE_SHIFT);
++		gstage_pgd_levels = 5;
++		goto skip_sv48x4_test;
++	}
++
+ 	/* Try Sv48x4 G-stage mode */
+ 	csr_write(CSR_HGATP, HGATP_MODE_SV48X4 << HGATP_MODE_SHIFT);
+ 	if ((csr_read(CSR_HGATP) >> HGATP_MODE_SHIFT) == HGATP_MODE_SV48X4) {
+ 		gstage_mode = (HGATP_MODE_SV48X4 << HGATP_MODE_SHIFT);
+ 		gstage_pgd_levels = 4;
+ 	}
+-	csr_write(CSR_HGATP, 0);
++skip_sv48x4_test:
+ 
++	csr_write(CSR_HGATP, 0);
+ 	__kvm_riscv_hfence_gvma_all();
+ #endif
+ }
 -- 
 2.25.1
 
