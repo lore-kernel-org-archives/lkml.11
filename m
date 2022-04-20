@@ -2,52 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A536DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 23:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB794C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 23:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383102AbiDTXPW (ORCPT
+        id S1383110AbiDTXRM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 19:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        Wed, 20 Apr 2022 19:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345452AbiDTXPT (ORCPT
+        with ESMTP id S1345452AbiDTXRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 19:15:19 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B9913DF0;
-        Wed, 20 Apr 2022 16:12:31 -0700 (PDT)
-Received: (Authenticated sender: joao@overdrivepizza.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 1377F100003;
-        Wed, 20 Apr 2022 23:12:26 +0000 (UTC)
+        Wed, 20 Apr 2022 19:17:08 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87AEA13DF0
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 16:14:21 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2ec04a2ebadso34594637b3.12
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 16:14:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qYRM9qktnYDaa3m8ekDwBnefJ70L+h8+LPGzeuAwAW8=;
+        b=PM9Q4FWkCG9dzfZg0PVI2vzhj45QKMnRwiq7QmmlnRFeMdzS74TyWfUFCtQNmsOjht
+         goEjr7b0a+mmKNjqg763zJCKW1Y3Vsj/ETv6gGXXor9fpSi02aizIOzJx9GlgWKOHvyV
+         fyUA6ogjKBV6nag2EKCpPT/UcN+bty/fNl/rOTijVnNi9mCxZMpvVzlMvB04wVZsxBHf
+         E6dio4yncjQwEqpTU/Q/DkMVJdZZ8aoDXGbg1FE3RuFTHhHiQVbtNEx2uGwW09PjUL+r
+         +d22UOmWFDu0jXwXwxcVO5Z3FWzl6HugwZ8NGiALvehDK9z8zUHO9bOuFxx3Pa/g+Dxq
+         0vgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qYRM9qktnYDaa3m8ekDwBnefJ70L+h8+LPGzeuAwAW8=;
+        b=0SzPV1kCifAs0g/QUMOouA2sbIaLzHZIkXYyM5uN6REO8zIPo8Qwb71v6eHOJ0lJbp
+         yXDnT0Yymxh8ceAIECgPuL/g+E/dXD6MeaPL8boOmg0u/NaMyP2FxkIcZz680dtZn1HS
+         6v1zOrbqPz6VtmLPysp1THhqBbtj/wYxS/8x3QHjvE2ZTREMF6G6rNMMlcleIYj5PyV/
+         PgTxtDDM4y7NL2fRh9dpLE79D4rdFiDe4hzwRhRKnWZkNmz/lYas9tYb64IlthwZF19U
+         GB411WE9k7zWptv3TcIF6MD1UhegkuyiF0mmZqkEkMcst1qwtRtk+WkYr5mh3P/xjNK6
+         kRNA==
+X-Gm-Message-State: AOAM5329z0CEMpe8xwFlppmELagsPkNEtyqRFUzDS3HR5S1XqAJ74A8n
+        WAi6u1kJnZ/fbpguXAqX4uhlD+32f9Ea+lUisFByYw==
+X-Google-Smtp-Source: ABdhPJzrOvt+32bvB/JOtbibZUy7E1gzG00WtbSE17MMsGjTOm8rogn79zYa9DvcpEodQdUtI64CWfpl2gi/QFxwYI4=
+X-Received: by 2002:a81:5dc5:0:b0:2eb:3feb:686c with SMTP id
+ r188-20020a815dc5000000b002eb3feb686cmr23848260ywb.268.1650496460802; Wed, 20
+ Apr 2022 16:14:20 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Wed, 20 Apr 2022 16:12:26 -0700
-From:   Joao Moreira <joao@overdrivepizza.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        peterz@infradead.org, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com, samitolvanen@google.com,
-        mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 11/11] driver/int3400_thermal: Fix prototype matching
-In-Reply-To: <202204201601.8291F550@keescook>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420004241.2093-12-joao@overdrivepizza.com>
- <202204191946.2843CF71@keescook>
- <06435f0b44681588052d145a17d60316@overdrivepizza.com>
- <202204201601.8291F550@keescook>
-Message-ID: <4dd9a9a3a7fb6f9af0fa04b8d2e3d5a2@overdrivepizza.com>
-X-Sender: joao@overdrivepizza.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220409034849.3717231-1-zheyuma97@gmail.com> <20220410165425.6c2f60e7@jic23-huawei>
+In-Reply-To: <20220410165425.6c2f60e7@jic23-huawei>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 21 Apr 2022 01:14:09 +0200
+Message-ID: <CACRpkdaFgB55HHR8a3vyVbZphu5fpguutBYemyVvGz=tcn6j+A@mail.gmail.com>
+Subject: Re: [PATCH] iio: magnetometer: ak8974: Fix the error handling of ak8974_probe()
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, lars@metafoo.de,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> 
-> Ah-ha, thanks. I think this will fix it, but I haven't tested it:
+On Sun, Apr 10, 2022 at 5:46 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> On Sat,  9 Apr 2022 11:48:48 +0800
+> Zheyu Ma <zheyuma97@gmail.com> wrote:
+>
+> > When the driver fail at devm_regmap_init_i2c(), we will get the
+> > following splat:
+> >
+> > [  106.797388] WARNING: CPU: 4 PID: 413 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+> > [  106.802183] RIP: 0010:_regulator_put+0x3ec/0x4e0
+> > [  106.811237] Call Trace:
+> > [  106.811515]  <TASK>
+> > [  106.811695]  regulator_bulk_free+0x82/0xe0
+> > [  106.812032]  devres_release_group+0x319/0x3d0
+> > [  106.812425]  i2c_device_probe+0x766/0x940
+> >
+> > Fix this by disabling the regulators at the error path.
+> >
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> + CC Linus W as it's his driver.
+>
+> Fix looks correct to me, though the handling of runtime pm in here is
+> probably more complex than it needs to be (and hence this odd error
+> handling for this one place in the probe).
 
-I tried that, and IIRC, there was an error or warning in the assignment 
-that happens a bit further in the file. My bad for not having it all 
-properly tracked.
+At the time I discussed how to do runtime pm with Ulf Hansson a lot
+and I think it was the state of the art at that time. It might have
+changed since.
+
+> > ---
+> >  drivers/iio/magnetometer/ak8974.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> > index e54feacfb980..84bbf7ccc887 100644
+> > --- a/drivers/iio/magnetometer/ak8974.c
+> > +++ b/drivers/iio/magnetometer/ak8974.c
+> > @@ -862,6 +862,7 @@ static int ak8974_probe(struct i2c_client *i2c,
+> >               dev_err(&i2c->dev, "failed to allocate register map\n");
+> >               pm_runtime_put_noidle(&i2c->dev);
+> >               pm_runtime_disable(&i2c->dev);
+> > +             regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
