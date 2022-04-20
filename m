@@ -2,113 +2,360 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B76BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4519FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358912AbiDTCVz (ORCPT
+        id S1358922AbiDTCXw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        Tue, 19 Apr 2022 22:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbiDTCVx (ORCPT
+        with ESMTP id S229791AbiDTCXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:21:53 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6AB30F54
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:19:09 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id bn33so259640ljb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:19:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vzcM0Fy8zoXIYtzw0zgKr6w3uu0pvrZ7K2myKeDxUvc=;
-        b=XlMHlA1yW/3psqu/gqNph/O3AA7PrGeW5068j/3DUXbJp9LCr/qQwXvvlCgRY66YZs
-         bfbo2buBJiwcJj5XorkSa+q8/5Dd97EEFrzXKMkVvKZ2Q6hHadvYR+AeJLYW8cad9NkT
-         BkTcdQwom8v7pt4NN84cQ97G02o6Ks7iPjqGw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vzcM0Fy8zoXIYtzw0zgKr6w3uu0pvrZ7K2myKeDxUvc=;
-        b=G13U3XjPfWenPIe31+SUrvnWIBILWZN00Q5iz4YR+xSu/i2hmwLXnayehThoDLNKgB
-         ceKBhbBhPqsrF53UBOj5yF5imsD1GthH4+YhEZmYCrAtXEBPe40OXvZjLzDD7NKPp58t
-         6D1ZVsJ2Wgckb92uzFa5TCp213/KG50Lw2+RInHrA6mrnhHkOSTiUYy2cGUSw2MwBk2c
-         L9Cn9xfxy1fQIj5g5UaHMlIHLJLMxb2VpOUBgkQeJWqOmiBuQCpyO71lD0do455KPg51
-         O8cvn7hHkyOTdbjJ4+ew/Nl+SOnGFn873F9MCIuQF7SqIc73KtrkPXrnaOO2lOMk7vw/
-         qoQw==
-X-Gm-Message-State: AOAM533+Wxosc/8DI/MJIZ/UENwGnQ4glzv5yZjDtq9lB0DQ1uwdWrHW
-        5ZOZiqO5bYmR+Q2I6ql4Ba0SMquQDOCzz/uttvs=
-X-Google-Smtp-Source: ABdhPJwWSaOKSr5HNjyEqgLsr0uTd7VQR9sC0EbC35LD/1LAu/KdUeyQCJuOJX8jeZvItSwKbQqjGA==
-X-Received: by 2002:a2e:a26b:0:b0:24d:b6e5:1097 with SMTP id k11-20020a2ea26b000000b0024db6e51097mr9546740ljm.110.1650421147558;
-        Tue, 19 Apr 2022 19:19:07 -0700 (PDT)
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com. [209.85.208.170])
-        by smtp.gmail.com with ESMTPSA id n7-20020a196f47000000b0046d1859fc45sm1672834lfk.102.2022.04.19.19.19.07
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 19:19:07 -0700 (PDT)
-Received: by mail-lj1-f170.google.com with SMTP id y11so260888ljh.5
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:19:07 -0700 (PDT)
-X-Received: by 2002:a2e:9041:0:b0:24a:ce83:dcb4 with SMTP id
- n1-20020a2e9041000000b0024ace83dcb4mr12387816ljg.291.1650421146776; Tue, 19
- Apr 2022 19:19:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <YlpPW9SdCbZnLVog@infradead.org> <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
- <CAHk-=wiMCndbBvGSmRVvsuHFWC6BArv-OEG2Lcasih=B=7bFNQ@mail.gmail.com>
- <B995F7EB-2019-4290-9C09-AE19C5BA3A70@fb.com> <Yl04LO/PfB3GocvU@kernel.org>
- <Yl4F4w5NY3v0icfx@bombadil.infradead.org> <88eafc9220d134d72db9eb381114432e71903022.camel@intel.com>
- <B20F8051-301C-4DE4-A646-8A714AF8450C@fb.com> <Yl8CicJGHpTrOK8m@kernel.org>
- <CAHk-=wh6um5AFR6TObsYY0v+jUSZxReiZM_5Kh4gAMU8Z8-jVw@mail.gmail.com> <20220420020311.6ojfhcooumflnbbk@MacBook-Pro.local.dhcp.thefacebook.com>
-In-Reply-To: <20220420020311.6ojfhcooumflnbbk@MacBook-Pro.local.dhcp.thefacebook.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 19 Apr 2022 19:18:50 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiF1KnM1_paB3jCONR9Mh1D_RCsnXKBau1K7XLG-mwwTQ@mail.gmail.com>
-Message-ID: <CAHk-=wiF1KnM1_paB3jCONR9Mh1D_RCsnXKBau1K7XLG-mwwTQ@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Mike Rapoport <rppt@kernel.org>, Song Liu <songliubraving@fb.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "song@kernel.org" <song@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dborkman@redhat.com" <dborkman@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "bp@alien8.de" <bp@alien8.de>, "mbenes@suse.cz" <mbenes@suse.cz>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
+        Tue, 19 Apr 2022 22:23:51 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5A0240AA;
+        Tue, 19 Apr 2022 19:21:05 -0700 (PDT)
+X-UUID: 84060849b298496882986b1cc0185350-20220420
+X-UUID: 84060849b298496882986b1cc0185350-20220420
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 153168727; Wed, 20 Apr 2022 10:21:00 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 20 Apr 2022 10:20:59 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 20 Apr 2022 10:20:59 +0800
+Message-ID: <a04e0a7e70e116c1155227b94c1c0f354e0dcc8f.camel@mediatek.com>
+Subject: Re: [PATCH 5/7] clk: mediatek: reset: Revise structure to control
+ reset register
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
+        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
+        <yong.liang@mediatek.com>, <runyang.chen@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <allen-kh.cheng@mediatek.com>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 20 Apr 2022 10:20:59 +0800
+In-Reply-To: <dc4277ce-cf80-7176-a71f-cb9f93411086@collabora.com>
+References: <20220418132154.7401-1-rex-bc.chen@mediatek.com>
+         <20220418132154.7401-6-rex-bc.chen@mediatek.com>
+         <dc4277ce-cf80-7176-a71f-cb9f93411086@collabora.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 7:03 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> Here is the quote from Song's cover letter for bpf_prog_pack series:
+On Tue, 2022-04-19 at 12:46 +0200, AngeloGioacchino Del Regno wrote:
+> Il 18/04/22 15:21, Rex-BC Chen ha scritto:
+> > Replace the structure "struct mtk_reset" to reset.h, and rename it
+> > as
+> > "mtk_clk_rst_data". We use it to input the resset register data and
+> > store reset controller device.
+> > 
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >   drivers/clk/mediatek/clk-mt2701-eth.c |  9 +++-
+> >   drivers/clk/mediatek/clk-mt2701-g3d.c |  9 +++-
+> >   drivers/clk/mediatek/clk-mt2701-hif.c |  9 +++-
+> >   drivers/clk/mediatek/clk-mt2701.c     | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt2712.c     | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt7622-eth.c |  9 +++-
+> >   drivers/clk/mediatek/clk-mt7622-hif.c | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt7622.c     | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt7629-eth.c |  9 +++-
+> >   drivers/clk/mediatek/clk-mt7629-hif.c | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt8135.c     | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt8173.c     | 19 +++++++-
+> >   drivers/clk/mediatek/clk-mt8183.c     | 10 ++++-
+> >   drivers/clk/mediatek/reset.c          | 62 +++++++++++++---------
+> > -----
+> >   drivers/clk/mediatek/reset.h          | 12 +++++-
+> >   15 files changed, 209 insertions(+), 53 deletions(-)
+> > 
+> > diff --git a/drivers/clk/mediatek/clk-mt2701-eth.c
+> > b/drivers/clk/mediatek/clk-mt2701-eth.c
+> > index 71257714e6a6..16fc4a50d513 100644
+> > --- a/drivers/clk/mediatek/clk-mt2701-eth.c
+> > +++ b/drivers/clk/mediatek/clk-mt2701-eth.c
+> > @@ -36,6 +36,13 @@ static const struct mtk_gate eth_clks[] = {
+> >   	GATE_ETH(CLK_ETHSYS_CRYPTO, "crypto_clk", "ethif_sel", 29),
+> >   };
+> >   
+> > +static struct mtk_clk_rst_data clk_rst_data = {
+> 
+> static const struct mtk_clk_rst_data clk_rst_data[] = {
+> 
+> ...because this is initialization data that is never supposed to
+> change, and
+> in the init function of reset.c, you should never modify this struct.
+> 
+> > +	.supported = true,
+> 
+> It would make no sense to call mtk_clk_register_rst_ctrl() if the
+> resets
+> are not supported, so this .supported member is useless and should be
+> removed.
 
-I care about performance as much as the next person, but I care about
-correctness too.
+Hello Angelo,
 
-That large-page code was a disaster, and was buggy and broken.
+Yes, you are right. I will remove is.
 
-And even with those four patches, it's still broken.
+> 
+> I will avoid commenting on patch 7/7 and will say it here: I know
+> that on that
+> patch you're checking for this one but, especially if this reset data
+> becomes a
+> const you can, at that point, simply check if anything has been
+> assigned to it
+> so that if it's not NULL, we implicitly know that said clock
+> controller instance
+> supports resets, and we register them:
+> 
+> int mtk_clk_simple_probe(...)
+> {
+> 	.. blah blah ..
+> 
+> 	if (mcd->rst)
+> 		r = mtk_clk_register_rst_ctrl(....)
+> 	return r;
+> }
+> 
+> 
+> > +	.version = MTK_RST_V1,
+> > +	.reg_num = 1,
+> > +	.reg_ofs = 0x34,
+> > +};
+> > +
+> >   static const struct of_device_id of_match_clk_mt2701_eth[] = {
+> >   	{ .compatible = "mediatek,mt2701-ethsys", },
+> >   	{}
+> 
+> ..snip..
+> 
+> > diff --git a/drivers/clk/mediatek/clk-mt2701.c
+> > b/drivers/clk/mediatek/clk-mt2701.c
+> > index c1100a20c7ed..a8ac3d11ced6 100644
+> > --- a/drivers/clk/mediatek/clk-mt2701.c
+> > +++ b/drivers/clk/mediatek/clk-mt2701.c
+> > @@ -735,6 +735,21 @@ static const struct mtk_fixed_factor
+> > infra_fixed_divs[] = {
+> >   	FACTOR(CLK_INFRA_CLK_13M, "clk13m", "clk26m", 1, 2),
+> >   };
+> >   
+> 
+> For increased readability, perhaps it's a good idea to do something
+> like...
+> 
 
-End result: there's no way that thigh gets re-enabled without the
-correctness being in place.
+OK, I will do this.
 
-At a minimum, to re-enable it, it needs (a) that zeroing and (b)
-actual numbers on real loads. (not some artificial benchmark).
+> > +static struct mtk_clk_rst_data clk_rst_data[] = {
+> > +	{
+> 
+> 	{	/* infrasys */
+> 
+> > +		.supported = true,
+> > +		.version = MTK_RST_V1,
+> > +		.reg_num = 2,
+> > +		.reg_ofs = 0x30,
+> > +	},
+> 
+> 	{	/* pericfg */
+> 
+> > +	{
+> > +		.supported = true,
+> > +		.version = MTK_RST_V1,
+> > +		.reg_num = 2,
+> > +		.reg_ofs = 0x0,
+> > +	},
+> > +};
+> > +
+> >   static struct clk_onecell_data *infra_clk_data;
+> >   
+> >   static void __init mtk_infrasys_init_early(struct device_node
+> > *node)
+> 
+> ..snip...
+> 
+> > diff --git a/drivers/clk/mediatek/clk-mt7622-hif.c
+> > b/drivers/clk/mediatek/clk-mt7622-hif.c
+> > index 6be894299ae3..a10ecc5b88a1 100644
+> > --- a/drivers/clk/mediatek/clk-mt7622-hif.c
+> > +++ b/drivers/clk/mediatek/clk-mt7622-hif.c
+> > @@ -76,6 +76,21 @@ static const struct mtk_gate pcie_clks[] = {
+> >   	GATE_PCIE(CLK_SATA_PM_EN, "sata_pm_en", "univpll2_d4", 30),
+> >   };
+> >   
+> > +static struct mtk_clk_rst_data clk_rst_data[] = {
+> > +	{
+> > +		.supported = true,
+> > +		.version = MTK_RST_V1,
+> > +		.reg_num = 1,
+> > +		.reg_ofs = 0x34,
+> > +	},
+> 
+> I get that the intention here is to separate the reset data between
+> ssusbsys
+> and pciesys, but both entries are declaring the exact same... since
+> (as pointed out
+> earlier) this should be a const, you can use the same entry for both.
+> 
 
-Because without (a) there's no way in hell I'll enable it.
+OK, I will do this using new definition of structure.
 
-And without (b), "performance" isn't actually an argument.
+> > +	{
+> > +		.supported = true,
+> > +		.version = MTK_RST_V1,
+> > +		.reg_num = 1,
+> > +		.reg_ofs = 0x34,
+> > +	},
+> > +};
+> > +
+> >   static int clk_mt7622_ssusbsys_init(struct platform_device *pdev)
+> >   {
+> >   	struct clk_onecell_data *clk_data;
+> 
+> ..snip..
+> 
+> 
+> > diff --git a/drivers/clk/mediatek/reset.c
+> > b/drivers/clk/mediatek/reset.c
+> > index 2a55e8bf6b28..709ae54efc18 100644
+> > --- a/drivers/clk/mediatek/reset.c
+> > +++ b/drivers/clk/mediatek/reset.c
+> 
+> ..snip..
+> 
+> > @@ -117,21 +123,15 @@ int mtk_clk_register_rst_ctrl(struct
+> > device_node *np,
+> >   		return -EINVAL;
+> >   	}
+> >   
+> > -	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> > -	if (!data)
+> > -		return -ENOMEM;
+> > -
+> > -	data->regmap = regmap;
+> > -	data->regofs = reg_ofs;
+> > -	data->rcdev.owner = THIS_MODULE;
+> > -	data->rcdev.nr_resets = reg_num * 32;
+> > -	data->rcdev.ops = rst_op[version];
+> > -	data->rcdev.of_node = np;
+> 
+> 
+> Here's a cleaner version of this:
+> 
+> int mtk_clk_register_rst_ctrl(struct device *dev,
+> 			      const struct mtk_clk_rst_desc *rst_desc)
+> {
+> 	....some code....
+> 
+> 	struct mtk_reset_data *mtk_reset;
+> 
+> 	mtk_reset = devm_kzalloc(dev, sizeof(*mtk_reset), GFP_KERNEL)
+> 	if (!mtk_reset)
+> 		return -ENOMEM;
+> 
+> 	mtk_reset->desc = rst_desc;
+> 	mtk_reset->regmap = regmap;
+> 	mtk_reset->rcdev.owner = .... blah blah
+> 
+> 	ret = devm_reset_controller_register(dev, &mtk_reset->rcdev);
+> 	if (ret)
+> 		return ret;
+> 
+> ....so if you use the devm_* variant, you don't need patch 6/7, as
+> unregistering
+> the reset controller will be taken care of by devm actions.
+> 
+> Besides, this is most probably not the case but remember that if you
+> need to
+> perform more operations to unregister this reset controller, you can
+> always
+> add a custom devm action with function devm_add_action_or_reset(dev,
+> func, parm).
+> 
+> 
 
-                  Linus
+Yes, I have noticed that. But for some clock drivers, they only provide
+device_node.
+I will add a new register function using device.
+
+> > +	clk_rst->regmap = regmap;
+> > +	clk_rst->rcdev.owner = THIS_MODULE;
+> > +	clk_rst->rcdev.nr_resets = clk_rst->reg_num * 32;
+> > +	clk_rst->rcdev.ops = rst_op[clk_rst->version];
+> > +	clk_rst->rcdev.of_node = np;
+> >   
+> > -	ret = reset_controller_register(&data->rcdev);
+> > +	ret = reset_controller_register(&clk_rst->rcdev);
+> >   	if (ret) {
+> >   		pr_err("could not register reset controller: %d\n",
+> > ret);
+> > -		kfree(data);
+> >   		return -EINVAL;
+> >   	}
+> >   
+> > diff --git a/drivers/clk/mediatek/reset.h
+> > b/drivers/clk/mediatek/reset.h
+> > index 0af77531b918..851a29c92440 100644
+> > --- a/drivers/clk/mediatek/reset.h
+> > +++ b/drivers/clk/mediatek/reset.h
+> > @@ -6,6 +6,7 @@
+> >   #ifndef __DRV_CLK_MTK_RESET_H
+> >   #define __DRV_CLK_MTK_RESET_H
+> >   
+> > +#include <linux/reset-controller.h>
+> >   #include <linux/types.h>
+> >   
+> >   enum mtk_reset_version {
+> > @@ -14,7 +15,16 @@ enum mtk_reset_version {
+> >   	MTK_RST_MAX,
+> >   };
+> >   
+> > +struct mtk_clk_rst_data {
+> > +	struct reset_controller_dev rcdev;
+> > +	struct regmap *regmap;
+> > +	bool supported;
+> > +	u8 version;
+> > +	u32 reg_num;
+> > +	u16 reg_ofs;
+> > +};
+> 
+> ...so here you'd have something like:
+> 
+> struct mtk_clk_rst_desc {
+> 	u8 version;
+> 	u32 reg_num;
+> 	u16 reg_ofs;
+> };
+> 
+> struct mtk_reset_data {
+> 	struct regmap *regmap;
+> 	struct reset_controller_dev rcdev;
+> 	const struct mtk_clk_rst_desc *desc;
+> };
+> 
+
+OK. Thanks for your suggestion.
+
+BRs,
+Rex
+
+> 
+> Cheers,
+> Angelo
+> 
+
