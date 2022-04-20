@@ -2,191 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2510C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D84C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380450AbiDTQSe (ORCPT
+        id S1380453AbiDTQSu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
+        Wed, 20 Apr 2022 12:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380432AbiDTQSa (ORCPT
+        with ESMTP id S1380426AbiDTQSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:18:30 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD65327CDD
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:15:43 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id n18so2219252plg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:15:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=tnEdHKpPyZkZmrpdyV+90S+5wmdBROjGyPq57BetpoU=;
-        b=D4JPc+7j0ulu+47aOpYDf++g8UTividvLRWK2iqrM38t4CWHmEoGr8rz8OOYNdiNyO
-         GOKHSHQAFxq2lF8cjaOFbwh9GTn4d87loazZMySaAMuNgdtiP2QB+IUHC10aAWMzK/oo
-         eg0fgki2O3/oP+Yo2CywVQsBFo3U5SFVtqkdF6K5/S07SwcB7IeNC+Kn+UJqfIKtT+X9
-         +6L3PYP6IJcAY6zyffxblxGRhjXelIWutWa9WDwxZGnTh1Hklfpu4LcTLesYtkMFKUFR
-         C+m8eoQGlpdQcP/Esz+2sogoUlGc9mGlMIFOy7nCbQbU+jmYwW/UhJk4yblgmZltuBz0
-         T6JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=tnEdHKpPyZkZmrpdyV+90S+5wmdBROjGyPq57BetpoU=;
-        b=Jq33Q8E6/RtMf8YnEfObGXDCaUK9o9p+K9e60aAseM9LO04J5wXT2Sjb8l+9scg8SW
-         oV7seEwUmVMp1KRKFSJRDW0HbO04POovoYLmkEwi5dfvtH6uDVy6MAqeDpyneY9To2vD
-         oN4xGFpfWKaPExPjGrebMbzf/bxAPmAdTTD2XFuDCGWl93pFtQZ4V6Y8VSn1Ma13Uk6U
-         YnKT56l4Ek2YlvmjbAl/uUC8ZRIO/t0dCFEgWte2MBF+7MVEbTHvhVPRwzOxe50xo+Yn
-         dA72n7R23hBTdE0U9FPg2BOSsk7HjiakBko2r/h6tRVdWpnwVAKHdmRXkuiV7zqaFrxW
-         fgHA==
-X-Gm-Message-State: AOAM533dOzoSw664DARdwniRl29HZTY3ENqMlW0vqMee83bTLhMVxdH6
-        yY9a/YzjFf6AyeNnyOQiytrJMfK+q11dyg==
-X-Google-Smtp-Source: ABdhPJwiECiSV47yGzjO1OSK5czfQAfEaTNuFinGeQPK7mUTXZmde2s/5XsQi8Zbio0IBM1grb9y/A==
-X-Received: by 2002:a17:902:bc8c:b0:156:bc64:fa47 with SMTP id bb12-20020a170902bc8c00b00156bc64fa47mr21385934plb.135.1650471343113;
-        Wed, 20 Apr 2022 09:15:43 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b004fe3d6c1731sm20575560pfo.175.2022.04.20.09.15.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 09:15:42 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 16:15:38 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Wed, 20 Apr 2022 12:18:48 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D122656D;
+        Wed, 20 Apr 2022 09:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650471362; x=1682007362;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=keqVj2ktPIEk/4jLO/r0b+85IqTBeW/fcCjhz3HKa1o=;
+  b=CSjOiaCnL2oGsJ2jnGOq0k5sj+EbVfzDnJB3xseK00AyfF9kkkLMnal3
+   xqDW2/nAMyyT0BAyXd+lj3aQJg7fbi2G5AWzp61N1Q0r83I6txyp6JLEV
+   90zk7Kk+uG+zAvmEzkVHkBb83lYxSaSpNjfDAhy6stSXV+zKvE8luPsG6
+   LMmd1ehhWlwyVBkv+mTBPYHWY4RyO9IyLAiTJg0Js5jI3avIy1k8feqdi
+   wQlRdgcAREHTwPx7Bm7wxg6XuyBVJYewr6Un+2A8d9Bnr5+uJmCSDFGQM
+   Ep4UOBmrnYjMRi1bURr7i0SDzJHBLcgSrVzrn/E1u+/6EI+vnnGfYDEv2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="289180633"
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="289180633"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:56:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="614468146"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 20 Apr 2022 08:56:23 -0700
+Received: from debox1-desk4.lan (unknown [10.212.213.71])
+        by linux.intel.com (Postfix) with ESMTP id 449FE58088F;
+        Wed, 20 Apr 2022 08:56:23 -0700 (PDT)
+From:   "David E. Box" <david.e.box@linux.intel.com>
+To:     hdegoede@redhat.com, david.e.box@linux.intel.com,
+        markgross@kernel.org, platform-driver-x86@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/8] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
-Message-ID: <YmAxqrbMRx76Ye5a@google.com>
-References: <20220402010903.727604-1-seanjc@google.com>
- <20220402010903.727604-2-seanjc@google.com>
- <112c2108-7548-f5bd-493d-19b944701f1b@maciej.szmigiero.name>
- <YkspIjFMwpMYWV05@google.com>
- <4505b43d-5c33-4199-1259-6d4e8ebac1ec@redhat.com>
- <98fca5c8-ca8e-be1f-857d-3d04041b66d7@maciej.szmigiero.name>
+Subject: [PATCH 3/3] platform/x86/intel/sdsi: Fix bug in multi packet reads
+Date:   Wed, 20 Apr 2022 08:56:22 -0700
+Message-Id: <20220420155622.1763633-4-david.e.box@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220420155622.1763633-1-david.e.box@linux.intel.com>
+References: <20220420155622.1763633-1-david.e.box@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <98fca5c8-ca8e-be1f-857d-3d04041b66d7@maciej.szmigiero.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022, Maciej S. Szmigiero wrote:
-> On 20.04.2022 17:00, Paolo Bonzini wrote:
-> > On 4/4/22 19:21, Sean Christopherson wrote:
-> > > On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
-> > > > > @@ -1606,7 +1622,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
-> > > > >        nested_copy_vmcb_control_to_cache(svm, ctl);
-> > > > >        svm_switch_vmcb(svm, &svm->nested.vmcb02);
-> > > > > -    nested_vmcb02_prepare_control(svm);
-> > > > > +    nested_vmcb02_prepare_control(svm, save->rip);
-> > > > 
-> > > >                        ^
-> > > > I guess this should be "svm->vmcb->save.rip", since
-> > > > KVM_{GET,SET}_NESTED_STATE "save" field contains vmcb01 data,
-> > > > not vmcb{0,1}2 (in contrast to the "control" field).
-> > > 
-> > > Argh, yes.  Is userspace required to set L2 guest state prior to KVM_SET_NESTED_STATE?
-> > > If not, this will result in garbage being loaded into vmcb02.
-> > > 
-> > 
-> > Let's just require X86_FEATURE_NRIPS, either in general or just to
-> > enable nested virtualiazation
-> 
-> 👍
+Fix bug that added an offset to the mailbox addr during multi-packet
+reads. Did not affect current ABI since it doesn't support multi-packet
+transactions.
 
-Hmm, so requiring NRIPS for nested doesn't actually buy us anything.  KVM still
-has to deal with userspace hiding NRIPS from L1, so unless I'm overlooking something,
-the only change would be:
+Fixes: 2546c6000430 ("platform/x86: Add Intel Software Defined Silicon driver")
+Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+---
+ drivers/platform/x86/intel/sdsi.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index bdf8375a718b..7bed4e05aaea 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -686,7 +686,7 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
-         */
-        if (svm->nrips_enabled)
-                vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
--       else if (boot_cpu_has(X86_FEATURE_NRIPS))
-+       else
-                vmcb02->control.next_rip    = vmcb12_rip;
-
-        if (is_evtinj_soft(vmcb02->control.event_inj)) {
-
-And sadly, because SVM doesn't provide the instruction length if an exit occurs
-while vectoring a software interrupt/exception, making NRIPS mandatory doesn't buy
-us much either.
-
-I believe the below diff is the total savings (plus the above nested thing) against
-this series if NRIPS is mandatory (ignoring the setup code, which is a wash).  It
-does eliminate the rewind in svm_complete_soft_interrupt() and the funky logic in
-svm_update_soft_interrupt_rip(), but that's it AFAICT.  The most obnoxious code of
-having to unwind EMULTYPE_SKIP when retrieving the next RIP for software int/except
-injection doesn't go away :-(
-
-I'm not totally opposed to requiring NRIPS, but I'm not in favor of it either.
-
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 66cfd533aaf8..6b48af423246 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -354,7 +354,7 @@ static int __svm_skip_emulated_instruction(struct kvm_vcpu *vcpu,
-        if (sev_es_guest(vcpu->kvm))
-                goto done;
-
--       if (nrips && svm->vmcb->control.next_rip != 0) {
-+       if (svm->vmcb->control.next_rip != 0) {
-                WARN_ON_ONCE(!static_cpu_has(X86_FEATURE_NRIPS));
-                svm->next_rip = svm->vmcb->control.next_rip;
-        }
-@@ -401,7 +401,7 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
-         * in use, the skip must not commit any side effects such as clearing
-         * the interrupt shadow or RFLAGS.RF.
-         */
--       if (!__svm_skip_emulated_instruction(vcpu, !nrips))
-+       if (!__svm_skip_emulated_instruction(vcpu, false))
-                return -EIO;
-
-        rip = kvm_rip_read(vcpu);
-@@ -420,11 +420,8 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
-        svm->soft_int_old_rip = old_rip;
-        svm->soft_int_next_rip = rip;
-
--       if (nrips)
--               kvm_rip_write(vcpu, old_rip);
--
--       if (static_cpu_has(X86_FEATURE_NRIPS))
--               svm->vmcb->control.next_rip = rip;
-+       kvm_rip_write(vcpu, old_rip);
-+       svm->vmcb->control.next_rip = rip;
-
-        return 0;
- }
-@@ -3738,20 +3735,9 @@ static void svm_complete_soft_interrupt(struct kvm_vcpu *vcpu, u8 vector,
-         * the same event, i.e. if the event is a soft exception/interrupt,
-         * otherwise next_rip is unused on VMRUN.
-         */
--       if (nrips && (is_soft || (is_exception && kvm_exception_is_soft(vector))) &&
-+       if ((is_soft || (is_exception && kvm_exception_is_soft(vector))) &&
-            kvm_is_linear_rip(vcpu, svm->soft_int_old_rip + svm->soft_int_csbase))
-                svm->vmcb->control.next_rip = svm->soft_int_next_rip;
--       /*
--        * If NextRIP isn't enabled, KVM must manually advance RIP prior to
--        * injecting the soft exception/interrupt.  That advancement needs to
--        * be unwound if vectoring didn't complete.  Note, the new event may
--        * not be the injected event, e.g. if KVM injected an INTn, the INTn
--        * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
--        * be the reported vectored event, but RIP still needs to be unwound.
--        */
--       else if (!nrips && (is_soft || is_exception) &&
--                kvm_is_linear_rip(vcpu, svm->soft_int_next_rip + svm->soft_int_csbase))
--               kvm_rip_write(vcpu, svm->soft_int_old_rip);
- }
-
- static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
+diff --git a/drivers/platform/x86/intel/sdsi.c b/drivers/platform/x86/intel/sdsi.c
+index 89729fed030c..c830e98dfa38 100644
+--- a/drivers/platform/x86/intel/sdsi.c
++++ b/drivers/platform/x86/intel/sdsi.c
+@@ -83,7 +83,7 @@ enum sdsi_command {
+ 
+ struct sdsi_mbox_info {
+ 	u64	*payload;
+-	u64	*buffer;
++	void	*buffer;
+ 	int	size;
+ };
+ 
+@@ -165,9 +165,7 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
+ 	total = 0;
+ 	loop = 0;
+ 	do {
+-		int offset = SDSI_SIZE_MAILBOX * loop;
+-		void __iomem *addr = priv->mbox_addr + offset;
+-		u64 *buf = info->buffer + offset / SDSI_SIZE_CMD;
++		void *buf = info->buffer + (SDSI_SIZE_MAILBOX * loop);
+ 		u32 packet_size;
+ 
+ 		/* Poll on ready bit */
+@@ -198,7 +196,7 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
+ 			break;
+ 		}
+ 
+-		sdsi_memcpy64_fromio(buf, addr, round_up(packet_size, SDSI_SIZE_CMD));
++		sdsi_memcpy64_fromio(buf, priv->mbox_addr, round_up(packet_size, SDSI_SIZE_CMD));
+ 
+ 		total += packet_size;
+ 
+-- 
+2.25.1
 
