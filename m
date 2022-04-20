@@ -2,102 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F95C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E82ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379493AbiDTOTa (ORCPT
+        id S1379576AbiDTOTf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39032 "EHLO
+        Wed, 20 Apr 2022 10:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380138AbiDTOSi (ORCPT
+        with ESMTP id S1380274AbiDTOSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:18:38 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0BB443C7;
-        Wed, 20 Apr 2022 07:13:25 -0700 (PDT)
+        Wed, 20 Apr 2022 10:18:47 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AF143AD9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:16:01 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id m14so2472455wrb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:16:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650464005; x=1682000005;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xSVtxqfp4JLpW3WWMuvDsq9oB3gov9dYbIhWlNNxBEo=;
-  b=fGaX0bEOO3yLXFTRbq+fdgafIeGDFeJSRJ9m20mLf12anuDBZWeoG+og
-   QfEEp6aSbz2pKHDakxjmBfzwFh0s/avH/K+alifaEr0LCaeNlHyxOctpG
-   tIY8TBua3yeqAxX1pkTfuuQ9zVPinzSU+BoajTVh3oPALYm40g8WX2iOr
-   k=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 Apr 2022 07:13:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 07:13:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 20 Apr 2022 07:13:24 -0700
-Received: from [10.226.58.18] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 20 Apr
- 2022 07:13:23 -0700
-Message-ID: <2100eed4-8081-6070-beaf-7c6ba65ad9be@quicinc.com>
-Date:   Wed, 20 Apr 2022 08:13:22 -0600
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=buTOea5hGyKVMycb2UNLHy/CmUKsfopnU76jMCLf+w0=;
+        b=DiPpygcsv1FE9XrikGyg1icYH8Svlo4wHN7c1tle/5MzbK5V7gZZJq5zEs1zm+Tr0m
+         hbQ7xTlZD3c3aGUWxVlvLu5rAiJ4fk64EfvWmQNbi2CZyH/3Eoq4iWQGbzXnWCaNJoUY
+         vLauIkmYNo/D2ewIjUpwRwG4OF3kyDl7X8CP4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=buTOea5hGyKVMycb2UNLHy/CmUKsfopnU76jMCLf+w0=;
+        b=hu/i2hzmby9gdI6E6RauCi1ukY6WTQsIOF9U9bKq0vxOtHN+U9DTsLpNsCJgP5Hc1V
+         0eRZ/yFFhAjo5t9Fv3lJ3/qUhJRinf4mx/vu5pmlTWDqo/5FctJ6VDnd86FsmoJVBFAX
+         Lx5Zt+zT9swpCwPiVst0tKO8Z+8dD+nMcqO5ioiDGhvDmRN6lSj0dy9H9x6s7mKd/vOY
+         EvEg/lizDHtE2vDsnwLkrCGKH3BDdYI7TFBtQlTAwCFUAP85zu5N8rBvLf1bYKeHw0ZI
+         K/MP4QmmaDjyBcqj5CA3uP5ouX7wmiGx5JKWZ7evZXuKN6RxzcSYWGQg+Oa8gqy/mYU9
+         OAqw==
+X-Gm-Message-State: AOAM532cA4mOY4UGbmhCTa3gOFQxv7ixaPUvoBANCaAwAjXaXyAKM/6P
+        RAsWWgBSeOtYch9l0VFM9cH0Eg==
+X-Google-Smtp-Source: ABdhPJyYIA6x9+f8e47TwQBEyU5CfA6Jc7fDHnsVuiVEE4Gn+yDN22VKV/egJHJ1ZcL3RtVt3ILCkg==
+X-Received: by 2002:a5d:6e85:0:b0:207:a435:d9a7 with SMTP id k5-20020a5d6e85000000b00207a435d9a7mr15785389wrz.217.1650464159946;
+        Wed, 20 Apr 2022 07:15:59 -0700 (PDT)
+Received: from localhost.localdomain ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b0020aa790a258sm12447wra.8.2022.04.20.07.15.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 07:15:59 -0700 (PDT)
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabio Baltieri <fabiobaltieri@chromium.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 1/4] dt-bindings: add mfd/cros_ec definitions
+Date:   Wed, 20 Apr 2022 14:15:53 +0000
+Message-Id: <20220420141556.681212-2-fabiobaltieri@chromium.org>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+In-Reply-To: <20220420141556.681212-1-fabiobaltieri@chromium.org>
+References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2] PCI: hv: Fix multi-MSI to allow more than one MSI
- vector
-Content-Language: en-US
-To:     <kys@microsoft.com>, <haiyangz@microsoft.com>,
-        <sthemmin@microsoft.com>, <wei.liu@kernel.org>,
-        <decui@microsoft.com>, <lorenzo.pieralisi@arm.com>,
-        <robh@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>,
-        <jakeo@microsoft.com>
-CC:     <bjorn.andersson@linaro.org>, <linux-hyperv@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com>
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/13/2022 7:36 AM, Jeffrey Hugo wrote:
-> If the allocation of multiple MSI vectors for multi-MSI fails in the core
-> PCI framework, the framework will retry the allocation as a single MSI
-> vector, assuming that meets the min_vecs specified by the requesting
-> driver.
-> 
-> Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
-> domain to implement that for x86.  The VECTOR domain does not support
-> multi-MSI, so the alloc will always fail and fallback to a single MSI
-> allocation.
-> 
-> In short, Hyper-V advertises a capability it does not implement.
-> 
-> Hyper-V can support multi-MSI because it coordinates with the hypervisor
-> to map the MSIs in the IOMMU's interrupt remapper, which is something the
-> VECTOR domain does not have.  Therefore the fix is simple - copy what the
-> x86 IOMMU drivers (AMD/Intel-IR) do by removing
-> X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
-> pci_msi_prepare().
-> 
-> Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-> Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-> Reviewed-by: Dexuan Cui <decui@microsoft.com>
-> ---
+Add a dt-bindings include file for cros_ec devicetree definition, define
+a pair of special purpose PWM channels in it.
 
-Ping?
+Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
-I don't see this in -next, nor have I seen any replies.  It is possible 
-I have missed some kind of update, but currently I'm wondering if this 
-change is progressing or not.  If there is some kind of process used in 
-this area, I'm not familiar with it, so I would appreciate an introduction.
+diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
+new file mode 100644
+index 000000000000..3b29cd049578
+--- /dev/null
++++ b/include/dt-bindings/mfd/cros_ec.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * DTS binding definitions used for the Chromium OS Embedded Controller.
++ *
++ * Copyright (c) 2022 The Chromium OS Authors. All rights reserved.
++ */
++
++#ifndef _DT_BINDINGS_MFD_CROS_EC_H
++#define _DT_BINDINGS_MFD_CROS_EC_H
++
++/* Typed channel for keyboard backlight. */
++#define CROS_EC_PWM_DT_KB_LIGHT		0
++/* Typed channel for display backlight. */
++#define CROS_EC_PWM_DT_DISPLAY_LIGHT	1
++/* Number of typed channels. */
++#define CROS_EC_PWM_DT_COUNT		2
++
++#endif
+-- 
+2.36.0.rc0.470.gd361397f0d-goog
 
-Thanks
-
--Jeff
