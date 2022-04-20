@@ -2,386 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 970A5C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B55C4167B
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377928AbiDTOTL (ORCPT
+        id S1379486AbiDTOTR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38768 "EHLO
+        Wed, 20 Apr 2022 10:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379765AbiDTORo (ORCPT
+        with ESMTP id S1380253AbiDTOSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:17:44 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B78F44751;
-        Wed, 20 Apr 2022 07:10:55 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23KD854J025916;
-        Wed, 20 Apr 2022 14:10:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=+KpPsG/KXdTLYehRtMGZ14VcLZk0xtGeaU0Cts2zpW4=;
- b=seS4lExkzXSPwnipgbu9FRbB2Bo1uACe5S3oHHN1ZAVmcOTsHaGjBaSGFFZFtJY1e5T2
- NhNo3sVgOPiHsWoDQymuLrgzYNBt319yhSHXjsPsITUpSW9Rikuud0zwQHLJEpgqIpLj
- HqZyjiUdu1+BEK60Ec5WK6+Xg4Q7Cq41vYBlLUEgz2ZlvulEmHmhKCIY4qC8BNsMtYZE
- 0DpLJCoIJ8iOPTNKAVYRjDA4MJTREn31M4JkDgnTfAMrMVWxw1pVYiWEAZXekP4gm7/X
- gTY0kU1+SETGbfE+KPMXZYT+Ntg4PU8kFUbFoERHqj8t1+01WK5Vw02u5GDb2jUyhekK FQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fhuukfq3m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:10:46 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23KCW1cr023137;
-        Wed, 20 Apr 2022 14:10:46 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fhuukfq34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:10:46 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23KE92MG028509;
-        Wed, 20 Apr 2022 14:10:44 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma02dal.us.ibm.com with ESMTP id 3ffneabw8t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:10:44 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23KEAhWa12583222
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Apr 2022 14:10:43 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C28E0AE05C;
-        Wed, 20 Apr 2022 14:10:43 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7E886AE064;
-        Wed, 20 Apr 2022 14:10:40 +0000 (GMT)
-Received: from [9.211.82.47] (unknown [9.211.82.47])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 20 Apr 2022 14:10:40 +0000 (GMT)
-Message-ID: <754b4f2e-00ba-07b0-b848-29b714c9d3b3@linux.ibm.com>
-Date:   Wed, 20 Apr 2022 10:10:39 -0400
+        Wed, 20 Apr 2022 10:18:45 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2076.outbound.protection.outlook.com [40.107.220.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48E24578D;
+        Wed, 20 Apr 2022 07:14:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Nng9i5CuUaWMolgJCtAzclqf23mm1ljNFFaKs37pfin81rNqmPjCVy1ux7OZJZirN6Zfr8J9mNwR+Vu+jhj1NMieQcnw3nycdJiTKAXeKVMcBqq8U8cuBYzxEmZJu246GXxb0LpqP5Itb6dp1Fa7HsBPeujbeIGtOQTG5LMGBG8Ju2NUbLs4AXL1NA3cRXiKLgJRLb772O1w/WeFeQcx6JqOYK93DiicY+MjnCROKu7D61nqbD1sx2rfregnx+J2qneLi7h49t+3B2A8x8h5o1IilE9XIqNwoQ0CNzR+CCjk28DbJucIZESeK0oUeG8bauYI7hmNVNSNK1WZWkxFkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XdLEhiTqfCvxSidHdtl/3pGmi2GJNT4acmJALX9x68U=;
+ b=hcWN23jT3bjsJvnikoRBF4zfRNb+8P8DLG+PpuaMriLBsJvBTrK9yw3kSOEH+Q5zX9mGKVM2VItOXd27ZAv0TMpV3+praaBjqTOVndXvfW3nx6Cbv6EJU0POCtdQkLuRcqwgvBL05GlOQdMyStKaIvqWo5hqFi71U8O2dVHQYbSf6t1kjIHWqCdanKX+6JUpOHNjkG+repga52+jZqFGswYWHnoWV67KR6xdR4xP1n7LgJ7prw7u7OH1yP1tQ0LQiCqL9YPkqaRxkc6iBRr4YK2IFjQVjuif050nIDu/G0cngcQS/jeGrXjr5afUES49xjZINfwQ5nKiFa2T8wUffw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XdLEhiTqfCvxSidHdtl/3pGmi2GJNT4acmJALX9x68U=;
+ b=UKsDylss9MnhNR1nf2IXQHblql9lpirKNjvHQyL2pnJELB5ax36Hw9AZFo97YaH5VLlLN4cRPyM7zKpJL7HkDAZSj/05yI+Xt5AAqITQIJnDyNg9D3WbBZH7IPY9rd319wrduzqqq0rdEoMwnxPvD8VYhnm7HOvsV3gWUzHC30M=
+Received: from MW4PR03CA0164.namprd03.prod.outlook.com (2603:10b6:303:8d::19)
+ by MN2PR12MB4014.namprd12.prod.outlook.com (2603:10b6:208:16d::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
+ 2022 14:14:37 +0000
+Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8d:cafe::5a) by MW4PR03CA0164.outlook.office365.com
+ (2603:10b6:303:8d::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
+ Transport; Wed, 20 Apr 2022 14:14:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 14:14:36 +0000
+Received: from tlendack-t1.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 20 Apr
+ 2022 09:14:33 -0500
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+        <linux-doc@vger.kernel.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Joerg Roedel <jroedel@suse.de>,
+        "Michael Roth" <michael.roth@amd.com>
+Subject: [PATCH 1/2] virt: sevguest: Change driver name to reflect generic SEV support
+Date:   Wed, 20 Apr 2022 09:14:13 -0500
+Message-ID: <307710bb5515c9088a19fd0b930268c7300479b2.1650464054.git.thomas.lendacky@amd.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1650464054.git.thomas.lendacky@amd.com>
+References: <cover.1650464054.git.thomas.lendacky@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 19/21] KVM: s390: add KVM_S390_ZPCI_OP to manage guest
- zPCI devices
-Content-Language: en-US
-To:     Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
- <20220404174349.58530-20-mjrosato@linux.ibm.com>
- <de630458-f48a-1b97-2bd3-53284c7d2a5e@linux.ibm.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <de630458-f48a-1b97-2bd3-53284c7d2a5e@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: leioqiAKMkMsJPJXKn8efSaDpx9FqYlf
-X-Proofpoint-GUID: -t_0WUjp1m5_oghuMIt3__eQpu7baauW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_03,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- impostorscore=0 malwarescore=0 mlxlogscore=999 bulkscore=0
- lowpriorityscore=0 phishscore=0 mlxscore=0 priorityscore=1501 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204200081
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 88c96bfa-04a9-456f-7eb4-08da22d81a03
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4014:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB40140E09B781E2D0FDF1FCCEECF59@MN2PR12MB4014.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2x7zTrZTGbtjVcjeWTKxArt6m4+hJABkCnOG2T1NNNsAdJZuD479nQlFGplcjHr1z9Q6Wvbq3TakVhSy+TIpcmxBrk9JXszKDCdcAJO494qOJRMjm2XSSdhrBA5gZkCEvuVXYEXheTmvbHKLwk5aHM4OqQAnMofWQXS5/bBPX7UspB4n5KAaW0DADh6V7uJcghajyhRZ/5prhdKoE407f3pHwuWKnb/3zdzzRirW4Hg/Q95aofb1od8igG4n/1dEeR805/+ZQAEwtUmmBxDyzBpnvqe1dRcb53KfuaIsZ+fdDHg83WTmR8qPBSgbZcUiN97B6fF79ngJG7t3LLmYQzQ9WapWcyNpxAWUDiCL9KK4Tb/8tDFNUCIusIswMU7+HpdIrepJD1p7q+jiC7Yvz3LAZJHgZRi0YJTOwX1qWqpQ0aTnPsWwKbjaN0TeWURMcj7FrC0CTQyycwF1J4QJDiYUM+sAZifBKMfzKXDiwZDof0ofVTst/shptpwtPkxYEKFt+JRYN1YRiXwNXUp38eKJk4kuB/Z+yLl0V5OrI0snbafCv0cFuN8BUEPTsUMN8D4d6pOKs+mIUK3u3wKfLwCndo2HmTn/fpYMZvQu1iDij/08+sek/mQBwL0pIQTvgi/HBydS228UX700cj962P5CjhxyxqVf51J2EcIFfhr9Iz12s+ldU7hAlkCTAeZTwfnqxWkzOOvChmWlaTgE8Ljn+R8B+SZT2W8gFT2kI00=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(508600001)(70206006)(8936002)(6666004)(2906002)(36860700001)(70586007)(7696005)(356005)(81166007)(16526019)(316002)(83380400001)(26005)(47076005)(186003)(426003)(336012)(5660300002)(2616005)(4326008)(8676002)(36756003)(86362001)(54906003)(82310400005)(110136005)(40460700003)(41533002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 14:14:36.9344
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88c96bfa-04a9-456f-7eb4-08da22d81a03
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/19/22 6:07 AM, Pierre Morel wrote:
-> 
-> 
-> On 4/4/22 19:43, Matthew Rosato wrote:
->> The KVM_S390_ZPCI_OP ioctl provides a mechanism for managing
->> hardware-assisted virtualization features for s390X zPCI passthrough.
->> Add the first 2 operations, which can be used to enable/disable
->> the specified device for Adapter Event Notification interpretation.
->>
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>   Documentation/virt/kvm/api.rst | 45 +++++++++++++++++++++++
->>   arch/s390/kvm/kvm-s390.c       | 23 ++++++++++++
->>   arch/s390/kvm/pci.c            | 65 ++++++++++++++++++++++++++++++++++
->>   arch/s390/kvm/pci.h            |  2 ++
->>   include/uapi/linux/kvm.h       | 31 ++++++++++++++++
->>   5 files changed, 166 insertions(+)
->>
->> diff --git a/Documentation/virt/kvm/api.rst 
->> b/Documentation/virt/kvm/api.rst
->> index d13fa6600467..474f502c2ea0 100644
->> --- a/Documentation/virt/kvm/api.rst
->> +++ b/Documentation/virt/kvm/api.rst
->> @@ -5645,6 +5645,51 @@ enabled with ``arch_prctl()``, but this may 
->> change in the future.
->>   The offsets of the state save areas in struct kvm_xsave follow the 
->> contents
->>   of CPUID leaf 0xD on the host.
->> +4.135 KVM_S390_ZPCI_OP
->> +--------------------
->> +
->> +:Capability: KVM_CAP_S390_ZPCI_OP
->> +:Architectures: s390
->> +:Type: vcpu ioctl
->> +:Parameters: struct kvm_s390_zpci_op (in)
->> +:Returns: 0 on success, <0 on error
->> +
->> +Used to manage hardware-assisted virtualization features for zPCI 
->> devices.
->> +
->> +Parameters are specified via the following structure::
->> +
->> +  struct kvm_s390_zpci_op {
->> +    /* in */
->> +    __u32 fh;        /* target device */
->> +    __u8  op;        /* operation to perform */
->> +    __u8  pad[3];
->> +    union {
->> +        /* for KVM_S390_ZPCIOP_REG_AEN */
->> +        struct {
->> +            __u64 ibv;    /* Guest addr of interrupt bit vector */
->> +            __u64 sb;    /* Guest addr of summary bit */
->> +            __u32 flags;
->> +            __u32 noi;    /* Number of interrupts */
->> +            __u8 isc;    /* Guest interrupt subclass */
->> +            __u8 sbo;    /* Offset of guest summary bit vector */
->> +            __u16 pad;
->> +        } reg_aen;
->> +        __u64 reserved[8];
->> +    } u;
->> +  };
->> +
->> +The type of operation is specified in the "op" field.
->> +KVM_S390_ZPCIOP_REG_AEN is used to register the VM for adapter event
->> +notification interpretation, which will allow firmware delivery of 
->> adapter
->> +events directly to the vm, with KVM providing a backup delivery 
->> mechanism;
->> +KVM_S390_ZPCIOP_DEREG_AEN is used to subsequently disable 
->> interpretation of
->> +adapter event notifications.
->> +
->> +The target zPCI function must also be specified via the "fh" field.  
->> For the
->> +KVM_S390_ZPCIOP_REG_AEN operation, additional information to 
->> establish firmware
->> +delivery must be provided via the "reg_aen" struct.
->> +
->> +The "reserved" field is meant for future extensions.
->>   5. The kvm_run structure
->>   ========================
->> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->> index 704d85214f4f..65a53e22f686 100644
->> --- a/arch/s390/kvm/kvm-s390.c
->> +++ b/arch/s390/kvm/kvm-s390.c
->> @@ -616,6 +616,12 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, 
->> long ext)
->>       case KVM_CAP_S390_PROTECTED:
->>           r = is_prot_virt_host();
->>           break;
->> +    case KVM_CAP_S390_ZPCI_OP:
->> +        if (kvm_s390_pci_interp_allowed())
->> +            r = 1;
->> +        else
->> +            r = 0;
->> +        break;
->>       default:
->>           r = 0;
->>       }
->> @@ -2621,6 +2627,23 @@ long kvm_arch_vm_ioctl(struct file *filp,
->>               r = -EFAULT;
->>           break;
->>       }
->> +    case KVM_S390_ZPCI_OP: {
->> +        struct kvm_s390_zpci_op args;
->> +
->> +        r = -EINVAL;
->> +        if (!IS_ENABLED(CONFIG_VFIO_PCI))
->> +            break;
->> +        if (copy_from_user(&args, argp, sizeof(args))) {
->> +            r = -EFAULT;
->> +            break;
->> +        }
->> +        r = kvm_s390_pci_zpci_op(kvm, &args);
->> +        if (r)
->> +            break;
->> +        if (copy_to_user(argp, &args, sizeof(args)))
->> +            r = -EFAULT;
->> +        break;
->> +    }
->>       default:
->>           r = -ENOTTY;
->>       }
->> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
->> index 66565f5f3f43..d941657bcb39 100644
->> --- a/arch/s390/kvm/pci.c
->> +++ b/arch/s390/kvm/pci.c
->> @@ -588,6 +588,71 @@ void kvm_s390_pci_clear_list(struct kvm *kvm)
->>           unregister_kvm(kzdev->zdev);
->>   }
->> +static struct kvm_zdev *get_kzdev_by_fh(struct kvm *kvm, u32 fh)
->> +{
->> +    struct kvm_zdev *kzdev, *retval = NULL;
->> +
->> +    spin_lock(&kvm->arch.kzdev_list_lock);
->> +    list_for_each_entry(kzdev, &kvm->arch.kzdev_list, entry) {
->> +        if (kzdev->zdev->fh == fh) {
->> +            retval = kzdev;
->> +            break;
->> +        }
->> +    }
->> +    spin_unlock(&kvm->arch.kzdev_list_lock);
->> +
->> +    return retval;
->> +}
->> +
->> +static int kvm_s390_pci_zpci_reg_aen(struct zpci_dev *zdev,
->> +                     struct kvm_s390_zpci_op *args)
->> +{
->> +    struct zpci_fib fib = {};
->> +
->> +    fib.fmt0.aibv = args->u.reg_aen.ibv;
->> +    fib.fmt0.isc = args->u.reg_aen.isc;
->> +    fib.fmt0.noi = args->u.reg_aen.noi;
->> +    if (args->u.reg_aen.sb != 0) {
->> +        fib.fmt0.aisb = args->u.reg_aen.sb;
->> +        fib.fmt0.aisbo = args->u.reg_aen.sbo;
->> +        fib.fmt0.sum = 1;
->> +    } else {
->> +        fib.fmt0.aisb = 0;
->> +        fib.fmt0.aisbo = 0;
->> +        fib.fmt0.sum = 0;
->> +    }
->> +
->> +    if (args->u.reg_aen.flags & KVM_S390_ZPCIOP_REGAEN_HOST)
->> +        return kvm_s390_pci_aif_enable(zdev, &fib, true);
->> +    else
->> +        return kvm_s390_pci_aif_enable(zdev, &fib, false);
->> +}
->> +
->> +int kvm_s390_pci_zpci_op(struct kvm *kvm, struct kvm_s390_zpci_op *args)
->> +{
->> +    struct kvm_zdev *kzdev;
->> +    struct zpci_dev *zdev;
->> +    int r;
->> +
->> +    kzdev = get_kzdev_by_fh(kvm, args->fh);
->> +    if (!kzdev)
->> +        return -ENODEV;
->> +    zdev = kzdev->zdev;
->> +
->> +    switch (args->op) {
->> +    case KVM_S390_ZPCIOP_REG_AEN:
->> +        r = kvm_s390_pci_zpci_reg_aen(zdev, args);
->> +        break;
->> +    case KVM_S390_ZPCIOP_DEREG_AEN:
->> +        r = kvm_s390_pci_aif_disable(zdev, false);
->> +        break;
->> +    default:
->> +        r = -EINVAL;
->> +    }
->> +
->> +    return r;
->> +}
->> +
->>   int kvm_s390_pci_init(void)
->>   {
->>       aift = kzalloc(sizeof(struct zpci_aift), GFP_KERNEL);
->> diff --git a/arch/s390/kvm/pci.h b/arch/s390/kvm/pci.h
->> index cb5ec3208923..b053b50c0904 100644
->> --- a/arch/s390/kvm/pci.h
->> +++ b/arch/s390/kvm/pci.h
->> @@ -59,6 +59,8 @@ void kvm_s390_pci_aen_exit(void);
->>   void kvm_s390_pci_init_list(struct kvm *kvm);
->>   void kvm_s390_pci_clear_list(struct kvm *kvm);
->> +int kvm_s390_pci_zpci_op(struct kvm *kvm, struct kvm_s390_zpci_op 
->> *args);
->> +
->>   int kvm_s390_pci_init(void);
->>   static inline bool kvm_s390_pci_interp_allowed(void)
->> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
->> index 91a6fe4e02c0..014adb30d42c 100644
->> --- a/include/uapi/linux/kvm.h
->> +++ b/include/uapi/linux/kvm.h
->> @@ -1144,6 +1144,7 @@ struct kvm_ppc_resize_hpt {
->>   #define KVM_CAP_S390_MEM_OP_EXTENSION 211
->>   #define KVM_CAP_PMU_CAPABILITY 212
->>   #define KVM_CAP_DISABLE_QUIRKS2 213
->> +#define KVM_CAP_S390_ZPCI_OP 214
->>   #ifdef KVM_CAP_IRQ_ROUTING
->> @@ -2060,4 +2061,34 @@ struct kvm_stats_desc {
->>   /* Available with KVM_CAP_XSAVE2 */
->>   #define KVM_GET_XSAVE2          _IOR(KVMIO,  0xcf, struct kvm_xsave)
->> +/* Available with KVM_CAP_S390_ZPCI_OP */
->> +#define KVM_S390_ZPCI_OP      _IOW(KVMIO,  0xd0, struct 
->> kvm_s390_zpci_op)
->> +
->> +struct kvm_s390_zpci_op {
->> +    /* in */
->> +    __u32 fh;        /* target device */
->> +    __u8  op;        /* operation to perform */
->> +    __u8  pad[3];
->> +    union {
->> +        /* for KVM_S390_ZPCIOP_REG_AEN */
->> +        struct {
->> +            __u64 ibv;    /* Guest addr of interrupt bit vector */
->> +            __u64 sb;    /* Guest addr of summary bit */
->> +            __u32 flags;
->> +            __u32 noi;    /* Number of interrupts */
->> +            __u8 isc;    /* Guest interrupt subclass */
->> +            __u8 sbo;    /* Offset of guest summary bit vector */
->> +            __u16 pad;
->> +        } reg_aen;
->> +        __u64 reserved[8];
->> +    } u;
->> +};
->> +
->> +/* types for kvm_s390_zpci_op->op */
->> +#define KVM_S390_ZPCIOP_REG_AEN        0
->> +#define KVM_S390_ZPCIOP_DEREG_AEN    1
->> +
->> +/* flags for kvm_s390_zpci_op->u.reg_aen.flags */
->> +#define KVM_S390_ZPCIOP_REGAEN_HOST    (1 << 0)
->> +
->>   #endif /* __LINUX_KVM_H */
->>
-> 
-> 
-> The purpose is to setup the IRQ for the zPCI device wouldn't it be more 
-> logical to go through VFIO_DEVICE_SET_IRQS and there jump to the zPCI 
-> handling, like it is done for the capabilities, instead to go directly 
-> through KVM?
-> We would also spare the research for the real FH in KVM.
-> 
+During patch review, it was decided the SNP guest driver name should not
+be SEV-SNP specific, but should be generic for use with anything SEV.
+However, this feedback was missed and the driver name, and many of the
+driver functions and structures, are SEV-SNP name specific. Rename the
+driver to "sev-guest" (to match the misc device that is created) and
+update some of the function and structure names, too.
 
-We need the host FH anyway -- for load/store intepretation, the guest 
-must be using the FH that the firmware expects.  Plus we need that FH 
-when issuing the MPCIFC op 2.  I guess maybe you mean the lookup (get 
-the exact device associated with this fd vs scanning the list of PCI 
-devices associated with this KVM).
+While in the file, adjust the one pr_err() message to be a dev_err()
+message so that the message, if issued, uses the driver name.
 
-One of the issues here is that, with load/store interpretation enabled, 
-vfio in QEMU will never get the config space notifiers triggered; these 
-are the things that end up calling vfio_enable_vectors() which will in 
-turn issue the VFIO_DEVICE_SET_IRQS (instead these guest config space 
-writes are executed interpretively)
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+---
+ arch/x86/include/asm/sev.h            |  2 +-
+ arch/x86/kernel/sev.c                 | 10 +++----
+ drivers/virt/coco/sevguest/sevguest.c | 39 ++++++++++++++-------------
+ 3 files changed, 27 insertions(+), 24 deletions(-)
 
-I did play around with this for a while, but if we were to call 
-VFIO_DEVICE_SET_IRQS ourselves from QEMU s390-pci instead of relying on 
-the config space notifier, we still have the issue of associating the 
-previously-established routes with the host function - because at the 
-end of it we need to issue a MPCIFC(2) specifying the host FH and 
-including the forwarding information (e.g. the work done in 
-kvm_s390_pci_aif_enable).  AFAICT today we can't derive the FH from 
-routes, that's where I got stuck.  But if you have an idea please share.
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 9c2d33f1cfee..6e3dda4f82b5 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -95,7 +95,7 @@ struct snp_req_data {
+ 	unsigned int data_npages;
+ };
+ 
+-struct snp_guest_platform_data {
++struct sev_guest_platform_data {
+ 	u64 secrets_gpa;
+ };
+ 
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index f01f4550e2c6..2fa87a07ab30 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -2166,8 +2166,8 @@ int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, unsigned
+ }
+ EXPORT_SYMBOL_GPL(snp_issue_guest_request);
+ 
+-static struct platform_device guest_req_device = {
+-	.name		= "snp-guest",
++static struct platform_device sev_guest_device = {
++	.name		= "sev-guest",
+ 	.id		= -1,
+ };
+ 
+@@ -2197,7 +2197,7 @@ static u64 get_secrets_page(void)
+ 
+ static int __init snp_init_platform_device(void)
+ {
+-	struct snp_guest_platform_data data;
++	struct sev_guest_platform_data data;
+ 	u64 gpa;
+ 
+ 	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
+@@ -2208,10 +2208,10 @@ static int __init snp_init_platform_device(void)
+ 		return -ENODEV;
+ 
+ 	data.secrets_gpa = gpa;
+-	if (platform_device_add_data(&guest_req_device, &data, sizeof(data)))
++	if (platform_device_add_data(&sev_guest_device, &data, sizeof(data)))
+ 		return -ENODEV;
+ 
+-	if (platform_device_register(&guest_req_device))
++	if (platform_device_register(&sev_guest_device))
+ 		return -ENODEV;
+ 
+ 	pr_info("SNP guest platform device initialized.\n");
+diff --git a/drivers/virt/coco/sevguest/sevguest.c b/drivers/virt/coco/sevguest/sevguest.c
+index aaa6134d1d40..f3b93bd92f2f 100644
+--- a/drivers/virt/coco/sevguest/sevguest.c
++++ b/drivers/virt/coco/sevguest/sevguest.c
+@@ -1,14 +1,12 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * AMD Secure Encrypted Virtualization Nested Paging (SEV-SNP) guest request interface
++ * AMD Secure Encrypted Virtualization (SEV) guest driver interface
+  *
+  * Copyright (C) 2021 Advanced Micro Devices, Inc.
+  *
+  * Author: Brijesh Singh <brijesh.singh@amd.com>
+  */
+ 
+-#define pr_fmt(fmt) "SNP: GUEST: " fmt
+-
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/types.h>
+@@ -574,7 +572,7 @@ static void free_shared_pages(void *buf, size_t sz)
+ 	__free_pages(virt_to_page(buf), get_order(sz));
+ }
+ 
+-static void *alloc_shared_pages(size_t sz)
++static void *alloc_shared_pages(struct device *dev, size_t sz)
+ {
+ 	unsigned int npages = PAGE_ALIGN(sz) >> PAGE_SHIFT;
+ 	struct page *page;
+@@ -586,7 +584,7 @@ static void *alloc_shared_pages(size_t sz)
+ 
+ 	ret = set_memory_decrypted((unsigned long)page_address(page), npages);
+ 	if (ret) {
+-		pr_err("failed to mark page shared, ret=%d\n", ret);
++		dev_err(dev, "failed to mark page shared, ret=%d\n", ret);
+ 		__free_pages(page, get_order(sz));
+ 		return NULL;
+ 	}
+@@ -627,10 +625,10 @@ static u8 *get_vmpck(int id, struct snp_secrets_page_layout *layout, u32 **seqno
+ 	return key;
+ }
+ 
+-static int __init snp_guest_probe(struct platform_device *pdev)
++static int __init sev_guest_probe(struct platform_device *pdev)
+ {
+ 	struct snp_secrets_page_layout *layout;
+-	struct snp_guest_platform_data *data;
++	struct sev_guest_platform_data *data;
+ 	struct device *dev = &pdev->dev;
+ 	struct snp_guest_dev *snp_dev;
+ 	struct miscdevice *misc;
+@@ -639,7 +637,7 @@ static int __init snp_guest_probe(struct platform_device *pdev)
+ 	if (!dev->platform_data)
+ 		return -ENODEV;
+ 
+-	data = (struct snp_guest_platform_data *)dev->platform_data;
++	data = (struct sev_guest_platform_data *)dev->platform_data;
+ 	layout = (__force void *)ioremap_encrypted(data->secrets_gpa, PAGE_SIZE);
+ 	if (!layout)
+ 		return -ENODEV;
+@@ -667,15 +665,15 @@ static int __init snp_guest_probe(struct platform_device *pdev)
+ 	snp_dev->layout = layout;
+ 
+ 	/* Allocate the shared page used for the request and response message. */
+-	snp_dev->request = alloc_shared_pages(sizeof(struct snp_guest_msg));
++	snp_dev->request = alloc_shared_pages(dev, sizeof(struct snp_guest_msg));
+ 	if (!snp_dev->request)
+ 		goto e_unmap;
+ 
+-	snp_dev->response = alloc_shared_pages(sizeof(struct snp_guest_msg));
++	snp_dev->response = alloc_shared_pages(dev, sizeof(struct snp_guest_msg));
+ 	if (!snp_dev->response)
+ 		goto e_free_request;
+ 
+-	snp_dev->certs_data = alloc_shared_pages(SEV_FW_BLOB_MAX_SIZE);
++	snp_dev->certs_data = alloc_shared_pages(dev, SEV_FW_BLOB_MAX_SIZE);
+ 	if (!snp_dev->certs_data)
+ 		goto e_free_response;
+ 
+@@ -698,7 +696,7 @@ static int __init snp_guest_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto e_free_cert_data;
+ 
+-	dev_info(dev, "Initialized SNP guest driver (using vmpck_id %d)\n", vmpck_id);
++	dev_info(dev, "Initialized SEV guest driver (using vmpck_id %d)\n", vmpck_id);
+ 	return 0;
+ 
+ e_free_cert_data:
+@@ -712,7 +710,7 @@ static int __init snp_guest_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
+-static int __exit snp_guest_remove(struct platform_device *pdev)
++static int __exit sev_guest_remove(struct platform_device *pdev)
+ {
+ 	struct snp_guest_dev *snp_dev = platform_get_drvdata(pdev);
+ 
+@@ -725,16 +723,21 @@ static int __exit snp_guest_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static struct platform_driver snp_guest_driver = {
+-	.remove		= __exit_p(snp_guest_remove),
++/*
++ * This driver is a common SEV guest interface driver and meant to support
++ * any SEV guest API. As such, even though it has been introduced along with
++ * the SEV-SNP support, it is named "sev-guest".
++ */
++static struct platform_driver sev_guest_driver = {
++	.remove		= __exit_p(sev_guest_remove),
+ 	.driver		= {
+-		.name = "snp-guest",
++		.name = "sev-guest",
+ 	},
+ };
+ 
+-module_platform_driver_probe(snp_guest_driver, snp_guest_probe);
++module_platform_driver_probe(sev_guest_driver, sev_guest_probe);
+ 
+ MODULE_AUTHOR("Brijesh Singh <brijesh.singh@amd.com>");
+ MODULE_LICENSE("GPL");
+ MODULE_VERSION("1.0.0");
+-MODULE_DESCRIPTION("AMD SNP Guest Driver");
++MODULE_DESCRIPTION("AMD SEV Guest Driver");
+-- 
+2.34.1
+
