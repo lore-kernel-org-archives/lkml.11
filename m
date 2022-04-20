@@ -2,132 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B694C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378936AbiDTNYd (ORCPT
+        id S1378941AbiDTNZC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        Wed, 20 Apr 2022 09:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233144AbiDTNYa (ORCPT
+        with ESMTP id S233144AbiDTNZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:24:30 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F04427FF;
-        Wed, 20 Apr 2022 06:21:43 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z99so2270594ede.5;
-        Wed, 20 Apr 2022 06:21:43 -0700 (PDT)
+        Wed, 20 Apr 2022 09:25:00 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7890A427FF
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:22:14 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id lc2so3466130ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:22:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=yTrKoeSx5DVhv4GKSGEZu42X2Dj3HZfus9gjzjDWtLo=;
-        b=jZdbFV5860QLbLI4Aa30pkXGVvf+mub3Ozvr8NOYxoqL2q2lY6k1RukB4ekJ9Ge9vE
-         5HusUBWHxsYowhC1HNVmkARaR784eKvj8c8Px5UmFTpgoL6Fo+/iaeVOzrkqLwo9teQV
-         f23FzTjLkEgi/dZpwJZACmP4vgT46hbuJY8Qo+ZlkdLXo9tdGQEnv8ULNf2sdgELeVVO
-         6S/JPmxEcZzYdosOKNEeph3F+ozBkNtZyttgwTpbQekwTLC7Ur7whgHT2bZwEKN0yoXE
-         /z3tLz2NHCZ59F4caRfn5BT4fMk7f0vJY3IiSxMp3gs4y2oWPlwk5ng7YlDYtCaWKFUG
-         wk2A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ng4rT6I4vcHmv4/7ezO3PQ9fpnN0wzaNSUcZ6IscV4k=;
+        b=hisOYUiR4cenD1rp5qPKSBG+WAk64wKCLuwUm8RftXBLSnJNAj+b10FaYqJQ3H8Y9I
+         Ll8ySPsAvRZBbFLxQqCxiKgJ0Raz+OKxSEH123P/ID9N4IMOW/8S2ZkWhDmPtn4DAB/m
+         CJXmIRJgEXBZ86KiTOsgJKbzAQqulyO6SC+rF1OBjPNBAOlcac+iA0cVT2Zag6WtfN5n
+         hByBi+9SfZHZRP99RvjAjR8Z+1Dv2JwgaaEJBwfKpHlGXP9Cqug0aiqIne7waUJcKbUf
+         gdKJgXh+ank2b2a3ZSQAavn0rdJK8My3fLILeOefKuQTSWeoq0kT/7SmppbOo6yXDD9L
+         H7QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=yTrKoeSx5DVhv4GKSGEZu42X2Dj3HZfus9gjzjDWtLo=;
-        b=ASAXt+JCyQLCmCl4G3UTOZGj556VPVdJS66IYLdsW7i8/unSx6DCIV6Ja53iJS1mq9
-         2hE0sKWzmRYDpccCd8IkSxYkRLFUSePKCBn7lAims+07H+zO4UJBRx/47rUOVK+h4zzh
-         XfGEBB/oBSMFJtS5L2UbUnR04px+BPpAzeptaK30puscpsRrrhbRwafY1LRzsqN3lzVO
-         qJkjDcDsGBRzrkMlLmWWQh4Vksvzu/ic36QYE5ElnqgoYDwaUzhrF6Xgc9ylttuIj78+
-         jQlIoEQToefs0Wf523byGeqvLgELpTc1FdHVemA9XsPH9e/I3aruNn/BDW4/kKAPPvPG
-         7ReA==
-X-Gm-Message-State: AOAM531CTFy9z8LCqZTBoHrUMagP6yE7+g8Ofw7GysKwjVnellIfrUau
-        gbTwp8G0M8cXwvyWQ5EelFE=
-X-Google-Smtp-Source: ABdhPJzcEcvHPxV6MF5NXWWou4veSt8SMjyDNTprQ4qC/0zHlveZsQAso1FXieKDqSDP6jt5ZtjyEg==
-X-Received: by 2002:a05:6402:3592:b0:423:d71e:41dc with SMTP id y18-20020a056402359200b00423d71e41dcmr20806464edc.402.1650460902000;
-        Wed, 20 Apr 2022 06:21:42 -0700 (PDT)
-Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.googlemail.com with ESMTPSA id g24-20020a056402321800b00423e43ebb60sm4827837eda.61.2022.04.20.06.21.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ng4rT6I4vcHmv4/7ezO3PQ9fpnN0wzaNSUcZ6IscV4k=;
+        b=faGGspw3AedWwV3onWueWBb6ZZpEcINrSftYGphHjaqtKimjueonc0pM+R6MY4vz5n
+         xTpXk3N7RrzqSB0+9FCGEtZZMEF3NQtLLHr4vtPVnsmm8gTVlOZ/pgSEPFwKXiullnJy
+         t/xsXZXEK6uoNgOCpx9zS7UYTbg2TrSUkTCAUTH7wkvUQ7l7mgT2dLLd7UD2/KLgrdqV
+         /aU6Owyn34tvAUldNn9b2DK1XVyCxSlrwY4jutnon5ZmRlPVzwWf3VMaVRkN95/ttijt
+         3/o/cJevLZT1Wl3okNCNGm0d4Y9AdT69SSxhFjq376dmlbzBS3BY7eMoBnpY/J9+O1n9
+         L6YA==
+X-Gm-Message-State: AOAM530Gv5PmiaA1aQvNNHFjiHACrnEeFZk/XqVPwmq/DkwFClORKzzF
+        Zh730IzlDXED9lCEjPsMAP4=
+X-Google-Smtp-Source: ABdhPJwU9wCOFteWozSkt5bu3lmUNtDTL6NNULRKJcKJoaUjbAjkFKxtS6lDaecx+VwibuEjcyEeBQ==
+X-Received: by 2002:a17:906:60c2:b0:6e7:681e:b4b7 with SMTP id f2-20020a17090660c200b006e7681eb4b7mr18667712ejk.130.1650460932892;
+        Wed, 20 Apr 2022 06:22:12 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id w7-20020a1709061f0700b006ec8197e8a4sm6255708ejj.97.2022.04.20.06.22.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 06:21:41 -0700 (PDT)
-Message-ID: <d26393a3323dc646df88fb09ee47d712c80eafc9.camel@gmail.com>
-Subject: Re: [PATCH v2 4/5] scsi: ufshpb: Add handing of device reset HPB
- regions Infos in HPB device mode
-From:   Bean Huo <huobean@gmail.com>
-To:     keosung.park@samsung.com, ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "asutoshd@codeaurora.org" <asutoshd@codeaurora.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "tomas.winkler@intel.com" <tomas.winkler@intel.com>,
-        "cang@codeaurora.org" <cang@codeaurora.org>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "powen.kao@mediatek.com" <powen.kao@mediatek.com>,
-        "peter.wang@mediatek.com" <peter.wang@mediatek.com>,
-        cpgsproxy3 <cpgsproxy3@samsung.com>
-Cc:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Wed, 20 Apr 2022 15:21:41 +0200
-In-Reply-To: <1381713434.41650433982422.JavaMail.epsvc@epcpadp4>
-References: <20220419183044.789065-5-huobean@gmail.com>
-         <20220419183044.789065-1-huobean@gmail.com>
-         <CGME20220419183934epcas2p28272bfd9167253c2d9136c60f9050c5f@epcms2p7>
-         <1381713434.41650433982422.JavaMail.epsvc@epcpadp4>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0-1 
+        Wed, 20 Apr 2022 06:22:11 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Julia Lawall <julia.lawall@inria.fr>, ira.weiny@intel.com
+Cc:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
+        outreachy@lists.linux.dev, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] xen:  Convert kmap() to kmap_local_page()
+Date:   Wed, 20 Apr 2022 15:22:10 +0200
+Message-ID: <2940450.687JKscXgg@leap>
+In-Reply-To: <alpine.DEB.2.22.394.2204200759080.2937@hadrien>
+References: <20220419234328.10346-1-eng.alaamohamedsoliman.am@gmail.com> <alpine.DEB.2.22.394.2204200759080.2937@hadrien>
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-20 at 14:31 +0900, Keoseong Park wrote:
-> > +/**
-> > + *ufshpb_submit_region_inactive() - submit a region to be
-> > inactivated later
-> > + *@hpb: per-LU HPB instance
-> > + *@region_index: the index associated with the region that will be
-> > inactivated later
-> > + */
-> > +static void ufshpb_submit_region_inactive(struct ufshpb_lu *hpb,
-> > int region_index)
-> > +{
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int subregion_index;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ufshpb_region *rgn;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ufshpb_subregion *sr=
-gn;
-> > +
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /*
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Remove this region =
-from active region list and add it
-> > to inactive list
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_lock(&hpb->rsp_list_lo=
-ck);
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ufshpb_update_inactive_info=
-(hpb, region_index);
-> How about separating the "hpb->stats.rb_inactive_cnt++" code from
-> ufshpb_update_inactive_info()?
-> Because I think this code should only be used in
-> ufshpb_rsp_req_region_update().
+On mercoled=C3=AC 20 aprile 2022 08:03:05 CEST Julia Lawall wrote:
+>=20
+> On Wed, 20 Apr 2022, Alaa Mohamed wrote:
+>=20
+> > kmap() is being deprecated and these usages are all local to the thread
+> > so there is no reason kmap_local_page() can't be used.
+> >
+> > Replace kmap() calls with kmap_local_page().
+>=20
+> OK, so from a Coccinelle point of view, could we do
+>=20
+> @@
+> expression e1,e2,x,f;
+> @@
+>=20
+> e1 =3D
+> - kmap
+> + kmap_local_page
+>     (e2)
+> ... when !=3D x =3D e1 // not stored in any location and not passed to=20
+another function
+>     when !=3D f(...,e1,...)
+>     when !=3D x =3D e2
+>     when !=3D f(...,e2,...)
+> -kunmap(e2)
+> +kunmap_local(e1)
+>=20
+> julia
+>=20
+
+I've never spent sufficient time to understand properly the syntax and=20
+semantics of expressions of Coccinelle. However, thanks Julia, this code=20
+looks good and can be very helpful.
+
+Only a minor objection... it doesn't tell when 'e2' has been allocated=20
+within the same function where the kmap() call is.
+
+In the particular case that I cite above, I'd prefer to remove the=20
+allocation of the page (say with alloc_page()) and convert kmap() /kunmap()=
+=20
+to use kmalloc() / kfree().=20
+
+=46ox example, this is done in the following patch:
+
+commit 633b0616cfe0 ("x86/sgx: Remove unnecessary kmap() from=20
+sgx_ioc_enclave_init()") from Ira Weiny.
+
+Can Coccinelle catch also those special cases where a page that is passed=20
+to kmap() is allocated within that same function (vs. being passed as=20
+argument to this function) and, if so, propose a replacement with=20
+kmalloc()?
+
+Thanks,
+
+=46abio
 
 
-based on Documentation/ABI/testing/sysfs-driver-ufs:
 
-"What:       /sys/class/scsi_device/*/device/hpb_stats/rb_inactive_cnt
-Date:       June 2021
-Contact:    Daejun Park <daejun7.park@samsung.com>
-Description:    This entry shows the number of inactive regions
-recommended by  response UPIUs."
-
-
-This parameter should be increased only when recieving inactive
-recommended.
-
-I will change it in the next version, thanks.
-
-
-Kind regards,
-Bean
