@@ -2,131 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 609E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 23:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9467DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 23:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354986AbiDTXNY (ORCPT
+        id S1383132AbiDTXNw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 19:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54508 "EHLO
+        Wed, 20 Apr 2022 19:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383099AbiDTXNO (ORCPT
+        with ESMTP id S1383122AbiDTXNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 19:13:14 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A19111A08
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 16:10:27 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-e5e8523fcbso3622753fac.10
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 16:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TRei6a1qHKhnvQ3GEDyy4E1WwK9zRMbycKgIfFir6MI=;
-        b=aicu3OOVauGYbi8Leet6cjCpJNEgBJymsZ53QG5imPcqz+s0HavG6bOHqFTs66yXIv
-         LrBNrePj1v5MHkeJVRGkNxlEl4w8DZeajSPgP4ajg2fo0tpcYidi6/McS2LDw9BkQUZS
-         r2a/rcaqJ5rb8AH4YWOmMMNcZ9dZ/NrIz/2dLjfJAOAhMPDZiZEkIzZfD/ELmXSU12W5
-         w3BhYqm0iLRcUZ3zYV6DJgIPvHxd0IAK+TkTwur23IHBuYYHbOErXj+E8w/RhFeP6ibL
-         kjTYwtJXxLTUoJb0vT2X+frl2s81XACMBnaR4bw4+tn8zgLS5xDLAUqoQ6X9QHutROOZ
-         0GUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TRei6a1qHKhnvQ3GEDyy4E1WwK9zRMbycKgIfFir6MI=;
-        b=bTmnoBHlDTWf9iOWpdkgAFLpmnb6NCXlnrXIMwUuzX2utbrfMRJEDWhBa+1ZjWwz1l
-         s5R+MqigiB7q+8JCpM1owd5R581Dm+p+ZYGcp2eNkw4w6ZiPcehnaG/OAKXzTqjZCBTb
-         h4A0vl55FsRGo3030rlbYFdZtCOHHvCdBfPVL2hxJce+n6dFitUJK6DEYcirEj4GIi05
-         FRnzFABZcxHua3Yoo0IwZyvJPKOYYaD61kOzFCipeFwp09uCWFRmjzekMDDe3O1j9cho
-         95jagY3dP2v09txomS1kV4dEY12Q6pSzPnvYpAd/KiKqQaOBc+Qb4oHX6QbmKMTUYhqH
-         qRdA==
-X-Gm-Message-State: AOAM533hQGEGpZ1e9jUqfiGC6aPljda797s8r7nvaPOJjKqLOgN3qkg3
-        vjURTOV11G3Uh6wjeXNzpyaNTw==
-X-Google-Smtp-Source: ABdhPJwFhn3WUPESS5w8sSu50szxQr6qmD32XDF7sWlOuuj5eugzUOUVYzym5mk0Jr/OIAp4Jq2Jiw==
-X-Received: by 2002:a05:6871:1d0:b0:da:b3f:2b28 with SMTP id q16-20020a05687101d000b000da0b3f2b28mr2674159oad.199.1650496226847;
-        Wed, 20 Apr 2022 16:10:26 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id a17-20020a4ae931000000b0032933be7230sm7424481ooe.4.2022.04.20.16.10.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 16:10:26 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Rob Clark <robdclark@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or bridge"
-Date:   Wed, 20 Apr 2022 16:12:30 -0700
-Message-Id: <20220420231230.58499-2-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220420231230.58499-1-bjorn.andersson@linaro.org>
-References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
+        Wed, 20 Apr 2022 19:13:49 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9550B2AD5;
+        Wed, 20 Apr 2022 16:11:01 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KkGcc0L9Pz4xPw;
+        Thu, 21 Apr 2022 09:10:56 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650496257;
+        bh=UEENmFCiIHc6YhyKwFZra1jHcWhXySN9kSsLIlKLjUw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=o+ONvwfnDuKmbB7SEilZ0xzNQcuYYiu4R8QcUxan71bpCSH0mXe69+Am9Lsy/a4IF
+         NuAvWz45K0MXOPUK39Vl+4QeUCCUal1aSxfUwlqhyjLTmdwvbAYK7MXBu35Pe92Dgu
+         q/+yHwS/EdktLrXe181hwGPhgYxqQgpAs4DTzboH/y13uhfLJ4XVIEUzdCuxCi92Of
+         XIwqi7JB/otHmoiwo+W/8C5JSkN2pP9oeTTXxkiPU2KfqkbOZx33sTlypVEWvyWNbv
+         bMB2BlDf+7UPZTSPpja2c+M6N5aPcMd9AckC+LJOj+5RMM4Cbyqk2eSRbFaSpIPk03
+         As17ZcS9WZaJg==
+Date:   Thu, 21 Apr 2022 09:10:55 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Caleb Connolly <kc@postmarketos.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tags need some work in the pinctrl tree
+Message-ID: <20220421091055.12d6465c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/uhSgl1LpokmC_rfP9NDKK0j";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit '80253168dbfd ("drm: of: Lookup if child node has panel or
-bridge")' attempted to simplify the case of expressing a simple panel
-under a DSI controller, by assuming that the first non-graph child node
-was a panel or bridge.
+--Sig_/uhSgl1LpokmC_rfP9NDKK0j
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Unfortunately for non-trivial cases the first child node might not be a
-panel or bridge.  Examples of this can be a aux-bus in the case of
-DisplayPort, or an opp-table represented before the panel node.
+Hi all,
 
-In these cases the reverted commit prevents the caller from ever finding
-a reference to the panel.
+In commit
 
-This reverts commit '80253168dbfd ("drm: of: Lookup if child node has
-panel or bridge")', in favor of using an explicit graph reference to the
-panel in the trivial case as well.
+  6548c9dc711d ("pinctrl/rockchip: support deferring other gpio params")
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/gpu/drm/drm_of.c | 17 -----------------
- 1 file changed, 17 deletions(-)
+Fixes tags
 
-diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-index 026e4e29a0f3..9a2cfab3a177 100644
---- a/drivers/gpu/drm/drm_of.c
-+++ b/drivers/gpu/drm/drm_of.c
-@@ -244,21 +244,6 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
- 	if (panel)
- 		*panel = NULL;
- 
--	/**
--	 * Devices can also be child nodes when we also control that device
--	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
--	 *
--	 * Lookup for a child node of the given parent that isn't either port
--	 * or ports.
--	 */
--	for_each_available_child_of_node(np, remote) {
--		if (of_node_name_eq(remote, "port") ||
--		    of_node_name_eq(remote, "ports"))
--			continue;
--
--		goto of_find_panel_or_bridge;
--	}
--
- 	/*
- 	 * of_graph_get_remote_node() produces a noisy error message if port
- 	 * node isn't found and the absence of the port is a legit case here,
-@@ -269,8 +254,6 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
- 		return -ENODEV;
- 
- 	remote = of_graph_get_remote_node(np, port, endpoint);
--
--of_find_panel_or_bridge:
- 	if (!remote)
- 		return -ENODEV;
- 
--- 
-2.35.1
+  Fixes: e7165b1d ("pinctrl/rockchip: add a queue for deferred pin output s=
+ettings on probe")
+  Fixes: 59dd178e ("gpio/rockchip: fetch deferred output settings on probe")
 
+have these problem(s):
+
+  - SHA1 should be at least 12 digits long
+    This can be fixed for the future by setting core.abbrev to 12 (or
+    more) or (for git v2.11 or later) just making sure it is not set
+    (or set to "auto").
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/uhSgl1LpokmC_rfP9NDKK0j
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJgkv8ACgkQAVBC80lX
+0GxROggAmKk1godPw5I1KXjFoE+D+O6KnZEuzJCu3Ixj8f03fidnY1u3f+aebD/T
+JkXNXcEEbyUh3Cz6539vqWfYL7xANz1iUhqX73g+6We3knLzFLlKLTc5n6/0Q2Bt
+KfIxS+6SBUkIwmByLPyHmVMFKNec/Y8Hv9E2BLRJ0hZXitLeK0UiVEjERhpCgUtG
+GpmANl75OM8WqeVfSuqf6oZtE7MEGIw8P8TrvHJQU70u4GZYm9o8X+a5n0xXD9r7
+qqrxRlcuS3P1AwYMUh2GkNh/nYPKU3tx5oXk3feWIViXTq78jhhmbzLwjlgLide3
+ccqCZxVaOJhO/F1fKXa0b9xNXyOTSQ==
+=MGJp
+-----END PGP SIGNATURE-----
+
+--Sig_/uhSgl1LpokmC_rfP9NDKK0j--
