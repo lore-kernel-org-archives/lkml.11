@@ -2,191 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E406C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C819C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:40:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381236AbiDTRjY (ORCPT
+        id S1349757AbiDTRmz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
+        Wed, 20 Apr 2022 13:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235570AbiDTRjW (ORCPT
+        with ESMTP id S237160AbiDTRmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 13:39:22 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02291EC74;
-        Wed, 20 Apr 2022 10:36:35 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2ef4a241cc5so26269767b3.2;
-        Wed, 20 Apr 2022 10:36:35 -0700 (PDT)
+        Wed, 20 Apr 2022 13:42:51 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9971B43ADF;
+        Wed, 20 Apr 2022 10:40:04 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id x33so4311302lfu.1;
+        Wed, 20 Apr 2022 10:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fDm0hCeP1iuF9WL7RiqDe/J3rtlxPQX1zeA/vezHRa0=;
+        b=WA6ZRCaU3cdlumlpbvWHxfloi03BAMhbknENhqsaWPbHRTCv9SZOTLs6l5atjl/rNB
+         WhDgJgxuFoJ/Qjj/q6o0HjImWWNexAoe3iis41zRi8T7cp+cNxoIeLsaIrzGx7M+aP5f
+         yTAUWAt+k6SrK4lNorKyp7zkayVMzWGHtU826B3wT4VF+PqS8rhJhhQw+6nzVJOpHjPO
+         Z+fl0//75bOefoMVkqelSYCTT7/Fe7c10WZtohovtXDzsn3PyILek6foHM5/OQmQFSLW
+         u1+mJd34DWLpm19EGHWC0J1RcHPjVNnGwatLnAkk0E4lmNtGfNVpgiVhfCCchSqTE+cC
+         Tr+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aSRYCi9Gu592mc1yy2JGCfSHyy3Om8/ZMl9fXbJ4VAk=;
-        b=ryiG9d/g0nAi1suycm097/0o0XNUzQhQjQg2vmNWQnRIOguh9XoKKkRSiJfbsSG5tc
-         vQCNo0+01j4eJ/mQfLJcTDSnBGx0HESqEoorumqIjkHocbCnSVc5AO2hUQaKCxpHJfD2
-         s2KMfwrawC2ufC8pAbxBn3W72mUZ9NI9d2oRXgGfz3PXSI7erLu0Q5MD0XOYyaXX78Sx
-         fg4hKI+bEsO3JvRcsXv0Sn1ykDteglvIOY2N+CC+1I/iYweTYb6H0HU6WcExdZlSZYJ7
-         l1WkMOsOj3TKNwSoKoqzcdVgM+5SFmr28Y80vxOn2DL/VKlgEYe2TJ7csyQhLyEt5Bjs
-         x9DA==
-X-Gm-Message-State: AOAM5303P3RyWlc6t0fECgadJ9ipaqrwLxeq39r1vXCOuBSgSkxTb02D
-        kFvVqgxkjJt2E26sxkyIsRmjrANlGzBEx4znGxY=
-X-Google-Smtp-Source: ABdhPJzNeFf91aJ2AcO4HxwsyceUmkMGZe3BT/sKo5s3TT3nCPguaeHFtXhd48Duxnk7AG97fF2bO/GqS3ZkGsIQMYE=
-X-Received: by 2002:a81:260a:0:b0:2f4:ca82:a42f with SMTP id
- m10-20020a81260a000000b002f4ca82a42fmr1985644ywm.149.1650476194968; Wed, 20
- Apr 2022 10:36:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fDm0hCeP1iuF9WL7RiqDe/J3rtlxPQX1zeA/vezHRa0=;
+        b=zdu1gMgQd6+MDp3H8S+NCcjuLHjg29gxBItxzhtBIdwItURUHeGDvVxDd7Mc09tuhc
+         4oUUPfWa+8mEi0zyGAq7GcVNFvvm5YRDMX78DVR8C5Iinw7UeEm5BXDXhei5gVf+G1mT
+         AG8R71Q4zAmHEtvlJ6CcP5NS/fhk/iO+FXA46+t6f3/RD/XHCToyooePf3PbLN75+T7u
+         lvG9VDHtV8lkQr2DwRgsbV34xOE86cDYZAS2W5GgHfI5Sv853ZA5K+MTAF37JVftQA4J
+         avGSEeR493mgbugCyRHNtobBOhgqvnjhU4CwvU+xYZz3pZsFzuhc/3gw2d10pKpgkTcq
+         F4Cg==
+X-Gm-Message-State: AOAM533Nzb5cLxGlJXU9gTDaSRq0L8vJ+19cmOs2DzZXm9rIccZNRuMt
+        knmk/celBkcCvJHMFaB9GwA=
+X-Google-Smtp-Source: ABdhPJxge8XTkpASmraJ0VjrGWjf9n/ju/ayI7pvlM3z8AJpfQOWU1Cqk3TRPVw0hpSrfMk+YQhJmQ==
+X-Received: by 2002:a05:6512:1504:b0:44b:36e:b50d with SMTP id bq4-20020a056512150400b0044b036eb50dmr15640332lfb.558.1650476402746;
+        Wed, 20 Apr 2022 10:40:02 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:9cae:8c00:9682:e720:334f:2fac? (dxw3k4yf2tnxwyp6sg02y-3.rev.dnainternet.fi. [2001:14ba:9cae:8c00:9682:e720:334f:2fac])
+        by smtp.gmail.com with ESMTPSA id s17-20020a195e11000000b0046eec768984sm1785063lfb.200.2022.04.20.10.40.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 10:40:02 -0700 (PDT)
+Message-ID: <90e11a93-4f3a-2209-2bc2-acfb791b8ac0@gmail.com>
+Date:   Wed, 20 Apr 2022 20:40:08 +0300
 MIME-Version: 1.0
-References: <20220411233832.391817-1-dmitry.osipenko@collabora.com>
- <20220411233832.391817-4-dmitry.osipenko@collabora.com> <CAJZ5v0gf1J+yPW14TAdLGLGfO+-2s=r0DDP7d+Rgop3=dB0gaQ@mail.gmail.com>
- <af51d9d0-26ba-fc66-05f1-d92ef7172730@collabora.com> <CAJZ5v0jFQi1x1Fnfk04n+HTTirz19-_xW2NgJtpOYyPgVh3Afw@mail.gmail.com>
- <fa20ae2f-e265-c713-493d-5b2ebcdf7f0a@collabora.com>
-In-Reply-To: <fa20ae2f-e265-c713-493d-5b2ebcdf7f0a@collabora.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 20 Apr 2022 19:36:23 +0200
-Message-ID: <CAJZ5v0iA6St_J5C6+Efygu25g9g-_tLBPc0qQoHbFqfrdT6azQ@mail.gmail.com>
-Subject: Re: [PATCH v7 03/20] reboot: Print error message if restart handler
- has duplicated priority
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Joshua Thompson <funaho@jurai.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        xen-devel@lists.xenproject.org,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] fs/ntfs3: remove redundant assignment to variable vcn
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        ntfs3@lists.linux.dev
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+References: <20220418140038.82843-1-colin.i.king@gmail.com>
+From:   Kari Argillander <kari.argillander@gmail.com>
+In-Reply-To: <20220418140038.82843-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 3:29 AM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
->
-> On 4/14/22 14:19, Rafael J. Wysocki wrote:
-> > On Thu, Apr 14, 2022 at 12:24 AM Dmitry Osipenko
-> > <dmitry.osipenko@collabora.com> wrote:
-> >>
-> >> On 4/13/22 21:48, Rafael J. Wysocki wrote:
-> >>> On Tue, Apr 12, 2022 at 1:39 AM Dmitry Osipenko
-> >>> <dmitry.osipenko@collabora.com> wrote:
-> >>>>
-> >>>> Add sanity check which ensures that there are no two restart handlers
-> >>>> registered using the same priority. This requirement will become mandatory
-> >>>> once all drivers will be converted to the new API and such errors will be
-> >>>> fixed.
-> >>>>
-> >>>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> >>>
-> >>> The first two patches in the series are fine with me and there's only
-> >>> one minor nit regarding this one (below).
-> >>>
-> >>>> ---
-> >>>>  kernel/reboot.c | 15 +++++++++++++++
-> >>>>  1 file changed, 15 insertions(+)
-> >>>>
-> >>>> diff --git a/kernel/reboot.c b/kernel/reboot.c
-> >>>> index ed4e6dfb7d44..acdae4e95061 100644
-> >>>> --- a/kernel/reboot.c
-> >>>> +++ b/kernel/reboot.c
-> >>>> @@ -182,6 +182,21 @@ static ATOMIC_NOTIFIER_HEAD(restart_handler_list);
-> >>>>   */
-> >>>>  int register_restart_handler(struct notifier_block *nb)
-> >>>>  {
-> >>>> +       int ret;
-> >>>> +
-> >>>> +       ret = atomic_notifier_chain_register_unique_prio(&restart_handler_list, nb);
-> >>>> +       if (ret != -EBUSY)
-> >>>> +               return ret;
-> >>>> +
-> >>>> +       /*
-> >>>> +        * Handler must have unique priority. Otherwise call order is
-> >>>> +        * determined by registration order, which is unreliable.
-> >>>> +        *
-> >>>> +        * This requirement will become mandatory once all drivers
-> >>>> +        * will be converted to use new sys-off API.
-> >>>> +        */
-> >>>> +       pr_err("failed to register restart handler using unique priority\n");
-> >>>
-> >>> I would use pr_info() here, because this is not a substantial error AFAICS.
-> >>
-> >> It's indeed not a substantial error so far, but it will become
-> >> substantial later on once only unique priorities will be allowed. The
-> >> pr_warn() could be a good compromise here, pr_info() is too mild, IMO.
-> >
-> > Well, I'm still unconvinced about requiring all of the users of this
-> > interface to use unique priorities.
-> >
-> > Arguably, there are some of them who don't really care about the
-> > ordering, so could there be an option for them to specify the lack of
-> > care by, say, passing 0 as the priority that would be regarded as a
-> > special case?
-> >
-> > IOW, if you pass 0, you'll be run along the others who've also passed
-> > 0, but if you pass anything different from 0, it must be unique.  What
-> > do you think?
->
-> There are indeed cases where ordering is unimportant. Like a case of
-> PMIC and watchdog restart handlers for example, both handlers will
-> produce equal effect from a user's perspective. Perhaps indeed it's more
-> practical to have at least one shared level.
->
-> In this patchset the level 0 is specified as an alias to the default
-> level 128. If one user registers handler using unique level 128 and the
-> other user uses non-unique level 0, then we have ambiguity.
->
-> One potential option is to make the whole default level 128 non-unique.
-> This will allow users to not care about the uniqueness by default like
-> they always did it previously, but it will hide potential problems for
-> users who actually need unique level and don't know about it yet due to
-> a lucky registration ordering that they have today. Are you okay with
-> this option?
+On 18.4.2022 17.00, Colin Ian King wrote:
+> Variable vcn is being assigned a value that is never read, it is
+> being re-assigned again in the initialization of a for-loop.  The
+> assignment is redundant and can be removed.
+> 
+> Cleans up clang scan build warning:
+> fs/ntfs3/attrib.c:1176:7: warning: Value stored to 'vcn' during its
+> initialization is never read [deadcode.DeadStores]
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Yes, I am.
+Reviewed-by: Kari Argillander <kari.argillander@gmail.com>
+
+> ---
+>   fs/ntfs3/attrib.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+> index e8c00dda42ad..fc0623b029e6 100644
+> --- a/fs/ntfs3/attrib.c
+> +++ b/fs/ntfs3/attrib.c
+> @@ -1173,7 +1173,7 @@ int attr_load_runs_range(struct ntfs_inode *ni, enum ATTR_TYPE type,
+>   {
+>   	struct ntfs_sb_info *sbi = ni->mi.sbi;
+>   	u8 cluster_bits = sbi->cluster_bits;
+> -	CLST vcn = from >> cluster_bits;
+> +	CLST vcn;
+>   	CLST vcn_last = (to - 1) >> cluster_bits;
+>   	CLST lcn, clen;
+>   	int err;
