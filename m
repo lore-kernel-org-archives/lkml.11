@@ -2,133 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C51AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377501AbiDTKJw (ORCPT
+        id S1377507AbiDTKJ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
+        Wed, 20 Apr 2022 06:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377492AbiDTKJs (ORCPT
+        with ESMTP id S1377490AbiDTKJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Apr 2022 06:09:48 -0400
-X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 03:07:00 PDT
-Received: from outbound-smtp06.blacknight.com (outbound-smtp06.blacknight.com [81.17.249.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74F61D0F5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:07:00 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp06.blacknight.com (Postfix) with ESMTPS id 35628C2B9E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:59:39 +0100 (IST)
-Received: (qmail 10849 invoked from network); 20 Apr 2022 09:59:39 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 20 Apr 2022 09:59:38 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 2/6] mm/page_alloc: Use only one PCP list for THP-sized allocations
-Date:   Wed, 20 Apr 2022 10:59:02 +0100
-Message-Id: <20220420095906.27349-3-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220420095906.27349-1-mgorman@techsingularity.net>
-References: <20220420095906.27349-1-mgorman@techsingularity.net>
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50161D321
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:07:01 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nh7Eh-0003GG-RX; Wed, 20 Apr 2022 12:06:59 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nh7Eh-0000fi-0s; Wed, 20 Apr 2022 12:06:59 +0200
+Date:   Wed, 20 Apr 2022 12:06:59 +0200
+From:   Sascha Hauer <sha@pengutronix.de>
+To:     Codrin.Ciubotariu@microchip.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        lars@metafoo.de, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, robh+dt@kernel.org, Nicolas.Ferre@microchip.com
+Subject: Re: [PATCH v3 1/6] ASoC: dmaengine: do not use a NULL
+ prepare_slave_config() callback
+Message-ID: <20220420100658.GU4012@pengutronix.de>
+References: <20220307122202.2251639-1-codrin.ciubotariu@microchip.com>
+ <20220307122202.2251639-2-codrin.ciubotariu@microchip.com>
+ <20220420091552.GD2387@pengutronix.de>
+ <968f9bfb-bddf-a8f0-6d8f-18b92d865aa2@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <968f9bfb-bddf-a8f0-6d8f-18b92d865aa2@microchip.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:03:21 up 20 days, 22:33, 67 users,  load average: 0.55, 0.31,
+ 0.16
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The per_cpu_pages is cache-aligned on a standard x86-64 distribution
-configuration but a later patch will add a new field which would push
-the structure into the next cache line. Use only one list to store
-THP-sized pages on the per-cpu list. This assumes that the vast majority
-of THP-sized allocations are GFP_MOVABLE but even if it was another type,
-it would not contribute to serious fragmentation that potentially causes
-a later THP allocation failure. Align per_cpu_pages on the cacheline
-boundary to ensure there is no false cache sharing.
+On Wed, Apr 20, 2022 at 09:58:06AM +0000, Codrin.Ciubotariu@microchip.com wrote:
+> On 20.04.2022 12:15, Sascha Hauer wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > Hi,
+> 
+> Hi Sascha,
+> 
+> > 
+> > On Mon, Mar 07, 2022 at 02:21:57PM +0200, Codrin Ciubotariu wrote:
+> >> Even if struct snd_dmaengine_pcm_config is used, prepare_slave_config()
+> >> callback might not be set. Check if this callback is set before using it.
+> >>
+> >> Fixes: fa654e085300 ("ASoC: dmaengine-pcm: Provide default config")
+> >> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+> >> ---
+> >>
+> >> Changes in v2,v3:
+> >>   - none
+> >>
+> >>   sound/soc/soc-generic-dmaengine-pcm.c | 6 +++---
+> >>   1 file changed, 3 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/sound/soc/soc-generic-dmaengine-pcm.c b/sound/soc/soc-generic-dmaengine-pcm.c
+> >> index 285441d6aeed..2ab2ddc1294d 100644
+> >> --- a/sound/soc/soc-generic-dmaengine-pcm.c
+> >> +++ b/sound/soc/soc-generic-dmaengine-pcm.c
+> >> @@ -86,10 +86,10 @@ static int dmaengine_pcm_hw_params(struct snd_soc_component *component,
+> >>
+> >>        memset(&slave_config, 0, sizeof(slave_config));
+> >>
+> >> -     if (!pcm->config)
+> >> -             prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+> >> -     else
+> >> +     if (pcm->config && pcm->config->prepare_slave_config)
+> >>                prepare_slave_config = pcm->config->prepare_slave_config;
+> >> +     else
+> >> +             prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+> >>
+> >>        if (prepare_slave_config) {
+> >>                int ret = prepare_slave_config(substream, params, &slave_config);
+> > 
+> > I wonder if this patch is correct. There are drivers like
+> > sound/soc/mxs/mxs-pcm.c which call snd_dmaengine_pcm_register() with a
+> > config which has the prepare_slave_config callback unset. For these
+> > drivers dmaengine_pcm_hw_params() previously was a no-op. Now with this
+> > patch snd_dmaengine_pcm_prepare_slave_config() and
+> > dmaengine_slave_config() are called. At least for the mxs-pcm driver
+> > calling dmaengine_slave_config() will return -ENOSYS.
+> > 
+> > At least the "Check if this callback is set before using it" part is
+> > wrong, the callback is checked before using it with
+> > 
+> >          if (prepare_slave_config) {
+> >                  ...
+> >          }
+> > 
+> > I don't have any mxs hardware at hand to test this. I just stumbled upon
+> > the change of behaviour when rebasing
+> > https://patchwork.kernel.org/project/alsa-devel/patch/20220301122111.1073174-1-s.hauer@pengutronix.de/
+> > on current master.
+> 
+> You are right. I changed the behavior from:
+> if (pmc->config && !pcm->config->prepare_slave_config)
+> 	<do nothing>
+> to:
+> if (pmc->config && !pcm->config->prepare_slave_config)
+> 	snd_dmaengine_pcm_prepare_slave_config()
+> 
+> It was not intended and I agree that the commit message is not accurate. 
+> I guess some drivers might not need dmaengine_slave_config()...
+> However, in my case, for the mchp-pdmc driver, I do have pcm->config 
+> with pcm->config->prepare_slave_config NULL, but I still need 
+> snd_dmaengine_pcm_prepare_slave_config() to be called. Should we add a 
+> separate flag to call snd_dmaengine_pcm_prepare_slave_config() if 
+> pcm->config->prepare_slave_config is NULL?
 
-After this patch, the structure sizing is;
+Other drivers set pcm->config->prepare_slave_config to
+snd_dmaengine_pcm_prepare_slave_config() explicitly:
 
-struct per_cpu_pages {
-        int                        count;                /*     0     4 */
-        int                        high;                 /*     4     4 */
-        int                        batch;                /*     8     4 */
-        short int                  free_factor;          /*    12     2 */
-        short int                  expire;               /*    14     2 */
-        struct list_head           lists[13];            /*    16   208 */
+sound/soc/fsl/imx-pcm-dma.c:33: .prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config,
 
-        /* size: 256, cachelines: 4, members: 6 */
-        /* padding: 32 */
-} __attribute__((__aligned__(64)));
+I think that's the way to go.
 
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
----
- include/linux/mmzone.h | 11 +++++++----
- mm/page_alloc.c        |  4 ++--
- 2 files changed, 9 insertions(+), 6 deletions(-)
+Regards,
+Sascha
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 962b14d403e8..abe530748de6 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -358,15 +358,18 @@ enum zone_watermarks {
- };
- 
- /*
-- * One per migratetype for each PAGE_ALLOC_COSTLY_ORDER plus one additional
-- * for pageblock size for THP if configured.
-+ * One per migratetype for each PAGE_ALLOC_COSTLY_ORDER. One additional list
-+ * for THP which will usually be GFP_MOVABLE. Even if it is another type,
-+ * it should not contribute to serious fragmentation causing THP allocation
-+ * failures.
-  */
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- #define NR_PCP_THP 1
- #else
- #define NR_PCP_THP 0
- #endif
--#define NR_PCP_LISTS (MIGRATE_PCPTYPES * (PAGE_ALLOC_COSTLY_ORDER + 1 + NR_PCP_THP))
-+#define NR_LOWORDER_PCP_LISTS (MIGRATE_PCPTYPES * (PAGE_ALLOC_COSTLY_ORDER + 1))
-+#define NR_PCP_LISTS (NR_LOWORDER_PCP_LISTS + NR_PCP_THP)
- 
- /*
-  * Shift to encode migratetype and order in the same integer, with order
-@@ -392,7 +395,7 @@ struct per_cpu_pages {
- 
- 	/* Lists of pages, one per migrate type stored on the pcp-lists */
- 	struct list_head lists[NR_PCP_LISTS];
--};
-+} ____cacheline_aligned_in_smp;
- 
- struct per_cpu_zonestat {
- #ifdef CONFIG_SMP
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 63976ad4b7f1..ed2deb93a758 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -648,7 +648,7 @@ static inline unsigned int order_to_pindex(int migratetype, int order)
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- 	if (order > PAGE_ALLOC_COSTLY_ORDER) {
- 		VM_BUG_ON(order != pageblock_order);
--		base = PAGE_ALLOC_COSTLY_ORDER + 1;
-+		return NR_LOWORDER_PCP_LISTS;
- 	}
- #else
- 	VM_BUG_ON(order > PAGE_ALLOC_COSTLY_ORDER);
-@@ -662,7 +662,7 @@ static inline int pindex_to_order(unsigned int pindex)
- 	int order = pindex / MIGRATE_PCPTYPES;
- 
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
--	if (order > PAGE_ALLOC_COSTLY_ORDER)
-+	if (pindex == NR_LOWORDER_PCP_LISTS)
- 		order = pageblock_order;
- #else
- 	VM_BUG_ON(order > PAGE_ALLOC_COSTLY_ORDER);
+
 -- 
-2.34.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
