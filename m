@@ -2,77 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8706CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381937AbiDTT6x (ORCPT
+        id S1382017AbiDTT65 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 15:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
+        Wed, 20 Apr 2022 15:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381878AbiDTT55 (ORCPT
+        with ESMTP id S1381883AbiDTT56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 15:57:57 -0400
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5893713F36;
+        Wed, 20 Apr 2022 15:57:58 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE2013FBE;
         Wed, 20 Apr 2022 12:55:09 -0700 (PDT)
-Received: by mail-ot1-f50.google.com with SMTP id w27-20020a056830061b00b00604cde931a0so1833184oti.2;
-        Wed, 20 Apr 2022 12:55:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0Eb+af1irrOGhsjiB2GmRtBN3a0Xd+4K2svp/0w6UF0=;
-        b=iAANf6/jSo8DRY93BJDULTVAJjhkCDvlS8xQ5n/jycQaMHAyQf0loEFIuUWH9bThlQ
-         KYcgD03VvTSAv297dTLfsjm4Pm8qu0/FmAFjn5wvYAzyTXuNnWWqpxjHXXTeEHO2aopP
-         D6pmaVc2sNFU0UZoVGsr9ltghnxC2cGdHtCQHskQs2u2Xn9IJqxMXGodwTsXvH5lQu8m
-         Wijv+Q/+xbIq3nEGD8KQRrc6HTn6SnPtQGp5xCaJkpDWpkR0ma6eQYmqvW0x/dViR/Lz
-         12Gwtx6J2RmMqsKf8sKGGsVSR2Uys2gFlHuDmrWSPMwz+5mNOcyLm2EEvouRRqZuusDw
-         0fgg==
-X-Gm-Message-State: AOAM532M0tKS0eMS+m9mcFWeJIfANj3jTZC8LeD/2dFsuu33FWzxRWEE
-        QfeMLjIS0dz+lE8+ECHSNg7gYcFShA==
-X-Google-Smtp-Source: ABdhPJyTTom7iJmtX/jkaOOTQsyYZxE80c+w24+z1bq5wFoAkF5MrFkUxjkaVYiouaoh1wNwsF96Ew==
-X-Received: by 2002:a9d:12a9:0:b0:603:d1cc:68eb with SMTP id g38-20020a9d12a9000000b00603d1cc68ebmr8195262otg.326.1650484508620;
-        Wed, 20 Apr 2022 12:55:08 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 30-20020a9d0ba1000000b005e95b29b95dsm6892287oth.5.2022.04.20.12.55.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 12:55:08 -0700 (PDT)
-Received: (nullmailer pid 1747542 invoked by uid 1000);
-        Wed, 20 Apr 2022 19:55:07 -0000
-Date:   Wed, 20 Apr 2022 14:55:07 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kartik <kkartik@nvidia.com>
-Cc:     jassisinghbrar@gmail.com, krzk+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: tegra186-hsp: add type for shared
- mailboxes
-Message-ID: <YmBlG7SeR7Ok4Sbh@robh.at.kernel.org>
-References: <1649921757-16919-1-git-send-email-kkartik@nvidia.com>
- <1649921757-16919-3-git-send-email-kkartik@nvidia.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=Bk/GVIwZMRE7BfrPX4RukHpgbSjfh2df83GTvHPnqeE=; b=r6mAeQ/3FqkDWaO4JlW9Fu/AR9
+        cToXgK2ax9Bd9zSBLPhGFiKb3eYjYShzlciv6f1XhRKql+SfJK9AZoJ6NkwElQ0/lzRKsUMwYH3na
+        cT8e+8Nr91C33fnYOgdeVBbou1WKQelWZcslcIkpYqeYRdmJ5pYpvJ/VyvrCeM6hgV82qYT92aI08
+        3qWpeasNT9yNapCM9N7MkYxj6sut+8E2XK6/QHSlRabTBLabeAK465XBF2GJnPNBlG9fCs81w3NcS
+        8Sq8uoksK4UYhCXkVlkXrJLi6jUURdkMwVjCZ+BeEnhoeerJ/wDySjLor5rYJC287l9uOQAEbBfd2
+        EsbOmYzA==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nhGPr-00CRsL-Jd; Wed, 20 Apr 2022 13:55:09 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nhGPq-00096l-CG; Wed, 20 Apr 2022 13:55:06 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Wed, 20 Apr 2022 13:54:23 -0600
+Message-Id: <20220420195425.34911-11-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220420195425.34911-1-logang@deltatee.com>
+References: <20220420195425.34911-1-logang@deltatee.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649921757-16919-3-git-send-email-kkartik@nvidia.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v2 10/12] md/raid5: Refactor add_stripe_bio()
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 01:05:56PM +0530, Kartik wrote:
-> Tegra234 supports sending/receiving 32-bit and 128-bit data over
-> a shared mailbox. Based on the data size to be used, clients need
-> to specify the type of shared mailbox in the device tree.
-> 
-> Add a macro for 128-bit shared mailbox. Mailbox clients can use this
-> macro as a flag in device tree to enable 128-bit data support for a
-> shared mailbox.
-> 
-> Signed-off-by: Kartik <kkartik@nvidia.com>
-> ---
->  .../devicetree/bindings/mailbox/nvidia,tegra186-hsp.yaml | 9 +++++++++
->  include/dt-bindings/mailbox/tegra186-hsp.h               | 5 +++++
->  2 files changed, 14 insertions(+)
+Factor out two helper functions from add_stripe_bio(): one to check for
+overlap (stripe_bio_overlaps()), and one to actually add the bio to the
+stripe (__add_stripe_bio()). The latter function will always succeed.
 
-Acked-by: Rob Herring <robh@kernel.org>
+This will be useful in the next patch so that overlap can be checked for
+multiple disks before adding any
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/raid5.c | 86 ++++++++++++++++++++++++++++++----------------
+ 1 file changed, 56 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index 28ea7b9b6ab6..1fa82d8fa89e 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -3418,39 +3418,32 @@ schedule_reconstruction(struct stripe_head *sh, struct stripe_head_state *s,
+ 		s->locked, s->ops_request);
+ }
+ 
+-/*
+- * Each stripe/dev can have one or more bion attached.
+- * toread/towrite point to the first in a chain.
+- * The bi_next chain must be in order.
+- */
+-static int add_stripe_bio(struct stripe_head *sh, struct bio *bi, int dd_idx,
+-			  int forwrite, int previous)
++static bool stripe_bio_overlaps(struct stripe_head *sh, struct bio *bi,
++				int dd_idx, int forwrite)
+ {
+-	struct bio **bip;
+ 	struct r5conf *conf = sh->raid_conf;
+-	int firstwrite=0;
++	struct bio **bip;
+ 
+-	pr_debug("adding bi b#%llu to stripe s#%llu\n",
+-		(unsigned long long)bi->bi_iter.bi_sector,
+-		(unsigned long long)sh->sector);
++	pr_debug("checking bi b#%llu to stripe s#%llu\n",
++		 bi->bi_iter.bi_sector, sh->sector);
+ 
+-	spin_lock_irq(&sh->stripe_lock);
+ 	/* Don't allow new IO added to stripes in batch list */
+ 	if (sh->batch_head)
+-		goto overlap;
+-	if (forwrite) {
++		return true;
++
++	if (forwrite)
+ 		bip = &sh->dev[dd_idx].towrite;
+-		if (*bip == NULL)
+-			firstwrite = 1;
+-	} else
++	else
+ 		bip = &sh->dev[dd_idx].toread;
++
+ 	while (*bip && (*bip)->bi_iter.bi_sector < bi->bi_iter.bi_sector) {
+ 		if (bio_end_sector(*bip) > bi->bi_iter.bi_sector)
+-			goto overlap;
+-		bip = & (*bip)->bi_next;
++			return true;
++		bip = &(*bip)->bi_next;
+ 	}
++
+ 	if (*bip && (*bip)->bi_iter.bi_sector < bio_end_sector(bi))
+-		goto overlap;
++		return true;
+ 
+ 	if (forwrite && raid5_has_ppl(conf)) {
+ 		/*
+@@ -3479,9 +3472,30 @@ static int add_stripe_bio(struct stripe_head *sh, struct bio *bi, int dd_idx,
+ 		}
+ 
+ 		if (first + conf->chunk_sectors * (count - 1) != last)
+-			goto overlap;
++			return true;
+ 	}
+ 
++	return false;
++}
++
++static void __add_stripe_bio(struct stripe_head *sh, struct bio *bi,
++			     int dd_idx, int forwrite, int previous)
++{
++	struct r5conf *conf = sh->raid_conf;
++	struct bio **bip;
++	int firstwrite = 0;
++
++	if (forwrite) {
++		bip = &sh->dev[dd_idx].towrite;
++		if (!*bip)
++			firstwrite = 1;
++	} else {
++		bip = &sh->dev[dd_idx].toread;
++	}
++
++	while (*bip && (*bip)->bi_iter.bi_sector < bi->bi_iter.bi_sector)
++		bip = &(*bip)->bi_next;
++
+ 	if (!forwrite || previous)
+ 		clear_bit(STRIPE_BATCH_READY, &sh->state);
+ 
+@@ -3508,8 +3522,7 @@ static int add_stripe_bio(struct stripe_head *sh, struct bio *bi, int dd_idx,
+ 	}
+ 
+ 	pr_debug("added bi b#%llu to stripe s#%llu, disk %d.\n",
+-		(unsigned long long)(*bip)->bi_iter.bi_sector,
+-		(unsigned long long)sh->sector, dd_idx);
++		 (*bip)->bi_iter.bi_sector, sh->sector, dd_idx);
+ 
+ 	if (conf->mddev->bitmap && firstwrite) {
+ 		/* Cannot hold spinlock over bitmap_startwrite,
+@@ -3517,7 +3530,7 @@ static int add_stripe_bio(struct stripe_head *sh, struct bio *bi, int dd_idx,
+ 		 * we have added to the bitmap and set bm_seq.
+ 		 * So set STRIPE_BITMAP_PENDING to prevent
+ 		 * batching.
+-		 * If multiple add_stripe_bio() calls race here they
++		 * If multiple __add_stripe_bio() calls race here they
+ 		 * much all set STRIPE_BITMAP_PENDING.  So only the first one
+ 		 * to complete "bitmap_startwrite" gets to set
+ 		 * STRIPE_BIT_DELAY.  This is important as once a stripe
+@@ -3535,14 +3548,27 @@ static int add_stripe_bio(struct stripe_head *sh, struct bio *bi, int dd_idx,
+ 			set_bit(STRIPE_BIT_DELAY, &sh->state);
+ 		}
+ 	}
+-	spin_unlock_irq(&sh->stripe_lock);
++}
+ 
+-	return 1;
++/*
++ * Each stripe/dev can have one or more bios attached.
++ * toread/towrite point to the first in a chain.
++ * The bi_next chain must be in order.
++ */
++static bool add_stripe_bio(struct stripe_head *sh, struct bio *bi,
++			   int dd_idx, int forwrite, int previous)
++{
++	spin_lock_irq(&sh->stripe_lock);
+ 
+- overlap:
+-	set_bit(R5_Overlap, &sh->dev[dd_idx].flags);
++	if (stripe_bio_overlaps(sh, bi, dd_idx, forwrite)) {
++		set_bit(R5_Overlap, &sh->dev[dd_idx].flags);
++		spin_unlock_irq(&sh->stripe_lock);
++		return false;
++	}
++
++	__add_stripe_bio(sh, bi, dd_idx, forwrite, previous);
+ 	spin_unlock_irq(&sh->stripe_lock);
+-	return 0;
++	return true;
+ }
+ 
+ static void end_reshape(struct r5conf *conf);
+-- 
+2.30.2
+
