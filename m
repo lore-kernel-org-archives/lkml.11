@@ -2,149 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B532C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE55DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359094AbiDTC6I (ORCPT
+        id S1348788AbiDTC7g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        Tue, 19 Apr 2022 22:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359082AbiDTC6F (ORCPT
+        with ESMTP id S239816AbiDTC7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:58:05 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C21165BC
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:55:20 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id r10so618289pfh.13
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:55:20 -0700 (PDT)
+        Tue, 19 Apr 2022 22:59:34 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5818538BDB
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:56:49 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-e2fa360f6dso649713fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:56:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=x+0BkD90lSyJDZ+2FE+F3s3K1NpvSXBebMgeO2N/Frg=;
-        b=Hfmk01lC9jeqEsouKixV0+yDRgrE5Fn2IlceBrZTVoWNuI6yeRyqhxoOz7EUwRS38d
-         LCZSzTzzyII4PS4IloyZ7eJjfDCzH1vjh9WpiVHL1Zj4twoIdTH4ht5UW8YxbAKhnFL3
-         sBr18LYtGGnmXA6KHl3FRPOtx23EiM2vOgAhs=
+        bh=Bpdl3onC2L+yuDtcrh15IbOpDqZIMLfc1uBqp1f+cK8=;
+        b=gr9rbqbPFrPKF6qrn9PR00iutEKQ4qGhvKekLBdKxT+fCdsoHCkixQhZar2+85UiBC
+         6nbTGsbcQIjw7NNhbr36TGDAVwu1F0FlgNdextRhKwZhHYWEoXdedE0Kto+iGP41JbyB
+         LxH01oDyC7N4sFgkl+0+eest9ZdFTUCYsRAwat8qu8yM/3BjOXYmHsFMgnH0kY4w/uOe
+         FTgQrz4nrB1CWbLxzNDyuQCfaG9cWo83OWTuaSnROQGrzAGsy/SSXOfMhjtbQAg73daa
+         3ADzEiMsTRcl18Fk1anuBjcVaKn7BqjhsoXS3hVgy+pxmBCCXv2cC9pAjN9/ulIt5h59
+         I8cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=x+0BkD90lSyJDZ+2FE+F3s3K1NpvSXBebMgeO2N/Frg=;
-        b=5dRGEdh6kitkfFi+vZ572WqdYVxE1k4FbYl1WkPNgfjSCPWOg+uiFW6WZKCUVGprC7
-         m2EYVZYXAwY0lR+JQGG87B6kpNxSJijhakahjbi2uKhjKHloboHAUOWpMbweiiWu4FRB
-         Jd5Ai5rSMw6r0zfCQkAlLiHWY+wa/Ia1IZhpgbRsSWuB52VN/OOWiGYC9AoB7U0ZzBt/
-         JPlbIvo4TyGnyk0vjSSJjp1NDGZZiame+xV67LLhedbttEWHLdBExlrAHoglbricMcUt
-         KF7OOz/c5K+tPJOhbWks8fnWFrS6KNL4coMdEDOTYe/a1sSl3AU8OYLCFx/udQ944d4s
-         Tm1g==
-X-Gm-Message-State: AOAM532+a0firnea/nZLLNd0abgVR2ncDTUTb7xlFGFiaHQHQyQEjPo0
-        nVAQhL0OQYYGFFGWJigZjTaJ3g==
-X-Google-Smtp-Source: ABdhPJztKHnzJt1bTQU7FWsNgVa3dAiH27NdueMZxHr+rgwVvS/3gVFDs06sMa+/DGDJRY29bePZEw==
-X-Received: by 2002:a63:6501:0:b0:39d:a2fc:1522 with SMTP id z1-20020a636501000000b0039da2fc1522mr16907859pgb.91.1650423320193;
-        Tue, 19 Apr 2022 19:55:20 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id g15-20020a63be4f000000b0039934531e95sm17484198pgo.18.2022.04.19.19.55.19
+        bh=Bpdl3onC2L+yuDtcrh15IbOpDqZIMLfc1uBqp1f+cK8=;
+        b=eKZtfthpw9h4AinpuR+zx1n/Qj+0/xTcNNHs10+H8ho5cj57ai9QtP6x608WKfLdHe
+         RaOGYfoAwyaVvnUxcFP4t0Hoby6CqFWCBAyTWIwKMes6Q9ZSDJvr1JvuenlcBRlBHdo7
+         nvrF3jvZi6SKVamdUKylqRNPwPulmawSuxUGrukw80mlC8edmaQ5BdTpRFhFqc95rhuY
+         wamD0TWDNzRjyHsAgu9Az/b8LrA5JvYIpHdO3orSGY1WBfFj9cUxtqY7GHLi5tj//Zsi
+         5QjeGByTWQirU782iIKRVXnH3qKFqQyrfZ/U0vqR11nRfVRAtj6kWKJ0g7iDXsMrbsjS
+         ye4w==
+X-Gm-Message-State: AOAM530A0HCDtQhnV1ABZ2qEA9wWBrOs0GOZQKeVVsYOuqHptaHk1TDG
+        NqWuwuz1PPbmHyHxeQVguqwHDw==
+X-Google-Smtp-Source: ABdhPJz1r1HbhjstrYl2H7CsBk3Ua1ucqJR7Lb2QJhnvesT98prMjuWrzu/us0Ykm/iAhf04AjAsSQ==
+X-Received: by 2002:a05:6870:f697:b0:d7:5679:8fc8 with SMTP id el23-20020a056870f69700b000d756798fc8mr721436oab.172.1650423408693;
+        Tue, 19 Apr 2022 19:56:48 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id c14-20020a4ad20e000000b0033a371fa815sm3549603oos.37.2022.04.19.19.56.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 19:55:19 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 19:55:19 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     joao@overdrivepizza.com
-Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        peterz@infradead.org, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com, samitolvanen@google.com,
-        mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 11/11] driver/int3400_thermal: Fix prototype matching
-Message-ID: <202204191946.2843CF71@keescook>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420004241.2093-12-joao@overdrivepizza.com>
+        Tue, 19 Apr 2022 19:56:48 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 21:56:46 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/2] arm64: dts: qcom: sm8150: Add support for SDC2
+Message-ID: <Yl92blX6FaCMU48p@builder.lan>
+References: <20220414213139.476240-1-bhupesh.sharma@linaro.org>
+ <20220414213139.476240-2-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220420004241.2093-12-joao@overdrivepizza.com>
+In-Reply-To: <20220414213139.476240-2-bhupesh.sharma@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 05:42:41PM -0700, joao@overdrivepizza.com wrote:
-> From: Joao Moreira <joao@overdrivepizza.com>
-> 
-> The function attr_dev_show directly invokes functions from drivers
-> expecting an specific prototype. The driver for int3400_thermal
-> implements the given show function using a different prototype than what
-> is expected. This violates the prototype-based fine-grained CFI policy.
-> 
-> Make the function prototype compliant and cast the respective assignement
-> so it can be properly user together with fine-grained CFI.
+On Thu 14 Apr 16:31 CDT 2022, Bhupesh Sharma wrote:
 
-Does this trip on regular CFI? See below, but this all looks correct to
-me in the original code.
-
-> (FWIIW, there should be a less ugly patch for this, but I don't know
-> enough about the touched source code).
+> Add support for SDC2 which can be used to interface uSD card.
 > 
-> Signed-off-by: Joao Moreira <joao@overdrivepizza.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Rob Herring <robh@kernel.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+
+Thanks for the patch Bhupesh. I have already applied v1 though. Can you
+please double check linux-next to confirm that things are in order?
+
+Thanks,
+Bjorn
+
 > ---
->  .../thermal/intel/int340x_thermal/int3400_thermal.c    | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>  arch/arm64/boot/dts/qcom/sm8150.dtsi | 45 ++++++++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
 > 
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index 4954800b9850..4bd95a2016b7 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -311,12 +311,13 @@ static int int3400_thermal_get_uuids(struct int3400_thermal_priv *priv)
->  	return result;
->  }
+> diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> index 15f3bf2e7ea0..0fecebf0a473 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> @@ -3270,6 +3270,51 @@ usb_2_ssphy: phy@88eb200 {
+>  			};
+>  		};
 >  
-> -static ssize_t odvp_show(struct kobject *kobj, struct kobj_attribute *attr,
-> +static ssize_t odvp_show(struct device *kobj, struct device_attribute *attr,
->  			 char *buf)
->  {
-> +	struct kobj_attribute *kattr = (struct kobj_attribute *) attr;
->  	struct odvp_attr *odvp_attr;
->  
-> -	odvp_attr = container_of(attr, struct odvp_attr, attr);
-> +	odvp_attr = container_of(kattr, struct odvp_attr, attr);
->  
->  	return sprintf(buf, "%d\n", odvp_attr->priv->odvp[odvp_attr->odvp]);
->  }
-> @@ -388,7 +389,10 @@ static int evaluate_odvp(struct int3400_thermal_priv *priv)
->  				goto out_err;
->  			}
->  			odvp->attr.attr.mode = 0444;
-
-Eww, this function has a masked "odvp" variable here. One should be
-likely renamed.
-
-But anyway, odvp is:
-
-struct odvp_attr {
-        int odvp;
-        struct int3400_thermal_priv *priv;
-        struct kobj_attribute attr;
-};
-
-The original code looks correct to me (besides the masked variable
-name). kobj_attribute is part of odvp, the odvp_show callback has the
-correct prototype, and performs the correct container_of() to get
-odvp_attr.
-
-Where/why is the mismatch happening?
-
--Kees
-
-> -			odvp->attr.show = odvp_show;
-> +			odvp->attr.show = (ssize_t (*)
-> +					(struct kobject *,
-> +					 struct kobj_attribute *,
-> +					 char *)) odvp_show;
->  			odvp->attr.store = NULL;
->  			ret = sysfs_create_file(&priv->pdev->dev.kobj,
->  						&odvp->attr.attr);
+> +		sdhc_2: sdhci@8804000 {
+> +			compatible = "qcom,sm8150-sdhci", "qcom,sdhci-msm-v5";
+> +			reg = <0 0x08804000 0 0x1000>;
+> +
+> +			interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
+> +			interrupt-names = "hc_irq", "pwr_irq";
+> +
+> +			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
+> +				 <&gcc GCC_SDCC2_APPS_CLK>,
+> +				 <&rpmhcc RPMH_CXO_CLK>;
+> +			clock-names = "iface", "core", "xo";
+> +			iommus = <&apps_smmu 0x6a0 0x0>;
+> +			qcom,dll-config = <0x0007642c>;
+> +			qcom,ddr-config = <0x80040868>;
+> +			power-domains = <&rpmhpd 0>;
+> +			operating-points-v2 = <&sdhc2_opp_table>;
+> +
+> +			status = "disabled";
+> +
+> +			sdhc2_opp_table: sdhc2-opp-table {
+> +				compatible = "operating-points-v2";
+> +
+> +				opp-19200000 {
+> +					opp-hz = /bits/ 64 <19200000>;
+> +					required-opps = <&rpmhpd_opp_min_svs>;
+> +				};
+> +
+> +				opp-50000000 {
+> +					opp-hz = /bits/ 64 <50000000>;
+> +					required-opps = <&rpmhpd_opp_low_svs>;
+> +				};
+> +
+> +				opp-100000000 {
+> +					opp-hz = /bits/ 64 <100000000>;
+> +					required-opps = <&rpmhpd_opp_svs>;
+> +				};
+> +
+> +				opp-202000000 {
+> +					opp-hz = /bits/ 64 <202000000>;
+> +					required-opps = <&rpmhpd_opp_svs_l1>;
+> +				};
+> +			};
+> +		};
+> +
+>  		dc_noc: interconnect@9160000 {
+>  			compatible = "qcom,sm8150-dc-noc";
+>  			reg = <0 0x09160000 0 0x3200>;
 > -- 
 > 2.35.1
 > 
-
--- 
-Kees Cook
