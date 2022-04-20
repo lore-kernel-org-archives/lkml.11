@@ -2,94 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD55C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 04:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38795C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 04:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356045AbiDTEcl (ORCPT
+        id S1359287AbiDTEh2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 00:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
+        Wed, 20 Apr 2022 00:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236411AbiDTEcj (ORCPT
+        with ESMTP id S236411AbiDTEh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 00:32:39 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA0062DE
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 21:29:54 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id r189so755657ybr.6
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 21:29:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ca0BuBVr/d8uQqf5viG8UycJ7VWTDMA7hYPu8iqyqE0=;
-        b=YzXagblC6H8cB8lRJtSr5Z8G7olqqRNFPijud3sJXVYI/FAakCkj2Dnha1DMQzQ3Q7
-         ABbpJZVwpHzpgyEz1f1xZA8SvDMn6ua6TuMzpaLSyxFJmIcmPkhrXfXlAuxL7G6wTKDp
-         F7hxEmqTBwtwbqYklooazDESdDTlD2A52eFWKQz+O3H/W2jMIlIqLld5OU/FFKWYa3kh
-         7EVkJU974u987fluC+xjR7LmLc2yVUujAa1bmaVjAUEyas4xZm6vlkrzttNloEKdLjJi
-         5in88C8szLmc7V7PyrYRhv6gYVOpN3X3ES8+Ny+es2JzmTEGQ/2Tk3cWIfieIrd17DkR
-         e8pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ca0BuBVr/d8uQqf5viG8UycJ7VWTDMA7hYPu8iqyqE0=;
-        b=a6nOJh3/UsONXf/Ne2bwUDTw6KJmsPdQj+bkYIDDJM34uW+R92UjbQG6J3D9yFfJnW
-         yz9d8yjx3IDTb75nFM2izXkaYDAvuUiqt2ezsB0FFNO+JPndXpAz+5vdgCaksnnLYf4o
-         9PhPAJD8dIppgMKATv11SCHhWAelFHsmR8XQ01pf419KDc93Ppgvi1HbsK33hE/Lm3gM
-         kaL4186PcfvGd74F7lnh22LsvFfMRm6KwBz9EV7mBRhqkmvxrSmZvGQm4b0akLfwdUkE
-         KZe9a7aHm2yYnj4bjbXPiDpTxI+qLAdeSMnHk3yFFR+C6/EtMKVR/nahsMsZRgtUFOQy
-         qcXw==
-X-Gm-Message-State: AOAM530IcgOMcRESqCCgFabq2DDkt/PyuNUdmmFNydH240GN/ZqsJNng
-        thqYh8ktPGNSwyadILIcB2T51IDcCiY0GA05AuY=
-X-Google-Smtp-Source: ABdhPJzwDzIu//iTtmXHlpWB9WaYG7mL/oELc2V02NCn8O0mBo54/rC/FE0UtyzQqj7VRnwcCpVT86WnpzqiI+lDFW0=
-X-Received: by 2002:a25:b991:0:b0:610:bf4e:1b33 with SMTP id
- r17-20020a25b991000000b00610bf4e1b33mr19029133ybg.352.1650428993716; Tue, 19
- Apr 2022 21:29:53 -0700 (PDT)
+        Wed, 20 Apr 2022 00:37:27 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530F810CD;
+        Tue, 19 Apr 2022 21:34:42 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 4E88F67373; Wed, 20 Apr 2022 06:34:38 +0200 (CEST)
+Date:   Wed, 20 Apr 2022 06:34:37 +0200
+From:   "hch@lst.de" <hch@lst.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Sven Peter <sven@svenpeter.dev>, "hch@lst.de" <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        "sagi@grimberg.me" <sagi@grimberg.me>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-nvme@lists.infradead.org, linux-spdx@vger.kernel.org
+Subject: Re: [PATCH v2 6/6] nvme-apple: Add initial Apple SoC NVMe driver
+Message-ID: <20220420043437.GA1123@lst.de>
+References: <20220415142055.30873-1-sven@svenpeter.dev> <20220415142055.30873-7-sven@svenpeter.dev> <20220419053157.GA31530@lst.de> <866f79b1-6c02-4248-ac98-594829fed204@www.fastmail.com> <CAK8P3a2CWZb3vdHQvseJZQwPbUFDRo5Z9aGb7iVgodT1YeB5Yw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220419204109.520779286@infradead.org> <20220419205241.339242797@infradead.org>
-In-Reply-To: <20220419205241.339242797@infradead.org>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Wed, 20 Apr 2022 12:29:41 +0800
-Message-ID: <CAJhGHyAhoRQWF1eWnUQTnUSVQHtYCudb1Ka2XF5EE9Bb9g7a4g@mail.gmail.com>
-Subject: Re: [PATCH 2/2] x86,entry: Use PUSH_AND_CLEAR_REGS for compat
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     X86 ML <x86@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Brian Gerst <brgerst@gmail.com>,
-        Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2CWZb3vdHQvseJZQwPbUFDRo5Z9aGb7iVgodT1YeB5Yw@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 4:53 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> Since the upper regs don't exist for ia32 code, preserving them
-> doesn't hurt and it simplifies the code.
+On Tue, Apr 19, 2022 at 11:52:15AM +0200, Arnd Bergmann wrote:
+> > I just checked again and 64-bit accesses seem to work fine.
+> > I'll remove the lo_hi_* calls and this include.
+> 
+> If you remove the #include, it is no longer possible to compile-test
+> this on all 32-bit architectures, though that is probably fine as long
+> as the Kconfig file has the right dependencies, like
+> 
+>       depends on ARCH_APPLE || (COMPILE_TEST && 64BIT)
+> 
+> I'd prefer to keep the #include here, but I don't mind the dependency
+> if Christoph prefers it that way.
 
-In entry_INT80_compat(), the upper regs need to be preserved on the
-stack which makes the code identical to the macro idtentry except the
-special prolog.
+So thre's really two steps here:
 
-So reusing idtentry simplifiers more.
+ 1) stop uing lo_hi_readq diretly which forces 32-bit access even on
+    64-bit platforms
+ 2) stop using the io-64-nonatomic headers entirely
 
-I don't ask to remove the change to entry_INT80_compat().
+I definitively want 1) done if the hardware does not require it.  Trying
+to cater to 32-bit build tests on hardware that has no chance of ever
+being used there by including the header seems a bit silly, but if
+it makes folks happy I can live with it.
 
-But I don't think the change to entry_INT80_compat()
-fit the changelog.
-
-I think it is better to split this patch into two.
-
-The first one contains the change to entry_SYSENTER_compat()
-and entry_SYSCALL_compat() with current changelog.
-
-The second one contains the change to entry_INT80_compat()
-and PUSH_AND_CLEAR_REGS with changelog saying it simplifies
-entry_SYSENTER_compat().
-
-My patchset can do the simplification by using idtentry
-and remove save_rdi from PUSH_AND_CLEAR_REGS on top of it.
-
-Thanks
-Lai
+> 
+>        Arnd
+---end quoted text---
