@@ -2,220 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CAD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E73C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379636AbiDTO0b (ORCPT
+        id S1379594AbiDTO23 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49440 "EHLO
+        Wed, 20 Apr 2022 10:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379597AbiDTO01 (ORCPT
+        with ESMTP id S1351242AbiDTO21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:26:27 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657E444759
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:23:40 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id w1so3287715lfa.4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:23:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6L9wlYfoTTVlFWQO6Q+aBUFZaMt8eiBvRHdomsCb/gQ=;
-        b=Z010qGorZkVwJPQFregA0TEII538tSkI9PcrpH33C3ttbmgCLOXe4POQcpAGi7IG5t
-         YLbO2w5gQ4z3tUpveaBuExKl3mKgtCbc8yCRysHk2Z7Mb1rHXVj3TqwIxWO6tH9yIAJa
-         nC+6COmPpwyjE5ubuwLEZrOTWeoeu7jIB6nOHOu2PijtkrzgkkDFCNze04zzqTi3Ysda
-         w/iyEAfryfJId4pQ6moJHVEELHHAZZ+zbtmfhqYDVWwqABWJY0u+MPRoiH7zVzJF1iDz
-         frq0+UneHHv5GJmDgsDiJV4ywAtbIol/M1BcbkZCthUOeDPTMQ0eKbz0YceQKPkQkSvA
-         PALA==
+        Wed, 20 Apr 2022 10:28:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4555927B06
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650464740;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8DSx54ImoIrDcTZ0ltEH183UWHNgTANiSB/5rc9D3JE=;
+        b=E3O+mx+IzmnUhzamyu1/pwbCMznXze385BFv/A5DjrQP183x7P85UomUu7NVfiEq+Z6D41
+        vIqq00k31rX0qFr/K+3psqTxDbpOcGxRxSy7DanwTvf1wQUWNhCR7jnezqpezlAIyG+yY3
+        iswvWBV2wLITzwJ0rNoVygybUiI1Klo=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-583-sut2He30OsSCkWS-EwLmZA-1; Wed, 20 Apr 2022 10:25:39 -0400
+X-MC-Unique: sut2He30OsSCkWS-EwLmZA-1
+Received: by mail-il1-f200.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso986372ilu.19
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:25:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6L9wlYfoTTVlFWQO6Q+aBUFZaMt8eiBvRHdomsCb/gQ=;
-        b=DHIjEz6JO64jROSIOehbf3qZToCsiFjq3GrsfBCD3jjZA+bYDcuiHiX+G2L5I2j/SU
-         u47lzOg/O1g9Zaa3PBY4KzH5yiWhFLoWS4AKpWJwPtk0Z4GKFTruudZU5aSqHV3JZcCV
-         T1C0DO0/2IbrVoDpZTbL+r71llcQ1u+imKDwhO8Gef/u7SHhsRFcEUbcV+opDQNpx++1
-         +Oppns9BUltd7IwSBVfa3uN0TjFK3KB46RgJqimeBiriQvyjJLiqjQ6Ip582blmwIO6f
-         B/NVZMhbb7yFSS1NIswIyISicDwqcps28ULrmEQXlz946rwyKCgv/VbOqwcwWyEo2iDa
-         U7LA==
-X-Gm-Message-State: AOAM533eVyFuNY5avK+wXUKM1rVNlW00aDvnRHWNq0EH+mPdLTUp0ayl
-        aiQ6IKN2ev/phL+I7faOp7NgxIUXohvtAXyVhscTIK46cDjl+g==
-X-Google-Smtp-Source: ABdhPJwORr+u06BVupqHEdr6+9bVLS7u6YOpv7Z8575GAnbbRW403yo6Hg6y84QtAeNyMBVdvSJxpYjNcFB0Jyc9k4U=
-X-Received: by 2002:ac2:43b1:0:b0:46d:c52d:bae1 with SMTP id
- t17-20020ac243b1000000b0046dc52dbae1mr14831663lfl.315.1650464618375; Wed, 20
- Apr 2022 07:23:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8DSx54ImoIrDcTZ0ltEH183UWHNgTANiSB/5rc9D3JE=;
+        b=BtIcz07C0GE8S4FEabFripwprLNUze3YfsuX1di63f8DG7xBoSIlYcIiVxuqMmrwQZ
+         WTQbF1JKiPSSuIc8OjZxwD+LBKvGIxE9b29ZWDDpwREtpqMNUyJJhPden9yOsa9KrxPW
+         +73gULZoThLbcEtMsnQh1zvjsESl0G+FI0DE7aiYQXC66pOmAPucuFU/UDFB6oJLqGri
+         zYmAHkaAIFq2RdM8qXSYDOpaQPemMzWK522W9wBevfPROT1DvvcPgOuddLG3FjjESJzE
+         F4LNdFHoQbW7I8iqTF6qIUBdE2gP/AuCOofQ89Zv4dfD/jvW0jx0Yw/Ovhg+1G4TdACp
+         jdAg==
+X-Gm-Message-State: AOAM532qIPvkrDJ+gi+UuEFlFxPrv3D9KJp1kNL17fHr3Diz9nJy5qwk
+        0JhjX8Vzdo0pESS4tC+ZM0xwguFXE+VhrmxwMNlb0jAaCZXSnvAFFpgtLBGdYm7t53kN0YlFjbI
+        PN9PQohSWuGyapnem5KIpd7rW
+X-Received: by 2002:a05:6e02:194e:b0:2cc:4e4c:fc9a with SMTP id x14-20020a056e02194e00b002cc4e4cfc9amr3237222ilu.178.1650464738515;
+        Wed, 20 Apr 2022 07:25:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyi8FH0j2gA8lyKO+QYNzf/oX37oN05YYk2uSAyOY7pC5pV0T5sVp835XJOoARGa9P9Xd6aOQ==
+X-Received: by 2002:a05:6e02:194e:b0:2cc:4e4c:fc9a with SMTP id x14-20020a056e02194e00b002cc4e4cfc9amr3237212ilu.178.1650464738323;
+        Wed, 20 Apr 2022 07:25:38 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id r9-20020a6b6009000000b006412abddbbbsm11320909iog.24.2022.04.20.07.25.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 07:25:37 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 10:25:36 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Alistair Popple <apopple@nvidia.com>
+Subject: Re: [PATCH v8 22/23] mm: Enable PTE markers by default
+Message-ID: <YmAX4IGu128Kinte@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405014929.15158-1-peterx@redhat.com>
+ <Yl7RrKV5mXtNAAzi@cmpxchg.org>
+ <Yl8UmWQodLX+JkZ7@xz-m1.local>
+ <Yl8YE+w+OWz5RNOL@cmpxchg.org>
+ <Yl8bYKOJGW2py7Q0@xz-m1.local>
+ <Yl8ojDwxsD/wqWM4@cmpxchg.org>
+ <Yl8xKh9Dc+nPr30a@xz-m1.local>
+ <YmAOn75O7zOOioXQ@cmpxchg.org>
 MIME-Version: 1.0
-References: <20220419160407.1740458-1-Jason@zx2c4.com> <CAG48ez3amS6=omb8XVDEz9H2bk3MxTEK_XPjD=ZO-cXcDqz-cg@mail.gmail.com>
- <CAHmME9r7Vt1XFzceHhy7O67iVMhtpLJ-d0p8UGgV4Srd4Dt2Hg@mail.gmail.com>
- <CAG48ez2X72XkpxaEDmzykewreuhk8=5t5L5b2Qdr1dn8LcFutw@mail.gmail.com>
- <CAHmME9q+mDw6n3FNJLvoZoD3UsX-G5PvTwb5L7h_M9RFKNemSw@mail.gmail.com> <YmAJoGtqA3PMrZmD@zx2c4.com>
-In-Reply-To: <YmAJoGtqA3PMrZmD@zx2c4.com>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 20 Apr 2022 16:23:02 +0200
-Message-ID: <CAG48ez1F0P7Wnp=PGhiUej=u=8CSF6gpD9J=Oxxg0buFRqV1tA@mail.gmail.com>
-Subject: Re: [PATCH] random: add fork_event sysctl for polling VM forks
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Colm MacCarthaigh <colmmacc@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YmAOn75O7zOOioXQ@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 3:25 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hey again,
->
-> On Wed, Apr 20, 2022 at 02:15:45AM +0200, Jason A. Donenfeld wrote:
-> > Hi Jann,
-> >
-> > On Tue, Apr 19, 2022 at 9:45 PM Jann Horn <jannh@google.com> wrote:
-> > > AFAIK this also means that if you make an epoll watch for
-> > > /proc/sys/kernel/random/fork_event, and then call poll() *on the epoll
-> > > fd* for some reason, that will probably already consume the event; and
-> > > if you then try to actually receive the epoll event via epoll_wait(),
-> > > it'll already be gone (because epoll tries to re-poll the "ready"
-> > > files to figure out what state those files are at now). Similarly if
-> > > you try to create an epoll watch for an FD that already has an event
-> > > pending: Installing the watch will call the ->poll handler once,
-> > > resetting the file's state, and the following epoll_wait() will call
-> > > ->poll again and think the event is already gone. See the call paths
-> > > to vfs_poll() in fs/eventpoll.c.
-> > >
-> > > Maybe we don't care about such exotic usage, and are willing to accept
-> > > the UAPI inconsistency and slight epoll breakage of plumbing
-> > > edge-triggered polling through APIs designed for level-triggered
-> > > polling. IDK.
-> >
-> > Hmm, I see. The thing is, this is _already_ what's done for
-> > domainname/hostname. It's how the sysctl poll handler was "designed".
-> > So our options here are:
-> >
-> > a) Remove this quirky behavior from domainname/hostname and start
-> > over. This would potentially break userspace, but maybe nobody uses
-> > this? No idea, but sounds risky.
-> >
-> > b) Apply this commit as-is, because it's using the API as the API was
-> > designed, and call it a day.
-> >
-> > c) Apply this commit as-is, because it's using the API as the API was
-> > designed, and then later try to fix up the epoll behavior on this.
-> >
-> > Of these, (a) seems like a non-starter. (c) is most appealing, but it
-> > sounds like it might not actually be possible?
-> >
-> > Jason
->
-> I actually tried to verify your concern but didn't have success doing
-> so.
+On Wed, Apr 20, 2022 at 09:46:07AM -0400, Johannes Weiner wrote:
+> My point was simply that for the user it might be easiest and most
+> intuitive if userfaultfd and its related suboptions are 1) grouped
+> together and 2) in the MM submenu.
 
-My point is that when you run this code:
+Very reasonable request.
 
-$ cat edgepoll.c
-#include <time.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <err.h>
-#include <unistd.h>
-#include <poll.h>
-#include <sys/epoll.h>
+> Yeah it looks like there is a healthy mix ;) To add to the list:
+> 
+> - mm/Kconfig has CONFIG_SWAP for the swapon/swapoff syscalls.
+> - fs/Kconfig has CONFIG_FILE_LOCKING, which adds the flock() syscall.
+> - Interestingly, fs/Kconfig has CONFIG_MEMFD_CREATE for memfd_create()
+>   which is implemented in mm/memfd.c.
+> 
+> It seems reasonable to me to move the userfaultfd stuff to mm as well,
+> especially when it's becoming more than just a single binary question
+> on whether you want a syscall or not, and has MM-specific suboptions.
 
-#define SYSCHK(x) ({          \
-  typeof(x) __res = (x);      \
-  if (__res == (typeof(x))-1) \
-    err(1, "SYSCHK(" #x ")"); \
-  __res;                      \
-})
+Thanks for the extra information!
 
-int main(void) {
-  int epfd = SYSCHK(epoll_create1(0));
-  int hostname_fd = SYSCHK(open("/proc/sys/kernel/hostname", O_RDONLY));
-  struct epoll_event event = { .events = EPOLLERR, .data = { .u32 = 1234 } };
-  SYSCHK(epoll_ctl(epfd, EPOLL_CTL_ADD, hostname_fd, &event));
+Obviously as you said it's growing a little bit.  I'll give it a shot later
+today.
 
-  while (1) {
-    struct pollfd pollfds[1] = { { .fd = epfd, .events = POLLIN } };
-    int poll_res = poll(pollfds, 1, -1);
-    if (poll_res == -1) {
-      perror("poll() error");
-      continue;
-    }
-    if (poll_res == 0) {
-      printf("poll(): no events ready (can't happen, we're using
-timeout=-1)\n");
-      continue;
-    }
-    struct epoll_event events[1];
-    int epoll_res = epoll_wait(epfd, events, 1, 0);
-    if (epoll_res == -1) {
-      perror("epoll error");
-      continue;
-    }
-    if (epoll_res == 0) {
-      printf("spurious epoll readiness\n");
-      continue;
-    }
-    printf("got epoll fd readiness: events=0x%x, u32=%u\n",
-events[0].events, events[0].data.u32);
-  }
-}
-$ gcc -o edgepoll edgepoll.c
-$ ./edgepoll
+-- 
+Peter Xu
 
-and then change the hostname, you'll just get "spurious epoll
-readiness" logged - simply calling poll() on the epoll FD resets the
-state of the hostname file that is being polled, so when we then try
-to receive the epoll event with epoll_wait(), the event is gone.
-
-
-And the other case is this:
-
-$ cat edgepoll2.c
-#include <time.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <err.h>
-#include <unistd.h>
-#include <poll.h>
-#include <sys/epoll.h>
-
-#define SYSCHK(x) ({          \
-  typeof(x) __res = (x);      \
-  if (__res == (typeof(x))-1) \
-    err(1, "SYSCHK(" #x ")"); \
-  __res;                      \
-})
-
-int main(void) {
-  int epfd = SYSCHK(epoll_create1(0));
-  int hostname_fd = SYSCHK(open("/proc/sys/kernel/hostname", O_RDONLY));
-  printf("opened hostname fd, sleeping\n");
-  sleep(10);
-  printf("done sleeping\n");
-  struct epoll_event event = { .events = EPOLLERR, .data = { .u32 = 1234 } };
-  SYSCHK(epoll_ctl(epfd, EPOLL_CTL_ADD, hostname_fd, &event));
-
-  struct epoll_event events[1];
-  int epoll_res = SYSCHK(epoll_wait(epfd, events, 1, 0));
-  if (epoll_res == 0)
-    errx(1, "no epoll events ready");
-  printf("got epoll fd readiness: events=0x%x, u32=%u\n",
-events[0].events, events[0].data.u32);
-}
-$ gcc -o edgepoll2 edgepoll2.c
-$ ./edgepoll2
-opened hostname fd, sleeping
-done sleeping
-edgepoll2: no epoll events ready
-$
-
-If you change the hostname when "opened hostname fd, sleeping" is
-printed, it'll still say "edgepoll2: no epoll events ready", because
-the EPOLL_CTL_ADD basically consumed the event.
