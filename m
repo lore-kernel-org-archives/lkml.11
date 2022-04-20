@@ -2,91 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC90C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3DCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385451AbiDUG5S (ORCPT
+        id S1385401AbiDUG6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59152 "EHLO
+        Thu, 21 Apr 2022 02:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385459AbiDUG5C (ORCPT
+        with ESMTP id S1385501AbiDUG5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:57:02 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C49193E6;
-        Wed, 20 Apr 2022 23:53:28 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23L6rPRe109706;
-        Thu, 21 Apr 2022 01:53:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650524005;
-        bh=So7jhvc/pnXSX8KuZD8w7ZNdHyBbCjCwlq8HpEYSAbQ=;
-        h=From:To:CC:Subject:Date;
-        b=nACfugG9oD3ibKfwrSJpURvGtoif3fj3F1SunWo3v+2HAMsRiQPjQr7XIXrOlJE9Y
-         4sJF+jwyyH23o/aMsEMalU/V+bxOf/0KSFly8Ol6fTM7l0jlZ8lyNzWzc55kdYoxeY
-         Vx0G+05rqm0hFvh5Bsmcd7nX/9K5iVYUoh1QFg98=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23L6rPNR109641
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 21 Apr 2022 01:53:25 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 21
- Apr 2022 01:53:25 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 21 Apr 2022 01:53:25 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23L6rO1X101513;
-        Thu, 21 Apr 2022 01:53:24 -0500
-From:   Jayesh Choudhary <j-choudhary@ti.com>
-To:     <dmaengine@vger.kernel.org>
-CC:     <peter.ujfalusi@gmail.com>, <vkoul@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <j-choudhary@ti.com>
-Subject: [PATCH] dmaengine: ti: k3-psil-am62: Update PSIL thread for saul.
-Date:   Thu, 21 Apr 2022 12:23:23 +0530
-Message-ID: <20220421065323.16378-1-j-choudhary@ti.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Thu, 21 Apr 2022 02:57:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4F216586
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:54:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C71C6198B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1799C385A1;
+        Thu, 21 Apr 2022 06:54:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650524071;
+        bh=FdF1NAKBmWO075waiXVJwrPyloe9VbS4QA0FHSWBn9w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dsngWohCqGLymVZBVR/znk4ixic3Y3+mkX8RnutaDFE6ZhAoghPP0A5mcrq01w7eq
+         gRPOR322zocUC2TOHvei/UqbVcy8ENpWzMCjVvTq1it33rS/aVQnV/u5lAvyYSb0oE
+         FFwNPV+/SMkCcVBovwRlVcyR/V0w7vwyL3lEto1HKTnlXWQ16WXBc29uuxMjFBEX0/
+         zicJfqe4pUb9tigI8HSx97xVLcaHjDJRxctJoFe4c1hSASIL/i8WQHZ1KuyxTKKAUM
+         avZ5vu39+TR/mkuI56cxqHHEWIOGg2Vr8YAfUHe6MCBG+vwzL09t7Fq7lPODaD2YUQ
+         luw7ffihH0aNQ==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=billy-the-mountain.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nhQhv-005o4Q-Hu; Thu, 21 Apr 2022 07:54:29 +0100
+Date:   Thu, 21 Apr 2022 00:19:02 +0100
+Message-ID: <87mtgfgx7d.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Nathan Rossi <nathan@nathanrossi.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Nathan Rossi <nathan.rossi@digi.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] irqchip/armada-370-xp: Enable MSI affinity configuration
+In-Reply-To: <20220421015728.86912-1-nathan@nathanrossi.com>
+References: <20220421015728.86912-1-nathan@nathanrossi.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: nathan@nathanrossi.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, nathan.rossi@digi.com, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, tglx@linutronix.de
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct the RX PSIL thread for sa3ul.
+Hi Nathan,
 
-Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
----
+On Thu, 21 Apr 2022 02:57:28 +0100,
+Nathan Rossi <nathan@nathanrossi.com> wrote:
+> 
+> From: Nathan Rossi <nathan.rossi@digi.com>
+> 
+> With multiple devices attached via PCIe to an Armada 385 it is possible
+> to overwhelm a single CPU with MSI interrupts. Under certain scenarios
+> configuring the interrupts to be handled by more than one CPU would
+> prevent the system from being overwhelmed. However the
+> irqchip-aramada-370-xp driver is configured to only handle MSIs on the
+> boot CPU, and provides no affinity configuration.
+> 
+> This change adds support to the armada-370-xp driver to allow for
+> configuring the affinity of specific MSI irqs and to generate the
+> interrupts on secondary CPUs. This is done by enabling the private
+> doorbell for all online CPUs and configures all CPUs to unmask MSI
+> specific private doorbell bits. The CPU affinity selection of the
+> interrupt is handled by the target list of the software triggered
+> interrupt value, which is provided as the MSI message. The message has
+> the associated CPU bit set for the target CPU. For private doorbell
+> interrupts only one bit can be set otherwise all CPUs will receive the
+> interrupt, so the lowest CPU in the affinity mask is used. This means
+> that by default the first CPU will handle all the interrupts as was the
+> case before.
+> 
+> Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
+> ---
+>  drivers/irqchip/irq-armada-370-xp.c | 34 ++++++++++++++++++++++++++++++++--
+>  1 file changed, 32 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/irqchip/irq-armada-370-xp.c b/drivers/irqchip/irq-armada-370-xp.c
+> index 5b8d571c04..42c257f576 100644
+> --- a/drivers/irqchip/irq-armada-370-xp.c
+> +++ b/drivers/irqchip/irq-armada-370-xp.c
+> @@ -209,15 +209,37 @@ static struct msi_domain_info armada_370_xp_msi_domain_info = {
+>  
+>  static void armada_370_xp_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  {
+> +#ifdef CONFIG_SMP
+> +	unsigned int cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
+> +
+> +	msg->data = (1 << (cpu + 8)) | (data->hwirq + PCI_MSI_DOORBELL_START);
 
-The new updated PSIL threads have been tested on local am62x board.
-Log is available here:
-<https://gist.github.com/Jayesh2000/b0316190de3d9dbb8e98337106ebe24a>
+BIT(cpu + 8) | ...
 
- drivers/dma/ti/k3-psil-am62.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> +#else
+> +	msg->data = 0xf00 | (data->hwirq + PCI_MSI_DOORBELL_START);
 
-diff --git a/drivers/dma/ti/k3-psil-am62.c b/drivers/dma/ti/k3-psil-am62.c
-index d431e2033237..2b6fd6e37c61 100644
---- a/drivers/dma/ti/k3-psil-am62.c
-+++ b/drivers/dma/ti/k3-psil-am62.c
-@@ -70,10 +70,10 @@
- /* PSI-L source thread IDs, used for RX (DMA_DEV_TO_MEM) */
- static struct psil_ep am62_src_ep_map[] = {
- 	/* SAUL */
--	PSIL_SAUL(0x7500, 20, 35, 8, 35, 0),
--	PSIL_SAUL(0x7501, 21, 35, 8, 36, 0),
--	PSIL_SAUL(0x7502, 22, 43, 8, 43, 0),
--	PSIL_SAUL(0x7503, 23, 43, 8, 44, 0),
-+	PSIL_SAUL(0x7504, 20, 35, 8, 35, 0),
-+	PSIL_SAUL(0x7505, 21, 35, 8, 36, 0),
-+	PSIL_SAUL(0x7506, 22, 43, 8, 43, 0),
-+	PSIL_SAUL(0x7507, 23, 43, 8, 44, 0),
- 	/* PDMA_MAIN0 - SPI0-3 */
- 	PSIL_PDMA_XY_PKT(0x4302),
- 	PSIL_PDMA_XY_PKT(0x4303),
+This paints the existing code a bit differently. This seems to target
+all 4 CPUs. Why is that? I'd expect only bit 8 to be set, and the
+whole #ifdefery to go away.
+
+> +#endif
+>  	msg->address_lo = lower_32_bits(msi_doorbell_addr);
+>  	msg->address_hi = upper_32_bits(msi_doorbell_addr);
+> -	msg->data = 0xf00 | (data->hwirq + PCI_MSI_DOORBELL_START);
+>  }
+>  
+>  static int armada_370_xp_msi_set_affinity(struct irq_data *irq_data,
+>  					  const struct cpumask *mask, bool force)
+>  {
+> -	 return -EINVAL;
+> +#ifdef CONFIG_SMP
+> +	unsigned int cpu;
+> +
+> +	if (!force)
+> +		cpu = cpumask_any_and(mask, cpu_online_mask);
+> +	else
+> +		cpu = cpumask_first(mask);
+> +
+> +	if (cpu >= nr_cpu_ids)
+> +		return -EINVAL;
+> +
+> +	irq_data_update_effective_affinity(irq_data, cpumask_of(cpu));
+> +
+> +	return IRQ_SET_MASK_OK;
+> +#else
+> +	return -EINVAL;
+> +#endif
+>  }
+>  
+>  static struct irq_chip armada_370_xp_msi_bottom_irq_chip = {
+> @@ -482,6 +504,7 @@ static void armada_xp_mpic_smp_cpu_init(void)
+>  static void armada_xp_mpic_reenable_percpu(void)
+>  {
+>  	unsigned int irq;
+> +	u32 reg;
+>  
+>  	/* Re-enable per-CPU interrupts that were enabled before suspend */
+>  	for (irq = 0; irq < ARMADA_370_XP_MAX_PER_CPU_IRQS; irq++) {
+> @@ -501,6 +524,13 @@ static void armada_xp_mpic_reenable_percpu(void)
+>  	}
+>  
+>  	ipi_resume();
+> +
+> +	/* Enable MSI doorbell mask and combined cpu local interrupt */
+> +	reg = readl(per_cpu_int_base + ARMADA_370_XP_IN_DRBEL_MSK_OFFS)
+> +		| PCI_MSI_DOORBELL_MASK;
+> +	writel(reg, per_cpu_int_base + ARMADA_370_XP_IN_DRBEL_MSK_OFFS);
+> +	/* Unmask local doorbell interrupt */
+> +	writel(1, per_cpu_int_base + ARMADA_370_XP_INT_CLEAR_MASK_OFFS);
+
+This is a duplicate of what is already in armada_370_xp_msi_init().
+Please refactor it so that this doesn't happen twice on the first CPU.
+
+This otherwise seem like a valuable improvement on the current
+behaviour,
+
+	M.
+
 -- 
-2.17.1
-
+Without deviation from the norm, progress is not possible.
