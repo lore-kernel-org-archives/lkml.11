@@ -2,63 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77228C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379929AbiDTPDO (ORCPT
+        id S1355558AbiDTPDS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        Wed, 20 Apr 2022 11:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379906AbiDTPCr (ORCPT
+        with ESMTP id S1379900AbiDTPCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:02:47 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26A2B87A;
-        Wed, 20 Apr 2022 08:00:00 -0700 (PDT)
-Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KEO4eN006612;
-        Wed, 20 Apr 2022 14:59:56 GMT
+        Wed, 20 Apr 2022 11:02:46 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2D16176;
+        Wed, 20 Apr 2022 07:59:59 -0700 (PDT)
+Received: from pps.filterd (m0150245.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KEX80G009745;
+        Wed, 20 Apr 2022 14:59:54 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pps0720;
- bh=PvZ1pQrQRJdHDkPHYmzY66oiRGACkdtxDpwSSivdkBY=;
- b=nbzlcAOasUtD3TC77dVDCRd+OBLxxeNQsGZ2JGM8uwx7D6CTTcllGapGM+DkTKJoGWzq
- lSgekrOwVtuqxeHjvLaKCy6VQLfUhbc4SNy4Vu5sTDPVsJcNSgaKaAd9pVOLgT+y9TgT
- zGNgloSTM/CRSG3jWj0XX52UQJClfc8zqIK6zrQxlPItLj+9X4jcY7O6ZqnQLnX5kX+7
- ZEs4nVIefKqVScqlXtieGOW8twyOieB4s0W95fgb/GE15dnBjVD/9F9NfuaPcnC/YJik
- 3nM4XW8Ig2fA0i9Zn2ewN5hiQUpnCYv+oWtsHbj68X0ikejSyQ8rAfl1SUgM8SpHcTXr Mw== 
-Received: from g2t2352.austin.hpe.com (g2t2352.austin.hpe.com [15.233.44.25])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fjkw88bfb-1
+ : date : message-id : in-reply-to : references : mime-version; s=pps0720;
+ bh=2AVoIDcJeFuQ5xIrTyKH31H/gdp/otBvvdy7T/5QB4k=;
+ b=f/Wu0m9hX6BsX8mumuLJnPz7Ooa6YQLZeIWSkR02R/zjDv1YXHDxDnU/8uiVzVvsJs2v
+ 0oUiHsMN9h3i5Kb3r/TZPRpTeIS0nEZPivEZmYgF7o3m32PALYFvkhmw99HSrssrkQEM
+ b+IKSHwh1Zp5/4mYlc7i+C09QT5sK6OqnN3e0jQkMRYUcb2DXNp1Rz4QBbgy8VtptJPH
+ 80AjuYIw/KeruXrFbqvR/5bpm4KFYMptwkctlrh3mBuM/WUgLOK9IObzs0w9A4Y+hu7q
+ DRYBAc6sS8qmmOOoGTwbCIUGUVMSQDjXLuI8OaMKVThGLQHLpXQEhzs2MpfXdcIGEab6 Yg== 
+Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fjbhjd7fu-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:59:55 +0000
+        Wed, 20 Apr 2022 14:59:54 +0000
 Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
-        by g2t2352.austin.hpe.com (Postfix) with ESMTP id 167C191;
-        Wed, 20 Apr 2022 14:59:55 +0000 (UTC)
+        by g2t2354.austin.hpe.com (Postfix) with ESMTP id E537481;
+        Wed, 20 Apr 2022 14:59:53 +0000 (UTC)
 Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id A7EA537;
-        Wed, 20 Apr 2022 14:59:54 +0000 (UTC)
+        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id A6FF537;
+        Wed, 20 Apr 2022 14:59:53 +0000 (UTC)
 From:   nick.hawkins@hpe.com
 To:     verdun@hpe.com, nick@hpe.com, joel@jms.id.au, arnd@arndb.de
 Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 09/11] dt-bindings: usb: generic-ochi:  Add HPE GXP ochi binding
-Date:   Wed, 20 Apr 2022 10:01:53 -0500
-Message-Id: <20220420150156.47405-9-nick.hawkins@hpe.com>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 07/11] dt-bindings: arm: Add HPE GXP Binding
+Date:   Wed, 20 Apr 2022 10:01:51 -0500
+Message-Id: <20220420150156.47405-7-nick.hawkins@hpe.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220420150156.47405-1-nick.hawkins@hpe.com>
 References: <20220420150156.47405-1-nick.hawkins@hpe.com>
-X-Proofpoint-ORIG-GUID: 6RkSogFcGp9eRWvN1NTo1ZbFTutXqXQS
-X-Proofpoint-GUID: 6RkSogFcGp9eRWvN1NTo1ZbFTutXqXQS
+X-Proofpoint-GUID: konGJ45vu20-aTiHw3lqPojT4ymtgleH
+X-Proofpoint-ORIG-GUID: konGJ45vu20-aTiHw3lqPojT4ymtgleH
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- priorityscore=1501 bulkscore=0 suspectscore=0 phishscore=0 spamscore=0
- lowpriorityscore=0 mlxlogscore=562 malwarescore=0 clxscore=1015
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=923
+ suspectscore=0 bulkscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
+ clxscore=1015 impostorscore=0 adultscore=0 spamscore=0 priorityscore=1501
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2204200089
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -66,31 +67,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Add hpe,gxp-ochi to the generic-ochi list. This is to
-enable the device tree support.
+This adds support for the hpe,gxp binding. The GXP is based on
+the cortex a9 processor and supports arm7.
 
 Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
 ---
-v1:
-*Based on previous feedback the hpe,gxp-ochi is added
-to the list
+v4:
+*Removed gxp.yaml
+*Created hpe,gxp.yaml based on reviewer input
 ---
- Documentation/devicetree/bindings/usb/generic-ohci.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/arm/hpe,gxp.yaml      | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/hpe,gxp.yaml
 
-diff --git a/Documentation/devicetree/bindings/usb/generic-ohci.yaml b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-index acbf94fa5f74..e2ac84665316 100644
---- a/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-+++ b/Documentation/devicetree/bindings/usb/generic-ohci.yaml
-@@ -42,6 +42,7 @@ properties:
-               - brcm,bcm7420-ohci
-               - brcm,bcm7425-ohci
-               - brcm,bcm7435-ohci
-+              - hpe,gxp-ohci
-               - ibm,476gtr-ohci
-               - ingenic,jz4740-ohci
-               - snps,hsdk-v1.0-ohci
+diff --git a/Documentation/devicetree/bindings/arm/hpe,gxp.yaml b/Documentation/devicetree/bindings/arm/hpe,gxp.yaml
+new file mode 100644
+index 000000000000..f896fc602d64
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/hpe,gxp.yaml
+@@ -0,0 +1,22 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/hpe,gxp.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: HPE bmc GXP SoC driver
++
++maintainers:
++  - Nick Hawkins <nick.hawkins@hpe.com>
++  - Jean-Marie Verdun <verdun@hpe.com>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - hpe,gxp-dl360gen10
++      - const: hpe,gxp
++
++additionalProperties: true
++
++...
 -- 
 2.17.1
 
