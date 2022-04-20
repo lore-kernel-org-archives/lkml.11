@@ -2,135 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861B2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A73FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377385AbiDTKAa (ORCPT
+        id S1377395AbiDTKBG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
+        Wed, 20 Apr 2022 06:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377423AbiDTKAM (ORCPT
+        with ESMTP id S1377369AbiDTKBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:00:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 883AE3D4B6
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 02:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650448644;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZbxWeXm1X4zfi7zki/F+6Y9tTnHLdesLwVcaLaLQFls=;
-        b=ZcfYFDG99M3ujkgDZxtEOBBp1u7soAKVCauEhzD3sHQ7ur5hfKnAh9ejfWWfJ1eaTwIX97
-        AEWIUEjPH97PIKvtOqMf2LS1ohWYLWhNxwm4sQ5Ihx9/H/vwxMIO29l3VQLCKXiUCjs+As
-        K48NUUz6dS8NW6vD+CbbWhwf8BAcdfw=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-81-FYWaFOFQNeiAmfQGs9-bbg-1; Wed, 20 Apr 2022 05:57:23 -0400
-X-MC-Unique: FYWaFOFQNeiAmfQGs9-bbg-1
-Received: by mail-wm1-f70.google.com with SMTP id q6-20020a1cf306000000b0038c5726365aso742996wmq.3
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 02:57:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZbxWeXm1X4zfi7zki/F+6Y9tTnHLdesLwVcaLaLQFls=;
-        b=FpSfCUXNbdEc8CYAgDoOo7YGlBSuRm3lGh4F7RTyv/hvTYcTZ5NdKjrUZmjaO1fGFy
-         pTahr+BXMt89hiOXWK66eH5TYfdA9ZepD+OYiPH1QC3FxskcbmybwR2zZVQzQPsoUheg
-         NPHW8ZeYgWgYsWB9wwM4MKywZwboklotrHnSSH5Vtg3674ZNFeycVd5PXL9q0YAx+UAn
-         NcFGRSHpj2uHgxsI0SnL7UyS6hP0D8Tm5yGRidtfGdjl89cdsA2A3p8tR0ht7U+xvCZ6
-         vRZycI5ytldGkaq5yehrqlPwh9WzPBptgXGFNSi95iXlMcQqw3JTiGHk08iwlCM2cyPi
-         0qzQ==
-X-Gm-Message-State: AOAM533/vb00YtGxTvKShXeVGHQwbn4JELZAYifG7cknpNWOrfx09Yfq
-        SuobVgY4v4RKVjeYd5yf7fPPK3fzp8u4ZrNgthb9BXMxWk2k7s+ziEUIKfxrNCwa7oqDm2FqK7H
-        y82P8isUHMyilTRObJYDticarkESloWPjiEkNwz3aoRWGnatEAcX/SyrmDF8K9dESOIuRhSJhMH
-        w=
-X-Received: by 2002:a5d:6788:0:b0:207:ad57:cc71 with SMTP id v8-20020a5d6788000000b00207ad57cc71mr14714987wru.180.1650448642406;
-        Wed, 20 Apr 2022 02:57:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwAkCEg6ZTgvGJWDPDulGPHJ7+1EP0RT/2MwYavQA06jMb2aB4/hMSe2V5kqJ2x7FdsxgpAjA==
-X-Received: by 2002:a5d:6788:0:b0:207:ad57:cc71 with SMTP id v8-20020a5d6788000000b00207ad57cc71mr14714970wru.180.1650448642139;
-        Wed, 20 Apr 2022 02:57:22 -0700 (PDT)
-Received: from kherbst.pingu.com (ip1f10bb48.dynamic.kabel-deutschland.de. [31.16.187.72])
-        by smtp.gmail.com with ESMTPSA id g8-20020a05600c4ec800b0039290a5b827sm11376161wmq.24.2022.04.20.02.57.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 02:57:21 -0700 (PDT)
-From:   Karol Herbst <kherbst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Karol Herbst <kherbst@redhat.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH v2] drm/i915: Fix race in __i915_vma_remove_closed
-Date:   Wed, 20 Apr 2022 11:57:20 +0200
-Message-Id: <20220420095720.3331609-1-kherbst@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 20 Apr 2022 06:01:04 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4B83BF93
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 02:58:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650448698; x=1681984698;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bOUtaX+PmECQ0swx/YCy7MNyYYwADHZzf3NqKuRbRqk=;
+  b=A+dWGWCPiO7ogU+0yvE62NQg6z2Bgs4JiaCY1PX8915TQCRRAIPa0pfg
+   OZcQ+WluLBAn2jfcQyYTyaNQ03Mjez+219fUtFUYpNRVK6Q0+aoBgpr9m
+   LJ5Gtu0Dv9yur/YYKSwdwa0bl1Rmqgwd7VS7EMmrXr7aBlBqKMFBEc/Kt
+   537EwL6QfwqXfZ3xSeKMwDrxZ4BEpDU7cOFAe1klyOberO7HDVMggzVsb
+   8k9SUvUiDmtotJrfiLsy1V/py386rkDaSV11EHmOSodHUf3ipo/gx0tM6
+   kzDl6otMBXFeKuZkIVoEEEhZpRtuK/713tVivPOrb4pd7otV34/MF0jcz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="264161920"
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="264161920"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 02:58:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="647607880"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Apr 2022 02:58:17 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nh76G-0006qs-Gv;
+        Wed, 20 Apr 2022 09:58:16 +0000
+Date:   Wed, 20 Apr 2022 17:57:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mark:stackleak/rework 7/7] arch/arm64/kernel/entry-common.c:273:13:
+ error: implicit declaration of function 'on_thread_stack'; did you mean
+ 'on_task_stack'?
+Message-ID: <202204201732.3XJvzeVZ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i915_vma_reopen checked if the vma is closed before without taking the
-lock. So multiple threads could attempt removing the vma.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git stackleak/rework
+head:   3ff9898bf29634c068fe32a93656ca6685cad126
+commit: 3ff9898bf29634c068fe32a93656ca6685cad126 [7/7] arm64: remove unused stackleak helpers
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220420/202204201732.3XJvzeVZ-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=3ff9898bf29634c068fe32a93656ca6685cad126
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark stackleak/rework
+        git checkout 3ff9898bf29634c068fe32a93656ca6685cad126
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
 
-Instead the lock needs to be taken before actually checking.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-v2: move struct declaration
+All errors (new ones prefixed by >>):
 
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: intel-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5732
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
----
- drivers/gpu/drm/i915/i915_vma.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+   arch/arm64/kernel/entry-common.c: In function 'do_interrupt_handler':
+>> arch/arm64/kernel/entry-common.c:273:13: error: implicit declaration of function 'on_thread_stack'; did you mean 'on_task_stack'? [-Werror=implicit-function-declaration]
+     273 |         if (on_thread_stack())
+         |             ^~~~~~~~~~~~~~~
+         |             on_task_stack
+   cc1: some warnings being treated as errors
 
-diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index 162e8d83691b..2efdad2b43fa 100644
---- a/drivers/gpu/drm/i915/i915_vma.c
-+++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -1615,17 +1615,17 @@ void i915_vma_close(struct i915_vma *vma)
- 
- static void __i915_vma_remove_closed(struct i915_vma *vma)
- {
--	struct intel_gt *gt = vma->vm->gt;
--
--	spin_lock_irq(&gt->closed_lock);
- 	list_del_init(&vma->closed_link);
--	spin_unlock_irq(&gt->closed_lock);
- }
- 
- void i915_vma_reopen(struct i915_vma *vma)
- {
-+	struct intel_gt *gt = vma->vm->gt;
-+
-+	spin_lock_irq(&gt->closed_lock);
- 	if (i915_vma_is_closed(vma))
- 		__i915_vma_remove_closed(vma);
-+	spin_unlock_irq(&gt->closed_lock);
- }
- 
- static void force_unbind(struct i915_vma *vma)
-@@ -1641,6 +1641,7 @@ static void force_unbind(struct i915_vma *vma)
- static void release_references(struct i915_vma *vma, bool vm_ddestroy)
- {
- 	struct drm_i915_gem_object *obj = vma->obj;
-+	struct intel_gt *gt = vma->vm->gt;
- 
- 	GEM_BUG_ON(i915_vma_is_active(vma));
- 
-@@ -1651,7 +1652,9 @@ static void release_references(struct i915_vma *vma, bool vm_ddestroy)
- 
- 	spin_unlock(&obj->vma.lock);
- 
-+	spin_lock_irq(&gt->closed_lock);
- 	__i915_vma_remove_closed(vma);
-+	spin_unlock_irq(&gt->closed_lock);
- 
- 	if (vm_ddestroy)
- 		i915_vm_resv_put(vma->vm);
+
+vim +273 arch/arm64/kernel/entry-common.c
+
+33a3581a76f3a3 Mark Rutland 2021-06-07  267  
+064dbfb4169141 Mark Rutland 2021-06-07  268  static void do_interrupt_handler(struct pt_regs *regs,
+064dbfb4169141 Mark Rutland 2021-06-07  269  				 void (*handler)(struct pt_regs *))
+064dbfb4169141 Mark Rutland 2021-06-07  270  {
+26dc129342cfc1 Mark Rutland 2021-10-19  271  	struct pt_regs *old_regs = set_irq_regs(regs);
+26dc129342cfc1 Mark Rutland 2021-10-19  272  
+064dbfb4169141 Mark Rutland 2021-06-07 @273  	if (on_thread_stack())
+064dbfb4169141 Mark Rutland 2021-06-07  274  		call_on_irq_stack(regs, handler);
+064dbfb4169141 Mark Rutland 2021-06-07  275  	else
+064dbfb4169141 Mark Rutland 2021-06-07  276  		handler(regs);
+26dc129342cfc1 Mark Rutland 2021-10-19  277  
+26dc129342cfc1 Mark Rutland 2021-10-19  278  	set_irq_regs(old_regs);
+064dbfb4169141 Mark Rutland 2021-06-07  279  }
+064dbfb4169141 Mark Rutland 2021-06-07  280  
+
+:::::: The code at line 273 was first introduced by commit
+:::::: 064dbfb4169141943ec7d9dbfd02974dd008f2ce arm64: entry: convert IRQ+FIQ handlers to C
+
+:::::: TO: Mark Rutland <mark.rutland@arm.com>
+:::::: CC: Will Deacon <will@kernel.org>
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
