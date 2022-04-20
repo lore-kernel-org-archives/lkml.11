@@ -2,210 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03356C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377478AbiDTKD3 (ORCPT
+        id S1377494AbiDTKDl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        Wed, 20 Apr 2022 06:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377460AbiDTKDX (ORCPT
+        with ESMTP id S1377495AbiDTKDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:03:23 -0400
-Received: from outbound-smtp08.blacknight.com (outbound-smtp08.blacknight.com [46.22.139.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC9C3ED00
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:00:22 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp08.blacknight.com (Postfix) with ESMTPS id 87D351C41E5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 11:00:21 +0100 (IST)
-Received: (qmail 14142 invoked from network); 20 Apr 2022 10:00:21 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 20 Apr 2022 10:00:21 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 6/6] mm/page_alloc: Remotely drain per-cpu lists
-Date:   Wed, 20 Apr 2022 10:59:06 +0100
-Message-Id: <20220420095906.27349-7-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220420095906.27349-1-mgorman@techsingularity.net>
-References: <20220420095906.27349-1-mgorman@techsingularity.net>
+        Wed, 20 Apr 2022 06:03:25 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536B83F318
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:00:33 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id l2-20020a056e0212e200b002cc235e7488so595360iln.21
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:00:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=NuMJFaN/tuN5msi//LVAfmhcWDCzrafOzikhw8nF8H8=;
+        b=wDax7nb/8Ywmw26eW4hOkEvJ97p55XB3WJc+e6sBMvvxbUGFDWQWBQoQ/LbL27Vx2F
+         MK/hVgYmsHWKww7SQe7tIsA2rj7Vfg2/u7Vw6pbtpNR6cBREFvuYH0syYmF/+3icZ3yn
+         CgeHMRbXI2WnjvUwoTn7Z3vxSXZycvjS7h8hKhO4mpMdWwQVryKE/rYHxEc8kyZXdK3/
+         cqtPcr4zdbWcs6I8qS0BbE3BApU9oorGeV9oD9a8K50Puynw0YXNGureHwO1gaSYDEPx
+         daiistH7US/QcT34DmzzSxKJku8Vmr/hSRRBOmmtOw1YqKR8lc23qxBcNgHJ0RyMLhJX
+         4+XQ==
+X-Gm-Message-State: AOAM533eeEzjMvg1CczGRkzyd3Y9XTNHZT30HCDgdxmNXs3Ex2TEnR8f
+        D97NmIAsTcTsdXn0ZeeqOiUCorEC+VeoRqUsbTQp8CH/+iCy
+X-Google-Smtp-Source: ABdhPJwOvtnWn0yqKUpPHiJDtFrabRFJqwryKPHVhcMyAeURtE5+kBJLIwru1nJz/4alVuUrMf++ohg3rCiAPnCgUwndiPyonkTK
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:2e05:b0:657:28bd:ca2c with SMTP id
+ o5-20020a0566022e0500b0065728bdca2cmr170391iow.210.1650448832554; Wed, 20 Apr
+ 2022 03:00:32 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 03:00:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000626ce805dd13108c@google.com>
+Subject: [syzbot] possible deadlock in io_disarm_next
+From:   syzbot <syzbot+57e67273f92d7f5f1931@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Hello,
 
-Some setups, notably NOHZ_FULL CPUs, are too busy to handle the per-cpu
-drain work queued by __drain_all_pages(). So introduce new a mechanism
-to remotely drain the per-cpu lists. It is made possible by remotely
-locking 'struct per_cpu_pages' new per-cpu spinlocks. A benefit of this
-new scheme is that drain operations are now migration safe.
+syzbot found the following issue on:
 
-There was no observed performance degradation vs. the previous scheme.
-Both netperf and hackbench were run in parallel to triggering the
-__drain_all_pages(NULL, true) code path around ~100 times per second.
-The new scheme performs a bit better (~5%), although the important point
-here is there are no performance regressions vs. the previous mechanism.
-Per-cpu lists draining happens only in slow paths.
+HEAD commit:    634de1db0e9b Add linux-next specific files for 20220419
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10c92db8f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bbd6f9b0a89865b0
+dashboard link: https://syzkaller.appspot.com/bug?extid=57e67273f92d7f5f1931
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a02f68f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=138e3008f00000
 
-Link: https://lore.kernel.org/r/20211103170512.2745765-4-nsaenzju@redhat.com
-Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+The issue was bisected to:
+
+commit 78bfbdd1a4977df1dded20f9783a6ec174e67ef8
+Author: Pavel Begunkov <asml.silence@gmail.com>
+Date:   Fri Apr 15 21:08:23 2022 +0000
+
+    io_uring: kill io_put_req_deferred()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13039c0cf00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10839c0cf00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17039c0cf00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+57e67273f92d7f5f1931@syzkaller.appspotmail.com
+Fixes: 78bfbdd1a497 ("io_uring: kill io_put_req_deferred()")
+
+============================================
+WARNING: possible recursive locking detected
+5.18.0-rc3-next-20220419-syzkaller #0 Not tainted
+--------------------------------------------
+syz-executor162/3588 is trying to acquire lock:
+ffff888011a453d8 (&ctx->timeout_lock){....}-{2:2}, at: spin_lock_irq include/linux/spinlock.h:379 [inline]
+ffff888011a453d8 (&ctx->timeout_lock){....}-{2:2}, at: io_disarm_next+0x545/0xaa0 fs/io_uring.c:2452
+
+but task is already holding lock:
+ffff888011a453d8 (&ctx->timeout_lock){....}-{2:2}, at: spin_lock_irq include/linux/spinlock.h:379 [inline]
+ffff888011a453d8 (&ctx->timeout_lock){....}-{2:2}, at: io_kill_timeouts+0x4c/0x227 fs/io_uring.c:10432
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&ctx->timeout_lock);
+  lock(&ctx->timeout_lock);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+2 locks held by syz-executor162/3588:
+ #0: ffff888011a45398 (&ctx->completion_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+ #0: ffff888011a45398 (&ctx->completion_lock){+.+.}-{2:2}, at: io_kill_timeouts+0x38/0x227 fs/io_uring.c:10431
+ #1: ffff888011a453d8 (&ctx->timeout_lock){....}-{2:2}, at: spin_lock_irq include/linux/spinlock.h:379 [inline]
+ #1: ffff888011a453d8 (&ctx->timeout_lock){....}-{2:2}, at: io_kill_timeouts+0x4c/0x227 fs/io_uring.c:10432
+
+stack backtrace:
+CPU: 1 PID: 3588 Comm: syz-executor162 Not tainted 5.18.0-rc3-next-20220419-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
+ check_deadlock kernel/locking/lockdep.c:3031 [inline]
+ validate_chain kernel/locking/lockdep.c:3816 [inline]
+ __lock_acquire.cold+0x1f5/0x3b4 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5665 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+ __raw_spin_lock_irq include/linux/spinlock_api_smp.h:119 [inline]
+ _raw_spin_lock_irq+0x32/0x50 kernel/locking/spinlock.c:170
+ spin_lock_irq include/linux/spinlock.h:379 [inline]
+ io_disarm_next+0x545/0xaa0 fs/io_uring.c:2452
+ __io_req_complete_post+0x794/0xd90 fs/io_uring.c:2200
+ io_kill_timeout fs/io_uring.c:1815 [inline]
+ io_kill_timeout+0x210/0x21d fs/io_uring.c:1803
+ io_kill_timeouts+0xe2/0x227 fs/io_uring.c:10435
+ io_ring_ctx_wait_and_kill+0x1eb/0x360 fs/io_uring.c:10462
+ io_uring_release+0x42/0x46 fs/io_uring.c:10483
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:37 [inline]
+ do_exit+0xaff/0x2a00 kernel/exit.c:796
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:926
+ __do_sys_exit_group kernel/exit.c:937 [inline]
+ __se_sys_exit_group kernel/exit.c:935 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:935
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f786cb8ccb9
+Code: Unable to access opcode bytes at RIP 0x7f786cb8cc8f.
+RSP: 002b:00007ffcf6b5b088 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f786cc01350 RCX: 00007f786cb8ccb9
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f786cc01350
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
+
+
 ---
- mm/page_alloc.c | 66 +++++++++----------------------------------------
- 1 file changed, 11 insertions(+), 55 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 813c84b67c65..17d11eb0413e 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -161,13 +161,7 @@ DEFINE_PER_CPU(int, _numa_mem_);		/* Kernel "local memory" node */
- EXPORT_PER_CPU_SYMBOL(_numa_mem_);
- #endif
- 
--/* work_structs for global per-cpu drains */
--struct pcpu_drain {
--	struct zone *zone;
--	struct work_struct work;
--};
- static DEFINE_MUTEX(pcpu_drain_mutex);
--static DEFINE_PER_CPU(struct pcpu_drain, pcpu_drain);
- 
- #ifdef CONFIG_GCC_PLUGIN_LATENT_ENTROPY
- volatile unsigned long latent_entropy __latent_entropy;
-@@ -3087,9 +3081,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
-  * Called from the vmstat counter updater to drain pagesets of this
-  * currently executing processor on remote nodes after they have
-  * expired.
-- *
-- * Note that this function must be called with the thread pinned to
-- * a single processor.
-  */
- void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
- {
-@@ -3114,10 +3105,6 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
- 
- /*
-  * Drain pcplists of the indicated processor and zone.
-- *
-- * The processor must either be the current processor and the
-- * thread pinned to the current processor or a processor that
-- * is not online.
-  */
- static void drain_pages_zone(unsigned int cpu, struct zone *zone)
- {
-@@ -3140,10 +3127,6 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
- 
- /*
-  * Drain pcplists of all zones on the indicated processor.
-- *
-- * The processor must either be the current processor and the
-- * thread pinned to the current processor or a processor that
-- * is not online.
-  */
- static void drain_pages(unsigned int cpu)
- {
-@@ -3156,9 +3139,6 @@ static void drain_pages(unsigned int cpu)
- 
- /*
-  * Spill all of this CPU's per-cpu pages back into the buddy allocator.
-- *
-- * The CPU has to be pinned. When zone parameter is non-NULL, spill just
-- * the single zone's pages.
-  */
- void drain_local_pages(struct zone *zone)
- {
-@@ -3170,24 +3150,6 @@ void drain_local_pages(struct zone *zone)
- 		drain_pages(cpu);
- }
- 
--static void drain_local_pages_wq(struct work_struct *work)
--{
--	struct pcpu_drain *drain;
--
--	drain = container_of(work, struct pcpu_drain, work);
--
--	/*
--	 * drain_all_pages doesn't use proper cpu hotplug protection so
--	 * we can race with cpu offline when the WQ can move this from
--	 * a cpu pinned worker to an unbound one. We can operate on a different
--	 * cpu which is alright but we also have to make sure to not move to
--	 * a different one.
--	 */
--	migrate_disable();
--	drain_local_pages(drain->zone);
--	migrate_enable();
--}
--
- /*
-  * The implementation of drain_all_pages(), exposing an extra parameter to
-  * drain on all cpus.
-@@ -3208,13 +3170,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
- 	 */
- 	static cpumask_t cpus_with_pcps;
- 
--	/*
--	 * Make sure nobody triggers this path before mm_percpu_wq is fully
--	 * initialized.
--	 */
--	if (WARN_ON_ONCE(!mm_percpu_wq))
--		return;
--
- 	/*
- 	 * Do not drain if one is already in progress unless it's specific to
- 	 * a zone. Such callers are primarily CMA and memory hotplug and need
-@@ -3264,14 +3219,12 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
- 	}
- 
- 	for_each_cpu(cpu, &cpus_with_pcps) {
--		struct pcpu_drain *drain = per_cpu_ptr(&pcpu_drain, cpu);
--
--		drain->zone = zone;
--		INIT_WORK(&drain->work, drain_local_pages_wq);
--		queue_work_on(cpu, mm_percpu_wq, &drain->work);
-+		if (zone) {
-+			drain_pages_zone(cpu, zone);
-+		} else {
-+			drain_pages(cpu);
-+		}
- 	}
--	for_each_cpu(cpu, &cpus_with_pcps)
--		flush_work(&per_cpu_ptr(&pcpu_drain, cpu)->work);
- 
- 	mutex_unlock(&pcpu_drain_mutex);
- }
-@@ -3280,8 +3233,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
-  * Spill all the per-cpu pages from all CPUs back into the buddy allocator.
-  *
-  * When zone parameter is non-NULL, spill just the single zone's pages.
-- *
-- * Note that this can be extremely slow as the draining happens in a workqueue.
-  */
- void drain_all_pages(struct zone *zone)
- {
-@@ -3559,7 +3510,12 @@ void free_unref_page_list(struct list_head *list)
- 
- 		trace_mm_page_free_batched(page);
- 
--		/* True is dead code at the moment due to local_lock_irqsave. */
-+		/*
-+		 * If there is a parallel drain in progress, free to the buddy
-+		 * allocator directly. This is expensive as the zone lock will
-+		 * be acquired multiple times but if a drain is in progress
-+		 * then an expensive operation is already taking place.
-+		 */
- 		if (unlikely(!free_unref_page_commit(page, migratetype, 0, true)))
- 			free_one_page(page_zone(page), page, page_to_pfn(page), 0, migratetype, FPI_NONE);
- 
--- 
-2.34.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
