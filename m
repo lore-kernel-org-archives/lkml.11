@@ -2,123 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:32:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9864DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380614AbiDTQfR (ORCPT
+        id S1380618AbiDTQfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        Wed, 20 Apr 2022 12:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380542AbiDTQfM (ORCPT
+        with ESMTP id S1380542AbiDTQfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:35:12 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A29443AD1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:32:26 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id o18so1350793qtk.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3J4XthPQxhmZkFCcoyfDlVHXj50acCyi35YWGqXRzhQ=;
-        b=MnuBJjSO+X5Pn8+P5NO2V5AJCtF1cWQ6TPbAd8C+4hJ5Qvnsyy7d412pABypCnNTlk
-         GqdXNfazFth9H0OxyARXt//T6KxxcABwfqHwl0XjhcpQ73Lq//+viSjwoBWzsN9BjwH+
-         LDRP+DaHS0tzYKk8DZQz6i/TNoeBRlftRxZNQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3J4XthPQxhmZkFCcoyfDlVHXj50acCyi35YWGqXRzhQ=;
-        b=qvs/9e4Lz//L5+Xgb17v3VOuBJ8Iz8oXrhQr93+b9BR8iF13RHA7Jkpi5RH4GU5Xbe
-         75DOn43lJJEPDaRXSDhHx1EdoKr2DsFtTx2X/HHeNSj9ZGtA5FCTn0KH5hQeewuTVmxq
-         0U1XnY2XDxicm8XofRaXv4v47RE4qQgAQbABMz/SVZEoVGmFlGnKDAZqHomhj/vdZ4ot
-         ALFQ2AOu3B3IV9pbbRHaNbZu+z6jOu4x2TyrbYnd8MLvXMmG5QkIJgjFFEbj/jlSEF7/
-         o7ex29/kXy5au5MiHWokwBeabAecvwKwoUHsmEvYlfY8mvjvro2O0avLSKv9crmTHSBu
-         +89A==
-X-Gm-Message-State: AOAM532q0KEn76Gk6VSUDeJPWmmndj28ipFdJOLXKugDGM/aPgrU+nhS
-        8Ag8Gc7YT2T0PPinsuMhtl1/og==
-X-Google-Smtp-Source: ABdhPJx539AYgJ3/MSSBaHkjC7fNsv8ltIIot/KmpPFw8OAWDw6agxwItmPKNSuHHH1eKaSLKSEWOg==
-X-Received: by 2002:ac8:5c4c:0:b0:2e2:1006:2b21 with SMTP id j12-20020ac85c4c000000b002e210062b21mr14391034qtj.423.1650472345134;
-        Wed, 20 Apr 2022 09:32:25 -0700 (PDT)
-Received: from nitro.local (bras-base-mtrlpq5031w-grc-32-216-209-220-127.dsl.bell.ca. [216.209.220.127])
-        by smtp.gmail.com with ESMTPSA id k20-20020a05622a03d400b002ec16d2694fsm1978359qtx.39.2022.04.20.09.32.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 09:32:24 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 12:32:23 -0400
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     Thorsten Leemhuis <linux@leemhuis.info>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        workflows@vger.kernel.org
-Subject: Re: A lot of regression reports submitted to bugzilla.kernel.org are
- apparently ignored, even bisected ones
-Message-ID: <20220420163223.kz32qomzj3y4hjj5@nitro.local>
-References: <6808cd17-b48c-657d-de60-ef9d8bfa151e@leemhuis.info>
- <acccdf28-3c5d-a81b-8e3a-f72e0f46149c@kernel.org>
- <20ad7c63-c837-6f6e-6bbe-7b49d653e033@leemhuis.info>
+        Wed, 20 Apr 2022 12:35:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3334477D;
+        Wed, 20 Apr 2022 09:32:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C123061A15;
+        Wed, 20 Apr 2022 16:32:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D50B4C385A8;
+        Wed, 20 Apr 2022 16:32:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650472371;
+        bh=PKoMbzxs1jAqbWrI4BDBNRwBDYIIy5G49keGciMb3ms=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=SI4kaMcEMZ6i7oO8ym6ohIaj94G8elOXuhFwyqi0csSsxFdLiSjiwHGBuSh7YWhu+
+         8IPhIJyqKqIarfF7RbfUNw3m97l93gho5VSJTTL1zP+0lEHq4s7pUz08hwl+cCHH8L
+         elHbECcZTWLjx5cDyrEYVAEu97isMbgChbKgkHJycQT+4gIs73b7fyN28oV1KZSVP5
+         priQ7R4mB36C6urAvsZL04DvLZv/AjsDC7ON6mQzoHOQm4ZaWvhd6DW1dx2sTTGFuS
+         J9x4ql0ltvdHdlV3btaNj+LxYDm8SdjC9l+hr2Mf7YlfF9Eim05FXPh95Jok2WFmCq
+         8yPkj4q4YXdVA==
+Date:   Wed, 20 Apr 2022 11:32:49 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+Cc:     bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+        prime.zeng@huawei.com,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v3] PCI: Make sure the bus bridge powered on when
+ scanning bus
+Message-ID: <20220420163249.GA1305194@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20ad7c63-c837-6f6e-6bbe-7b49d653e033@leemhuis.info>
+In-Reply-To: <20220414123736.34150-1-yangyicong@hisilicon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 01:57:12PM +0200, Thorsten Leemhuis wrote:
-> > I find such Bugzilla useless - the Components are not matching reality,
-> > Products look ok except missing really a lot. Does it have proper
-> > assigners based on maintainers? Nope. At least not everywhere.
+[+cc Rafael, linux-pm, since I'd really like his ack/review]
 
-Nobody has stepped up to maintain bugzilla for the past 10 years. Managing
-components, products, assignees -- that's not the job of the infrastructure
-team. Linux development is so compartmentalized that cross-subsystem tasks
-like bug reporting have been thoroughly neglected.
-
-However, I would argue that bugzilla needs fewer components, not more of them.
-Otherwise people get confused and file bugs against "kernel.org" or whatever
-happens to be the first entry in the list. For bugzilla to be useful, it needs
-to have a bugmaster -- and nobody has volunteered thus far. It's not something
-that members of the LF IT team can do, since none of us are kernel developers.
-
-If someone steps up, I'll be happy to grant them admin rights to manage all
-the components, etc.
-
-> > All the bug or issue reports I get via email and I think I am not alone
-> > in this. All automated tools (kbuild, kernelCI) are using emails for bug
-> > reporting. Why having one more system which seems not up to date?
-
-Email is a poor choice when someone needs to share large files (usually,
-dumps). Besides, I really don't want stuff like that in public-inbox archives,
-either.
-
-This is one major upside of bugzilla -- it can still be largely email-based,
-but it also provides a way to share large files without the need to ship them
-around as attachments or use some other 3rd-party file sharing services.
-
-> I'm the wrong one to ask, as I think it's a disservice right now that
-> needs to be dealt with -- for example by turning it off or by making it
-> work properly. But to my knowledge there is nobody really responsible
-> for it (apart from Konstantin and his team, but they are afaics only
-> responsible for running bugzilla the software -- not for maintaining
-> components, products, and such things). That's afaics why we as the
-> kernel developers community need to come up with a decision. But maybe
-> mailing lists are a bad tool for this and this needs to wait till kernel
-> and/or maintainers summit in September (it's already on the list of
-> topics I plan to propose).
-
-All that really needs to happen to improve the situation:
-
-1. have an actual kernel developer be responsible for managing bugzilla; this
-   person would manage components and keep an eye on new bugs to make sure
-   they get to proper subsystem owners
-
-That's it, there are no other entries here. Bugzilla *can* be a useful tool
-and works reasonably well with email back-and-forth, but nobody wants to do
-this work -- so everyone ends up blaming the tool.
-
--K
+On Thu, Apr 14, 2022 at 08:37:36PM +0800, Yicong Yang wrote:
+> When the bus bridge is runtime suspended, we'll fail to rescan
+> the devices through sysfs as we cannot access the configuration
+> space correctly when the bridge is in D3hot.
+> It can be reproduced like:
+> 
+> $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/0000:81:00.1/remove
+> $ echo 1 > /sys/bus/pci/devices/0000:80:00.0/pci_bus/0000:81/rescan
+> 
+> 0000:80:00.0 is root port and is runtime suspended and we cannot
+> get 0000:81:00.1 after rescan.
+> 
+> Make bridge powered on when scanning the child bus, by adding
+> pm_runtime_get_sync()/pm_runtime_put() in pci_scan_child_bus_extend().
+> 
+> A similar issue is met and solved by
+> d963f6512e15 ("PCI: Power on bridges before scanning new devices")
+> which rescan the devices through /sys/bus/pci/devices/0000:80:00.0/rescan.
+> The callstack is like:
+> 
+> dev_rescan_restore()
+>   pci_rescan_bus()
+>     pci_scan_bridge_extend()
+>       pci_scan_child_bus_extend() /* will wake up the bridge with this patch */
+> 
+> With this patch the issue is also resolved, so let's remove the calls of
+> pm_runtime_*() in pci_scan_bridge_extend().
+> 
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+> Change since v2:
+> - just rebase it on v5.18-rc2
+> Link: https://lore.kernel.org/linux-pci/1601029386-4928-1-git-send-email-yangyicong@hisilicon.com/
+> 
+> Change since v1:
+> - use an intermediate variable *bridge as suggested
+> - remove the pm_runtime_*() calls in pci_scan_bridge_extend()
+> Link: https://lore.kernel.org/linux-pci/1596022223-4765-1-git-send-email-yangyicong@hisilicon.com/
+> 
+>  drivers/pci/probe.c | 21 ++++++++++++---------
+>  1 file changed, 12 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 17a969942d37..2ca6b4b708e3 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1257,12 +1257,6 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
+>  	u8 fixed_sec, fixed_sub;
+>  	int next_busnr;
+>  
+> -	/*
+> -	 * Make sure the bridge is powered on to be able to access config
+> -	 * space of devices below it.
+> -	 */
+> -	pm_runtime_get_sync(&dev->dev);
+> -
+>  	pci_read_config_dword(dev, PCI_PRIMARY_BUS, &buses);
+>  	primary = buses & 0xFF;
+>  	secondary = (buses >> 8) & 0xFF;
+> @@ -1464,8 +1458,6 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
+>  out:
+>  	pci_write_config_word(dev, PCI_BRIDGE_CONTROL, bctl);
+>  
+> -	pm_runtime_put(&dev->dev);
+> -
+>  	return max;
+>  }
+>  
+> @@ -2859,11 +2851,19 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+>  	unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
+>  	unsigned int start = bus->busn_res.start;
+>  	unsigned int devfn, fn, cmax, max = start;
+> -	struct pci_dev *dev;
+> +	struct pci_dev *dev, *bridge = bus->self;
+>  	int nr_devs;
+>  
+>  	dev_dbg(&bus->dev, "scanning bus\n");
+>  
+> +	/*
+> +	 * Make sure the bus bridge is powered on, otherwise we may not be
+> +	 * able to scan the devices as we may fail to access the configuration
+> +	 * space of subordinates.
+> +	 */
+> +	if (bridge)
+> +		pm_runtime_get_sync(&bridge->dev);
+> +
+>  	/* Go find them, Rover! */
+>  	for (devfn = 0; devfn < 256; devfn += 8) {
+>  		nr_devs = pci_scan_slot(bus, devfn);
+> @@ -2976,6 +2976,9 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+>  		}
+>  	}
+>  
+> +	if (bridge)
+> +		pm_runtime_put(&bridge->dev);
+> +
+>  	/*
+>  	 * We've scanned the bus and so we know all about what's on
+>  	 * the other side of any bridges that may be on this bus plus
+> -- 
+> 2.24.0
+> 
