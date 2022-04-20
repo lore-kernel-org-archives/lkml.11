@@ -2,213 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A45AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 736FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380739AbiDTQrb (ORCPT
+        id S1380836AbiDTQsB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        Wed, 20 Apr 2022 12:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380737AbiDTQrX (ORCPT
+        with ESMTP id S1380742AbiDTQrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:47:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECFB4666B;
-        Wed, 20 Apr 2022 09:44:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 756ADB81FB6;
-        Wed, 20 Apr 2022 16:44:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFBE9C385A1;
-        Wed, 20 Apr 2022 16:44:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650473074;
-        bh=y7SdXt71n1BDdaDOsWRdrF7usDyjXHRWkjywHnzgDqc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mcYpeSpyz+Y5b9DgPgyl3EQQrzBuMqa9nlzseC6A5isszBQ3P7vvbNroi56n3uCfn
-         4l8x5tuRMQgIFg6XaWykmPEFvyF/I8Zv8Au3raRqYwL2zN4U4OjORKXUrdVYVLZr7p
-         eSRPrlTzt1bOVJiwj/ItdoIC6V/YA6wU6eWoGVZJjysVE59k2zZh4oKiZORL04RA/X
-         sqQW0pdn4k73AddP26D6v9EYusnGzsiqUkXpYrSxzll6FfQ0MGtwC2eZVqBOtzjaq3
-         DPbx5SySMY2w5WXzskYVWGv7ShQmKiej2hL7ealfSEZ/BConwtNTd+s0LR8DP5d9/c
-         FuHTkpFhC5XlA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 3208D400B1; Wed, 20 Apr 2022 13:44:31 -0300 (-03)
-Date:   Wed, 20 Apr 2022 13:44:31 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Florian Fischer <florian.fischer@muhq.space>
-Cc:     linux-perf-users@vger.kernel.org, Ian Rogers <irogers@google.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>
-Subject: Re: [PATCH v4 3/3] perf list: print all available tool events
-Message-ID: <YmA4byoEa3QBNeST@kernel.org>
-References: <20220420102354.468173-1-florian.fischer@muhq.space>
- <20220420102354.468173-4-florian.fischer@muhq.space>
+        Wed, 20 Apr 2022 12:47:32 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D776646668
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:44:44 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bv19so4725620ejb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AfxWSlxIEICGSyTo5UTwMPZe6Q55PvAA0DKxMflvlU4=;
+        b=nC9D+qQY6zO1b5+6ctalBsBld2Gklo1raloLX7LprQ0sz5ZMyJeK4iWk33WJIMlBys
+         sWrGm3frGJHX0al+4QCmYIKE7/xB/nf2dHq34Kz/P8+KRaTi2tfXM3zPx31zCAO/b1Rx
+         KsZ2TB/vy3W4s+buZh6s672JbmkLoKKCcRCzSZc7IaxWMIbQ8/G6krCr2AeARLmX0PBe
+         SYuPncrqbw/hmoPenwsyTTApQEjuiClFf78tTK4ef20HmQPibh2pVeKqEKo9Ii8LvUcM
+         aj/x9FkzcoYXASEDuyIQkrrZOcqOIfXVN9KydRiHmMBD6cNygUpxKXPQR8YkW0vJZwzS
+         B+kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AfxWSlxIEICGSyTo5UTwMPZe6Q55PvAA0DKxMflvlU4=;
+        b=tS5JtQn6EZCO8j7/6KyNEqp+TurO5INJvLMFPqXukYsgFe0rNu4lLb47Sd93CNmD9A
+         6Uiqst4SGczOeSFiLr3pSNF8kwxCUhbt5Zc3/Qy4uUkF1QYGJzHaJU1tcuSToj5mjTY2
+         6WmquPtz87sn2v8HE8XYVivEEw875YNGImYRmLxSy++5kH5di9G1QveDwOCzzU0gDji7
+         K4ewjgGK0jf0P5z7TSxCDyhMNTCHz1DAQp8IkxwSUy5ikno3ZcpiMv53+tcX9egGtDWg
+         W5WdUDZpCp/THhAwQxpiExwAXEwehwY+q6q5O0mWLdat3SeCECortqsRmhFQ6roKPF8f
+         lBkg==
+X-Gm-Message-State: AOAM533H4Bxkm9ly5gn3eRFfW+XCWGhqfLwt70C/mgNZRgKWZ0Svn/pV
+        Gc13boJuA32YQUl/T3292GGsrdeuh3KkFh8yXpzlyQ==
+X-Google-Smtp-Source: ABdhPJyZtJ2OiQqRMqkArjaqQ1FeKnI5zVUYHqY6VjiqjAqVr53rH54QfeTBwC+gpwXOjHnNJhHpdYKW5AxpfxLyFmo=
+X-Received: by 2002:a17:907:1c8a:b0:6e9:2a0d:d7b7 with SMTP id
+ nb10-20020a1709071c8a00b006e92a0dd7b7mr19095476ejc.572.1650473083179; Wed, 20
+ Apr 2022 09:44:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420102354.468173-4-florian.fischer@muhq.space>
-X-Url:  http://acmel.wordpress.com
+References: <20220418034444.520928-1-tongtiangen@huawei.com>
+ <20220418034444.520928-2-tongtiangen@huawei.com> <1671baf7-046e-7c52-183f-fd654125fd67@arm.com>
+ <c376877e-53a7-d471-61bc-e7f9dd400d60@huawei.com>
+In-Reply-To: <c376877e-53a7-d471-61bc-e7f9dd400d60@huawei.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Wed, 20 Apr 2022 12:44:07 -0400
+Message-ID: <CA+CK2bCF=7mADB=rxyHtVEd3oCZ4mxtKf=28L49uQr5oxUwYZQ@mail.gmail.com>
+Subject: Re: [PATCH -next v4 1/4] mm: page_table_check: move
+ pxx_user_accessible_page into x86
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-riscv@lists.infradead.org,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Apr 20, 2022 at 12:23:54PM +0200, Florian Fischer escreveu:
-> Introduce names for the new tool events 'user_time' and 'system_time'.
+On Wed, Apr 20, 2022 at 2:45 AM Tong Tiangen <tongtiangen@huawei.com> wrote=
+:
+>
+>
+>
+> =E5=9C=A8 2022/4/19 17:29, Anshuman Khandual =E5=86=99=E9=81=93:
+> >
+> >
+> > On 4/18/22 09:14, Tong Tiangen wrote:
+> >> --- a/mm/page_table_check.c
+> >> +++ b/mm/page_table_check.c
+> >> @@ -10,6 +10,14 @@
+> >>   #undef pr_fmt
+> >>   #define pr_fmt(fmt)        "page_table_check: " fmt
+> >>
+> >> +#ifndef PMD_PAGE_SIZE
+> >> +#define PMD_PAGE_SIZE       PMD_SIZE
+> >> +#endif
+> >> +
+> >> +#ifndef PUD_PAGE_SIZE
+> >> +#define PUD_PAGE_SIZE       PUD_SIZE
+> >> +#endif
+> >
+> > Why cannot PMD_SIZE/PUD_SIZE be used on every platform instead ? What i=
+s the
+> > need for using PUD_PAGE_SIZE/PMD_PAGE_SIZE ? Are they different on x86 =
+?
+> > .
+>
+> Hi, Pasha=EF=BC=9A
+> I checked the definitions of PMD_SIZE/PUD_SIZE and
+> PUD_PAGE_SIZE/PMD_PAGE_SIZE in x86 architecture and their use outside
+> the architecture(eg: in mm/, all used PMD_SIZE/PUD_SIZE), Would it be
+> better to use a unified PMD_SIZE/PUD_SIZE here?
 
-Before:
+Hi Tong,
 
-  duration_time                                      [Tool event]
+Yes, it makes sense to use PMD_SIZE/PUD_SIZE instead of
+PUD_PAGE_SIZE/PMD_PAGE_SIZE in page_table_check to be inline with the
+rest of the mm/
 
-After:
+Pasha
 
-$ perf list | grep Tool
-  duration_time OR                                   [Tool event]
-  user_time OR                                       [Tool event]
-  system_time OR                                     [Tool event]
-$ 
-
-So now we have that extraneous "OR", can you please take a look?
-Probably needs to check if there is an alias?
-
-- Arnaldo
- 
-> Signed-off-by: Florian Fischer <florian.fischer@muhq.space>
-> ---
->  tools/perf/util/evsel.c        | 19 ++++++++++------
->  tools/perf/util/evsel.h        |  1 +
->  tools/perf/util/parse-events.c | 40 +++++++++++++++++++++++++++++-----
->  3 files changed, 47 insertions(+), 13 deletions(-)
-> 
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index 2a1729e7aee4..d38722560e80 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -597,6 +597,17 @@ static int evsel__sw_name(struct evsel *evsel, char *bf, size_t size)
->  	return r + evsel__add_modifiers(evsel, bf + r, size - r);
->  }
->  
-> +const char *evsel__tool_names[PERF_TOOL_MAX] = {
-> +	"duration_time",
-> +	"user_time",
-> +	"system_time",
-> +};
-> +
-> +static int evsel__tool_name(enum perf_tool_event ev, char *bf, size_t size)
-> +{
-> +	return scnprintf(bf, size, "%s", evsel__tool_names[ev]);
-> +}
-> +
->  static int __evsel__bp_name(char *bf, size_t size, u64 addr, u64 type)
->  {
->  	int r;
-> @@ -723,12 +734,6 @@ static int evsel__raw_name(struct evsel *evsel, char *bf, size_t size)
->  	return ret + evsel__add_modifiers(evsel, bf + ret, size - ret);
->  }
->  
-> -static int evsel__tool_name(char *bf, size_t size)
-> -{
-> -	int ret = scnprintf(bf, size, "duration_time");
-> -	return ret;
-> -}
-> -
->  const char *evsel__name(struct evsel *evsel)
->  {
->  	char bf[128];
-> @@ -754,7 +759,7 @@ const char *evsel__name(struct evsel *evsel)
->  
->  	case PERF_TYPE_SOFTWARE:
->  		if (evsel->tool_event)
-> -			evsel__tool_name(bf, sizeof(bf));
-> +			evsel__tool_name(evsel->tool_event, bf, sizeof(bf));
->  		else
->  			evsel__sw_name(evsel, bf, sizeof(bf));
->  		break;
-> diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
-> index 7e2209b47b39..45d674812239 100644
-> --- a/tools/perf/util/evsel.h
-> +++ b/tools/perf/util/evsel.h
-> @@ -262,6 +262,7 @@ extern const char *evsel__hw_cache_op[PERF_COUNT_HW_CACHE_OP_MAX][EVSEL__MAX_ALI
->  extern const char *evsel__hw_cache_result[PERF_COUNT_HW_CACHE_RESULT_MAX][EVSEL__MAX_ALIASES];
->  extern const char *evsel__hw_names[PERF_COUNT_HW_MAX];
->  extern const char *evsel__sw_names[PERF_COUNT_SW_MAX];
-> +extern const char *evsel__tool_names[PERF_TOOL_MAX];
->  extern char *evsel__bpf_counter_events;
->  bool evsel__match_bpf_counter_events(const char *name);
->  
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> index 064ec368a90b..c0e88d3b3e3c 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -154,6 +154,21 @@ struct event_symbol event_symbols_sw[PERF_COUNT_SW_MAX] = {
->  	},
->  };
->  
-> +struct event_symbol event_symbols_tool[PERF_TOOL_MAX] = {
-> +	[PERF_TOOL_DURATION_TIME] = {
-> +		.symbol = "duration_time",
-> +		.alias  = "",
-> +	},
-> +	[PERF_TOOL_USER_TIME] = {
-> +		.symbol = "user_time",
-> +		.alias  = "",
-> +	},
-> +	[PERF_TOOL_SYSTEM_TIME] = {
-> +		.symbol = "system_time",
-> +		.alias  = "",
-> +	},
-> +};
-> +
->  #define __PERF_EVENT_FIELD(config, name) \
->  	((config & PERF_EVENT_##name##_MASK) >> PERF_EVENT_##name##_SHIFT)
->  
-> @@ -3058,21 +3073,34 @@ int print_hwcache_events(const char *event_glob, bool name_only)
->  	return evt_num;
->  }
->  
-> -static void print_tool_event(const char *name, const char *event_glob,
-> +static void print_tool_event(const struct event_symbol *syms, const char *event_glob,
->  			     bool name_only)
->  {
-> -	if (event_glob && !strglobmatch(name, event_glob))
-> +	if (syms->symbol == NULL)
-> +		return;
-> +
-> +	if (event_glob && !(strglobmatch(syms->symbol, event_glob) ||
-> +	      (syms->alias && strglobmatch(syms->alias, event_glob))))
->  		return;
-> +
->  	if (name_only)
-> -		printf("%s ", name);
-> -	else
-> +		printf("%s ", syms->symbol);
-> +	else {
-> +		char name[MAX_NAME_LEN];
-> +		if (syms->alias)
-> +			snprintf(name, MAX_NAME_LEN, "%s OR %s", syms->symbol, syms->alias);
-> +		else
-> +			strlcpy(name, syms->symbol, MAX_NAME_LEN);
->  		printf("  %-50s [%s]\n", name, "Tool event");
-> -
-> +	}
->  }
->  
->  void print_tool_events(const char *event_glob, bool name_only)
->  {
-> -	print_tool_event("duration_time", event_glob, name_only);
-> +	// Start at 1 because the first enum entry symbols no tool event
-> +	for (int i = 1; i < PERF_TOOL_MAX; ++i) {
-> +		print_tool_event(event_symbols_tool + i, event_glob, name_only);
-> +	}
->  	if (pager_in_use())
->  		printf("\n");
->  }
-> -- 
-> 2.36.0
-
--- 
-
-- Arnaldo
+>
+> Thanks,
+> Tong.
