@@ -2,96 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 893CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B55BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380768AbiDTQtz (ORCPT
+        id S1380769AbiDTQum (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
+        Wed, 20 Apr 2022 12:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380759AbiDTQtw (ORCPT
+        with ESMTP id S239724AbiDTQui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:49:52 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E89444A20
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:47:06 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id 79so2459498iou.7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:47:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4kWqTU8/11z4FGTT7w8HybBeD0Jsvi/MPxPw1kkyct8=;
-        b=aqrbgx37XpNBMKqxX6gTj1xOa1AdrQnXRe2HUJ4vfj7uVfl25XjQuH46tTduJsyUkH
-         IgKkifmsdQfjPFBS3gcTzCVr1sRc2Col2RlPFtSkGrrZ9QYWrY8imqCEgUDFEBmmnmJB
-         C5CgIlaG4gi77LgvwQIei4izQoPgcMGzNtWBXDjU3plszZe6Rs8+DWLeB/dw/KInEPra
-         ctdUfySrl/kP+jtfo8X8BXJQq5aYdwJ+9NT+gT1zt85XPShsjLhXGW8iQ5jaU2B9b3ll
-         KIaLr40WZOsNipglYcSij0kGEuWSG9r5wLghCFdczgTycn6BpFGKKXBLWApUanuPE7SQ
-         8TQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4kWqTU8/11z4FGTT7w8HybBeD0Jsvi/MPxPw1kkyct8=;
-        b=4eJOTdg6+7MIXAPzIeT7ZUlc3tH2N5qyYsu51M5s41heCoRFQLHmLjbEcRWJDK1r9E
-         KF7wt+ANV2DNrmyFvKiBWysU5+bctapS3Cg3G+63ngNpvw7/Zm0NBdcjwjbHYicQUUtM
-         KV6xplm2jfKCruzm21caPaiVUxSHe9CJpeQaMHu7CB6QMvOtKK0gDxmikDkdm3km7NhV
-         cJrDv75pZKRa7v146f9nLqWy3YElr7jdVFV0Y8EQ7udb6Ncblj4bYFBv4sfPNCgFnHBy
-         KFYWaom1yTwAWHD72PdcqNSbFTl2uoba6xIFDGk1scRylI6yIH/7MdQu4YChNz8yy8y7
-         PakQ==
-X-Gm-Message-State: AOAM53186Diy6QeTaNqWxGBG1wpJyJLi5L1N9YuJCbwRGAONOWOOLnQX
-        kNgFkWfyuqy07OntWApAWYHkfTp0HcbTdblt2zle1scD91Y=
-X-Google-Smtp-Source: ABdhPJxRTbmqlJ7i1WoOUmbDTP8JjJjXF/VWbsgUV6b48tCKcfVxF9EJaDBA82x837CF7qZmOqUhZX/umYLt2dHCiZ8=
-X-Received: by 2002:a5d:9448:0:b0:657:24e0:c0b2 with SMTP id
- x8-20020a5d9448000000b0065724e0c0b2mr1678055ior.167.1650473225232; Wed, 20
- Apr 2022 09:47:05 -0700 (PDT)
+        Wed, 20 Apr 2022 12:50:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E69E4507F;
+        Wed, 20 Apr 2022 09:47:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37FFBB81FB6;
+        Wed, 20 Apr 2022 16:47:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF0C8C385A0;
+        Wed, 20 Apr 2022 16:47:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650473269;
+        bh=ZFEnnoJ0V3bmUpNbtwzofwaKYze8ukC5EiqVvI8/chI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gFLKEXNI7atLTte+D+RjS5mY62ZGdhYdWUzcWdX5tyaAcvNeto4awO7jteIRXntTS
+         K+V+Lv9Fahx0ul8Hf49u5gf1QijaJunhK6dCn8ix/R7484RJtO+BlAH8/2JZyHXt5c
+         rb2w6FSwJg8xfPMBuiFLxZ6DehuBPrIFnhnn1fu7/Xys1nbMm+wb0X5e2hGZ8zyHHZ
+         he2IZVVKSzX/k3jYTPRbOn0XXJYeCjI0fcdiXWt2mBfA3QNd/w6uDWVN0yiavOwbIN
+         LzQiaqlQJuE4uHVZ0M5EUNULpQKbxiYTTL5cXMRPQmE8eSGZfXnFwIkzz86Wzi5tig
+         Gpz0prn917Acw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 31D9F400B1; Wed, 20 Apr 2022 13:47:46 -0300 (-03)
+Date:   Wed, 20 Apr 2022 13:47:46 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     German Gomez <german.gomez@arm.com>,
+        Ali Saidi <alisaidi@amazon.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, benh@kernel.crashing.org,
+        Nick.Forrington@arm.com, alexander.shishkin@linux.intel.com,
+        andrew.kilroy@arm.com, james.clark@arm.com, john.garry@huawei.com,
+        jolsa@kernel.org, kjain@linux.ibm.com, lihuafei1@huawei.com,
+        mark.rutland@arm.com, mathieu.poirier@linaro.org, mingo@redhat.com,
+        namhyung@kernel.org, peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH v5 5/5] perf mem: Support mem_lvl_num in c2c command
+Message-ID: <YmA5MqWxxLCp1Nff@kernel.org>
+References: <20220408195344.32764-1-alisaidi@amazon.com>
+ <20220408195344.32764-6-alisaidi@amazon.com>
+ <3ad0128a-1b3d-37a7-81f6-fd597b565b18@arm.com>
+ <20220420084823.GE843168@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-References: <20220420144823.35277-1-peterx@redhat.com> <YmAnUQdQ63jD48ad@cmpxchg.org>
-In-Reply-To: <YmAnUQdQ63jD48ad@cmpxchg.org>
-From:   Axel Rasmussen <axelrasmussen@google.com>
-Date:   Wed, 20 Apr 2022 09:46:29 -0700
-Message-ID: <CAJHvVcgepLYwTaiRsn6AqpfSRRimSoVjWFLsxNEsGzmRD6HJmw@mail.gmail.com>
-Subject: Re: [PATCH] mm/uffd: Move USERFAULTFD configs into mm/
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Peter Xu <peterx@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220420084823.GE843168@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Axel Rasmussen <axelrasmussen@google.com>
+Em Wed, Apr 20, 2022 at 04:48:23PM +0800, Leo Yan escreveu:
+> On Mon, Apr 11, 2022 at 11:04:28AM +0100, German Gomez wrote:
+> > 
+> > On 08/04/2022 20:53, Ali Saidi wrote:
+> > > In addition to summarizing data encoded in mem_lvl also support data
+> > > encoded in mem_lvl_num.
+> > >
+> > > Since other architectures don't seem to populate the mem_lvl_num field
+> > > here there shouldn't be a change in functionality.
+> > >
+> > > Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+> > > ---
+> > >  tools/perf/util/mem-events.c | 11 +++++++----
+> > >  1 file changed, 7 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
+> > > index ed0ab838bcc5..e5e405185498 100644
+> > > --- a/tools/perf/util/mem-events.c
+> > > +++ b/tools/perf/util/mem-events.c
+> > > @@ -485,6 +485,7 @@ int c2c_decode_stats(struct c2c_stats *stats, struct mem_info *mi)
+> > >  	u64 daddr  = mi->daddr.addr;
+> > >  	u64 op     = data_src->mem_op;
+> > >  	u64 lvl    = data_src->mem_lvl;
+> > > +	u64 lnum   = data_src->mem_lvl_num;
+> > >  	u64 snoop  = data_src->mem_snoop;
+> > >  	u64 lock   = data_src->mem_lock;
+> > >  	u64 blk    = data_src->mem_blk;
+> > > @@ -527,16 +528,18 @@ do {				\
+> > >  			if (lvl & P(LVL, UNC)) stats->ld_uncache++;
+> > >  			if (lvl & P(LVL, IO))  stats->ld_io++;
+> > >  			if (lvl & P(LVL, LFB)) stats->ld_fbhit++;
+> > 
+> > Just for completion, can we also handle LFB as it seems to be being set
+> > in "/arch/x86/events/intel/ds.c"? (Sorry I missed this in the v4)
+> 
+> With fixing LFB issue pointed by German, the change looks good to me:
 
-On Wed, Apr 20, 2022 at 8:31 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
->
-> On Wed, Apr 20, 2022 at 10:48:23AM -0400, Peter Xu wrote:
-> > We used to have USERFAULTFD configs stored in init/.  It makes sense as a
-> > start because that's the default place for storing syscall related configs.
-> >
-> > However userfaultfd evolved a bit in the past few years and some more
-> > config options were added.  They're no longer related to syscalls and start
-> > to be not suitable to be kept in the init/ directory anymore, because
-> > they're pure mm concepts.
-> >
-> > But it's not ideal either to keep the userfaultfd configs separate from
-> > each other.  Hence this patch moves the userfaultfd configs under init/ to
-> > be under mm/ so that we'll start to group all userfaultfd configs
-> > together.
-> >
-> > We do have quite a few examples of syscall related configs that are not put
-> > under init/Kconfig: FTRACE_SYSCALLS, SWAP, FILE_LOCKING, MEMFD_CREATE..
-> > They all reside in the dir where they're more suitable for the concept. So
-> > it seems there's no restriction to keep the role of having syscall related
-> > CONFIG_* under init/ only.
-> >
-> > Suggested-by: Johannes Weiner <hannes@cmpxchg.org>
-> > Signed-off-by: Peter Xu <peterx@redhat.com>
->
-> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Waiting for a v6 then, please collect Leo's reviewed-by tag when
+submitting it.
+
+- Arnaldo
+ 
+> Reviewed-by: Leo Yan <leo.yan@linaro.org>
+> 
+> It would be appreciate if x86 or PowerPC maintainers could take a look
+> for this patch.  Thanks!
+ 
+
+> Leo
+> 
+> > > -			if (lvl & P(LVL, L1 )) stats->ld_l1hit++;
+> > > -			if (lvl & P(LVL, L2 )) stats->ld_l2hit++;
+> > > -			if (lvl & P(LVL, L3 )) {
+> > > +			if (lvl & P(LVL, L1) || lnum == P(LVLNUM, L1))
+> > > +				stats->ld_l1hit++;
+> > > +			if (lvl & P(LVL, L2) || lnum == P(LVLNUM, L2))
+> > > +				stats->ld_l2hit++;
+> > > +			if (lvl & P(LVL, L3) || lnum == P(LVLNUM, L3)) {
+> > >  				if (snoop & P(SNOOP, HITM))
+> > >  					HITM_INC(lcl_hitm);
+> > >  				else
+> > >  					stats->ld_llchit++;
+> > >  			}
+> > >  
+> > > -			if (lvl & P(LVL, LOC_RAM)) {
+> > > +			if (lvl & P(LVL, LOC_RAM) || lnum == P(LVLNUM, RAM)) {
+> > >  				stats->lcl_dram++;
+> > >  				if (snoop & P(SNOOP, HIT))
+> > >  					stats->ld_shared++;
+
+-- 
+
+- Arnaldo
