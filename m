@@ -2,122 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3954CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376391AbiDTPUL (ORCPT
+        id S1378989AbiDTPVx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51588 "EHLO
+        Wed, 20 Apr 2022 11:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354475AbiDTPUI (ORCPT
+        with ESMTP id S1344823AbiDTPVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:20:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EACB44A2A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:17:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650467840;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tawPnIWWjQdoIazhl+r2801d/l1EXFGE8jMsnLNAlno=;
-        b=ibuGkRFN41AkdHtPkwsHzz5jnywAQqpmBAhCHcZBoPLi7N0pQFXUQkMvmk0SXTX7VeSypy
-        NhB+H4CckSRhJlQMRVSyyhLiGfecc1Mddd2EgKUsFti7f3iAvFVmhXPEIRAf3zp6ZCVohz
-        cqls5qOy9hv5jjkkBUsDussAYkX05kI=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-126-IH7d5f_ZMCC_Sr4d6P9WQw-1; Wed, 20 Apr 2022 11:17:19 -0400
-X-MC-Unique: IH7d5f_ZMCC_Sr4d6P9WQw-1
-Received: by mail-qk1-f200.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so1404186qkb.23
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:17:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tawPnIWWjQdoIazhl+r2801d/l1EXFGE8jMsnLNAlno=;
-        b=KE/WtnoHDqrML9lSeiZYGH0okcQQhoLkj8qvTVzwj8MMpXt7T6JQ7YRD6bn5VOtxJ4
-         xmB0zY8wcpwrnt9K9Mygx4PFMRpsvHtow+QQs6U0b5v2D1j+GRTV/lv48puNqjaPq+gJ
-         nzTssXL8BJMToHiZoat3qCioa7snvJKc9Nqus9IbttaJQRrxKA6OER+dk/+FKbi2nJo8
-         GK57oItGqDFx39vmbdcuWQ0V7uWlb/mVJMC1laNlsEZdZaxpaDJKyKOrGygdVuYny3IT
-         WIrz1yXbNRIEaxxHW6Kzxhy99lkyL0uyYF99v+onWaPAG594yW1TsPxOOrSYC069TDF0
-         gOUQ==
-X-Gm-Message-State: AOAM531fRcTsHs7fzEJ8yEUG1sbLjMBV/+dgRijnsPrvAPSGOM50w27j
-        J7yqmG0KkqlNYAtVCR5WxiWTu0Euy8wz9DR0a2djXKobW1f28/i8rlwpTZO6fCITXmEy58EZDpf
-        B4m0mLt7o2RNXDl0hK5r6IQJS
-X-Received: by 2002:a37:b484:0:b0:69b:db47:69a8 with SMTP id d126-20020a37b484000000b0069bdb4769a8mr13172014qkf.460.1650467838560;
-        Wed, 20 Apr 2022 08:17:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw9Jr9LQASoZCUHBuMXCR9K/qCqPf0fDTpqGvGKtTblfg7LphaYZ397Zrar7j6Rf9EQRb7i+g==
-X-Received: by 2002:a37:b484:0:b0:69b:db47:69a8 with SMTP id d126-20020a37b484000000b0069bdb4769a8mr13172004qkf.460.1650467838326;
-        Wed, 20 Apr 2022 08:17:18 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id bm1-20020a05620a198100b0047bf910892bsm1767274qkb.65.2022.04.20.08.17.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 08:17:17 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 08:17:14 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     joao@overdrivepizza.com, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org, andrew.cooper3@citrix.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 00/11] Kernel FineIBT Support
-Message-ID: <20220420151714.fderdz4dzea75rvg@treble>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420074044.GC2731@worktop.programming.kicks-ass.net>
+        Wed, 20 Apr 2022 11:21:52 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645B544A2A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:19:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650467945; x=1682003945;
+  h=message-id:date:mime-version:from:subject:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=+f8zw2+M+xo4E4iKHv4DnPjhY06IfOG5lA6m98XiFlk=;
+  b=WO+3tYG/1leprZWcx98fKkWIPttOlp3yX5FD6Z7CHc/omwgvhfbG2Etx
+   cFlQN/wNJO4oDAJQKhyu6kDol2TBIQjzKxLclIFzlPKZxFfxz2hX3iTbu
+   zJfCuOzN+Bcrjy8CLohiYVmNpqZgBJ84hSzHH6RVobH+QrVNJJ3/A3igR
+   QI+Mz1ZicHCCUazL7xJDmCkeduUV6Wu0iwEGHkh2H7W5aP9Vn8VfwRp1f
+   B7recV/fElxD5c3SiBIfeiGDlaAHHiONDOi9VRX+E2n16UebITW00QU5b
+   8GcSDyPO9j7zPZmikTHbY5GohNjuGiBwnLTktOe3zmwBr55zm6z6Oa4E9
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="262908382"
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="262908382"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:05:37 -0700
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="576625740"
+Received: from sbidasar-mobl.amr.corp.intel.com (HELO [10.209.100.171]) ([10.209.100.171])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:05:36 -0700
+Message-ID: <78c7edc3-f431-9735-238d-9aa2b45ec45e@linux.intel.com>
+Date:   Wed, 20 Apr 2022 08:28:31 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220420074044.GC2731@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Subject: Re: [PATCH] ASoC: SOF: using pm_runtime_resume_and_get to simplify
+ the code
+To:     cgel.zte@gmail.com
+Cc:     lgirdwood@gmail.com, ranjani.sridharan@linux.intel.com,
+        kai.vehmanen@linux.intel.com, daniel.baluta@nxp.com,
+        broonie@kernel.org, sound-open-firmware@alsa-project.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220420030315.2575691-1-chi.minghao@zte.com.cn>
+Content-Language: en-US
+In-Reply-To: <20220420030315.2575691-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 09:40:44AM +0200, Peter Zijlstra wrote:
-> On Tue, Apr 19, 2022 at 05:42:30PM -0700, joao@overdrivepizza.com wrote:
-> > @PeterZ @JoshP
-> > 
-> > I'm a bit unaware of the details on why the objtool approach to bypass ENDBRs
-> > was removed from the IBT series. Is this approach now sensible considering that
-> > it is a requirement for a new/enhanced feature? If not, how extending the Linker
-> > to emit already fixed offsets sounds like?
-> 
-> Josh hates objtool modifying actualy code. He much prefers objtool only
-> emits out of band data.
-> 
-> Now, I did sneak in that jump_label nop'ing, and necessity (broken
-> compilers) had us do the KCOV nop'ing in noinstr, but if you look at the
-> recent objtool series here:
-> 
->   https://lkml.kernel.org/r/cover.1650300597.git.jpoimboe@redhat.com
-> 
-> you'll see his thoughs on that :-)
-> 
-> Now, I obviously don't mind, it's easy enough to figure out what objtool
-> actually does with something like:
-> 
->   $ OBJTOOL_ARGS="--backup" make O=ibt-build/ -j$lots vmlinux
->   $ objdiff.sh ibt-build/vmlinux.o
-> 
-> Where objdiff.sh is the below crummy script.
-> 
-> Now, one compromise that I did get out of Josh was that he objected less
-> to rewriting relocations than to rewriting the immediates. From my
-> testing the relocations got us the vast majority of direct call sites,
-> very few are immediates.
-> 
-> Josh, any way you might reconsider all that? :-)
 
-If I remember correctly, the goal of --ibt-fix-direct was to avoid
-hitting unnecessary ENDBRs, which basically decode to NOPs, so the
-ghastly hack wasn't worth it.
 
-If FineIBT needs it, I could reconsider.  But I think there's a strong
-case to be made that the linker should be doing that instead.
+On 4/19/22 22:03, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+> pm_runtime_put_noidle. This change is just to simplify the code, no
+> actual functional changes.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
--- 
-Josh
+Well, maybe that's a simplification, but we've been using the same pattern for years now.
 
+Is there really a clear direction to use this new function?
+
+the overwhelming majority of drivers in sound/soc still rely on the pm_runtime_get_sync (111 v. 7).
+
+
+> ---
+>  sound/soc/sof/sof-client-probes.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/sound/soc/sof/sof-client-probes.c b/sound/soc/sof/sof-client-probes.c
+> index 797dedb26163..c4c6e03c8133 100644
+> --- a/sound/soc/sof/sof-client-probes.c
+> +++ b/sound/soc/sof/sof-client-probes.c
+> @@ -503,10 +503,9 @@ static ssize_t sof_probes_dfs_points_read(struct file *file, char __user *to,
+>  	if (!buf)
+>  		return -ENOMEM;
+>  
+> -	ret = pm_runtime_get_sync(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+>  	if (ret < 0 && ret != -EACCES) {
+>  		dev_err_ratelimited(dev, "debugfs read failed to resume %d\n", ret);
+> -		pm_runtime_put_noidle(dev);
+>  		goto exit;
+>  	}
+>  
+> @@ -568,10 +567,9 @@ sof_probes_dfs_points_write(struct file *file, const char __user *from,
+>  
+>  	desc = (struct sof_probe_point_desc *)tkns;
+>  
+> -	ret = pm_runtime_get_sync(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+>  	if (ret < 0 && ret != -EACCES) {
+>  		dev_err_ratelimited(dev, "debugfs write failed to resume %d\n", ret);
+> -		pm_runtime_put_noidle(dev);
+>  		goto exit;
+>  	}
+>  
+> @@ -621,10 +619,9 @@ sof_probes_dfs_points_remove_write(struct file *file, const char __user *from,
+>  		goto exit;
+>  	}
+>  
+> -	ret = pm_runtime_get_sync(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+>  	if (ret < 0) {
+>  		dev_err_ratelimited(dev, "debugfs write failed to resume %d\n", ret);
+> -		pm_runtime_put_noidle(dev);
+>  		goto exit;
+>  	}
+>  
