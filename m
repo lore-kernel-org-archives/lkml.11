@@ -2,157 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C53C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6471FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380994AbiDTRRH (ORCPT
+        id S1381003AbiDTRSN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
+        Wed, 20 Apr 2022 13:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380948AbiDTRRE (ORCPT
+        with ESMTP id S1381087AbiDTRRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 13:17:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098D8457A9;
-        Wed, 20 Apr 2022 10:14:18 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 53D461F380;
-        Wed, 20 Apr 2022 17:14:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650474856; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cCyVaEehkrahTF4ZZE0t6pBOtUmw5LLz8/1wxeHDxX4=;
-        b=K7U7yAPVtWoeKBCvI9IM0SUrBd3SuNQlXwbO69YYMvu/uQgJCBHLxvJUvYDJUM+CzMgGQE
-        RVSlZxkoXhp1TqU71hUtulLocxn+2wyVtaobkUyEwzAopoea+zPD+x5OcZ/P14F7mUWQ0X
-        9jy/5tEGm6a4qWbujDTO1fyNpFdYlOg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650474856;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cCyVaEehkrahTF4ZZE0t6pBOtUmw5LLz8/1wxeHDxX4=;
-        b=NwzWMKJRWqBiYsMEpHY2LSE0kR5L5AsWQDr46B/AzDDh+7ae+1bOHK7cbVF3M3crtt+AoJ
-        6QSH0t6rY1IUvWBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9E94C13A30;
-        Wed, 20 Apr 2022 17:14:15 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id cLLMJWc/YGJFYAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 20 Apr 2022 17:14:15 +0000
-Message-ID: <e1b61853-143a-3691-2e6d-4fea5c049562@suse.cz>
-Date:   Wed, 20 Apr 2022 19:14:15 +0200
+        Wed, 20 Apr 2022 13:17:55 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7346462E0;
+        Wed, 20 Apr 2022 10:15:08 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id q3so3172639wrj.7;
+        Wed, 20 Apr 2022 10:15:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VVE40BH1GRcbe/2Tu0Z62ouo5J9RFF1pHt0E7xPlfvg=;
+        b=IQnt/x4OcHX5HZ7mUhDc2ms9QVGAIqV2zbzFjSl/BZga+POXGprc8jAVcP4WSBn8q1
+         oC5hUbE3f6l+Jzzr4sdV/Ymci9y5RbyiL52HGSuNgpV7j/y/XnAboHJWcXFj0fwpyy5z
+         eKPgBZNNG1V9twCmthvzdlKMf/41DMP3YWUrS27NcX/bJjIGToW3XSjaok/cXdGPspeg
+         R09YACy8sr9p/VlWOoLOAb0nJCMZr88milhj4Buqymnm70moyTHwgrKh6FfcIAk7xXVc
+         c3eTLSsYRjlm5bvxLmhF6M/j1C7egViWY+e0l/dsHfkJ0AI3vSU4nwTHJIju/5UlMNvR
+         aXtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VVE40BH1GRcbe/2Tu0Z62ouo5J9RFF1pHt0E7xPlfvg=;
+        b=XeOOh43XbTo9f3+uMfCEgTgnmKzX+/Mm8Odplop0INAFFzZKj9mxx2X7mn2VomkyRI
+         MB4HakiViqVkGiRDC7552mvVUplatNyaAqEOHxgdfyPUaTTwUthNid6VcP1Ircdi0YSI
+         H2djVwcct/UEh5k6XSx7imYikxKPWAt8A0Wxxu6txCU1zXEBgmqyZE5q6CdQ4h5rk/Se
+         sKzpOQHG7bJWpbN0TDvv+LpxNloVYVOQG/pzase8A/GnMnDZtHB5rtFkMlD7VnA8cybP
+         LVACel5qFI6GfvY/kjLZn9WJoh27xqXpL+W9kxaQ/Oq2eYjnYhVb29QSNskRJNCR7n84
+         XNbQ==
+X-Gm-Message-State: AOAM533iEC8KTT0qpgY4wNUmpgicgYu1NWAWoYPOyddetAmP168g8Vv1
+        L9T1eENU3VfzhzXIb0QqzWg=
+X-Google-Smtp-Source: ABdhPJxIWxnjYPQvPY4VWEEwaTL7CTlMNmYuFQRH2BJ3aMaZWK7/tlKRUWXIe4rCjz+bb1//4bh1qA==
+X-Received: by 2002:adf:f943:0:b0:203:e832:129 with SMTP id q3-20020adff943000000b00203e8320129mr16151390wrr.626.1650474906913;
+        Wed, 20 Apr 2022 10:15:06 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id l6-20020a1c2506000000b0038e6fe8e8d8sm398575wml.5.2022.04.20.10.15.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 10:15:06 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <3e6018ad-06b7-f465-7b74-aeb20bca9489@redhat.com>
+Date:   Wed, 20 Apr 2022 19:15:04 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/8] mm/debug_vm_pgtable: add tests for
- __HAVE_ARCH_PTE_SWP_EXCLUSIVE
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 2/2] KVM: X86/MMU: Introduce role.passthrough for
+ shadowing 5-level NPT for 4-level NPT L1 guest
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
+To:     Lai Jiangshan <jiangshanlai@gmail.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        linux-mm@kvack.org, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org
-References: <20220329164329.208407-1-david@redhat.com>
- <20220329164329.208407-3-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220329164329.208407-3-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org
+References: <20220420131204.2850-1-jiangshanlai@gmail.com>
+ <20220420131204.2850-3-jiangshanlai@gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220420131204.2850-3-jiangshanlai@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 18:43, David Hildenbrand wrote:
-> Let's test that __HAVE_ARCH_PTE_SWP_EXCLUSIVE works as expected.
+On 4/20/22 15:12, Lai Jiangshan wrote:
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 > 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+> When shadowing 5-level NPT for 4-level NPT L1 guest, the root_sp is
+> allocated with role.level = 5 and the guest pagetable's root gfn.
+> 
+> And root_sp->spt[0] is also allocated with the same gfn and the same
+> role except role.level = 4.  Luckily that they are different shadow
+> pages, but only root_sp->spt[0] is the real translation of the guest
+> pagetable.
+> 
+> Here comes a problem:
+> 
+> If the guest switches from gCR4_LA57=0 to gCR4_LA57=1 (or vice verse)
+> and uses the same gfn as the root page for nested NPT before and after
+> switching gCR4_LA57.  The host (hCR4_LA57=1) might use the same root_sp
+> for the guest even the guest switches gCR4_LA57.  The guest will see
+> unexpected page mapped and L2 may exploit the bug and hurt L1.  It is
+> lucky that the problem can't hurt L0.
+> 
+> And three special cases need to be handled:
+> 
+> The root_sp should be like role.direct=1 sometimes: its contents are
+> not backed by gptes, root_sp->gfns is meaningless.  (For a normal high
+> level sp in shadow paging, sp->gfns is often unused and kept zero, but
+> it could be relevant and meaningful if sp->gfns is used because they
+> are backed by concrete gptes.)
+> 
+> For such root_sp in the case, root_sp is just a portal to contribute
+> root_sp->spt[0], and root_sp->gfns should not be used and
+> root_sp->spt[0] should not be dropped if gpte[0] of the guest root
+> pagetable is changed.
+> 
+> Such root_sp should not be accounted too.
+> 
+> So add role.passthrough to distinguish the shadow pages in the hash
+> when gCR4_LA57 is toggled and fix above special cases by using it in
+> kvm_mmu_page_{get|set}_gfn() and sp_has_gptes().
+> 
+> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Looks good, and is easy to backport; thanks.
+
+However, once we have also your series "KVM: X86/MMU: Use one-off 
+special shadow page for special roots", perhaps the passthrough sp can 
+be converted to a special root (but now with a shadow_page) as well?
+
+Paolo
 
 > ---
->  mm/debug_vm_pgtable.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+>   Documentation/virt/kvm/mmu.rst  |  3 +++
+>   arch/x86/include/asm/kvm_host.h |  5 +++--
+>   arch/x86/kvm/mmu/mmu.c          | 16 ++++++++++++++++
+>   arch/x86/kvm/mmu/paging_tmpl.h  |  1 +
+>   4 files changed, 23 insertions(+), 2 deletions(-)
 > 
-> diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
-> index db2abd9e415b..55f1a8dc716f 100644
-> --- a/mm/debug_vm_pgtable.c
-> +++ b/mm/debug_vm_pgtable.c
-> @@ -837,6 +837,19 @@ static void __init pmd_soft_dirty_tests(struct pgtable_debug_args *args) { }
->  static void __init pmd_swap_soft_dirty_tests(struct pgtable_debug_args *args) { }
->  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
->  
-> +static void __init pte_swap_exclusive_tests(struct pgtable_debug_args *args)
-> +{
-> +#ifdef __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-> +	pte_t pte = pfn_pte(args->fixed_pte_pfn, args->page_prot);
+> diff --git a/Documentation/virt/kvm/mmu.rst b/Documentation/virt/kvm/mmu.rst
+> index 5b1ebad24c77..4018b9d7a0d3 100644
+> --- a/Documentation/virt/kvm/mmu.rst
+> +++ b/Documentation/virt/kvm/mmu.rst
+> @@ -202,6 +202,9 @@ Shadow pages contain the following information:
+>       Is 1 if the MMU instance cannot use A/D bits.  EPT did not have A/D
+>       bits before Haswell; shadow EPT page tables also cannot use A/D bits
+>       if the L1 hypervisor does not enable them.
+> +  role.passthrough:
+> +    Is 1 if role.level = 5 when shadowing 5-level shadow NPT for
+> +    4-level NPT L1.
+>     gfn:
+>       Either the guest page table containing the translations shadowed by this
+>       page, or the base page frame for linear translations.  See role.direct.
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 9694dd5e6ccc..d4f8f4784d87 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -285,7 +285,7 @@ struct kvm_kernel_irq_routing_entry;
+>    * minimize the size of kvm_memory_slot.arch.gfn_track, i.e. allows allocating
+>    * 2 bytes per gfn instead of 4 bytes per gfn.
+>    *
+> - * Indirect upper-level shadow pages are tracked for write-protection via
+> + * Upper-level shadow pages having gptes are tracked for write-protection via
+>    * gfn_track.  As above, gfn_track is a 16 bit counter, so KVM must not create
+>    * more than 2^16-1 upper-level shadow pages at a single gfn, otherwise
+>    * gfn_track will overflow and explosions will ensure.
+> @@ -331,7 +331,8 @@ union kvm_mmu_page_role {
+>   		unsigned smap_andnot_wp:1;
+>   		unsigned ad_disabled:1;
+>   		unsigned guest_mode:1;
+> -		unsigned :6;
+> +		unsigned passthrough:1;
+> +		unsigned :5;
+>   
+>   		/*
+>   		 * This is left at the top of the word so that
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 1bdff55218ef..d14cb6f99cb1 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -737,6 +737,9 @@ static void mmu_free_pte_list_desc(struct pte_list_desc *pte_list_desc)
+>   
+>   static gfn_t kvm_mmu_page_get_gfn(struct kvm_mmu_page *sp, int index)
+>   {
+> +	if (sp->role.passthrough)
+> +		return sp->gfn;
 > +
-> +	pr_debug("Validating PTE swap exclusive\n");
-> +	pte = pte_swp_mkexclusive(pte);
-> +	WARN_ON(!pte_swp_exclusive(pte));
-
-I guess only this WARN_ON must be guarded by the #ifdef, but doesn't matter
-that much - won't gain significantly more test coverage.
-
-> +	pte = pte_swp_clear_exclusive(pte);
-> +	WARN_ON(pte_swp_exclusive(pte));
-> +#endif /* __HAVE_ARCH_PTE_SWP_EXCLUSIVE */
-> +}
+>   	if (!sp->role.direct)
+>   		return sp->gfns[index];
+>   
+> @@ -745,6 +748,11 @@ static gfn_t kvm_mmu_page_get_gfn(struct kvm_mmu_page *sp, int index)
+>   
+>   static void kvm_mmu_page_set_gfn(struct kvm_mmu_page *sp, int index, gfn_t gfn)
+>   {
+> +	if (sp->role.passthrough) {
+> +		WARN_ON_ONCE(gfn != sp->gfn);
+> +		return;
+> +	}
 > +
->  static void __init pte_swap_tests(struct pgtable_debug_args *args)
->  {
->  	swp_entry_t swp;
-> @@ -1288,6 +1301,8 @@ static int __init debug_vm_pgtable(void)
->  	pte_swap_soft_dirty_tests(&args);
->  	pmd_swap_soft_dirty_tests(&args);
->  
-> +	pte_swap_exclusive_tests(&args);
+>   	if (!sp->role.direct) {
+>   		sp->gfns[index] = gfn;
+>   		return;
+> @@ -1861,6 +1869,9 @@ static bool sp_has_gptes(struct kvm_mmu_page *sp)
+>   	if (sp->role.direct)
+>   		return false;
+>   
+> +	if (sp->role.passthrough)
+> +		return false;
 > +
->  	pte_swap_tests(&args);
->  	pmd_swap_tests(&args);
->  
+>   	return true;
+>   }
+>   
+> @@ -2059,6 +2070,8 @@ static struct kvm_mmu_page *kvm_mmu_get_page(struct kvm_vcpu *vcpu,
+>   		quadrant &= (1 << ((PT32_PT_BITS - PT64_PT_BITS) * level)) - 1;
+>   		role.quadrant = quadrant;
+>   	}
+> +	if (level <= vcpu->arch.mmu->root_level)
+> +		role.passthrough = 0;
+>   
+>   	sp_list = &vcpu->kvm->arch.mmu_page_hash[kvm_page_table_hashfn(gfn)];
+>   	for_each_valid_sp(vcpu->kvm, sp, sp_list) {
+> @@ -4890,6 +4903,9 @@ kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
+>   
+>   	role.base.direct = false;
+>   	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+> +	if (role.base.level == PT64_ROOT_5LEVEL &&
+> +	    role_regs_to_root_level(regs) == PT64_ROOT_4LEVEL)
+> +		role.base.passthrough = 1;
+>   
+>   	return role;
+>   }
+> diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+> index 8621188b46df..c1b975fb85a2 100644
+> --- a/arch/x86/kvm/mmu/paging_tmpl.h
+> +++ b/arch/x86/kvm/mmu/paging_tmpl.h
+> @@ -1042,6 +1042,7 @@ static int FNAME(sync_page)(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp)
+>   		.level = 0xf,
+>   		.access = 0x7,
+>   		.quadrant = 0x3,
+> +		.passthrough = 0x1,
+>   	};
+>   
+>   	/*
 
