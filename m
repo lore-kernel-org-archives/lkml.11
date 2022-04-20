@@ -2,98 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F317DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355489AbiDTQEG (ORCPT
+        id S1355646AbiDTQIB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
+        Wed, 20 Apr 2022 12:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351205AbiDTQEC (ORCPT
+        with ESMTP id S1354875AbiDTQIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:04:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56199BBB
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650470474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VxVL4ghGZnPEC5vFwYZynA+vKk4w0NQswkaaYSL7cxQ=;
-        b=C902XPpUTqZ/Jkw3iD2Bsp+sRrHNYhzF5IMokds9CBKXfbEsx3d2aRBAX0HWVsHxaV2fob
-        TV6VLuy7jS+UyY18oexO9mj+8XRYMOjXMlddTTF3lHliVqog/j9PV8xyl1ow2Hx/2+LSN8
-        ZPWoaLMDl+egu4Wz2rk6MxZcEuZu4DI=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-GsIvt46tOyuTXo8zIXNtmg-1; Wed, 20 Apr 2022 12:01:12 -0400
-X-MC-Unique: GsIvt46tOyuTXo8zIXNtmg-1
-Received: by mail-qt1-f198.google.com with SMTP id fp30-20020a05622a509e00b002f33ea61111so1255088qtb.22
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:01:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VxVL4ghGZnPEC5vFwYZynA+vKk4w0NQswkaaYSL7cxQ=;
-        b=A87eRp+QG/oGW6XVCEeS77sK2M8erE/ykV0yAYat4EvivvWfglJQysqeBfxmw9lF7F
-         FRwelxnnjw3lyipX4X4U3OHnoOiq3EZdOY65ULq48HKkATcj3nKviEH4mbX4Pjt892pG
-         kNGYghBecMK27Rl2+tRn6DOf2/IxlfULetsWzzfBhIfOJEUNkCEDYiHN7spX2Ancneov
-         3YbTcKM/+HHJYqZFrL/snMQa8oNpR/lURK0tH7RAqb//WuZJuZLuxKJjKDIlYFcMfWhh
-         0P/Nj4Q3HTkYJNAZS7gRQtuImJ57o8UPWWt8VnKGpiwnCFNQgFVVUnpNeo/xRyLsDEdj
-         YzGw==
-X-Gm-Message-State: AOAM532ok4Zr24uDTn9YCa/dOOziyzwSlKT1kHxM04tybR6X9W/PbaE3
-        NaiIxSfaErL6i4K6rw8yeG5Qkg6idXzk/rYx5ZPEYIqjidN/zbft1mKjK+gSvmpdD23dQBpSNQ5
-        BgMLYk1Qw0ijh6eu7x0eYz/oc
-X-Received: by 2002:ac8:7ee4:0:b0:2f1:e9e6:7200 with SMTP id r4-20020ac87ee4000000b002f1e9e67200mr14196181qtc.622.1650470472447;
-        Wed, 20 Apr 2022 09:01:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzF2P3YQNDtZZpjeFbYaPsXv2IV95hGJOjMeb5v5TrIYcOeNkobSHTZNVj7tGL0BajRL8LkFQ==
-X-Received: by 2002:ac8:7ee4:0:b0:2f1:e9e6:7200 with SMTP id r4-20020ac87ee4000000b002f1e9e67200mr14196152qtc.622.1650470472217;
-        Wed, 20 Apr 2022 09:01:12 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id t4-20020ae9df04000000b0069e9a6734dbsm1709186qkf.11.2022.04.20.09.01.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 09:01:11 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 09:01:08 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, brgerst@gmail.com, jiangshanlai@gmail.com,
-        Andrew.Cooper3@citrix.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] x86: Simplify Retpoline thunk
-Message-ID: <20220420160108.w3rxf3vhmgnnpplq@treble>
-References: <20220419204109.520779286@infradead.org>
- <20220419205241.280037046@infradead.org>
- <20220420152736.qzl3nikds6mq5nrr@treble>
- <20220420155116.GH2731@worktop.programming.kicks-ass.net>
+        Wed, 20 Apr 2022 12:08:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B11FA5FE8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:05:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5433E1424;
+        Wed, 20 Apr 2022 09:05:13 -0700 (PDT)
+Received: from [10.57.41.251] (unknown [10.57.41.251])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C9C83F766;
+        Wed, 20 Apr 2022 09:05:10 -0700 (PDT)
+Message-ID: <5ae51610-5027-777e-36e3-7bdb92e00752@arm.com>
+Date:   Wed, 20 Apr 2022 17:05:03 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220420155116.GH2731@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 04/13] iommu/arm-smmu: Clean up bus_set_iommu()
+Content-Language: en-GB
+To:     Will Deacon <will@kernel.org>
+Cc:     joro@8bytes.org, iommu@lists.linux-foundation.org,
+        sven@svenpeter.dev, robdclark@gmail.com, m.szyprowski@samsung.com,
+        baolu.lu@linux.intel.com, yong.wu@mediatek.com,
+        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
+        jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1649935679.git.robin.murphy@arm.com>
+ <2e59602d982fd4941ec923571940fa3c628b2188.1649935679.git.robin.murphy@arm.com>
+ <20220419144042.GA6186@willie-the-truck>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220419144042.GA6186@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 05:51:16PM +0200, Peter Zijlstra wrote:
-> On Wed, Apr 20, 2022 at 08:27:36AM -0700, Josh Poimboeuf wrote:
-> > On Tue, Apr 19, 2022 at 10:41:10PM +0200, Peter Zijlstra wrote:
-> > > Now that we rewrite all the indirect call sites, per commit:
-> > > 
-> > >   750850090081 ("x86/alternative: Implement .retpoline_sites support")
-> > > 
-> > > it doesn't make sense to have the retpoline thunks be an ALTERNATIVE_2
-> > > that still includes a 'naked' indirect jump.
-> > > 
-> > > (this accidentally 'defunnels' i386 by going back to full retpolines)
-> > 
-> > So mitigations=off no longer works on i386?
+On 2022-04-19 15:40, Will Deacon wrote:
+> On Thu, Apr 14, 2022 at 01:42:33PM +0100, Robin Murphy wrote:
+>> Stop calling bus_set_iommu() since it's now unnecessary. With device
+>> probes now replayed for every IOMMU instance registration, the whole
+>> sorry ordering workaround for legacy DT bindings goes too, hooray!
 > 
-> Also true I suppose... does anybody care? /me runs like heck.
+> Ha, I hope you tested this!
+
+Oh alright then, since it's you... :)
+
+I've hacked up a Juno DT with the old bindings, and (after needing a 
+while to remember that they're fundamentally incompatible with 
+disable_bypass), can confirm that with my whole dev branch including 
+this series applied, it boots and creates IOMMU groups as expected. I 
+then made the mistake of trying without the branch to check whether the 
+squawks from iommu_setup_dma_ops() were new or not, and... well... plain 
+rc3 doesn't even boot on the same setup - it's somehow blowing up in the 
+failure cleanup path of iommu_bus_init(), apparently calling 
+iommu_release_device() on something where dev->iommu->iommu_dev is NULL, 
+for reasons that are far from clear and I'm not sure I can really be 
+bothered to debug further... :/
+
+Cheers,
+Robin.
+
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 84 +--------------------------
+>>   1 file changed, 2 insertions(+), 82 deletions(-)
 > 
-> I'd hate to make all this more complicated just because i386 tho :/
-
-Not that I care... but at least the commit log should own up to it :-)
-
--- 
-Josh
-
+> Assuming it works,
+> 
+> Acked-by: Will Deacon <will@kernel.org>
+> 
+> Will
