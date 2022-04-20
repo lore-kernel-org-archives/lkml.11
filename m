@@ -2,94 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92278C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A59C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380234AbiDTQaR (ORCPT
+        id S1380571AbiDTQah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
+        Wed, 20 Apr 2022 12:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237190AbiDTQaO (ORCPT
+        with ESMTP id S1379855AbiDTQaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:30:14 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900C530F7E;
-        Wed, 20 Apr 2022 09:27:27 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id bg25so856476wmb.4;
-        Wed, 20 Apr 2022 09:27:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=r6/1LJ6bEhhBqRzSKXoEbeE0rdJ9IO1XFkaZ2FJo+Pg=;
-        b=VVR/LaYO3RzlOTagucqR1RML8ejvY1psyRLd5bTXvzz7zuT7wgzJwqxg9fnsaVRI/6
-         rs7RO2dZR8EwPmC+O/bpn6OkhZoiIa3mQ2kjFFALt9yFJ0eie4tc6GIsJUmzutMQNrAx
-         KvSKAZbaumWANWDULse2KHAmFrpMvkzF1zM7rTUaybz98BrSvD0K54EGEDk0nxH1KVCM
-         XXw356u/Kb1+DyZkHioKyvI6HWxkNftkOgkUIY/pRXWddHQ3crbc0bhHSSfp0pHmkUCO
-         mHCVkXqcWdQ7aV76PRNCBq6BV09p+0WqpWtQvcYIxlciVc9pMy+8zpJJjOlvcDvYL09x
-         IizQ==
+        Wed, 20 Apr 2022 12:30:35 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29253EB90;
+        Wed, 20 Apr 2022 09:27:48 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id r8so2626098oib.5;
+        Wed, 20 Apr 2022 09:27:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=r6/1LJ6bEhhBqRzSKXoEbeE0rdJ9IO1XFkaZ2FJo+Pg=;
-        b=7YH2nCfEZHObJ+zqeF1D1E4U4yjHMzfzVKoY9XPneGWKFFrfymNJazYp+BO3ok2Hhl
-         MxwKVzV0uh+/UvOo8bmTlxc6rBkfkZFB8gHXx+uWcpQIQUgbm97fy/+2bybTvKrD6cEz
-         9w/fdqv9WLs6flN67WYGBEcFoa0s2EWWtbJnZ09+W+By4y+iHL9+hI8jj9QgUTmreJn6
-         Bdwp1TI4DN8mI6ciA5cshlrBkms1QIiO8A23uA431fI2vgX06LEP+Oz45fg2oxma194+
-         KypDUiVCK8jGcUbzkiMf+ToeuqlyEhvj9fypetgDZUwsA9q/oDDCnyv/gPbfb9gouqn8
-         7wRw==
-X-Gm-Message-State: AOAM531xEX+QdkN4EoVeyDZcferDxtVY2z4l9rZnLvP3s4dSAis8aZNy
-        iEgI2bo6qLXneBkoPTXztL8=
-X-Google-Smtp-Source: ABdhPJwF7KqLSE5LuXgnXxDM3O1OPa2mvlH5rrta77NPNra9zi504DUMJ5Ylo71dUF7S6KaqrNQR+g==
-X-Received: by 2002:a1c:f211:0:b0:381:6c60:742f with SMTP id s17-20020a1cf211000000b003816c60742fmr4766034wmc.130.1650472046061;
-        Wed, 20 Apr 2022 09:27:26 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id 2-20020a1c1902000000b00380d3873d6asm210737wmz.43.2022.04.20.09.27.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 09:27:25 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <e5f976aa-d993-7e4a-c69d-e02e86bec1f4@redhat.com>
-Date:   Wed, 20 Apr 2022 18:27:23 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s0Czcu6TCdRJh3Fx3ESiSoL0ZyRIITOPGEegqcioA0I=;
+        b=wGEC3QuW9wpsoJU4eXbH894zW4EBS2VXHTzkrwLWGlHk6JIQpgIMOiD2EsxdcXLW/v
+         316zvsYFblFCt+JvVXlwWegE25XDXzdwzKwwZ/HX2XxmrJ/+u9Q+U7kpXLKa/q9Z1J+j
+         AyRoUW86ia5kSLKohVz27fJVr+zqMO0BSBEAAl/Fh8PYN6gFbsldPh1xl442weRvIkg3
+         p1y+nyFrQP0uUWPzM359eDpDAspw62rgyLtQnB/oCRdafrrDkARciWhcmXEudn+UAECO
+         bZYIr4yOARsIMQjjcy3MgbbWhBg6+STbu9QySjoaCNfeD/hdB4lrZlYHxsm/n6jyMVat
+         XP8Q==
+X-Gm-Message-State: AOAM533Qv7UKra1UV3CywaTwRJStMDPszqubYtLTcs4Muw0nNkm7r6/g
+        7jMyb+Z5UuajNhFe+TIRc9MNUCWvUQ==
+X-Google-Smtp-Source: ABdhPJyRPm3dclqsf2iFh3UbCM9lc4G9rxreTjcEaDUvEUguNudR6cmXNyCdMlZBbXh2js1oF7+nyQ==
+X-Received: by 2002:a05:6808:3010:b0:2f7:3e71:88b2 with SMTP id ay16-20020a056808301000b002f73e7188b2mr2159525oib.102.1650472068176;
+        Wed, 20 Apr 2022 09:27:48 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j5-20020a4a7505000000b0033a47bb6a74sm2123535ooc.47.2022.04.20.09.27.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 09:27:47 -0700 (PDT)
+Received: (nullmailer pid 1428607 invoked by uid 1000);
+        Wed, 20 Apr 2022 16:27:46 -0000
+Date:   Wed, 20 Apr 2022 11:27:46 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Simon Xue <xxm@rock-chips.com>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH v7 1/4] dt-bindings: pci: remove fallback from Rockchip
+ DesignWare binding
+Message-ID: <YmA0gokzLKqX7dxP@robh.at.kernel.org>
+References: <20220416110507.642398-1-pgwipeout@gmail.com>
+ <20220416110507.642398-2-pgwipeout@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Babu Moger <babu.moger@amd.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, seanjc@google.com
-Cc:     vkuznets@redhat.com, jmattson@google.com, joro@8bytes.org,
-        wanpengli@tencent.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, x86@kernel.org
-References: <165040157111.1399644.6123821125319995316.stgit@bmoger-ubuntu>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v2 1/2] x86/cpufeatures: Add virtual TSC_AUX feature bit
-In-Reply-To: <165040157111.1399644.6123821125319995316.stgit@bmoger-ubuntu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220416110507.642398-2-pgwipeout@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/19/22 22:53, Babu Moger wrote:
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index b24ca7f4ed7c..99a4c078b397 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -674,7 +674,7 @@ void kvm_set_cpu_caps(void)
->   
->   	kvm_cpu_cap_mask(CPUID_8000_001F_EAX,
->   		0 /* SME */ | F(SEV) | 0 /* VM_PAGE_FLUSH */ | F(SEV_ES) |
-> -		F(SME_COHERENT));
-> +		F(V_TSC_AUX) | F(SME_COHERENT));
->   
->   	kvm_cpu_cap_mask(CPUID_C000_0001_EDX,
->   		F(XSTORE) | F(XSTORE_EN) | F(XCRYPT) | F(XCRYPT_EN) |
+On Sat, 16 Apr 2022 07:05:03 -0400, Peter Geis wrote:
+> The snps,dw-pcie binds to a standalone driver.
+> It is not fully compatible with the Rockchip implementation and causes a
+> hang if it binds to the device.
+> 
+> Remove this binding as a valid fallback.
+> 
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> ---
+>  .../devicetree/bindings/pci/rockchip-dw-pcie.yaml    | 12 +-----------
+>  1 file changed, 1 insertion(+), 11 deletions(-)
+> 
 
-Not needed, since V_TSC_AUX is not exposed to guests.
-
-I made the changes and queued both patches.
-
-Paolo
+Reviewed-by: Rob Herring <robh@kernel.org>
