@@ -2,152 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F536C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C305EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349919AbiDTF7o (ORCPT
+        id S1350049AbiDTGAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 01:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51084 "EHLO
+        Wed, 20 Apr 2022 02:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbiDTF7k (ORCPT
+        with ESMTP id S232098AbiDTF7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 01:59:40 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2088.outbound.protection.outlook.com [40.107.220.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D033C3702F;
-        Tue, 19 Apr 2022 22:56:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ldNlSj3vnr+mtsmSRC+X0Bl8WKY0CC4/j3Uv9g7u3IuMSuI8dOoEveNpcmCGXKe5M4BGHwnjutI5JzvJXlbLFaSdGt53NJ1J4pdm+ZpkxZ2pgpwHYfGG9xBHCQvTg+JZgxY6ZL8p+fhyIdkvP0HasHWM+o1r9VkeCTjAAz9R0dIcj6vAO3VEFAdd4ee/A/H/P7GmjetaSdpO2xd3Ut0Ifa+j9jivaPg28CbyCl1CqQp9ofXVC8M4H78yPRgFmG3NvqVfn0/CuvJT4QBMQipbeyBfY4JigcFBPbGxKgpe81/ODjcc9k+4yiv9l9pbGcU0j5ADnIiSzACoLazSEuXowQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4aD/QcWgLaVJRTUwjn5DgqKgt8EyWDDdanWlMDpeqt0=;
- b=OCy2EnsITZIwf4yscWtXpgVtjdekVQFbtNnPyJo4YsMhf0P0G7rWhzTuMAP3vEvi9vycvXl+kcgPC36ustjMlfzfXxpOGoC83ZFtg5v1osoMJMQC7aVchJ/qBX5fXHgO4yniDOs5mwpVrNE2wsqGXEEbRziesOcJ/hipsDairiSxsVQoFmLgcBV1YoAKKgtwNbNuYokh6bb4zu6Foi6nXgAeUS30ogWN5KNcEdUadfqDTfs5U1xMDkTePsCW1wQGZKsiPBJROHzVb7aSvN709mfIV8MIrjEb+d75ZzfgSbH7ivFL5BqpmBbXGXlXFkwGA/p3uQj1RjcZxoTCP5vqkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=nxp.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4aD/QcWgLaVJRTUwjn5DgqKgt8EyWDDdanWlMDpeqt0=;
- b=l7L4/YleDu8Ec6H7u2/s6QtYnLOU4X/E8VcOuNf7DpTs5tizegpUktBwvc7Gu++iRqXqxr8ueLjFgXV7pQ8yKDTqkd3uDzAQVM7u3m8Jy29mk0a/IhO3Ec9x57tyKsYb+cG/6pxNkfNKZK/Q5wwk4p1Oz1w+77L4dYOf3vvj9w8=
-Received: from SN6PR04CA0106.namprd04.prod.outlook.com (2603:10b6:805:f2::47)
- by SA2PR02MB7770.namprd02.prod.outlook.com (2603:10b6:806:14e::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
- 2022 05:56:51 +0000
-Received: from SN1NAM02FT0039.eop-nam02.prod.protection.outlook.com
- (2603:10b6:805:f2:cafe::49) by SN6PR04CA0106.outlook.office365.com
- (2603:10b6:805:f2::47) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
- Transport; Wed, 20 Apr 2022 05:56:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0039.mail.protection.outlook.com (10.97.5.35) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 05:56:51 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 19 Apr 2022 22:56:48 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 19 Apr 2022 22:56:48 -0700
-Envelope-to: sherry.sun@nxp.com,
- bp@alien8.de,
- mchehab@kernel.org,
- tony.luck@intel.com,
- james.morse@arm.com,
- rric@kernel.org,
- linux-edac@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- linux-imx@nxp.com
-Received: from [10.254.241.50] (port=50380)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1nh3KZ-0007Fw-RR; Tue, 19 Apr 2022 22:56:48 -0700
-Message-ID: <8c49091c-5bba-47fe-6479-8a2af69c7340@xilinx.com>
-Date:   Wed, 20 Apr 2022 07:56:44 +0200
+        Wed, 20 Apr 2022 01:59:54 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B0637010
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 22:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650434228; x=1681970228;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=dlOqVIZR/L6MtBohPXpS6Rrn6hDW2/Wi7App5uHPJEI=;
+  b=Oxb3odVxTSMJjbShVumltVmSMruoozJPPx4Q1elb8UIS46H2OdBtQBOD
+   H1QtDNLfVWruuNKw/Pi8yyZiiM0YKi/v4fUzD6SfXhhwsY4mteLvbOxNt
+   nNs8ouQPXj+RGHk5buRhWPDW3uquPKN2+BhQFsvIatdSlCOw6VKIvP1iQ
+   +WnVeLf/2l6EsKjksVBozUo62FsX01Hyzz6fxYsuccYqnjqTo6FLrhdCd
+   HnLrYyTG4rA/YJs/5zCss3xCCychuet+48AI7Sz5+bJfM1o78pQg4/tL2
+   ZfgDctZVUL1uvSKHQ+ENH2oCmdifaJN7xVmDinLE9mBMFkVpo67Yb5cxq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261548722"
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="261548722"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 22:57:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="727350038"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 19 Apr 2022 22:57:06 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nh3Kr-0006dC-K4;
+        Wed, 20 Apr 2022 05:57:05 +0000
+Date:   Wed, 20 Apr 2022 13:56:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2152/2579]
+ arch/s390/include/asm/smp.h:19:30: error: expected ';' after top level
+ declarator
+Message-ID: <202204201328.V8wP7bP6-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 1/2] EDAC: synopsys: Add disable_intr support for V3.X
- Synopsys EDAC DDR
-Content-Language: en-US
-To:     Sherry Sun <sherry.sun@nxp.com>, <bp@alien8.de>,
-        <mchehab@kernel.org>, <michal.simek@xilinx.com>,
-        <tony.luck@intel.com>, <james.morse@arm.com>, <rric@kernel.org>
-CC:     <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-imx@nxp.com>
-References: <20220318111742.15730-1-sherry.sun@nxp.com>
- <20220318111742.15730-2-sherry.sun@nxp.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-In-Reply-To: <20220318111742.15730-2-sherry.sun@nxp.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 98846b92-634c-48a5-8827-08da229290ac
-X-MS-TrafficTypeDiagnostic: SA2PR02MB7770:EE_
-X-Microsoft-Antispam-PRVS: <SA2PR02MB777097345C9BC65F212E8042C6F59@SA2PR02MB7770.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3mwa0+LzXsPexlpmZzLuk20D1QxLSvjLscDYOmp3KxMt7DaqwEO0GB+97GbKYusUMuKDFNWNMWeAPQyi4pTd13vv0fD0Nl4X44jMO9vS33sbRG1Bnc/n7qgmMu2EYXfa0yim+/sfeBFNnVplWnRngzmdZ1loBs3jO6Tm0q/23N0tw4ygyizr4NNQ9hv0O1N8yHptdfwAVTK5hUj4JzxwpxObUC+y2xNugMbnrsCCPlBwikaqZ8JbeotP/JDMzeY87S62BiSBOJrNF6O2sFvYiiEtLWzDXev8UbTtVfT+kjoXKrQfAad8OfLcoPGfFqe3yKxR1R1npCulOtq0nGXhKT2nRoLXp9sfVTEARr3x8NtVe+AOjJKTAMHpTHDL2unLmKvqk3H+xuzpn52Y4FXTFlT30ir+6gASJPdmzrYrTGOHpAYCBYB2uVelA0qHxr7aFlzn1CTqEqfVZWvReZpgq94fb+nscRx+k71nzRfL3J20pMdvYZZt1gYFkjtlZ4HjTs1np2WympjB6kyvtlNF3tiQ5wEZJqbosJYW8J3tk9x3mfvzSdRjecOgFemgq4LZnXKLS+ke0G6A0Ugq/qoCBNa6532MShCWXzkcFCVk0jl74qEFn9V4YjzOeyXlS8HG7zPogC4ADLxbzZ9KmysgoeF4jRefUTlvRsDrfi2jDvxDB16+APA80HoYr7F1btPZ6vNSKx/p/N7fpDrRk5IHX4rGXMvNNPbgHmwDzT7Zphv7oT/H9kVGLsq7P9cC0kB4
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(26005)(9786002)(508600001)(186003)(8936002)(2616005)(44832011)(2906002)(6666004)(40460700003)(53546011)(7416002)(31696002)(5660300002)(83380400001)(70206006)(47076005)(70586007)(336012)(426003)(7636003)(4326008)(8676002)(31686004)(110136005)(54906003)(82310400005)(36756003)(36860700001)(316002)(356005)(50156003)(43740500002)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 05:56:51.3361
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98846b92-634c-48a5-8827-08da229290ac
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0039.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR02MB7770
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
+commit: 87125f7f4d668eb2a4fc48a926799299c8774fdf [2152/2579] headers/deps: locking/lockdep: Split <linux/lockep.h> into <linux/lockep_types.h> and <linux/lockep_api.h>
+config: s390-randconfig-r044-20220420 (https://download.01.org/0day-ci/archive/20220420/202204201328.V8wP7bP6-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=87125f7f4d668eb2a4fc48a926799299c8774fdf
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 87125f7f4d668eb2a4fc48a926799299c8774fdf
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 prepare
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/s390/kernel/asm-offsets.c:11:
+   In file included from include/linux/kvm_host.h:7:
+   In file included from include/linux/hashtable_api.h:16:
+   In file included from include/linux/rculist.h:11:
+   In file included from include/linux/rcupdate.h:23:
+   In file included from include/linux/lockdep_api.h:27:
+   In file included from include/linux/smp_api.h:15:
+>> arch/s390/include/asm/smp.h:19:30: error: expected ';' after top level declarator
+   extern __vector128 __initdata boot_cpu_vector_save_area[__NUM_VXRS];
+                                ^
+                                ;
+   In file included from arch/s390/kernel/asm-offsets.c:11:
+   In file included from include/linux/kvm_host.h:7:
+   In file included from include/linux/hashtable_api.h:16:
+   In file included from include/linux/rculist.h:11:
+   In file included from include/linux/rcupdate.h:35:
+   include/linux/sched/per_task.h:48:11: fatal error: 'generated/asm-offsets.h' file not found
+   # include <generated/asm-offsets.h>
+             ^~~~~~~~~~~~~~~~~~~~~~~~~
+   2 errors generated.
+   make[2]: *** [scripts/Makefile.build:120: arch/s390/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1194: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
 
-On 3/18/22 12:17, Sherry Sun wrote:
-> V3.X Synopsys EDAC DDR doesn't have the QOS Interrupt register, need
-> to change to use the ECC Clear Register to disable the interrupts.
-> 
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->   drivers/edac/synopsys_edac.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-> index f05ff02c0656..1b630f0be119 100644
-> --- a/drivers/edac/synopsys_edac.c
-> +++ b/drivers/edac/synopsys_edac.c
-> @@ -859,8 +859,11 @@ static void enable_intr(struct synps_edac_priv *priv)
->   static void disable_intr(struct synps_edac_priv *priv)
->   {
->   	/* Disable UE/CE Interrupts */
-> -	writel(DDR_QOSUE_MASK | DDR_QOSCE_MASK,
-> -			priv->baseaddr + DDR_QOS_IRQ_DB_OFST);
-> +	if (priv->p_data->quirks & DDR_ECC_INTR_SELF_CLEAR)
-> +		writel(0x0, priv->baseaddr + ECC_CLR_OFST);
-> +	else
-> +		writel(DDR_QOSUE_MASK | DDR_QOSCE_MASK,
-> +		       priv->baseaddr + DDR_QOS_IRQ_DB_OFST);
->   }
->   
->   static int setup_irq(struct mem_ctl_info *mci,
+vim +19 arch/s390/include/asm/smp.h
 
-Acked-by: Michal Simek <michal.simek@xilinx.com>
+^1da177e4c3f415 include/asm-s390/smp.h      Linus Torvalds     2005-04-16  15  
+dbd70fb499952d0 include/asm-s390/smp.h      Heiko Carstens     2008-04-17  16  extern struct mutex smp_cpu_state_mutex;
+10ad34bc76dfbc4 arch/s390/include/asm/smp.h Martin Schwidefsky 2015-01-14  17  extern unsigned int smp_cpu_mt_shift;
+10ad34bc76dfbc4 arch/s390/include/asm/smp.h Martin Schwidefsky 2015-01-14  18  extern unsigned int smp_cpu_mtid;
+1a36a39e225d355 arch/s390/include/asm/smp.h Martin Schwidefsky 2015-10-29 @19  extern __vector128 __initdata boot_cpu_vector_save_area[__NUM_VXRS];
+a052096bdd6809e arch/s390/include/asm/smp.h Sven Schnelle      2021-08-27  20  extern cpumask_t cpu_setup_mask;
+8b646bd759086f6 arch/s390/include/asm/smp.h Martin Schwidefsky 2012-03-11  21  
 
-Thanks,
-Michal
+:::::: The code at line 19 was first introduced by commit
+:::::: 1a36a39e225d3558fb3776a3d3d7736cf1ec9f60 s390/dump: rework CPU register dump code
+
+:::::: TO: Martin Schwidefsky <schwidefsky@de.ibm.com>
+:::::: CC: Martin Schwidefsky <schwidefsky@de.ibm.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
