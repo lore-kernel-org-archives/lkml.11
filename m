@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0207C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 797C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 02:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358956AbiDTCfr (ORCPT
+        id S1358964AbiDTCfv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 22:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
+        Tue, 19 Apr 2022 22:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358945AbiDTCfp (ORCPT
+        with ESMTP id S1358945AbiDTCfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 22:35:45 -0400
+        Tue, 19 Apr 2022 22:35:50 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4212C1839A
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:33:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1266932995
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 19:33:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650421981; x=1681957981;
+  t=1650421986; x=1681957986;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=0eWwMl+ObBY5gfMXyIhi98beSo6eDTBnlE0TeJeZonY=;
-  b=URmYQrr9Dkg6mvXqmzRBTJ4kZmVziYP3HTOyVnZW808CN1c5C4LRv6ne
-   UR0TRYECz6ObIM2Ch8s2SC0YMAd5KgeN1DnBkk69+x5a0PPz4ZvP3LfoN
-   fex6DKPOolUL1kFdn7FVSXKHeZW+kVQo7Svsj/MbNJeiuGLFYUwvRE+9x
-   h8N6tCNsfESk1BgVmPFVdNjU1Q0nP6yNfBdzcC9NzbRk+bjsqccKUOWqN
-   GmDcM4ihtFIOHET+XcfOyc8PZS4AnvcAkZSowP9uczLFFYR6bF8ePWxeP
-   jcOtJxsa0ZG8o6LCQPLAOAWQb5T7el3vPNdw3DoVun+szWoNL4LXmMrDU
+  bh=NhcIVk7RjAY/MIh/KHzpjrCZoNRYNyCEFEr4+HwwHNI=;
+  b=JxKLnr8/BmAtwN1RDUsh53zy1q1dGnojInRKRN3i6tdnjh3/APNFQM/P
+   YpFB+NOtB/jroWTZ7x+lB7/sx3Nz4pp7L0GpQYQiCWU+KT6gNKQSaGbJB
+   gGmtlxyyFDH9kjTIZ8E9lKvLqoX3syz4mb43YYOaWYM6EXxIqJfVQGGmd
+   4SDVQ6wr03rgWbJdOPNsjBKkId/FQSWLLIHT5sCptbRdmL2DAeq4V7sz4
+   cB3pqzjSYbhb8bIfqbictIpO54ASCslqFHbhBewbbxw48e7F7hE1/4Rx7
+   fTG7sEKB4Iog+JAkz+LSgHftHnryAs0iJkUWyBxCmyNTJBUMlM737MJ2k
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261522438"
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261522464"
 X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="261522438"
+   d="scan'208";a="261522464"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 19:33:01 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 19:33:05 -0700
 X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="529554562"
+   d="scan'208";a="529554582"
 Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 19:32:58 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 19:33:03 -0700
 From:   Bard Liao <yung-chuan.liao@linux.intel.com>
 To:     alsa-devel@alsa-project.org, vkoul@kernel.org
 Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
         gregkh@linuxfoundation.org, srinivas.kandagatla@linaro.org,
         pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
         bard.liao@intel.com
-Subject: [PATCH 1/3] soundwire: intel: prevent pm_runtime resume prior to system suspend
-Date:   Wed, 20 Apr 2022 10:32:39 +0800
-Message-Id: <20220420023241.14335-2-yung-chuan.liao@linux.intel.com>
+Subject: [PATCH 3/3] soundwire: bus: pm_runtime_request_resume on peripheral attachment
+Date:   Wed, 20 Apr 2022 10:32:41 +0800
+Message-Id: <20220420023241.14335-4-yung-chuan.liao@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220420023241.14335-1-yung-chuan.liao@linux.intel.com>
 References: <20220420023241.14335-1-yung-chuan.liao@linux.intel.com>
@@ -56,49 +56,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-commit e38f9ff63e6d ("ACPI: scan: Do not add device IDs from _CID if _HID is not valid")
-exposes a race condition on a TGL RVP device leading to a timeout.
+In typical use cases, the peripheral becomes pm_runtime active as a
+result of the ALSA/ASoC framework starting up a DAI. The parent/child
+hierarchy guarantees that the manager device will be fully resumed
+beforehand.
 
-The detailed analysis shows the RT711 codec driver scheduling a jack
-detection workqueue while attaching during a spurious pm_runtime
-resume, and the work function happens to be scheduled after the
-manager device is suspended.
+There is however a corner case where the manager device may become
+pm_runtime active, but without ALSA/ASoC requesting any functionality
+from the peripherals. In this case, the hardware peripheral device
+will report as ATTACHED and its initialization routine will be
+executed. If this initialization routine initiates any sort of
+deferred processing, there is a possibility that the manager could
+suspend without the peripheral suspend sequence being invoked: from
+the pm_runtime framework perspective, the peripheral is *already*
+suspended.
 
-The direct link between this ACPI patch and a spurious pm_runtime
-resume is not obvious; the most likely explanation is that a change in
-the ACPI device linked list management modifies the order in which the
-pm_runtime device status is checked and exposes a race condition that
-was probably present for a very long time, but was not identified.
-
-We already have a check in the .prepare stage, where we will resume to
-full power from specific clock-stop modes. In all other cases, we
-don't need to resume to full power by default. Adding the
-SMART_SUSPEND flag prevents the spurious resume from happening.
+To avoid such disconnects between hardware state and pm_runtime state,
+this patch adds an asynchronous pm_request_resume() upon successful
+attach/initialization which will result in the proper resume/suspend
+sequence to be followed on the peripheral side.
 
 BugLink: https://github.com/thesofproject/linux/issues/3459
-Fixes: 029bfd1cd53cd ("soundwire: intel: conditionally exit clock stop mode on system suspend")
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Reviewed-by: Rander Wang <rander.wang@intel.com>
 Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 ---
- drivers/soundwire/intel.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/soundwire/bus.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 63101f1ba271..32e5fdb823c4 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -1293,6 +1293,9 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
- 	/* use generic bandwidth allocation algorithm */
- 	sdw->cdns.bus.compute_params = sdw_compute_params;
+diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
+index 354d3f89366f..8b7a680f388e 100644
+--- a/drivers/soundwire/bus.c
++++ b/drivers/soundwire/bus.c
+@@ -1838,6 +1838,18 @@ int sdw_handle_slave_status(struct sdw_bus *bus,
+ 				__func__, slave->dev_num);
  
-+	/* avoid resuming from pm_runtime suspend if it's not required */
-+	dev_pm_set_driver_flags(dev, DPM_FLAG_SMART_SUSPEND);
+ 			complete(&slave->initialization_complete);
 +
- 	ret = sdw_bus_master_add(bus, dev, dev->fwnode);
- 	if (ret) {
- 		dev_err(dev, "sdw_bus_master_add fail: %d\n", ret);
++			/*
++			 * If the manager became pm_runtime active, the peripherals will be
++			 * restarted and attach, but their pm_runtime status may remain
++			 * suspended. If the 'update_slave_status' callback initiates
++			 * any sort of deferred processing, this processing would not be
++			 * cancelled on pm_runtime suspend.
++			 * To avoid such zombie states, we queue a request to resume.
++			 * This would be a no-op in case the peripheral was being resumed
++			 * by e.g. the ALSA/ASoC framework.
++			 */
++			pm_request_resume(&slave->dev);
+ 		}
+ 	}
+ 
 -- 
 2.17.1
 
