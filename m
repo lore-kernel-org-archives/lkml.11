@@ -2,56 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D81C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 01:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F58AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 01:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241319AbiDTBXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 21:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
+        id S1345037AbiDTB3a (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Apr 2022 21:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233914AbiDTBXV (ORCPT
+        with ESMTP id S232010AbiDTB33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 21:23:21 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8FA32EC3;
-        Tue, 19 Apr 2022 18:20:35 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id k14so166059pga.0;
-        Tue, 19 Apr 2022 18:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kt0BA6E2YVz9rnggJc+TiKb9bbmdQfz/mieF7YR0eTY=;
-        b=nPetD018frdQiGN1xpLyv+3uSuUXRlLIAw/Q2KO+NA8JE5r19ZuBQk/jLrNcWqqZ63
-         4scmHiHLF7HRFSJdnuMnu0kxHqR1NBDB/BjgaTd2MGeJeJVfif1KuFpr56WYX2zPkoXt
-         nqDXLPKPYbYwkd+qIyX52w7J6VoPrs4npeBZA7LXWI11yUTodroygKZgwnTbu2AJNPb9
-         wdJ8eowa9aeo0ndzSoMBhrwyp3TeYcvR6OK5kjw1omdyCvVC6ODyIcl33JgyxE05ZPGF
-         YM/QNmt9fYwSMfXrmBDi4iGW2DtDY5Ox9Ca3sz6iURzrpk+wzTLxzIxCJXp5bU3h4XmP
-         lYQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kt0BA6E2YVz9rnggJc+TiKb9bbmdQfz/mieF7YR0eTY=;
-        b=AQWeQppUFrbJPQXVdSaiX1IHNsyaPLtz0TSubAhaRb/45xTKy043kHTUQmIhDdoF0Z
-         xFStVtGztVoarkZazSOKQeVtM4bKtYMIbTifEbG0rJWkzKJToevASl5A2YkbYYo0dEqF
-         Ze3fDA6TDxL0t5agw9aXSAycwhWjGy1ss5oY84RocUql4cwIRFaZt50St5/b+mDgWRMt
-         Vg8Sd/zz48cDsJOO5v9fZtW75lSe0q1CnEBB9J1J0rJ3bTcvbsVYJSzVnve3XOk+hNx0
-         sqivCcWAG57wEBMoHb1shJZ7iXTFxPdJ/q5phFTG80qiJlCi2HR4eBNjY0Edb74jCoWd
-         ropg==
-X-Gm-Message-State: AOAM532Ojd4oizQuUqS1pIxFw7q3pRV6IlvWY2Jzwjnl7TcdcwiPdmUI
-        L7PDuWw5EHtuUB0h3SIMwUM=
-X-Google-Smtp-Source: ABdhPJxZ2jY+wMDYjTy7G8OoBSAEtjGieq42V1SbbKU98nxxVnPAyKFImwL4eXny0f4+7V1WbEHmHA==
-X-Received: by 2002:a63:5421:0:b0:3aa:5717:fadb with SMTP id i33-20020a635421000000b003aa5717fadbmr2259402pgb.422.1650417634718;
-        Tue, 19 Apr 2022 18:20:34 -0700 (PDT)
-Received: from localhost ([192.55.54.52])
-        by smtp.gmail.com with ESMTPSA id c15-20020a17090a674f00b001cba1008a3csm17225172pjm.51.2022.04.19.18.20.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 18:20:34 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 18:20:32 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
+        Tue, 19 Apr 2022 21:29:29 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378AD23BC4;
+        Tue, 19 Apr 2022 18:26:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650418005; x=1681954005;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mbBwslPLaoBfylvW/dhJ1OLBSlP7qYZg3Cvd31qjORE=;
+  b=CGW8trYZ7koQ47kn2LlAg7TkxqunsCuFhU7JYFAjDdaBz3in7He7YYGz
+   GfOlp5+lHQFlk7N5slDxiYDdAxRp63TkJ3qY9FEpw4YlnMnzjCaZDCS7v
+   JZK41CI20P4OcnG+l7T9NLi4Aj9nmjGmO34zstVUtvjgdhgCnxM85BdDq
+   +nLSwP4XsnxvX66ICG+Qug2ELP6OMSThtW9I5szLe1dnx/GvRUESjIKCA
+   LWwTwJyAtTMCqvxFYUcXYTpuG/oV1aFqS6ZrxPxm2ECY3NEnwGI2B2wU+
+   fAg4sn9OO2E1qpsXkqBx2Y10KqpM8lyNqnjqRejlxypsFR6umooMUV2RA
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="244495224"
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="244495224"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 18:26:44 -0700
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="561918375"
+Received: from ktuv-desk2.amr.corp.intel.com (HELO [10.212.227.192]) ([10.212.227.192])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 18:26:43 -0700
+Message-ID: <dd4a2b16-397e-8866-0fd5-b5c5dfd453ab@linux.intel.com>
+Date:   Tue, 19 Apr 2022 18:26:43 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+Content-Language: en-US
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
@@ -61,94 +56,33 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
         Tony Luck <tony.luck@intel.com>,
         Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, isaku.yamahata@gmail.com
-Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
- attestation interface driver
-Message-ID: <20220420012032.GA2224031@ls.amr.corp.intel.com>
+        platform-driver-x86@vger.kernel.org
 References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220420012032.GA2224031@ls.amr.corp.intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <20220420012032.GA2224031@ls.amr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 03:01:09PM -0700,
-Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
-...
-> diff --git a/drivers/platform/x86/intel/tdx/intel_tdx_attest.c b/drivers/platform/x86/intel/tdx/intel_tdx_attest.c
-> new file mode 100644
-> index 000000000000..9124db800d4f
-> --- /dev/null
-> +++ b/drivers/platform/x86/intel/tdx/intel_tdx_attest.c
-...
-> +static long tdx_attest_ioctl(struct file *file, unsigned int cmd,
-> +			     unsigned long arg)
-> +{
-> +	struct attest_dev *adev = platform_get_drvdata(pdev);
-> +	void __user *argp = (void __user *)arg;
-> +	struct tdx_gen_quote tdquote_req;
-> +	long ret = 0, err;
-> +
-> +	mutex_lock(&adev->lock);
-> +
-> +	switch (cmd) {
-> +	case TDX_CMD_GET_TDREPORT:
-> +		if (copy_from_user(adev->report_buf, argp,
-> +					TDX_REPORT_DATA_LEN)) {
-> +			ret = -EFAULT;
-> +			break;
-> +		}
-> +
-> +		/* Generate TDREPORT_STRUCT */
-> +		err = tdx_mcall_tdreport(adev->tdreport_buf, adev->report_buf);
-> +		if (err) {
-> +			ret = put_user(err, (long __user *)argp);
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +
-> +		if (copy_to_user(argp, adev->tdreport_buf, TDX_TDREPORT_LEN))
-> +			ret = -EFAULT;
-> +		break;
-> +	case TDX_CMD_GEN_QUOTE:
-> +		reinit_completion(&adev->req_compl);
-> +
-> +		/* Copy TDREPORT data from user buffer */
-> +		if (copy_from_user(&tdquote_req, argp, sizeof(struct tdx_gen_quote))) {
-> +			ret = -EFAULT;
-> +			break;
-> +		}
-> +
-> +		if (tdquote_req.len <= 0 || tdquote_req.len > GET_QUOTE_MAX_SIZE) {
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +
-> +		if (copy_from_user(adev->tdquote_buf, (void __user *)tdquote_req.buf,
-> +					tdquote_req.len)) {
-> +			ret = -EFAULT;
-> +			break;
-> +		}
-> +
-> +		/* Submit GetQuote Request */
-> +		err = tdx_hcall_get_quote(adev->tdquote_buf, GET_QUOTE_MAX_SIZE);
-> +		if (err) {
-> +			ret = put_user(err, (long __user *)argp);
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +
-> +		/* Wait for attestation completion */
-> +		ret = wait_for_completion_interruptible_timeout(
-> +				&adev->req_compl,
-> +				msecs_to_jiffies(GET_QUOTE_TIMEOUT));
 
-If timeout occurs, the state of adev->tdquote_buf is unknown.  It's not safe
-to continue to using adev->tdquote_buf.  VMM would continue to processing
-getquote request with this buffer.  What if TDX_CMD_GEN_QUOTE is issued again,
-and tdquote_buf is re-used?
+
+On 4/19/22 6:20 PM, Isaku Yamahata wrote:
+> If timeout occurs, the state of adev->tdquote_buf is unknown.  It's not safe
+> to continue to using adev->tdquote_buf.  VMM would continue to processing
+> getquote request with this buffer.  What if TDX_CMD_GEN_QUOTE is issued again,
+> and tdquote_buf is re-used?
+
+This part is not clearly discussed in the specification. May be spec
+should define some reasonable timeout and teardown details.
+
+Regarding not using this buffer again, what happens if we de-allocate
+it on timeout and the host still updates it?
+
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
