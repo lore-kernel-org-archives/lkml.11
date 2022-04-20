@@ -2,207 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA24C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 311D1C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378897AbiDTNVk (ORCPT
+        id S1378915AbiDTNVs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        Wed, 20 Apr 2022 09:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242970AbiDTNVi (ORCPT
+        with ESMTP id S242970AbiDTNVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:21:38 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C096342A03;
-        Wed, 20 Apr 2022 06:18:52 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e5bdd14b59so1873459fac.11;
-        Wed, 20 Apr 2022 06:18:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B3CbAt4ZX/EEyH49jyAg9jAZpFJcJq4CEXfhKoE4EjY=;
-        b=BQ58M06eeS7/UfYa8nf7lS96baHMfKjTYrxmNuIn4Oy4/u9DkKNPSXlipQt3lbZ4pD
-         KiHPOtAzDEVxlRHBMaksP0dAkNcsMs6E7LLf1XJLMPB9pHwqM6MKS0LqIkm3n9AT6jMl
-         CUFGXfZlt6j2dT4U3NBw1u2lsAjCgwCZSob+bV8qdyq2PpKuGO02vYhhFEsrBG8y5ydd
-         +82XB0i6ZgeETvjhK/c5ZaXJwPURx0bQ94bV+dzIZymc7K9z/wu6cn2xoMwcA6oycpJK
-         XAhA7amK16MawkH5Y/IDvbZl4T/cm40d4SYxiX9V83LKcgQEfX3ZeFrLn2lARv4nWjaK
-         ob7Q==
-X-Gm-Message-State: AOAM531xW+7wBWPKUE9Ofn2wifzsCPmz/bKvZ1OQt5fAldqly3UjMJFx
-        V4tRmxUmuanaLZq5ciBU7g==
-X-Google-Smtp-Source: ABdhPJx2A5aMeqamW9lvDMpyT+zJ9u6tnpoQnlk5qYdgWXu62FfEJRvWdUGDP2ElX2LCKfRj2sQdZA==
-X-Received: by 2002:a05:6870:538f:b0:e1:def7:7640 with SMTP id h15-20020a056870538f00b000e1def77640mr1486007oan.34.1650460731982;
-        Wed, 20 Apr 2022 06:18:51 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t83-20020aca5f56000000b00322b2a08b85sm2418869oib.19.2022.04.20.06.18.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 06:18:51 -0700 (PDT)
-Received: (nullmailer pid 1152994 invoked by uid 1000);
-        Wed, 20 Apr 2022 13:18:50 -0000
-Date:   Wed, 20 Apr 2022 08:18:50 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH v2 2/8] dt-bindings: PCI: renesas-pci-usb: Convert
- bindings to json-schema
-Message-ID: <YmAIOt1vAEzHGvBP@robh.at.kernel.org>
-References: <20220414074011.500533-1-herve.codina@bootlin.com>
- <20220414074011.500533-3-herve.codina@bootlin.com>
- <YlhkwvGdcf4ozTzG@robh.at.kernel.org>
- <20220420144411.2d369b49@bootlin.com>
+        Wed, 20 Apr 2022 09:21:46 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4757F42A11;
+        Wed, 20 Apr 2022 06:19:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650460740; x=1681996740;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=E9RTNBXOoMcT8m9LfR3nKt3g7nqLHXacsFd0iJAtk8s=;
+  b=grYJ0Elp/nDOrtMJNahoNH5gOm4UvEE5UIRTpAm+hsuzH8o374d2QS7t
+   5RBVUlimRkf3t2IuTfZ2NB9DAEDmYelFFlWDKJicuRHl+BQPKtXjRGIQA
+   3WRaVoCBESt71M/MfGf1urQL3fIypaQAGeqTBI5+QF0DiqdksVPw2bNZA
+   IZ4NA0EcnfDxY0/6WhM8CgUSEyPR+UXbS20dCizRW9bWZNEMtAFDXgwUb
+   7z2QzTupUepR55uS/6h+tPLpZpZnF6MlZS666udkKN5cCjHTMI+x+miCB
+   Ivk6YQbvGUHIfpx/TABFBV2CwSKWhiCNCRJLO0x11qblui8XsNFxnqvqX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="243954024"
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="243954024"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 06:18:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="727490441"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga005.jf.intel.com with ESMTP; 20 Apr 2022 06:18:55 -0700
+To:     "Sandeep Maheswaram (Temp) (QUIC)" <quic_c_sanm@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Pavan Kumar Kondeti (QUIC)" <quic_pkondeti@quicinc.com>,
+        "Pratham Pratap (QUIC)" <quic_ppratap@quicinc.com>,
+        "Krishna Kurapati PSSNV (QUIC)" <quic_kriskura@quicinc.com>,
+        "Vidya Sagar Pulyala (Temp) (QUIC)" <quic_vpulyala@quicinc.com>
+References: <1649323888-12420-1-git-send-email-quic_c_sanm@quicinc.com>
+ <DM6PR02MB4857A0ADCDA1558DE58E103ADFF29@DM6PR02MB4857.namprd02.prod.outlook.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v3 0/2] Skip phy initialization for DWC3 USB Controllers
+Message-ID: <4b34735f-8e1f-bf37-398f-9b4a8aa2e939@linux.intel.com>
+Date:   Wed, 20 Apr 2022 16:20:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420144411.2d369b49@bootlin.com>
+In-Reply-To: <DM6PR02MB4857A0ADCDA1558DE58E103ADFF29@DM6PR02MB4857.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 02:44:11PM +0200, Herve Codina wrote:
-> Hi Rob,
+On 19.4.2022 13.17, Sandeep Maheswaram (Temp) (QUIC) wrote:
+> Hi Mathias, Felipe,
 > 
-> On Thu, 14 Apr 2022 13:15:30 -0500
-> Rob Herring <robh@kernel.org> wrote:
+>> -----Original Message-----
+>> From: Sandeep Maheswaram (Temp) (QUIC) <quic_c_sanm@quicinc.com>
+>> Sent: Thursday, April 7, 2022 3:01 PM
+>> To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Felipe Balbi
+>> <balbi@kernel.org>; Stephen Boyd <swboyd@chromium.org>; Doug
+>> Anderson <dianders@chromium.org>; Matthias Kaehlcke
+>> <mka@chromium.org>; Mathias Nyman <mathias.nyman@intel.com>
+>> Cc: linux-arm-msm@vger.kernel.org; linux-usb@vger.kernel.org; linux-
+>> kernel@vger.kernel.org; Pavan Kumar Kondeti (QUIC)
+>> <quic_pkondeti@quicinc.com>; Pratham Pratap (QUIC)
+>> <quic_ppratap@quicinc.com>; Krishna Kurapati PSSNV (QUIC)
+>> <quic_kriskura@quicinc.com>; Vidya Sagar Pulyala (Temp) (QUIC)
+>> <quic_vpulyala@quicinc.com>; Sandeep Maheswaram (Temp) (QUIC)
+>> <quic_c_sanm@quicinc.com>
+>> Subject: [PATCH v3 0/2] Skip phy initialization for DWC3 USB Controllers
+>>
+>> Runtime suspend of phy drivers was failing from DWC3 driver as runtime
+>> usage value is 2 because the phy is initialized from
+>> DWC3 core and HCD core.
+>> Some controllers like DWC3 and CDNS3 manage phy in their core drivers.
+>> This property can be set to avoid phy initialization in HCD core.
+>>
+>> v3:
+>> Coming back to this series based on discussion at below thread
+>> https://patchwork.kernel.org/project/linux-arm-msm/patch/1648103831-
+>> 12347-4-git-send-email-quic_c_sanm@quicinc.com/
+>> Dropped the dt bindings PATCH 1/3 in v2
+>> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-
+>> 25582-1-git-send-email-quic_c_sanm@quicinc.com/
+>>
+>> v2:
+>> Updated the commit descriptions.
+>> Changed subject prefix from dwc to dwc3.
+>> Increased props array size.
+>>
+>> Sandeep Maheswaram (2):
+>>   usb: host: xhci-plat: Add device property to set XHCI_SKIP_PHY_INIT
+>>     quirk
+>>   usb: dwc3: host: Set the property usb-skip-phy-init
+>>
+>>  drivers/usb/dwc3/host.c      | 4 +++-
+>>  drivers/usb/host/xhci-plat.c | 3 +++
+>>  2 files changed, 6 insertions(+), 1 deletion(-)
+>>
+>> --
+>> 2.7.4
 > 
-> > On Thu, Apr 14, 2022 at 09:40:05AM +0200, Herve Codina wrote:
-> > > Convert Renesas PCI bridge bindings documentation to json-schema.
-> > > Also name it 'renesas,pci-usb' as it is specifically used to
-> > > connect the PCI USB controllers to AHB bus.  
-> > 
-> > Please name it based on compatible strings. renesas,pci-rcar-gen2.yaml
-> 
-> Ok, renamed.
-> 
-> > 
-> > > 
-> > > Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> > > ---
-> > >  .../devicetree/bindings/pci/pci-rcar-gen2.txt |  84 -----------
-> > >  .../bindings/pci/renesas,pci-usb.yaml         | 134 ++++++++++++++++++
-> > >  2 files changed, 134 insertions(+), 84 deletions(-)
-> > >  delete mode 100644 Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
-> > >  create mode 100644 Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt b/Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
-> > > deleted file mode 100644
-> ...
-> > > diff --git a/Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml b/Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml
-> > > new file mode 100644
-> ...
-> > > index 000000000000..3f8d79b746c7
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml
-> > > @@ -0,0 +1,134 @@
-> > > +# SPDX-License-Identifier: GPL-2.0
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/pci/renesas,pci-usb.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: Renesas AHB to PCI bridge
-> > > +
-> > > +maintainers:
-> > > +  - Marek Vasut <marek.vasut+renesas@gmail.com>
-> > > +  - Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > +
-> > > +description: |
-> > > +  This is the bridge used internally to connect the USB controllers to the
-> > > +  AHB. There is one bridge instance per USB port connected to the internal
-> > > +  OHCI and EHCI controllers.
-> > > +
-> > > +allOf:
-> > > +  - $ref: /schemas/pci/pci-bus.yaml#
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    oneOf:
-> > > +      - items:
-> > > +          - enum:
-> > > +              - renesas,pci-r8a7742      # RZ/G1H
-> > > +              - renesas,pci-r8a7743      # RZ/G1M
-> > > +              - renesas,pci-r8a7744      # RZ/G1N
-> > > +              - renesas,pci-r8a7745      # RZ/G1E
-> > > +              - renesas,pci-r8a7790      # R-Car H2
-> > > +              - renesas,pci-r8a7791      # R-Car M2-W
-> > > +              - renesas,pci-r8a7793      # R-Car M2-N
-> > > +              - renesas,pci-r8a7794      # R-Car E2
-> > > +          - const: renesas,pci-rcar-gen2 # R-Car Gen2 and RZ/G1
-> > > +
-> > > +  reg:
-> > > +    description: |
-> > > +      A list of physical regions to access the device. The first is
-> > > +      the operational registers for the OHCI/EHCI controllers and the
-> > > +      second is for the bridge configuration and control registers.
-> > > +    minItems: 2
-> > > +    maxItems: 2
-> > > +
-> > > +  interrupts:
-> > > +    description: Interrupt for the device.
-> > > +
-> > > +  interrupt-map:
-> > > +    description: |
-> > > +      Standard property used to define the mapping of the PCI interrupts
-> > > +      to the GIC interrupts.
-> > > +
-> > > +  interrupt-map-mask:
-> > > +    description:
-> > > +      Standard property that helps to define the interrupt mapping.
-> > > +
-> > > +  clocks:
-> > > +    description: The reference to the device clock.
-> > > +
-> > > +  bus-range:
-> > > +    description: |
-> > > +      The PCI bus number range; as this is a single bus, the range
-> > > +      should be specified as the same value twice.  
-> > 
-> > items:
-> >   const: 0
-> 
-> Well, some other values are present in some dtsi files such as
-> 'bus_range = <1 1>;' or 'bus_range = <2 2>;' in r8a7742.dtsi.
-> 
-> The constraint is to have the same value twice. Is there a way
-> to specify this constraint ?
+> Please let me know your opinion about this series.
 
-Yes, but probably not worthwhile. Just drop it as pci-bus.yaml already 
-defines it.
+Otherwise looks good but wondering if we should document that new device
+property somewhere. 
 
-> > > +
-> > > +  "#address-cells":
-> > > +    const: 3
-> > > +
-> > > +  "#size-cells":
-> > > +    const: 2
-> > > +
-> > > +  "#interrupt-cells":
-> > > +    const: 1  
-> > 
-> > All these are defined by pci-bus.yaml
-> 
-> Right.
-> Replaced by:
-> 
-> "#address-cells": true
-> "#size-cells": true
-> "#interrupt-cells": true
-> 
-> Is that correct ?
+Couldn't find a standard way how those device properties excluded from
+Documentation/devicetree/binding are documented
 
-You can just drop them completely.
+Thanks
+-Mathias
 
-Rob
