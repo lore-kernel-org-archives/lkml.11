@@ -2,176 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0030C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376584AbiDTH7Y (ORCPT
+        id S1376588AbiDTIBB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        Wed, 20 Apr 2022 04:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376567AbiDTH7T (ORCPT
+        with ESMTP id S1357036AbiDTIA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:59:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C19F2668;
-        Wed, 20 Apr 2022 00:56:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 20 Apr 2022 04:00:57 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EDA625E;
+        Wed, 20 Apr 2022 00:58:11 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1D1A721112;
+        Wed, 20 Apr 2022 07:58:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650441490; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zh1+qCZ/MYXJ0sRvzfY4sa1n6TDnYaGX5/J1ORSZtfg=;
+        b=fK/qA+XzGW35/9w2tvE+4x0zKayfY5S1REDI0Hj+Wv7kazxwNLOX5GtAsN3xI2vwpGp0Li
+        UpZRRdnfs3qfCIlF00lXuhhreXhdDvkhiNqTs6bgNrdBkgTBQwAOGtZqJv0+LppY79rot2
+        KuWaR/55MHeREPMSv9wljkh6Kuxns1w=
+Received: from suse.cz (unknown [10.100.224.162])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF8ADB81D57;
-        Wed, 20 Apr 2022 07:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 730F5C385A1;
-        Wed, 20 Apr 2022 07:56:30 +0000 (UTC)
-Message-ID: <c3d0d176-252b-5823-0c34-f1bfc7c4978c@xs4all.nl>
-Date:   Wed, 20 Apr 2022 09:56:28 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 9C31F2C142;
+        Wed, 20 Apr 2022 07:58:09 +0000 (UTC)
+Date:   Wed, 20 Apr 2022 09:58:09 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "Torvalds, Linus" <torvalds@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "song@kernel.org" <song@kernel.org>,
+        "Kernel-team@fb.com" <Kernel-team@fb.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dborkman@redhat.com" <dborkman@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "bp@alien8.de" <bp@alien8.de>, "mbenes@suse.cz" <mbenes@suse.cz>,
+        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Adam Manzanares <a.manzanares@samsung.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
+Message-ID: <Yl+9ETR8qc1sRKy3@alley>
+References: <20220415164413.2727220-1-song@kernel.org>
+ <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
+ <YlpPW9SdCbZnLVog@infradead.org>
+ <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
+ <CAHk-=wiMCndbBvGSmRVvsuHFWC6BArv-OEG2Lcasih=B=7bFNQ@mail.gmail.com>
+ <B995F7EB-2019-4290-9C09-AE19C5BA3A70@fb.com>
+ <Yl04LO/PfB3GocvU@kernel.org>
+ <Yl4F4w5NY3v0icfx@bombadil.infradead.org>
+ <88eafc9220d134d72db9eb381114432e71903022.camel@intel.com>
+ <Yl8olpqvZxY8KoNf@bombadil.infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/5] dt-bindings: media: platform: visconti: Add
- Toshiba Visconti Video Input Interface bindings
-Content-Language: en-US
-To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220414053528.31460-1-yuji2.ishikawa@toshiba.co.jp>
- <20220414053528.31460-2-yuji2.ishikawa@toshiba.co.jp>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220414053528.31460-2-yuji2.ishikawa@toshiba.co.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yl8olpqvZxY8KoNf@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/04/2022 07:35, Yuji Ishikawa wrote:
-> Adds the Device Tree binding documentation that allows to describe
-> the Video Input Interface found in Toshiba Visconti SoCs.
+On Tue 2022-04-19 14:24:38, Luis Chamberlain wrote:
+> On Tue, Apr 19, 2022 at 01:56:03AM +0000, Edgecombe, Rick P wrote:
+> > Yea, that was my understanding. X86 modules have to be linked within
+> > 2GB of the kernel text, also eBPF x86 JIT generates code that expects
+> > to be within 2GB of the kernel text.
 > 
-> Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-> Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> ---
->  .../bindings/media/toshiba,visconti-viif.yaml | 103 ++++++++++++++++++
->  1 file changed, 103 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+> And kprobes / live patching / ftrace.
 > 
-> diff --git a/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
-> new file mode 100644
+> Another architectural fun fact, powerpc book3s/32 requires executability
+> to be set per 256 Mbytes segments. Some architectures like this one
+> will want to also optimize how they use the module alloc area.
+> 
+> Even though today the use cases might be limited, we don't exactly know
+> how much memory a target device has a well, and so treating memory
+> failures for "special memory" request as regular memory failures seems
+> a bit odd, and users could get confused. For instance slapping on
+> extra memory on a system won't resolve any issues if the limit for a
+> special type of memory is already hit. Very likely not a problem at all today,
+> given how small modules / eBPF jit programs are / etc, but conceptually it
+> would seem wrong to just say -ENOMEM when in fact it's a special type of
+> required memory which cannot be allocated and the issue cannot possibly be
+> fixed. I don't think we have an option but to use -ENOMEM but at least
+> hinting of the special failure would have seem desirable.
 
-You need to CC this series to devicetree@vger.kernel.org so that the device tree reviewers
-can take a look at this.
+I am not mm expert but I think that this is common problem. There are
+many types of "special memory". And mm provides many details via procfs, e.g.
+/proc/meminfo, /proc/slabinfo, /proc/vmstat.
 
-Regards,
-
-	Hans
-
-> index 000000000..848ea5019
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
-> @@ -0,0 +1,103 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/toshiba,visconti-viif.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Toshiba Visconti5 SoC Video Input Interface Device Tree Bindings
-> +
-> +maintainers:
-> +  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> +
-> +description: |
-> +  Toshiba Visconti5 SoC Video Input Interface (VIIF) receives MIPI CSI2 video stream,
-> +  processes the stream with embedded image signal processor (L1ISP, L2ISP), then stores pictures to main memory.
-> +
-> +properties:
-> +  compatible:
-> +    const: toshiba,visconti-viif
-> +
-> +  reg:
-> +    items:
-> +      - description: registers for capture control
-> +      - description: registers for CSI2 receiver control
-> +
-> +  interrupts:
-> +    items:
-> +      - description: Sync Interrupt
-> +      - description: Status (Error) Interrupt
-> +      - description: CSI2 Receiver Interrupt
-> +      - description: L1ISP Interrupt
-> +
-> +  index:
-> +    enum: [0, 1]
-> +
-> +  port:
-> +    $ref: /schemas/graph.yaml#/$defs/port-base
-> +    unevaluatedProperties: false
-> +    description: Input port node, single endpoint describing the CSI-2 transmitter.
-> +
-> +    properties:
-> +      endpoint:
-> +        $ref: video-interfaces.yaml#
-> +        unevaluatedProperties: false
-> +
-> +        properties:
-> +          data-lanes:
-> +            description: VIIF supports 2 or 4 data lines
-> +            items:
-> +              minItems: 1
-> +              maxItems: 4
-> +              items:
-> +                - const: 1
-> +                - const: 2
-> +                - const: 3
-> +                - const: 4
-> +          clock-lanes:
-> +            description: VIIF supports 1 clock line
-> +            const: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - port
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        viif0: viif@1c000000 {
-> +            compatible = "toshiba,visconti-viif";
-> +            reg = <0 0x1c000000 0 0x6000>,
-> +                  <0 0x1c008000 0 0x400>;
-> +            interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
-> +            index = <0>;
-> +            status = "disabled";
-> +
-> +            port {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                csi_in0: endpoint {
-> +                    remote-endpoint = <&imx219_out0>;
-> +                    bus-type = <4>;
-> +                    data-lanes = <1 2>;
-> +                    clock-lanes = <0>;
-> +                    clock-noncontinuous;
-> +                    link-frequencies = /bits/ 64 <456000000>;
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-
+Best Regards,
+Petr
