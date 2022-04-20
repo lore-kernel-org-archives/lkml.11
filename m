@@ -2,197 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 08:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376669AbiDTIWG (ORCPT
+        id S1376675AbiDTIWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43528 "EHLO
+        Wed, 20 Apr 2022 04:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376653AbiDTIWE (ORCPT
+        with ESMTP id S1376653AbiDTIWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:22:04 -0400
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A995F2494A;
-        Wed, 20 Apr 2022 01:19:18 -0700 (PDT)
-Received: from [10.28.39.106] (10.28.39.106) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 20 Apr
- 2022 16:19:17 +0800
-Message-ID: <fb76d82d-d4df-9b0a-506c-83771f000b97@amlogic.com>
-Date:   Wed, 20 Apr 2022 16:19:16 +0800
+        Wed, 20 Apr 2022 04:22:49 -0400
+X-Greylist: delayed 2782 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 01:20:01 PDT
+Received: from m1379.mail.163.com (m1379.mail.163.com [220.181.13.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C249CB862;
+        Wed, 20 Apr 2022 01:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=4pQOI
+        0lXv/1b8La+IhVdVvh0mn/IVS55aNoj0KtmFpE=; b=L/qKbSncgKY/qPz3w0S78
+        WcYqMvLOrTCZIFPfxljHSsPWF2nIvmWp+BBSavxYGjWZQy903zlY6dxM1Ypzw25I
+        AzRAofgSe2IGS7lsROTk9rYRSkK5q5ESfc78Ls4qTmhPFL04CYamIv/Hr6v8P4ao
+        ib5/z/V4+BQbLZTHM4aRjw=
+Received: from slark_xiao$163.com ( [112.97.59.179] ) by
+ ajax-webmail-wmsvr79 (Coremail) ; Wed, 20 Apr 2022 15:33:09 +0800 (CST)
+X-Originating-IP: [112.97.59.179]
+Date:   Wed, 20 Apr 2022 15:33:09 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     "Johan Hovold" <johan@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH] USB: serial: option: Adding support for Cinterion
+ MV32-WA/MV32-WB
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <Yl+zNlWflAzLMcPA@hovoldconsulting.com>
+References: <20220414074434.5699-1-slark_xiao@163.com>
+ <Yl+zNlWflAzLMcPA@hovoldconsulting.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v4 1/2] mtd: rawnand: meson: discard the common MMC sub
- clock framework
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-CC:     <linux-mtd@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20220402074921.13316-1-liang.yang@amlogic.com>
- <20220402074921.13316-2-liang.yang@amlogic.com>
- <20220404103034.48ec16b1@xps13>
- <50105d6b-8ced-1b72-30cb-a709c4a4dd26@amlogic.com>
- <d5a33645-fac1-9c69-afe6-654bfe93ca48@amlogic.com>
- <20220419102629.1c77aa2a@xps13>
- <2e382e3e-c231-c9e4-73a1-0637288fcd4f@amlogic.com>
- <20220419172528.2dd75e7b@xps13>
- <126691f4-bc6b-10cd-ee2c-ff4006bc6518@amlogic.com>
- <20220420092912.10ce66ec@xps13>
-From:   Liang Yang <liang.yang@amlogic.com>
-In-Reply-To: <20220420092912.10ce66ec@xps13>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.28.39.106]
-X-ClientProxiedBy: mail-sz.amlogic.com (10.28.11.5) To mail-sz.amlogic.com
- (10.28.11.5)
+Message-ID: <73e2184.29b2.18045e3a85d.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: T8GowACXpfk1t19iGUsRAA--.55648W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwXoZFc7XBuVsQACsD
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miquel,
-
-On 2022/4/20 15:29, Miquel Raynal wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> Hi Liang,
-> 
-> liang.yang@amlogic.com wrote on Wed, 20 Apr 2022 13:44:32 +0800:
-> 
->> Hi Miquel,
->>
->> On 2022/4/19 23:25, Miquel Raynal wrote:
->>> [ EXTERNAL EMAIL ]
->>>
->>> Hello,
->>>
->>> liang.yang@amlogic.com wrote on Tue, 19 Apr 2022 17:17:48 +0800:
->>>    
->>>> Hello Miquel,
->>>>
->>>> On 2022/4/19 16:26, Miquel Raynal wrote:
->>>>> [ EXTERNAL EMAIL ]
->>>>>
->>>>> Hello,
->>>>>
->>>>> liang.yang@amlogic.com wrote on Mon, 18 Apr 2022 11:40:10 +0800:
->>>>>     >>>> Hi Miquel,
->>>>>>
->>>>>> i have some confusion when i prepare the patches. for DT compatibility, it falls back to the old DT when failed to get resource by the new DT, but there is some points:
->>>>>> a. old DT depends on MMC sub clock driver, but it never be merged, so it can't work.
->>>>>
->>>>> I don't get what you mean here, sorry. I believe there is a new way to
->>>>> describe this clock but grabbing the one from the MMC still works, does
->>>>> not it?
->>>>>     >>
->>>> No, it doesn't. after the NFC driver using the MMC sub clock framework was merged into the mainline of kernel, we didn't continue to submit the series of patches about MMC sub clock after v9. when i found that, we made a discussion to decide whether to recover the series of patches about MMC sub clock framework, finally, see the description from cover letter, we plan to abandon it and adopt the new clock scheme in this series of patches.
->>>
->>> I am not sure to follow. Is the current code completely broken? I
->>> believe it is not, so I don't understand your issue.
->>
->> i think only the code about the clock is completely broken.
->>
->>>
->>> Can you please summarize the situation?
->>
->> Yes. the current NFC clock implementation depends on the following series of patches [https://lore.kernel.org/all/20220121074508.42168-5-liang.yang@amlogic.com], which we call "Meson MMC Sub Clock Controller Driver".
->> when i was preparing the NFC patchset at that time, we discussed how the clock should be implemented base on the special clock framework for NFC and EMMC port. then we decided to implement a driver "Meson MMC Sub Clock Controller Driver". so another people begin to prepare "Meson MMC Sub Clock Controller Driver", but submitted it by different patchset.
->> finally, now the meson NFC patchset is accepted and merged, but "Meson MMC Sub Clock Controller Driver" patchset is not. also we decide to abandon the patset "Meson MMC Sub Clock Controller Driver" and implement the new clock design in this series.
-> 
-> Ok thanks for the summary and the link with the discussion with Jerome
-> and Neil, it's informative.
-> 
-> So in the end, we are not really breaking anything here as this NAND
-> controller driver never worked in the first place? Or is it only one of
-> the two compatibles which is not working?
-
-i think no one can work now. i am preparing the newer clock framework in 
-this series.
-
-> 
-> If this never worked then please do the binding changes (in the first
-> patch of your series) and then do the necessary changes in the code. If
-> this worked with at least one of the two compatibles, then you have to
-> create dedicated helpers, one for each, in order to grab the clocks
-> differently and not break anybody.
-
-ok, i am changing the bindings and code in this series. thanks for your 
-explanation.
-
-> 
->>
->>>    
->>>>
->>>> Thanks.
->>>>   
->>>>>> b. if it falls back to the old DT, beside the regmap lookup below, it seems that we have to preserve the code of the old clock setting in nfc_clk_init().
->>>>>
->>>>> Yes, probably.
->>>>>     >>>> do we still need to avoid break DT compatibility?
->>>>>
->>>>> We should try our best to avoid breaking the DT, yes.
->>>>>     >>>>
->>>>>> Thanks.
->>>>>>
->>>>>> On 2022/4/11 10:40, Liang Yang wrote:
->>>>>>>>>          nfc->dev = dev;
->>>>>>>>> -    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>>>>>>> -    nfc->reg_base = devm_ioremap_resource(dev, res);
->>>>>>>>> +    nfc->reg_base = devm_platform_ioremap_resource_byname(pdev, "nfc");
->>>>>>>>
->>>>>>>> This change seems unrelated.
->>>>>>>
->>>>>>> To be consistent with the following > devm_platform_ioremap_resource_byname(pdev, "emmc"). do you mean that we > don't need it?>
->>>>>>>>>          if (IS_ERR(nfc->reg_base))
->>>>>>>>>              return PTR_ERR(nfc->reg_base);
->>>>>>>>> -    nfc->reg_clk =
->>>>>>>>> -        syscon_regmap_lookup_by_phandle(dev->of_node,
->>>>>>>>> -                        "amlogic,mmc-syscon");
->>>>>>>>> -    if (IS_ERR(nfc->reg_clk)) {
->>>>>>>>> -        dev_err(dev, "Failed to lookup clock base\n");
->>>>>>>>> -        return PTR_ERR(nfc->reg_clk);
->>>>>>>>> -    }
->>>>>>>>> +    nfc->sd_emmc_clock = devm_platform_ioremap_resource_byname(pdev, >>> "emmc");
->>>>>>>>> +    if (IS_ERR(nfc->sd_emmc_clock))
->>>>>>>>> +        return PTR_ERR(nfc->sd_emmc_clock);
->>>>>>>>
->>>>>>>> While I agree this is much better than the previous solution, we cannot
->>>>>>>> break DT compatibility, so you need to try getting the emmc clock, but
->>>>>>>> if it fails you should fallback to the regmap lookup.
->>>>>>>
->>>>>>> ok, i will fix it next version. thanks.
->>>>>>>      >>>>   >>>>>        irq = platform_get_irq(pdev, 0);
->>>>>
->>>>>
->>>>> Thanks,
->>>>> Miquèl
->>>>>
->>>>> .
->>>
->>>
->>> Thanks,
->>> Miquèl
->>>
->>> .
-> 
-> 
-> Thanks,
-> Miquèl
-> 
-> .
+ClRoYW5rcyBmb3IgdGhlIHN1Z2dlc3Rpb24uCkF0IDIwMjItMDQtMjAgMTU6MTY6MDYsICJKb2hh
+biBIb3ZvbGQiIDxqb2hhbkBrZXJuZWwub3JnPiB3cm90ZToKPk9uIFRodSwgQXByIDE0LCAyMDIy
+IGF0IDAzOjQ0OjM0UE0gKzA4MDAsIFNsYXJrIFhpYW8gd3JvdGU6Cj4+IEFkZGluZyBzdXBwb3J0
+IGZvciBDaW50ZXJpb24gZGV2aWNlIE1WMzItV0EvTVYzMi1XQi4KPgo+Tml0OiBQbGVhc2UgdXNl
+IGltcGVyYXRpdmUgbW9vZCBpbiB5b3VyIGNvbW1pdCBtZXNzYWdlIChlLmcuIHVzZSAiYWRkIgo+
+aW5zdGVhZCBvZiAiYWRkaW5nIikuCkdvdCBpdC4gQWN0dWFsbHkgSSBqdXN0IHdhbnQgdG8gYWxp
+Z24gaXQgd2l0aCBwcmV2aW91cyBNVjMxLVcgY29tbWl0LgpJIHdpbGwgbm90aWNlIHRoaXMgaW4g
+bmV4dCB0aW1lLgpUaGFua3MhCj4KPj4gTVYzMi1XQSBQSUQgaXMgMHgwMEYxLCBhbmQgTVYzMi1X
+QiBQSUQgaXMgMHgwMEYyLgo+PiAKPj4gVGVzdCBldmlkZW5jZSBhcyBiZWxvdzoKPj4gVDogIEJ1
+cz0wNCBMZXY9MDEgUHJudD0wMSBQb3J0PTAxIENudD0wMSBEZXYjPSAgNCBTcGQ9NTAwMCBNeENo
+PSAwCj4+IEQ6ICBWZXI9IDMuMjAgQ2xzPWVmKG1pc2MgKSBTdWI9MDIgUHJvdD0wMSBNeFBTPSA5
+ICNDZmdzPSAgMQo+PiBQOiAgVmVuZG9yPTFlMmQgUHJvZElEPTAwZjEgUmV2PTA1LjA0Cj4+IFM6
+ICBNYW51ZmFjdHVyZXI9Q2ludGVyaW9uCj4+IFM6ICBQcm9kdWN0PUNpbnRlcmlvbiBQSUQgMHgw
+MEYxIFVTQiBNb2JpbGUgQnJvYWRiYW5kCj4+IFM6ICBTZXJpYWxOdW1iZXI9NzhhZGE4YzQKPj4g
+QzogICNJZnM9IDYgQ2ZnIz0gMSBBdHI9YTAgTXhQd3I9ODk2bUEKPj4gSTogIElmIz0weDAgQWx0
+PSAwICNFUHM9IDEgQ2xzPTAyKGNvbW1jKSBTdWI9MGUgUHJvdD0wMCBEcml2ZXI9Y2RjX21iaW0K
+Pj4gSTogIElmIz0weDEgQWx0PSAxICNFUHM9IDIgQ2xzPTBhKGRhdGEgKSBTdWI9MDAgUHJvdD0w
+MiBEcml2ZXI9Y2RjX21iaW0KPj4gSTogIElmIz0weDIgQWx0PSAwICNFUHM9IDMgQ2xzPWZmKHZl
+bmQuKSBTdWI9ZmYgUHJvdD00MCBEcml2ZXI9b3B0aW9uCj4+IEk6ICBJZiM9MHgzIEFsdD0gMCAj
+RVBzPSAxIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9ZmYgRHJpdmVyPShub25lKQo+PiBJOiAg
+SWYjPTB4NCBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTYwIERyaXZl
+cj1vcHRpb24KPj4gSTogIElmIz0weDUgQWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9
+ZmYgUHJvdD0zMCBEcml2ZXI9b3B0aW9uCj4+IAo+PiBUOiAgQnVzPTA0IExldj0wMSBQcm50PTAx
+IFBvcnQ9MDEgQ250PTAxIERldiM9ICAzIFNwZD01MDAwIE14Q2g9IDAKPj4gRDogIFZlcj0gMy4y
+MCBDbHM9ZWYobWlzYyApIFN1Yj0wMiBQcm90PTAxIE14UFM9IDkgI0NmZ3M9ICAxCj4+IFA6ICBW
+ZW5kb3I9MWUyZCBQcm9kSUQ9MDBmMiBSZXY9MDUuMDQKPj4gUzogIE1hbnVmYWN0dXJlcj1DaW50
+ZXJpb24KPj4gUzogIFByb2R1Y3Q9Q2ludGVyaW9uIFBJRCAweDAwRjIgVVNCIE1vYmlsZSBCcm9h
+ZGJhbmQKPj4gUzogIFNlcmlhbE51bWJlcj1jZGQwNmE3OAo+PiBDOiAgI0lmcz0gNiBDZmcjPSAx
+IEF0cj1hMCBNeFB3cj04OTZtQQo+PiBJOiAgSWYjPTB4MCBBbHQ9IDAgI0VQcz0gMSBDbHM9MDIo
+Y29tbWMpIFN1Yj0wZSBQcm90PTAwIERyaXZlcj1jZGNfbWJpbQo+PiBJOiAgSWYjPTB4MSBBbHQ9
+IDEgI0VQcz0gMiBDbHM9MGEoZGF0YSApIFN1Yj0wMCBQcm90PTAyIERyaXZlcj1jZGNfbWJpbQo+
+PiBJOiAgSWYjPTB4MiBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTQw
+IERyaXZlcj1vcHRpb24KPj4gSTogIElmIz0weDMgQWx0PSAwICNFUHM9IDEgQ2xzPWZmKHZlbmQu
+KSBTdWI9ZmYgUHJvdD1mZiBEcml2ZXI9KG5vbmUpCj4+IEk6ICBJZiM9MHg0IEFsdD0gMCAjRVBz
+PSAzIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9NjAgRHJpdmVyPW9wdGlvbgo+PiBJOiAgSWYj
+PTB4NSBBbHQ9IDAgI0VQcz0gMiBDbHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PTMwIERyaXZlcj1v
+cHRpb24KPj4gCj4+IEludGVyZmFjZSAwJjE6IE1CSU0sIDI6TW9kZW0sIDM6IEdOU1MsIDQ6IE5N
+RUEsIDU6IERpYWcKPj4gR05TUyBwb3J0IGRvbid0IHVzZSBzZXJpYWwgZHJpdmVyLgo+PiAKPj4g
+U2lnbmVkLW9mZi1ieTogU2xhcmsgWGlhbyA8c2xhcmtfeGlhb0AxNjMuY29tPgo+PiAtLS0KPj4g
+IGRyaXZlcnMvdXNiL3NlcmlhbC9vcHRpb24uYyB8IDcgKysrKysrLQo+PiAgMSBmaWxlIGNoYW5n
+ZWQsIDYgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+PiAKPj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvdXNiL3NlcmlhbC9vcHRpb24uYyBiL2RyaXZlcnMvdXNiL3NlcmlhbC9vcHRpb24uYwo+
+PiBpbmRleCBlNzc1NWQ5Y2ZjNjEuLmQ5NDczNTc4ODFjMyAxMDA2NDQKPj4gLS0tIGEvZHJpdmVy
+cy91c2Ivc2VyaWFsL29wdGlvbi5jCj4+ICsrKyBiL2RyaXZlcnMvdXNiL3NlcmlhbC9vcHRpb24u
+Ywo+PiBAQCAtNDMyLDcgKzQzMiw4IEBAIHN0YXRpYyB2b2lkIG9wdGlvbl9pbnN0YXRfY2FsbGJh
+Y2soc3RydWN0IHVyYiAqdXJiKTsKPj4gICNkZWZpbmUgQ0lOVEVSSU9OX1BST0RVQ1RfQ0xTOAkJ
+CTB4MDBiMAo+PiAgI2RlZmluZSBDSU5URVJJT05fUFJPRFVDVF9NVjMxX01CSU0JCTB4MDBiMwo+
+PiAgI2RlZmluZSBDSU5URVJJT05fUFJPRFVDVF9NVjMxX1JNTkVUCQkweDAwYjcKPj4gLQo+Cj5X
+aHkgcmVtb3ZlIHRoZSBzZWN0aW9uIHNlcGFyYXRpbmcgbmV3bGluZT8KU29ycnkgZm9yIHRoaXMg
+bWlzdGFrZS4KPgo+PiArI2RlZmluZSBDSU5URVJJT05fUFJPRFVDVF9NVjMyX1dBCQkweDAwZjEK
+Pj4gKyNkZWZpbmUgQ0lOVEVSSU9OX1BST0RVQ1RfTVYzMl9XQgkJMHgwMGYyCj4+ICAvKiBPbGl2
+ZXR0aSBwcm9kdWN0cyAqLwo+PiAgI2RlZmluZSBPTElWRVRUSV9WRU5ET1JfSUQJCQkweDBiM2MK
+Pj4gICNkZWZpbmUgT0xJVkVUVElfUFJPRFVDVF9PTElDQVJEMTAwCQkweGMwMDAKPj4gQEAgLTE5
+NjksNiArMTk3MCwxMCBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHVzYl9kZXZpY2VfaWQgb3B0aW9u
+X2lkc1tdID0gewo+PiAgCSAgLmRyaXZlcl9pbmZvID0gUlNWRCgzKX0sCj4+ICAJeyBVU0JfREVW
+SUNFX0lOVEVSRkFDRV9DTEFTUyhDSU5URVJJT05fVkVORE9SX0lELCBDSU5URVJJT05fUFJPRFVD
+VF9NVjMxX1JNTkVULCAweGZmKSwKPj4gIAkgIC5kcml2ZXJfaW5mbyA9IFJTVkQoMCl9LAo+PiAr
+CXsgVVNCX0RFVklDRV9JTlRFUkZBQ0VfQ0xBU1MoQ0lOVEVSSU9OX1ZFTkRPUl9JRCwgQ0lOVEVS
+SU9OX1BST0RVQ1RfTVYzMl9XQSwgMHhmZiksCj4+ICsJICAuZHJpdmVyX2luZm8gPSBSU1ZEKDMp
+fSwKPj4gKwl7IFVTQl9ERVZJQ0VfSU5URVJGQUNFX0NMQVNTKENJTlRFUklPTl9WRU5ET1JfSUQs
+IENJTlRFUklPTl9QUk9EVUNUX01WMzJfV0IsIDB4ZmYpLAo+PiArCSAgLmRyaXZlcl9pbmZvID0g
+UlNWRCgzKX0sCj4+ICAJeyBVU0JfREVWSUNFKE9MSVZFVFRJX1ZFTkRPUl9JRCwgT0xJVkVUVElf
+UFJPRFVDVF9PTElDQVJEMTAwKSwKPj4gIAkgIC5kcml2ZXJfaW5mbyA9IFJTVkQoNCkgfSwKPj4g
+IAl7IFVTQl9ERVZJQ0UoT0xJVkVUVElfVkVORE9SX0lELCBPTElWRVRUSV9QUk9EVUNUX09MSUNB
+UkQxMjApLAo+Cj5Mb29rcyBnb29kIG90aGVyd2lzZS4gSSd2ZSBmaXhlZCB1cCB0aGUgaXNzdWVz
+IHBvaW50ZWQgb3V0IGFib3ZlLCBidXQKPnBsZWFzZSBrZWVwIGl0IGluIG1pbmQgZm9yIG5leHQg
+dGltZS4KPgo+Sm9oYW4K
