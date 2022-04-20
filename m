@@ -2,206 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3150C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379050AbiDTN2p (ORCPT
+        id S1379056AbiDTN2w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:28:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        Wed, 20 Apr 2022 09:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379032AbiDTN2g (ORCPT
+        with ESMTP id S1379021AbiDTN2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:28:36 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E174F11A36;
+        Wed, 20 Apr 2022 09:28:37 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412DC3A5D8;
+        Wed, 20 Apr 2022 06:25:51 -0700 (PDT)
+Received: from mail-wm1-f46.google.com ([209.85.128.46]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MMFdY-1nRI9D2Fs6-00JKba; Wed, 20 Apr 2022 15:25:49 +0200
+Received: by mail-wm1-f46.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso3707201wma.0;
         Wed, 20 Apr 2022 06:25:49 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id bg9so1604742pgb.9;
-        Wed, 20 Apr 2022 06:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6LkvNab/6tjOJLVxEQOpqPQJoB0oTUl274FVeJL6vXA=;
-        b=DorGCDAlIME225NVrrVUdFe8hl/FJoxit0vf/SUZTlVJQ096P6UpSwyZwsw/dTyUEa
-         Uo038b/+rHeHFZlhzABlPJr0+jFGm+lW8E5YRG4JwKl9B7bDk3sirniuZY0gjnJqbRh4
-         emAKGdruA57bwR+VWQRwcZ7GpI1x6eU93GoAdZRK6YFApFIxhQ1YLobYbz0iafOdxJcp
-         hKU0kbGSE4dZL4EEt8FaL1/Orgk1xMe3JUV9IdvghTAY7B98GNtr0b3EFaBAQ1ot4F5F
-         8S++ZnqFOFyulmaGa9t8sm6xp6NUzz1WNo0wwMF/VJu6lV0aqRwrTcWeSrvcCgGpOdBR
-         NUQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6LkvNab/6tjOJLVxEQOpqPQJoB0oTUl274FVeJL6vXA=;
-        b=cFABkfaVNs3zXY8NLa3d4/JBFQFV+RuncnDF8OSdkL6+ivLuXN/vVtRpTKVOo0V8mM
-         LPQRWV2G4G3QktXtRYWTr/xF1PreIJN2Ovek6FshdF9q3K8XFa4poMtey+w6T7dgwDhN
-         cNS1TKS7Jy93ddXnh98eCHt/NHOdLmCyoUzWN5BTc7vuPHqig3kmI1iWZUAWI2tHhFK2
-         kTiTow5U2Qmrws0H5YuaN0vkDH3C/2tKCSV517hx4fpCaZbq0twruixURC7l9nQ0yH6+
-         Q+VTOXQ443LWcvA08DhV4Fxq8C/8lCroWct5OlrOi9Fzuz+jP0EWr1l4ZzCs7D9aAcZj
-         l55Q==
-X-Gm-Message-State: AOAM532lMqRdb2W9793fSrJl/aOh7xVAs/Mqdnc6a8+NtCqyHXQ4S8mX
-        C46sNBfh0iguOKorL2NH/MjhOSUNh9A=
-X-Google-Smtp-Source: ABdhPJxH753vNUNaiRfbkVu9zw8nveSjuhbUIU8CFyc/KgFf6Qzj99r6dwCkttJRsoKDV0SGKwswiQ==
-X-Received: by 2002:a62:5343:0:b0:4f7:baad:5c22 with SMTP id h64-20020a625343000000b004f7baad5c22mr23214956pfb.30.1650461149233;
-        Wed, 20 Apr 2022 06:25:49 -0700 (PDT)
-Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id d8-20020a636808000000b00398e9c7049bsm19899161pgc.31.2022.04.20.06.25.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Apr 2022 06:25:49 -0700 (PDT)
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH 5/7] KVM: X86/MMU: Remove the check of the return value of to_shadow_page()
-Date:   Wed, 20 Apr 2022 21:26:03 +0800
-Message-Id: <20220420132605.3813-6-jiangshanlai@gmail.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20220420132605.3813-1-jiangshanlai@gmail.com>
-References: <20220420132605.3813-1-jiangshanlai@gmail.com>
+X-Gm-Message-State: AOAM533Ruzzhq3AJnT/ApE5/MdAhSW3ZXbnGtnby3NKLfiyYe6w5d3f+
+        57jVaS0GWfE6nujzi1m53KI5P/uSFE7Jda3XKrI=
+X-Google-Smtp-Source: ABdhPJwiG3EyuSNpaHqra2dahTK/JnvqbUz+C9/o2SqI7KlR071QCZmOW+DAbeiKB7yYo6yDeDE/gbVIPvIMFUY5Nvg=
+X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id
+ s25-20020a1cf219000000b0038c782c03bbmr3668880wmc.94.1650461149002; Wed, 20
+ Apr 2022 06:25:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220420115512.175917-1-krzysztof.kozlowski@linaro.org>
+ <CAK8P3a0uH5KjaobrqUmJQnvMmjkUaR1iC-7jEPjZFjZF1Z-GfQ@mail.gmail.com> <0c0b53c3-294a-b1ac-487a-ca96266c4bb7@linaro.org>
+In-Reply-To: <0c0b53c3-294a-b1ac-487a-ca96266c4bb7@linaro.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 20 Apr 2022 15:25:32 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2uuFMVcsR9c+J28ZsA1cC9+FJCnFy5Lnq6uUY=nPoTEQ@mail.gmail.com>
+Message-ID: <CAK8P3a2uuFMVcsR9c+J28ZsA1cC9+FJCnFy5Lnq6uUY=nPoTEQ@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: samsung: fix missing GPIOLIB on ARM64 Exynos config
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        "# 3.4.x" <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:kbYlLd+2VeG+VWzjp2K6Ui5Pwogjevu9don8FxO2FstBnYgOmnb
+ LOavINgChxrc7d/yNCNs3yYy+Z4YBCrOM4OU+St7NMVCZ22FTO65Rp5CSFdfeeJuZDZgTA+
+ wR8Yv/7zq9QQ+dYn4fdSgUu0r9J0U3Uga2wpngv3mw62rFq4AnWMrqofibanPF7LmBKuMDP
+ tyyddHoxnf2MhEeiTex6A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:oOEJXlPpHLE=:0/LNQHR2Jtklkx+Q/alL+R
+ bTjXpgO+yhO5xs0fEl5t1X2v1CysRELdtgaQwna8vDG51FulKc/cMuZ6ME3zTF2hc2XCuC/gL
+ iPEMotvBDdQmQX8EV+II6I7qvmg7BjJgrX1rApPooRigWQaAWHCG+QQIjfpOU0044gCXD87WH
+ 2kkwyHVpSUfdJu5kg0oZANkeS31KLhQsxLDq3cowdxPnY1S0vgTR9P1MjNBcv+J0gktnD8w9T
+ ElkDgyey6/5pCPudRFsqoBAQQ60miirEliEmSI48ZGcxDuRQo24cibQwo4EW6LBcGxzRT05Ka
+ da/jM6oiXrIWOHjX/97w+XGs4pkiMKEs/19M9yuKlEi2YdNZY4PKShzblUNCkXvTNUqDWeOPl
+ RUSs9YiYx1KID8bx0NiDOn4vS90gQbnf0eU6SS3ppPP3YbF36rSECuatiYv2gZxc5/a8KxITf
+ shENMZuBk/242pATS8zcTXa01DmnBLL2mDucwl2OZfWwLsMwMeuTJoRYT2iJj9iq56gPbb/QH
+ K4pzegIECuI/dLXfcY95iwGNNBEuQz5PKkVYrQz1Ct5wh0SNmzMcOfKnI1Fp2HKB7v3iJopVR
+ v29NKvylAR3araV1BNou5bHtgixNg/dPJFRWsBF4pLTV5emsNck+y37wPPmI0npP1Hbr+pgy6
+ DRVHu69fYU+MhdIJplOmC+06L1RFktrLc1iwk6kDTqTUWfhBHbPft2FoK9MSfkzWW754=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+On Wed, Apr 20, 2022 at 2:13 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> On 20/04/2022 14:10, Arnd Bergmann wrote:
+> > On Wed, Apr 20, 2022 at 1:55 PM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> The Samsung pinctrl drivers depend on OF_GPIO, which is part of GPIOLIB.
+> >> ARMv7 Exynos platform selects GPIOLIB and Samsung pinctrl drivers. ARMv8
+> >> Exynos selects only the latter leading to possible wrong configuration
+> >> on ARMv8 build:
+> >>
+> >>   WARNING: unmet direct dependencies detected for PINCTRL_EXYNOS
+> >>     Depends on [n]: PINCTRL [=y] && OF_GPIO [=n] && (ARCH_EXYNOS [=y] || ARCH_S5PV210 || COMPILE_TEST [=y])
+> >>     Selected by [y]:
+> >>     - ARCH_EXYNOS [=y]
+> >>
+> >>  config PINCTRL_EXYNOS
+> >>         bool "Pinctrl common driver part for Samsung Exynos SoCs"
+> >> -       depends on OF_GPIO
+> >>         depends on ARCH_EXYNOS || ARCH_S5PV210 || COMPILE_TEST
+> >>         select PINCTRL_SAMSUNG
+> >>         select PINCTRL_EXYNOS_ARM if ARM && (ARCH_EXYNOS || ARCH_S5PV210)
+> >
+> >
+> > The problem here is that PINCTRL_EXYNOS and the others can be built for
+> > compile-testing without CONFIG_OF on non-arm machines.
+> >
+> > I think the correct dependency line would be
+> >
+> >       depends on ARCH_EXYNOS || ARCH_S5PV210 || (COMPILE_TEST && OF)
+> >
+> > which guarantees that OF_GPIO is also enabled.
+>
+> I don't think OF is the problem here, because the error is in missing
+> GPIOLIB.
 
-Remove the check of the return value of to_shadow_page() in
-mmu_free_root_page(), kvm_mmu_free_guest_mode_roots(), is_unsync_root()
-and is_tdp_mmu() because it can not return NULL.
+You are correct that the added dependency is not the solution for the
+original problem. What I meant is that by dropping the dependency on
+OF_GPIO, you create a new problem for compile-testing without
+CONFIG_OF. Adding back the OF dependency avoids the regression.
 
-Remove the check of the return value of to_shadow_page() in
-is_page_fault_stale() and is_obsolete_root() because it can not return
-NULL and the obsoleting for special shadow page is already handled by
-a different way.
+> The platform selects Samsung pinctrl but it does not select
+> GPIOLIB. Possible fixes are:
+> 1. Do not select Samsung pinctrl from the platform (but have some
+> default), so on compile test build it might not work.
+> 2. Select GPIOLIB from the platform (ARMv7 Exynos does it).
+> 3. Select GPIOLIB from here - this is current proposal.
 
-When the obsoleting process is done, all the obsoleted shadow pages are
-already unlinked from the special pages by the help of the rmap of the
-children and the special pages become theoretically valid again.  The
-special shadow page can be freed if is_obsolete_sp() return true, or be
-reused if is_obsolete_sp() return false.
+Agreed, either 2. or 3. is fine, as long as you keep the CONFIG_OF
+dependency.
 
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
----
- arch/x86/kvm/mmu/mmu.c     | 44 +++-----------------------------------
- arch/x86/kvm/mmu/tdp_mmu.h |  7 +-----
- 2 files changed, 4 insertions(+), 47 deletions(-)
-
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 3b34a6912081..72a1af35e331 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3278,8 +3278,6 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
- 		return;
- 
- 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
--	if (WARN_ON(!sp))
--		return;
- 
- 	if (is_tdp_mmu_page(sp))
- 		kvm_tdp_mmu_put_root(kvm, sp, false);
-@@ -3382,8 +3380,7 @@ void kvm_mmu_free_guest_mode_roots(struct kvm *kvm, struct kvm_mmu *mmu)
- 		if (!VALID_PAGE(root_hpa))
- 			continue;
- 
--		if (!to_shadow_page(root_hpa) ||
--			to_shadow_page(root_hpa)->role.guest_mode)
-+		if (to_shadow_page(root_hpa)->role.guest_mode)
- 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
- 	}
- 
-@@ -3632,13 +3629,6 @@ static bool is_unsync_root(hpa_t root)
- 	smp_rmb();
- 	sp = to_shadow_page(root);
- 
--	/*
--	 * PAE roots (somewhat arbitrarily) aren't backed by shadow pages, the
--	 * PDPTEs for a given PAE root need to be synchronized individually.
--	 */
--	if (WARN_ON_ONCE(!sp))
--		return false;
--
- 	if (sp->unsync || sp->unsync_children)
- 		return true;
- 
-@@ -3934,21 +3924,7 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
- static bool is_page_fault_stale(struct kvm_vcpu *vcpu,
- 				struct kvm_page_fault *fault, int mmu_seq)
- {
--	struct kvm_mmu_page *sp = to_shadow_page(vcpu->arch.mmu->root.hpa);
--
--	/* Special roots, e.g. pae_root, are not backed by shadow pages. */
--	if (sp && is_obsolete_sp(vcpu->kvm, sp))
--		return true;
--
--	/*
--	 * Roots without an associated shadow page are considered invalid if
--	 * there is a pending request to free obsolete roots.  The request is
--	 * only a hint that the current root _may_ be obsolete and needs to be
--	 * reloaded, e.g. if the guest frees a PGD that KVM is tracking as a
--	 * previous root, then __kvm_mmu_prepare_zap_page() signals all vCPUs
--	 * to reload even if no vCPU is actively using the root.
--	 */
--	if (!sp && kvm_test_request(KVM_REQ_MMU_FREE_OBSOLETE_ROOTS, vcpu))
-+	if (is_obsolete_sp(vcpu->kvm, to_shadow_page(vcpu->arch.mmu->root.hpa)))
- 		return true;
- 
- 	return fault->slot &&
-@@ -5099,24 +5075,10 @@ void kvm_mmu_unload(struct kvm_vcpu *vcpu)
- 
- static bool is_obsolete_root(struct kvm *kvm, hpa_t root_hpa)
- {
--	struct kvm_mmu_page *sp;
--
- 	if (!VALID_PAGE(root_hpa))
- 		return false;
- 
--	/*
--	 * When freeing obsolete roots, treat roots as obsolete if they don't
--	 * have an associated shadow page.  This does mean KVM will get false
--	 * positives and free roots that don't strictly need to be freed, but
--	 * such false positives are relatively rare:
--	 *
--	 *  (a) only PAE paging and nested NPT has roots without shadow pages
--	 *  (b) remote reloads due to a memslot update obsoletes _all_ roots
--	 *  (c) KVM doesn't track previous roots for PAE paging, and the guest
--	 *      is unlikely to zap an in-use PGD.
--	 */
--	sp = to_shadow_page(root_hpa);
--	return !sp || is_obsolete_sp(kvm, sp);
-+	return is_obsolete_sp(kvm, to_shadow_page(root_hpa));
- }
- 
- static void __kvm_mmu_free_obsolete_roots(struct kvm *kvm, struct kvm_mmu *mmu)
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
-index 5e5ef2576c81..4f70cb1b46df 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.h
-+++ b/arch/x86/kvm/mmu/tdp_mmu.h
-@@ -84,13 +84,8 @@ static inline bool is_tdp_mmu(struct kvm_mmu *mmu)
- 	if (WARN_ON(!VALID_PAGE(hpa)))
- 		return false;
- 
--	/*
--	 * A NULL shadow page is legal when shadowing a non-paging guest with
--	 * PAE paging, as the MMU will be direct with root_hpa pointing at the
--	 * pae_root page, not a shadow page.
--	 */
- 	sp = to_shadow_page(hpa);
--	return sp && is_tdp_mmu_page(sp) && sp->root_count;
-+	return is_tdp_mmu_page(sp) && sp->root_count;
- }
- #else
- static inline bool kvm_mmu_init_tdp_mmu(struct kvm *kvm) { return false; }
--- 
-2.19.1.6.gb485710b
-
+       Arnd
