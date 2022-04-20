@@ -2,211 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 836C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F2DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380311AbiDTPwU (ORCPT
+        id S1380327AbiDTPxH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
+        Wed, 20 Apr 2022 11:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380211AbiDTPwQ (ORCPT
+        with ESMTP id S1380211AbiDTPxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:52:16 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED43F40935;
-        Wed, 20 Apr 2022 08:49:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650469770; x=1682005770;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/aT/uybwZGUBqHJAa/El+PMS98PqvKBE4Ru4gZtuJEU=;
-  b=GExNJ8skvIFFdUNpazFAI3vU28MWNL9PCFq3pTMqD5SRILw27b1FZZfx
-   SvEM2A15n6PJP6u9t9lU5bDVaKSDEyVh17XxlStEF29IH9ZdtXGvZXxgA
-   VAYx6PMEJwjrffiUyzuEJ5Wj3jnswTkTG7kvUow9e+SA+9UebvYKt2I+9
-   VUxrDfhA7PwdvSgUyWJMG8j/0zJV20WSxonPhtwY7ykculDfBxlUgysZy
-   Vrqmcs6DQakZ+VoDKz3waogA17dJSktaFV06JHiCPXUU22RmwxJwp/iSi
-   A3jvdOqBc7PXIkUEtxUcKDzJqA+Pop9Nkmdg1mbgJOULl9YALpZVLjZDJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263524837"
-X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="263524837"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:27:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="647705664"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:27:54 -0700
-Date:   Wed, 20 Apr 2022 08:27:53 -0700
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>, markgross@kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Joseph, Jithu" <jithu.joseph@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
-        Ravi V Shankar <ravi.v.shankar@intel.com>
-Subject: Re: [PATCH v3 03/11] platform/x86/intel/ifs: Create device for Intel
- IFS (In Field Scan)
-Message-ID: <YmAmebezoc8m6n2E@agluck-desk3.sc.intel.com>
-References: <20220407191347.9681-1-jithu.joseph@intel.com>
- <20220419163859.2228874-1-tony.luck@intel.com>
- <20220419163859.2228874-4-tony.luck@intel.com>
- <Yl7npfrVTPFEIivC@kroah.com>
- <CAPcyv4jzscs3Dg4QN0+XHRYdekBeqy1=dRX-mWCj1OXo8jS2vQ@mail.gmail.com>
- <Yl+66oyQhI0AkEDC@kroah.com>
+        Wed, 20 Apr 2022 11:53:05 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2044.outbound.protection.outlook.com [40.107.223.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7127533359;
+        Wed, 20 Apr 2022 08:50:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ko7z4hqRZ2PDBslnE0szOmQMy+bFSVQCxAbCbPnO4MVA+9kIVDFjwlZZ+PwsVauKd0Xdxe+9/N05QE/Y4aIgS5mvmR4khaBcVpPtwOQJX9TEEAgrzcOGjKzKaN3NvYagXwwrCvb7qf99t+cmZWLefZ3rArc/mgVUqDeN6jaxObDJQQLhemb72Y1OBci4lc60j+RGDLm1+Y5aezUuF5+v7XyEQg975NsX4kB5V4DqBIDgau06uyM9SIdIG4Rgjs1/vyrcY4BfAil+BEsf8nRHSF8M4/UxpkIalaBAoI89JF5o36RWTisKWzf/lrbgIuzrgicQNfxUn+5Ff6vgmlhk7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vERCj8v9Zj2m8Wx79KdPwqjV0jMHyaOPSvheCrJ9/bY=;
+ b=VqfpIWtgSk63QTOZTRNsBJTFi508MDUavW3j1xZVrqOz0wMTEpVoKhB51RvD1vcDfZAHwgym7bc9SCQy51jMsJILeEs/qKZh+BUJ2MDmfa3nPheBpE8KP4JXYzvo0bWZkSJMVgQb+qvmMIjeDJty1ZW8uK2zOnnK4FjphF3ebcnM2S9dOj4wwKavbkT2EWS1jrruard1x4hsP4GZnaLFL9TK588ZLwuN9ohGIBVGVa3hx9zySCvWoecJ6Tv4PT9dIAEQoebGaoo4tJUDHSnBkg+d/VB9s3gS4+XJAC49J41p5O3KLbSFlCkY2SGWpYT43xW878SKSlOL+8/nhNryKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vERCj8v9Zj2m8Wx79KdPwqjV0jMHyaOPSvheCrJ9/bY=;
+ b=gF+csGeem+0qb0317GgR9mnDIea3c0BIFvuYxqwUAswrM4B/apJSjt7XWI7Ccno/BwpnTXee3xxlkHdr4iw+YBeI2mV1zWUnawREOLCWw8cvW0gnMsU4sc5JoL8koZRiKKpvyD2t6rFyIX8Nb+zUSfCE/oP7osvSkdgtiDqx1iM=
+Received: from MW4PR03CA0062.namprd03.prod.outlook.com (2603:10b6:303:b6::7)
+ by BY5PR12MB4869.namprd12.prod.outlook.com (2603:10b6:a03:1d9::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Wed, 20 Apr
+ 2022 15:50:17 +0000
+Received: from CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b6:cafe::a3) by MW4PR03CA0062.outlook.office365.com
+ (2603:10b6:303:b6::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
+ Transport; Wed, 20 Apr 2022 15:50:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT066.mail.protection.outlook.com (10.13.175.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 15:50:16 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 20 Apr
+ 2022 10:50:13 -0500
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
+CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
+        <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
+        <terry.bowman@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH V2 0/2] KVM: SVM: Optimize AVIC incomplete IPI #vmexit handling
+Date:   Wed, 20 Apr 2022 10:49:52 -0500
+Message-ID: <20220420154954.19305-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yl+66oyQhI0AkEDC@kroah.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d945a9aa-1a22-49f5-e51d-08da22e5775b
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4869:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB4869706227CE71EA942899A9F3F59@BY5PR12MB4869.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WuDfBaq56oYOq2qac/G6tPkiAn/zBAgxUI8YcJR1Yux8SItvQpG9uxulKnsH1ZzdLeF0j7pIh1KN9WSLP042JTVtpTvPjL2o/MQrDnEbqHW+aMHWiAf0rlpwKoXCRU/PzniQ1DPhE7k6CpSiKst7VeMNGyYSQbbvv8YwY1oFeXH5OSJbU1gKeZm5O3tqjOXRc5rRjFJSudS9JuWLrCvdyrW3FMrjLtS0wKe845Ib+C5Ar/LzlKOYrVqRV7E5lNWKqW3DEtqAdApqBHyJxbFF8p4eNP3vg9NTNSzOBFsXs090eS8ZJ2PyfN/051VMSGHOH16BpZDA31QAQHhJ3SEUNzV/uAxdA07GcxdmQhgwx1+ijkT7iwAD7Vh8lNLfSDAmQmaBrYkafO1MXJbt5ScE/q8aVXCDIep81ZnUkqri4ammHQAz+BlqP6Lxp6enGdFFyOSNYxlgM6PZXk3tSu9nXiH++ngFcnfb0i+oHkYSVirpZc9tzq5VzBZup5gLINFBLRplK342+DKS87WpWBp0xvPRz+w+8OIBHJbNBYbfrXN8+zhQadJCEiVK+fOEimN1XPX+d9XcztEB+jKy/OQqV9ga+s+ypRCHvJXqEy9tDVIpKU7nF4HeKa/QkyK77Ryvndx4RQXD5lgLiGks4+cmbsQCdzYCJ2aBlzh3S+Fg0GB1U2GKd2/7jZ5qtjOp4FykuQf3RIuir94v6kAx0LD4e0S9ICTVLNHWKeHWuA/bRmXS5+hpHfAga0ShtA5XQK5VUZoELzXgLEPtdUPTvflLCX6SPzKbMLWt1JWmMcCZpbc=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(8936002)(508600001)(36860700001)(86362001)(356005)(40460700003)(110136005)(316002)(83380400001)(7696005)(336012)(47076005)(426003)(36756003)(54906003)(44832011)(70586007)(81166007)(4744005)(26005)(2906002)(70206006)(186003)(4326008)(1076003)(16526019)(5660300002)(2616005)(82310400005)(6666004)(8676002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 15:50:16.9994
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d945a9aa-1a22-49f5-e51d-08da22e5775b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4869
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 09:48:58AM +0200, Greg KH wrote:
-> Don't write code today for stuff you do not have right now, you all know
-> that.  We can always revisit it in the future.
+This series introduce a fast-path when handling AVIC incomplete IPI #vmexit
+for AVIC, and introduce a new tracepoint for the slow-path processing.
 
-Direction check on the virtual device option. Is this what
-you are asking for in "core.c"?
+Regards,
+Suravee
 
-The second test type is happening internally right away ... so I
-put in some example code of how it can be added. Upstream submission
-will just have the one test that exists today.
+Change from v1: (https://lore.kernel.org/lkml/20220414051151.77710-1-suravee.suthikulpanit@amd.com/T/)
+ * Rebased on top of Linux 5.18-rc3
+ * Patch 1/2:
+    - Update commit shortlog to be more meaningful
+    - Refactor to remove x2AVIC related logic for now, which will be included
+      in the x2AVIC patch series.
 
-Static definition of:
+Suravee Suthikulpanit (2):
+  KVM: SVM: Use target APIC ID to complete AVIC IRQs when possible
+  KVM: SVM: Introduce trace point for the slow-path of
+    avic_kic_target_vcpus
 
- static struct ifs_data ifs_data[IFS_NUMTESTS];
+ arch/x86/kvm/svm/avic.c | 74 ++++++++++++++++++++++++++++++++++++++---
+ arch/x86/kvm/trace.h    | 20 +++++++++++
+ arch/x86/kvm/x86.c      |  1 +
+ 3 files changed, 91 insertions(+), 4 deletions(-)
 
-keeps the code simpler (no need to have code to
-cleanup if dynamic allocation of this small structure
-fails). But if you feel strongly that all static allocation
-is bad, then I can kzallloc() per enumerated test type.
+-- 
+2.25.1
 
-With this change it is no longer a platform driver. So maybe
-doesn't belong in drivers/platform/x86/intel/ifs/*
-
-Any thoughts on where I should move it to?
-
--Tony
-
----- core.c ---
-
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. */
-
-#include <linux/module.h>
-#include <linux/device.h>
-#include <linux/kdev_t.h>
-#include <linux/semaphore.h>
-
-#include <asm/cpu_device_id.h>
-
-#include "ifs.h"
-
-enum test_types {
-	IFS_SAF,
-	IFS_ANOTHER,
-	IFS_NUMTESTS
-};
-
-static struct class *ifs_class;
-static struct ifs_data ifs_data[IFS_NUMTESTS];
-
-#define MSR_IA32_CORE_CAPS_INTEGRITY_BIT	2
-#define MSR_IA32_CORE_CAPS_INTEGRITY		BIT(MSR_IA32_CORE_CAPS_INTEGRITY_BIT)
-
-#define X86_MATCH(model)				\
-	X86_MATCH_VENDOR_FAM_MODEL_FEATURE(INTEL, 6,	\
-		INTEL_FAM6_##model, X86_FEATURE_CORE_CAPABILITIES, NULL)
-
-static const struct x86_cpu_id ifs_cpu_ids[] __initconst = {
-	X86_MATCH(SAPPHIRERAPIDS_X),
-	{}
-};
-MODULE_DEVICE_TABLE(x86cpu, ifs_cpu_ids);
-
-static int ifs_device_unregister(struct device *dev, void *data)
-{
-	device_unregister(dev);
-
-	return 0;
-}
-
-static int __init ifs_init(void)
-{
-	const struct x86_cpu_id *m;
-	u64 ia32_core_caps;
-	struct device *dev;
-	int ndevices = 0;
-	int ret = 0;
-
-	m = x86_match_cpu(ifs_cpu_ids);
-	if (!m)
-		return -ENODEV;
-
-	if (rdmsrl_safe(MSR_IA32_CORE_CAPS, &ia32_core_caps))
-		return -ENODEV;
-
-	ifs_class = class_create(THIS_MODULE, "intel_ifs");
-	if (IS_ERR(ifs_class))
-		return PTR_ERR(ifs_class);
-
-	ret = ifs_setup_wq();
-	if (ret)
-		goto class_cleanup;
-
-	if (ia32_core_caps & MSR_IA32_CORE_CAPS_INTEGRITY) {
-		dev = device_create_with_groups(ifs_class, NULL, MKDEV(0, 0), &ifs_data[IFS_SAF],
-					        plat_ifs_groups, "ifs%d", IFS_SAF);
-		if (dev) {
-			ndevices++;
-
-			down(&ifs_sem);
-			ifs_data[IFS_SAF].loaded = !ifs_load_firmware(dev);
-			up(&ifs_sem);
-		}
-	}
-
-	if (1) { // placeholder to test 2nd test
-		dev = device_create_with_groups(ifs_class, NULL, MKDEV(0, 0), &ifs_data[IFS_ANOTHER],
-					        plat_ifs_groups, "ifs%d", IFS_ANOTHER);
-		if (dev)
-			ndevices++;
-	}
-
-	if (ndevices)
-		goto done;
-
-	ret = -ENODEV;
-
-	class_for_each_device(ifs_class, NULL, NULL, ifs_device_unregister);
-
-class_cleanup:
-	class_destroy(ifs_class);
-done:
-	return ret;
-}
-
-static void __exit ifs_exit(void)
-{
-	class_for_each_device(ifs_class, NULL, NULL, ifs_device_unregister);
-	class_destroy(ifs_class);
-	ifs_destroy_wq();
-}
-
-module_init(ifs_init);
-module_exit(ifs_exit);
-
-MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("Intel In Field Scan (IFS) driver");
