@@ -2,153 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F5EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 00:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 00:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358576AbiDTAlN (ORCPT
+        id S1358581AbiDTAmn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 20:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        Tue, 19 Apr 2022 20:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244069AbiDTAlL (ORCPT
+        with ESMTP id S244069AbiDTAmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 20:41:11 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2071.outbound.protection.outlook.com [40.107.95.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02892B857
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 17:38:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=moigYMTV7XTcuvhRBy0MchLX0TM7LApYUR/fONLTo4yTDKqnP4D049r7c4kEqQRz3ofkL6fnASn31CYzDkDuI++9YZZo8RV0RAWeqqP1IwBcRvUdyaEYt8i3WjRH4pDSXiSJY5BhvNo7NjN6yf4sGjty8L/7pdP8gjYFWxyZpPdmIHHDzPSBYJx9EPwSOVD3ZLlCLzKjDPxRQGgKfhuwwCK0Twvez06H3v2aItGYkWqnId+Sl9AvwivaMf+ZxysrZfOodZOEH86H5XznYsCHSvkFyU4c01ZB2gz7NADHhCfYYBZa5evMGdaJmXXvAPp+AN66qM3hvig3H4E53LVJBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WdIE435lxMT7L9ln//Mj5g1NJ3jesGtXBaHjDn9Ffwc=;
- b=bkUTZ3BTk20P5T6LtL0R5KE0HmenjRH3uwMsSJooGHZvWc+DMIa2ygwsj7lxg7F+3Sp6w++O2it99xKSGPplMk6JWMpIcodsF8OaE/Fhy5bEHGljj4ah+EiP0BR3hR9U3oVEfAc5R8r73qqVFW47MPvcBQzVczORYWi9olpyFZQNCPx8YHhtfHbVVgJebgw7zOcuzbDe7DzQmRmF6OMzGpuGKEuige0P52oSviO2uS9AO7kn9SRyTuyRjYhPr+nDuzJI4Qckx27aQBsyn94T6FsMK4G5vmuntYYz97TEkRPvptpg6/4lNSEIWthJlGhiS79ZzIcHeHmAK1Niyx16FA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WdIE435lxMT7L9ln//Mj5g1NJ3jesGtXBaHjDn9Ffwc=;
- b=j8aaiMDdP26xofD0IaY4jgwBkLpZF4ovsuk2OiP6QT6iV8zfb6nwHxKiy7/Wzi6CsoJ0Fj8HQSxI26Ts9IbHyApuenpbRsYZUXEX/UoWlk+SFLL8WflDxCHcRIhoxZUMtDd2yx5xD06AIpuhwfqWzPpQFsZ5+hAjyIpn+KBNJ9pHZThr/+Q+OimaEFDa2GpAOHrYpCweGRU75ac8cvqWZ3f0cMFvR6tOSksOQ+B4fNKGgVLx/hfPRkbb4uWaq8k+ZCvywmwXKji4Ig9OQPtU8hj7iw4vwNm9pQ2eSUILg3r2dx2ScU8K8TaYR5g27sOG0+0gzF7oUlI8cSxXOjZuGw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by BYAPR12MB2887.namprd12.prod.outlook.com (2603:10b6:a03:12e::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.25; Wed, 20 Apr
- 2022 00:38:23 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::2d17:b68a:e101:4c18]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::2d17:b68a:e101:4c18%6]) with mapi id 15.20.5164.025; Wed, 20 Apr 2022
- 00:38:23 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
-        dhowells@redhat.com, neilb@suse.de, david@redhat.com,
-        surenb@google.com, minchan@kernel.org, peterx@redhat.com,
-        sfr@canb.auug.org.au, rcampbell@nvidia.com,
-        naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mm/swapfile: unuse_pte can map random data if swap
- read fails
-Date:   Wed, 20 Apr 2022 10:25:02 +1000
-References: <20220416030549.60559-1-linmiaohe@huawei.com>
- <87tuapk9n7.fsf@nvdebian.thelocal> <87r15tjy76.fsf@nvdebian.thelocal>
- <e320fb01-7d53-668e-53b5-463312ae0909@huawei.com>
-User-agent: mu4e 1.6.9; emacs 27.1
-In-reply-to: <e320fb01-7d53-668e-53b5-463312ae0909@huawei.com>
-Message-ID: <87k0bkk2rp.fsf@nvdebian.thelocal>
-Content-Type: multipart/mixed; boundary="=-=-="
-X-ClientProxiedBy: SJ0PR03CA0214.namprd03.prod.outlook.com
- (2603:10b6:a03:39f::9) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Tue, 19 Apr 2022 20:42:40 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAA011A2D
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 17:39:54 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id d9so130036vsh.10
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 17:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KT16lddZpOeYEOzxjkpuLBwqew5J7d3LxwdLjYYWCDQ=;
+        b=sctCgxK1K3o1FcCO7rvQr3ADGC+2y/q5zKIjHhpp8W+eXKQaq+DYjntlCpz7UR9H81
+         Tv5YrcqPtfHJzmdKz9P80FH3XA7nIEBfI2SwjV9PwgwTIyvcDxCDY/ahHe4b9Y29ubQS
+         ZZuUKsJTeqbluvdFLtz6CwI3+FWQY4RjkNiEQhQrJtX5EFCjClPp+ZSEkCiY6TejT/m/
+         2n+FES1CNoeKXkI9nvvM9uUg3IBqLEA2B/SjcEQ/TTR6KJM4SXYQXXBaJN8W8BDSXgZX
+         rUmsCxlXsk1u1leLF4gcOGUcacKgrve+KnL4WN1a7FtjdIBjU8L11UzWS8weJnlr8/qd
+         63gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KT16lddZpOeYEOzxjkpuLBwqew5J7d3LxwdLjYYWCDQ=;
+        b=VuIGD/nTsNHigM/7yp8XaYjlAtn2NEznpLnYdM5JaZ4snC23b3u/a/e3rAK/TdfKTi
+         dyXyiewlECPWxkklmpMErA8FG8EZ+C7fwb34RLF6cMrpbZhN4ZPLBRiHi0R3OFPpGBK5
+         NDz6yW3AnH+luclczrqTv+LjYu6uULkqSlgj0vPaLBJBbbKHwNCeF66otp/44FVgFMI0
+         Zzt7Xse2MUpvFI/dubiU9cyRx4Xr1MYjJjTRhL7ls7jqctzOJ23sLFs2b1b/ER0AQbxO
+         LsVCHzE1sRuU1nPoJdpDDYdIC6wdo9Irkv7eWCzlWPghH/MhHi/9f94TiDyVn1g9iNym
+         hjmw==
+X-Gm-Message-State: AOAM531iNOgRkMi4rxvkKUFw91JYo6NCsmWS5Gj3l3/MmT4+bPnbcncX
+        kQGIeU5HW9JJHboduJ2AH/lChpz6SuFZZxn55+iD1g==
+X-Google-Smtp-Source: ABdhPJxtK3l4fn9+QFdiu0rNZ2xlRrzY2+o6YQzD7NeHRc8+S6Z7hXRtCYNygpfogrJcYbf8Hrjskc6cyluLwGUtJnM=
+X-Received: by 2002:a05:6102:5113:b0:32a:76b1:e1bc with SMTP id
+ bm19-20020a056102511300b0032a76b1e1bcmr622157vsb.41.1650415193573; Tue, 19
+ Apr 2022 17:39:53 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9967e30f-0404-416f-ec89-08da2266131e
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2887:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB2887CC1FCF3D1801E54F71DADFF59@BYAPR12MB2887.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cTZr09+ubVlfW4bkJ2Ep/zoMPstEgqfd0Ne4HgizbZzdphNCVCjzc1e77mlcF1kBLClze1CpFgvT3DsvG1gmjGeucgd7l3cRJSnDlsNMYUu4+0fftpTtrIzkEt1enjVi18cThB02g6OpqCiUVKGChZZn9GIfBcCj1kem224bAJQdJQVyOhXM1OwJa8Z5Z495zlg+M0EPtPSZU0QOC9e09XKlq8sjc8HG6dv03qCQZAQbtQI8GsDzDtfQ8EBeLYlo+erZ8W0IVXaFOgtGo7X7qODipc/80d/ihE54cG4grAb6JqJKuBuuHwHEhLvyFZQXj/Z0mFeMhxmoNazPZTCkWmSim6/OGIJLbGSUqgHr0GUGokjdhQeq0+JVvJtcQasCdKX27P+6n/qsyflPNMqyilxAA0vBZgs/vSlhlhVc/osYoL8amya8sd0Pw8Gcy2f8UJ+9ZYVz+B6xjUG7EYCTIx7ENy+/61nmgQfAwNbIX84zhYMWkZIxdYiS50f7hhRGIORRsn7pXJE6YkgP85Q8wsZ4U9C7gjDkIrjvP0ArOqJ7fHRV4BwxdpNjt4m7fr9pMYTaLmhe8F5T9qQ4XxFj3drpZ0GavZWqT3ks8LrabIRGQHJTc9yxO8D+5lR0EPvZ+abET1ULUKMVjkIjIX+WxQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(66946007)(8936002)(66556008)(38100700002)(66476007)(316002)(44144004)(6506007)(53546011)(6916009)(6666004)(5660300002)(7416002)(508600001)(186003)(26005)(8676002)(83380400001)(2906002)(9686003)(6512007)(86362001)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hRSk61Y9NJ+IdJV3RS4cz3ND/OZXvuM1MBd3g3hpM419JSE0aEP8h8bt3GH3?=
- =?us-ascii?Q?4q9wv421tvladVZ/P6SwixFSFpKYL1kVxj3X1cj82cN7el9Dbe/qmZhUXyzh?=
- =?us-ascii?Q?ntINEEUkPaxpv7Ig1GWn/pFwZoKc3f6eIWw6OF7II37Z4oruqU1+Kc1GhXq3?=
- =?us-ascii?Q?ZUGf609a46WITI4N9Gec5+7pVIiO0EcnSDu/YzsGmC+ScVOGoX+qt4fmOpiG?=
- =?us-ascii?Q?T06w5xtQo5067lECV3pB+VFlHaqL+ESZFXlNr013rOYj9vv4URg+tkSargNn?=
- =?us-ascii?Q?2S+S2CIdJh5//kbDPulbl8T6LzWQc5tp7KVh1ZnyanNv2AkcmWp986yHU/pR?=
- =?us-ascii?Q?SfC25z+1y07q8Y8l4FvqZoJNwrHrzLeER/90egeTvWJ/jeYY0B/9I8OrpptF?=
- =?us-ascii?Q?MCO6TAAyaR/2asL6H4BmR0WWWESqj/G5k1OlclHDII7264XPHBCWjMjcvesh?=
- =?us-ascii?Q?uXC2C7CIRo9kdQ0I77Ks4pKcTBLpGvaPmKamSoF6WuNSOnC2QT+NvnjSEWF1?=
- =?us-ascii?Q?jnsOU4kPxy60UYmRseWepd+ulo6H7S9Lr6d3dFi1OcCYbVcZKWmHNBJxIYSg?=
- =?us-ascii?Q?xJGdw4mufFvFKlMvMzrTsf5KOpYVM+rIXEbtREoHTra0efiyhZjjKt0NflLH?=
- =?us-ascii?Q?cU1erD9/gAWUjTK2wKRlPr5IhNdqT6uXTjlzT7jwTHHZgvLT8JXoVVgGnSWq?=
- =?us-ascii?Q?cEZWH2WyOgvVxalBkD4+UN67tKkryOv873FxfaGqjj9FyZJr2YK/TucVJmcR?=
- =?us-ascii?Q?k+SAVDqAUjG0eJhEHR/wPvIMIe8cW2bxNstmOC+BNsbaB4aB4nv5IPiX+ROO?=
- =?us-ascii?Q?2Sm4aRcgkmvBC8pKykRMjJCVlmf5MNS/jVvGhPpuprp89n5PI242qy+bIJ2n?=
- =?us-ascii?Q?QoWsrr5VL1Yw/dE66HH7Hkj/pHmyUaW7ScE17Am6bLLx4jZLmljIb3/+3fid?=
- =?us-ascii?Q?wsoGQz8Px4h8qwq+VRXaVdCLykzRfnWHKv4IglthP3AqJO7tPYMiN+ZK1o0r?=
- =?us-ascii?Q?T7YDcvd0x91pD/UQEO/remxbV/Bf0y1x88g+Da0CThU4fc9h7HlVPwaB5z4Z?=
- =?us-ascii?Q?tyS57lC2H2Pr3mLED26Dbu0ibtObFQWjFxpHvaJ50jKE2Nu99qVa4XTj/s+Q?=
- =?us-ascii?Q?wojct8QRTbBjgxmCVA0amm8BeTB4plRyJvZvUVmBH9DcMSptAdw3y844fHrf?=
- =?us-ascii?Q?CZ9I13dZ31gdp0u0mwuecHjQSYGCUYfbCmVMhJBwZG+KlMV2jPSfrvoa5cD5?=
- =?us-ascii?Q?xXRxZYWRlG2wZhkrGC3iDKRx7084z9XYfYpP6PB/TN+ypPMGMFpX3HRy3YtR?=
- =?us-ascii?Q?qyaYmkHzqM+oO3RPa1VVTORflmvHFKgUgdMZNVyldD+4uS2xU2K5pfSqKoLP?=
- =?us-ascii?Q?y3Ee2JK3N5yTWdNZw+OWHBmHIKpohbXCpi/PTNIVGnR5y84oVJ+ZzWjmtir/?=
- =?us-ascii?Q?YFnsQ0nvRp4HatVxDatAPdAwEdOfYeR7aKGTm5U1Et2e/UVa7y2szYcpQZ75?=
- =?us-ascii?Q?36Q9zqYDOY83N3LwazRpHxejAooPi3/bcmKOwsH2rLICTKW2kQYwmFBUby0Z?=
- =?us-ascii?Q?TDVz62LQOALL2oZRxB4r4/KafgiGBAOVsN1wbqRsB8lE/ilix6RrdlJ2MB37?=
- =?us-ascii?Q?F6/Z5jsGPkmSbIoqcFFd1okZYJabexMCzCHBr3NUoSnCyvCKuy4ZnfxX3yeV?=
- =?us-ascii?Q?gZxK16Q8/AEqjGhUJ5kL9UPgTGu7xCB1t3njidLqag1rbHTYkKl/ik9fsla1?=
- =?us-ascii?Q?7WwPXUWuAw=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9967e30f-0404-416f-ec89-08da2266131e
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 00:38:23.1492
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zqIBhIIAZrNb0ob8kglNbFg31lUCvAIFG03R/39Xbada9vbemMSSwiEvQmQNCUkZPur32LiHUHckMcqYwt+TPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2887
+References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-6-yuzhao@google.com>
+ <20220411191615.a34959bdcc25ef3f9c16a7ce@linux-foundation.org> <20220412070616.GT2731@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220412070616.GT2731@worktop.programming.kicks-ass.net>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Tue, 19 Apr 2022 18:39:17 -0600
+Message-ID: <CAOUHufbUyTL-xx1RBovfSh+CrK7mBHGOouvyQBjy1RX1f3dkzw@mail.gmail.com>
+Subject: Re: [PATCH v10 05/14] mm: multi-gen LRU: groundwork
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Stephen Rothwell <sfr@rothwell.id.au>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Disposition: inline
-
-Miaohe Lin <linmiaohe@huawei.com> writes:
-
-> On 2022/4/19 15:53, Alistair Popple wrote:
->> Also in madvise_free_pte_range() you could just remove the swap entry as it's no
->> longer needed.
->>
+On Tue, Apr 12, 2022 at 1:06 AM Peter Zijlstra <peterz@infradead.org> wrote:
 >
-> This swap entry will be removed in madvise_dontneed_single_vma().
-> And in madvise_free_pte_range(), we may need to keep it as same as
-> hwpoison entry. Or am I supposed to remove it even if hwpoison entry
-> is reused later?
-
-Why would we need to keep it for MADV_FREE though? It only works on private
-anonymous memory, and once the MADV_FREE operation has succeeded callers can
-expect they might get zero-fill pages if accessing the memory again. Therefore
-it should be safe to delete the entry. I think that applies equally to a
-hwpoison entry too - there's no reason to kill the process if it has called
-MADV_FREE on the range.
-
+> On Mon, Apr 11, 2022 at 07:16:15PM -0700, Andrew Morton wrote:
 >
-> Thanks!
+> > > +{
+> > > +   int gen;
+> > > +   unsigned long old_flags, new_flags;
+> > > +
+> > > +   do {
+> > > +           new_flags = old_flags = READ_ONCE(folio->flags);
+> > > +           if (!(new_flags & LRU_GEN_MASK))
+> > > +                   return false;
+> > > +
+> > > +           VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
+> > > +           VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
+> > > +
+> > > +           gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> > > +
+> > > +           new_flags &= ~LRU_GEN_MASK;
+> > > +           /* for shrink_page_list() */
+> > > +           if (reclaiming)
+> > > +                   new_flags &= ~(BIT(PG_referenced) | BIT(PG_reclaim));
+> > > +           else if (lru_gen_is_active(lruvec, gen))
+> > > +                   new_flags |= BIT(PG_active);
+> > > +   } while (cmpxchg(&folio->flags, old_flags, new_flags) != old_flags);
 >
->> Alistair Popple <apopple@nvidia.com> writes:
->>
->>> Miaohe Lin <linmiaohe@huawei.com> writes:
->>>
-> ...
+> Also; please use the form:
+>
+>         unsigned long new, old = READ_ONCE(folio->flags);
+>
+>         do {
+>                 new = /* something */ old;
+>         } while (!try_cmpxchg(&folio->flags, &old, new))
 
---=-=-=--
+Sweet. Thanks.
+
+A related question: if I pass new = old to try_cmpxchg(), does it know
+that and avoid an unnecessary atomic op?
