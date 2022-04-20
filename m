@@ -2,90 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E75C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A02EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378568AbiDTMeV (ORCPT
+        id S1378559AbiDTMeX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 08:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
+        Wed, 20 Apr 2022 08:34:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378556AbiDTMeQ (ORCPT
+        with ESMTP id S1378580AbiDTMeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 08:34:16 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5198E40912;
-        Wed, 20 Apr 2022 05:31:29 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id q3so2050386wrj.7;
-        Wed, 20 Apr 2022 05:31:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FgnqC9bRUlZPRTGJ0+j/kZyJEtMjStFTln7fWbmDgz4=;
-        b=mfEYirzx76v7kG+/3n79xx810Nk0iF4FjcmEpr55et8kKbA+5kPuLnQnor3t8+4WN5
-         JKWUtGNbS0EB4JlKh5F8EqFTPvmhXU2m6nQYU49r1vSStTlpToOaLP5kaq10lw5xAR/x
-         ZlA9GUST0tgLmoYghedu0mbYPyQEM79EqfkRp10rCG745FEDgFOeGzvpYXIGTxmM8HGs
-         oxVyPlTlvlpB32ez1EwZ953fz1FV5N+mUYWwm+lNTG3+HQlgZZ0eWzoGyRIyz1aVlupw
-         pWNbabDsl4Gw1407ZFz+kySGDO7BQwzEnccH6evPzWHHM2c1HuwV2ZH2mN/jqZhbl7c1
-         LKKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FgnqC9bRUlZPRTGJ0+j/kZyJEtMjStFTln7fWbmDgz4=;
-        b=rS9Ci/JVWvL4DPMCSBlGfehrVKF5crH0gZ8iTMpNDlRGa3Tp/mQl+BqxK7zi68HgwM
-         KxWtEZvNneAI/M5oIBa7ii6F+/WY3M8lA+J73gdEzb2lluWYD8y5j7kVZ9/GaIzZb8YC
-         9Xolru6qcReoWeEfPmebR+WvRkJ08uN01XJhsnK7RMjelpaiIb1vG/veIUv5Tfd/ou0H
-         DPrMr+qGIH3Z678AGrU9g3bL2n8sgwq7nDlGOs4SZijJ/wi5g7MhX1EE5OIHZwTyb8a3
-         q1QCh6XOOL8gVhaesJHybK6dOpdbXkgdz2I5IAMgOERF9r6qJ6j14vh9h222azDCtYTr
-         c+Tg==
-X-Gm-Message-State: AOAM530D15HuAiMMD2dCHS/vx1WbNyDpza9lG1ybRI/ZWMivCEAKwNXD
-        LWAMd1Ec5ZmVIOXkMfB/VoU=
-X-Google-Smtp-Source: ABdhPJzP1pkV5UtrWecTxbP1L1o82e4X/1/e6TahNaQTgZfRxAbn1HL/X7RCebkw34DpjMQwjMFTBg==
-X-Received: by 2002:adf:d1c6:0:b0:20a:b006:85ec with SMTP id b6-20020adfd1c6000000b0020ab00685ecmr2069283wrd.334.1650457887536;
-        Wed, 20 Apr 2022 05:31:27 -0700 (PDT)
-Received: from tpt440p.steeds.sam ([41.84.241.188])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm21277277wmq.35.2022.04.20.05.31.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 05:31:26 -0700 (PDT)
-From:   "Sicelo A. Mhlongo" <absicsz@gmail.com>
-To:     pali@kernel.org, sre@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Sicelo A. Mhlongo" <absicsz@gmail.com>
-Subject: [PATCH v2 0/1] power: supply: bq27xxx: expose battery data when CI=1
-Date:   Wed, 20 Apr 2022 14:30:58 +0200
-Message-Id: <20220420123059.1206443-1-absicsz@gmail.com>
-X-Mailer: git-send-email 2.35.2
+        Wed, 20 Apr 2022 08:34:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6BA41615;
+        Wed, 20 Apr 2022 05:31:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54137B81ED1;
+        Wed, 20 Apr 2022 12:31:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34703C385A1;
+        Wed, 20 Apr 2022 12:31:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650457888;
+        bh=xFBxXROoKf7u+JAvuiZg1qFNSkoOxNBQ8DLIUz0UXt0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VvD6eMwnKgud8prkIqkDyIzKkAwnMUG4UDyyfYe5GozZoG+JQD9ZC+MWEawYLhELH
+         0hs82Censkr6ZKriGuk5xCI8kZvqNjS2ShtpnewUZGs/rHnoy7JER51sXpcFOHyHJd
+         4w+zU+Ph3yxGaGChG7V0qCp4ZV33CvLWCyxvRqHGJgCMa3G6ckchns1V8GDedi7lls
+         x9z5xtoClxAUKqZt9X+vrgmAIL0TCf+Td8S1Xd/FyCAytoUxrZ4tVXTsZaH6oZw9SI
+         L7UBS0eW7oRNR9gmS8JUdYIodtOY26V6MAWwBDUsh1SnJ6sjmEgj/wBJ4T44IezRCD
+         6O7NfTrnHhCGg==
+From:   Will Deacon <will@kernel.org>
+To:     joro@8bytes.org, jgg@ziepe.ca, robin.murphy@arm.com,
+        Nicolin Chen <nicolinc@nvidia.com>, jean-philippe@linaro.org
+Cc:     catalin.marinas@arm.com, kernel-team@android.com,
+        Will Deacon <will@kernel.org>, stable@vger.kernel.org,
+        jacob.jun.pan@linux.intel.com,
+        linux-arm-kernel@lists.infradead.org, fenghua.yu@intel.com,
+        iommu@lists.linux-foundation.org, rikard.falkeborn@gmail.com,
+        linux-kernel@vger.kernel.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
+Date:   Wed, 20 Apr 2022 13:31:21 +0100
+Message-Id: <165044753398.180787.4069543281631212706.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220419210158.21320-1-nicolinc@nvidia.com>
+References: <20220419210158.21320-1-nicolinc@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We currently discard capacity information provided by the chip when the
-Capacity Inaccurate flag is set. However, in many cases, having this
-stale data is better than no information at all.
+On Tue, 19 Apr 2022 14:01:58 -0700, Nicolin Chen wrote:
+> The arm_smmu_mm_invalidate_range function is designed to be called
+> by mm core for Shared Virtual Addressing purpose between IOMMU and
+> CPU MMU. However, the ways of two subsystems defining their "end"
+> addresses are slightly different. IOMMU defines its "end" address
+> using the last address of an address range, while mm core defines
+> that using the following address of an address range:
+> 
+> [...]
 
-Even if the chip has been fully reset, the datasheet shows that capacity
-values (NAC specifically) can be seeded by using the WRTNAC facility of
-the Control and Mode registers. After seeding, CI remains set, but the
-capacity values are as accurate as the NAC value provided to WRTNAC is.
+Applied to will (for-joerg/arm-smmu/fixes), thanks!
 
-On the Nokia N900, such seed value can be obtained from rx51_battery,
-which reads battery data directly from the battery's BSI pin. This can
-be done in userspace via i2c access to the registers. With this patch,
-once seeded, capacity values are available through the driver.
+[1/1] iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
+      https://git.kernel.org/will/c/95d4782c34a6
 
-The patch was successfully tested on bq27200 on the Nokia N900.
-
-Sicelo A. Mhlongo (1):
-  power: supply: bq27xxx: expose battery data when CI=1
-
- drivers/power/supply/bq27xxx_battery.c | 59 ++++++++++++--------------
- 1 file changed, 27 insertions(+), 32 deletions(-)
-
+Cheers,
 -- 
-2.35.2
+Will
 
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
