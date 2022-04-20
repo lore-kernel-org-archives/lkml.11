@@ -2,91 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 152A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F58C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:16:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359817AbiDTLOr (ORCPT
+        id S1377902AbiDTLTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        Wed, 20 Apr 2022 07:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352623AbiDTLOn (ORCPT
+        with ESMTP id S1348105AbiDTLTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 07:14:43 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65084160F
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:11:57 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id z99so1810910ede.5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:11:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=dd68attu6wu8SnkuJQL45TqfDMtpPSRWGhXsotp4fTY=;
-        b=lEJ8p5ElATv5tyFZAbGsc745hOouC6LTxXrw9Bkb6v+j3URODF22aXFXhG0dmZOnoc
-         xcMHtdlUaMadbQ/J25dUNYqM2fNIkTQrGq8CcT/N0qdiv4dSUSdSuVtC09352RKkQndt
-         RdDPDX+kGDgldVfnXnoKtpkoZ40JA9Thp+nhrPHdiyildt36YwnDEmGxDTBGrdKH3l7G
-         bnfrN0Auidp/galrNajKjI+u5XlZXs+jbq35cvIXSJB1146d0+yXgGCSV98n67lreBnY
-         vQoHy0fQa47z+y8SEVVb+Q0v8W0OYKa7HzLbLYm4/rEFPuS6hB0JfBORr7y7NNYmy9/k
-         DD6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=dd68attu6wu8SnkuJQL45TqfDMtpPSRWGhXsotp4fTY=;
-        b=Pxux+1uELEYLV5XFMzojfIrDk2MzgRhtl/csZh9wwvxIoilFajTkhSKEmR6BBS2xbo
-         y5C5ANJMgA42GjImB1yHoTHrqykcPUSeKTTCQ68xabJMPidgLElL7xab8QmcgMcO075T
-         9nKTruqxLhv5LcGjBqBUtyY1RjwT4BcDATeX1jIw1Nl6zb8Rl1m7XEarPSo+0Um/4YTe
-         /hHTqHQp4e99YEKeFgNoXBHAhl2mGmGLweQP4MgvkgSFO8Ri+u3vJPfKqguQ3ZxYAZUe
-         3vBcpNMiU57VhOnx/QP0r5SSPJnIEX5lLkojxqtwODaz/M21ZeBJFqr7I121FG6Nd+ey
-         n+IQ==
-X-Gm-Message-State: AOAM530735QT90mlmKXN/sHSMyUBlVaHJV++ZW6xRScqKXyaRLBxC+kI
-        s2OwLmYoCyPV1x/AmyHgN7svtpqQYf7JaA==
-X-Google-Smtp-Source: ABdhPJxY1Yx1+CTh4SZOnb1fxoaQucy1q7RvAqB3GBbl9vKfDQMW6ddMc084uEsY/jIiGh/MJqYQew==
-X-Received: by 2002:a05:6402:d4c:b0:410:a415:fd95 with SMTP id ec12-20020a0564020d4c00b00410a415fd95mr22513317edb.288.1650453116311;
-        Wed, 20 Apr 2022 04:11:56 -0700 (PDT)
-Received: from [192.168.0.225] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id lo15-20020a170906fa0f00b006e8a81cb623sm6637533ejb.224.2022.04.20.04.11.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 04:11:55 -0700 (PDT)
-Message-ID: <e08a8f96-54a7-60be-0bd4-7a74fdcd627e@linaro.org>
-Date:   Wed, 20 Apr 2022 13:11:54 +0200
+        Wed, 20 Apr 2022 07:19:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E994330F75
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650453388;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=ANM8sgY2zWTjkDswoY5JYgUiViPL2M2LOo86UtXDq95w8y5XsKIzNHW114lhuH24lTx6tN
+        TYN/C48UKmpBXkSKRRSg7CvUOrA2ibLtQOCePpo/tR6vGd3PPvc3H5Pqhq8VzZf/CFv2Cj
+        wJwqNYRKJIF+d9Dj2IZz1fE5aYea3T0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-601-jKVHNw1HMJWOlZ4SBx9stw-1; Wed, 20 Apr 2022 07:16:24 -0400
+X-MC-Unique: jKVHNw1HMJWOlZ4SBx9stw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2B9A8185A7A4;
+        Wed, 20 Apr 2022 11:16:24 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5DEB6112131B;
+        Wed, 20 Apr 2022 11:16:15 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Thomas Huth <thuth@redhat.com>
+Cc:     kvm@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH] KVM: selftests: Silence compiler warning in the kvm_page_table_test
+Date:   Wed, 20 Apr 2022 07:11:09 -0400
+Message-Id: <20220420111109.1145821-1-pbonzini@redhat.com>
+In-Reply-To: <20220414103031.565037-1-thuth@redhat.com>
+References: 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: dmaengine: qcom: gpi: Add minItems for
- interrupts
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220414064235.1182195-1-vkoul@kernel.org>
- <0598d1bb-cd7c-1414-910c-ae6bedc8295d@linaro.org> <Ylf2gsJ+Ks0wz6i3@matsya>
- <9d35e76e-5d98-b2d8-a22c-293adcbaadf0@linaro.org> <Yl/iElIfHhmoOYOU@matsya>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <Yl/iElIfHhmoOYOU@matsya>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/04/2022 12:36, Vinod Koul wrote:
->> If the choice is per SoC-controller, then the best would be to limit in
->> allOf:if:then. However maybe the number of channels depends also on
->> other factor (e.g. secure world configuration)?
-> 
-> That is quite right. So we wont know how many channels are made
-> available..
-> 
-> So is min 1 acceptable or do you have an alternate ?
+Queued, thanks.
 
-minItems:1 is ok.
+Paolo
 
 
-Best regards,
-Krzysztof
