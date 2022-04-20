@@ -2,111 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C12CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3486C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 05:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359346AbiDTFUU (ORCPT
+        id S1346594AbiDTFVo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 01:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
+        Wed, 20 Apr 2022 01:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232351AbiDTFUS (ORCPT
+        with ESMTP id S231731AbiDTFVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 01:20:18 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C7D340C5;
-        Tue, 19 Apr 2022 22:17:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650431854; x=1681967854;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=l0WdwVsUeyccH1Fn1OB0E52YvfyFMuwl2zNyTg/ZU5E=;
-  b=V/5bp0QFmGwZGkTXV2kBMEYaoivOpIjqXqC/Sbg7WNMU/95Ry7QUgC2+
-   bjveMRV2YBIwHa39lvJrvN7JRvfUZkUbNPTlrIGDOE1kLrVFQY3Ix55FB
-   UUSUXmipRUkYM7XJBgFJo+KAGnKnYwrJBmHBYDJa70ZmNBdh8QLaYh1rF
-   WXOzPqCBs5n6MK2YyI4bTbjx9NtW9FOqrdn1R1G7A2yvKDGSe+H1S4jGj
-   dUstmB8KVU3PmMQl7AUD398VTgwy70O4C3YiBwUHkVO78ouGhWI/NQDxH
-   qUUOG4MzhbLvkuHVRU/U4ZDWPyQx1PdftG5yO1SA9u0+28ognSNKSaY+B
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="264113563"
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="264113563"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 22:17:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
-   d="scan'208";a="804919014"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga006.fm.intel.com with ESMTP; 19 Apr 2022 22:17:12 -0700
-Received: from linux.intel.com (ssid-ilbpg3-teeminta.png.intel.com [10.88.227.74])
-        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 5DCF85807D2;
-        Tue, 19 Apr 2022 22:17:08 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 13:15:08 +0800
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp
- checking loop
-Message-ID: <20220420051508.GA18173@linux.intel.com>
-References: <20220413040115.2351987-1-tee.min.tan@intel.com>
- <20220413125915.GA667752@hoboy.vegasvil.org>
- <20220414072934.GA10025@linux.intel.com>
- <20220414104259.0b928249@kernel.org>
- <20220419005220.GA17634@linux.intel.com>
- <20220419132853.GA19386@hoboy.vegasvil.org>
+        Wed, 20 Apr 2022 01:21:42 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9131D340E3;
+        Tue, 19 Apr 2022 22:18:57 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id e128so496130qkd.7;
+        Tue, 19 Apr 2022 22:18:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jRBAKSNTX3OPR1ejw6VcnPzpXTqvP8rwf6yGE9zvTRs=;
+        b=jnjFR1ymmSrPNyMHCu25MqxYRGsrlYdv1hzv/xd7UCQAvgKJl8vg+15+ee5LJtGZyg
+         pK8YJUj+X74FdID5/A3RaMj/3gbQjcxbVX+Cyzv+DSnQHIDnFkQA0YgOOB64kAi6zod0
+         8M5PYOlNXB8lAw+AMTavpsQxWmUVSLhqUSnDhx6aTUfPU3v5RPij8KQVJWLhuly50OWU
+         Fw+qtDSjP0bzVLiyZ8QJD7WuQG0NgJO0Y0vAYZw4wGHlXbiky0KuwLgs5hMUh0XPuDHA
+         zoadeBbrqspxVifgip76C9nhfMVfaXVUwl2H+ut1mt4qv6eYu6dgxli6m18pbS3q6+L7
+         WYIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jRBAKSNTX3OPR1ejw6VcnPzpXTqvP8rwf6yGE9zvTRs=;
+        b=ON9FkEPly8qVua1Yo1McndVtezI1HqXc7vtZGd5q0CJbNvaLZjkblup3iXYLUbROPC
+         2GBd82IiS643FM8qLVkgrqYjyHzt+gUUbUkcuwi6HiKkvGgLB359N2FVg//pjRJrza8e
+         Qm2Ly0g3u7/+IR9s18evRkgru+/lC4PsxzZyTVCEjvwEozEBtGPtgWDX5ejS9zmCSesz
+         E3wA05un2Yo/vGSjwyg5wWplAHWttIBujGFNxcj0hWqve7ZE9i3D7Q7J1/L8HgwFHJzy
+         nRkAU4s4DUxwk5pSvZTRMggDgqiivPvJu0bsym2hw/A70zf54ZWrck14Q8axaibYJztZ
+         3qxQ==
+X-Gm-Message-State: AOAM530bwNsQXDHFMgWTkr9towdMrCp67ogY2kM3wkEx4lSv9cZu8s96
+        mRMiR+XTEMVUnHhSCzKZsDpeSoOdDE5M
+X-Google-Smtp-Source: ABdhPJy+zsCfxOjoQRrsWeFxSM/HX+HUNvFFWNnnsMNhQTEA8qiEipcsnFZfAdahiNyxdqyBSiWqJQ==
+X-Received: by 2002:a05:620a:4706:b0:69e:b913:e592 with SMTP id bs6-20020a05620a470600b0069eb913e592mr5668468qkb.18.1650431936757;
+        Tue, 19 Apr 2022 22:18:56 -0700 (PDT)
+Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id d13-20020a37c40d000000b0069ebc29ddc1sm993292qki.136.2022.04.19.22.18.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 22:18:55 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 01:18:54 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, roman.gushchin@linux.dev,
+        hannes@cmpxchg.org
+Subject: Re: [PATCH 1/4] lib/printbuf: New data structure for heap-allocated
+ strings
+Message-ID: <20220420051854.qioq4nt4dejpnip6@moria.home.lan>
+References: <20220419203202.2670193-1-kent.overstreet@gmail.com>
+ <20220419203202.2670193-2-kent.overstreet@gmail.com>
+ <Yl+T3Mx408HiC6dS@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220419132853.GA19386@hoboy.vegasvil.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <Yl+T3Mx408HiC6dS@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 06:28:53AM -0700, Richard Cochran wrote:
-> On Tue, Apr 19, 2022 at 08:52:20AM +0800, Tan Tee Min wrote:
+On Tue, Apr 19, 2022 at 10:02:20PM -0700, Christoph Hellwig wrote:
+> On Tue, Apr 19, 2022 at 04:31:59PM -0400, Kent Overstreet wrote:
+> > This adds printbufs: simple heap-allocated strings meant for building up
+> > structured messages, for logging/procfs/sysfs and elsewhere. They've
+> > been heavily used in bcachefs for writing .to_text() functions/methods -
+> > pretty printers, which has in turn greatly improved the overall quality
+> > of error messages.
 > 
-> > I agree that the fsleep(1) (=1us) is a big hammer.
-> > Thus in order to improve this, I’ve figured out a smaller delay
-> > time that is enough for the context descriptor to be ready which
-> > is ndelay(500) (=500ns).
-> 
-> Why isn't the context descriptor ready?
-> 
-> I mean, the frame already belongs to the CPU, right?
+> How does this use case differ from that of lib/seq_buf.c?
 
-No. The context descriptor (frame) is possibly still owned by the
-DMA controller in this situation.
-This is why a looping in the original code to wait for the descriptor
-to be owned by the application CPU. However, when NAPI is busy polling,
-the context descriptor might be still owned by the DMA controller even
-after the looping.
+I hadn't come across that code before, thanks for pointing it out :)
 
-Thus, we are adding an additional nanosecond delay inside the loop,
-so that the DMA controller can get a short moment to breathe and
-complete the context descriptor.
-
-Thanks,
-Tee Min
-
-> 
-> Thanks,
-> Richard
+seq_buf.c looks exactly like an older version of printbufs, from before I added
+the auto heap allocating functionality. seq_buf.c could be dropped, I could go
+ahead and convert existing users to printbufs.
