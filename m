@@ -2,123 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65678C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D32EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351699AbiDTKam (ORCPT
+        id S1351740AbiDTKcH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        Wed, 20 Apr 2022 06:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343847AbiDTKaa (ORCPT
+        with ESMTP id S1349339AbiDTKcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:30:30 -0400
-Received: from mail-m17635.qiye.163.com (mail-m17635.qiye.163.com [59.111.176.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208443D1EF;
-        Wed, 20 Apr 2022 03:27:44 -0700 (PDT)
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m17635.qiye.163.com (Hmail) with ESMTPA id D78494005C0;
-        Wed, 20 Apr 2022 18:27:41 +0800 (CST)
-From:   Sugar Zhang <sugar.zhang@rock-chips.com>
-To:     vkoul@kernel.org
-Cc:     Sugar Zhang <sugar.zhang@rock-chips.com>,
-        Huibin Hong <huibin.hong@rock-chips.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dmaengine: pl330: Fix unbalanced runtime PM
-Date:   Wed, 20 Apr 2022 18:27:36 +0800
-Message-Id: <1650450456-34351-1-git-send-email-sugar.zhang@rock-chips.com>
-X-Mailer: git-send-email 2.7.4
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUlKS0tKN1dZLVlBSVdZDwkaFQgSH1lBWUJDTB1WGU4aT0JPSk
-        lMSB9MVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mzo6HQw5KD01PilNClYtHxUK
-        LjxPFEtVSlVKTU5LT05LT01JSExPVTMWGhIXVQgOHBoJVQETGhUcOwkUGBBWGBMSCwhVGBQWRVlX
-        WRILWUFZTkNVSUlVTFVKSk9ZV1kIAVlBSEJLQzcG
-X-HM-Tid: 0a8046837595d991kuwsd78494005c0
+        Wed, 20 Apr 2022 06:32:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7457F3F887
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:29:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650450555;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KIJu0PnDJV4/uO0UdPgu/58WGciQu1suUPJ1SFUvK60=;
+        b=SM0CWFeQRknY+2vXhIKwxZDRIEAcagCUbNhNyNGPN3vin+UWjSybQYLQlbLX0z1tv3E0Mz
+        E4r0wCSEM5GiDEDVfjJ/SF6jp9wPb+EF+DER2runUmY6dMeB/H4AdFbJcWvqP42Yl+PGDn
+        3lp/IhsoPd9ZuaRyJNtF3PvgPQcibWg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-441-5Q0XG3XRM2uJXHWtLXv0tg-1; Wed, 20 Apr 2022 06:29:12 -0400
+X-MC-Unique: 5Q0XG3XRM2uJXHWtLXv0tg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83F2338149C1;
+        Wed, 20 Apr 2022 10:29:11 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E39654022C4;
+        Wed, 20 Apr 2022 10:29:08 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20210312171232.2681989-4-mic@digikod.net>
+References: <20210312171232.2681989-4-mic@digikod.net> <20210312171232.2681989-1-mic@digikod.net>
+To:     =?us-ascii?Q?=3D=3FUTF-8=3Fq=3FMicka=3DC3=3DABl=3D20Sala=3DC3=3DBCn=3F?=
+         =?us-ascii?Q?=3D?= <mic@digikod.net>
+Cc:     dhowells@redhat.com, David Woodhouse <dwmw2@infradead.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        James Morris <jmorris@namei.org>,
+        =?us-ascii?Q?=3D=3FUTF-8=3Fq=3FMicka=3DC3=3DABl?=
+         =?us-ascii?Q?=3D20Sala=3DC3=3DBCn=3F=3D?= 
+        <mic@linux.microsoft.com>, Mimi Zohar <zohar@linux.ibm.com>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v7 3/5] certs: Make blacklist_vet_description() more strict
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 20 Apr 2022 11:29:08 +0100
+Message-ID: <648218.1650450548@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver use runtime PM autosuspend mechanism to manager clk.
+Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> wrote:
 
-  pm_runtime_use_autosuspend(&adev->dev);
-  pm_runtime_set_autosuspend_delay(&adev->dev, PL330_AUTOSUSPEND_DELAY);
+> +	/* The following algorithm only works if prefix lengths match. */
+> +	BUILD_BUG_ON(sizeof(tbs_prefix) !=3D sizeof(bin_prefix));
+> +	prefix_len =3D sizeof(tbs_prefix) - 1;
+> +	for (i =3D 0; *desc; desc++, i++) {
+> +		if (*desc =3D=3D ':') {
+> +			if (tbs_step =3D=3D prefix_len)
+> +				goto found_colon;
+> +			if (bin_step =3D=3D prefix_len)
+> +				goto found_colon;
+> +			return -EINVAL;
+> +		}
+> +		if (i >=3D prefix_len)
+> +			return -EINVAL;
+> +		if (*desc =3D=3D tbs_prefix[i])
+> +			tbs_step++;
+> +		if (*desc =3D=3D bin_prefix[i])
+> +			bin_step++;
+> +	}
 
-So, after ref count reached to zero, it will enter suspend
-after the delay time elapsed.
+I wonder if:
 
-The unbalanced PM:
+	static const char tbs_prefix[] =3D "tbs:";
+	static const char bin_prefix[] =3D "bin:";
 
-* May cause dmac the next start failed.
-* May cause dmac read unexpected state.
-* May cause dmac stall if power down happen at the middle of the transfer.
-  e.g. may lose ack from AXI bus and stall.
+	if (strncmp(desc, tbs_prefix, sizeof(tbs_prefix) - 1) =3D=3D 0 ||
+	    strncmp(desc, bin_prefix, sizeof(bin_prefix) - 1) =3D=3D 0)
+		goto found_colon;
 
-Considering the following situation:
+might be better.
 
-      DMA TERMINATE               TASKLET ROUTINE
-            |                            |
-            |                       issue_pending
-            |                            |
-            |                     pch->active = true
-            |                       pm_runtime_get
-  pm_runtime_put(if active)              |
-    pch->active = false                  |
-            |                      work_list empty
-            |                            |
-            |                     pm_runtime_put(unconditional)
-            |                            |
-
-At this point, it's unbalanced(1 get / 2 put).
-
-After this patch:
-
-      DMA TERMINATE               TASKLET ROUTINE
-            |                            |
-            |                       issue_pending
-            |                            |
-            |                     pch->active = true
-            |                       pm_runtime_get
-  pm_runtime_put(if active)              |
-    pch->active = false                  |
-            |                      work_list empty
-            |                            |
-            |                   pm_runtime_put(if active)
-            |                            |
-
-Now, it's balanced(1 get / 1 put).
-
-Fixes: 5c9e6c2b2ba3 ("dmaengine: pl330: Fix runtime PM support for terminated transfers")
-Fixes: ae43b3289186 ("ARM: 8202/1: dmaengine: pl330: Add runtime Power Management support v12")
-
-Signed-off-by: Huibin Hong <huibin.hong@rock-chips.com>
-Signed-off-by: Sugar Zhang <sugar.zhang@rock-chips.com>
-
----
-
-Changes in v2:
-- fixup commit message per Vinod suggestion.
-
- drivers/dma/pl330.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 858400e..ccd430e 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -2084,7 +2084,7 @@ static void pl330_tasklet(struct tasklet_struct *t)
- 		spin_lock(&pch->thread->dmac->lock);
- 		_stop(pch->thread);
- 		spin_unlock(&pch->thread->dmac->lock);
--		power_down = true;
-+		power_down = pch->active;
- 		pch->active = false;
- 	} else {
- 		/* Make sure the PL330 Channel thread is active */
--- 
-2.7.4
+David
 
