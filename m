@@ -2,166 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E32C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 19:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381869AbiDTTzH (ORCPT
+        id S1381880AbiDTT55 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 15:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
+        Wed, 20 Apr 2022 15:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239428AbiDTTzG (ORCPT
+        with ESMTP id S244058AbiDTT5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 15:55:06 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D913D27FEB;
-        Wed, 20 Apr 2022 12:52:18 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id g18so5661851ejc.10;
-        Wed, 20 Apr 2022 12:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=SZrgLLDQ7PgoSi/7g5Obv5jfV72dMP0nKyqFwVpsbBs=;
-        b=m5W2J6jCd0XixCAf8PenQ6GaqE1jzdwvhN3tZklypsvNiipXZ3wuxlqFPH3OVmLgxU
-         UdtPp7c6U2La8eMu87S7ADwQ2OYUjlFJ9WTZXuoxd49Yuvy4mRi/dx8sUoKPQLGxx6SR
-         GAes2X62JqgjT446TUjEnkchn1YkABqhn0W/2LZYXf5fPlWDBSZ25ozlJY9/aHwLrn3R
-         OIXNsRWqDF9mq6z62++Mxn40cJgOvNdaHsw+RU9XT3HX0pSdue/UFYH4HQ6WhFAu9ZlE
-         7wOZDx12rIlDl+Y1s7+AG2M/8TYNMKFL7KLE9BcJuDY5s7E9ILj4bX9T0jZ48m18gyy/
-         PPLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=SZrgLLDQ7PgoSi/7g5Obv5jfV72dMP0nKyqFwVpsbBs=;
-        b=RIiSkXO7kof+XLlxtHFPTuD3ZbT+yQl79svsXy49mvAe4jrjsstCL8pRWdd0NSj6Y9
-         hToljAVKywEO2KCYSpJ1HadlZPhazRmdvTG7C9psvgjHHVGEUPdCCXmIMQcqV75yohq5
-         tgiVUlsjd4Uhna0BApJ/h1QrCsiwzWmI7gl4pGScFR7k9JJjCUXLrOVcRHsFt+n73mn7
-         SnrohoTTHTVczoLgPZxGUm7Ya6Du2po//mf6Sn7aQnlBF2lo7pqpgn2hYaDwglTrvl6O
-         B4fw8AYznsd0tVUed1rEaVaJDCZyqg31CGty775Vq3FM/NLSby6gd3F/WPvpVrIWs0oI
-         iECg==
-X-Gm-Message-State: AOAM5338jb+RksDizd8WZEXUamKY8HGEfEVG3lF0KPdjLOUuljP1o4AW
-        fnx1J2Orv7winjnP7DQ92vQ=
-X-Google-Smtp-Source: ABdhPJwuwg37hWZfP+nzyVodKRQj2bvQGOzMYrc0cUeVqZjR744WW0PEf9w5IghNIi9OoCftj3065w==
-X-Received: by 2002:a17:907:6e8a:b0:6ef:76b8:3379 with SMTP id sh10-20020a1709076e8a00b006ef76b83379mr20741261ejc.457.1650484337397;
-        Wed, 20 Apr 2022 12:52:17 -0700 (PDT)
-Received: from skbuf ([188.26.185.183])
-        by smtp.gmail.com with ESMTPSA id gl2-20020a170906e0c200b006a767d52373sm7006713ejb.182.2022.04.20.12.52.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 12:52:16 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 22:52:14 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 08/12] net: dsa: rzn1-a5psw: add FDB support
-Message-ID: <20220420195214.dnekbfhha53trbke@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-9-clement.leger@bootlin.com>
- <20220414175140.p2vyy7f7yk6vlomi@skbuf>
- <20220420101648.7aa973b2@fixe.home>
+        Wed, 20 Apr 2022 15:57:54 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC97313F36;
+        Wed, 20 Apr 2022 12:55:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=Tc/4updu0oXiBoTJVCaXt56ab14DRILkwn0ElXxLw4k=; b=osP4/WJYBYQbjKitA+IgBIZBj2
+        8u2yO6Kx//0FaaIKxTzh2hJROz8PJ26zI2sWKDWaeLflVsjC1u+0PEbZVpMZPs62KmPYsg8ht3MR5
+        6F5tlAZbLsJm9IfGvxrE3zodddmyeC/QU3dEK1/qJWpwe5NeweksYIqYnxjk5emXsg2HlX+a3d+rY
+        4haCV8HrI0KI/aKZexNZi48stTTi3P1NGgH1vowRbmrQqNONqUeMj0I8YPR7RsvWkliFwg9uaV9Dj
+        i30MoeUWwfoKDWnXkAxZi382c3zF4PiHEvAIqJna6hDhzgT1xkuW3kGN2FtTtG0HsP71D5Yh/vCs4
+        EHBIfiVA==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nhGPp-00CRsE-AT; Wed, 20 Apr 2022 13:55:05 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nhGPo-00096C-Sb; Wed, 20 Apr 2022 13:55:04 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Christoph Hellwig <hch@lst.de>
+Date:   Wed, 20 Apr 2022 13:54:14 -0600
+Message-Id: <20220420195425.34911-2-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220420195425.34911-1-logang@deltatee.com>
+References: <20220420195425.34911-1-logang@deltatee.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220420101648.7aa973b2@fixe.home>
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com, hch@lst.de
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v2 01/12] md/raid5: Factor out ahead_of_reshape() function
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 10:16:48AM +0200, Clément Léger wrote:
-> Le Thu, 14 Apr 2022 20:51:40 +0300,
-> Vladimir Oltean <olteanv@gmail.com> a écrit :
-> 
-> > > +
-> > > +static int a5psw_port_fdb_add(struct dsa_switch *ds, int port,
-> > > +			      const unsigned char *addr, u16 vid,
-> > > +			      struct dsa_db db)  
-> > 
-> > This isn't something that is documented because I haven't had time to
-> > update that, but new drivers should comply to the requirements for FDB
-> > isolation (not ignore the passed "db" here) and eventually set
-> > ds->fdb_isolation = true. Doing so would allow your switch to behave
-> > correctly when
-> > - there is more than one bridge spanning its ports,
-> > - some ports are standalone and some ports are bridged
-> > - standalone ports are looped back via an external cable with bridged
-> >   ports
-> > - unrecognized upper interfaces (bond, team) are used, and those are
-> >   bridged directly with some other switch ports
-> > 
-> > The most basic thing you need to do to satisfy the requirements is to
-> > figure out what mechanism for FDB partitioning does your hardware have.
-> > If the answer is "none", then we'll have to use VLANs for that: all
-> > standalone ports to share a VLAN, each VLAN-unaware bridge to share a
-> > VLAN across all member ports, each VLAN of a VLAN-aware bridge to
-> > reserve its own VLAN. Up to a total of 32 VLANs, since I notice that's
-> > what the limit for your hardware is.
-> 
-> Ok, I see the idea. In the mean time, could we make a first step with a
-> single bridge and without VLAN support ? This is expected to come later
-> anyway.
-> 
-> > 
-> > But I see this patch set doesn't include VLAN functionality (and also
-> > ignores the "vid" from FDB entries), so I can't really say more right now.
-> > But if you could provide more information about the hardware
-> > capabilities we can discuss implementation options.
-> 
-> That's indeed the problem. The FDB table does not seems to have
-> partitionning at all (except for ports) and entries (such as seen below)
-> do not contain any VLAN information.
-> 
-> > > diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
-> > > index b34ea549e936..37aa89383e70 100644
-> > > --- a/drivers/net/dsa/rzn1_a5psw.h
-> > > +++ b/drivers/net/dsa/rzn1_a5psw.h
-> > > @@ -167,6 +167,22 @@
-> > >  #define A5PSW_CTRL_TIMEOUT		1000
-> > >  #define A5PSW_TABLE_ENTRIES		8192
-> > >  
-> > > +struct fdb_entry {  
-> > 
-> > Shouldn't this contain something along the lines of a VID, FID, something?
-> 
-> This is extracted directly from the datasheet [1]. The switch FDB table
-> does not seems to store the VID with the entries (See page 300).
-> 
-> [1]
-> https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-group-users-manual-r-engine-and-ethernet-peripherals
+There are a few uses of an ugly ternary operator in raid5_make_request()
+to check if a sector is a head of a reshape sector.
 
-Thanks for the link. I see that the switch has a non-partitionable
-lookup table, not even by VLAN. A shame.
+Factor this out into a simple helper called ahead_of_reshape().
 
-This is also in contrast with the software bridge driver, where FDB and
-MDB entries can have independent destinations per VID.
+This appears to fix the first bio_wouldblock_error() check which appears
+to have comparison operators that didn't match the check below which
+causes a schedule. Besides this, no functional changes intended.
 
-So there's nothing you can do beyond limiting to a single offloaded
-bridge and hoping for the best w.r.t. per-VLAN forwarding destinations.
+Suggested-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/raid5.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-Note that if you limit to a single bridge does not mean that you can
-declare ds->fdb_isolation = true. Declaring that would opt you into
-unicast and multicast filtering towards the CPU, i.o.w. a method for
-software to only receive the addresses it has expressed an interest in,
-rather than all packets received on standalone ports. The way that is
-implemented in DSA is by adding FDB and MDB entries on the management
-port, and it would break a lot of things without a partitioning scheme
-for the lookup table.
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index 7f7d1546b9ba..97b23c18402b 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -5787,6 +5787,15 @@ static void make_discard_request(struct mddev *mddev, struct bio *bi)
+ 	bio_endio(bi);
+ }
+ 
++static bool ahead_of_reshape(struct mddev *mddev, sector_t sector,
++			     sector_t reshape_sector)
++{
++	if (mddev->reshape_backwards)
++		return sector < reshape_sector;
++	else
++		return sector >= reshape_sector;
++}
++
+ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ {
+ 	struct r5conf *conf = mddev->private;
+@@ -5843,9 +5852,8 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ 	/* Bail out if conflicts with reshape and REQ_NOWAIT is set */
+ 	if ((bi->bi_opf & REQ_NOWAIT) &&
+ 	    (conf->reshape_progress != MaxSector) &&
+-	    (mddev->reshape_backwards
+-	    ? (logical_sector > conf->reshape_progress && logical_sector <= conf->reshape_safe)
+-	    : (logical_sector >= conf->reshape_safe && logical_sector < conf->reshape_progress))) {
++	    !ahead_of_reshape(mddev, logical_sector, conf->reshape_progress) &&
++	    ahead_of_reshape(mddev, logical_sector, conf->reshape_safe)) {
+ 		bio_wouldblock_error(bi);
+ 		if (rw == WRITE)
+ 			md_write_end(mddev);
+@@ -5874,14 +5882,12 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ 			 * to check again.
+ 			 */
+ 			spin_lock_irq(&conf->device_lock);
+-			if (mddev->reshape_backwards
+-			    ? logical_sector < conf->reshape_progress
+-			    : logical_sector >= conf->reshape_progress) {
++			if (ahead_of_reshape(mddev, logical_sector,
++					     conf->reshape_progress)) {
+ 				previous = 1;
+ 			} else {
+-				if (mddev->reshape_backwards
+-				    ? logical_sector < conf->reshape_safe
+-				    : logical_sector >= conf->reshape_safe) {
++				if (ahead_of_reshape(mddev, logical_sector,
++						     conf->reshape_safe)) {
+ 					spin_unlock_irq(&conf->device_lock);
+ 					schedule();
+ 					do_prepare = true;
+@@ -5912,9 +5918,8 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ 				 */
+ 				int must_retry = 0;
+ 				spin_lock_irq(&conf->device_lock);
+-				if (mddev->reshape_backwards
+-				    ? logical_sector >= conf->reshape_progress
+-				    : logical_sector < conf->reshape_progress)
++				if (!ahead_of_reshape(mddev, logical_sector,
++						      conf->reshape_progress))
+ 					/* mismatch, need to try again */
+ 					must_retry = 1;
+ 				spin_unlock_irq(&conf->device_lock);
+-- 
+2.30.2
+
