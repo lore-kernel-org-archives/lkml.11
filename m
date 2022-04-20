@@ -2,278 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43070C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A02A8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376294AbiDTHoF (ORCPT
+        id S1376309AbiDTHpu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
+        Wed, 20 Apr 2022 03:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241235AbiDTHn7 (ORCPT
+        with ESMTP id S241235AbiDTHps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:43:59 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5213B00E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:41:13 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8C5DB20002;
-        Wed, 20 Apr 2022 07:41:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650440472;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zNCqHdoDiIIO8GrtVq7oJYoQzRKdLynJa7XVU5UOud4=;
-        b=i/MXxswxLD8ta458UREAWTH+0ALFDKozqVuToRsulIqcGNM2YAptjjqKvLAiZz5e2gCndm
-        nqgIMYpubMC1APg2m6WTDjD/Vr1Qlh6UnZ0VB1Z8jA0C6U9vNu7p/6L4Xa1k1r9yP/f5cc
-        Y38ZhebeyKs5bP2uC++iRWh1dajZQgWbv2maBEy/L9zS1dDoCTkRP9I669nwiBMtdpvdH5
-        FUFlJ/S6RDN7TraAHsce2Hd2joNQF2f57iF3u6iAGcORrGXLZ4JcOa8EuYypCrDv5/5xZo
-        TJjB8vhalj11RjqP5K0Yy3yXK1X4BeuP22UxU5lHKoEWJb76svGcRlKTn2l+eA==
-Date:   Wed, 20 Apr 2022 09:41:07 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Liang Yang <liang.yang@amlogic.com>
-Cc:     <linux-mtd@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 2/2] dt-bindings: nand: meson: refine Amlogic NAND
- controller driver
-Message-ID: <20220420094107.4799f15a@xps13>
-In-Reply-To: <20220402074921.13316-3-liang.yang@amlogic.com>
-References: <20220402074921.13316-1-liang.yang@amlogic.com>
-        <20220402074921.13316-3-liang.yang@amlogic.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 20 Apr 2022 03:45:48 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DECD3B572
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:43:02 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id m132so1383936ybm.4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:43:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cic/lmVeICvTPM3bIFzSlnqztIyS7Y2EoW5ARigCG0A=;
+        b=s/ciJ8lMhG4LLgARFOfSM8q0G/vnREGeJ2tEuGmZ6Qz1x6PcfJ3F9bjpoNTp9q28S8
+         /N8Md10+1Hw3XlKP2UFVKbmaXKPUg4UCnMfyyxtO1ZXXiF/dOrIzNxuHB4aYG+JWXRTl
+         aIXcM0vNX7r4oypff+hHWhIS+iEa26RDMZyQM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cic/lmVeICvTPM3bIFzSlnqztIyS7Y2EoW5ARigCG0A=;
+        b=28e8U/Bjd+Fwf5F8WYPKRGnJX88xXyCvFrOQbxt71kZwgEATnCfer6v3aBZjSRdXtG
+         78wxT33RP3TwL8Me3cWrii82u5uIe5CEgbN4vFCuWH0W6LkpKG/l2erI2BQOnEzbOO/6
+         gqeo4V5uf9+3d22s86EXE7Y+hDtvPH1WSuWZ2PhEbCHg+2/MuT+sRePxGK6mtj3Kw8xY
+         rcrfa+rwueJPxwSfvCqaI3mTqY9YjDFxMr/AWKb457Nrke6vPSFiuer7knS+SWuRQsC4
+         WfTvNkDoePOPyDWexe3jaAPojl1FacGvaP2pwq6NbOXrHeUdd23zDSyyqnDOpZBQWi3o
+         9FAw==
+X-Gm-Message-State: AOAM5334lviXtPq3k9GLGeVrBgInL3jt3GDj+hVJQHi044H9pxbm0K4t
+        qh4Fg46dufYZ+1jm6GZvDO2rEvTLy3usZu18Y7gg
+X-Google-Smtp-Source: ABdhPJy6qgrX3X0fcMprBIXxkdVXgaBpxQHgQNT5mrlWB67ltcFM8mvuiIGYv+VxFX94vHy9xIzWFAjaUpdkySngZZo=
+X-Received: by 2002:a5b:803:0:b0:633:749f:9acd with SMTP id
+ x3-20020a5b0803000000b00633749f9acdmr19288159ybp.236.1650440581619; Wed, 20
+ Apr 2022 00:43:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220420013258.3639264-1-atishp@rivosinc.com> <20220420013258.3639264-3-atishp@rivosinc.com>
+In-Reply-To: <20220420013258.3639264-3-atishp@rivosinc.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Wed, 20 Apr 2022 00:42:50 -0700
+Message-ID: <CAOnJCU+EPHxD7MqbswKMy=gZhmyyXMiezqaw1+D1h+O+pbYR2w@mail.gmail.com>
+Subject: Re: [PATCH 2/2] RISC-V: KVM: Restrict the extensions that can be disabled
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     KVM General <kvm@vger.kernel.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>, kvm-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liang,
+On Tue, Apr 19, 2022 at 6:33 PM Atish Patra <atishp@rivosinc.com> wrote:
+>
+> Currently, the config reg register allows to disable all allowed
+> single letter ISA extensions. It shouldn't be the case as vmm
+> shouldn't be able disable base extensions (imac).
 
-liang.yang@amlogic.com wrote on Sat, 2 Apr 2022 15:49:20 +0800:
+/s/able/able to/
 
-> convert txt to yaml and refine the meson NFC clock document.
-
-We generally prefer to split this into two changes (yaml conversion
-then modifications). You need to be very explicit on the changes you
-bring to this file afterward. Also you may s/refine/fix/ in your title
-if this really is a correction of something that does not work at all as
-you suggest.
-
-Please mention that due to the other series about the clock changes
-never being accepted the current binding was never valid/working
-(again, I'm not sure it's the case on all Amlogic SoCs, so please be
-very careful about that).
-
-And please use a Link: tag to point to the discussion with Neil and
-Jerome on your MMC/NAND subclock final discussion.
-
-> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
+> These extensions should always be enabled as long as they are enabled
+> in the host ISA.
+>
+> Signed-off-by: Atish Patra <atishp@rivosinc.com>
 > ---
->  .../bindings/mtd/amlogic,meson-nand.txt       | 60 --------------
->  .../bindings/mtd/amlogic,meson-nand.yaml      | 80 +++++++++++++++++++
->  2 files changed, 80 insertions(+), 60 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-n=
-and.txt
->  create mode 100644 Documentation/devicetree/bindings/mtd/amlogic,meson-n=
-and.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt=
- b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
-> deleted file mode 100644
-> index 5794ab1147c1..000000000000
-> --- a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
-> +++ /dev/null
-> @@ -1,60 +0,0 @@
-> -Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
-> -
-> -This file documents the properties in addition to those available in
-> -the MTD NAND bindings.
-> -
-> -Required properties:
-> -- compatible : contains one of:
-> -  - "amlogic,meson-gxl-nfc"
-> -  - "amlogic,meson-axg-nfc"
-> -- clocks     :
-> -	A list of phandle + clock-specifier pairs for the clocks listed
-> -	in clock-names.
-> -
-> -- clock-names: Should contain the following:
-> -	"core" - NFC module gate clock
-> -	"device" - device clock from eMMC sub clock controller
-> -	"rx" - rx clock phase
-> -	"tx" - tx clock phase
-> -
-> -- amlogic,mmc-syscon	: Required for NAND clocks, it's shared with SD/eMMC
-> -				controller port C
-> -
-> -Optional children nodes:
-> -Children nodes represent the available nand chips.
-> -
-> -Other properties:
-> -see Documentation/devicetree/bindings/mtd/nand-controller.yaml for gener=
-ic bindings.
-> -
-> -Example demonstrate on AXG SoC:
-> -
-> -	sd_emmc_c_clkc: mmc@7000 {
-> -		compatible =3D "amlogic,meson-axg-mmc-clkc", "syscon";
-> -		reg =3D <0x0 0x7000 0x0 0x800>;
-> -	};
-> -
-> -	nand-controller@7800 {
-> -		compatible =3D "amlogic,meson-axg-nfc";
-> -		reg =3D <0x0 0x7800 0x0 0x100>;
-> -		#address-cells =3D <1>;
-> -		#size-cells =3D <0>;
-> -		interrupts =3D <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
-> -
-> -		clocks =3D <&clkc CLKID_SD_EMMC_C>,
-> -			<&sd_emmc_c_clkc CLKID_MMC_DIV>,
-> -			<&sd_emmc_c_clkc CLKID_MMC_PHASE_RX>,
-> -			<&sd_emmc_c_clkc CLKID_MMC_PHASE_TX>;
-> -		clock-names =3D "core", "device", "rx", "tx";
-> -		amlogic,mmc-syscon =3D <&sd_emmc_c_clkc>;
-> -
-> -		pinctrl-names =3D "default";
-> -		pinctrl-0 =3D <&nand_pins>;
-> -
-> -		nand@0 {
-> -			reg =3D <0>;
-> -			#address-cells =3D <1>;
-> -			#size-cells =3D <1>;
-> -
-> -			nand-on-flash-bbt;
-> -		};
-> -	};
-> diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yam=
-l b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
-> new file mode 100644
-> index 000000000000..965a2dd20645
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
-> @@ -0,0 +1,80 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mtd/amlogic,meson-nand.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>  arch/riscv/kvm/vcpu.c | 21 +++++++++++++--------
+>  1 file changed, 13 insertions(+), 8 deletions(-)
+>
+> diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+> index 2e25a7b83a1b..14dd801651e5 100644
+> --- a/arch/riscv/kvm/vcpu.c
+> +++ b/arch/riscv/kvm/vcpu.c
+> @@ -38,12 +38,16 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
+>                        sizeof(kvm_vcpu_stats_desc),
+>  };
+>
+> -#define KVM_RISCV_ISA_ALLOWED  (riscv_isa_extension_mask(a) | \
+> -                                riscv_isa_extension_mask(c) | \
+> -                                riscv_isa_extension_mask(d) | \
+> -                                riscv_isa_extension_mask(f) | \
+> -                                riscv_isa_extension_mask(i) | \
+> -                                riscv_isa_extension_mask(m))
+> +#define KVM_RISCV_ISA_DISABLE_ALLOWED  (riscv_isa_extension_mask(d) | \
+> +                                       riscv_isa_extension_mask(f))
 > +
-> +title: Amlogic NAND Flash Controller (NFC) for GXBB/GXL/AXG family SoCs
-
-Maybe you need to inherit from nand-controller.yaml.
-
+> +#define KVM_RISCV_ISA_DISABLE_NOT_ALLOWED      (riscv_isa_extension_mask(a) | \
+> +                                               riscv_isa_extension_mask(c) | \
+> +                                               riscv_isa_extension_mask(i) | \
+> +                                               riscv_isa_extension_mask(m))
 > +
-> +maintainers:
-> +  - liang.yang@amlogic.com
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - "amlogic,meson-gxl-nfc"
-> +      - "amlogic,meson-axg-nfc"
-> +
-> +  reg:
-> +    maxItems: 2
-> +
-> +  '#address-cells':
-> +    const: 1
+> +#define KVM_RISCV_ISA_ALLOWED (KVM_RISCV_ISA_DISABLE_ALLOWED | \
+> +                              KVM_RISCV_ISA_DISABLE_NOT_ALLOWED)
+>
+>  static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
+>  {
+> @@ -217,9 +221,10 @@ static int kvm_riscv_vcpu_set_reg_config(struct kvm_vcpu *vcpu,
+>         switch (reg_num) {
+>         case KVM_REG_RISCV_CONFIG_REG(isa):
+>                 if (!vcpu->arch.ran_atleast_once) {
+> -                       vcpu->arch.isa = reg_val;
+> +                       /* Ignore the disable request for these extensions */
+> +                       vcpu->arch.isa = reg_val | KVM_RISCV_ISA_DISABLE_NOT_ALLOWED;
+>                         vcpu->arch.isa &= riscv_isa_extension_base(NULL);
+> -                       vcpu->arch.isa &= KVM_RISCV_ISA_ALLOWED;
+> +                       vcpu->arch.isa &= KVM_RISCV_ISA_DISABLE_ALLOWED;
+>                         kvm_riscv_vcpu_fp_reset(vcpu);
+>                 } else {
+>                         return -EOPNOTSUPP;
+> --
+> 2.25.1
+>
 
-Not sure this property is needed.
+Sorry. I forgot to add the fixes tag.
 
-> +
-> +  '#size-cells':
-> +    const: 0
+Fixes: 92ad82002c39 (RISC-V: KVM: Implement
+KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls)
 
-Ditto. Plus, this one looks wrong anyway.
-
-> +
-> +  reg-names:
-> +    items:
-> +      - const: nfc
-> +      - const: emmc
-
-Why do you need the emmc register map? Do you really need to perform a
-register access there?
-
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 2
-> +
-> +  clock-names:
-> +    items:
-> +      - const: core
-> +      - const: device
-> +
-> +  "#clock-cells":
-> +    const: 1
-
-?
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - '#address-cells'
-> +  - '#size-cells'
-> +  - reg-names
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +
-> +additionalProperties: false
-
-I will let Rob check that but I think what you need is
-
-unevaluatedProperties: false
-
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/axg-clkc.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    apb {
-> +      #address-cells =3D <2>;
-> +      #size-cells =3D <2>;
-
-Not sure you need this upper node in the example.
-
-> +      nand-controller@7800 {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +        compatible =3D "amlogic,meson-axg-nfc";
-> +        reg =3D <0x0 0x7800 0x0 0x100>,
-> +              <0x0 0x7000 0x0 0x800>;
-> +        reg-names =3D "nfc", "emmc";
-> +
-> +        interrupts =3D <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
-> +        clocks =3D <&clkc CLKID_SD_EMMC_C>,
-> +                 <&clkc CLKID_FCLK_DIV2>;
-> +        clock-names =3D "core", "device";
-> +
-> +      };
-> +    };
-> +...
-
-
-Thanks,
-Miqu=C3=A8l
+-- 
+Regards,
+Atish
