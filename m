@@ -2,107 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E82ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FAA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379576AbiDTOTf (ORCPT
+        id S1379589AbiDTOTq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
+        Wed, 20 Apr 2022 10:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380274AbiDTOSr (ORCPT
+        with ESMTP id S1380254AbiDTOSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:18:47 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AF143AD9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:16:01 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id m14so2472455wrb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:16:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=buTOea5hGyKVMycb2UNLHy/CmUKsfopnU76jMCLf+w0=;
-        b=DiPpygcsv1FE9XrikGyg1icYH8Svlo4wHN7c1tle/5MzbK5V7gZZJq5zEs1zm+Tr0m
-         hbQ7xTlZD3c3aGUWxVlvLu5rAiJ4fk64EfvWmQNbi2CZyH/3Eoq4iWQGbzXnWCaNJoUY
-         vLauIkmYNo/D2ewIjUpwRwG4OF3kyDl7X8CP4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=buTOea5hGyKVMycb2UNLHy/CmUKsfopnU76jMCLf+w0=;
-        b=hu/i2hzmby9gdI6E6RauCi1ukY6WTQsIOF9U9bKq0vxOtHN+U9DTsLpNsCJgP5Hc1V
-         0eRZ/yFFhAjo5t9Fv3lJ3/qUhJRinf4mx/vu5pmlTWDqo/5FctJ6VDnd86FsmoJVBFAX
-         Lx5Zt+zT9swpCwPiVst0tKO8Z+8dD+nMcqO5ioiDGhvDmRN6lSj0dy9H9x6s7mKd/vOY
-         EvEg/lizDHtE2vDsnwLkrCGKH3BDdYI7TFBtQlTAwCFUAP85zu5N8rBvLf1bYKeHw0ZI
-         K/MP4QmmaDjyBcqj5CA3uP5ouX7wmiGx5JKWZ7evZXuKN6RxzcSYWGQg+Oa8gqy/mYU9
-         OAqw==
-X-Gm-Message-State: AOAM532cA4mOY4UGbmhCTa3gOFQxv7ixaPUvoBANCaAwAjXaXyAKM/6P
-        RAsWWgBSeOtYch9l0VFM9cH0Eg==
-X-Google-Smtp-Source: ABdhPJyYIA6x9+f8e47TwQBEyU5CfA6Jc7fDHnsVuiVEE4Gn+yDN22VKV/egJHJ1ZcL3RtVt3ILCkg==
-X-Received: by 2002:a5d:6e85:0:b0:207:a435:d9a7 with SMTP id k5-20020a5d6e85000000b00207a435d9a7mr15785389wrz.217.1650464159946;
-        Wed, 20 Apr 2022 07:15:59 -0700 (PDT)
-Received: from localhost.localdomain ([37.228.205.1])
-        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b0020aa790a258sm12447wra.8.2022.04.20.07.15.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 07:15:59 -0700 (PDT)
-From:   Fabio Baltieri <fabiobaltieri@chromium.org>
-To:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Fabio Baltieri <fabiobaltieri@chromium.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 1/4] dt-bindings: add mfd/cros_ec definitions
-Date:   Wed, 20 Apr 2022 14:15:53 +0000
-Message-Id: <20220420141556.681212-2-fabiobaltieri@chromium.org>
-X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-In-Reply-To: <20220420141556.681212-1-fabiobaltieri@chromium.org>
-References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
+        Wed, 20 Apr 2022 10:18:45 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2048.outbound.protection.outlook.com [40.107.236.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6549C45783;
+        Wed, 20 Apr 2022 07:14:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CStNmSy3nl5ZvL7dc+tffoEgtaIw6G/sn+FoqOqHL+5Fg9lFFjWA40hicUKVFIoOj5LdZyfTXgRk/+FCUBpy2+6zmGRybAUym9jqKbJj/jbRlBOdyjbp+qnM7ON3/jOrURzjJHH+vSHv9NyuxiL353AlHf1IScc6BzGBC23DVxPlaXMpTUp5qJNaluo1/36OEtyob7u4Uua9W8Lct8dihMJz+Q4WQYQLDY80/inB5GCB6wG8xBKNG4tT9iWZlnrH7tRx5dKI9bIaoAuMI4CZcNNeY4LmSGlUboG0H96v4x3/ds4Abr3sWq+MZ181gxZBGwPqnDs4brcwutuhz3jvkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ztl3nDsYub7t/6+KbSrM6Z07arLY4BUgZOkZlmMD9Xo=;
+ b=e9coObp1ZXKWRZo7liFgGEedh4NFr/savfthPCkog2bMldWGQ+YTndlAuj0B18hGOmTxxafu3gPt6ODBvQWKbkTz+ZFzd0U9fNImHQi6eT5b4MLVf55LefDG0o9HvBebgCwDt3OhoS7stBzYavWY4lSwMY7Mq9IIrn+cCPy9U88EVGY6acMDyPkJdBRk/uK9mcjFdTTmUecjVj3xIT2JSO4ONkUNPDT9OndZ+fCkuYNLLd86SnZIheU5q1PuZCyVibsCpjzQkQW3L2GA0F8BcsLoqkG97iKBqCbq/7VaKjy5U/Gt6aPUl/V38sVpROL4V7/rN7vdnwlgipvG6I9Smg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ztl3nDsYub7t/6+KbSrM6Z07arLY4BUgZOkZlmMD9Xo=;
+ b=wjMYyarbFUoMjwMFF8uVyWeE5Rfdt4KtC2tzLE2hW7bdhC/VWewvb3Uq/1FjqL+whQK6ViMUEMHS8ID542GrmJ99cm5r2zbByagwqoARBxZK5DqdnQMa41i/SvBFV91domC+3QmMJxk1tc8M4/+wcBCM1zz4o/V8yuMGTQ3a4bU=
+Received: from MW4PR04CA0120.namprd04.prod.outlook.com (2603:10b6:303:83::35)
+ by BN8PR12MB3380.namprd12.prod.outlook.com (2603:10b6:408:43::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
+ 2022 14:14:28 +0000
+Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::81) by MW4PR04CA0120.outlook.office365.com
+ (2603:10b6:303:83::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20 via Frontend
+ Transport; Wed, 20 Apr 2022 14:14:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 14:14:27 +0000
+Received: from tlendack-t1.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 20 Apr
+ 2022 09:14:25 -0500
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+        <linux-doc@vger.kernel.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Joerg Roedel <jroedel@suse.de>,
+        "Michael Roth" <michael.roth@amd.com>
+Subject: [PATCH 0/2] Provide consistent name of the SEV Guest driver
+Date:   Wed, 20 Apr 2022 09:14:12 -0500
+Message-ID: <cover.1650464054.git.thomas.lendacky@amd.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 02bf770c-6e56-4f75-222a-08da22d81461
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3380:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB33806489BA92A3BC4B974CDBECF59@BN8PR12MB3380.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VsWw07WgCcHue5Es9c/4fFHWqGpw7Ky/hze/+t2CxEgrGYj4qcTWLWSroLTaJE4RaSVAW2atFdiUil6Nyf0yeUObhoeP/1b2d+njQIi0Sf9urDEOQDr4IMyilyWMpJCxa5Mrm4JKliBAb40O8RbDU/LFa8+Osd5f6kOy84osuzzWq3f8+yQ8T4mzWjgfWEDbuObgYF8bVyNDTVQH6cGF5c2eFB6i0m3PN5s012SS8HeHWoeS1yywEOs0TSV62Oob3eczdM2v9lEcCKwFKHJ+X5yfzebQ6yZe29kE5dU/ENGXrn1eIZQlpmqbOHpeXrGkmVh6UHuteEJVy7Jzulh5z+w+9SJ0zPbrac7I2vk8S5C8gmD0VlrgPEb40moVCRpHxTTGRN3Gk3BrhwAhnxJp7O+6sEmBmwesXeDmbvwbFHMWa71Vtw4MNhGn9qWaz9RdvDI16GN1E5OkWjrbMU7zqpboGAZQbWjx/oSkD8SAQYkrF2wPUjmi7xqNYN0XTVCRZbfAVQwT601ALIAnx/cyF1EaWyyydP+od900V6oZejPZ4wsDmld0alZvR5sWCx9yg5/YU9oLwVY9r8rhAuD8V1PkPbxEcSOeA8gEYORacAGUrJTclzpIOlL43PisjplqATsr+FcrU2xXwi5LbofsY+IPQHl40YW6hNOjmtvOLzR+SDxIXiIKJrpE+mByTWnHi0bXak2WfuOlMGmOU73ycw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(40460700003)(2616005)(5660300002)(316002)(110136005)(508600001)(356005)(86362001)(54906003)(7696005)(2906002)(83380400001)(6666004)(70206006)(70586007)(336012)(82310400005)(36860700001)(26005)(186003)(4326008)(16526019)(8676002)(426003)(8936002)(47076005)(81166007)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 14:14:27.4505
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 02bf770c-6e56-4f75-222a-08da22d81461
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3380
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a dt-bindings include file for cros_ec devicetree definition, define
-a pair of special purpose PWM channels in it.
+This series renames the SEV guest driver from snp-guest to sev-guest. This
+consists of changing the driver name field, some functions and structs and
+renaming the driver directory and files.
 
-Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
-Acked-by: Rob Herring <robh@kernel.org>
+This provides consistent naming between the driver name, the module name,
+the misc device name and the file names.
+
 ---
- include/dt-bindings/mfd/cros_ec.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 include/dt-bindings/mfd/cros_ec.h
 
-diff --git a/include/dt-bindings/mfd/cros_ec.h b/include/dt-bindings/mfd/cros_ec.h
-new file mode 100644
-index 000000000000..3b29cd049578
---- /dev/null
-+++ b/include/dt-bindings/mfd/cros_ec.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/*
-+ * DTS binding definitions used for the Chromium OS Embedded Controller.
-+ *
-+ * Copyright (c) 2022 The Chromium OS Authors. All rights reserved.
-+ */
-+
-+#ifndef _DT_BINDINGS_MFD_CROS_EC_H
-+#define _DT_BINDINGS_MFD_CROS_EC_H
-+
-+/* Typed channel for keyboard backlight. */
-+#define CROS_EC_PWM_DT_KB_LIGHT		0
-+/* Typed channel for display backlight. */
-+#define CROS_EC_PWM_DT_DISPLAY_LIGHT	1
-+/* Number of typed channels. */
-+#define CROS_EC_PWM_DT_COUNT		2
-+
-+#endif
+Patches based on:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+
+and commit:
+  6a0111882747 ("Merge branch into tip/master: 'x86/platform'")
+
+Tom Lendacky (2):
+  virt: sevguest: Change driver name to reflect generic SEV support
+  virt: sevguest: Rename the sevguest dir and files to sev-guest
+
+ Documentation/virt/index.rst                  |  2 +-
+ arch/x86/include/asm/sev.h                    |  2 +-
+ arch/x86/kernel/sev.c                         | 10 ++---
+ drivers/virt/Kconfig                          |  2 +-
+ drivers/virt/Makefile                         |  2 +-
+ .../virt/coco/{sevguest => sev-guest}/Kconfig |  2 +-
+ .../coco/{sevguest => sev-guest}/Makefile     |  2 +-
+ .../sevguest.c => sev-guest/sev-guest.c}      | 41 ++++++++++---------
+ .../sevguest.h => sev-guest/sev-guest.h}      |  0
+ 9 files changed, 33 insertions(+), 30 deletions(-)
+ rename drivers/virt/coco/{sevguest => sev-guest}/Kconfig (87%)
+ rename drivers/virt/coco/{sevguest => sev-guest}/Makefile (50%)
+ rename drivers/virt/coco/{sevguest/sevguest.c => sev-guest/sev-guest.c} (94%)
+ rename drivers/virt/coco/{sevguest/sevguest.h => sev-guest/sev-guest.h} (100%)
+
 -- 
-2.36.0.rc0.470.gd361397f0d-goog
+2.34.1
 
