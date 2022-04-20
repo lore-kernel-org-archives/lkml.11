@@ -2,136 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC06C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 22:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB91C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 22:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382848AbiDTWgt (ORCPT
+        id S1382858AbiDTWi3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 18:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
+        Wed, 20 Apr 2022 18:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239674AbiDTWgp (ORCPT
+        with ESMTP id S233746AbiDTWi0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 18:36:45 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC933CFDD
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 15:33:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1650494037; x=1682030037;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4lgTYp4beWNQQ0PzTvH+WAeDNBZ25X0ElX3e2wBoqyY=;
-  b=LvEVoO/VrfRzbmHEsbRmMjPy2R9bLNtLWd/xQzo6c9AE8vdTrUEDHXsX
-   4jK7FIZat2CNgcfxHmjgroUvxBdNOqcCTkm/D25Paio5cGF+02ZRr0boO
-   tPI1+myBBGwO4fupaMvuP9HGWZ8FUPcUBWhxks878L7J9JyIBUN9CgXCk
-   TrsnWAGh1SHgLre1d1Crq0uOqwJkmjlIEtqr7dRCq3fI8i/l8iWfGmZsa
-   4bitdP+IgqZmhohtIz8DVub9g3v54xXC+KyxzFd2Znvtty7+CqPrg2XmM
-   uhd573uXkRvBNLhBnRCUj3JQmsHMvRpfUH3jcRFCBN9bWw7VMMjSxPZhe
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,276,1643644800"; 
-   d="scan'208";a="203273501"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 21 Apr 2022 06:33:55 +0800
-IronPort-SDR: TK25q4UoYzoHTFk7ttfw3o1/QCyVbVJojDucCzXYB6sHU4ci5v+Sjv0jwJJrVUOj7d+ze2xb5g
- D3ZPTE1JGsnudJH/OFJzKru06/naci6EL6dFSuj5IbaeeED1O5OEq8IB9jLvOLl5HEnueC/5Nb
- hpeTE38gDObfRRI8Fizob9I9Vx6Aum/SOtzaFjHlOJ80b6RnuBw1WGZFrGc3vY75i4hgxi1YJW
- BPyPNAanfTUam3psnAoy76KEFCx6spZcZDnGaRWHAWwK3QeatKRMr+0Hni+SXn3+Yzr+TyBbVF
- qgGSKcBXDH2OFV+u50CaRKJ0
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Apr 2022 15:04:14 -0700
-IronPort-SDR: 2aSaWKKp56SH8Lw3jAWWhXmhct+Kc7cshZb3F1zxOUF1x0XSy1iiATo86Yh7qzfwxWabSUKFBz
- kY1rSxp9l9SSSh3VnE2h0Yc03P+kxBLePfsbGo4+RbaIfZlLnLrmCWnDFOddesfDIdUzA96GOf
- F+dPkiYRP8A40wF5mKFT/ZuUEFADtbPfDIz3u+9p2nq3jyVl2FG1fEqACghhhDynZ4LVHD2oxi
- TlOeglPrsoNC8YmV83Awyw+8wpwvu6zb++LGxyY7gJTF5ZfVLTSLcxyRYAglTOlXqfqzkuGfSA
- /7M=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Apr 2022 15:33:56 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KkFnv3m81z1SVp0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 15:33:55 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1650494034; x=1653086035; bh=4lgTYp4beWNQQ0PzTvH+WAeDNBZ25X0ElX3
-        e2wBoqyY=; b=bWDY651T5piuKIZEzu/pqHevDlQF+nH8LEBqH2TmRoyOgMo7Mtv
-        mdE1WtVPjY4+58pFJ8s0bZHkjev4DCi80eppn/nR++1lLNwz7My0rqNaAspZHL9p
-        oTeiEMeuekE3GnnbRgolbpuzBESk/9zZwE+k08EfbTZUWTCGeqXygwSFkL2GgCgp
-        /To7SBNQ8PszPzPYSWnNlWe2gaolErwce1ccHuzaTQhSz+XpOPPgSvuW1/u5Nx0T
-        QullpKAPdB7DR53MAsufyYgacsRJM+y1cBF5+vXWx9hPE7WurC5cTWgvNQnpb4cC
-        MKrHguBvPVjWQx3WMHm+eCaj0W/BZ5hSFRQ==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Xlp4GOfBWzm3 for <linux-kernel@vger.kernel.org>;
-        Wed, 20 Apr 2022 15:33:54 -0700 (PDT)
-Received: from [10.225.163.14] (unknown [10.225.163.14])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KkFns6zfRz1Rvlx;
-        Wed, 20 Apr 2022 15:33:53 -0700 (PDT)
-Message-ID: <da32482a-a38c-091d-ae28-aecb56fe1e7a@opensource.wdc.com>
-Date:   Thu, 21 Apr 2022 07:33:52 +0900
+        Wed, 20 Apr 2022 18:38:26 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164F6403EF;
+        Wed, 20 Apr 2022 15:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650494139; x=1682030139;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=i1FV9ua/QKqRvQE28+dhqw9LbkWLdadta+7evj3sFmk=;
+  b=oD+QQfkFtsDodvhhubmQLJVqUfV70VsMEINBKYKbBA+I31aAHwl8SKbS
+   RP793G55btg8w/QdOlM32mc3VqOcITt+QyiSqtiQV16ZkCa1SlODicHk6
+   Nmt67d/c5TzUpSNqj0SsRs/xsWkS+zJoJJQlQRlWsH4kTF4rWvyS8wkPt
+   mHztCWsgLHRTT0oxqDh8YocQ96Eugf6WzOTozmnW7//rxboF6uQlgJ5OV
+   nVfyCdmAXkCeZCd7g8QakMqxpB6EM/+nBto2e1AuUqO9C7leudkYIDZYt
+   bV6cFcxaHOhyyXnE453iaKn3G5joJLCniZpGOIN0wkKLDaFceKgZshFVe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="246056291"
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="246056291"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 15:35:35 -0700
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="658249359"
+Received: from ssharm9-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.30.148])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 15:35:32 -0700
+Message-ID: <a8085f189deffb367f446656bc1da619cd53d447.camel@intel.com>
+Subject: Re: [PATCH v3 04/21] x86/virt/tdx: Add skeleton for detecting and
+ initializing TDX on demand
+From:   Kai Huang <kai.huang@intel.com>
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com, isaku.yamahata@intel.com
+Date:   Thu, 21 Apr 2022 10:35:30 +1200
+In-Reply-To: <136845e1-fe43-fbb6-3a95-741c46c42156@linux.intel.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <32dcf4c7acc95244a391458d79cd6907125c5c29.1649219184.git.kai.huang@intel.com>
+         <bc078c41-89fd-0a24-7d8e-efcd5a697686@linux.intel.com>
+         <fd954918981d5c823a8c2b8d1b346d4eb13f334f.camel@intel.com>
+         <136845e1-fe43-fbb6-3a95-741c46c42156@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] ata: pata_marvell: Check the 'bmdma_addr' beforing
- reading
-Content-Language: en-US
-To:     Zheyu Ma <zheyuma97@gmail.com>, s.shtylyov@omp.ru
-Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220420122134.430997-1-zheyuma97@gmail.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220420122134.430997-1-zheyuma97@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/20/22 21:21, Zheyu Ma wrote:
-> Before detecting the cable type on the dma bar, the driver should check
-> whether the 'bmdma_addr' is zero, which means the adapter does not
-> support DMA, otherwise we will get the following error:
 > 
-> [    5.146634] Bad IO access at port 0x1 (return inb(port))
-> [    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
-> [    5.150856] RIP: 0010:ioread8+0x4a/0x60
-> [    5.160238] Call Trace:
-> [    5.160470]  <TASK>
-> [    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
-> [    5.161728]  ata_eh_recover+0x3520/0x6cc0
-> [    5.168075]  ata_do_eh+0x49/0x3c0
+> > > > +
+> > > > +/**
+> > > > + * tdx_detect - Detect whether the TDX module has been loaded
+> > > > + *
+> > > > + * Detect whether the TDX module has been loaded and ready for
+> > > > + * initialization.  Only call this function when all cpus are
+> > > > + * already in VMX operation.
+> > > > + *
+> > > > + * This function can be called in parallel by multiple callers.
+> > > > + *
+> > > > + * Return:
+> > > > + *
+> > > > + * * -0:	The TDX module has been loaded and ready for
+> > > > + *		initialization.
+> > > > + * * -ENODEV:	The TDX module is not loaded.
+> > > > + * * -EPERM:	CPU is not in VMX operation.
+> > > > + * * -EFAULT:	Other internal fatal errors.
+> > > > + */
+> > > > +int tdx_detect(void)
+> > > 
+> > > Will this function be used separately or always along with
+> > > tdx_init()?
+> > 
+> > The caller should first use tdx_detect() and then use tdx_init().  If caller
+> > only uses tdx_detect(), then TDX module won't be initialized (unless other
+> > caller does this).  If caller calls tdx_init() before tdx_detect(),  it will get
+> > error.
+> > 
 > 
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> ---
->  drivers/ata/pata_marvell.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> I just checked your patch set to understand where you are using
+> tdx_detect()/tdx_init(). But I did not find any callers. Did I miss it? 
+> or it is not used in your patch set?
 > 
-> diff --git a/drivers/ata/pata_marvell.c b/drivers/ata/pata_marvell.c
-> index 0c5a51970fbf..d2922699be5e 100644
-> --- a/drivers/ata/pata_marvell.c
-> +++ b/drivers/ata/pata_marvell.c
-> @@ -77,7 +77,9 @@ static int marvell_cable_detect(struct ata_port *ap)
->  	switch(ap->port_no)
->  	{
->  	case 0:
-> -		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
-> +		if (!ap->ioaddr.bmdma_addr)
-> +			return ATA_CBL_PATA_UNK;
-> +		else if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
 
-No need for the "else" here.
-
->  			return ATA_CBL_PATA40;
->  		return ATA_CBL_PATA80;
->  	case 1: /* Legacy SATA port */
+No you didn't.  They are not called in this series.  KVM series which is under
+upstream process by Isaku will call them.  Dave once said w/o caller is fine as
+for this particular case people know KVM is going to use them.  In cover letter
+I also mentioned KVM support is under development by another series.  Next
+version in cover letter, I'll explicitly call out this series doesn't have
+caller of them but depends on KVM to call them.
 
 
 -- 
-Damien Le Moal
-Western Digital Research
+Thanks,
+-Kai
+
+
