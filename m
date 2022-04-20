@@ -2,207 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379380AbiDTONa (ORCPT
+        id S1379428AbiDTONr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        Wed, 20 Apr 2022 10:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379445AbiDTOLV (ORCPT
+        with ESMTP id S1379523AbiDTOLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:11:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C577A43EDD;
-        Wed, 20 Apr 2022 07:07:23 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23KDlEIl018650;
-        Wed, 20 Apr 2022 14:06:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=SgzSoq5xT43TolHrDde3otB79FsXGO9TTeR14lmijzg=;
- b=NVirgqdAd56hx3B1Urj0L6mYhuJ3je/E2LjJYTVK3bwSaWXJTG46wZTCuJ23yrBCCoSR
- UM5Zh8NrPt44O3DcgIG7bLp1I4ai0sAluZQ0U9C1jEIeREXZHVeQewstxFU4jKxq5Wqr
- vBjnozkpU84SMiX6y9c6/NGz6ZDu86HhU1JSsr7YrCLGPLJYLoACln7WEz0xPNm3TICq
- aW/3hskIO0yVq0LZuY99d5OcXFRpmB+P28IV0VzGDyowDUdTlZKGQVAK+pUCaRMt4qQH
- rdpWJNjwgeRIcN0rqV9eE0oGO7d+UyN2rQZT2AzV+6Y2KY0bZgfHN2kviBjOMDnFiX+C 2A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7vpqyuh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:06:43 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23KDvM0S025280;
-        Wed, 20 Apr 2022 14:06:43 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7vpqyts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:06:42 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23KE3Cq1015554;
-        Wed, 20 Apr 2022 14:06:41 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma04dal.us.ibm.com with ESMTP id 3ffnea3tv6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:06:41 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23KE6exb33030592
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Apr 2022 14:06:40 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C3800AE062;
-        Wed, 20 Apr 2022 14:06:40 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A374AAE060;
-        Wed, 20 Apr 2022 14:06:40 +0000 (GMT)
-Received: from sbct-3.pok.ibm.com (unknown [9.47.158.153])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 20 Apr 2022 14:06:40 +0000 (GMT)
-From:   Stefan Berger <stefanb@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org
-Cc:     zohar@linux.ibm.com, serge@hallyn.com,
-        christian.brauner@ubuntu.com, containers@lists.linux.dev,
-        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
-        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
-        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
-        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
-        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        jpenumak@redhat.com, Christian Brauner <brauner@kernel.org>,
-        John Johansen <john.johansen@canonical.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Micah Morton <mortonm@chromium.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Stefan Berger <stefanb@linux.ibm.com>
-Subject: [PATCH v12 01/26] securityfs: rework dentry creation
-Date:   Wed, 20 Apr 2022 10:06:08 -0400
-Message-Id: <20220420140633.753772-2-stefanb@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220420140633.753772-1-stefanb@linux.ibm.com>
-References: <20220420140633.753772-1-stefanb@linux.ibm.com>
+        Wed, 20 Apr 2022 10:11:41 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F31F4477D
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:07:40 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id k23so3824601ejd.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=axtU0b8TtpVbp0s/mbZjWqvA94Dr9I508ZNrAg+bBn0=;
+        b=h3ip9pqn1Te/4FB3H+4SHiAbA6baF/wjith2bzY2njubpPrbXH4SFJAnu8cJNj6/UK
+         9HFHH3DpzxOPKbG+JhKptMmqnimupMF5acHMST/auHETQ7IXtI8oLiXzopiADk6Xvj+G
+         C+uMkITomXf82mlJjY28A1Qwx4BudvCvgJ1RrHhCiHyBwvdNwBsktj2N82QxuHlJ2qY6
+         A5ppVf0HcXwng/AJ50Z3JkMX+BIyeJSclRVNNIxSeuhV0kmicV+m33kBimktN/XAZHu0
+         lnksAl27sz/nFPLLWRtLinxEZQwto3wwwhH8Z8jHyQEWM7nZtP1hdljsDO9Keod1r5az
+         5AEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=axtU0b8TtpVbp0s/mbZjWqvA94Dr9I508ZNrAg+bBn0=;
+        b=1m7myiO/meB/kbuAdCXPmQ0YlxyUg5NWGw9PdeLcldnlN55V6HSsIkDt3W4RNW/PpC
+         nUn1l1J17R/U9tGBSnRA6A4ttKc6JQT+5C4kxeTsXDyzSOqV/h/eeHvUcCJz+53oRYpy
+         70KSvmTY8VSxpg6/h1idFTk5NNS2uVgsbywj1yEIpA80XG/re6VBP/Jkr3l8n7roN2Lc
+         kWfSlC0XVUYr3gxAX/UN27SnZy3f6clydtQbDHzQHGb8H3/OJSENCgmwzHiEHdXVlXV3
+         4wgZrwjwbaiHSo4I8OBe+csFZ2s4IB/IAhm/qIAhZYl0g3r4czVlqHFLNs4zbhWIntBZ
+         Ec5Q==
+X-Gm-Message-State: AOAM53102UCYBdJ9uD0pRRSLHvCLPlslF+JwN86F1fTVNmSMt+CZY+YU
+        U0XPW3ZIE/U3qjeDWgLSM8Q=
+X-Google-Smtp-Source: ABdhPJzx++INwh/binOtJF6UHoLInnaW20QfquRf+Me/PgiY/eme4g+R8VUQweTxq86X6SxppLyFcQ==
+X-Received: by 2002:a17:906:2e8d:b0:6e4:b5fc:e8e6 with SMTP id o13-20020a1709062e8d00b006e4b5fce8e6mr6678249eji.215.1650463658445;
+        Wed, 20 Apr 2022 07:07:38 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id au9-20020a170907092900b006e8985cc68asm6703151ejc.1.2022.04.20.07.07.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 07:07:37 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     Julia Lawall <julia.lawall@inria.fr>, ira.weiny@intel.com,
+        Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
+        outreachy@lists.linux.dev, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] xen:  Convert kmap() to kmap_local_page()
+Date:   Wed, 20 Apr 2022 16:07:36 +0200
+Message-ID: <2538961.9Mp67QZiUf@leap>
+In-Reply-To: <alpine.DEB.2.22.394.2204201556330.2937@hadrien>
+References: <20220419234328.10346-1-eng.alaamohamedsoliman.am@gmail.com> <3990312.6PsWsQAL7t@leap> <alpine.DEB.2.22.394.2204201556330.2937@hadrien>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6cEhuZsipT30dEp9ovxyjqVb1vHjfLKv
-X-Proofpoint-GUID: PA2sLHPWeg1EBhhyEf3ru90iivtPzUZN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxscore=0
- phishscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0 spamscore=0
- priorityscore=1501 impostorscore=0 mlxlogscore=999 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204200081
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+On mercoled=C3=AC 20 aprile 2022 15:57:14 CEST Julia Lawall wrote:
+>=20
+> On Wed, 20 Apr 2022, Fabio M. De Francesco wrote:
+>=20
+> > On mercoled=C3=AC 20 aprile 2022 15:40:10 CEST Julia Lawall wrote:
+> > >
+> > > On Wed, 20 Apr 2022, Fabio M. De Francesco wrote:
+> > >
+> > > > On mercoled=C3=AC 20 aprile 2022 08:03:05 CEST Julia Lawall wrote:
+> > > > >
+> > > > > On Wed, 20 Apr 2022, Alaa Mohamed wrote:
+> > > > >
+> > > > > > kmap() is being deprecated and these usages are all local to=20
+the
+> > thread
+> > > > > > so there is no reason kmap_local_page() can't be used.
+> > > > > >
+> > > > > > Replace kmap() calls with kmap_local_page().
+> > > > >
+> > > > > OK, so from a Coccinelle point of view, could we do
+> > > > >
+> > > > > @@
+> > > > > expression e1,e2,x,f;
+> > > > > @@
+> > > > >
+> > > > > e1 =3D
+> > > > > - kmap
+> > > > > + kmap_local_page
+> > > > >     (e2)
+> > > > > ... when !=3D x =3D e1 // not stored in any location and not pass=
+ed=20
+to
+> > > > another function
+> > > > >     when !=3D f(...,e1,...)
+> > > > >     when !=3D x =3D e2
+> > > > >     when !=3D f(...,e2,...)
+> > > > > -kunmap(e2)
+> > > > > +kunmap_local(e1)
+> > > > >
+> > > > > julia
+> > > > >
+> > > >
+> > > > I've never spent sufficient time to understand properly the syntax=
+=20
+and
+> > > > semantics of expressions of Coccinelle. However, thanks Julia, this
+> > code
+> > > > looks good and can be very helpful.
+> > > >
+> > > > Only a minor objection... it doesn't tell when 'e2' has been=20
+allocated
+> > > > within the same function where the kmap() call is.
+> > > >
+> > > > In the particular case that I cite above, I'd prefer to remove the
+> > > > allocation of the page (say with alloc_page()) and convert kmap() /
+> > kunmap()
+> > > > to use kmalloc() / kfree().
+> > > >
+> > > > Fox example, this is done in the following patch:
+> > > >
+> > > > commit 633b0616cfe0 ("x86/sgx: Remove unnecessary kmap() from
+> > > > sgx_ioc_enclave_init()") from Ira Weiny.
+> > > >
+> > > > Can Coccinelle catch also those special cases where a page that is
+> > passed
+> > > > to kmap() is allocated within that same function (vs. being passed=
+=20
+as
+> > > > argument to this function) and, if so, propose a replacement with
+> > > > kmalloc()?
+> > >
+> > > It looks complex in this case, because the allocation is in another
+> > > function, and it is passed to another function.
+> >
+> > This is not the special case I was talking about. In this case your=20
+code
+> > for Coccinelle tells the right proposal and it is exactly what Alaa did=
+=20
+in
+> > her patch (which is good!).
+> >
+> > I'm talking about other special cases like the one I pointed to with=20
+the
+> > link I provided. I'm sorry if my bad English made you think that Alaa's
+> > patch was one of those cases where the page is allocated within the=20
+same
+> > function where kmap() is.
+> >
+> > I hope that now I've been clearer :)
+>=20
+> Ah, sorry for the misunderstanding.  If you have an example, I can take a
+> look and propose something for this special case.
+>=20
+> julia
 
-When securityfs creates a new file or directory via
-securityfs_create_dentry() it will take an additional reference on the
-newly created dentry after it has attached the new inode to the new
-dentry and added it to the hashqueues.
-If we contrast this with debugfs which has the same underlying logic as
-securityfs. It uses a similar pairing as securityfs. Where securityfs
-has the securityfs_create_dentry() and securityfs_remove() pairing,
-debugfs has the __debugfs_create_file() and debugfs_remove() pairing.
+Yes, I have the example that you are asking for. It's that commit=20
+633b0616cfe0 from Ira Weiny.
 
-In contrast to securityfs, debugfs doesn't take an additional reference
-on the newly created dentry in __debugfs_create_file() which would need
-to be put in debugfs_remove().
+Let me copy and paste it here for your convenience...
 
-The additional dget() isn't a problem per se. In the current
-implementation of securityfs each created dentry pins the filesystem via
-until it is removed. Since it is virtually guaranteed that there is at
-least one user of securityfs that has created dentries the initial
-securityfs mount cannot go away until all dentries have been removed.
+diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/
+ioctl.c
+index 90a5caf76939..2e10367ea66c 100644
+=2D-- a/arch/x86/kernel/cpu/sgx/ioctl.c
++++ b/arch/x86/kernel/cpu/sgx/ioctl.c
+@@ -604,7 +604,6 @@ static long sgx_ioc_enclave_init(struct sgx_encl *encl,=
+=20
+void __user *arg)
+ {
+        struct sgx_sigstruct *sigstruct;
+        struct sgx_enclave_init init_arg;
+=2D       struct page *initp_page;
+        void *token;
+        int ret;
+=20
+@@ -615,11 +614,15 @@ static long sgx_ioc_enclave_init(struct sgx_encl=20
+*encl, void __user *arg)
+        if (copy_from_user(&init_arg, arg, sizeof(init_arg)))
+                return -EFAULT;
+=20
+=2D       initp_page =3D alloc_page(GFP_KERNEL);
+=2D       if (!initp_page)
++       /*
++        * 'sigstruct' must be on a page boundary and 'token' on a 512 byte
++        * boundary.  kmalloc() will give this alignment when allocating
++        * PAGE_SIZE bytes.
++        */
++       sigstruct =3D kmalloc(PAGE_SIZE, GFP_KERNEL);
++       if (!sigstruct)
+                return -ENOMEM;
+=20
+=2D       sigstruct =3D kmap(initp_page);
+        token =3D (void *)((unsigned long)sigstruct + PAGE_SIZE / 2);
+        memset(token, 0, SGX_LAUNCH_TOKEN_SIZE);
+=20
+@@ -645,8 +648,7 @@ static long sgx_ioc_enclave_init(struct sgx_encl *encl,=
+=20
+void __user *arg)
+        ret =3D sgx_encl_init(encl, sigstruct, token);
+=20
+ out:
+=2D       kunmap(initp_page);
+=2D       __free_page(initp_page);
++       kfree(sigstruct);
+        return ret;
+ }
 
-Since most of the users of the initial securityfs mount don't go away
-until the system is shutdown the initial securityfs won't go away when
-unmounted. Instead a mount will usually surface the same superblock as
-before. The additional dget() doesn't matter in this scenario since it
-is required that all dentries have been cleaned up by the respective
-users before the superblock can be destroyed, i.e. superblock shutdown
-is tied to the lifetime of the associated dentries.
+I think that Coccinelle might understand that "initp_page" is allocated in=
+=20
+the same function where later it is kmap()'ed. But I'm not able to write a=
+=20
+Coccinelle check to find out these kinds of special cases. In these cases=20
+the correct solution is not to use kmap_local_page(). Instead delete the=20
+alloc_page() and use kmalloc().
 
-However, in order to support ima namespaces we need to extend securityfs
-to support being mounted outside of the initial user namespace. For
-namespaced users the pinning logic doesn't make sense. Whereas in the
-initial namespace the securityfs instance and the associated data
-structures of its users can't go away for reason explained earlier users
-of non-initial securityfs instances do go away when the last users of
-the namespace are gone.
+Thanks,
 
-So for those users we neither want to duplicate the pinning logic nor
-make the global securityfs instance display different information based
-on the namespace. Both options would be really messy and hacky.
+=46abio
 
-Instead we will simply give each namespace its own securityfs instance
-similar to how each ipc namespace has its own mqueue instance and all
-entries in there are cleaned up on umount or when the last user of the
-associated namespace is gone.
 
-This means that the superblock's lifetime isn't tied to the dentries.
-Instead the last umount, without any fds kept open, will trigger a clean
-shutdown. But now the additional dget() gets in the way. Instead of
-being able to rely on the generic superblock shutdown logic we would
-need to drop the additional dentry reference during superblock shutdown
-for all associated users. That would force the use of a generic
-coordination mechanism for current and future users of securityfs which
-is unnecessary. Simply remove the additional dget() in
-securityfs_dentry_create().
-
-In securityfs_remove() we will call dget() to take an additional
-reference on the dentry about to be removed. After simple_unlink() or
-simple_rmdir() have dropped the dentry refcount we can call d_delete()
-which will either turn the dentry into negative dentry if our earlier
-dget() is the only reference to the dentry, i.e. it has no other users,
-or remove it from the hashqueues in case there are additional users.
-
-All of these changes should not have any effect on the userspace
-semantics of the initial securityfs mount.
-
-Signed-off-by: Christian Brauner <brauner@kernel.org>
-Cc: John Johansen <john.johansen@canonical.com>
-Cc: Matthew Garrett <mjg59@srcf.ucam.org>
-Cc: Micah Morton <mortonm@chromium.org>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: James Morris <jmorris@namei.org>
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
----
- security/inode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/security/inode.c b/security/inode.c
-index 6c326939750d..13e6780c4444 100644
---- a/security/inode.c
-+++ b/security/inode.c
-@@ -159,7 +159,6 @@ static struct dentry *securityfs_create_dentry(const char *name, umode_t mode,
- 		inode->i_fop = fops;
- 	}
- 	d_instantiate(dentry, inode);
--	dget(dentry);
- 	inode_unlock(dir);
- 	return dentry;
- 
-@@ -302,10 +301,12 @@ void securityfs_remove(struct dentry *dentry)
- 	dir = d_inode(dentry->d_parent);
- 	inode_lock(dir);
- 	if (simple_positive(dentry)) {
-+		dget(dentry);
- 		if (d_is_dir(dentry))
- 			simple_rmdir(dir, dentry);
- 		else
- 			simple_unlink(dir, dentry);
-+		d_delete(dentry);
- 		dput(dentry);
- 	}
- 	inode_unlock(dir);
--- 
-2.34.1
 
