@@ -2,88 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380761AbiDTQtw (ORCPT
+        id S1380768AbiDTQtz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
+        Wed, 20 Apr 2022 12:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380497AbiDTQtu (ORCPT
+        with ESMTP id S1380759AbiDTQtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791C244A20
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:47:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 175E861A5A
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 16:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED7DC385A0;
-        Wed, 20 Apr 2022 16:47:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650473223;
-        bh=4fRcsXUhyVGIx/AjQuBcKxjrSKJPAxMI3mcZszc6S1A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ns/VOAU3hEltoED5s7v6fzhSb0W6hQRhd/5yUdx1pv7ZV8nNNrxsmkd9gpybhTW4A
-         HD0TBIT5tMO+z2aDZIf0Vh/YsMTOWynaCjKWT1cmI3Hrxbx+D0CLzMl2Y1UNWd++fK
-         5NE2BJu1ULUgMZ9OGwE1Pz1GgJQU33dtloYIxbQg=
-Date:   Wed, 20 Apr 2022 18:47:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Artur Bujdoso <artur.bujdoso@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-Subject: Re: [PATCH v2] staging: rtl8723bs: remove leftover code for other
- chips
-Message-ID: <YmA5BM2Fkie5xMk/@kroah.com>
-References: <Yl8bCE8Rjh/w4Ogz@crux>
+        Wed, 20 Apr 2022 12:49:52 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E89444A20
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:47:06 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id 79so2459498iou.7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:47:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4kWqTU8/11z4FGTT7w8HybBeD0Jsvi/MPxPw1kkyct8=;
+        b=aqrbgx37XpNBMKqxX6gTj1xOa1AdrQnXRe2HUJ4vfj7uVfl25XjQuH46tTduJsyUkH
+         IgKkifmsdQfjPFBS3gcTzCVr1sRc2Col2RlPFtSkGrrZ9QYWrY8imqCEgUDFEBmmnmJB
+         C5CgIlaG4gi77LgvwQIei4izQoPgcMGzNtWBXDjU3plszZe6Rs8+DWLeB/dw/KInEPra
+         ctdUfySrl/kP+jtfo8X8BXJQq5aYdwJ+9NT+gT1zt85XPShsjLhXGW8iQ5jaU2B9b3ll
+         KIaLr40WZOsNipglYcSij0kGEuWSG9r5wLghCFdczgTycn6BpFGKKXBLWApUanuPE7SQ
+         8TQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4kWqTU8/11z4FGTT7w8HybBeD0Jsvi/MPxPw1kkyct8=;
+        b=4eJOTdg6+7MIXAPzIeT7ZUlc3tH2N5qyYsu51M5s41heCoRFQLHmLjbEcRWJDK1r9E
+         KF7wt+ANV2DNrmyFvKiBWysU5+bctapS3Cg3G+63ngNpvw7/Zm0NBdcjwjbHYicQUUtM
+         KV6xplm2jfKCruzm21caPaiVUxSHe9CJpeQaMHu7CB6QMvOtKK0gDxmikDkdm3km7NhV
+         cJrDv75pZKRa7v146f9nLqWy3YElr7jdVFV0Y8EQ7udb6Ncblj4bYFBv4sfPNCgFnHBy
+         KFYWaom1yTwAWHD72PdcqNSbFTl2uoba6xIFDGk1scRylI6yIH/7MdQu4YChNz8yy8y7
+         PakQ==
+X-Gm-Message-State: AOAM53186Diy6QeTaNqWxGBG1wpJyJLi5L1N9YuJCbwRGAONOWOOLnQX
+        kNgFkWfyuqy07OntWApAWYHkfTp0HcbTdblt2zle1scD91Y=
+X-Google-Smtp-Source: ABdhPJxRTbmqlJ7i1WoOUmbDTP8JjJjXF/VWbsgUV6b48tCKcfVxF9EJaDBA82x837CF7qZmOqUhZX/umYLt2dHCiZ8=
+X-Received: by 2002:a5d:9448:0:b0:657:24e0:c0b2 with SMTP id
+ x8-20020a5d9448000000b0065724e0c0b2mr1678055ior.167.1650473225232; Wed, 20
+ Apr 2022 09:47:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yl8bCE8Rjh/w4Ogz@crux>
+References: <20220420144823.35277-1-peterx@redhat.com> <YmAnUQdQ63jD48ad@cmpxchg.org>
+In-Reply-To: <YmAnUQdQ63jD48ad@cmpxchg.org>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Wed, 20 Apr 2022 09:46:29 -0700
+Message-ID: <CAJHvVcgepLYwTaiRsn6AqpfSRRimSoVjWFLsxNEsGzmRD6HJmw@mail.gmail.com>
+Subject: Re: [PATCH] mm/uffd: Move USERFAULTFD configs into mm/
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Peter Xu <peterx@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 10:26:48PM +0200, Artur Bujdoso wrote:
-> Clean up unreferenced definitions in hal headers and code.
-> 
-> Signed-off-by: Artur Bujdoso <artur.bujdoso@gmail.com>
-> ---
->  drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h  |  11 -
->  drivers/staging/rtl8723bs/hal/hal_btcoex.c    |   8 -
->  drivers/staging/rtl8723bs/include/HalVerDef.h |  10 -
->  .../staging/rtl8723bs/include/hal_com_reg.h   | 295 ------------------
->  4 files changed, 324 deletions(-)
-> 
+Reviewed-by: Axel Rasmussen <axelrasmussen@google.com>
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+On Wed, Apr 20, 2022 at 8:31 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Wed, Apr 20, 2022 at 10:48:23AM -0400, Peter Xu wrote:
+> > We used to have USERFAULTFD configs stored in init/.  It makes sense as a
+> > start because that's the default place for storing syscall related configs.
+> >
+> > However userfaultfd evolved a bit in the past few years and some more
+> > config options were added.  They're no longer related to syscalls and start
+> > to be not suitable to be kept in the init/ directory anymore, because
+> > they're pure mm concepts.
+> >
+> > But it's not ideal either to keep the userfaultfd configs separate from
+> > each other.  Hence this patch moves the userfaultfd configs under init/ to
+> > be under mm/ so that we'll start to group all userfaultfd configs
+> > together.
+> >
+> > We do have quite a few examples of syscall related configs that are not put
+> > under init/Kconfig: FTRACE_SYSCALLS, SWAP, FILE_LOCKING, MEMFD_CREATE..
+> > They all reside in the dir where they're more suitable for the concept. So
+> > it seems there's no restriction to keep the role of having syscall related
+> > CONFIG_* under init/ only.
+> >
+> > Suggested-by: Johannes Weiner <hannes@cmpxchg.org>
+> > Signed-off-by: Peter Xu <peterx@redhat.com>
+>
+> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
