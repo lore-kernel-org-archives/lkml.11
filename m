@@ -2,58 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0184AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381114AbiDTRoK (ORCPT
+        id S1381183AbiDTRoN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
+        Wed, 20 Apr 2022 13:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359710AbiDTRoI (ORCPT
+        with ESMTP id S1376358AbiDTRoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 13:44:08 -0400
+        Wed, 20 Apr 2022 13:44:09 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1BA47049;
-        Wed, 20 Apr 2022 10:41:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D435E47043;
+        Wed, 20 Apr 2022 10:41:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650476481; x=1682012481;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=rbZu7eWEid6dNs7PEy4WsbHQMUyRtvOvvbZT7aD6MhU=;
-  b=bNa3FBoF5FnRcQc6cTFnI73IfR4KQQwyTelGlKyq4ycO56Z1ZSPKOET9
-   R9IOoAQYLnB8b18rPkmWxEqrbgCOuHbGpZ5tSLoO1MDMQ8REOdPuo5/EB
-   Z9DZD0MYRb07eEcTPsHzYzJn6luCgvMQimtO75drFJ5qvb6G1MprLivTU
-   9ltlH6pNa8zpdtpM0JGm9fOosxi3/hHAjICGTvMcOY+tdQLo7h2G5OdJX
-   MZ+kt8AP2yBnHL49JXSo5I0W7ZvW6OM8Z05Z/aTVg5VIOOoA3jxR59EGv
-   fk4RF8GzzDXSaJ5IAWuO9VKP8+ilZmYXtD7q9phyHZqawXs+E9FREZcky
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251416868"
+  t=1650476482; x=1682012482;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=3CtKJu86H4ZmVWLsuoKje6DsnJeg0MUXUxRcD9E3dzM=;
+  b=LV6eacejHcsZoFfOPPzLEeJOerWabESxuKwrxN/y/5wKhgSBiwliK8u+
+   Uv08E64fP0XBPUVAJ40xmrle3gikQM86LIrcnobp2acU9mfqSK3SZTCcE
+   lvrcJXdH7dlDE0E5m6a8tPwDkeLnv2eQa20M2BkieQY27WrFM8RKl6VeA
+   M/dawHG2YQbLSChOKN660Jy6xD6meN0R2od7OEy1g5dMpsVa9CmsVuOdP
+   R6eLDaLrn9Z1eXmOW70NzYe5JVuMTeeGA+ioIlt+/FDaMqtshJXicZ9zq
+   Sl4Yas6SfWk3z+OO8iEIxBPgcXUjSZVNI0HNNtyVL1tycG47TJiG5aBMd
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251416879"
 X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="251416868"
+   d="scan'208";a="251416879"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:40:57 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:40:59 -0700
 X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="576712395"
+   d="scan'208";a="576712409"
 Received: from sbidasar-mobl.amr.corp.intel.com (HELO [10.209.100.171]) ([10.209.100.171])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:40:56 -0700
-Message-ID: <10eb3973-03c4-74cd-d28a-014fc280cdf8@linux.intel.com>
-Date:   Wed, 20 Apr 2022 12:39:26 -0500
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:40:58 -0700
+Message-ID: <217a59f8-86fb-5508-bdd9-25c553052a48@linux.intel.com>
+Date:   Wed, 20 Apr 2022 12:40:11 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/3] soundwire: qcom: add runtime pm support
+Subject: Re: [PATCH v3 3/3] soundwire: qcom: add in-band wake up interrupt
+ support
 Content-Language: en-US
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         robh+dt@kernel.org, vkoul@kernel.org,
         yung-chuan.liao@linux.intel.com
 Cc:     devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
 References: <20220228172528.3489-1-srinivas.kandagatla@linaro.org>
- <20220228172528.3489-2-srinivas.kandagatla@linaro.org>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220228172528.3489-2-srinivas.kandagatla@linaro.org>
+ <20220228172528.3489-4-srinivas.kandagatla@linaro.org>
+ <a3240a03-2e14-35e6-4915-41f994e365fc@linux.intel.com>
+In-Reply-To: <a3240a03-2e14-35e6-4915-41f994e365fc@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -61,64 +63,31 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+>> +static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
+>> +{
+>> +	struct qcom_swrm_ctrl *swrm = dev_id;
+>> +	int ret;
+>> +
+>> +	ret = pm_runtime_get_sync(swrm->dev);
+>> +	if (ret < 0 && ret != -EACCES) {
+>> +		dev_err_ratelimited(swrm->dev,
+>> +				    "pm_runtime_get_sync failed in %s, ret %d\n",
+>> +				    __func__, ret);
+>> +		pm_runtime_put_noidle(swrm->dev);
 
-> @@ -1017,6 +1032,15 @@ static int qcom_swrm_startup(struct snd_pcm_substream *substream,
->  	struct snd_soc_dai *codec_dai;
->  	int ret, i;
->  
-> +	ret = pm_runtime_get_sync(ctrl->dev);
-> +	if (ret < 0 && ret != -EACCES) {
-> +		dev_err_ratelimited(ctrl->dev,
-> +				    "pm_runtime_get_sync failed in %s, ret %d\n",
-> +				    __func__, ret);
-> +		pm_runtime_put_noidle(ctrl->dev);
-> +		return ret;
+missing 'return ret' here as well, is this intentional?
 
-here there's an error handling, but ...
+Fix at https://github.com/thesofproject/linux/pull/3602/commits/6353eec8dc971c5f0fda0166ae1777f71784ea32 ready to go, but not sure what the intent was.
 
-> +	}
-> +
->  	sruntime = sdw_alloc_stream(dai->name);
->  	if (!sruntime)
->  		return -ENOMEM;
-> @@ -1044,6 +1068,9 @@ static void qcom_swrm_shutdown(struct snd_pcm_substream *substream,
->  
->  	sdw_release_stream(ctrl->sruntime[dai->id]);
->  	ctrl->sruntime[dai->id] = NULL;
-> +	pm_runtime_mark_last_busy(ctrl->dev);
-> +	pm_runtime_put_autosuspend(ctrl->dev);
-> +
->  }
->  
->  static const struct snd_soc_dai_ops qcom_swrm_pdm_dai_ops = {
-> @@ -1197,12 +1224,23 @@ static int qcom_swrm_get_port_config(struct qcom_swrm_ctrl *ctrl)
->  static int swrm_reg_show(struct seq_file *s_file, void *data)
->  {
->  	struct qcom_swrm_ctrl *swrm = s_file->private;
-> -	int reg, reg_val;
-> +	int reg, reg_val, ret;
-> +
-> +	ret = pm_runtime_get_sync(swrm->dev);
-> +	if (ret < 0 && ret != -EACCES) {
-> +		dev_err_ratelimited(swrm->dev,
-> +				    "pm_runtime_get_sync failed in %s, ret %d\n",
-> +				    __func__, ret);
-> +		pm_runtime_put_noidle(swrm->dev);
-
-... here it's missing?
-
-I have a fix ready but thought I would check first if this was intentional
-
-https://github.com/thesofproject/linux/pull/3602/commits/6353eec8dc971c5f0fda0166ae1777f71784ea32
-
-> +	}
->  
->  	for (reg = 0; reg <= SWR_MSTR_MAX_REG_ADDR; reg += 4) {
->  		swrm->reg_read(swrm, reg, &reg_val);
->  		seq_printf(s_file, "0x%.3x: 0x%.2x\n", reg, reg_val);
->  	}
-> +	pm_runtime_mark_last_busy(swrm->dev);
-> +	pm_runtime_put_autosuspend(swrm->dev);
-> +
->  
->  	return 0;
+>> +	}
+>> +
+>> +	if (swrm->wake_irq > 0) {
+>> +		if (!irqd_irq_disabled(irq_get_irq_data(swrm->wake_irq)))
+>> +			disable_irq_nosync(swrm->wake_irq);
+>> +	}
+>> +
+>> +	pm_runtime_mark_last_busy(swrm->dev);
+>> +	pm_runtime_put_autosuspend(swrm->dev);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
