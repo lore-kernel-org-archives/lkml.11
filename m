@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2605DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3029AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381208AbiDTRid (ORCPT
+        id S1381201AbiDTRih (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 13:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
+        Wed, 20 Apr 2022 13:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381163AbiDTRiR (ORCPT
+        with ESMTP id S1381168AbiDTRiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Apr 2022 13:38:17 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8B01EACA
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:35:26 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id r12-20020a17090a690c00b001cb9bce2284so1319828pjj.8
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:35:26 -0700 (PDT)
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED6F205CA
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:35:30 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id t3-20020a656083000000b0039cf337edd6so1362175pgu.18
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 10:35:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=2gtKOU35OdURDLf2vQT2shOzxYpqDt8gAksR5jX1bwc=;
-        b=UerDsJvqa+wjYvw3RmbKSKCag/gLiIUrxMEtyPzWi98n6Txmyb9L0p4f6C/xpvujt/
-         4n0UBt++725LBe3gMgr4uUovUw6nE+Hw4QtwonboW1shQ8kUTq9NM4THEMu9xupN5p8Q
-         h0lMY8GOcEfBG9Jd+VD9WSBbh0m9vcagXxpQdSBwD/m2oW9zQML5rioZE1fRrGuNI7XP
-         cfJcUOM8YKcJziaSlz14VdViSGv0Y0EFdCG+8GofENoqBBvwl4TG8oFplLlEGBZymozj
-         FRLdJM6kQZibiIFtYct8U5D6CVmUycMqjiu5J4ansFXN4VivyCqxQ8gYvzCZNqQtp2Vl
-         xDWw==
+        bh=Oj7z6gF3UmFPqpARpPyMhAnqQVwNhos0ksWVaS2glIE=;
+        b=BHW4MoPP2qr6KkJ/bv2IsG+E7kEQXfxOROPLzA/Q0FGDcoBzR8RG3LaCyDgc+N/VZD
+         ebM5y3USor/huYodLjYAIrwk+3trvOyQqnp/3EC2drn0LDVzJNrGW8kjD8kAueuW1sCv
+         9SqEOSQTgoVR5UMh2Ggs4IzpLD3upFTu8YsObU3SkgGfjoSNkRzyw7tiqIWKO/1y60PD
+         dkJDpj3NgVL9l9i36GP4khKUbxDXLDKKaTmeZaADvtYr1NiPrMNl/FVAKN7Kki3AQ3VM
+         SjFcdRFoq2Mzy+dyYsA+ZUCkiTDeAMTcmYg9Sub9vwJqwC6vKt9J4BIu5yhgMpo9WgPi
+         Xn+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=2gtKOU35OdURDLf2vQT2shOzxYpqDt8gAksR5jX1bwc=;
-        b=eK1e1o7B/NB5y3GPs2XfbzJ++RCBMX2f2/r4bBgI3J8vmVGdStXco2IakRb2mclokY
-         W37ku+r5IvxtJ2JYzwXmQ5tDeIJZ5aYg/1PAPog+XE5tCfwqhStSUDBOMZzfXtpbpl7T
-         lGzDmiPrJo58WQZTsTOP10T7Fe5tcZuUxGQTDCdJ26Jj4m3Yv55+Kb7zhZGUOQVDyYIt
-         GTGERbyZKV10JoZ0SRu1N9avzebmOM3dRxHrJBSsThnGQZstYeYQnEHdBGkbTcEhGBtW
-         0IISPyvWsVmcJkyKIIb0W1fSQwMXMl44BTeHUE95JZee+73e6p4qr51cGsQFnG8ELVI8
-         X+6Q==
-X-Gm-Message-State: AOAM531Z2JvIi35YVjfaUEVbUoBEI9yCkyf3Da81Iw5jW/MqgksOxtRT
-        cTYGXeSEQpDLlDCp/4yZzNm8Alf/xqHPnf1hurhXIbzgGAns5gYUF2Ut+R8UDWdzjeA9U/0BUNI
-        feJEhumG93joSq6M3LEErJslyPKineHoJ8huTZXMLiYxCaCbnlgB/mm7LlEfosyg7rDgyJaHO
-X-Google-Smtp-Source: ABdhPJymfloTy7XRp3ZJVIqCgiFCZHKjPQQqzUk2UH9hwRmzj7Aft1fc3NOFXJsNrgjFBZge2vJSLIJb+4Hv
+        bh=Oj7z6gF3UmFPqpARpPyMhAnqQVwNhos0ksWVaS2glIE=;
+        b=7LOX5bK40eThlKPDXmtOfrz6UmVMyQK1SpaLkShdWzaVX7xETm8PZCc3XNOMIcVSvG
+         2vFBueSw1we9ale/YhGyagbo6dta7ducadaOKQfysaTvGyVZ/0H26+1iNoT0cxTvYbVv
+         7aeqGdr6P0tfEwBX+ku7MpK3vgfn7VDoRBWUscPC7F0UnEfT9TMvp9xwXer0iyqkYWJE
+         YyJ6/i6SyEf6Z4/6ke5UMZ7QJPwYoUIqzg/7cxSS2USwQ049sFucTC7Imcg8Dv+4/9e8
+         ejxp9f0QfHwAlh1EQPDda1nzet6DC8EDk+yvKYbjObOniO7S1srp0cM7waRiXwCHTihQ
+         rKCw==
+X-Gm-Message-State: AOAM530eFBcy6UE9Ugl76G13m+tJTs82ZXeQyov52TzLERfWnXOq8RQc
+        5J33Vhb5doabM7R3tM4J1dpcSNLXOCDLMfB4HbHJEcqAsURQTZNvDttR3FEvC2NGdvMd233zq1D
+        PCFRsEng87crC5tLXy7sHAeC7ukgrPDBytztwuJSYnf9aOXbyzwxyK2WHmR0Zuv9Axxv/5zEv
+X-Google-Smtp-Source: ABdhPJzDSmuusSkVSzZvaX/pcqMXPsz/BlZMEv7jAS+fuTBtjfO8rwJ48kCEMy1Q77d2R6RIlL4rmKwZsKAJ
 X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:6ea6:489a:aad6:761c])
- (user=bgardon job=sendgmr) by 2002:aa7:9019:0:b0:4fa:7532:9551 with SMTP id
- m25-20020aa79019000000b004fa75329551mr24877253pfo.26.1650476126053; Wed, 20
- Apr 2022 10:35:26 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 10:35:08 -0700
+ (user=bgardon job=sendgmr) by 2002:a17:90b:33ca:b0:1d4:d5ab:40b0 with SMTP id
+ lk10-20020a17090b33ca00b001d4d5ab40b0mr3119586pjb.96.1650476129737; Wed, 20
+ Apr 2022 10:35:29 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 10:35:10 -0700
 In-Reply-To: <20220420173513.1217360-1-bgardon@google.com>
-Message-Id: <20220420173513.1217360-6-bgardon@google.com>
+Message-Id: <20220420173513.1217360-8-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220420173513.1217360-1-bgardon@google.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH v6 05/10] KVM: selftests: Read binary stat data in lib
+Subject: [PATCH v6 07/10] KVM: x86: Fix errant brace in KVM capability handling
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -70,95 +70,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the code to read the binary stats data to the KVM selftests
-library. It will be re-used by other tests to check KVM behavior.
+The braces around the KVM_CAP_XSAVE2 block also surround the
+KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
+move the curly brace back to where it belongs.
 
-No functional change intended.
+Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
 
 Reviewed-by: David Matlack <dmatlack@google.com>
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  3 ++
- .../selftests/kvm/kvm_binary_stats_test.c     |  7 ++--
- tools/testing/selftests/kvm/lib/kvm_util.c    | 36 +++++++++++++++++++
- 3 files changed, 41 insertions(+), 5 deletions(-)
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index fabe46ddc1b2..2a3a4d9ed8e3 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -403,6 +403,9 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
- void read_stats_header(int stats_fd, struct kvm_stats_header *header);
- struct kvm_stats_desc *read_stats_desc(int stats_fd,
- 				       struct kvm_stats_header *header);
-+int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-+		   struct kvm_stats_desc *desc, uint64_t *data,
-+		   ssize_t max_elements);
- 
- uint32_t guest_get_vcpuid(void);
- 
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 8b31f8fc7e08..59677fae26e5 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -160,11 +160,8 @@ static void stats_test(int stats_fd)
- 	size_data = 0;
- 	for (i = 0; i < header.num_desc; ++i) {
- 		pdesc = (void *)stats_desc + i * size_desc;
--		ret = pread(stats_fd, stats_data,
--				pdesc->size * sizeof(*stats_data),
--				header.data_offset + size_data);
--		TEST_ASSERT(ret == pdesc->size * sizeof(*stats_data),
--				"Read data of KVM stats: %s", pdesc->name);
-+		read_stat_data(stats_fd, &header, pdesc, stats_data,
-+			       pdesc->size);
- 		size_data += pdesc->size * sizeof(*stats_data);
- 	}
- 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 12fa8cc88043..ea4ab64e5997 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -2615,3 +2615,39 @@ struct kvm_stats_desc *read_stats_desc(int stats_fd,
- 
- 	return stats_desc;
- }
-+
-+/*
-+ * Read stat data for a particular stat
-+ *
-+ * Input Args:
-+ *   stats_fd - the file descriptor for the binary stats file from which to read
-+ *   header - the binary stats metadata header corresponding to the given FD
-+ *   desc - the binary stat metadata for the particular stat to be read
-+ *   max_elements - the maximum number of 8-byte values to read into data
-+ *
-+ * Output Args:
-+ *   data - the buffer into which stat data should be read
-+ *
-+ * Return:
-+ *   The number of data elements read into data or -ERRNO on error.
-+ *
-+ * Read the data values of a specified stat from the binary stats interface.
-+ */
-+int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-+		   struct kvm_stats_desc *desc, uint64_t *data,
-+		   ssize_t max_elements)
-+{
-+	ssize_t size = min_t(ssize_t, desc->size, max_elements);
-+	ssize_t ret;
-+
-+	ret = pread(stats_fd, data, size * sizeof(*data),
-+		    header->data_offset + desc->offset);
-+
-+	/* ret from pread is in bytes. */
-+	ret = ret / sizeof(*data);
-+
-+	TEST_ASSERT(ret == size,
-+		    "Read data of KVM stats: %s", desc->name);
-+
-+	return ret;
-+}
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index ab336f7c82e4..665c1fa8bb57 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4382,10 +4382,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		if (r < sizeof(struct kvm_xsave))
+ 			r = sizeof(struct kvm_xsave);
+ 		break;
++	}
+ 	case KVM_CAP_PMU_CAPABILITY:
+ 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
+ 		break;
+-	}
+ 	case KVM_CAP_DISABLE_QUIRKS2:
+ 		r = KVM_X86_VALID_QUIRKS;
+ 		break;
 -- 
 2.36.0.rc0.470.gd361397f0d-goog
 
