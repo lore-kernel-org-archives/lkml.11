@@ -2,202 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7759C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F61C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379706AbiDTObl (ORCPT
+        id S1343983AbiDTOcy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
+        Wed, 20 Apr 2022 10:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231538AbiDTObh (ORCPT
+        with ESMTP id S231538AbiDTOcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:31:37 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEB544759;
-        Wed, 20 Apr 2022 07:28:50 -0700 (PDT)
-Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 4393CCD147;
-        Wed, 20 Apr 2022 14:24:59 +0000 (UTC)
-Received: from melee.fritz.box (unknown [77.244.183.192])
-        (Authenticated sender: luca.ceresoli@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id A9FA940005;
-        Wed, 20 Apr 2022 14:24:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650464695;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=psA6iM1Q1qYNvi/shbhgNJN0YpWI69oasIrc52R//8o=;
-        b=A/LejFrbDQbZww+XzPBLIe1NZDFAmF0mLv3HgI/lp8NT9R+TGZAq+lZtkrvy2cVXA39zQc
-        4ZfzRm3N9yVtW14/5VowhX8K073TIwMENBpfPLOsFhyEOrrD5VKpMg6rBG4+TLbUChvkGo
-        xl4OMwPCKahsIL0gPeTj/gKMcGQpyybc6RlDmAXVILD7HbcmB+EBYyL9V2Uc/nOfKWJIrV
-        BLEwV+qUHyY+X7vgaC4cgnB0YQgJY8ikxtdFEGWXZ/oDP6OLQXjGyaGDKsyCa2rCV24OGp
-        XQxOaq4I5ZkwyQiz9ePqRoF5TqPjzciiuYqrIXuxUnzp1q6KVb/NnH5hr5LBYQ==
-From:   Luca Ceresoli <luca.ceresoli@bootlin.com>
-To:     linux-gpio@vger.kernel.org
-Cc:     Luca Ceresoli <luca.ceresoli@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Jianqun Xu <jay.xu@rock-chips.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] pinctrl: rockchip: fix RK3308 pinmux bits
-Date:   Wed, 20 Apr 2022 16:24:31 +0200
-Message-Id: <20220420142432.248565-1-luca.ceresoli@bootlin.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Apr 2022 10:32:50 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10722DEB5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:30:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650465004; x=1682001004;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=hQFUSFKncVrleQOWMCchXY4SxJ71Fh4LDwpgNGBlicA=;
+  b=HVJthji6gELK0vYMsZJ1dYznpz5i4KRxH7YEYNoDPTF6hgXx9VrXGgKq
+   MHebHZzBEWAIdsmz6M9kg2qyrdfBKzjfSFyTDWkptnbNsk25ql05APOPd
+   Oe42i/nd0SMSeaDXAvDFKknOcg2py9HUsC0xJCxtNRv2BCoSDfrex+X/C
+   At3RzSD6uNaZlxwNl2DUWHn1OawO0PcFRV+6QaaC2c0xN4KTnOIuRIwZa
+   Ilq5kn/rrT7NZ++OMIvb+UFBuPEasIJqF6yqafm3jf8SMV/Xv8yFkYiZp
+   RRWSDAeIPMmwk6crpLtqbOhJvhzTZalT+m1sLttyvYJOv98BmHKP0FH7R
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251344176"
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="251344176"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 07:30:03 -0700
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="562124251"
+Received: from mileskin-mobl.amr.corp.intel.com (HELO [10.213.184.8]) ([10.213.184.8])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 07:30:02 -0700
+Message-ID: <20356d0e-74cc-1537-71f9-1c3f81e01b9f@intel.com>
+Date:   Wed, 20 Apr 2022 07:30:01 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] x86/mm/ptdump: display page encryption state
+Content-Language: en-US
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Shutemov, Kirill" <kirill.shutemov@intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220419143545.30295-1-rppt@kernel.org>
+ <3f27999a-35bc-3499-2bf8-afd0e8666068@intel.com>
+ <Yl+zdNP/5iHtPolv@kernel.org>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <Yl+zdNP/5iHtPolv@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the pinmuxing bits described in rk3308_mux_recalced_data are wrong,
-pointing to non-existing registers.
+On 4/20/22 00:17, Mike Rapoport wrote:
+>> _PAGE_ENC is AMD-specific. Could we do this with a new generic "cc_"
+>> function, maybe cc_is_enc()?
+>>
+>> Something like this would (I think) work for both SEV and TDX:
+>>
+>> bool cc_is_enc(u64 prot)
+>> {
+>> 	return cc_mkdec(prot) != prot;
+>> }
+> It works for SEV. I can repost with this and you'll confirm it works on
+> TDX?
 
-Fix the entire table.
-
-Also add a comment in front of each entry with the same string that appears
-in the datasheet to make the table easier to compare with the docs.
-
-This fix has been tested on real hardware for the gpio3b3_sel entry.
-
-Fixes: 7825aeb7b208 ("pinctrl: rockchip: add rk3308 SoC support")
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
----
- drivers/pinctrl/pinctrl-rockchip.c | 45 ++++++++++++++++++++----------
- 1 file changed, 30 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index a1b598b86aa9..65fa305b5f59 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -457,95 +457,110 @@ static  struct rockchip_mux_recalced_data rk3128_mux_recalced_data[] = {
- 
- static struct rockchip_mux_recalced_data rk3308_mux_recalced_data[] = {
- 	{
-+		/* gpio1b6_sel */
- 		.num = 1,
- 		.pin = 14,
- 		.reg = 0x28,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1b7_sel */
- 		.num = 1,
- 		.pin = 15,
- 		.reg = 0x2c,
- 		.bit = 0,
- 		.mask = 0x3
- 	}, {
-+		/* gpio1c2_sel */
- 		.num = 1,
- 		.pin = 18,
- 		.reg = 0x30,
- 		.bit = 4,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c3_sel */
- 		.num = 1,
- 		.pin = 19,
- 		.reg = 0x30,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c4_sel */
- 		.num = 1,
- 		.pin = 20,
- 		.reg = 0x30,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c5_sel */
- 		.num = 1,
- 		.pin = 21,
- 		.reg = 0x34,
- 		.bit = 0,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c6_sel */
- 		.num = 1,
- 		.pin = 22,
- 		.reg = 0x34,
- 		.bit = 4,
- 		.mask = 0xf
- 	}, {
-+		/* gpio1c7_sel */
- 		.num = 1,
- 		.pin = 23,
- 		.reg = 0x34,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio3b4_sel */
- 		.num = 3,
- 		.pin = 12,
- 		.reg = 0x68,
- 		.bit = 8,
- 		.mask = 0xf
- 	}, {
-+		/* gpio3b5_sel */
- 		.num = 3,
- 		.pin = 13,
- 		.reg = 0x68,
- 		.bit = 12,
- 		.mask = 0xf
- 	}, {
-+		/* gpio2a2_sel */
- 		.num = 2,
- 		.pin = 2,
--		.reg = 0x608,
--		.bit = 0,
--		.mask = 0x7
-+		.reg = 0x40,
-+		.bit = 4,
-+		.mask = 0x3
- 	}, {
-+		/* gpio2a3_sel */
- 		.num = 2,
- 		.pin = 3,
--		.reg = 0x608,
--		.bit = 4,
--		.mask = 0x7
-+		.reg = 0x40,
-+		.bit = 6,
-+		.mask = 0x3
- 	}, {
-+		/* gpio2c0_sel */
- 		.num = 2,
- 		.pin = 16,
--		.reg = 0x610,
--		.bit = 8,
--		.mask = 0x7
-+		.reg = 0x50,
-+		.bit = 0,
-+		.mask = 0x3
- 	}, {
-+		/* gpio3b2_sel */
- 		.num = 3,
- 		.pin = 10,
--		.reg = 0x610,
--		.bit = 0,
--		.mask = 0x7
-+		.reg = 0x68,
-+		.bit = 4,
-+		.mask = 0x3
- 	}, {
-+		/* gpio3b3_sel */
- 		.num = 3,
- 		.pin = 11,
--		.reg = 0x610,
--		.bit = 4,
--		.mask = 0x7
-+		.reg = 0x68,
-+		.bit = 6,
-+		.mask = 0x3
- 	},
- };
- 
--- 
-2.25.1
-
+I don't have a TDX setup handy, but Kirill certainly does.  I'm sure
+he'd be happy to give you a tested-by.
