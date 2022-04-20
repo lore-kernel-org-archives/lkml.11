@@ -2,164 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB11C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377657AbiDTKiN (ORCPT
+        id S1377685AbiDTKiU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
+        Wed, 20 Apr 2022 06:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377672AbiDTKhf (ORCPT
+        with ESMTP id S1377681AbiDTKhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:37:35 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF8618D;
-        Wed, 20 Apr 2022 03:34:47 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id bu29so2251260lfb.0;
-        Wed, 20 Apr 2022 03:34:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HyXkNyvFoe2pY1RyCllxHpxefVN6lfUijwnOgvMkxcw=;
-        b=qeVY+gdjEyyR+9ndlkpsNmVRgsz1f8Bmm2TLtLrgXhv5PH7+HS56pxBXAKpMvoX2kC
-         f3KrA54To9v+ECO8Ghn/HkHV05ePsinZPK2NuGjHPgplplanHuF+uAD/nYgF2hFKATFw
-         iVCppbrKGq7feKtLKg0R45P0xkqJIfhCUgb8O1ALebHqZAnhjVNEHFAa1nY0g06NUHV+
-         lZaSVsgvfajK4rC28j8W4ieQG8EblnaUhDrVq+LCxxMqFvhheRlBKq/y9npSwdNvHSat
-         zOCTi/IfbFyuoq8273+Y7pxfERLWE4r0pRSVZNBJzqiTpForTa/AVEMigWQKoSM++xlf
-         nF+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HyXkNyvFoe2pY1RyCllxHpxefVN6lfUijwnOgvMkxcw=;
-        b=C2MTp4n6LDevY7X962PARapufjluGnukOWWQcF6QTvHRfBdkID2EghsFnPBScwSgga
-         1ExIpFinprHWjMZNxKL5To7yBlwumPi0AtM77T/m+8qmWsvomLNe/MWyhVPTE6KiGrIg
-         PqWAG9AJVrwWiRshEPPHTofM6mxNWiVy/oQehDGu2Tpn78E8JWfm1hmGkqxN+UKeYcyM
-         P6dmaGOodbFnsMlw9elPncL+vgNl6qtoL3Rpp45e4L8cL8LK3DClEwXODJeQ0MXTpVn+
-         iDfhewF6nWPi+wguuy1G8hcXnnRLDti6YLjh/i/tJLrdNCNu/YPtjzPErz2fraYxRat+
-         jyiQ==
-X-Gm-Message-State: AOAM5328FPLZ2TrG+xIFnhxmes+AgqFoC/fjHX67KB4poEbl0GBr+H1W
-        oT115P36akM1cwyRne0XSuYLvy2El6hc7pqmwTM=
-X-Google-Smtp-Source: ABdhPJzm1QGqh6TjEypj7GEX7XEZ7pCzBcrIDZLkj7IyJZPCNyNnu4yN1GZ3MoDcSeno88680nflcMtlyPzTS8cx8ZQ=
-X-Received: by 2002:a05:6512:31d3:b0:471:b18f:b604 with SMTP id
- j19-20020a05651231d300b00471b18fb604mr4013534lfe.96.1650450885656; Wed, 20
- Apr 2022 03:34:45 -0700 (PDT)
+        Wed, 20 Apr 2022 06:37:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE822DA4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:34:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1650450891; x=1681986891;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=35s8zzgaSLVt8GRMDwieLQnpD+4vW72LtpsgbSJB94o=;
+  b=Ki+Kwf/9DnMkNJtcjiF/tHhv/HyO84NrmAuMJlWbIzHidV0n7XMTad17
+   nCZH/2/AqAW6lL5EWpT7XiQ2eAyd1BlO7wAXuZYcswerk51eI4f9dWrTn
+   /v19USaMGwihUAKkPxpyCf1nXFZSNNKtjQfx9K9cKGOTigIfFjS6bamrP
+   P+6G41Sh+wcdwomSoIrYWSHPecgdekW69UfiRSRovblppr0GtYF/HcdTL
+   RsW0XJE9BywMEUWXKJdPcUmAsxoEypNWrCfXKdKRml11MT5zj8earyU6x
+   mWgNGY/5m2QW/j6rb9U9yImTk2cwmvNPIIxwxLeDV8nc+7QUDS4ULgnY4
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,275,1643698800"; 
+   d="scan'208";a="161091319"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2022 03:34:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 20 Apr 2022 03:34:51 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 20 Apr 2022 03:34:49 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <p.yadav@ti.com>, <michael@walle.cc>
+CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <Takahiro.Kuwano@infineon.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH v4 08/11] mtd: spi-nor: spansion: Rework spi_nor_cypress_octal_dtr_enable()
+Date:   Wed, 20 Apr 2022 13:34:24 +0300
+Message-ID: <20220420103427.47867-9-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220420103427.47867-1-tudor.ambarus@microchip.com>
+References: <20220420103427.47867-1-tudor.ambarus@microchip.com>
 MIME-Version: 1.0
-References: <20220418043735.11441-1-patrick.wang.shcn@gmail.com>
- <20220418143404.55c8fcab@gandalf.local.home> <CAGcnep8bH4Nncbt3t+VRLff35ZyD8JyzHcEgkq-u6TEq47jqzQ@mail.gmail.com>
-In-Reply-To: <CAGcnep8bH4Nncbt3t+VRLff35ZyD8JyzHcEgkq-u6TEq47jqzQ@mail.gmail.com>
-From:   patrick wang <patrick.wang.shcn@gmail.com>
-Date:   Wed, 20 Apr 2022 18:34:34 +0800
-Message-ID: <CAGcnep_Gx+3KiUvDVronYKn_divU3OM-RQEOPZakv7MRYh4EJw@mail.gmail.com>
-Subject: Re: [PATCH] rcu: ftrace: avoid tracing a few functions executed in multi_cpu_stop()
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 12:06 PM patrick wang
-<patrick.wang.shcn@gmail.com> wrote:
->
-> On Tue, Apr 19, 2022 at 2:34 AM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > On Mon, 18 Apr 2022 12:37:35 +0800
-> > Patrick Wang <patrick.wang.shcn@gmail.com> wrote:
-> >
-> > > A few functions are in the call chain of rcu_momentary_dyntick_idle()
-> > > which is executed in multi_cpu_stop() and marked notrace. They are running
-> > > in traced when ftrace modify code. This may cause non-ftrace_modify_code
-> > > CPUs stall:
-> >
-> > I'm confused by this. How is traced functions causing this exactly? Is this
-> > on RISC-V?
->
-> During ftrace modify code, these functions are running and their
-> instructions will
-> be modified by ftrace (I see the nop instructions in these functions
-> from the compiler).
-> When instructions are being modified, they shouldn't be executed. Or
-> the executor
-> may behave unpredictably.
->
+Introduce template operation to remove code duplication.
+Split spi_nor_cypress_octal_dtr_enable() in
+spi_nor_cypress_octal_dtr_ena() spi_nor_cypress_octal_dtr_dis() as it no
+longer made sense to try to keep everything alltogether: too many
+"if (enable)" throughout the code, which made the code difficult to read.
+Add debug messages in case spi_nor_read_id() fails.
 
-Sorry for the format. Need get used to gmail.
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Reviewed-by: Michael Walle <michael@walle.cc>
+---
+ drivers/mtd/spi-nor/spansion.c | 128 ++++++++++++++++++---------------
+ 1 file changed, 69 insertions(+), 59 deletions(-)
 
-These functions are running within stop machine and ftrace modify
-code by using stop machine to ensure the safety on some
-architectures(e.g. RISC-V). These functions' instructions will be
-modified during ftrace modifying code. When instructions are being
-modified, they shouldn't be executed typically. Or the executor
-may behave unpredictably.
+diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
+index c5988312cc91..56b43074ef17 100644
+--- a/drivers/mtd/spi-nor/spansion.c
++++ b/drivers/mtd/spi-nor/spansion.c
+@@ -23,87 +23,81 @@
+ #define SPINOR_REG_CYPRESS_CFR5V_OCT_DTR_DS	0
+ #define SPINOR_OP_CYPRESS_RD_FAST		0xee
+ 
+-/**
+- * cypress_nor_octal_dtr_enable() - Enable octal DTR on Cypress flashes.
+- * @nor:		pointer to a 'struct spi_nor'
+- * @enable:              whether to enable or disable Octal DTR
+- *
+- * This also sets the memory access latency cycles to 24 to allow the flash to
+- * run at up to 200MHz.
+- *
+- * Return: 0 on success, -errno otherwise.
+- */
+-static int cypress_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
++/* Cypress SPI NOR flash operations. */
++#define CYPRESS_NOR_WR_ANY_REG_OP(naddr, addr, ndata, buf)		\
++	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WR_ANY_REG, 0),		\
++		   SPI_MEM_OP_ADDR(naddr, addr, 0),			\
++		   SPI_MEM_OP_NO_DUMMY,					\
++		   SPI_MEM_OP_DATA_OUT(ndata, buf, 0))
++
++static int cypress_nor_octal_dtr_en(struct spi_nor *nor)
+ {
+ 	struct spi_mem_op op;
+ 	u8 *buf = nor->bouncebuf;
+ 	int ret;
+ 
+-	if (enable) {
+-		/* Use 24 dummy cycles for memory array reads. */
+-		ret = spi_nor_write_enable(nor);
+-		if (ret)
+-			return ret;
++	/* Use 24 dummy cycles for memory array reads. */
++	*buf = SPINOR_REG_CYPRESS_CFR2V_MEMLAT_11_24;
++	op = (struct spi_mem_op)
++		CYPRESS_NOR_WR_ANY_REG_OP(3, SPINOR_REG_CYPRESS_CFR2V, 1, buf);
+ 
+-		*buf = SPINOR_REG_CYPRESS_CFR2V_MEMLAT_11_24;
+-		op = (struct spi_mem_op)
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WR_ANY_REG, 1),
+-				   SPI_MEM_OP_ADDR(3, SPINOR_REG_CYPRESS_CFR2V,
+-						   1),
+-				   SPI_MEM_OP_NO_DUMMY,
+-				   SPI_MEM_OP_DATA_OUT(1, buf, 1));
++	ret = spi_nor_write_any_volatile_reg(nor, &op, nor->reg_proto);
++	if (ret)
++		return ret;
+ 
+-		ret = spi_mem_exec_op(nor->spimem, &op);
+-		if (ret)
+-			return ret;
++	ret = spi_nor_wait_till_ready(nor);
++	if (ret)
++		return ret;
+ 
+-		ret = spi_nor_wait_till_ready(nor);
+-		if (ret)
+-			return ret;
++	nor->read_dummy = 24;
+ 
+-		nor->read_dummy = 24;
+-	}
++	/* Set the octal and DTR enable bits. */
++	buf[0] = SPINOR_REG_CYPRESS_CFR5V_OCT_DTR_EN;
++	op = (struct spi_mem_op)
++		CYPRESS_NOR_WR_ANY_REG_OP(3, SPINOR_REG_CYPRESS_CFR5V, 1, buf);
+ 
+-	/* Set/unset the octal and DTR enable bits. */
+-	ret = spi_nor_write_enable(nor);
++	ret = spi_nor_write_any_volatile_reg(nor, &op, nor->reg_proto);
+ 	if (ret)
+ 		return ret;
+ 
+-	if (enable) {
+-		buf[0] = SPINOR_REG_CYPRESS_CFR5V_OCT_DTR_EN;
+-	} else {
+-		/*
+-		 * The register is 1-byte wide, but 1-byte transactions are not
+-		 * allowed in 8D-8D-8D mode. Since there is no register at the
+-		 * next location, just initialize the value to 0 and let the
+-		 * transaction go on.
+-		 */
+-		buf[0] = SPINOR_REG_CYPRESS_CFR5V_OCT_DTR_DS;
+-		buf[1] = 0;
++	/* Read flash ID to make sure the switch was successful. */
++	ret = spi_nor_read_id(nor, 4, 3, buf, SNOR_PROTO_8_8_8_DTR);
++	if (ret) {
++		dev_dbg(nor->dev, "error %d reading JEDEC ID after enabling 8D-8D-8D mode\n", ret);
++		return ret;
+ 	}
+ 
+-	op = (struct spi_mem_op)
+-		SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WR_ANY_REG, 1),
+-			   SPI_MEM_OP_ADDR(enable ? 3 : 4,
+-					   SPINOR_REG_CYPRESS_CFR5V,
+-					   1),
+-			   SPI_MEM_OP_NO_DUMMY,
+-			   SPI_MEM_OP_DATA_OUT(enable ? 1 : 2, buf, 1));
++	if (memcmp(buf, nor->info->id, nor->info->id_len))
++		return -EINVAL;
+ 
+-	if (!enable)
+-		spi_nor_spimem_setup_op(nor, &op, SNOR_PROTO_8_8_8_DTR);
++	return 0;
++}
+ 
+-	ret = spi_mem_exec_op(nor->spimem, &op);
++static int cypress_nor_octal_dtr_dis(struct spi_nor *nor)
++{
++	struct spi_mem_op op;
++	u8 *buf = nor->bouncebuf;
++	int ret;
++
++	/*
++	 * The register is 1-byte wide, but 1-byte transactions are not allowed
++	 * in 8D-8D-8D mode. Since there is no register at the next location,
++	 * just initialize the value to 0 and let the transaction go on.
++	 */
++	buf[0] = SPINOR_REG_CYPRESS_CFR5V_OCT_DTR_DS;
++	buf[1] = 0;
++	op = (struct spi_mem_op)
++		CYPRESS_NOR_WR_ANY_REG_OP(4, SPINOR_REG_CYPRESS_CFR5V, 2, buf);
++	ret = spi_nor_write_any_volatile_reg(nor, &op, SNOR_PROTO_8_8_8_DTR);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* Read flash ID to make sure the switch was successful. */
+-	if (enable)
+-		ret = spi_nor_read_id(nor, 4, 3, buf, SNOR_PROTO_8_8_8_DTR);
+-	else
+-		ret = spi_nor_read_id(nor, 0, 0, buf, SNOR_PROTO_1_1_1);
+-	if (ret)
++	ret = spi_nor_read_id(nor, 0, 0, buf, SNOR_PROTO_1_1_1);
++	if (ret) {
++		dev_dbg(nor->dev, "error %d reading JEDEC ID after disabling 8D-8D-8D mode\n", ret);
+ 		return ret;
++	}
+ 
+ 	if (memcmp(buf, nor->info->id, nor->info->id_len))
+ 		return -EINVAL;
+@@ -111,6 +105,22 @@ static int cypress_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
+ 	return 0;
+ }
+ 
++/**
++ * cypress_nor_octal_dtr_enable() - Enable octal DTR on Cypress flashes.
++ * @nor:		pointer to a 'struct spi_nor'
++ * @enable:              whether to enable or disable Octal DTR
++ *
++ * This also sets the memory access latency cycles to 24 to allow the flash to
++ * run at up to 200MHz.
++ *
++ * Return: 0 on success, -errno otherwise.
++ */
++static int cypress_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
++{
++	return enable ? cypress_nor_octal_dtr_en(nor) :
++			cypress_nor_octal_dtr_dis(nor);
++}
++
+ static void s28hs512t_default_init(struct spi_nor *nor)
+ {
+ 	nor->params->octal_dtr_enable = cypress_nor_octal_dtr_enable;
+-- 
+2.25.1
 
->
-> >
-> > >
-> > > [   72.686113] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-> > > [   72.687344] rcu:   1-...!: (0 ticks this GP) idle=14f/1/0x4000000000000000 softirq=3397/3397 fqs=0
-> > > [   72.687800] rcu:   3-...!: (0 ticks this GP) idle=ee9/1/0x4000000000000000 softirq=5168/5168 fqs=0
-> > > [   72.688280]        (detected by 0, t=8137 jiffies, g=5889, q=2 ncpus=4)
-> > > [   72.688739] Task dump for CPU 1:
-> > > [   72.688991] task:migration/1     state:R  running task     stack:    0 pid:   19 ppid:     2 flags:0x00000000
-> > > [   72.689594] Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
-> > > [   72.690242] Call Trace:
-> > > [   72.690603] Task dump for CPU 3:
-> > > [   72.690761] task:migration/3     state:R  running task     stack:    0 pid:   29 ppid:     2 flags:0x00000000
-> > > [   72.691135] Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
-> > > [   72.691474] Call Trace:
-> > > [   72.691733] rcu: rcu_preempt kthread timer wakeup didn't happen for 8136 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
-> > > [   72.692180] rcu:   Possible timer handling issue on cpu=2 timer-softirq=594
-> > > [   72.692485] rcu: rcu_preempt kthread starved for 8137 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2
-> > > [   72.692876] rcu:   Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
-> > > [   72.693232] rcu: RCU grace-period kthread stack dump:
-> > > [   72.693433] task:rcu_preempt     state:I stack:    0 pid:   14 ppid:     2 flags:0x00000000
-> > > [   72.693788] Call Trace:
-> > > [   72.694018] [<ffffffff807f3740>] schedule+0x56/0xc2
-> > > [   72.694306] [<ffffffff807f9cd8>] schedule_timeout+0x82/0x184
-> > > [   72.694539] [<ffffffff8007c456>] rcu_gp_fqs_loop+0x19a/0x318
-> > > [   72.694809] [<ffffffff8007e408>] rcu_gp_kthread+0x11a/0x140
-> > > [   72.695325] [<ffffffff800324d6>] kthread+0xee/0x118
-> > > [   72.695657] [<ffffffff8000398a>] ret_from_exception+0x0/0x14
-> > > [   72.696089] rcu: Stack dump where RCU GP kthread last ran:
-> > > [   72.696383] Task dump for CPU 2:
-> > > [   72.696562] task:migration/2     state:R  running task     stack:    0 pid:   24 ppid:     2 flags:0x00000000
-> > > [   72.697059] Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
-> > > [   72.697471] Call Trace:
-> > >
-> > > Mark rcu_preempt_deferred_qs(), rcu_preempt_need_deferred_qs() and
-> > > rcu_preempt_deferred_qs_irqrestore() notrace to avoid this.
-> > >
-> >
-> > The rcu_momentary_dyntick_idle() was marked notrace because of RISC-V not
-> > being able to call functions from within stop machine. If that's what is
-> > being prevented,
->
-
-Yes, that is. Commit 4230e2deaa48 (stop_machine, rcu: Mark
-functions as notrace) marked rcu_momentary_dyntick_idle() notrace.
-But this issue still exists to some extent.
-
-Thanks,
-Patrick
-
->
-> > then I'm fine with this (although I'm thinking we need
-> > different kinds of "notrace" for different architectures as one arch's
-> > limitation should not be cause for another's).
-> >
->
-> Totally agree with this. The "notrace" currently is heavy, can effect all archs.
->
-> Thanks
-> Patrick
->
->
-> > But before I ack this patch, I want to understand the real issues here.
-> >
-> > -- Steve
