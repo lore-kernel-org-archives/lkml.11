@@ -2,141 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359114AbiDTDGi (ORCPT
+        id S1359160AbiDTDGl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 23:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
+        Tue, 19 Apr 2022 23:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359102AbiDTDGQ (ORCPT
+        with ESMTP id S1359110AbiDTDGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 23:06:16 -0400
-Received: from esa2.hc1455-7.c3s2.iphmx.com (esa2.hc1455-7.c3s2.iphmx.com [207.54.90.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E7939172
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:03:31 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="70387731"
-X-IronPort-AV: E=Sophos;i="5.90,274,1643641200"; 
-   d="scan'208";a="70387731"
-Received: from unknown (HELO oym-r1.gw.nic.fujitsu.com) ([210.162.30.89])
-  by esa2.hc1455-7.c3s2.iphmx.com with ESMTP; 20 Apr 2022 12:02:28 +0900
-Received: from oym-m3.gw.nic.fujitsu.com (oym-nat-oym-m3.gw.nic.fujitsu.com [192.168.87.60])
-        by oym-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id DDD36575A4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:02:26 +0900 (JST)
-Received: from yto-om1.fujitsu.com (yto-om1.o.css.fujitsu.com [10.128.89.162])
-        by oym-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 01906D95F2
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 12:02:26 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om1.fujitsu.com (Postfix) with ESMTP id 7A6F24060C93E;
-        Wed, 20 Apr 2022 12:02:25 +0900 (JST)
-From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        fenghua.yu@intel.com, reinette.chatre@intel.com
-Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH v3 6/9] x86: resctrl: pseudo_lock: Fix to restore to original value when re-enabling hardware prefetch register
-Date:   Wed, 20 Apr 2022 12:02:20 +0900
-Message-Id: <20220420030223.689259-7-tarumizu.kohei@fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220420030223.689259-1-tarumizu.kohei@fujitsu.com>
-References: <20220420030223.689259-1-tarumizu.kohei@fujitsu.com>
+        Tue, 19 Apr 2022 23:06:19 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F8239815
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:03:32 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id q75so360443qke.6
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CCQfkH82Dpv/txvDTzosoWFisSIFdL3o03R2vl6HtCM=;
+        b=VkQntLRqujQdmG7D7luBRFasyuLd5VGWWy2Njp865rEjOFK2iFgQg2wIml/G4Yj100
+         WSzW6E+o2/57UuXD7vlNZ3VRDQ89pvsH/XFRIyKM3s/VpvLEeIb1eldZLXbogwuXi9mj
+         Pwk4trmtwiR9vdLZsHvQ1gimsQSuE+5VxzpoCZBM5VEehNtPP8tVSdoOWD6nQ8TjvX+s
+         c6R9mQebiqxK+PQpmshJAp8Kbc4Mbl0SubhIMQUDzs7EYfbK4sh1Y+p8r5XLpFgAbPnB
+         uB0LZdqJga8u7r+cXp529exkgtFXwENl+quRn6bOdPolFbpx8tDw7IWFvV3LOQlrDviv
+         cOpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CCQfkH82Dpv/txvDTzosoWFisSIFdL3o03R2vl6HtCM=;
+        b=BYFyh9G5dCKFkPepNrwc7sTmGP+WZSsPf0vjHEjhUX/Jucu0AtGr9CW/8N48EgGa7u
+         g+YK02nze53YVRIK2xe+SuwkWcBk0aX2pd/rNPgh3TXosyPleHwx3ZZkxqtVXavwiZI/
+         JPFO/MOT/Gxu0X59eFX3iTz9gmcpE4fJR/6eYL2PXBVhRmJD+TgT4PquMHqCYof6QAhD
+         U4E4wJKY3oWMonsN+eWzTDK4qGGNLeJa0WIbig0js2ARzbzw4VUFj2h506zAdQYwBkIE
+         s2NShmT91rvC/HkFXwscCD6tS6fOma7i+xuk/YhhmcuNQ0FVHaYSZoxIWIKT0i//pKqZ
+         ZpaQ==
+X-Gm-Message-State: AOAM531s44ipRdy2xpUhXusPLlneNvuZ2p0e9O5hj7/1J4d9KRGMcLWq
+        AkPZ7FvRm02Wrg5KDisalxs=
+X-Google-Smtp-Source: ABdhPJy1C1g2Kf4YHazszq9HYtDEp84aNZiOFK2Mc6gSxH+oWhyqN7sscDsElcGcafi1CGbWt1/Z0g==
+X-Received: by 2002:a05:620a:404f:b0:67e:a3ed:472c with SMTP id i15-20020a05620a404f00b0067ea3ed472cmr11563949qko.556.1650423811803;
+        Tue, 19 Apr 2022 20:03:31 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id w4-20020a05620a0e8400b0067b1bcd081csm843587qkm.66.2022.04.19.20.03.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 20:03:31 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     pierre-louis.bossart@linux.intel.com
+Cc:     lgirdwood@gmail.com, ranjani.sridharan@linux.intel.com,
+        kai.vehmanen@linux.intel.com, daniel.baluta@nxp.com,
+        broonie@kernel.org, sound-open-firmware@alsa-project.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ASoC: SOF: using pm_runtime_resume_and_get to simplify the code
+Date:   Wed, 20 Apr 2022 03:03:15 +0000
+Message-Id: <20220420030315.2575691-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current pseudo_lock.c code overwrittes the value of the
-MSR_MISC_FEATURE_CONTROL to 0 even if the original value is not 0.
-Therefore, modify it to save and restore the original values.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- arch/x86/kernel/cpu/resctrl/pseudo_lock.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ sound/soc/sof/sof-client-probes.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/pseudo_lock.c b/arch/x86/kernel/cpu/resctrl/pseudo_lock.c
-index db813f819ad6..2d713c20f55f 100644
---- a/arch/x86/kernel/cpu/resctrl/pseudo_lock.c
-+++ b/arch/x86/kernel/cpu/resctrl/pseudo_lock.c
-@@ -420,6 +420,7 @@ static int pseudo_lock_fn(void *_rdtgrp)
- 	struct pseudo_lock_region *plr = rdtgrp->plr;
- 	u32 rmid_p, closid_p;
- 	unsigned long i;
-+	u64 saved_msr;
- #ifdef CONFIG_KASAN
- 	/*
- 	 * The registers used for local register variables are also used
-@@ -463,6 +464,7 @@ static int pseudo_lock_fn(void *_rdtgrp)
- 	 * the buffer and evict pseudo-locked memory read earlier from the
- 	 * cache.
- 	 */
-+	saved_msr = __rdmsr(MSR_MISC_FEATURE_CONTROL);
- 	__wrmsr(MSR_MISC_FEATURE_CONTROL, prefetch_disable_bits, 0x0);
- 	closid_p = this_cpu_read(pqr_state.cur_closid);
- 	rmid_p = this_cpu_read(pqr_state.cur_rmid);
-@@ -514,7 +516,7 @@ static int pseudo_lock_fn(void *_rdtgrp)
- 	__wrmsr(IA32_PQR_ASSOC, rmid_p, closid_p);
+diff --git a/sound/soc/sof/sof-client-probes.c b/sound/soc/sof/sof-client-probes.c
+index 797dedb26163..c4c6e03c8133 100644
+--- a/sound/soc/sof/sof-client-probes.c
++++ b/sound/soc/sof/sof-client-probes.c
+@@ -503,10 +503,9 @@ static ssize_t sof_probes_dfs_points_read(struct file *file, char __user *to,
+ 	if (!buf)
+ 		return -ENOMEM;
  
- 	/* Re-enable the hardware prefetcher(s) */
--	wrmsr(MSR_MISC_FEATURE_CONTROL, 0x0, 0x0);
-+	wrmsrl(MSR_MISC_FEATURE_CONTROL, saved_msr);
- 	local_irq_enable();
- 
- 	plr->thread_done = 1;
-@@ -873,12 +875,14 @@ static int measure_cycles_lat_fn(void *_plr)
- 	struct pseudo_lock_region *plr = _plr;
- 	unsigned long i;
- 	u64 start, end;
-+	u32 saved_low, saved_high;
- 	void *mem_r;
- 
- 	local_irq_disable();
- 	/*
- 	 * Disable hardware prefetchers.
- 	 */
-+	rdmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
- 	wrmsr(MSR_MISC_FEATURE_CONTROL, prefetch_disable_bits, 0x0);
- 	mem_r = READ_ONCE(plr->kmem);
- 	/*
-@@ -895,7 +899,7 @@ static int measure_cycles_lat_fn(void *_plr)
- 		end = rdtsc_ordered();
- 		trace_pseudo_lock_mem_latency((u32)(end - start));
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0 && ret != -EACCES) {
+ 		dev_err_ratelimited(dev, "debugfs read failed to resume %d\n", ret);
+-		pm_runtime_put_noidle(dev);
+ 		goto exit;
  	}
--	wrmsr(MSR_MISC_FEATURE_CONTROL, 0x0, 0x0);
-+	wrmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
- 	local_irq_enable();
- 	plr->thread_done = 1;
- 	wake_up_interruptible(&plr->lock_thread_wq);
-@@ -945,6 +949,7 @@ static int measure_residency_fn(struct perf_event_attr *miss_attr,
- 	unsigned long i;
- 	void *mem_r;
- 	u64 tmp;
-+	u32 saved_low, saved_high;
  
- 	miss_event = perf_event_create_kernel_counter(miss_attr, plr->cpu,
- 						      NULL, NULL, NULL);
-@@ -973,6 +978,7 @@ static int measure_residency_fn(struct perf_event_attr *miss_attr,
- 	/*
- 	 * Disable hardware prefetchers.
- 	 */
-+	rdmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
- 	wrmsr(MSR_MISC_FEATURE_CONTROL, prefetch_disable_bits, 0x0);
+@@ -568,10 +567,9 @@ sof_probes_dfs_points_write(struct file *file, const char __user *from,
  
- 	/* Initialize rest of local variables */
-@@ -1031,7 +1037,7 @@ static int measure_residency_fn(struct perf_event_attr *miss_attr,
- 	 */
- 	rmb();
- 	/* Re-enable hardware prefetchers */
--	wrmsr(MSR_MISC_FEATURE_CONTROL, 0x0, 0x0);
-+	wrmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
- 	local_irq_enable();
- out_hit:
- 	perf_event_release_kernel(hit_event);
+ 	desc = (struct sof_probe_point_desc *)tkns;
+ 
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0 && ret != -EACCES) {
+ 		dev_err_ratelimited(dev, "debugfs write failed to resume %d\n", ret);
+-		pm_runtime_put_noidle(dev);
+ 		goto exit;
+ 	}
+ 
+@@ -621,10 +619,9 @@ sof_probes_dfs_points_remove_write(struct file *file, const char __user *from,
+ 		goto exit;
+ 	}
+ 
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0) {
+ 		dev_err_ratelimited(dev, "debugfs write failed to resume %d\n", ret);
+-		pm_runtime_put_noidle(dev);
+ 		goto exit;
+ 	}
+ 
 -- 
-2.27.0
+2.25.1
+
 
