@@ -2,126 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B694C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2250BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 13:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378941AbiDTNZC (ORCPT
+        id S1378950AbiDTNZj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 09:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        Wed, 20 Apr 2022 09:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233144AbiDTNZA (ORCPT
+        with ESMTP id S233144AbiDTNZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 09:25:00 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7890A427FF
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:22:14 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id lc2so3466130ejb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 06:22:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ng4rT6I4vcHmv4/7ezO3PQ9fpnN0wzaNSUcZ6IscV4k=;
-        b=hisOYUiR4cenD1rp5qPKSBG+WAk64wKCLuwUm8RftXBLSnJNAj+b10FaYqJQ3H8Y9I
-         Ll8ySPsAvRZBbFLxQqCxiKgJ0Raz+OKxSEH123P/ID9N4IMOW/8S2ZkWhDmPtn4DAB/m
-         CJXmIRJgEXBZ86KiTOsgJKbzAQqulyO6SC+rF1OBjPNBAOlcac+iA0cVT2Zag6WtfN5n
-         hByBi+9SfZHZRP99RvjAjR8Z+1Dv2JwgaaEJBwfKpHlGXP9Cqug0aiqIne7waUJcKbUf
-         gdKJgXh+ank2b2a3ZSQAavn0rdJK8My3fLILeOefKuQTSWeoq0kT/7SmppbOo6yXDD9L
-         H7QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ng4rT6I4vcHmv4/7ezO3PQ9fpnN0wzaNSUcZ6IscV4k=;
-        b=faGGspw3AedWwV3onWueWBb6ZZpEcINrSftYGphHjaqtKimjueonc0pM+R6MY4vz5n
-         xTpXk3N7RrzqSB0+9FCGEtZZMEF3NQtLLHr4vtPVnsmm8gTVlOZ/pgSEPFwKXiullnJy
-         t/xsXZXEK6uoNgOCpx9zS7UYTbg2TrSUkTCAUTH7wkvUQ7l7mgT2dLLd7UD2/KLgrdqV
-         /aU6Owyn34tvAUldNn9b2DK1XVyCxSlrwY4jutnon5ZmRlPVzwWf3VMaVRkN95/ttijt
-         3/o/cJevLZT1Wl3okNCNGm0d4Y9AdT69SSxhFjq376dmlbzBS3BY7eMoBnpY/J9+O1n9
-         L6YA==
-X-Gm-Message-State: AOAM530Gv5PmiaA1aQvNNHFjiHACrnEeFZk/XqVPwmq/DkwFClORKzzF
-        Zh730IzlDXED9lCEjPsMAP4=
-X-Google-Smtp-Source: ABdhPJwU9wCOFteWozSkt5bu3lmUNtDTL6NNULRKJcKJoaUjbAjkFKxtS6lDaecx+VwibuEjcyEeBQ==
-X-Received: by 2002:a17:906:60c2:b0:6e7:681e:b4b7 with SMTP id f2-20020a17090660c200b006e7681eb4b7mr18667712ejk.130.1650460932892;
-        Wed, 20 Apr 2022 06:22:12 -0700 (PDT)
-Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id w7-20020a1709061f0700b006ec8197e8a4sm6255708ejj.97.2022.04.20.06.22.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 06:22:11 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Julia Lawall <julia.lawall@inria.fr>, ira.weiny@intel.com
-Cc:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        outreachy@lists.linux.dev, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] xen:  Convert kmap() to kmap_local_page()
-Date:   Wed, 20 Apr 2022 15:22:10 +0200
-Message-ID: <2940450.687JKscXgg@leap>
-In-Reply-To: <alpine.DEB.2.22.394.2204200759080.2937@hadrien>
-References: <20220419234328.10346-1-eng.alaamohamedsoliman.am@gmail.com> <alpine.DEB.2.22.394.2204200759080.2937@hadrien>
+        Wed, 20 Apr 2022 09:25:36 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012B242A27;
+        Wed, 20 Apr 2022 06:22:50 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23KCDeNo024516;
+        Wed, 20 Apr 2022 13:22:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=kN02BilbPjciMpzpxMIq+yOFK1czBMc+s5hK9BVxh4c=;
+ b=BX1RTwRzP/YV7cOaoaiVs70HelVItoebavNwqKBjIlaFutAlo5TGTWvlWNiNqn//k1PB
+ 7PMPiqx/xI3cX7SU3PzBckn4MSp5HGNSjMgJTth/eB+cyMPO6cwl5npJqaWAaPI0oPYF
+ RCpAbEP8W+oecETvBagzzVj0n2lu9rQ00ORMrFAO3IVMcd+Yef/FvyOrTnkAn2RkxboN
+ WbmVVH6Iyc3uka+AsnvSFexrI+rRL3vhHaG7MCM5Z0sErqWlDGsbb3zacB0bvq7ypBtw
+ jezeqZAc+NWHuxRpOhtFCgi1oUDTLgnnOzb9QHvWqwRYliPXwJyn6n1CetQd+lf0C8Xm 1Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjff2vtn2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 13:22:50 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23KBmBbo011980;
+        Wed, 20 Apr 2022 13:22:49 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjff2vtm4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 13:22:49 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23KDD54S030720;
+        Wed, 20 Apr 2022 13:22:47 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3ffne951aq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 20 Apr 2022 13:22:47 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23KDMtpr10093242
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Apr 2022 13:22:55 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1D9DE11C04C;
+        Wed, 20 Apr 2022 13:22:44 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5896A11C05E;
+        Wed, 20 Apr 2022 13:22:43 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.10.176])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 20 Apr 2022 13:22:43 +0000 (GMT)
+Date:   Wed, 20 Apr 2022 15:22:41 +0200
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        david@redhat.com, thuth@redhat.com, gor@linux.ibm.com,
+        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com
+Subject: Re: [PATCH v8 1/2] s390x: KVM: guest support for topology function
+Message-ID: <20220420152241.4d9edea5@p-imbrenda>
+In-Reply-To: <Yl/27Pz3pvARmIHn@osiris>
+References: <20220420113430.11876-1-pmorel@linux.ibm.com>
+        <20220420113430.11876-2-pmorel@linux.ibm.com>
+        <Yl/27Pz3pvARmIHn@osiris>
+Organization: IBM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: N15tDa8gHZtPnWoR-E3XoVQBWCf4a02g
+X-Proofpoint-ORIG-GUID: wrX6HMN0SUnpusW4M7c1dRW7XgatiOgq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-20_03,2022-04-20_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=951 adultscore=0 clxscore=1015 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204200079
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On mercoled=C3=AC 20 aprile 2022 08:03:05 CEST Julia Lawall wrote:
->=20
-> On Wed, 20 Apr 2022, Alaa Mohamed wrote:
->=20
-> > kmap() is being deprecated and these usages are all local to the thread
-> > so there is no reason kmap_local_page() can't be used.
-> >
-> > Replace kmap() calls with kmap_local_page().
->=20
-> OK, so from a Coccinelle point of view, could we do
->=20
-> @@
-> expression e1,e2,x,f;
-> @@
->=20
-> e1 =3D
-> - kmap
-> + kmap_local_page
->     (e2)
-> ... when !=3D x =3D e1 // not stored in any location and not passed to=20
-another function
->     when !=3D f(...,e1,...)
->     when !=3D x =3D e2
->     when !=3D f(...,e2,...)
-> -kunmap(e2)
-> +kunmap_local(e1)
->=20
-> julia
->=20
+On Wed, 20 Apr 2022 14:05:00 +0200
+Heiko Carstens <hca@linux.ibm.com> wrote:
 
-I've never spent sufficient time to understand properly the syntax and=20
-semantics of expressions of Coccinelle. However, thanks Julia, this code=20
-looks good and can be very helpful.
+> > +static inline bool kvm_s390_topology_changed(struct kvm_vcpu *vcpu)
+> > +{
+> > +	if (!test_kvm_facility(vcpu->kvm, 11))
+> > +		return false;
+> > +
+> > +	/* A new vCPU has been hotplugged */
+> > +	if (vcpu->arch.prev_cpu == S390_KVM_TOPOLOGY_NEW_CPU)
+> > +		return true;
+> > +
+> > +	/* The real CPU backing up the vCPU moved to another socket */
+> > +	if (cpumask_test_cpu(vcpu->cpu,
+> > +			     topology_core_cpumask(vcpu->arch.prev_cpu)))
+> > +		return true;
+> > +
+> > +	return false;
+> > +}  
+> 
+> This seems to be wrong. I'd guess that you need
+> 
+> 	if (cpumask_test_cpu(vcpu->cpu,
+> 			     topology_core_cpumask(vcpu->arch.prev_cpu)))
+> -->		return false;
+> -->	return true;  
 
-Only a minor objection... it doesn't tell when 'e2' has been allocated=20
-within the same function where the kmap() call is.
-
-In the particular case that I cite above, I'd prefer to remove the=20
-allocation of the page (say with alloc_page()) and convert kmap() /kunmap()=
-=20
-to use kmalloc() / kfree().=20
-
-=46ox example, this is done in the following patch:
-
-commit 633b0616cfe0 ("x86/sgx: Remove unnecessary kmap() from=20
-sgx_ioc_enclave_init()") from Ira Weiny.
-
-Can Coccinelle catch also those special cases where a page that is passed=20
-to kmap() is allocated within that same function (vs. being passed as=20
-argument to this function) and, if so, propose a replacement with=20
-kmalloc()?
-
-Thanks,
-
-=46abio
-
-
-
+so if the CPU moved to a different socket, it's not a change?
+and if nothing happened, it is a change?
