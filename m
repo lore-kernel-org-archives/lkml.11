@@ -2,183 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC859C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E24EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380267AbiDTPgW (ORCPT
+        id S1380269AbiDTPgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        Wed, 20 Apr 2022 11:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380251AbiDTPgP (ORCPT
+        with ESMTP id S1346215AbiDTPgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:36:15 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F4D3EBB4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:33:29 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1CC781F385;
-        Wed, 20 Apr 2022 15:33:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650468808; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kUyien+X+aKrfWNmxu1J2DMHSzIs0wi8yTDzXFvfr6A=;
-        b=PQwL7DUDNvQu+aJEVFd0jprGoTBj6Jgi4S+pvkM/n0Szgln9UNjx2j51uohrkhoBEKLHwe
-        2Hv+zVe0kJqjJ3Fmg4ScxLCyQ38HBHsLmi/fWQw3QGOfe0ZLyQ9cZgoOvo5Hj0Hy1jD5t9
-        RnWe5o6V2QNzSKBnAJLIGdHT0BRZMaw=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DDAD513AD5;
-        Wed, 20 Apr 2022 15:33:27 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id mE/bNMcnYGJpNwAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 15:33:27 +0000
-Message-ID: <67088937-576d-cafa-ad21-13eea497683a@suse.com>
-Date:   Wed, 20 Apr 2022 17:33:27 +0200
+        Wed, 20 Apr 2022 11:36:40 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2069.outbound.protection.outlook.com [40.107.94.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F80B3EBB4
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:33:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J5gE5kun4zVCoYvdyxseFUDoB9sFYEHZBr8Npd8AWJkMOMaqP7NVZjVkbOSj4eZXXWZQ6Bi+7vqmOkVTvligGMXn3A6YESbfnqFr/jeLvpJBZdB1uT/zVXpRQSJ0B9v3t8EKKise5a9KiXUo4RJ5AxEWHLIzYxWZMnWtaP5Do+qg7kfau0WENsgaOvaYIqt399QaDOtB1MbFAs9gS6cYQyTdXRGrv9fjyepPMKehoszgcq40dsQqswPiqpwbOFPhQmcEDC1c/Rreq9f1gU/sxDPwKBGFA9hTSqf7wgIIL47inEMROoMq7MPLvcnY+nW+ScUcmj/SO/VlwKMELnHaOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/wIL+qRfGg7BqDNctAjokZGZAqIIHfOkut2KlYqJKK4=;
+ b=GXjv797qNnYGpiCnW8C/zNCvxK5JVLUcqpA5a+EbJctDbvIGvTtGSnggOtduQ802j8NHUySQAO+79qs1RtoUMM1fOtqIE7Fn8EKq8R/qATXf4v+JHGwRgH30Bx0g3bc2xxZUlgymtrCTRpNDIF371P6VTwWLuE59tOGptTU/x1ud2EqxhyRDCWtafV9AVV6/pETxj11UrVYZWwVozcIgnphTVIt9fGOT4BeY2WgRWZsuMVMN7t/9k7LMFgrxpSKN+wfiVr67A4gVWq8SRtk1BRMxotc+Biyt44Xcg7Q1Lr1Yb9PTgRlZ1zNJ02K+iJwK9BHlUBlwtMMxPVpn+nPqpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/wIL+qRfGg7BqDNctAjokZGZAqIIHfOkut2KlYqJKK4=;
+ b=G01EN5hQB/y3H+nNSHwLuRYtUzTAR9niRUx9Te4gZV8xyw2BZ01xhELY/DklYXnGOl5KngZVUoJFfXrNgRVV5FbGmUO6atTBxKe+xqcOvZ+k/fdMzW6aZQFRuhq14Tmu26E0tYqwoCi5Jh1uF2kWILktBBPyfP0XabCCg7S9xVQ=
+Received: from DS7PR03CA0092.namprd03.prod.outlook.com (2603:10b6:5:3b7::7) by
+ MN2PR12MB3342.namprd12.prod.outlook.com (2603:10b6:208:c3::32) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5164.20; Wed, 20 Apr 2022 15:33:51 +0000
+Received: from DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b7:cafe::e9) by DS7PR03CA0092.outlook.office365.com
+ (2603:10b6:5:3b7::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
+ Transport; Wed, 20 Apr 2022 15:33:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT044.mail.protection.outlook.com (10.13.173.185) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 15:33:51 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 20 Apr
+ 2022 10:33:47 -0500
+From:   Michael Roth <michael.roth@amd.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Nick Desaulniers" <ndesaulniers@google.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Venu Busireddy <venu.busireddy@oracle.com>,
+        "Joerg Roedel" <jroedel@suse.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "Brijesh Singh" <brijesh.singh@amd.com>
+Subject: [PATCH] x86/sev: get the AP jump table address from secrets page
+Date:   Wed, 20 Apr 2022 10:27:51 -0500
+Message-ID: <20220420152751.145180-1-michael.roth@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 18/18] xen/xenbus: eliminate xenbus_grant_ring()
-Content-Language: en-US
-To:     Andrew Cooper <Andrew.Cooper3@citrix.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-References: <20220420150942.31235-1-jgross@suse.com>
- <20220420150942.31235-19-jgross@suse.com>
- <fdc5675e-7766-2144-8f56-a49faab9631a@citrix.com>
-From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <fdc5675e-7766-2144-8f56-a49faab9631a@citrix.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------pbiZjsksvj6Z21gBiaYfufUn"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a5b0b6c1-084d-4a0b-2ec5-08da22e32bb3
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3342:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB334218259CFF8302851C70CB95F59@MN2PR12MB3342.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ceoei1lgT/mv6GO0be2PBjF38W7uVe/a/ZixkFihFrwDviGl7437ovpRC5sucVPUh18wCAINgw4ftMTmOweilIimQvCu8z/7jaS6q819dHXYf/kKl0bJ1n6MrnZJx7SAQQv8+pr10Web7IplhfFcaSR1hhoeLosbOTXPYusttzUBPLmY4+GxBQOH0kCwqBfSJmptYIm8ep/9ncym012e3TKSMFnJ4SBVXA+6t9iLMbl9LoR8KMWLecu5TyC8FLr9l9pl7rHgtw78HEvVHahYR5sAVsdrlzUZLU8BAa0+s/3i4hvFPnUFvZ8Wr/sqCTPnRBpg8NZ/rjgC+vb16mCcOkzsRSdu08dlSjtPXRLU2d+/N8nfKSYxm0PDTRcxvpr6k/RX+6sHAbSLI4EDidglaYwzLWiUxeCe/5lkn45lnBLrBmlPCt3ZLcOfaI+0+VJ3FSY5iwogtCD5cONUEibzc3NMkALTLJ9PDUW97/d1e8X4mfgWIHxYVKfu77Mmb8Ywrppr96FyOhAWmjchLdB9RDZuHabps9zhx3i9esxiKeCEpm2IJsX08GEOkBak3A3jqazfv6DaI2u1n4Uz/cgJaf7FrarVELGIxcFn314Sb+AIjc1dc3fbf0YJ39B0a3InkBXjGCSoc8wwpZnglJkUJFx5tI6GRHTk9uFKb8+81ZPd4ZJrQHjx3iWcnUzryRsBccLv7ulvFZuRR76mUImCWdXEeleBoCMSwyiGUS1tr9Y=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(81166007)(82310400005)(6916009)(54906003)(2906002)(1076003)(186003)(16526019)(2616005)(47076005)(6666004)(426003)(336012)(4326008)(36756003)(316002)(40460700003)(8676002)(508600001)(86362001)(5660300002)(356005)(70206006)(70586007)(44832011)(83380400001)(36860700001)(26005)(7416002)(8936002)(15583001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 15:33:51.1492
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5b0b6c1-084d-4a0b-2ec5-08da22e32bb3
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3342
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------pbiZjsksvj6Z21gBiaYfufUn
-Content-Type: multipart/mixed; boundary="------------Zynua7uXBy7MiNzM6Om5Hml7";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Andrew Cooper <Andrew.Cooper3@citrix.com>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>
-Message-ID: <67088937-576d-cafa-ad21-13eea497683a@suse.com>
-Subject: Re: [PATCH 18/18] xen/xenbus: eliminate xenbus_grant_ring()
-References: <20220420150942.31235-1-jgross@suse.com>
- <20220420150942.31235-19-jgross@suse.com>
- <fdc5675e-7766-2144-8f56-a49faab9631a@citrix.com>
-In-Reply-To: <fdc5675e-7766-2144-8f56-a49faab9631a@citrix.com>
+From: Brijesh Singh <brijesh.singh@amd.com>
 
---------------Zynua7uXBy7MiNzM6Om5Hml7
-Content-Type: multipart/mixed; boundary="------------OzQRlIwmin5E8UoUJHiWu0RY"
+The GHCB specification section 2.7 states that when SEV-SNP is enabled,
+a hypervisor must provide the AP jump table physical address through
+the SNP secrets pages.
 
---------------OzQRlIwmin5E8UoUJHiWu0RY
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Fixes: 0afb6b660a6b ("x86/sev: Use SEV-SNP AP creation to start secondary CPUs")
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+Signed-off-by: Michael Roth <michael.roth@amd.com>
+---
+ arch/x86/include/asm/sev.h            | 35 ++++++++++++++
+ arch/x86/kernel/sev.c                 | 70 ++++++++++++++++++---------
+ drivers/virt/coco/sevguest/sevguest.h | 35 --------------
+ 3 files changed, 81 insertions(+), 59 deletions(-)
 
-T24gMjAuMDQuMjIgMTc6MjIsIEFuZHJldyBDb29wZXIgd3JvdGU6DQo+IE9uIDIwLzA0LzIw
-MjIgMTY6MDksIEp1ZXJnZW4gR3Jvc3Mgd3JvdGU6DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy94ZW4veGVuYnVzL3hlbmJ1c19jbGllbnQuYyBiL2RyaXZlcnMveGVuL3hlbmJ1cy94ZW5i
-dXNfY2xpZW50LmMNCj4+IGluZGV4IDFhMmUwZDk0Y2NkMS4uN2IxZjdmODZiNmU1IDEwMDY0
-NA0KPj4gLS0tIGEvZHJpdmVycy94ZW4veGVuYnVzL3hlbmJ1c19jbGllbnQuYw0KPj4gKysr
-IGIvZHJpdmVycy94ZW4veGVuYnVzL3hlbmJ1c19jbGllbnQuYw0KPj4gQEAgLTQzMyw5ICsz
-OTAsMjQgQEAgaW50IHhlbmJ1c19zZXR1cF9yaW5nKHN0cnVjdCB4ZW5idXNfZGV2aWNlICpk
-ZXYsIGdmcF90IGdmcCwgdm9pZCAqKnZhZGRyLA0KPj4gICAJCWdvdG8gZXJyOw0KPj4gICAJ
-fQ0KPj4gICANCj4+IC0JcmV0ID0geGVuYnVzX2dyYW50X3JpbmcoZGV2LCAqdmFkZHIsIG5y
-X3BhZ2VzLCBncmVmcyk7DQo+PiAtCWlmIChyZXQpDQo+PiArCXJldCA9IGdudHRhYl9hbGxv
-Y19ncmFudF9yZWZlcmVuY2VzKG5yX3BhZ2VzLCAmZ3JlZl9oZWFkKTsNCj4+ICsJaWYgKHJl
-dCkgew0KPj4gKwkJeGVuYnVzX2Rldl9mYXRhbChkZXYsIHJldCwgImdyYW50aW5nIGFjY2Vz
-cyB0byByaW5nIHBhZ2UiKTsNCj4gDQo+IENhbiB3ZSB0YWtlIHRoZSBvcHBvcnR1bml0eSB0
-byB1bmJyZWFrIHRoaXMgZXJyb3IgbWVzc2FnZT/CoCAiJXUgcmluZyBwYWdlcyIuDQoNCkZp
-bmUgd2l0aCBtZS4NCg0KDQpKdWVyZ2VuDQo=
---------------OzQRlIwmin5E8UoUJHiWu0RY
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 9c2d33f1cfee..509a23c85fe8 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -99,6 +99,41 @@ struct snp_guest_platform_data {
+ 	u64 secrets_gpa;
+ };
+ 
++/*
++ * The secrets page contains 96-bytes of reserved field that can be used by
++ * the guest OS. The guest OS uses the area to save the message sequence
++ * number for each VMPCK.
++ *
++ * See the GHCB spec section Secret page layout for the format for this area.
++ */
++struct secrets_os_area {
++	u32 msg_seqno_0;
++	u32 msg_seqno_1;
++	u32 msg_seqno_2;
++	u32 msg_seqno_3;
++	u64 ap_jump_table_pa;
++	u8 rsvd[40];
++	u8 guest_usage[32];
++} __packed;
++
++#define VMPCK_KEY_LEN		32
++
++/* See the SNP spec version 0.9 for secrets page format */
++struct snp_secrets_page_layout {
++	u32 version;
++	u32 imien	: 1,
++	    rsvd1	: 31;
++	u32 fms;
++	u32 rsvd2;
++	u8 gosvw[16];
++	u8 vmpck0[VMPCK_KEY_LEN];
++	u8 vmpck1[VMPCK_KEY_LEN];
++	u8 vmpck2[VMPCK_KEY_LEN];
++	u8 vmpck3[VMPCK_KEY_LEN];
++	struct secrets_os_area os_area;
++	u8 rsvd3[3840];
++} __packed;
++
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ extern struct static_key_false sev_es_enable_key;
+ extern void __sev_es_ist_enter(struct pt_regs *regs);
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index f01f4550e2c6..9cb27490745c 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -558,6 +558,49 @@ void noinstr __sev_es_nmi_complete(void)
+ 	__sev_put_ghcb(&state);
+ }
+ 
++static u64 get_secrets_page(void)
++{
++	u64 pa_data = boot_params.cc_blob_address;
++	struct cc_blob_sev_info info;
++	void *map;
++
++	/*
++	 * The CC blob contains the address of the secrets page, check if the
++	 * blob is present.
++	 */
++	if (!pa_data)
++		return 0;
++
++	map = early_memremap(pa_data, sizeof(info));
++	memcpy(&info, map, sizeof(info));
++	early_memunmap(map, sizeof(info));
++
++	/* smoke-test the secrets page passed */
++	if (!info.secrets_phys || info.secrets_len != PAGE_SIZE)
++		return 0;
++
++	return info.secrets_phys;
++}
++
++static u64 get_snp_jump_table_addr(void)
++{
++	struct snp_secrets_page_layout *layout;
++	u64 pa = get_secrets_page();
++	u64 addr;
++
++	if (!pa)
++		return 0;
++
++	layout = (__force void *)ioremap_encrypted(pa, PAGE_SIZE);
++	if (!layout)
++		return 0;
++
++	addr = layout->os_area.ap_jump_table_pa;
++	iounmap(layout);
++
++	return addr;
++}
++
+ static u64 get_jump_table_addr(void)
+ {
+ 	struct ghcb_state state;
+@@ -565,6 +608,9 @@ static u64 get_jump_table_addr(void)
+ 	struct ghcb *ghcb;
+ 	u64 ret = 0;
+ 
++	if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
++		return get_snp_jump_table_addr();
++
+ 	local_irq_save(flags);
+ 
+ 	ghcb = __sev_get_ghcb(&state);
+@@ -2171,30 +2217,6 @@ static struct platform_device guest_req_device = {
+ 	.id		= -1,
+ };
+ 
+-static u64 get_secrets_page(void)
+-{
+-	u64 pa_data = boot_params.cc_blob_address;
+-	struct cc_blob_sev_info info;
+-	void *map;
+-
+-	/*
+-	 * The CC blob contains the address of the secrets page, check if the
+-	 * blob is present.
+-	 */
+-	if (!pa_data)
+-		return 0;
+-
+-	map = early_memremap(pa_data, sizeof(info));
+-	memcpy(&info, map, sizeof(info));
+-	early_memunmap(map, sizeof(info));
+-
+-	/* smoke-test the secrets page passed */
+-	if (!info.secrets_phys || info.secrets_len != PAGE_SIZE)
+-		return 0;
+-
+-	return info.secrets_phys;
+-}
+-
+ static int __init snp_init_platform_device(void)
+ {
+ 	struct snp_guest_platform_data data;
+diff --git a/drivers/virt/coco/sevguest/sevguest.h b/drivers/virt/coco/sevguest/sevguest.h
+index d39bdd013765..21bda26fdb95 100644
+--- a/drivers/virt/coco/sevguest/sevguest.h
++++ b/drivers/virt/coco/sevguest/sevguest.h
+@@ -60,39 +60,4 @@ struct snp_guest_msg {
+ 	u8 payload[4000];
+ } __packed;
+ 
+-/*
+- * The secrets page contains 96-bytes of reserved field that can be used by
+- * the guest OS. The guest OS uses the area to save the message sequence
+- * number for each VMPCK.
+- *
+- * See the GHCB spec section Secret page layout for the format for this area.
+- */
+-struct secrets_os_area {
+-	u32 msg_seqno_0;
+-	u32 msg_seqno_1;
+-	u32 msg_seqno_2;
+-	u32 msg_seqno_3;
+-	u64 ap_jump_table_pa;
+-	u8 rsvd[40];
+-	u8 guest_usage[32];
+-} __packed;
+-
+-#define VMPCK_KEY_LEN		32
+-
+-/* See the SNP spec version 0.9 for secrets page format */
+-struct snp_secrets_page_layout {
+-	u32 version;
+-	u32 imien	: 1,
+-	    rsvd1	: 31;
+-	u32 fms;
+-	u32 rsvd2;
+-	u8 gosvw[16];
+-	u8 vmpck0[VMPCK_KEY_LEN];
+-	u8 vmpck1[VMPCK_KEY_LEN];
+-	u8 vmpck2[VMPCK_KEY_LEN];
+-	u8 vmpck3[VMPCK_KEY_LEN];
+-	struct secrets_os_area os_area;
+-	u8 rsvd3[3840];
+-} __packed;
+-
+ #endif /* __VIRT_SEVGUEST_H__ */
+-- 
+2.25.1
 
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------OzQRlIwmin5E8UoUJHiWu0RY--
-
---------------Zynua7uXBy7MiNzM6Om5Hml7--
-
---------------pbiZjsksvj6Z21gBiaYfufUn
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmJgJ8cFAwAAAAAACgkQsN6d1ii/Ey8z
-VwgAh1MZdNvdCxCgf5LxO0qIPGvZHJWiJwP/cImXnvin9CGB4VUSgWMQWzPs9Iw7zYJVPEN6VYx2
-vlKCqu75kY11q3RfjYcsmFyiNU6BL/VDkbelbFiLDYPVqrkjXiJ0gnGdAsRtFy/09Dihyu21jlLP
-fNuRyikPXexmuD5iKsVyAusaKwJG4Uzxd3wr9ChSsoUSZ9/K5VIM+JAbM/Qkm8VfBDldxtbXxXfY
-iBSWGHHEFj0E2JdEto7OkMnbQoHeOADXC4wCyOoHd0ZTZV4jbGfRLSzc0LuDvmJFJ2y8l4jRT7R+
-vnBNUe4/vdJDqE3LD04IfBoRwu3IbwCDlu9lpcRxAw==
-=kcqN
------END PGP SIGNATURE-----
-
---------------pbiZjsksvj6Z21gBiaYfufUn--
