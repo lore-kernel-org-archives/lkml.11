@@ -2,60 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 890E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1451CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380456AbiDTQTO (ORCPT
+        id S1380457AbiDTQUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        Wed, 20 Apr 2022 12:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376339AbiDTQTJ (ORCPT
+        with ESMTP id S245375AbiDTQUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:19:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80F22B180;
-        Wed, 20 Apr 2022 09:16:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 780C7B81FE5;
-        Wed, 20 Apr 2022 16:16:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F58C385A0;
-        Wed, 20 Apr 2022 16:16:18 +0000 (UTC)
-Date:   Wed, 20 Apr 2022 12:16:16 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH rcu 1/2] docs: Add documentation for rude and trace RCU
- flavors
-Message-ID: <20220420121616.50a0abc2@gandalf.local.home>
-In-Reply-To: <20220420161319.GD4285@paulmck-ThinkPad-P17-Gen-1>
-References: <20220418225004.GA3944767@paulmck-ThinkPad-P17-Gen-1>
-        <20220418225033.3944860-1-paulmck@kernel.org>
-        <20220420113231.6d3202e4@gandalf.local.home>
-        <20220420161319.GD4285@paulmck-ThinkPad-P17-Gen-1>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 20 Apr 2022 12:20:02 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150272E9E8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:17:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650471436; x=1682007436;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Y1a4pcTqymAWKcsqfTocRlg43sp5JlsqbUEBLfk5npw=;
+  b=gRsHsRA49Aelf+LYQHYamHevXE4k0f6N77YZtOEmbWkqs41jZHVB6KK9
+   xyvRUghvh4fwDfC9V/UVIhwccz/aGdOpCKvudtsmL5F+EyLj0C6BVd6il
+   PL+mWugerdzHP15bcRy3pj/gX/PcbYss4oNc9rR+wjN4K/+2b1mHD/AQv
+   JviSrlyH8kJaOu+DbbXr+2zeFZj5u+MaKcvDVRbK2CzIW6vkpwpxgmZsg
+   HUla9W557pUbF/kOneW81AGDYm0+lhcTmdswckNgakI8HEgu0uAiBCBEs
+   +1clR8O9rykKTsW+FgsSGtR21zSMXUVCb48GiGkG+KaOBLrxmqHs8pPDR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263537620"
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="263537620"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 09:11:08 -0700
+X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
+   d="scan'208";a="576661339"
+Received: from sbidasar-mobl.amr.corp.intel.com (HELO [10.209.100.171]) ([10.209.100.171])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 09:11:04 -0700
+Message-ID: <2572220e-57d0-4f10-1695-bfeab54de38d@linux.intel.com>
+Date:   Wed, 20 Apr 2022 11:11:03 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH] ASoC: SOF: using pm_runtime_resume_and_get to simplify
+ the code
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
+        cgel.zte@gmail.com, Zeal Robot <zealci@zte.com.cn>,
+        lgirdwood@gmail.com, Minghao Chi <chi.minghao@zte.com.cn>,
+        ranjani.sridharan@linux.intel.com, daniel.baluta@nxp.com,
+        linux-kernel@vger.kernel.org, sound-open-firmware@alsa-project.org
+References: <20220420030315.2575691-1-chi.minghao@zte.com.cn>
+ <78c7edc3-f431-9735-238d-9aa2b45ec45e@linux.intel.com>
+ <YmAljQjpLCoBv+nj@sirena.org.uk>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <YmAljQjpLCoBv+nj@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 09:13:19 -0700
-"Paul E. McKenney" <paulmck@kernel.org> wrote:
 
-> > Are we going to be able to get rid of the "rude" version once we have all
-> > tracing in a RCU visible section?  
+
+On 4/20/22 10:23, Mark Brown wrote:
+> On Wed, Apr 20, 2022 at 08:28:31AM -0500, Pierre-Louis Bossart wrote:
+>> On 4/19/22 22:03, cgel.zte@gmail.com wrote:
+>>> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> You tell me!  ;-)
+>>> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+>>> pm_runtime_put_noidle. This change is just to simplify the code, no
+>>> actual functional changes.
 > 
-> If there are no longer any users, I would be happy to get rid of it.
-> As of v5.18-rc1, the only user is ftrace.
+>> Well, maybe that's a simplification, but we've been using the same pattern for years now.
+> 
+>> Is there really a clear direction to use this new function?
+> 
+> It seems like a much better pattern and there's been a steady stream of
+> conversion patches.  The whole get/idle thing is pretty much just sharp
+> edges.
+> 
+>> the overwhelming majority of drivers in sound/soc still rely on the pm_runtime_get_sync (111 v. 7).
+> 
+> We'll get there I'm sure.
 
-I'll add to my todo list to audit the existing code to see if we can
-finally drop it.
+ok, I'll send follow-up patches for the remaining code.
 
--- Steve
+For this patch: 
+
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
