@@ -2,105 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D84C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 890E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380453AbiDTQSu (ORCPT
+        id S1380456AbiDTQTO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
+        Wed, 20 Apr 2022 12:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380426AbiDTQSs (ORCPT
+        with ESMTP id S1376339AbiDTQTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:18:48 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D122656D;
-        Wed, 20 Apr 2022 09:16:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650471362; x=1682007362;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=keqVj2ktPIEk/4jLO/r0b+85IqTBeW/fcCjhz3HKa1o=;
-  b=CSjOiaCnL2oGsJ2jnGOq0k5sj+EbVfzDnJB3xseK00AyfF9kkkLMnal3
-   xqDW2/nAMyyT0BAyXd+lj3aQJg7fbi2G5AWzp61N1Q0r83I6txyp6JLEV
-   90zk7Kk+uG+zAvmEzkVHkBb83lYxSaSpNjfDAhy6stSXV+zKvE8luPsG6
-   LMmd1ehhWlwyVBkv+mTBPYHWY4RyO9IyLAiTJg0Js5jI3avIy1k8feqdi
-   wQlRdgcAREHTwPx7Bm7wxg6XuyBVJYewr6Un+2A8d9Bnr5+uJmCSDFGQM
-   Ep4UOBmrnYjMRi1bURr7i0SDzJHBLcgSrVzrn/E1u+/6EI+vnnGfYDEv2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="289180633"
-X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="289180633"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:56:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="614468146"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Apr 2022 08:56:23 -0700
-Received: from debox1-desk4.lan (unknown [10.212.213.71])
-        by linux.intel.com (Postfix) with ESMTP id 449FE58088F;
-        Wed, 20 Apr 2022 08:56:23 -0700 (PDT)
-From:   "David E. Box" <david.e.box@linux.intel.com>
-To:     hdegoede@redhat.com, david.e.box@linux.intel.com,
-        markgross@kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] platform/x86/intel/sdsi: Fix bug in multi packet reads
-Date:   Wed, 20 Apr 2022 08:56:22 -0700
-Message-Id: <20220420155622.1763633-4-david.e.box@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220420155622.1763633-1-david.e.box@linux.intel.com>
-References: <20220420155622.1763633-1-david.e.box@linux.intel.com>
+        Wed, 20 Apr 2022 12:19:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80F22B180;
+        Wed, 20 Apr 2022 09:16:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 780C7B81FE5;
+        Wed, 20 Apr 2022 16:16:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F58C385A0;
+        Wed, 20 Apr 2022 16:16:18 +0000 (UTC)
+Date:   Wed, 20 Apr 2022 12:16:16 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH rcu 1/2] docs: Add documentation for rude and trace RCU
+ flavors
+Message-ID: <20220420121616.50a0abc2@gandalf.local.home>
+In-Reply-To: <20220420161319.GD4285@paulmck-ThinkPad-P17-Gen-1>
+References: <20220418225004.GA3944767@paulmck-ThinkPad-P17-Gen-1>
+        <20220418225033.3944860-1-paulmck@kernel.org>
+        <20220420113231.6d3202e4@gandalf.local.home>
+        <20220420161319.GD4285@paulmck-ThinkPad-P17-Gen-1>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix bug that added an offset to the mailbox addr during multi-packet
-reads. Did not affect current ABI since it doesn't support multi-packet
-transactions.
+On Wed, 20 Apr 2022 09:13:19 -0700
+"Paul E. McKenney" <paulmck@kernel.org> wrote:
 
-Fixes: 2546c6000430 ("platform/x86: Add Intel Software Defined Silicon driver")
-Signed-off-by: David E. Box <david.e.box@linux.intel.com>
----
- drivers/platform/x86/intel/sdsi.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+> > Are we going to be able to get rid of the "rude" version once we have all
+> > tracing in a RCU visible section?  
+> 
+> You tell me!  ;-)
+> 
+> If there are no longer any users, I would be happy to get rid of it.
+> As of v5.18-rc1, the only user is ftrace.
 
-diff --git a/drivers/platform/x86/intel/sdsi.c b/drivers/platform/x86/intel/sdsi.c
-index 89729fed030c..c830e98dfa38 100644
---- a/drivers/platform/x86/intel/sdsi.c
-+++ b/drivers/platform/x86/intel/sdsi.c
-@@ -83,7 +83,7 @@ enum sdsi_command {
- 
- struct sdsi_mbox_info {
- 	u64	*payload;
--	u64	*buffer;
-+	void	*buffer;
- 	int	size;
- };
- 
-@@ -165,9 +165,7 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
- 	total = 0;
- 	loop = 0;
- 	do {
--		int offset = SDSI_SIZE_MAILBOX * loop;
--		void __iomem *addr = priv->mbox_addr + offset;
--		u64 *buf = info->buffer + offset / SDSI_SIZE_CMD;
-+		void *buf = info->buffer + (SDSI_SIZE_MAILBOX * loop);
- 		u32 packet_size;
- 
- 		/* Poll on ready bit */
-@@ -198,7 +196,7 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
- 			break;
- 		}
- 
--		sdsi_memcpy64_fromio(buf, addr, round_up(packet_size, SDSI_SIZE_CMD));
-+		sdsi_memcpy64_fromio(buf, priv->mbox_addr, round_up(packet_size, SDSI_SIZE_CMD));
- 
- 		total += packet_size;
- 
--- 
-2.25.1
+I'll add to my todo list to audit the existing code to see if we can
+finally drop it.
 
+-- Steve
