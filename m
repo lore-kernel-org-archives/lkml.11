@@ -2,66 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E98FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E452DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 12:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353570AbiDTMoA (ORCPT
+        id S1353352AbiDTMrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 08:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
+        Wed, 20 Apr 2022 08:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350752AbiDTMn5 (ORCPT
+        with ESMTP id S237999AbiDTMq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 08:43:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6861A800;
-        Wed, 20 Apr 2022 05:41:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C9FB619E3;
-        Wed, 20 Apr 2022 12:41:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30CC1C385A1;
-        Wed, 20 Apr 2022 12:41:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650458470;
-        bh=j1KYYrsq3QBPHD2FUNZJiA9ohS63WMTls9Sh71Rq/O0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mBnJcXad1dQ5UE8LtuudQYEuqUnTrZOZDETLeXb4u7Bq8vQnnrZGaFdunfGdZxngQ
-         aP4YLXkOgiiJQjqN9h5J9QIVSqRTVRn2njKObCRTrKC547T0xqpdPjmAPn0J47EgL5
-         9/iLFYzA0cse6251fPvGSXqJrOf9+yzlg4AGXsgvvc5EqVgTPwF/JuqrbgMJZv1lPV
-         CSjjwN5Ne3dzyB/zXml/PTfKu9OgKS2st7ypC8tbloZuoYeSVaxxo6rVbi52g57qz5
-         CySKvHavyXWCuEeCZMvHhuH10ymSiZM0toZOBuynTPNnp669qeNMI5X4afW7EACzjk
-         n2bz2nDqutP/Q==
-Date:   Wed, 20 Apr 2022 18:11:06 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: dmaengine: qcom: gpi: Add minItems for
- interrupts
-Message-ID: <Yl//YhBvzVxQu6GX@matsya>
-References: <20220414064235.1182195-1-vkoul@kernel.org>
+        Wed, 20 Apr 2022 08:46:58 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9756B201B2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 05:44:12 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id x8-20020a056602160800b00654b3a46b66so1118129iow.19
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 05:44:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=D4cHpkDZsSvHotz5ZPOKW6x/SBIpuMTJuj0KKbrXmlU=;
+        b=dj+dpXi0INeqHkr8ujk3/zenRU46PXiP8XIxEMVj8SJ5sEJQkGK6XGf3H6Xb78l+um
+         N1iVmtUVzePoH2D2Ck828D8A1e9FiQQUvizh3HMrSgSDkxEyRhboZRQEn5chbh7PCfmn
+         yl+ni9bqAQKwyF//4qTOrmd85Evs66ARo2xUnGB+E1SVp/Ag/OZDSwBWaSaOek5bp/gk
+         unoZNWhtteGXZ9U51tIlouRMpPqJabUrOIGg9TBUnKr/e9KvXSgLtugi8aVWw1HZysKN
+         Uf59VcUKTEiJw04pckf4TH2T1LKDiQtFk/vrlF2PxLX8iRdTnQT4UTinCYgxuyWfCsd2
+         S9Ow==
+X-Gm-Message-State: AOAM530eF1qCWT+ulSe4XhmevtLuEtnEQ8CcYws9tUGvAItj5/ErhkSo
+        xJv3Knm2J47dAGnH8T9/2sxj3DG2NwFHtXE+M50f+PCCbTPl
+X-Google-Smtp-Source: ABdhPJx7zci4bHGbHwRnpnbelQqfHsdh0Sg1WcrSrtVffdHJmd8RaDbRAPVvE6sTVjZii++8vphDSFbKIFmI1qbD8sYdsqyVg32C
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414064235.1182195-1-vkoul@kernel.org>
+X-Received: by 2002:a02:8604:0:b0:326:681e:eef1 with SMTP id
+ e4-20020a028604000000b00326681eeef1mr9259926jai.275.1650458651970; Wed, 20
+ Apr 2022 05:44:11 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 05:44:11 -0700
+In-Reply-To: <20220420122610.7k2qx5dwdchu27mg@wittgenstein>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aacee405dd1559b7@google.com>
+Subject: Re: [syzbot] INFO: rcu detected stall in sys_setxattr (2)
+From:   syzbot <syzbot+10a16d1c43580983f6a2@syzkaller.appspotmail.com>
+To:     brauner@kernel.org, fweisbec@gmail.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingo@kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14-04-22, 12:12, Vinod Koul wrote:
-> Add the minItems for interrupts property as well. In the absence of
-> this, we get warning if interrupts are less than 13
-> 
-> arch/arm64/boot/dts/qcom/qrb5165-rb5.dtb:
-> dma-controller@800000: interrupts: [[0, 588, 4], [0, 589, 4], [0, 590,
-> 4], [0, 591, 4], [0, 592, 4], [0, 593, 4], [0, 594, 4], [0, 595, 4], [0,
->   596, 4], [0, 597, 4]] is too short
+Hello,
 
-Applied, thanks
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
--- 
-~Vinod
+Reported-and-tested-by: syzbot+10a16d1c43580983f6a2@syzkaller.appspotmail.com
+
+Tested on:
+
+commit:         bbc1e8c5 fs: unset MNT_WRITE_HOLD on failure
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux.git fs.mount_setattr.cleanup
+kernel config:  https://syzkaller.appspot.com/x/.config?x=34d641b059469a42
+dashboard link: https://syzkaller.appspot.com/bug?extid=10a16d1c43580983f6a2
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
+Note: testing is done by a robot and is best-effort only.
