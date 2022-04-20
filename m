@@ -2,223 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D175C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E5C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359709AbiDTHcH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        id S242171AbiDTHcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 20 Apr 2022 03:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242171AbiDTHcE (ORCPT
+        with ESMTP id S1359719AbiDTHcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:32:04 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4C33B017;
-        Wed, 20 Apr 2022 00:29:17 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5D7DC1C000F;
-        Wed, 20 Apr 2022 07:29:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650439756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QxxLqwZKbkp7nwz1evA3eEbo/hQsneWeBfjxoXN5fbk=;
-        b=QaoQkCNjXRxpHyEnKepPy5eRNox30saqO9EWU4NqDUYFtGsZT/6R1PLy9ytaQXFtQkQIIB
-        jFxg4bNlQjzF+CD2oTt1Fvx3jsV/lYUsDmouPwuTNpFPrtlt2jx/dflMQhqgk+TiEkddNB
-        47McAh5hHEf9pOPFzAqAPVqIK+nYpWk+luM+Cb/pyqbzWev+3Y+1M0ZCVvtD6Tx+RlN2VP
-        zlG8yEuJIyDiKnSoNi8YgEQiIwm9z3OWV+9HH0O9pmeJPE6MX8KChtxcBb5jz+jy/D7lva
-        GHasc3PxTP8p4Fq3zcINMD5HG7xIgnnxU/qmhu154x0JCb8XHiD4p7qL1VsVVQ==
-Date:   Wed, 20 Apr 2022 09:29:12 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Liang Yang <liang.yang@amlogic.com>
-Cc:     <linux-mtd@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v4 1/2] mtd: rawnand: meson: discard the common MMC sub
- clock framework
-Message-ID: <20220420092912.10ce66ec@xps13>
-In-Reply-To: <126691f4-bc6b-10cd-ee2c-ff4006bc6518@amlogic.com>
-References: <20220402074921.13316-1-liang.yang@amlogic.com>
-        <20220402074921.13316-2-liang.yang@amlogic.com>
-        <20220404103034.48ec16b1@xps13>
-        <50105d6b-8ced-1b72-30cb-a709c4a4dd26@amlogic.com>
-        <d5a33645-fac1-9c69-afe6-654bfe93ca48@amlogic.com>
-        <20220419102629.1c77aa2a@xps13>
-        <2e382e3e-c231-c9e4-73a1-0637288fcd4f@amlogic.com>
-        <20220419172528.2dd75e7b@xps13>
-        <126691f4-bc6b-10cd-ee2c-ff4006bc6518@amlogic.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 20 Apr 2022 03:32:18 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9B43B2AC;
+        Wed, 20 Apr 2022 00:29:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650439773; x=1681975773;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+2VkkaHgs7Bi4lmS3LREzrgtsND2nPSs2jyfSDUHHGU=;
+  b=UZluPZINbjZCeCKdtOV5ANkT+aU0cv1b24ntmZoknuYw8hqim/iNpULc
+   MNhHhovbHKJgrWCRnRq0CAm/hfY3qC+jwgfs2tI0uA1r29zk5m7erIc4D
+   VWQIsuBdANH6hV3Ub5OFX16LbupJSUaiE42YJNsTG1p+X6kUsMgBaLaQJ
+   dUTl0atcHYsmCVG5BYaZoZkEHKwJMMzj1A0oV1Wyu2XcKmeRwKyi++bCl
+   +aLB4G2+JTCCqsGSbrGfYGgQ+8rDHVVlKvjU88A6OKx/7t5L01f8urPWK
+   P+0pfy03Cd/h17GCO1778ODdMuBhw4bdtY38Kh7vWCaXef0PNPD/C/aaS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261565065"
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="261565065"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 00:29:33 -0700
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="562007675"
+Received: from ktuv-desk2.amr.corp.intel.com (HELO [10.212.227.192]) ([10.212.227.192])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 00:29:32 -0700
+Message-ID: <faf366f9-a0cb-4121-e5bf-c63e6d0b14aa@linux.intel.com>
+Date:   Wed, 20 Apr 2022 00:29:31 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v3 03/21] x86/virt/tdx: Implement the SEAMCALL base
+ function
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com, isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <1c3f555934c73301a9cbf10232500f3d15efe3cc.1649219184.git.kai.huang@intel.com>
+ <dd9d6f7d-5cec-e6b7-2fa0-5bf1fdcb79b5@linux.intel.com>
+ <d1b88a6e08feee137df9acd2cdf37f7685171f4b.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <d1b88a6e08feee137df9acd2cdf37f7685171f4b.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liang,
-
-liang.yang@amlogic.com wrote on Wed, 20 Apr 2022 13:44:32 +0800:
-
-> Hi Miquel,
->=20
-> On 2022/4/19 23:25, Miquel Raynal wrote:
-> > [ EXTERNAL EMAIL ]
-> >=20
-> > Hello,
-> >=20
-> > liang.yang@amlogic.com wrote on Tue, 19 Apr 2022 17:17:48 +0800:
-> >  =20
-> >> Hello Miquel,
-> >>
-> >> On 2022/4/19 16:26, Miquel Raynal wrote: =20
-> >>> [ EXTERNAL EMAIL ]
-> >>>
-> >>> Hello,
-> >>>
-> >>> liang.yang@amlogic.com wrote on Mon, 18 Apr 2022 11:40:10 +0800: =20
-> >>>    >>>> Hi Miquel, =20
-> >>>>
-> >>>> i have some confusion when i prepare the patches. for DT compatibili=
-ty, it falls back to the old DT when failed to get resource by the new DT, =
-but there is some points:
-> >>>> a. old DT depends on MMC sub clock driver, but it never be merged, s=
-o it can't work. =20
-> >>>
-> >>> I don't get what you mean here, sorry. I believe there is a new way to
-> >>> describe this clock but grabbing the one from the MMC still works, do=
-es
-> >>> not it? =20
-> >>>    >> =20
-> >> No, it doesn't. after the NFC driver using the MMC sub clock framework=
- was merged into the mainline of kernel, we didn't continue to submit the s=
-eries of patches about MMC sub clock after v9. when i found that, we made a=
- discussion to decide whether to recover the series of patches about MMC su=
-b clock framework, finally, see the description from cover letter, we plan =
-to abandon it and adopt the new clock scheme in this series of patches. =20
-> >=20
-> > I am not sure to follow. Is the current code completely broken? I
-> > believe it is not, so I don't understand your issue. =20
->=20
-> i think only the code about the clock is completely broken.
->=20
-> >=20
-> > Can you please summarize the situation? =20
->=20
-> Yes. the current NFC clock implementation depends on the following series=
- of patches [https://lore.kernel.org/all/20220121074508.42168-5-liang.yang@=
-amlogic.com], which we call "Meson MMC Sub Clock Controller Driver".
-> when i was preparing the NFC patchset at that time, we discussed how the =
-clock should be implemented base on the special clock framework for NFC and=
- EMMC port. then we decided to implement a driver "Meson MMC Sub Clock Cont=
-roller Driver". so another people begin to prepare "Meson MMC Sub Clock Con=
-troller Driver", but submitted it by different patchset.
-> finally, now the meson NFC patchset is accepted and merged, but "Meson MM=
-C Sub Clock Controller Driver" patchset is not. also we decide to abandon t=
-he patset "Meson MMC Sub Clock Controller Driver" and implement the new clo=
-ck design in this series.
-
-Ok thanks for the summary and the link with the discussion with Jerome
-and Neil, it's informative.
-
-So in the end, we are not really breaking anything here as this NAND
-controller driver never worked in the first place? Or is it only one of
-the two compatibles which is not working?
-
-If this never worked then please do the binding changes (in the first
-patch of your series) and then do the necessary changes in the code. If
-this worked with at least one of the two compatibles, then you have to
-create dedicated helpers, one for each, in order to grab the clocks
-differently and not break anybody.
-
->=20
-> >  =20
-> >>
-> >> Thanks.
-> >> =20
-> >>>> b. if it falls back to the old DT, beside the regmap lookup below, i=
-t seems that we have to preserve the code of the old clock setting in nfc_c=
-lk_init(). =20
-> >>>
-> >>> Yes, probably. =20
-> >>>    >>>> do we still need to avoid break DT compatibility? =20
-> >>>
-> >>> We should try our best to avoid breaking the DT, yes. =20
-> >>>    >>>> =20
-> >>>> Thanks.
-> >>>>
-> >>>> On 2022/4/11 10:40, Liang Yang wrote: =20
-> >>>>>>>   =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nfc->dev =3D dev;
-> >>>>>>> -=C2=A0=C2=A0=C2=A0 res =3D platform_get_resource(pdev, IORESOURC=
-E_MEM, 0);
-> >>>>>>> -=C2=A0=C2=A0=C2=A0 nfc->reg_base =3D devm_ioremap_resource(dev, =
-res);
-> >>>>>>> +=C2=A0=C2=A0=C2=A0 nfc->reg_base =3D devm_platform_ioremap_resou=
-rce_byname(pdev, "nfc"); =20
-> >>>>>>
-> >>>>>> This change seems unrelated. =20
-> >>>>>
-> >>>>> To be consistent with the following > devm_platform_ioremap_resourc=
-e_byname(pdev, "emmc"). do you mean that we > don't need it?> =20
-> >>>>>>>   =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(nfc->reg_base))
-> >>>>>>>   =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return P=
-TR_ERR(nfc->reg_base);
-> >>>>>>> -=C2=A0=C2=A0=C2=A0 nfc->reg_clk =3D
-> >>>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 syscon_regmap_lookup_=
-by_phandle(dev->of_node,
-> >>>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- "amlogic,mmc-syscon");
-> >>>>>>> -=C2=A0=C2=A0=C2=A0 if (IS_ERR(nfc->reg_clk)) {
-> >>>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_err(dev, "Failed =
-to lookup clock base\n");
-> >>>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR(nfc->r=
-eg_clk);
-> >>>>>>> -=C2=A0=C2=A0=C2=A0 }
-> >>>>>>> +=C2=A0=C2=A0=C2=A0 nfc->sd_emmc_clock =3D devm_platform_ioremap_=
-resource_byname(pdev, >>> "emmc");
-> >>>>>>> +=C2=A0=C2=A0=C2=A0 if (IS_ERR(nfc->sd_emmc_clock))
-> >>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return PTR_ERR(nfc->s=
-d_emmc_clock); =20
-> >>>>>>
-> >>>>>> While I agree this is much better than the previous solution, we c=
-annot
-> >>>>>> break DT compatibility, so you need to try getting the emmc clock,=
- but
-> >>>>>> if it fails you should fallback to the regmap lookup. =20
-> >>>>>
-> >>>>> ok, i will fix it next version. thanks. =20
-> >>>>>     >>>>   >>>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 irq =3D platform_g=
-et_irq(pdev, 0); =20
-> >>>
-> >>>
-> >>> Thanks,
-> >>> Miqu=C3=A8l
-> >>>
-> >>> . =20
-> >=20
-> >=20
-> > Thanks,
-> > Miqu=C3=A8l
-> >=20
-> > . =20
 
 
-Thanks,
-Miqu=C3=A8l
+On 4/19/22 9:16 PM, Kai Huang wrote:
+> On Tue, 2022-04-19 at 07:07 -0700, Sathyanarayanan Kuppuswamy wrote:
+>>
+>> On 4/5/22 9:49 PM, Kai Huang wrote:
+>>> SEAMCALL leaf functions use an ABI different from the x86-64 system-v
+>>> ABI.  Instead, they share the same ABI with the TDCALL leaf functions.
+>>
+>> TDCALL is a new term for this patch set. Maybe add some detail about
+>> it in ()?.
+>>
+>>>
+> 
+> TDCALL implementation is already in tip/tdx.  This series will be rebased to it.
+> I don't think we need to explain more about something that is already in the tip
+> tree?
+
+Since you have already expanded terms like TD,TDX and SEAM in this patch
+set, I thought you wanted to explain TDX terms to make it easy for new 
+readers. So to keep it uniform, I have suggested adding some brief 
+details about the TDCALL.
+
+But I am fine either way.
+
+> 
+> 
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
