@@ -2,71 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 738E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380209AbiDTP25 (ORCPT
+        id S1380259AbiDTPab (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59564 "EHLO
+        Wed, 20 Apr 2022 11:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379306AbiDTP2g (ORCPT
+        with ESMTP id S234586AbiDTPa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:28:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D9445784;
-        Wed, 20 Apr 2022 08:25:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E2F4B81F91;
-        Wed, 20 Apr 2022 15:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9552C385AE;
-        Wed, 20 Apr 2022 15:25:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650468346;
-        bh=ZxzLUWHxnezX1TGZ93jFGJL3H82CW3GKO5E/VGDJcxY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cbYZnUcsGb2X/YnDkiMwESY3AF9ooLeHzdEah6Xw+l6uM2FdFXI1s4KrUFKkK8bDA
-         VYkw8BQUSfSxmLyuq34N1qIS94en+vprtvi+mctoVdvatBula8fQsoeDM01NctWWR5
-         C9rYqeOef0+3CR8oFhCRlPYyl/TH5XB+mPqUThDLs8ziQUmvJvhnize0o4u6a0T6T7
-         KQjfHs+IdlOF8LZuFIN+shwkjUmHx9rCfTXAs7sjOSfMrplYstJ834/mg3+fjoLWUH
-         uhqcUdx/a7htMe607cVK37VV15uQoAGui08zSEAr2ziwYKHVgyDzyForr1+NTFoCOv
-         dPRE0jSfZwtiw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1nhCD5-0001SY-5T; Wed, 20 Apr 2022 17:25:39 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 0/2] phy: qcom-qmp: pipe clock fixes
-Date:   Wed, 20 Apr 2022 17:23:29 +0200
-Message-Id: <20220420152331.5527-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 20 Apr 2022 11:30:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30B3045AC7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650468462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/8Ka6GvZhFRkfzLxzT1UbmtWFPhhmqZ+X1PdVTRfmEs=;
+        b=AO6VC09n2J6MJ/s9sl/fEswPs/0FYODTaN+8jws6eUCAwvIgjjkXx6rBDVLbMsx61VrrBq
+        mu8RNVKEf+oznrXc0Tue2bPxcR8rN8ot5+JsxPDv26LkwOgmKpRUbO4k0DkeCi3B/4SV1i
+        aqnCDVhsf/2CkML0Knhkf9X79YB0Qps=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-426-XP-iuyOZNwad_uqyqIU4Jg-1; Wed, 20 Apr 2022 11:27:40 -0400
+X-MC-Unique: XP-iuyOZNwad_uqyqIU4Jg-1
+Received: by mail-qk1-f199.google.com with SMTP id ay14-20020a05620a178e00b0069a9c319c64so1461769qkb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 08:27:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/8Ka6GvZhFRkfzLxzT1UbmtWFPhhmqZ+X1PdVTRfmEs=;
+        b=h707aH821gEIO8J6pDDo0/ljbsiQGl0C9K2W0eWIMxIdCrUvipG7LX4qCZsQvFOeMv
+         9dY0971gM2l65jrlJ290PQvqkj0pPhBdMG2+JQEo5qUSiyHkJ+19PV2YkTL+yJFpZc/m
+         9H/RbEaIhdm3UpsA3jRnpT2js8DMuzvN131OwOk026LQVE5FowOb5dS0o+4q0wIEfDh0
+         FMtcI6USJkUwcwkpDhkFyJ4FM1G9vzyPn1ToLTFmXh8SHZeMmSFzMBRJQ0S3iWFZCmSl
+         vkDooH2nAGrloYumj7MssXwmdVztCfPkVmD38Ifw9ggkEzSqfmDz2MhMcnbtQk88q49E
+         ufqg==
+X-Gm-Message-State: AOAM531rkUG6eGtlxBmVlEaai/ORdPZ3M9VAlHua7wCNnketc+Hdu2Nh
+        kK33Igk//+SvTMjp8DZj2m53xmECO/kZtWnp2GQHfeqY8v3rg205kHlNYNZIDe0zx0TN1sKzeuy
+        x6NYlSPmHmibEwwGrlF+yyICB
+X-Received: by 2002:a05:622a:46:b0:2f2:9b12:5375 with SMTP id y6-20020a05622a004600b002f29b125375mr7452067qtw.625.1650468460271;
+        Wed, 20 Apr 2022 08:27:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwn3nxAFYXT+zwaS7qYVDdc6sBZB4FBKPMFC5LGoK+YCn4oDeo/3RBWzPylWFA333pfcvcIBQ==
+X-Received: by 2002:a05:622a:46:b0:2f2:9b12:5375 with SMTP id y6-20020a05622a004600b002f29b125375mr7452046qtw.625.1650468459998;
+        Wed, 20 Apr 2022 08:27:39 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id c23-20020a05620a201700b0069c7c8d1b9fsm1621839qka.21.2022.04.20.08.27.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 08:27:39 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 08:27:36 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, brgerst@gmail.com, jiangshanlai@gmail.com,
+        Andrew.Cooper3@citrix.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] x86: Simplify Retpoline thunk
+Message-ID: <20220420152736.qzl3nikds6mq5nrr@treble>
+References: <20220419204109.520779286@infradead.org>
+ <20220419205241.280037046@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220419205241.280037046@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series fixes a kernel doc typo and pipe clock imbalance on PHY
-power on failures.
+On Tue, Apr 19, 2022 at 10:41:10PM +0200, Peter Zijlstra wrote:
+> Now that we rewrite all the indirect call sites, per commit:
+> 
+>   750850090081 ("x86/alternative: Implement .retpoline_sites support")
+> 
+> it doesn't make sense to have the retpoline thunks be an ALTERNATIVE_2
+> that still includes a 'naked' indirect jump.
+> 
+> (this accidentally 'defunnels' i386 by going back to full retpolines)
 
-Johan
+So mitigations=off no longer works on i386?
 
-
-Johan Hovold (2):
-  phy: qcom-qmp: fix phy-descriptor kernel-doc typo
-  phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
-
- drivers/phy/qualcomm/phy-qcom-qmp.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+Is funneling even a concern on i386?  I don't think it has eIBRS anyway,
+or does it?
 
 -- 
-2.35.1
+Josh
 
