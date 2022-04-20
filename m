@@ -2,81 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE26CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75672C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377792AbiDTKuz (ORCPT
+        id S1377806AbiDTKvV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50446 "EHLO
+        Wed, 20 Apr 2022 06:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377780AbiDTKux (ORCPT
+        with ESMTP id S229837AbiDTKvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:50:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3665F18381
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650451687;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YeuUl3FgKBq3ulAiRQVIkPodY1d8UaUkeElFnx59KAU=;
-        b=GIDmaWdu0/7eEd02Vj466NLjX63wJcxhHmFzE69eoKjFC/Fbw8Mv8lveMAJBSe3IV87K6D
-        S9hUqQ90OT1P1YN30gKhVODGAs1RiEU5AdMAQKKw8PNPteDtgZirJIUZ3OLdztp7tI5tBE
-        eRb6z1P30KqSAjTSlGntzcQhk7q3src=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-110-CZ15ePgHOjCgsVQ2kn_MbA-1; Wed, 20 Apr 2022 06:48:01 -0400
-X-MC-Unique: CZ15ePgHOjCgsVQ2kn_MbA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 731AD80346F;
-        Wed, 20 Apr 2022 10:48:00 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 24E4C403D19A;
-        Wed, 20 Apr 2022 10:47:59 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <Yl95wykQMHc/tIq8@kernel.org>
-References: <Yl95wykQMHc/tIq8@kernel.org>
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     dhowells@redhat.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        keyrings@vger.kernel.org, James Morris <jmorris@namei.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?us-ascii?Q?=3D=3Fiso-8859-1=3FQ=3FMicka=3DEBl?=
-         =?us-ascii?Q?=5FSala=3DFCn=3F=3D?= <mic@linux.microsoft.com>
-Subject: Re: [GIT PULL] TPM DEVICE DRIVER updates for tpmdd-next-v5.18-rc4
+        Wed, 20 Apr 2022 06:51:19 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18F318381;
+        Wed, 20 Apr 2022 03:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650451713; x=1681987713;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yiWtHyh0+dkP7vvS/980PY5qigFMLm0paOIezN2buEA=;
+  b=nydwTQ2fk6jOPIuWHNDYmBHVdpwaaq6aLWjsNMcdRraSAvufjSpRgtM+
+   dJVP13/UjdPMBKV1kgJNW9lT5KIn6c1fAb1BpTEqIIFjbA4Iz8e/DfCdo
+   7DAC1MwKkROXhB5p8GaRdhIn7H6M5Thy6R5mvex4dSB5L8Q2vGZWYm7SF
+   rg5nZpOqiX/+0VhKBZieXFdd2lepK56ALLPJ60G0LtqJBiUYjk/cEOo9H
+   3DusgwqeyjW5AhoFaFLKseK+9CumDFQNA8lhrBvJ4/t+c+fo7O14eVDNU
+   ZpQV4qHiMIYI/h17tCPqWNXfzfNdUNVT2/YHfovqlT8GFNhdQrg9y3MYM
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="350446355"
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="350446355"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 03:48:33 -0700
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="593132230"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 03:48:30 -0700
+Received: by lahna (sSMTP sendmail emulation); Wed, 20 Apr 2022 13:45:32 +0300
+Date:   Wed, 20 Apr 2022 13:45:32 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Ricardo Ribalda <ribalda@chromium.org>
+Subject: Re: linux-next: manual merge of the kunit-next tree with the
+ thunderbolt tree
+Message-ID: <Yl/kTEZxet0fLPj4@lahna>
+References: <20220420151612.117f84b9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 20 Apr 2022 11:47:58 +0100
-Message-ID: <649342.1650451678@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220420151612.117f84b9@canb.auug.org.au>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jarkko Sakkinen <jarkko@kernel.org> wrote:
+Hi Stephen,
 
-> Micka=C3=ABl's patches to add signed hash to the blacklist keyring that w=
-ere
-> left out from the original v5.18 PR. They should be safe to include to
-> rc4 as they've been in circulation for ages, and have been tested
-> throughly.
+On Wed, Apr 20, 2022 at 03:16:12PM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the kunit-next tree got a conflict in:
+> 
+>   drivers/thunderbolt/test.c
+> 
+> between commit:
+> 
+>   9d2d0a5cf0ca ("thunderbolt: Use different lane for second DisplayPort tunnel")
+> 
+> from the thunderbolt tree and commit:
+> 
+>   7aadf8433357 ("thunderbolt: test: use NULL macros")
+> 
+> from the kunit-next tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
 
-Barring a bit in patch 3 where I think strncmp() would be better employed f=
-or
-checking prefixes (and can be fixed up later):
-
-Reviewed-by: David Howells <dhowells@redhat.com>
-
+The fixup looks good to me, thanks!
