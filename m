@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F016C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 09:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377004AbiDTJJ3 (ORCPT
+        id S1377010AbiDTJNC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 05:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
+        Wed, 20 Apr 2022 05:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351352AbiDTJJ0 (ORCPT
+        with ESMTP id S1352601AbiDTJM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 05:09:26 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84C612756;
-        Wed, 20 Apr 2022 02:06:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650445600; x=1681981600;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uf3MUfIrMG7NSD6MLuF40FAUsLWXCYmgBZwz5nCggiw=;
-  b=HRPLN2c+ZFkwho5c3pPTyUFilYVZMWOyZksjSB+IdFiRrLariD1Q2vTu
-   2DXWpzRANm3YuoCe9iIHjojy4GqXJyA7++mDQk4vy6mLPVsNsYhJUB1ar
-   XqPZr9LxQJZ8yYEfFzIVoZ5Wagy/SqgUshXqDQEw/SO7PJ5vbu4/XlVJ1
-   YD5m3U/JZdKDwPrKNE7uAIYVjXg6rbIpc6WvqczgrZ7ZFVlO/An6P/Rq8
-   Y6ji3Ow9tETniJA6NLT1vPunht6VD230NfyOnESgnwaz0jahugq0gT6Bs
-   yi4n/xwM8F6iD3FAP7C13wsE1NeDXnG2U8opbG1tayMM1VfVKWLL1rmGH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="326880507"
-X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
-   d="scan'208";a="326880507"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 02:06:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
-   d="scan'208";a="702568859"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 20 Apr 2022 02:06:37 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Wed, 20 Apr 2022 12:06:36 +0300
-Date:   Wed, 20 Apr 2022 12:06:36 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Ren Zhijie <renzhijie2@huawei.com>
-Cc:     gregkh@linuxfoundation.org, cy_huang@richtek.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] usb: typec: rt1719: Fix build error without
- CONFIG_POWER_SUPPLY
-Message-ID: <Yl/NHAaXFh1UzFdI@kuha.fi.intel.com>
-References: <20220418082425.41566-1-renzhijie2@huawei.com>
+        Wed, 20 Apr 2022 05:12:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E927615A00
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 02:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A10ADB81DB7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 09:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F9D0C385A8;
+        Wed, 20 Apr 2022 09:10:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650445811;
+        bh=11pfjz1i2MS42xR7uvvDnDe7JxVoRfoPmLnKDExZ3Dc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ckTqUZryaTng3rCKHFe97gt9yNXMk3QrKYyKS1V0Qcx/fpvCTgI0wesrhA9G2y3om
+         +AtmyJAcPmTqAhvMY6j3OAqzDkOZ/5QCHns/1iZC0YJb3dq6jv3SIIbsB1tQ/ceWyX
+         0slT9md2Ri+CG+LBl+OC3YgSDuOkoPj4b+6t3NfD5lu81OQ0lmwl/9inhsdRCsF3Sq
+         Yr4B4V4nCB+HK5ZowIeMxp5jy737BqaV0JxfwODGiBtGYY8oP0dq+SX2MoopSBUr5Q
+         tEecNlxwdrS0utn5sop+wH+5Pijv5HpIGrhsK50OnKnmv3xettCtmudySrHRt+Q/g+
+         QnjO74qT4JaLg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 244A9E8DD85;
+        Wed, 20 Apr 2022 09:10:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418082425.41566-1-renzhijie2@huawei.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it
+ for ioctls
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165044581114.11968.7352761617264023399.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Apr 2022 09:10:11 +0000
+References: <20220318165422.686848-1-linux@roeck-us.net>
+In-Reply-To: <20220318165422.686848-1-linux@roeck-us.net>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     bleung@chromium.org, chrome-platform@lists.linux.dev,
+        linux-kernel@vger.kernel.org, dnojiri@chromium.org,
+        robbarnes@google.com, rajatja@google.com, briannorris@chromium.org,
+        parthmalkan@google.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mon, Apr 18, 2022 at 04:24:25PM +0800, Ren Zhijie kirjoitti:
-> Building without CONFIG_POWER_SUPPLY will fail:
-> 
-> drivers/usb/typec/rt1719.o: In function `rt1719_psy_set_property':
-> rt1719.c:(.text+0x10a): undefined reference to `power_supply_get_drvdata'
-> drivers/usb/typec/rt1719.o: In function `rt1719_psy_get_property':
-> rt1719.c:(.text+0x2c8): undefined reference to `power_supply_get_drvdata'
-> drivers/usb/typec/rt1719.o: In function `devm_rt1719_psy_register':
-> rt1719.c:(.text+0x3e9): undefined reference to `devm_power_supply_register'
-> drivers/usb/typec/rt1719.o: In function `rt1719_irq_handler':
-> rt1719.c:(.text+0xf9f): undefined reference to `power_supply_changed'
-> drivers/usb/typec/rt1719.o: In function `rt1719_update_pwr_opmode.part.9':
-> rt1719.c:(.text+0x657): undefined reference to `power_supply_changed'
-> drivers/usb/typec/rt1719.o: In function `rt1719_attach':
-> rt1719.c:(.text+0x83e): undefined reference to `power_supply_changed'
-> 
-> Add POWER_SUPPLY dependency to Kconfig.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 25d29b980912 ("usb: typec: rt1719: Add support for Richtek RT1719")
-> Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
+Hello:
 
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+This patch was applied to chrome-platform/linux.git (for-next)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
 
-> ---
->  drivers/usb/typec/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+On Fri, 18 Mar 2022 09:54:22 -0700 you wrote:
+> Commit 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use
+> cros_ec_cmd_xfer_status helper") inadvertendly changed the userspace ABI.
+> Previously, cros_ec ioctls would only report errors if the EC communication
+> failed, and otherwise return success and the result of the EC
+> communication. An EC command execution failure was reported in the EC
+> response field. The above mentioned commit changed this behavior, and the
+> ioctl itself would fail. This breaks userspace commands trying to analyze
+> the EC command execution error since the actual EC command response is no
+> longer reported to userspace.
 > 
-> diff --git a/drivers/usb/typec/Kconfig b/drivers/usb/typec/Kconfig
-> index 8f921213b17d..ba24847fb245 100644
-> --- a/drivers/usb/typec/Kconfig
-> +++ b/drivers/usb/typec/Kconfig
-> @@ -56,6 +56,7 @@ config TYPEC_RT1719
->  	tristate "Richtek RT1719 Sink Only Type-C controller driver"
->  	depends on USB_ROLE_SWITCH || !USB_ROLE_SWITCH
->  	depends on I2C
-> +	depends on POWER_SUPPLY
->  	select REGMAP_I2C
->  	help
->  	  Say Y or M here if your system has Richtek RT1719 sink only
-> -- 
-> 2.17.1
+> [...]
 
+Here is the summary with links:
+  - [v2] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
+    https://git.kernel.org/chrome-platform/c/57b888ca2541
+
+You are awesome, thank you!
 -- 
-heikki
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
