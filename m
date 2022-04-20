@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44657C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 06:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D97C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 06:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359506AbiDTGTZ (ORCPT
+        id S1357278AbiDTGUY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 02:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        Wed, 20 Apr 2022 02:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359484AbiDTGTJ (ORCPT
+        with ESMTP id S230473AbiDTGUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 02:19:09 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C1D393DB;
-        Tue, 19 Apr 2022 23:16:25 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id j17so1015633pfi.9;
-        Tue, 19 Apr 2022 23:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8XEJp2R4K25ZYHNS7d51S7Y7FdMSq6LIaDwY2H8Jjr4=;
-        b=CqEHDfVth2SZNnvBCwXpvmd6rbXdFGJqBERrT7dtwrUFgTDo60j6hyDZTbDmB1ADXE
-         a3UnFt63E9yNhfqXq5GYE8L7zZzDLX8BJ7EB+A1lW/VMA7R9lMhZgK7EM3mas6+HQ5pg
-         vJmJdR1D0/LRDvYUKOpbX3HX9r1olMPhF+AC2h1lA4XcpI/fL838JEPWQhDTbFoH3Vuf
-         m/yON1qaFowxbhCmM5aaotBekQxCgbq8jF86jjPZRQF+huuovksEjFMphWhp5NRsPaEA
-         AEeFLDjgb0NKAPTqfw9qWz1Npa0SC7sLR07id7TnwYZ+dDzhbCANwxW4PTInmk3O8/fy
-         XiWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8XEJp2R4K25ZYHNS7d51S7Y7FdMSq6LIaDwY2H8Jjr4=;
-        b=dkQg2cQ6rx8ike+hzdgUEmo00U1nLNk1ktRGSQ/NZgaV2ncaFTn2Hik+4TXK/NxY7v
-         wsY+a6ECVEBZEU/sRMhwxDtixHyNKBHKoUkDCu0xBwPGe8uB/rCYfl40M8/LGptgRp5F
-         KB8I9CDNDzA7/HAoulFsuH4HtBA0RulVpgH7svbK4/X/ffMuPWhcTZ2LOWb9dcmi4EiM
-         DIrCkpufHu5HPJXG9eGJAg+mCaPdT8DFYu4RoXEqVvNGp7LvODr5JQQC94XeGTBcIURk
-         X3WiePIA2sJCqBSC8QzuM7GqdfRuz0Gytwe4c5lMI3owlYykKNv1hq8DwBBeFia4QqVY
-         USyw==
-X-Gm-Message-State: AOAM530JORLMHUipN9D3R+8QcK6NjdXoUQxu5JXkcvRxjS2KtoQcMSnp
-        RUB36e9rjSYSgHMByLF9dqRaPXJ+BEjolw==
-X-Google-Smtp-Source: ABdhPJx6BmH11OdCkrvs7y7Wlz4oKOOhwV/WA8UZNjUBwJd+BMtI++dJBOS0FIsBOU4yEeWcL8YoFg==
-X-Received: by 2002:a05:6a00:16c7:b0:4f7:e497:69b8 with SMTP id l7-20020a056a0016c700b004f7e49769b8mr21618014pfc.6.1650435384472;
-        Tue, 19 Apr 2022 23:16:24 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:daec:60d:88f6:798a])
-        by smtp.gmail.com with ESMTPSA id k22-20020aa790d6000000b0050a765d5d48sm9798778pfk.160.2022.04.19.23.16.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 23:16:23 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH 3/3] xtensa: fix a7 clobbering in coprocessor context load/store
-Date:   Tue, 19 Apr 2022 23:16:11 -0700
-Message-Id: <20220420061611.4103443-4-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220420061611.4103443-1-jcmvbkbc@gmail.com>
-References: <20220420061611.4103443-1-jcmvbkbc@gmail.com>
+        Wed, 20 Apr 2022 02:20:22 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA6F393E0
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 23:17:37 -0700 (PDT)
+Received: from kwepemi100005.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kjr4S6KlRzFpXF;
+        Wed, 20 Apr 2022 14:15:04 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100005.china.huawei.com (7.221.188.155) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Apr 2022 14:17:35 +0800
+Received: from [10.174.179.19] (10.174.179.19) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 20 Apr 2022 14:17:34 +0800
+Message-ID: <ecd49289-383d-7a6a-d3be-168bdebc9ebc@huawei.com>
+Date:   Wed, 20 Apr 2022 14:17:34 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v4] hugetlb: Fix wrong use of nr_online_nodes
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     <mike.kravetz@oracle.com>, <david@redhat.com>,
+        <yaozhenguo1@gmail.com>, <baolin.wang@linux.alibaba.com>,
+        <songmuchun@bytedance.com>, <liuyuntao10@huawei.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <dave@stgolabs.net>
+References: <20220413032915.251254-2-liupeng256@huawei.com>
+ <20220416103526.3287348-1-liupeng256@huawei.com>
+ <20220418210352.1d1d90aeba477d598bd6f0be@linux-foundation.org>
+ <4734132d-bae3-d3ab-33b3-a4c3282ad5cd@huawei.com>
+From:   "liupeng (DM)" <liupeng256@huawei.com>
+In-Reply-To: <4734132d-bae3-d3ab-33b3-a4c3282ad5cd@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.19]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fast coprocessor exception handler saves a3..a6, but coprocessor context
-load/store code uses a4..a7 as temporaries, potentially clobbering a7.
-'Potentially' because coprocessor state load/store macros may not use
-all four temporary registers (and neither FPU nor HiFi macros do).
-Use a3..a6 as intended.
 
-Cc: stable@vger.kernel.org
-Fixes: c658eac628aa ("[XTENSA] Add support for configurable registers and coprocessors")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
- arch/xtensa/kernel/coprocessor.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 2022/4/19 22:07, Kefeng Wang wrote:
+>
+> On 2022/4/19 12:03, Andrew Morton wrote:
+>> On Sat, 16 Apr 2022 10:35:26 +0000 Peng Liu <liupeng256@huawei.com> 
+>> wrote:
+>>
+>>> Certain systems are designed to have sparse/discontiguous nodes. In
+>>> this case, nr_online_nodes can not be used to walk through numa node.
+>>> Also, a valid node may be greater than nr_online_nodes.
+>>>
+>>> However, in hugetlb, it is assumed that nodes are contiguous. Recheck
+>>> all the places that use nr_online_nodes, and repair them one by one.
+>> oops.
+>>
+>> What are the user-visible runtime effects of this flaw?
+>
+> For example, there are four node=0,1,2,3, and nid = 1 is offline 
+> node，nr_online_nodes = 3
+>
+> 1) per-node alloc (hugepages=1:2) fails,
+>
+> 2) per-node alloc (hugepages=3:2) fails, but it could succeed.
+>
+> I assume that there is no user-visible runtime effects.
+>
+Thanks, you are right.
 
-diff --git a/arch/xtensa/kernel/coprocessor.S b/arch/xtensa/kernel/coprocessor.S
-index 45cc0ae0af6f..c7b9f12896f2 100644
---- a/arch/xtensa/kernel/coprocessor.S
-+++ b/arch/xtensa/kernel/coprocessor.S
-@@ -29,7 +29,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lsave_cp_regs_cp##x:						\
--		xchal_cp##x##_store a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_store a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
- 
-@@ -46,7 +46,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lload_cp_regs_cp##x:						\
--		xchal_cp##x##_load a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_load a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
- 
--- 
-2.30.2
+I have constructed node =0, 1, 3, 4, and requested huge pages as:
 
+hugepagesz=1G hugepages=0:1,4:1 hugepagesz=2M hugepages=0:1024,4:1024
+
+Without this patch:
+
+  HugeTLB: Invalid hugepages parameter 4:1
+  HugeTLB: Invalid hugepages parameter 4:1024
+  HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
+  HugeTLB registered 2.00 MiB page size, pre-allocated 1024 pages
+
+With this patch:
+
+   HugeTLB registered 1.00 GiB page size, pre-allocated 2 pages
+   HugeTLB registered 2.00 MiB page size, pre-allocated 2048 pages
+
+>> .
+> .
