@@ -2,58 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB25AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 11:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378075AbiDTLwJ (ORCPT
+        id S1378250AbiDTLxP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
+        Wed, 20 Apr 2022 07:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234463AbiDTLwI (ORCPT
+        with ESMTP id S234463AbiDTLxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 07:52:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8206041FBB;
-        Wed, 20 Apr 2022 04:49:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 20 Apr 2022 07:53:14 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D442511A1B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 04:50:28 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b58ed329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:58ed:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id ECD26CE1D7A;
-        Wed, 20 Apr 2022 11:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F999C385A1;
-        Wed, 20 Apr 2022 11:49:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650455359;
-        bh=9NypnRFtmDHEIVYZtB9K0mzLsLVLYiYoDBvugKIf1ho=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A2TEfjgVIL8TMywOaYsWvLmUDrMT2MoA+x3KcjIFu7ALui/D5hf/6IH1FKGknNg5h
-         VsIRgxu3Wp7JXv/7YhTjWRF+Sk30OhFHBoygGEZHOAUoeA5FGiizpCCzw5k3cPiHyd
-         FNUEpSDiqlOXhzRMpp3nB4fwm+pOtvg2b59j3KnJbawY3Lhbls+21VD874lj6g7C4Z
-         NhE52wsZVGfmU1NLyW7rcfsFh/slHtqlf16duEAq9vO+PdqGP8/756pdMPrOzpmSkl
-         T6yz9z9U1xVC6mFz/Gxrim8n/CKkkxcV6lFB3r3Ec82ZMx06UPUrUXw5jdeaDZL+9k
-         LVuu65rVkypIg==
-Date:   Wed, 20 Apr 2022 17:19:15 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3] dmaengine: pl08x: drop the useless function
-Message-ID: <Yl/zOxqlL+TFb27u@matsya>
-References: <YlQ1i3DFqoFFFszO@matsya>
- <1649726180-13133-1-git-send-email-baihaowen@meizu.com>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 897111EC04EC;
+        Wed, 20 Apr 2022 13:50:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650455427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:
+         content-transfer-encoding:content-transfer-encoding:in-reply-to:
+         references; bh=QcJGoUKK849qjQfP32KT/DB395vjWIaLjTRFtrLgTuM=;
+        b=jaMNswgxDqnjPA7/EwDWeH05ltD+uM/+vnRG3VTzzayBMBM1VsdbYJUCNOkVqcZ1Fqn4Hk
+        Ymzh2wmsJTuf6VNHzuOUuMLyVbn5qvCq05aDgX61YeH965OHoNvhuVG/yh+3VPyDPDFAKm
+        eSjbZoOanroDJDmBtcOSrl61Ay7o7pg=
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     X86 ML <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: [PATCH] x86/tdx: Annotate a noreturn function
+Date:   Wed, 20 Apr 2022 13:50:25 +0200
+Message-Id: <20220420115025.5448-1-bp@alien8.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649726180-13133-1-git-send-email-baihaowen@meizu.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12-04-22, 09:16, Haowen Bai wrote:
-> Unneeded variable: "retval". Return "NULL" , so we have to make code clear.
-> better way, drop the function.
+From: Borislav Petkov <bp@suse.de>
 
-Applied, thanks
+objdump complains:
 
+  vmlinux.o: warning: objtool: __tdx_hypercall()+0x74: unreachable instruction
+
+because __tdx_hypercall_failed() won't return but panic the guest.
+Annotate that that is ok and desired.
+
+Fixes: eb94f1b6a70a ("x86/tdx: Add __tdx_module_call() and __tdx_hypercall() helper functions")
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ arch/x86/coco/tdx/tdcall.S | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/coco/tdx/tdcall.S b/arch/x86/coco/tdx/tdcall.S
+index 245888290bb6..eeb4511dc414 100644
+--- a/arch/x86/coco/tdx/tdcall.S
++++ b/arch/x86/coco/tdx/tdcall.S
+@@ -200,5 +200,6 @@ SYM_FUNC_START(__tdx_hypercall)
+ .Lpanic:
+ 	call __tdx_hypercall_failed
+ 	/* __tdx_hypercall_failed never returns */
++	REACHABLE
+ 	jmp .Lpanic
+ SYM_FUNC_END(__tdx_hypercall)
 -- 
-~Vinod
+2.35.1
+
