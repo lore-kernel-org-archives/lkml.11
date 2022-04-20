@@ -2,104 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78395C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C48EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359178AbiDTDKe (ORCPT
+        id S1359161AbiDTDKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 23:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
+        Tue, 19 Apr 2022 23:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359204AbiDTDK0 (ORCPT
+        with ESMTP id S1359138AbiDTDK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 23:10:26 -0400
-Received: from mail.meizu.com (edge01.meizu.com [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3E960FC;
-        Tue, 19 Apr 2022 20:07:25 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 20 Apr
- 2022 11:07:26 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 20 Apr
- 2022 11:07:22 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <siyanteng01@gmail.com>
-CC:     <alexs@kernel.org>, <baihaowen@meizu.com>, <corbet@lwn.net>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <seakeel@gmail.com>, <siyanteng@loongson.cn>
-Subject: [PATCH 2/2] doc/vm/page_owner.rst: Fix table display confusion
-Date:   Wed, 20 Apr 2022 11:06:56 +0800
-Message-ID: <1650424016-7225-3-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
-References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
- <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
+        Tue, 19 Apr 2022 23:10:28 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A6A6571
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:07:36 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id y129so376037qkb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 20:07:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hpmyg8XLS13nF/sVE65s2xiBisYTpjV5/f0AVee7Iss=;
+        b=TAL2aCc91h+Ay7idog+nOlQuP8J6jP28XTdU1Y6wUy6VMnZoqEl54ET/e3GXf0xNi/
+         15Ha0PlwVZtDaWDVIyaEGFBnNyueQU/dhknbMFUvtPau6P9z03NTa6yDXfMkyk5V0OiK
+         drcgS8fUset703wRlXMEpyRGj6d4xp8hhQlpWH2yciub/lYl+ogS1nnw38IHkk7+KcMH
+         ZczgNtLLy2JAhxX7sA6Em58ijKp626XjEJ9dD5S3C/8w/IrYbZ8rzkf6h65BpLx0IL/B
+         RUdEeNxproDeP4HEdaAxvRf9wmdrv6N/MKQcrENdlZS7UmKC7+VliEbfXTU58oi54ACa
+         JdqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hpmyg8XLS13nF/sVE65s2xiBisYTpjV5/f0AVee7Iss=;
+        b=fPfM8FFKeL+H+FDkPH3qgv0+puTQ3g9nXJraiAKXLGjjkFqDXDzq9I0jILJXkuoY1e
+         wgU2O0cCCnC3AwrxlWkUUl9JBY+097a4Ubv5q1ykDkQMSLGcfKrebRM/fkasSM7gE4BY
+         f5hXpv6Gl+OnLCJD4lkxauJKwMv5cZi5gnXYQMroB6IzQzEKyjD+1R/zR/kzAuLCd7vZ
+         91PJeq2RhiunaZgApSaVicz7WrgpMwdqfc1igFIJRBBOUlt9eA9Fq/IIx//vhcY9eEtq
+         49q261Rdv252Jj0HK/BkP0NPwbDcpM7grE+Y0fc5OjT5KngqYl+xokcRZRxL+EsDUOnH
+         ++og==
+X-Gm-Message-State: AOAM531zQovsbsFZ+agzsI/ZL7OGItuRg0UsGX8mf4q0xjhcxk8lO+/z
+        +GJ8qLrJ7/y8CBWNZQZ6R74=
+X-Google-Smtp-Source: ABdhPJy4wHrCRkO6ny5AYzUzvmrLJxHazJY5R+UASEjdsR+b+H3QhIPr7QTeV+IrTguLc4w4HJjKcg==
+X-Received: by 2002:a05:620a:30a:b0:69c:10ef:c87f with SMTP id s10-20020a05620a030a00b0069c10efc87fmr11279776qkm.634.1650424055254;
+        Tue, 19 Apr 2022 20:07:35 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l130-20020a37a288000000b0069e8290f28asm914740qke.97.2022.04.19.20.07.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 20:07:34 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     joro@8bytes.org
+Cc:     will@kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] iommu/omap: using pm_runtime_resume_and_get to simplify the code
+Date:   Wed, 20 Apr 2022 03:07:29 +0000
+Message-Id: <20220420030729.2576005-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After make htmldocs, the table which is made of tab will
-display all by one line. so we make a standard table for STANDARD
-FORMAT SPECIFIERS description.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- Documentation/vm/page_owner.rst | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ drivers/iommu/omap-iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
-index 422d5fa99e84..a8505e3a3044 100644
---- a/Documentation/vm/page_owner.rst
-+++ b/Documentation/vm/page_owner.rst
-@@ -174,22 +174,28 @@ STANDARD FORMAT SPECIFIERS
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 4aab631ef517..7cfa80ccd9a8 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -193,9 +193,7 @@ static int iommu_enable(struct omap_iommu *obj)
+ {
+ 	int ret;
  
- For --sort option:
+-	ret = pm_runtime_get_sync(obj->dev);
+-	if (ret < 0)
+-		pm_runtime_put_noidle(obj->dev);
++	ret = pm_runtime_resume_and_get(obj->dev);
  
--	KEY		LONG		DESCRIPTION
--	p		pid		process ID
--	tg		tgid		thread group ID
--	n		name		task command name
--	st		stacktrace	stack trace of the page allocation
--	T		txt		full text of block
--	ft		free_ts		timestamp of the page when it was released
--	at		alloc_ts	timestamp of the page when it was allocated
-+        ====            ==========      ============================================
-+        KEY             LONG            DESCRIPTION
-+        ====            ==========      ============================================
-+        p               pid             process ID
-+        tg              tgid            thread group ID
-+        n               name            task command name
-+        st              stacktrace      stack trace of the page allocation
-+        T               txt             full text of block
-+        ft              free_ts         timestamp of the page when it was released
-+        at              alloc_ts        timestamp of the page when it was allocated
-         ator            allocator       memory allocator for pages
-+        ====            ==========      ============================================
- 
- For --curl option:
- 
--	KEY		LONG		DESCRIPTION
--	p		pid		process ID
--	tg		tgid		thread group ID
--	n		name		task command name
--	f		free		whether the page has been released or not
--	st		stacktrace	stack trace of the page allocation
-+        ====            ===========     ============================================
-+        KEY             LONG            DESCRIPTION
-+        ====            ===========     ============================================
-+        p               pid             process ID
-+        tg              tgid            thread group ID
-+        n               name            task command name
-+        f               free            whether the page has been released or not
-+        st              stacktrace      stack trace of the page allocation
-         ator            allocator       memory allocator for pages
-+        ====            ===========     ============================================
+ 	return ret < 0 ? ret : 0;
+ }
 -- 
-2.7.4
+2.25.1
+
 
