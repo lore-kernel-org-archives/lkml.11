@@ -2,119 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355155AbiDTQAH (ORCPT
+        id S1355243AbiDTQBV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
+        Wed, 20 Apr 2022 12:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350019AbiDTQAD (ORCPT
+        with ESMTP id S232100AbiDTQBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:00:03 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37FC2ED5D;
-        Wed, 20 Apr 2022 08:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1650470237; x=1682006237;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=S98vaXkbz8UZkBJ9FEMnbk+W6levwYfoDCblKiAVM20=;
-  b=hzq1b4jquH4wQ+Xty9pUdCKh3UDj8yEJacSstOc6ziy6sY0BE6709pqj
-   qCcIU9fbDsDUxUYvcdbGgPEiqco6FTt/rkXOXRB+d4nrlM3y4H93khAtL
-   0HSfdsjXOoGw7nOu0h6BRz2nOGP4v6w0Ab0K2uVx4LjI3EdsyizQnq5JS
-   JwQx0euU3bvwPezxOCEhJNBeHMllpQD0r8cDNOTSiV1MrGg8rb+1PELbu
-   DKHxvv0tQz6ZTDobvXmU23lqXnkcJyBniIkMIw8gcVsW29JNUOwC7b74/
-   HvPjO8Si7pxzM1bh5XEM8DvfS7qQ+ab2O02TpEv9hiqApEJN/d1ovaUVy
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,276,1643670000"; 
-   d="scan'208";a="23392892"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 20 Apr 2022 17:57:15 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Wed, 20 Apr 2022 17:57:15 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Wed, 20 Apr 2022 17:57:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1650470235; x=1682006235;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=S98vaXkbz8UZkBJ9FEMnbk+W6levwYfoDCblKiAVM20=;
-  b=DQrL6l2SiOoxKg5q/nTMqixNBoEGggjvvt3eeraTH0YM4f88s/hWl42V
-   s8KOGt0hY8gtoI+guXiD8Ttbv7HY4kc8vyoO5o0VNdQwc8t0PmOSg1rHM
-   FUKBla+K3XIAw0n+PgqoYG3IpaUnWPAtCRkW9RRnUKr2us9z+9XKJ4May
-   NBmt31bik37WYIrwBh9skiYTUwtMeeVxdjPltagNSJQ2ePyFWLJu9W2D1
-   el08blOadz7KXnFwOBEWODXnUoLBvUnZaGASNH4piSOLpbvo8SJWlSl1Y
-   zBmyGUjISB/kvMoPMXlHHWZuLoY5qImMpBlWCRXH8yyr6pMdzCr7KNc/K
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,276,1643670000"; 
-   d="scan'208";a="23392891"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 20 Apr 2022 17:57:15 +0200
-Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.49.14])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id C2A19280070;
-        Wed, 20 Apr 2022 17:57:14 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Pratyush Yadav <p.yadav@ti.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ramuthevar Vadivel Murugan 
-        <vadivel.muruganx.ramuthevar@linux.intel.com>,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH v2 2/2] spi: cadence-quadspi: allow operations with cmd/addr buswidth >1
-Date:   Wed, 20 Apr 2022 17:56:16 +0200
-Message-Id: <20220420155616.281730-2-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220420155616.281730-1-matthias.schiffer@ew.tq-group.com>
-References: <20220420155616.281730-1-matthias.schiffer@ew.tq-group.com>
+        Wed, 20 Apr 2022 12:01:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAA7326D6;
+        Wed, 20 Apr 2022 08:58:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 769D8618FA;
+        Wed, 20 Apr 2022 15:58:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A839EC385A1;
+        Wed, 20 Apr 2022 15:58:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650470307;
+        bh=VvLMFQx+kyGUgqKbI5QdNFQWU8MFY2kgwwVYHLQ1fjg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Al1tKU0PVMhdgvBzcru+cjod1p0+mweJT3K9CV5c+C9Pgfz7Tw4QPaGjXyVYsWtB5
+         xgTwiHh8kHcD+FpxZzTx2vwEo5iT6Yv9fZ7FFQZNzCmpcdoTOU3gEjy2sQjt+TVYGc
+         befJfu4gftHbZdludJ669rTmJI7BxUpySPFzHaOe8sytcI+fiNZO520CFnkXMYAKy8
+         6eh/A7Jal0X353b3UX8SloBkNA9/8RFhVa24aU/acM4gS4Hp1UKlGMQVbf1z8Cb7Vp
+         QSQEoqfY6a56IoidVgyfwm9nEDJNjKc29U6SoAfoZ+/b5LvUK8q+QLGtcfqj4SirZl
+         KUP7qEn+kzh0g==
+Date:   Wed, 20 Apr 2022 10:58:25 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] PCI: fix unused pci_restore_standard_config without
+ suspend/hibernate
+Message-ID: <20220420155825.GA1298368@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220420141135.444820-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the removal of the incorrect logic of cqspi_set_protocol(), ops with
-cmd/addr buswidth >1 are now working correctly.
+On Wed, Apr 20, 2022 at 04:11:35PM +0200, Krzysztof Kozlowski wrote:
+> The pci_restore_standard_config() is called only by functions within
+> CONFIG_SUSPEND or CONFIG_HIBERNATION, so a configuration with only PM
+> leads to a warning:
+> 
+>   drivers/pci/pci-driver.c:533:12: error: ‘pci_restore_standard_config’ defined but not used [-Werror=unused-function]
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash using 1-4-4
-operations.
+Applied to pci/pm for v5.19, thanks!
 
-DTR operations are currently untested, so we leave them disabled for now
-(except for the previously allowed 8-8-8 ops).
-
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
-
-v2: update commit message; no code changes
-
- drivers/spi/spi-cadence-quadspi.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
-
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 8c12c6dd58ae..0f7e28ef5209 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -1347,13 +1347,7 @@ static bool cqspi_supports_mem_op(struct spi_mem *mem,
- 			return false;
- 		if (op->data.nbytes && op->data.buswidth != 8)
- 			return false;
--	} else if (all_false) {
--		/* Only 1-1-X ops are supported without DTR */
--		if (op->cmd.nbytes && op->cmd.buswidth > 1)
--			return false;
--		if (op->addr.nbytes && op->addr.buswidth > 1)
--			return false;
--	} else {
-+	} else if (!all_false) {
- 		/* Mixed DTR modes are not supported. */
- 		return false;
- 	}
--- 
-2.25.1
-
+> ---
+>  drivers/pci/pci-driver.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index dc18c1faf5e5..a2e6aabfa324 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -522,9 +522,9 @@ static void pci_device_shutdown(struct device *dev)
+>  		pci_clear_master(pci_dev);
+>  }
+>  
+> -#ifdef CONFIG_PM
+> +#ifdef CONFIG_PM_SLEEP
+>  
+> -/* Auxiliary functions used for system resume and run-time resume. */
+> +/* Auxiliary functions used for system resume. */
+>  
+>  /**
+>   * pci_restore_standard_config - restore standard config registers of PCI device
+> @@ -544,6 +544,11 @@ static int pci_restore_standard_config(struct pci_dev *pci_dev)
+>  	pci_pme_restore(pci_dev);
+>  	return 0;
+>  }
+> +#endif /* CONFIG_PM_SLEEP */
+> +
+> +#ifdef CONFIG_PM
+> +
+> +/* Auxiliary functions used for system resume and run-time resume. */
+>  
+>  static void pci_pm_default_resume(struct pci_dev *pci_dev)
+>  {
+> @@ -558,8 +563,7 @@ static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>  	pci_restore_state(pci_dev);
+>  	pci_pme_restore(pci_dev);
+>  }
+> -
+> -#endif
+> +#endif /* CONFIG_PM */
+>  
+>  #ifdef CONFIG_PM_SLEEP
+>  
+> -- 
+> 2.32.0
+> 
