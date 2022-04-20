@@ -2,95 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F6F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 06:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C13E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 06:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353880AbiDTGlg (ORCPT
+        id S1350485AbiDTGn5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 02:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        Wed, 20 Apr 2022 02:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355703AbiDTGl0 (ORCPT
+        with ESMTP id S233571AbiDTGny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 02:41:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87A435246;
-        Tue, 19 Apr 2022 23:38:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E5C7617E4;
-        Wed, 20 Apr 2022 06:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BAA4C385A1;
-        Wed, 20 Apr 2022 06:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650436719;
-        bh=Ulp2uHH2QMrPkqjxvlQjTR4D2G7L2h9l4LRiYfoqp7E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ji+urf2156sh2jw2j2gwVYmGyxKuQ89gjDU/z0qWU6xSAs0d5Hw2uEOb5i0y3xhyw
-         lxMS3PvtggpUPrlbHeS3slVkZnTdU4/VwXzGL8ZoipsPw6CiVJmIzrGmvcxAbkQzDF
-         urEHfPL46ethOtyluuL72bBvC5E4r/wJ1qnS8gCk=
-Date:   Wed, 20 Apr 2022 08:38:36 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Jani Nikula <jani.nikula@intel.com>, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/1] add support for enum module parameters
-Message-ID: <Yl+qbPG19ot5N3ut@kroah.com>
-References: <20220414123033.654198-1-jani.nikula@intel.com>
- <YlgfXxjefuxiXjtC@kroah.com>
- <87a6cneoco.fsf@intel.com>
- <87sfq8qqus.fsf@tynnyri.adurom.net>
+        Wed, 20 Apr 2022 02:43:54 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E2B340DA
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 23:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650436869; x=1681972869;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eSMluGEM3zFG2k5bkshxCznXFVNbgyN9Ew7MMKDa1J4=;
+  b=adIUEu81dqO/43jmnaZPBrfTlBw8x0D/FnbNJyiCOtfhxyL947THWDJE
+   Bu4icBjKOGDBCbJ7KzOzmR0Fxm+ED5GX6vMfjMH4HzTKTah6J5tIuDQRL
+   85qYumyswc9I3kLVBrYalkZTEk/7fd83JrunC9lLaJ0ornbk4Zba0eHNv
+   R8ZoJGTVOvFGdNPwFJUz8ey52HlzDas2EjUhuQLgxV0Y3Z9oOVrw+CJdb
+   XLl3csUaMP2qz4rT9a9kwZ3j7r7mJY8s1crAdN9Jz8nvmqyJtovwjZlHB
+   ceZzO4xYikwTkiBWTKhosORHAJOANAEjpHhplldqb0IBvPIPCAR5V43ty
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="261555609"
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="261555609"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 23:41:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="727364130"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 19 Apr 2022 23:41:08 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nh41T-0006ft-Lr;
+        Wed, 20 Apr 2022 06:41:07 +0000
+Date:   Wed, 20 Apr 2022 14:41:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 621/2579]
+ include/asm-generic/barrier.h:16:10: fatal error: asm/vdso/processor.h: No
+ such file or directory
+Message-ID: <202204201450.pNRIlkjX-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87sfq8qqus.fsf@tynnyri.adurom.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 08:13:47AM +0300, Kalle Valo wrote:
-> + linux-wireless, netdev
-> 
-> Jani Nikula <jani.nikula@intel.com> writes:
-> 
-> > On Thu, 14 Apr 2022, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> >> On Thu, Apr 14, 2022 at 03:30:32PM +0300, Jani Nikula wrote:
-> >>> Hey, I've sent this before, ages ago, but haven't really followed
-> >>> through with it. I still think it would be useful for many scenarios
-> >>> where a plain number is a clumsy interface for a module param.
-> >>> 
-> >>> Thoughts?
-> >>
-> >> We should not be adding new module parameters anyway (they operate on
-> >> code, not data/devices), so what would this be used for?
-> >
-> > I think it's just easier to use names than random values, and this also
-> > gives you range check on the input.
-> >
-> > I also keep telling people not to add new module parameters, but it's
-> > not like they're going away anytime soon.
-> >
-> > If there's a solution to being able to pass device specific debug
-> > parameters at probe time, I'm all ears. At least i915 has a bunch of
-> > things which can't really be changed after probe, when debugfs for the
-> > device is around. Module parameters aren't ideal, but debugfs doesn't
-> > work for this.
-> 
-> Wireless drivers would also desperately need to pass device specific
-> parameters at (or before) probe time. And not only debug parameters but
-> also configuration parameters, for example firmware memory allocations
-> schemes (optimise for features vs number of clients etc) and whatnot.
-> 
-> Any ideas how to implement that? Is there any prior work for anything
-> like this? This is pretty hard limiting usability of upstream wireless
-> drivers and I really want to find a proper solution.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
+commit: 224dbd4b77caebda16df2f388e4cb826e22ea64c [621/2579] headers/deps: Add header dependencies to .h files: <asm/vdso/processor.h>
+config: h8300-buildonly-randconfig-r003-20220420 (https://download.01.org/0day-ci/archive/20220420/202204201450.pNRIlkjX-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=224dbd4b77caebda16df2f388e4cb826e22ea64c
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 224dbd4b77caebda16df2f388e4cb826e22ea64c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=h8300 prepare
 
-Again, configfs?  That should be what that subsystem was designed for...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-thanks,
+All errors (new ones prefixed by >>):
 
-greg k-h
+   In file included from ./arch/h8300/include/generated/asm/barrier.h:1,
+                    from include/asm-generic/atomic.h:13,
+                    from ./arch/h8300/include/generated/asm/atomic.h:1,
+                    from include/linux/atomic.h:7,
+                    from include/asm-generic/bitops/lock.h:5,
+                    from arch/h8300/include/asm/bitops.h:173,
+                    from include/linux/bitops.h:28,
+                    from include/linux/log2.h:12,
+                    from include/asm-generic/getorder.h:8,
+                    from include/asm-generic/page.h:95,
+                    from arch/h8300/include/asm/page.h:5,
+                    from arch/h8300/include/asm/string.h:8,
+                    from include/linux/string.h:20,
+                    from include/linux/uuid.h:12,
+                    from include/linux/mod_devicetable.h:13,
+                    from scripts/mod/devicetable-offsets.c:3:
+>> include/asm-generic/barrier.h:16:10: fatal error: asm/vdso/processor.h: No such file or directory
+      16 | #include <asm/vdso/processor.h>
+         |          ^~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
+   make[2]: *** [scripts/Makefile.build:120: scripts/mod/devicetable-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1193: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +16 include/asm-generic/barrier.h
+
+    15	
+  > 16	#include <asm/vdso/processor.h>
+    17	#include <linux/compiler.h>
+    18	#include <linux/kcsan-checks.h>
+    19	#include <asm/rwonce.h>
+    20	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
