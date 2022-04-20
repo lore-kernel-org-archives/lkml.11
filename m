@@ -2,73 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0827AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:05:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5004C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 16:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376809AbiDTQIh (ORCPT
+        id S1380309AbiDTQJT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 12:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46628 "EHLO
+        Wed, 20 Apr 2022 12:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354875AbiDTQIf (ORCPT
+        with ESMTP id S1380158AbiDTQJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 12:08:35 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6AA15813;
-        Wed, 20 Apr 2022 09:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650470749; x=1682006749;
-  h=from:to:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=hf08b4QE9XkawxK/fJrYihK5N3GRLc2QBMxwYiBXxXQ=;
-  b=I09BkyEzhiUK4exWkucxPkoD6rbWGtLOlfTiM+9e2xJgJX4ZGPxZR2/4
-   +f52fK+wpJUwGp+TwsELcRr4TkN3FH6e3WteA1hnfdmCJh2oVJaXEzj7b
-   r5SwaLFB8fmjfNzYj71aoMIncE28H6JxYzz5eqd60enSOMJoIbwjmKChH
-   plXZuW2npmCWoiPqiPEHn9TuCDOwg73cnQK9BCRdPW4O9e/aAdlLWnRAl
-   TC0CCISff4iirxgwMvTSHnKcN/DCVecI+URLt4UmoomnSnCGsydixM+Df
-   nJDp3ZVltVaEcY3YZyCU9mFaJKrPp9Yi/3N7JliH64Z4PkYpna8C64sNW
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="324509606"
-X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="324509606"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 08:56:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="658110872"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga002.fm.intel.com with ESMTP; 20 Apr 2022 08:56:22 -0700
-Received: from debox1-desk4.lan (unknown [10.212.213.71])
-        by linux.intel.com (Postfix) with ESMTP id B423158088F;
-        Wed, 20 Apr 2022 08:56:22 -0700 (PDT)
-From:   "David E. Box" <david.e.box@linux.intel.com>
-To:     hdegoede@redhat.com, david.e.box@linux.intel.com,
-        markgross@kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] platform/x86/intel/sdsi: Fixes for 5.18
-Date:   Wed, 20 Apr 2022 08:56:19 -0700
-Message-Id: <20220420155622.1763633-1-david.e.box@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Apr 2022 12:09:14 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DA130552;
+        Wed, 20 Apr 2022 09:06:28 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e2afb80550so2434497fac.1;
+        Wed, 20 Apr 2022 09:06:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=xUUVhcCV2MnLvckxNQgFIVhxYpI9BwVhaob+8jFGxmE=;
+        b=oc2C+JoZAcCa5ezslIwZxLQJIZwS49mZnJKCFyXLCYAXqB/J9OXfL7g6jibOS/6oNv
+         nr2SE8Z7cH0Zs74f65Er1RV1/K6UdES7yjVwcD7zz+amDcqM1hw9fMxUSQKayJ8Rw+H0
+         NOERztMpRK//cZU5FUbfwBRYEP82fwFwpN6NnyoNzurl1DJCIsB4nxfjXVhpWUbbBA55
+         3wXz/jC9TokskhGMDpoTBTS4PyJym80DvZ7fO77/yR+bbO/FYBt6BmNxJaL0L5EzzCsE
+         59DTCusR7JSquzgssb/im89wP1GziIPHexlplgrAHVU7c39rvEeXBUcCy7VfYDRfl57s
+         ohOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=xUUVhcCV2MnLvckxNQgFIVhxYpI9BwVhaob+8jFGxmE=;
+        b=yCgUQk5su2Bclfo916pybQjtEb/iumdUQvrA4D8WguBjGSURP/rYiiBW0ofYvUduaY
+         lL7hXM2rOPtEGhoPurVhtMcSHSceDQQixGq1Rr3lt40AT+ONcGXZIr5y1846cc2Ayz/5
+         HIWOrTaSQTMWvj9hN2FPa2agdqS9M+ldqKAcNbL6KjOx6YLApdl+WrGSE7QWOSkZpCRO
+         nY1tX+vCTYwTX1OEzoIJ1BLPhkr2XKdsntEV/Y+2VsI21/JEvBTTLVHsfROx9oxl+tBy
+         9f8sKfEhZvDofUH5W+tiqf+IfxbZNoIv/xkVCG9qm2YWaeD/9KdiE2wGl/Ml9NLdqezS
+         Dchg==
+X-Gm-Message-State: AOAM531DUqgpS0N8uRQomnzOVT480pYrxgcw9R/rPn7x5dI18SHIMge3
+        0By1agns+1Sw/mh1HsOgrggWysPmUO4=
+X-Google-Smtp-Source: ABdhPJwc5QKQo8PyoeJVu08zt/5fsKFlXNotL3sz5212wczBacQh9Tvq/6BKTIGJGD0v5RpkOMQhyQ==
+X-Received: by 2002:a05:6871:793:b0:db:360c:7f5e with SMTP id o19-20020a056871079300b000db360c7f5emr1921012oap.218.1650470787745;
+        Wed, 20 Apr 2022 09:06:27 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a3-20020a9d5c83000000b006054c7ecfb6sm3705539oti.34.2022.04.20.09.06.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 09:06:27 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <1b12cb3a-3d87-8254-b229-dcf83ad0bc0a@roeck-us.net>
+Date:   Wed, 20 Apr 2022 09:06:25 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     wujek dev <dev_public@wujek.eu>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220419215326.309991-1-dev_public@wujek.eu>
+ <20220420122128.411757-1-dev_public@wujek.eu>
+ <f34ec7ac-7b34-6d98-25ad-31b13fe08c59@roeck-us.net>
+ <PFzjnraIDClF6umMOqlCKCzxG6q5lIhBLHpynRA6juh6gXSp5Y7SLPpzXZGNU6L7OGCEwl_F-niJn1jTflifWnqm9PX3Rcfqbtdo6rmPAT4=@wujek.eu>
+ <6f697b2c-58aa-6ca4-966b-147bcc184dad@roeck-us.net>
+ <Liq6d7nBil1lQx274diOvpjRJ9cEYH6co7ZMjrudPfYn0TTzOsfqsjuVBK-pMpFF5nBC0jhuoFEtbtmUY4Td4uY-a4qn6j-OmQD-Qu_xdck=@wujek.eu>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 2/2] hwmon: (pmbus) add MFR_* registers to debugfs
+In-Reply-To: <Liq6d7nBil1lQx274diOvpjRJ9cEYH6co7ZMjrudPfYn0TTzOsfqsjuVBK-pMpFF5nBC0jhuoFEtbtmUY4Td4uY-a4qn6j-OmQD-Qu_xdck=@wujek.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following patches provide fixes for the Intel SDSi driver based on
-firmware updates and for one driver bug.
+On 4/20/22 08:51, wujek dev wrote:
+> ------- Original Message -------
+> On Wednesday, April 20th, 2022 at 16:15, Guenter Roeck <linux@roeck-us.net> wrote:
+> 
+> 
+>>
+>>
+>> On 4/20/22 06:58, wujek dev wrote:
+>>
+>>> ------- Original Message -------
+>>> On Wednesday, April 20th, 2022 at 15:53, Guenter Roeck linux@roeck-us.net wrote:
+>>>
+>>>> On 4/20/22 05:22, Adam Wujek wrote:
+>>>>
+>>>>> Add registers to debugfs:
+>>>>> PMBUS_MFR_ID
+>>>>> PMBUS_MFR_MODEL
+>>>>> PMBUS_MFR_REVISION
+>>>>> PMBUS_MFR_LOCATION
+>>>>> PMBUS_MFR_DATE
+>>>>> PMBUS_MFR_SERIAL
+>>>>>
+>>>>> Signed-off-by: Adam Wujek dev_public@wujek.eu
+>>>>
+>>>> Where is patch 1/2, and why did you resend this patch ?
+>>>
+>>> There should be no "1/2" since this and the second patch are unrelated.
+>>> I resend it because I rebased it on master.
+>>
+>> Please provide change logs and version your patches in the future.
+> ok, thank you for your patience.
+>>
+>>> Adam
+>>>
+>>>> Guenter
+>>>>
+>>>>> ---
+>>>>> drivers/hwmon/pmbus/pmbus_core.c | 84 ++++++++++++++++++++++++++++++++
+>>>>> 1 file changed, 84 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+>>>>> index 0af7a3d74f47..1dc186780ccf 100644
+>>>>> --- a/drivers/hwmon/pmbus/pmbus_core.c
+>>>>> +++ b/drivers/hwmon/pmbus/pmbus_core.c
+>>>>> @@ -2625,6 +2625,30 @@ static int pmbus_debugfs_get_status(void *data, u64 *val)
+>>>>> DEFINE_DEBUGFS_ATTRIBUTE(pmbus_debugfs_ops_status, pmbus_debugfs_get_status,
+>>>>> NULL, "0x%04llx\n");
+>>>>>
+>>>>> +static ssize_t pmbus_debugfs_mfr_read(struct file *file, char __user *buf,
+>>>>> + size_t count, loff_t *ppos)
+>>>>> +{
+>>>>> + int rc;
+>>>>> + struct pmbus_debugfs_entry *entry = file->private_data;
+>>>>> + char data[I2C_SMBUS_BLOCK_MAX + 2] = { 0 };
+>>>>> +
+>>>>> + rc = i2c_smbus_read_block_data(entry->client, entry->reg, data);
+>>>>> + if (rc < 0)
+>>>>> + return rc;
+>>>>> +
+>>>>> + data[rc] = '\n';
+>>>>> + rc += 2;
+>>
+>>
+>> Why +2 ?
+>>
+> Copied from another driver.
+> +1 due to '\n'
+> +1 due to NULL character (smbus block transfer does not include it in the length)
+> Explanation included in v3 patch.
 
-David E. Box (3):
-  platform/x86/intel/sdsi: Handle leaky bucket
-  platform/x86/intel/sdsi: Poll on ready bit for writes
-  platform/x86/intel/sdsi: Fix bug in multi packet reads
+"copied from another driver" is not really a good argument.
+That other driver might just be buggy.
 
- drivers/platform/x86/intel/sdsi.c | 44 +++++++++++++++++++++----------
- 1 file changed, 30 insertions(+), 14 deletions(-)
+What do you see in userspace when you read the data ? A string that ends with
+"\n\0" ? If so, does the "\0" at the end add any value ?
 
-
-base-commit: b2d229d4ddb17db541098b83524d901257e93845
--- 
-2.25.1
-
+Guenter
