@@ -2,136 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A02A8C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F556C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376309AbiDTHpu (ORCPT
+        id S1376314AbiDTHqF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        Wed, 20 Apr 2022 03:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241235AbiDTHps (ORCPT
+        with ESMTP id S241235AbiDTHqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:45:48 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DECD3B572
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:43:02 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id m132so1383936ybm.4
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 00:43:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cic/lmVeICvTPM3bIFzSlnqztIyS7Y2EoW5ARigCG0A=;
-        b=s/ciJ8lMhG4LLgARFOfSM8q0G/vnREGeJ2tEuGmZ6Qz1x6PcfJ3F9bjpoNTp9q28S8
-         /N8Md10+1Hw3XlKP2UFVKbmaXKPUg4UCnMfyyxtO1ZXXiF/dOrIzNxuHB4aYG+JWXRTl
-         aIXcM0vNX7r4oypff+hHWhIS+iEa26RDMZyQM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cic/lmVeICvTPM3bIFzSlnqztIyS7Y2EoW5ARigCG0A=;
-        b=28e8U/Bjd+Fwf5F8WYPKRGnJX88xXyCvFrOQbxt71kZwgEATnCfer6v3aBZjSRdXtG
-         78wxT33RP3TwL8Me3cWrii82u5uIe5CEgbN4vFCuWH0W6LkpKG/l2erI2BQOnEzbOO/6
-         gqeo4V5uf9+3d22s86EXE7Y+hDtvPH1WSuWZ2PhEbCHg+2/MuT+sRePxGK6mtj3Kw8xY
-         rcrfa+rwueJPxwSfvCqaI3mTqY9YjDFxMr/AWKb457Nrke6vPSFiuer7knS+SWuRQsC4
-         WfTvNkDoePOPyDWexe3jaAPojl1FacGvaP2pwq6NbOXrHeUdd23zDSyyqnDOpZBQWi3o
-         9FAw==
-X-Gm-Message-State: AOAM5334lviXtPq3k9GLGeVrBgInL3jt3GDj+hVJQHi044H9pxbm0K4t
-        qh4Fg46dufYZ+1jm6GZvDO2rEvTLy3usZu18Y7gg
-X-Google-Smtp-Source: ABdhPJy6qgrX3X0fcMprBIXxkdVXgaBpxQHgQNT5mrlWB67ltcFM8mvuiIGYv+VxFX94vHy9xIzWFAjaUpdkySngZZo=
-X-Received: by 2002:a5b:803:0:b0:633:749f:9acd with SMTP id
- x3-20020a5b0803000000b00633749f9acdmr19288159ybp.236.1650440581619; Wed, 20
- Apr 2022 00:43:01 -0700 (PDT)
+        Wed, 20 Apr 2022 03:46:00 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7313B572;
+        Wed, 20 Apr 2022 00:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650440595; x=1681976595;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VLZ3Oiyauf4PXpEX5Cd3P8yK2szKUl8ted+JLr34T8s=;
+  b=O39xguA1G39ziqlPw8qZTsneBbsU8qMTlnIulZrtmnVnya9eIE68PQpv
+   pziHmSpYeSt1b69PSYMfwuSPmNpAVvy05fUbkEpNjWSxqmTNpER958QAv
+   Yi8uhO0FiHBjR9Cfwr+E/HBUJiyrdnPADgV4zM1cttE8MLx4hvO8I4b5d
+   Rlk0KUhwszqw86W4HdWnOt9miBselBzFDY3ebb+Fd++cqpU2L8GyBLL0O
+   JrTfL8x+UTAUKWEOO/oRytulJi3r47MU3IS46LX5ifeyQaQGfqxJ9Dtlh
+   MOU9BEjeaTMHPxk9Rx7TKBJafkuM0CKdybJEWGMZIJtos69NwyEiN/OOc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="244548604"
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="244548604"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 00:43:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,275,1643702400"; 
+   d="scan'208";a="510453668"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 20 Apr 2022 00:43:11 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nh4zW-0006jC-Ps;
+        Wed, 20 Apr 2022 07:43:10 +0000
+Date:   Wed, 20 Apr 2022 15:42:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>
+Cc:     kbuild-all@lists.01.org, Arnd Bergmann <arnd@arndb.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Finn Thain <fthain@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: Re: [PATCH] [v2] m68k: coldfire: drop ISA_DMA_API support
+Message-ID: <202204201546.tAlqEoGg-lkp@intel.com>
+References: <20220419132716.1392407-1-arnd@kernel.org>
 MIME-Version: 1.0
-References: <20220420013258.3639264-1-atishp@rivosinc.com> <20220420013258.3639264-3-atishp@rivosinc.com>
-In-Reply-To: <20220420013258.3639264-3-atishp@rivosinc.com>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Wed, 20 Apr 2022 00:42:50 -0700
-Message-ID: <CAOnJCU+EPHxD7MqbswKMy=gZhmyyXMiezqaw1+D1h+O+pbYR2w@mail.gmail.com>
-Subject: Re: [PATCH 2/2] RISC-V: KVM: Restrict the extensions that can be disabled
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     KVM General <kvm@vger.kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Rob Herring <robh+dt@kernel.org>, kvm-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419132716.1392407-1-arnd@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 6:33 PM Atish Patra <atishp@rivosinc.com> wrote:
->
-> Currently, the config reg register allows to disable all allowed
-> single letter ISA extensions. It shouldn't be the case as vmm
-> shouldn't be able disable base extensions (imac).
+Hi Arnd,
 
-/s/able/able to/
+I love your patch! Yet something to improve:
 
-> These extensions should always be enabled as long as they are enabled
-> in the host ISA.
->
-> Signed-off-by: Atish Patra <atishp@rivosinc.com>
-> ---
->  arch/riscv/kvm/vcpu.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
->
-> diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-> index 2e25a7b83a1b..14dd801651e5 100644
-> --- a/arch/riscv/kvm/vcpu.c
-> +++ b/arch/riscv/kvm/vcpu.c
-> @@ -38,12 +38,16 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
->                        sizeof(kvm_vcpu_stats_desc),
->  };
->
-> -#define KVM_RISCV_ISA_ALLOWED  (riscv_isa_extension_mask(a) | \
-> -                                riscv_isa_extension_mask(c) | \
-> -                                riscv_isa_extension_mask(d) | \
-> -                                riscv_isa_extension_mask(f) | \
-> -                                riscv_isa_extension_mask(i) | \
-> -                                riscv_isa_extension_mask(m))
-> +#define KVM_RISCV_ISA_DISABLE_ALLOWED  (riscv_isa_extension_mask(d) | \
-> +                                       riscv_isa_extension_mask(f))
-> +
-> +#define KVM_RISCV_ISA_DISABLE_NOT_ALLOWED      (riscv_isa_extension_mask(a) | \
-> +                                               riscv_isa_extension_mask(c) | \
-> +                                               riscv_isa_extension_mask(i) | \
-> +                                               riscv_isa_extension_mask(m))
-> +
-> +#define KVM_RISCV_ISA_ALLOWED (KVM_RISCV_ISA_DISABLE_ALLOWED | \
-> +                              KVM_RISCV_ISA_DISABLE_NOT_ALLOWED)
->
->  static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
->  {
-> @@ -217,9 +221,10 @@ static int kvm_riscv_vcpu_set_reg_config(struct kvm_vcpu *vcpu,
->         switch (reg_num) {
->         case KVM_REG_RISCV_CONFIG_REG(isa):
->                 if (!vcpu->arch.ran_atleast_once) {
-> -                       vcpu->arch.isa = reg_val;
-> +                       /* Ignore the disable request for these extensions */
-> +                       vcpu->arch.isa = reg_val | KVM_RISCV_ISA_DISABLE_NOT_ALLOWED;
->                         vcpu->arch.isa &= riscv_isa_extension_base(NULL);
-> -                       vcpu->arch.isa &= KVM_RISCV_ISA_ALLOWED;
-> +                       vcpu->arch.isa &= KVM_RISCV_ISA_DISABLE_ALLOWED;
->                         kvm_riscv_vcpu_fp_reset(vcpu);
->                 } else {
->                         return -EOPNOTSUPP;
-> --
-> 2.25.1
->
+[auto build test ERROR on geert-m68k/for-next]
+[also build test ERROR on tiwai-sound/for-next gerg-m68knommu/for-next v5.18-rc3 next-20220419]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Sorry. I forgot to add the fixes tag.
+url:    https://github.com/intel-lab-lkp/linux/commits/Arnd-Bergmann/m68k-coldfire-drop-ISA_DMA_API-support/20220419-212846
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git for-next
+config: m68k-m5307c3_defconfig (https://download.01.org/0day-ci/archive/20220420/202204201546.tAlqEoGg-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/0adee00b1eb9676cd3c269f898b1fae518d8c9e5
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Arnd-Bergmann/m68k-coldfire-drop-ISA_DMA_API-support/20220419-212846
+        git checkout 0adee00b1eb9676cd3c269f898b1fae518d8c9e5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash arch/m68k/
 
-Fixes: 92ad82002c39 (RISC-V: KVM: Implement
-KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> make[3]: *** No rule to make target 'arch/m68k/coldfire/dma.o', needed by 'arch/m68k/coldfire/built-in.a'.
+   make[3]: Target '__build' not remade because of errors.
 
 -- 
-Regards,
-Atish
+0-DAY CI Kernel Test Service
+https://01.org/lkp
