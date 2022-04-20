@@ -2,126 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7517C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67982C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 15:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379963AbiDTPDo (ORCPT
+        id S1379885AbiDTPEf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 11:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
+        Wed, 20 Apr 2022 11:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379904AbiDTPDB (ORCPT
+        with ESMTP id S1379904AbiDTPEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 11:03:01 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3981E14013;
-        Wed, 20 Apr 2022 08:00:13 -0700 (PDT)
-Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23KERNLq001481;
-        Wed, 20 Apr 2022 14:59:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version; s=pps0720;
- bh=zBrTf6Qo31CzintAEZ1ZV+ruktO4W9tsAWx5OVdR+dM=;
- b=KupYLTLCRJ816BY6MxTsA3kTlXLHqoCQ2eUbX+X5vMz4Lfl7wuRFAtQDNh9pwLVYBK+L
- flou89e0Ap6sIPUsP0vsiPbtoH9Hi32NGOjw28iIXJC11ZFCx9y4QyWUNYXMWTWaJeHY
- kE6qRi+FhCZLAvWhgiCKamiZCd+NhFQZfBmd9klOg4DH2raB+FaBHbhQilVOn+VqfNPP
- zw+oQmahUD/lq3u7nG5TFO2nYHOVwLthGN/NZKSlr7k1B1WzlOh+d5lisAwJpZsMLseB
- FFykq86XkIPSON0xL2mIR2Sl1kpO6aghZJly6kMTAwit+vffU0bW+64jMGut9dFyClSq Lw== 
-Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fjky1g9va-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 14:59:54 +0000
-Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
-        by g2t2353.austin.hpe.com (Postfix) with ESMTP id 8708465;
-        Wed, 20 Apr 2022 14:59:53 +0000 (UTC)
-Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id 2C7C03A;
-        Wed, 20 Apr 2022 14:59:53 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     verdun@hpe.com, nick@hpe.com, joel@jms.id.au, arnd@arndb.de
-Cc:     Nick Hawkins <nick.hawkins@hpe.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 06/11] dt-bindings: watchdog: Add HPE GXP Watchdog timer binding
-Date:   Wed, 20 Apr 2022 10:01:50 -0500
-Message-Id: <20220420150156.47405-6-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220420150156.47405-1-nick.hawkins@hpe.com>
-References: <20220420150156.47405-1-nick.hawkins@hpe.com>
-X-Proofpoint-ORIG-GUID: ybzwJOOO4EBSPXrdjN8Ue_p6Yr-YjTJq
-X-Proofpoint-GUID: ybzwJOOO4EBSPXrdjN8Ue_p6Yr-YjTJq
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 20 Apr 2022 11:04:32 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E469440E77;
+        Wed, 20 Apr 2022 08:01:42 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id y21so1398584wmi.2;
+        Wed, 20 Apr 2022 08:01:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XsQiKH6TajJPAJHa8yDpCvGZxUo92/efC5z+5+H0ZlA=;
+        b=QgKJcishop3aV1xXrheRV4qyylb1AI5grf9+ZvrBgbbHio91mGzOh5Sujl1rBYh5HS
+         yPYdO/Rwprg0JLDluwQVIlnxMABdTWOdgiKbnEvQCe6wvGAb7QkRyMrd9c92iPGNZBcc
+         ClsZmZQCDrCbjxPIywrrQ3LHxysH8DgN50f9Hvd8ua+hioe42+3WKdeaAh+71xIMRyAZ
+         v5MMQMNd1zciCw3y/DgAY/GTBvdO2IOsFVbqb0jri9eOFcmqsmRN77dcBnjLUPhXDmFx
+         w3NBnyGr/fqQcCrB2SQFnTD9YULHVm0OLSEWdVaM2QA0fv2RbpJDlVAB5bgfZbKQc+40
+         9Kbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XsQiKH6TajJPAJHa8yDpCvGZxUo92/efC5z+5+H0ZlA=;
+        b=PXZUsEVzujfnYEc7Eof626x4LJ3J6zDQ26H30SnbGPDuLw4xBoYLHXbBydZ6nE8rEQ
+         GhxxXJjd/pZJcQo62xRLY0z/r6Bx0bLkQl+YrDeZcE/aHdLAuxnF8kXmyQPPOIPAtz6e
+         YNR2n6VTevuaNCUlHIm2mNB1gfMH+4yrj1qAjUvCN6NxZgRUEN0pLdGh7fwzXEa+DYkW
+         3G4Hoq4ODfXWY+QBnaywlT27/UGKWK3P9F8ZAhvtTqCdGBmexTb8jIwFuW3Yp7FAwaRT
+         7B7M5lAq2qHvOh6wj/egDYmI5/jWFwk0uek+XO4jKUhSyGnO0rEd1gUbc9XpEGvzWTUb
+         FXfg==
+X-Gm-Message-State: AOAM532vNHep422WMoFV5mVn7Raq99s2WSt2qcjoFeMH0wy5ppc5waUt
+        47lTG0uKuJ4ymyUBAqF+uH+3aRUNBQxdyw==
+X-Google-Smtp-Source: ABdhPJxR8PYfXuaXr7lmmOaz11HRXe8ImqDUmbKI+XvfJWLNFr3Gfkjge/cQEqozYmF/1axP319Q2g==
+X-Received: by 2002:a05:600c:1987:b0:392:90f9:98df with SMTP id t7-20020a05600c198700b0039290f998dfmr4115302wmq.72.1650466901452;
+        Wed, 20 Apr 2022 08:01:41 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id y6-20020a05600015c600b0020a8f950471sm89128wry.115.2022.04.20.08.01.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 08:01:41 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <792073cb-c1ea-2fd0-f05c-3f793a013ce2@redhat.com>
+Date:   Wed, 20 Apr 2022 17:01:38 +0200
 MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_04,2022-04-20_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 mlxscore=0 clxscore=1015 phishscore=0 spamscore=0
- suspectscore=0 adultscore=0 impostorscore=0 mlxlogscore=923
- lowpriorityscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2204200089
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 3/8] KVM: SVM: Unwind "speculative" RIP advancement if
+ INTn injection "fails"
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-4-seanjc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220402010903.727604-4-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+On 4/2/22 03:08, Sean Christopherson wrote:
+>   		 * but re-execute the instruction instead. Rewind RIP first
+>   		 * if we emulated INT3 before.
+>   		 */
+> -		if (kvm_exception_is_soft(vector)) {
+> -			if (vector == BP_VECTOR && int3_injected &&
+> -			    kvm_is_linear_rip(vcpu, svm->int3_rip))
+> -				kvm_rip_write(vcpu,
+> -					      kvm_rip_read(vcpu) - int3_injected);
+> +		if (kvm_exception_is_soft(vector))
+>   			break;
+> -		}
 
-Add the hpe gxp watchdog timer binding hpe,gxp-wdt.
-This will enable support for the HPE GXP Watchdog
+Stale comment.
 
-Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
-
----
-v2:
-*Made watchdog a child of timer because of same register
-area based on review feedback
-*Simplified the watchdog yaml as it will get information
-from parent device
----
- .../bindings/watchdog/hpe,gxp-wdt.yaml        | 30 +++++++++++++++++++
- 1 file changed, 30 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
-
-diff --git a/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
-new file mode 100644
-index 000000000000..c20da146352f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
-@@ -0,0 +1,30 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/hpe,gxp-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: HPE GXP Controlled Watchdog
-+
-+allOf:
-+  - $ref: "watchdog.yaml#"
-+
-+maintainers:
-+  - Nick Hawkins <nick.hawkins@hpe.com>
-+  - Jean-Marie Verdun <verdun@hpe.com>
-+
-+properties:
-+  compatible:
-+    const: hpe,gxp-wdt
-+
-+required:
-+  - compatible
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    watchdog0:  watchdog {
-+      compatible = "hpe,gxp-wdt";
-+    };
-+
--- 
-2.17.1
-
+Paolo
