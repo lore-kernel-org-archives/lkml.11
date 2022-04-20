@@ -2,153 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F47BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 14:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379690AbiDTOUQ (ORCPT
+        id S1345172AbiDTOUW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 10:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38342 "EHLO
+        Wed, 20 Apr 2022 10:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380122AbiDTOSf (ORCPT
+        with ESMTP id S1380235AbiDTOSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 10:18:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FB843EC1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:13:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40FF0B81D61
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 14:13:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E93C385A0;
-        Wed, 20 Apr 2022 14:12:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650463978;
-        bh=iULM7A9fCQ7Zxmf8Gc24aApToUhdP1WhjkyXL/nyKwY=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=etV8oUqfv9dE6yVfXu40FtLwMs0AHRaSfiXSrVnw5u5E3gykqT9hC9jVunWEhQtKr
-         vXaeK9dvE1i/ycJLZWRdUYwANww1DspDiyGKMikswRlVgs6LM/9MxEFKPanorWx2Hf
-         5dpya0CVEygSSR049gjUdt+vWOohBUZPzXpHs8fKl3AXDmdYBIK4KbgP0vICxggBNj
-         DpMShLr5MSDo5STVL1WeCTeBxDXWCHJFSrkJuMxdf+gHN7ODIywGvZrCpR7KN55EaP
-         fvgZ3Eyj8pYDXQx4wrpWRGX35Nff9p0j/ghgMSzfnT4of+/oeivp4RH3zAOUt1eoT2
-         Ubnb2CTQeVPYQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 807475C0269; Wed, 20 Apr 2022 07:12:58 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 07:12:58 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Hillf Danton <hdanton@sina.com>, linux-kernel@vger.kernel.org,
-        syzkaller <syzkaller@googlegroups.com>
-Subject: Re: [PATCH rcu 04/11] kernel/smp: Provide boot-time timeout for CSD
- lock diagnostics
-Message-ID: <20220420141258.GB4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220418225345.GA3945110@paulmck-ThinkPad-P17-Gen-1>
- <20220419085607.2014-1-hdanton@sina.com>
- <20220419134616.GE4285@paulmck-ThinkPad-P17-Gen-1>
- <CACT4Y+Y8Az3_gi-UX-KCfQ1dxARJtL1NhB1AGLv9o_5gNtkWOg@mail.gmail.com>
- <20220419164908.GM4285@paulmck-ThinkPad-P17-Gen-1>
- <20220419231820.2089-1-hdanton@sina.com>
- <CACT4Y+YwP0Vvupn3QmQj9Ks4NV4hkBcc6gDQ7ro3_Dzy-benCg@mail.gmail.com>
- <20220420134149.GX4285@paulmck-ThinkPad-P17-Gen-1>
- <CACT4Y+ZNXT1HHDT3aBzMtSouTYbetHcbFz-bVscj=5sbVdsaew@mail.gmail.com>
+        Wed, 20 Apr 2022 10:18:44 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AAB45535
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:14:13 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id g18so3799224ejc.10
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 07:14:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aQ942c+7vb6/qCDUQRQxRZC5wp53vmGcX8QQSZzWOFI=;
+        b=RKgHBFDDg/JiJVmQisIRJGrEpZ2E81++nBGY0N2innYsm9KQAUjV3TMkLMqjEHYVS9
+         YZaFLrTh4hw6/QQOk7r+dFztN7u2F93uJ19L89b8wvGbMIGBU/WgRsT9Xhf+6OvtkVGe
+         eu/aBE6k1BTjoN6Kv01mXZC1A6v9J+sIGU9BWSrr1HZdxGckhRvmqjLZVgLIF73rKxOy
+         4dc+itvEHSCspXMYIEO7jA1xFgufPizM0UGXerRCyyqFicrjmJU85htg3BYMrT6fc1Z/
+         wbzAeF5MTeUKVrFCBQccR90OAFB9fakXUe2+aROc6hYTv6SyqzbDyl1n7H0v8Iw0Iq7+
+         /ngw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aQ942c+7vb6/qCDUQRQxRZC5wp53vmGcX8QQSZzWOFI=;
+        b=LDuEinL8ZWtH0ToPyZz+O9DbVjQmLdQZ0Z1UnY40DMNwydGCcSSCyHTBhIuExyUM6Q
+         1FEUC2geG6p6H7NDb8/o2HUSfbdaYc12yz2Ehe8fK8B9z8pp4hUb3bSaWUGRzSXvmdhI
+         pDZ9MLyPeylhC6/g5fSw2njL6/T4EtvsMTiTWbpD3NOsG30+Yz9lMyIDX9uDUcRt0YIU
+         hFDiBAB9hqN+dPYbTko48Z4DNgSw6M/ZxA3Tw6Vr0sIXEyfOLYJcRwU95DTKOo9RoNjs
+         24lho8Wnsgn4/hYIJLaVcGkIgmUOyO7Chbr8NEax/Pjq7PGBSd1b2/35YhdZsLISom1q
+         LGQw==
+X-Gm-Message-State: AOAM533ROwq5tSmpn8cLxeV1nvNA4/xlipDqX8J8EvQouHh4Rg5aW+Oy
+        0maRKrFv8CzaYrzWqSsJf2fwDQ==
+X-Google-Smtp-Source: ABdhPJxp5IWPFIxb6KZ3dRafE5gv7h8/JLmZGz6bqI5HkNKyelttYLmZhMfHrNc95/3MtEr1mWRUlg==
+X-Received: by 2002:a17:906:9754:b0:6da:7d72:1353 with SMTP id o20-20020a170906975400b006da7d721353mr18472378ejy.273.1650464052444;
+        Wed, 20 Apr 2022 07:14:12 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id yy18-20020a170906dc1200b006d6e5c75029sm6635599ejb.187.2022.04.20.07.14.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 07:14:11 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        stable@vger.kernel.org
+Subject: [PATCH v2] pinctrl: samsung: fix missing GPIOLIB on ARM64 Exynos config
+Date:   Wed, 20 Apr 2022 16:14:07 +0200
+Message-Id: <20220420141407.470955-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+ZNXT1HHDT3aBzMtSouTYbetHcbFz-bVscj=5sbVdsaew@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 04:00:07PM +0200, Dmitry Vyukov wrote:
-> On Wed, 20 Apr 2022 at 15:41, Paul E. McKenney <paulmck@kernel.org> wrote:
-> > > > > > > > > Debugging of problems involving insanely long-running SMI handlers
-> > > > > > > > > proceeds better if the CSD-lock timeout can be adjusted.  This commit
-> > > > > > > > > therefore provides a new smp.csd_lock_timeout kernel boot parameter
-> > > > > > > > > that specifies the timeout in milliseconds.  The default remains at the
-> > > > > > > > > previously hard-coded value of five seconds.
-> > > > > > > > >
-> > > > > > > > > Cc: Rik van Riel <riel@surriel.com>
-> > > > > > > > > Cc: Peter Zijlstra <peterz@infradead.org>
-> > > > > > > > > Cc: Ingo Molnar <mingo@kernel.org>
-> > > > > > > > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > > > > > > > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > > > > > > > > Cc: Juergen Gross <jgross@suse.com>
-> > > > > > > > > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > > > > > > > > ---
-> > > > > > > > >  Documentation/admin-guide/kernel-parameters.txt | 11 +++++++++++
-> > > > > > > > >  kernel/smp.c                                    |  7 +++++--
-> > > > > > > > >  2 files changed, 16 insertions(+), 2 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> > > > > > > > > index 3f1cc5e317ed..645c4c001b16 100644
-> > > > > > > > > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > > > > > > > > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > > > > > > > > @@ -5377,6 +5377,17 @@
-> > > > > > > > >     smart2=         [HW]
-> > > > > > > > >                     Format: <io1>[,<io2>[,...,<io8>]]
-> > > > > > > > >
-> > > > > > > > > +   smp.csd_lock_timeout= [KNL]
-> > > > > > > > > +                   Specify the period of time in milliseconds
-> > > > > > > > > +                   that smp_call_function() and friends will wait
-> > > > > > > > > +                   for a CPU to release the CSD lock.  This is
-> > > > > > > > > +                   useful when diagnosing bugs involving CPUs
-> > > > > > > > > +                   disabling interrupts for extended periods
-> > > > > > > > > +                   of time.  Defaults to 5,000 milliseconds, and
-> > > > > > > > > +                   setting a value of zero disables this feature.
-> > > > > > > > > +                   This feature may be more efficiently disabled
-> > > > > > > > > +                   using the csdlock_debug- kernel parameter.
-> > > > > > > > > +
-> > > > > > > >
-> > > > > > > > Can non-responsive CSD lock detected trigger syzbot (warning) report?
-> > > > > > >
-> > > > > > > If they enable it by building with CONFIG_CSD_LOCK_WAIT_DEBUG=y, yes.
-> > > > > >
-> > > > > > +syzkaller mailing list
-> > > > > >
-> > > > > > Currently we don't enable CONFIG_CSD_LOCK_WAIT_DEBUG in syzbot configs.
-> > > > > > Is it a generally useful debugging feature recommended to be enabled
-> > > > > > in kernel testing systems?
-> > > > >
-> > > > > With the default value for smp.csd_lock_timeout, it detects CPUs that have
-> > > > > had interrupts disabled for more than five seconds, which can be useful
-> > > > > for detecting what would otherwise be silent response-time failures.
-> > > >
-> > > > The five seconds take precedence over the 143s in reports [1] IMO.
-> > > > The shorter timeout helps select reproducers which in turn help find answer
-> > > > to questions there.
-> > >
-> > > I've sent https://github.com/google/syzkaller/pull/3090 to enable the config.
-> > > 5 seconds won't be reliable, I've set it to 100s to match CPU stall timeout.
-> >
-> > Thank you, Dmitry!
-> >
-> > Is there something I should be doing to enable the RCU CPU stall timeout
-> > to be reduced?
-> 
-> No.
-> We just bumped it to a high enough value to not cause false positives.
-> If it's stalled, it's stalled.
+The Samsung pinctrl drivers depend on OF_GPIO, which is part of GPIOLIB.
+ARMv7 Exynos platform selects GPIOLIB and Samsung pinctrl drivers. ARMv8
+Exynos selects only the latter leading to possible wrong configuration
+on ARMv8 build:
 
-Ah, your goal is to find perma-stalls.  Got it, thank you!
+  WARNING: unmet direct dependencies detected for PINCTRL_EXYNOS
+    Depends on [n]: PINCTRL [=y] && OF_GPIO [=n] && (ARCH_EXYNOS [=y] || ARCH_S5PV210 || COMPILE_TEST [=y])
+    Selected by [y]:
+    - ARCH_EXYNOS [=y]
 
-                                                        Thanx, Paul
+Always select the GPIOLIB from the Samsung pinctrl drivers to fix the
+issue.  This requires removing of OF_GPIO dependency (to avoid recursive
+dependency), so add dependency on OF for COMPILE_TEST cases.
 
-> > > > [1] https://lore.kernel.org/lkml/20220321210140.GK4285@paulmck-ThinkPad-P17-Gen-1/
-> > > >
-> > > > >
-> > > > > > If we enabled it, we also need to figure out where it fits into the
-> > > > > > timeout hierarchy and adjust smp.csd_lock_timeout:
-> > > > > > https://github.com/google/syzkaller/blob/master/dashboard/config/linux/bits/x86_64.yml#L15-L40
-> > > > >
-> > > > > On this, I must defer to you guys.  I can say that the larger the value
-> > > > > that you choose for smp.csd_lock_timeout, the nearer the beginnning of
-> > > > > that group it should go, but you guys knew that already.  ;-)
-> > > > >
-> > > > >                                                         Thanx, Paul
-> > > >
-> > > > --
-> > > > You received this message because you are subscribed to the Google Groups "syzkaller" group.
-> > > > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller+unsubscribe@googlegroups.com.
-> > > > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller/20220419231820.2089-1-hdanton%40sina.com.
+Reported-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
+Fixes: eed6b3eb20b9 ("arm64: Split out platform options to separate Kconfig")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+---
+
+Changes since v1:
+1. Do not select OF_GPIO and add back dependency on OF (Arnd).
+
+Original report:
+https://bugzilla.kernel.org/show_bug.cgi?id=210047
+---
+ arch/arm/mach-exynos/Kconfig    |  1 -
+ drivers/pinctrl/samsung/Kconfig | 11 ++++-------
+ 2 files changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfig
+index 51a336f349f4..4d3b40e4049a 100644
+--- a/arch/arm/mach-exynos/Kconfig
++++ b/arch/arm/mach-exynos/Kconfig
+@@ -16,7 +16,6 @@ menuconfig ARCH_EXYNOS
+ 	select EXYNOS_PMU
+ 	select EXYNOS_SROM
+ 	select EXYNOS_PM_DOMAINS if PM_GENERIC_DOMAINS
+-	select GPIOLIB
+ 	select HAVE_ARM_ARCH_TIMER if ARCH_EXYNOS5
+ 	select HAVE_ARM_SCU if SMP
+ 	select PINCTRL
+diff --git a/drivers/pinctrl/samsung/Kconfig b/drivers/pinctrl/samsung/Kconfig
+index dfd805e76862..7b0576f71376 100644
+--- a/drivers/pinctrl/samsung/Kconfig
++++ b/drivers/pinctrl/samsung/Kconfig
+@@ -4,14 +4,13 @@
+ #
+ config PINCTRL_SAMSUNG
+ 	bool
+-	depends on OF_GPIO
++	select GPIOLIB
+ 	select PINMUX
+ 	select PINCONF
+ 
+ config PINCTRL_EXYNOS
+ 	bool "Pinctrl common driver part for Samsung Exynos SoCs"
+-	depends on OF_GPIO
+-	depends on ARCH_EXYNOS || ARCH_S5PV210 || COMPILE_TEST
++	depends on ARCH_EXYNOS || ARCH_S5PV210 || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
+ 	select PINCTRL_EXYNOS_ARM if ARM && (ARCH_EXYNOS || ARCH_S5PV210)
+ 	select PINCTRL_EXYNOS_ARM64 if ARM64 && ARCH_EXYNOS
+@@ -26,12 +25,10 @@ config PINCTRL_EXYNOS_ARM64
+ 
+ config PINCTRL_S3C24XX
+ 	bool "Samsung S3C24XX SoC pinctrl driver"
+-	depends on OF_GPIO
+-	depends on ARCH_S3C24XX || COMPILE_TEST
++	depends on ARCH_S3C24XX || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
+ 
+ config PINCTRL_S3C64XX
+ 	bool "Samsung S3C64XX SoC pinctrl driver"
+-	depends on OF_GPIO
+-	depends on ARCH_S3C64XX || COMPILE_TEST
++	depends on ARCH_S3C64XX || (COMPILE_TEST && OF)
+ 	select PINCTRL_SAMSUNG
+-- 
+2.32.0
+
