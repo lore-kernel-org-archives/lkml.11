@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 103DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377557AbiDTKR6 (ORCPT
+        id S1377533AbiDTKSE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
+        Wed, 20 Apr 2022 06:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377537AbiDTKRv (ORCPT
+        with ESMTP id S1377530AbiDTKRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:17:51 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 03:15:03 PDT
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D292BD7
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:15:01 -0700 (PDT)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2022042010135683572b2da7f9cb76e8
+        Wed, 20 Apr 2022 06:17:55 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 03:15:08 PDT
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B0962E7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:15:06 -0700 (PDT)
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2022042010140142f38d9dfe652359bc
         for <linux-kernel@vger.kernel.org>;
-        Wed, 20 Apr 2022 12:13:57 +0200
+        Wed, 20 Apr 2022 12:14:02 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=FFNQWKAaa+tOjtARGnA7TybHGnCzkS3/CB981T3WncY=;
- b=Jxe2OEimlwTyMCpTX0/NgKmNH7P443a28SYHynIN8TAOlyKUOPHLzDJD+2Etu2PR8oIXe7
- kJcJsIYO+hBuUDG1yZ1BNcNEbPjL9bRbYrMrwUMTg/AoNHbqJe83cASB76wYuIfxDACSpdhE
- tCxC/optrbE8ZVSHRzowMaq8RDFH0=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ieRvSfzJc1NYOPDOUJRBMLhqaqAbjJNtd7H/SPVP6kA=;
+ b=b36bfNTEUoDGWRCe8XvZHCKF3BmqBw4CWRSROYtGu6t/wgOSNn2tuLlgoF8rCNwwPiGKhW
+ ckWXh+DPSRN0N6BMX74XspxmbVWv8vtQ/uWqdywlsx3HyafsUza/MRaGeIoTq48xmvMjnPxG
+ e70bXuT4Y51dttt0mJvUwIGW/Za9Y=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 1/3] tty: n_gsm: fix missing update of modem controls after DLCI open
-Date:   Wed, 20 Apr 2022 03:13:44 -0700
-Message-Id: <20220420101346.3315-1-daniel.starke@siemens.com>
+Subject: [PATCH v3 3/3] tty: n_gsm: clean up implicit CR bit encoding in address field
+Date:   Wed, 20 Apr 2022 03:13:46 -0700
+Message-Id: <20220420101346.3315-3-daniel.starke@siemens.com>
+In-Reply-To: <20220420101346.3315-1-daniel.starke@siemens.com>
+References: <20220420101346.3315-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -45,48 +47,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Currently the peer is not informed about the initial state of the modem
-control lines after a new DLCI has been opened.
-Fix this by sending the initial modem control line states after DLCI open.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
+address field within the frame header. It is made up of the DLCI address,
+command/response (CR) bit and EA bit.
+Use the predefined CR value instead of a plain 2 in alignment to the
+remaining code and to make the encoding obvious.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-All remarks have been incorporated.
-Compared to the original patch the additional comment on the prototypes was
-removed and the comment in gsm_dlci_open() was moved to a separate line.
-The commit message remains unchanged.
+All remarks have been incorporated. The commit title was changed from fix
+to clean up and the fix and backporting remarks have been removed. The
+remaining commit message body and the code changes remain untouched.
 This is version 3 of the patch because the second version was missing the
 change remarks.
 
-Link: https://lore.kernel.org/all/YlkQ5Jh8HIm+AJHe@kroah.com/
+Link: https://lore.kernel.org/all/YlkRvMhDfwgNZptV@kroah.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index f3fb66be8513..07d03447cdfd 100644
+index 9bf5aa508f0e..1beb4b28cd18 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -370,6 +370,7 @@ static const u8 gsm_fcs8[256] = {
- #define GOOD_FCS	0xCF
+@@ -751,7 +751,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
  
- static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
-+static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
- 
- /**
-  *	gsm_fcs_add	-	update FCS
-@@ -1479,6 +1480,9 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Register gsmtty driver,report gsmtty dev add uevent for user */
- 	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
-+	/* Send current modem state */
-+	if (dlci->addr)
-+		gsmtty_modem_update(dlci, 0);
- 	wake_up(&dlci->gsm->event);
- }
- 
+ 	*--dp = msg->ctrl;
+ 	if (gsm->initiator)
+-		*--dp = (msg->addr << 2) | 2 | EA;
++		*--dp = (msg->addr << 2) | CR | EA;
+ 	else
+ 		*--dp = (msg->addr << 2) | EA;
+ 	*fcs = gsm_fcs_add_block(INIT_FCS, dp , msg->data - dp);
 -- 
 2.25.1
 
