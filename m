@@ -2,153 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD39C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 03:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54293C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 04:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359297AbiDTDxo (ORCPT
+        id S1347945AbiDTEHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Apr 2022 23:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
+        Wed, 20 Apr 2022 00:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242857AbiDTDxj (ORCPT
+        with ESMTP id S240534AbiDTEHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Apr 2022 23:53:39 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2088.outbound.protection.outlook.com [40.107.22.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEE62612E;
-        Tue, 19 Apr 2022 20:50:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i9leljPHFZFqrGJ2Ec4iyMxJGW0ee9RU7PmcRYwfrwoTczfZ86xlXWPPuAHKciQvNWieLCPJR7zPEjplLwKMCSr2Gwy81nfnAAt+MxtWYVxvafhgOzfntneEzoRvJ/IACBwpsPHmMWgIMhvEFPVPWltzolFhwe1yn7anGHH8MhtAMM0oA5PGAFwt5bd0olzJ0/+csSb0SynR25P8eYKMeCb+djX1bN9Y3o+3JcM/uF44l90OYcAEjJiACmigOuh2Jt+jRpEcGKnFaN8gqukDMq8GEY0WGrFOAo5fOsGBU+mhhGzP6bjMFMEJQqBrFPPa9QzzIHpNIuyPpeQKvnWb7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VnCe52Sq4XspF8/bw8Q1GZRFbuP3BqWrvcwQB9BibGs=;
- b=TqyOvKYItoDsc9+l+vhsymZUzvmqqHlh/3liwWpDhrvHIyfOqnS1flYXIzITQvtyrOsDTZArxpKdhU69Mr9NWfVWYtg2R9LciqHsmMRurZi6Yv+gJq7EUmzFbARy4MT0WmefbJm6EYvHlGDJKchtX5l9sLuon+JcZfvQpwGQ20Y9xE03c3aC9PbroTAUxfyYpNNoJcF7Gnrh0WLDYJNJ8MFomu+SSfAZ/ytFEtmlh7Tt0O7ZhbAlNMDeU049nG5NBtw/QRZYQpY3Wglo15tKK0GpKVB8Nd6gKYPDPIvznq8EyPPKhREHzkM22WmhUfB5h4qCYcNlgh30qynjfAbidg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VnCe52Sq4XspF8/bw8Q1GZRFbuP3BqWrvcwQB9BibGs=;
- b=M+tyeXBO1tQhkH1ks/yX/PxFojbp7I0vV/3zIfx/KTeQFXzl2vLAnLUygFklqRj1NBZuEjRmTpG/YcCSLCaxqeIRb2U8sI1aSot9Scnuntl1L4yZix2T26QH++QrfIcV5oirPA21ciX/PnLxU/oT+xcDETObz3wDd4y7Syt1fJ8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VE1PR04MB6477.eurprd04.prod.outlook.com (2603:10a6:803:11e::14)
- by AM0PR04MB5025.eurprd04.prod.outlook.com (2603:10a6:208:cd::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
- 2022 03:50:52 +0000
-Received: from VE1PR04MB6477.eurprd04.prod.outlook.com
- ([fe80::60ad:e5ec:cdfd:1b01]) by VE1PR04MB6477.eurprd04.prod.outlook.com
- ([fe80::60ad:e5ec:cdfd:1b01%3]) with mapi id 15.20.5186.014; Wed, 20 Apr 2022
- 03:50:52 +0000
-From:   Changming Huang <jerry.huang@nxp.com>
-To:     broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shawnguo@kernel.org, leoyang.li@nxp.com,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Changming Huang <jerry.huang@nxp.com>
-Subject: [PATCH 2/2 v3] arm64: dts: fsl-ls1028a: add dspi2 support
-Date:   Wed, 20 Apr 2022 11:50:45 +0800
-Message-Id: <20220420035045.33940-2-jerry.huang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220420035045.33940-1-jerry.huang@nxp.com>
-References: <20220420035045.33940-1-jerry.huang@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0023.apcprd02.prod.outlook.com
- (2603:1096:4:195::11) To VE1PR04MB6477.eurprd04.prod.outlook.com
- (2603:10a6:803:11e::14)
+        Wed, 20 Apr 2022 00:07:49 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC16E615E
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Apr 2022 21:05:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650427503; x=1681963503;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=11k0+5rRsUznFFqJNOnxwAFacN8LUVKxZuk2gFphtNY=;
+  b=bqcm8vWRmGeg75okGN5utoSpKuext06wOfS8B3PwyrmmNk0tDGnKAl4N
+   aEko0+CHIu2meLrXbnnB6vRtivMd0/8wbElzrJhhZY0d8QDt2SA6HOJ9w
+   Krd3MiyQnamQgtqOmCcUPrkPUgyGcQtuYhMDZ51IYtavx7jNJ0VOsCThX
+   QznZJPGr4G13whNMgqGRzQwTfxTPq7U09iJjuY8BvyjzACcfVyW42CGSW
+   NEBpMa540F/xPuHxkgoBHyTjDXa3HcTCSBmZBaOfc9BKWrOjOI/OTZ3jt
+   uFBpDfln6xaglc2JSYCLSJSHhg0BfRe/Rlk5J1EtdulRfbBGJwE7vpoCm
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="324374390"
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="324374390"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 21:05:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,274,1643702400"; 
+   d="scan'208";a="625909033"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Apr 2022 21:05:00 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nh1aO-0006Wy-24;
+        Wed, 20 Apr 2022 04:05:00 +0000
+Date:   Wed, 20 Apr 2022 12:04:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v3 14/15] printk: extend console_lock for proper
+ kthread support
+Message-ID: <202204201103.MeWPs1iv-lkp@intel.com>
+References: <20220419234637.357112-15-john.ogness@linutronix.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a3ef6f80-1e5d-4dfb-974b-08da2280f6e4
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5025:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR04MB5025816586250C02E170A74BFEF59@AM0PR04MB5025.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Zx3FRlexklirJbU7TmtexDhjWulqykT2uHG+MHu28cKTAcp4xQ5VFzwYxmQhP90+7LGv+I5alRESEimxsPKGBCTS/TznpxA47sWau5cQWI2S3q2sJpMvcfWydbZInjpL1Kvfi+pEXVNnn0Xj2eqU+OQCqHB9rIwZKD0nBOpMp8oSh9ffjowPkGgEsdAEV3H1DALwlmielPojo5mDtztNMSoJCzXY3I7Ol9WM5fNcyYxDMGqLn9abifcoYj3T+98R64IE5kGHRirm7wFMnSY1gOs+SkaCVrzfl3+WoLU5JBgS2I02PDCmSQxQmpX6XjIzzbLy/U29BboZikPjSLs2Cl0bIJ62RWcEaunGmPyhM3xfjTbuLQQMvZCPClCs6TFjxfxcRNBd7Slcq9mAn2YBdIMKq2/pkpbO8syPF3Hk2770cREeQxm2lilj8bjSyUywseOMx4C1NnsnRBzegnRJ7f5qgvdVFLwvXgyzb1C0mJYInIGNeBbqqp4aJs/xJRyOwnGzV+tyQKUWx56ZKJNau48chvpJsW831+ArKXtKsufJDsKtzMw9ySIpRtrPrnhrLGnwH/DEIpClhz08/EBuZkFQfeDdLHaztWqNrlDhYcqeM1/4941xEKK+56MJjvJ5jLSYQA5gqTA/wzRiTKttGsVU+iHB4cuA1ZK1Iv7nNowlALl/29JQjEDOadSXL5GlViLBVSdOkA3ux4NDs1WS6w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6477.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(186003)(1076003)(66556008)(66476007)(4326008)(8676002)(316002)(38350700002)(38100700002)(36756003)(66946007)(5660300002)(52116002)(26005)(6486002)(6506007)(6512007)(6666004)(86362001)(508600001)(8936002)(4744005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oRKHk3ieSO4JGCvjwrowPGW5VqMTzFHWvxgK3zJuT8X47TkbS1KML0esdCzd?=
- =?us-ascii?Q?a6kF/zHdqaA7t3WgqBeyqya7K1V0lJzA5t2ENqcd6v5cM8RlhVvr1p9bBX/q?=
- =?us-ascii?Q?gaUf+JNVCI62mPOfgCrB6tSM0rrH6ABhSNNvfkWBVYfAIMwHD4huuJmB5JI+?=
- =?us-ascii?Q?6p1DClMr918Yv63AAt4QFQprYGDgL02qDQhfSbktKi5CYIRUIo2VC7NHcpdM?=
- =?us-ascii?Q?9FJmXoF/FvNOsE1lPejcY1FNZrNOvvrpbzbTcDaJlS/ozshuacHxmQv2iJ9A?=
- =?us-ascii?Q?5f6tqxYlORWonGWEfL/viHy1kBbTtClljs/ueDKfVyv4vbQWkBOF4Odi/I8D?=
- =?us-ascii?Q?XFdZthrMvevI0gzXAL1w0kmVXRWMcL47h8K9eRzi/UW2kPSi6p2mD6yh1Yd2?=
- =?us-ascii?Q?E5kWVdoEstY7khce9YlW45NNWd37areRXKtb8L/TMiegKFgKkpuC6luBO6Oo?=
- =?us-ascii?Q?/kPmgqgGq5DKOdecbQLO9CmlRVgipO5hc24KzSvuaXm4IsfnPskbBKJLSKc9?=
- =?us-ascii?Q?+Uyig7RQVthU9VDiAWaFVJCstkyL2hWqhzmp+JNiNBBigAC7MkrDCc8lRbjX?=
- =?us-ascii?Q?fvEty5EpJKPzuOL3SJKFBDBXNyB9nFRI276mOhHR6CEc010wKuvr4DyvjznZ?=
- =?us-ascii?Q?yeQIlCy+5QcjCBnfEoHuC8b63jbBbQRWHNi8LrUQ3vLf7LYz+aApyRiQKrlH?=
- =?us-ascii?Q?oH3lnasrMD4rn/VjRDKAyei5VHuekuLRZ+JkJUilnG41J7DULFrVPbHPV+Xw?=
- =?us-ascii?Q?oknxgLyPtsm48X+VSKg3wgq8FCmYxDHa/cQcpoKbCZT0YjYZw0dIq+FS8d1A?=
- =?us-ascii?Q?HQCmusIEajQgmRduLT+a4z8rIIpy3ST8nO32dk/Vzb6t2+P0NrGwRN+1zmXb?=
- =?us-ascii?Q?R9SA08KZfFA0K2KTRU0Sh8m7/R4/4PLrJVGf4GqXSguLtmXQxImmVji+IQZB?=
- =?us-ascii?Q?efYOB3zhfeR7/eG78k9Q7pOwUdrAgGZw0IP9Wf5GQilBOdoBmA4O1WxpaGws?=
- =?us-ascii?Q?qkM7RkPKQYo6JLUSs0X8nbxiAwyU+M8plXRDhtIx8idTYu1k6UptWi5ywVg+?=
- =?us-ascii?Q?HLdIjj/6JdB/yuCvduSUWPhhQIIDTG9jeA2jSLDQ3x3XR01U6wm8NYbciZm4?=
- =?us-ascii?Q?3igc+2Dqxzs8g9RIebfP1bmGNSfabbY+e2E7fq4uXK0Z0tpq5VvjdA4zQK5/?=
- =?us-ascii?Q?l9QAsCVY1xK3RQeLhN2y7OFH63VW2Hu4Anj8GR/IUNNTuJWWyM5DuSvjnZNp?=
- =?us-ascii?Q?iqauWMwvqlfaY4DL2tk2ySGqF84F7iwm0Zud1l07Aa93mrHR8JJJDUxfb6JR?=
- =?us-ascii?Q?YGi4ri5g0gElCTdClsXcME1eQz1hVCci0qE1IGxtkhLmdeFhALA1xO494N2k?=
- =?us-ascii?Q?FZXMwqezYGR4ybFkZ/MhlYtTps+tCwXbOLCIjCiaeKnre8Fnpme3eJZF1szj?=
- =?us-ascii?Q?IwB2QQfWwYFTADm7IIgnm3zJnTolkjOoOdY3ZtI7dFIFfFVc1lHAc2PQ5mfb?=
- =?us-ascii?Q?bYW8eCvyQPiIhdobAsK3v7Doh4xLGjb/mY6aPs/Ll+HNF6FVkepDRe4hphii?=
- =?us-ascii?Q?CuNpONQcgfBYAn675sZkLhibsp5n/kpPxmCiaQMrn5E5wBx/uABjNt72DCYI?=
- =?us-ascii?Q?m/PbdI9ZoXJTDMZ4ObGLqGa8z7qi63RD9uiDRqOF36PHgaZpgZUsQrANXWoP?=
- =?us-ascii?Q?U0tKz+gt7Z26AK1qi8PvunE4waf8x4VC9NTdGV3M4S+VClLZ9ugVLsPuRIfY?=
- =?us-ascii?Q?a+qIQYFKXQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3ef6f80-1e5d-4dfb-974b-08da2280f6e4
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6477.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 03:50:52.2805
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rMGSkXGlLs5nPiyn/KHpFv8BLLAZcovdO19ymlTYe+xz7CecB2OdPnLa42YnDAAFrlMMYN/fZ/FL/NretOTH2Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5025
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419234637.357112-15-john.ogness@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable MikroBUS SPI port.
+Hi John,
 
-Signed-off-by: Changming Huang <jerry.huang@nxp.com>
----
-changes in v3:
-  - add the dt-bindings
+I love your patch! Perhaps something to improve:
 
- arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+[auto build test WARNING on 84d7df104dbab9c3dda8f2c5b46f9a6fc256fe02]
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-index 68c31cb8eead..6d0508d5abd0 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-@@ -117,6 +117,19 @@ &duart1 {
- 	status = "okay";
- };
- 
-+&dspi2 {
-+	bus-num = <2>;
-+	status = "okay";
-+
-+	mikrobus@0 {
-+		compatible = "semtech,sx1301";
-+		reg = <0>;
-+		spi-max-frequency = <2000000>;
-+		fsl,spi-cs-sck-delay = <1000000>;
-+		fsl,spi-sck-cs-delay = <50>;
-+	};
-+};
-+
- &enetc_mdio_pf3 {
- 	sgmii_phy0: ethernet-phy@2 {
- 		reg = <0x2>;
+url:    https://github.com/intel-lab-lkp/linux/commits/John-Ogness/printk-for-next/20220420-080725
+base:   84d7df104dbab9c3dda8f2c5b46f9a6fc256fe02
+config: s390-randconfig-r032-20220419 (https://download.01.org/0day-ci/archive/20220420/202204201103.MeWPs1iv-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/5139c5b347088e124f3812a3fa63eb284b14f2dc
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review John-Ogness/printk-for-next/20220420-080725
+        git checkout 5139c5b347088e124f3812a3fa63eb284b14f2dc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash kernel/printk/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from kernel/printk/printk.c:35:
+   In file included from include/linux/memblock.h:13:
+   In file included from arch/s390/include/asm/dma.h:5:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from kernel/printk/printk.c:35:
+   In file included from include/linux/memblock.h:13:
+   In file included from arch/s390/include/asm/dma.h:5:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from kernel/printk/printk.c:35:
+   In file included from include/linux/memblock.h:13:
+   In file included from arch/s390/include/asm/dma.h:5:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> kernel/printk/printk.c:2703:6: warning: no previous prototype for function 'console_lock_single_hold' [-Wmissing-prototypes]
+   void console_lock_single_hold(struct console *con)
+        ^
+   kernel/printk/printk.c:2703:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void console_lock_single_hold(struct console *con)
+   ^
+   static 
+   13 warnings generated.
+
+
+vim +/console_lock_single_hold +2703 kernel/printk/printk.c
+
+  2697	
+  2698	/*
+  2699	 * Lock the console_lock, but rather than blocking all the kthread printers,
+  2700	 * lock a specified kthread printer and hold the lock. This is useful if
+  2701	 * console flags for a particular console need to be updated.
+  2702	 */
+> 2703	void console_lock_single_hold(struct console *con)
+  2704	{
+  2705		might_sleep();
+  2706		down_console_sem();
+  2707		mutex_lock(&con->lock);
+  2708		console_locked = 1;
+  2709		console_may_schedule = 1;
+  2710	}
+  2711	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
