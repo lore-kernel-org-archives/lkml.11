@@ -2,98 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 205F2C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 20:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49809C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 20:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382023AbiDTUKc (ORCPT
+        id S1382033AbiDTUKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 16:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
+        Wed, 20 Apr 2022 16:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381936AbiDTUK2 (ORCPT
+        with ESMTP id S1381909AbiDTUK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 20 Apr 2022 16:10:28 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F6045AED;
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFC245AD7;
         Wed, 20 Apr 2022 13:07:41 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23K9EiFp030296;
-        Wed, 20 Apr 2022 13:07:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=qC2ZktjidKj+/UlljeyBNuul/oLAKa3ekjEB28eOfes=;
- b=ETy7mKHqJbryWtyLlVpQtt6BOzTHg9GMo7AD36eQhegWUi2qvSVRwJu552mt46dwvu34
- u6Dll0N/wbmI1mptYGKMhNRQiJHSckhubW7UhF6+mYmtm8q28GzTg8V9hE/Ze6ycQml3
- 5Nka9UwT0i6emsypljMPwXfFFW970eOkWbDyCAMdfWpC7+vZPTHY6L6kK9gQOL6p+qsr
- oqbqRKYAwfau0qv6wX9AxsMw4fb3dEoAmRxsGk9b7tN0a3FuvLgB0Q3T62YP+MVzHw4F
- Qh58UrOqP8XWoEkuXV3KPkOlrBUVYe0ky4A9EjQqBWA0OOnWCWFoe9ASo874xOQFtgCU NQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3fjfcgaakn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 20 Apr 2022 13:07:12 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 20 Apr
- 2022 13:07:11 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 20 Apr 2022 13:07:11 -0700
-Received: from localhost.localdomain (unknown [10.110.150.250])
-        by maili.marvell.com (Postfix) with ESMTP id ECDF83F707A;
-        Wed, 20 Apr 2022 13:07:10 -0700 (PDT)
-From:   Vasyl Gomonovych <vgomonovych@marvell.com>
-To:     <bp@alien8.de>, <mchehab@kernel.org>, <tony.luck@intel.com>,
-        <james.morse@arm.com>, <rric@kernel.org>,
-        <vgomonovych@marvell.com>, <linux-edac@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH] EDAC: Init minimum possible error desc grain
-Date:   Wed, 20 Apr 2022 13:07:08 -0700
-Message-ID: <20220420200708.29921-1-vgomonovych@marvell.com>
-X-Mailer: git-send-email 2.17.1
+Received: by mail-ej1-x629.google.com with SMTP id u15so5720513ejf.11;
+        Wed, 20 Apr 2022 13:07:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cccalB/f7dl98H1DWBiuWR8XYUD40T0nXDNgYapNT6Q=;
+        b=mReAvsGhWJGmo5vlFsepe6okBMMhYkdttmKKqi6+6iE82RuA0CqCTeJIpUHAx535Ub
+         FLfKBECIy+HwDsZ1UTQkIungkf1EZypG088XIvz2/VbDZYBkWb/e5B6GjvStlpCS3Lqg
+         W6xaBnZHkNRO56XNZvacULwDaZvaGfA1vgDk8QXg1qHfWHaEX6tGXrdezq92aNETbEi3
+         oE3O8FB4e73i+CFXfvIr+I0is7GefKKCZuLvWDnRUrH0fyVrvR1ndFqvK5m9p6f2D2yV
+         j93tUjDxaBngw3/gXnMQf63yBvDTIJb3WSBh6xGJodQfYV1jcvk0eYHMs1T74oHzrJGb
+         BSsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cccalB/f7dl98H1DWBiuWR8XYUD40T0nXDNgYapNT6Q=;
+        b=llci3FhfUTn+q+HOGwnga44skNvOCyAz+Wvvkkr4FmujjZaQnimWCrUX947W06Qaaw
+         YKq+mdoloNgaZl3kUmjMZ7jqlpzvfxMu2s1Eby8QWjRn9/gZ37Vhpwm8vIlnm+1/L+VN
+         fydsY/uyZeOWBlOxrdpllaPR9IlobrXfycly6c5ejwp2JKcape46gBfh26LHcYBml9md
+         Zq+CYvGqzMI96gU7hS7yF5x30EPSplq6/La9Pdi5ge2yEfEmwulq4FijaX8Y9zyZvQYB
+         lFfrY1bN0RQPOjc2+1cbXFC9bh4bY5NDnm2S6y00ZeLOPSF1ogG5yF1rEPgbHwiRSQhp
+         BoKQ==
+X-Gm-Message-State: AOAM530G0bZY548P49jrc/GIWHgI9BUkZ0ewTG5Qj5bj28gKLRY9TPL7
+        RJ8PDpwY9FKWpX5cM2QaLK0=
+X-Google-Smtp-Source: ABdhPJyZfzCx8LHq+K++oK2wId/JfxwpHxd20K3/BkHPNopiYdq5l3FNSMvilCLfPyoLPw1CmeE5Xg==
+X-Received: by 2002:a17:907:8687:b0:6e8:d71a:7a51 with SMTP id qa7-20020a170907868700b006e8d71a7a51mr20171221ejc.265.1650485259524;
+        Wed, 20 Apr 2022 13:07:39 -0700 (PDT)
+Received: from anparri.mshome.net (host-82-53-3-95.retail.telecomitalia.it. [82.53.3.95])
+        by smtp.gmail.com with ESMTPSA id gy10-20020a170906f24a00b006e894144707sm7126853ejb.53.2022.04.20.13.07.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 13:07:38 -0700 (PDT)
+From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+To:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hyperv@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Subject: [PATCH 0/5] hv_sock: Hardening changes
+Date:   Wed, 20 Apr 2022 22:07:15 +0200
+Message-Id: <20220420200720.434717-1-parri.andrea@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: gdGnoRDw2Dwm6MTH2NQxYBNvsaHxDwUv
-X-Proofpoint-GUID: gdGnoRDw2Dwm6MTH2NQxYBNvsaHxDwUv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_05,2022-04-20_01,2022-02-23_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Initialize the raw error descriptor after
-zeroing to a minimum possible value 1.
-It is safe for DIMM and not DIMM-based
-systems and does not provide a useless
-verification print.
+Changes since RFC[1]:
 
-Signed-off-by: Vasyl Gomonovych <vgomonovych@marvell.com>
----
- drivers/edac/edac_mc.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+  - Massage changelogs, fix typo
+  - Drop "hv_sock: Initialize send_buf in hvs_stream_enqueue()"
+  - Remove style/newline change
+  - Remove/"inline" hv_pkt_iter_first_raw()
 
-diff --git a/drivers/edac/edac_mc.c b/drivers/edac/edac_mc.c
-index d2715774af6fb3a0b07ff2c6ce6bb510091c0a68..a985f9a0b89b466934d1c167bdb243687fbfd093 100644
---- a/drivers/edac/edac_mc.c
-+++ b/drivers/edac/edac_mc.c
-@@ -990,10 +990,6 @@ void edac_raw_mc_handle_error(struct edac_raw_error_desc *e)
- 	struct mem_ctl_info *mci = error_desc_to_mci(e);
- 	u8 grain_bits;
- 
--	/* Sanity-check driver-supplied grain value. */
--	if (WARN_ON_ONCE(!e->grain))
--		e->grain = 1;
--
- 	grain_bits = fls_long(e->grain - 1);
- 
- 	/* Report the error via the trace interface */
-@@ -1047,6 +1043,7 @@ void edac_mc_handle_error(const enum hw_event_mc_err_type type,
- 	/* need valid strings here for both: */
- 	e->msg = msg ?: "";
- 	e->other_detail = other_detail ?: "";
-+	e->grain = 1;
- 
- 	/*
- 	 * Check if the event report is consistent and if the memory location is
+Applies to v5.18-rc3.
+
+Thanks,
+  Andrea
+
+[1] https://lkml.kernel.org/r/20220413204742.5539-1-parri.andrea@gmail.com
+
+Andrea Parri (Microsoft) (5):
+  hv_sock: Check hv_pkt_iter_first_raw()'s return value
+  hv_sock: Copy packets sent by Hyper-V out of the ring buffer
+  hv_sock: Add validation for untrusted Hyper-V values
+  Drivers: hv: vmbus: Accept hv_sock offers in isolated guests
+  Drivers: hv: vmbus: Refactor the ring-buffer iterator functions
+
+ drivers/hv/channel_mgmt.c        |  8 ++++--
+ drivers/hv/ring_buffer.c         | 32 ++++++---------------
+ include/linux/hyperv.h           | 48 ++++++++++----------------------
+ net/vmw_vsock/hyperv_transport.c | 22 ++++++++++++---
+ 4 files changed, 48 insertions(+), 62 deletions(-)
+
 -- 
-2.17.1
+2.25.1
 
