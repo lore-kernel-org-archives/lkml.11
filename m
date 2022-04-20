@@ -2,244 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A818EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 17:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 18:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381389AbiDTSBc (ORCPT
+        id S1381361AbiDTSCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 14:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
+        Wed, 20 Apr 2022 14:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381385AbiDTSBH (ORCPT
+        with ESMTP id S1344246AbiDTSCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 14:01:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF8F47558;
-        Wed, 20 Apr 2022 10:58:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id ED57ECE1F6D;
-        Wed, 20 Apr 2022 17:58:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34BF2C385A0;
-        Wed, 20 Apr 2022 17:58:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650477485;
-        bh=HjqNizz2UkQgCdLOC/F3s0q1QlXx1JsTyvOA/jgUXyw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YlB03/js/4fzWqeo1WlTqDwGajsOcrbi219jHadJoI410A2TWR5KYbzmWkjj4FJTY
-         McQ/4WftYtN8zwEfhuKO/jH668k4OMSQqSyAxVyNC+PBNR9RO2K6n4+0qT7oeArkA2
-         dMtdNRL1SF4NOuUMpNuEAytkwh8o/l5/rUjmM7M40cHicBLnCzJz7cuse2cVUaHoQB
-         leiLBMZRfOYzv/N41lQ//R5wo9TPQfqwAK1FQ8jThkYv4I8plGVqwJmR7ynVFyVgy7
-         s6gQa6W3Y+VJb8xCGHCMKI8YDNtewZtUemj9SepwCeDbPkXEgam7v6o+Uydsmhh6rs
-         GoZI8BwVbjoaA==
-Date:   Wed, 20 Apr 2022 10:58:04 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, dan.j.williams@intel.com,
-        david@fromorbit.com, hch@infradead.org, jane.chu@oracle.com,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v13 5/7] mm: Introduce mf_dax_kill_procs() for fsdax case
-Message-ID: <20220420175804.GY17025@magnolia>
-References: <20220419045045.1664996-1-ruansy.fnst@fujitsu.com>
- <20220419045045.1664996-6-ruansy.fnst@fujitsu.com>
+        Wed, 20 Apr 2022 14:02:22 -0400
+X-Greylist: delayed 380 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 10:59:28 PDT
+Received: from muminek.juszkiewicz.com.pl (muminek.juszkiewicz.com.pl [213.251.184.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB544756B;
+        Wed, 20 Apr 2022 10:59:28 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muminek.juszkiewicz.com.pl (Postfix) with ESMTP id 3BA0E260253;
+        Wed, 20 Apr 2022 19:53:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=juszkiewicz.com.pl;
+        s=mail; t=1650477186;
+        bh=378xZQcGCJsWGgLcL6Zj3T/L5wKuxRZjXh77lEd5C6M=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gsN+z/lmkYH60f9l+afHZ/LVBFIZqoRQAAxviVf+H9ZfaBT/LXPE8TwIScjPbPosu
+         XZQOfbwjLP6LP+OAVFH9dA2vk+fdlNMJLA42avfinlhKEjfldAoyPbLASIGv4S1yuT
+         CM5rojZ/TYOa/KNSMM8UrtRZVapWb83+NzMRf+Fl3eSyUj8/HA3OWRTDFzx2z3b7FZ
+         UB6r3aUFxAnSgQa2fCKyTpVJOmy8e6a4PyMZRaiXp/w/0BBM4vLd94gag0xQKBHsKH
+         LnEdHn6j1vR26AROhErAvMolMjhHttplSQgLH1vQf+JZVaks875MTMWHp8yRzk+sGV
+         Up6o11cPTvdCw==
+X-Virus-Scanned: Debian amavisd-new at juszkiewicz.com.pl
+Received: from muminek.juszkiewicz.com.pl ([127.0.0.1])
+        by localhost (muminek.juszkiewicz.com.pl [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id rQR2UrWCHivI; Wed, 20 Apr 2022 19:53:03 +0200 (CEST)
+Received: from [IPV6:2a01:11bf:4201:1400::6ca2] (2a01-11bf-4201-1400-0000-0000-0000-6ca2.la.ipv6.supernova.orange.pl [IPv6:2a01:11bf:4201:1400::6ca2])
+        by muminek.juszkiewicz.com.pl (Postfix) with ESMTPSA id 4DCEB260060;
+        Wed, 20 Apr 2022 19:53:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=juszkiewicz.com.pl;
+        s=mail; t=1650477183;
+        bh=378xZQcGCJsWGgLcL6Zj3T/L5wKuxRZjXh77lEd5C6M=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=teTmWJ8qvTben8ximYcjIVe/Yk1el33/c4DNhdKU1T9G8pCta6CqV5KnyON5tWpMy
+         fsz2Zrw7GbQqN9ZULj+vD91fYs01U8T5G1l9bQDR1pog7I0Du5q9VOSRqTzZxwYs9T
+         LEjoAPKYnttOI4AuqEz41xZZ9SONRN3Ph8V43gwsoJL2tOz3OT5H8n/ierZGenXmeG
+         gkyURrFvnLIGgFgSa34We8PNL9vs6BBdJVPmG1fE7dsy0rwZ4iYwYWmMeRhvT16g1p
+         u2MlR3dIj8liH7QaOOuRA7XIc7VsaqN4/o6KXNUV3QxM/l9nUKOG95bWU8KI8KKc8w
+         dc4QlHbMEJL0A==
+Message-ID: <1ee78aa5-919a-9d37-7d59-a2c87f856eaf@juszkiewicz.com.pl>
+Date:   Wed, 20 Apr 2022 19:52:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419045045.1664996-6-ruansy.fnst@fujitsu.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Explicitly defining the userspace API
+Content-Language: en-US
+To:     Spencer Baugh <sbaugh@catern.com>, linux-api@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        arnd@arndb.de
+References: <874k2nhgtg.fsf@catern.com>
+From:   Marcin Juszkiewicz <marcin@juszkiewicz.com.pl>
+In-Reply-To: <874k2nhgtg.fsf@catern.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 12:50:43PM +0800, Shiyang Ruan wrote:
-> This new function is a variant of mf_generic_kill_procs that accepts a
-> file, offset pair instead of a struct to support multiple files sharing
-> a DAX mapping.  It is intended to be called by the file systems as part
-> of the memory_failure handler after the file system performed a reverse
-> mapping from the storage address to the file and file offset.
-> 
-> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+W dniu 20.04.2022 o 18:15, Spencer Baugh pisze:
 
-Looks ok,
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+> Another related project is system call tables like
+> https://marcin.juszkiewicz.com.pl/download/tables/syscalls.html  which
+> don't contain any more information than already in SYSCALL_DEFINE.
 
---D
+This project was made to give a way of getting number<>name information 
+for system call. And for 'is it implemented'.
 
-> ---
->  include/linux/mm.h  |  2 +
->  mm/memory-failure.c | 96 ++++++++++++++++++++++++++++++++++++++++-----
->  2 files changed, 88 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index ad4b6c15c814..52208d743546 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -3233,6 +3233,8 @@ enum mf_flags {
->  	MF_SOFT_OFFLINE = 1 << 3,
->  	MF_UNPOISON = 1 << 4,
->  };
-> +int mf_dax_kill_procs(struct address_space *mapping, pgoff_t index,
-> +		      unsigned long count, int mf_flags);
->  extern int memory_failure(unsigned long pfn, int flags);
->  extern void memory_failure_queue(unsigned long pfn, int flags);
->  extern void memory_failure_queue_kick(int cpu);
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index a40e79e634a4..dc47c5f83d85 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -295,10 +295,9 @@ void shake_page(struct page *p)
->  }
->  EXPORT_SYMBOL_GPL(shake_page);
->  
-> -static unsigned long dev_pagemap_mapping_shift(struct page *page,
-> -		struct vm_area_struct *vma)
-> +static unsigned long dev_pagemap_mapping_shift(struct vm_area_struct *vma,
-> +		unsigned long address)
->  {
-> -	unsigned long address = vma_address(page, vma);
->  	unsigned long ret = 0;
->  	pgd_t *pgd;
->  	p4d_t *p4d;
-> @@ -338,10 +337,14 @@ static unsigned long dev_pagemap_mapping_shift(struct page *page,
->  /*
->   * Schedule a process for later kill.
->   * Uses GFP_ATOMIC allocations to avoid potential recursions in the VM.
-> + *
-> + * Notice: @fsdax_pgoff is used only when @p is a fsdax page.
-> + *   In other cases, such as anonymous and file-backend page, the address to be
-> + *   killed can be caculated by @p itself.
->   */
->  static void add_to_kill(struct task_struct *tsk, struct page *p,
-> -		       struct vm_area_struct *vma,
-> -		       struct list_head *to_kill)
-> +			pgoff_t fsdax_pgoff, struct vm_area_struct *vma,
-> +			struct list_head *to_kill)
->  {
->  	struct to_kill *tk;
->  
-> @@ -352,9 +355,15 @@ static void add_to_kill(struct task_struct *tsk, struct page *p,
->  	}
->  
->  	tk->addr = page_address_in_vma(p, vma);
-> -	if (is_zone_device_page(p))
-> -		tk->size_shift = dev_pagemap_mapping_shift(p, vma);
-> -	else
-> +	if (is_zone_device_page(p)) {
-> +		/*
-> +		 * Since page->mapping is not used for fsdax, we need
-> +		 * calculate the address based on the vma.
-> +		 */
-> +		if (p->pgmap->type == MEMORY_DEVICE_FS_DAX)
-> +			tk->addr = vma_pgoff_address(fsdax_pgoff, 1, vma);
-> +		tk->size_shift = dev_pagemap_mapping_shift(vma, tk->addr);
-> +	} else
->  		tk->size_shift = page_shift(compound_head(p));
->  
->  	/*
-> @@ -503,7 +512,7 @@ static void collect_procs_anon(struct page *page, struct list_head *to_kill,
->  			if (!page_mapped_in_vma(page, vma))
->  				continue;
->  			if (vma->vm_mm == t->mm)
-> -				add_to_kill(t, page, vma, to_kill);
-> +				add_to_kill(t, page, 0, vma, to_kill);
->  		}
->  	}
->  	read_unlock(&tasklist_lock);
-> @@ -539,13 +548,41 @@ static void collect_procs_file(struct page *page, struct list_head *to_kill,
->  			 * to be informed of all such data corruptions.
->  			 */
->  			if (vma->vm_mm == t->mm)
-> -				add_to_kill(t, page, vma, to_kill);
-> +				add_to_kill(t, page, 0, vma, to_kill);
->  		}
->  	}
->  	read_unlock(&tasklist_lock);
->  	i_mmap_unlock_read(mapping);
->  }
->  
-> +#if IS_ENABLED(CONFIG_FS_DAX)
-> +/*
-> + * Collect processes when the error hit a fsdax page.
-> + */
-> +static void collect_procs_fsdax(struct page *page,
-> +		struct address_space *mapping, pgoff_t pgoff,
-> +		struct list_head *to_kill)
-> +{
-> +	struct vm_area_struct *vma;
-> +	struct task_struct *tsk;
-> +
-> +	i_mmap_lock_read(mapping);
-> +	read_lock(&tasklist_lock);
-> +	for_each_process(tsk) {
-> +		struct task_struct *t = task_early_kill(tsk, true);
-> +
-> +		if (!t)
-> +			continue;
-> +		vma_interval_tree_foreach(vma, &mapping->i_mmap, pgoff, pgoff) {
-> +			if (vma->vm_mm == t->mm)
-> +				add_to_kill(t, page, pgoff, vma, to_kill);
-> +		}
-> +	}
-> +	read_unlock(&tasklist_lock);
-> +	i_mmap_unlock_read(mapping);
-> +}
-> +#endif /* CONFIG_FS_DAX */
-> +
->  /*
->   * Collect the processes who have the corrupted page mapped to kill.
->   */
-> @@ -1582,6 +1619,45 @@ static int mf_generic_kill_procs(unsigned long long pfn, int flags,
->  	return rc;
->  }
->  
-> +#ifdef CONFIG_FS_DAX
-> +/**
-> + * mf_dax_kill_procs - Collect and kill processes who are using this file range
-> + * @mapping:	the file in use
-> + * @index:	start pgoff of the range within the file
-> + * @count:	length of the range, in unit of PAGE_SIZE
-> + * @mf_flags:	memory failure flags
-> + */
-> +int mf_dax_kill_procs(struct address_space *mapping, pgoff_t index,
-> +		unsigned long count, int mf_flags)
-> +{
-> +	LIST_HEAD(to_kill);
-> +	dax_entry_t cookie;
-> +	struct page *page;
-> +	size_t end = index + count;
-> +
-> +	mf_flags |= MF_ACTION_REQUIRED | MF_MUST_KILL;
-> +
-> +	for (; index < end; index++) {
-> +		page = NULL;
-> +		cookie = dax_lock_mapping_entry(mapping, index, &page);
-> +		if (!cookie)
-> +			return -EBUSY;
-> +		if (!page)
-> +			goto unlock;
-> +
-> +		SetPageHWPoison(page);
-> +
-> +		collect_procs_fsdax(page, mapping, index, &to_kill);
-> +		unmap_and_kill(&to_kill, page_to_pfn(page), mapping,
-> +				index, mf_flags);
-> +unlock:
-> +		dax_unlock_mapping_entry(mapping, index, cookie);
-> +	}
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(mf_dax_kill_procs);
-> +#endif /* CONFIG_FS_DAX */
-> +
->  /*
->   * Called from hugetlb code with hugetlb_lock held.
->   *
-> -- 
-> 2.35.1
-> 
-> 
-> 
+Nothing more, just simple info. And so far helped many developers and 
+their projects.
+
+One day I got request from loongarch port maintainers to add their table 
+because systemd relies on it ;D
+
+I also made Python module for using it. So far no known users :D
+
+https://marcin.juszkiewicz.com.pl/2021/09/14/python-package-for-system-calls-information/
