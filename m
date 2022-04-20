@@ -2,85 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71044C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF580C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377717AbiDTKiq (ORCPT
+        id S1377730AbiDTKiz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35266 "EHLO
+        Wed, 20 Apr 2022 06:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351890AbiDTKhp (ORCPT
+        with ESMTP id S1377720AbiDTKix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:37:45 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32962676
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 03:34:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650450899; x=1681986899;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CgU0M9Ctm66tAtz7ZrqfIj4aDO8PJLE7JPM+0GAyffk=;
-  b=lFZnQHxwUWRG/OUKn9Gt/JkUlv7H9q6QnosDFX5o9MWk2eNlgHxn+rkS
-   0i3EFc/tAEisjB5o80dHNLim55aEQoCQ37OXRNMwGZikAutZnV/+HX3hm
-   Mjt5FL4hSiXCrX0af9Nq93QpBXg0YQN/JO7jYrzRL1YjW/MKzKgoOI1g7
-   QKz9ZhEjpUAlNDyV2QjIT+xPnfjw1Jxifr7IXKbHPbH0GyRdn4qbMty7f
-   khFC1RoAgdbpBjPHtS+fV3JRF2m9WZPfNpxOicsgfwRIx1/44DhARWlNy
-   gLdpBDbSMSeeOXZy1iVUQgci/aEZ9WuoSoqLC66zhlqxvv91MifcwO9P5
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,275,1643698800"; 
-   d="scan'208";a="170245898"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2022 03:34:59 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 20 Apr 2022 03:34:58 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 20 Apr 2022 03:34:56 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <p.yadav@ti.com>, <michael@walle.cc>
-CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <Takahiro.Kuwano@infineon.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH v4 11/11] mtd: spi-nor: micron-st: Remove status polling on volatile registers write
-Date:   Wed, 20 Apr 2022 13:34:27 +0300
-Message-ID: <20220420103427.47867-12-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220420103427.47867-1-tudor.ambarus@microchip.com>
-References: <20220420103427.47867-1-tudor.ambarus@microchip.com>
+        Wed, 20 Apr 2022 06:38:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0083FBD6;
+        Wed, 20 Apr 2022 03:36:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 596BD617CC;
+        Wed, 20 Apr 2022 10:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029CDC385A0;
+        Wed, 20 Apr 2022 10:36:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650450966;
+        bh=fTs96CqjvphFVKpX75orr/aEaWullDZzBRJGRDTh33s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=asPD7GobM/w/uudIAIu8VzMwwEIoHsYwLLYYgCYAn1FwVfD1UucQdocoyxItb/pbs
+         +YSHC+0N2mmebNHxTuq2+OeBi3bLJvdASN8taaeYRrSzjSXemLwJVyYp9jKvgaAU4d
+         nSMcxvWwgL551aMxyp4Fgng92MOmrItgoNNC4Gqj+p0wEiFSsmjLKRoZdqDOE3/GJZ
+         fo3IYHoyVkiRerR5vg1HDzviQf/oGslXvGQR5SpPmfNwpiDi3ZPbuKICJY6GycTahi
+         n0DV5xsB6Oq0oEdDSyk0NmezfE/k0W8eUaDnQ5mtbulXKNLVhAAruhOczpOVlyJBzk
+         ySn3oHojwZKaw==
+Date:   Wed, 20 Apr 2022 16:06:02 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: dmaengine: qcom: gpi: Add minItems for
+ interrupts
+Message-ID: <Yl/iElIfHhmoOYOU@matsya>
+References: <20220414064235.1182195-1-vkoul@kernel.org>
+ <0598d1bb-cd7c-1414-910c-ae6bedc8295d@linaro.org>
+ <Ylf2gsJ+Ks0wz6i3@matsya>
+ <9d35e76e-5d98-b2d8-a22c-293adcbaadf0@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9d35e76e-5d98-b2d8-a22c-293adcbaadf0@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Writing volatile registers are instant according to Micron and do not
-need any status polling. Remove status polling on volatile registers write.
+On 14-04-22, 13:44, Krzysztof Kozlowski wrote:
+> On 14/04/2022 12:25, Vinod Koul wrote:
+> >>>        Interrupt lines for each GPI instance
+> >>> +    minItems: 1
+> >>
+> >> This should be some real case minimum, not just 1. Unless really only
+> >> one interrupt is also possible in existing variations?
+> > 
+> > So that depends on the channels available to use which can be worst case
+> > of 1. Maximum is 13.. Most of the controllers are between 12-13, but we
+> > dont want to change binding in future if controller has lesser channels
+> > right?
+> 
+> If the choice is per SoC-controller, then the best would be to limit in
+> allOf:if:then. However maybe the number of channels depends also on
+> other factor (e.g. secure world configuration)?
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
----
- drivers/mtd/spi-nor/micron-st.c | 3 ---
- 1 file changed, 3 deletions(-)
+That is quite right. So we wont know how many channels are made
+available..
 
-diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-index 61db4896e327..a96f74e0f568 100644
---- a/drivers/mtd/spi-nor/micron-st.c
-+++ b/drivers/mtd/spi-nor/micron-st.c
-@@ -58,9 +58,6 @@ static int micron_st_nor_octal_dtr_en(struct spi_nor *nor)
- 	op = (struct spi_mem_op)
- 		MICRON_ST_NOR_WR_ANY_REG_OP(3, SPINOR_REG_MT_CFR1V, 1, buf);
- 	ret = spi_nor_write_any_volatile_reg(nor, &op, nor->reg_proto);
--	if (ret)
--		return ret;
--	ret = spi_nor_wait_till_ready(nor);
- 	if (ret)
- 		return ret;
- 
+So is min 1 acceptable or do you have an alternate ?
+
 -- 
-2.25.1
-
+~Vinod
