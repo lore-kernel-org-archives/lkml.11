@@ -2,78 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07845C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 10:15:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377552AbiDTKNB (ORCPT
+        id S1377520AbiDTKRx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
+        Wed, 20 Apr 2022 06:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377484AbiDTKM7 (ORCPT
+        with ESMTP id S1377530AbiDTKRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:12:59 -0400
+        Wed, 20 Apr 2022 06:17:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6933EBB5;
-        Wed, 20 Apr 2022 03:10:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EACDFE;
+        Wed, 20 Apr 2022 03:14:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62E8561755;
-        Wed, 20 Apr 2022 10:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8EC58C385A1;
-        Wed, 20 Apr 2022 10:10:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AB7F61767;
+        Wed, 20 Apr 2022 10:14:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66BFC385A1;
+        Wed, 20 Apr 2022 10:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650449412;
-        bh=kgUJN+UBTLmDmzszyDcZPLTkalYOukejwnpRQs4AeAI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AwjgT+6W2dzbhhkNsCJAcf2oHZEW9UfQNy9qrmXYC4/JAy6DTlCz9rL/LHR9DKYlu
-         o8K6h01aSyUVDlc7cb1EQ6vnqnXk1QfRKbSda9pYwA4dUS2QeH7F4dDfdL0lPUGQsU
-         38JHh1VIMetB8mRLVjVWI3siPOQYtxSmvvUUDQyTXQzfJgN4X9O9IPcSyRtx4K+IFG
-         EVCqoFqb+nlm2+fyNMvIg3WCZpF3gJCtkZaJW0RMoO0cgyL4MXzrTGXN2fij9Que7a
-         TlrCOPofBJ+TD2xQTOVirCCGk8F5Gi7OifmURNej5wy3FD3uBgxPYyxj3of/p3ONQt
-         VSMID04DNhK4g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7154DE85D90;
-        Wed, 20 Apr 2022 10:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1650449690;
+        bh=OtV0bJziajsXc61CjhTcvg895CG7yz/vfhesx5zRXUs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rtEphXr2XrkEmgSUXgenZQFPiC+ty0Wzze+C9Ys/WHcQjp0SEk4hwQJAcg3+6/5By
+         sypFyMApr0XV4YUGPOc/VkOscGqZODh3ic9ZpOzgQCRXpHnB/eWgG75ed7n6G1yrmQ
+         XD6tob4gLNKlE5Ybp4nNFcYezdkGykqWvgfBFfzkSUP2PRWmLFIc/k/H51YsE4r8Mz
+         1owDXhyF7ws69EUz2CiRlokjvwbRNpdEbjyXk2iBiO7Xz7g/yM+JZeUwgfJiLdS+hH
+         aaZ8zMOz0MDKdsHx7PeebuFx1ZBPP7onGrZdV5yjwc0DRTKr9qxGAWYlArubg8h1Gx
+         rbXIiHJMtMWkw==
+Date:   Wed, 20 Apr 2022 15:44:46 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, michal.simek@xilinx.com,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, git@xilinx.com
+Subject: Re: [PATCH] dt-bindings: dmaengine: xilinx_dma: Add MCMDA channel ID
+ index description
+Message-ID: <Yl/dFrejkq2OspZZ@matsya>
+References: <1649939061-6675-1-git-send-email-radhey.shyam.pandey@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ar5523: Use kzalloc instead of kmalloc/memset
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165044941246.8751.12176607608401955459.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Apr 2022 10:10:12 +0000
-References: <1650332252-4994-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1650332252-4994-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     pontus.fuchs@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649939061-6675-1-git-send-email-radhey.shyam.pandey@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On 14-04-22, 17:54, Radhey Shyam Pandey wrote:
+> MCDMA IP provides up to 16 multiple channels of data movement each on
+> MM2S and S2MM paths. Inline with implementation, in the binding add
+> description for the channel ID start index and mention that it's fixed
+> irrespective of the MCDMA IP configuration(number of read/write channels).
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Applied, thanks
 
-On Tue, 19 Apr 2022 09:37:31 +0800 you wrote:
-> Use kzalloc rather than duplicating its implementation, which
-> makes code simple and easy to understand.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->  drivers/net/wireless/ath/ar5523/ar5523.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-
-Here is the summary with links:
-  - ar5523: Use kzalloc instead of kmalloc/memset
-    https://git.kernel.org/netdev/net-next/c/e63dd4123507
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+~Vinod
