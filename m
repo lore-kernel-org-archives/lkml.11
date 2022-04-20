@@ -2,170 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D303DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 20 Apr 2022 07:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359808AbiDTHdm (ORCPT
+        id S1359812AbiDTHed (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 03:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        Wed, 20 Apr 2022 03:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359798AbiDTHdj (ORCPT
+        with ESMTP id S1356242AbiDTHe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 03:33:39 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8FD2DD74;
-        Wed, 20 Apr 2022 00:30:52 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23K7Uhev080633;
-        Wed, 20 Apr 2022 02:30:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650439843;
-        bh=7jce7pVMCQfztGGAX7hetps3rpfzHuAPIlJY/Ijzf9M=;
-        h=From:To:CC:Subject:Date;
-        b=wgYzL4sjJWr9KZXDCymWseVzLdxkRzHJVIK2rgEbZ28k7HshyYZf/Q5k86Zebfvh6
-         Bc4SqldszaSvuXGH/gsLHTlbCflGigg2Wo4eO0EjGQiROLqk9TlEHdbBPpnXiyDZs9
-         FCroJhvO4IfRKV5aCRpWm07OW+ePqBf3oF+6vj0I=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23K7Uhsb106934
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 20 Apr 2022 02:30:43 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 20
- Apr 2022 02:30:43 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 20 Apr 2022 02:30:43 -0500
-Received: from swubn03.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23K7UdYK002316;
-        Wed, 20 Apr 2022 02:30:40 -0500
-From:   Aparna M <a-m1@ti.com>
-To:     <nm@ti.com>, <vigneshr@ti.com>, <kristo@kernel.org>,
-        <robh+dt@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <praneeth@ti.com>, <grygorii.strashko@ti.com>, <nikhil.nd@ti.com>
-Subject: [PATCH RESEND] arm64: dts: ti: k3-am642-sk: Add DT entry for onboard LEDs
-Date:   Wed, 20 Apr 2022 12:59:52 +0530
-Message-ID: <20220420072952.3509-1-a-m1@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 20 Apr 2022 03:34:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF853338AB;
+        Wed, 20 Apr 2022 00:31:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D4DAB81D49;
+        Wed, 20 Apr 2022 07:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED4C7C385A9;
+        Wed, 20 Apr 2022 07:31:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650439901;
+        bh=Gaa/kKlQJ1FZzJzU//2sD+rws3+4VoYKDAstnglOxLs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=KzbmApoCTqXK1O3oM3GyEcjozjtNIABT3CpFhb4STIN1XPXY3rl2WkwJvMyMGEGQA
+         Czz/kvS89Mx/Fgxo4Ty+rSNUTMckCSKLS219iKzR36zKkWyUOH4Eou4GPXMebiRjCy
+         jiVn6UqvHmNV5BRPYlEiVJ1Ai8Af/vxoirKye0DkkXj0DF/ROgx8ilWgSGO8haSQUn
+         GEaALLypW10Vl6Cc5BWi2cnLPgm1eNoZiRaH1IOwKR54ttwG4+/FjdEnO/E7gQHyf6
+         Cf20nKY98g9nq63ukKyD+2mRS0cHhgfNrAlKkHdoLAq4NdtdNOsGGQORdXKRu8XZnq
+         HH7m2YfwW76nA==
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-e2afb80550so1139221fac.1;
+        Wed, 20 Apr 2022 00:31:40 -0700 (PDT)
+X-Gm-Message-State: AOAM532zVaWfOrSBjjOxzJdSPzu++7PUvSY5ZXwxQsqq9Uvywl3YiP7f
+        GBvXsyF1E9xoANRmKZOD7BPYBxK0DyjqBGns+9w=
+X-Google-Smtp-Source: ABdhPJynajv3K6AdbTR66x16tS+6R53JFDVzu1p0IAT/68oZB2y+PB3uPGIU0m+ilSMwbTvCOiCV4egJ4cUxv0EEA1E=
+X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
+ s37-20020a056870eaa500b000da0b3f2b45mr1036835oap.228.1650439900047; Wed, 20
+ Apr 2022 00:31:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
+In-Reply-To: <CA+G9fYuACgY2hcAgh_LwVb9AURjodMJbV6SsJb90wj-0aJKUOw@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 20 Apr 2022 09:31:29 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXFKzi14UCoiDOMwS5jyNz61_UzxGXm+ke0EWEt4nn6E1g@mail.gmail.com>
+Message-ID: <CAMj1kXFKzi14UCoiDOMwS5jyNz61_UzxGXm+ke0EWEt4nn6E1g@mail.gmail.com>
+Subject: Re: [next] arm: boot failed - PC is at cpu_ca15_set_pte_ext
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        max.krummenacher@toradex.com, Shawn Guo <shawnguo@kernel.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AM642 SK has 8 leds connected to tpic2810 onboard. Add support for these
-gpio leds.
+On Tue, 19 Apr 2022 at 12:59, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+>
+> Linux next 20220419 boot failed on arm architecture qemu_arm and BeagleBoard
+> x15 device.
+>
+> kernel crash log from x15:
+> -----------------
+> [    6.866516] 8<--- cut here ---
+> [    6.869598] Unable to handle kernel paging request at virtual
+> address f000e62c
+> [    6.876861] [f000e62c] *pgd=82935811, *pte=00000000, *ppte=00000000
+> [    6.883209] Internal error: Oops: 807 [#3] SMP ARM
+> [    6.888000] Modules linked in:
+> [    6.891082] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G      D W
+>   5.18.0-rc3-next-20220419 #1
+> [    6.899993] Hardware name: Generic DRA74X (Flattened Device Tree)
+> [    6.906127] PC is at cpu_ca15_set_pte_ext+0x4c/0x58
+> [    6.911041] LR is at handle_mm_fault+0x60c/0xed0
+> [    6.915679] pc : [<c031f26c>]    lr : [<c04cfeb8>]    psr: 40000013
+> [    6.921966] sp : f000dde8  ip : f000de44  fp : a0000013
+> [    6.927215] r10: 00000000  r9 : 00000000  r8 : c1e95194
+> [    6.932464] r7 : c3c95000  r6 : befffff1  r5 : 00000081  r4 : c29d8000
+> [    6.939025] r3 : 00000000  r2 : 00000000  r1 : 00000040  r0 : f000de2c
+> [    6.945587] Flags: nZcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> [    6.952758] Control: 10c5387d  Table: 8020406a  DAC: 00000051
+> [    6.958526] Register r0 information: 2-page vmalloc region starting
+> at 0xf000c000 allocated at kernel_clone+0x94/0x3b0
+> [    6.969299] Register r1 information: non-paged memory
+> [    6.974365] Register r2 information: NULL pointer
+> [    6.979095] Register r3 information: NULL pointer
+> [    6.983825] Register r4 information: slab task_struct start
+> c29d8000 pointer offset 0
+> [    6.991729] Register r5 information: non-paged memory
+> [    6.996795] Register r6 information: non-paged memory
+> [    7.001861] Register r7 information: slab vm_area_struct start
+> c3c95000 pointer offset 0
+> [    7.010009] Register r8 information: non-slab/vmalloc memory
+> [    7.015716] Register r9 information: NULL pointer
+> [    7.020446] Register r10 information: NULL pointer
+> [    7.025238] Register r11 information: non-paged memory
+> [    7.030426] Register r12 information: 2-page vmalloc region
+> starting at 0xf000c000 allocated at kernel_clone+0x94/0x3b0
+> [    7.041259] Process swapper/0 (pid: 1, stack limit = 0xfaff0077)
+> [    7.047302] Stack: (0xf000dde8 to 0xf000e000)
+> [    7.051696] dde0:                   c29d8000 00000cc0 c20a1108
+> c2065fa0 c1e09f50 b6db6db7
+> [    7.059906] de00: c195bf0c 17c0f572 c29d8000 c3c95000 00000cc0
+> 000befff befff000 befffff1
+> [    7.068115] de20: 00000081 c3c3afb8 c3c3afb8 00000000 00000000
+> 00000000 00000000 00000000
+> [    7.076324] de40: 00000000 17c0f572 befff000 c3c95000 00002017
+> befffff1 00002017 00002fb8
+> [    7.084564] de60: c2d04000 00000081 c29d8000 c04c6790 c20d01d4
+> 00000000 00000001 c20ce440
+> [    7.092773] de80: c1e10bcc fffff000 00000000 c2a45680 eeb33cc0
+> c29d8000 00000000 c2d04000
+> [    7.100982] dea0: befffff1 f000df18 00000000 00002017 c20661a0
+> c04c77e8 f000df18 00000000
+> [    7.109222] dec0: 00000000 c1d95c40 00000002 c20661e0 00000000
+> 00000001 00000000 c04c7ad0
+> [    7.117431] dee0: 00000011 c2d02a00 00000001 befffff1 c29d8000
+> 00000000 00000011 c2a30010
+> [    7.125640] df00: c29d8000 c0524c24 f000df18 00000000 00000000
+> 2cd9e000 c1d95c40 17c0f572
+> [    7.133850] df20: 00000000 c2d02a00 0000000b 00000ffc 00000000
+> befffff1 00000000 c0524f74
+> [    7.142089] df40: c1e0e394 c2d02a00 c209a71c 38e38e39 c29d8000
+> bee00008 c2d02a00 c2a30000
+> [    7.150299] df60: c1e0e394 c1e0e420 00000000 00000000 00000000
+> c05266bc c209a000 c1944c60
+> [    7.158508] df80: 00000000 00000000 00000000 c129d2b4 c209a000
+> c1e0e394 00000000 c12b5600
+> [    7.166748] dfa0: 00000000 c12b5518 00000000 c0300168 00000000
+> 00000000 00000000 00000000
+> [    7.174957] dfc0: 00000000 00000000 00000000 00000000 00000000
+> 00000000 00000000 00000000
+> [    7.183166] dfe0: 00000000 00000000 00000000 00000000 00000013
+> 00000000 00000000 00000000
+> [    7.191406] Code: 13110001 12211b02 13110b02 03a03000 (e5a03800)
 
-Signed-off-by: Aparna M <a-m1@ti.com>
----
+This decodes to
 
-This patch is dependent on:
-https://lore.kernel.org/all/20220223174215.17838-1-a-m1@ti.com/ 
+   0: 13110001 tstne r1, #1
+   4: 12211b02 eorne r1, r1, #2048 ; 0x800
+   8: 13110b02 tstne r1, #2048 ; 0x800
+   c: 03a03000 moveq r3, #0
+  10:* e5a03800 str r3, [r0, #2048]! ; 0x800 <-- trapping instruction
 
-RESEND patch has been rebased on top of v5.18-rc2.
+and R0 points into the stack. So we are updating a PTE that is located
+on the stack rather than in a page table somewhere, which seems very
+odd. However, this could be a latent bug that got uncovered by the
+VMAP stacks changes.
 
- arch/arm64/boot/dts/ti/k3-am642-sk.dts | 70 ++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+Unfortunately, the vmlinux.xz file I downloaded from the link below
+seems to be different from the one that produced the crash, given that
+the LR address of c04cfeb8 does not seem to correspond with
+handle_mm_fault+0x60c/0xed0.
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-index 1d7db8bf3a5c..c5979d03c287 100644
---- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-@@ -8,6 +8,7 @@
- #include <dt-bindings/mux/ti-serdes.h>
- #include <dt-bindings/phy/phy.h>
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/net/ti-dp83867.h>
- #include "k3-am642.dtsi"
- 
-@@ -125,6 +126,67 @@
- 		vin-supply = <&vcc_3v3_sys>;
- 		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led-0 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <1>;
-+			gpios = <&exp2 0 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-1 {
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <2>;
-+			gpios = <&exp2 1 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-2 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <3>;
-+			gpios = <&exp2 2 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-3 {
-+			color = <LED_COLOR_ID_AMBER>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <4>;
-+			gpios = <&exp2 3 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-4 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <5>;
-+			gpios = <&exp2 4 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-5 {
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <6>;
-+			gpios = <&exp2 5 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-6 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <7>;
-+			gpios = <&exp2 6 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-7 {
-+			color = <LED_COLOR_ID_AMBER>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <8>;
-+			linux,default-trigger = "heartbeat";
-+			gpios = <&exp2 7 GPIO_ACTIVE_HIGH>;
-+		};
-+	};
- };
- 
- &main_pmx0 {
-@@ -274,6 +336,14 @@
- 				  "VPP_LDO_EN", "RPI_PS_3V3_En",
- 				  "RPI_PS_5V0_En", "RPI_HAT_DETECT";
- 	};
-+
-+	exp2: gpio@60 {
-+		compatible = "ti,tpic2810";
-+		reg = <0x60>;
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+		gpio-line-names = "LED1","LED2","LED3","LED4","LED5","LED6","LED7","LED8";
-+	};
- };
- 
- &main_i2c3 {
--- 
-2.17.1
+Can you please double check the artifacts?
 
+
+
+> metadata:
+>   git_ref: master
+>   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+>   git_sha: 634de1db0e9bbeb90d7b01020e59ec3dab4d38a1
+>   git_describe: next-20220419
+>   kernel-config: https://builds.tuxbuild.com/280TXP6P7tIBfnowvFY4wobXp3R/config
+>   System.map:  https://builds.tuxbuild.com/280TXP6P7tIBfnowvFY4wobXp3R/System.map
+>   vmlinux.xz: https://builds.tuxbuild.com/280TXP6P7tIBfnowvFY4wobXp3R/vmlinux.xz
+>   build-url: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/pipelines/519362851
+>   build: https://builds.tuxbuild.com/280TXP6P7tIBfnowvFY4wobXp3R
+>   toolchain: gcc-10
+>
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
+>
+> [1] https://lkft.validation.linaro.org/scheduler/job/4921995#L2616
+> [2] https://lkft.validation.linaro.org/scheduler/job/4922061#L552
