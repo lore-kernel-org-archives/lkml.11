@@ -2,103 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE46C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389937AbiDUPRE (ORCPT
+        id S1389945AbiDUPRM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
+        Thu, 21 Apr 2022 11:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355292AbiDUPRC (ORCPT
+        with ESMTP id S230247AbiDUPRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:17:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05921433AA;
-        Thu, 21 Apr 2022 08:14:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9506661AC3;
-        Thu, 21 Apr 2022 15:14:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A99E1C385A5;
-        Thu, 21 Apr 2022 15:14:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650554052;
-        bh=I0zUItcOxFNNsLtXno+sh+nNc68LyirhSdAYTIDEIE4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dtfFZhaT2VSG7B3vpDVhu7DPaIcToxTO1AtvXVDAGmpgAmGXqG9futEtSoU1F0n6K
-         G/BN+b9TTS/Ei9x6W3lEDVMn5SKQTkrDyDapLXHGsTlaBxcLBROJTp0knNpj+KjeB6
-         LSqyFbhB4mNlZ3vLZCM8Re2ziShdCIQJmNJBV+/ajSjXCAnHAYyQCIupScTK9hGwBg
-         nE3qt0w/WH/64L0SHsy2jfnoQ7wS6TjwBj3BDBaMpI/KK8gvV5spcs7y1FPO5cfrnh
-         9ePR+JUJosdgR3tNrQwaIGUX/tpr6Mtd9ABj7ktTp1WPI7VVYXR2AKHQNf2Hby2qaJ
-         8cqWqzvjJTP3Q==
-Date:   Thu, 21 Apr 2022 18:12:56 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     =?us-ascii?B?PT9VVEYtOD9xP01pY2thPUMzPUFCbD0yMFNhbGE9QzM9QkNuPz0=?= 
-        <mic@digikod.net>, David Woodhouse <dwmw2@infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        James Morris <jmorris@namei.org>,
-        =?us-ascii?B?PT9VVEYtOD9xP01pY2thPUMzPUFCbD0yMFNhbGE9QzM9QkNuPz0=?= 
-        <mic@linux.microsoft.com>, Mimi Zohar <zohar@linux.ibm.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v7 3/5] certs: Make blacklist_vet_description() more
- strict
-Message-ID: <YmF0eAh7dYmtLDVx@kernel.org>
-References: <20210312171232.2681989-4-mic@digikod.net>
- <20210312171232.2681989-1-mic@digikod.net>
- <648218.1650450548@warthog.procyon.org.uk>
+        Thu, 21 Apr 2022 11:17:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93D6743EC5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:14:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 505791515;
+        Thu, 21 Apr 2022 08:14:17 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9F963F73B;
+        Thu, 21 Apr 2022 08:14:15 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 16:14:13 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>, cj.chengjian@huawei.com,
+        huawei.libin@huawei.com, xiexiuqi@huawei.com, liwei391@huawei.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+Message-ID: <YmF0xYpTMoWOIl00@lakrids>
+References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+ <20220316100132.244849-4-bobo.shaobowang@huawei.com>
+ <YmFXrBG5AmX3+4f8@lakrids>
+ <20220421100639.03c0d123@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <648218.1650450548@warthog.procyon.org.uk>
+In-Reply-To: <20220421100639.03c0d123@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 11:29:08AM +0100, David Howells wrote:
-> Mickaël Salaün <mic@digikod.net> wrote:
+On Thu, Apr 21, 2022 at 10:06:39AM -0400, Steven Rostedt wrote:
+> On Thu, 21 Apr 2022 14:10:04 +0100
+> Mark Rutland <mark.rutland@arm.com> wrote:
 > 
-> > +	/* The following algorithm only works if prefix lengths match. */
-> > +	BUILD_BUG_ON(sizeof(tbs_prefix) != sizeof(bin_prefix));
-> > +	prefix_len = sizeof(tbs_prefix) - 1;
-> > +	for (i = 0; *desc; desc++, i++) {
-> > +		if (*desc == ':') {
-> > +			if (tbs_step == prefix_len)
-> > +				goto found_colon;
-> > +			if (bin_step == prefix_len)
-> > +				goto found_colon;
-> > +			return -EINVAL;
-> > +		}
-> > +		if (i >= prefix_len)
-> > +			return -EINVAL;
-> > +		if (*desc == tbs_prefix[i])
-> > +			tbs_step++;
-> > +		if (*desc == bin_prefix[i])
-> > +			bin_step++;
-> > +	}
+> > On Wed, Mar 16, 2022 at 06:01:31PM +0800, Wang ShaoBo wrote:
+> > > From: Cheng Jian <cj.chengjian@huawei.com>
+> > > 
+> > > When tracing multiple functions customly, a list function is called
+> > > in ftrace_(regs)_caller, which makes all the other traced functions
+> > > recheck the hash of the ftrace_ops when tracing happend, apparently
+> > > it is inefficient.  
+> > 
+> > ... and when does that actually matter? Who does this and why?
 > 
-> I wonder if:
-> 
-> 	static const char tbs_prefix[] = "tbs:";
-> 	static const char bin_prefix[] = "bin:";
-> 
-> 	if (strncmp(desc, tbs_prefix, sizeof(tbs_prefix) - 1) == 0 ||
-> 	    strncmp(desc, bin_prefix, sizeof(bin_prefix) - 1) == 0)
-> 		goto found_colon;
-> 
-> might be better.
-> 
-> David
+> I don't think it was explained properly. What dynamically allocated
+> trampolines give you is this.
 
-I think it'd be. 
+Thanks for the, explanation, btw!
 
-BR, Jarkko
+> Let's say you have 10 ftrace_ops registered (with bpf and kprobes this can
+> be quite common). But each of these ftrace_ops traces a function (or
+> functions) that are not being traced by the other ftrace_ops. That is, each
+> ftrace_ops has its own unique function(s) that they are tracing. One could
+> be tracing schedule, the other could be tracing ksoftirqd_should_run
+> (whatever).
+
+Ok, so that's when messing around with bpf or kprobes, and not generally
+when using plain old ftrace functionality under /sys/kernel/tracing/
+(unless that's concurrent with one of the former, as per your other
+reply) ?
+
+> Without this change, because the arch does not support dynamically
+> allocated trampolines, it means that all these ftrace_ops will be
+> registered to the same trampoline. That means, for every function that is
+> traced, it will loop through all 10 of theses ftrace_ops and check their
+> hashes to see if their callback should be called or not.
+
+Sure; I can see how that can be quite expensive.
+
+What I'm trying to figure out is who this matters to and when, since the
+implementation is going to come with a bunch of subtle/fractal
+complexities, and likely a substantial overhead too when enabling or
+disabling tracing of a patch-site. I'd like to understand the trade-offs
+better.
+
+> With dynamically allocated trampolines, each ftrace_ops will have their own
+> trampoline, and that trampoline will be called directly if the function
+> is only being traced by the one ftrace_ops. This is much more efficient.
+> 
+> If a function is traced by more than one ftrace_ops, then it falls back to
+> the loop.
+
+I see -- so the dynamic trampoline is just to get the ops? Or is that
+doing additional things?
+
+There might be a middle-ground here where we patch the ftrace_ops
+pointer into a literal pool at the patch-site, which would allow us to
+handle this atomically, and would avoid the issues with out-of-range
+trampolines.
+
+Thanks,
+Mark.
