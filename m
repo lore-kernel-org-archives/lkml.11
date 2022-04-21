@@ -2,87 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E46C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE29C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385612AbiDUHON (ORCPT
+        id S1385620AbiDUHOs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42154 "EHLO
+        Thu, 21 Apr 2022 03:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385603AbiDUHOL (ORCPT
+        with ESMTP id S1385603AbiDUHOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:14:11 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C1615A2E;
-        Thu, 21 Apr 2022 00:11:21 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KkTGs13Wtz4xPw;
-        Thu, 21 Apr 2022 17:11:17 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1650525077;
-        bh=S1lft9PBkR3rmXHsCaJf2k1NukatZyVGgp0UoVBJgc4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=AFmFAUAWv+cwByvFx6l0ZTSHROEDMja2VYA1DyN45r06mDL4O+JCcW6Q0rGPnIlB5
-         feV0YnTRtM/1wQNLE6j2xLBWcVnF2yHdBEhPf65vj/6WK4j5DRCkgCRasYHM2DWBhs
-         2E/4SbDfPoIcC3NKJwElN/H+cA9w3qk657wp0TT+S51Wo4gVroYvd/17a0dt9vVqur
-         ajhEDzz+8KG/njvUOxBVPM97S9oH+1b/nl2dpMmDgfLw6QcrIo+9hKmZ8NW26AUtG5
-         mQEtKqe2LV4gcsmatBqtjP53XHZZcRA6un3AZXnWCw1eTZUvhwz6wHLWCWlrjwC0FX
-         jhJpUiuRtdh9g==
-Date:   Thu, 21 Apr 2022 17:11:16 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the pinctrl tree
-Message-ID: <20220421171116.6dbe87cb@canb.auug.org.au>
+        Thu, 21 Apr 2022 03:14:45 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9938417057
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:11:56 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DBB0CC0004;
+        Thu, 21 Apr 2022 07:11:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650525114;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=auX3gqJ9RGHSlEjxZinnSR2NSKwIF6WVN5onY8r43Tw=;
+        b=fQ89SzY9T2yawRq6xMz3v04rLQiHaJAaKKURUEMVZ/j5FGfFskv02t3pEkfACh/rPC2KKH
+        mOpRrNcy3/0IRDB49yLkQMw/w0EnpmzjgM7sncY6yB0Z6TTsOeNH/QkFqHiCBM2ymtzJ+I
+        v+8igLxThVX33sEBIddO3Qih8XLPGwbmRzCrCmyaT30wAcBIIO1qux8iiS4A4NbCB+BjLH
+        emo5MtaxPG/3ADGsV6vniKWMaWUh9r9Wj5emSDXHJaWnhxQf9ce+0Xi6ScXI26cgbHYYQ+
+        I1uWQyw43A4ReI39BVDEjcjJgs7/lcUDQIw66/svPOssEembEZz3evxHprvrmQ==
+Date:   Thu, 21 Apr 2022 09:11:52 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Clark <robdclark@gmail.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] Revert "drm: of: Properly try all possible cases for
+ bridge/panel detection"
+Message-ID: <YmEDuBeAhQr8Ev1d@aptenodytes>
+References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/h55M/XjbUb7SQqjhoVE0LEw";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IGpprMjyZuptqbr8"
+Content-Disposition: inline
+In-Reply-To: <20220420231230.58499-1-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/h55M/XjbUb7SQqjhoVE0LEw
-Content-Type: text/plain; charset=US-ASCII
+
+--IGpprMjyZuptqbr8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+Hi Bjorn,
 
-After merging the pinctrl tree, today's linux-next build (htmldocs)
-produced this warning:
+On Wed 20 Apr 22, 16:12, Bjorn Andersson wrote:
+> Commit '80253168dbfd ("drm: of: Lookup if child node has panel or
+> bridge")' introduced the ability to describe a panel under a display
+> controller without having to use a graph to connect the controller to
+> its single child panel (or bridge).
+>=20
+> The implementation of this would find the first non-graph node and
+> attempt to acquire the related panel or bridge. This prevents cases
+> where any other child node, such as a aux bus for a DisplayPort
+> controller, or an opp-table to find the referenced panel.
+>=20
+> Commit '67bae5f28c89 ("drm: of: Properly try all possible cases for
+> bridge/panel detection")' attempted to solve this problem by not
+> bypassing the graph reference lookup before attempting to find the panel
+> or bridge.
+>=20
+> While this does solve the case where a proper graph reference is
+> present, it does not allow the caller to distinguish between a
+> yet-to-be-probed panel or bridge and the absence of a reference to a
+> panel.
+>=20
+> One such case is a DisplayPort controller that on some boards have an
+> explicitly described reference to a panel, but on others have a
+> discoverable DisplayPort display attached (which doesn't need to be
+> expressed in DeviceTree).
+>=20
+> This reverts commit '67bae5f28c89 ("drm: of: Properly try all possible
+> cases for bridge/panel detection")', as a step towards reverting commit
+> '80253168dbfd ("drm: of: Lookup if child node has panel or bridge")'.
+>=20
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-include/linux/gpio/driver.h:507: warning: Incorrect use of kernel-doc forma=
-t:          * @of_gpio_ranges_fallback
-include/linux/gpio/driver.h:518: warning: Function parameter or member 'of_=
-gpio_ranges_fallback' not described in 'gpio_chip'
+Acked-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-Introduced by commit
+Cheers,
 
-  a9491df0c4ae ("gpiolib: of: Introduce hook for missing gpio-ranges")
+Paul
+
+> ---
+>  drivers/gpu/drm/drm_of.c | 99 ++++++++++++++++++++--------------------
+>  1 file changed, 49 insertions(+), 50 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
+> index f4df344509a8..026e4e29a0f3 100644
+> --- a/drivers/gpu/drm/drm_of.c
+> +++ b/drivers/gpu/drm/drm_of.c
+> @@ -214,29 +214,6 @@ int drm_of_encoder_active_endpoint(struct device_nod=
+e *node,
+>  }
+>  EXPORT_SYMBOL_GPL(drm_of_encoder_active_endpoint);
+> =20
+> -static int find_panel_or_bridge(struct device_node *node,
+> -				struct drm_panel **panel,
+> -				struct drm_bridge **bridge)
+> -{
+> -	if (panel) {
+> -		*panel =3D of_drm_find_panel(node);
+> -		if (!IS_ERR(*panel))
+> -			return 0;
+> -
+> -		/* Clear the panel pointer in case of error. */
+> -		*panel =3D NULL;
+> -	}
+> -
+> -	/* No panel found yet, check for a bridge next. */
+> -	if (bridge) {
+> -		*bridge =3D of_drm_find_bridge(node);
+> -		if (*bridge)
+> -			return 0;
+> -	}
+> -
+> -	return -EPROBE_DEFER;
+> -}
+> -
+>  /**
+>   * drm_of_find_panel_or_bridge - return connected panel or bridge device
+>   * @np: device tree node containing encoder output ports
+> @@ -259,44 +236,66 @@ int drm_of_find_panel_or_bridge(const struct device=
+_node *np,
+>  				struct drm_panel **panel,
+>  				struct drm_bridge **bridge)
+>  {
+> -	struct device_node *node;
+> -	int ret;
+> +	int ret =3D -EPROBE_DEFER;
+> +	struct device_node *remote;
+> =20
+>  	if (!panel && !bridge)
+>  		return -EINVAL;
+> -
+>  	if (panel)
+>  		*panel =3D NULL;
+> -	if (bridge)
+> -		*bridge =3D NULL;
+> -
+> -	/* Check for a graph on the device node first. */
+> -	if (of_graph_is_present(np)) {
+> -		node =3D of_graph_get_remote_node(np, port, endpoint);
+> -		if (node) {
+> -			ret =3D find_panel_or_bridge(node, panel, bridge);
+> -			of_node_put(node);
+> -
+> -			if (!ret)
+> -				return 0;
+> -		}
+> -	}
+> =20
+> -	/* Otherwise check for any child node other than port/ports. */
+> -	for_each_available_child_of_node(np, node) {
+> -		if (of_node_name_eq(node, "port") ||
+> -		    of_node_name_eq(node, "ports"))
+> +	/**
+> +	 * Devices can also be child nodes when we also control that device
+> +	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
+> +	 *
+> +	 * Lookup for a child node of the given parent that isn't either port
+> +	 * or ports.
+> +	 */
+> +	for_each_available_child_of_node(np, remote) {
+> +		if (of_node_name_eq(remote, "port") ||
+> +		    of_node_name_eq(remote, "ports"))
+>  			continue;
+> =20
+> -		ret =3D find_panel_or_bridge(node, panel, bridge);
+> -		of_node_put(node);
+> +		goto of_find_panel_or_bridge;
+> +	}
+> +
+> +	/*
+> +	 * of_graph_get_remote_node() produces a noisy error message if port
+> +	 * node isn't found and the absence of the port is a legit case here,
+> +	 * so at first we silently check whether graph presents in the
+> +	 * device-tree node.
+> +	 */
+> +	if (!of_graph_is_present(np))
+> +		return -ENODEV;
+> +
+> +	remote =3D of_graph_get_remote_node(np, port, endpoint);
+> +
+> +of_find_panel_or_bridge:
+> +	if (!remote)
+> +		return -ENODEV;
+> +
+> +	if (panel) {
+> +		*panel =3D of_drm_find_panel(remote);
+> +		if (!IS_ERR(*panel))
+> +			ret =3D 0;
+> +		else
+> +			*panel =3D NULL;
+> +	}
+> +
+> +	/* No panel found yet, check for a bridge next. */
+> +	if (bridge) {
+> +		if (ret) {
+> +			*bridge =3D of_drm_find_bridge(remote);
+> +			if (*bridge)
+> +				ret =3D 0;
+> +		} else {
+> +			*bridge =3D NULL;
+> +		}
+> =20
+> -		/* Stop at the first found occurrence. */
+> -		if (!ret)
+> -			return 0;
+>  	}
+> =20
+> -	return -EPROBE_DEFER;
+> +	of_node_put(remote);
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
+> =20
+> --=20
+> 2.35.1
+>=20
 
 --=20
-Cheers,
-Stephen Rothwell
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
 
---Sig_/h55M/XjbUb7SQqjhoVE0LEw
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+--IGpprMjyZuptqbr8
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJhA5QACgkQAVBC80lX
-0GxWtQgAgho4Xlny7Sp7e7d2gT/sGGNkC0FcIRij+FRUfRwsgr/iT/rY33U29YmQ
-5gb7zXN+TXhVYELmDosyWB2vpva65vFeimB6MpY6fiRR2EOvd5oX2wkj3g0ut+sd
-WnVGOZfvO+/mzy5EJj9H/EN0iHNAsDph9sCmGj/ljLPQQklCHm3ouo8HYewN8PR0
-R7jFqif0zOMRyA/bSK79sZJaMWp+ERF8lkC0i88hCM4JBAddfCINSKuUA9sZ9KGV
-vPhqZ/yJdH3GOrzhx8ASuoGNZ7kOeWFrMRIzwdn/WJctQWwgc1Do2KEJgTOJdz/0
-g08ltGZzenHjq8Dgda0b0hPsOOhSBA==
-=rQCA
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJhA7gACgkQ3cLmz3+f
+v9F5eAf8DSn5rUoTVRvz8d54z0pmGXraRjFUR62/CJQXXJLdzU8zxT2HWXc4Cpig
+Y6sSCV7ZrdephXnxnj2wS2NxuQcYNuM9kVawdLAWOBc6a5K4qpkUqMyxsV22zO8D
+Fj/0DN87ca65SDepivE2ZPVEiZjmk1iUeRH+2d7VsMXsISzvXGuELwGAc8y0xoHj
+ZesxD9zK28YFffBJW3C3AcMYT7Cn81uAiLrb3g1YxtsPdIwbo+A1CNQ98OmC8LqB
+wAjckScXtdg5y9mA/CVdF/ny3PRqx2tGvD/4utOhfKUXDHomkYRIyuM6KJyxxXh3
+a1Z5f3FSyq8Ksm7UcuurjwzcRm4DJg==
+=jIW0
 -----END PGP SIGNATURE-----
 
---Sig_/h55M/XjbUb7SQqjhoVE0LEw--
+--IGpprMjyZuptqbr8--
