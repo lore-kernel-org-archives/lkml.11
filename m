@@ -2,77 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 161B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD1BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382512AbiDULyL (ORCPT
+        id S1382548AbiDULyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 07:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
+        Thu, 21 Apr 2022 07:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382319AbiDULyI (ORCPT
+        with ESMTP id S230158AbiDULyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 07:54:08 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DC52A265;
-        Thu, 21 Apr 2022 04:51:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4ZHbzQMu8uYjFrthvRXYK9IV2thwt/HDx1K+L+tY5GI=; b=NG+UAvEABaHJ2j50viDG+b1G6o
-        lC5Onb/goJrpHXhWUAFyb0/mF3qZngbv2pz0ZkYB6mbSti6dc4un0MhYyzZ7hx5Diyyruljjvs3zf
-        1z4BcBa6xGcdQcA79av1TpLUtMUhxE0/2GQdC0V+VoYxQwlJKc/duufKdIALVOeVJh0mIddZO3Ba0
-        bZGaycSiuRzgjh54ko3Y0RjMJgdP5JABVb0CL+rxevge4FsucATLLWzC1HOiHxSN3+aB9qNIYLxl/
-        qsZ8O92+Y2nidEVXqC05TNi+5AsUQCeIWNC7+y2PjqYzpjen5SajuvUOYgQGIUeY2l8nsnFEbc90i
-        FCvqJa2w==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhVKu-00530f-A0; Thu, 21 Apr 2022 11:51:00 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2A8D09861C1; Thu, 21 Apr 2022 13:50:58 +0200 (CEST)
-Date:   Thu, 21 Apr 2022 13:50:58 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>, rjw@rjwysocki.net,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org, tj@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [RFC][PATCH] ptrace: Don't change __state
-Message-ID: <20220421115058.GN2731@worktop.programming.kicks-ass.net>
-References: <20220415101644.GA10421@redhat.com>
- <20220415105755.GA15217@redhat.com>
- <Yllep6B8eva2VURJ@hirez.programming.kicks-ass.net>
- <20220418170104.GA16199@redhat.com>
- <20220420131731.GF2731@worktop.programming.kicks-ass.net>
- <20220420180323.GA14947@redhat.com>
- <875yn3zdag.fsf_-_@email.froward.int.ebiederm.org>
- <20220421072138.GI2731@worktop.programming.kicks-ass.net>
- <20220421102631.GE2762@worktop.programming.kicks-ass.net>
- <20220421104914.GA20402@redhat.com>
+        Thu, 21 Apr 2022 07:54:20 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B6BEB2A265;
+        Thu, 21 Apr 2022 04:51:31 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id A873B8106;
+        Thu, 21 Apr 2022 11:48:39 +0000 (UTC)
+Date:   Thu, 21 Apr 2022 14:51:30 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Paul Walmsley <paul@pwsan.com>, kernel-janitors@vger.kernel.org,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: OMAP1: fix typos in comments
+Message-ID: <YmFFQjmAYS7btKsP@atomide.com>
+References: <20220318103729.157574-33-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220421104914.GA20402@redhat.com>
+In-Reply-To: <20220318103729.157574-33-Julia.Lawall@inria.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 12:49:43PM +0200, Oleg Nesterov wrote:
-> On 04/21, Peter Zijlstra wrote:
-> >
-> > As such, I've taken the liberty of munging yours and Oleg's approach
-> > together. I've yet to actually test this but it looks feasible.
+Hi,
+
+* Julia Lawall <Julia.Lawall@inria.fr> [220318 12:36]:
+> Various spelling mistakes in comments.
+> Detected with the help of Coccinelle.
 > 
-> Agreed, but I am a but confused. Is it on top of 1/5? Doesn't look so,
-> and I can't apply it with or without 1/5. So I am not sure I understand
-> what exactly it does.
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-Yes, it is on top of a modified 1, I mean to post an updated and tested
-series later today.
+Probably best that Arnd picks this into his omap1-multiplatform branch:
 
-Basically it does the TRACED_QUIESCE thing from your patch, and then
-does the DELAY_WAKEKILL thing from Eric's patch.
+Acked-by: Tony Lindgren <tony@atomide.com>
 
+Regards,
+
+Tony
+
+> ---
+>  arch/arm/mach-omap1/clock_data.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/mach-omap1/clock_data.c b/arch/arm/mach-omap1/clock_data.c
+> index 3ebcd96efbff..c761e72563c1 100644
+> --- a/arch/arm/mach-omap1/clock_data.c
+> +++ b/arch/arm/mach-omap1/clock_data.c
+> @@ -818,7 +818,7 @@ int __init omap1_clk_init(void)
+>  		omap_readw(ARM_SYSST), omap_readw(DPLL_CTL),
+>  		omap_readw(ARM_CKCTL));
+>  
+> -	/* We want to be in syncronous scalable mode */
+> +	/* We want to be in synchronous scalable mode */
+>  	omap_writew(0x1000, ARM_SYSST);
+>  
+>  
+> 
