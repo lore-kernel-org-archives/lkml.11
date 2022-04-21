@@ -2,119 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D4EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391869AbiDUT2i (ORCPT
+        id S1391927AbiDUT2r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37614 "EHLO
+        Thu, 21 Apr 2022 15:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390623AbiDUT2b (ORCPT
+        with ESMTP id S1391610AbiDUT2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:28:31 -0400
-Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10134551E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:25:40 -0700 (PDT)
-Received: (wp-smtpd smtp.tlen.pl 24171 invoked from network); 21 Apr 2022 21:25:36 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1650569136; bh=KT7q9eMAxby7uyk2jYuKh3OvBVpIpHr8zoPO+QpVv2U=;
-          h=From:To:Cc:Subject;
-          b=DhQE9adGRhpowyJEBc9mhoEvr4wrXxXbN2WV2wNOydYIOjma8KF3+cSjZ1vlgEvSi
-           rf1tJQPKjy0eYkwprTwhvs2DP/aWzKdj4hBmZtfLPayZhEzmEuvRSSwAEOjz3q7EDZ
-           oEIGBNCv6gJipvDvZnmxNiTzPNA322SPd4yAWUZI=
-Received: from aafl13.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.141.13])
-          (envelope-sender <mat.jonczyk@o2.pl>)
-          by smtp.tlen.pl (WP-SMTPD) with SMTP
-          for <linux-kernel@vger.kernel.org>; 21 Apr 2022 21:25:35 +0200
-From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-To:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org
-Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH v2 2/2] x86/rtc: rename mach_set_rtc_mmss
-Date:   Thu, 21 Apr 2022 21:24:49 +0200
-Message-Id: <20220421192449.11004-3-mat.jonczyk@o2.pl>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421192449.11004-1-mat.jonczyk@o2.pl>
-References: <20220421192449.11004-1-mat.jonczyk@o2.pl>
+        Thu, 21 Apr 2022 15:28:46 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9832B4D270;
+        Thu, 21 Apr 2022 12:25:55 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id p8so5883581pfh.8;
+        Thu, 21 Apr 2022 12:25:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cBrbiWDBHEqVzD/h6n2uk0w0Vf7EqWqgPo3W9iAFxx0=;
+        b=HTZ57TThs2gZgtm09J297EO0M3RO62RHz/zVoetmYhSGSzXIWjGtQNVlcT/am6ElqW
+         +cTLNQXaPDGTicHPztmAQxL3KOlCa0xow9uOS0FV7+JXKwDeZShuUEbBQiE0Rvus2mm5
+         eLMesI2o5ptZFTctQwjDDGBVhqCeowgcfZNMhAiMxUibIPc0sbqguwSOhdL28aF/wAhR
+         OZ5HsLcodEdCdqfjUtovF9t5paSvEko+HnTNyqgzeng1bpWq/xgmjewQjuDsQDeCZo73
+         Hqyj9I01JfoH0aaOvVNTvMQISmhsF50hwZGJaZUherneAHdfPc/CDIR4kCzKfbNxpgrg
+         5ujQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=cBrbiWDBHEqVzD/h6n2uk0w0Vf7EqWqgPo3W9iAFxx0=;
+        b=0+EBFbQC2kVJpggDuSgsKAxBIWswb38o0V17mfZymlkzF0K4qG1CZbjxEZF7lN+A3V
+         TQaeREQxT4u4RIxHYzCtZm1pnrkrFdUkWV5m3lsgSWA7RsTzNOasHw0+FE4dld/IVxPX
+         VaIuDlfKHWxFNhQovx8Yyi2huNX7O4vLtjamslfodyXN+vgGvT/P+KIW5MUKy8yB3mDS
+         W2jWAPb86n3+ICPFdNEwpptnbtAhLsMfgEK5+oY2zQTolsCf6+pthIdOwQDXkFumpb8W
+         W7qXsVr1FgI4bj7/+/5p5GpsWXUWIZBGGd72xb9b/zbebu8NFeQ8+RjQ3yTXkNWQudv6
+         rQWg==
+X-Gm-Message-State: AOAM531isdSk7DvXdRzUWgOKV06jLS5J5qpJuuRAjOzhXsupfccU7IR4
+        M8vzNGzC4DzruAb41nFIOZM=
+X-Google-Smtp-Source: ABdhPJydgd/xmb2yR2CCAMjNeInbLx5JdrgHVbwNiCA8VKBZYu2tb2FGgUU1dxdUfy8WyP5TnL9L3A==
+X-Received: by 2002:aa7:9522:0:b0:4e1:d277:ce8 with SMTP id c2-20020aa79522000000b004e1d2770ce8mr1170604pfp.16.1650569154975;
+        Thu, 21 Apr 2022 12:25:54 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:2c86])
+        by smtp.gmail.com with ESMTPSA id t63-20020a625f42000000b0050a7eaff8c9sm14868920pfb.189.2022.04.21.12.25.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 12:25:54 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 21 Apr 2022 09:25:52 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Vernet <void@manifault.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>
+Subject: Re: [PATCH 3/4] MAINTAINERS: add corresponding kselftests to cgroup
+ entry
+Message-ID: <YmGvwPIAA1LqCcku@slm.duckdns.org>
+References: <20220415000133.3955987-1-roman.gushchin@linux.dev>
+ <20220415000133.3955987-4-roman.gushchin@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: 98bcf9135cc57123f251e21cff7a9931
-X-WP-AV: skaner antywirusowy Poczty o2
-X-WP-SPAM: NO 0000000 [kbN0]                               
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415000133.3955987-4-roman.gushchin@linux.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Once upon a time, before
-commit 3195ef59cb42 ("x86: Do full rtc synchronization with ntp")
-in 2013, the function set only the minute and seconds registers
-of the CMOS RTC. This is no longer true, so rename the function to
-mach_set_cmos_time.
+On Thu, Apr 14, 2022 at 05:01:32PM -0700, Roman Gushchin wrote:
+> List cgroup kselftests in the cgroup MAINTAINERS entry.
+> These are tests covering core, freezer and cgroup.kill
+> functionality.
+> 
+> Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+> Cc: Tejun Heo <tj@kernel.org>
+> Cc: Zefan Li <lizefan.x@bytedance.com>
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Cc: cgroups@vger.kernel.org
 
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: x86@kernel.org
-Cc: "H. Peter Anvin" <hpa@zytor.com>
----
- arch/x86/include/asm/mc146818rtc.h | 2 +-
- arch/x86/kernel/rtc.c              | 4 ++--
- arch/x86/kernel/x86_init.c         | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+Acked-by: Tejun Heo <tj@kernel.org>
 
-diff --git a/arch/x86/include/asm/mc146818rtc.h b/arch/x86/include/asm/mc146818rtc.h
-index 97198001e567..6115bb3d5795 100644
---- a/arch/x86/include/asm/mc146818rtc.h
-+++ b/arch/x86/include/asm/mc146818rtc.h
-@@ -95,7 +95,7 @@ static inline unsigned char current_lock_cmos_reg(void)
- unsigned char rtc_cmos_read(unsigned char addr);
- void rtc_cmos_write(unsigned char val, unsigned char addr);
- 
--extern int mach_set_rtc_mmss(const struct timespec64 *now);
-+extern int mach_set_cmos_time(const struct timespec64 *now);
- extern void mach_get_cmos_time(struct timespec64 *now);
- 
- #define RTC_IRQ 8
-diff --git a/arch/x86/kernel/rtc.c b/arch/x86/kernel/rtc.c
-index 1cadc8a15267..349046434513 100644
---- a/arch/x86/kernel/rtc.c
-+++ b/arch/x86/kernel/rtc.c
-@@ -27,13 +27,13 @@ DEFINE_SPINLOCK(rtc_lock);
- EXPORT_SYMBOL(rtc_lock);
- 
- /*
-- * In order to set the CMOS clock precisely, set_rtc_mmss has to be
-+ * In order to set the CMOS clock precisely, mach_set_cmos_time has to be
-  * called 500 ms after the second nowtime has started, because when
-  * nowtime is written into the registers of the CMOS clock, it will
-  * jump to the next second precisely 500 ms later. Check the Motorola
-  * MC146818A or Dallas DS12887 data sheet for details.
-  */
--int mach_set_rtc_mmss(const struct timespec64 *now)
-+int mach_set_cmos_time(const struct timespec64 *now)
- {
- 	unsigned long long nowtime = now->tv_sec;
- 	struct rtc_time tm;
-diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
-index e84ee5cdbd8c..57353519bc11 100644
---- a/arch/x86/kernel/x86_init.c
-+++ b/arch/x86/kernel/x86_init.c
-@@ -138,7 +138,7 @@ struct x86_platform_ops x86_platform __ro_after_init = {
- 	.calibrate_cpu			= native_calibrate_cpu_early,
- 	.calibrate_tsc			= native_calibrate_tsc,
- 	.get_wallclock			= mach_get_cmos_time,
--	.set_wallclock			= mach_set_rtc_mmss,
-+	.set_wallclock			= mach_set_cmos_time,
- 	.iommu_shutdown			= iommu_shutdown_noop,
- 	.is_untracked_pat_range		= is_ISA_range,
- 	.nmi_init			= default_nmi_init,
+I suppose this can go with the rest through -mm? Please let me know if I
+should pick it up.
+
+Thanks.
+
 -- 
-2.25.1
-
+tejun
