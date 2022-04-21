@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9223C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385330AbiDUGuU (ORCPT
+        id S1385205AbiDUGu1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45684 "EHLO
+        Thu, 21 Apr 2022 02:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385168AbiDUGrO (ORCPT
+        with ESMTP id S1385170AbiDUGrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:47:14 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C86B15706
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:43:52 -0700 (PDT)
+        Thu, 21 Apr 2022 02:47:21 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6C715722
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:43:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523433; x=1682059433;
+  t=1650523435; x=1682059435;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=t6EX66T85u1c5LDaK5D+bJxZGki09xbXVSxRqkTFzEw=;
-  b=U6Qxkat70JdTzKBsbpP7tEV7UHuEyp41gWxBp2gELT1WQCVdcWP8d/Bx
-   z4UVt3G2xXIXX9QpTnV4MiLW8lQxAm9jQPI4IBBgNgHkl0n5Te4/Qpo+7
-   NBdI8qc+xVhhL5BmH3oCBTGe/gL3s87q2rZRMlHHsdEvqU/cBn4M7p8kh
-   nVA8s3A2UoWBlmF33j7+ERG7BlUFyjpqsS4X5quSmSbUOhq6yEI/tynyc
-   PtetstNkKws3bqYX1AqdZ6uodT9B+xjFibGzMmoorShOBZ8IXvX1u6rbf
-   JEfNGgQt1TIqLGmQZsE5zxzZfVbZYQ4CJVIeF2BKTC2TQoHcXdPCZyHxF
+  bh=tGDwsRSfzzAl2tPyM5e0CqzjFlQNTdW0Hf+Zc8ssoIU=;
+  b=ZklVmwRxf4BFRd2FwU/ltfWUB0yYa4xY2SnCvee8wDNwxZLD04qDNt7W
+   ZHpr2iR0Z1m6R5ShvDq0qcoo/bFPrzlMgY3JWH9mSceAOHu3R5RBXc/0/
+   nZMjqqUwfjYXU7ufHCB/8YfytN8SYpverboHtE0bSpw0C4YTNrITdES1C
+   q/0Q5Q/N4tDhj0XM2hZ6WZsmbfnNbZpaZL61zw0TBDUZ6Vmf1XRPis6sP
+   jlwzCbi1lArq5CimDxrD62yN5pH8Tnaj/QB3smj7mn9/AQoRVVe9EFo+L
+   cM17+WkWmYZ4SIfPXlVRy8rrFgk0CGSCah+fGFmvHJhhIy1OrDjkhMXOL
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264022261"
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="289369461"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="264022261"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:43:52 -0700
+   d="scan'208";a="289369461"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:43:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="532792899"
+   d="scan'208";a="670049057"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 20 Apr 2022 23:43:51 -0700
+  by orsmga004.jf.intel.com with ESMTP; 20 Apr 2022 23:43:51 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQXe-00080X-TW;
-        Thu, 21 Apr 2022 06:43:50 +0000
-Date:   Thu, 21 Apr 2022 14:43:10 +0800
+        id 1nhQXf-00080v-3y;
+        Thu, 21 Apr 2022 06:43:51 +0000
+Date:   Thu, 21 Apr 2022 14:42:59 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 909/2579] ./usr/include/linux/rds.h:38:10:
- fatal error: uapi/linux/sockios.h: No such file or directory
-Message-ID: <202204210658.9lRMw5Y6-lkp@intel.com>
+To:     Sven Schnelle <svens@stackframe.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Helge Deller <deller@gmx.de>
+Subject: arch/parisc/kernel/traps.c:806:14: warning: variable 'hpmcp' set but
+ not used
+Message-ID: <202204210504.e7yvq7aa-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,48 +57,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 94cfca12ab9e9b8b05b4baec60d6450f80682d91 [909/2579] headers/deps: Add header dependencies to .h files: <uapi/linux/sockios.h>
-config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220421/202204210658.9lRMw5Y6-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+Hi Sven,
+
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b253435746d9a4a701b5f09211b9c14d3370d0da
+commit: c70919bd9d0782a6078ccd37d7f861d514f5481e parisc: Fix IVT checksum calculation wrt HPMC
+date:   1 year, 2 months ago
+config: parisc-randconfig-r031-20220420 (https://download.01.org/0day-ci/archive/20220421/202204210504.e7yvq7aa-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=94cfca12ab9e9b8b05b4baec60d6450f80682d91
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 94cfca12ab9e9b8b05b4baec60d6450f80682d91
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c70919bd9d0782a6078ccd37d7f861d514f5481e
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout c70919bd9d0782a6078ccd37d7f861d514f5481e
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   In file included from <command-line>:
->> ./usr/include/linux/rds.h:38:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      38 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
-   In file included from <command-line>:
->> ./usr/include/linux/if_tunnel.h:5:10: fatal error: uapi/linux/sockios.h: No such file or directory
-       5 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
-   In file included from <command-line>:
->> ./usr/include/linux/kcm.h:18:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      18 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
-   In file included from <command-line>:
->> ./usr/include/linux/x25.h:15:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      15 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
+   arch/parisc/kernel/traps.c: In function 'initialize_ivt':
+>> arch/parisc/kernel/traps.c:806:14: warning: variable 'hpmcp' set but not used [-Wunused-but-set-variable]
+     806 |         u32 *hpmcp;
+         |              ^~~~~
+
+
+vim +/hpmcp +806 arch/parisc/kernel/traps.c
+
+^1da177e4c3f415 Linus Torvalds    2005-04-16  797  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  798  
+4182d0cdf853fb0 Helge Deller      2015-11-20  799  void __init initialize_ivt(const void *iva)
+^1da177e4c3f415 Linus Torvalds    2005-04-16  800  {
+c3d4ed4e3e5aa8d Kyle McMartin     2007-06-04  801  	extern const u32 os_hpmc[];
+c3d4ed4e3e5aa8d Kyle McMartin     2007-06-04  802  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  803  	int i;
+^1da177e4c3f415 Linus Torvalds    2005-04-16  804  	u32 check = 0;
+^1da177e4c3f415 Linus Torvalds    2005-04-16  805  	u32 *ivap;
+^1da177e4c3f415 Linus Torvalds    2005-04-16 @806  	u32 *hpmcp;
+c70919bd9d0782a Sven Schnelle     2020-10-02  807  	u32 instr;
+^1da177e4c3f415 Linus Torvalds    2005-04-16  808  
+4182d0cdf853fb0 Helge Deller      2015-11-20  809  	if (strcmp((const char *)iva, "cows can fly"))
+4182d0cdf853fb0 Helge Deller      2015-11-20  810  		panic("IVT invalid");
+^1da177e4c3f415 Linus Torvalds    2005-04-16  811  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  812  	ivap = (u32 *)iva;
+^1da177e4c3f415 Linus Torvalds    2005-04-16  813  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  814  	for (i = 0; i < 8; i++)
+^1da177e4c3f415 Linus Torvalds    2005-04-16  815  	    *ivap++ = 0;
+^1da177e4c3f415 Linus Torvalds    2005-04-16  816  
+8d771b143fe2e39 Helge Deller      2017-09-17  817  	/*
+8d771b143fe2e39 Helge Deller      2017-09-17  818  	 * Use PDC_INSTR firmware function to get instruction that invokes
+8d771b143fe2e39 Helge Deller      2017-09-17  819  	 * PDCE_CHECK in HPMC handler.  See programming note at page 1-31 of
+8d771b143fe2e39 Helge Deller      2017-09-17  820  	 * the PA 1.1 Firmware Architecture document.
+8d771b143fe2e39 Helge Deller      2017-09-17  821  	 */
+8d771b143fe2e39 Helge Deller      2017-09-17  822  	if (pdc_instr(&instr) == PDC_OK)
+8d771b143fe2e39 Helge Deller      2017-09-17  823  		ivap[0] = instr;
+8d771b143fe2e39 Helge Deller      2017-09-17  824  
+41dbee81c875300 Helge Deller      2018-04-18  825  	/*
+41dbee81c875300 Helge Deller      2018-04-18  826  	 * Rules for the checksum of the HPMC handler:
+41dbee81c875300 Helge Deller      2018-04-18  827  	 * 1. The IVA does not point to PDC/PDH space (ie: the OS has installed
+41dbee81c875300 Helge Deller      2018-04-18  828  	 *    its own IVA).
+41dbee81c875300 Helge Deller      2018-04-18  829  	 * 2. The word at IVA + 32 is nonzero.
+41dbee81c875300 Helge Deller      2018-04-18  830  	 * 3. If Length (IVA + 60) is not zero, then Length (IVA + 60) and
+41dbee81c875300 Helge Deller      2018-04-18  831  	 *    Address (IVA + 56) are word-aligned.
+41dbee81c875300 Helge Deller      2018-04-18  832  	 * 4. The checksum of the 8 words starting at IVA + 32 plus the sum of
+41dbee81c875300 Helge Deller      2018-04-18  833  	 *    the Length/4 words starting at Address is zero.
+41dbee81c875300 Helge Deller      2018-04-18  834  	 */
+41dbee81c875300 Helge Deller      2018-04-18  835  
+1138b6718ff74d2 John David Anglin 2018-10-06  836  	/* Setup IVA and compute checksum for HPMC handler */
+1138b6718ff74d2 John David Anglin 2018-10-06  837  	ivap[6] = (u32)__pa(os_hpmc);
+^1da177e4c3f415 Linus Torvalds    2005-04-16  838  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  839  	hpmcp = (u32 *)os_hpmc;
+^1da177e4c3f415 Linus Torvalds    2005-04-16  840  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  841  	for (i=0; i<8; i++)
+^1da177e4c3f415 Linus Torvalds    2005-04-16  842  	    check += ivap[i];
+^1da177e4c3f415 Linus Torvalds    2005-04-16  843  
+^1da177e4c3f415 Linus Torvalds    2005-04-16  844  	ivap[5] = -check;
+c70919bd9d0782a Sven Schnelle     2020-10-02  845  	pr_debug("initialize_ivt: IVA[6] = 0x%08x\n", ivap[6]);
+^1da177e4c3f415 Linus Torvalds    2005-04-16  846  }
+^1da177e4c3f415 Linus Torvalds    2005-04-16  847  	
+4182d0cdf853fb0 Helge Deller      2015-11-20  848  
+
+:::::: The code at line 806 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
 
 -- 
 0-DAY CI Kernel Test Service
