@@ -2,194 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A722C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391147AbiDUSF0 (ORCPT
+        id S1391150AbiDUSFh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        Thu, 21 Apr 2022 14:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391130AbiDUSFN (ORCPT
+        with ESMTP id S1391151AbiDUSF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:05:13 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0564B1DE;
-        Thu, 21 Apr 2022 11:02:21 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id u15so11560716ejf.11;
-        Thu, 21 Apr 2022 11:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=a6ZmwFanJZuh7hQqz3LVbwr1p4KwEMnE7IqhDHbu+tA=;
-        b=WQkj196SEjCOm5X1GFd5opNyYrB5ISoL5QCp3zcZ4yG0SHgB7UKcBFt7pk76U2OtPU
-         +Ve58ZPZqJmVLzICA+f/cnKOvcfY/w5tV4ffzw3Qja6gBgVs/y+RzREkPUa4Y3xsmFbA
-         3Je4Dkv/zCVMsTbR4+e2pYNkLBajXcdoM/FMM5Q+mt5Ts7Yfs2LoBBwxQbeaYSlUO+o2
-         L/EGCoZIiqV+yiIOC3doM2oX8GC93aQ1io1l7PE3rqtxJd6HIp0xaT7N257ByOGQ5b07
-         T6b1k8onjIXT3G9OxRiw0g3fI5pr8KMPaleq644o0uSnCkBIAdvXXVt5hGGGBzx7VcXK
-         0u6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a6ZmwFanJZuh7hQqz3LVbwr1p4KwEMnE7IqhDHbu+tA=;
-        b=YH6qED0tzZePi/AJRNQhlz4YynHkXoDk+18nLzzpbTPP5TERw51SxyRv9D5J5Tk0YB
-         wzjKbzF9ysa/MFrkAzyhcg9LxrANduNHMGwdbQ2x8TWsXX3lYrV6cLJWBbK444UmVP9/
-         5uPYf3NP+4+unrOHTQlZP/7KaXiNP1EiWTV3yRwppVhFVg3ek4q7yZX817q6OQIo/Qzo
-         lMWhmdO43oDJP/9RAE2OrbFYtTC013Twjete+IRt7cNthdgmbZqZlEIuBxvQnIOmHAAm
-         gkxWCXUR+Dzkdscdyd2FrKlnJDgw0Q2XcVzbBHazGvH00wTFjz/VTvlaz0m1XDfHJVJ9
-         ivKQ==
-X-Gm-Message-State: AOAM533AFO5NG+5GX+PV43iGTihkm/PmFXR7/13TM5YxhFGU3YX30dgX
-        17Gqi+stgeeFVH4zYugrr7Y=
-X-Google-Smtp-Source: ABdhPJyLVNzKlRNdicrjeKkwsfZkoOjRLHIkNCSVnaOxJCJcfpFsnLT/eGP2v0fC33Y/ojSFUEB1Pg==
-X-Received: by 2002:a17:907:7d88:b0:6f0:29ea:cbfe with SMTP id oz8-20020a1709077d8800b006f029eacbfemr640244ejc.704.1650564140059;
-        Thu, 21 Apr 2022 11:02:20 -0700 (PDT)
-Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id l17-20020a056402231100b0041d98ed7ad8sm11836204eda.46.2022.04.21.11.02.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 11:02:18 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, outreachy@lists.linux.dev
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 4/4] Documentation/vm: Rework "Temporary Virtual Mappings"
-Date:   Thu, 21 Apr 2022 20:02:00 +0200
-Message-Id: <20220421180200.16901-5-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220421180200.16901-1-fmdefrancesco@gmail.com>
-References: <20220421180200.16901-1-fmdefrancesco@gmail.com>
+        Thu, 21 Apr 2022 14:05:27 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118CE4A914
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650564152; x=1682100152;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=J+3Xvok9xV8uEvqY9CwIS5w9GvNM7edK7Hjcq6V7x1Q=;
+  b=QM23PO8rGPoEx92TdcesFvWjxnOO6jkGVcu68xy3yWAEkpC84npuKmhn
+   fpQof0JX4EpDAXcakorrggSUYlwnMUPa6qZnbxEyCWDhUAtiOLvlxFTbt
+   Y98G+0rrM0EmUPrObz3SGgGWEYclnVPTdjPa/CJP2LVswc1IcbwyhK1/L
+   +0kKlHSEGXx/lUhtL5KERGN8EC5gG96BPa+xCPROyQgvcS52IWJt9oWAE
+   kD0CWA1U5yMkYjeJs7+HYirdlL7hWh+loP/Xkw9Xze7byWTbmfGQZe5bz
+   4AbJXw4RPMZ+YxLtzPEJP+yBeT/y7e31hYvKOv/QiD+7ZMSXg1q1BsHQH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="251754377"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="251754377"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 11:02:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="658641083"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 21 Apr 2022 11:02:30 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhb8P-0008e0-M4;
+        Thu, 21 Apr 2022 18:02:29 +0000
+Date:   Fri, 22 Apr 2022 02:02:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [intel-tdx:guest-hardening 3/13]
+ drivers/virtio/virtio_mmio.c:565:13: error: implicit declaration of function
+ 'cc_platform_has'
+Message-ID: <202204220127.lTGaGifK-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend and rework the "Temporary Virtual Mappings" section of the highmem.rst
-documentation.
+tree:   https://github.com/intel/tdx.git guest-hardening
+head:   121e66762efef210f0bbd57d767c22301ff0878e
+commit: 3377879e3b9e6535e58030a0d0c9068812664416 [3/13] virtio-mmio: Disable in TDX guest
+config: mips-buildonly-randconfig-r003-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220127.lTGaGifK-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel/tdx/commit/3377879e3b9e6535e58030a0d0c9068812664416
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-hardening
+        git checkout 3377879e3b9e6535e58030a0d0c9068812664416
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/virtio/
 
-Despite the local kmaps were introduced by Thomas Gleixner in October 2020,
-documentation was still missing information about them. These additions rely
-largely on Gleixner's patches, Jonathan Corbet's LWN articles, comments by
-Ira Weiny and Matthew Wilcox, and in-code comments from
-./include/linux/highmem.h.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-1) Add a paragraph to document kmap_local_page().
-2) Reorder the list of functions by decreasing order of preference of
-use.
-3) Rework part of the kmap() entry in list.
+All errors (new ones prefixed by >>):
 
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- Documentation/vm/highmem.rst | 71 ++++++++++++++++++++++++++++++------
- 1 file changed, 60 insertions(+), 11 deletions(-)
+   drivers/virtio/virtio_mmio.c: In function 'virtio_mmio_probe':
+>> drivers/virtio/virtio_mmio.c:565:13: error: implicit declaration of function 'cc_platform_has' [-Werror=implicit-function-declaration]
+     565 |         if (cc_platform_has(CC_ATTR_GUEST_DEVICE_FILTER))
+         |             ^~~~~~~~~~~~~~~
+>> drivers/virtio/virtio_mmio.c:565:29: error: 'CC_ATTR_GUEST_DEVICE_FILTER' undeclared (first use in this function)
+     565 |         if (cc_platform_has(CC_ATTR_GUEST_DEVICE_FILTER))
+         |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/virtio/virtio_mmio.c:565:29: note: each undeclared identifier is reported only once for each function it appears in
+   cc1: some warnings being treated as errors
 
-diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
-index e05bf5524174..960f61e7a552 100644
---- a/Documentation/vm/highmem.rst
-+++ b/Documentation/vm/highmem.rst
-@@ -50,26 +50,75 @@ space when they use mm context tags.
- Temporary Virtual Mappings
- ==========================
- 
--The kernel contains several ways of creating temporary mappings:
-+The kernel contains several ways of creating temporary mappings. The following
-+list shows them in order of preference of use.
- 
--* vmap().  This can be used to make a long duration mapping of multiple
--  physical pages into a contiguous virtual space.  It needs global
--  synchronization to unmap.
-+* kmap_local_page().  This function is used to require short term mappings.
-+  It can be invoked from any context (including interrupts) but the mappings
-+  can only be used in the context which acquired them.
-+
-+  This function should be preferred, where feasible, over all the others.
- 
--* kmap().  This permits a short duration mapping of a single page.  It needs
--  global synchronization, but is amortized somewhat.  It is also prone to
--  deadlocks when using in a nested fashion, and so it is not recommended for
--  new code.
-+  These mappings are per thread, CPU local (i.e., migration from one CPU to
-+  another is disabled - this is why they are called "local"), but they don't
-+  disable preemption. It's valid to take pagefaults in a local kmap region,
-+  unless the context in which the local mapping is acquired does not allow
-+  it for other reasons.
-+
-+  It is assumed that kmap_local_page() always returns the virtual address
-+  of the mapping, therefore they won't ever fail.
-+
-+  If a task holding local kmaps is preempted, the maps are removed on context
-+  switch and restored when the task comes back on the CPU. As the maps are
-+  strictly CPU local, it is guaranteed that the task stays on the CPU and
-+  that the CPU cannot be unplugged until the local kmaps are released.
-+
-+  Nesting kmap_local_page() and kmap_atomic() mappings is allowed to a certain
-+  extent (up to KMAP_TYPE_NR) but their invocations have to be strictly ordered
-+  because the map implementation is stack based.
- 
- * kmap_atomic().  This permits a very short duration mapping of a single
-   page.  Since the mapping is restricted to the CPU that issued it, it
-   performs well, but the issuing task is therefore required to stay on that
-   CPU until it has finished, lest some other task displace its mappings.
- 
--  kmap_atomic() may also be used by interrupt contexts, since it is does not
--  sleep and the caller may not sleep until after kunmap_atomic() is called.
-+  kmap_atomic() may also be used by interrupt contexts, since it does not
-+  sleep and the callers too may not sleep until after kunmap_atomic() is
-+  called.
-+
-+  Each call of kmap_atomic() in the kernel creates a non-preemptible section
-+  and disable pagefaults. This could be a source of unwanted latency, so it
-+  should be only used if it is absolutely required, otherwise kmap_local_page()
-+  should be used where it is feasible.
- 
--  It may be assumed that k[un]map_atomic() won't fail.
-+  It is assumed that k[un]map_atomic() won't fail.
-+
-+* kmap().  This should be used to make short duration mapping of a single
-+  page with no restrictions on preemption or migration. It comes with an
-+  overhead as mapping space is restricted and protected by a global lock
-+  for synchronization. When mapping is no more needed, the address that
-+  the page was mapped to must be released with kunmap().
-+
-+  Mapping changes must be propagated across all the CPUs. kmap() also
-+  requires global TLB invalidation when the kmap's pool wraps and it might
-+  block when the mapping space is fully utilized until a slot becomes
-+  available. Therefore, kmap() is only callable from preemptible context.
-+
-+  All the above work is necessary if a mapping must last for a relatively
-+  long time but the bulk of high-memory mappings in the kernel are
-+  short-lived and only used in one place. This means that the cost of
-+  kmap() is mostly wasted in such cases. kmap() was not intended for long
-+  term mappings but it has morphed in that direction and its use is
-+  strongly discouraged in newer code and the set of the preceding functions
-+  should be preferred.
-+
-+  On 64-bit systems, calls to kmap_local_page(), kmap_atomic() and kmap() have
-+  no real work to do because a 64-bit address space is more than sufficient to
-+  address all the physical memory whose pages are permanently mapped.
-+
-+* vmap().  This can be used to make a long duration mapping of multiple
-+  physical pages into a contiguous virtual space.  It needs global
-+  synchronization to unmap.
- 
- 
- Cost of Temporary Mappings
+
+vim +/cc_platform_has +565 drivers/virtio/virtio_mmio.c
+
+   558	
+   559	static int virtio_mmio_probe(struct platform_device *pdev)
+   560	{
+   561		struct virtio_mmio_device *vm_dev;
+   562		unsigned long magic;
+   563		int rc;
+   564	
+ > 565		if (cc_platform_has(CC_ATTR_GUEST_DEVICE_FILTER))
+   566			return -ENODEV;
+   567	
+   568		vm_dev = devm_kzalloc(&pdev->dev, sizeof(*vm_dev), GFP_KERNEL);
+   569		if (!vm_dev)
+   570			return -ENOMEM;
+   571	
+   572		vm_dev->vdev.dev.parent = &pdev->dev;
+   573		vm_dev->vdev.dev.release = virtio_mmio_release_dev;
+   574		vm_dev->vdev.config = &virtio_mmio_config_ops;
+   575		vm_dev->pdev = pdev;
+   576		INIT_LIST_HEAD(&vm_dev->virtqueues);
+   577		spin_lock_init(&vm_dev->lock);
+   578	
+   579		vm_dev->base = devm_platform_ioremap_resource(pdev, 0);
+   580		if (IS_ERR(vm_dev->base))
+   581			return PTR_ERR(vm_dev->base);
+   582	
+   583		/* Check magic value */
+   584		magic = readl(vm_dev->base + VIRTIO_MMIO_MAGIC_VALUE);
+   585		if (magic != ('v' | 'i' << 8 | 'r' << 16 | 't' << 24)) {
+   586			dev_warn(&pdev->dev, "Wrong magic value 0x%08lx!\n", magic);
+   587			return -ENODEV;
+   588		}
+   589	
+   590		/* Check device version */
+   591		vm_dev->version = readl(vm_dev->base + VIRTIO_MMIO_VERSION);
+   592		if (vm_dev->version < 1 || vm_dev->version > 2) {
+   593			dev_err(&pdev->dev, "Version %ld not supported!\n",
+   594					vm_dev->version);
+   595			return -ENXIO;
+   596		}
+   597	
+   598		vm_dev->vdev.id.device = readl(vm_dev->base + VIRTIO_MMIO_DEVICE_ID);
+   599		if (vm_dev->vdev.id.device == 0) {
+   600			/*
+   601			 * virtio-mmio device with an ID 0 is a (dummy) placeholder
+   602			 * with no function. End probing now with no error reported.
+   603			 */
+   604			return -ENODEV;
+   605		}
+   606		vm_dev->vdev.id.vendor = readl(vm_dev->base + VIRTIO_MMIO_VENDOR_ID);
+   607	
+   608		if (vm_dev->version == 1) {
+   609			writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
+   610	
+   611			rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
+   612			/*
+   613			 * In the legacy case, ensure our coherently-allocated virtio
+   614			 * ring will be at an address expressable as a 32-bit PFN.
+   615			 */
+   616			if (!rc)
+   617				dma_set_coherent_mask(&pdev->dev,
+   618						      DMA_BIT_MASK(32 + PAGE_SHIFT));
+   619		} else {
+   620			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+   621		}
+   622		if (rc)
+   623			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+   624		if (rc)
+   625			dev_warn(&pdev->dev, "Failed to enable 64-bit or 32-bit DMA.  Trying to continue, but this might not work.\n");
+   626	
+   627		platform_set_drvdata(pdev, vm_dev);
+   628	
+   629		rc = register_virtio_device(&vm_dev->vdev);
+   630		if (rc)
+   631			put_device(&vm_dev->vdev.dev);
+   632	
+   633		return rc;
+   634	}
+   635	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
