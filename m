@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E153C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 00:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 00:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383528AbiDUAol (ORCPT
+        id S1352074AbiDUAr3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 20:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
+        Wed, 20 Apr 2022 20:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383504AbiDUAmU (ORCPT
+        with ESMTP id S231931AbiDUAr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 20:42:20 -0400
-Received: from mail-40131.protonmail.ch (mail-40131.protonmail.ch [185.70.40.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5ED237CD
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:39:32 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 00:39:22 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1650501571;
-        bh=wuC1+vhay3ASZ7SmRAfdiwma2HlM/uaJNS3a/KTFZuQ=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
-         Feedback-ID:Message-ID;
-        b=NIW25xfbt5y/meQ91SkENqxh9jDr3xHuEFfIe9oFetZeS9Esx9nq8D+f3xtwOA4R5
-         b8GP5uR12nhhBLrs6GCiJ9HDeL2dRxCDOeTJFvJrsvupR+G9tQBAfOuRy3NbmPIKQG
-         yUsJCTvZzpOmbj9S6V4ErjLhrazOgUcobhQeqJXW4HwXhIeTgHVcnj+sK2WvRUkvNp
-         dnrx3QM6E4YCMKtE3+EIDd8FW/HTImIihzbNRxk28a1+yBz0CpoF09lH7OXpmdDOl+
-         bWGk2DnVUw9kxrDqtPC+fMy3Eakf9VhoJseNmaf9Rycy1KX5opa+VHbFubileRA6jJ
-         71UbHrbwvhDsQ==
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 bpf 05/11] samples/bpf: add 'asm/mach-generic' include path for every MIPS
-Message-ID: <20220421003152.339542-6-alobakin@pm.me>
-In-Reply-To: <20220421003152.339542-1-alobakin@pm.me>
-References: <20220421003152.339542-1-alobakin@pm.me>
-Feedback-ID: 22809121:user:proton
+        Wed, 20 Apr 2022 20:47:27 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED39329813
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:44:39 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id s14so3322443plk.8
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ESUxm4cSJyIm60549ToiEcMf0F7V0X1uPD4V4iCHr1g=;
+        b=iCLZwnUrJlXXS94NHeOiMqZdbp79cqEIAIkcxS3f1QhYmIU4Rn72icr+yGFMXL7sJq
+         wgPHBQcOdAxXOBEeXSWFmZ5+2+zhjQ3yYKyOCdd+LxjNIetmHSlz804tJPwbjm2t3CVd
+         i0t77FIu70AC9aRHobJ3ZLFq5TlHMCcTw2lxEXzjLpQ15yj7ycOSvanS6K0fwndiEz0m
+         fSlFP1OiPDmc80jD/DnJ4kPukwewQQPrzxhPUvTYAn+nTvjAwv6Sn/2ylRCR90Hn7gD3
+         FkxAg8MQH+lKjgDSJjoGIuqOfCZdVn7DMkDD9l2BZCVW6MgZZuzAX2gBwXuMwb1mNkau
+         LLow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ESUxm4cSJyIm60549ToiEcMf0F7V0X1uPD4V4iCHr1g=;
+        b=fa2nZpHgSDujhfyLvr7fdwwcwEL/AOzzXHr+ly9XuH6xzDKd2Z9M5w1GKEh1Lq7EPs
+         MbCFHqZcoFGhbv6Qnf129REFU1elmo0b+Zyb4KTkMLAHs3yWf7WQTd9u5hieKJd1aDIo
+         4I8H1ehuiGcFzR0Yuswu6i1sIyxNnFMczLDX7FQC232soXngUT67c++9/LQT1D0UqBSr
+         MzQ4JFYcA54GmT05abBepSC8wkDu3OZQHCgEHcdL+c9RZefgtU7CMK9nRMCq+FYbxHdU
+         g+VTiasd+P6joLLDKjAIYp9tNTNShjCpLeaZZqmmCFbhgtRlrNjvDecDeIprKQcSobNE
+         PWAg==
+X-Gm-Message-State: AOAM532zlHLkk0UJpgQKlG4G5NcMUYX/iUYkh5oKaN62v4p90pd/HvSR
+        YmuBstlRxWZWD10Z2oV07PI2PacNV84M3J2wr74OF3tV
+X-Google-Smtp-Source: ABdhPJziSwrhCSrYNTJmBFaWn3ITBCiVgMnq0qlf+ROQeo46KkFucBE9DDNvi7wGYLxJk3HuGVoiZKZmDBQxznThA90=
+X-Received: by 2002:a17:90b:4b10:b0:1d2:c235:6c8e with SMTP id
+ lx16-20020a17090b4b1000b001d2c2356c8emr7292583pjb.21.1650501879483; Wed, 20
+ Apr 2022 17:44:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220419122234.45083-1-linmiaohe@huawei.com>
+In-Reply-To: <20220419122234.45083-1-linmiaohe@huawei.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 20 Apr 2022 17:44:27 -0700
+Message-ID: <CAHbLzkp0Ok0ZKZvKXGaAEVGCQ3gU9zXxAV1eudpPaCZqqpcdpQ@mail.gmail.com>
+Subject: Re: [PATCH] mm/mempolicy: clean up the code logic in queue_pages_pte_range
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following:
+On Tue, Apr 19, 2022 at 5:22 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> Since commit e5947d23edd8 ("mm: mempolicy: don't have to split pmd for
+> huge zero page"), THP is never splited in queue_pages_pmd. Thus 2 is
+> never returned now. We can remove such unnecessary ret != 2 check and
+> clean up the relevant comment. Minor improvements in readability.
 
-In file included from samples/bpf/tracex2_kern.c:7:
-In file included from ./include/linux/skbuff.h:13:
-In file included from ./include/linux/kernel.h:22:
-In file included from ./include/linux/bitops.h:33:
-In file included from ./arch/mips/include/asm/bitops.h:20:
-In file included from ./arch/mips/include/asm/barrier.h:11:
-./arch/mips/include/asm/addrspace.h:13:10: fatal error: 'spaces.h' file not=
- found
- #include <spaces.h>
-          ^~~~~~~~~~
+Nice catch. Yeah, it was missed when I worked on that commit.
 
-'arch/mips/include/asm/mach-generic' should always be included as
-many other MIPS include files rely on this.
-Move it from under CONFIG_MACH_LOONGSON64 to let it be included
-for every MIPS.
+Reviewed-by: Yang Shi <shy828301@gmail.com>
 
-Fixes: 058107abafc7 ("samples/bpf: Add include dir for MIPS Loongson64 to f=
-ix build errors")
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- samples/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 38638845db9d..70323ac1114f 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -194,8 +194,8 @@ ifeq ($(ARCH), mips)
- TPROGS_CFLAGS +=3D -D__SANE_USERSPACE_TYPES__
- ifdef CONFIG_MACH_LOONGSON64
- BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-loongson64
--BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-generic
- endif
-+BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-generic
- endif
-
- TPROGS_CFLAGS +=3D -Wall -O2
---
-2.36.0
-
-
+>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/mempolicy.c | 12 +++---------
+>  1 file changed, 3 insertions(+), 9 deletions(-)
+>
+> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+> index 75a8b247f631..3934476fb708 100644
+> --- a/mm/mempolicy.c
+> +++ b/mm/mempolicy.c
+> @@ -441,12 +441,11 @@ static inline bool queue_pages_required(struct page *page,
+>  }
+>
+>  /*
+> - * queue_pages_pmd() has four possible return values:
+> + * queue_pages_pmd() has three possible return values:
+>   * 0 - pages are placed on the right node or queued successfully, or
+>   *     special page is met, i.e. huge zero page.
+>   * 1 - there is unmovable page, and MPOL_MF_MOVE* & MPOL_MF_STRICT were
+>   *     specified.
+> - * 2 - THP was split.
+>   * -EIO - is migration entry or only MPOL_MF_STRICT was specified and an
+>   *        existing page was already on a node that does not follow the
+>   *        policy.
+> @@ -508,18 +507,13 @@ static int queue_pages_pte_range(pmd_t *pmd, unsigned long addr,
+>         struct page *page;
+>         struct queue_pages *qp = walk->private;
+>         unsigned long flags = qp->flags;
+> -       int ret;
+>         bool has_unmovable = false;
+>         pte_t *pte, *mapped_pte;
+>         spinlock_t *ptl;
+>
+>         ptl = pmd_trans_huge_lock(pmd, vma);
+> -       if (ptl) {
+> -               ret = queue_pages_pmd(pmd, ptl, addr, end, walk);
+> -               if (ret != 2)
+> -                       return ret;
+> -       }
+> -       /* THP was split, fall through to pte walk */
+> +       if (ptl)
+> +               return queue_pages_pmd(pmd, ptl, addr, end, walk);
+>
+>         if (pmd_trans_unstable(pmd))
+>                 return 0;
+> --
+> 2.23.0
+>
+>
