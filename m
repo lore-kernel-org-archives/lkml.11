@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48764C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DB3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbiDUQ22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
+        id S229871AbiDUQ2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiDUQKo (ORCPT
+        with ESMTP id S1390477AbiDUQKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:10:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FC447541;
-        Thu, 21 Apr 2022 09:07:55 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 18:07:51 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650557273;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=K14QTM7Qe+PKqSGcrLG7jOzYp3yn8ozz6G/LoWNfiyc=;
-        b=JUA6dHEJm3WZyKKktnpAyxcAqobaMl08V0hDiBfciCFoUfwe1jPmDFiVrx7QfXQDMCRc6f
-        jdxE6uDh6ZvSTjIW4FE4O1pjHjP4pQMkt/SSbp1HeclEyWVEWfAG1uU0RPxegrS4P4zcg9
-        eLYSfIDIV9mIKK7OLeDDD5Tz48EvUHdc97mTrg0r6gy7KLFKuPYZYobbnauyENilQvvtyA
-        wPcDwu3clBssqlgzOpEVscM7m1ImjIPJBelG49x12/paOgiymFmGNFwpOm45SNVQ+hZ4tJ
-        MwuJhN8CRrtBa7lkJNsangSxMbAhdtf+joXQLIF1FO6ZV/IgXWGqiMtZ6BjpHA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650557273;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=K14QTM7Qe+PKqSGcrLG7jOzYp3yn8ozz6G/LoWNfiyc=;
-        b=k68WP7D8eVaPd0RnakYM6Medmw/sl7gr/TCpP+ZXibP350SD9mtpEiqCzWktttbdNPSZ+F
-        7V/NTmtP7qGzXTDQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [ANNOUNCE] v5.18-rc3-rt1
-Message-ID: <YmGBVzuZLRVNs3C2@linutronix.de>
+        Thu, 21 Apr 2022 12:10:04 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B204739D;
+        Thu, 21 Apr 2022 09:07:14 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nhZKp-0004EH-PB; Thu, 21 Apr 2022 18:07:11 +0200
+Message-ID: <de25abef-c071-9f71-36dd-8f2f0b77dc28@leemhuis.info>
+Date:   Thu, 21 Apr 2022 18:07:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Cc:     firew4lker <firew4lker@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Basavaraj.Natikar@amd.com, Richard.Gong@amd.com,
+        stable@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20220414025705.598-1-mario.limonciello@amd.com>
+ <20966c6b-9045-9f8b-ba35-bf44091ce380@gmail.com>
+ <67df4178-5943-69d8-0d61-f533671a1248@amd.com>
+ <CACRpkdbvN0ZJnn+N=Vt2n_aO4CnM=E4qpe_3dmu-c8_Ufp8ZzQ@mail.gmail.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CACRpkdbvN0ZJnn+N=Vt2n_aO4CnM=E4qpe_3dmu-c8_Ufp8ZzQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650557234;1cd7b2c7;
+X-HE-SMSGID: 1nhZKp-0004EH-PB
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear RT folks!
+On 20.04.22 00:02, Linus Walleij wrote:
+> On Mon, Apr 18, 2022 at 6:34 AM Mario Limonciello
+> <mario.limonciello@amd.com> wrote:
+> 
+>> Linus Walleij,
+>>
+>> As this is backported to 5.15.y, 5.16.y, 5.17.y and those all had point
+>> releases a bunch of people are hitting it now.  If you choose to adopt
+>> this patch instead of revert the broken one, you can add to the commit
+>> message too:
+>>
+>> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
+> 
+> I am on parental leave kind of, but Bartosz knows what to do,
+> in this case, since it is ACPI-related, Andy knows best what
+> to do, and I see he also replied.
 
-I'm pleased to announce the v5.18-rc3-rt1 patch set. 
+Bartosz, Andy, what's the status here? It looks like the patch didn't
+make any progress in the past few days (or did I miss it?). I'd really
+like to see this patch or a revert of 5467801f1fcb ("gpio: Restrict
+usage of GPIO chip irq members before initialization") mainlined by rc4,
+so Greg (CCed) can fix it in the next round of stable updates, as it
+seems quite a few people are affected by the problem.
 
-Changes since v5.17.1-rt17:
+Reminder: this is one of those issue that we IMHO really should fix
+quickly, as explained by a text recently added to the documentation:
 
-  - Rebase to v5.18-rc3.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/handling-regressions.rst#n131
 
-  - Update John's printk series to v3.
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-  - Include v5 of "smp: Make softirq handling RT friendly" as posted by
-    Thomas Gleixner.
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
 
-Known issues
-     - Valentin Schneider reported a few splats on ARM64, see
-          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
-
-You can get this release via the git tree at:
-
-    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.18-rc3-rt1
-
-The RT patch against v5.18-rc3 can be found here:
-
-    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/older/patch-5.18-rc3-rt1.patch.xz
-
-The split quilt queue is available at:
-
-    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/older/patches-5.18-rc3-rt1.tar.xz
-
-Sebastian
