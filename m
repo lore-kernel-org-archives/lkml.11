@@ -2,132 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A564C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387685AbiDUJeY (ORCPT
+        id S1387690AbiDUJe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
+        Thu, 21 Apr 2022 05:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387684AbiDUJeT (ORCPT
+        with ESMTP id S1387677AbiDUJey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:34:19 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8427B1A80E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:31:26 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso5441393wme.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:31:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NpVbGkWT0mxI2z+QAaSeB8XReImeuL8/00d31gyn1MM=;
-        b=NY9XSGico1KIM7Fqq1EwGMyOn23m25iSrqopxZzF4wmajHZm5QZcwf++tU2uNOffNB
-         UeVQd/I1bq4JozXtv6evYNUmcNwYfU/KfNtBG7MDWdWVG2JUYJIFJJHAM0H15lRuEZKa
-         R9S3PYlmM9lI7sako+G/6+A4F4ltAbThft8OH+6SbmAVH38hR1PdfkQvBJOGJz5OSt1B
-         oRx1boWIrxsw5sr7IU6KGuPsr1cOnaZuvL0KyAF8dmMrwqhEs803oPzeNQB8MlrYOMGT
-         cbVboZi+ArEXiI1u2DpaENkXwf7cCecA0XbX8tQTiI38P52z3Gws4A5MFjd9jVeSaXlF
-         HoEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NpVbGkWT0mxI2z+QAaSeB8XReImeuL8/00d31gyn1MM=;
-        b=msS3eNajVxsN+ZTtLGQJlULSlK+aMu6GonKLHhKGjJwJzh9PIuHHECj9bhj+PU/776
-         A+oLVKOW9Rpa3V/1SgZmMK4/kquvxE4ZFtLZAKwrF93dVjNU3m1LJvDSAmI2A3Zs2DE9
-         m9x+8qX4Bx4VhlOM79V1wmhLHl+gqo6WFqTuDzCC6CQfw8mdD2ew8mTz0BckWuOJnq3a
-         kkU+UO1eMeU7vJ1xWU9jpLY3H6a6NqBTVIgF+G97WPs+l+ozlkOY+/3EuXoI4MEqYBQM
-         WA2krxN3+rm+fvwX/gnbywQHjK27UhzR9r77Mbtm8TlJErBDfZy7Upx5W0M+Fl5jsLq1
-         Nvrg==
-X-Gm-Message-State: AOAM530qD8/W49575xRdsQaSJEJuIHbTMvaTPJviGTrPQsMGRgS/d8Ei
-        b6teacHc9QvNbHyGmGDftr44aQ==
-X-Google-Smtp-Source: ABdhPJxaoLhiuIhW9HJh8IcFoEychIb2KfG7PIpMWfHCfoHwz8QnTOir1Vnoo5J6Q0KLFVR7ZlZwjw==
-X-Received: by 2002:a05:600c:a06:b0:392:a4f2:2097 with SMTP id z6-20020a05600c0a0600b00392a4f22097mr7718250wmp.97.1650533485120;
-        Thu, 21 Apr 2022 02:31:25 -0700 (PDT)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id v13-20020a5d4b0d000000b00207a8815063sm1795043wrq.2.2022.04.21.02.31.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 02:31:24 -0700 (PDT)
-Message-ID: <8a91822c-d68a-a2d8-6865-3985f2f85c0b@linaro.org>
-Date:   Thu, 21 Apr 2022 10:31:23 +0100
+        Thu, 21 Apr 2022 05:34:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B4E1572F;
+        Thu, 21 Apr 2022 02:32:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6916AB823A7;
+        Thu, 21 Apr 2022 09:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B45BC385A1;
+        Thu, 21 Apr 2022 09:32:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650533522;
+        bh=5tCYODYe4IUZwtg/8f/XY3fbdkY0KtrDaNGpzi8qFUc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yfswzQHoys+STXSwb/IAa5il79nk+s0bn4xbXaq3LJUY4T+natHRxo3gFMZnnHrbr
+         qWtKCmV/Tu/jUBHnKejgruocGkKwQ0AY/s+DLkOHXVgjQPhCrkzNF0uLywNsqc1x/4
+         z88Hhlly+u+82ml4UqP+bBAjzPnflGgUiB3akSNY=
+Date:   Thu, 21 Apr 2022 11:31:59 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Mathias Nyman <mathias.nyman@linux.intel.com>,
+        "Sandeep Maheswaram (Temp) (QUIC)" <quic_c_sanm@quicinc.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Pavan Kumar Kondeti (QUIC)" <quic_pkondeti@quicinc.com>,
+        "Pratham Pratap (QUIC)" <quic_ppratap@quicinc.com>,
+        "Krishna Kurapati PSSNV (QUIC)" <quic_kriskura@quicinc.com>,
+        "Vidya Sagar Pulyala (Temp) (QUIC)" <quic_vpulyala@quicinc.com>
+Subject: Re: [PATCH v3 0/2] Skip phy initialization for DWC3 USB Controllers
+Message-ID: <YmEkj3/6+9gvgqAx@kroah.com>
+References: <1649323888-12420-1-git-send-email-quic_c_sanm@quicinc.com>
+ <DM6PR02MB4857A0ADCDA1558DE58E103ADFF29@DM6PR02MB4857.namprd02.prod.outlook.com>
+ <4b34735f-8e1f-bf37-398f-9b4a8aa2e939@linux.intel.com>
+ <YmEL3WnyM7sa8VP9@kuha.fi.intel.com>
+ <YmEXqe5IEAzZezU5@kroah.com>
+ <YmEYvYA0uXatStZg@kuha.fi.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4] ASoC: codecs: wsa881x: add runtime pm support
-Content-Language: en-US
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        broonie@kernel.org
-Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com,
-        linux-kernel@vger.kernel.org, tiwai@suse.com,
-        quic_srivasam@quicinc.com
-References: <20220228144235.24208-1-srinivas.kandagatla@linaro.org>
- <b1b0a8b9-5fc2-bfe1-dfde-692a0a7ac34a@linux.intel.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <b1b0a8b9-5fc2-bfe1-dfde-692a0a7ac34a@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmEYvYA0uXatStZg@kuha.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 21, 2022 at 11:41:33AM +0300, Heikki Krogerus wrote:
+> On Thu, Apr 21, 2022 at 10:36:57AM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Apr 21, 2022 at 10:46:37AM +0300, Heikki Krogerus wrote:
+> > > On Wed, Apr 20, 2022 at 04:20:52PM +0300, Mathias Nyman wrote:
+> > > > On 19.4.2022 13.17, Sandeep Maheswaram (Temp) (QUIC) wrote:
+> > > > > Hi Mathias, Felipe,
+> > > > > 
+> > > > >> -----Original Message-----
+> > > > >> From: Sandeep Maheswaram (Temp) (QUIC) <quic_c_sanm@quicinc.com>
+> > > > >> Sent: Thursday, April 7, 2022 3:01 PM
+> > > > >> To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Felipe Balbi
+> > > > >> <balbi@kernel.org>; Stephen Boyd <swboyd@chromium.org>; Doug
+> > > > >> Anderson <dianders@chromium.org>; Matthias Kaehlcke
+> > > > >> <mka@chromium.org>; Mathias Nyman <mathias.nyman@intel.com>
+> > > > >> Cc: linux-arm-msm@vger.kernel.org; linux-usb@vger.kernel.org; linux-
+> > > > >> kernel@vger.kernel.org; Pavan Kumar Kondeti (QUIC)
+> > > > >> <quic_pkondeti@quicinc.com>; Pratham Pratap (QUIC)
+> > > > >> <quic_ppratap@quicinc.com>; Krishna Kurapati PSSNV (QUIC)
+> > > > >> <quic_kriskura@quicinc.com>; Vidya Sagar Pulyala (Temp) (QUIC)
+> > > > >> <quic_vpulyala@quicinc.com>; Sandeep Maheswaram (Temp) (QUIC)
+> > > > >> <quic_c_sanm@quicinc.com>
+> > > > >> Subject: [PATCH v3 0/2] Skip phy initialization for DWC3 USB Controllers
+> > > > >>
+> > > > >> Runtime suspend of phy drivers was failing from DWC3 driver as runtime
+> > > > >> usage value is 2 because the phy is initialized from
+> > > > >> DWC3 core and HCD core.
+> > > > >> Some controllers like DWC3 and CDNS3 manage phy in their core drivers.
+> > > > >> This property can be set to avoid phy initialization in HCD core.
+> > > > >>
+> > > > >> v3:
+> > > > >> Coming back to this series based on discussion at below thread
+> > > > >> https://patchwork.kernel.org/project/linux-arm-msm/patch/1648103831-
+> > > > >> 12347-4-git-send-email-quic_c_sanm@quicinc.com/
+> > > > >> Dropped the dt bindings PATCH 1/3 in v2
+> > > > >> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-
+> > > > >> 25582-1-git-send-email-quic_c_sanm@quicinc.com/
+> > > > >>
+> > > > >> v2:
+> > > > >> Updated the commit descriptions.
+> > > > >> Changed subject prefix from dwc to dwc3.
+> > > > >> Increased props array size.
+> > > > >>
+> > > > >> Sandeep Maheswaram (2):
+> > > > >>   usb: host: xhci-plat: Add device property to set XHCI_SKIP_PHY_INIT
+> > > > >>     quirk
+> > > > >>   usb: dwc3: host: Set the property usb-skip-phy-init
+> > > > >>
+> > > > >>  drivers/usb/dwc3/host.c      | 4 +++-
+> > > > >>  drivers/usb/host/xhci-plat.c | 3 +++
+> > > > >>  2 files changed, 6 insertions(+), 1 deletion(-)
+> > > > >>
+> > > > >> --
+> > > > >> 2.7.4
+> > > > > 
+> > > > > Please let me know your opinion about this series.
+> > > > 
+> > > > Otherwise looks good but wondering if we should document that new device
+> > > > property somewhere. 
+> > > > 
+> > > > Couldn't find a standard way how those device properties excluded from
+> > > > Documentation/devicetree/binding are documented
+> > > 
+> > > Couldn't it be just documented in drivers/usb/host/xhci-plat.c for now?
+> > 
+> > That's not where DT properties are documented.
+> 
+> It's not a DT property.
 
+Then what is it and why are the other properties documented?
 
-On 20/04/2022 18:59, Pierre-Louis Bossart wrote:
-> Hi Srini,
-> 
->> +static int __maybe_unused wsa881x_runtime_resume(struct device *dev)
->> +{
->> +	struct sdw_slave *slave = dev_to_sdw_dev(dev);
->> +	struct regmap *regmap = dev_get_regmap(dev, NULL);
->> +	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
->> +
->> +	gpiod_direction_output(wsa881x->sd_n, 1);
->> +
->> +	wait_for_completion_timeout(&slave->initialization_complete,
->> +				    msecs_to_jiffies(WSA881X_PROBE_TIMEOUT));
-> 
-> while I was revisiting pm_runtime support, I also saw that this codec driver is the only one that doesn't check for errors
-> 
-> max98373-sdw.c: time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt1308-sdw.c:   time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt1316-sdw.c:   time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt5682-sdw.c:   time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt5682.c:                       &slave->initialization_complete,
-> 
-> rt700-sdw.c:    time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt711-sdca-sdw.c:       time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt711-sdw.c:    time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> rt715-sdw.c:    time = wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> wsa881x.c:      wait_for_completion_timeout(&slave->initialization_complete,
-> 
-> 
-> If the attachment fails for some reason, you probably want to avoid starting regmap syncs that will fail by construction, no?
-
-Thanks Pierre for auditing the calls.
-
-Yes syncs would fail on reg writes if initialization timeout.
-Do you already have fix patch to this or do you want me to send one?
-
-Am also trying to understand what is the expected behavior in the resume 
-failure cases, should pm attempt to resume the codec after some time, if 
-so returning -ETIMEOUT is the right error code?
-
-
---srini
-> 
->> +
->> +	regcache_cache_only(regmap, false);
->> +	regcache_sync(regmap);
->> +
->> +	return 0;
->> +}
+Anyway, a new series has been submitted that does document this so I
+don't think it's an argument anymore :)
