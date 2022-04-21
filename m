@@ -2,97 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71853C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A56AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390980AbiDURyX (ORCPT
+        id S1390983AbiDURyb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
+        Thu, 21 Apr 2022 13:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390955AbiDURyN (ORCPT
+        with ESMTP id S1383260AbiDURy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:54:13 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6786D49CAE;
-        Thu, 21 Apr 2022 10:51:23 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id e2so1460496wrh.7;
-        Thu, 21 Apr 2022 10:51:23 -0700 (PDT)
+        Thu, 21 Apr 2022 13:54:29 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9875D4A90F;
+        Thu, 21 Apr 2022 10:51:39 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id x18so7771873wrc.0;
+        Thu, 21 Apr 2022 10:51:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=swQTkiKjFD5ptp4W3Ja/W8eTKagq0ceNN+OGlm4hQ/4=;
-        b=NoPiKXW+7QpOjDKp7ziLUhiCsVn1X8FjKO8AO+JWtvK9ZEZrXXM28kWkJnfsWXH6MW
-         5cY40nKZbGmAJRZulx5OrFs49VpNkpJ6uRKSP27CxctLa2/P6R1528Iv/tfYWr7/xF2E
-         TF6d2AR4AVOWEtAJDTY6Khvw4JAMmo4QwwT1XcYTmZp0+ac1x67pns3W1J/+EUJAdxDh
-         YTARN/nII2+baMOH3JIPs+z8ysYsqCLmRGUzAm4IzHwBNUqF1jSaWogUuF/HyAGid0zr
-         tTjwFWrI2J0EJ6qhkBa+DiU1BVh12rNnu8e0iHYivIjip9J96ZzKyFXSFYka/uWZcImt
-         xraw==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=7lWJD4Cehmg0sq4G4syNiHxZE4IXa2IBfkB5ulYDQ9g=;
+        b=Y/Bfgwcks3FeuHavXLrNU9YgsQnYmdJug3PPRV1aNbqMkqPY/N1XJeqVJ0K1Z6qWXU
+         X+ZLl9Kx7FRJ7Ed+BACJeZQAZHurG358B3ap61neI8yCKiGL+5XT+lXKIg4GSYi8f8nx
+         JcPYutFKjjZWYSrC0ZPxBSs1wWcw7P5YY0ATa6RX50uIMmI61viWXGfeTT++mc0Vde6e
+         grfflOGhjPtQrs1OiDinFtoJOglagYzaNAl1kV+OZri28nNqQKNNfIL4iIVN1w/lcT/0
+         fJnkG9RLU1OS7ECJaefX6yMm7XdNXFTtfMCjWmV3dauPdNr6Xm4jBYBHbQ9uoPunCsuC
+         w5mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=swQTkiKjFD5ptp4W3Ja/W8eTKagq0ceNN+OGlm4hQ/4=;
-        b=rNyzQQGjitSfbvom9Csl8hCTbBOlA6KFvL5TJDPyicQH/f+8ibAQZjPGMX4xkt7Czy
-         GOvsJrMh3p1/Tgtc9jmwguFBWr1gZYZtG9P8jj+Zrmc+YV6ZDyI5FcuxkhHv0cNqa4VH
-         tx/FcN5Zy2ajBg5KbY9c1xAPTlgCWSdEAW6kExifOkqd6vAM51Q999Ovy9yPcPUTmxic
-         I2WswVXDh3BGV4yHkg/zP3cHBh/WggI6GD4ScogVroDN7QrpxHuOr+hAV2wP7V4OuW09
-         gjBuplLN1nNmRLgKZF7u7Xk6puajgHmC1b/8xu2jN/dcJZnwAd2FyhsXv4Yd4/OC/5QA
-         xnIQ==
-X-Gm-Message-State: AOAM531N8qgGhqiWaA90VtKGElYQlpYsqoYnNSJvesRWWvW80hC6x8dP
-        H1/vcZ2OIQbZf9T6rIwMQ4QnaEo9A+U=
-X-Google-Smtp-Source: ABdhPJxPMncNG1jRjthRoVskLKjXa+e9urIccixdabrPtknrvZC5BkR+Y0mVLOuytrGVWUqzrrVCjg==
-X-Received: by 2002:adf:b64b:0:b0:207:f20d:23f0 with SMTP id i11-20020adfb64b000000b00207f20d23f0mr643640wre.11.1650563482009;
-        Thu, 21 Apr 2022 10:51:22 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.37.128])
-        by smtp.gmail.com with ESMTPSA id l28-20020a05600c1d1c00b0038ece66f1b0sm2685634wms.8.2022.04.21.10.51.21
+        bh=7lWJD4Cehmg0sq4G4syNiHxZE4IXa2IBfkB5ulYDQ9g=;
+        b=J64A7gkFKDnf3Ul8xE3ln0EUUgBvTR6slUsBg0tqhFIeBaI/KHsq/lkZFwONDr/RQD
+         X22tGmRSn8fyfNE7cc+meUBnWIg7ZaEkfcpaw9+3pEloYxHSqyggN2FOJ4hEoIIfiETH
+         PVG/qbgzTjPVEQvXSyFvsPRkyC0y6s7L9QAOdY4NxbswDagZiniaXfuOpmhNKwUjH+J4
+         SyrQgQi9wUD8gKn12JJ9IGoqVYCfKifUBiWn0+YjfPn1Cc7rNac2MgW1JW2sOtPikh2z
+         /QbIKvtM4TifJaXpJg4YEjxB9QgVkD6AsrilvozTxXO/YAxfczG4IVOrq074Uau90cxl
+         RhvA==
+X-Gm-Message-State: AOAM5322UtgY1N7YtnS70g4es+8liAc93RBVV0zlc0jsotmxM6zcdXfE
+        70ijgDsoSNY45dAvzApyuI8=
+X-Google-Smtp-Source: ABdhPJwvv3EYK2rogJiUsH2tIFVInFv0qLt1cMsaHQcuicUtecwSnDJgWj7vT+U46Dic3Eu6zvR3+g==
+X-Received: by 2002:adf:e586:0:b0:20a:c729:dfc6 with SMTP id l6-20020adfe586000000b0020ac729dfc6mr359739wrm.686.1650563498233;
+        Thu, 21 Apr 2022 10:51:38 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id ay41-20020a05600c1e2900b0038e75fda4edsm2569764wmb.47.2022.04.21.10.51.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 10:51:21 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH for-5.19/uclogic 5/5] HID: uclogic: Disable pen usage for Huion keyboard interfaces
-Date:   Thu, 21 Apr 2022 19:50:52 +0200
-Message-Id: <20220421175052.911446-6-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421175052.911446-1-jose.exposito89@gmail.com>
-References: <20220421175052.911446-1-jose.exposito89@gmail.com>
+        Thu, 21 Apr 2022 10:51:36 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        SeongJae Park <sj@kernel.org>,
+        Jiajian Ye <yejiajian2018@email.szu.edu.cn>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        outreachy@lists.linux.dev, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] Documentation/vm: Rework and extend highmem.rst
+Date:   Thu, 21 Apr 2022 19:51:35 +0200
+Message-ID: <1938696.zToM8qfIzz@leap>
+In-Reply-To: <20220415231917.25962-1-fmdefrancesco@gmail.com>
+References: <20220415231917.25962-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolai Kondrashov <spbnick@gmail.com>
+On sabato 16 aprile 2022 01:19:15 CEST Fabio M. De Francesco wrote:
+> Extend and rework the "Temporary Virtual Mappings" section of the 
+highmem.rst
+> documentation.
+> 
+> Do a partial rework of the paragraph related to kmap() and add a new 
+paragraph
+> in order to document the set of kmap_local_*() functions. Re-order 
+paragraphs
+> in decreasing order of preference of usage.
+> 
+> Include kerneldoc comments from include/linux/highmem.h and remove
+> redundant and obsolete section about kmap_atomic().
+> 
+> v1-v2:
+> 	1/2 - According to comments on v1 by Matthew Wilcox and Ira 
+Weiny,
+> 	      correct a mistake in text, format paragraphs to stay within 
+> 	      the 75 characters limit, re-order the flow of the same 
+> 	      paragraphs in decreasing order of preference of usage.
+> 	2/2 - No patch.
+> 
+> v2->v3:
+> 	1/2 - No changes.
+> 	2/2 - Added patch to include kernel-doc to highmem.rst and
+> 	      remove the now redundant section about kmap_atomic().
+> 
+> Fabio M. De Francesco (2):
+>   Documentation/vm: Extend "Temporary Virtual Mappings" section in
+>     highmem.rst
+>   Documentation/vm: Include kernel-doc to highmem.rst
+> 
+>  Documentation/vm/highmem.rst | 96 +++++++++++++++++++++---------------
+>  1 file changed, 56 insertions(+), 40 deletions(-)
+> 
+> -- 
+> 2.34.1
+> 
+Dear Maintainers,
 
-Disable pen usage inputs for Huion interfaces reporting on-the-frame
-buttons. We don't want to change those, as they mostly work, but we want
-to avoid creation of a mute pen interface, confusing to users.
+Please drop this patch because it has been reworked and inserted as part of 
+a new series whose subject is "Extend and reorganize Highmem's 
+documentation" and which is about to be submitted.
 
-Signed-off-by: Nikolai Kondrashov <spbnick@gmail.com>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/hid/hid-uclogic-params.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks,
 
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index b85585ac3372..22f9c4f9da8a 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -713,7 +713,8 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
- 
- 	/* If it's a custom keyboard interface */
- 	if (bInterfaceNumber == 1) {
--		/* Keep everything intact */
-+		/* Keep everything intact, but mark pen usage invalid */
-+		p.pen.usage_invalid = true;
- 		goto output;
- 	/* Else, if it's not a pen interface */
- 	} else if (bInterfaceNumber != 0) {
--- 
-2.25.1
+Fabio M. De Francesco
+
+
+
 
