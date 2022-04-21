@@ -2,92 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 639A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358121AbiDUT2H (ORCPT
+        id S1387788AbiDUT2U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37056 "EHLO
+        Thu, 21 Apr 2022 15:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232785AbiDUT2E (ORCPT
+        with ESMTP id S1347468AbiDUT2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:28:04 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F18D192B7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:25:12 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id j8so5905877pll.11
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:25:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qeRjKSXDeJIH0+CQwoCMl5922pNFNUxTvF5aowm8rco=;
-        b=n99NELoggPuhcsqKws/Ci4cGpg5aTBJYtQnAe9JU8tBA1qr9ygYOAR+1bDIsNVLV5p
-         PzgfBQxai1TPXPdvVFGh9O1CcYKegnrlAPTNYxwYYt07W/JnhKPeV2EssXa5URw7o0Ag
-         SbxCXwUC9VpajRWpPiZp096BFjq0Fjh6o1gRqvsaf0QS+Sdy/HmIRHNhWGUZRtzVg3E0
-         0z9GCsn/tiJHXCCHr7NILgGmwG4cakwPAGUyQGFLATwnHLGp7l43bBirgfe1702YLJfw
-         VHRKT35JWViWbCpUyZM0Orq2vsD7GoyOqWqol0/N/ekRJwk1FNnIIjq8s4maGk+0/XGT
-         dCvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qeRjKSXDeJIH0+CQwoCMl5922pNFNUxTvF5aowm8rco=;
-        b=oS9wWx7FCiCUsNYZmitZGpG3HF5qZplezc862NksZlK0HmEPuw1Zj4zo16J2v5oAlx
-         v5qPkKCYHVjHWIIu04n/7N2m5BYWSvvVz8VCBr7rZoccsr/Om+BRG201vFAt7fFVPWl3
-         bXYR7ODE9KnlMT+e/BR1rSjcf6gyH2pkEnd2UmSgndr7AK5AbPSwhyjmoZC2iqQCFYe+
-         guLkP80LiyMv7zUaix33y2FMzrDv97eBlPYF8VI5nbxYU2bmyYXtUUb4uQZrR4jB1xHD
-         rMjEZdZRDQjQb+Gk3rZE1jFoxBXAMU8L15ttgGKoU1SIjHH5CeAnXoPxTkXSmNqzk7l2
-         6zkQ==
-X-Gm-Message-State: AOAM5324dEHQblyoZx9r2Eu5X5zLwSDGMi85gD6oHE5X+3+Lp5OgABKG
-        OGR2Me3Qr4/a2BycoAxB4fWylPlbP0CN2dch5P2G9Q==
-X-Google-Smtp-Source: ABdhPJyqf0QRE4ybiwrpA4CL2rjYdR9Dfz1kuf/M+oV726c8/KeCCX7M1xEsBCAx988EvXNGhdhdyy5S+lFBAanpVRU=
-X-Received: by 2002:a17:90b:4c84:b0:1d2:cadc:4e4d with SMTP id
- my4-20020a17090b4c8400b001d2cadc4e4dmr12075384pjb.8.1650569111988; Thu, 21
- Apr 2022 12:25:11 -0700 (PDT)
+        Thu, 21 Apr 2022 15:28:15 -0400
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B3922B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:25:23 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 7750 invoked from network); 21 Apr 2022 21:25:18 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1650569118; bh=cL8/ZnaB/KGYG+SGDO68j65XoxyE6Adoj+9820riXYg=;
+          h=From:To:Cc:Subject;
+          b=WUOZGSM87IvSYQsX6ghg9tbHg8LTh/+S6mJfDvNWvxl+Xig4ulmN1iHt5NhSAaZMi
+           7zclYU0m6O/xS+FYd1p1c262yCu7V2vo4ST4575BSsBOK5aQameeVb4yDmkvM3P3HS
+           Fn0D8w9lZ5z8FHmI6e2XxocKjrN6a7KnzfeivuYE=
+Received: from aafl13.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.141.13])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with SMTP
+          for <linux-kernel@vger.kernel.org>; 21 Apr 2022 21:25:18 +0200
+From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+To:     linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org
+Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v2 0/2] x86/rtc: refactoring
+Date:   Thu, 21 Apr 2022 21:24:47 +0200
+Message-Id: <20220421192449.11004-1-mat.jonczyk@o2.pl>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220420020435.90326-1-jane.chu@oracle.com> <20220420020435.90326-2-jane.chu@oracle.com>
-In-Reply-To: <20220420020435.90326-2-jane.chu@oracle.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Thu, 21 Apr 2022 12:25:00 -0700
-Message-ID: <CAPcyv4jMNvgWrh5WMY1gFN3-vKLU4eccXW3CDRrn1+=FY7D5jw@mail.gmail.com>
-Subject: Re: [PATCH v8 1/7] acpi/nfit: rely on mce->misc to determine poison granularity
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, david <david@fromorbit.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        X86 ML <x86@kernel.org>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        device-mapper development <dm-devel@redhat.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vivek Goyal <vgoyal@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: fcb26315dbc1799316f4225d272121ef
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 0000000 [gXMk]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 7:05 PM Jane Chu <jane.chu@oracle.com> wrote:
->
-> nfit_handle_mec() hardcode poison granularity at L1_CACHE_BYTES.
-> Instead, let the driver rely on mce->misc register to determine
-> the poison granularity.
->
-> Suggested-by: Dan Williams <dan.j.williams@intel.com>
-> Signed-off-by: Jane Chu <jane.chu@oracle.com>
+Hello,
 
-Looks good,
+The first and main patch of this series removes duplicated code in
+mach_get_cmos_time() in arch/x86/kernel/rtc.c . This function performed
+the same thing as mc146818_get_time() - reading the time from the CMOS
+RTC - but used a different algorithm. So modify it to use standard
+mc146818_get_time().
 
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+The second patch renames a function in arch/x86/kernel/rtc.c.
 
-...I'll add the Fixes: line when applying this.
+Greetings,
+Mateusz
+
+v2:
+  - drop the previously first patch ("rtc-mc146818-lib: reduce RTC_UIP
+    polling period"). Its intent was to make behaviour of
+    mc146818_get_time() more similar to the existing version of
+    mach_get_cmos_time() by decreasing the polling period in
+    mc146818_get_time(). However, I determined that this does not matter
+    for users of mach_get_cmos_time().
+
+  - use pr_err instead of pr_err_ratelimited in the first remaining
+    patch,
+
+  - small patch description modifications.
+
+Tested on 3 computers, and on i386 and amd64 VMs.
+        
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: x86@kernel.org
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+
+Mateusz Jończyk (2):
+  x86/rtc: rewrite mach_get_cmos_time to delete duplicated code
+  x86/rtc: rename mach_set_rtc_mmss
+
+ arch/x86/include/asm/mc146818rtc.h |  2 +-
+ arch/x86/kernel/rtc.c              | 63 +++++-------------------------
+ arch/x86/kernel/x86_init.c         |  2 +-
+ 3 files changed, 11 insertions(+), 56 deletions(-)
+
+base-commit: b2d229d4ddb17db541098b83524d901257e93845
+-- 
+2.25.1
+
