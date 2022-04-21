@@ -2,144 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D45C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3141AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:38:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388869AbiDULkE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 07:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        id S231635AbiDULlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 07:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388855AbiDULj5 (ORCPT
+        with ESMTP id S244998AbiDULlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 07:39:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB0622229E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 04:37:07 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 88B6E1516;
-        Thu, 21 Apr 2022 04:37:07 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 89C773F5A1;
-        Thu, 21 Apr 2022 04:37:06 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     hch@lst.de, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
-        arnd@kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] ARM/dma-mapping: Merge IOMMU ops
-Date:   Thu, 21 Apr 2022 12:36:59 +0100
-Message-Id: <394482083c51c7596587a87edf012010f846feb0.1650539846.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.35.3.dirty
-In-Reply-To: <cover.1650539846.git.robin.murphy@arm.com>
-References: <cover.1650539846.git.robin.murphy@arm.com>
+        Thu, 21 Apr 2022 07:41:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3E02BB37
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 04:38:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650541123; x=1682077123;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MVIx/sHIEgO1dkAuJU+YX9nK4jl1uGAeDl15aPmqOWY=;
+  b=RGrLMhJV6g2ahFNIkLX3gNhFtRXO5dz80H4HeC8mBozE1I4yPAiMWz1B
+   OPrUSBEMC6ZDf+EjW1l+o2JyfLlz0XO0wTAiFHD/jnsDzCOKZgjZlC2aP
+   HAnbq5S2HTpahY7hKZkjIB9+mnATtu0Q3SgBQLvX/YYqSGprWzsq19A97
+   Fs3l/BRN+ENhxJLMk7wiCrYd4Ujn63nBAb2xGaf1qzde9lFNkYnzXX7vl
+   wYzOyeCcIHQxnnG1pxu9N6MhMC8pGNue/fonp6jPmj36Z08iFRnGtHU9e
+   w8kHQ8029xilhfEDkgBPJZrpJjHuBTQjCcbFuPH3TiVU1B+dTLTxR87ax
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264492175"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="264492175"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 04:38:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="703047905"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Apr 2022 04:38:41 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>
+Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/4] iommu/vt-d: Some fine tuning of SVA
+Date:   Thu, 21 Apr 2022 19:35:54 +0800
+Message-Id: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dma_sync_* operations are now the only difference between the
-coherent and non-coherent IOMMU ops. Some minor tweaks to make those
-safe for coherent devices with minimal overhead, and we can condense
-down to a single set of DMA ops.
+Hi folks,
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- arch/arm/mm/dma-mapping.c | 37 +++++++++++++------------------------
- 1 file changed, 13 insertions(+), 24 deletions(-)
+This includes several tunings of Intel SVA implementation. I plan to
+target them for v5.19. Please help to review.
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 10e5e5800d78..dd46cce61579 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1341,6 +1341,9 @@ static void arm_iommu_sync_sg_for_cpu(struct device *dev,
- 	struct scatterlist *s;
- 	int i;
- 
-+	if (dev->dma_coherent)
-+		return;
-+
- 	for_each_sg(sg, s, nents, i)
- 		__dma_page_dev_to_cpu(sg_page(s), s->offset, s->length, dir);
- 
-@@ -1360,6 +1363,9 @@ static void arm_iommu_sync_sg_for_device(struct device *dev,
- 	struct scatterlist *s;
- 	int i;
- 
-+	if (dev->dma_coherent)
-+		return;
-+
- 	for_each_sg(sg, s, nents, i)
- 		__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
- }
-@@ -1493,12 +1499,13 @@ static void arm_iommu_sync_single_for_cpu(struct device *dev,
- {
- 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
- 	dma_addr_t iova = handle & PAGE_MASK;
--	struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
-+	struct page *page;
- 	unsigned int offset = handle & ~PAGE_MASK;
- 
--	if (!iova)
-+	if (dev->dma_coherent || !iova)
- 		return;
- 
-+	page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
- 	__dma_page_dev_to_cpu(page, offset, size, dir);
- }
- 
-@@ -1507,12 +1514,13 @@ static void arm_iommu_sync_single_for_device(struct device *dev,
- {
- 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
- 	dma_addr_t iova = handle & PAGE_MASK;
--	struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
-+	struct page *page;
- 	unsigned int offset = handle & ~PAGE_MASK;
- 
--	if (!iova)
-+	if (dev->dma_coherent || !iova)
- 		return;
- 
-+	page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
- 	__dma_page_cpu_to_dev(page, offset, size, dir);
- }
- 
-@@ -1536,22 +1544,6 @@ static const struct dma_map_ops iommu_ops = {
- 	.unmap_resource		= arm_iommu_unmap_resource,
- };
- 
--static const struct dma_map_ops iommu_coherent_ops = {
--	.alloc		= arm_iommu_alloc_attrs,
--	.free		= arm_iommu_free_attrs,
--	.mmap		= arm_iommu_mmap_attrs,
--	.get_sgtable	= arm_iommu_get_sgtable,
--
--	.map_page	= arm_iommu_map_page,
--	.unmap_page	= arm_iommu_unmap_page,
--
--	.map_sg		= arm_iommu_map_sg,
--	.unmap_sg	= arm_iommu_unmap_sg,
--
--	.map_resource	= arm_iommu_map_resource,
--	.unmap_resource	= arm_iommu_unmap_resource,
--};
--
- /**
-  * arm_iommu_create_mapping
-  * @bus: pointer to the bus holding the client device (for IOMMU calls)
-@@ -1750,10 +1742,7 @@ static void arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		return;
- 	}
- 
--	if (coherent)
--		set_dma_ops(dev, &iommu_coherent_ops);
--	else
--		set_dma_ops(dev, &iommu_ops);
-+	set_dma_ops(dev, &iommu_ops);
- }
- 
- static void arm_teardown_iommu_dma_ops(struct device *dev)
+Best regards,
+baolu
+
+Change log:
+
+v2:
+ - Move snoop control capability check into a separated patch.
+ - Return false if the caller opt-in setting PGSNP with a flag.
+ - Add a Fixes tag for "iommu/vt-d: Drop stop marker messages" as it is
+   required by the iopf framework.
+
+v1: initial post
+ - https://lore.kernel.org/linux-iommu/20220416123049.879969-1-baolu.lu@linux.intel.com/ 
+
+Lu Baolu (4):
+  iommu/vt-d: Check before setting PGSNP bit in pasid table entry
+  iommu/vt-d: Set PGSNP bit in pasid table entry for SVA binding
+  iommu/vt-d: Drop stop marker messages
+  iommu/vt-d: Size Page Request Queue to avoid overflow condition
+
+ include/linux/intel-svm.h   |  2 +-
+ drivers/iommu/intel/pasid.c | 13 ++++++++++---
+ drivers/iommu/intel/svm.c   | 13 ++++++++++---
+ 3 files changed, 21 insertions(+), 7 deletions(-)
+
 -- 
-2.35.3.dirty
+2.25.1
 
