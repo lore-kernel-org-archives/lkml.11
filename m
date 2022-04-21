@@ -2,106 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8909BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A210BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389122AbiDUOVs (ORCPT
+        id S1389160AbiDUOXQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
+        Thu, 21 Apr 2022 10:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357522AbiDUOVp (ORCPT
+        with ESMTP id S1389234AbiDUOXJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:21:45 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7753C4BF
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:18:56 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-e5e8523fcbso5503513fac.10
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:18:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k6DcgaBgifbl98HwTQyTz4opgdKW16OPxOhCg6ox3bw=;
-        b=akZH1M9X1Mq0wvuSic/T+8WK0gaoybBnq14OO+c+2tuwmuNrFE/Tz1feJvZ4HpbwtI
-         NZ49Dc9Owb5RUujQIA47u/DGtnwCpY/5weTW/7vDTtfD3g+GENCOi/neHowgA7im+dTh
-         w7pTm5p5Iy+pIjTHy4XRTiP1Adthk4fO2oGUL5K9CNtmt/1k43Eke5y0ZvlacYlP95lP
-         EWnK6lnz/IP8J0Gp3g2S1B7QjrptJgveyM/mzQSQ3EOV4piUVeYgYjSgMLPca87vwUMI
-         4sSBwGpSAb80sXMEMvjVideV7RceGWxOy8SutDao5yiyVAFTNPwqxERvGnOt3kakP/kG
-         z3og==
+        Thu, 21 Apr 2022 10:23:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BDF93B54E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:20:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650550818;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cgfeAm2iEB905RN1m/pwZv+PSShsBs0z05aWSrdVjJo=;
+        b=XXGhuPwgEKb0vfRkFcHc9pysB7r8mfDnb4IrSyAt703aP94J4/eVa+RVEmOzDxeozzXwEL
+        L50jMse/4f9+MArm/zD1oOvzoMu5Bris0g0wTH9zZzsqMHu6IgZoUbBqj4Wj4/ayOxzF3X
+        h9Slcmx1KndImdZjuIwAA5r/GzDx4ps=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-568-fRxWr0urPfulMSsc5U38FA-1; Thu, 21 Apr 2022 10:20:17 -0400
+X-MC-Unique: fRxWr0urPfulMSsc5U38FA-1
+Received: by mail-wm1-f70.google.com with SMTP id t187-20020a1c46c4000000b0038ebc45dbfcso2421271wma.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:20:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k6DcgaBgifbl98HwTQyTz4opgdKW16OPxOhCg6ox3bw=;
-        b=dZUMF0/uWBg66QCsoXh78/5ZMKfasd9ljnBHfrhGzZ7WaNcycirhBfWHtC6N1x0CRd
-         9yV3LBH9GtMwyP2sOlRX6k+kr8ulsGJP4KtAxFHyAC2jJRYPCbcgvEQb11hkfxyy0+ln
-         pX+ejBcjS8TuE+YUDTz3A1cW5W0KrnsVwhTmZg2dH2ydFHl7IvvSl8D6u/iii2djllsU
-         /UeO77mHwIdO4RzqJ/JBL+m2JMoLBbBAfdlDLuXLnX+6lf3WjhRraoZUAzenNXLrFaAE
-         um6uas0ewKsw3f01dm8IWrmEhyNsuPrl8T2QGZmHvV03arXy9Ooc0NJPMhCR4K1jRvYa
-         RTag==
-X-Gm-Message-State: AOAM533RJd0uLJRCM8+eFttE+TkxU4ddHvdwOJHj0WTnGghh+EAcy7O+
-        nmhsPu8h5+Y0z+b02JGcVAEuQ7usJeWoEmbp7/A=
-X-Google-Smtp-Source: ABdhPJzuZENytfXhDw4gnAPlJURyrJyYpEVhxUavxnPVMpQVwHQL3dxxaZOzCAfQotdDEP6MCIiiT4dbinmfyqR2jCA=
-X-Received: by 2002:a05:6870:d683:b0:de:eaa2:3550 with SMTP id
- z3-20020a056870d68300b000deeaa23550mr4071428oap.253.1650550735602; Thu, 21
- Apr 2022 07:18:55 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=cgfeAm2iEB905RN1m/pwZv+PSShsBs0z05aWSrdVjJo=;
+        b=scBVb6Yz1bsCa2oGadAnUqMvrRoY20H8KX1WbH+e2EOTSVSuFFsR+GsVurOImKClqg
+         ouxCADuBm68m2W9KQQ3QtupTvfui4cAqt05QCvE/0kirjzTdo7tk9mrJKFKoqLu5PbXd
+         brlbeqqRR/V41uHu00wDgMfQKgMz2spmEBwPqhJBX5JXOIGXU4LDI57Pp5bfoCxZZJGe
+         g1vkXcQVK4XycQRovS7ZX57I1YU+RFovYdiQYoWNzzSDKB4mOxcy8Oo8p4GboC8NRcXY
+         juUOoTnUpBmGzl2VLK2WkxEC14EIw0c5CeGkeq765mF+kmC7dUXd/+GtLjusy9q0mHMi
+         oAFg==
+X-Gm-Message-State: AOAM532OUcAzDctBzGbe1aO+8ucmNEjjpJfk2cv4KkfwqqXhgZhOsNGY
+        fsVevstD7n6vIJIwQTgs6rBBZpxqVfQeo9JZ7RfE9A5vsoaAm6hJYEizbobMmo/H+3xM16kBcbG
+        ENFLzCXNUEC7im3coP4/FIjjL
+X-Received: by 2002:a05:6000:1a86:b0:20a:a933:ba16 with SMTP id f6-20020a0560001a8600b0020aa933ba16mr9480787wry.583.1650550816037;
+        Thu, 21 Apr 2022 07:20:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzRRbpKnJ9/eE6gsD+4QxEmdPqcDEaUEUINsFTdWmYyAgvU0MGDBkJJuVh1969nuIV7H33eeA==
+X-Received: by 2002:a05:6000:1a86:b0:20a:a933:ba16 with SMTP id f6-20020a0560001a8600b0020aa933ba16mr9480767wry.583.1650550815692;
+        Thu, 21 Apr 2022 07:20:15 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c702:de00:711b:76af:b335:9b70? (p200300cbc702de00711b76afb3359b70.dip0.t-ipconnect.de. [2003:cb:c702:de00:711b:76af:b335:9b70])
+        by smtp.gmail.com with ESMTPSA id d11-20020adfa34b000000b0020ab3201c50sm2395559wrb.17.2022.04.21.07.20.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 07:20:15 -0700 (PDT)
+Message-ID: <8fae51af-b12f-4232-1330-54f7b0943907@redhat.com>
+Date:   Thu, 21 Apr 2022 16:20:13 +0200
 MIME-Version: 1.0
-References: <1650536939-13778-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1650536939-13778-1-git-send-email-baihaowen@meizu.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Thu, 21 Apr 2022 10:18:44 -0400
-Message-ID: <CADnq5_Of9Z0LV4DFhGcsoeXHdKGXTekntXePufNeZ+LGJ13XxA@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd/display: Remove useless code
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>
+References: <20220421135129.19767-1-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] mm/memory_hotplug: avoid consuming corrupted data when
+ offline pages
+In-Reply-To: <20220421135129.19767-1-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On 21.04.22 15:51, Miaohe Lin wrote:
+> When trying to offline pages, HWPoisoned hugepage is migrated without
+> checking PageHWPoison first. So corrupted data could be consumed. Fix
+> it by deferring isolate_huge_page until PageHWPoison is handled.
+> 
 
-Alex
+CCing Oscar, Mike and Naoya
 
-On Thu, Apr 21, 2022 at 6:29 AM Haowen Bai <baihaowen@meizu.com> wrote:
->
-> aux_rep only memset but no use at all, so we drop it.
->
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 > ---
->  drivers/gpu/drm/amd/display/dc/dce/dce_aux.c | 2 --
->  1 file changed, 2 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c b/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
-> index 8e814000db62..29e20d92b0bb 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dce/dce_aux.c
-> @@ -565,13 +565,11 @@ int dce_aux_transfer_raw(struct ddc_service *ddc,
->         struct ddc *ddc_pin = ddc->ddc_pin;
->         struct dce_aux *aux_engine;
->         struct aux_request_transaction_data aux_req;
-> -       struct aux_reply_transaction_data aux_rep;
->         uint8_t returned_bytes = 0;
->         int res = -1;
->         uint32_t status;
->
->         memset(&aux_req, 0, sizeof(aux_req));
-> -       memset(&aux_rep, 0, sizeof(aux_rep));
->
->         aux_engine = ddc->ctx->dc->res_pool->engines[ddc_pin->pin_data->en];
->         if (!acquire(aux_engine, ddc_pin)) {
-> --
-> 2.7.4
->
+>  mm/memory_hotplug.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index 4c6065e5d274..093f85ec5c5c 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -1600,11 +1600,9 @@ do_migrate_range(unsigned long start_pfn, unsigned long end_pfn)
+>  		folio = page_folio(page);
+>  		head = &folio->page;
+>  
+> -		if (PageHuge(page)) {
+> +		if (PageHuge(page))
+>  			pfn = page_to_pfn(head) + compound_nr(head) - 1;
+> -			isolate_huge_page(head, &source);
+> -			continue;
+> -		} else if (PageTransHuge(page))
+> +		else if (PageTransHuge(page))
+>  			pfn = page_to_pfn(head) + thp_nr_pages(page) - 1;
+>  
+>  		/*
+> @@ -1622,6 +1620,11 @@ do_migrate_range(unsigned long start_pfn, unsigned long end_pfn)
+>  			continue;
+>  		}
+>  
+> +		if (PageHuge(page)) {
+> +			isolate_huge_page(head, &source);
+> +			continue;
+> +		}
+> +
+>  		if (!get_page_unless_zero(page))
+>  			continue;
+>  		/*
+
+The problem statement makes sense to me but I am not sure about the
+details if we run into the "PageHWPoison" path with a huge page. I have
+the gut feeling that we have to do more for huge pages in the
+PageHWPoison() path, because we might be dealing with a free huge page
+after unmap succeeds. I might be wrong.
+
+-- 
+Thanks,
+
+David / dhildenb
+
