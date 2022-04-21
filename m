@@ -2,296 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E93C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47218C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383869AbiDUMYQ (ORCPT
+        id S1383924AbiDUM0Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
+        Thu, 21 Apr 2022 08:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383883AbiDUMX5 (ORCPT
+        with ESMTP id S243488AbiDUM0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:23:57 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3AC2E0AC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:21:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650543664; x=1682079664;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XHRGs5C8iakQ/LSsG/OCcsopA/MQANrQTQkr3zdQl/s=;
-  b=EmVREDLzHsUfZ2gx1GrSXgVkQfqTuzSawJoaUtA33WHoODUCG7rqwSMH
-   brzVcVXezQ2ILcM9n0w+6g6Dpv2yB6lMAFJZEoXqC/WLqjT4+uLL+e64D
-   nwDj8q+8lSVS9zYCIocWOe/clT6rV6ayR0n5UIT8nrueaQareNgLE2Qd9
-   a/ruTySQdLmJIHa6obbghYK2C3gostaDUDtF4O2LKep6u5bT3HQ1noaJU
-   Nrcn8ErLkU+0h6kmfPJvbXVWsHvRhRObnQ3a0wcwSTJs0PnA/8fi9sihq
-   0R3xtSl90u1vjQiyR2utFCrf+0DXUWy+h44xJ3LiaLt9ieuGTGHeSlyiT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263799460"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="263799460"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 05:21:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="658504474"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 21 Apr 2022 05:21:01 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhVnw-0008NL-W7;
-        Thu, 21 Apr 2022 12:21:01 +0000
-Date:   Thu, 21 Apr 2022 20:20:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Subject: drivers/dma/dw-edma/dw-edma-v0-regs.h:37:4: warning: field sar
- within 'struct dw_edma_v0_ch_regs' is less aligned than 'union (unnamed
- union at drivers/dma/dw-edma/dw-edma-v0-regs.h:31:2)' and is usually due to
- 'struct dw_edma_v0_ch_regs' being packed, wh...
-Message-ID: <202204212012.U0izsH0M-lkp@intel.com>
+        Thu, 21 Apr 2022 08:26:12 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2128.outbound.protection.outlook.com [40.107.255.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10D92E09D;
+        Thu, 21 Apr 2022 05:23:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ODzyD93yc3nOc4F+olUFTnCGDjME0E0woCuDHiMnJ2YiG+J99uLq7s+wQ2aQOYwQ+EjpbvGid8GVwlXsbP/uwJVhfhJhE9MhAfY5lvi6545PGMKG3L06jmgShCb7KZ4GwQ04/qO/c8Ux3fR7VlAeOy2dqfWuxNrJp1csmrciY33il5UO6EOMXSe8pZ0t5QDiJudTIxz6Pot3iS2AfYC7GOfTsYku3MdnlzZKjbzviVzbf4yw3XgmRUHOWmZPqmJDoiU5k/OKFiqWRYeKO0ag/CezLEVgS4Oaj4gqAXCa1HxJJvwzI9IlNTAXrq6kcYjugKh3O2c2knF6clclbEZPXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VcdxtRTU2qyVDOIdy2e9aXE1mb6ol+kW5q0yPPXvqhk=;
+ b=l6C21wfyHC0MdmsEPeAhNQwCpeqra1Ansl74Vrxn2ppaQC4JODdmTEPy/UFoQPfV5TM1GeD7dIlk/0mkYkcrFa3pb6qqji2+3u3+jmbb/eoaglP8TRjvhgTlOUQKvbWpy/9g9bfWe/mZSBq7elVu7Edd+NCOxoP0vqU/N/ubMqbzT0JmETRoGjzHAxP3MjlT2GOAc754QsaRAeyqxBD2PWKH8AvwBnvkp9v22suuhAGfBqk2dLhGPBxGapVm+O1oVfpUI8eOnAP0glxhoQ4IdPfShKtWUwWE3sTAWVoi3EcG5EPG0VOZ7IqlA+8j4VP1iDi1dzDriPLCX4IeSpGPwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VcdxtRTU2qyVDOIdy2e9aXE1mb6ol+kW5q0yPPXvqhk=;
+ b=EAg5IpVroDBgtJF61PvGfWvt8IicDnriGOlg/5x56CHZcEzyPLJwheL3zQ0nSP8zfacjvSiSEjIF+0f5o2sP+7rZ1vbOwI3VRl6pg78rsEeAWoXgZKLU44AVvXgLacVmvfaOjsaEUXPIJwEs3K04ij/PkVCGESb8vn+2zmx/ftU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SG2PR06MB3031.apcprd06.prod.outlook.com (2603:1096:4:79::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5164.20; Thu, 21 Apr 2022 12:23:19 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::4591:4f3e:f951:6c8c]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::4591:4f3e:f951:6c8c%7]) with mapi id 15.20.5164.025; Thu, 21 Apr 2022
+ 12:23:19 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] of: Add missing of_node_put() before return
+Date:   Thu, 21 Apr 2022 20:23:03 +0800
+Message-Id: <20220421122303.111766-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.35.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK0PR03CA0099.apcprd03.prod.outlook.com
+ (2603:1096:203:b0::15) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 09b3eae9-c1fe-4489-bdc2-08da2391b7a6
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3031:EE_
+X-Microsoft-Antispam-PRVS: <SG2PR06MB303113EC67936A9358C39F44ABF49@SG2PR06MB3031.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: w3iJkfozhrNucO0PzAYH84noIfIHCE1Ao9KrZonSkK1x0Giu+RdrSKLbdXIiTLOZ/5+YElkRo47im5iLMcH7QiH2kSQbp1FAQa3M2cRm4c9OA7Ol+0uoG97g+R2P1flfOjrAoOIJECdF+FzkHgMm4rkSQEkQ4xVnpatHEPVW2pqevPwyLjuHA6R+qSBTYwz20Mtro0QflD3PbFtA6NnMKmsBkqo4tN0wnpsQGANUMV9airnqrL4GTA8qg52Bvjy4ovvlIl464TQimHaohFhFdpBJtbWdm8uSD/b3YSeIDB3RSQ1T82coC4wH8W/CiDEV27sZ792q7jiOzY1S/mLwHxfZ+gIYlFLELfQyekIlA+PmXfthY57rn0waa9zDfQYXinaEUw+sA1R62kMgMqp6RYwXWsngLo2o++MKc3R+AVCY9o1A0W+Qs2dBme/Tt1eU4Pq6fyglNbx9ovThcnsng0dcZbPIstxlNF6vL3cetbXuS55Jni64Ytn7wCA6WemUe2dy/VyMYCKaYf0GuqHO32nCHexXrNbtswzsOJ7ruYoWTMB9pwYtwzXKvlE/Xtp1Ws0fy1W60hVuMkK3C30y116rgCbfH9oczzUQSCJUsstkfoZTByn3gaZz1LDWXHJc2pByouVGySnhCS0Y11hyFWDcaieGuIb6m9XhCHe/tbWkRJe21rX+jH5Xs3T9ZSr19elGMZcLHAuB+p4Fl/NMVw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(6486002)(2906002)(4326008)(4744005)(8676002)(6512007)(52116002)(316002)(508600001)(83380400001)(1076003)(36756003)(86362001)(6666004)(110136005)(2616005)(26005)(186003)(107886003)(66946007)(8936002)(66556008)(66476007)(38350700002)(5660300002)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VMfwgfiy7F5tS0lk0pQ8mD5oSEKXKBeEnn3abBDtd8tdOmAgqM4yKoekbuiJ?=
+ =?us-ascii?Q?T8uD1WAzwtUvyvLSVDTHX64IQXA0A/N0sbTy6QGY1mu6z2E6KXNatP57p35j?=
+ =?us-ascii?Q?YSqWgvUDUs/igoWoakJzjh8iuGEi9Pqk9K1Mn5j6jMmTg17iX1eT/qO9Jpf/?=
+ =?us-ascii?Q?BhmxRewLGHDVd00rdq/jtM7BXCpk7jgy+jcnhSf+uRFEIqGB3v75juZfvG5N?=
+ =?us-ascii?Q?cs7lC/ctGhxlBD0NoRNNZMHnZBsoim0f/K9Po7Llqln4+ZQGOt8i5qcagVkq?=
+ =?us-ascii?Q?jjyLggKA42sq/6ysLaEhhCK6aAl0vX2Yv3Wl02uUbUWJkm1bJuCTEIrhxWlM?=
+ =?us-ascii?Q?DgCJ8bQiwG9aYeVM+5aw8JSlG0x9tY6mv1hFJ9qkQt1xJqznP+BGUIWKmSDv?=
+ =?us-ascii?Q?ZZVQmor1e7MyQCFzYMrMcKKHT9gswFPiVqslUiITtz5TKU7+mQfRsQ96adsK?=
+ =?us-ascii?Q?U3hZc1ItrN9jCcfjrJS8lo24vDZ6CQDNp7xETTGu5zOQCud71XKLRP9l2+t8?=
+ =?us-ascii?Q?PLEGupbtkLB+jb5X9mSscLpJ85WuLhzm32K4s+AFn3OtCg+Au6QsPavbvXhk?=
+ =?us-ascii?Q?ufRP/Swcd2tjf1t6/nJKoVF4+RUneu1u1aBhwTIezBdiJFqP3odZHFhR39Bw?=
+ =?us-ascii?Q?bI5Yb3KrJWcMnDnFWu3T3ayjOYUT3mgkSc6TgypzgWXcwl7pBF/H1XX5F11I?=
+ =?us-ascii?Q?hMTH5ERY69NfvX+9FI1yuUDzt9v8D8/pLb//yLz4sLgFor0r6TmV3aW5QaYT?=
+ =?us-ascii?Q?eMEX9hYwbvD2a2XUufWXIA+2glH9uHTTE1jAjFJGh+1uVc91mXYzI5hx327r?=
+ =?us-ascii?Q?ERLkZxR/D3ow+mIxsrEse8muE9XDL9OY9qzExpH0S6s8/JKkHo0sxheOIqGP?=
+ =?us-ascii?Q?LJZRIENm5KV0eGv8KzSL4QfzMkqxADJX2APYAyfxVJx8LgO3mJZltN073WFk?=
+ =?us-ascii?Q?H2C8saC+1zNkty4L7/Uu0h1DZvx4pHROtD+UXoPv8LorWNDl+2LS9v2GZ9hW?=
+ =?us-ascii?Q?TOqU0O3UV4rkS09wE2PHYvqGbLUIJe3wVXL2Wp3NuYY1BHP0LbuMirYq/ogZ?=
+ =?us-ascii?Q?Uhtj5jbMR93wtFbKr7BmGiw8DEOEnhaKYIhbtLTGLFSxlVo27kBpJHE2o59q?=
+ =?us-ascii?Q?1wB+uvODRZHY1CN8DPqAi71fp4cG+qGO2WgLvz79wDF+VZW6Oa1fE4C2OlUt?=
+ =?us-ascii?Q?yYLtpnXYKn0XvgbxrFgOum3WmAWQjt17oTmMmuLCX637GtYyWfexsBQHK9/y?=
+ =?us-ascii?Q?F3QCYbMd9+aJOEidJYC2kG7nAIdZstW+Hqli/r29gYZFRtMjHTLP5MFLy1wC?=
+ =?us-ascii?Q?p3r/qhofXc6YgeADKIWaBD4ym1iesM+s6qJKctb+FrU/OeQvSJXgMmO/+ayW?=
+ =?us-ascii?Q?zWMuVO9WTWU5dNEfBvFPWEpxnq6cKbquYB/phrAHpNE3A83s7m7zvZpcyc3V?=
+ =?us-ascii?Q?Azb51ReA24M8gB1BCLPJfE9bymWiK5lcrpqknZB3JU6gBcPBm8YOddXnyMxt?=
+ =?us-ascii?Q?SvkkceiD5gzJzNXidDj10hq4sTxYZtLHgaJrOeeeFLB+SnaS0UDesWDHmOcp?=
+ =?us-ascii?Q?gyvKVrWyICBHvrubeSqzQpoO0NmxYiR13hnJ13N5Rgx4Mc5MV+fiENJS2TM9?=
+ =?us-ascii?Q?0fwRtSos8ZOUNfQX/ihgoqQwfidoJz9/ebv7uOrSbOd05iuXshQ99R6rv3ZB?=
+ =?us-ascii?Q?dwBfZ8UzAijBD3HWDLe5XCcfWLaV30egN+4ywz3jOMIT8n7ULMkqsya61Ae7?=
+ =?us-ascii?Q?Yqme/j6/KQ=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09b3eae9-c1fe-4489-bdc2-08da2391b7a6
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 12:23:18.8328
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wvh400hKHDlACbSfDFdOmqvhjmfnvvBvK1CTwGelNL125XIAxTcwnegjRVcviGoFyD/TIte3geFckcTpsXH/Hg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3031
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gustavo,
+Fix the following coccicheck error:
+drivers/of/platform.c:554:2-23: WARNING: Function "for_each_node_by_type"
+should have of_node_put() before return around line 560.
 
-FYI, the error/warning still remains.
+Early exits from for_each_node_by_type() should decrement the node
+reference counter.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b253435746d9a4a701b5f09211b9c14d3370d0da
-commit: 04e0a39fc10f82a71b84af73351333b184cee578 dmaengine: dw-edma: Add writeq() and readq() for 64 bits architectures
-date:   1 year, 1 month ago
-config: arm-randconfig-c002-20220420 (https://download.01.org/0day-ci/archive/20220421/202204212012.U0izsH0M-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=04e0a39fc10f82a71b84af73351333b184cee578
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 04e0a39fc10f82a71b84af73351333b184cee578
-        # save the config file
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross 
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+---
+ drivers/of/platform.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:37:4: warning: field sar within 'struct dw_edma_v0_ch_regs' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:31:2)' and is usually due to 'struct dw_edma_v0_ch_regs' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } sar;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:44:4: warning: field dar within 'struct dw_edma_v0_ch_regs' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:38:2)' and is usually due to 'struct dw_edma_v0_ch_regs' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } dar;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:51:4: warning: field llp within 'struct dw_edma_v0_ch_regs' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:45:2)' and is usually due to 'struct dw_edma_v0_ch_regs' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } llp;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:172:4: warning: field rd_err_status within 'struct dw_edma_v0_regs' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:166:2)' and is usually due to 'struct dw_edma_v0_regs' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } rd_err_status;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:182:4: warning: field rd_done_imwr within 'struct dw_edma_v0_regs' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:176:2)' and is usually due to 'struct dw_edma_v0_regs' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } rd_done_imwr;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:189:4: warning: field rd_abort_imwr within 'struct dw_edma_v0_regs' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:183:2)' and is usually due to 'struct dw_edma_v0_regs' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } rd_abort_imwr;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:71:4: warning: field wr_engine_hshake_cnt within 'struct dw_edma_v0_unroll' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:65:2)' and is usually due to 'struct dw_edma_v0_unroll' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } wr_engine_hshake_cnt;
-             ^
->> drivers/dma/dw-edma/dw-edma-v0-regs.h:79:4: warning: field rd_engine_hshake_cnt within 'struct dw_edma_v0_unroll' is less aligned than 'union (unnamed union at drivers/dma/dw-edma/dw-edma-v0-regs.h:73:2)' and is usually due to 'struct dw_edma_v0_unroll' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } rd_engine_hshake_cnt;
-             ^
-   8 warnings generated.
-
-
-vim +37 drivers/dma/dw-edma/dw-edma-v0-regs.h
-
-    26	
-    27	struct dw_edma_v0_ch_regs {
-    28		u32 ch_control1;				/* 0x000 */
-    29		u32 ch_control2;				/* 0x004 */
-    30		u32 transfer_size;				/* 0x008 */
-    31		union {
-    32			u64 reg;				/* 0x00c..0x010 */
-    33			struct {
-    34				u32 lsb;			/* 0x00c */
-    35				u32 msb;			/* 0x010 */
-    36			};
-  > 37		} sar;
-    38		union {
-    39			u64 reg;				/* 0x014..0x018 */
-    40			struct {
-    41				u32 lsb;			/* 0x014 */
-    42				u32 msb;			/* 0x018 */
-    43			};
-  > 44		} dar;
-    45		union {
-    46			u64 reg;				/* 0x01c..0x020 */
-    47			struct {
-    48				u32 lsb;			/* 0x01c */
-    49				u32 msb;			/* 0x020 */
-    50			};
-  > 51		} llp;
-    52	} __packed;
-    53	
-    54	struct dw_edma_v0_ch {
-    55		struct dw_edma_v0_ch_regs wr;			/* 0x200 */
-    56		u32 padding_1[55];				/* [0x224..0x2fc] */
-    57		struct dw_edma_v0_ch_regs rd;			/* 0x300 */
-    58		u32 padding_2[55];				/* [0x324..0x3fc] */
-    59	} __packed;
-    60	
-    61	struct dw_edma_v0_unroll {
-    62		u32 padding_1;					/* 0x0f8 */
-    63		u32 wr_engine_chgroup;				/* 0x100 */
-    64		u32 rd_engine_chgroup;				/* 0x104 */
-    65		union {
-    66			u64 reg;				/* 0x108..0x10c */
-    67			struct {
-    68				u32 lsb;			/* 0x108 */
-    69				u32 msb;			/* 0x10c */
-    70			};
-  > 71		} wr_engine_hshake_cnt;
-    72		u32 padding_2[2];				/* [0x110..0x114] */
-    73		union {
-    74			u64 reg;				/* 0x120..0x124 */
-    75			struct {
-    76				u32 lsb;			/* 0x120 */
-    77				u32 msb;			/* 0x124 */
-    78			};
-  > 79		} rd_engine_hshake_cnt;
-    80		u32 padding_3[2];				/* [0x120..0x124] */
-    81		u32 wr_ch0_pwr_en;				/* 0x128 */
-    82		u32 wr_ch1_pwr_en;				/* 0x12c */
-    83		u32 wr_ch2_pwr_en;				/* 0x130 */
-    84		u32 wr_ch3_pwr_en;				/* 0x134 */
-    85		u32 wr_ch4_pwr_en;				/* 0x138 */
-    86		u32 wr_ch5_pwr_en;				/* 0x13c */
-    87		u32 wr_ch6_pwr_en;				/* 0x140 */
-    88		u32 wr_ch7_pwr_en;				/* 0x144 */
-    89		u32 padding_4[8];				/* [0x148..0x164] */
-    90		u32 rd_ch0_pwr_en;				/* 0x168 */
-    91		u32 rd_ch1_pwr_en;				/* 0x16c */
-    92		u32 rd_ch2_pwr_en;				/* 0x170 */
-    93		u32 rd_ch3_pwr_en;				/* 0x174 */
-    94		u32 rd_ch4_pwr_en;				/* 0x178 */
-    95		u32 rd_ch5_pwr_en;				/* 0x18c */
-    96		u32 rd_ch6_pwr_en;				/* 0x180 */
-    97		u32 rd_ch7_pwr_en;				/* 0x184 */
-    98		u32 padding_5[30];				/* [0x188..0x1fc] */
-    99		struct dw_edma_v0_ch ch[EDMA_V0_MAX_NR_CH];	/* [0x200..0x1120] */
-   100	} __packed;
-   101	
-   102	struct dw_edma_v0_legacy {
-   103		u32 viewport_sel;				/* 0x0f8 */
-   104		struct dw_edma_v0_ch_regs ch;			/* [0x100..0x120] */
-   105	} __packed;
-   106	
-   107	struct dw_edma_v0_regs {
-   108		/* eDMA global registers */
-   109		u32 ctrl_data_arb_prior;			/* 0x000 */
-   110		u32 padding_1;					/* 0x004 */
-   111		u32 ctrl;					/* 0x008 */
-   112		u32 wr_engine_en;				/* 0x00c */
-   113		u32 wr_doorbell;				/* 0x010 */
-   114		u32 padding_2;					/* 0x014 */
-   115		union {
-   116			u64 reg;				/* 0x018..0x01c */
-   117			struct {
-   118				u32 lsb;			/* 0x018 */
-   119				u32 msb;			/* 0x01c */
-   120			};
-   121		} wr_ch_arb_weight;
-   122		u32 padding_3[3];				/* [0x020..0x028] */
-   123		u32 rd_engine_en;				/* 0x02c */
-   124		u32 rd_doorbell;				/* 0x030 */
-   125		u32 padding_4;					/* 0x034 */
-   126		union {
-   127			u64 reg;				/* 0x038..0x03c */
-   128			struct {
-   129				u32 lsb;			/* 0x038 */
-   130				u32 msb;			/* 0x03c */
-   131			};
-   132		} rd_ch_arb_weight;
-   133		u32 padding_5[3];				/* [0x040..0x048] */
-   134		/* eDMA interrupts registers */
-   135		u32 wr_int_status;				/* 0x04c */
-   136		u32 padding_6;					/* 0x050 */
-   137		u32 wr_int_mask;				/* 0x054 */
-   138		u32 wr_int_clear;				/* 0x058 */
-   139		u32 wr_err_status;				/* 0x05c */
-   140		union {
-   141			u64 reg;				/* 0x060..0x064 */
-   142			struct {
-   143				u32 lsb;			/* 0x060 */
-   144				u32 msb;			/* 0x064 */
-   145			};
-   146		} wr_done_imwr;
-   147		union {
-   148			u64 reg;				/* 0x068..0x06c */
-   149			struct {
-   150				u32 lsb;			/* 0x068 */
-   151				u32 msb;			/* 0x06c */
-   152			};
-   153		} wr_abort_imwr;
-   154		u32 wr_ch01_imwr_data;				/* 0x070 */
-   155		u32 wr_ch23_imwr_data;				/* 0x074 */
-   156		u32 wr_ch45_imwr_data;				/* 0x078 */
-   157		u32 wr_ch67_imwr_data;				/* 0x07c */
-   158		u32 padding_7[4];				/* [0x080..0x08c] */
-   159		u32 wr_linked_list_err_en;			/* 0x090 */
-   160		u32 padding_8[3];				/* [0x094..0x09c] */
-   161		u32 rd_int_status;				/* 0x0a0 */
-   162		u32 padding_9;					/* 0x0a4 */
-   163		u32 rd_int_mask;				/* 0x0a8 */
-   164		u32 rd_int_clear;				/* 0x0ac */
-   165		u32 padding_10;					/* 0x0b0 */
-   166		union {
-   167			u64 reg;				/* 0x0b4..0x0b8 */
-   168			struct {
-   169				u32 lsb;			/* 0x0b4 */
-   170				u32 msb;			/* 0x0b8 */
-   171			};
- > 172		} rd_err_status;
-   173		u32 padding_11[2];				/* [0x0bc..0x0c0] */
-   174		u32 rd_linked_list_err_en;			/* 0x0c4 */
-   175		u32 padding_12;					/* 0x0c8 */
-   176		union {
-   177			u64 reg;				/* 0x0cc..0x0d0 */
-   178			struct {
-   179				u32 lsb;			/* 0x0cc */
-   180				u32 msb;			/* 0x0d0 */
-   181			};
- > 182		} rd_done_imwr;
-   183		union {
-   184			u64 reg;				/* 0x0d4..0x0d8 */
-   185			struct {
-   186				u32 lsb;			/* 0x0d4 */
-   187				u32 msb;			/* 0x0d8 */
-   188			};
- > 189		} rd_abort_imwr;
-   190		u32 rd_ch01_imwr_data;				/* 0x0dc */
-   191		u32 rd_ch23_imwr_data;				/* 0x0e0 */
-   192		u32 rd_ch45_imwr_data;				/* 0x0e4 */
-   193		u32 rd_ch67_imwr_data;				/* 0x0e8 */
-   194		u32 padding_13[4];				/* [0x0ec..0x0f8] */
-   195		/* eDMA channel context grouping */
-   196		union dw_edma_v0_type {
-   197			struct dw_edma_v0_legacy legacy;	/* [0x0f8..0x120] */
-   198			struct dw_edma_v0_unroll unroll;	/* [0x0f8..0x1120] */
-   199		} type;
-   200	} __packed;
-   201	
-
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index 2dff3a3d137c..3c7ca6671716 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -556,8 +556,10 @@ static int __init of_platform_default_populate_init(void)
+ 			    !of_get_property(node, "linux,boot-display", NULL))
+ 				continue;
+ 			dev = of_platform_device_create(node, "of-display", NULL);
+-			if (WARN_ON(!dev))
++			if (WARN_ON(!dev)) {
++				of_node_put(node)
+ 				return -ENOMEM;
++			}
+ 			boot_display = node;
+ 			break;
+ 		}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
