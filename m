@@ -2,83 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F8EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E709EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbiDUNC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:02:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
+        id S229607AbiDUNCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 09:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiDUNCY (ORCPT
+        with ESMTP id S229824AbiDUNCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:02:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A3326F9;
-        Thu, 21 Apr 2022 05:59:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5855F61852;
-        Thu, 21 Apr 2022 12:59:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48642C385A1;
-        Thu, 21 Apr 2022 12:59:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650545973;
-        bh=8803hr6O5mQBudZ27bUhnRG0/mmmQXp3VtHKDzpV0oA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Yu63/tQTCWNHg+l1Po21sOyavfk0zUQnCi1y5uIVRmlAoNiyrrSjnHw9pDSoeWJpd
-         dov3dRWoo9ZHOuhJx0tz+8ARGsv+tR5AjTK+A7QUC6gqcZNMfGMJUNbRGqrys08KmM
-         8Cc0Dk9ePNFl2Ji3AQn/xbP0jpJAJxrASxxmZPAzqaj6IVy6X3UTKhrHiPVPuPMOl4
-         st+5UEWjVNAzHFqyNY/I2zAhfDloK9ZLPzrzoxxLhGZwp3Sqo0OaGJgY6HMPVXTbjX
-         FKhen/SBTqBaFTmSxGt8jQBYiQWiUqbtIeWSmnw+dySQrpOJ0O23YO8jdcbjEKN2O9
-         iIrL/vFuY4H+w==
-Date:   Thu, 21 Apr 2022 18:29:23 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: qrb5165-rb5: Fix can-clock node name
-Message-ID: <20220421125923.GA262430@thinkpad>
-References: <20220421073502.1824089-1-vkoul@kernel.org>
+        Thu, 21 Apr 2022 09:02:33 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12A2326DC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:59:43 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id t12so4770328pll.7
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:59:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VSJ2rJFM71/kL79jCnpAQ93KJ/x7JSaLjByZLJIvLis=;
+        b=bQtAXsYrpcScFVSrq4QfayE0uHz89yJvJj+NWwQJz3uspPNZ7IfaI8i0n4MZTB3C2P
+         q5X1w6+0UxgI7xuJsjLYgN2vxjbYCTgEuSwIrxO6btQEvZXb2kc9rX1GTF9c/da9lXb1
+         7qzBHOjpjiInSMm/AEtcos16xxEb3L4VPFng5koQvwWdWcnOFcuM7RhhjV+RNVnY/Z7A
+         wGIMq+5NiH3sxrQzNiP5Lqx25Ep/AkpKP5FQazdNeRVVFD3v3PzXKKrQU/gNqlBNM2hr
+         An1M2YUl7YkKW9ubxieNdfg+dQBk+7RA186t2O7yi+zmPDuwravC2jbaC3rNWul1SQqY
+         fqeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VSJ2rJFM71/kL79jCnpAQ93KJ/x7JSaLjByZLJIvLis=;
+        b=FnyTCrErrE5PsW7Pv9l8PqNoX7rxf2mSABpkR7BO8wFtqqIPuBiRWfv/VkctI1QIcV
+         JvUaaJhzLv+sKeNdxbP7mnidmYhjKP2zehrPQ9fC8mT4TWwgPp3eYs01eNF8XaFnhypa
+         BYDehK+hQOaJo026uc57+urT32CeJhA5DiA2vJjkhDm2XMxeUw5M3+E3dxy1wBfMdgbc
+         pk+VEkMjOhSwWUxhncW/frEk5giW/OoDknX+gpGjoCNEuTlJpPo3cC0VMfMif8GWoa9K
+         zCFfRCcN2TR4UyhvUWFZwP5PYUpPLKJDNpPv8hJthyMSgotBW1ABB12LMXrclRQ4psv1
+         uHhw==
+X-Gm-Message-State: AOAM533isI95h+wciVeymqbfJo9BKlup5aNNjCBwCWAdt9al03oo3sG7
+        QMAegmEd7wZYulmPM+zVbnKysY9oOQ+DCRav+elOWQ==
+X-Google-Smtp-Source: ABdhPJwIQ+2mB3qv1xOCuDVLDbz2dL0D2KptMiV9MvVDYueNqS5LsR0SqIrxmiAg5fGEmFqcn+ZywX4Ga1cLAZuoQPg=
+X-Received: by 2002:a17:90a:558a:b0:1c6:fad4:2930 with SMTP id
+ c10-20020a17090a558a00b001c6fad42930mr10366902pji.159.1650545983470; Thu, 21
+ Apr 2022 05:59:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421073502.1824089-1-vkoul@kernel.org>
+References: <20220421092141.3984-1-slark_xiao@163.com>
+In-Reply-To: <20220421092141.3984-1-slark_xiao@163.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 21 Apr 2022 14:59:07 +0200
+Message-ID: <CAMZdPi9hsxGqiw11hUkN3dmXVUJ6CUXQdb6P7STPWyfPErpUhg@mail.gmail.com>
+Subject: Re: [PATCH v2] bus: mhi: host: Add support for Cinterion MV32-WA/MV32-WB
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     mani@kernel.org, hemantk@codeaurora.org,
+        gregkh@linuxfoundation.org, bbhatt@codeaurora.org,
+        christophe.jaillet@wanadoo.fr, thomas.ulrich@thalesgroup.com,
+        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 01:05:02PM +0530, Vinod Koul wrote:
-> Per DT spec node names should not have underscores (_) in them, so
-> change can_clock to can-clock.
-> 
-> Fixes: 5c44c564e449 ("arm64: dts: qcom: qrb5165-rb5: Add support for MCP2518FD")
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> ---
->  arch/arm64/boot/dts/qcom/qrb5165-rb5.dts | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-> index 845eb7a6bf92..0e63f707b911 100644
-> --- a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-> +++ b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-> @@ -29,7 +29,7 @@ chosen {
->  	};
->  
->  	/* Fixed crystal oscillator dedicated to MCP2518FD */
-> -	clk40M: can_clock {
-> +	clk40M: can-clock {
+On Thu, 21 Apr 2022 at 11:22, Slark Xiao <slark_xiao@163.com> wrote:
+>
+> MV32-WA is designed based on Qualcomm SDX62, and
+> MV32-WB is designed based on QUalcomm SDX65. Both
+> products' enumeration would align with previous
+> product MV31-W.So we merge MV31 and MV32 to MV3X
+> for some common settings.
+>
+> Fixes: 87693e092bd0 ("bus: mhi: pci_generic: Add Cinterion MV31-W PCIe to MHI")
 
-Should the node name be just "clock"?
+The patch does not fix a bug, but adds new hardware support.
 
-Thanks,
-Mani
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
 
->  		compatible = "fixed-clock";
->  		#clock-cells = <0>;
->  		clock-frequency = <40000000>;
-> -- 
-> 2.34.1
-> 
+Without the 'fixes' tag:
+
+Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
