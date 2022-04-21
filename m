@@ -2,154 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F06C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390152AbiDUPeN (ORCPT
+        id S1390155AbiDUPcb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
+        Thu, 21 Apr 2022 11:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359696AbiDUPeM (ORCPT
+        with ESMTP id S233545AbiDUPcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:34:12 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217ED7673;
-        Thu, 21 Apr 2022 08:31:22 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 40777221D4;
-        Thu, 21 Apr 2022 17:31:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1650555081;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JdCg+YpeK6cuEDBAcZQNddcy4UjLpNx+E3WQ3o1hlck=;
-        b=ZAK6ZIoGDjF4a8yCQdk3/gzdybksfXbID3YSjSUyrCJfViO7CF5H1+BipFchAIjuo+AE+l
-        pg7iQqs71vqJwsolH1ixv9J5V7ou1JyjZVpBIn08asVvXHecocLHOOg2ucOE4gTP+PNuBn
-        FBnrLRh1ms5LRn9K74tR3XFJKxMBq84=
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Li Yang <leoyang.li@nxp.com>, Michael Walle <michael@walle.cc>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: fsl: convert fsl,layerscape-scfg to YAML
-Date:   Thu, 21 Apr 2022 17:31:15 +0200
-Message-Id: <20220421153115.3496834-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        Thu, 21 Apr 2022 11:32:06 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FFC42A3F;
+        Thu, 21 Apr 2022 08:29:15 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A2AD921112;
+        Thu, 21 Apr 2022 15:29:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650554954; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f5prPCFHB7tTpkq+k4vcAxkUxCclepioM3qt4/48E8Q=;
+        b=2Z74KBSTI+RRW3GVqizC7kuz1hDkLz4U4zUBxmnuybv0YQL24y8MZ/NB4Xll2RqEmewWUh
+        ImYL2fb/kOneaW3yh1blQ3OZGTLcKxh7ij8YZ8tGSnCx+Hdd8PSEi8xWQ2NhKyqMqddyAD
+        WY5J7zo3N49wwyZK533B8iE3ajDLr5U=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650554954;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f5prPCFHB7tTpkq+k4vcAxkUxCclepioM3qt4/48E8Q=;
+        b=cDTswGpjMsuGJ40wpUPWQRFhzrHaBSYb6Oq9VLny/QKIAhXFq2nockljSqAHs15IeQZYTv
+        Q+OSzGO1KvMe6nDA==
+Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 8F5832C141;
+        Thu, 21 Apr 2022 15:29:14 +0000 (UTC)
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Nick Terrell <terrelln@fb.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH 3/5] selftests: firmware: Fix the request_firmware_into_buf() test for XZ format
+Date:   Thu, 21 Apr 2022 17:29:06 +0200
+Message-Id: <20220421152908.4718-4-tiwai@suse.de>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220421152908.4718-1-tiwai@suse.de>
+References: <20220421152908.4718-1-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the fsl,layerscape-scfg binding to the new YAML format.
+The test uses a different firmware name, and we forgot to adapt for
+the XZ compressed file tests.
 
-Added, compared to the original binding, is the interrupt-controller
-subnode as used in arch/arm/boot/dts/ls1021a.dtsi as well as the
-litte-endian and big-endian properties.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
+Fixes: 1798045900b7 ("selftests: firmware: Add request_firmware_into_buf tests")
+https://lore.kernel.org/all/20210127154939.13288-1-tiwai@suse.de/
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
- .../arm/freescale/fsl,layerscape-scfg.txt     | 19 ------
- .../arm/freescale/fsl,layerscape-scfg.yaml    | 58 +++++++++++++++++++
- 2 files changed, 58 insertions(+), 19 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.txt
- create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.yaml
+ tools/testing/selftests/firmware/fw_filesystem.sh | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.txt b/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.txt
-deleted file mode 100644
-index 0ab67b0b216d..000000000000
---- a/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.txt
-+++ /dev/null
-@@ -1,19 +0,0 @@
--Freescale SCFG
--
--SCFG is the supplemental configuration unit, that provides SoC specific
--configuration and status registers for the chip. Such as getting PEX port
--status.
--
--Required properties:
--  - compatible: Should contain a chip-specific compatible string,
--	Chip-specific strings are of the form "fsl,<chip>-scfg",
--	The following <chip>s are known to be supported:
--	ls1012a, ls1021a, ls1043a, ls1046a, ls2080a.
--
--  - reg: should contain base address and length of SCFG memory-mapped registers
--
--Example:
--	scfg: scfg@1570000 {
--		compatible = "fsl,ls1021a-scfg";
--		reg = <0x0 0x1570000 0x0 0x10000>;
--	};
-diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.yaml b/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.yaml
-new file mode 100644
-index 000000000000..b68a9bc68860
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.yaml
-@@ -0,0 +1,58 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/freescale/fsl,layerscape-scfg.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale Layerscape Supplemental Configuration Unit
-+
-+maintainers:
-+  - Shawn Guo <shawnguo@kernel.org>
-+  - Li Yang <leoyang.li@nxp.com>
-+
-+description: |
-+  SCFG is the supplemental configuration unit, that provides SoC specific
-+  configuration and status registers for the chip. Such as getting PEX port
-+  status.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - fsl,ls1012a-scfg
-+          - fsl,ls1021a-scfg
-+          - fsl,ls1028a-scfg
-+          - fsl,ls1043a-scfg
-+          - fsl,ls1046a-scfg
-+      - const: syscon
-+
-+  reg:
-+    maxItems: 1
-+
-+  little-endian: true
-+  big-endian: true
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 1
-+
-+  ranges: true
-+
-+patternProperties:
-+  "^interrupt-controller@[a-z0-9]+$":
-+    $ref: /schemas/interrupt-controller.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    scfg@1570000 {
-+        compatible = "fsl,ls1021a-scfg", "syscon";
-+        reg = <0x1570000 0x10000>;
-+    };
+diff --git a/tools/testing/selftests/firmware/fw_filesystem.sh b/tools/testing/selftests/firmware/fw_filesystem.sh
+index 731f011def78..3ac09b401a83 100755
+--- a/tools/testing/selftests/firmware/fw_filesystem.sh
++++ b/tools/testing/selftests/firmware/fw_filesystem.sh
+@@ -504,6 +504,7 @@ test "$HAS_FW_LOADER_COMPRESS" != "yes" && exit 0
+ 
+ # test with both files present
+ $RUN_XZ -k $FW
++$RUN_XZ -k $FW_INTO_BUF
+ config_set_name $NAME
+ echo
+ echo "Testing with both plain and xz files present..."
+@@ -529,6 +530,7 @@ done
+ 
+ # test with only xz file present
+ mv "$FW" "${FW}-orig"
++mv "$FW_INTO_BUF" "${FW_INTO_BUF}-orig"
+ echo
+ echo "Testing with only xz file present..."
+ for i in $(seq 1 5); do
 -- 
-2.30.2
+2.31.1
 
