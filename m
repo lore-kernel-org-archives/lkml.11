@@ -2,100 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 01:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C306EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 01:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383644AbiDUB3e (ORCPT
+        id S1383638AbiDUBhP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 21:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
+        Wed, 20 Apr 2022 21:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383623AbiDUB33 (ORCPT
+        with ESMTP id S231248AbiDUBhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 21:29:29 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8635F13F4A;
-        Wed, 20 Apr 2022 18:26:37 -0700 (PDT)
-X-UUID: 5a05551d64e343ff8d5e5506ed38cb6a-20220421
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:92da5554-90da-46d7-8869-d39776fa4a9e,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.4,REQID:92da5554-90da-46d7-8869-d39776fa4a9e,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:faefae9,CLOUDID:e43092ef-06b0-4305-bfbf-554bfc9d151a,C
-        OID:52bde752a9fb,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 5a05551d64e343ff8d5e5506ed38cb6a-20220421
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <hui.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1287322795; Thu, 21 Apr 2022 09:26:30 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 21 Apr 2022 09:26:28 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 21 Apr 2022 09:26:27 +0800
-From:   Hui-Liu Liu <hui.liu@mediatek.com>
-To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <eddie.huang@mediatek.com>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <fshao@chromium.org>
-CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
-        <zhiyong.tao@mediatek.com>, <hsin-hsiung.wang@mediatek.com>,
-        <sean.wang@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <yuchen.huang@mediatek.com>, <wen.su@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH v5 0/1] Add mt6359 node for MediaTek PMIC MT6359
-Date:   Thu, 21 Apr 2022 09:26:22 +0800
-Message-ID: <20220421012623.3446-1-hui.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 20 Apr 2022 21:37:13 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982211402B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 18:34:24 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
+ 2022 09:34:17 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 21 Apr
+ 2022 09:34:16 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH V4] staging: rtl8192e: Fix signedness bug in rtllib_rx_assoc_resp()
+Date:   Thu, 21 Apr 2022 09:34:14 +0800
+Message-ID: <1650504854-17576-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <YmA3ttZal8Bwlp7P@kroah.com>
+References: <YmA3ttZal8Bwlp7P@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This pathset add PMIC MT6359 related nodes.
+The rtllib_rx_assoc_resp() function has a signedness bug because it's
+a declared as a u16 but it return -ENOMEM.  When you look at it more
+closely it returns a mix of error codes including 0xcafe, -ENOMEM, and
+a->status which is WLAN_STATUS_NOT_SUPPORTED_AUTH_ALG.  This is a mess.
 
-The series[1] send by Hsin-Hsiung will continue to upstream in this pathset afterwards.
-[1] https://patchwork.kernel.org/project/linux-mediatek/patch/1622011927-359-9-git-send-email-hsin-hsiung.wang@mediatek.com/
+Clean it up to just return standard kernel error codes.  We can print
+out the a->status before returning a regular error code.  The printks
+in the caller need to be adjusted as well.
 
-Changes in patch v5:
-1)Fix commit message typo.
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+V1->V2: reduce return random value; print its own error message.
+V2->V3: change commit message; change s16 -> int.
+V3->V4: 
+1. change message suggested by Dan Carpenter;
+2. hold a->status in auth_parse() and return error code or 0 on success.
+3. print le16_to_cpu(errcode) -> int %d.
 
-Changes in patch v4:
-1)Include mt6359.dtsi in mt8192-evb.dts.
+ drivers/staging/rtl8192e/rtllib_softmac.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-Changes in patch v3:
-1)Add commit messages.
-
-Changes in patch v2:
-1)Only add mt6359.dtsi, mt8192-evb.dts no need update.
-
-Changes in patch v1:
-1)Add "SPDX-License-Identifier: (GPL-2.0 OR MIT)" in mt6359.dtsi.
-
-*** BLURB HERE ***
-
-Hui Liu (1):
-  arm64: dts: mt6359: add PMIC MT6359 related nodes
-
- arch/arm64/boot/dts/mediatek/mt6359.dtsi    | 298 ++++++++++++++++++++
- arch/arm64/boot/dts/mediatek/mt8192-evb.dts |   1 +
- 2 files changed, 299 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt6359.dtsi
-
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 82bf05eb1cbf..38ac733c3245 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -1764,7 +1764,7 @@ static void rtllib_softmac_check_all_nets(struct rtllib_device *ieee)
+ 	spin_unlock_irqrestore(&ieee->lock, flags);
+ }
+ 
+-static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
++static inline int auth_parse(struct net_device *dev, struct sk_buff *skb,
+ 			     u8 **challenge, int *chlen)
+ {
+ 	struct rtllib_authentication *a;
+@@ -1773,7 +1773,7 @@ static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
+ 	if (skb->len <  (sizeof(struct rtllib_authentication) -
+ 	    sizeof(struct rtllib_info_element))) {
+ 		netdev_dbg(dev, "invalid len in auth resp: %d\n", skb->len);
+-		return 0xcafe;
++		return -EINVAL;
+ 	}
+ 	*challenge = NULL;
+ 	a = (struct rtllib_authentication *) skb->data;
+@@ -1787,7 +1787,13 @@ static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
+ 				return -ENOMEM;
+ 		}
+ 	}
+-	return le16_to_cpu(a->status);
++
++	if (a->status) {
++		netdev_info(ieee->dev, "auth_parse() failed");
++		return -EINVAL;
++	}
++
++	return 0;
+ }
+ 
+ static int auth_rq_parse(struct net_device *dev, struct sk_buff *skb, u8 *dest)
+@@ -2282,7 +2288,7 @@ rtllib_rx_assoc_resp(struct rtllib_device *ieee, struct sk_buff *skb,
+ 
+ static void rtllib_rx_auth_resp(struct rtllib_device *ieee, struct sk_buff *skb)
+ {
+-	u16 errcode;
++	int errcode;
+ 	u8 *challenge;
+ 	int chlen = 0;
+ 	bool bSupportNmode = true, bHalfSupportNmode = false;
+@@ -2292,8 +2298,7 @@ static void rtllib_rx_auth_resp(struct rtllib_device *ieee, struct sk_buff *skb)
+ 	if (errcode) {
+ 		ieee->softmac_stats.rx_auth_rs_err++;
+ 		netdev_info(ieee->dev,
+-			    "Authentication response status code 0x%x",
+-			    errcode);
++			    "Authentication response status code %d", errcode);
+ 		rtllib_associate_abort(ieee);
+ 		return;
+ 	}
 -- 
-2.25.1
-
+2.7.4
 
