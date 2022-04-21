@@ -2,116 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B92C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B813C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356500AbiDUN0w (ORCPT
+        id S1347125AbiDUN1t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
+        Thu, 21 Apr 2022 09:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385501AbiDUN0c (ORCPT
+        with ESMTP id S229676AbiDUN1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:26:32 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF8436E1D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650547416; x=1682083416;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UVSxh8CbXTjBYQT0GwhNnPQhc0FfkGKPcK166DLDR14=;
-  b=KZwig6YuXwCaBYypw4dqw+62fwqSHbJyRdogp320AQInZFa8QkJ0QpX9
-   sBgsVK+mjCF5Okd3W3qEchzzyHXjvar3g6bRrgfEflvvn5sqpcVJx8ago
-   6nYs4UanaQhndpm8qHpupYv4w9FV527rZ8DY4m6qdSVN1jR9yyfxqCOh4
-   LTLGu+pXJuYoF3SYUiNfzTEHFhcq2SjPZYuP87ghMJe5GMZ6GXi6nqpXT
-   zxzTZ1mq4rfNQjNS3hVj21vbU592MbRE6H/Wu8oWLZfMlGnc9Dk2RKFEL
-   W6bzHoCYVym9CCrOGF7zPJcGNW8DMQFa5bSaXQXjLDJPUdZl3VojZlLSw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="350789941"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="350789941"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 06:23:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="511065067"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 21 Apr 2022 06:23:16 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhWmB-0008Qp-A7;
-        Thu, 21 Apr 2022 13:23:15 +0000
-Date:   Thu, 21 Apr 2022 21:22:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jean-Marc Eurin <jmeurin@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [mtd:mtd/next 10/11] include/linux/kern_levels.h:5:25: warning:
- format '%ld' expects argument of type 'long int', but argument 4 has type
- 'unsigned int'
-Message-ID: <202204212112.2ixFkcQp-lkp@intel.com>
+        Thu, 21 Apr 2022 09:27:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68788D60
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:24:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650547492;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=y22ZubXxLrbUim9/2nYp/1QkaF1qr8akqy+ZFhTpdnw=;
+        b=W9lFNpjnezkOCIoFQhYIIvP8mLzw8eABgIfX9oZ9pYmhxc+iwIvQPAwFfZg6eZDnekcAot
+        /wMxoe6/p/Fcr/+eqbTszCj+oScVF2UXJfjn3z9wK2Uqo5rSAASNJyu6tXGAb1ZovKSzly
+        4Va3LXXr6oEP8ar+4lJHQRO5X167GAw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-367-8hwKYX1aP-e_r0Kn_RdK6A-1; Thu, 21 Apr 2022 09:24:47 -0400
+X-MC-Unique: 8hwKYX1aP-e_r0Kn_RdK6A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 68A6A802803;
+        Thu, 21 Apr 2022 13:24:46 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 77EA9C53B80;
+        Thu, 21 Apr 2022 13:24:43 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220415123614.54024-2-jefflexu@linux.alibaba.com>
+References: <20220415123614.54024-2-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
+Subject: Re: [PATCH v9 01/21] cachefiles: extract write routine
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1393748.1650547482.1@warthog.procyon.org.uk>
+Date:   Thu, 21 Apr 2022 14:24:42 +0100
+Message-ID: <1393749.1650547482@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git mtd/next
-head:   f812679fab605b3d5b853ed24a81dabb222ea23a
-commit: 0629fcef16d703d384f76cb2c2c3a119a9149a34 [10/11] mtd: mtdoops: Create a header structure for the saved mtdoops.
-config: arc-randconfig-r023-20220420 (https://download.01.org/0day-ci/archive/20220421/202204212112.2ixFkcQp-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git/commit/?id=0629fcef16d703d384f76cb2c2c3a119a9149a34
-        git remote add mtd https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git
-        git fetch --no-tags mtd mtd/next
-        git checkout 0629fcef16d703d384f76cb2c2c3a119a9149a34
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/mtd/
+Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Extract the generic routine of writing data to cache files, and make it
+> generally available.
+> 
+> This will be used by the following patch implementing on-demand read
+> mode. Since it's called inside cachefiles module in this case, make the
+> interface generic and unrelated to netfs_cache_resources.
+> 
+> It is worth noting that, ki->inval_counter is not initialized after
+> this cleanup. It shall not make any visible difference, since
+> inval_counter is no longer used in the write completion routine, i.e.
+> cachefiles_write_complete().
+> 
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 
-All warnings (new ones prefixed by >>):
+Acked-by: David Howells <dhowells@redhat.com>
 
-   In file included from include/linux/kernel.h:29,
-                    from drivers/mtd/mtdoops.c:10:
-   drivers/mtd/mtdoops.c: In function 'find_next_position':
->> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   drivers/mtd/mtdoops.c:243:25: note: in expansion of macro 'printk'
-     243 |                         printk(KERN_ERR "mtdoops: read failure at %ld (%td of %ld read), err %d\n",
-         |                         ^~~~~~
-   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
-      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
-         |                         ^~~~~~~~
-   drivers/mtd/mtdoops.c:243:32: note: in expansion of macro 'KERN_ERR'
-     243 |                         printk(KERN_ERR "mtdoops: read failure at %ld (%td of %ld read), err %d\n",
-         |                                ^~~~~~~~
-
-
-vim +5 include/linux/kern_levels.h
-
-314ba3520e513a Joe Perches 2012-07-30  4  
-04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
-04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
-04d2c8c83d0e3a Joe Perches 2012-07-30  7  
-
-:::::: The code at line 5 was first introduced by commit
-:::::: 04d2c8c83d0e3ac5f78aeede51babb3236200112 printk: convert the format for KERN_<LEVEL> to a 2 byte pattern
-
-:::::: TO: Joe Perches <joe@perches.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
