@@ -2,127 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0ADBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B22C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387696AbiDUJff (ORCPT
+        id S1387709AbiDUJhW convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
+        Thu, 21 Apr 2022 05:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387692AbiDUJf1 (ORCPT
+        with ESMTP id S1384833AbiDUJhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:35:27 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6B915817
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:32:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650533558; x=1682069558;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wynBT3GsNc8N0T1pIpKq8OjfBbxpA23I2Tu5/2/HG7k=;
-  b=k/Ou4n+EwH2ltadWXMSO8JJqPxcYldtHKJVgC2lTuS9DiXUJLg4A9MFP
-   iJJlrRNvifJpHFXFKq8UJ/1AD6OiShrDTyREHIF63bgJQblhxU7vchvdR
-   kNsXzn/3vUqX8JPxaQABrR7d3v2oN0ulab+cD0APvVuzKy0wZ2aTjziFp
-   qKJRnjEZ4uvwbH6i5yh3VEn6y2DjtbJ0KfexrvlH6FLZ1tFf+DCySXH6/
-   WQtI4NpyDZJLnLR8GbGJIxCU7nsytlGRTIL47RFlBeNi45lUgSTjtim/O
-   r4s4XhyQIumP217PJ07Rg/o5Ki+ax+Rgl4E6C993oDix9HeeAhTizo+7N
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="327198393"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="327198393"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 02:32:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="593573923"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 02:32:36 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhTAy-0008Af-3N;
-        Thu, 21 Apr 2022 09:32:36 +0000
-Date:   Thu, 21 Apr 2022 17:31:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Koba Ko <koba.ko@canonical.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:18:
- error: invalid use of undefined type 'struct cpuinfo_x86'
-Message-ID: <202204211734.hHKaiLoZ-lkp@intel.com>
+        Thu, 21 Apr 2022 05:37:19 -0400
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EB91F608;
+        Thu, 21 Apr 2022 02:34:30 -0700 (PDT)
+Received: by mail-qv1-f44.google.com with SMTP id dw17so3257778qvb.9;
+        Thu, 21 Apr 2022 02:34:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mOiSQI/1VD18oOaTUb0xPlwkFtlJUDzIFqwnqSWVldQ=;
+        b=hzV/tZFcowwImRdGexraxZbHXFdEMMFIMKgU99EhukVCjCsb+y35CHUgBHh1lbmTSB
+         +0NMuIxDynEdnaAa1jAj8FAg0rnefS+Wc3Aw7D+MjKLzva7vfTcA22QNn5es8slUCIFE
+         aJHIsoPkH7+dpbeQqIboVQCEZu7eL/YdLEGXLuxkX5LBr92QypBr+qD3noIt7TfoeMJP
+         svjmfT/QxHfx/0ElGwtXgMnp79QlNfJQi2iUC06Kc7XVXtoX+rMvEJiXvRbrztHsoFbu
+         CMn7DPuBsho8THfv/nFKLS06OelhWnc7gJfYnD4Ja1P2T8XV+J32w59eP2QbWVZBANL9
+         dB/Q==
+X-Gm-Message-State: AOAM532VrwRvhh6jGCBZkF0ESEZtBaDKeaG4QaldAbbBJiZGD4IdHCta
+        Fsj8pPUiS70KfiKe5nfrbqQJu4TXEtiftOW9
+X-Google-Smtp-Source: ABdhPJw+MiKAPrQny06x1ispO+kdzbd/v6/ZqvgBJBTscL/27eDVJL1Pku5tyY94DYkkw7M2CRZ3wA==
+X-Received: by 2002:a0c:ed2b:0:b0:444:3f99:dc5d with SMTP id u11-20020a0ced2b000000b004443f99dc5dmr18414185qvq.2.1650533669382;
+        Thu, 21 Apr 2022 02:34:29 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id w15-20020ac857cf000000b002f33f220c76sm2936759qta.32.2022.04.21.02.34.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 02:34:28 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2f18982c255so45951367b3.1;
+        Thu, 21 Apr 2022 02:34:28 -0700 (PDT)
+X-Received: by 2002:a81:1cd5:0:b0:2f4:c3fc:2174 with SMTP id
+ c204-20020a811cd5000000b002f4c3fc2174mr5738857ywc.512.1650533668273; Thu, 21
+ Apr 2022 02:34:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220414122250.158113-1-clement.leger@bootlin.com> <20220414122250.158113-12-clement.leger@bootlin.com>
+In-Reply-To: <20220414122250.158113-12-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Apr 2022 11:34:17 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXgZuBjC2URJdjeefacqNwWScf7-+01OCZKP3auaUcjKA@mail.gmail.com>
+Message-ID: <CAMuHMdXgZuBjC2URJdjeefacqNwWScf7-+01OCZKP3auaUcjKA@mail.gmail.com>
+Subject: Re: [PATCH net-next 11/12] ARM: dts: r9a06g032: describe switch
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Koba,
+Hi Clément,
 
-FYI, the error/warning still remains.
+On Thu, Apr 14, 2022 at 2:25 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> Add description of the switch that is present on the RZ/N1 SoC.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b253435746d9a4a701b5f09211b9c14d3370d0da
-commit: b3dc549986eb7b38eba4a144e979dc93f386751f drm/amdgpu: Disable PCIE_DPM on Intel RKL Platform
-date:   8 months ago
-config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220421/202204211734.hHKaiLoZ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b3dc549986eb7b38eba4a144e979dc93f386751f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b3dc549986eb7b38eba4a144e979dc93f386751f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash
+Thanks for your patch!
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> @@ -250,6 +250,17 @@ mii_conv4: mii-conv@4 {
+>                         };
+>                 };
+>
+> +               switch: switch@44050000 {
+> +                       compatible = "renesas,rzn1-a5psw";
+> +                       #address-cells = <1>;
+> +                       #size-cells = <0>;
+> +                       reg = <0x44050000 0x10000>;
+> +                       clocks = <&sysctrl R9A06G032_HCLK_SWITCH>,
+> +                                <&sysctrl R9A06G032_CLK_SWITCH>;
+> +                       clock-names = "hclk_switch", "clk_switch";
 
-All errors (new ones prefixed by >>):
+"make dtbs_check":
 
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:92,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/slab.h:15,
-                    from drivers/gpu/drm/amd/amdgpu/../pm/inc/pp_debug.h:35,
-                    from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:23:
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c: In function 'intel_core_rkl_chk':
-   arch/um/include/asm/processor-generic.h:104:19: error: called object is not a function or function pointer
-     104 | #define cpu_data (&boot_cpu_data)
-         |                  ~^~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1742:34: note: in expansion of macro 'cpu_data'
-    1742 |         struct cpuinfo_x86 *c = &cpu_data(0);
-         |                                  ^~~~~~~~
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:18: error: invalid use of undefined type 'struct cpuinfo_x86'
-    1744 |         return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-         |                  ^~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:33: error: invalid use of undefined type 'struct cpuinfo_x86'
-    1744 |         return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-         |                                 ^~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1748:1: error: control reaches end of non-void function [-Werror=return-type]
-    1748 | }
-         | ^
-   cc1: some warnings being treated as errors
+arch/arm/boot/dts/r9a06g032-rzn1d400-db.dtb: switch@44050000:
+clock-names:0: 'hclk' was expected
+arch/arm/boot/dts/r9a06g032-rzn1d400-db.dtb: switch@44050000:
+clock-names:1: 'clk' was expected
+        From schema:
+Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
 
+> +                       status = "disabled";
+> +               };
+> +
+>                 gic: interrupt-controller@44101000 {
+>                         compatible = "arm,gic-400", "arm,cortex-a7-gic";
+>                         interrupt-controller;
 
-vim +1744 drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c
+Gr{oetje,eeting}s,
 
-  1738	
-  1739	static bool intel_core_rkl_chk(void)
-  1740	{
-  1741	#if IS_ENABLED(CONFIG_X86_64)
-  1742		struct cpuinfo_x86 *c = &cpu_data(0);
-  1743	
-> 1744		return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-  1745	#else
-  1746		return false;
-  1747	#endif
-  1748	}
-  1749	
+                        Geert
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
