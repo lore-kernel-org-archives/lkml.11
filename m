@@ -2,66 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B89CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD42C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387564AbiDUJX6 (ORCPT
+        id S1387554AbiDUJYy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
+        Thu, 21 Apr 2022 05:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387593AbiDUJXu (ORCPT
+        with ESMTP id S1357478AbiDUJYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:23:50 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2A524BE5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:20:54 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
- 2022 17:20:46 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 21 Apr
- 2022 17:20:44 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] staging: r8188eu: Drop redundant memset
-Date:   Thu, 21 Apr 2022 17:20:43 +0800
-Message-ID: <1650532843-28132-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 21 Apr 2022 05:24:50 -0400
+Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA4C26559;
+        Thu, 21 Apr 2022 02:22:00 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id 71A5244E78;
+        Thu, 21 Apr 2022 09:21:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        content-type:content-type:content-transfer-encoding:mime-version
+        :x-mailer:message-id:date:date:subject:subject:from:from
+        :received:received:received; s=mta-01; t=1650532918; x=
+        1652347319; bh=rOJ0XVAQ/xdObrmr4EZjjsd3fyHJyaGnzJz9olY/nj8=; b=B
+        LOW7iLCyXXf4kW08cBsOrLbITN4KIaWXm09TtJlf9jfcrxM9xV1jkFVFh9+QfTi5
+        AAM8mdyAA+rbpvCzA+zi21h/4N2qI+Fxg4/362jdwcswxUncFb4jgj69Y4GYvDpw
+        zOBDa//OMCVSLvcQrJFrz7r3mNtmv8e3KKXEKVVb0Q=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 0h_BWXo10m-n; Thu, 21 Apr 2022 12:21:58 +0300 (MSK)
+Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id D4BD644E3C;
+        Thu, 21 Apr 2022 12:21:50 +0300 (MSK)
+Received: from ubuntu.yadro.com (10.199.0.136) by T-EXCH-04.corp.yadro.com
+ (172.17.100.104) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Thu, 21
+ Apr 2022 12:21:50 +0300
+From:   <i.m.novikov@yadro.com>
+To:     <vkoul@kernel.org>
+CC:     <i.m.novikov@yadro.com>, <sanju.mehta@amd.com>,
+        <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux@yadro.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH] dmaengine: PTDMA: statify pt_tx_status
+Date:   Thu, 21 Apr 2022 12:21:43 +0300
+Message-ID: <20220421092143.18281-1-i.m.novikov@yadro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-Originating-IP: [10.199.0.136]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-04.corp.yadro.com (172.17.100.104)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The region set by the call to memset is immediately overwritten by the
-subsequent call to memcpy. So we drop redundant memset.
+From: Ilya Novikov <i.m.novikov@yadro.com>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+LKP bot reports a new warning:
+Warning:
+drivers/dma/ptdma/ptdma-dmaengine.c:262:1: warning: no previous
+prototype for 'pt_tx_status' [-Wmissing-prototypes]
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ilya Novikov <i.m.novikov@yadro.com>
 ---
- drivers/staging/r8188eu/os_dep/mlme_linux.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/dma/ptdma/ptdma-dmaengine.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/r8188eu/os_dep/mlme_linux.c b/drivers/staging/r8188eu/os_dep/mlme_linux.c
-index 72ad9700130e..899d8e9c3834 100644
---- a/drivers/staging/r8188eu/os_dep/mlme_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/mlme_linux.c
-@@ -66,7 +66,6 @@ void rtw_reset_securitypriv(struct adapter *adapter)
- 		/*  We have to backup the PMK information for WiFi PMK Caching test item. */
- 		/*  Backup the btkip_countermeasure information. */
- 		/*  When the countermeasure is trigger, the driver have to disconnect with AP for 60 seconds. */
--		memset(&backup_pmkid[0], 0x00, sizeof(struct rt_pmkid_list) * NUM_PMKID_CACHE);
- 		memcpy(&backup_pmkid[0], &adapter->securitypriv.PMKIDList[0], sizeof(struct rt_pmkid_list) * NUM_PMKID_CACHE);
- 		backup_index = adapter->securitypriv.PMKIDIndex;
- 		backup_counter = adapter->securitypriv.btkip_countermeasure;
+diff --git a/drivers/dma/ptdma/ptdma-dmaengine.c b/drivers/dma/ptdma/ptdma-dmaengine.c
+index ea07cc42f4d0..cc22d162ce25 100644
+--- a/drivers/dma/ptdma/ptdma-dmaengine.c
++++ b/drivers/dma/ptdma/ptdma-dmaengine.c
+@@ -258,7 +258,7 @@ static void pt_issue_pending(struct dma_chan *dma_chan)
+ 		pt_cmd_callback(desc, 0);
+ }
+ 
+-enum dma_status
++static enum dma_status
+ pt_tx_status(struct dma_chan *c, dma_cookie_t cookie,
+ 		struct dma_tx_state *txstate)
+ {
 -- 
-2.7.4
+2.25.1
 
