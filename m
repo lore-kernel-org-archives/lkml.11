@@ -2,98 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 413DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390235AbiDUPm6 (ORCPT
+        id S1390382AbiDUPpm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
+        Thu, 21 Apr 2022 11:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348309AbiDUPmy (ORCPT
+        with ESMTP id S1390259AbiDUPpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:42:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B37E2FE4A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:40:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650555602;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=S9DMw1QVObZXzp5ejmL5d1FwtHhPc8XTYmN4X9Dq3O0=;
-        b=hXZGlethubjqRAQ5wj2M1pNDeC2VLDAJrH2rdhP5MNi2VWBMAEgp4kUF1bhZbkk5agWcIf
-        bwYjsJ1FG/qL21C2/6kNCg9pwLjwx7Io0pAjT7IrNo7zaeGA4gVUxY3kGox6o5uCNTWeQd
-        pjrBJjt8Uct72BajonfdQGl7ge3mnOU=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-539-ELeyo7YsNF-usjRsY-i0Cg-1; Thu, 21 Apr 2022 11:40:01 -0400
-X-MC-Unique: ELeyo7YsNF-usjRsY-i0Cg-1
-Received: by mail-qv1-f72.google.com with SMTP id gy6-20020a056214242600b0044656c198b0so4209018qvb.20
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:39:59 -0700 (PDT)
+        Thu, 21 Apr 2022 11:45:33 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF5548335
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:42:08 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so5568670pjf.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:42:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=L2BkpTCz5akLsohhEIIUYuv1LmfI2RQS6LEGsp/sj6w=;
+        b=m1gyy5dvpwSTVTH1w7nGbqrC6fljhM2QZ8C6huIyhVBYkcXMS4azkaDXSl+hJRAhxK
+         pmC6BhzshY1KUxMRPHX0/UlFJsqlZkAYRZqPEKDKaoTuxlmkGikKXmRKlYugk0gFMnZh
+         +zqsTkAumqipfpplHayGys82rP5jCL6o9cWOg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=S9DMw1QVObZXzp5ejmL5d1FwtHhPc8XTYmN4X9Dq3O0=;
-        b=NvEN46t/WaoLBzLNVaw+0yNQqem490V26Vd0YReJZ8q5ik6PV6i/8majfXuxyrunye
-         0QETpcyKgYPG/SLe8dBfK/z4DsY4Fxy+bLCrP4SnsLYjDdPAWqEk4ERSB2dwqaTot1Lm
-         G+QXvt6SszhTS2PWe4puJ9xxmaZ3aItR3svhQfOenMjeZfabuttSzMeDrsW9uf76XOEk
-         q2GDEMbpt/m3zNsro6cBR7FkayZQ9P6pInt/cyv/p8NiVf1EJio/uaNvWxNh8CUvbnph
-         ZjEWzjuqWd+9O4yJxLZjzCmFnmBhEQN0dPjNv+THfhIsfeJxhahh+Olih+USYxA6y8Ii
-         GkvA==
-X-Gm-Message-State: AOAM533KL+mKJEsJT8PojhkyPxqBDGTy0+ggDOscH29CyTmn9JoJyJbY
-        p5YIu2RzcKkeVFtvRfIR19EMMcih9Fy6KdwkGXk38PiwRP1YAWAzJ+G8rCcoU13HvcTxC121PVU
-        4+2mBJLhGve1a2SCJQR3FoBrJ
-X-Received: by 2002:a05:620a:2489:b0:69e:996d:7940 with SMTP id i9-20020a05620a248900b0069e996d7940mr12470766qkn.553.1650555599182;
-        Thu, 21 Apr 2022 08:39:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwCwL51TZHhleKjAOtyVvVuDn5ubOOLwr4iM0Tlnqh/J1qgACgnab0k7LSIjuU6d2UPFyXdzA==
-X-Received: by 2002:a05:620a:2489:b0:69e:996d:7940 with SMTP id i9-20020a05620a248900b0069e996d7940mr12470746qkn.553.1650555598818;
-        Thu, 21 Apr 2022 08:39:58 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id k14-20020ac85fce000000b002f344fc0e0bsm2401950qta.38.2022.04.21.08.39.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 08:39:58 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     dan.j.williams@intel.com, vishal.l.verma@intel.com,
-        dave.jiang@intel.com, ira.weiny@intel.com
-Cc:     nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] libnvdimm/security: change __nvdimm_security_overwrite_query from global to static
-Date:   Thu, 21 Apr 2022 11:39:51 -0400
-Message-Id: <20220421153951.35792-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=L2BkpTCz5akLsohhEIIUYuv1LmfI2RQS6LEGsp/sj6w=;
+        b=HWKVQvOdPxYgS7YHsbdUACO4bXQgVL6tHDh7g2QUD371lizFEAxSZ4pxwhN84vTEBP
+         CFR7dZSgthVyx/sS0dKHn6ZTm5B0vAHZ5cD2I0JyZ87PxhE4NfnKxnqjLKRjen/MWgVV
+         6+CwOrVHsHj+ubAolTBClfYmvu/FJO+evBiiTIFlGJxJ6r9CPTZ/vXXktchZJRWyPAfX
+         wtRY4MwwIpgILWTtSvgYs6eAIEs7mivn7xm0ZrjIsEefXBSv5ByKjgx2iGfOXHD5F8bN
+         7e5SO6thivkjm81cUb16fBVyW0q5Wx8Pk9Mknq6L9LkY65m8nxsUvvs085ilggK+iwdc
+         MUAA==
+X-Gm-Message-State: AOAM5310ma3DXG8bN43tpwbfnmTeKxCzRNn8mbH90YER6CL15/KKvZCy
+        lZBrsKgs4KuSBeXWuW6bkNEhjA==
+X-Google-Smtp-Source: ABdhPJwYo4k73WHrantPhUBUqbwFNdVAqpeNInsw9CuK++22pbLVzGNiv9Mxabafa/NNcHZgLnRoIQ==
+X-Received: by 2002:a17:90a:c781:b0:1d0:c23e:5842 with SMTP id gn1-20020a17090ac78100b001d0c23e5842mr11130978pjb.182.1650555727697;
+        Thu, 21 Apr 2022 08:42:07 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
+        by smtp.gmail.com with UTF8SMTPSA id t66-20020a628145000000b0050ca37e60eesm1153066pfd.57.2022.04.21.08.42.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 08:42:07 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 08:42:05 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v8 2/4] arm64: dts: qcom: sc7280: Add nodes for wcd9385
+ and max98360a codec
+Message-ID: <YmF7TRlxUWWQ394e@google.com>
+References: <1650291252-30398-1-git-send-email-quic_srivasam@quicinc.com>
+ <1650291252-30398-3-git-send-email-quic_srivasam@quicinc.com>
+ <Yl2VmW18QAJl9v+m@google.com>
+ <5ac149ac-4862-e8c9-185c-524c4b111961@quicinc.com>
+ <5d4b7c44-62e1-aaa6-3116-f58e1a1b437b@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <5d4b7c44-62e1-aaa6-3116-f58e1a1b437b@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports this issue
-security.c:416:6: warning: symbol '__nvdimm_security_overwrite_query' was not declared. Should it be static?
+On Thu, Apr 21, 2022 at 12:31:52PM +0530, Srinivasa Rao Mandadapu wrote:
+> 
+> On 4/19/2022 4:54 PM, Srinivasa Rao Mandadapu wrote:
+> > 
+> > On 4/18/2022 10:15 PM, Matthias Kaehlcke wrote:
+> > Thanks for your time and valuable inputs Matthias!!!
+> > > On Mon, Apr 18, 2022 at 07:44:10PM +0530, Srinivasa Rao Mandadapu wrote:
+> > > > Add wcd938x and  max98360a codecs for audio use case on
+> > > > sc7280 based platforms.
+> > > > Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
+> > > > Add amp_en node for  max98360a codec.
+> > > General note: I don't think it's a good practice to add stuff like
+> > > this to
+> > > multiple boards in a single patch. Why?
+> > > 
+> > > First the subject of such a patch tends to be vague ("arm64: dts: qcom:
+> > > sc7280: Add nodes for wcd9385 and max98360a codec"), in this case it
+> > > gives
+> > > no hint about the boards. If someone was interested in picking changes
+> > > for a given board they can't easily identify from the subject that the
+> > > change is relevant for them.
+> > > 
+> > > Changes touching multiple boards are more likely to cause conflicts when
+> > > being picked (or reverted), both upstream and in downstream trees (which
+> > > unfortunately have to exist for product development). Downstream trees
+> > > might only pick changes for the board(s) they target, patches that touch
+> > > mutiple boards often cause conflicts due to context deltas in the
+> > > 'irrelevant' boards.
+> > > 
+> > > Lastly it's usually easier to get a patch reviewed (in the sense of
+> > > getting a 'Reviewed-by' tag) and landed that does a single thing.
+> > 
+> > Yes, agree to your opinion. In a nutshell, we will include board
+> > name(ex: herobrine)
+> > 
+> > in commit message and split the patches per external codec.
+> > 
+> > Actually, in Initial herobrine boards, EVT and IDP, has both maxim
+> > speaker and WCD codec,
+> > 
+> > hence we included in same patch.
+> > 
+> > > > Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> > > > Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> > > > Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> > > > ---
+> > > >   arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts     |  6 ++
+> > > >   arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  8 +++
+> > > >   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 97
+> > > > ++++++++++++++++++++++++++
+> > > >   3 files changed, 111 insertions(+)
+> > > > 
+> > > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> > > > b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> > > > index 344338a..aa0bf6e2 100644
+> > > > --- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> > > > +++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> > > > @@ -87,6 +87,12 @@ ap_ts_pen_1v8: &i2c13 {
+> > > >       pins = "gpio51";
+> > > >   };
+> > > >   +&wcd938x {
+> > > > +    pinctrl-names = "default";
+> > > > +    pinctrl-0 = <&us_euro_hs_sel>;
+> > > > +    us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+> > > > +};
+> > > Since this is added for the CRD rev3 it probably should also be added to
+> > > sc7280-herobrine-crd.dts
+> > Okay. Will add in corresponding latest herobrine CRD dts file also.
+> > > 
+> > > > +
+> > > >   &tlmm {
+> > > >       tp_int_odl: tp-int-odl {
+> > > >           pins = "gpio7";
+> > > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > > > b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > > > index d58045d..f247403 100644
+> > > > --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > > > +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > > > @@ -20,6 +20,14 @@
+> > > >   #include "sc7280-chrome-common.dtsi"
+> > > >     / {
+> > > > +    max98360a: audio-codec-0 {
+> > > > +        compatible = "maxim,max98360a";
+> > > > +        pinctrl-names = "default";
+> > > > +        pinctrl-0 = <&amp_en>;
+> > > > +        sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+> > > > +        #sound-dai-cells = <0>;
+> > > > +    };
+> > > > +
+> > > >       chosen {
+> > > >           stdout-path = "serial0:115200n8";
+> > > >       };
+> > > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > > b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > > index 2f863c0..8dad599 100644
+> > > > --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > > +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > > @@ -20,6 +20,42 @@
+> > > >           serial1 = &uart7;
+> > > >       };
+> > > >   +    max98360a: audio-codec-0 {
+> > > > +        compatible = "maxim,max98360a";
+> > > > +        pinctrl-names = "default";
+> > > > +        pinctrl-0 = <&amp_en>;
+> > > > +        sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+> > > > +        #sound-dai-cells = <0>;
+> > > > +    };
+> > > > +
+> > > > +    wcd938x: audio-codec-1 {
+> > > Why 'wcd938x' and not 'wcd9385'?
+> > 
+> > Actually same driver is used for both wcd9380 and wcd9385. Here we can
+> > use specific name as per board.
+> > 
+> > Will change accordingly.
+> 
+> At present, dt-bindgs also has wcd938x. So will update the name in bindings
+> and here post this series.
+> 
+> is it okay?
 
-__nvdimm_security_overwrite_query is only used in security.c so change
-its storage-class specifier to static
-
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/nvdimm/security.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
-index 4b80150e4afa..d3e782662bf4 100644
---- a/drivers/nvdimm/security.c
-+++ b/drivers/nvdimm/security.c
-@@ -413,7 +413,7 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
- 	return rc;
- }
- 
--void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
-+static void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
- {
- 	struct nvdimm_bus *nvdimm_bus = walk_to_nvdimm_bus(&nvdimm->dev);
- 	int rc;
--- 
-2.27.0
-
+I don't think it's strictly necessary to update the binding, as
+'wcd938x' is only used in the example, and also it's not really
+wrong. Then again, if the example in the binding uses a
+specific wcd version it might make it less likely that the
+wildcard name is used in future board DTs. Up to you :)
