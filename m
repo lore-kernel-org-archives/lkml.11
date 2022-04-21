@@ -2,200 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1832C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E01CC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbiDUQdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
+        id S231709AbiDUQdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390534AbiDUQdO (ORCPT
+        with ESMTP id S1390650AbiDUQdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:33:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D55549269
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:27:44 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 478C9153B;
-        Thu, 21 Apr 2022 09:27:44 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CC8E73F73B;
-        Thu, 21 Apr 2022 09:27:42 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 17:27:40 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>, cj.chengjian@huawei.com,
-        huawei.libin@huawei.com, xiexiuqi@huawei.com, liwei391@huawei.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com
-Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
- allocated trampolines
-Message-ID: <YmGF/OpIhAF8YeVq@lakrids>
-References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
- <20220316100132.244849-4-bobo.shaobowang@huawei.com>
- <YmFXrBG5AmX3+4f8@lakrids>
- <20220421100639.03c0d123@gandalf.local.home>
- <YmF0xYpTMoWOIl00@lakrids>
- <20220421114201.21228eeb@gandalf.local.home>
+        Thu, 21 Apr 2022 12:33:41 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7002D48E4D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:28:53 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id bx5so5414736pjb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:28:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WkdhlTGKvN68SlRLMJdx437G/wIo/jBpfIeJhDG0Jck=;
+        b=g39jc98KyMqzeT74PT79TxjVzfhAFziSDBuq3v+ZuzvRsVporGEnbMVsRQ1b6C3o5X
+         54Vr2jaUQIApND2TCOlwd7uaPlyoPFPRpa5ytuI8OzdU9IqVVanwrl/aFYoyA6qIC44R
+         2rrP+NXlVDCcuyelWumY9NhKgwTvxPswO/qAo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WkdhlTGKvN68SlRLMJdx437G/wIo/jBpfIeJhDG0Jck=;
+        b=bVKkH8MawpiZdTvfrBvuzKMLwKSLdGRZkIn9lab8iDAehegHSXp2X6zuhUWQn+6bxo
+         IBf4FP2QotDRO/XfEAfClYV5eREHqvYy3ysyeJhkfOZ4lQK6sQMLqjXN06jt0hhdLv+E
+         NTGNk1dZLeGSMqccg1jFoswwBdNU0eSlkMSBxpoa0gIL3n6Jn3EK1QFAfDDZyO1I3gKu
+         ZRp2e4vJrpFpg+e395EJqm9W/RaeTFZzKcIffMKO4/0DXVGjNSZLO9Efv/5foW7Ka0FS
+         BqQQJRRLB4pcCkV/0udbV4I1zbO5xMp7HMLoRMaHWMJCqMxU08ymaOQGPTe+xME5GjqY
+         bm1w==
+X-Gm-Message-State: AOAM531iq+Gw/p+orBqD1gAyb4faF4rDJWty8990smBTtQ3q7H9Wmudy
+        bsBHuK6H4NhOouAFHefJHPhPCQ==
+X-Google-Smtp-Source: ABdhPJwwEZAKewcyO4Htm0T4aE9t8nchCjvROAy5B3s0/2c0AxEY8XyA/EVhcuqsUwTSeh7+7XgOtw==
+X-Received: by 2002:a17:902:8306:b0:158:2d58:a36a with SMTP id bd6-20020a170902830600b001582d58a36amr82271plb.55.1650558533004;
+        Thu, 21 Apr 2022 09:28:53 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
+        by smtp.gmail.com with UTF8SMTPSA id h13-20020a056a00230d00b004f427ffd485sm26982254pfh.143.2022.04.21.09.28.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 09:28:52 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 09:28:50 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v9 03/12] arm64: dts: qcom: sc7280: Enable digital codecs
+ and soundwire for CRD 3.0/3.1
+Message-ID: <YmGGQiD0L2GipcRt@google.com>
+References: <1650552459-21077-1-git-send-email-quic_srivasam@quicinc.com>
+ <1650552459-21077-4-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220421114201.21228eeb@gandalf.local.home>
+In-Reply-To: <1650552459-21077-4-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 11:42:01AM -0400, Steven Rostedt wrote:
-> On Thu, 21 Apr 2022 16:14:13 +0100
-> Mark Rutland <mark.rutland@arm.com> wrote:
+On Thu, Apr 21, 2022 at 08:17:30PM +0530, Srinivasa Rao Mandadapu wrote:
+> Enable rx, tx and va macro codecs and soundwire nodes for
+> CRD rev5 (aka CRD 3.0/3.1) boards.
 > 
-> > > Let's say you have 10 ftrace_ops registered (with bpf and kprobes this can
-> > > be quite common). But each of these ftrace_ops traces a function (or
-> > > functions) that are not being traced by the other ftrace_ops. That is, each
-> > > ftrace_ops has its own unique function(s) that they are tracing. One could
-> > > be tracing schedule, the other could be tracing ksoftirqd_should_run
-> > > (whatever).  
-> > 
-> > Ok, so that's when messing around with bpf or kprobes, and not generally
-> > when using plain old ftrace functionality under /sys/kernel/tracing/
-> > (unless that's concurrent with one of the former, as per your other
-> > reply) ?
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 35 +++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
 > 
-> It's any user of the ftrace infrastructure, which includes kprobes, bpf,
-> perf, function tracing, function graph tracing, and also affects instances.
-> 
-> > 
-> > > Without this change, because the arch does not support dynamically
-> > > allocated trampolines, it means that all these ftrace_ops will be
-> > > registered to the same trampoline. That means, for every function that is
-> > > traced, it will loop through all 10 of theses ftrace_ops and check their
-> > > hashes to see if their callback should be called or not.  
-> > 
-> > Sure; I can see how that can be quite expensive.
-> > 
-> > What I'm trying to figure out is who this matters to and when, since the
-> > implementation is going to come with a bunch of subtle/fractal
-> > complexities, and likely a substantial overhead too when enabling or
-> > disabling tracing of a patch-site. I'd like to understand the trade-offs
-> > better.
-> > 
-> > > With dynamically allocated trampolines, each ftrace_ops will have their own
-> > > trampoline, and that trampoline will be called directly if the function
-> > > is only being traced by the one ftrace_ops. This is much more efficient.
-> > > 
-> > > If a function is traced by more than one ftrace_ops, then it falls back to
-> > > the loop.  
-> > 
-> > I see -- so the dynamic trampoline is just to get the ops? Or is that
-> > doing additional things?
-> 
-> It's to get both the ftrace_ops (as that's one of the parameters) as well
-> as to call the callback directly. Not sure if arm is affected by spectre,
-> but the "loop" function is filled with indirect function calls, where as
-> the dynamic trampolines call the callback directly.
-> 
-> Instead of:
-> 
->   bl ftrace_caller
-> 
-> ftrace_caller:
->   [..]
->   bl ftrace_ops_list_func
->   [..]
-> 
-> 
-> void ftrace_ops_list_func(...)
-> {
-> 	__do_for_each_ftrace_ops(op, ftrace_ops_list) {
-> 		if (ftrace_ops_test(op, ip)) // test the hash to see if it
-> 					     //	should trace this
-> 					     //	function.
-> 			op->func(...);
-> 	}
-> }
-> 
-> It does:
-> 
->   bl dyanmic_tramp
-> 
-> dynamic_tramp:
->   [..]
->   bl func  // call the op->func directly!
-> 
-> 
-> Much more efficient!
-> 
-> 
-> > 
-> > There might be a middle-ground here where we patch the ftrace_ops
-> > pointer into a literal pool at the patch-site, which would allow us to
-> > handle this atomically, and would avoid the issues with out-of-range
-> > trampolines.
-> 
-> Have an example of what you are suggesting?
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+> index fd6eadc..d0794f2 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+> @@ -69,6 +69,19 @@ ap_ts_pen_1v8: &i2c13 {
+>  	};
+>  };
+>  
+> +&lpass_rx_macro {
+> +	status = "okay";
+> +};
+> +
+> +&lpass_tx_macro {
+> +	status = "okay";
+> +};
+> +
+> +&lpass_va_macro {
+> +	status = "okay";
+> +	vdd-micb-supply = <&vreg_bob>;
+> +};
+> +
+>  /* For nvme */
+>  &pcie1 {
+>  	status = "okay";
+> @@ -89,6 +102,28 @@ ap_ts_pen_1v8: &i2c13 {
+>  	status = "okay";
+>  };
+>  
+> +&swr0 {
+> +	status = "okay";
+> +
+> +	wcd_rx: codec@0,4 {
+> +		compatible = "sdw20217010d00";
+> +		reg = <0 4>;
+> +		#sound-dai-cells = <1>;
+> +		qcom,rx-port-mapping = <1 2 3 4 5>;
+> +	};
+> +};
+> +
+> +&swr1 {
+> +	status = "okay";
+> +
+> +	wcd_tx: codec@0,3 {
+> +		compatible = "sdw20217010d00";
+> +		reg = <0 3>;
+> +		#sound-dai-cells = <1>;
+> +		qcom,tx-port-mapping = <1 2 3 4>;
+> +	};
+> +};
 
-We can make the compiler to place 2 NOPs before the function entry point, and 2
-NOPs after it using `-fpatchable-function-entry=4,2` (the arguments are
-<total>,<before>). On arm64 all instructions are 4 bytes, and we'll use the
-first two NOPs as an 8-byte literal pool.
-
-Ignoring BTI for now, the compiler generates (with some magic labels added here
-for demonstration):
-
-	__before_func:
-			NOP
-			NOP
-	func:
-			NOP
-			NOP
-	__remainder_of_func:
-			...
-
-At ftrace_init_nop() time we patch that to:
-
-	__before_func:
-			// treat the 2 NOPs as an 8-byte literal-pool
-			.quad	<default ops pointer> // see below
-	func:
-			MOV	X9, X30
-			NOP
-	__remainder_of_func:
-			...
-
-When enabling tracing we do
-
-	__before_func:
-			// patch this with the relevant ops pointer
-			.quad	<ops pointer>
-	func:
-			MOV	X9, X30
-			BL	<trampoline>	// common trampoline
-	__remainder_of_func:
-		 	..
-
-The `BL <trampoline>` clobbers X30 with __remainder_of_func, so within
-the trampoline we can find the ops pointer at an offset from X30. On
-arm64 we can load that directly with something like:
-
-	LDR	<tmp>, [X30, # -(__remainder_of_func - __before_func)]
-
-... then load the ops->func from that and invoke it (or pass it to a
-helper which does):
-
-	// Ignoring the function arguments for this demonstration
-	LDR	<tmp2>, [<tmp>, #OPS_FUNC_OFFSET]
-	BLR	<tmp2>
-
-That avoids iterating over the list *without* requiring separate
-trampolines, and allows us to patch the sequence without requiring
-stop-the-world logic (since arm64 has strong requirements for patching
-most instructions other than branches and nops).
-
-We can initialize the ops pointer to a default ops that does the whole
-__do_for_each_ftrace_ops() dance.
-
-To handle BTI we can have two trampolines, or we can always reserve 3 NOPs
-before the function so that we can have a consistent offset regardless.
-
-Thanks,
-Mark.
+The wcd9385 is on the qcard, so the wcd_tx/rx nodes should probably
+be added to sc7280-qcard.dtsi, and the CRD DT would only set 'status'.
