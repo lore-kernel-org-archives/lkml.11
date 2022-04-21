@@ -2,113 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388231AbiDUKOv (ORCPT
+        id S1350974AbiDUKPm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        Thu, 21 Apr 2022 06:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388138AbiDUKN5 (ORCPT
+        with ESMTP id S1388272AbiDUKPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:13:57 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EBEF6B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:11:08 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id bo5so4573216pfb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:11:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hdnqgvQUKM2bZrGrKVDmt9RrjK+aAWvXbMuv7vTUtfE=;
-        b=cbo5rNoZILL/PF4xvaUy1JfZC8M8NOp0uxlPNB8cgum7YnNXqEeLQMfcFU6K3fCUKz
-         bI79klpOhBfZS9m6xyE/aZbbiUNtunfi4g1i1+FpRJuAIuwAgAsWgq3I7wBuRHCZeRlf
-         5SdJZ9YI+dzv1DlZzHG2wJVB7Tpd5s7lYZCg0lvze3MH5cnQ+vj3+gg10MIvMDQmGajH
-         hqwFRVhqUvk/eCxvg3xxZUrgy1EeMT95c7zSHVBOUeCSsglXP9yXTM/sj2xrVbV4OAan
-         98c8/Q3HdNSmHQE6hC+UwmJGKRWWaE7y4yXkLImH7G97LOETjzfv7063gpRCw3GzMfCm
-         RKHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hdnqgvQUKM2bZrGrKVDmt9RrjK+aAWvXbMuv7vTUtfE=;
-        b=6S8jrZf4CM+i27BVZ4go0ZnfXhWrm+mkxvlTcNtXQXOmmAFGoI9CA3XyEbn479wAuK
-         2r/7CA3Eq5j9vtwpaBCPE8JEnEqONj+T0iZOd5aVy695rUUMYWlh9dPnhMn2p0/YybuV
-         aGp6SxfI5JWqjBwa3VdiYehnOa1ylyoEH0Bkk/zxwWciCU+rgE/HItTOEIT6smB/RXZ9
-         sn/hpV+KB7Rs0uDJ6hpDlYW4W2wWmeDWgOoNOMswrRFC59E+YFoabOWcPZtvRjVS7ovu
-         Af/tyDohJJBgj1aQsO3wJ3ugBhi3gXpv43FRkhxFs5URkjoQ2I8KcJIlxIKkzxGs37zW
-         plgg==
-X-Gm-Message-State: AOAM533o41lEgqs0C7v7Ojaw/dp18nKEIvl0G7hLjCSZGZRQk4/EiAIZ
-        cHOzxrRLFc+p5KBChpuQqy8=
-X-Google-Smtp-Source: ABdhPJzkJD3TIf9slREdnMuLeJHCgp6CgU05+02Url1Fw+VtyLcJN6X4kVhTTd7i7Xj7SDvObNEzRw==
-X-Received: by 2002:a63:f147:0:b0:399:2b1f:7aff with SMTP id o7-20020a63f147000000b003992b1f7affmr23531374pgk.341.1650535867681;
-        Thu, 21 Apr 2022 03:11:07 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:df13:3d47:8c92:6576])
-        by smtp.gmail.com with ESMTPSA id w196-20020a6282cd000000b0050ada022940sm2407806pfd.183.2022.04.21.03.11.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 03:11:06 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH v2 09/10] xtensa: get rid of stack frame in coprocessor_flush
-Date:   Thu, 21 Apr 2022 03:10:32 -0700
-Message-Id: <20220421101033.216394-10-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220421101033.216394-1-jcmvbkbc@gmail.com>
-References: <20220421101033.216394-1-jcmvbkbc@gmail.com>
+        Thu, 21 Apr 2022 06:15:24 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F4D2FE4A;
+        Thu, 21 Apr 2022 03:12:08 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 8AA9D1F45483
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650535927;
+        bh=HPOrpLDJ/NYqVSsQ+sZ4XQLCeAYBNHE6ulTq2mIsJDc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=W98B6+rtp16cuw3lgkpd6JA8YrUWyrDUDS+Mj/UxJ4GP+7oFd1sUbklJ1QDBiTAzm
+         m2ci2dmyJYPHDvtIi6kMUq1Yy/BbCjMFaw65IRUHQftiQg/CRO1TOmFumOWsSScKbc
+         fRJ9MfHo8bUZVC6NYFcWTgJbL+1frzxj/7wSgPSwob60ulGk1S1a8gzf2lzuh0jbzm
+         ve+52G2dyd8CeD0qfv2zlWcbbhoZimNrS9C3a7In65nuGZetHNhf/oOBSl2dzw3Ji/
+         5/omW4tgdBxeR/U6ccdShnlc8/RaYJpJ9WgKpkfYgEac1zD7PAKEB5ANIEKhfYBKSB
+         Dwj2BuYcCicqg==
+Message-ID: <2703f3de-1ee9-36ca-4866-89398c501244@collabora.com>
+Date:   Thu, 21 Apr 2022 12:12:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 2/2] remoteproc: mediatek: allow reading firmware-name
+ from DT
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-remoteproc@vger.kernel.org
+References: <20220419123331.14377-1-allen-kh.cheng@mediatek.com>
+ <20220419123331.14377-3-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220419123331.14377-3-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-coprocessor_flush is an ordinary function, it can use all registers.
-Don't reserve stack frame for it and use a7 to preserve a0 around the
-context saving call.
+Il 19/04/22 14:33, Allen-KH Cheng ha scritto:
+> The SCP firmware blob differs between platforms and SoCs. We add
+> support in the SCP driver for reading the path of firmware file from
+> DT in order to allow these files to live in a generic file system
+> (or linux-firmware).
+> 
+> The firmware-name property is optional and the code falls back to the
+> old filename if the property isn't present.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
-Changes v1->v2:
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-- new patch
-
- arch/xtensa/kernel/coprocessor.S | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/arch/xtensa/kernel/coprocessor.S b/arch/xtensa/kernel/coprocessor.S
-index af11ddaa8c5f..95412409c49e 100644
---- a/arch/xtensa/kernel/coprocessor.S
-+++ b/arch/xtensa/kernel/coprocessor.S
-@@ -216,10 +216,8 @@ ENDPROC(fast_coprocessor)
- 
- ENTRY(coprocessor_flush)
- 
--	/* reserve 4 bytes on stack to save a0 */
--	abi_entry(4)
-+	abi_entry_default
- 
--	s32i	a0, a1, 0
- 	movi	a4, .Lcp_regs_jump_table
- 	addx8	a4, a3, a4
- 	addx4	a3, a3, a4
-@@ -227,10 +225,11 @@ ENTRY(coprocessor_flush)
- 	beqz	a4, 1f
- 	l32i	a3, a3, CP_REGS_TAB_OFFSET
- 	add	a2, a2, a3
-+	mov	a7, a0
- 	callx0	a4
--1:	l32i	a0, a1, 0
--
--	abi_ret(4)
-+	mov	a0, a7
-+1:
-+	abi_ret_default
- 
- ENDPROC(coprocessor_flush)
- 
--- 
-2.30.2
 
