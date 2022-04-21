@@ -2,260 +2,322 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF08C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4ADBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389059AbiDUOOe (ORCPT
+        id S1389039AbiDUOOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
+        Thu, 21 Apr 2022 10:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389011AbiDUOMh (ORCPT
+        with ESMTP id S1389212AbiDUOOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:12:37 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC943B2A1;
-        Thu, 21 Apr 2022 07:09:46 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23LDsMQt020880;
-        Thu, 21 Apr 2022 14:09:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=gNp9ZlbmLVSkiic9jRUu4UmK2HrMEclCkVg1qvgOHPw=;
- b=fqqKXyTF0OtD4dhN3Z7L5V3oWvEJwL3j3X46ckYN8OJ5EgD2D0F+7NlKhXAq8B7wJ31D
- B9ALvRgD+sK2HDlx602v90itasLQ1srwUSaPBsi2TVxw4SAh76ytgBce7LRLPVuvXCDk
- Elb/MvA9AWkOrM6Q2gY7cAzMlBqJ+NrZjzH/tSaKlxUNAkGTyDRiAo2d0evXNlkhqjDZ
- uUp84hTrLVrhYCngVXZO5n3purGJW6mTQrZMhEFtUojFsR5xozP4cLxzS2oK6+WwgDOM
- 9mWl2aL5wnN0kdrzeGLomZyDDWphU95sIMzMjRyZyYvCAVaJx1po2ybMvVW7I8apuB6U 9Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fk1ye9a68-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Apr 2022 14:09:37 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23LDpvTx011306;
-        Thu, 21 Apr 2022 14:09:37 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fk1ye9a5m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Apr 2022 14:09:37 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23LDr6ck028357;
-        Thu, 21 Apr 2022 14:09:35 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ffne8r0gv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Apr 2022 14:09:35 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23LE9XRh57147830
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Apr 2022 14:09:33 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 19B6F42042;
-        Thu, 21 Apr 2022 14:09:33 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BC6F142045;
-        Thu, 21 Apr 2022 14:09:32 +0000 (GMT)
-Received: from [9.145.46.115] (unknown [9.145.46.115])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 21 Apr 2022 14:09:32 +0000 (GMT)
-Message-ID: <f18be57f-c1c3-bf83-098c-4e0e1c57c580@linux.ibm.com>
-Date:   Thu, 21 Apr 2022 16:09:32 +0200
+        Thu, 21 Apr 2022 10:14:05 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0963EBA9
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:11:08 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id u15so1591458ple.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DVT4NECZaBEyFLjp9p66xD5Y1Fcie61kWtMgCTa876U=;
+        b=ARiQRJDX9hfyXi7Q1abH2PQJb5EsDAUnhIfMR0UK31lEOZ2mKIWSV0jNcFqleh0/WQ
+         EdiTrxBZlz3wuN+ohpXx2L/NmcXVkswz37LfSdqKGJN4zoECz7lnXFC2/6KIdiFWkFup
+         toGG3HcGOL4kCNMxpdIk5aQYb0INpI4beDRHKm7L0f5S2cSysXyrawR9+brp7zFVRXZT
+         Pu329wI8U/VK13HO2eox20buCGDQZzeYO6u/G/VrfV7VQxW3bHCHqmlxczuKuuz5IM28
+         +G9oDW3FBIIRLnCi+wp4KT31iM9nEjVotv7hPxzDpmkOcy0TTm5s/EXa4GSTe11w9RB2
+         llrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DVT4NECZaBEyFLjp9p66xD5Y1Fcie61kWtMgCTa876U=;
+        b=Vm2yPqWM2YUCy+bqB+akgfW7Jj2+JigB/M9EzkOPgwW3XJfLusRzaoiBUUWJ2rHTf+
+         YFyJcdMJD9jLoUllUM9WbqapJMjuzTdOKUHVQ5M9XxKNbNEKo/1CxvHvv061Xtj51QZP
+         1C2EMrqAz62PjwQqEfoX7vmlAQ8QXleWOk/8J9mXKk62hO5eHpRZS3lBeo3qPQacmWF3
+         KzIRmHqcAhollc4PbYFu6DRDdAkGevMolZDnil+UQ9U+GuvV/rYKgJg+zpfSj4Dx9yEu
+         9gf4iOzmidVL+CjLy2uhJ6D2VcXYBbXGIHu4z8ByilMby/BB5PNxEWC0l5svpMvA2cUm
+         HK/g==
+X-Gm-Message-State: AOAM533Og3qaIuUHKjr4wSvH4GDQP7GT3yFrRcp2pGAHfLrIrcwhByv3
+        fVH44xFuEvKQ/0ywUALv3eUArV76mhw=
+X-Google-Smtp-Source: ABdhPJwXTlw4BVGjQOH6dVklKbgX2phmCqoKqC2wCUr9zfr574jUXuizNsZOEY+3BGeTChwhNSWaJQ==
+X-Received: by 2002:a17:902:a413:b0:156:15b:524a with SMTP id p19-20020a170902a41300b00156015b524amr25616102plq.106.1650550267515;
+        Thu, 21 Apr 2022 07:11:07 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id p11-20020a65490b000000b003aa7791f3afsm4555494pgs.84.2022.04.21.07.11.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 21 Apr 2022 07:11:07 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <jroedel@suse.de>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH V6 8/8] x86/entry: Use idtentry macro for entry_INT80_compat()
+Date:   Thu, 21 Apr 2022 22:10:55 +0800
+Message-Id: <20220421141055.316239-9-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220421141055.316239-1-jiangshanlai@gmail.com>
+References: <20220421141055.316239-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH v2] powerpc/rtas: Keep MSR[RI] set when calling RTAS
-Content-Language: en-US
-To:     mpe@ellerman.id.au
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>
-References: <20220401140634.65726-1-ldufour@linux.ibm.com>
- <1649829486.cvd3k2eimb.astroid@bobo.none>
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-In-Reply-To: <1649829486.cvd3k2eimb.astroid@bobo.none>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: txuU3_IRCuH_PYgdfeEFY8Z13T7txX0u
-X-Proofpoint-GUID: jcmVTBrXFwYz2kBokaLuPCAR79K_H0g1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-21_01,2022-04-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- bulkscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0
- priorityscore=1501 phishscore=0 mlxscore=0 clxscore=1011 adultscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204210077
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/04/2022, 07:58:42, Nicholas Piggin wrote:
-> Excerpts from Laurent Dufour's message of April 2, 2022 12:06 am:
->> RTAS runs in real mode (MSR[DR] and MSR[IR] unset) and in 32bits
->> mode (MSR[SF] unset).
->>
->> The change in MSR is done in enter_rtas() in a relatively complex way,
->> since the MSR value could be hardcoded.
->>
->> Furthermore, a panic has been reported when hitting the watchdog interrupt
->> while running in RTAS, this leads to the following stack trace:
->>
->> [69244.027433][   C24] watchdog: CPU 24 Hard LOCKUP
->> [69244.027442][   C24] watchdog: CPU 24 TB:997512652051031, last heartbeat TB:997504470175378 (15980ms ago)
->> [69244.027451][   C24] Modules linked in: chacha_generic(E) libchacha(E) xxhash_generic(E) wp512(E) sha3_generic(E) rmd160(E) poly1305_generic(E) libpoly1305(E) michael_mic(E) md4(E) crc32_generic(E) cmac(E) ccm(E) algif_rng(E) twofish_generic(E) twofish_common(E) serpent_generic(E) fcrypt(E) des_generic(E) libdes(E) cast6_generic(E) cast5_generic(E) cast_common(E) camellia_generic(E) blowfish_generic(E) blowfish_common(E) algif_skcipher(E) algif_hash(E) gcm(E) algif_aead(E) af_alg(E) tun(E) rpcsec_gss_krb5(E) auth_rpcgss(E)
->> nfsv4(E) dns_resolver(E) rpadlpar_io(EX) rpaphp(EX) xsk_diag(E) tcp_diag(E) udp_diag(E) raw_diag(E) inet_diag(E) unix_diag(E) af_packet_diag(E) netlink_diag(E) nfsv3(E) nfs_acl(E) nfs(E) lockd(E) grace(E) sunrpc(E) fscache(E) netfs(E) af_packet(E) rfkill(E) bonding(E) tls(E) ibmveth(EX) crct10dif_vpmsum(E) rtc_generic(E) drm(E) drm_panel_orientation_quirks(E) fuse(E) configfs(E) backlight(E) ip_tables(E) x_tables(E) dm_service_time(E) sd_mod(E) t10_pi(E)
->> [69244.027555][   C24]  ibmvfc(EX) scsi_transport_fc(E) vmx_crypto(E) gf128mul(E) btrfs(E) blake2b_generic(E) libcrc32c(E) crc32c_vpmsum(E) xor(E) raid6_pq(E) dm_mirror(E) dm_region_hash(E) dm_log(E) sg(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi_dh_alua(E) scsi_mod(E)
->> [69244.027587][   C24] Supported: No, Unreleased kernel
->> [69244.027600][   C24] CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
->> [69244.027609][   C24] NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
->> [69244.027612][   C24] REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
->> [69244.027615][   C24] MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
->> [69244.027625][   C24] CFAR: 000000000000011c IRQMASK: 1
->> [69244.027625][   C24] GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
->> [69244.027625][   C24] GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
->> [69244.027625][   C24] GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
->> [69244.027625][   C24] GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
->> [69244.027625][   C24] GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
->> [69244.027625][   C24] GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
->> [69244.027625][   C24] GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
->> [69244.027625][   C24] GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
->> [69244.027663][   C24] NIP [000000001fb41050] 0x1fb41050
->> [69244.027696][   C24] LR [000000001fb4104c] 0x1fb4104c
->> [69244.027699][   C24] Call Trace:
->> [69244.027701][   C24] Instruction dump:
->> [69244.027723][   C24] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
->> [69244.027728][   C24] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
->> [69244.027762][T87504] Oops: Unrecoverable System Reset, sig: 6 [#1]
->> [69244.028044][T87504] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
->> [69244.028089][T87504] Modules linked in: chacha_generic(E) libchacha(E) xxhash_generic(E) wp512(E) sha3_generic(E) rmd160(E) poly1305_generic(E) libpoly1305(E) michael_mic(E) md4(E) crc32_generic(E) cmac(E) ccm(E) algif_rng(E) twofish_generic(E) twofish_common(E) serpent_generic(E) fcrypt(E) des_generic(E) libdes(E) cast6_generic(E) cast5_generic(E) cast_common(E) camellia_generic(E) blowfish_generic(E) blowfish_common(E) algif_skcipher(E) algif_hash(E) gcm(E) algif_aead(E) af_alg(E) tun(E) rpcsec_gss_krb5(E) auth_rpcgss(E)
->> nfsv4(E) dns_resolver(E) rpadlpar_io(EX) rpaphp(EX) xsk_diag(E) tcp_diag(E) udp_diag(E) raw_diag(E) inet_diag(E) unix_diag(E) af_packet_diag(E) netlink_diag(E) nfsv3(E) nfs_acl(E) nfs(E) lockd(E) grace(E) sunrpc(E) fscache(E) netfs(E) af_packet(E) rfkill(E) bonding(E) tls(E) ibmveth(EX) crct10dif_vpmsum(E) rtc_generic(E) drm(E) drm_panel_orientation_quirks(E) fuse(E) configfs(E) backlight(E) ip_tables(E) x_tables(E) dm_service_time(E) sd_mod(E) t10_pi(E)
->> [69244.028171][T87504]  ibmvfc(EX) scsi_transport_fc(E) vmx_crypto(E) gf128mul(E) btrfs(E) blake2b_generic(E) libcrc32c(E) crc32c_vpmsum(E) xor(E) raid6_pq(E) dm_mirror(E) dm_region_hash(E) dm_log(E) sg(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi_dh_alua(E) scsi_mod(E)
->> [69244.028307][T87504] Supported: No, Unreleased kernel
->> [69244.028385][T87504] CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
->> [69244.028408][T87504] NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
->> [69244.028418][T87504] REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
->> [69244.028429][T87504] MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
->> [69244.028444][T87504] CFAR: 000000000000011c IRQMASK: 1
->> [69244.028444][T87504] GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
->> [69244.028444][T87504] GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
->> [69244.028444][T87504] GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
->> [69244.028444][T87504] GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
->> [69244.028444][T87504] GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
->> [69244.028444][T87504] GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
->> [69244.028444][T87504] GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
->> [69244.028444][T87504] GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
->> [69244.028534][T87504] NIP [000000001fb41050] 0x1fb41050
->> [69244.028543][T87504] LR [000000001fb4104c] 0x1fb4104c
->> [69244.028549][T87504] Call Trace:
->> [69244.028554][T87504] Instruction dump:
->> [69244.028561][T87504] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
->> [69244.028575][T87504] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
->> [69244.028607][T87504] ---[ end trace 3ddec07f638c34a2 ]---
->>
->> This happens because MSR[RI] is unset when entering RTAS but there is no
->> valid reason to not set it here.
->>
->> RTAS is expected to be called with MSR[RI] as specified in PAPR+ section
->> "7.2.1 Machine State":
->>
->>  R1–7.2.1–9. If called with MSR[RI] equal to 1, then RTAS must protect its
->>  own critical regions from recursion by setting the MSRRI bit to 0 when in
->>  the critical regions.
->>
->> Fixing this by reviewing the way MSR is compute before calling RTAS. Now a
->> hardcoded value meaning real mode, 32 bits and Recoverable Interrupt is
->> loaded.
->>
->> In addition a check is added in do_enter_rtas() to detect calls made with
->> MSR[RI] unset, as we are forcing it on later.
->>
->> This patch has been tested on the following machines:
->> Power KVM Guest
->>   P8 S822L (host Ubuntu kernel 5.11.0-49-generic)
->> PowerVM LPAR
->>   P8 9119-MME (FW860.A1)
->>   p9 9008-22L (FW950.00)
->>   P10 9080-HEX (FW1010.00)
->>
->> Changes in V2:
->>  - Change comment in code to indicate NMI (Nick's comment)
->>  - Add reference to PAPR+ in the change log (Michael's comment)
->>
->> Cc: stable@vger.kernel.org
->> Suggested-by: Nicholas Piggin <npiggin@gmail.com>
->> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-> 
-> Still looks good,
-> 
-> Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Hi Michael,
+entry_INT80_compat() is identical to idtentry macro except a special
+handling for %rax in the prolog.
 
-Do you consider peeking that patch ?
+Add the prolog to idtentry and use idtentry for entry_INT80_compat().
 
-Thanks,
-Laurent.
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+---
+ arch/x86/entry/entry_64.S        |  18 ++++++
+ arch/x86/entry/entry_64_compat.S | 103 -------------------------------
+ arch/x86/include/asm/idtentry.h  |  47 ++++++++++++++
+ arch/x86/include/asm/proto.h     |   4 --
+ 4 files changed, 65 insertions(+), 107 deletions(-)
 
-> 
->> ---
->>  arch/powerpc/kernel/entry_64.S | 20 ++++++++------------
->>  arch/powerpc/kernel/rtas.c     |  5 +++++
->>  2 files changed, 13 insertions(+), 12 deletions(-)
->>
->> diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_64.S
->> index 9581906b5ee9..65cb14b56f8d 100644
->> --- a/arch/powerpc/kernel/entry_64.S
->> +++ b/arch/powerpc/kernel/entry_64.S
->> @@ -330,22 +330,18 @@ _GLOBAL(enter_rtas)
->>  	clrldi	r4,r4,2			/* convert to realmode address */
->>         	mtlr	r4
->>  
->> -	li	r0,0
->> -	ori	r0,r0,MSR_EE|MSR_SE|MSR_BE|MSR_RI
->> -	andc	r0,r6,r0
->> -	
->> -        li      r9,1
->> -        rldicr  r9,r9,MSR_SF_LG,(63-MSR_SF_LG)
->> -	ori	r9,r9,MSR_IR|MSR_DR|MSR_FE0|MSR_FE1|MSR_FP|MSR_RI|MSR_LE
->> -	andc	r6,r0,r9
->> -
->>  __enter_rtas:
->> -	sync				/* disable interrupts so SRR0/1 */
->> -	mtmsrd	r0			/* don't get trashed */
->> -
->>  	LOAD_REG_ADDR(r4, rtas)
->>  	ld	r5,RTASENTRY(r4)	/* get the rtas->entry value */
->>  	ld	r4,RTASBASE(r4)		/* get the rtas->base value */
->> +
->> +	/* RTAS runs in 32bits real mode but let MSR[]RI on as we may hit
->> +	 * NMI (SRESET or MCE). RTAS should disable RI in its critical
->> +	 * regions (as specified in PAPR+ section 7.2.1). */
->> +	LOAD_REG_IMMEDIATE(r6, MSR_ME|MSR_RI)
->> +
->> +	li      r0,0
->> +	mtmsrd  r0,1                    /* disable RI before using SRR0/1 */
->>  	
->>  	mtspr	SPRN_SRR0,r5
->>  	mtspr	SPRN_SRR1,r6
->> diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
->> index 1f42aabbbab3..d7775b8c8853 100644
->> --- a/arch/powerpc/kernel/rtas.c
->> +++ b/arch/powerpc/kernel/rtas.c
->> @@ -49,6 +49,11 @@ void enter_rtas(unsigned long);
->>  
->>  static inline void do_enter_rtas(unsigned long args)
->>  {
->> +	unsigned long msr;
->> +
->> +	msr = mfmsr();
->> +	BUG_ON(!(msr & MSR_RI));
->> +
->>  	enter_rtas(args);
->>  
->>  	srr_regs_clobbered(); /* rtas uses SRRs, invalidate */
->> -- 
->> 2.35.1
->>
->>
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 312186612f4e..2bbecde5b228 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -386,6 +386,24 @@ SYM_CODE_START(\asmsym)
+ 		pushq	$-1			/* ORIG_RAX: no syscall to restart */
+ 	.endif
+ 
++	.if \vector == IA32_SYSCALL_VECTOR
++		/*
++		 * User tracing code (ptrace or signal handlers) might assume
++		 * that the saved RAX contains a 32-bit number when we're
++		 * invoking a 32-bit syscall.  Just in case the high bits are
++		 * nonzero, zero-extend the syscall number.  (This could almost
++		 * certainly be deleted with no ill effects.)
++		 */
++		movl	%eax, %eax
++
++		/*
++		 * do_int80_syscall_32() expects regs->orig_ax to be user ax,
++		 * and regs->ax to be $-ENOSYS.
++		 */
++		movq	%rax, (%rsp)
++		movq	$-ENOSYS, %rax
++	.endif
++
+ 	.if \vector == X86_TRAP_BP
+ 		/*
+ 		 * If coming from kernel space, create a 6-word gap to allow the
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index c5aeb0819707..6866151bbef3 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -315,106 +315,3 @@ sysret32_from_system_call:
+ 	swapgs
+ 	sysretl
+ SYM_CODE_END(entry_SYSCALL_compat)
+-
+-/*
+- * 32-bit legacy system call entry.
+- *
+- * 32-bit x86 Linux system calls traditionally used the INT $0x80
+- * instruction.  INT $0x80 lands here.
+- *
+- * This entry point can be used by 32-bit and 64-bit programs to perform
+- * 32-bit system calls.  Instances of INT $0x80 can be found inline in
+- * various programs and libraries.  It is also used by the vDSO's
+- * __kernel_vsyscall fallback for hardware that doesn't support a faster
+- * entry method.  Restarted 32-bit system calls also fall back to INT
+- * $0x80 regardless of what instruction was originally used to do the
+- * system call.
+- *
+- * This is considered a slow path.  It is not used by most libc
+- * implementations on modern hardware except during process startup.
+- *
+- * Arguments:
+- * eax  system call number
+- * ebx  arg1
+- * ecx  arg2
+- * edx  arg3
+- * esi  arg4
+- * edi  arg5
+- * ebp  arg6
+- */
+-SYM_CODE_START(entry_INT80_compat)
+-	UNWIND_HINT_EMPTY
+-	ENDBR
+-	/*
+-	 * Interrupts are off on entry.
+-	 */
+-	ASM_CLAC			/* Do this early to minimize exposure */
+-	SWAPGS
+-
+-	/*
+-	 * User tracing code (ptrace or signal handlers) might assume that
+-	 * the saved RAX contains a 32-bit number when we're invoking a 32-bit
+-	 * syscall.  Just in case the high bits are nonzero, zero-extend
+-	 * the syscall number.  (This could almost certainly be deleted
+-	 * with no ill effects.)
+-	 */
+-	movl	%eax, %eax
+-
+-	/* switch to thread stack expects orig_ax and rdi to be pushed */
+-	pushq	%rax			/* pt_regs->orig_ax */
+-	pushq	%rdi			/* pt_regs->di */
+-
+-	/* Need to switch before accessing the thread stack. */
+-	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdi
+-
+-	/* In the Xen PV case we already run on the thread stack. */
+-	ALTERNATIVE "", "jmp .Lint80_keep_stack", X86_FEATURE_XENPV
+-
+-	movq	%rsp, %rdi
+-	movq	PER_CPU_VAR(cpu_current_top_of_stack), %rsp
+-
+-	pushq	6*8(%rdi)		/* regs->ss */
+-	pushq	5*8(%rdi)		/* regs->rsp */
+-	pushq	4*8(%rdi)		/* regs->eflags */
+-	pushq	3*8(%rdi)		/* regs->cs */
+-	pushq	2*8(%rdi)		/* regs->ip */
+-	pushq	1*8(%rdi)		/* regs->orig_ax */
+-	pushq	(%rdi)			/* pt_regs->di */
+-.Lint80_keep_stack:
+-
+-	pushq	%rsi			/* pt_regs->si */
+-	xorl	%esi, %esi		/* nospec   si */
+-	pushq	%rdx			/* pt_regs->dx */
+-	xorl	%edx, %edx		/* nospec   dx */
+-	pushq	%rcx			/* pt_regs->cx */
+-	xorl	%ecx, %ecx		/* nospec   cx */
+-	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   %r8			/* pt_regs->r8 */
+-	xorl	%r8d, %r8d		/* nospec   r8 */
+-	pushq   %r9			/* pt_regs->r9 */
+-	xorl	%r9d, %r9d		/* nospec   r9 */
+-	pushq   %r10			/* pt_regs->r10*/
+-	xorl	%r10d, %r10d		/* nospec   r10 */
+-	pushq   %r11			/* pt_regs->r11 */
+-	xorl	%r11d, %r11d		/* nospec   r11 */
+-	pushq   %rbx                    /* pt_regs->rbx */
+-	xorl	%ebx, %ebx		/* nospec   rbx */
+-	pushq   %rbp                    /* pt_regs->rbp */
+-	xorl	%ebp, %ebp		/* nospec   rbp */
+-	pushq   %r12                    /* pt_regs->r12 */
+-	xorl	%r12d, %r12d		/* nospec   r12 */
+-	pushq   %r13                    /* pt_regs->r13 */
+-	xorl	%r13d, %r13d		/* nospec   r13 */
+-	pushq   %r14                    /* pt_regs->r14 */
+-	xorl	%r14d, %r14d		/* nospec   r14 */
+-	pushq   %r15                    /* pt_regs->r15 */
+-	xorl	%r15d, %r15d		/* nospec   r15 */
+-
+-	UNWIND_HINT_REGS
+-
+-	cld
+-
+-	movq	%rsp, %rdi
+-	call	do_int80_syscall_32
+-	jmp	swapgs_restore_regs_and_return_to_usermode
+-SYM_CODE_END(entry_INT80_compat)
+diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+index 72184b0b2219..5bf8a01d31f3 100644
+--- a/arch/x86/include/asm/idtentry.h
++++ b/arch/x86/include/asm/idtentry.h
+@@ -206,6 +206,20 @@ __visible noinstr void func(struct pt_regs *regs,			\
+ 									\
+ static noinline void __##func(struct pt_regs *regs, u32 vector)
+ 
++/**
++ * DECLARE_IDTENTRY_IA32_EMULATION - Declare functions for int80
++ * @vector:	Vector number (ignored for C)
++ * @asm_func:	Function name of the entry point
++ * @cfunc:	The C handler called from the ASM entry point (ignored for C)
++ *
++ * Declares two functions:
++ * - The ASM entry point: asm_func
++ * - The XEN PV trap entry point: xen_##asm_func (maybe unused)
++ */
++#define DECLARE_IDTENTRY_IA32_EMULATION(vector, asm_func, cfunc)	\
++	asmlinkage void asm_func(void);					\
++	asmlinkage void xen_##asm_func(void)
++
+ /**
+  * DECLARE_IDTENTRY_SYSVEC - Declare functions for system vector entry points
+  * @vector:	Vector number (ignored for C)
+@@ -432,6 +446,35 @@ __visible noinstr void func(struct pt_regs *regs,			\
+ #define DECLARE_IDTENTRY_ERRORCODE(vector, func)			\
+ 	idtentry vector asm_##func func has_error_code=1
+ 
++/*
++ * 32-bit legacy system call entry.
++ *
++ * 32-bit x86 Linux system calls traditionally used the INT $0x80
++ * instruction.  INT $0x80 lands here.
++ *
++ * This entry point can be used by 32-bit and 64-bit programs to perform
++ * 32-bit system calls.  Instances of INT $0x80 can be found inline in
++ * various programs and libraries.  It is also used by the vDSO's
++ * __kernel_vsyscall fallback for hardware that doesn't support a faster
++ * entry method.  Restarted 32-bit system calls also fall back to INT
++ * $0x80 regardless of what instruction was originally used to do the
++ * system call.
++ *
++ * This is considered a slow path.  It is not used by most libc
++ * implementations on modern hardware except during process startup.
++ *
++ * Arguments:
++ * eax  system call number
++ * ebx  arg1
++ * ecx  arg2
++ * edx  arg3
++ * esi  arg4
++ * edi  arg5
++ * ebp  arg6
++ */
++#define DECLARE_IDTENTRY_IA32_EMULATION(vector, asm_func, cfunc)	\
++	idtentry vector asm_func cfunc has_error_code=0
++
+ /* Special case for 32bit IRET 'trap'. Do not emit ASM code */
+ #define DECLARE_IDTENTRY_SW(vector, func)
+ 
+@@ -642,6 +685,10 @@ DECLARE_IDTENTRY_IRQ(X86_TRAP_OTHER,	common_interrupt);
+ DECLARE_IDTENTRY_IRQ(X86_TRAP_OTHER,	spurious_interrupt);
+ #endif
+ 
++#ifdef CONFIG_IA32_EMULATION
++DECLARE_IDTENTRY_IA32_EMULATION(IA32_SYSCALL_VECTOR,	entry_INT80_compat, do_int80_syscall_32);
++#endif
++
+ /* System vector entry points */
+ #ifdef CONFIG_X86_LOCAL_APIC
+ DECLARE_IDTENTRY_SYSVEC(ERROR_APIC_VECTOR,		sysvec_error_interrupt);
+diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
+index 0f899c8d7a4e..4700d1650410 100644
+--- a/arch/x86/include/asm/proto.h
++++ b/arch/x86/include/asm/proto.h
+@@ -28,10 +28,6 @@ void entry_SYSENTER_compat(void);
+ void __end_entry_SYSENTER_compat(void);
+ void entry_SYSCALL_compat(void);
+ void entry_SYSCALL_compat_safe_stack(void);
+-void entry_INT80_compat(void);
+-#ifdef CONFIG_XEN_PV
+-void xen_entry_INT80_compat(void);
+-#endif
+ #endif
+ 
+ void x86_configure_nx(void);
+-- 
+2.19.1.6.gb485710b
 
