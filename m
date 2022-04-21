@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2078DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385128AbiDUGtG (ORCPT
+        id S1385165AbiDUGtO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
+        Thu, 21 Apr 2022 02:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385422AbiDUGrw (ORCPT
+        with ESMTP id S1385178AbiDUGrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:47:52 -0400
-X-Greylist: delayed 371 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 23:45:03 PDT
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC4E11A20
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:45:03 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.197.31])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 672DE3F7E2;
-        Thu, 21 Apr 2022 06:38:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1650523131;
-        bh=7E8gP7qXCjJXg+TBnr+pJ+eIzE0s+bO3ojbZKNQi4lA=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=AK+XnMcvK/oZd2uPp/2LK66Jd1zNAK2fGQB2y0Cxgdz/MkEjNrX03bc0eGsjY847/
-         LIAX3MtDaFdlJ7oX0/B3/kewNnTNRt6KWSfXNsle40CscwFmVohFVnsTqJBuSY4hbD
-         QCDyVsFrSaVIIFxgosDmIWkH07WProVWvu7b+kRzVaHYvIgHUdDO9zEp2M509KPjxF
-         c/XQOTMkpGqil6dl6c4T2c29Yl3Oo6XON9CdG3wyS+jctnwqPFV2vcXJ86y028Ttbu
-         P3oG3mqwHH92MGIA0ErGQw17RNQfWKBB+E3Gts+ikLyvLnvqjCyBVb9INu3kq+1dj3
-         lZR3XbxN7sHcQ==
-From:   Andy Chi <andy.chi@canonical.com>
-Cc:     andy.chi@canonical.com, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: hda/realtek: Enable mute/micmute LEDs and limit mic boost on EliteBook 845/865 G9
-Date:   Thu, 21 Apr 2022 14:36:04 +0800
-Message-Id: <20220421063606.39772-1-andy.chi@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Apr 2022 02:47:22 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A9A1580A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:44:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650523440; x=1682059440;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9+dxDIm0+feMgzZZmQKgNiv6PylkgIAbcs+ydU/3LBY=;
+  b=OzUF4QLGHnLNvMB+moeC+WoQj0xqpxVJiE3wnJg3NeyoBKtI+eY4PQv9
+   /PmRA9Hwmzk35oBLUcM5iyYSnSAjDdxMTqTgpa5enRxq6nSQsawmzolhQ
+   d83F2dRbq7coVzYBuxyhpcZU477HYJeiNwn0Jm6YOrb+5DwI8FZ3g2bI+
+   yI2X12YZaOPL0X3pM6GLv6vDqo/x2p7H+GSmUSQe6Dt6f94XCiQrMJDbs
+   NFBWQPgW//cHy/rGO+wCe9sW8awUUXDbmW+ICR4FQ+Hxc2v0L0YR+vREr
+   jzQUNltnEgWYceUy58mzTDvml+1dkrE4FWUjkN875xEN6fkFdKTUi03/Y
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="350704803"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="350704803"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:43:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="555609059"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 20 Apr 2022 23:43:51 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhQXf-00080s-3F;
+        Thu, 21 Apr 2022 06:43:51 +0000
+Date:   Thu, 21 Apr 2022 14:43:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2110/2579] include/linux/fscrypt.h:757:30:
+ error: implicit declaration of function 'file_inode' is invalid in C99
+Message-ID: <202204210747.4hHN7nFz-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On HP EliteBook 845 G9 and EliteBook 865 G9, the audio LEDs can be enabled by
-ALC285_FIXUP_HP_MUTE_LED. So use it accordingly.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
+commit: 1cb1e496fc95fd250b11d4ae7bd593cbe22bb5f6 [2110/2579] headers/deps: fs: Optimize <linux/fs.h> dependencies, remove <linux/fs_api.h> inclusion
+config: i386-randconfig-a011 (https://download.01.org/0day-ci/archive/20220421/202204210747.4hHN7nFz-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=1cb1e496fc95fd250b11d4ae7bd593cbe22bb5f6
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 1cb1e496fc95fd250b11d4ae7bd593cbe22bb5f6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/ fs/
 
-Signed-off-by: Andy Chi <andy.chi@canonical.com>
----
- sound/pci/hda/patch_realtek.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 62fbf3772b41..0cba2f19a772 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -7006,6 +7006,7 @@ enum {
- 	ALC285_FIXUP_LEGION_Y9000X_AUTOMUTE,
- 	ALC287_FIXUP_LEGION_16ACHG6,
- 	ALC287_FIXUP_CS35L41_I2C_2,
-+	ALC287_FIXUP_CS35L41_I2C_2_HP_GPIO_LED,
- 	ALC245_FIXUP_CS35L41_SPI_2,
- 	ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED,
- 	ALC245_FIXUP_CS35L41_SPI_4,
-@@ -8769,6 +8770,12 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cs35l41_fixup_i2c_two,
- 	},
-+	[ALC287_FIXUP_CS35L41_I2C_2_HP_GPIO_LED] = {
-+		.type = HDA_FIXUP_FUNC,
-+		.v.func = cs35l41_fixup_i2c_two,
-+		.chained = true,
-+		.chain_id = ALC285_FIXUP_HP_MUTE_LED,
-+	},
- 	[ALC245_FIXUP_CS35L41_SPI_2] = {
- 		.type = HDA_FIXUP_FUNC,
- 		.v.func = cs35l41_fixup_spi_two,
-@@ -9025,9 +9032,9 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x8981, "HP Elite Dragonfly G3", ALC245_FIXUP_CS35L41_SPI_4),
- 	SND_PCI_QUIRK(0x103c, 0x898e, "HP EliteBook 835 G9", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x103c, 0x898f, "HP EliteBook 835 G9", ALC287_FIXUP_CS35L41_I2C_2),
--	SND_PCI_QUIRK(0x103c, 0x8991, "HP EliteBook 845 G9", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x103c, 0x8991, "HP EliteBook 845 G9", ALC287_FIXUP_CS35L41_I2C_2_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8992, "HP EliteBook 845 G9", ALC287_FIXUP_CS35L41_I2C_2),
--	SND_PCI_QUIRK(0x103c, 0x8994, "HP EliteBook 855 G9", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x103c, 0x8994, "HP EliteBook 855 G9", ALC287_FIXUP_CS35L41_I2C_2_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8995, "HP EliteBook 855 G9", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x103c, 0x89a4, "HP ProBook 440 G9", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89a6, "HP ProBook 450 G9", ALC236_FIXUP_HP_GPIO_LED),
+All errors (new ones prefixed by >>):
+
+   In file included from fs/crypto/fname.c:23:
+   In file included from fs/crypto/fscrypt_private.h:14:
+>> include/linux/fscrypt.h:757:30: error: implicit declaration of function 'file_inode' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           const struct inode *inode = file_inode(iocb->ki_filp);
+                                       ^
+   include/linux/fscrypt.h:757:22: warning: incompatible integer to pointer conversion initializing 'const struct inode *' with an expression of type 'int' [-Wint-conversion]
+           const struct inode *inode = file_inode(iocb->ki_filp);
+                               ^       ~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning and 1 error generated.
+
+
+vim +/file_inode +757 include/linux/fscrypt.h
+
+c6c89783eba05a Eric Biggers 2022-01-28  753  
+c6c89783eba05a Eric Biggers 2022-01-28  754  static inline bool fscrypt_dio_supported(struct kiocb *iocb,
+c6c89783eba05a Eric Biggers 2022-01-28  755  					 struct iov_iter *iter)
+c6c89783eba05a Eric Biggers 2022-01-28  756  {
+c6c89783eba05a Eric Biggers 2022-01-28 @757  	const struct inode *inode = file_inode(iocb->ki_filp);
+c6c89783eba05a Eric Biggers 2022-01-28  758  
+c6c89783eba05a Eric Biggers 2022-01-28  759  	return !fscrypt_needs_contents_encryption(inode);
+c6c89783eba05a Eric Biggers 2022-01-28  760  }
+c6c89783eba05a Eric Biggers 2022-01-28  761  
+
+:::::: The code at line 757 was first introduced by commit
+:::::: c6c89783eba05a5e159b07cfd8c68d841cc5de42 fscrypt: add functions for direct I/O support
+
+:::::: TO: Eric Biggers <ebiggers@google.com>
+:::::: CC: Eric Biggers <ebiggers@google.com>
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
