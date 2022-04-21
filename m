@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E628C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA64C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389137AbiDUOYA (ORCPT
+        id S1389147AbiDUOZD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59964 "EHLO
+        Thu, 21 Apr 2022 10:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377277AbiDUOX5 (ORCPT
+        with ESMTP id S1377277AbiDUOZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:23:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9A013B54E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:21:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650550866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=H5k1rgXE1P7IbK6cMqND8jHr8Tf+eEFak/sZ9mPOKJY=;
-        b=XnHKpQdEXkj8ZazcxeVavhPMFNJYF9xNggM9ZTKcavrsWLHdWRvWFPAkujCELGrrCYZeyq
-        GHlP+n/R+cT+c7YVocEoqIZbk9/Wvvz/jXiZWOh4PSFFUiS1qYVgZ1JjjPHHeimfbcEzw5
-        xaM8c3pr5T9LPZQj5VQDXC6iuSfmmW0=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-617-Z9VWvBWrMk66fPw5j7arhw-1; Thu, 21 Apr 2022 10:21:05 -0400
-X-MC-Unique: Z9VWvBWrMk66fPw5j7arhw-1
-Received: by mail-qv1-f71.google.com with SMTP id kd13-20020a056214400d00b0044c066d97dbso2273855qvb.22
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:21:05 -0700 (PDT)
+        Thu, 21 Apr 2022 10:25:01 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA2D3CA61
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:22:11 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id x12so3309866qtp.9
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:22:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xZMCVPcYFV3B+SKd3NEIMAMCeRNJPyaeLFKLuEeo51c=;
+        b=q3lCCATKuv+Uf5ChmHextg+VIYRg7sglu2vtz03zUPGFsDXhO7asAMZtk1H9E/JnDr
+         YibqlpDokwcpSiIdJL8QeVip38kYFCQ2xBWbysfUDwU2V/NRfUkI9/PsfsKYxDZpQ1mb
+         r5AXLmwCXYxLFzrCecn/0Y6Au873M0CBj+0vEC9orZ/LT+dE/GvFDYw3rgIA8Op4LCHN
+         X0zzweG7A0C3beYpMXbFFw6IKQHaInfwnSTOD6NPwJN7YTK+tGVujdGsHuUJ2H+myjpT
+         S6/znAKKqrEvzcWQ1qKqblw6q/aLFBRAYuB9f3t7HhAqRizq4t2KEezpyBvq6OLqFbzI
+         JAfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H5k1rgXE1P7IbK6cMqND8jHr8Tf+eEFak/sZ9mPOKJY=;
-        b=EPjr6R1u1153nfsS8aqbIeY3rNwTDEyfVEtK86+0VAzShO4MBHO/47sGRQW3BFpLr1
-         W8Gw/GDRF5DbUlxhNHmI7yvGP9e4PM54fTTmg6rh+BS6lNWMxNLrXUSYok+Tn0uJXqJu
-         LOYmYBROmKByFjQ8d5Q1xuzN/syJluw+ddpxW+FG4OIF+tihE1jGTjAs4p3PnY2S0rAQ
-         yxWoL0+SL0yYfGbe0kj7zHVdJLYyIIbtRTsyPQs51qjzJYybrNnUFoD5UML9EhYy4hAH
-         e60DYu/eNi28wY+2UIawJxZPpqcGiAwrR1SLuE1TvZWhAaCi7m/QmAEANq7Jths0AqtJ
-         LJHg==
-X-Gm-Message-State: AOAM532UsONTELcbKiJ8kQwsByLAZpYpD75IUoN+YUiQyJ7fSIZfj9Aw
-        GfYm/0/iD5de/aaNDFWodSZ5RNLWr0+6WkPs46E0Q8VUu9LgBALkiushjy5D31T4vocgr2XW4+U
-        C5D+h81QJmX0jkqBizGyQ6vQ6
-X-Received: by 2002:ac8:7088:0:b0:2f1:e898:2971 with SMTP id y8-20020ac87088000000b002f1e8982971mr17388772qto.152.1650550864999;
-        Thu, 21 Apr 2022 07:21:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzxT8nLASqLzLkqUhCnNzC+DSX/0wzDIp2IM7/27GwXj/kq8GhqiNKzl6Dba3zy6dUouhyaww==
-X-Received: by 2002:ac8:7088:0:b0:2f1:e898:2971 with SMTP id y8-20020ac87088000000b002f1e8982971mr17388760qto.152.1650550864784;
-        Thu, 21 Apr 2022 07:21:04 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j131-20020a37a089000000b0069e7ebc625bsm2881419qke.78.2022.04.21.07.21.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xZMCVPcYFV3B+SKd3NEIMAMCeRNJPyaeLFKLuEeo51c=;
+        b=h3/AKirPxtDDsQpWICRoiwgxChZWa04ERK1RhYMsMhLdFsLfqvHL4paP9jgr+/2FWi
+         ajk2P/Vg0R4ysebI3VOX9OFCB9yqeVurDDUoBV/slOJ/lvdtZ6V5duP4sAC76b7a5lMi
+         AQR/LntOwMv4Og5iA2PWwd2ELWg/dnb8+/+yt3m8WkrSL+2UxTrjHxWAeh4tjc8IL6Ig
+         X5IrsWUGq1XPREwEXojFZ/LfsUsNyHHdqzXnUfw5GFJ/4hKgiwzASIlq6q9NFmMg2OuJ
+         zjjVWHaqnQkdP0hqv9JRaXSFeJknZbiSWuTFLd/dmL8ATLySDe8yK79YiXzMdvZhyr2S
+         VB1g==
+X-Gm-Message-State: AOAM531dHCIJ0FmrvPhNUla5HbHEsRzCtm67QLSYkMFEsgG1Z4xY6geU
+        Vbaad+SJLekGGarSluneSLw3rezCJXmxAA==
+X-Google-Smtp-Source: ABdhPJyZap0TOdrBgRkuajd9I7vdEoxGIlxp0WQHjmdek10/dK3YxB4ChxtlTFV7Gj5bn6hewrWGEA==
+X-Received: by 2002:ac8:5905:0:b0:2f2:480:ef2e with SMTP id 5-20020ac85905000000b002f20480ef2emr11909254qty.272.1650550930673;
+        Thu, 21 Apr 2022 07:22:10 -0700 (PDT)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id n11-20020a05622a11cb00b002f344f11849sm2096485qtk.71.2022.04.21.07.22.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 07:21:04 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     airlied@redhat.com, kraxel@redhat.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     virtualization@lists.linux-foundation.org,
-        spice-devel@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/qxl: remove qxl_log_level global
-Date:   Thu, 21 Apr 2022 10:20:54 -0400
-Message-Id: <20220421142054.3751507-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 21 Apr 2022 07:22:10 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 10:22:09 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Lu Jialin <lujialin4@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Yang Shi <shy828301@gmail.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Wang Weiyang <wangweiyang2@huawei.com>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH -next] mm/memcontrol.c: make cgroup_memory_noswap static
+Message-ID: <YmFokXAWjp35yIFS@cmpxchg.org>
+References: <20220421124736.62180-1-lujialin4@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421124736.62180-1-lujialin4@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports this issue
-qxl_kms.c:36:5: warning: symbol 'qxl_log_level' was not declared. Should it be static?
+On Thu, Apr 21, 2022 at 08:47:36PM +0800, Lu Jialin wrote:
+> cgroup_memory_noswap is only used in mm/memcontrol.c, therefore just make
+> it static, and remove export in include/linux/memcontrol.h
+> 
+> Signed-off-by: Lu Jialin <lujialin4@huawei.com>
 
-qxl_log_level is defined qxl_kms.c but unused, so remove.
+Nice. Unused since 2d1c498072de ("mm: memcontrol: make swap tracking
+an integral part of memory control"), which removed the two instances
+from mm/swap_cgroup.c.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/gpu/drm/qxl/qxl_kms.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/qxl/qxl_kms.c b/drivers/gpu/drm/qxl/qxl_kms.c
-index a054e4a00fe8..9bf6d4cc98d4 100644
---- a/drivers/gpu/drm/qxl/qxl_kms.c
-+++ b/drivers/gpu/drm/qxl/qxl_kms.c
-@@ -33,8 +33,6 @@
- #include "qxl_drv.h"
- #include "qxl_object.h"
- 
--int qxl_log_level;
--
- static bool qxl_check_device(struct qxl_device *qdev)
- {
- 	struct qxl_rom *rom = qdev->rom;
--- 
-2.27.0
-
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
