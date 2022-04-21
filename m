@@ -2,193 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1430DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81937C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391183AbiDUSGu (ORCPT
+        id S1391149AbiDUSGx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
+        Thu, 21 Apr 2022 14:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391182AbiDUSGm (ORCPT
+        with ESMTP id S1391202AbiDUSGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:06:42 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F494B43F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:03:23 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id d23-20020a17090a115700b001d2bde6c234so5911534pje.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0R+rUO6qFnTFl4iOBE135fiQ5474O3jXDThMBCai2no=;
-        b=iXsHoNCc1h1zyDeB+QJKZuZBmwC9fGx543/8SCLGP8Vfaaoe+DkCmAte7fyz4LYrbn
-         raFeVzlgpnIIigHO6XkqQx0302XoulfnDLsv3/NQpNRKKL3fqSOEQL3P6cdvmDw/tKz/
-         +CdqNlgopHqKzxUE2pPL8ShnGCl7hTEPJM/to=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0R+rUO6qFnTFl4iOBE135fiQ5474O3jXDThMBCai2no=;
-        b=pF/Ogb31WorbdMfPfpSHNoo/021NqiMcTS6RAgS3hk54o36HD5n3DSqNWR2CUYvFlF
-         No5GbyRBuTfIJEMj/On/srdgGzfvXJHjOs7kyuXRwz6Y4QiM7twBMwPLTx3gXSrgBxLz
-         /bl0ukC00sHm78aE1LfAcLYWAB/Dppq0ScOlkIdrKGL5bw/BWwm4A8hH0rLqVDZ82kLN
-         EIJBenQUepT+ORBJVEIS2tKZzb76Qknzg7kNjJlFIRfoPL8iBTsEFt5pWG250eVl5vCR
-         FJiq0+wTFe9HyUJ8ultwtJDebO2vNTwJyBuRObWmBMTcb9XbB4J+dIFcbqGqs24r2nDV
-         IPsg==
-X-Gm-Message-State: AOAM530hlH3ETp5Wt3rsl/RWuwOn1I4m5WDuUEEPm2h9q/ECIH1haAQa
-        jafYkC1xZB8SGtgW8Lh9H2tGCw==
-X-Google-Smtp-Source: ABdhPJxfw0GmD+H/PI1CwP2ixJv3REBy3eeBNVafcTNTvNfAxmxpNZg2mrh+q8ErHNEivfQV2G9WYQ==
-X-Received: by 2002:a17:902:a987:b0:158:b020:e5b8 with SMTP id bh7-20020a170902a98700b00158b020e5b8mr429725plb.103.1650564202999;
-        Thu, 21 Apr 2022 11:03:22 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
-        by smtp.gmail.com with UTF8SMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm25449651pfc.78.2022.04.21.11.03.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 11:03:22 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 11:03:20 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v9 12/12] arm64: dts: qcom: sc7280: Add sound node for
- CRD 3.0/3.1
-Message-ID: <YmGcaG3MKIHSQyNi@google.com>
-References: <1650552459-21077-1-git-send-email-quic_srivasam@quicinc.com>
- <1650552459-21077-13-git-send-email-quic_srivasam@quicinc.com>
+        Thu, 21 Apr 2022 14:06:45 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5794B84D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:03:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650564216; x=1682100216;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bQ+rneEE1x3jrND7Y9Wv3LGa2VxvPuk/c+WG8SdyEzQ=;
+  b=VI0lCMtpgyRWIR2MVpdVS39pWila2FnjFkisYts7EclQbKaB2jEBi7PF
+   DHJjqy5f6BRgFjWhIW+GVywioknnL7DP6I+GjVRMWm3UBJKL1rKcskKm0
+   yh5LO9oZKbJWyctYZGBrm+GDB5e6KrbSwvI2PrZTQqhPdSlTU5XKMuGAY
+   XAfayIuKjRn42OdC5cxY9+FY6lK3RAaNNoWnWGvv/P6kJ9dYCf50VJmgM
+   E/f9eS3pRE20w2wxxNk5zfxkrflLir118fJ2du6Ng6fbJQo69qmjbW71f
+   018e0FYAElEzV0dgOhnHuTNdgyuZ+chlUowoddJgzzkD5Azo/q1TkAwzb
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246335278"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="246335278"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 11:03:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="728116051"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 21 Apr 2022 11:03:30 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhb9N-0008e7-O6;
+        Thu, 21 Apr 2022 18:03:29 +0000
+Date:   Fri, 22 Apr 2022 02:02:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [dhowells-fs:netfs-lib 2/18] fs/netfs/objects.c:48:2: error: call to
+ undeclared function 'netfs_proc_add_writeback'; ISO C99 and later do not
+ support implicit function declarations
+Message-ID: <202204220100.5rFjj0Qv-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1650552459-21077-13-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:17:39PM +0530, Srinivasa Rao Mandadapu wrote:
-> Add dt nodes for sound card support on rev5 (aka CRD 3.0/3.1) boards,
-> which is using WCD938x headset playback, capture, I2S speaker playback
-> and DMICs via VA macro.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 98 +++++++++++++++++++++++
->  1 file changed, 98 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> index 4033d2a..bc6dbcc 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> @@ -42,6 +42,104 @@
->  		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
->  		#sound-dai-cells = <1>;
->  	};
-> +
-> +	sound: sound {
-> +		compatible = "google,sc7280-herobrine";
-> +		model = "sc7280-wcd938x-max98360a-1mic";
-> +
-> +		audio-routing =
-> +			"IN1_HPHL", "HPHL_OUT",
-> +			"IN2_HPHR", "HPHR_OUT",
-> +			"AMIC1", "MIC BIAS1",
-> +			"AMIC2", "MIC BIAS2",
-> +			"VA DMIC0", "MIC BIAS1",
-> +			"VA DMIC1", "MIC BIAS1",
-> +			"VA DMIC2", "MIC BIAS3",
-> +			"VA DMIC3", "MIC BIAS3",
-> +			"TX SWR_ADC0", "ADC1_OUTPUT",
-> +			"TX SWR_ADC1", "ADC2_OUTPUT",
-> +			"TX SWR_ADC2", "ADC3_OUTPUT",
-> +			"TX SWR_DMIC0", "DMIC1_OUTPUT",
-> +			"TX SWR_DMIC1", "DMIC2_OUTPUT",
-> +			"TX SWR_DMIC2", "DMIC3_OUTPUT",
-> +			"TX SWR_DMIC3", "DMIC4_OUTPUT",
-> +			"TX SWR_DMIC4", "DMIC5_OUTPUT",
-> +			"TX SWR_DMIC5", "DMIC6_OUTPUT",
-> +			"TX SWR_DMIC6", "DMIC7_OUTPUT",
-> +			"TX SWR_DMIC7", "DMIC8_OUTPUT";
-> +
-> +		qcom,msm-mbhc-hphl-swh = <1>;
-> +		qcom,msm-mbhc-gnd-swh = <1>;
-> +
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		#sound-dai-cells = <0>;
-> +
-> +		dai-link@0 {
-> +			link-name = "MAX98360A";
-> +			reg = <MI2S_SECONDARY>;
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git netfs-lib
+head:   5b166ee5742c8a13e2958bad90e4b3a5d9bb0426
+commit: d2183d7d55ccea0042532727e540a4835aa0a266 [2/18] netfs: Add a procfile to list in-progress requests
+config: hexagon-randconfig-r045-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220100.5rFjj0Qv-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?id=d2183d7d55ccea0042532727e540a4835aa0a266
+        git remote add dhowells-fs https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+        git fetch --no-tags dhowells-fs netfs-lib
+        git checkout d2183d7d55ccea0042532727e540a4835aa0a266
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/netfs/
 
-same comment as for "arm64: dts: qcom: sc7280: Add sound node for CRD
-1.0 and CRD 2.0", i.e. use the link number for 'reg' instead of the lpass
-DAI id.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> +
-> +			cpu {
-> +				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
-> +			};
-> +
-> +			codec {
-> +				sound-dai = <&max98360a>;
-> +			};
-> +		};
-> +
-> +		dai-link@1 {
-> +			link-name = "DisplayPort";
-> +			reg = <LPASS_DP_RX>;
-> +
-> +			cpu {
-> +				sound-dai = <&lpass_cpu LPASS_DP_RX>;
-> +			};
-> +
-> +			codec {
-> +				sound-dai = <&mdss_dp>;
-> +			};
-> +		};
-> +
-> +		dai-link@2 {
-> +			link-name = "WCD9385 Playback";
-> +			reg = <LPASS_CDC_DMA_RX0>;
-> +
-> +			cpu {
-> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_RX0>;
-> +			};
-> +
-> +			codec {
-> +				sound-dai = <&wcd938x 0>, <&swr0 0>, <&lpass_rx_macro 0>;
-> +			};
-> +		};
-> +
-> +		dai-link@3 {
-> +			link-name = "WCD9385 Capture";
-> +			reg = <LPASS_CDC_DMA_TX3>;
-> +
-> +			cpu {
-> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_TX3>;
-> +			};
-> +
-> +			codec {
-> +				sound-dai = <&wcd938x 1>, <&swr1 0>, <&lpass_tx_macro 0>;
-> +			};
-> +		};
-> +
-> +		dai-link@4 {
-> +			link-name = "DMIC";
-> +			reg = <LPASS_CDC_DMA_VA_TX0>;
-> +
-> +			cpu {
-> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_VA_TX0>;
-> +			};
-> +
-> +			codec {
-> +				sound-dai = <&lpass_va_macro 0>;
-> +			};
-> +		};
-> +	};
->  };
+All errors (new ones prefixed by >>):
+
+>> fs/netfs/objects.c:48:2: error: call to undeclared function 'netfs_proc_add_writeback'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           netfs_proc_add_writeback(rreq);
+           ^
+   fs/netfs/objects.c:48:2: note: did you mean 'netfs_proc_add_rreq'?
+   fs/netfs/internal.h:51:20: note: 'netfs_proc_add_rreq' declared here
+   static inline void netfs_proc_add_rreq(struct netfs_io_request *rreq) {}
+                      ^
+>> fs/netfs/objects.c:80:2: error: call to undeclared function 'netfs_proc_del_writeback'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           netfs_proc_del_writeback(rreq);
+           ^
+   fs/netfs/objects.c:80:2: note: did you mean 'netfs_proc_del_rreq'?
+   fs/netfs/internal.h:52:20: note: 'netfs_proc_del_rreq' declared here
+   static inline void netfs_proc_del_rreq(struct netfs_io_request *rreq) {}
+                      ^
+   2 errors generated.
+
+
+vim +/netfs_proc_add_writeback +48 fs/netfs/objects.c
+
+    10	
+    11	/*
+    12	 * Allocate an I/O request and initialise it.
+    13	 */
+    14	struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
+    15						     struct file *file,
+    16						     loff_t start, size_t len,
+    17						     enum netfs_io_origin origin)
+    18	{
+    19		static atomic_t debug_ids;
+    20		struct inode *inode = file ? file_inode(file) : mapping->host;
+    21		struct netfs_i_context *ctx = netfs_i_context(inode);
+    22		struct netfs_io_request *rreq;
+    23		int ret;
+    24	
+    25		rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
+    26		if (!rreq)
+    27			return ERR_PTR(-ENOMEM);
+    28	
+    29		rreq->start	= start;
+    30		rreq->len	= len;
+    31		rreq->origin	= origin;
+    32		rreq->netfs_ops	= ctx->ops;
+    33		rreq->mapping	= mapping;
+    34		rreq->inode	= inode;
+    35		rreq->i_size	= i_size_read(inode);
+    36		rreq->debug_id	= atomic_inc_return(&debug_ids);
+    37		INIT_LIST_HEAD(&rreq->subrequests);
+    38		refcount_set(&rreq->ref, 1);
+    39		__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
+    40		if (rreq->netfs_ops->init_request) {
+    41			ret = rreq->netfs_ops->init_request(rreq, file);
+    42			if (ret < 0) {
+    43				kfree(rreq);
+    44				return ERR_PTR(ret);
+    45			}
+    46		}
+    47	
+  > 48		netfs_proc_add_writeback(rreq);
+    49		netfs_stat(&netfs_n_rh_rreq);
+    50		return rreq;
+    51	}
+    52	
+    53	void netfs_get_request(struct netfs_io_request *rreq, enum netfs_rreq_ref_trace what)
+    54	{
+    55		int r;
+    56	
+    57		__refcount_inc(&rreq->ref, &r);
+    58		trace_netfs_rreq_ref(rreq->debug_id, r + 1, what);
+    59	}
+    60	
+    61	void netfs_clear_subrequests(struct netfs_io_request *rreq, bool was_async)
+    62	{
+    63		struct netfs_io_subrequest *subreq;
+    64	
+    65		while (!list_empty(&rreq->subrequests)) {
+    66			subreq = list_first_entry(&rreq->subrequests,
+    67						  struct netfs_io_subrequest, rreq_link);
+    68			list_del(&subreq->rreq_link);
+    69			netfs_put_subrequest(subreq, was_async,
+    70					     netfs_sreq_trace_put_clear);
+    71		}
+    72	}
+    73	
+    74	static void netfs_free_request(struct work_struct *work)
+    75	{
+    76		struct netfs_io_request *rreq =
+    77			container_of(work, struct netfs_io_request, work);
+    78	
+    79		trace_netfs_rreq(rreq, netfs_rreq_trace_free);
+  > 80		netfs_proc_del_writeback(rreq);
+    81		netfs_clear_subrequests(rreq, false);
+    82		if (rreq->netfs_ops->free_request)
+    83			rreq->netfs_ops->free_request(rreq);
+    84		if (rreq->cache_resources.ops)
+    85			rreq->cache_resources.ops->end_operation(&rreq->cache_resources);
+    86		kfree_rcu(rreq, rcu);
+    87		netfs_stat_d(&netfs_n_rh_rreq);
+    88	}
+    89	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
