@@ -2,95 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B147AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386911AbiDUIve (ORCPT
+        id S1386923AbiDUIw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        Thu, 21 Apr 2022 04:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386902AbiDUIv0 (ORCPT
+        with ESMTP id S1386901AbiDUIwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:51:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5A615805
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:48:37 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KkWQy2zQ3zhY3w;
-        Thu, 21 Apr 2022 16:48:26 +0800 (CST)
-Received: from localhost.localdomain (10.175.102.38) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 16:48:35 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Adam Ward <Adam.Ward.opensource@diasemi.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH] regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
-Date:   Thu, 21 Apr 2022 09:03:35 +0000
-Message-ID: <20220421090335.1876149-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Apr 2022 04:52:15 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDAB15712
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:49:25 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id r19so2756944wmq.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:49:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=aqSPW9x18iap7VEqnzBaFCwvwC9XWVLp+mVcr+cF4XU=;
+        b=sVQrimJBLCXmLbM375kfAud906Dx8MUr3UWI3gePbVIosyLCjwJ+wV3rGV4lFcJXo1
+         1lSq9f8z1TFWEw9edZllTJ3NOhv5VycjBt43cAcM/TrPwgvUl9+7uc+eYFc1Hkk+TDPr
+         bMjavqPKtpYICG8KvxnSjVbCYkovadQH6N3rCQXk7EBh4V15hzAzWV3Or9vDkOvtEP5g
+         KJw/4nsk6vEFEA9WddRyyRnXnI1Clue8JLCQcHiWsoEBQC+LUwuFq8lyVLslq9lU9Mhx
+         /ZRDg87iM64NODjWq9JGGVgVmSEDpmAMikiVoxWhcw9OBsSFX3nt59A7FyESVJjNTLdi
+         OlRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=aqSPW9x18iap7VEqnzBaFCwvwC9XWVLp+mVcr+cF4XU=;
+        b=0m10FpYe93XG3LgVQHDjI8Elzj7XUD5NAljBZE6IXwEzPZ8X0LlVCpXgbgBTFZJjoO
+         SsgegcnTLuDVP6eJsudAuFzU4wjJuAhl7N7FrLELvQfqAuJ3D4Zm0Db/6uc5a4I6lPqF
+         T25X/hfUKcOTIffAH3rl2kD6bEg53VAcEav7TGnk/6ZWxDPjfFLfUMG4GS3EcFr6aVBY
+         GhR2VeniaVEB5xHPhzg0FAFfRxxdaqTzlBuYquIvlsv2eyA1kEPYSwo0G6G4LWW7Q/cv
+         AOnkv61KkX6NNu3PJOVSLyvSlvDdwehZK+3LEG+BxniVm2t+wRxxL9ADhK0JZI4TuH4h
+         MYDA==
+X-Gm-Message-State: AOAM530h6n6QU1snJZFZ85T0VNv7YLO3tlVYwE+Z4M0hGHguPAVYX6KY
+        L6EI/5HX8EUY8f5pUhSitRboHA==
+X-Google-Smtp-Source: ABdhPJzriyI1Ddu4GZCWUIbVECnu8piDZLNnSlQ/iUsewg5ps2kg0Tk6ePdstsZTppKMCwkIC+JBSA==
+X-Received: by 2002:a05:600c:1c9b:b0:391:6287:b7a3 with SMTP id k27-20020a05600c1c9b00b003916287b7a3mr7507911wms.188.1650530964122;
+        Thu, 21 Apr 2022 01:49:24 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:35ba:2677:956:980d? ([2001:861:44c0:66c0:35ba:2677:956:980d])
+        by smtp.gmail.com with ESMTPSA id g8-20020a5d4888000000b00207a49fa6a1sm2028679wrq.81.2022.04.21.01.49.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 01:49:23 -0700 (PDT)
+Message-ID: <3f5df9df-7699-7210-6253-4dd03f4444a0@baylibre.com>
+Date:   Thu, 21 Apr 2022 10:49:31 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.102.38]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2 2/2] tty: serial: meson: Added S4 SOC compatibility
+Content-Language: en-US
+To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220418053202.24528-1-yu.tu@amlogic.com>
+ <20220418053202.24528-3-yu.tu@amlogic.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220418053202.24528-3-yu.tu@amlogic.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KASAN report slab-out-of-bounds in __regmap_init as follows:
+On 18/04/2022 07:32, Yu Tu wrote:
+> Make UART driver compatible with S4 SOC UART. Meanwhile, the S4 SOC
+> UART uses 12MHz as the clock source for baud rate calculations.
+> 
+> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+> ---
+>   drivers/tty/serial/meson_uart.c | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index 58bd2723c004..43941f21735f 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -790,11 +790,19 @@ static int meson_uart_remove(struct platform_device *pdev)
+>   	return 0;
+>   }
+>   
+> +static struct meson_uart_data s4_uart_date = {
 
-BUG: KASAN: slab-out-of-bounds in __regmap_init drivers/base/regmap/regmap.c:841
-Read of size 1 at addr ffff88803678cdf1 by task xrun/9137
+Should be s4_uart_data instead of s4_uart_date
 
-CPU: 0 PID: 9137 Comm: xrun Tainted: G        W         5.18.0-rc2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x15a lib/dump_stack.c:88
- print_report.cold+0xcd/0x69b mm/kasan/report.c:313
- kasan_report+0x8e/0xc0 mm/kasan/report.c:491
- __regmap_init+0x4540/0x4ba0 drivers/base/regmap/regmap.c:841
- __devm_regmap_init+0x7a/0x100 drivers/base/regmap/regmap.c:1266
- __devm_regmap_init_i2c+0x65/0x80 drivers/base/regmap/regmap-i2c.c:394
- da9121_i2c_probe+0x386/0x6d1 drivers/regulator/da9121-regulator.c:1039
- i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
+> +	.has_xtal_div2 = true,
+> +};
+> +
+>   static const struct of_device_id meson_uart_dt_match[] = {
+>   	{ .compatible = "amlogic,meson6-uart" },
+>   	{ .compatible = "amlogic,meson8-uart" },
+>   	{ .compatible = "amlogic,meson8b-uart" },
+>   	{ .compatible = "amlogic,meson-gx-uart" },
+> +	{
+> +		.compatible = "amlogic,meson-s4-uart",
+> +		.data = (void *)&s4_uart_date,
 
-This happend when da9121 device is probe by da9121_i2c_id, but with
-invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
-da9121_assign_chip_model() will access 'regmap' without init it.
+Here same
 
-Fix it by return -EINVAL from da9121_assign_chip_model() if
-'chip->subvariant_id' is invalid.
+> +	},
+>   	{ /* sentinel */ },
+>   };
+>   MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
+With this change, it's fine for me.
 
-Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/regulator/da9121-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
-index eb9df485bd8a..76e0e23bf598 100644
---- a/drivers/regulator/da9121-regulator.c
-+++ b/drivers/regulator/da9121-regulator.c
-@@ -1030,6 +1030,8 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
- 		chip->variant_id = DA9121_TYPE_DA9142;
- 		regmap = &da9121_2ch_regmap_config;
- 		break;
-+	default:
-+		return -EINVAL;
- 	}
- 
- 	/* Set these up for of_regulator_match call which may want .of_map_modes */
--- 
-2.25.1
-
+Neil
