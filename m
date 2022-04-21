@@ -2,160 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbiDUNGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
+        id S230091AbiDUNGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 09:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiDUNGL (ORCPT
+        with ESMTP id S230056AbiDUNGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:06:11 -0400
-Received: from out199-9.us.a.mail.aliyun.com (out199-9.us.a.mail.aliyun.com [47.90.199.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4E3338B5;
-        Thu, 21 Apr 2022 06:03:20 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R991e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VAf7aqz_1650546191;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VAf7aqz_1650546191)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 21 Apr 2022 21:03:14 +0800
-Date:   Thu, 21 Apr 2022 21:03:11 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-Subject: Re: [PATCH v9 17/21] erofs: implement fscache-based metadata read
-Message-ID: <YmFWD7otjEb/SMPJ@B-P7TQMD6M-0146.local>
-Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
-        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-References: <20220415123614.54024-1-jefflexu@linux.alibaba.com>
- <20220415123614.54024-18-jefflexu@linux.alibaba.com>
+        Thu, 21 Apr 2022 09:06:15 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143F8338B5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:03:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650546206; x=1682082206;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=motXs5KVTHeBonIQQERqYU8O1E/gky/yojvQugo6wqo=;
+  b=JJogByNPaDabDOgZI31y52dlfhR2sS23xWUfc8RfbL4Bv1Y4pM/FL8Fv
+   8CTVxOfCT9Q8jbKQnqDCW2ZA8wbFswyzxHbQ53A8D/PexwlcouvnvDHVj
+   +1ByCqY9L8gd0on676S4Gq7AksYt+f0JtgDMEGJ6WLCQxSKph2xBQY5Jp
+   tl9uH+q+CPFJLg4poyG7/FjodC7y5fHmgfM7BzX1WI2PXyDYLlRrIgJAZ
+   5T9a9C7Ct4wb82hiR40XvPpir0I6a98uiR0Ee6tSjUBKTHzW8nxqcb3zT
+   4L6N3XgwMdFhCInaexkzs4Pk/LDAZyzG3jcAyBjvMhW+eOokUVgmKw4fv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="327245882"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="327245882"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 06:02:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="648122772"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 21 Apr 2022 06:02:15 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhWRq-0008Q1-O0;
+        Thu, 21 Apr 2022 13:02:14 +0000
+Date:   Thu, 21 Apr 2022 21:01:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1933/2579] lib/memcat_p.c:10:8: warning: no
+ previous prototype for function '__memcat_p'
+Message-ID: <202204212135.0nRWoKwW-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220415123614.54024-18-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 08:36:10PM +0800, Jeffle Xu wrote:
-> Implement the data plane of reading metadata from primary data blob
-> over fscache.
-> 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-> ---
->  fs/erofs/data.c    | 19 +++++++++++++++----
->  fs/erofs/fscache.c | 27 +++++++++++++++++++++++++++
->  2 files changed, 42 insertions(+), 4 deletions(-)
-> 
-> diff --git a/fs/erofs/data.c b/fs/erofs/data.c
-> index 14b64d960541..bb9c1fd48c19 100644
-> --- a/fs/erofs/data.c
-> +++ b/fs/erofs/data.c
-> @@ -6,6 +6,7 @@
->   */
->  #include "internal.h"
->  #include <linux/prefetch.h>
-> +#include <linux/sched/mm.h>
->  #include <linux/dax.h>
->  #include <trace/events/erofs.h>
->  
-> @@ -35,14 +36,20 @@ void *erofs_bread(struct erofs_buf *buf, struct inode *inode,
->  	erofs_off_t offset = blknr_to_addr(blkaddr);
->  	pgoff_t index = offset >> PAGE_SHIFT;
->  	struct page *page = buf->page;
-> +	struct folio *folio;
-> +	unsigned int nofs_flag;
->  
->  	if (!page || page->index != index) {
->  		erofs_put_metabuf(buf);
-> -		page = read_cache_page_gfp(mapping, index,
-> -				mapping_gfp_constraint(mapping, ~__GFP_FS));
-> -		if (IS_ERR(page))
-> -			return page;
-> +
-> +		nofs_flag = memalloc_nofs_save();
-> +		folio = read_cache_folio(mapping, index, NULL, NULL);
-> +		memalloc_nofs_restore(nofs_flag);
-> +		if (IS_ERR(folio))
-> +			return folio;
-> +
->  		/* should already be PageUptodate, no need to lock page */
-> +		page = folio_file_page(folio, index);
->  		buf->page = page;
->  	}
->  	if (buf->kmap_type == EROFS_NO_KMAP) {
-> @@ -63,6 +70,10 @@ void *erofs_bread(struct erofs_buf *buf, struct inode *inode,
->  void *erofs_read_metabuf(struct erofs_buf *buf, struct super_block *sb,
->  			 erofs_blk_t blkaddr, enum erofs_kmap_type type)
->  {
-> +	if (erofs_is_fscache_mode(sb))
-> +		return erofs_bread(buf, EROFS_SB(sb)->s_fscache->inode,
-> +				   blkaddr, type);
-> +
->  	return erofs_bread(buf, sb->s_bdev->bd_inode, blkaddr, type);
->  }
->  
-> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-> index 066f68c062e2..3f00eb34ac35 100644
-> --- a/fs/erofs/fscache.c
-> +++ b/fs/erofs/fscache.c
-> @@ -58,7 +58,34 @@ static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
->  	return ret;
->  }
->  
-> +static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
-> +{
-> +	int ret;
-> +	struct folio *folio = page_folio(page);
-> +	struct super_block *sb = folio_mapping(folio)->host->i_sb;
-> +	struct erofs_map_dev mdev = {
-> +		.m_deviceid = 0,
-> +		.m_pa = folio_pos(folio),
-> +	};
-> +
-> +	ret = erofs_map_dev(sb, &mdev);
-> +	if (ret)
-> +		goto out;
-> +
-> +	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
-> +			folio_mapping(folio), folio_pos(folio),
-> +			folio_size(folio), mdev.m_pa);
-> +	if (ret)
-> +		goto out;
-> +
-> +	folio_mark_uptodate(folio);
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
+commit: b17c57b9f326f544a10178f2be4c886c4b02b4f3 [1933/2579] headers/deps: smp: Optimize <linux/smp.h> dependencies, remove <linux/smp_api.h> inclusion
+config: mips-randconfig-r026-20220419 (https://download.01.org/0day-ci/archive/20220421/202204212135.0nRWoKwW-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c1c49a356162b22554088d269f7689bdb044a9f1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=b17c57b9f326f544a10178f2be4c886c4b02b4f3
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout b17c57b9f326f544a10178f2be4c886c4b02b4f3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-	if (!ret)
-		folio_mark_uptodate(folio);
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks,
-Gao Xiang
+All warnings (new ones prefixed by >>):
 
-> +out:
-> +	folio_unlock(folio);
-> +	return ret;
-> +}
-> +
->  static const struct address_space_operations erofs_fscache_meta_aops = {
-> +	.readpage = erofs_fscache_meta_readpage,
->  };
->  
->  /*
-> -- 
-> 2.27.0
+>> lib/memcat_p.c:10:8: warning: no previous prototype for function '__memcat_p' [-Wmissing-prototypes]
+   void **__memcat_p(void **a, void **b)
+          ^
+   lib/memcat_p.c:10:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void **__memcat_p(void **a, void **b)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/__memcat_p +10 lib/memcat_p.c
+
+93048c0944150b Alexander Shishkin 2018-10-16   4  
+93048c0944150b Alexander Shishkin 2018-10-16   5  /*
+93048c0944150b Alexander Shishkin 2018-10-16   6   * Merge two NULL-terminated pointer arrays into a newly allocated
+93048c0944150b Alexander Shishkin 2018-10-16   7   * array, which is also NULL-terminated. Nomenclature is inspired by
+93048c0944150b Alexander Shishkin 2018-10-16   8   * memset_p() and memcat() found elsewhere in the kernel source tree.
+93048c0944150b Alexander Shishkin 2018-10-16   9   */
+93048c0944150b Alexander Shishkin 2018-10-16 @10  void **__memcat_p(void **a, void **b)
+
+:::::: The code at line 10 was first introduced by commit
+:::::: 93048c0944150b316a15f92c41a4d626c8df37fd lib: Fix ia64 bootloader linkage
+
+:::::: TO: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
