@@ -2,129 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F05CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8B1C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389873AbiDUPNa (ORCPT
+        id S1389903AbiDUPNi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
+        Thu, 21 Apr 2022 11:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232354AbiDUPN2 (ORCPT
+        with ESMTP id S232354AbiDUPNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:13:28 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EF213F97
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:10:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650553838; x=1682089838;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6s/Jh5/Nw/2YaODYM5uQMsmu5ex+nw0PjlAspdHlwBU=;
-  b=AO7z6tmCft1L5ijTNWUZ/VB0j4JT4YY57EwX4Y3ThcCc3Ym7AsY5M/Bb
-   8BcnF3Mn0CTEi8k33kNABNPa4SNwXVr4mjVcZROWj05rJF6ln6SzZ36D+
-   wGVyffmmQDUjlBuPKRWnqAWzgMHg4rCDi+sUj6t50YQ5uAHh2tdjlp73h
-   L4KeThmcuTK1fr8ei0gPMJXGGYZuxWqbCWL00vELBHkIGwpMht/I4dujz
-   F3jZZcTXo20tKm/hGDBWjXrodtZy7pj3zAbSqhB3J6rOnvljY6uaQYJdq
-   jhdTrBvPYZwfG9kVF68S3tovk/YdkE+ztPTuAj1lheH0dAY1iTbiCXYsF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="251693232"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="251693232"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:10:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="626547444"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Apr 2022 08:10:21 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhYRp-0008Vb-6c;
-        Thu, 21 Apr 2022 15:10:21 +0000
-Date:   Thu, 21 Apr 2022 23:09:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sandor Yu <Sandor.yu@nxp.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm: bridge: dw_hdmi: Audio: fix returnvar.cocci warnings
-Message-ID: <YmFzutFV/iDyEQF2@dd18de969aa6>
-References: <202204212311.TnfpcTGm-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202204212311.TnfpcTGm-lkp@intel.com>
+        Thu, 21 Apr 2022 11:13:34 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BDB3299D;
+        Thu, 21 Apr 2022 08:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Subject:Cc:To:From:Date:Message-ID:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=4rWOXJsvuobYbiGoWOq011uN1R9GhH39hya4yiHq06A=; b=DfAJsgGXTHsCtf/8unN3gWA2wH
+        yoC+BnND0K6m4IGyU7/G5FNcjA3agmRBpUoO9qZC/eB4/Jtt5UpuMkC7K0T9JAbHVQYuXcdK3o/JS
+        bOpLMLK8XuFbzi93q6gAsY9jDcfu22RhhDtjZtoYxOoEZ6Mj6nplGj0q5j+BTf2RQsewA62vxggFi
+        k/clpnM+9WCaCxVwyre3joSS+KcL8zuKehO6cnERl6r+OZiH4EHeqD0Y+iTEwPuQqY/S5ctG7Ojj8
+        +unNQIq4dGz1chrFR2SdUDHrOHKQphduo3tep+5FanU2SjWGODgCjy/zYx3fI3k4C8GWK1mzHbBmv
+        wJAM7G5w==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nhYRk-007QKR-48; Thu, 21 Apr 2022 15:10:16 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9A6543006C5;
+        Thu, 21 Apr 2022 17:10:13 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 5FA6A2B32F273; Thu, 21 Apr 2022 17:10:13 +0200 (CEST)
+Message-ID: <20220421150248.667412396@infradead.org>
+User-Agent: quilt/0.66
+Date:   Thu, 21 Apr 2022 17:02:48 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, ebiederm@xmission.com,
+        bigeasy@linutronix.de, Will Deacon <will@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, tj@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v2 0/5] ptrace-vs-PREEMPT_RT and freezer rewrite
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+Find here a new posting of the ptrace and freezer patches :-)
 
-drivers/gpu/drm/bridge/synopsys/dw-hdmi-gp-audio.c:80:5-8: Unneeded variable: "ret". Return "0" on line 94
-drivers/gpu/drm/bridge/synopsys/dw-hdmi-gp-audio.c:105:5-8: Unneeded variable: "ret". Return "0" on line 112
+The majority of the changes are in patch 2, which with much feedback from Oleg
+and Eric has changed lots.
 
+I'm hoping we're converging on something agreeable.
 
- Remove unneeded variable used to store return value.
-
-Generated by: scripts/coccinelle/misc/returnvar.cocci
-
-CC: Sandor Yu <Sandor.yu@nxp.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
 ---
+ drivers/acpi/x86/s2idle.c         |  12 +-
+ drivers/android/binder.c          |   4 +-
+ drivers/media/pci/pt3/pt3.c       |   4 +-
+ drivers/scsi/scsi_transport_spi.c |   7 +-
+ fs/cifs/inode.c                   |   4 +-
+ fs/cifs/transport.c               |   5 +-
+ fs/coredump.c                     |   5 +-
+ fs/nfs/file.c                     |   3 +-
+ fs/nfs/inode.c                    |  12 +-
+ fs/nfs/nfs3proc.c                 |   3 +-
+ fs/nfs/nfs4proc.c                 |  14 +--
+ fs/nfs/nfs4state.c                |   3 +-
+ fs/nfs/pnfs.c                     |   4 +-
+ fs/xfs/xfs_trans_ail.c            |   8 +-
+ include/linux/completion.h        |   1 +
+ include/linux/freezer.h           | 244 ++------------------------------------
+ include/linux/sched.h             |  49 ++++----
+ include/linux/sched/jobctl.h      |  10 ++
+ include/linux/sched/signal.h      |   5 +-
+ include/linux/sunrpc/sched.h      |   7 +-
+ include/linux/suspend.h           |   8 +-
+ include/linux/umh.h               |   9 +-
+ include/linux/wait.h              |  40 ++++++-
+ init/do_mounts_initrd.c           |  10 +-
+ kernel/cgroup/legacy_freezer.c    |  23 ++--
+ kernel/exit.c                     |   4 +-
+ kernel/fork.c                     |   5 +-
+ kernel/freezer.c                  | 137 +++++++++++++++------
+ kernel/futex/waitwake.c           |   8 +-
+ kernel/hung_task.c                |   4 +-
+ kernel/power/hibernate.c          |  35 ++++--
+ kernel/power/main.c               |  18 +--
+ kernel/power/process.c            |  10 +-
+ kernel/power/suspend.c            |  12 +-
+ kernel/power/user.c               |  24 ++--
+ kernel/ptrace.c                   | 114 ++++++++++--------
+ kernel/sched/completion.c         |   9 ++
+ kernel/sched/core.c               |  24 ++--
+ kernel/signal.c                   |  62 +++++++---
+ kernel/time/hrtimer.c             |   4 +-
+ kernel/umh.c                      |  18 ++-
+ mm/khugepaged.c                   |   4 +-
+ net/sunrpc/sched.c                |  12 +-
+ net/unix/af_unix.c                |   8 +-
+ 44 files changed, 478 insertions(+), 528 deletions(-)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   65eb92e4c9f0a962656f131521f4fbc0d24c9d4c
-commit: d970ce303ff80ae57bbd3e784f2772dbf3056e0c [4441/5346] drm: bridge: dw_hdmi: Audio: Add General Parallel Audio (GPA) driver
-:::::: branch date: 8 hours ago
-:::::: commit date: 2 days ago
-
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-gp-audio.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-gp-audio.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-gp-audio.c
-@@ -77,7 +77,6 @@ static int audio_hw_params(struct device
- 			   struct hdmi_codec_params *params)
- {
- 	struct snd_dw_hdmi *dw = dev_get_drvdata(dev);
--	int ret = 0;
- 	u8 ca;
- 
- 	dw_hdmi_set_sample_rate(dw->data.hdmi, params->sample_rate);
-@@ -91,7 +90,7 @@ static int audio_hw_params(struct device
- 				   params->iec.status[0] & IEC958_AES0_NONAUDIO);
- 	dw_hdmi_set_sample_width(dw->data.hdmi, params->sample_width);
- 
--	return ret;
-+	return 0;
- }
- 
- static void audio_shutdown(struct device *dev, void *data)
-@@ -102,14 +101,13 @@ static int audio_mute_stream(struct devi
- 			     bool enable, int direction)
- {
- 	struct snd_dw_hdmi *dw = dev_get_drvdata(dev);
--	int ret = 0;
- 
- 	if (!enable)
- 		dw_hdmi_audio_enable(dw->data.hdmi);
- 	else
- 		dw_hdmi_audio_disable(dw->data.hdmi);
- 
--	return ret;
-+	return 0;
- }
- 
- static int audio_get_eld(struct device *dev, void *data,
