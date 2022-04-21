@@ -2,363 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC6CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 03:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 03:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383897AbiDUDTk (ORCPT
+        id S1383904AbiDUDUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 23:19:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
+        Wed, 20 Apr 2022 23:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345657AbiDUDTf (ORCPT
+        with ESMTP id S1345657AbiDUDUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 23:19:35 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9288A12629
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 20:16:46 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-deb9295679so4116010fac.6
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 20:16:46 -0700 (PDT)
+        Wed, 20 Apr 2022 23:20:44 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AFE1262A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 20:17:55 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2ec1914e315so32695767b3.23
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 20:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5JB0gUMTmyGNaaB0sHkZ7WLGgPRHKvvOXuIeU593CwY=;
-        b=t6uXv3HdWpPzQFokq9nFqKyzjG8FMVTZXGj3xBOJq/tD78N6+spaYMgCxqM5o9UsUB
-         yGF3TdM7WDSclO7v/4X59nZm15yhyybppqRr73qIBr+QdFyQS+UfpVM78ER/TMLazdND
-         Zx/ioYJvXx8HYK+fRt+I2dSxnLglXJDGggYjBwDnt8ZUr+j0dezbtugfAue46BfNjfrm
-         QHXu2UvboYOk5VnAPvLdKIqqJZIoUjkh3HmXXQ3H27EAN5K5g3NWXv4dSt934jWkHRMG
-         cmtwklzhLNuFppsnepCWUcC1wkGVUTqcHwbBaGnpUjsrbcaG9AdMNNp9KfQq4j28gZoQ
-         vILw==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=SbxX3iRYBfJsdKsirndlC6UWegb+qEqhjR3XzkrVSj0=;
+        b=ZMN+jGeDKY3AvGi/KV82QDQCz3vMHbjL6Q+R2pWZbUXMI/lV8J5I6l0oy5dYae3dEk
+         Mhb17aP8V6qcnNLKSYY8B8PLwV4+Lkjax59QF/HQ/AAo6ccsbjU7E2fmsF07CSjg1MNr
+         yeJbgq1YMZJpO13LMbMuZTnmbjOMtxNj5oUb6QgaqcDmPjmiwV8cWvMUACOVc8wNVdq6
+         QwHjdgnsNMU++S8dEseDi1frndz8cjHQ3pz8idpF58BV56kF09wE8QS8+mIktxqJ7/EE
+         7ATJY3GzHUp+dr02vt2LVPSZr3XA1OtJQd8gN9COnd31sMVRw2edVWgUTTxIrDxis67O
+         6K4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5JB0gUMTmyGNaaB0sHkZ7WLGgPRHKvvOXuIeU593CwY=;
-        b=seltPFpa7alB6nnPa4FbyMReLbsAkROskQF3NhYoL6/8R1ZbyF1CPfyqrDMcSNaWGP
-         v8YPrOQK1gbs71mLV/ZgOVBVPrhDdy+QopcNm+Rsd6RZ3KbgyiKGsdBEEp8Di6cQqbFa
-         SikdXknoDhqXDJy/cdkI1e3jTpBCDxUkAcw0+SO+e8jc41jGyVur3sqsnIapSMv9RPMS
-         bXv0EzCavdm8IzglSTLrrlgYXRrDtdvGt3ETBib+r8xZhrfQ8eaYDXNZaZf0Gwn2J0Nl
-         yveYqavUWOifBQxph/pEi9N+4b6Zk2g9M8DrGv/QQhWIe6RQr4IB95qxHpfiuAs1er2H
-         H1wA==
-X-Gm-Message-State: AOAM531Jkf2CswIyVVX7UjC+vcfB/KLRwG5xhep48gPBk9cjM6gn+QTy
-        2cWLberFTJggBGhL8kohFy3SOw==
-X-Google-Smtp-Source: ABdhPJyQdEmZ1cOI+Mu68onPfacFGFzdSHci+WhfKL+DEbliYtaiQkOEIeu0U+r2ttiEQaeKCVb2IA==
-X-Received: by 2002:a05:6870:8a0a:b0:e5:b7dd:9a04 with SMTP id p10-20020a0568708a0a00b000e5b7dd9a04mr2957492oaq.96.1650511005887;
-        Wed, 20 Apr 2022 20:16:45 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id x20-20020a4ac594000000b00329a02f2f34sm7339509oop.16.2022.04.20.20.16.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 20:16:45 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Amit Nischal <anischal@codeaurora.org>,
-        Taniya Das <tdas@codeaurora.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=SbxX3iRYBfJsdKsirndlC6UWegb+qEqhjR3XzkrVSj0=;
+        b=m9zLv3Td6EzQh6wEtuqFudoWrlyxvCI5MGGoCzMxjNrPodEeMjTmcWyWUcpDncieDS
+         QRJ5OEo5e1r0MGm1tL3Wq1ltCJR39tQY1XRwLWhNq+do+afTpIH5vxkZ+ttf6B4OA/oH
+         eiWSqxtsGITcnW2euPDuT/Ht6NItvwLmsR+viqIAE1gMzS3ZbiRrOJr2UYHyg/3GttUC
+         ADJev8t6JsjSYDOZKDmTejPC65ADeQi/IIwwRn8roTaHmt9+zW0vM4YwNzxyuYx6UayZ
+         vUg2YNRwluFo1IVBdF4mV95ZQ2e+Hj6EjT/IwLwJU/FWYj7fXFp4OGjf1sxqYNPgpMLr
+         5TIQ==
+X-Gm-Message-State: AOAM5307gnoKoxNa/PGAcvJszHZq9NwY/yxxGNi2IsLGW8dFgDuL7ixt
+        OEENR1y5B/pxQZczJhGzQs8+I14=
+X-Google-Smtp-Source: ABdhPJykcclttmnOtbgLTyZVBmJ1Wqu+sh1ix+zCl7mtpFORSWLvU2MlVo/BUQfI8ut/W/PeVdXbtY8=
+X-Received: from pcc-desktop.svl.corp.google.com ([2620:15c:2ce:200:7bfa:bfc6:ac0d:67de])
+ (user=pcc job=sendgmr) by 2002:a25:9a42:0:b0:622:4bed:4f4f with SMTP id
+ r2-20020a259a42000000b006224bed4f4fmr24488782ybo.508.1650511074523; Wed, 20
+ Apr 2022 20:17:54 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 20:17:38 -0700
+Message-Id: <20220421031738.3168157-1-pcc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+Subject: [PATCH] mm: make minimum slab alignment a runtime property
+From:   Peter Collingbourne <pcc@google.com>
+To:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Peter Collingbourne <pcc@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3] clk: qcom: rcg2: Cache CFG register updates for parked RCGs
-Date:   Wed, 20 Apr 2022 20:18:49 -0700
-Message-Id: <20220421031849.454626-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As GDSCs are turned on and off some associated clocks are momentarily
-enabled for house keeping purposes. For this, and similar, purposes the
-"shared RCGs" will park the RCG on a source clock which is known to be
-available.
-When the RCG is parked, a safe clock source will be selected and
-committed, then the original source would be written back and upon enable
-the change back to the unparked source would be committed.
+When CONFIG_KASAN_HW_TAGS is enabled we currently increase the minimum
+slab alignment to 16. This happens even if MTE is not supported in
+hardware or disabled via kasan=off, which creates an unnecessary
+memory overhead in those cases. Eliminate this overhead by making
+the minimum slab alignment a runtime property and only aligning to
+16 if KASAN is enabled at runtime.
 
-But starting with SM8350 this fails, as the value in CFG is committed by
-the GDSC handshake and without a ticking parent the GDSC enablement will
-time out.
+On a DragonBoard 845c (non-MTE hardware) with a kernel built with
+CONFIG_KASAN_HW_TAGS, waiting for quiescence after a full Android
+boot I see the following Slab measurements in /proc/meminfo (median
+of 3 reboots):
 
-This becomes a concrete problem if the runtime supended state of a
-device includes disabling such rcg's parent clock. As the device
-attempts to power up the domain again the rcg will fail to enable and
-hence the GDSC enablement will fail, preventing the device from
-returning from the suspended state.
+Before: 169020 kB
+After:  167304 kB
 
-This can be seen in e.g. the display stack during probe on SM8350.
-
-To avoid this problem, the software needs to ensure that the RCG is
-configured to a active parent clock while it is disabled. This is done
-by caching the CFG register content while the shared RCG is parked on
-this safe source.
-
-Writes to M, N and D registers are committed as they are requested. New
-helpers for get_parent() and recalc_rate() are extracted from their
-previous implementations and __clk_rcg2_configure() is modified to allow
-it to operate on the cached value.
-
-Fixes: 7ef6f11887bd ("clk: qcom: Configure the RCGs to a safe source as needed")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://linux-review.googlesource.com/id/I752e725179b43b144153f4b6f584ceb646473ead
+Signed-off-by: Peter Collingbourne <pcc@google.com>
 ---
+ arch/arc/include/asm/cache.h        |  4 ++--
+ arch/arm/include/asm/cache.h        |  2 +-
+ arch/arm64/include/asm/cache.h      | 19 +++++++++++++------
+ arch/microblaze/include/asm/page.h  |  2 +-
+ arch/riscv/include/asm/cache.h      |  2 +-
+ arch/sparc/include/asm/cache.h      |  2 +-
+ arch/xtensa/include/asm/processor.h |  2 +-
+ fs/binfmt_flat.c                    |  9 ++++++---
+ include/crypto/hash.h               |  2 +-
+ include/linux/slab.h                | 22 +++++++++++++++++-----
+ mm/slab.c                           |  7 +++----
+ mm/slab_common.c                    |  3 +--
+ mm/slob.c                           |  6 +++---
+ 13 files changed, 51 insertions(+), 31 deletions(-)
 
-Changes since v2:
-- Explained the symptoms in commit message
-- Reduced error in clk_rcg2_get_parent() to pr_debug()
-- Reduced the size of the change in __clk_rcg2_configure()
-- Polished comment in clk_rcg2_shared_set_rate()
-- Use clk_hw_is_enabled() in clk_rcg2_shared_set_parent()
-
- drivers/clk/qcom/clk-rcg.h  |   2 +
- drivers/clk/qcom/clk-rcg2.c | 124 ++++++++++++++++++++++++++++--------
- 2 files changed, 100 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/clk/qcom/clk-rcg.h b/drivers/clk/qcom/clk-rcg.h
-index 00cea508d49e..012e745794fd 100644
---- a/drivers/clk/qcom/clk-rcg.h
-+++ b/drivers/clk/qcom/clk-rcg.h
-@@ -140,6 +140,7 @@ extern const struct clk_ops clk_dyn_rcg_ops;
-  * @freq_tbl: frequency table
-  * @clkr: regmap clock handle
-  * @cfg_off: defines the cfg register offset from the CMD_RCGR + CFG_REG
-+ * @parked_cfg: cached value of the CFG register for parked RCGs
+diff --git a/arch/arc/include/asm/cache.h b/arch/arc/include/asm/cache.h
+index f0f1fc5d62b6..b6a7763fd5d6 100644
+--- a/arch/arc/include/asm/cache.h
++++ b/arch/arc/include/asm/cache.h
+@@ -55,11 +55,11 @@
+  * Make sure slab-allocated buffers are 64-bit aligned when atomic64_t uses
+  * ARCv2 64-bit atomics (LLOCKD/SCONDD). This guarantess runtime 64-bit
+  * alignment for any atomic64_t embedded in buffer.
+- * Default ARCH_SLAB_MINALIGN is __alignof__(long long) which has a relaxed
++ * Default ARCH_SLAB_MIN_MINALIGN is __alignof__(long long) which has a relaxed
+  * value of 4 (and not 8) in ARC ABI.
   */
- struct clk_rcg2 {
- 	u32			cmd_rcgr;
-@@ -150,6 +151,7 @@ struct clk_rcg2 {
- 	const struct freq_tbl	*freq_tbl;
- 	struct clk_regmap	clkr;
- 	u8			cfg_off;
-+	u32			parked_cfg;
+ #if defined(CONFIG_ARC_HAS_LL64) && defined(CONFIG_ARC_HAS_LLSC)
+-#define ARCH_SLAB_MINALIGN	8
++#define ARCH_SLAB_MIN_MINALIGN	8
+ #endif
+ 
+ extern int ioc_enable;
+diff --git a/arch/arm/include/asm/cache.h b/arch/arm/include/asm/cache.h
+index e3ea34558ada..3e1018bb9805 100644
+--- a/arch/arm/include/asm/cache.h
++++ b/arch/arm/include/asm/cache.h
+@@ -21,7 +21,7 @@
+  * With EABI on ARMv5 and above we must have 64-bit aligned slab pointers.
+  */
+ #if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
+-#define ARCH_SLAB_MINALIGN 8
++#define ARCH_SLAB_MIN_MINALIGN 8
+ #endif
+ 
+ #define __read_mostly __section(".data..read_mostly")
+diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
+index a074459f8f2f..38f171591c3f 100644
+--- a/arch/arm64/include/asm/cache.h
++++ b/arch/arm64/include/asm/cache.h
+@@ -6,6 +6,7 @@
+ #define __ASM_CACHE_H
+ 
+ #include <asm/cputype.h>
++#include <asm/mte-def.h>
+ 
+ #define CTR_L1IP_SHIFT		14
+ #define CTR_L1IP_MASK		3
+@@ -49,15 +50,21 @@
+  */
+ #define ARCH_DMA_MINALIGN	(128)
+ 
+-#ifdef CONFIG_KASAN_SW_TAGS
+-#define ARCH_SLAB_MINALIGN	(1ULL << KASAN_SHADOW_SCALE_SHIFT)
+-#elif defined(CONFIG_KASAN_HW_TAGS)
+-#define ARCH_SLAB_MINALIGN	MTE_GRANULE_SIZE
+-#endif
+-
+ #ifndef __ASSEMBLY__
+ 
+ #include <linux/bitops.h>
++#include <linux/kasan-enabled.h>
++
++#ifdef CONFIG_KASAN_SW_TAGS
++#define ARCH_SLAB_MIN_MINALIGN	(1ULL << KASAN_SHADOW_SCALE_SHIFT)
++#elif defined(CONFIG_KASAN_HW_TAGS)
++static inline size_t arch_slab_minalign(void)
++{
++	return kasan_hw_tags_enabled() ? MTE_GRANULE_SIZE :
++					 __alignof__(unsigned long long);
++}
++#define arch_slab_minalign() arch_slab_minalign()
++#endif
+ 
+ #define ICACHEF_ALIASING	0
+ #define ICACHEF_VPIPT		1
+diff --git a/arch/microblaze/include/asm/page.h b/arch/microblaze/include/asm/page.h
+index 4b8b2fa78fc5..ccdbc1da3c3e 100644
+--- a/arch/microblaze/include/asm/page.h
++++ b/arch/microblaze/include/asm/page.h
+@@ -33,7 +33,7 @@
+ /* MS be sure that SLAB allocates aligned objects */
+ #define ARCH_DMA_MINALIGN	L1_CACHE_BYTES
+ 
+-#define ARCH_SLAB_MINALIGN	L1_CACHE_BYTES
++#define ARCH_SLAB_MIN_MINALIGN	L1_CACHE_BYTES
+ 
+ /*
+  * PAGE_OFFSET -- the first address of the first page of memory. With MMU
+diff --git a/arch/riscv/include/asm/cache.h b/arch/riscv/include/asm/cache.h
+index 9b58b104559e..7beb3b5d27c7 100644
+--- a/arch/riscv/include/asm/cache.h
++++ b/arch/riscv/include/asm/cache.h
+@@ -16,7 +16,7 @@
+  * the flat loader aligns it accordingly.
+  */
+ #ifndef CONFIG_MMU
+-#define ARCH_SLAB_MINALIGN	16
++#define ARCH_SLAB_MIN_MINALIGN	16
+ #endif
+ 
+ #endif /* _ASM_RISCV_CACHE_H */
+diff --git a/arch/sparc/include/asm/cache.h b/arch/sparc/include/asm/cache.h
+index e62fd0e72606..9d8cb4687b7e 100644
+--- a/arch/sparc/include/asm/cache.h
++++ b/arch/sparc/include/asm/cache.h
+@@ -8,7 +8,7 @@
+ #ifndef _SPARC_CACHE_H
+ #define _SPARC_CACHE_H
+ 
+-#define ARCH_SLAB_MINALIGN	__alignof__(unsigned long long)
++#define ARCH_SLAB_MIN_MINALIGN	__alignof__(unsigned long long)
+ 
+ #define L1_CACHE_SHIFT 5
+ #define L1_CACHE_BYTES 32
+diff --git a/arch/xtensa/include/asm/processor.h b/arch/xtensa/include/asm/processor.h
+index 4489a27d527a..e3ea278e3fcf 100644
+--- a/arch/xtensa/include/asm/processor.h
++++ b/arch/xtensa/include/asm/processor.h
+@@ -18,7 +18,7 @@
+ #include <asm/types.h>
+ #include <asm/regs.h>
+ 
+-#define ARCH_SLAB_MINALIGN XTENSA_STACK_ALIGNMENT
++#define ARCH_SLAB_MIN_MINALIGN XTENSA_STACK_ALIGNMENT
+ 
+ /*
+  * User space process size: 1 GB.
+diff --git a/fs/binfmt_flat.c b/fs/binfmt_flat.c
+index 626898150011..8ff1bf7d1e87 100644
+--- a/fs/binfmt_flat.c
++++ b/fs/binfmt_flat.c
+@@ -64,7 +64,10 @@
+  * Here we can be a bit looser than the data sections since this
+  * needs to only meet arch ABI requirements.
+  */
+-#define FLAT_STACK_ALIGN	max_t(unsigned long, sizeof(void *), ARCH_SLAB_MINALIGN)
++static size_t flat_stack_align(void)
++{
++	return max_t(unsigned long, sizeof(void *), arch_slab_minalign());
++}
+ 
+ #define RELOC_FAILED 0xff00ff01		/* Relocation incorrect somewhere */
+ #define UNLOADED_LIB 0x7ff000ff		/* Placeholder for unused library */
+@@ -148,7 +151,7 @@ static int create_flat_tables(struct linux_binprm *bprm, unsigned long arg_start
+ 		sp -= 2; /* argvp + envp */
+ 	sp -= 1;  /* &argc */
+ 
+-	current->mm->start_stack = (unsigned long)sp & -FLAT_STACK_ALIGN;
++	current->mm->start_stack = (unsigned long)sp & -flat_stack_align();
+ 	sp = (unsigned long __user *)current->mm->start_stack;
+ 
+ 	if (put_user(bprm->argc, sp++))
+@@ -966,7 +969,7 @@ static int load_flat_binary(struct linux_binprm *bprm)
+ #endif
+ 	stack_len += (bprm->argc + 1) * sizeof(char *);   /* the argv array */
+ 	stack_len += (bprm->envc + 1) * sizeof(char *);   /* the envp array */
+-	stack_len = ALIGN(stack_len, FLAT_STACK_ALIGN);
++	stack_len = ALIGN(stack_len, flat_stack_align());
+ 
+ 	res = load_flat_file(bprm, &libinfo, 0, &stack_len);
+ 	if (res < 0)
+diff --git a/include/crypto/hash.h b/include/crypto/hash.h
+index f140e4643949..442c290f458c 100644
+--- a/include/crypto/hash.h
++++ b/include/crypto/hash.h
+@@ -149,7 +149,7 @@ struct ahash_alg {
+ 
+ struct shash_desc {
+ 	struct crypto_shash *tfm;
+-	void *__ctx[] __aligned(ARCH_SLAB_MINALIGN);
++	void *__ctx[] __aligned(ARCH_SLAB_MIN_MINALIGN);
  };
  
- #define to_clk_rcg2(_hw) container_of(to_clk_regmap(_hw), struct clk_rcg2, clkr)
-diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
-index f675fd969c4d..9d218b04aa49 100644
---- a/drivers/clk/qcom/clk-rcg2.c
-+++ b/drivers/clk/qcom/clk-rcg2.c
-@@ -73,16 +73,11 @@ static int clk_rcg2_is_enabled(struct clk_hw *hw)
- 	return (cmd & CMD_ROOT_OFF) == 0;
- }
+ #define HASH_MAX_DIGESTSIZE	 64
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 373b3ef99f4e..80e517593372 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -201,21 +201,33 @@ void kmem_dump_obj(void *object);
+ #endif
  
--static u8 clk_rcg2_get_parent(struct clk_hw *hw)
-+static u8 __clk_rcg2_get_parent(struct clk_hw *hw, u32 cfg)
- {
- 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
- 	int num_parents = clk_hw_get_num_parents(hw);
--	u32 cfg;
--	int i, ret;
--
--	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
--	if (ret)
--		goto err;
-+	int i;
- 
- 	cfg &= CFG_SRC_SEL_MASK;
- 	cfg >>= CFG_SRC_SEL_SHIFT;
-@@ -91,12 +86,27 @@ static u8 clk_rcg2_get_parent(struct clk_hw *hw)
- 		if (cfg == rcg->parent_map[i].cfg)
- 			return i;
- 
--err:
- 	pr_debug("%s: Clock %s has invalid parent, using default.\n",
- 		 __func__, clk_hw_get_name(hw));
- 	return 0;
- }
- 
-+static u8 clk_rcg2_get_parent(struct clk_hw *hw)
+ /*
+- * Setting ARCH_SLAB_MINALIGN in arch headers allows a different alignment.
++ * Setting ARCH_SLAB_MIN_MINALIGN in arch headers allows a different alignment.
+  * Intended for arches that get misalignment faults even for 64 bit integer
+  * aligned buffers.
+  */
+-#ifndef ARCH_SLAB_MINALIGN
+-#define ARCH_SLAB_MINALIGN __alignof__(unsigned long long)
++#ifndef ARCH_SLAB_MIN_MINALIGN
++#define ARCH_SLAB_MIN_MINALIGN __alignof__(unsigned long long)
++#endif
++
++/*
++ * Arches can define this function if they want to decide the minimum slab
++ * alignment at runtime. The value returned by the function must be
++ * >= ARCH_SLAB_MIN_MINALIGN.
++ */
++#ifndef arch_slab_minalign
++static inline size_t arch_slab_minalign(void)
 +{
-+	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-+	u32 cfg;
-+	int ret;
-+
-+	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-+	if (ret) {
-+		pr_debug("%s: Unable to read CFG register for %s\n",
-+			 __func__, clk_hw_get_name(hw));
-+		return 0;
-+	}
-+
-+	return __clk_rcg2_get_parent(hw, cfg);
++	return ARCH_SLAB_MIN_MINALIGN;
 +}
-+
- static int update_config(struct clk_rcg2 *rcg)
+ #endif
+ 
+ /*
+  * kmalloc and friends return ARCH_KMALLOC_MINALIGN aligned
+- * pointers. kmem_cache_alloc and friends return ARCH_SLAB_MINALIGN
++ * pointers. kmem_cache_alloc and friends return ARCH_SLAB_MIN_MINALIGN
+  * aligned pointers.
+  */
+ #define __assume_kmalloc_alignment __assume_aligned(ARCH_KMALLOC_MINALIGN)
+-#define __assume_slab_alignment __assume_aligned(ARCH_SLAB_MINALIGN)
++#define __assume_slab_alignment __assume_aligned(ARCH_SLAB_MIN_MINALIGN)
+ #define __assume_page_alignment __assume_aligned(PAGE_SIZE)
+ 
+ /*
+diff --git a/mm/slab.c b/mm/slab.c
+index 0edb474edef1..97b756976c8b 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3009,10 +3009,9 @@ static void *cache_alloc_debugcheck_after(struct kmem_cache *cachep,
+ 	objp += obj_offset(cachep);
+ 	if (cachep->ctor && cachep->flags & SLAB_POISON)
+ 		cachep->ctor(objp);
+-	if (ARCH_SLAB_MINALIGN &&
+-	    ((unsigned long)objp & (ARCH_SLAB_MINALIGN-1))) {
+-		pr_err("0x%px: not aligned to ARCH_SLAB_MINALIGN=%d\n",
+-		       objp, (int)ARCH_SLAB_MINALIGN);
++	if ((unsigned long)objp & (arch_slab_minalign() - 1)) {
++		pr_err("0x%px: not aligned to arch_slab_minalign()=%d\n", objp,
++		       (int)arch_slab_minalign());
+ 	}
+ 	return objp;
+ }
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 2b3206a2c3b5..33cc49810a54 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -154,8 +154,7 @@ static unsigned int calculate_alignment(slab_flags_t flags,
+ 		align = max(align, ralign);
+ 	}
+ 
+-	if (align < ARCH_SLAB_MINALIGN)
+-		align = ARCH_SLAB_MINALIGN;
++	align = max_t(size_t, align, arch_slab_minalign());
+ 
+ 	return ALIGN(align, sizeof(void *));
+ }
+diff --git a/mm/slob.c b/mm/slob.c
+index 40ea6e2d4ccd..3bd2669bd690 100644
+--- a/mm/slob.c
++++ b/mm/slob.c
+@@ -478,7 +478,7 @@ static __always_inline void *
+ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
  {
- 	int count, ret;
-@@ -163,12 +173,10 @@ calc_rate(unsigned long rate, u32 m, u32 n, u32 mode, u32 hid_div)
+ 	unsigned int *m;
+-	int minalign = max_t(size_t, ARCH_KMALLOC_MINALIGN, ARCH_SLAB_MINALIGN);
++	int minalign = max_t(size_t, ARCH_KMALLOC_MINALIGN, arch_slab_minalign());
+ 	void *ret;
+ 
+ 	gfp &= gfp_allowed_mask;
+@@ -555,7 +555,7 @@ void kfree(const void *block)
+ 
+ 	sp = virt_to_folio(block);
+ 	if (folio_test_slab(sp)) {
+-		int align = max_t(size_t, ARCH_KMALLOC_MINALIGN, ARCH_SLAB_MINALIGN);
++		int align = max_t(size_t, ARCH_KMALLOC_MINALIGN, arch_slab_minalign());
+ 		unsigned int *m = (unsigned int *)(block - align);
+ 		slob_free(m, *m + align);
+ 	} else {
+@@ -584,7 +584,7 @@ size_t __ksize(const void *block)
+ 	if (unlikely(!folio_test_slab(folio)))
+ 		return folio_size(folio);
+ 
+-	align = max_t(size_t, ARCH_KMALLOC_MINALIGN, ARCH_SLAB_MINALIGN);
++	align = max_t(size_t, ARCH_KMALLOC_MINALIGN, arch_slab_minalign());
+ 	m = (unsigned int *)(block - align);
+ 	return SLOB_UNITS(*m) * SLOB_UNIT;
  }
- 
- static unsigned long
--clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
-+__clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate, u32 cfg)
- {
- 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
--	u32 cfg, hid_div, m = 0, n = 0, mode = 0, mask;
--
--	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-+	u32 hid_div, m = 0, n = 0, mode = 0, mask;
- 
- 	if (rcg->mnd_width) {
- 		mask = BIT(rcg->mnd_width) - 1;
-@@ -189,6 +197,17 @@ clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
- 	return calc_rate(parent_rate, m, n, mode, hid_div);
- }
- 
-+static unsigned long
-+clk_rcg2_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
-+{
-+	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-+	u32 cfg;
-+
-+	regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-+
-+	return __clk_rcg2_recalc_rate(hw, parent_rate, cfg);
-+}
-+
- static int _freq_tbl_determine_rate(struct clk_hw *hw, const struct freq_tbl *f,
- 				    struct clk_rate_request *req,
- 				    enum freq_policy policy)
-@@ -262,7 +281,8 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
- 	return _freq_tbl_determine_rate(hw, rcg->freq_tbl, req, FLOOR);
- }
- 
--static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
-+static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f,
-+				u32 *_cfg)
- {
- 	u32 cfg, mask, d_val, not2d_val, n_minus_m;
- 	struct clk_hw *hw = &rcg->clkr.hw;
-@@ -304,15 +324,27 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
- 	cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
- 	if (rcg->mnd_width && f->n && (f->m != f->n))
- 		cfg |= CFG_MODE_DUAL_EDGE;
--	return regmap_update_bits(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg),
--					mask, cfg);
-+
-+	*_cfg &= ~mask;
-+	*_cfg |= cfg;
-+
-+	return 0;
- }
- 
- static int clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
- {
-+	u32 cfg;
- 	int ret;
- 
--	ret = __clk_rcg2_configure(rcg, f);
-+	ret = regmap_read(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), &cfg);
-+	if (ret)
-+		return ret;
-+
-+	ret = __clk_rcg2_configure(rcg, f, &cfg);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(rcg->clkr.regmap, RCG_CFG_OFFSET(rcg), cfg);
- 	if (ret)
- 		return ret;
- 
-@@ -979,11 +1011,12 @@ static int clk_rcg2_shared_set_rate(struct clk_hw *hw, unsigned long rate,
- 		return -EINVAL;
- 
- 	/*
--	 * In case clock is disabled, update the CFG, M, N and D registers
--	 * and don't hit the update bit of CMD register.
-+	 * In case clock is disabled, update the M, N and D registers, cache
-+	 * the CFG value in parked_cfg and don't hit the update bit of CMD
-+	 * register.
- 	 */
- 	if (!__clk_is_enabled(hw->clk))
--		return __clk_rcg2_configure(rcg, f);
-+		return __clk_rcg2_configure(rcg, f, &rcg->parked_cfg);
- 
- 	return clk_rcg2_shared_force_enable_clear(hw, f);
- }
-@@ -1007,6 +1040,11 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
- 	if (ret)
- 		return ret;
- 
-+	/* Write back the stored configuration corresponding to current rate */
-+	ret = regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, rcg->parked_cfg);
-+	if (ret)
-+		return ret;
-+
- 	ret = update_config(rcg);
- 	if (ret)
- 		return ret;
-@@ -1017,13 +1055,12 @@ static int clk_rcg2_shared_enable(struct clk_hw *hw)
- static void clk_rcg2_shared_disable(struct clk_hw *hw)
- {
- 	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
--	u32 cfg;
- 
- 	/*
- 	 * Store current configuration as switching to safe source would clear
- 	 * the SRC and DIV of CFG register
- 	 */
--	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &cfg);
-+	regmap_read(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, &rcg->parked_cfg);
- 
- 	/*
- 	 * Park the RCG at a safe configuration - sourced off of safe source.
-@@ -1041,17 +1078,52 @@ static void clk_rcg2_shared_disable(struct clk_hw *hw)
- 	update_config(rcg);
- 
- 	clk_rcg2_clear_force_enable(hw);
-+}
- 
--	/* Write back the stored configuration corresponding to current rate */
--	regmap_write(rcg->clkr.regmap, rcg->cmd_rcgr + CFG_REG, cfg);
-+static u8 clk_rcg2_shared_get_parent(struct clk_hw *hw)
-+{
-+	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-+
-+	/* If the shared rcg is parked used the cached cfg instead */
-+	if (!__clk_is_enabled(hw->clk))
-+		return __clk_rcg2_get_parent(hw, rcg->parked_cfg);
-+
-+	return clk_rcg2_get_parent(hw);
-+}
-+
-+static int clk_rcg2_shared_set_parent(struct clk_hw *hw, u8 index)
-+{
-+	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-+
-+	/* If the shared rcg is parked only update the cached cfg */
-+	if (!clk_hw_is_enabled(hw)) {
-+		rcg->parked_cfg &= ~CFG_SRC_SEL_MASK;
-+		rcg->parked_cfg |= rcg->parent_map[index].cfg << CFG_SRC_SEL_SHIFT;
-+
-+		return 0;
-+	}
-+
-+	return clk_rcg2_set_parent(hw, index);
-+}
-+
-+static unsigned long
-+clk_rcg2_shared_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
-+{
-+	struct clk_rcg2 *rcg = to_clk_rcg2(hw);
-+
-+	/* If the shared rcg is parked used the cached cfg instead */
-+	if (!__clk_is_enabled(hw->clk))
-+		return __clk_rcg2_recalc_rate(hw, parent_rate, rcg->parked_cfg);
-+
-+	return clk_rcg2_recalc_rate(hw, parent_rate);
- }
- 
- const struct clk_ops clk_rcg2_shared_ops = {
- 	.enable = clk_rcg2_shared_enable,
- 	.disable = clk_rcg2_shared_disable,
--	.get_parent = clk_rcg2_get_parent,
--	.set_parent = clk_rcg2_set_parent,
--	.recalc_rate = clk_rcg2_recalc_rate,
-+	.get_parent = clk_rcg2_shared_get_parent,
-+	.set_parent = clk_rcg2_shared_set_parent,
-+	.recalc_rate = clk_rcg2_shared_recalc_rate,
- 	.determine_rate = clk_rcg2_determine_rate,
- 	.set_rate = clk_rcg2_shared_set_rate,
- 	.set_rate_and_parent = clk_rcg2_shared_set_rate_and_parent,
 -- 
-2.35.1
+2.36.0.rc0.470.gd361397f0d-goog
 
