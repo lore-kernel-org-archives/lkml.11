@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F282BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A20C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386578AbiDUINP (ORCPT
+        id S1386537AbiDUINV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
+        Thu, 21 Apr 2022 04:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386501AbiDUIMn (ORCPT
+        with ESMTP id S1386511AbiDUIMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:12:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A707E59
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:09:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650528593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p5mkp6RgcSobuU7TrowdyzROdlgIwSdHC604GfrT0MY=;
-        b=XqADFnvMV1d4VAhOFkM/AyTvFwFbwu3ollVd7T0tqJyNbEeAm4oWpYTfMtusAfepEFbQ++
-        j7BHjk1T6OZYfdt8eGhYLcdIIqhOToGnJxeWakGRo14JmF8PR0PdNBrYijrsXt/CQ8YoAB
-        kx76NfD1/ctLVpXezbAPhvuOAMl6wzY=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-e2gf34BiOLGJNpsfnZ8EqQ-1; Thu, 21 Apr 2022 04:09:52 -0400
-X-MC-Unique: e2gf34BiOLGJNpsfnZ8EqQ-1
-Received: by mail-qk1-f199.google.com with SMTP id k15-20020a05620a07ef00b0069eab7275d5so2864463qkk.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:09:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=p5mkp6RgcSobuU7TrowdyzROdlgIwSdHC604GfrT0MY=;
-        b=tCGRKEvyjxO44gehIexBxy2mUflCIplOcd5BJaQutHvkg1TlwkaM6zc9eHvP+u2P6/
-         bqjWd1jj+sp2copr5gLpEhlst9eIFtnmG2M986borhwnxHNJZD6iRufa46euDoGJT8ks
-         Us5TuBChmz5kq9uAHWYeNVqsETPvRusVgFACyd01tDWiOZ7Oyb0350q/CuQdMngCphM4
-         znA2EIp7y/PBtrlvDSnC2GfIkgClAmP7YK/BZ6EMvi/SOmwxXPdViJ88fSFis3mz0bNj
-         HPf0zrZRSVxsa86rnP9aNTsqS0we7mtnfsZuKlzURYQg4MGS0qgXzU1xEM7Zjve9U7CQ
-         39tQ==
-X-Gm-Message-State: AOAM531zYFWMBWa1H1AF9VaPrtijtbgsZUMARakyrS9KHrg1x281srdw
-        g1rLWwLYvOSb59AxS1bTVRAZoMwIjuGw+mQEMA7S0PBnsTyJC/c/kx/bRTT9V/q/mPiPySXLbtx
-        aq7cykaFOj5CEDHs6oL9lAF5l
-X-Received: by 2002:ac8:5d8e:0:b0:2f1:fbc6:ae89 with SMTP id d14-20020ac85d8e000000b002f1fbc6ae89mr13320685qtx.647.1650528591620;
-        Thu, 21 Apr 2022 01:09:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxSWl/IdeBjalShp/k7O4K9i4aFpme9ARCm4osm7hX2EifpK6owbeUtv7Nf9MMUd0R2II36pw==
-X-Received: by 2002:ac8:5d8e:0:b0:2f1:fbc6:ae89 with SMTP id d14-20020ac85d8e000000b002f1fbc6ae89mr13320674qtx.647.1650528591406;
-        Thu, 21 Apr 2022 01:09:51 -0700 (PDT)
-Received: from gerbillo.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id c131-20020a379a89000000b0069c903625absm2686220qke.102.2022.04.21.01.09.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 01:09:50 -0700 (PDT)
-Message-ID: <a3596a37f72d6df35a6de4e0cf912d2f6d434bbc.camel@redhat.com>
-Subject: Re: [PATCH] net/smc: sync err info when TCP connection is refused
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     yacanliu@163.com, kgraul@linux.ibm.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
-Date:   Thu, 21 Apr 2022 10:09:48 +0200
-In-Reply-To: <20220417123307.1094747-1-yacanliu@163.com>
-References: <20220417123307.1094747-1-yacanliu@163.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 21 Apr 2022 04:12:50 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9441D2BE6
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:10:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650528600; x=1682064600;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9Dvw55VSR2AYsXJHuar7PwFU+kUOe8VxzohYRnEFbv0=;
+  b=lqvlWeDlZBek7fwQpvcFpoqQCK0a5JFz831u1PvXDi3x5ioXMbWM9ThQ
+   j7f9WcahNCk2c1H2DFdDrZvWiWpM6gVMZKRogGjNjk3u4m1djS2BNKfQm
+   UPqfR9vlbOKQHCQAWBD5lYLbDPh2IE65Cxu9Q8dSL2TH2Pqava5szgBp3
+   G6IXVoDBYYSnxhZxHoohSHY7iJyjNifeL0tD3BXBMf7oubiwG0Xbhgcwq
+   ZhA/ZaBxAaMbhq0DLVBf67yx7EfSDRC+yCJq4+MyoTjI5x3ZYO5scNVtk
+   k3XbL+TXsoPupYBeJmvYjSsfysWrHjtfzfi1+RsxOBISYa/CO+fqTi61n
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263128112"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="263128112"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 01:10:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="562475118"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 21 Apr 2022 01:09:59 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhRt0-00086m-8P;
+        Thu, 21 Apr 2022 08:09:58 +0000
+Date:   Thu, 21 Apr 2022 16:09:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: kernel/sysctl.c:183:13: error: no previous prototype for
+ 'unpriv_ebpf_notify'
+Message-ID: <202204211555.LOlUnkOB-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-04-17 at 20:33 +0800, yacanliu@163.com wrote:
-> From: liuyacan <liuyacan@corp.netease.com>
-> 
-> In the current implementation, when TCP initiates a connection
-> to an unavailable [ip,port], ECONNREFUSED will be stored in the
-> TCP socket, but SMC will not. However, some apps (like curl) use
-> getsockopt(,,SO_ERROR,,) to get the error information, which makes
-> them miss the error message and behave strangely.
-> 
-> Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b253435746d9a4a701b5f09211b9c14d3370d0da
+commit: 44a3918c8245ab10c6c9719dd12e7a8d291980d8 x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+date:   8 weeks ago
+config: x86_64-sof-customedconfig-bpf-defconfig (https://download.01.org/0day-ci/archive/20220421/202204211555.LOlUnkOB-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=44a3918c8245ab10c6c9719dd12e7a8d291980d8
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 44a3918c8245ab10c6c9719dd12e7a8d291980d8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Could you please formally re-submit for -net (inclusing NET into the
-patch subj) with a suitable 'fixes' tag? You can retain the already
-collected reviewed/ack-by tags.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks!
+All errors (new ones prefixed by >>):
 
-Paolo
+>> kernel/sysctl.c:183:13: error: no previous prototype for 'unpriv_ebpf_notify' [-Werror=missing-prototypes]
+     183 | void __weak unpriv_ebpf_notify(int new_state)
+         |             ^~~~~~~~~~~~~~~~~~
+   cc1: all warnings being treated as errors
+--
+>> arch/x86/kernel/cpu/bugs.c:657:6: error: no previous prototype for 'unpriv_ebpf_notify' [-Werror=missing-prototypes]
+     657 | void unpriv_ebpf_notify(int new_state)
+         |      ^~~~~~~~~~~~~~~~~~
+   cc1: all warnings being treated as errors
 
+
+vim +/unpriv_ebpf_notify +183 kernel/sysctl.c
+
+   182	
+ > 183	void __weak unpriv_ebpf_notify(int new_state)
+   184	{
+   185	}
+   186	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
