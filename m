@@ -2,197 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1084DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45515C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389456AbiDUOk2 (ORCPT
+        id S1389475AbiDUOke (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
+        Thu, 21 Apr 2022 10:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389475AbiDUOkT (ORCPT
+        with ESMTP id S1389503AbiDUOkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:40:19 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FBF40930;
-        Thu, 21 Apr 2022 07:37:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650551845; x=1682087845;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=+qF2GX2hZEj//xn0Ym9Mabjo1aTxa2x08295shLMgqA=;
-  b=Emq+lGMxJ4fpa0EkTNXyeMEb43RMi7CQFM0fkhXRRsazTGY3d1J5O/nx
-   H0harAWsbijfwJCM2WoHMseDpFiEjUgCB6SZX6TIjvn1vocyTq0penLA6
-   cuitli0+uFi1U5t18pnzVLpZym7gtLUmSTjoSWyyYKXQ+Tfg8hJnkE0OK
-   Y=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Apr 2022 07:37:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 07:37:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 21 Apr 2022 07:37:24 -0700
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 21 Apr 2022 07:37:17 -0700
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
-        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
-        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
-        <quic_aravindh@quicinc.com>, <steev@kali.org>
-Subject: [PATCH v8 2/4] drm/msm/dp: Support only IRQ_HPD and REPLUG interrupts for eDP
-Date:   Thu, 21 Apr 2022 20:06:49 +0530
-Message-ID: <1650551811-24319-3-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650551811-24319-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1650551811-24319-1-git-send-email-quic_sbillaka@quicinc.com>
+        Thu, 21 Apr 2022 10:40:23 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CC140A07
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650551854; x=1682087854;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DsPJo/C0ybgqsg0hBbD7oY+lO1N2A92sGm7qEPTNZW0=;
+  b=HbQvEX6rkqj5V0R13ps+oXmIBOIy7SYt6kDxue3xJQZjK9bn5K6qCOBN
+   FEKJu558rvoh5I4I5n1I+U1XTdKG95zTm/HPLWA/S/uf1znV2hqVpkFZw
+   xYeV9qg9L+gYbGCsz8YA+HU61vwDnhymxvStCdjj2xxU9jvwa4E16ntKC
+   v6sc90FBSP/IAeCniagjxPNyolMgT3MLqFTxvR1Df25rnECnvtb4HYDC1
+   RJmyvPwww1lz1+BXyhzMC4emP9KSGPXwCAoIbWucTXRiyvh+owpBRVmiI
+   9iDw9aHlLrmOm+1vMG1gfor7azBBk0hNE6n0c4MItBGV3n698K4MFskOo
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246263223"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="246263223"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 07:37:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="593677144"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 07:37:20 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhXvs-0008U6-3Q;
+        Thu, 21 Apr 2022 14:37:20 +0000
+Date:   Thu, 21 Apr 2022 22:37:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops'
+Message-ID: <202204212201.GQb844HH-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The panel-edp enables the eDP panel power during probe, get_modes
-and pre-enable. The eDP connect and disconnect interrupts for the eDP/DP
-controller are directly dependent on panel power. As eDP display can be
-assumed as always connected, the controller driver can skip the eDP
-connect and disconnect interrupts. Any disruption in the link status
-will be indicated via the IRQ_HPD interrupts.
+Hi Yajun,
 
-So, the eDP controller driver can just enable the IRQ_HPD and replug
-interrupts. The DP controller driver still needs to enable all the
-interrupts.
+FYI, the error/warning still remains.
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
----
-Changes in v8:
-  - add comment explaining the interrupt status return
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b253435746d9a4a701b5f09211b9c14d3370d0da
+commit: e968b1b3e9b86c4751faea019a5d340fee9e9142 arp: Remove #ifdef CONFIG_PROC_FS
+date:   5 months ago
+config: hexagon-randconfig-r045-20220420 (https://download.01.org/0day-ci/archive/20220421/202204212201.GQb844HH-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e968b1b3e9b86c4751faea019a5d340fee9e9142
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e968b1b3e9b86c4751faea019a5d340fee9e9142
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ipv4/
 
-Changes in v7:
-  - reordered the patch in the series
-  - modified the return statement for isr
-  - connector check modified to just check for eDP
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
- drivers/gpu/drm/msm/dp/dp_catalog.c | 18 ++++++++++++------
- drivers/gpu/drm/msm/dp/dp_display.c | 22 +++++++++++++++++++++-
- 2 files changed, 33 insertions(+), 7 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
-index fac815f..3a298e9 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.c
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
-@@ -569,10 +569,6 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
- 
- 	u32 reftimer = dp_read_aux(catalog, REG_DP_DP_HPD_REFTIMER);
- 
--	/* enable HPD plug and unplug interrupts */
--	dp_catalog_hpd_config_intr(dp_catalog,
--		DP_DP_HPD_PLUG_INT_MASK | DP_DP_HPD_UNPLUG_INT_MASK, true);
--
- 	/* Configure REFTIMER and enable it */
- 	reftimer |= DP_DP_HPD_REFTIMER_ENABLE;
- 	dp_write_aux(catalog, REG_DP_DP_HPD_REFTIMER, reftimer);
-@@ -599,13 +595,23 @@ u32 dp_catalog_hpd_get_intr_status(struct dp_catalog *dp_catalog)
- {
- 	struct dp_catalog_private *catalog = container_of(dp_catalog,
- 				struct dp_catalog_private, dp_catalog);
--	int isr = 0;
-+	int isr, mask;
- 
- 	isr = dp_read_aux(catalog, REG_DP_DP_HPD_INT_STATUS);
- 	dp_write_aux(catalog, REG_DP_DP_HPD_INT_ACK,
- 				 (isr & DP_DP_HPD_INT_MASK));
-+	mask = dp_read_aux(catalog, REG_DP_DP_HPD_INT_MASK);
- 
--	return isr;
-+	/*
-+	 * REG_DP_DP_HPD_INT_STATUS reports the status of all interrupts
-+	 * irrespective of their masked status. The HW interrupt will not be
-+	 * generated if an interrupt is masked. However, the interrupt status
-+	 * bit in the register will still be set. The eDP controller driver
-+	 * masks the plug and unplug interrupts unlike DP controller which
-+	 * unmasks all the interrupts. So, do not report the status of the
-+	 * masked interrupts.
-+	 */
-+	return isr & (mask | ~DP_DP_HPD_INT_MASK);
- }
- 
- int dp_catalog_ctrl_get_interrupt(struct dp_catalog *dp_catalog)
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 3d03c77..874258d 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -683,7 +683,8 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 	dp_display_handle_plugged_change(&dp->dp_display, false);
- 
- 	/* enable HDP plug interrupt to prepare for next plugin */
--	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
-+	if (!dp->dp_display.is_edp)
-+		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
- 
- 	DRM_DEBUG_DP("After, type=%d hpd_state=%d\n",
- 			dp->dp_display.connector_type, state);
-@@ -1096,6 +1097,13 @@ static void dp_display_config_hpd(struct dp_display_private *dp)
- 	dp_display_host_init(dp);
- 	dp_catalog_ctrl_hpd_config(dp->catalog);
- 
-+	/* Enable plug and unplug interrupts only for external DisplayPort */
-+	if (!dp->dp_display.is_edp)
-+		dp_catalog_hpd_config_intr(dp->catalog,
-+				DP_DP_HPD_PLUG_INT_MASK |
-+				DP_DP_HPD_UNPLUG_INT_MASK,
-+				true);
-+
- 	/* Enable interrupt first time
- 	 * we are leaving dp clocks on during disconnect
- 	 * and never disable interrupt
-@@ -1381,6 +1389,12 @@ static int dp_pm_resume(struct device *dev)
- 	dp_catalog_ctrl_hpd_config(dp->catalog);
- 
- 
-+	if (!dp->dp_display.is_edp)
-+		dp_catalog_hpd_config_intr(dp->catalog,
-+				DP_DP_HPD_PLUG_INT_MASK |
-+				DP_DP_HPD_UNPLUG_INT_MASK,
-+				true);
-+
- 	if (dp_catalog_link_is_connected(dp->catalog)) {
- 		/*
- 		 * set sink to normal operation mode -- D0
-@@ -1655,6 +1669,9 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
- 		return;
- 	}
- 
-+	if (dp->is_edp)
-+		dp_hpd_plug_handle(dp_display, 0);
-+
- 	mutex_lock(&dp_display->event_mutex);
- 
- 	/* stop sentinel checking */
-@@ -1719,6 +1736,9 @@ void dp_bridge_post_disable(struct drm_bridge *drm_bridge)
- 
- 	dp_display = container_of(dp, struct dp_display_private, dp_display);
- 
-+	if (dp->is_edp)
-+		dp_hpd_unplug_handle(dp_display, 0);
-+
- 	mutex_lock(&dp_display->event_mutex);
- 
- 	/* stop sentinel checking */
+>> net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops' [-Wunused-const-variable]
+   static const struct seq_operations arp_seq_ops = {
+                                      ^
+   1 warning generated.
+
+
+vim +/arp_seq_ops +1412 net/ipv4/arp.c
+
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1411  
+f690808e17925f Stephen Hemminger 2007-03-12 @1412  static const struct seq_operations arp_seq_ops = {
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1413  	.start	= arp_seq_start,
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1414  	.next	= neigh_seq_next,
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1415  	.stop	= neigh_seq_stop,
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1416  	.show	= arp_seq_show,
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1417  };
+^1da177e4c3f41 Linus Torvalds    2005-04-16  1418  
+
+:::::: The code at line 1412 was first introduced by commit
+:::::: f690808e17925fc45217eb22e8670902ecee5c1b [NET]: make seq_operations const
+
+:::::: TO: Stephen Hemminger <shemminger@linux-foundation.org>
+:::::: CC: David S. Miller <davem@sunset.davemloft.net>
+
 -- 
-2.7.4
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
