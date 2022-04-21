@@ -2,66 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB26C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D32FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389249AbiDUOau (ORCPT
+        id S1389252AbiDUOa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
+        Thu, 21 Apr 2022 10:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389237AbiDUOaW (ORCPT
+        with ESMTP id S1389235AbiDUOaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:30:22 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3123F323
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:29 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id r85so5774479oie.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:29 -0700 (PDT)
+        Thu, 21 Apr 2022 10:30:16 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2433ED05
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:25 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-e5c42b6e31so5507570fac.12
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0w23URXeycXFwHQWgdXQr4pbeMphaV2jmFrrqqfSE3s=;
-        b=Kebsc3zy2R6yFz94yzcf5L02awCw06FtzoKktwaU4iZ/+LNtOXn4l4wjwnFA8Xih3N
-         VPPlS4BHiIxYilcUMU2sRgVAvEJxkOxD1J8/HnmpZ8Dh/hNWGzH1/Kd2Jgm4Bx5ugpM7
-         3BVW5CbZ9hV+f9TvQuGyzrFZZU9DimKCStk4OmEOdq1MzjP0Sw7WKH1fTQe0BZXj/NZD
-         t7O4lcWpctPZEB+jxdXNPnwMpmAJoKSOMFXWFss8V9bg7/RXtzsAdaEAR/MLDEL6RGZ4
-         6zKGlSwaAFZ5kUBI1dHspvlo3sqi37zqx2jNTTZfqMmED0PR8UnWCBcpEq3H4b9ykIB5
-         aLqQ==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=/B502ChT3poZts8YCPYz5xDZwyr0p5zHV9IaQgtAduM=;
+        b=YJokhvHYtwCU4lkXd2dwDyWVceLbY39kVkkrn66Vfhbf6cmg2d66bPLwAU/vV00T7Z
+         tCDVKCODBT67ycLr4MIrYtmuIsElypgl2yu02weO0myy4VElaSyONt9UuwDqHImxWSHN
+         lNNacm2mMBd5eWlRY0NR3heA9qqiUcQUQymA4VbT07MCZNGnLKWXtt/ZMeodexe1SFX8
+         0AQ3DlohQCWRrL4G8qPDJ1rWqpPgWpt0YKafBimHRXcnTdXr3C1zA7IgiQA6bEhjPF8+
+         mSpUCpcWdJysUlKQdQtqnk5tRvjIe0+xLzjh6zozrt1mCnnmnxJGf/pYNa2n3O9vOiUE
+         a++Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0w23URXeycXFwHQWgdXQr4pbeMphaV2jmFrrqqfSE3s=;
-        b=XhhuuRaKhJ76415k9Kw+gWKMBdzbAUfiX5KBXnuHhTSMJerGnojA3aULiNjkHT4JTm
-         ghfQZhnElVe1SPNhfuh6iw/ezRCWO4yQCAo/yx4KITUs5lgUc0Td7QKzgqWIfDkzCpy2
-         eoznOVUqSfkcgmTUqKM3gTMF4HErMzqm6Nyk5f/8n9CZEulvs0TAVOK+k2682JC4AItI
-         BKhlVSMDqzg8MABqvvVF43ss4Cxu2gMDi5W2HvRaa8OuQVmoTmFM/FcYr3REeiUVisRG
-         SDiXb08+bk6BfQsyIQ3IF1zk3G+6KGU5EcJ3/BlM4R61NFkKYTaEwamG114z8TUeoPFu
-         GKAQ==
-X-Gm-Message-State: AOAM531BXtiqyCYE75Ojws0ETwnZrWuRrIJRSE+OeUbSP3XivpGp4Ub9
-        zdkrVvBZ2/9+OjTfP82crnpqP+ZQYAetdcTS
-X-Google-Smtp-Source: ABdhPJxCL7XWF6jtZFt9pOGaDmdX7DhZt/kmdmrCbgrDyE4fGGQ4vEqB3z2nqbkDX62yOn6G/+njBg==
-X-Received: by 2002:aca:bed6:0:b0:322:bd33:7efc with SMTP id o205-20020acabed6000000b00322bd337efcmr4424116oif.95.1650551248383;
-        Thu, 21 Apr 2022 07:27:28 -0700 (PDT)
+        bh=/B502ChT3poZts8YCPYz5xDZwyr0p5zHV9IaQgtAduM=;
+        b=XzRsqlX5lRJ8ohj9mHJ5E2rly9LmHkKg355z+AvyyJylYg2XPVMbkgOeZ8WfabqrZO
+         Isn133qAEov2Ct1IjYakvUKuL52gpXFW01eki8Lan1/IhgpvduG26+4L9wON6VWI2a7D
+         AkTink5I/bmo0al3ZHBV7+wmucqG0RuMRH2MiEpgPyiGggSQmv1egeV4TJYqV7aviNdM
+         CYywxaY3yN9d3msPAYzIwwWe+YIprDVi9/dGtj7xycarRMvjRNg0Emdzu4S0N8aFRIJX
+         LIwgkMaGoRFSt2vvbCZG0zcEGdIoyhihpVNej4xavB/384MOaE56gP8hFBhbNc17PfSy
+         nFkg==
+X-Gm-Message-State: AOAM530e+yN3kT8of6ZUXtQ+lTHBDT2Mdzwcdub3L+Z4wT6A23aLoNrE
+        kZk7v2uUZDNKBXkZc9/FWAyOTw==
+X-Google-Smtp-Source: ABdhPJx5I93/gr/TtuBIYsuENa6bHuPnLnkAB0V0/GpdtFvLnZFeDlt/vLW1daZgSOemg9l8OmxABQ==
+X-Received: by 2002:a05:6870:b152:b0:e6:77a6:7ee0 with SMTP id a18-20020a056870b15200b000e677a67ee0mr1193970oal.78.1650551244431;
+        Thu, 21 Apr 2022 07:27:24 -0700 (PDT)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm4296295otu.73.2022.04.21.07.27.27
+        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm4296295otu.73.2022.04.21.07.27.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 07:27:27 -0700 (PDT)
+        Thu, 21 Apr 2022 07:27:23 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>, Andy Gross <agross@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: (subset) [PATCH] arm64: dts: qcom: sc7280: Add SAR sensors to herobrine crd
-Date:   Thu, 21 Apr 2022 09:27:04 -0500
-Message-Id: <165055095991.2574292.1674742785100690480.b4-ty@linaro.org>
+To:     linux-pm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vamsi krishna Lanka <quic_vamslank@quicinc.com>
+Subject: Re: (subset) [PATCH 4/4] dt-bindings: soc: qcom,rpmh-rsc: convert to dtschema
+Date:   Thu, 21 Apr 2022 09:27:00 -0500
+Message-Id: <165055095990.2574292.13140723180984898600.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220415172238.1.I671bdf40fdfce7a35f6349fca0dc56145d4210ee@changeid>
-References: <20220415172238.1.I671bdf40fdfce7a35f6349fca0dc56145d4210ee@changeid>
+In-Reply-To: <20220411085935.130072-4-krzysztof.kozlowski@linaro.org>
+References: <20220411085935.130072-1-krzysztof.kozlowski@linaro.org> <20220411085935.130072-4-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -69,15 +71,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Apr 2022 17:22:41 -0700, Matthias Kaehlcke wrote:
-> Enable the two SAR sensors of the CRD based on herobrine.
+On Mon, 11 Apr 2022 10:59:35 +0200, Krzysztof Kozlowski wrote:
+> Convert the Qualcomm RPMH RSC bindings to DT Schema.
 > 
+> Changes against original bindings:
+> 1. Add qcom,tcs-offset as a property instead of one of reg (not used
+>    that way).
+> 2. Add limits to interrupts.
+> 3. Add child nodes (bcm-voter, clock-controller, power-controller).
+> 4. Extend the example with more complex one.
 > 
+> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom: sc7280: Add SAR sensors to herobrine crd
-      commit: 5d04419045e7ad28155e2f7403599b2fdbd1548f
+[4/4] dt-bindings: soc: qcom,rpmh-rsc: convert to dtschema
+      commit: 38d46b0f41ec57c734f1a647055644c2131c3d8f
 
 Best regards,
 -- 
