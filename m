@@ -2,101 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0042BC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3483C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389344AbiDUOam (ORCPT
+        id S1389444AbiDUOaq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
+        Thu, 21 Apr 2022 10:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389293AbiDUOaR (ORCPT
+        with ESMTP id S1389241AbiDUOaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:30:17 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1503E0FE
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:25 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id b95so9070202ybi.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:25 -0700 (PDT)
+        Thu, 21 Apr 2022 10:30:23 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8743ED15
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:30 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id w194so5752083oiw.11
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rZBFlmHymTZ2XITuJ76uKuNQ0o0eA5W4vkdFBM1hN1c=;
-        b=HIUTIlxPXowbJ3dcoyknjSXqxR5CjgMSug5s2lgyUCH6fubEhvkPqSs0IQEDbIUavK
-         rsUZpjscswS7NpGcWsb4RmKrAcIcd8Szmtj1s/qcOR1cYUm45ffupKZabx5GPyeqlA3X
-         BW+y35hFDgzhnFox/GHjge6OtB6J5xqVUoQdR+SO5hJy97Q5J8JHBGhWGKORRF6ezZJJ
-         aLtfoRyuL76mWxeQWWMRn6UscTZmDGHerZo7SFSdKEw3tnsw2BeISqIz46UbGlEGFJdF
-         hofHZ2NlkXN5SCdQKsNHU/MnOPdwknu3LGVzxvS3Az86dxhgXmhw+xODOjaW0TXdWtVR
-         h2hg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=iy+XsehI6myAL6KVn5dImXgKFPVtiwpahoxHlaa6W+8=;
+        b=YL/XFCuKPTSpDT9LQ0u2gSLWguoJmeREzY3fUT2kajNVSBHiMcBeQIYPBsWAVI53Tw
+         O2gEBPqLa5XtoDiwwKnD/glOhKSSFNst4A3YoEgwlA36QaQdk1VKRi3i12bQ5AYuavem
+         miBA0FuUIFzrNd84QYVxH3kGm8AOwbOIV4GEsroyQY9MrEO3emTL5f8+oy2ROcEim8ux
+         EfpeOHh0MYnvkUVNM+ZmCi305wClm7GKFI7EvpByocn+6R/J+qU53MYUPqonG/ztF9AF
+         lKfRTEb8E2HLRd5qv+VhNku51bcI9pXl8Ya+vEJMctnqP9hV/0q0BNSQgACKxF/77MqN
+         gSoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rZBFlmHymTZ2XITuJ76uKuNQ0o0eA5W4vkdFBM1hN1c=;
-        b=bwpSyE6ahPBwWDmcuVOPlR+K80UdWvtaJutp8qui0XOQBZHIkDzV3MKfIuhdQ4512Z
-         VUbaMo/j8jZ+Dtn061Xq8DRkNJGzAPiGko1JFzy8CLhlmzdotLXDYV7lbEX9fsZ/llSZ
-         mAUy2xR28PWddSvFUjU8FO+9D4nz6fJr1lPZT3NIA533SczsccAGom8sQaVKbrLu4vDP
-         AeVfMnOgRH/Cc41m+Ze/V+Mt8JkTUTozXwo9/F1yGFNOXhN/ie5l9KD0Off97Br+lksf
-         yKmbIg95Qz8sn3tPmtuovour2la1D4DdRmtLqvVOqBHRyrBwBMdJWZyG8A7OCZ74voSZ
-         8N3A==
-X-Gm-Message-State: AOAM532JOs9j4gYuuZXGkavdrS4aBhQG0MMltinmr7zqbZRioChbNKAS
-        GqhWYuEv7ZTO/N1grXh79+tLjH+PJ6uS09RaYOMZXQ==
-X-Google-Smtp-Source: ABdhPJxwa0wYivda5wva68xSE6bQM3iIiGgh0H/o0EtiG339T3VCMNkaKR8Ayly0FrW7pr65Fgv+eV4VQGZN5Tvmkzk=
-X-Received: by 2002:a25:4e82:0:b0:633:68d7:b864 with SMTP id
- c124-20020a254e82000000b0063368d7b864mr26018665ybb.514.1650551245081; Thu, 21
- Apr 2022 07:27:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220413060729.27639-1-arinc.unal@arinc9.com>
-In-Reply-To: <20220413060729.27639-1-arinc.unal@arinc9.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 21 Apr 2022 16:27:13 +0200
-Message-ID: <CACRpkdbbMFYNNjAKwhysKpu1JVh2JSB-N=Y8QMx1JvMhCPBpwg@mail.gmail.com>
-Subject: Re: [PATCH 0/14] Refactor Ralink Pinctrl and Add Documentation
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iy+XsehI6myAL6KVn5dImXgKFPVtiwpahoxHlaa6W+8=;
+        b=P/7O3kvKs5gQJT598zhP2mKNQOGSn9z8W3QAA9hZIssAs7iRftM7MDYNUNYSMLRe22
+         TeN7t3q3jTmFCB/V9kjDW54MdxmetCoYv6yxrvPJhcYmLKxJ5zOlSWEr5ZHy57q4Ise7
+         bJlHXN8n2MPtxHx43ZsXaygbokWSnHecptOcoM5rg4uTWaUvmSi6a2mGuW6qeK+uNYn7
+         1TqYGCRH7HW9uzuQb7kRpn+eYlKaeT/nDq311pJ9/74MBpf72pfMVuOUuy1uJiC+qN96
+         hTDKGiDWWjBvMEpnL0L+VlcFka56m2cnNLDo4hxtRxSM/LR1AxpRCOJK3D28EUFMzock
+         oTQg==
+X-Gm-Message-State: AOAM532XgKMtBbPEuOoPCS8AXan9zkqCQasxcLChy/9G3QMAXBRwdrFG
+        YXZ4Js5WmFz4CiA9sTfOtm+gSQ==
+X-Google-Smtp-Source: ABdhPJwDJSTzhIjX39Fq4tMduvuKO7oY4rI+JlI6xy2v8gHC0G9bwShy/fxLVML9LC1jPY0qkdgzJQ==
+X-Received: by 2002:aca:ef0a:0:b0:323:24d2:1ccd with SMTP id n10-20020acaef0a000000b0032324d21ccdmr348679oih.261.1650551249529;
+        Thu, 21 Apr 2022 07:27:29 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm4296295otu.73.2022.04.21.07.27.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 07:27:28 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        erkin.bozoglu@xeront.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Cc:     quic_pkondeti@quicinc.com, quic_ppratap@quicinc.com,
+        devicetree@vger.kernel.org, quic_kriskura@quicinc.com,
+        quic_vpulyala@quicinc.com, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: (subset) [PATCH v13 6/6] arm64: dts: qcom: sc7280: Add wakeup-source property for USB node
+Date:   Thu, 21 Apr 2022 09:27:05 -0500
+Message-Id: <165055095990.2574292.11484347980865320517.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <1649704614-31518-7-git-send-email-quic_c_sanm@quicinc.com>
+References: <1649704614-31518-1-git-send-email-quic_c_sanm@quicinc.com> <1649704614-31518-7-git-send-email-quic_c_sanm@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 8:08 AM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc=
-9.com> wrote:
+On Tue, 12 Apr 2022 00:46:54 +0530, Sandeep Maheswaram wrote:
+> Adding wakeup-source property for USB controller in SC7280.
+> This property is added to inform that the USB controller is
+> wake up capable and to conditionally power down the phy during
+> system suspend.
+> 
+> 
 
-> This patch series brings complete refactoring to the Ralink pinctrl drive=
-r
-> and its subdrivers.
+Applied, thanks!
 
-I just merged all the patches, the comments seem minor and any further
-fixes can certainly be done on top of this. Anyone interested in ralink
-working nicely is likely in the thread and we mostly care about that this
-works for OpenWrt, and if it works for them we are happy.
+[6/6] arm64: dts: qcom: sc7280: Add wakeup-source property for USB node
+      commit: 97276cbfb4fbe33c3ab8b5f5277a73c0b5f3732b
 
->   mips: dts: ralink: mt7621: use the new compatible string for MT7621 pin=
-ctrl
-
-This was a bit scary since we usually take these through the respective
-SoC tree, but I just applied it anyway, it makes logical sense in the
-series.
-
-I hope it will not lead to conflicts.
-
-Good work with this series!
-
-My personal headache with RT2880 is the Ralink RT2880F mini PCI card
-which apparently contains a non-reflashable firmware. It's not
-the RT2880:s fault though, I'm just always reminded of this when
-working with RT2880 :/
-
-Yours,
-Linus Walleij
+Best regards,
+-- 
+Bjorn Andersson <bjorn.andersson@linaro.org>
