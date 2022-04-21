@@ -2,137 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 00:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 00:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383400AbiDUAPb (ORCPT
+        id S1357996AbiDUAXh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 20:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50054 "EHLO
+        Wed, 20 Apr 2022 20:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383390AbiDUAPZ (ORCPT
+        with ESMTP id S232084AbiDUAXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 20:15:25 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E421A078
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:12:36 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id s17so3263373plg.9
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:12:36 -0700 (PDT)
+        Wed, 20 Apr 2022 20:23:35 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD20C1A078
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:20:47 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id p65so5825156ybp.9
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 17:20:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mZ4DQrUT0teh2OCHLccoXzTPXFLo3iiH/Aggk2F56Hg=;
-        b=B42U8RHKbCW+dc4LpDeKZT8c8MND7ONSahnG4v/GlOuP3U9dbEKh6rL6z4rMDfWacR
-         YDSvoZ8pHgISE2TrrAS0iZkbiuBCYeG6TUa0duCosI4AOZXN9FXOcxdZcOrYeuv6zGtK
-         rkMFXd1fPr3ugLhaBEgvReSoHR2nmD2ADfyGo=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OXocRW4Fcy3ODLwlLZMAvoG6TfyjzPBLt8Rv4un+YTQ=;
+        b=nImhtQPJaOzP6XFyaGqECd5mDgHxWmDJRHdRNv+vEPa5JrDA9N7SPydqUH64Gq+hQV
+         NtKuBALzWwwJkFIUXcbefjATqKncxCcqE2gX6X1+ZCEZp3/XoRyFVN3C+Ql4w+nDRuew
+         q6TLmIqM0Dxfyp8AT8r4nBE3K28zycciwtrU9VM57sjM9jTtjOhzemgs1/LE7uhaTLj2
+         NpaCFLd0cB6ZAvRcmI1b3nMSA5ulnNKoCmrGmxz11LR8/9BTE6vVDc9Y6RCpAcN8qZvl
+         pAleeywzdXr1/wUhp8ubkefmyj0HuspW7uuqu7SdBu71UNDDY249sR3lJuwbxG1GMs/P
+         PlYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mZ4DQrUT0teh2OCHLccoXzTPXFLo3iiH/Aggk2F56Hg=;
-        b=g1XzQMT36Hh9Wc88K2Y8J9KLXgCxDXh+IqW7dMuFhVgOQjNyub6AnZ9TXuH5CGcT42
-         zwCJoQA0dk14yiPu4nhJ+KknXphhmgwDQ54pmEAyHrcXPK+85+sMw/WGBi3uQEc10uRi
-         EDOdEpwGCn69qRjFHBEsDCOY0azX+f+iCGY6GGQ7QuCZkHqDP8fzJ63UsDuJvIrmwY/3
-         6q3DPR2PbxGQuKOZFuZJhbivwdrUBBfHSQoDNjf1C0mVYha5zKq4oEzhXl/MgEij78bS
-         gpfo9UPFHAJ+Ucy/Y1lOuNGjFCM8AQTlJgRDg9B6Xg2aYr5Oh0F4tfqTwXiE/zgQkLwj
-         sCgQ==
-X-Gm-Message-State: AOAM531sO1Gia/zEqRpeRW1omNJjqwscspp0SOEQhcf4m/uDujisCOAD
-        4CH6wY6giQbQVWK/7JKbjvdTRw==
-X-Google-Smtp-Source: ABdhPJwdM10iVXVT4GgVJ7n68bXRc4XF9sp4PCqnh2QPb5tgmj8tUrfXT6ObEnzuRE/TzvsSI3P/cw==
-X-Received: by 2002:a17:902:cecb:b0:158:9a0b:c839 with SMTP id d11-20020a170902cecb00b001589a0bc839mr22007105plg.58.1650499956459;
-        Wed, 20 Apr 2022 17:12:36 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c15-20020a63350f000000b003992202f95fsm21198168pga.38.2022.04.20.17.12.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 17:12:36 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        kernel test robot <lkp@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH v2] USB: serial: Fix heap overflow in WHITEHEAT_GET_DTR_RTS
-Date:   Wed, 20 Apr 2022 17:12:34 -0700
-Message-Id: <20220421001234.2421107-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OXocRW4Fcy3ODLwlLZMAvoG6TfyjzPBLt8Rv4un+YTQ=;
+        b=5qEyE/lAvCqVsf3rbQS40aihDfAPWGYgW6eqoH1EC44GeOebhcFJWN6DDS4BGSWKqK
+         E5TlzsC6rf15ljDSs1qDpCxeKLRUVzVr8Aq6HcrBrqSR4z0F5d8UbnbNb+2wVvhjS4VN
+         FA1JcWgV3Jg71AMG7BakQPHTG4oMJY+euEleCl05BmRWINIxj+qIPvnFa6LinQEUjbNc
+         9OBAffWT/GlAYiuLZ3PKgjkYh2rMhfdC2At1C5VhoEPPHEKk29SzOeDMpSBQLDlNmxm5
+         KQZJgi/20f0FuadB/70K9loFkvr9rK408QnLHSeQgmB9Qcgr96EtkNqacaJxkuHeOyU+
+         OwNw==
+X-Gm-Message-State: AOAM532kkeM0+GpPgZaeA+NShTq3/+FKKNlkdMerKRRjp38vbDg8Nb0Q
+        MWhaseK0mRq5M59aNHGghMLZI5JjqCQF24sWi7p6NLy7zTzJaRyt
+X-Google-Smtp-Source: ABdhPJyY7IxMb9HzNn/D6HXins/F226memrjVTU9idaaExMqGEnSVuhTv/NpqoqY7E/6DLIx3N5uyai+7UzTD8B5MxM=
+X-Received: by 2002:a05:6902:1109:b0:645:58e:a373 with SMTP id
+ o9-20020a056902110900b00645058ea373mr18145423ybu.231.1650500446691; Wed, 20
+ Apr 2022 17:20:46 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3048; h=from:subject; bh=27sA78q0oVmYGS0XfXLNtfdHOOZSlXQQsmiidfepGiM=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiYKFxlmtHj212PdV32XRZoSS1OuohiF8aXa+eAnEi uF3EZFKJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYmChcQAKCRCJcvTf3G3AJt1SD/ wIA5Ub4jPeBldsKvd0TU9ZGzRKJ2m3utc987tW5kJirN4PIYWyvyvoEbO6rSSEzZ8hpIH7ypA2dtSE yeTdYwaBQR3Q6HxrVBDC7TU15XzdQludQ6ar8yL5JoH8yn6omH7AxRe1OOhh5YLo8lqFDsXzQhI5Xn 35MZsHPZs21sP7lR4XU17SK7K6VRWOb6oR6fkmW1xB/0mG87IiimtO0LMSLo4FRSgw6kKOQZyhdQwJ lQQH5dFl6DqEGx0Ublm44BRZ6PUd+bUuGa3fbAKVK4ZkCQ6EEnqxLiBuyhmf/DcUTPAzJSO0b7xi0E DzrzAKxacn9Go1NfeAwHHPYNB2PY2kqcGqqXOsUQdD1cj5ugYICOwsAjEtga2CGJnlCIbxcT2UYD6E YB4dweO4RUSNphc/Pih/xZwmMignRP2S7P+/C0tyfrfEY/5krd/yktNv6kYacwphMJu6XaFHG8j0yq 1dJ+u6X7tFxzf/gDSvbzNyDDsQOd/++G0XqHVD7QD9y7lF+Pq7Hibhw/2WsKGrYRgT3n+juSH/59rw B174TvjeYgAgfMLO6qphWf2S3K24S6h4EJUd9su3a77JTZYA/eOYRxdCKydzddWseKoHqrkGk6thGF nstFY+p0WOtloFx8MNBIoCWBrtRPT0qEeCWwOWPzYjvf1HLqYqPRYvCwa3Bg==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+References: <20220420235659.830155EC021C@us226.sjc.aristanetworks.com>
+In-Reply-To: <20220420235659.830155EC021C@us226.sjc.aristanetworks.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 20 Apr 2022 17:20:35 -0700
+Message-ID: <CANn89iJjwV2gAKMc4iydUt_MqtnB-4_EKdVrqQO9q4Dt17Lf9w@mail.gmail.com>
+Subject: Re: [PATCH] tcp: md5: incorrect tcp_header_len for incoming connections
+To:     Francesco Ruggeri <fruggeri@arista.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sizeof(struct whitehat_dr_info) can be 4 bytes under CONFIG_AEABI=n
-due to "-mabi=apcs-gnu", even though it has a single u8:
+On Wed, Apr 20, 2022 at 4:57 PM Francesco Ruggeri <fruggeri@arista.com> wrote:
+>
+> In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
+> remote address in newsk. But that address is still 0 in newsk at this
+> point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
+> Use the address from the request socket instead.
+>
 
-whiteheat_private {
-        __u8                       mcr;                  /*     0     1 */
+Nice catch.
 
-        /* size: 4, cachelines: 1, members: 1 */
-        /* padding: 3 */
-        /* last cacheline: 4 bytes */
-};
+This seems like a day-0 bug, right ?
 
-The result is technically harmless, as both the source and the
-destinations are currently the same allocation size (4 bytes) and don't
-use their padding, but if anything were to ever be added after the
-"mcr" member in "struct whiteheat_private", it would be overwritten. The
-structs both have a single u8 "mcr" member, but are 4 bytes in padded
-size. The memcpy() destination was explicitly targeting the u8 member
-(size 1) with the length of the whole structure (size 4), triggering
-the memcpy buffer overflow warning:
+Do you agree on adding
 
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from include/linux/smp.h:13,
-                 from include/linux/lockdep.h:14,
-                 from include/linux/spinlock.h:62,
-                 from include/linux/mmzone.h:8,
-                 from include/linux/gfp.h:6,
-                 from include/linux/slab.h:15,
-                 from drivers/usb/serial/whiteheat.c:17:
-In function 'fortify_memcpy_chk',
-    inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
-include/linux/fortify-string.h:328:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-  328 |                         __write_overflow_field(p_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
 
-Instead, just assign the one byte directly.
+Thanks.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202204142318.vDqjjSFn-lkp@intel.com
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-usb@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
-v1: https://lore.kernel.org/lkml/20220419041742.4117026-1-keescook@chromium.org/
-v2: - just assign the single byte
----
- drivers/usb/serial/whiteheat.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/usb/serial/whiteheat.c b/drivers/usb/serial/whiteheat.c
-index da65d14c9ed5..06aad0d727dd 100644
---- a/drivers/usb/serial/whiteheat.c
-+++ b/drivers/usb/serial/whiteheat.c
-@@ -584,9 +584,8 @@ static int firm_send_command(struct usb_serial_port *port, __u8 command,
- 		switch (command) {
- 		case WHITEHEAT_GET_DTR_RTS:
- 			info = usb_get_serial_port_data(port);
--			memcpy(&info->mcr, command_info->result_buffer,
--					sizeof(struct whiteheat_dr_info));
--				break;
-+			info->mcr = command_info->result_buffer[0];
-+			break;
- 		}
- 	}
- exit:
--- 
-2.32.0
-
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+> ---
+>  net/ipv4/tcp_minisocks.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index 6366df7aaf2a..6854bb1fb32b 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -531,7 +531,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+>         newtp->tsoffset = treq->ts_off;
+>  #ifdef CONFIG_TCP_MD5SIG
+>         newtp->md5sig_info = NULL;      /*XXX*/
+> -       if (newtp->af_specific->md5_lookup(sk, newsk))
+> +       if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
+>                 newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
+>  #endif
+>         if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
+> --
+> 2.28.0
+>
+>
