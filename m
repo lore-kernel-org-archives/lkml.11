@@ -2,93 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:15:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3948BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387445AbiDUJSB (ORCPT
+        id S1387522AbiDUJTK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
+        Thu, 21 Apr 2022 05:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387477AbiDUJRo (ORCPT
+        with ESMTP id S1387454AbiDUJS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:17:44 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9A4EB3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:55 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ec04a2ebadso45126067b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V1uWVuZ6+A0BASrhtcS2ivTUwFpVOwbpQq4d16gjWgQ=;
-        b=KfviBbNUxTMiBSnCXE3OrnaDK39G+p2hghIMD25j0KUp7ZLrh+Bw0OZCCeC1hIrSfM
-         pTwQMys9R1SkEgZPN+U1YplF3DXwzr61jkkU3Mwwa78nUXpDeRMWrFKrBUAfDTLhyPsM
-         ciErq4lfgYuxNGVDSG40Gj/QRvjJLmtgAGJLU=
+        Thu, 21 Apr 2022 05:18:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1372A2316F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:15:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650532543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FjbrFR2rd1qLIkWt8BR0K+aE+G8bE2tFsHPUNoUm3Lc=;
+        b=hmSaCi6DwQQY067bXu94TH9vyWHG9tadoQgkTmd9mBTWJoCf2g5D8hkhfBzARygYIgYNhE
+        bHq7sUdrzwnnb5fPYwVCbZBcvw2kCkYxCgoFkZaE6JQyppli+VbUJJrYO2oE85xOAS0AQp
+        Z3OQXjJf2pi6f9r2oPeOOToRfZYRUFg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-141-jZZ2xSoCOKG4r1iW8E6ZBQ-1; Thu, 21 Apr 2022 05:15:42 -0400
+X-MC-Unique: jZZ2xSoCOKG4r1iW8E6ZBQ-1
+Received: by mail-wm1-f72.google.com with SMTP id b12-20020a05600c4e0c00b003914432b970so2156868wmq.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:15:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V1uWVuZ6+A0BASrhtcS2ivTUwFpVOwbpQq4d16gjWgQ=;
-        b=Ta2So1GZ+R4XdCu1JOFZKTSnd991kAp3MCAfiD98AgO2V8XOF6qBKxOrEM/2aGp6zv
-         k/Wa9BQ+CvnB91Dy9CM+VduU0oWzCrbAn6KCZBoAjGxuJeba8HJgBmH++NLiOfnpVDKX
-         jo2+0tomTaeqZC7sDP15Zn1iPWJbAbLui19jy9OVtApA1AHXvWAQUpljM30+j0ObV+qr
-         5Dzyp7CJ0g72rs5r2UlTvEbudT32OpTc8WpmcfQl6mOW0Ly0AMBY+vXNeptjNME0Uxno
-         m7KSVQOjMCrrNpj+ZMmtUeX2OzukOEZ05WmwUtMYvSreubh1xUPtcJxxuIiXyB/g4+qN
-         kOtw==
-X-Gm-Message-State: AOAM5318PMYu5lkFCE5KtMssr42CB4pd9Gr35Zmaymtpb8HjRKpEg6+J
-        mQAK82vTBiwWvYysgcf4wfm+2NqKPldbx69VOlUuMA==
-X-Google-Smtp-Source: ABdhPJy9nYqH8i9c1NYzIrrrk2RUAbZ7bXTS0+WD7NPVL44tYER6HZDSPvwCms4t/XCM0TjMDZvIAjxJ9Py7xiUDcss=
-X-Received: by 2002:a0d:eb46:0:b0:2ef:4946:544 with SMTP id
- u67-20020a0deb46000000b002ef49460544mr25008925ywe.286.1650532494832; Thu, 21
- Apr 2022 02:14:54 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=FjbrFR2rd1qLIkWt8BR0K+aE+G8bE2tFsHPUNoUm3Lc=;
+        b=HEyXDaoB3ND5qRllYHMC+8bCSHGxLeI2CgEfM52OnZBQEuJ1ndrLNy90AAcSZ865mp
+         BPSoDGrDFgmJMv7lFxOPmgSk2ox9YX5lQzwfoHEBGv9yYtHav5/XGvd0g4kEzES0Rt+T
+         svB0RdJ2iksRZ3I2+dpB8Fc9yA+OXNsSTn+ZXpTFNrZ2rK+QHtkkjZ+ruX8utYM131Wx
+         h9GFv2DfrDOlFn57C1lOIOZdUSJZ8kTIpySGOUD6NRL866AFs1eYBX4lMKMqDgZ5uIRm
+         jNuy1R2HZ2ZQYMpsBwmCVa1MlsLEfx2ey86xSCYqFZa+6eaOOZs2K11XKQ14N49s3eo8
+         H7Zw==
+X-Gm-Message-State: AOAM532+vdU14HjZ4d3J8m2vH8ICL5IEUfIFfu5D8gmlZ5y7yAipbyq/
+        oKoISLesUjVIkfMNbiXfPbfYCgPmrMokBfrkQugkRzvckmID8JtMQ1x7vLZdan0edekCvoo9CBd
+        A/DqtiTB87dJACKrZyMuzq0oz
+X-Received: by 2002:a7b:c5d1:0:b0:37f:a8a3:9e17 with SMTP id n17-20020a7bc5d1000000b0037fa8a39e17mr7420574wmk.109.1650532541081;
+        Thu, 21 Apr 2022 02:15:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJybhViWdGUkp8BlFKuS91mClSpg6lIAaDSHqaAhU8UVIOCqoiWdlZ9Z1I212vYDASNuQITD4g==
+X-Received: by 2002:a7b:c5d1:0:b0:37f:a8a3:9e17 with SMTP id n17-20020a7bc5d1000000b0037fa8a39e17mr7420518wmk.109.1650532540774;
+        Thu, 21 Apr 2022 02:15:40 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c702:de00:711b:76af:b335:9b70? (p200300cbc702de00711b76afb3359b70.dip0.t-ipconnect.de. [2003:cb:c702:de00:711b:76af:b335:9b70])
+        by smtp.gmail.com with ESMTPSA id r17-20020a0560001b9100b00207afaa8987sm2160122wru.27.2022.04.21.02.15.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 02:15:40 -0700 (PDT)
+Message-ID: <31b37b7c-a969-eec2-bdff-a7e4dca9b770@redhat.com>
+Date:   Thu, 21 Apr 2022 11:15:38 +0200
 MIME-Version: 1.0
-References: <20220420130527.23200-1-rex-bc.chen@mediatek.com>
- <20220420130527.23200-6-rex-bc.chen@mediatek.com> <90ad46a5-8b67-e9ca-25df-2a7cc6110bff@collabora.com>
-In-Reply-To: <90ad46a5-8b67-e9ca-25df-2a7cc6110bff@collabora.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Thu, 21 Apr 2022 17:14:43 +0800
-Message-ID: <CAGXv+5FL=YdjonwBWV9ZkRf3jstCsxCEonmH02g2+1PAopObYg@mail.gmail.com>
-Subject: Re: [PATCH V2 05/12] clk: mediatek: reset: Add reset.h
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
-        sboyd@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        chun-jie.chen@mediatek.com, runyang.chen@mediatek.com,
-        linux-kernel@vger.kernel.org, allen-kh.cheng@mediatek.com,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3 16/16] mm/gup: sanity-check with CONFIG_DEBUG_VM that
+ anonymous pages are exclusive when (un)pinning
+Content-Language: en-US
+To:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220329160440.193848-1-david@redhat.com>
+ <20220329160440.193848-17-david@redhat.com>
+ <be2c1ad4-1557-677e-dfd8-2089c98fe85d@suse.cz>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <be2c1ad4-1557-677e-dfd8-2089c98fe85d@suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 5:07 PM AngeloGioacchino Del Regno
-<angelogioacchino.delregno@collabora.com> wrote:
->
-> Il 20/04/22 15:05, Rex-BC Chen ha scritto:
-> > Add a new file "reset.h" to place some definitions for clock reset.
-> >
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
->
-> Right now, you're adding the enum mtk_reset_version and *then* you're
-> moving it to the new reset.h header, but does that really make sense?
->
-> I think that this series would be cleaner if you add this header from
-> the start, so that you place the aforementioned enumeration directly
-> in here...
->
-> ...so we would have a commit that moves the mtk_clk_register_rst_ctrl()
-> function from clk-mtk.h to a newly created reset.h, mentioning in the
-> commit description that it's all about preparing for a coming cleanup,
-> then the addition of enum mtk_reset_version would be in
-> `clk: mediatek: reset: Merge and revise reset register function` directly
-> into reset.h.
+On 19.04.22 19:40, Vlastimil Babka wrote:
+> On 3/29/22 18:04, David Hildenbrand wrote:
+>> Let's verify when (un)pinning anonymous pages that we always deal with
+>> exclusive anonymous pages, which guarantees that we'll have a reliable
+>> PIN, meaning that we cannot end up with the GUP pin being inconsistent
+>> with he pages mapped into the page tables due to a COW triggered
+>> by a write fault.
+>>
+>> When pinning pages, after conditionally triggering GUP unsharing of
+>> possibly shared anonymous pages, we should always only see exclusive
+>> anonymous pages. Note that anonymous pages that are mapped writable
+>> must be marked exclusive, otherwise we'd have a BUG.
+>>
+>> When pinning during ordinary GUP, simply add a check after our
+>> conditional GUP-triggered unsharing checks. As we know exactly how the
+>> page is mapped, we know exactly in which page we have to check for
+>> PageAnonExclusive().
+>>
+>> When pinning via GUP-fast we have to be careful, because we can race with
+>> fork(): verify only after we made sure via the seqcount that we didn't
+>> race with concurrent fork() that we didn't end up pinning a possibly
+>> shared anonymous page.
+>>
+>> Similarly, when unpinning, verify that the pages are still marked as
+>> exclusive: otherwise something turned the pages possibly shared, which
+>> can result in random memory corruptions, which we really want to catch.
+>>
+>> With only the pinned pages at hand and not the actual page table entries
+>> we have to be a bit careful: hugetlb pages are always mapped via a
+>> single logical page table entry referencing the head page and
+>> PG_anon_exclusive of the head page applies. Anon THP are a bit more
+>> complicated, because we might have obtained the page reference either via
+>> a PMD or a PTE -- depending on the mapping type we either have to check
+>> PageAnonExclusive of the head page (PMD-mapped THP) or the tail page
+>> (PTE-mapped THP) applies: as we don't know and to make our life easier,
+>> check that either is set.
+>>
+>> Take care to not verify in case we're unpinning during GUP-fast because
+>> we detected concurrent fork(): we might stumble over an anonymous page
+>> that is now shared.
+>>
+>> Signed-off-by: David Hildenbrand <david@redhat.com>
+> 
+> Acked-by: Vlastimil Babka <vbabka@suse.cz>
+> 
+> Nits:
+> 
+>> @@ -510,6 +563,10 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
+>>  		page = ERR_PTR(-EMLINK);
+>>  		goto out;
+>>  	}
+>> +
+>> +	VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+>> +		  !PageAnonExclusive(page));
+> 
+> Do we rather want VM_BUG_ON_PAGE? Also for the same tests in mm/huge*.c below.
 
-And probably name it mtk-reset.h ? 'reset.h' is a bit too generic, and
-I'm sure there are multiple files with the same name throughout the
-kernel source tree.
+Make sense, thanks:
 
-ChenYu
+diff --git a/mm/gup.c b/mm/gup.c
+index 5c17d4816441..46ffd8c51c6e 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -564,8 +564,8 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
+                goto out;
+        }
+ 
+-       VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+-                 !PageAnonExclusive(page));
++       VM_BUG_ON_PAGE((flags & FOLL_PIN) && PageAnon(page) &&
++                      !PageAnonExclusive(page), page);
+ 
+        /* try_grab_page() does nothing unless FOLL_GET or FOLL_PIN is set. */
+        if (unlikely(!try_grab_page(page, flags))) {
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 390f22334ee9..a2f44d8d3d47 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1392,8 +1392,8 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+        if (!pmd_write(*pmd) && gup_must_unshare(flags, page))
+                return ERR_PTR(-EMLINK);
+ 
+-       VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+-                 !PageAnonExclusive(page));
++       VM_BUG_ON_PAGE((flags & FOLL_PIN) && PageAnon(page) &&
++                       !PageAnonExclusive(page), page);
+ 
+        if (!try_grab_page(page, flags))
+                return ERR_PTR(-ENOMEM);
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 8a635b5b5270..0ba2b1930b21 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -6100,8 +6100,8 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
+                pfn_offset = (vaddr & ~huge_page_mask(h)) >> PAGE_SHIFT;
+                page = pte_page(huge_ptep_get(pte));
+ 
+-               VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
+-                         !PageAnonExclusive(page));
++               VM_BUG_ON_PAGE((flags & FOLL_PIN) && PageAnon(page) &&
++                              !PageAnonExclusive(page), page);
+ 
+                /*
+                 * If subpage information not requested, update counters
+
+
+
+-- 
+Thanks,
+
+David / dhildenb
+
