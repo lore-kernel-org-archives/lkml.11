@@ -2,164 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48345C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442958AbiDUX6r (ORCPT
+        id S1387054AbiDVAA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
+        Thu, 21 Apr 2022 20:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442970AbiDUX6i (ORCPT
+        with ESMTP id S233119AbiDVAAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:58:38 -0400
-Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E84A4A935
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 16:55:44 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-115-138.pa.nsw.optusnet.com.au [49.181.115.138])
-        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 4CB9753473B;
-        Fri, 22 Apr 2022 09:55:39 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nhgeA-002yEq-4d; Fri, 22 Apr 2022 09:55:38 +1000
-Date:   Fri, 22 Apr 2022 09:55:38 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hillf Danton <hdanton@sina.com>, MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Yu Zhao <yuzhao@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] mm/vmscan: add periodic slab shrinker
-Message-ID: <20220421235538.GS1609613@dread.disaster.area>
-References: <20220402072103.5140-1-hdanton@sina.com>
- <20220403005618.5263-1-hdanton@sina.com>
- <20220404010948.GV1609613@dread.disaster.area>
- <YktCKVbChtC+YjOk@carbon.dhcp.thefacebook.com>
- <20220405051710.GW1609613@dread.disaster.area>
- <Ykxv1j9dxlz1BS5N@carbon.dhcp.thefacebook.com>
- <CAHbLzko=bjLhhJXjcs0Uh-g3x9vV1gQZjEU2JqxVehqSb1UGkQ@mail.gmail.com>
- <Ykyy8RfJgWDOGylv@casper.infradead.org>
- <20220406000130.GZ1609613@dread.disaster.area>
- <20220421190339.z2fxoywedhyibsgn@moria.home.lan>
+        Thu, 21 Apr 2022 20:00:25 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF082018E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 16:57:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650585453; x=1682121453;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qNbkrPfEWjwymGAI+jxZp21smcon3y5Vd3dXkyOa+vE=;
+  b=hvcdjGkmD101zjU+Sgq/CPP9Bg0oNr3KXFRCEv+3SxAOHj4Ta7CizQCv
+   QTVBNTxRGYynN944IZVjWUHaHE2BjTiBJte0qhpAIIb37iZ0uImUKY6ty
+   o2aKV7KBSmB/AY9gNVx2R1ERin+kIlKtvMqic+p/c0JMKajqibw9w6Efx
+   gA4WfI/JKmOmBF+SAymrWmaYD4mDe1dpsS6fTvFDRRRtiTHzM0wlgqAuu
+   8OPJluQ61sh9FxIIScYoBitVrepgrdwdpAuQ9F0azJo0a9ktb5XMJgNUd
+   GxnxkQdtZM8U7w2trTI4lXAwjClfnEVklDbjp7xQKYtdqBfO14Cbv/ufa
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262115796"
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="262115796"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 16:57:33 -0700
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="556055518"
+Received: from zhouju8x-mobl.ccr.corp.intel.com ([10.254.212.221])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 16:57:31 -0700
+Message-ID: <ce9a0dcf91e731db032d67b8b6fcbc9c30b9c829.camel@intel.com>
+Subject: Re: [PATCH] mm: swap: determine swap device by using page nid
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Aaron Lu <aaron.lu@intel.com>
+Cc:     Yang Shi <shy828301@gmail.com>, Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Fri, 22 Apr 2022 07:57:29 +0800
+In-Reply-To: <YmFmL42W+OrORElV@ziqianlu-nuc9qn>
+References: <20220407020953.475626-1-shy828301@gmail.com>
+         <Yk6cutNf5sOuYbDl@ziqianlu-nuc9qn>
+         <CAHbLzkq+eKcKCsxXDTiOcBxk8FjMdWBqOxwi4N_NG7PZWbAAkA@mail.gmail.com>
+         <Yl/FS9enAD4V8jG3@ziqianlu-nuc9qn>
+         <f27ec36beb3cf1dbbfc3b8835e586d5d6fe7f561.camel@intel.com>
+         <YmFmL42W+OrORElV@ziqianlu-nuc9qn>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421190339.z2fxoywedhyibsgn@moria.home.lan>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=6261eefe
-        a=/kVtbFzwtM2bJgxRVb+eeA==:117 a=/kVtbFzwtM2bJgxRVb+eeA==:17
-        a=kj9zAlcOel0A:10 a=z0gMJWrwH1QA:10 a=7-415B0cAAAA:8
-        a=-weUsO0AUHsLch9HhjwA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 03:03:39PM -0400, Kent Overstreet wrote:
-> On Wed, Apr 06, 2022 at 10:01:30AM +1000, Dave Chinner wrote:
-> > On Tue, Apr 05, 2022 at 10:21:53PM +0100, Matthew Wilcox wrote:
-> > > On Tue, Apr 05, 2022 at 01:58:59PM -0700, Yang Shi wrote:
-> > > > Yeah, I agree it actually doesn't make too much sense to return the
-> > > > number of reclaimed objects. Other part of vmscan returns the number
-> > > > of base pages, the sizes of slab objects are varied, it may be much
-> > > > smaller than a page, for example, dentry may be 192 bytes.
+On Thu, 2022-04-21 at 22:11 +0800, Aaron Lu wrote:
+> On Thu, Apr 21, 2022 at 03:49:21PM +0800, ying.huang@intel.com wrote:
+> > On Wed, 2022-04-20 at 16:33 +0800, Aaron Lu wrote:
+> > > On Thu, Apr 07, 2022 at 10:36:54AM -0700, Yang Shi wrote:
+> > > > On Thu, Apr 7, 2022 at 1:12 AM Aaron Lu <aaron.lu@intel.com> wrote:
+> > > > > 
+> > > > > On Wed, Apr 06, 2022 at 07:09:53PM -0700, Yang Shi wrote:
+> > > > > > The swap devices are linked to per node priority lists, the swap device
+> > > > > > closer to the node has higher priority on that node's priority list.
+> > > > > > This is supposed to improve I/O latency, particularly for some fast
+> > > > > > devices.  But the current code gets nid by calling numa_node_id() which
+> > > > > > actually returns the nid that the reclaimer is running on instead of the
+> > > > > > nid that the page belongs to.
+> > > > > > 
+> > > > > 
+> > > > > Right.
+> > > > > 
+> > > > > > Pass the page's nid dow to get_swap_pages() in order to pick up the
+> > > > > > right swap device.  But it doesn't work for the swap slots cache which
+> > > > > > is per cpu.  We could skip swap slots cache if the current node is not
+> > > > > > the page's node, but it may be overkilling. So keep using the current
+> > > > > > node's swap slots cache.  The issue was found by visual code inspection
+> > > > > > so it is not sure how much improvement could be achieved due to lack of
+> > > > > > suitable testing device.  But anyway the current code does violate the
+> > > > > > design.
+> > > > > > 
+> > > > > 
+> > > > > I intentionally used the reclaimer's nid because I think when swapping
+> > > > > out to a device, it is faster when the device is on the same node as
+> > > > > the cpu.
+> > > > 
+> > > > OK, the offline discussion with Huang Ying showed the design was to
+> > > > have page's nid in order to achieve better I/O performance (more
+> > > > noticeable on faster devices) since the reclaimer may be running on a
+> > > > different node from the reclaimed page.
+> > > > 
+> > > > > 
+> > > > > Anyway, I think I can make a test case where the workload allocates all
+> > > > > its memory on the remote node and its workingset memory is larger then
+> > > > > the available memory so swap is triggered, then we can see which way
+> > > > > achieves better performance. Sounds reasonable to you?
+> > > > 
+> > > > Yeah, definitely, thank you so much. I don't have a fast enough device
+> > > > by hand to show the difference right now. If you could get some data
+> > > > it would be perfect.
+> > > > 
 > > > 
-> > > From the point of view of vmscan, it only cares about the number of pages
-> > > freed because it's trying to free pages.  But from the point of view of
-> > > trying to keep the number of non-useful objects in check, the number of
-> > > objects freed is more important, and it doesn't matter whether we ended
-> > > up freeing any pages because we made memory available for this slab cache.
+> > > Failed to find a test box that has two NVMe disks attached to different
+> > > nodes and since Shanghai is locked down right now, we couldn't install
+> > > another NVMe on the box so I figured it might be OK to test on a box that
+> > > has a single NVMe attached to node 0 like this:
+> > > 
+> > > 1) restrict the test processes to run on node 0 and allocate on node 1;
+> > > 2) restrict the test processes to run on node 1 and allocate on node 0.
+> > > 
+> > > In case 1), the reclaimer's node id is the same as the swap device's so
+> > > it's the same as current behaviour and in case 2), the page's node id is
+> > > the same as the swap device's so it's what your patch proposed.
+> > > 
+> > > The test I used is vm-scalability/case-swap-w-rand:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/wfg/vm-scalability.git/tree/case-swap-w-seq
+> > > which spawns $nr_task processes and each will mmap $size and then
+> > > randomly write to that area. I set nr_task=32 and $size=4G, so a total
+> > > of 128G memory will be needed and I used memory.limit_in_bytes to
+> > > restrict the available memory to 64G, to make sure swap is triggered.
+> > > 
+> > > The reason why cgroup is used is to avoid waking up the per-node kswapd
+> > > which can trigger swapping with reclaimer/page/swap device all having the
+> > > same node id.
+> > > 
+> > > And I don't see a measuable difference from the result:
+> > > case1(using reclaimer's node id) vm-scalability.throughput: 10574 KB/s
+> > > case2(using page's node id)      vm-scalability.throughput: 10567 KB/s
+> > > 
+> > > My interpretation of the result is, when reclaiming a remote page, it
+> > > doesn't matter much which swap device to use if the swap device is a IO
+> > > device.
+> > > 
+> > > Later Ying reminded me we have test box that has optane installed on
+> > > different nodes so I also tested there: Icelake 2 sockets server with 2
+> > > optane installed on each node. I did the test there like this:
+> > > 1) restrict the test processes to run on node 0 and allocate on node 1
+> > >    and only swapon pmem0, which is the optane backed swap device on node 0;
+> > > 2) restrict the test processes to run on node 0 and allocate on node 1
+> > >    and only swapon pmem1, which is the optane backed swap device on node 1.
+> > > 
+> > > So case 1) is current behaviour and case 2) is what your patch proposed.
+> > > 
+> > > With the same test and the same nr_task/size, the result is:
+> > > case1(using reclaimer's node id) vm-scalability.throughput: 71033 KB/s
+> > > case2(using page's node id)      vm-scalability.throughput: 58753 KB/s
+> > > 
 > > 
-> > Yes and no. If the memory pressure is being placed on this cache,
-> > then freeing any number of objects is a win-win situation - reclaim
-> > makes progress and new allocations don't need to wait for reclaim.
+> > The per-node swap device support is more about swap-in latency than
+> > swap-out throughput.  I suspect the test case is more about swap-out
+> > throughput.  perf profiling can show this.
 > > 
-> > However, if there is no pressure on this slab cache, then freeing
-> > objects but no actual memory pages is largely wasted reclaim effort.
-> > Freeing those objects does nothing to alleviate the memory shortage,
-> > and the memory freed is not going to be consumed any time soon so
-> > all we've done is fragment the slab cache and require the subsystem
-> > to spend more resources re-populating it. That's a lose-lose.
-> > 
-> > We want to select the shrinkers that will result in the former
-> > occurring, not the latter.
 > 
-> Do we have any existing shrinkers that preferentially free from mostly empty
-> slab pages though?
+> On another thought, swap out can very well affect swap in latency:
+> since swap is involved, the available memory is in short supply and swap
+> in may very likely need to reclaim a page and that reclaim can involve a
+> swap out, so swap out performance can also affect swap in latency.
+> 
 
-No, because shrinkers have no visbility into slab cache layout.
+I think you are talking about thrashing.  Thrashing will kill
+performance.  With proactive reclaiming, or something similar (e.g. kill
+low priority workloads), we can introduce swapping almost without
+thrashing.
 
-> And do we want them to?
+I don't want to say the performance of swapout isn't important.  But
+swap out and swap in are different.  swap out performance is more about
+throughput, while swap in performance is more about latency.
 
-There have been attempts in the past to do this, which started from
-selecting partial slab pages and then trying free/reclaim the
-objects on those pages.
+Best Regards,
+Huang, Ying
 
-The problems these direct defrag attempts face is that partial slabs
-can be a mix of referenced (in use) and unreferenced (reclaimable)
-objects. Freeing/relocating an in use object is largely impossible
-because of all the (unknown) external references to the object would
-need to be updated and that's an intractable problem.
+> > For swap-in latency, we can use pmbench, which can output latency
+> > information.
+> > 
+> > Best Regards,
+> > Huang, Ying
+> > 
+> > 
+> > [snip]
+> > 
 
-Hence attempts to directly target partial slab pages for reclaim
-have largely ended up not having very good results because partial
-slab pages containing only unreferenced objects are much rarer than
-partial slab pages....
 
-> You're talking about memory fragmentation, and I'm not sure that should be the
-> shrinker's concern (on the other hand, I'm not sure it shouldn't - just freeing
-> the objects on mostly empty slab pages is pretty reasonable for cached objects).
-
-Yeah, but as per above, having mostly empty slab pages does not mean
-the remaining active objects on those pages can actually be
-reclaimed...
-
-> We could also plumb compaction down to the slab level, and just request the
-> subsystem move those objects.
-
-Been there, tried that, not feasible. How do you find all the
-external active references to a dentry or inode at any given point
-in time and then prevent all of them from being actively used while
-you switch all the external pointers to the old object to the new
-object?
-
-> Might be easier than making that an additional
-> responsibility of the shrinkers, which really should be more concerned with
-> implementing cache replacement policy and whatnot - e.g. shrinkers were doing
-> something more LFU-ish that would also help with the one-off object problem.
-
-*nod*
-
-I've said this many times in the past when people have wanted to
-hack special cases into inode and dentry cache reference bit
-management.  We need to make the list_lru rotation implementation
-smarter, not hack special cases into individual shrinker algorithms
-
-One of the original goals of the list_lru was to unify all the LRU
-mechanisms used by shrinkable slab caches so we could then do
-something smarter with the list_lru than a plain LRU + reference bit
-and everything would benefit.  e.g. Being able to bias reclaim
-priority of objects based on their known access patterns (which I
-implemented for the xfs buffer cache via b_lru_ref so it holds onto
-tree roots and nodes harder than it does leaves) or moving the list
-ordering towards LFU or clock-pro style active/inactive lists page
-reclaim uses to allow single use objects to stream through the cache
-instead of turn it entirely over were all potential improvements I
-as thinking of.
-
-So, yes, we should be looking at improving the list_lru
-implementation so taht it handles streaming single use objects a
-whole lot better. Fix it once, fix it properly, and everyone who
-uses list-lru and shrinkers benefits...
-
-Cheers,
-
-Dave.
-
--- 
-Dave Chinner
-david@fromorbit.com
