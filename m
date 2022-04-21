@@ -2,73 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 296E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389947AbiDUPSU (ORCPT
+        id S1389965AbiDUPSf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        Thu, 21 Apr 2022 11:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbiDUPSS (ORCPT
+        with ESMTP id S230247AbiDUPSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:18:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F0C32ED6;
-        Thu, 21 Apr 2022 08:15:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D702061B50;
-        Thu, 21 Apr 2022 15:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7CCCC385A5;
-        Thu, 21 Apr 2022 15:15:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650554128;
-        bh=dXYX28jG4L4NQMvfx7CP9y/C1JaKTliUm0ZkRga+wD8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L8CJL7qO1C5wzadWiWIJZ/CCyz15k1igx10N9spuyO0BjvBYgpiSe4NOL2CRZApiy
-         rOF2nLKGoxyRDDchUNZwSBPSzV4mXXb6e3NS0J5YaGW4PL5cC3RmnDP7hiU4NAYxJV
-         JEaEjfAWNe11e8SpnC3VUzp27OYqDfSPiapTAICgyLgO5CCuiIkiO51dSJQohbdB3o
-         C2XqBkutfKsq5gVTkOK6fncc5bAfhfDUgEeAu0XZJBS47nkT0YTpbUb9kkcWq216IC
-         OVKH/OlywNZ28aMlq5F1HmzLyjvwkBmcVHVGbiuny6cI5/ZtfDuhz7QXH8DD1Q0rSb
-         WLyaA7UgrR8Sw==
-Date:   Thu, 21 Apr 2022 18:14:12 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        keyrings@vger.kernel.org, James Morris <jmorris@namei.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?us-ascii?B?PT9pc28tODg1OS0xP1E/TWlja2E9RUJsX1NhbGE9RkNuPz0=?= 
-        <mic@linux.microsoft.com>
-Subject: Re: [GIT PULL] TPM DEVICE DRIVER updates for tpmdd-next-v5.18-rc4
-Message-ID: <YmF0xMsEKVVfCmH6@kernel.org>
-References: <Yl95wykQMHc/tIq8@kernel.org>
- <649342.1650451678@warthog.procyon.org.uk>
+        Thu, 21 Apr 2022 11:18:33 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCF535A86;
+        Thu, 21 Apr 2022 08:15:43 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23LFFekn096130;
+        Thu, 21 Apr 2022 10:15:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650554140;
+        bh=BSmVKrWhv52kLUAhA2dwa8QvQEt8yIyAabglUhHYYvc=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=X+i6UeSQVuzFnhmu/Jyx1BNXESg04Pe0GryT/tpDDAg1D4jMpMcN4Xs57IWhOp64r
+         kkJNqG2GDLfJCNj3cve4oRDhImsqgVPVzcGTy/JOqMN9ZTrTKEONio7G/uvTVW8JXY
+         PfH5Vyz97SGY2lh/VdMyxEn7HTqK8I7S74Z7tb0U=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23LFFeSn013596
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 21 Apr 2022 10:15:40 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 21
+ Apr 2022 10:15:39 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 21 Apr 2022 10:15:39 -0500
+Received: from [10.250.235.115] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23LFFaQl121385;
+        Thu, 21 Apr 2022 10:15:37 -0500
+Message-ID: <7993bc10-fff1-bacb-d0c5-929b14f35244@ti.com>
+Date:   Thu, 21 Apr 2022 20:45:36 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <649342.1650451678@warthog.procyon.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] dmaengine: ti: k3-psil-am62: Update PSIL thread for saul.
+Content-Language: en-US
+To:     Jayesh Choudhary <j-choudhary@ti.com>, <dmaengine@vger.kernel.org>
+CC:     <peter.ujfalusi@gmail.com>, <vkoul@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220421065323.16378-1-j-choudhary@ti.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <20220421065323.16378-1-j-choudhary@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 11:47:58AM +0100, David Howells wrote:
-> Jarkko Sakkinen <jarkko@kernel.org> wrote:
-> 
-> > Mickaël's patches to add signed hash to the blacklist keyring that were
-> > left out from the original v5.18 PR. They should be safe to include to
-> > rc4 as they've been in circulation for ages, and have been tested
-> > throughly.
-> 
-> Barring a bit in patch 3 where I think strncmp() would be better employed for
-> checking prefixes (and can be fixed up later):
-> 
-> Reviewed-by: David Howells <dhowells@redhat.com>
+Hi Jayesh,
 
-Thanks David.
+On 21/04/22 12:23 pm, Jayesh Choudhary wrote:
+> Correct the RX PSIL thread for sa3ul.
+> 
 
-BR, Jarkko
+Commit message needs more info:
+Threads are not wrong but, the first 4 threads are reserved
+for secure side usage and the rest is available to be paired with main pktdma.
+
+Also, add fixes tag:
+
+Fixes: 5ac6bfb587772 ("dmaengine: ti: k3-psil: Add AM62x PSIL and PDMA data")
+
+
+> Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
+> ---
+> 
+> The new updated PSIL threads have been tested on local am62x board.
+> Log is available here:
+> <https://gist.github.com/Jayesh2000/b0316190de3d9dbb8e98337106ebe24a>
+> 
+>  drivers/dma/ti/k3-psil-am62.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/dma/ti/k3-psil-am62.c b/drivers/dma/ti/k3-psil-am62.c
+> index d431e2033237..2b6fd6e37c61 100644
+> --- a/drivers/dma/ti/k3-psil-am62.c
+> +++ b/drivers/dma/ti/k3-psil-am62.c
+> @@ -70,10 +70,10 @@
+>  /* PSI-L source thread IDs, used for RX (DMA_DEV_TO_MEM) */
+>  static struct psil_ep am62_src_ep_map[] = {
+>  	/* SAUL */
+> -	PSIL_SAUL(0x7500, 20, 35, 8, 35, 0),
+> -	PSIL_SAUL(0x7501, 21, 35, 8, 36, 0),
+> -	PSIL_SAUL(0x7502, 22, 43, 8, 43, 0),
+> -	PSIL_SAUL(0x7503, 23, 43, 8, 44, 0),
+> +	PSIL_SAUL(0x7504, 20, 35, 8, 35, 0),
+> +	PSIL_SAUL(0x7505, 21, 35, 8, 36, 0),
+> +	PSIL_SAUL(0x7506, 22, 43, 8, 43, 0),
+> +	PSIL_SAUL(0x7507, 23, 43, 8, 44, 0),
+>  	/* PDMA_MAIN0 - SPI0-3 */
+>  	PSIL_PDMA_XY_PKT(0x4302),
+>  	PSIL_PDMA_XY_PKT(0x4303),
+
+
+Regards
+Vignesh
