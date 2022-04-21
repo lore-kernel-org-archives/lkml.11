@@ -2,108 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8383EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC248C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390923AbiDURwC (ORCPT
+        id S1390932AbiDURxy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
+        Thu, 21 Apr 2022 13:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390907AbiDURwA (ORCPT
+        with ESMTP id S1390907AbiDURxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:52:00 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821D64A3F5;
-        Thu, 21 Apr 2022 10:49:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650563350; x=1682099350;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mA55YQhjLIsfXwlrMTErhiZKJ7+sd5wb1DTEqU6nP0c=;
-  b=Tp0j6QYRcdOMOxxYkkvo9nleMLUru6vo1WDTH9wTD3DnU57VDlNZfepP
-   qK6AkQHMBRpfmbKCTQZ61yKLESAT+/Fj+nnSxUOf/BJ4sZAqmpXb41G94
-   Y2RK9oCGT7sBR825yjGeXpN8vq4r5BflVL8LB1i31CVHnDECk4XprG6DO
-   ONTdH8uNzw75DvQENcgTPHj3C6SfAJW0k/t112UhaValt1K2mjJFKuo/Q
-   YoJhnsR9aBtWFGenWu6xiVDcknON76OvhTORLw/uW842DgXMYL0LK4QIX
-   6iH/DkJ8N++ir5RAyvEXaI+VUiUmohZQfVaG8iE4YkGfvMhXBfI0yPi+u
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="289547871"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="289547871"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 10:49:10 -0700
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="562674802"
-Received: from ssaladi-mobl1.amr.corp.intel.com (HELO localhost) ([10.213.165.163])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 10:49:09 -0700
-Date:   Thu, 21 Apr 2022 10:49:09 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     outreachy@lists.linux.dev, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] igb: Convert kmap() to kmap_local_page()
-Message-ID: <YmGZFfcY/Yz6Iv1Y@iweiny-desk3>
-References: <20220419234313.10324-1-eng.alaamohamedsoliman.am@gmail.com>
+        Thu, 21 Apr 2022 13:53:51 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD1E49CAE
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:51:00 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id q7so103308wrm.5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:51:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=M22h9UQjwXBYuhzU3iIzL65vslAk4PsiNxWDwMZ8FAo=;
+        b=hEECmpUnpB3qCAOGX3uyF12IUPH1WwYzm/Tv+tRwA2dyTdlvn18OlYA1n9edNZF9jH
+         Ci+i2S7I7ii5aaDUHP8i2cdgue9/jbgG2rvA+jU4zhZXdgUO4M8JGOgsAIB+9CtsAMxM
+         xiynn++9MRLsCGD9cPamO/O1MHYoRMPeXgiY3uy00vhonh76G8CS1aB6NcOw7AvL6TnQ
+         R0Ltzup4dT2T0mx6g7sYEab4LmX7jrTdMn7iKnnt4hrwi+kHFzhDgZ4vd8JkVBDjX6hW
+         5UeRkn4GlXT7c1UDq1QMzJpwglAcBUYi+yGXrPAz4c+U9lW5Wh4x7odRIJ1tSnan+S8Z
+         /zTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=M22h9UQjwXBYuhzU3iIzL65vslAk4PsiNxWDwMZ8FAo=;
+        b=LDCgD3L1nUr+IiCroxp25ro57I+RYMLB9XjrCJ0wLZbZfVHsDzosDNXwaylt13sfPL
+         qaMZHLEmlXZkH+h1aREluObYJjXjFgZjdWHEENTiB9mlqT0skqaY/cxix0XlP60dXpjC
+         gaKeoNT9iSYhqs8+gZV6xt+YwyFU+yQ7AosunpcFicj4rFN/uoZCkWUuw2ZcsT11yNVX
+         PpPyE2ZFn6MSrxOKD7zMmt7fQNG9J95En2Cfqq7QuaTC/fBinxyux5IOdBaKRekZ3D9x
+         Xb2j7teZkaTmfHBs6Tph2BVuiJ9RdjhLjAhvKdTkN9CKoKrVoK99byN3Afj2QUDUmbeo
+         TZbw==
+X-Gm-Message-State: AOAM533K68L/Dr4qCNl5om3dqFRJw8A8BJoItNdL5A2AAvztPlURaB40
+        2EQa+qSbeDnxrkoRH913LtE=
+X-Google-Smtp-Source: ABdhPJy90JiQaRGbP3+RdlApAiy5FRq5lCRQKdFczqp+z85MecKOuuhtXHTPf64gmnZmmiXjGp8Uhw==
+X-Received: by 2002:a05:6000:1f97:b0:20a:bb9d:c82d with SMTP id bw23-20020a0560001f9700b0020abb9dc82dmr656649wrb.302.1650563459174;
+        Thu, 21 Apr 2022 10:50:59 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id a18-20020adffb92000000b00207a257d47asm2798931wrr.95.2022.04.21.10.50.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 10:50:57 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Subject: Re: [PATCH v2] mm/highmem: Fix kernel-doc warnings in highmem*.h
+Date:   Thu, 21 Apr 2022 19:50:56 +0200
+Message-ID: <12321324.iMDcRRXYNz@leap>
+In-Reply-To: <20220418175638.30018-1-fmdefrancesco@gmail.com>
+References: <20220418175638.30018-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419234313.10324-1-eng.alaamohamedsoliman.am@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 01:43:13AM +0200, Alaa Mohamed wrote:
-> kmap() is being deprecated and these usages are all local to the thread
-> so there is no reason kmap_local_page() can't be used.
-> 
-> Replace kmap() calls with kmap_local_page().
-> 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+On luned=C3=AC 18 aprile 2022 19:56:38 CEST Fabio M. De Francesco wrote:
+> `scripts/kernel-doc -none include/linux/highmem*` reports the following
+> warnings:
+>=20
+> include/linux/highmem.h:160: warning: expecting prototype for=20
+kunmap_atomic(). Prototype was for nr_free_highpages() instead
+> include/linux/highmem-internal.h:256: warning: Function parameter or=20
+member '__addr' not described in 'kunmap_atomic'
+> include/linux/highmem-internal.h:256: warning: Excess function parameter=
+=20
+'addr' description in 'kunmap_atomic'
+>=20
+> Fix these warnings by (1) move the kernel-doc comments from highmem.h to
+> highmem-internal.h (which is the file were the kunmap_atomic() macro is
+> actually defined), (2) merge it with the comment which already was in
+> highmem-internal.h, and (3) use correct parameter names.
+>=20
+> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>=20
+> v1->v2: Re-word the last sentence of the commit message and add a missing
+> 	number to the second entry in the fixes list. Add Mike Rapoport's
+> 	"Acked-by:" tag (thanks!).
+>=20
+>  include/linux/highmem-internal.h | 14 +++++++++++---
+>  include/linux/highmem.h          | 13 +------------
+>  2 files changed, 12 insertions(+), 15 deletions(-)
+>=20
+> diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-
+internal.h
+> index a77be5630209..7307de391288 100644
+> --- a/include/linux/highmem-internal.h
+> +++ b/include/linux/highmem-internal.h
+> @@ -236,9 +236,17 @@ static inline unsigned long totalhigh_pages(void) {=
+=20
+return 0UL; }
+> =20
+>  #endif /* CONFIG_HIGHMEM */
+> =20
+> -/*
+> - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
+> - * kunmap_atomic() should get the return value of kmap_atomic, not the=20
+page.
+> +/**
+> + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
+> + * @__addr:       Virtual address to be unmapped
+> + *
+> + * Counterpart to kmap_atomic().
+> + *
+> + * Effectively a wrapper around kunmap_local() which additionally undoes
+> + * the side effects of kmap_atomic(), i.e. reenabling pagefaults and
+> + * preemption. Prevent people trying to call kunmap_atomic() as if it
+> + * were kunmap() because kunmap_atomic() should get the return value of
+> + * kmap_atomic(), not its argument which is a pointer to struct page.
+>   */
+>  #define kunmap_atomic(__addr)				=09
+\
+>  do {							=09
+\
+> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+> index 39bb9b47fa9c..0a7a89721e5d 100644
+> --- a/include/linux/highmem.h
+> +++ b/include/linux/highmem.h
+> @@ -37,7 +37,7 @@ static inline void *kmap(struct page *page);
+> =20
+>  /**
+>   * kunmap - Unmap the virtual address mapped by kmap()
+> - * @addr:	Virtual address to be unmapped
+> + * @page:	Virtual address to be unmapped
+>   *
+>   * Counterpart to kmap(). A NOOP for CONFIG_HIGHMEM=3Dn and for mappings=
+=20
+of
+>   * pages in the low memory area.
+> @@ -145,17 +145,6 @@ static inline void *kmap_local_folio(struct folio=20
+*folio, size_t offset);
+>   */
+>  static inline void *kmap_atomic(struct page *page);
+> =20
+> -/**
+> - * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
+> - * @addr:	Virtual address to be unmapped
+> - *
+> - * Counterpart to kmap_atomic().
+> - *
+> - * Effectively a wrapper around kunmap_local() which additionally undoes
+> - * the side effects of kmap_atomic(), i.e. reenabling pagefaults and
+> - * preemption.
+> - */
+> -
+>  /* Highmem related interfaces for management code */
+>  static inline unsigned int nr_free_highpages(void);
+>  static inline unsigned long totalhigh_pages(void);
+> --=20
+> 2.34.1
+>=20
+Dear Maintainers,
 
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Please drop this patch because it has been reworked and inserted as part of=
+=20
+a new series whose subject is "Extend and reorganize Highmem's=20
+documentation" and which is about to be submitted.
 
-> ---
-> changes in V2:
-> 	fix kunmap_local path value to take address of the mapped page.
-> ---
-> changes in V3:
-> 	edit commit message to be clearer
-> ---
-> changes in V4:
-> 	edit the commit message
-> ---
-> changes in V5:
-> 	-edit commit subject
-> 	-edit commit message
-> ---
->  drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> index 2a5782063f4c..c14fc871dd41 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
->  
->  	frame_size >>= 1;
->  
-> -	data = kmap(rx_buffer->page);
-> +	data = kmap_local_page(rx_buffer->page);
->  
->  	if (data[3] != 0xFF ||
->  	    data[frame_size + 10] != 0xBE ||
->  	    data[frame_size + 12] != 0xAF)
->  		match = false;
->  
-> -	kunmap(rx_buffer->page);
-> +	kunmap_local(data);
->  
->  	return match;
->  }
-> -- 
-> 2.35.2
-> 
+Thanks,
+
+=46abio M. De Francesco
+
+
+
+
