@@ -2,148 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBABC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbiDUQ2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
+        id S231169AbiDUQ2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390499AbiDUQKY (ORCPT
+        with ESMTP id S232402AbiDUQUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:10:24 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAA14739D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:07:34 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 17-20020a05600c021100b00393a19f8f98so708346wmi.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:07:34 -0700 (PDT)
+        Thu, 21 Apr 2022 12:20:21 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E872F3879C
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:17:30 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id n33-20020a17090a5aa400b001d28f5ee3f9so5617058pji.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:17:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W/2Za70C1RHKqi8XDzjUDlZrNvCkjmOJSSy94nVWdeo=;
-        b=V6zMP4bR03OtSHzQnhQ8C07/7liPhzxks7VIQDG9UyNJlBm3gL9cl4qycYdZpw/6/8
-         gnRZzPoPbAm6EteTZIlMDohqau4tlXHabCZVBb8CNbV34fkBdNicaT8J7KVwITEkZ202
-         MF+Jc+m5W5Nd6ChFOK7ImjudxfaZq5yp7KfW4iFKia9NQ2gtarCUKeCP1t3Ij7iJphyq
-         bxp3IJ8k2nd9DtzjAWA/30ru4FTtDp8Cfli7RMLYwxFFZynSMhKH+hYRChs7nfdIceq7
-         gc3SzrGQ7nDluILkLngZeZYVy8TBLepLx6mbM/bq0f9FBLKpE9t00Ah4un9atburVfsZ
-         nBOA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8Fty8QNXfrAs0BV6klkEKYRiPAtqj4wdItJ/oZdWShw=;
+        b=kRX5k9piGdMkSNkFjTIMS1g8v4ZUcKqn+BMMV0eG4CnXV3Zj9/qyJRQiXSZiY2v3AR
+         qIBYYn5FczOPbiYThonWlEwbb/0x3ufJaykEhq6VS1IPmNvnuFeQJe61+hYwuxT2qZGK
+         X6kAYxgcUYWg5u1pcH3zKB3sTp1SVjddn2srA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W/2Za70C1RHKqi8XDzjUDlZrNvCkjmOJSSy94nVWdeo=;
-        b=NI1WuebuGKkwoVC1n7BqUE4Tav7yXj0fSFuWnMdLvNVOH5IvNvgNASRogJWvJik6ie
-         Lb73ktDll3m7yldg9oIdLIURD4w3BjMg5M9bbEzoeer+LHW9PTb/hovcsKspr9kU+N24
-         EI6epcgXOkP12TsUptqGuylLRUQvgsmXTSZqxaDpq2jk2wk68AwRpqIOkFoaOGzD8Eca
-         6oLwupsOKAnPXyPc1Mf+rM/TsHOy/+ENiaoaaiPcDyzZYq090pjs+Dq6KCC+ArSLnSp1
-         if2Hjqj1qpI+Rh4lYYe+Y+W6/+/6I+ECwzi5xLP3mOdVzp7FI9f5VBRhDV8kvgfOKxqy
-         JAxw==
-X-Gm-Message-State: AOAM532fsXtZswL3pYnP6spH2QLi4jHLWS/XoV0oU8cn8D4RRPCIWh/N
-        6suWeAtO9oApYkn1UYJxmDvE+YnDwe80n0mM4WH+Cw==
-X-Google-Smtp-Source: ABdhPJxqUYobkFKPsjnyNIvJy+aGvbRCq3IvWHSrRSfKqva8aaJVNAP6j8VnjdlZbx3EmrWdD1hpjE86W6KLq8k0p9U=
-X-Received: by 2002:a05:600c:1990:b0:392:7119:b55d with SMTP id
- t16-20020a05600c199000b003927119b55dmr75078wmq.49.1650557252813; Thu, 21 Apr
- 2022 09:07:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8Fty8QNXfrAs0BV6klkEKYRiPAtqj4wdItJ/oZdWShw=;
+        b=B4pCLyRRyCXkEN9FN3k0rcoQLVhpDSVLYDyH4SWfp4D4/yPoPauwgcxdLMjtCX7AiN
+         MbR8zjYxJmSVr1nBcqvJnf++v1Dt+T/rkJhqyN0xB4bq1oC3AukKYpybGWS3rrww8+Jw
+         qZsaMeWV2yhC+P23NqUBqFSBwUDZbj6I1+t7b2sIpY/XbsANqQTBXSYg5hz46iSWLII1
+         rPL7rMTVos0SXI86s4GjduiQg1N+vZevXZ12T6bzs7nf91ub2HqiVGAzMxh432XhNu/Z
+         tFEgBLcJ7ntyd6OtQbXsnYOsFd1f6eY5JfCH31+kZFGdiS3Ci/7geLORUdP03M6RJ4Zs
+         y6LA==
+X-Gm-Message-State: AOAM533MxgF7k+6bAZ7wjNIk8vji1D4SZ/RD5ckNts/9hoheci9an4hT
+        gxFmdpEPp0xekl3viPQV9wWTaQ==
+X-Google-Smtp-Source: ABdhPJz0jVyZiWkJb5eJkw4mj6V9lFamfYYK+Z0tLblE59uEzfuw9mcwUtLalS/qcqGqoxv1GYXr0g==
+X-Received: by 2002:a17:902:8b8a:b0:158:983d:2689 with SMTP id ay10-20020a1709028b8a00b00158983d2689mr241189plb.173.1650557850191;
+        Thu, 21 Apr 2022 09:17:30 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
+        by smtp.gmail.com with UTF8SMTPSA id t21-20020a17090a951500b001d77f392280sm513587pjo.30.2022.04.21.09.17.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 09:17:29 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 09:17:27 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v9 02/12] arm64: dts: qcom: sc7280: Enable digital codecs
+ and soundwire for CRD 1.0 and CRD 2.0
+Message-ID: <YmGDl4+os6Wkxn1G@google.com>
+References: <1650552459-21077-1-git-send-email-quic_srivasam@quicinc.com>
+ <1650552459-21077-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-References: <20220419163749.1.Ica39bd8d1494f750a70a668e5929f6e5e63241f2@changeid>
- <c8f5ada2-c5cc-fe1b-bdeb-8b7d134250ee@molgen.mpg.de>
-In-Reply-To: <c8f5ada2-c5cc-fe1b-bdeb-8b7d134250ee@molgen.mpg.de>
-From:   Jes Klinke <jbk@google.com>
-Date:   Thu, 21 Apr 2022 09:07:21 -0700
-Message-ID: <CANMTAZRp5GPwrJNO4RY1KpvABgiuOMYEtwm+jdYfX5JRH8FpSA@mail.gmail.com>
-Subject: Re: [PATCH v2] tpm: cr50: Add new device/vendor ID 0x504a6666
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     "Jes B. Klinke" <jbk@chromium.org>,
-        linux-integrity@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Peter Huewe <peterhuewe@gmx.de>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1650552459-21077-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Paul,
+On Thu, Apr 21, 2022 at 08:17:29PM +0530, Srinivasa Rao Mandadapu wrote:
 
-On Wed, Apr 20, 2022 at 3:52 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
->
-> Dear Jes,
->
->
-> Am 20.04.22 um 01:37 schrieb Jes B. Klinke:
-> > Accept one additional numerical value of DID:VID for next generation
-> > Google TPM with new firmware, to be used in future Chromebooks.
-> >
-> > The TPM with the new firmware has the code name TI50, and is going to
-> > use the same interfaces.
-> >
-> > Signed-off-by: Jes B. Klinke <jbk@chromium.org>
-> > Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > ---
-> >
-> >   drivers/char/tpm/tpm_tis_i2c_cr50.c | 7 ++++---
-> >   1 file changed, 4 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm=
-_tis_i2c_cr50.c
-> > index f6c0affbb4567..4ddb8ff3a8569 100644
-> > --- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
-> > +++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-> > @@ -31,6 +31,7 @@
-> >   #define TPM_CR50_TIMEOUT_SHORT_MS   2               /* Short timeout =
-during transactions */
-> >   #define TPM_CR50_TIMEOUT_NOIRQ_MS   20              /* Timeout for TP=
-M ready without IRQ */
-> >   #define TPM_CR50_I2C_DID_VID                0x00281ae0L     /* Device=
- and vendor ID reg value */
-> > +#define TPM_TI50_I2C_DID_VID         0x504a6666L     /* Device and ven=
-dor ID reg value */
-> >   #define TPM_CR50_I2C_MAX_RETRIES    3               /* Max retries du=
-e to I2C errors */
-> >   #define TPM_CR50_I2C_RETRY_DELAY_LO 55              /* Min usecs betw=
-een retries on I2C */
-> >   #define TPM_CR50_I2C_RETRY_DELAY_HI 65              /* Max usecs betw=
-een retries on I2C */
-> > @@ -742,15 +743,15 @@ static int tpm_cr50_i2c_probe(struct i2c_client *=
-client)
-> >       }
-> >
-> >       vendor =3D le32_to_cpup((__le32 *)buf);
-> > -     if (vendor !=3D TPM_CR50_I2C_DID_VID) {
-> > +     if (vendor !=3D TPM_CR50_I2C_DID_VID && vendor !=3D TPM_TI50_I2C_=
-DID_VID) {
-> >               dev_err(dev, "Vendor ID did not match! ID was %08x\n", ve=
-ndor);
-> >               tpm_cr50_release_locality(chip, true);
-> >               return -ENODEV;
-> >       }
-> >
-> > -     dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
-> > +     dev_info(dev, "%s TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
-> > +              vendor =3D=3D TPM_TI50_I2C_DID_VID ? "ti50" : "cr50",
-> >                client->addr, client->irq, vendor >> 16);
-> > -
->
-> Remove this blank line wasn=E2=80=99t needed, I gues.
+> Subject: arm64: dts: qcom: sc7280: Enable digital codecs and soundwire for CRD 1.0 and CRD 2.0
 
-You are right, I should probably have left the blank line untouched.
-It does not hurt the readability of the code much to remove it,
-though.
+This also enables things for IDP boards, right? If that isn't intended
+then these changes should be in sc7280-crd-r3.dts
 
-> >       return tpm_chip_register(chip);
-> >   }
-> >
->
-> Thank for addressing the other comments, and congratulations on getting
-> your first commit into the Linux kernel.
-
-When I think about it, I did propose a kernel patch in 2002, to
-introduce /proc/sys/kernel/core_pattern, so this is my second patch.
-All the mailing lists, and formal review process this time seemed
-daunting at first, though, so thank you for guiding me through the
-process.
-
-Regards
-Jes
+> Enable rx, tx and va macro codecs and soundwire nodes on revision 3
+> and 4 (aka CRD 1.0 and 2.0) boards.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 35 ++++++++++++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index 2f863c0..6cb5fc4 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -238,6 +238,19 @@
+>  	modem-init;
+>  };
+>  
+> +&lpass_rx_macro {
+> +	status = "okay";
+> +};
+> +
+> +&lpass_tx_macro {
+> +	status = "okay";
+> +};
+> +
+> +&lpass_va_macro {
+> +	status = "okay";
+> +	vdd-micb-supply = <&vreg_bob>;
+> +};
+> +
+>  &pcie1 {
+>  	status = "okay";
+>  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
+> @@ -298,6 +311,28 @@
+>  	cd-gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
+>  };
+>  
+> +&swr0 {
+> +	status = "okay";
+> +
+> +	wcd_rx: codec@0,4 {
+> +		compatible = "sdw20217010d00";
+> +		reg = <0 4>;
+> +		#sound-dai-cells = <1>;
+> +		qcom,rx-port-mapping = <1 2 3 4 5>;
+> +	};
+> +};
+> +
+> +&swr1 {
+> +	status = "okay";
+> +
+> +	wcd_tx: codec@0,3 {
+> +		compatible = "sdw20217010d00";
+> +		reg = <0 3>;
+> +		#sound-dai-cells = <1>;
+> +		qcom,tx-port-mapping = <1 2 3 4>;
+> +	};
+> +};
+> +
+>  &uart5 {
+>  	compatible = "qcom,geni-debug-uart";
+>  	status = "okay";
+> -- 
+> 2.7.4
+> 
