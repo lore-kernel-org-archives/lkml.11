@@ -2,118 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3810C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383667AbiDUGEJ (ORCPT
+        id S1358324AbiDUGIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        Thu, 21 Apr 2022 02:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237590AbiDUGEH (ORCPT
+        with ESMTP id S229494AbiDUGIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:04:07 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0CC64DD
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650520878; x=1682056878;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=O7MKbuqHNRvjU+QrsuUcPlZPeoTt9r3lAbYwnQzZZ0U=;
-  b=avtKaeZwKlBHniTjgWQp0Gl1AJJaGxhO5YktdbhGSiiD7iSkMKh1nh/a
-   QtN1mH0oYZUlgTfVftxRPyOzt+4/j+KRgdPyHmYHbLeyVYuHVGVln/WJQ
-   PNGupCidu0SysIocF3toAwNV+7jCfrZ/AeYlzLgx08OeWf25WRXBQij9o
-   BhDask37cpluGRtOHu66rI2RaBNXfSLgPhSl8vhq6eM0NFlcU9qxG6bBq
-   z7ZUmyVr7puEXEsdqhNnW3j3jedBXLcfbVkJJ223pqmKi9wrBETdm0t3I
-   CGWDTM54KcKzcjqLbmb1dhrB0njp3DANXwn6IkCY37XFNMsbZ8ZwLmDLl
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="261850469"
-X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
-   d="scan'208";a="261850469"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:00:58 -0700
-X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
-   d="scan'208";a="555594587"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:00:54 -0700
-Received: by lahna (sSMTP sendmail emulation); Thu, 21 Apr 2022 09:00:31 +0300
-Date:   Thu, 21 Apr 2022 09:00:31 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Won Chung <wonchung@google.com>
-Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] thunderbolt: Link USB4 ports to their USB Type-C
- connectors
-Message-ID: <YmDy/xEsyktRS6D+@lahna>
-References: <20220418175932.1809770-1-wonchung@google.com>
- <Yl/l7gjRXj41a93q@lahna>
- <CAOvb9yidpOZ4jCjme+u1a4fPTRnLmxUHSTO3yHPPuYtDbe1V0g@mail.gmail.com>
+        Thu, 21 Apr 2022 02:08:11 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27E52192
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:05:22 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ec0bb4b715so41286047b3.5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:05:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gEbbg2zUxEbfOPOeQbHxD+QIKFZ02AhkGwLbMa0NQSM=;
+        b=KLsAX0i9jDGFxcJ1StIniQy3cR6kMX25Hk/LgVmLefBQl/yALbKZ+rvMpxwfzZ9B9A
+         wqulaM7y65JqbZWNrH23JjM7ZCVW9hCgBbLIm3x4Qo3l3uOrLKR7cBwrXzuzUhxDhpnc
+         +AGPPjIGkT/talsWQY5pjnXm7wvtFWO4cssX0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gEbbg2zUxEbfOPOeQbHxD+QIKFZ02AhkGwLbMa0NQSM=;
+        b=ar06Se+DYKx46S6Mq7DYSHTv2KNpvcTUWLe8lRJFbeG9ef3erT295jY24aarFSF7BP
+         4nQYHDHBNH5ycTsLAP9ARFUk0enfVO52TiOr3gNf+la03Dfw7Xk8YZRWq+LqhCbeDb6x
+         wmxFPeVNvb35WtFGLU3a87uccXAt7Kh8LZOwIGQ2ETp9oyzAXRPk2SAFJtpQEDvxYMbn
+         56ANuEYK1Fgm6o9wET162QCkpWM0drcAGQYzJimony4h4LNufOXDKEi3EkG/ZNTG7vuF
+         TYIHVTH5nXVBQVJ86REDH4zHBYVug1tykwHNMB+rJKBfvyNwc+n8OrdtUJTmNcp0ODHW
+         xPxg==
+X-Gm-Message-State: AOAM533Psdsp6DDaqyCpqY0O7NokQWHFvrJgJIMqMd4CffImym6XbxV2
+        HdDCSYGkomtxzz8JbGHNUQ/dI2u/lW1PPw/ZFLlYUw==
+X-Google-Smtp-Source: ABdhPJzzdgkklWVlYeUDIN7ffgffId2uPhqM9WuJYRxVahXvUomxKUoe1jLZymEecsTdjNSGDTjwSXCB2zRhqiYXq+o=
+X-Received: by 2002:a05:690c:110:b0:2ec:2d79:eee1 with SMTP id
+ bd16-20020a05690c011000b002ec2d79eee1mr24722358ywb.21.1650521121784; Wed, 20
+ Apr 2022 23:05:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOvb9yidpOZ4jCjme+u1a4fPTRnLmxUHSTO3yHPPuYtDbe1V0g@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220419081246.2546159-1-wenst@chromium.org> <3591fcc1-d34a-b40a-4e78-edcf9d2ddf08@collabora.com>
+ <CAGXv+5HhcQbdGLQFtgPnvzVbSKaQ5GQGvmjwPVOVxjrYnMh1dg@mail.gmail.com> <ca8048f4-2e75-a49b-6c54-9f6abba6ead3@collabora.com>
+In-Reply-To: <ca8048f4-2e75-a49b-6c54-9f6abba6ead3@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Thu, 21 Apr 2022 14:05:10 +0800
+Message-ID: <CAGXv+5G2Uyq5fdMUnhr5wOm6O8M3dHNKGaSP2L_Vv1o28mXmOQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/7] clk: mediatek: Move to struct clk_hw provider APIs
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Apr 20, 2022 at 8:02 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> Il 19/04/22 18:09, Chen-Yu Tsai ha scritto:
+> > On Tue, Apr 19, 2022 at 11:08 PM AngeloGioacchino Del Regno
+> > <angelogioacchino.delregno@collabora.com> wrote:
+> >>
+> >> Il 19/04/22 10:12, Chen-Yu Tsai ha scritto:
+> >>> Hi everyone,
+> >>>
+> >>> This is part 2 of my proposed MediaTek clk driver cleanup work [1].
+> >>>
+> >>
+> >> ..snip..
+> >>
+> >>>
+> >>> The next phase of the cleanup/improvement shall be to introduce some
+> >>> variant of `struct clk_parent_data` to describe clk relationships
+> >>> efficiently.
+> >>>
+> >>> Please have a look.
+> >>>
+> >>
+> >> Hello Chen-Yu,
+> >>
+> >> I am grateful to see this series, as the MediaTek clock drivers are getting
+> >> a bit old, despite new platforms being implemented practically as we speak.
+> >>
+> >> With this, you surely get that I completely agree with the proposed cleanup
+> >> and modernization of the entire MediaTek clocks infrastructure, but I think
+> >> that introducing a `struct clk_parent_data` for these drivers is, at this
+> >> point, a must, that not only fully justifies these patches, but also "makes
+> >> the point" - as the effect of that would be a performance improvement as we
+> >> would *at least* avoid lots of clk_cpy_name() in case of parent_hws, or in
+> >> case or parent_data where no .fw_name is provided (which would be the case
+> >> for most of the clocks).
 
-On Wed, Apr 20, 2022 at 09:39:25AM -0700, Won Chung wrote:
-> On Wed, Apr 20, 2022 at 3:54 AM Mika Westerberg
-> <mika.westerberg@linux.intel.com> wrote:
-> >
-> > Hi,
-> >
-> > On Mon, Apr 18, 2022 at 05:59:30PM +0000, Won Chung wrote:
-> > > Currently, USB port is linked to Type C connector, using the component
-> > > framework, if they share the same _PLD fields from ACPI table. Type C
-> > > port-mapper searches for devices with the same _PLD values, and
-> > > aggregate them as components.
-> > >
-> > > When there is another device that share the same _PLD but does not
-> > > registers a component, Type C connector (component master) would never
-> > > be bound due to a component match entry device without a component
-> > > registered. There exists some cases where USB4 port also shares the same
-> > > _PLD with USB port and Type C connector, so we need to register a
-> > > component for USB4 ports too, linking USB4 port with Type C connector.
-> > > Otherwise, link between USB port and Type C connector would not
-> > > work either.
-> > >
-> > > Due to the nature of the component framework, all registered components
-> > > are shared by all component match despite the relevance. MEI subsystems
-> > > also use the component framework to bind to i915 driver, which try to
-> > > match components registered by USB ports and USB4 ports. This can be
-> > > problematic since MEI assumes that there is a driver bound to the
-> > > component device, while USB4 port does not bind to any drivers. MEI's
-> > > component match callback functions should handle such case to avoid NULL
-> > > pointer dereference when USB4 port registers a component.
-> > >
-> > > In summary this patch series
-> > > 1. Fixes MEI subsystem's component match callbacks to handle a component
-> > > device without any driver bound
-> > > 2. Registers a component for USB4 ports to link them to Type C
-> > > connectors, similar to USB ports.
-> > >
-> > > Heikki Krogerus (1):
-> > >   thunderbolt: Link USB4 ports to their USB Type-C connectors
-> > >
-> > > Won Chung (1):
-> > >   misc/mei: Add NULL check to component match callback functions
-> >
-> > The Thunderbolt patch looks good to me. Do you want me to take the both
-> > patches through the Thunderbolt tree or they can go separately? I need
-> > an ack from the mei maintainer it goes through my tree.
-> 
-> Hi Mika,
-> 
-> I would prefer the two patches to go to the same tree since it can
-> cause a crash with only the second patch (tbt). Would that sound okay?
+BTW, clk_cpy_name() handles const values correctly, i.e. it won't actually
+copy them. The performance issue with using names is the clk core has to
+match them against the ever increasing list of clks in the system to find
+the actual clk object.
 
-Sounds good to me.
+> > You and me both. :) And yes, one of the intended results is to make the
+> > clk driver probe faster.
+> >
+> >> That said, my advice would be to add that conversion to declaring clocks
+> >> with .hw.init.parent_data and/or .hw.init.parent_hws to this series as to
+> >> really make it complete.
+> >
+> > This series itself already touches a lot of code, even if most of it was
+> > done by coccinelle. I'd like to send them separately to not overwhelm
+> > people.
+> >
+> > Also, I haven't actually started on that part yet. It is actually part 3
+> > of my overall plan. I have a good idea of what to do, given I did similar
+> > work for the sunxi-ng clk drivers (though half finished...).
+>
+> Having a good plan means that you're already half-done though :) :) :)
+>
+> Besides, the reason why I said that you should do the conversion in the same
+> series was exactly because your changes are done with coccinelle scripts...
+> ...but I thought that you already had something in the works for that.
+
+The final part won't be doable with coccinelle scripts though. It involves
+converting the existing list of clk parent names to IDs. It might be doable
+in Perl or Python, but would likely involve a whole lot of string parsing
+and pattern matching ...
+
+> Since you still need some time for the final part, having this kind of (even
+> if partial) modernization is still golden.
+> Let's do it in two steps as you prefer then, that's fine for me.
+>
+> >
+> > Most of the clk references are internal to each driver, and those would
+> > be mapped from some CLK_ID to some `struct clk_hw *` internally, but all
+> > blocks have external parents that need to be modeled as well, and we
+> > would likely need global clk name fallbacks for the blocks that don't
+> > have parents declared in the device tree, which is unfortunately most
+> > of them. Especially the central clock controllers like infracfg or pericfg
+> > take many clk inputs, to the point that MediaTek folks were somewhat
+> > unwilling to bloat the device tree with them.
+> >
+> > So it does seem easier to use something like clk_parent_data with
+> > `struct clk_hw *` replaced with an index everywhere. This structure
+> > would get converted into clk_parent_data by the singular clk registration
+> > helpers.
+> >
+>
+> I may not be understanding what you mean by mapping the CLK_ID internally, but
+> from what my brain processed, I think that you want to look at, and basically
+> replicate, how it's done in the Qualcomm clock drivers (and perhaps standardize
+> that in the clock API?).
+>
+> Specifically, clk/qcom/common.h, struct parent_map.
+>
+> Though, I admit I haven't looked at the MTK clocks *very deeply*, so I may be
+> misunderstanding something.
+
+Not exactly. All the clocks in the MTK drivers are allocated at runtime,
+so we can't use clk_parent_data to point to not-yet-allocated clk_hw-s.
+Instead we'll need to have
+
+    struct mtk_clk_parent_data {
+        unsigned int clk_id; /* Match CLK_XXX_YYY from dt-binding headers */
+        ... /* remaining fields same as mtk_clk_parent_data */
+    };
+
+and create the actual clk_parent_data at runtime by looking up clk_id in
+the set of already registered clks:
+
+    int mtk_clk_register_XXX(..., struct mtk_clk_parent_data *pdata,
+                             struct clk_hw_onecell_data *clk_data) {
+        struct clk_parent_data data = {
+            .hw = clk_data[pdata->clk_id],
+            /* copy other fields verbatim */
+        };
+        ...
+    }
+
+Obviously this forces some ordering of how the clks are registered.
+I believe the order is already correct, and if it isn't, it would be
+easy to detect, and we can reorder things to fix it.
+
+> > This would have to coexist with the existing helpers we have. So I think
+> > this work would be combined with the helper API cleanup / alignment with
+> > clk provider API.
+> >
+> > Does that make sense to you?
+> >
+>
+> Yes that does fully make sense to me.
+>
+> >> Of course, if you have concerns about old platforms that you cannot test,
+> >> or for which this kind of conversion would require a huge amount of effort,
+> >> then I would go for converting as many as possible as a first step and then
+> >> leave the others for later.
+> >>
+> >> I would envision MT8183, 8186, 8192, 8195 to be a good amount of first
+> >> candidates for this great effort.
+> >
+> > I'm working with MT8183 right now, as it can readily boot mainline to a
+> > shell. Depending on the schedule and whose on board with resources, I'd
+
+* who's onboard *
+
+> > probably handle the other ChromeOS platforms, or delegate it internally.
+> >
+> >
+>
+> That sounds like a plan. Besides, I wasn't trying to give you any hurry
+> whatsoever - I was simply thinking out loud :))
+
+Got it. :)
+
+
+Regards
+ChenYu
