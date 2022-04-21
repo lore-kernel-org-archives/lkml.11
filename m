@@ -2,245 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4865CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A56C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388397AbiDUN6P (ORCPT
+        id S1388543AbiDUN6Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
+        Thu, 21 Apr 2022 09:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388321AbiDUN6M (ORCPT
+        with ESMTP id S1388439AbiDUN6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:58:12 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51C22BB1B;
-        Thu, 21 Apr 2022 06:55:20 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A07805FD06;
-        Thu, 21 Apr 2022 16:55:17 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1650549317;
-        bh=Vx0fQIL15yRo1tQ1B3ku9JZaBjnreUllysZQgmgiL3Q=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=Q0rv00JCvcd+EQczEOKRA9bRPlKgNKE7Y1QjVasvOVqwcM20f11lnPZtgBzKGYUKw
-         XRZT2hEcgLxEqmJNay40LOOvvGJis8d3a7eIccZc70NtSaQsmud2HnJxL7DR4cTQsA
-         5PtemGvEjCdN1U9FYdz4I1L3GIAykjayuMPmBvsRXlLFBIRCpW1ZVA1yaPwBpsFclp
-         temG3CF9lCjfb5C8zBUU7EJJSvFWFMnX15lZKQ91nDVJfXri5dNFaovsvtX1HCf55C
-         /bvljLoHkLpjIqVcekG9oQq5I4mOE6EB63WlBnWlvg04zmVQDqRk7kkDR+Yw1FOvmd
-         RowmP1v2/KFfA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 21 Apr 2022 16:55:14 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema for
- msa311 accel driver
-Thread-Topic: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema
- for msa311 accel driver
-Thread-Index: AQHYVASQQZC393Ji1keuDd+e+35bUqz4TVCAgAHnLgA=
-Date:   Thu, 21 Apr 2022 13:55:07 +0000
-Message-ID: <20220421135457.ldtsff6ii4nhjkh5@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
- <20220419154555.24191-4-ddrokosov@sberdevices.ru>
- <20220420095127.000059d4@Huawei.com>
-In-Reply-To: <20220420095127.000059d4@Huawei.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9F4944C50A2B3F4CB31F52FCB5B5F289@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Thu, 21 Apr 2022 09:58:18 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00422BB1B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:55:25 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id bf11so5855994ljb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:55:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lzEPZD4SC3I9SVQDbsAF0F1Rh7CzBkbKno9SVHKNclE=;
+        b=hVVJzRiOHbQ1DvCsfacjZTIvOgsTjjshIlvtvnLVwcm3Rrj8ItYANVLUNJGM3kBhYI
+         qekT1/u9T/mx3cdf+pNK1CFnIeqpZ7ie1jYDHAkqx+IKRFtHH6LsKCB8AD7pglIGEr+k
+         GeaVZzdNNyWf+6DGWeDJsfJiZvU5AKjZjz8VeoYvoLiQ+exa/uoIv7QkV43ibikf6Bde
+         n/mrKC5vwc8tRe8BeqSsd78Ptwh5/n0+34RbJ2fo0lTLEW4jZrwrXlD02NbnoKljEPBk
+         RlF1kya9OZdYIhF1Dda6nupcl263pICR0WEN3xhggWCE/cGgTHHFA+N8oV4ndBEDMR5A
+         ys6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lzEPZD4SC3I9SVQDbsAF0F1Rh7CzBkbKno9SVHKNclE=;
+        b=UwRwmbMOpaXK08mNAIU0B50mtvgMqKMEyww5O1TXxa21HIbdqDRNb2FLB+VfrKzmIx
+         YOy6FMvtRCsDK7pfRoe9L2K0y5wkfiF++zUax+Wb8hMjbHgaHOYO0xy6hS/DvIJqF761
+         H5EGeNt/3jFo0pAFhxUB5bFB0p2DXEfrQv5Bg6HrlxDCdhCdh7qFIPzSD5doOH5NNeDm
+         HXq52CWYO0byDh9QJBNXTc+ZehIJ+ajZpdA3FmJpo0G1gMcz3VgtEDDnF6Ll6CjKNAWv
+         ix1zhVki39Teh42kD0HU3vtHwPRuMQUgF8IskMaVrRTvU0Nw+gWOIsqIi6L19LjBR0MY
+         FZBw==
+X-Gm-Message-State: AOAM531vEcOdOttxarcJjmtpkrAFlhU5yLmutO6i/iQlxHMqbGSQ/cLm
+        BbawMoVCsq0sYq5DBIbZ1wulIGd9XG0ifQrkZM4iA/t76CA=
+X-Google-Smtp-Source: ABdhPJwdp7CwjJHxh38xo1mngfbcuKzywJgB4sJ2e01ZpDfXKMcYq4nHRTIm9dwvY/IUZLkqyoDgioE1u0ngCHX2XtI=
+X-Received: by 2002:a2e:a552:0:b0:24d:c784:4b43 with SMTP id
+ e18-20020a2ea552000000b0024dc7844b43mr8126261ljn.4.1650549323893; Thu, 21 Apr
+ 2022 06:55:23 -0700 (PDT)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/04/21 06:36:00 #19322218
-X-KSMG-AntiVirus-Status: Clean, skipped
+References: <20220419024611.1327525-1-chris.packham@alliedtelesis.co.nz> <20220419024611.1327525-4-chris.packham@alliedtelesis.co.nz>
+In-Reply-To: <20220419024611.1327525-4-chris.packham@alliedtelesis.co.nz>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 21 Apr 2022 15:54:47 +0200
+Message-ID: <CAPDyKFoPpWn+RNLRm02c2D779GeBW_rM2_jUprnD=jnKQT4xHA@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] dt-bindings: mmc: convert orion-sdio to JSON schema
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, nico@fluxnic.net,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jonathan,
+On Tue, 19 Apr 2022 at 04:46, Chris Packham
+<chris.packham@alliedtelesis.co.nz> wrote:
+>
+> Convert the orion-sdio binding to JSON schema.
+>
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Thank you for the quick feedback.
-I completely agree with all of your comments. Please find my notes below.
+Applied for next, thanks!
 
-On Wed, Apr 20, 2022 at 09:51:27AM +0100, Jonathan Cameron wrote:
-> On Tue, 19 Apr 2022 15:45:58 +0000
-> Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru> wrote:
->=20
-> > Introduce devicetree binding json-schema for MSA311 tri-axial,
-> > low-g accelerometer driver.
-> >=20
-> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> Hi Dmitry and welcome to IIO.
->=20
-> Sign off generally matches the From: of the email.
-> Makes it easier for scripts to check than having different name forms.
->=20
+Kind regards
+Uffe
 
-Yes, looks like this problem is located on the corporative Exchange server =
-side.
-I use DavMail local proxy to send emails, so server changes From: statement=
-.
-I have already discussed it with our IT guys, it should be fixed starting f=
-rom current email.
 
-> > ---
-> >  .../bindings/iio/accel/memsensing,msa311.yaml      | 64 ++++++++++++++=
-++++++++
-> >  MAINTAINERS                                        |  1 +
-> >  2 files changed, 65 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/accel/memsens=
-ing,msa311.yaml
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/iio/accel/memsensing,msa=
-311.yaml b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.ya=
-ml
-> > new file mode 100644
-> > index 00000000..3e4660f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yam=
-l
-> > @@ -0,0 +1,64 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +
-> > +%YAML 1.2
-> > +---
-> > +$id: "http://devicetree.org/schemas/iio/accel/memsensing,msa311.yaml#"
-> > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> > +
-> > +title: MEMSensing digital 3-Axis accelerometer
-> > +
-> > +maintainers:
-> > +  - Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> > +
-> > +description: |
-> > +  MSA311 is a tri-axial, low-g accelerometer with I2C digital output f=
-or
-> > +  sensitivity consumer applications. It has dynamical user selectable =
-full
-> > +  scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measure=
-ments
-> > +  with output data rates from 1Hz to 1000Hz.
-> > +  Datasheet can be found at following URL
-> > +  https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: memsensing,msa311
-> > +
-> > +  "#address-cells":
-> > +    const: 1
-> > +
-> > +  "#size-cells":
-> > +    const: 0
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +    description: I2C registers address
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +    description: optional I2C int pin can be freely mapped to specific=
- func
-> > +
-> > +  interrupt-names:
-> > +    const: irq
->=20
-> For a single IRQ giving it a name isn't that useful so I would drop this.
->=20
->=20
-
-Based on Documentation/devicetree/bindings/example-schema.yaml I thought
-interrupt-names must contain irq name regardless of interrupt count,
-because it helps to understand right property name.
-I'll delete it for v2.
-
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/gpio/gpio.h>
->=20
-> Why have this?
->=20
-
-I agree, this header is needed for GPIO constant values, which is not used =
-here.
-I'll remove it for the v2 then.
-
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    i2c0 {
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <0>;
-> > +
-> > +        msa311: msa311@62 {
-> Generic naming required.
->            accelerometer@62 {
->=20
-
-Okay, I will change it in the next version.
-
-> > +            compatible =3D "memsensing,msa311";
-> > +            reg =3D <0x62>;
-> > +            interrupt-parent =3D <&gpio_intc>;
-> > +            interrupts =3D <29 IRQ_TYPE_LEVEL_HIGH>;
-> > +            interrupt-names =3D "irq";
-> > +            status =3D "okay";
->=20
-> We don't often have status in the examples.=20
->=20
-
-Sure, status is useful for real dts declarations.
-It's there because I copied this declaration from by tested real board dts =
-:-)
-
->=20
-> Otherwise looks good to me.
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> > +        };
-> > +    };
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index c75be17..4227914 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -12482,6 +12482,7 @@ MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DR=
-IVER
-> >  M:	Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> >  L:	linux-iio@vger.kernel.org
-> >  S:	Maintained
-> > +F:	Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
-> >  F:	drivers/iio/accel/msa311.c
-> > =20
-> >  MEN A21 WATCHDOG DRIVER
->=20
-
---=20
-Thank you,
-Dmitry=
+> ---
+>
+> Notes:
+>     Changes in v2:
+>     - Add review from Krzysztof
+>
+>  .../bindings/mmc/marvell,orion-sdio.yaml      | 44 +++++++++++++++++++
+>  .../devicetree/bindings/mmc/orion-sdio.txt    | 16 -------
+>  2 files changed, 44 insertions(+), 16 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/mmc/orion-sdio.txt
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yaml b/Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yaml
+> new file mode 100644
+> index 000000000000..8a97ded15aed
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yaml
+> @@ -0,0 +1,44 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mmc/marvell,orion-sdio.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Marvell orion-sdio controller
+> +
+> +maintainers:
+> +  - Nicolas Pitre <nico@fluxnic.net>
+> +  - Ulf Hansson <ulf.hansson@linaro.org>
+> +
+> +allOf:
+> +  - $ref: mmc-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: marvell,orion-sdio
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    mmc@d00d4000 {
+> +      compatible = "marvell,orion-sdio";
+> +      reg = <0xd00d4000 0x200>;
+> +      interrupts = <54>;
+> +      clocks = <&gateclk 17>;
+> +    };
+> diff --git a/Documentation/devicetree/bindings/mmc/orion-sdio.txt b/Documentation/devicetree/bindings/mmc/orion-sdio.txt
+> deleted file mode 100644
+> index 10f0818a34c5..000000000000
+> --- a/Documentation/devicetree/bindings/mmc/orion-sdio.txt
+> +++ /dev/null
+> @@ -1,16 +0,0 @@
+> -* Marvell orion-sdio controller
+> -
+> -This file documents differences between the core properties in mmc.txt
+> -and the properties used by the orion-sdio driver.
+> -
+> -- compatible: Should be "marvell,orion-sdio"
+> -- clocks: reference to the clock of the SDIO interface
+> -
+> -Example:
+> -
+> -       mvsdio@d00d4000 {
+> -               compatible = "marvell,orion-sdio";
+> -               reg = <0xd00d4000 0x200>;
+> -               interrupts = <54>;
+> -               clocks = <&gateclk 17>;
+> -       };
+> --
+> 2.35.1
+>
