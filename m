@@ -2,57 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C90C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03571C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391871AbiDUTXY (ORCPT
+        id S1391868AbiDUTXa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        Thu, 21 Apr 2022 15:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389410AbiDUTWn (ORCPT
+        with ESMTP id S1388673AbiDUTWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:22:43 -0400
+        Thu, 21 Apr 2022 15:22:48 -0400
 Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B8F2E5;
-        Thu, 21 Apr 2022 12:19:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3251148;
+        Thu, 21 Apr 2022 12:19:57 -0700 (PDT)
 Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23LEv0Ko007017;
-        Thu, 21 Apr 2022 19:19:42 GMT
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23LEufIq006763;
+        Thu, 21 Apr 2022 19:19:39 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pps0720;
- bh=kUzIlJ5qad8YpCJQCWHt6PCb8d/QHqmZG5rNDhyUL9M=;
- b=ET0NwvTFchYLtaj+IVhaVbtx4XDCIU4Vr6xZ4oTSYJGxfg7UcKc9r8/qI/v4XbzDEXtn
- t4iEhF0OXSRHrRw3ZG3L6btkh71D9FghpxK/8GMM71dmvhMoUx2omCepSOhbJT5fSLVh
- Ie0HUmTkUs8Ae6LT5ZA3nz7PrVfyKQ62ZlkO34tLWtZ/zcShdVzGnVLQrwQkJVp/Lrs4
- E4oCpf5lx9tt/O13iWKjMi1OfKKfnu00hrHxPk1YdV7pk8Mlx8YI+moGnfQ8lMsN1XMd
- XBs/P0Us4C1b3dnrE+QsK1YTwEPsviXyI1d9IXXbogrhB4B+httRUFQBZGlCfKVuwdUI DQ== 
-Received: from g4t3426.houston.hpe.com (g4t3426.houston.hpe.com [15.241.140.75])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fk9fkt6bd-1
+ bh=2EzGVGy2WsVYT4xPR4dmL8vboMRA3i+XoQ+4aM5tx74=;
+ b=WGlBxiRdUIMtfDozX7SlEx6DL1NtTwo3qj785abvnU19LqPfQFLad8nwheR8+qqcO3m3
+ jVPhfXuVs49+vaG/aOUKpVpvVemGYGfJKKSLifRd9SbO7OujI3Pv5GXDVEpNk9z+C489
+ quRi4KXa/edK5FuHbyDEiPqBwVbHTd3madU3MP5i+PspgGivxsDATFYdOAq0PRskLt9j
+ 3U1cnIWMj9Ezlq0vN945UP6SSuMNJTFQ7MWq6StF8FRB2PeEIPPNUu2S5oETC6bR5Dpw
+ Pbk2msT4WQSfOD/papz7KTypT65Pm9O0s1miNmAlXnoR8OvW2lpQQ1LUF8mZiZ0ZpwIA jw== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fk9fkt6av-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Apr 2022 19:19:42 +0000
+        Thu, 21 Apr 2022 19:19:39 +0000
 Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g4t3426.houston.hpe.com (Postfix) with ESMTP id B04B562;
-        Thu, 21 Apr 2022 19:19:41 +0000 (UTC)
+        by g4t3427.houston.hpe.com (Postfix) with ESMTP id DDDE772;
+        Thu, 21 Apr 2022 19:19:37 +0000 (UTC)
 Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 60F1848;
-        Thu, 21 Apr 2022 19:19:41 +0000 (UTC)
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 9EF6B48;
+        Thu, 21 Apr 2022 19:19:37 +0000 (UTC)
 From:   nick.hawkins@hpe.com
 To:     verdun@hpe.com, nick.hawkins@hpe.com, joel@jms.id.au,
         arnd@arndb.de, openbmc@lists.ozlabs.org
-Cc:     Olof Johansson <olof@lixom.net>, soc@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 10/11] arch: arm: boot: dts: Introduce HPE GXP Device tree
-Date:   Thu, 21 Apr 2022 14:21:31 -0500
-Message-Id: <20220421192132.109954-11-nick.hawkins@hpe.com>
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v5 03/11] drivers: wdt: Introduce HPE GXP SoC Watchdog
+Date:   Thu, 21 Apr 2022 14:21:24 -0500
+Message-Id: <20220421192132.109954-4-nick.hawkins@hpe.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220421192132.109954-1-nick.hawkins@hpe.com>
 References: <20220421192132.109954-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: CTkM_sirV8zjtSvWPSbTNYOI5yK9wa3L
-X-Proofpoint-ORIG-GUID: CTkM_sirV8zjtSvWPSbTNYOI5yK9wa3L
+X-Proofpoint-GUID: uJYDCfgR7RO--6MnqEsaqqpCekeMIbt5
+X-Proofpoint-ORIG-GUID: uJYDCfgR7RO--6MnqEsaqqpCekeMIbt5
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
@@ -68,215 +66,246 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nick Hawkins <nick.hawkins@hpe.com>
 
-The HPE SoC is new to linux. This patch
-creates the basic device tree layout with minimum required
-for linux to boot. This includes timer and watchdog
-support.
-
-The dts file is empty at this point but will be
-updated in subsequent updates as board specific features
-are enabled.
+Adding support for the HPE GXP Watchdog. It is new to the linux
+community and this along with several other patches is the first
+support for it. The GXP asic contains a full compliment of
+timers one of which is the watchdog timer. The watchdog timer
+is 16 bit and has 10ms resolution. The watchdog is
+created as a child device of timer since the same register
+range is used.
 
 Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
 ---
 v5:
-* Fixed commit message to show previous changes
-* Fixed typo ehci -> echi
+* Fixed version log
+* Added details to Kconfig for module support.
+* Adjusted commit messaged
 v4:
-* Removed hpe,gxp-cpu-init as it was no longer necessary
-* Removed bootargs as requested
-* Removed empty ahb node
-* Moved reg after compatible, everywhere
-* Removed osc and memclk
-* Removed syscon@c00000f8 as it was not necessary for boot
-* Fixed Alphabetical issue in dts/Makefile
-* Added specific board binding for dl360gen10
-* Removed empty node
-* Added Accurate Clock Architecture
-* Fixed generic-echi and generic-ochi issues
-* Removed i2cg
+* Made watchdog a child of timer as they share the same register
+  region per change request on dtsi.
+* Removed extra parenthesis
+* Fixed u8 u32 u64 usage
+* Fixed alignment issue
+* Reconfigured conditional statement for interrupt setup
+* Removed unused gxp_wdt_remove function
 v3:
-* Fixed issues with warnings
-* Used proper patchset format
+* Put into proper patchset format
 v2:
-* Reduced size of dtsi to essential components
-* Followed the proper format for having a dtsi and
-  dts
+* No change
 ---
- arch/arm/boot/dts/Makefile               |   2 +
- arch/arm/boot/dts/hpe-bmc-dl360gen10.dts |  13 +++
- arch/arm/boot/dts/hpe-gxp.dtsi           | 128 +++++++++++++++++++++++
- 3 files changed, 143 insertions(+)
- create mode 100644 arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
- create mode 100644 arch/arm/boot/dts/hpe-gxp.dtsi
+ drivers/watchdog/Kconfig   |  11 +++
+ drivers/watchdog/Makefile  |   1 +
+ drivers/watchdog/gxp-wdt.c | 166 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 178 insertions(+)
+ create mode 100644 drivers/watchdog/gxp-wdt.c
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 7c16f8a2b738..293717719c70 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -255,6 +255,8 @@ dtb-$(CONFIG_ARCH_HISI) += \
- 	hi3519-demb.dtb
- dtb-$(CONFIG_ARCH_HIX5HD2) += \
- 	hisi-x5hd2-dkb.dtb
-+dtb-$(CONFIG_ARCH_HPE_GXP) += \
-+	hpe-bmc-dl360gen10.dtb
- dtb-$(CONFIG_ARCH_INTEGRATOR) += \
- 	integratorap.dtb \
- 	integratorap-im-pd1.dtb \
-diff --git a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index c4e82a8d863f..a591cc6aa152 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -1820,6 +1820,17 @@ config RALINK_WDT
+ 	help
+ 	  Hardware driver for the Ralink SoC Watchdog Timer.
+ 
++config GXP_WATCHDOG
++	tristate "HPE GXP watchdog support"
++	depends on ARCH_HPE_GXP
++	select WATCHDOG_CORE
++	help
++	  Say Y here to include support for the watchdog timer
++	  in HPE GXP SoCs.
++
++	  To compile this driver as a module, choose M here.
++	  The module will be called gxp-wdt.
++
+ config MT7621_WDT
+ 	tristate "Mediatek SoC watchdog"
+ 	select WATCHDOG_CORE
+diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
+index f7da867e8782..e2acf3a0d0fc 100644
+--- a/drivers/watchdog/Makefile
++++ b/drivers/watchdog/Makefile
+@@ -92,6 +92,7 @@ obj-$(CONFIG_RTD119X_WATCHDOG) += rtd119x_wdt.o
+ obj-$(CONFIG_SPRD_WATCHDOG) += sprd_wdt.o
+ obj-$(CONFIG_PM8916_WATCHDOG) += pm8916_wdt.o
+ obj-$(CONFIG_ARM_SMC_WATCHDOG) += arm_smc_wdt.o
++obj-$(CONFIG_GXP_WATCHDOG) += gxp-wdt.o
+ obj-$(CONFIG_VISCONTI_WATCHDOG) += visconti_wdt.o
+ obj-$(CONFIG_MSC313E_WATCHDOG) += msc313e_wdt.o
+ obj-$(CONFIG_APPLE_WATCHDOG) += apple_wdt.o
+diff --git a/drivers/watchdog/gxp-wdt.c b/drivers/watchdog/gxp-wdt.c
 new file mode 100644
-index 000000000000..69e9c6672ea8
+index 000000000000..f45ab9a826d6
 --- /dev/null
-+++ b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-@@ -0,0 +1,13 @@
++++ b/drivers/watchdog/gxp-wdt.c
+@@ -0,0 +1,166 @@
 +// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree file for HPE DL360Gen10
-+ */
++/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P. */
 +
-+/include/ "hpe-gxp.dtsi"
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/of_address.h>
++#include <linux/of_platform.h>
++#include <linux/types.h>
++#include <linux/watchdog.h>
 +
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+	compatible = "hpe,gxp-dl360gen10","hpe,gxp";
-+	model = "Hewlett Packard Enterprise ProLiant dl360 Gen10";
++#define MASK_WDGCS_ENABLE	0x01
++#define MASK_WDGCS_RELOAD	0x04
++#define MASK_WDGCS_NMIEN	0x08
++#define MASK_WDGCS_WARN		0x80
++
++#define WDT_MAX_TIMEOUT_MS	655000
++#define WDT_DEFAULT_TIMEOUT	30
++#define SECS_TO_WDOG_TICKS(x) ((x) * 100)
++#define WDOG_TICKS_TO_SECS(x) ((x) / 100)
++
++#define GXP_WDT_CNT_OFS		0x10
++#define GXP_WDT_CTRL_OFS	0x16
++
++struct gxp_wdt {
++	void __iomem *base;
++	struct watchdog_device wdd;
 +};
-diff --git a/arch/arm/boot/dts/hpe-gxp.dtsi b/arch/arm/boot/dts/hpe-gxp.dtsi
-new file mode 100644
-index 000000000000..a3a082d21101
---- /dev/null
-+++ b/arch/arm/boot/dts/hpe-gxp.dtsi
-@@ -0,0 +1,128 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree file for HPE GXP
-+ */
 +
-+/dts-v1/;
-+/ {
-+	model = "Hewlett Packard Enterprise GXP BMC";
-+	compatible = "hpe,gxp","hpe,gxp-dl360gen10";
-+	#address-cells = <1>;
-+	#size-cells = <1>;
++static void gxp_wdt_enable_reload(struct gxp_wdt *drvdata)
++{
++	u8 val;
 +
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	val = readb(drvdata->base + GXP_WDT_CTRL_OFS);
++	val |= (MASK_WDGCS_ENABLE | MASK_WDGCS_RELOAD);
++	writeb(val, drvdata->base + GXP_WDT_CTRL_OFS);
++}
 +
-+		cpu@0 {
-+			compatible = "arm,cortex-a9";
-+			reg = <0>;
-+			device_type = "cpu";
-+		};
-+	};
++static int gxp_wdt_start(struct watchdog_device *wdd)
++{
++	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
 +
-+	clocks {
++	writew(SECS_TO_WDOG_TICKS(wdd->timeout), drvdata->base + GXP_WDT_CNT_OFS);
++	gxp_wdt_enable_reload(drvdata);
++	return 0;
++}
 +
-+		pll: pll {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <1600000000>;
-+		};
++static int gxp_wdt_stop(struct watchdog_device *wdd)
++{
++	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
++	u8 val;
 +
-+		iopclk: iopclk {
-+			compatible = "fixed-factor-clock";
-+			#clock-cells = <0>;
-+			clock-div = <4>;
-+			clock-mult = <1>;
-+			clocks = <&pll>;
-+		};
-+	};
++	val = readb_relaxed(drvdata->base + GXP_WDT_CTRL_OFS);
++	val &= ~MASK_WDGCS_ENABLE;
++	writeb(val, drvdata->base + GXP_WDT_CTRL_OFS);
++	return 0;
++}
 +
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0x40000000 0x20000000>;
-+	};
++static int gxp_wdt_set_timeout(struct watchdog_device *wdd,
++			       unsigned int timeout)
++{
++	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
++	u32 actual;
 +
-+	axi {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+		dma-ranges;
++	wdd->timeout = timeout;
++	actual = min(timeout, wdd->max_hw_heartbeat_ms / 1000);
++	writew(SECS_TO_WDOG_TICKS(actual), drvdata->base + GXP_WDT_CNT_OFS);
 +
-+		ahb@c0000000 {
-+			compatible = "simple-bus";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xc0000000 0x30000000>;
++	return 0;
++}
 +
-+			vic0: interrupt-controller@eff0000 {
-+				compatible = "arm,pl192-vic";
-+				reg = <0xeff0000 0x1000>;
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+			};
++static unsigned int gxp_wdt_get_timeleft(struct watchdog_device *wdd)
++{
++	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
++	u32 val = readw(drvdata->base + GXP_WDT_CNT_OFS);
 +
-+			vic1: interrupt-controller@80f00000 {
-+				compatible = "arm,pl192-vic";
-+				reg = <0x80f00000 0x1000>;
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+			};
++	return WDOG_TICKS_TO_SECS(val);
++}
 +
-+			uarta: serial@e0 {
-+				compatible = "ns16550a";
-+				reg = <0xe0 0x8>;
-+				interrupts = <17>;
-+				interrupt-parent = <&vic0>;
-+				clock-frequency = <1846153>;
-+				reg-shift = <0>;
-+			};
++static int gxp_wdt_ping(struct watchdog_device *wdd)
++{
++	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
 +
-+			uartb: serial@e8 {
-+				compatible = "ns16550a";
-+				reg = <0xe8 0x8>;
-+				interrupts = <18>;
-+				interrupt-parent = <&vic0>;
-+				clock-frequency = <1846153>;
-+				reg-shift = <0>;
-+			};
++	gxp_wdt_enable_reload(drvdata);
++	return 0;
++}
 +
-+			uartc: serial@f0 {
-+				compatible = "ns16550a";
-+				reg = <0xf0 0x8>;
-+				interrupts = <19>;
-+				interrupt-parent = <&vic0>;
-+				clock-frequency = <1846153>;
-+				reg-shift = <0>;
-+			};
++static int gxp_restart(struct watchdog_device *wdd, unsigned long action,
++		       void *data)
++{
++	struct gxp_wdt *drvdata = watchdog_get_drvdata(wdd);
 +
-+			usb0: usb@efe0000 {
-+				compatible = "hpe,gxp-ehci","generic-ehci";
-+				reg = <0xefe0000 0x100>;
-+				interrupts = <7>;
-+				interrupt-parent = <&vic0>;
-+			};
++	writew(10, drvdata->base + GXP_WDT_CNT_OFS);
++	gxp_wdt_enable_reload(drvdata);
++	mdelay(100);
++	return 0;
++}
 +
-+			st: timer@80 {
-+				compatible = "hpe,gxp-timer","simple-mfd";
-+				reg = <0x80 0x16>;
-+				interrupts = <0>;
-+				interrupt-parent = <&vic0>;
-+				clocks = <&iopclk>;
-+				clock-names = "iopclk";
-+				watchdog {
-+					compatible = "hpe,gxp-wdt";
-+				};
-+			};
-+
-+			usb1: usb@efe0100 {
-+				compatible = "hpe,gxp-ohci","generic-ohci";
-+				reg = <0xefe0100 0x110>;
-+				interrupts = <6>;
-+				interrupt-parent = <&vic0>;
-+			};
-+		};
-+	};
-+
++static const struct watchdog_ops gxp_wdt_ops = {
++	.owner =	THIS_MODULE,
++	.start =	gxp_wdt_start,
++	.stop =		gxp_wdt_stop,
++	.ping =		gxp_wdt_ping,
++	.set_timeout =	gxp_wdt_set_timeout,
++	.get_timeleft =	gxp_wdt_get_timeleft,
++	.restart =	gxp_restart,
 +};
++
++static const struct watchdog_info gxp_wdt_info = {
++	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
++	.identity = "HPE GXP Watchdog timer",
++};
++
++static int gxp_wdt_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct gxp_wdt *drvdata;
++	int err;
++	u8 val;
++
++	drvdata = devm_kzalloc(dev, sizeof(struct gxp_wdt), GFP_KERNEL);
++	if (!drvdata)
++		return -ENOMEM;
++
++	drvdata->base = (void __iomem *)dev->platform_data;
++
++	drvdata->wdd.info = &gxp_wdt_info;
++	drvdata->wdd.ops = &gxp_wdt_ops;
++	drvdata->wdd.max_hw_heartbeat_ms = WDT_MAX_TIMEOUT_MS;
++	drvdata->wdd.parent = dev;
++	drvdata->wdd.timeout = WDT_DEFAULT_TIMEOUT;
++
++	watchdog_set_drvdata(&drvdata->wdd, drvdata);
++	watchdog_set_nowayout(&drvdata->wdd, WATCHDOG_NOWAYOUT);
++
++	val = readb(drvdata->base + GXP_WDT_CTRL_OFS);
++
++	if (val & MASK_WDGCS_ENABLE)
++		set_bit(WDOG_HW_RUNNING, &drvdata->wdd.status);
++
++	watchdog_set_restart_priority(&drvdata->wdd, 128);
++
++	watchdog_stop_on_reboot(&drvdata->wdd);
++	err = devm_watchdog_register_device(dev, &drvdata->wdd);
++	if (err) {
++		dev_err(dev, "Failed to register watchdog device");
++		return err;
++	}
++
++	dev_info(dev, "HPE GXP watchdog timer");
++
++	return 0;
++}
++
++static struct platform_driver gxp_wdt_driver = {
++	.probe = gxp_wdt_probe,
++	.driver = {
++		.name =	"gxp-wdt",
++	},
++};
++module_platform_driver(gxp_wdt_driver);
++
++MODULE_AUTHOR("Nick Hawkins <nick.hawkins@hpe.com>");
++MODULE_AUTHOR("Jean-Marie Verdun <verdun@hpe.com>");
++MODULE_DESCRIPTION("Driver for GXP watchdog timer");
 -- 
 2.17.1
 
