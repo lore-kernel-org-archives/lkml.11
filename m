@@ -2,100 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6648AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 370A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386290AbiDUPkp (ORCPT
+        id S1390244AbiDUPlI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35914 "EHLO
+        Thu, 21 Apr 2022 11:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351142AbiDUPkj (ORCPT
+        with ESMTP id S1349678AbiDUPlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:40:39 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEE3473B8;
-        Thu, 21 Apr 2022 08:37:49 -0700 (PDT)
+        Thu, 21 Apr 2022 11:41:07 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB7D47567;
+        Thu, 21 Apr 2022 08:38:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650555470; x=1682091470;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pvlInBpDXmfZpNmV6tJBOiPX6jvMjdSbFEbI3I82ysM=;
-  b=ZHt4rJnzAKon83HKxE7mOVau/Ve+faT8NpFeymbFdZSJYpKnOCmP8p7a
-   5Z/FebXJ6AQYsgZfLwh6Z25l0+9Fj2bdRfdgQt6w794ZXvHD9Chsp8N6e
-   YA8SH+eSzO1hKwGn5tOVz3HbvonV2LKjMUC9qtD7h94kyBYw/0mlfuL1n
-   sdy2weP5hTailY8/ALxdIAIBlhuzw06bb/Lr0o1Mzq3KLEJZbCSgUM8Pr
-   uSz4E8829FNPUd82XdotGCpyN6roZS0ioqyhPNORLcGlzoZscLpPnyL45
-   uKI6xBy21Wd0RDCExwwHtYTxO1rAdUB+HWW712HU4/aoZ+4Yl4xL0alLJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327297266"
+  t=1650555497; x=1682091497;
+  h=subject:from:to:cc:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=x3xS6cEt6lHXiNb+A1o9kWq7JklXoM+r+tP2gN5rJV4=;
+  b=Nfped+G9jtnauyMKN4Y3280vytBcN3IOLbF5Di6ZfGLfw1U/uHajWRJI
+   l4EaXaO1f1BNQirVHrQmcRPnxKXY4qLcjM1Cba8MkM5MtdD0iaYSsT+o9
+   nJaDq3ASlcK47+WWrm992j3TJ2D+5VN6hg3cjhEo+x/5quNI5Pksi7HRX
+   xv/fWnnHCK1jKry+ZTdQiX99xyVp2hQuU5BBI9RYgKiNvc2cIVPglSHci
+   LhWvZV8D8/X8iIF/VHX66UU18A9swzQLKtOwFooqprihu7kcg69WnyYM5
+   frLTs9vaR7G+SwKHT3T41E/dTQr26bWcGh9iefWIdsW7FjJExfke4y1gu
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263241291"
 X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="327297266"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:34:20 -0700
+   d="scan'208";a="263241291"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:33:51 -0700
 X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="533353357"
-Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.212.94.100]) ([10.212.94.100])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:34:20 -0700
-Message-ID: <f3261912-dc13-46ed-471f-046ba314365d@intel.com>
-Date:   Thu, 21 Apr 2022 08:34:19 -0700
+   d="scan'208";a="530353769"
+Received: from dwillia2-desk3.jf.intel.com (HELO dwillia2-desk3.amr.corp.intel.com) ([10.54.39.25])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:33:51 -0700
+Subject: [PATCH v3 8/8] nvdimm: Fix firmware activation deadlock scenarios
+From:   Dan Williams <dan.j.williams@intel.com>
+To:     linux-cxl@vger.kernel.org
+Cc:     peterz@infradead.org, vishal.l.verma@intel.com,
+        alison.schofield@intel.com, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 21 Apr 2022 08:33:51 -0700
+Message-ID: <165055523099.3745911.9091010720291846249.stgit@dwillia2-desk3.amr.corp.intel.com>
+In-Reply-To: <165055518776.3745911.9346998911322224736.stgit@dwillia2-desk3.amr.corp.intel.com>
+References: <165055518776.3745911.9346998911322224736.stgit@dwillia2-desk3.amr.corp.intel.com>
+User-Agent: StGit/0.18-3-g996c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] dmaengine: idxd: Fix the error handling path in
- idxd_cdev_register()
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        dmaengine@vger.kernel.org
-References: <1b5033dcc87b5f2a953c413f0306e883e6114542.1650521591.git.christophe.jaillet@wanadoo.fr>
-From:   Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <1b5033dcc87b5f2a953c413f0306e883e6114542.1650521591.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Lockdep reports the following deadlock scenarios for CXL root device
+power-management, device_prepare(), operations, and device_shutdown()
+operations for 'nd_region' devices:
 
-On 4/20/2022 11:13 PM, Christophe JAILLET wrote:
-> If a call to alloc_chrdev_region() fails, the already allocated resources
-> are leaking.
->
-> Add the needed error handling path to fix the leak.
->
-> Fixes: 42d279f9137a ("dmaengine: idxd: add char driver to expose submission portal to userland")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ Chain exists of:
+   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
 
-Acked-by: Dave Jiang <dave.jiang@intel.com>
+  Possible unsafe locking scenario:
 
-Thanks!
+        CPU0                    CPU1
+        ----                    ----
+   lock(system_transition_mutex);
+                                lock(&nvdimm_bus->reconfig_mutex);
+                                lock(system_transition_mutex);
+   lock(&nvdimm_region_key);
 
-> ---
->   drivers/dma/idxd/cdev.c | 8 +++++++-
->   1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
-> index b9b2b4a4124e..033df43db0ce 100644
-> --- a/drivers/dma/idxd/cdev.c
-> +++ b/drivers/dma/idxd/cdev.c
-> @@ -369,10 +369,16 @@ int idxd_cdev_register(void)
->   		rc = alloc_chrdev_region(&ictx[i].devt, 0, MINORMASK,
->   					 ictx[i].name);
->   		if (rc)
-> -			return rc;
-> +			goto err_free_chrdev_region;
->   	}
->   
->   	return 0;
-> +
-> +err_free_chrdev_region:
-> +	for (i--; i >= 0; i--)
-> +		unregister_chrdev_region(ictx[i].devt, MINORMASK);
-> +
-> +	return rc;
->   }
->   
->   void idxd_cdev_remove(void)
+--
+
+ Chain exists of:
+   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(&cxl_root_key);
+                                lock(acpi_scan_lock);
+                                lock(&cxl_root_key);
+   lock(&cxl_nvdimm_bridge_key);
+
+---
+
+These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
+which walks the entire system device topology taking device_lock() along
+the way. The nvdimm_bus_lock() is protecting against unregistration,
+multiple simultaneous ops callers, and preventing activate_show() from
+racing activate_store(). For the first 2, the lock is redundant.
+Unregistration already flushes all ops users, and sysfs already prevents
+multiple threads to be active in an ops handler at the same time. For
+the last userspace should already be waiting for its last
+activate_store() to complete, and does not need activate_show() to flush
+the write side, so this lock usage can be deleted in these attributes.
+
+Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+---
+ drivers/nvdimm/core.c |    4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
+index 144926b7451c..7c7f4a43fd4f 100644
+--- a/drivers/nvdimm/core.c
++++ b/drivers/nvdimm/core.c
+@@ -395,10 +395,8 @@ static ssize_t activate_show(struct device *dev,
+ 	if (!nd_desc->fw_ops)
+ 		return -EOPNOTSUPP;
+ 
+-	nvdimm_bus_lock(dev);
+ 	cap = nd_desc->fw_ops->capability(nd_desc);
+ 	state = nd_desc->fw_ops->activate_state(nd_desc);
+-	nvdimm_bus_unlock(dev);
+ 
+ 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
+ 		return -EOPNOTSUPP;
+@@ -443,7 +441,6 @@ static ssize_t activate_store(struct device *dev,
+ 	else
+ 		return -EINVAL;
+ 
+-	nvdimm_bus_lock(dev);
+ 	state = nd_desc->fw_ops->activate_state(nd_desc);
+ 
+ 	switch (state) {
+@@ -461,7 +458,6 @@ static ssize_t activate_store(struct device *dev,
+ 	default:
+ 		rc = -ENXIO;
+ 	}
+-	nvdimm_bus_unlock(dev);
+ 
+ 	if (rc == 0)
+ 		rc = len;
+
