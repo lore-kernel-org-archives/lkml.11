@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 767A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238700AbiDUV0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 17:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52516 "EHLO
+        id S1442062AbiDUV00 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 17:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442006AbiDUVZq (ORCPT
+        with ESMTP id S1441960AbiDUVZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 17:25:46 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9CC4EA14
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:22:55 -0700 (PDT)
+        Thu, 21 Apr 2022 17:25:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B2A4CD57
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:22:57 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650576173;
+        s=2020; t=1650576176;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=d25OS0lIHyT2YZUge8HFuc5eZjY2wCVUgqFbMMgN8b4=;
-        b=07llAGxvfKwKiKefcAhA0pGW8UwQ92/VEHY2sbMZ+B+tkLikmQRJnZAnC9gLj5wCwDqLth
-        xNSO3vjXZfla+4dAaVBcOuvuT5nBqrscks0Z44yEBhJX07K8Yd5sLOBxejrCz+c3iApgut
-        v+PyUHtrpD+FDhQej2xuj4udj1rqQXCkjUXSDzlkVZ1iFeWdeSDDOlOHy87/scRoCt2W69
-        s/S0Hf80OvdNNokfVGhfoJlS7PJ/v5AEmX0LqfoNPX2WbCD2aW1e9HVUInwXlP72+B1xxP
-        ymzfWd4XvZZQSTK6tOb7B1uLigYmW8J64PWahqsohfluJ8qZ2S1HAg1+nAbujw==
+        bh=HSgktthrWIX4vLAlRcs+TnI2EMXfL1Zd8m//xuPJUko=;
+        b=uJuzLKxvgvywTuAO8zGNrqwIwOFf6JNMInP+1XHUVJuIQUoCW/jwGel8FVuUBJDYIsjIyU
+        kqQyABsDi29yBCcsx5ySxw5/TgWfTcpoSmNs5Z/kosVt0EIgqvVWw9RJm19uJTKYin0ry7
+        GGB40uXsbVPAsqXvsWtT06T6R1ljfizFjzT/iDyLNhzZR5r9O0Teq98E46EzF7wFrXarnm
+        T7MjrBpxCboX2w2iNhZCEWGlB3S3aSKchB5b2jGo3Zhk99X7D13ITj9beeRuSlZCXe9+DN
+        kigYV+IGOWMdbR5l0QyYVx6MC6nx8G+a/JHcjJkAIFDOwiRFXqqAs1kUaf1PFw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650576173;
+        s=2020e; t=1650576176;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=d25OS0lIHyT2YZUge8HFuc5eZjY2wCVUgqFbMMgN8b4=;
-        b=p96CMTvvDbuH1JK5hxJECsSAeOBW2zHnk9BiDB2eSlWcxnTnuD9yDmscgv2HJp79jZhVIg
-        5LQf/OGzf9V5DFBA==
+        bh=HSgktthrWIX4vLAlRcs+TnI2EMXfL1Zd8m//xuPJUko=;
+        b=bHvIb/D4319navmhyFONFfqLrGE5zFDemQSVEV4r1IuEpboMaIFOTP8buYLxYNw49Vy8YL
+        +Uravc/K/8V2mtDw==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH printk v4 04/15] printk: wake up all waiters
-Date:   Thu, 21 Apr 2022 23:28:39 +0206
-Message-Id: <20220421212250.565456-5-john.ogness@linutronix.de>
+Subject: [PATCH printk v4 11/15] printk: add pr_flush()
+Date:   Thu, 21 Apr 2022 23:28:46 +0206
+Message-Id: <20220421212250.565456-12-john.ogness@linutronix.de>
 In-Reply-To: <20220421212250.565456-1-john.ogness@linutronix.de>
 References: <20220421212250.565456-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -53,29 +54,188 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There can be multiple tasks waiting for new records. They should
-all be woken. Use wake_up_interruptible_all() instead of
-wake_up_interruptible().
+Provide a might-sleep function to allow waiting for console printers
+to catch up to the latest logged message.
+
+Use pr_flush() whenever it is desirable to get buffered messages
+printed before continuing: suspend_console(), resume_console(),
+console_stop(), console_start(), console_unblank().
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/printk/printk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/printk.h |  7 ++++
+ kernel/printk/printk.c | 83 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 90 insertions(+)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index f817dfb4852d..e23357002648 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3326,7 +3326,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
- 	}
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index b70a42f94031..091fba7283e1 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -170,6 +170,8 @@ extern void __printk_safe_exit(void);
+ #define printk_deferred_enter __printk_safe_enter
+ #define printk_deferred_exit __printk_safe_exit
  
- 	if (pending & PRINTK_PENDING_WAKEUP)
--		wake_up_interruptible(&log_wait);
-+		wake_up_interruptible_all(&log_wait);
++extern bool pr_flush(int timeout_ms, bool reset_on_progress);
++
+ /*
+  * Please don't use printk_ratelimit(), because it shares ratelimiting state
+  * with all other unrelated printk_ratelimit() callsites.  Instead use
+@@ -220,6 +222,11 @@ static inline void printk_deferred_exit(void)
+ {
  }
  
- static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
++static inline bool pr_flush(int timeout_ms, bool reset_on_progress)
++{
++	return true;
++}
++
+ static inline int printk_ratelimit(void)
+ {
+ 	return 0;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index dec5355c5b5b..a06999d55278 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2296,6 +2296,8 @@ asmlinkage __visible int _printk(const char *fmt, ...)
+ }
+ EXPORT_SYMBOL(_printk);
+ 
++static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress);
++
+ #else /* CONFIG_PRINTK */
+ 
+ #define CONSOLE_LOG_MAX		0
+@@ -2328,6 +2330,7 @@ static void call_console_driver(struct console *con, const char *text, size_t le
+ {
+ }
+ static bool suppress_message_printing(int level) { return false; }
++static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress) { return true; }
+ 
+ #endif /* CONFIG_PRINTK */
+ 
+@@ -2515,6 +2518,7 @@ void suspend_console(void)
+ 	if (!console_suspend_enabled)
+ 		return;
+ 	pr_info("Suspending console(s) (use no_console_suspend to debug)\n");
++	pr_flush(1000, true);
+ 	console_lock();
+ 	console_suspended = 1;
+ 	up_console_sem();
+@@ -2527,6 +2531,7 @@ void resume_console(void)
+ 	down_console_sem();
+ 	console_suspended = 0;
+ 	console_unlock();
++	pr_flush(1000, true);
+ }
+ 
+ /**
+@@ -2912,6 +2917,9 @@ void console_unblank(void)
+ 		if ((c->flags & CON_ENABLED) && c->unblank)
+ 			c->unblank();
+ 	console_unlock();
++
++	if (!oops_in_progress)
++		pr_flush(1000, true);
+ }
+ 
+ /**
+@@ -2970,6 +2978,7 @@ struct tty_driver *console_device(int *index)
+  */
+ void console_stop(struct console *console)
+ {
++	__pr_flush(console, 1000, true);
+ 	console_lock();
+ 	console->flags &= ~CON_ENABLED;
+ 	console_unlock();
+@@ -2981,6 +2990,7 @@ void console_start(struct console *console)
+ 	console_lock();
+ 	console->flags |= CON_ENABLED;
+ 	console_unlock();
++	__pr_flush(console, 1000, true);
+ }
+ EXPORT_SYMBOL(console_start);
+ 
+@@ -3352,6 +3362,79 @@ static int __init printk_late_init(void)
+ late_initcall(printk_late_init);
+ 
+ #if defined CONFIG_PRINTK
++/* If @con is specified, only wait for that console. Otherwise wait for all. */
++static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress)
++{
++	int remaining = timeout_ms;
++	struct console *c;
++	u64 last_diff = 0;
++	u64 printk_seq;
++	u64 diff;
++	u64 seq;
++
++	might_sleep();
++
++	seq = prb_next_seq(prb);
++
++	for (;;) {
++		diff = 0;
++
++		console_lock();
++		for_each_console(c) {
++			if (con && con != c)
++				continue;
++			if (!console_is_usable(c))
++				continue;
++			printk_seq = c->seq;
++			if (printk_seq < seq)
++				diff += seq - printk_seq;
++		}
++		console_unlock();
++
++		if (diff != last_diff && reset_on_progress)
++			remaining = timeout_ms;
++
++		if (diff == 0 || remaining == 0)
++			break;
++
++		if (remaining < 0) {
++			/* no timeout limit */
++			msleep(100);
++		} else if (remaining < 100) {
++			msleep(remaining);
++			remaining = 0;
++		} else {
++			msleep(100);
++			remaining -= 100;
++		}
++
++		last_diff = diff;
++	}
++
++	return (diff == 0);
++}
++
++/**
++ * pr_flush() - Wait for printing threads to catch up.
++ *
++ * @timeout_ms:        The maximum time (in ms) to wait.
++ * @reset_on_progress: Reset the timeout if forward progress is seen.
++ *
++ * A value of 0 for @timeout_ms means no waiting will occur. A value of -1
++ * represents infinite waiting.
++ *
++ * If @reset_on_progress is true, the timeout will be reset whenever any
++ * printer has been seen to make some forward progress.
++ *
++ * Context: Process context. May sleep while acquiring console lock.
++ * Return: true if all enabled printers are caught up.
++ */
++bool pr_flush(int timeout_ms, bool reset_on_progress)
++{
++	return __pr_flush(NULL, timeout_ms, reset_on_progress);
++}
++EXPORT_SYMBOL(pr_flush);
++
+ /*
+  * Delayed printk version, for scheduler-internal messages:
+  */
 -- 
 2.30.2
 
