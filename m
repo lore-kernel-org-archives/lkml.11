@@ -2,77 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344812AbiDUUnA (ORCPT
+        id S1384219AbiDUUpF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
+        Thu, 21 Apr 2022 16:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392532AbiDUUmq (ORCPT
+        with ESMTP id S245040AbiDUUpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 16:42:46 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7524A2710
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:39:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=0psPi+tRkYnMiK9FJemFMmEK3dwTlFRjOVKnBSUnjHg=; b=ZPL1dAy9LTmrQCQffc+qSQUV/7
-        xVewuqER+jKOI2WazzXW4DR73RLDvPeumFDdkpRBe7eUcQjDZqUK2Z/xupv2uooBLXxt08XyGgd/u
-        SnptgiKp/+OFCADTlzg8ODuPi21o6CXbYd5si83JG4qoVIVixpOK/a56nnP/iTxKlvWwhtauS2yW7
-        eMlLZLh6+X1Wtp3XQco5+BnekDqbYMjrdIiOPI5YY0fp1p3LW3N00vMlMXlVoVrUiQ8MxbfTS1+xm
-        kVL8WPSk25edqzgHJ6V1HA5hV1MWMbV0H1xbEZtjKBEvGnk3MsV4+2pmGl6E/dETj2wJt4j5LNHFK
-        HHTcivfA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhdac-005QtO-Id; Thu, 21 Apr 2022 20:39:46 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 55B539861C1; Thu, 21 Apr 2022 22:39:44 +0200 (CEST)
-Date:   Thu, 21 Apr 2022 22:39:44 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        Miroslav Benes <mbenes@suse.cz>, Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v3] scripts: Create objdump-func helper script
-Message-ID: <20220421203944.GQ2731@worktop.programming.kicks-ass.net>
-References: <4d3ab1f17230f0188698cfbc7ba08696fe1abfe9.1650474927.git.jpoimboe@redhat.com>
- <20220421085244.GL2731@worktop.programming.kicks-ass.net>
- <20220421173759.ijvytapqhoqpt22n@treble>
+        Thu, 21 Apr 2022 16:45:02 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C14A4D268
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:42:11 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id y19-20020a056e02119300b002c2d3ef05bfso3250847ili.18
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:42:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=QTaJFCvihcUmHDlw/ICH6QwXqyikackCR6G4w+KbOPs=;
+        b=qeSJ+yLvxVzb4Pp8DxNyRPgldUHn2ovEVZf/46sZmQ83JhQ/jhDRLUlKnZW/aa1td+
+         UY0yoyCGPl6ogs8QIXI3wmGiRb6kSRiS2yVw/AxZDXMcs1owvww/iWhDpC0aiW3PcCM5
+         +w/knHQuZqnHYk/OwqV0HOlyxCe3xTkeBKWNCytAzzBDY4bzEeqMhnKv/gUztyXlTBCc
+         ijTJnnJmyPxENb9ZsIZqFqXh+vCJQbh43qjVuU9qjVYHbpluv47xvkFg2xIoWTT4DvGN
+         u0EKKYJj9/jzY7fY9rDtC+YAVvlacNGJBo3mT7x3qEXIOc3j0m4LbP/8Adm++TsFmkSe
+         xmsw==
+X-Gm-Message-State: AOAM5315ZMMvcQ9hli0y0sASIuuCiXCqH7/4QdIUzyzT9c3LQzvSAxTQ
+        lz6ISLzNSebD7nOtuqjvoEDMcr96okUfNVVEbrFA+3/hK6pp
+X-Google-Smtp-Source: ABdhPJxeuoyMPdfv0cavfLIcjxEa18/sMT287zLocnJIrQ8M+pc3e5eXNK/A7/Agt+HpAbdAM8QtmHFfrvF1ro0LqjWafQzEoQNJ
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421173759.ijvytapqhoqpt22n@treble>
+X-Received: by 2002:a05:6e02:1bc1:b0:2cd:5db6:d9e8 with SMTP id
+ x1-20020a056e021bc100b002cd5db6d9e8mr689285ilv.276.1650573730916; Thu, 21 Apr
+ 2022 13:42:10 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 13:42:10 -0700
+In-Reply-To: <83061bda-5a91-6123-a006-aaeb5458d5d7@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e8321c05dd30241a@google.com>
+Subject: Re: [syzbot] general protection fault in ntfs_update_mftmirr
+From:   syzbot <syzbot+c95173762127ad76a824@syzkaller.appspotmail.com>
+To:     almaz.alexandrovich@paragon-software.com,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        nathan@kernel.org, ndesaulniers@google.com, ntfs3@lists.linux.dev,
+        paskripkin@gmail.com, syzkaller-bugs@googlegroups.com,
+        trix@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 10:37:59AM -0700, Josh Poimboeuf wrote:
-> On Thu, Apr 21, 2022 at 10:52:44AM +0200, Peter Zijlstra wrote:
-> > On Wed, Apr 20, 2022 at 10:16:36AM -0700, Josh Poimboeuf wrote:
-> > 
-> > > +${OBJDUMP} -wdr $OBJ | gawk -M -v f=$FUNC '/^$/ { P=0; } $0 ~ "<" f ">:" { P=1; O=strtonum("0x" $1); } { if (P) { o=strtonum("0x" $1); printf("%04x ", o-O); print $0; } }'
-> > 
-> > Two noteworthy changes:
-> > 
-> >  - $@ went missing, I've occasionally abused that to add extra argument
-> >    to objdump.
-> 
-> Just to clarify, you'd add the extra arg at the end like this, right?
-> 
->   objdump-func <file> <func> -Mintel
+Hello,
 
-Yeah, highly awkward, but it worked ;-)
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-> >  - you removed the glob after FUNC, I had that so that .cold and
-> >    .constprop etc.. variants of the function also show up.
-> 
-> Sure, I'll match ".whatever" if there's a period, but not other
-> substring matches, e.g. "put_page" shouldn't match "put_pages_list".
-> 
->   {OBJDUMP} -wdr $@ $OBJ | gawk -M -v f=$FUNC '/^$/ { P=0; } $0 ~ "<" f "(\\..*)?>:" { P=1; O=strtonum("0x" $1); } { if (P) { o=strtonum("0x" $1); printf("%04x ", o-O); print $0; } }'
+Reported-and-tested-by: syzbot+c95173762127ad76a824@syzkaller.appspotmail.com
 
-Ah, good thinking requiring that '.' in there. I just ignored the extra
-gunk on the very rare occasion I got it.
+Tested on:
+
+commit:         b2534357 Merge tag 'xtensa-20220416' of https://github..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4cdc9619f45633df
+dashboard link: https://syzkaller.appspot.com/bug?extid=c95173762127ad76a824
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1778ee1cf00000
+
+Note: testing is done by a robot and is best-effort only.
