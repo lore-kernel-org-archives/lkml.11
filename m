@@ -2,304 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B17C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386030AbiDUHpf (ORCPT
+        id S1386049AbiDUHpn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
+        Thu, 21 Apr 2022 03:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377539AbiDUHpP (ORCPT
+        with ESMTP id S1386013AbiDUHpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:45:15 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D171A3AF;
-        Thu, 21 Apr 2022 00:42:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=Wxo80Y3piPxU/ni1/aWITQ3M0ga5tlrrjhx+fd5z4n4=; b=m0jWbWz+WLGshfnciLa07mPXSx
-        astEAzUrwtvIHSG3DK6SD/bIKslVTIypezYztDoRO8nab2JQFmZHI0+XaJqWoXeYYiTM3cTzxk732
-        8mP/hzRmqdmuTVnhy3Q9vZPFcPV1o4Qmre1Qp7FBeNt0E4Ce/P4HzD6BicBpFQCy8XGmg1XtA2B5m
-        RJHqFPsHVzvG9Y5SfY0rQAw5iu4mnN1X6luyVgfExGUT8vXO7R0+VhCsto6Wsk1/+FjRbpuV1du2P
-        QyER2OWgFgZGWT9CmmZzImNFTDYYnFsYmY+WLji70Iw+uUjWFtHwS8X3dZOjkMsM60Ef2Qc6nnoD9
-        922cSZqA==;
-Received: from [2001:4bb8:191:364b:7b50:153f:5622:82f7] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhRS5-00C7RT-5E; Thu, 21 Apr 2022 07:42:09 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Christoph Hellwig <hch@infradead.org>
-Subject: [PATCH 1/7] ARM: sa1100/assabet: move dmabounce hack to ohci driver
-Date:   Thu, 21 Apr 2022 09:41:58 +0200
-Message-Id: <20220421074204.1284072-2-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220421074204.1284072-1-hch@lst.de>
-References: <20220421074204.1284072-1-hch@lst.de>
+        Thu, 21 Apr 2022 03:45:13 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2046.outbound.protection.outlook.com [40.107.212.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7AC1B7B2;
+        Thu, 21 Apr 2022 00:42:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cGVz947VV0eTNafHeEKWGWRl5mE1VqAiXoh0sRruUWXVzuffebCmKphZH8IqNuhvVE6eJF15hL8ziKSmNdMQI+/IA2xVkuDduzKoESZoWrms1qfWKPFDZZon3CFBvGaJUHyQYZGq8lzq+wMe9vhEJj6ui2ciUuKQwmMHFtMiSVJtRl4L1ut1zmgpxlluC3hPOFPbcpTEUCWGPC96KSYZtlkEZ4/Kjznv9qqNiJNEDbiS2s+ULZgtUJAuhUxMaFkISDWL5mwsklJP0KyZpvietISvg4zKSA6Bh5rgW0O/15Lf69tMVg4wBE0EHkii7/n2poxaRrOQhYcqDmRgaR6Ipw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jKpkjbBcLxSzCls+II2vecD2lNXJJLEGCXzpfAk5x9Y=;
+ b=YjfGcQRbHZdi6uRDdMibfpy1RuKwLVs25CoBXUKsIf+32wa0PjyFakjwJZ93FO8EaRFr6aFNyKsEse0cK8bryHcPlCVkB8tRP/loLSAXZwNnO8tGH7V58u/iduscXd/vnMgqZp2GWJRPaImThdf4ILl3dnTlpp1otRG2J+M8ZNhPPdA2Y6D8mepL6X5DxytAoHae/m65NtEHzJNK6auB7fs/CoRk0RiboNnm+pbri6uiia5cuFh7uKGupTvObewQTMKRV8Z4Y4AQ1Jwxr/iXpaijDlvHIo9V0R0UPVsbGqXP5zZOVxYDcvnqjeN1eYDyq/5Fl4A7tPdelxvnPric0Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jKpkjbBcLxSzCls+II2vecD2lNXJJLEGCXzpfAk5x9Y=;
+ b=iKUl8a7x6DL5jjl0gKFW2VW5RlLgnZU+dOw7ir9UmhBCP8EiBtx7P4hOgt6QAWKPnWzC+B97CEaU6xd5Iiw6qaKdntK6z229p882dd+6t0nHoWK+mvAuMfgHDHje7poMTnNASGeud20+/k8LF2dw5bDOJMfuEJTy96pUCmWfhkc=
+Received: from BN8PR03CA0015.namprd03.prod.outlook.com (2603:10b6:408:94::28)
+ by DM6PR12MB3434.namprd12.prod.outlook.com (2603:10b6:5:3b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.25; Thu, 21 Apr
+ 2022 07:42:22 +0000
+Received: from BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:94:cafe::eb) by BN8PR03CA0015.outlook.office365.com
+ (2603:10b6:408:94::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
+ Transport; Thu, 21 Apr 2022 07:42:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT034.mail.protection.outlook.com (10.13.176.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Thu, 21 Apr 2022 07:42:21 +0000
+Received: from jasmine-meng.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Apr
+ 2022 02:42:17 -0500
+From:   Meng Li <li.meng@amd.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Huang Rui <ray.huang@amd.com>, <linux-pm@vger.kernel.org>
+CC:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Nathan Fontenot <nathan.fontenot@amd.com>,
+        Deepak Sharma <deepak.sharma@amd.com>,
+        "Alex Deucher" <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Jinzhou Su <Jinzhou.Su@amd.com>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        Xiaojian Du <Xiaojian.Du@amd.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Borislav Petkov <bp@alien8.de>, <linux-kernel@vger.kernel.org>,
+        Meng Li <li.meng@amd.com>
+Subject: [PATCH V3 2/3] selftests: cpufreq: Add wapper script for test AMD P-State
+Date:   Thu, 21 Apr 2022 15:41:51 +0800
+Message-ID: <20220421074152.599419-3-li.meng@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220421074152.599419-1-li.meng@amd.com>
+References: <20220421074152.599419-1-li.meng@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 623bdc17-d01c-4eef-9cce-08da236a786d
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3434:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3434E299139602A4C3BF27DDF7F49@DM6PR12MB3434.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jMuLCjgjbw5ZTeauJ7gC3JdBjrarKzmfE3QMReeUeWGW2ZKVj8+EtXY/pDNgmcCtgZNmee5VYMDQfstaLSt8kjaYd9ibEiQ/oy236CNfWJVaMHeppXFPPl5EGQNLemu5fsKLcrmnxk8iltvYmVa45P0Mbg2bvEO0CYKX+PnQ9bnOyqKatSMP3+USOvyoLvJLJBIJ++CVBTdn07ZbIsx4601XEywiLarPIdrSk8V0Mekux01Cq20V3UBbHsMil7EL59HFo9uM+ofqounqKPox/RAYasMkbkhbo8a7/DdblzDipoDf+S8/Vq+PDH1n+avNQlyPNyGKXBSxkHUyNwT9q7nqp4powvrJc3lvYL1I5XxFhpfHqIZvgvcfINGoKQHfo4o/be/uPIb2zEvlXIKtEMgjFlprbTYEQZwZWq2JSWfAWyqpQbqf+ul8DFTC4O300IIdWqXYlFiiRNM3JYNA9Kw7xLklzWi62ZQeE2VtZg/l9HxYSPtwftnKKZRg3jApMIl2j0X2gH20a6Ag4wV91sq2iMOqUq1gPTCJdX1eKlTbovA54dYReB8CBLLcSXL4gexVfhRy4HVRpF6rACNEqoetU7KCm/yjVHvd5cAYnilFQaaQ/lYU26rSKPx064zYBbUUfw1YEQ14tadzdOHEf/VDzyniK9mB6jC8ek4tolWZ0D4bIThCutABJz/aNKNXBowlwR5xRUv3OKgAPc6L1Q==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(36860700001)(1076003)(110136005)(426003)(54906003)(356005)(70586007)(81166007)(70206006)(2616005)(47076005)(4326008)(8676002)(82310400005)(336012)(40460700003)(26005)(316002)(83380400001)(8936002)(7696005)(508600001)(86362001)(5660300002)(186003)(2906002)(36756003)(6666004)(16526019)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 07:42:21.9676
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 623bdc17-d01c-4eef-9cce-08da236a786d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3434
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Adds a wrapper shell script for the amd_pstate_testmod module.
 
-The sa1111 platform is one of the two remaining users of the old Arm
-specific "dmabounce" code, which is an earlier implementation of the
-generic swiotlb.
-
-Linus Walleij submitted a patch that removes dmabounce support from
-the ixp4xx, and I had a look at the other user, which is the sa1111
-companion chip.
-
-Looking at how dmabounce is used, I could narrow it down to one driver
-one three machines:
-
- - dmabounce is only initialized on assabet/neponset, jornada720 and
-   badge4, which are the platforms that have an sa1111 and support
-   DMA on it.
-
- - All three of these suffer from "erratum #7" that requires only
-   doing DMA to half the memory sections based on one of the address
-   lines, in addition, the neponset also can't DMA to the RAM that
-   is connected to sa1111 itself.
-
- - the pxa lubbock machine also has sa1111, but does not support DMA
-   on it and does not set dmabounce.
-
- - only the OHCI and audio devices on sa1111 support DMA, but as
-   there is no audio driver for this hardware, only OHCI remains.
-
-In the OHCI code, I noticed that two other platforms already have
-a local bounce buffer support in the form of the "local_mem"
-allocator. Specifically, TMIO and SM501 use this on a few other ARM
-boards with 16KB or 128KB of local SRAM that can be accessed from the
-OHCI and from the CPU.
-
-While this is not the same problem as on sa1111, I could not find a
-reason why we can't re-use the existing implementation but replace the
-physical SRAM address mapping with a locally allocated DMA buffer.
-
-There are two main downsides:
-
- - rather than using a dynamically sized pool, this buffer needs
-   to be allocated at probe time using a fixed size. Without
-   having any idea of what it should be, I picked a size of
-   64KB, which is between what the other two OHCI front-ends use
-   in their SRAM. If anyone has a better idea what that size
-   is reasonable, this can be trivially changed.
-
- - Previously, only USB transfers to unaddressable memory needed
-   to go through the bounce buffer, now all of them do, which may
-   impact runtime performance for USB endpoints that do a lot of
-   transfers.
-
-On the upside, the local_mem support uses write-combining buffers,
-which should be a bit faster for transfers to the device compared to
-normal uncached coherent memory as used in dmabounce.
-
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc: linux-usb@vger.kernel.org
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Meng Li <li.meng@amd.com>
 ---
- arch/arm/common/Kconfig        |  2 +-
- arch/arm/common/sa1111.c       | 64 ----------------------------------
- drivers/usb/core/hcd.c         | 17 +++++++--
- drivers/usb/host/ohci-sa1111.c | 25 +++++++++++++
- 4 files changed, 40 insertions(+), 68 deletions(-)
+ tools/testing/selftests/cpufreq/amd_pstate_testmod.sh | 4 ++++
+ tools/testing/selftests/cpufreq/config                | 1 +
+ tools/testing/selftests/cpufreq/main.sh               | 1 +
+ 3 files changed, 6 insertions(+)
+ create mode 100755 tools/testing/selftests/cpufreq/amd_pstate_testmod.sh
 
-diff --git a/arch/arm/common/Kconfig b/arch/arm/common/Kconfig
-index c8e198631d418..bc158fd227e12 100644
---- a/arch/arm/common/Kconfig
-+++ b/arch/arm/common/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- config SA1111
- 	bool
--	select DMABOUNCE if !ARCH_PXA
-+	select ZONE_DMA if ARCH_SA1100
+diff --git a/tools/testing/selftests/cpufreq/amd_pstate_testmod.sh b/tools/testing/selftests/cpufreq/amd_pstate_testmod.sh
+new file mode 100755
+index 000000000000..5398ad568885
+--- /dev/null
++++ b/tools/testing/selftests/cpufreq/amd_pstate_testmod.sh
+@@ -0,0 +1,4 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++# Tests the AMD P-State unit test infrastructure using amd_pstate_testmod kernel module.
++$(dirname $0)/../kselftest/module.sh "amd_pstate_testmod" amd_pstate_testmod
+diff --git a/tools/testing/selftests/cpufreq/config b/tools/testing/selftests/cpufreq/config
+index 75e900793e8a..374a8adbb34c 100644
+--- a/tools/testing/selftests/cpufreq/config
++++ b/tools/testing/selftests/cpufreq/config
+@@ -13,3 +13,4 @@ CONFIG_DEBUG_LOCK_ALLOC=y
+ CONFIG_PROVE_LOCKING=y
+ CONFIG_LOCKDEP=y
+ CONFIG_DEBUG_ATOMIC_SLEEP=y
++CONFIG_AMD_PSTATE_TESTMOD=m
+diff --git a/tools/testing/selftests/cpufreq/main.sh b/tools/testing/selftests/cpufreq/main.sh
+index 60ce18ed0666..d3602fa11392 100755
+--- a/tools/testing/selftests/cpufreq/main.sh
++++ b/tools/testing/selftests/cpufreq/main.sh
+@@ -6,6 +6,7 @@ source cpufreq.sh
+ source governor.sh
+ source module.sh
+ source special-tests.sh
++source amd_pstate_testmod.sh
  
- config DMABOUNCE
- 	bool
-diff --git a/arch/arm/common/sa1111.c b/arch/arm/common/sa1111.c
-index 5367f03beb468..eaf2b527b0673 100644
---- a/arch/arm/common/sa1111.c
-+++ b/arch/arm/common/sa1111.c
-@@ -1386,70 +1386,9 @@ void sa1111_driver_unregister(struct sa1111_driver *driver)
- }
- EXPORT_SYMBOL(sa1111_driver_unregister);
- 
--#ifdef CONFIG_DMABOUNCE
--/*
-- * According to the "Intel StrongARM SA-1111 Microprocessor Companion
-- * Chip Specification Update" (June 2000), erratum #7, there is a
-- * significant bug in the SA1111 SDRAM shared memory controller.  If
-- * an access to a region of memory above 1MB relative to the bank base,
-- * it is important that address bit 10 _NOT_ be asserted. Depending
-- * on the configuration of the RAM, bit 10 may correspond to one
-- * of several different (processor-relative) address bits.
-- *
-- * This routine only identifies whether or not a given DMA address
-- * is susceptible to the bug.
-- *
-- * This should only get called for sa1111_device types due to the
-- * way we configure our device dma_masks.
-- */
--static int sa1111_needs_bounce(struct device *dev, dma_addr_t addr, size_t size)
--{
--	/*
--	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
--	 * User's Guide" mentions that jumpers R51 and R52 control the
--	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
--	 * SDRAM bank 1 on Neponset). The default configuration selects
--	 * Assabet, so any address in bank 1 is necessarily invalid.
--	 */
--	return (machine_is_assabet() || machine_is_pfs168()) &&
--		(addr >= 0xc8000000 || (addr + size) >= 0xc8000000);
--}
--
--static int sa1111_notifier_call(struct notifier_block *n, unsigned long action,
--	void *data)
--{
--	struct sa1111_dev *dev = to_sa1111_device(data);
--
--	switch (action) {
--	case BUS_NOTIFY_ADD_DEVICE:
--		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL) {
--			int ret = dmabounce_register_dev(&dev->dev, 1024, 4096,
--					sa1111_needs_bounce);
--			if (ret)
--				dev_err(&dev->dev, "failed to register with dmabounce: %d\n", ret);
--		}
--		break;
--
--	case BUS_NOTIFY_DEL_DEVICE:
--		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL)
--			dmabounce_unregister_dev(&dev->dev);
--		break;
--	}
--	return NOTIFY_OK;
--}
--
--static struct notifier_block sa1111_bus_notifier = {
--	.notifier_call = sa1111_notifier_call,
--};
--#endif
--
- static int __init sa1111_init(void)
- {
- 	int ret = bus_register(&sa1111_bus_type);
--#ifdef CONFIG_DMABOUNCE
--	if (ret == 0)
--		bus_register_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
--#endif
- 	if (ret == 0)
- 		platform_driver_register(&sa1111_device_driver);
- 	return ret;
-@@ -1458,9 +1397,6 @@ static int __init sa1111_init(void)
- static void __exit sa1111_exit(void)
- {
- 	platform_driver_unregister(&sa1111_device_driver);
--#ifdef CONFIG_DMABOUNCE
--	bus_unregister_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
--#endif
- 	bus_unregister(&sa1111_bus_type);
- }
- 
-diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-index d9712c2602afe..3893be6303522 100644
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -1251,7 +1251,8 @@ void usb_hcd_unlink_urb_from_ep(struct usb_hcd *hcd, struct urb *urb)
- EXPORT_SYMBOL_GPL(usb_hcd_unlink_urb_from_ep);
- 
- /*
-- * Some usb host controllers can only perform dma using a small SRAM area.
-+ * Some usb host controllers can only perform dma using a small SRAM area,
-+ * or have restrictions on addressable DRAM.
-  * The usb core itself is however optimized for host controllers that can dma
-  * using regular system memory - like pci devices doing bus mastering.
-  *
-@@ -3100,8 +3101,18 @@ int usb_hcd_setup_local_mem(struct usb_hcd *hcd, phys_addr_t phys_addr,
- 	if (IS_ERR(hcd->localmem_pool))
- 		return PTR_ERR(hcd->localmem_pool);
- 
--	local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
--				  size, MEMREMAP_WC);
-+	/*
-+	 * if a physical SRAM address was passed, map it, otherwise
-+	 * allocate system memory as a buffer.
-+	 */
-+	if (phys_addr)
-+		local_mem = devm_memremap(hcd->self.sysdev, phys_addr,
-+					  size, MEMREMAP_WC);
-+	else
-+		local_mem = dmam_alloc_attrs(hcd->self.sysdev, size, &dma,
-+					     GFP_KERNEL,
-+					     DMA_ATTR_WRITE_COMBINE);
-+
- 	if (IS_ERR(local_mem))
- 		return PTR_ERR(local_mem);
- 
-diff --git a/drivers/usb/host/ohci-sa1111.c b/drivers/usb/host/ohci-sa1111.c
-index feca826d3f6a8..75c2b28b33794 100644
---- a/drivers/usb/host/ohci-sa1111.c
-+++ b/drivers/usb/host/ohci-sa1111.c
-@@ -203,6 +203,31 @@ static int ohci_hcd_sa1111_probe(struct sa1111_dev *dev)
- 		goto err1;
- 	}
- 
-+	/*
-+	 * According to the "Intel StrongARM SA-1111 Microprocessor Companion
-+	 * Chip Specification Update" (June 2000), erratum #7, there is a
-+	 * significant bug in the SA1111 SDRAM shared memory controller.  If
-+	 * an access to a region of memory above 1MB relative to the bank base,
-+	 * it is important that address bit 10 _NOT_ be asserted. Depending
-+	 * on the configuration of the RAM, bit 10 may correspond to one
-+	 * of several different (processor-relative) address bits.
-+	 *
-+	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
-+	 * User's Guide" mentions that jumpers R51 and R52 control the
-+	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
-+	 * SDRAM bank 1 on Neponset). The default configuration selects
-+	 * Assabet, so any address in bank 1 is necessarily invalid.
-+	 *
-+	 * As a workaround, use a bounce buffer in addressable memory
-+	 * as local_mem, relying on ZONE_DMA to provide an area that
-+	 * fits within the above constraints.
-+	 *
-+	 * SZ_64K is an estimate for what size this might need.
-+	 */
-+	ret = usb_hcd_setup_local_mem(hcd, 0, 0, SZ_64K);
-+	if (ret)
-+		goto err1;
-+
- 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
- 		dev_dbg(&dev->dev, "request_mem_region failed\n");
- 		ret = -EBUSY;
+ FUNC=basic	# do basic tests by default
+ OUTFILE=cpufreq_selftest
 -- 
-2.30.2
+2.25.1
 
