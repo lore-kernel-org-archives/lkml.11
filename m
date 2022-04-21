@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9228CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D26AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390103AbiDUPe3 (ORCPT
+        id S1388250AbiDUPf1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        Thu, 21 Apr 2022 11:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390157AbiDUPcb (ORCPT
+        with ESMTP id S229985AbiDUPfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:32:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2459443FB;
-        Thu, 21 Apr 2022 08:29:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 518FAB826C3;
-        Thu, 21 Apr 2022 15:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D584C385A1;
-        Thu, 21 Apr 2022 15:29:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650554977;
-        bh=EKJGYb/V8GuIQV2zCWM7O0DO+UDppn4OJfYvUz7po+4=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=KBNkMN0czT2PfINytqkWxw1iGN4gSdEllXA54JqEFZuLV9p9bixBRSxFeZKAU9/0s
-         7BPtvbembm1+MwxHSY0i4mtQ5XPeZ0WRnQD38MTtlsrQCFPxPHuZE+AIz7jnHaG8f8
-         0FP9oiLMkEk3tFOFZBrJ2XzSi86RFOCp9KzTYcwj8ozU0LDgvNRbYPG37sctnCBvRs
-         +kXi5SWfTAEmJ+q6KKcefT+QlZEEl8HsxdaknJpbDBAUojHtkGtOZL4Y/o9eHxqqaU
-         POI5VH07vxnQHLGMsfaPBIKlnmrAPnMgkDxdJLxrVHtViSsGnXnq5waTbQnfV4qDB1
-         YnS1BncQVESGg==
-From:   Mark Brown <broonie@kernel.org>
-To:     p.yadav@ti.com
-Cc:     tudor.ambarus@microchip.com, linux-spi@vger.kernel.org,
-        tkuw584924@gmail.com, michael@walle.cc, miquel.raynal@bootlin.com,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220420102022.3310970-1-p.yadav@ti.com>
-References: <20220420102022.3310970-1-p.yadav@ti.com>
-Subject: Re: [PATCH v2] spi: spi-mem: check if data buffers are on stack
-Message-Id: <165055497529.347641.5916575094061881222.b4-ty@kernel.org>
-Date:   Thu, 21 Apr 2022 16:29:35 +0100
+        Thu, 21 Apr 2022 11:35:24 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613A3B847;
+        Thu, 21 Apr 2022 08:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=UlrK2UBvxdMqDUsjxJEXKn2pxD/qQjI/AOd8I2Jov7k=; b=FnY3bky969vzjNorLHSkfXetcF
+        G5APoF9zoTeF2Ar4VEr2KoaVMxpqwYjBU6GFNGQkHCG2OvTx7jwbeEpaqulM3M0LeHfu7o+G/Nyq6
+        7nDZjBwM2O9yVFW0jajDjs7rPQg42o7UumUdenJ8OZrMrWN4lgOCRnBM69WxOcdLA8s8hojtBD6O3
+        YlzIg5tCildFIjzRpUfJk+5RgSfqW+vjsh/uMILJma57NDgDJE02I6YT2jiXwqpeaMfshbCp0cKoD
+        /T/vVEHF57ujO5sU6Qq9TYxYKz2SwG6WTbH+C5ZOMtrxIdwOAqP1arugT0JFJ91agq+rRiVp3ao3i
+        2uJWziHA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nhYnG-005D0K-Ou; Thu, 21 Apr 2022 15:32:31 +0000
+Message-ID: <d7b81bef-5f51-2b42-6f84-ec09d9b469ff@infradead.org>
+Date:   Thu, 21 Apr 2022 08:32:24 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [next] s390: build failed
+Content-Language: en-US
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, lkft-triage@lists.linaro.org
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Peter Xu <peterx@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <CA+G9fYvA9e760hFH==n2_gn8zNQeGBQ1=8_+Ot1sMCwoPiS15g@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CA+G9fYvA9e760hFH==n2_gn8zNQeGBQ1=8_+Ot1sMCwoPiS15g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 15:50:22 +0530, Pratyush Yadav wrote:
-> The buffers passed in the data phase must be DMA-able. Programmers often
-> don't realise this requirement and pass in buffers that reside on the
-> stack. This can be hard to spot when reviewing code. Reject ops if their
-> data buffer is on the stack to avoid this.
+
+
+On 4/21/22 02:57, Naresh Kamboju wrote:
+> Linux next-20220421 s390 tinyconfig and allnoconfig builds failed [1].
 > 
+> Regressions found on s390:
+>   - s390-clang-nightly-tinyconfig
+>   - s390-gcc-10-tinyconfig
+>   - s390-gcc-11-tinyconfig
+>   - s390-clang-14-allnoconfig
+>   - s390-clang-nightly-allnoconfig
+>   - s390-clang-14-tinyconfig
+>   - s390-clang-13-tinyconfig
+>   - s390-gcc-10-allnoconfig
+>   - s390-clang-13-allnoconfig
+>   - s390-gcc-9-allnoconfig
+>   - s390-gcc-9-tinyconfig
+>   - s390-gcc-11-allnoconfig
+>   - s390-gcc-8-tinyconfig
+>   - s390-gcc-8-allnoconfig
+> 
+> In file included from arch/s390/mm/pageattr.c:6:
+> include/linux/hugetlb.h:414:25: error: unknown type name
+> 'zap_flags_t'; did you mean 'vm_flags_t'?
+>   414 |                         zap_flags_t zap_flags)
+>       |                         ^~~~~~~~~~~
+>       |                         vm_flags_t
+> make[3]: *** [scripts/Makefile.build:284: arch/s390/mm/pageattr.o] Error 1
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 > 
 
-Applied to
+Here's a fix:
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+https://lore.kernel.org/lkml/20220421014723.5802-1-rdunlap@infradead.org/
 
-Thanks!
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
+> 
+> [1] https://builds.tuxbuild.com/2868Z0YrLSpSGSk9QDqRKYMJPug/
 
-[1/1] spi: spi-mem: check if data buffers are on stack
-      commit: 8868c03f3ca584abec7bb53d6c3f7c5ab6b60949
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+-- 
+~Randy
