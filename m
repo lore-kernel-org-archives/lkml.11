@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33A6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E56C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387984AbiDUKAN (ORCPT
+        id S1387994AbiDUKC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
+        Thu, 21 Apr 2022 06:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232617AbiDUKAK (ORCPT
+        with ESMTP id S1388008AbiDUKCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:00:10 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D702D25C59
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:57:21 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2ef5380669cso46275297b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:57:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=BRpBTKiaFhVLmT4dCtaB+HDGQyQYO4qpuBRNd+GaM3w=;
-        b=jOUAM1UW3puj7tGbBazYn+hiVpRGjTCwSBns4PyvV5wYui2Z/9KZtsrOivNxMRdbfE
-         93kaZLzA4z+FfyOMam7Z3pYLsKdgh2amJlm0WJKQPD9IQQnryIAujtm5aH5WNVPJtgP4
-         oFQUWUH40LaBHXasUo7fxGByj8m1wJw0xjEfcFZZNk0rHs98bnbOP3dgk0Nbv3EDp9c6
-         i9D74wFLpuyraPNnqDxI6kjuQCuIOoeSrLQw5kthgn5xN0qq/jhLInriCHFop+lPTMTB
-         4CnMqcrXVzE8czp0v4ylsOjUPYtmEqg4JcLSGDKmEta7wJYBWVRG96sCG+/yHvEat/l2
-         I1wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=BRpBTKiaFhVLmT4dCtaB+HDGQyQYO4qpuBRNd+GaM3w=;
-        b=Y78s6e8eU9q2tp/lJ/AK/wGja2ukIHV/NlVwukTcLehyRHk6avCBjmT3c6YTKbJf0x
-         IUBmizffFLSrUOOjE1JDJLrMvp05z6bdPQ/glcUSoFyN7lNVSjEShmBCAXLMOaCCx7wc
-         qZ0I5Rc000+w9mzRqEg1YhH/9IyoOqi0e2jnBJfpzf7v/M9uE49yjahid04Y7lun1Bhi
-         hO7aLOy5GhK0W0Wu7utfa7Fne3Y+3q7GhLqStPc025dFsvw8MCCESrUmHkhACV5JJftG
-         gI6tZvTvSWjJsTUOW6YZiA6cJM7jIO+5cWSO4IVsMV7pUse+RN/5DEP85RGpi53jKuRu
-         OYvw==
-X-Gm-Message-State: AOAM5325tNBky5u0c09wqVYj504HFy242COZHsvoeqCBjod3cHfblp8y
-        ozF9p22W1DCSWe75x0+FlhLq8sTm5wX+EJ1TWDaxQfbSZqcdrv21
-X-Google-Smtp-Source: ABdhPJwLOtR7AyrcmlsGs0ss51VpYNPbfDy9KKotr9egbK7J7mOdmBo/x+qeoVGlam/uf3t4VB0iGhVDnab2O0227Zk=
-X-Received: by 2002:a0d:ffc3:0:b0:2eb:2327:3361 with SMTP id
- p186-20020a0dffc3000000b002eb23273361mr24852584ywf.36.1650535040995; Thu, 21
- Apr 2022 02:57:20 -0700 (PDT)
+        Thu, 21 Apr 2022 06:02:38 -0400
+Received: from ZXBJCAS.zhaoxin.com (zxbjcas.zhaoxin.com [124.127.214.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07D921250;
+        Thu, 21 Apr 2022 02:59:48 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXBJCAS.zhaoxin.com
+ (10.29.252.3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 21 Apr
+ 2022 17:43:37 +0800
+Received: from zx-HX001EM1.zhaoxin.com (10.29.8.9) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 21 Apr
+ 2022 17:43:37 +0800
+From:   Runa Guo-oc <RunaGuo-oc@zhaoxin.com>
+To:     <damien.lemoal@opensource.wdc.com>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/2] ahci: Add PxSCTL.IPM control on actual LPM capability
+Date:   Thu, 21 Apr 2022 17:43:37 +0800
+Message-ID: <1650534217-14052-3-git-send-email-RunaGuo-oc@zhaoxin.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650534217-14052-1-git-send-email-RunaGuo-oc@zhaoxin.com>
+References: <1650534217-14052-1-git-send-email-RunaGuo-oc@zhaoxin.com>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 21 Apr 2022 15:27:09 +0530
-Message-ID: <CA+G9fYvA9e760hFH==n2_gn8zNQeGBQ1=8_+Ot1sMCwoPiS15g@mail.gmail.com>
-Subject: [next] s390: build failed
-To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, lkft-triage@lists.linaro.org
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Xu <peterx@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.29.8.9]
+X-ClientProxiedBy: zxbjmbx1.zhaoxin.com (10.29.252.163) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linux next-20220421 s390 tinyconfig and allnoconfig builds failed [1].
+On some platform, when OS enables LPM by default (eg, min_power),
+then, DIPM slumber request cannot be disallowed if ahci's CAP.PSC
+is set to '1' and CAP.SSC is cleared to '0', which may cause ahci
+to be an uncertain state (same for Partial).
 
-Regressions found on s390:
-  - s390-clang-nightly-tinyconfig
-  - s390-gcc-10-tinyconfig
-  - s390-gcc-11-tinyconfig
-  - s390-clang-14-allnoconfig
-  - s390-clang-nightly-allnoconfig
-  - s390-clang-14-tinyconfig
-  - s390-clang-13-tinyconfig
-  - s390-gcc-10-allnoconfig
-  - s390-clang-13-allnoconfig
-  - s390-gcc-9-allnoconfig
-  - s390-gcc-9-tinyconfig
-  - s390-gcc-11-allnoconfig
-  - s390-gcc-8-tinyconfig
-  - s390-gcc-8-allnoconfig
+In ahci spec, when CAP.PSC/SSC is cleared to '0', the PxSCTL.IPM
+field must be programmed to disallow device initiated Partial/
+Slumber request.
 
-In file included from arch/s390/mm/pageattr.c:6:
-include/linux/hugetlb.h:414:25: error: unknown type name
-'zap_flags_t'; did you mean 'vm_flags_t'?
-  414 |                         zap_flags_t zap_flags)
-      |                         ^~~~~~~~~~~
-      |                         vm_flags_t
-make[3]: *** [scripts/Makefile.build:284: arch/s390/mm/pageattr.o] Error 1
+Adds support to control this case on actual LPM capability.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Signed-off-by: Runa Guo-oc <RunaGuo-oc@zhaoxin.com>
+---
+ drivers/ata/libata-sata.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---
-Linaro LKFT
-https://lkft.linaro.org
+diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+index 7a5fe41..e6195cf 100644
+--- a/drivers/ata/libata-sata.c
++++ b/drivers/ata/libata-sata.c
+@@ -394,9 +394,19 @@ int sata_link_scr_lpm(struct ata_link *link, enum ata_lpm_policy policy,
+ 	case ATA_LPM_MED_POWER_WITH_DIPM:
+ 	case ATA_LPM_MIN_POWER_WITH_PARTIAL:
+ 	case ATA_LPM_MIN_POWER:
+-		if (ata_link_nr_enabled(link) > 0)
++		if (ata_link_nr_enabled(link) > 0) {
+ 			/* no restrictions on LPM transitions */
+ 			scontrol &= ~(0x7 << 8);
++
++			/* if controller does not support partial, then disallows it,
++			 * the same for slumber
++			 */
++			if (!(link->ap->host->flags & ATA_HOST_PART))
++				scontrol |= (0x1 << 8);
++
++			if (!(link->ap->host->flags & ATA_HOST_SSC))
++				scontrol |= (0x2 << 8);
++		}
+ 		else {
+ 			/* empty port, power off */
+ 			scontrol &= ~0xf;
+-- 
+2.7.4
 
-[1] https://builds.tuxbuild.com/2868Z0YrLSpSGSk9QDqRKYMJPug/
