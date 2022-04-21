@@ -2,155 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E26D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79076C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386956AbiDUIxp (ORCPT
+        id S1387003AbiDUIzG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34334 "EHLO
+        Thu, 21 Apr 2022 04:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386954AbiDUIxm (ORCPT
+        with ESMTP id S1386999AbiDUIzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:53:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12AE718E3D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:50:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650531052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/9GOgKbTaKLpjisKA5uiBPW2PYHrqd+UofqKoU0ytW8=;
-        b=QjXwcFMN/xurlBkr5UTrjWwDlLYtLP34nZOOVFD8Sbmrm/Do9a90j7zmSviss91xBcAkt7
-        V3y4ZxN6xZoPGUVjMMrqX29EDF5RSbnKbEV1Jk6uR6eBbBEHkHv3h3gI56WOvNkO3+4OaX
-        ymsoPEO42V7ZjlxI7jzGkhd7KH2jVxo=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-35-ODHWt5YyMRSBo5Cnshcpag-1; Thu, 21 Apr 2022 04:50:48 -0400
-X-MC-Unique: ODHWt5YyMRSBo5Cnshcpag-1
-Received: by mail-wr1-f70.google.com with SMTP id w22-20020adf8bd6000000b0020aaff5af82so915714wra.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:50:48 -0700 (PDT)
+        Thu, 21 Apr 2022 04:55:03 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5452205F7
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:52:14 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id j2so7575730ybu.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:52:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RVwbNEHetlg1aBbC3TTzybaz/F661Vy3CjQbZIH5gD8=;
+        b=hpkIkkgmPs/OwKykZmCJ7cDR4V/a/9lwLClAz0dHK4rCp6VCt7Ve1zX7NhaiBlnMjZ
+         QcALCkpNMKftDNYdRwBG7z9ve/T1bDVp3GmQ6OmW7ctbSykuy2lDGFozVyON1aDVfhry
+         54dafnw9wkhaTfW2Q9KSjynqzyBomemt+Nmdk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=/9GOgKbTaKLpjisKA5uiBPW2PYHrqd+UofqKoU0ytW8=;
-        b=akoVAXwcZSRp4sH5XhqQKO28/JBOouuDqpLUpb561dHAMWII/00ABz6vpCMngBp0fV
-         PsCZgGIg7Wj+9GrxHhfeCdqWTH5gi0SE8lM/eN4Z1lFVDlIgBIgw/yPmKPSX4YRUVn5V
-         soelsy9pDNtyVCmNGAcsxtq3bjf8hvyTIRXK1u5UZAMbQFeXz2aBDVM1nNxuSbSc2K7M
-         IB65qlkJtDrkmwa5kzJ3gnpzFuaQ8Meuu1jvrqEuT9v5snMJw3b2+qLThkDv2Z6UVbFG
-         Qu7LqxqKsP5JOFp4w34DOni4AAPmQO2P3il8cjgiO6xsiebKpVLqQIdz6Gx+8PxHDzIB
-         zSHA==
-X-Gm-Message-State: AOAM533WHJbq+1ZIiu5dy8D7pLEBJORm4IlRMwxV2Si9n8EIhDHKmgf1
-        C0ePCHE6aA2cm/q93zmXvtTcgD6q91jin4WxT+P+u7e0BN+8hGhU9Nyya7e7q4r422iadb6qU6L
-        Vw05GshwCrV+9n7tK9QCYyAcx
-X-Received: by 2002:a5d:6251:0:b0:20a:b1de:627c with SMTP id m17-20020a5d6251000000b0020ab1de627cmr4744811wrv.100.1650531046725;
-        Thu, 21 Apr 2022 01:50:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKFLs1xBNEuxsOzGJ6kr1aswBBF3UzmV1rUTNavKT9f4etZ83OsiQoPegkDw48HatLMKviUw==
-X-Received: by 2002:a5d:6251:0:b0:20a:b1de:627c with SMTP id m17-20020a5d6251000000b0020ab1de627cmr4744789wrv.100.1650531046421;
-        Thu, 21 Apr 2022 01:50:46 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c702:de00:711b:76af:b335:9b70? (p200300cbc702de00711b76afb3359b70.dip0.t-ipconnect.de. [2003:cb:c702:de00:711b:76af:b335:9b70])
-        by smtp.gmail.com with ESMTPSA id i14-20020a0560001ace00b0020aac00f862sm1741182wry.98.2022.04.21.01.50.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 01:50:45 -0700 (PDT)
-Message-ID: <022fe906-054d-43b4-14d4-a4c1cb7527af@redhat.com>
-Date:   Thu, 21 Apr 2022 10:50:44 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RVwbNEHetlg1aBbC3TTzybaz/F661Vy3CjQbZIH5gD8=;
+        b=gL4eq+GSrLIlMWNNiNJhAzKqILb55oDp66/7RhmJ9eQzs68gW3CgBtFimjnaAVAtMs
+         ZsxMmu2kfxi6CxI0dSPPvyGdlRSCHZ9J9IetVu6wmOHDMFV7oIsYqoZHCzqA3dhe/nfP
+         66AjhJlRGfGp0C2KoGVfIeMJyOYRf5bXE4m0oSnvKy9eRofvs0VnDkshsEMvKFBYNv4J
+         2vrFZ+sC0TpuS63aujs0JPhBtBLYf+C4aS+5AWprizKPFe7xlgufZLAjgxStpo5c5n/E
+         PPkCY9e84DWec/yiwX/jziC+2OP5XfMppDuSWHMXtx3ErFOTlGn920kAV1fFa1kV/vG+
+         CBkw==
+X-Gm-Message-State: AOAM533zr37injBXVP/uapFtvPUKhWXDeh9AmyjR6rCceR5fV2bvYeYn
+        B/pyg8iFigdjAUgWfZCqTgqm/uezoMkEgP+Qtct1CQ==
+X-Google-Smtp-Source: ABdhPJyKef455oTvaFL6rcv3Vq5Kb9A+9FCodtqSS+bFRoVjdp61iRPYNvGJFFAJ1+dU0e5ySbK5huRp1pOhJOS/3TI=
+X-Received: by 2002:a25:9d90:0:b0:644:cd19:305a with SMTP id
+ v16-20020a259d90000000b00644cd19305amr21496085ybp.196.1650531133784; Thu, 21
+ Apr 2022 01:52:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     "Zhuo, Qiuxu" <qiuxu.zhuo@intel.com>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-Cc:     "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "open list:HWPOISON MEMORY FAILURE HANDLING" <linux-mm@kvack.org>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-References: <20220420210009.65666-1-qiuxu.zhuo@intel.com>
- <3720f7d9-a4f3-214c-1dea-f8ffc837c1da@intel.com>
- <DM8PR11MB566941C063EA44929147035E89F49@DM8PR11MB5669.namprd11.prod.outlook.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH 1/1] x86/mm: Forbid the zero page once it has
- uncorrectable errors
-In-Reply-To: <DM8PR11MB566941C063EA44929147035E89F49@DM8PR11MB5669.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
+ <20220420141556.681212-3-fabiobaltieri@chromium.org> <YmBJF2//wGjKA7I9@chromium.org>
+ <YmEXKMYMGstCGBZv@google.com>
+In-Reply-To: <YmEXKMYMGstCGBZv@google.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Thu, 21 Apr 2022 01:52:02 -0700
+Message-ID: <CACeCKacnUm3MfOsP96H+AxoSkdkxS4ixb9sMNmyc9GaLgw+t8Q@mail.gmail.com>
+Subject: Re: [PATCH v5 2/4] pwm: pwm-cros-ec: add channel type support
+To:     Fabio Baltieri <fabiobaltieri@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.04.22 09:53, Zhuo, Qiuxu wrote:
->> From: Hansen, Dave <dave.hansen@intel.com>
->> ...
->> Subject: Re: [PATCH 1/1] x86/mm: Forbid the zero page once it has
->> uncorrectable errors
->> ...
->> There are lots of pages which are entirely fatal if they have uncorrectable errors.
->> On my laptop, if there were an error, there is a 0.00000596% chance it will be in
->> the zero page.
->>
->> Why is this worth special casing this one page?
-> 
-> Hi Dave,
-> 
->    Yes, this is a rare problem. Just feel that the fix is simple, so post it here to see whether you'll consider it 😊.
+On Thu, Apr 21, 2022 at 1:34 AM Fabio Baltieri
+<fabiobaltieri@chromium.org> wrote:
+>
+> On Wed, Apr 20, 2022 at 05:55:35PM +0000, Prashant Malani wrote:
+> > On Apr 20 14:15, Fabio Baltieri wrote:
+> > > Add support for EC_PWM_TYPE_DISPLAY_LIGHT and EC_PWM_TYPE_KB_LIGHT pwm
+> > > types to the PWM cros_ec_pwm driver. This allows specifying one of these
+> > > PWM channel by functionality, and let the EC firmware pick the correct
+> > > channel, thus abstracting the hardware implementation from the kernel
+> > > driver.
+> > >
+> > > To use it, define the node with the "google,cros-ec-pwm-type"
+> > > compatible.
+> > >
+> > > Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+> > > Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> > > ---
+> > >  drivers/pwm/pwm-cros-ec.c | 82 ++++++++++++++++++++++++++++++++-------
+> > >  1 file changed, 67 insertions(+), 15 deletions(-)
+> > >
+> > > diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+> > > index 5e29d9c682c3..7f10f56c3eb6 100644
+> > > --- a/drivers/pwm/pwm-cros-ec.c
+> > > +++ b/drivers/pwm/pwm-cros-ec.c
+> > > @@ -12,17 +12,21 @@
+> > >  #include <linux/pwm.h>
+> > >  #include <linux/slab.h>
+> > >
+> > > +#include <dt-bindings/mfd/cros_ec.h>
+> > > +
+> > >  /**
+> > >   * struct cros_ec_pwm_device - Driver data for EC PWM
+> > >   *
+> > >   * @dev: Device node
+> > >   * @ec: Pointer to EC device
+> > >   * @chip: PWM controller chip
+> > > + * @use_pwm_type: Use PWM types instead of generic channels
+> > >   */
+> > >  struct cros_ec_pwm_device {
+> > >     struct device *dev;
+> > >     struct cros_ec_device *ec;
+> > >     struct pwm_chip chip;
+> > > +   bool use_pwm_type;
+> > >  };
+> > >
+> > >  /**
+> > > @@ -58,14 +62,31 @@ static void cros_ec_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+> > >     kfree(channel);
+> > >  }
+> > >
+> > > -static int cros_ec_pwm_set_duty(struct cros_ec_device *ec, u8 index, u16 duty)
+> > > +static int cros_ec_dt_type_to_pwm_type(u8 dt_index, u8 *pwm_type)
+> > >  {
+> > > +   switch (dt_index) {
+> > > +   case CROS_EC_PWM_DT_KB_LIGHT:
+> > > +           *pwm_type = EC_PWM_TYPE_KB_LIGHT;
+> > > +           return 0;
+> > > +   case CROS_EC_PWM_DT_DISPLAY_LIGHT:
+> > > +           *pwm_type = EC_PWM_TYPE_DISPLAY_LIGHT;
+> > > +           return 0;
+> > > +   default:
+> > > +           return -EINVAL;
+> > > +   }
+> > > +}
+> > > +
+> > > +static int cros_ec_pwm_set_duty(struct cros_ec_pwm_device *ec_pwm, u8 index,
+> > > +                           u16 duty)
+> > > +{
+> > > +   struct cros_ec_device *ec = ec_pwm->ec;
+> > >     struct {
+> > >             struct cros_ec_command msg;
+> > >             struct ec_params_pwm_set_duty params;
+> > >     } __packed buf;
+> > >     struct ec_params_pwm_set_duty *params = &buf.params;
+> > >     struct cros_ec_command *msg = &buf.msg;
+> > > +   int ret;
+> > >
+> > >     memset(&buf, 0, sizeof(buf));
+> > >
+> > > @@ -75,14 +96,25 @@ static int cros_ec_pwm_set_duty(struct cros_ec_device *ec, u8 index, u16 duty)
+> > >     msg->outsize = sizeof(*params);
+> > >
+> > >     params->duty = duty;
+> > > -   params->pwm_type = EC_PWM_TYPE_GENERIC;
+> > > -   params->index = index;
+> > > +
+> > > +   if (ec_pwm->use_pwm_type) {
+> > > +           ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
+> > > +           if (ret) {
+> > > +                   dev_err(ec->dev, "Invalid PWM type index: %d\n", index);
+> > > +                   return ret;
+> > > +           }
+> > > +           params->index = 0;
+> > > +   } else {
+> > > +           params->pwm_type = EC_PWM_TYPE_GENERIC;
+> > > +           params->index = index;
+> > > +   }
+> > >
+> > >     return cros_ec_cmd_xfer_status(ec, msg);
+> > >  }
+> > >
+> > > -static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index)
+> > > +static int cros_ec_pwm_get_duty(struct cros_ec_pwm_device *ec_pwm, u8 index)
+> > >  {
+> > > +   struct cros_ec_device *ec = ec_pwm->ec;
+> > >     struct {
+> > >             struct cros_ec_command msg;
+> > >             union {
+> > > @@ -102,8 +134,17 @@ static int cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index)
+> > >     msg->insize = sizeof(*resp);
+> > >     msg->outsize = sizeof(*params);
+> > >
+> > > -   params->pwm_type = EC_PWM_TYPE_GENERIC;
+> > > -   params->index = index;
+> > > +   if (ec_pwm->use_pwm_type) {
+> > > +           ret = cros_ec_dt_type_to_pwm_type(index, &params->pwm_type);
+> > > +           if (ret) {
+> > > +                   dev_err(ec->dev, "Invalid PWM type index: %d\n", index);
+> > > +                   return ret;
+> > > +           }
+> > > +           params->index = 0;
+> > > +   } else {
+> > > +           params->pwm_type = EC_PWM_TYPE_GENERIC;
+> > > +           params->index = index;
+> > > +   }
+> > >
+> > >     ret = cros_ec_cmd_xfer_status(ec, msg);
+> > >     if (ret < 0)
+> > > @@ -133,7 +174,7 @@ static int cros_ec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> > >      */
+> > >     duty_cycle = state->enabled ? state->duty_cycle : 0;
+> > >
+> > > -   ret = cros_ec_pwm_set_duty(ec_pwm->ec, pwm->hwpwm, duty_cycle);
+> > > +   ret = cros_ec_pwm_set_duty(ec_pwm, pwm->hwpwm, duty_cycle);
+> > >     if (ret < 0)
+> > >             return ret;
+> > >
+> > > @@ -149,7 +190,7 @@ static void cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+> > >     struct cros_ec_pwm *channel = pwm_get_chip_data(pwm);
+> > >     int ret;
+> > >
+> > > -   ret = cros_ec_pwm_get_duty(ec_pwm->ec, pwm->hwpwm);
+> > > +   ret = cros_ec_pwm_get_duty(ec_pwm, pwm->hwpwm);
+> > >     if (ret < 0) {
+> > >             dev_err(chip->dev, "error getting initial duty: %d\n", ret);
+> > >             return;
+> > > @@ -204,13 +245,13 @@ static const struct pwm_ops cros_ec_pwm_ops = {
+> > >   * of PWMs it supports directly, so we have to read the pwm duty cycle for
+> > >   * subsequent channels until we get an error.
+> > >   */
+> > > -static int cros_ec_num_pwms(struct cros_ec_device *ec)
+> > > +static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
+> > >  {
+> > >     int i, ret;
+> > >
+> > >     /* The index field is only 8 bits */
+> > >     for (i = 0; i <= U8_MAX; i++) {
+> > > -           ret = cros_ec_pwm_get_duty(ec, i);
+> > > +           ret = cros_ec_pwm_get_duty(ec_pwm, i);
+> > >             /*
+> > >              * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
+> > >              * responses; everything else is treated as an error.
+> > > @@ -236,6 +277,7 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+> > >  {
+> > >     struct cros_ec_device *ec = dev_get_drvdata(pdev->dev.parent);
+> > >     struct device *dev = &pdev->dev;
+> > > +   struct device_node *np = pdev->dev.of_node;
+> > >     struct cros_ec_pwm_device *ec_pwm;
+> > >     struct pwm_chip *chip;
+> > >     int ret;
+> > > @@ -251,17 +293,26 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+> > >     chip = &ec_pwm->chip;
+> > >     ec_pwm->ec = ec;
+> > >
+> > > +   if (of_device_is_compatible(np, "google,cros-ec-pwm-type"))
+> > > +           ec_pwm->use_pwm_type = true;
+> >
+> > Isn't it possible to just use an optional boolean property
+> > (for example: "use-pwm-type") instead of defining a new compatible
+> > string?
+>
+> Yeah that's what I did originally but Rob suggested to use a new
+> compatible instead:
+>
+> https://lore.kernel.org/chrome-platform/Yk20uTE%2FVdm2c6jI@robh.at.kernel.org/
 
-Just some background information.
+Thanks for the context. I suppose one could use the "split number
+space" suggestion mentioned there,
+and still be able to supply the right arguments for
+pwm_request_from_chip() (since we're the ones
+supplying the argument via of_xlate). But, if the DT maintainer is
+alright with a new compatible, then
+of course you should go with whatever works for you.
 
-mm_forbids_zeropage() exists for the sole purpose of s390x/kvm not being
-able to use the shared zeropage for a KVM guest because the storage keys
-associated with the shared zeropage could result in trouble. So
-s390x/kvm has to make sure that no shared zeropage
-is mapped into the process.
-
-See fa41ba0d08de ("s390/mm: avoid empty zero pages for KVM guests to
-avoid postcopy hangs") for details.
-
-@Christian
-
-a) with keyless guests we could actually use the shared zeropage because
-the guest cannot possibly enable storage keys, correct?
-
-b) Why is there no mm_forbids_zeropage() check in mfill_zeropage_pte()?
-Maybe I'm missing something, but looks like we can still place the
-shared zeropage into a KVM guest via uffd.
-
-
-In general, there are more place that will use the shared zeropage, most
-notably, fs/dax.c  will place the shared zeropage for holes and would
-still use it on x86-64. IIRC, s390x doesn't use it.
-
-/proc/vmcore will map the zeropage to user space for areas that are not
-RAM, so you could still stumble over it there and trigger a MCE.
-
-Last but not least, the huge shared zeropage would suffer from similar
-problems.
-
-
-Also, I wonder if the generic code change in mm/memory-failure.c is
-correct as it touches common code and you only mess with the x86
-zeropage. But I did not look into the details.
-
-
-So the code here at least isn't complete. So I'm not convinced this
-change is worth it.
-
-
--- 
-Thanks,
-
-David / dhildenb
-
+>
+> > > +
+> > >     /* PWM chip */
+> > >     chip->dev = dev;
+> > >     chip->ops = &cros_ec_pwm_ops;
+> > >     chip->of_xlate = cros_ec_pwm_xlate;
+> > >     chip->of_pwm_n_cells = 1;
+> > > -   ret = cros_ec_num_pwms(ec);
+> > > -   if (ret < 0) {
+> > > -           dev_err(dev, "Couldn't find PWMs: %d\n", ret);
+> > > -           return ret;
+> > > +
+> > > +   if (ec_pwm->use_pwm_type) {
+> > > +           chip->npwm = CROS_EC_PWM_DT_COUNT;
+> > > +   } else {
+> > > +           ret = cros_ec_num_pwms(ec_pwm);
+> > > +           if (ret < 0) {
+> > > +                   dev_err(dev, "Couldn't find PWMs: %d\n", ret);
+> > > +                   return ret;
+> > > +           }
+> > > +           chip->npwm = ret;
+> > >     }
+> > > -   chip->npwm = ret;
+> > > +
+> > >     dev_dbg(dev, "Probed %u PWMs\n", chip->npwm);
+> > >
+> > >     ret = pwmchip_add(chip);
+> > > @@ -288,6 +339,7 @@ static int cros_ec_pwm_remove(struct platform_device *dev)
+> > >  #ifdef CONFIG_OF
+> > >  static const struct of_device_id cros_ec_pwm_of_match[] = {
+> > >     { .compatible = "google,cros-ec-pwm" },
+> > > +   { .compatible = "google,cros-ec-pwm-type" },
+> > >     {},
+> > >  };
+> > >  MODULE_DEVICE_TABLE(of, cros_ec_pwm_of_match);
+> > > --
+> > > 2.36.0.rc0.470.gd361397f0d-goog
+> > >
+> > >
+>
+> --
+> Fabio Baltieri
