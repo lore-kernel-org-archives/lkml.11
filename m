@@ -2,202 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E732C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiDUQ3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
+        id S231144AbiDUQ3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbiDUQSI (ORCPT
+        with ESMTP id S1390684AbiDUQWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:18:08 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 539AD101C7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:15:16 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0D885153B;
-        Thu, 21 Apr 2022 09:15:16 -0700 (PDT)
-Received: from airbuntu (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 728203F73B;
-        Thu, 21 Apr 2022 09:15:14 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 17:15:09 +0100
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Xuewen Yan <xuewen.yan94@gmail.com>
-Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
-        lukasz.luba@arm.com, rafael@kernel.org, viresh.kumar@linaro.org,
-        mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
-        di.shen@unisoc.com
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-Message-ID: <20220421161509.asz25zmh25eurgrk@airbuntu>
-References: <20220407051932.4071-1-xuewen.yan@unisoc.com>
- <20220420135127.o7ttm5tddwvwrp2a@airbuntu>
- <CAB8ipk-tWjkeAbV=BDhNy04Yq6rdLf80x_7twuLV=HqT4nc1+w@mail.gmail.com>
+        Thu, 21 Apr 2022 12:22:51 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B4D63AE;
+        Thu, 21 Apr 2022 09:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650558001; x=1682094001;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3A6zp59+CXbCtLUTRaBcmCTCcB/VbVNvDqbxb0ss9Wc=;
+  b=EXBZbzjA8WH51v04aZqdN5UKuxK4m6PYPdE/m8yHJW7GWvbnEH6ZRFkU
+   hZlPoEfcy17KlEndu/BcvP/WbZnePNXk3W6OoPhu/w3JkCm0cBJ/yCe1z
+   svLevC5OoKVT8gFSKa8xhBdWUpb+2zt1wXh2up365rxasgTGCqTXVCHj2
+   zO3bwZ0R2MzSD+vH4MdBaHd61rBPX7DIG6m0+ZA4Nch0y/7Y6kgpwEFK4
+   u4ycv0EO8qfJxNmOVj8pz+F1+GS2IrB+N+AuUCQ883HKL4af2A/9MDvvE
+   jcgdDjvkVwP91fDqaBltrhks9zUqyY1suGWOUMCgNpKpmRsmiWiMTDCSk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263872592"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="263872592"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 09:20:00 -0700
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="648200010"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 09:20:00 -0700
+Date:   Thu, 21 Apr 2022 09:19:59 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: [PATCH v2] topology/sysfs: Fix allnoconfig build breakage.
+Message-ID: <YmGEL2klp4S97UiH@agluck-desk3.sc.intel.com>
+References: <20220421152645.3a849198@canb.auug.org.au>
+ <YmD+geU9CmjoVnN9@kroah.com>
+ <YmF8Hrq5kgDdfvtS@agluck-desk3.sc.intel.com>
+ <YmF+FTxgu2U4/oPA@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAB8ipk-tWjkeAbV=BDhNy04Yq6rdLf80x_7twuLV=HqT4nc1+w@mail.gmail.com>
+In-Reply-To: <YmF+FTxgu2U4/oPA@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/21/22 16:07, Xuewen Yan wrote:
-> Hi Qais
-> 
-> On Wed, Apr 20, 2022 at 9:51 PM Qais Yousef <qais.yousef@arm.com> wrote:
-> >
-> > Hi Xuewen
-> >
-> > Thanks for sending the patch. RT relationship with thermal pressure is an
-> > interesting topic :)
-> >
-> > On 04/07/22 13:19, Xuewen Yan wrote:
-> > > There are cases when the cpu max capacity might be reduced due to thermal.
-> > > Take into the thermal pressure into account when judge whether the rt task
-> > > fits the cpu. And when schedutil govnor get cpu util, the thermal pressure
-> > > also should be considered.
-> >
-> > It would help to explain the mode of failure you're seeing here. What are you
-> > seeing?
-> 
-> I used in Android scenario, there are many RT processes in the
-> Android. I do not want to set the sched_uclamp_util_min_rt_default to
-> 1024, it would make the power consumption very high.
-> I used a compromise method, setting the value of
-> sysctl_sched_uclamp_util_min_rt_default to be bigger than the small
-> core capacity but not so that the frequency of the big core becomes
-> very high.
-> But when there are there clusters on the soc, the big core's capacity
-> often become smaller than the middle core, when this happens, I want
-> the RT can run on the middle cores instead of the on the big core
-> always.
-> When consider the thermal pressure, it could relieve this phenomenon.
+drivers/base/topology.c: In function 'topology_is_visible':
+drivers/base/topology.c:158:24: warning: unused variable 'dev' [-Wunused-variable]
+  158 |         struct device *dev = kobj_to_dev(kobj);
 
-Thanks for the explanation. It's worth putting some of this in the changelog in
-the next versions.
+This is because the topology_ppin(dev->id) macro expands to:
 
-So the problem is as I suspected, but capacity inversion is the major cause of
-grief.
+	(cpu_data(dev->id).ppin)
 
-Is it okay to share what the capacities of the littles, mediums and bigs on
-your system? And how they change under worst case scenario thermal pressure?
-Only IF you have these numbers handy :-)
+and with CONFIG_SMP=n the cpu_data() macro expands to boot_cpu_data
+(ignoring its argument) with the end result:
 
-Is it actually an indication of a potential other problem if you swing into
-capacity inversion in the bigs that often? I've seen a lot of systems where the
-difference between the meds and bigs is small. But frequent inversion could be
-suspicious still.
+	boot_cpu_data.ppin
 
-Do the littles and the mediums experience any significant thermal pressure too?
+Fix by just checking whether the boot_cpu has a PPIN instead of whether
+this specific CPU has one.
 
-> >
-> > >
-> > > Signed-off-by: Xuewen Yan <xuewen.yan@unisoc.com>
-> > > ---
-> > >  kernel/sched/cpufreq_schedutil.c | 1 +
-> > >  kernel/sched/rt.c                | 1 +
-> > >  2 files changed, 2 insertions(+)
-> > >
-> > > diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
-> > > index 3dbf351d12d5..285ad51caf0f 100644
-> > > --- a/kernel/sched/cpufreq_schedutil.c
-> > > +++ b/kernel/sched/cpufreq_schedutil.c
-> > > @@ -159,6 +159,7 @@ static void sugov_get_util(struct sugov_cpu *sg_cpu)
-> > >       struct rq *rq = cpu_rq(sg_cpu->cpu);
-> > >       unsigned long max = arch_scale_cpu_capacity(sg_cpu->cpu);
-> > >
-> > > +     max -= arch_scale_thermal_pressure(sg_cpu->cpu);
-> >
-> > Wouldn't this break the call to irq_scale_capacity() in effective_cpu_util()?
-> >
-> > >       sg_cpu->max = max;
-> > >       sg_cpu->bw_dl = cpu_bw_dl(rq);
-> > >       sg_cpu->util = effective_cpu_util(sg_cpu->cpu, cpu_util_cfs(sg_cpu->cpu), max,
-> 
-> It would destory the irq_scale_capacity, but indeed the cpu max
-> capacity has changed, is it better to use the real cpu caopacity?
-> 
->                           max - irq
->             U' = irq + --------- * U
->                            max
-> I can't imagine how much of an impact this will have at the moment.
+Fixes: c3702a746ff5 ("topology/sysfs: Hide PPIN on systems that do not support it.")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
 
-It doesn't seem it'll cause a significant error, but still it seems to me this
-function wants the original capacity passed to it.
+---
+I don't believe it will ever be possible to have no PPIN on the boot CPU,
+but somehow have PPINs on other CPUs (or vice versa)
 
-There are similar questions to be asked since you modify sg_cpu->max. Every
-user needs to be audited if they're fine with this change or not.
+ drivers/base/topology.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-I'm not sure still what we are achieving here. You want to force schedutil not
-to request higher frequencies if thermal pressure is high? Should schedutil
-actually care? Shouldn't the cpufreq driver reject this request and pick the
-next best thing if it can't satisfy it? I could be missing something, I haven't
-looked that hard tbh :-)
+diff --git a/drivers/base/topology.c b/drivers/base/topology.c
+index 706dbf8bf249..11a56a10188d 100644
+--- a/drivers/base/topology.c
++++ b/drivers/base/topology.c
+@@ -155,9 +155,7 @@ static struct attribute *default_attrs[] = {
+ static umode_t topology_is_visible(struct kobject *kobj,
+ 				   struct attribute *attr, int unused)
+ {
+-	struct device *dev = kobj_to_dev(kobj);
+-
+-	if (attr == &dev_attr_ppin.attr && !topology_ppin(dev->id))
++	if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+ 		return 0;
+ 
+ 	return attr->mode;
+-- 
+2.35.1
 
-> 
-> > > diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-> > > index a32c46889af8..d9982ebd4821 100644
-> > > --- a/kernel/sched/rt.c
-> > > +++ b/kernel/sched/rt.c
-> > > @@ -466,6 +466,7 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
-> > >       max_cap = uclamp_eff_value(p, UCLAMP_MAX);
-> > >
-> > >       cpu_cap = capacity_orig_of(cpu);
-> > > +     cpu_cap -= arch_scale_thermal_pressure(cpu);
-> >
-> > Hmm I'm not a fan of this. By default all RT tasks have uclamp_min = 1024 to
-> > keep the default behavior of the system running at max performance point.
-> >
-> > With this change, any tiny thermal pressure means all RT tasks will fail to fit
-> > on the biggest CPU. While this hint is not meant to be bullet proof, but it
-> > shouldn't break that easily either. The highest performance point will still be
-> > on this CPU. The only exception is capacity inversion where the bigs
-> > performance goes below the mediums' under severe thermal circumstances. But
-> > then there are 2 issues.
-> >
-> >         1. This patch doesn't help with this case. It simply reverts to putting
-> >            tasks 'randomly' and  might still end up on this CPU. I can't see
-> >            how this is better.
-> >         2. If we are under such severe thermal pressure, then things must be
-> >            falling over badly anyway and I'm not sure we can still satisfy the
-> >            perf requirements these tasks want anyway. Unless you're trying to
-> >            keep these CPUs less busy to alleviate thermal pressure? This patch
-> >            will not help achieving that either. Or I'm unable to see it if it
-> >            does.
-> 
-> Yes，It is the problem that would lead to, maybe it need more
-> consideration just like select the cpus which have min overutil.
-
-It depends on the severity of the problem. The simplest thing I can suggest is
-to check if the cpu is in capacity inversion state, and if it is, then make
-rt_task_fits_capacity() return false always.
-
-If we need a generic solution to handle thermal pressure omitting OPPs, then
-the search needs to become more complex. The proposal in this patch is not
-adequate because tasks that want to run at capacity_orig_of(cpu) will wrongly
-omit some cpus because of any tiny thermal pressure. For example if the
-capacity_orig_of(medium_cpu) = 700, and uclamp_min for RT is set to 700, then
-any small thermal pressure on mediums will cause these tasks to run on big cpus
-only, which is not what we want. Especially if these big cpus can end up in
-capacity inversion later ;-)
-
-So if we want to handle this case, then we need to ensure the search returns
-false only if
-
-	1. Thermal pressure results in real OPP to be omitted.
-	2. Another CPU that can provide this performance level is available.
-
-Otherwise we should still fit it on this CPU because it'll give us the closest
-thing to what was requested.
-
-I can think of 2 ways to implement this, but none of them seem particularly
-pretty :-/
-
-
-Thanks
-
---
-Qais Yousef
