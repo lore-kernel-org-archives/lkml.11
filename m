@@ -2,118 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 05:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384628AbiDUGAr (ORCPT
+        id S1383667AbiDUGEJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
+        Thu, 21 Apr 2022 02:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237590AbiDUGAn (ORCPT
+        with ESMTP id S237590AbiDUGEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:00:43 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796B612ADD;
-        Wed, 20 Apr 2022 22:57:54 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KkRdG3fCrz1J9vy;
-        Thu, 21 Apr 2022 13:57:06 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500023.china.huawei.com
- (7.185.36.114) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Apr
- 2022 13:57:52 +0800
-From:   Peng Wu <wupeng58@huawei.com>
-To:     <j.neuschaefer@gmx.net>, <linus.walleij@linaro.org>
-CC:     <openbmc@lists.ozlabs.org>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wupeng58@huawei.com>,
-        <liwei391@huawei.com>
-Subject: [PATCH] pinctrl: nuvoton: Add missing fwnode_handle_put in wpcm450_gpio_register
-Date:   Thu, 21 Apr 2022 05:53:56 +0000
-Message-ID: <20220421055356.8163-1-wupeng58@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 21 Apr 2022 02:04:07 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0CC64DD
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650520878; x=1682056878;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=O7MKbuqHNRvjU+QrsuUcPlZPeoTt9r3lAbYwnQzZZ0U=;
+  b=avtKaeZwKlBHniTjgWQp0Gl1AJJaGxhO5YktdbhGSiiD7iSkMKh1nh/a
+   QtN1mH0oYZUlgTfVftxRPyOzt+4/j+KRgdPyHmYHbLeyVYuHVGVln/WJQ
+   PNGupCidu0SysIocF3toAwNV+7jCfrZ/AeYlzLgx08OeWf25WRXBQij9o
+   BhDask37cpluGRtOHu66rI2RaBNXfSLgPhSl8vhq6eM0NFlcU9qxG6bBq
+   z7ZUmyVr7puEXEsdqhNnW3j3jedBXLcfbVkJJ223pqmKi9wrBETdm0t3I
+   CGWDTM54KcKzcjqLbmb1dhrB0njp3DANXwn6IkCY37XFNMsbZ8ZwLmDLl
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="261850469"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="261850469"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:00:58 -0700
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="555594587"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:00:54 -0700
+Received: by lahna (sSMTP sendmail emulation); Thu, 21 Apr 2022 09:00:31 +0300
+Date:   Thu, 21 Apr 2022 09:00:31 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Won Chung <wonchung@google.com>
+Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] thunderbolt: Link USB4 ports to their USB Type-C
+ connectors
+Message-ID: <YmDy/xEsyktRS6D+@lahna>
+References: <20220418175932.1809770-1-wonchung@google.com>
+ <Yl/l7gjRXj41a93q@lahna>
+ <CAOvb9yidpOZ4jCjme+u1a4fPTRnLmxUHSTO3yHPPuYtDbe1V0g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOvb9yidpOZ4jCjme+u1a4fPTRnLmxUHSTO3yHPPuYtDbe1V0g@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In one of the error paths of the device_for_each_child_node() loop
-in wpcm450_gpio_register, add missing call to fwnode_handle_put.
+Hi,
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
----
- drivers/pinctrl/nuvoton/pinctrl-wpcm450.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+On Wed, Apr 20, 2022 at 09:39:25AM -0700, Won Chung wrote:
+> On Wed, Apr 20, 2022 at 3:54 AM Mika Westerberg
+> <mika.westerberg@linux.intel.com> wrote:
+> >
+> > Hi,
+> >
+> > On Mon, Apr 18, 2022 at 05:59:30PM +0000, Won Chung wrote:
+> > > Currently, USB port is linked to Type C connector, using the component
+> > > framework, if they share the same _PLD fields from ACPI table. Type C
+> > > port-mapper searches for devices with the same _PLD values, and
+> > > aggregate them as components.
+> > >
+> > > When there is another device that share the same _PLD but does not
+> > > registers a component, Type C connector (component master) would never
+> > > be bound due to a component match entry device without a component
+> > > registered. There exists some cases where USB4 port also shares the same
+> > > _PLD with USB port and Type C connector, so we need to register a
+> > > component for USB4 ports too, linking USB4 port with Type C connector.
+> > > Otherwise, link between USB port and Type C connector would not
+> > > work either.
+> > >
+> > > Due to the nature of the component framework, all registered components
+> > > are shared by all component match despite the relevance. MEI subsystems
+> > > also use the component framework to bind to i915 driver, which try to
+> > > match components registered by USB ports and USB4 ports. This can be
+> > > problematic since MEI assumes that there is a driver bound to the
+> > > component device, while USB4 port does not bind to any drivers. MEI's
+> > > component match callback functions should handle such case to avoid NULL
+> > > pointer dereference when USB4 port registers a component.
+> > >
+> > > In summary this patch series
+> > > 1. Fixes MEI subsystem's component match callbacks to handle a component
+> > > device without any driver bound
+> > > 2. Registers a component for USB4 ports to link them to Type C
+> > > connectors, similar to USB ports.
+> > >
+> > > Heikki Krogerus (1):
+> > >   thunderbolt: Link USB4 ports to their USB Type-C connectors
+> > >
+> > > Won Chung (1):
+> > >   misc/mei: Add NULL check to component match callback functions
+> >
+> > The Thunderbolt patch looks good to me. Do you want me to take the both
+> > patches through the Thunderbolt tree or they can go separately? I need
+> > an ack from the mei maintainer it goes through my tree.
+> 
+> Hi Mika,
+> 
+> I would prefer the two patches to go to the same tree since it can
+> cause a crash with only the second patch (tbt). Would that sound okay?
 
-diff --git a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-index 0dbeb91f0bf2..de4388b512d7 100644
---- a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-@@ -1038,15 +1038,19 @@ static int wpcm450_gpio_register(struct platform_device *pdev,
- 			continue;
- 
- 		ret = fwnode_property_read_u32(child, "reg", &reg);
--		if (ret < 0)
-+		if (ret < 0) {
-+			fwnode_handle_put(child);
- 			return ret;
-+		}
- 
- 		gpio = &pctrl->gpio_bank[reg];
- 		gpio->pctrl = pctrl;
- 
--		if (reg >= WPCM450_NUM_BANKS)
-+		if (reg >= WPCM450_NUM_BANKS) {
-+			fwnode_handle_put(child);
- 			return dev_err_probe(dev, -EINVAL,
--					     "GPIO index %d out of range!\n", reg);
-+					"GPIO index %d out of range!\n", reg);
-+		}
- 
- 		bank = &wpcm450_banks[reg];
- 		gpio->bank = bank;
-@@ -1060,8 +1064,10 @@ static int wpcm450_gpio_register(struct platform_device *pdev,
- 		}
- 		ret = bgpio_init(&gpio->gc, dev, 4,
- 				 dat, set, NULL, dirout, NULL, flags);
--		if (ret < 0)
-+		if (ret < 0) {
-+			fwnode_handle_put(child);
- 			return dev_err_probe(dev, ret, "GPIO initialization failed\n");
-+		}
- 
- 		gpio->gc.ngpio = bank->length;
- 		gpio->gc.set_config = wpcm450_gpio_set_config;
-@@ -1074,8 +1080,11 @@ static int wpcm450_gpio_register(struct platform_device *pdev,
- 		girq->parent_handler = wpcm450_gpio_irqhandler;
- 		girq->parents = devm_kcalloc(dev, WPCM450_NUM_GPIO_IRQS,
- 					     sizeof(*girq->parents), GFP_KERNEL);
--		if (!girq->parents)
-+		if (!girq->parents) {
-+			fwnode_handle_put(child);
- 			return -ENOMEM;
-+		}
-+
- 		girq->default_type = IRQ_TYPE_NONE;
- 		girq->handler = handle_bad_irq;
- 
-@@ -1091,8 +1100,10 @@ static int wpcm450_gpio_register(struct platform_device *pdev,
- 		}
- 
- 		ret = devm_gpiochip_add_data(dev, &gpio->gc, gpio);
--		if (ret)
-+		if (ret) {
-+			fwnode_handle_put(child);
- 			return dev_err_probe(dev, ret, "Failed to add GPIO chip\n");
-+		}
- 	}
- 
- 	return 0;
--- 
-2.17.1
-
+Sounds good to me.
