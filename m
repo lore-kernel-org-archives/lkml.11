@@ -2,93 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08481C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386411AbiDUIH2 (ORCPT
+        id S1386449AbiDUIIX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        Thu, 21 Apr 2022 04:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355609AbiDUIHQ (ORCPT
+        with ESMTP id S1386414AbiDUIIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:07:16 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFD91DA42
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:04:27 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-e2afb80550so4658173fac.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:04:27 -0700 (PDT)
+        Thu, 21 Apr 2022 04:08:19 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DE11A812
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:05:30 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id e30so1939283eda.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:05:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5BVjlGwH06cTyu6muXsNBsyVK6oxj3UYMa0frNggqds=;
-        b=DW5A8NyrPu5kmtG6ZlwJsLfXNpG7VuBOeXgRhetvMBOfIpBJZ74ru8E03tjXxmvd+X
-         aTPl5MB8ba9gBc2hX7NQogMvyWug9swFGeE6el5EXsMuiVASFXiATSgRsneQ7tant1Ny
-         VsMSqP+yIbaMr8wWKqnDkjIRglGy/D6RQRzmmF08jDIB2uxobioRu0OouR6mGKOfmxAx
-         3T7JXsBZoaBjSw70q6iUm5umC9UUyMIY+Rbo5405g77+oTYcx1d62W7AtAWgp2as7pnp
-         htTdHxQt54wmw5KjhS2D6TVan8zS24RfO1Bf5JTZAqX3LhusLoz4k/SaUvktAw7xycvG
-         p0eA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q1EKn9j2FtU/5NboQOODHWM3vZN+UjF82zhvbN8nb9k=;
+        b=R6lSh2UFKaO74B3eWJIkVab0BloB6Dhobt1+TrxUz2TUSrZ8aLO3F9hQefyTcjUhlj
+         ckDeFsOklqGcLhkR5sJV0kAOmgoFfG4Q72gGWMd4urFPFKIrCAJC8eLau/K/eQAAcSmS
+         6oXfMhrc5olw+9+HHUb5K2w/rnaARWeTFxrayIQEveEUS2DabrRADVxOqSyNIg7eM5Ic
+         pwiUj3v9IX6l0E1uZRpCiXteqYpyHecVk4hm7LsyDu3Q4TJhlcroPTbwc1677itjAM+M
+         0T5ALxDxQI7gHkcyAnA/I02rW7hxNMkKH3FINIMp3XdYedIh/zquiuSySa4B00pJaJJl
+         cNIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5BVjlGwH06cTyu6muXsNBsyVK6oxj3UYMa0frNggqds=;
-        b=BHhE20mKRTEYGTfSnmLlS7LsnWIAozmLPX3LLe+PbaRx49Lj6TO4fTNb9o4mmI+vnE
-         oN3ssrajqVAZOgy8CCFyGbOGNBMI+38U9zJ5L0OCIAD2E000CQrLKZQqeSqMtZgNLn3D
-         +WlDlMXrBfPpFJJhr3E3gIHOOuCWw1cI+Kg75D8g2RVAFCZINZWYNhil2GMa/JjRlBu9
-         TIDgOvcdlQTWT5279RlY7QpuAKcba6GaAm6RVPsAIGqwJftaGaUSN4ruf3kmJ9QYXPOf
-         IUPdyzAvFLS5Lak/VchL8+eDnOwWuzsbt7LqcBE0s5E51ou86LCr6KtnXSCnAFR86InI
-         w4cg==
-X-Gm-Message-State: AOAM533MXlUm4XrEanZ42zzYFSWsuptueQ1dbZebTe+wOBz3zG/kdHIE
-        3ny5EvY5PH3J4OFJF2x7FQvLI6jk5k7xJNgGOfRXSQ==
-X-Google-Smtp-Source: ABdhPJxWY3/xQrMA/LGLDcUbYJsNHYAuaDCQ0ZZwkR5qeQGTshY+L+HBii+8hjXoK0Sn1TiQp41iyOWJUdQus1maen8=
-X-Received: by 2002:a05:6870:d254:b0:db:12b5:da3 with SMTP id
- h20-20020a056870d25400b000db12b50da3mr3327530oac.211.1650528266235; Thu, 21
- Apr 2022 01:04:26 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q1EKn9j2FtU/5NboQOODHWM3vZN+UjF82zhvbN8nb9k=;
+        b=iwzpsV++qUqGTx62d0ImYX58k/6E1Lw5/b+89Y4zM7Tpx1UXbwocJSfhaKaJyKCDtr
+         6rG1VU/i7eEKmFnp023S22TQ09biLBZurjP+EpwuVLD0GGvzSW9y0u/ZE5mHvzHZbcmW
+         1NJU3nyLsII9sOKpCVbtVhFRlvELUg1SUYWHhKteWv2x0PtVmd9Ha+tmEEZZO1K8D6uJ
+         zIntjjrZFQI8jaMQcp6aLosA79+XViUuQ+FdGs5dDWzxqmy3ZDx+bHpCnYLULGfn55KP
+         3RuOQ8CqRvmc8vrQfeDmYkKJhiuyvPyVQ+NuMawxoZX5KoT5WyVoXru4qOBvVA5VXEC5
+         0/ng==
+X-Gm-Message-State: AOAM533yCqwdKyk4a9Pf92XIBNbC50BAI/yTzZnBBkoj1bWayovHNpnO
+        bvV9ms88HCkpn1e7gzfE5s6E+g==
+X-Google-Smtp-Source: ABdhPJwPUX9PvxFwTkKf4Gh25rl6Mr51/zal0qNIX0et9fv15KBh9Cdf3j3ybGhi4AATK6awdkZjYg==
+X-Received: by 2002:a05:6402:2813:b0:424:1882:d064 with SMTP id h19-20020a056402281300b004241882d064mr9783221ede.357.1650528329430;
+        Thu, 21 Apr 2022 01:05:29 -0700 (PDT)
+Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id i20-20020aa7c714000000b0041fbd14c34bsm11207571edq.4.2022.04.21.01.05.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 01:05:29 -0700 (PDT)
+Message-ID: <43cb61ac-461f-e6ff-b495-44f8befde79f@linaro.org>
+Date:   Thu, 21 Apr 2022 10:05:28 +0200
 MIME-Version: 1.0
-References: <0000000000004ecea505c28504b9@google.com> <0000000000007b1cbd05dd1cab5a@google.com>
-In-Reply-To: <0000000000007b1cbd05dd1cab5a@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 21 Apr 2022 10:04:15 +0200
-Message-ID: <CACT4Y+ZWAFKBCnj18n8g8KsrQL9bxO7uCMmcQjk8-24G_caZHw@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in pm_qos_update_target
-To:     syzbot <syzbot+f7d9295d2565ee819d21@syzkaller.appspotmail.com>
-Cc:     alsa-devel@alsa-project.org, len.brown@intel.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        pavel@ucw.cz, perex@perex.cz, rjw@rjwysocki.net,
-        syzkaller-bugs@googlegroups.com, tiwai@suse.com, tiwai@suse.de
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 5/5] dt-bindings: arm: Add initial bindings for Nuvoton
+ Platform
+Content-Language: en-US
+To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
+Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
+        arnd@arndb.de, olof@lixom.net, will@kernel.org, soc@kernel.org,
+        cfli0@nuvoton.com
+References: <20220418082738.11301-1-ychuang3@nuvoton.com>
+ <20220418082738.11301-6-ychuang3@nuvoton.com>
+ <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
+ <caf4867f-7f71-9262-f190-463325eb13ab@nuvoton.com>
+ <4e9eaede-2208-bd73-35ae-89e128562653@linaro.org>
+ <80994f4b-136f-7669-4674-0c9826e88248@nuvoton.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <80994f4b-136f-7669-4674-0c9826e88248@nuvoton.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 at 23:28, syzbot
-<syzbot+f7d9295d2565ee819d21@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit 3c3201f8c7bb77eb53b08a3ca8d9a4ddc500b4c0
-> Author: Takashi Iwai <tiwai@suse.de>
-> Date:   Tue Mar 22 17:07:19 2022 +0000
->
->     ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=104e3034f00000
-> start commit:   dbb5afad100a ptrace: make ptrace() fail if the tracee chan..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=91ff0467ce169bc
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f7d9295d2565ee819d21
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16c75e73d00000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+On 21/04/2022 10:04, Jacky Huang wrote:
+> 
+> 
+> On 2022/4/21 下午 02:56, Krzysztof Kozlowski wrote:
+>> On 21/04/2022 08:39, Jacky Huang wrote:
+>>>
+>>> On 2022/4/18 下午 08:11, Krzysztof Kozlowski wrote:
+>>>> On 18/04/2022 10:27, Jacky Huang wrote:
+>>>>> +properties:
+>>>>> +  $nodename:
+>>>>> +    const: '/'
+>>>>> +  compatible:
+>>>>> +    items:
+>>>>> +      - enum:
+>>>>> +          - nuvoton,ma35d1
+>>>>> +          - nuvoton,ma35d1-evb
+>>>>> +          - nuvoton,ma35d1-iot
+>>>>> +          - nuvoton,ma35d1-som512
+>>>>> +          - nuvoton,ma35d1-som1g
+>>>> This does not match your DTS and does not look reasonable (SoC
+>>>> compatible should not be part of this enum). Check some other board
+>>>> bindings for examples.
+>>>>
+>>>>
+>>>> Best regards,
+>>>> Krzysztof
+>>> I would like to modify it as follows:
+>>>
+>>> description: |
+>>>     Boards with an ARMv8 based Nuvoton SoC shall have the following
+>>>     properties.
+>>>
+>>> properties:
+>>>     $nodename:
+>>>       const: '/'
+>>>     compatible:
+>>>       oneOf:
+>>>
+>>>         - description: MA35D1 evaluation board
+>>>           items:
+>>>             - const: nuvoton,ma35d1-evb
+>>>             - const: nuvoton,ma35d1
+>>>
+>>>         - description: MA35D1 IoT board
+>>>           items:
+>>>             - const: nuvoton,ma35d1-iot
+>> Instead just enum with all board compatibles.
+> 
+> How about to modify it as the follows:
+> 
+>    compatible:
+>      oneOf:
+> 
+>        - description: MA35D1 evaluation board
+>          items:
+>            - enum:
+>                - nuvoton,ma35d1-evb
+>            - const: nuvoton,ma35d1
+> 
+>        - description: MA35D1 IoT board
+>          items:
+>            - enum:
+>                - nuvoton,ma35d1-iot
+>            - const: nuvoton,ma35d1
+> 
+>        - description: MA35D1 SOM board
+>          items:
+>            - enum:
+>                - nuvoton,ma35d1-som512
+>                - nuvoton,ma35d1-som1g
+>            - const: nuvoton,ma35d1
+> 
+
+It's still almost the same. All boards together. You can add a comment
+next to the compatible if you want some user-friendly name.
 
 
-Looks legit, that code is in the stack trace:
-
-#syz fix:
-ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
+Best regards,
+Krzysztof
