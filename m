@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A04C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA95AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385191AbiDUGsm (ORCPT
+        id S1385159AbiDUGsw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        Thu, 21 Apr 2022 02:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385405AbiDUGrs (ORCPT
+        with ESMTP id S1385395AbiDUGrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 02:47:48 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27FE5F71
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:44:54 -0700 (PDT)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55417F1F
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523494; x=1682059494;
+  t=1650523493; x=1682059493;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=L3BomUbahSMPZzmxaKoJr9l1taXJtzFxAxh5XsF74Ig=;
-  b=QXPz696pGIg1dBXeqC37jb5verqYKdE2aIghuKQTGokXqIhMFCZnNKfr
-   Q3jhKebOxCTGxEwXtpNHSYVMB9Ifes7KMYNN2rhlsgM/TpmTfnioYCodT
-   T6keDoe1YtTTeXE9XcJrZuhY56E7SYk+G4m0QV8LXAR/xnjsop86feRcA
-   GJ9cxQzf+PVr3f+WqD4E9bUtl9z8nDNUCj32SDJvBZd1qg6ty3mw43+Wr
-   pkleGGDXYcjTTxlnAE4N5rdkTKD4AcOAvcLeFju5FLDcVNYHBRLcdewAG
-   aPEWUwpdY/pTmVSoMf7UBWWK/nGVkG3rTJPekuAXvz6k50kKnezG+IRdH
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264022421"
+  bh=EbS87KL5VPkTKHKMhwfU53bwvY+Q0qgi2a2RTEZdUuQ=;
+  b=f89lanhece3YyOiV38sIXsFkmAOT79XdCwufeVqVTg9AIsQWdTWsA39E
+   +kMt3ctCX+y12sC1VfZRTqHSCn09sqKGHe+EvOdWHhRAvfOy0994FODDX
+   q4AL+Imqqvm873Bv9ACeV39jYnn3TDel6Wv/l2Hmv8TE/xgEYKT6fOaGK
+   NfDfzOYlJf/f4xY9yYqg19BzZ49YJJvxT8i4PVOkGlXEIn+7fuvIjV6jr
+   APOaMliUjRP4OLdBDr0ysNfXZPggmZR3thjG4mxwqQHYiVFDnWGO0x0rc
+   tdVLb9RQ1eX6reNTdKFKgYszYjlYBeB3Htm4UH1jwfZKiKhonfST8Uahj
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="289369629"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="264022421"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:44:53 -0700
+   d="scan'208";a="289369629"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:44:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="532793801"
+   d="scan'208";a="658392046"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 20 Apr 2022 23:44:52 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 20 Apr 2022 23:44:52 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQYd-000825-I8;
+        id 1nhQYd-00081z-GM;
         Thu, 21 Apr 2022 06:44:51 +0000
-Date:   Thu, 21 Apr 2022 14:44:25 +0800
+Date:   Thu, 21 Apr 2022 14:44:32 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Ingo Molnar <mingo@kernel.org>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1933/2579] lib/memcat_p.c:10:8: warning: no
- previous prototype for '__memcat_p'
-Message-ID: <202204210956.Xu01pPZP-lkp@intel.com>
+Subject: [mingo-tip:sched/headers 2005/2579] net/ipv6/mcast.c:258:5: warning:
+ no previous prototype for 'ipv6_sock_mc_join_ssm'
+Message-ID: <202204211115.AswnonHW-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -58,43 +58,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
 head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: b17c57b9f326f544a10178f2be4c886c4b02b4f3 [1933/2579] headers/deps: smp: Optimize <linux/smp.h> dependencies, remove <linux/smp_api.h> inclusion
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220421/202204210956.Xu01pPZP-lkp@intel.com/config)
+commit: c69b0b89e88734be4e9bf8aad8f3fbcbf0b05df9 [2005/2579] headers/deps: net: Split <net/ipv6_api_sock.h> header out of <net/ipv6.h>
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220421/202204211115.AswnonHW-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=b17c57b9f326f544a10178f2be4c886c4b02b4f3
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=c69b0b89e88734be4e9bf8aad8f3fbcbf0b05df9
         git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
         git fetch --no-tags mingo-tip sched/headers
-        git checkout b17c57b9f326f544a10178f2be4c886c4b02b4f3
+        git checkout c69b0b89e88734be4e9bf8aad8f3fbcbf0b05df9
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/pci/ fs/crypto/ net/ipv6/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> lib/memcat_p.c:10:8: warning: no previous prototype for '__memcat_p' [-Wmissing-prototypes]
-      10 | void **__memcat_p(void **a, void **b)
-         |        ^~~~~~~~~~
+>> net/ipv6/mcast.c:258:5: warning: no previous prototype for 'ipv6_sock_mc_join_ssm' [-Wmissing-prototypes]
+     258 | int ipv6_sock_mc_join_ssm(struct sock *sk, int ifindex,
+         |     ^~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/__memcat_p +10 lib/memcat_p.c
+vim +/ipv6_sock_mc_join_ssm +258 net/ipv6/mcast.c
 
-93048c0944150b3 Alexander Shishkin 2018-10-16   4  
-93048c0944150b3 Alexander Shishkin 2018-10-16   5  /*
-93048c0944150b3 Alexander Shishkin 2018-10-16   6   * Merge two NULL-terminated pointer arrays into a newly allocated
-93048c0944150b3 Alexander Shishkin 2018-10-16   7   * array, which is also NULL-terminated. Nomenclature is inspired by
-93048c0944150b3 Alexander Shishkin 2018-10-16   8   * memset_p() and memcat() found elsewhere in the kernel source tree.
-93048c0944150b3 Alexander Shishkin 2018-10-16   9   */
-93048c0944150b3 Alexander Shishkin 2018-10-16 @10  void **__memcat_p(void **a, void **b)
+^1da177e4c3f415 Linus Torvalds 2005-04-16  257  
+c7ea20c9da5b94e Hangbin Liu    2018-07-10 @258  int ipv6_sock_mc_join_ssm(struct sock *sk, int ifindex,
+c7ea20c9da5b94e Hangbin Liu    2018-07-10  259  			  const struct in6_addr *addr, unsigned int mode)
+c7ea20c9da5b94e Hangbin Liu    2018-07-10  260  {
+c7ea20c9da5b94e Hangbin Liu    2018-07-10  261  	return __ipv6_sock_mc_join(sk, ifindex, addr, mode);
+c7ea20c9da5b94e Hangbin Liu    2018-07-10  262  }
+c7ea20c9da5b94e Hangbin Liu    2018-07-10  263  
 
-:::::: The code at line 10 was first introduced by commit
-:::::: 93048c0944150b316a15f92c41a4d626c8df37fd lib: Fix ia64 bootloader linkage
+:::::: The code at line 258 was first introduced by commit
+:::::: c7ea20c9da5b94e400c8dcc0adb99411f2e430a6 ipv6/mcast: init as INCLUDE when join SSM INCLUDE group
 
-:::::: TO: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+:::::: TO: Hangbin Liu <liuhangbin@gmail.com>
+:::::: CC: David S. Miller <davem@davemloft.net>
 
 -- 
 0-DAY CI Kernel Test Service
