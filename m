@@ -2,108 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57333C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391637AbiDUS70 (ORCPT
+        id S1391643AbiDUTAG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        Thu, 21 Apr 2022 15:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391632AbiDUS7X (ORCPT
+        with ESMTP id S1391632AbiDUTAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:59:23 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E511827E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:56:32 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id q129so6591268oif.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:56:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j9sL2H/ZOCgnGpcLG1QjlGRXlzPJ6+xsVS4xIVbj648=;
-        b=U7gH6Y8/gtoBXxgZJPMG8CGv9KcR7ZrYZTq7+b3/nIpbx5kUC5y46QJc5psKZOjjnS
-         lUFUGBRoARQfa0YNrcleaNr6peO/QEZyTMSlte1wpLCHf5DcdnT0sX/LTrOUkHNR12Pf
-         reHzDhx6g6JMUfGk8bbgO0fJbV7QSFsrP6VbZcKeSk1Couwd0oPCmcwoN0sakIp32M/8
-         VQ8EhE0a8O+1Pe0LdenvWdzVOjN/IpI0oTjgcRiVP5fnNGqzmuzR4dSoyizkE/pfMzEi
-         Mrv4RuXQ1iFThF4qgPggmtXH29D2j2ZU1pcpT6Fe99K7oA04JPElztfRcharVx1Yyoun
-         V0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j9sL2H/ZOCgnGpcLG1QjlGRXlzPJ6+xsVS4xIVbj648=;
-        b=nKinnZCPnn52KkBo55SKeOxs/dh/7aWsZkBu5tcdzvZPUu2jHNFxVjPWG7LvtCq4V1
-         K//MU+XufcAnVrgpCNJTrNrlb4X0vW8SvzvohR7Vag39wbOOS5WWcANXO9Y8lOR6+yGo
-         E28v6Xwq3s/+JftVBG9NlgCKMKuicnwaKl42T/cyZ3aGch+KDh8K7VSiPq0Qc2aQRTVZ
-         Xocyz0pgx8M3SVXUAyA81qstrSHoZ3PyWZiHh3HAZYlQmpox/gK3T6PL00keu5zCHS9R
-         ytJAyz3+b1Lf5mVkdN2o7/GQ3zcss0k1NPD5YiyZFh6+otDBB0/p8gY8fRFgzM8SGSBY
-         5rBQ==
-X-Gm-Message-State: AOAM530UIeDaIVMqXwkb9QXiuWWTEsmobEKBPWp8vA+nNzAhA5pBvbYR
-        pLt8gGCO1G1/OBoUHkrT5Cp+Nost59M5Y7MMdjg=
-X-Google-Smtp-Source: ABdhPJwLdWLO/LYGJwyf3cCJC09phqh2XODcHF9eMQtvVXcbdqxWLm16Xwe+1+u9QK7jzNKWtZKhwON2O2YpO4T0fgI=
-X-Received: by 2002:aca:1306:0:b0:322:9104:6cf9 with SMTP id
- e6-20020aca1306000000b0032291046cf9mr560869oii.112.1650567392285; Thu, 21 Apr
- 2022 11:56:32 -0700 (PDT)
+        Thu, 21 Apr 2022 15:00:05 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A611171
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:57:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=7GHKFnbj3QVvMVmD5+xSq/YafPBrluK6Cd8roIkA8zs=; b=Dz2MqSeh7ovHxEfejHz4J5gTG7
+        /6fJtO9omLvMzbPglH+V8GwzBX1v+4Xa/QD/6EYVT3wHY+IYiD6vBoxyri1vRbcbeyiP6emn/FMMa
+        j/DYcrfPckvApvmMytsQLWAqIxnbNXUe7fdQeaXr42bscxgdJ98q1i7z0znWm+av7140+egbpceNB
+        a68kXQaJlSMmkrH5D+CDFgEdEfBcK8R8lItGhBDvLij83ugWBNbMAW2zlUK+9sz748sm/8SLeNVRL
+        YyPHcuHQ0bUogr9k4kiOoDU+yYjvX5KZS3BghqDaz3h8LpDLoFUAs34PaaCn7n6QxslcL0FdqZoOd
+        io03t7WQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nhbzB-00EifQ-LQ; Thu, 21 Apr 2022 18:57:01 +0000
+Date:   Thu, 21 Apr 2022 11:57:01 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mingo@redhat.com, YueHaibing <yuehaibing@huawei.com>,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        mcgrof@kernel.org
+Subject: [PATCH] ftrace: fix building with SYSCTL=y but DYNAMIC_FTRACE=n
+Message-ID: <YmGo/TcNVzOK4Bjn@bombadil.infradead.org>
 MIME-Version: 1.0
-References: <20220411102136.14937-1-makvihas@gmail.com> <3484215.R56niFO833@leap>
- <20220412151529.GF3293@kadam> <3134226.AJdgDx1Vlc@leap> <20220413054252.GR12805@kadam>
-In-Reply-To: <20220413054252.GR12805@kadam>
-From:   Vihas Makwana <makvihas@gmail.com>
-Date:   Fri, 22 Apr 2022 00:26:21 +0530
-Message-ID: <CAH1kMwT0gyQNB1-j62-2ntJD9Lobsmr8-5h6n6-SJ44wykMyHQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/7] drop some unnecessary wrappers
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Did this patch series get lost?
-just pinging :)
+Ok so hopefully this is the last of it. 0day picked up a build
+failure [0] when SYSCTL=y but DYNAMIC_FTRACE=n. This can be fixed
+by just declaring an empty routine for the calls moved just
+recently.
 
-On Wed, Apr 13, 2022 at 11:13 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> On Tue, Apr 12, 2022 at 06:08:24PM +0200, Fabio M. De Francesco wrote:
-> > On marted? 12 aprile 2022 17:15:29 CEST Dan Carpenter wrote:
-> > > On Tue, Apr 12, 2022 at 11:53:42AM +0200, Fabio M. De Francesco wrote:
-> > > > I didn't suggest a re-write of the commit messages.
-> > >
-> > > Yes.  That's the problem.  If you want to complain about a commit
-> > > message then you *should* suggest how you would re-write it.  Otherwise
-> > > how are we supposed to read your mind?
-> >
-> > Ah, sorry. I had missed that you were asking for a re-write (literally).
-> >
-> > Here it is a sort of diff on Vihas' patch:
-> >
-> > - [PATCH v2 1/7] staging: r8188eu: drop unnecessary wrapper _rtw_free_cmd_priv
-> > + [PATCH v2 1/7] staging: r8188eu: drop unnecessary helper _rtw_free_cmd_priv()
-> >
-> > - Drop unnecessary wrapper _rtw_free_cmd_priv and move its logic to
-> > - rtw_free_cmd_priv.
-> > + Drop unnecessary helper (wrapped function) _rtw_free_cmd_priv() and
-> > + move its code to the wrapper rtw_free_cmd_priv().
-> >
->
-> I kind of feel like the original is better.  Why would we want to remove
-> helper functions?  Helper functions are ok.  What we don't like are
-> pointless wrapper functions.  The whole motivation for the patch is to
-> remove wrapper functions and that's what it does.
->
-> regards,
-> dan carpenter
->
+[0] https://lkml.kernel.org/r/202204161203.6dSlgKJX-lkp@intel.com
 
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: f8b7d2b4c192 ("ftrace: fix building with SYSCTL=n but DYNAMIC_FTRACE=y")
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+---
+ kernel/trace/ftrace.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index d9424fd9a183..1f89039f0feb 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -7873,6 +7873,8 @@ int unregister_ftrace_function(struct ftrace_ops *ops)
+ EXPORT_SYMBOL_GPL(unregister_ftrace_function);
+ 
+ #ifdef CONFIG_SYSCTL
++
++#ifdef CONFIG_DYNAMIC_FTRACE
+ static void ftrace_startup_sysctl(void)
+ {
+ 	int command;
+@@ -7906,6 +7908,10 @@ static void ftrace_shutdown_sysctl(void)
+ 		ftrace_run_update_code(command);
+ 	}
+ }
++#else
++# define ftrace_startup_sysctl()       do { } while (0)
++# define ftrace_shutdown_sysctl()      do { } while (0)
++#endif /* CONFIG_DYNAMIC_FTRACE */
+ 
+ static bool is_permanent_ops_registered(void)
+ {
 -- 
-Thanks,
-Vihas
+2.35.1
+
