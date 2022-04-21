@@ -2,82 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E628C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389176AbiDUOXY (ORCPT
+        id S1389137AbiDUOYA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
+        Thu, 21 Apr 2022 10:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389170AbiDUOWp (ORCPT
+        with ESMTP id S1377277AbiDUOX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:22:45 -0400
+        Thu, 21 Apr 2022 10:23:57 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA7321129
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:19:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9A013B54E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:21:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650550795;
+        s=mimecast20190719; t=1650550866;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gh/ekHtIZZN+60K/0LRwMMxguSuLO/6ec0oEYzv6z7I=;
-        b=egIjlBf1dj8EQGnF3hNLh/tUbdxNKGHUTX2CXy3F1xZ66rrMWZirKjxDU/lTyp2R9QTaqz
-        vGYM66o4IV61UfRY8C8LEXIlQbQxReN4J0U1hkSGui+ZiYHxjvwspy+X/XrqPdsbzsNZwB
-        xhrlOU+zaIeFtbQ1g54c9iOjMKh+UDo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=H5k1rgXE1P7IbK6cMqND8jHr8Tf+eEFak/sZ9mPOKJY=;
+        b=XnHKpQdEXkj8ZazcxeVavhPMFNJYF9xNggM9ZTKcavrsWLHdWRvWFPAkujCELGrrCYZeyq
+        GHlP+n/R+cT+c7YVocEoqIZbk9/Wvvz/jXiZWOh4PSFFUiS1qYVgZ1JjjPHHeimfbcEzw5
+        xaM8c3pr5T9LPZQj5VQDXC6iuSfmmW0=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-457-RQwT9gTFMziTC2qMODELuw-1; Thu, 21 Apr 2022 10:19:47 -0400
-X-MC-Unique: RQwT9gTFMziTC2qMODELuw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA0D62822A20;
-        Thu, 21 Apr 2022 14:19:46 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 65E59111E3FA;
-        Thu, 21 Apr 2022 14:19:44 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220415123614.54024-8-jefflexu@linux.alibaba.com>
-References: <20220415123614.54024-8-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-Subject: Re: [PATCH v9 07/21] cachefiles: add tracepoints for on-demand read mode
+ us-mta-617-Z9VWvBWrMk66fPw5j7arhw-1; Thu, 21 Apr 2022 10:21:05 -0400
+X-MC-Unique: Z9VWvBWrMk66fPw5j7arhw-1
+Received: by mail-qv1-f71.google.com with SMTP id kd13-20020a056214400d00b0044c066d97dbso2273855qvb.22
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:21:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H5k1rgXE1P7IbK6cMqND8jHr8Tf+eEFak/sZ9mPOKJY=;
+        b=EPjr6R1u1153nfsS8aqbIeY3rNwTDEyfVEtK86+0VAzShO4MBHO/47sGRQW3BFpLr1
+         W8Gw/GDRF5DbUlxhNHmI7yvGP9e4PM54fTTmg6rh+BS6lNWMxNLrXUSYok+Tn0uJXqJu
+         LOYmYBROmKByFjQ8d5Q1xuzN/syJluw+ddpxW+FG4OIF+tihE1jGTjAs4p3PnY2S0rAQ
+         yxWoL0+SL0yYfGbe0kj7zHVdJLYyIIbtRTsyPQs51qjzJYybrNnUFoD5UML9EhYy4hAH
+         e60DYu/eNi28wY+2UIawJxZPpqcGiAwrR1SLuE1TvZWhAaCi7m/QmAEANq7Jths0AqtJ
+         LJHg==
+X-Gm-Message-State: AOAM532UsONTELcbKiJ8kQwsByLAZpYpD75IUoN+YUiQyJ7fSIZfj9Aw
+        GfYm/0/iD5de/aaNDFWodSZ5RNLWr0+6WkPs46E0Q8VUu9LgBALkiushjy5D31T4vocgr2XW4+U
+        C5D+h81QJmX0jkqBizGyQ6vQ6
+X-Received: by 2002:ac8:7088:0:b0:2f1:e898:2971 with SMTP id y8-20020ac87088000000b002f1e8982971mr17388772qto.152.1650550864999;
+        Thu, 21 Apr 2022 07:21:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzxT8nLASqLzLkqUhCnNzC+DSX/0wzDIp2IM7/27GwXj/kq8GhqiNKzl6Dba3zy6dUouhyaww==
+X-Received: by 2002:ac8:7088:0:b0:2f1:e898:2971 with SMTP id y8-20020ac87088000000b002f1e8982971mr17388760qto.152.1650550864784;
+        Thu, 21 Apr 2022 07:21:04 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id j131-20020a37a089000000b0069e7ebc625bsm2881419qke.78.2022.04.21.07.21.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 07:21:04 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     airlied@redhat.com, kraxel@redhat.com, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] drm/qxl: remove qxl_log_level global
+Date:   Thu, 21 Apr 2022 10:20:54 -0400
+Message-Id: <20220421142054.3751507-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1445790.1650550783.1@warthog.procyon.org.uk>
-Date:   Thu, 21 Apr 2022 15:19:43 +0100
-Message-ID: <1445791.1650550783@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+Smatch reports this issue
+qxl_kms.c:36:5: warning: symbol 'qxl_log_level' was not declared. Should it be static?
 
-> Add tracepoints for on-demand read mode. Currently following tracepoints
-> are added:
-> 
-> 	OPEN request / COPEN reply
-> 	CLOSE request
-> 	READ request / CREAD reply
-> 	write through anonymous fd
-> 	release of anonymous fd
-> 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+qxl_log_level is defined qxl_kms.c but unused, so remove.
 
-Acked-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/gpu/drm/qxl/qxl_kms.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/qxl/qxl_kms.c b/drivers/gpu/drm/qxl/qxl_kms.c
+index a054e4a00fe8..9bf6d4cc98d4 100644
+--- a/drivers/gpu/drm/qxl/qxl_kms.c
++++ b/drivers/gpu/drm/qxl/qxl_kms.c
+@@ -33,8 +33,6 @@
+ #include "qxl_drv.h"
+ #include "qxl_object.h"
+ 
+-int qxl_log_level;
+-
+ static bool qxl_check_device(struct qxl_device *qdev)
+ {
+ 	struct qxl_rom *rom = qdev->rom;
+-- 
+2.27.0
 
