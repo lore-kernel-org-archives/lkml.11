@@ -2,65 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8970C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392322AbiDUU2Z (ORCPT
+        id S1392328AbiDUU2i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46240 "EHLO
+        Thu, 21 Apr 2022 16:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392313AbiDUU2V (ORCPT
+        with ESMTP id S1392313AbiDUU2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 16:28:21 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCDF3FBD1;
-        Thu, 21 Apr 2022 13:25:30 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R631e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VAhNoEG_1650572724;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VAhNoEG_1650572724)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 22 Apr 2022 04:25:28 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     clm@fb.com
-Cc:     josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] btrfs: zoned: Fix non-kernel-doc comment
-Date:   Fri, 22 Apr 2022 04:25:18 +0800
-Message-Id: <20220421202518.128992-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Thu, 21 Apr 2022 16:28:36 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC04033895
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650572745; x=1682108745;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=SQgqDQzbQI90mASehWeKiklm60MKpj1pVexG2Vkd0s0=;
+  b=ZuJMUVyy/cIxKzejSBKv2v66T5LCzeNcuGBosX9IH4czMswqoSp9YFsC
+   55ju+v/c6mDM7SGCO02R5wh40kmf4/PjUTgNU8einURc9/d+L9WIRZoGD
+   r68DfIBNHDI+ic6JkPjWfmJ1+HOZ+tr9msGdP1E7irbSz1idwDmDxJPyl
+   ixt215vOvQkFJPaRj1PcnXwB5A2dJuZyTxle5ssblfl5XFjsw80Sq+SfO
+   Xhh1pQGbH4jS+cTPWJgG4jRYbob58m0AeEHBwDMIndHfXPoJlsCiSmHOh
+   LWk+EC+dxOso/IJEhXtWNZ0w5AhbonrrpXnWF5+Hrn7L9fcm0uYAvatd8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245045025"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="245045025"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 13:25:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="703235799"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Apr 2022 13:25:44 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhdN1-0008ku-IY;
+        Thu, 21 Apr 2022 20:25:43 +0000
+Date:   Fri, 22 Apr 2022 04:25:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
+Subject: drivers/base/topology.c:158:38: error: use of undeclared identifier
+ 'boot_cpu_data'
+Message-ID: <202204220442.JKPnWIAg-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes the following W=1 kernel build warning:
+tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220422-002853/Luck-Tony/topology-sysfs-Fix-allnoconfig-build-breakage/20220421-235053
+head:   8aad1c48b8885d9febd55ecbc5915032cfe857bc
+commit: 8aad1c48b8885d9febd55ecbc5915032cfe857bc topology/sysfs: Fix allnoconfig build breakage.
+date:   4 hours ago
+config: hexagon-randconfig-r041-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220442.JKPnWIAg-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/8aad1c48b8885d9febd55ecbc5915032cfe857bc
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review UPDATE-20220422-002853/Luck-Tony/topology-sysfs-Fix-allnoconfig-build-breakage/20220421-235053
+        git checkout 8aad1c48b8885d9febd55ecbc5915032cfe857bc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/base/
 
-fs/btrfs/zoned.c:1811: warning: This comment starts with '/**', but
-isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
- * Activate block group and underlying device zones
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- fs/btrfs/zoned.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/fs/btrfs/zoned.c b/fs/btrfs/zoned.c
-index 081df456d6df..5da40e190942 100644
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -1808,7 +1808,7 @@ struct btrfs_device *btrfs_zoned_get_device(struct btrfs_fs_info *fs_info,
- }
- 
- /**
-- * Activate block group and underlying device zones
-+ * btrfs_zone_activate() - Activate block group and underlying device zones
-  *
-  * @block_group: the block group to activate
-  *
+>> drivers/base/topology.c:158:38: error: use of undeclared identifier 'boot_cpu_data'
+           if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+                                               ^
+   1 error generated.
+
+
+vim +/boot_cpu_data +158 drivers/base/topology.c
+
+   154	
+   155	static umode_t topology_is_visible(struct kobject *kobj,
+   156					   struct attribute *attr, int unused)
+   157	{
+ > 158		if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+   159			return 0;
+   160	
+   161		return attr->mode;
+   162	}
+   163	
+
 -- 
-2.20.1.7.g153144c
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
