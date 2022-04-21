@@ -2,199 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 433F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390270AbiDUPpo (ORCPT
+        id S1390288AbiDUPp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
+        Thu, 21 Apr 2022 11:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390247AbiDUPpd (ORCPT
+        with ESMTP id S1390347AbiDUPpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:45:33 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA848338;
-        Thu, 21 Apr 2022 08:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650555729; x=1682091729;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iyrtmVX8R4qF7b2JnARY9AoUPuBqnatgrb6GHKPVUl8=;
-  b=ADHoZnqL2pTqR2zIOmGchApPNq0NStekraZsNUiFiRSkNE+g/ftJhJDD
-   kh3uKS959Rrhb6qPpiQNof3BxKKAaaMMa1dsRvC+0UabfQeBrbwb6rx47
-   OXmKdEWZF5tNoZQg1sQwFbYCk3nmJfzt+7qk1JQbToC1Ht5PIq2BlXTdc
-   rvJCJqlXOb78nDzGWEBx/8NvRF46nFqP72hgPrsHKTczE4xsA6n4k06cv
-   Rfgw+5nwYkfYykQpecauAXfJ1nuLjgn5AIxpmw0FWDta3xGMl7WCGnjms
-   eBExlgr6mEFcDVVgp9jlTpgUbzGNMn3T22zN83FGdZd1eIa/TlhGwtXSV
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="261993861"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="261993861"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:41:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="577302302"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 21 Apr 2022 08:41:48 -0700
-Date:   Thu, 21 Apr 2022 23:34:11 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        Thu, 21 Apr 2022 11:45:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09BE49250
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:42:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4D6E5CE2420
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:42:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE24C385A5;
+        Thu, 21 Apr 2022 15:42:03 +0000 (UTC)
+Date:   Thu, 21 Apr 2022 11:42:01 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>, cj.chengjian@huawei.com,
+        huawei.libin@huawei.com, xiexiuqi@huawei.com, liwei391@huawei.com,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        git@xilinx.com
-Subject: Re: [PATCH v5 2/5] fpga: fix for coding style issues
-Message-ID: <20220421153411.GA347460@yilunxu-OptiPlex-7050>
-References: <20220421044744.3777983-1-nava.manne@xilinx.com>
- <20220421044744.3777983-3-nava.manne@xilinx.com>
+        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+Message-ID: <20220421114201.21228eeb@gandalf.local.home>
+In-Reply-To: <YmF0xYpTMoWOIl00@lakrids>
+References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+        <20220316100132.244849-4-bobo.shaobowang@huawei.com>
+        <YmFXrBG5AmX3+4f8@lakrids>
+        <20220421100639.03c0d123@gandalf.local.home>
+        <YmF0xYpTMoWOIl00@lakrids>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421044744.3777983-3-nava.manne@xilinx.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 10:17:41AM +0530, Nava kishore Manne wrote:
-> fixes the below checks reported by checkpatch.pl:
-> - Lines should not end with a '('
-> - Alignment should match open parenthesis
+On Thu, 21 Apr 2022 16:14:13 +0100
+Mark Rutland <mark.rutland@arm.com> wrote:
+
+> > Let's say you have 10 ftrace_ops registered (with bpf and kprobes this can
+> > be quite common). But each of these ftrace_ops traces a function (or
+> > functions) that are not being traced by the other ftrace_ops. That is, each
+> > ftrace_ops has its own unique function(s) that they are tracing. One could
+> > be tracing schedule, the other could be tracing ksoftirqd_should_run
+> > (whatever).  
 > 
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
+> Ok, so that's when messing around with bpf or kprobes, and not generally
+> when using plain old ftrace functionality under /sys/kernel/tracing/
+> (unless that's concurrent with one of the former, as per your other
+> reply) ?
 
-Sorry, the checkpatch maintainer Joe gives comments after my Acked-by,
-so maybe more changes should be made, see my comments inline.
-
-And if you have more changes than expectation, it is better to remove the
-Acked-by/Reviewed-by tags, otherwise people thought the reviewers are
-good to new changes which are actually not checked at all.
-
-> ---
-> Changes for v2:
->                 -None.
-> Changes for v3:
->                -Fixed similar issue exists in "drivers/fpga/*".
-> Changes for v4:
->                -None.
-> Changes for v5:
->               - Reduced the length of the 'fpga_mgr_write_init(...)' API
->                 as suggested by Joe.
->               - To align Include declaration and definition of APIs updated
->                 the FPGA-region.h file as suggested by joe.
-
-The of_fpga_region_parse_ov() changes are also new to us.
+It's any user of the ftrace infrastructure, which includes kprobes, bpf,
+perf, function tracing, function graph tracing, and also affects instances.
 
 > 
->  drivers/fpga/fpga-mgr.c          | 4 ++--
->  drivers/fpga/fpga-region.c       | 7 ++++---
->  drivers/fpga/of-fpga-region.c    | 6 +++---
->  include/linux/fpga/fpga-region.h | 7 ++++---
->  4 files changed, 13 insertions(+), 11 deletions(-)
+> > Without this change, because the arch does not support dynamically
+> > allocated trampolines, it means that all these ftrace_ops will be
+> > registered to the same trampoline. That means, for every function that is
+> > traced, it will loop through all 10 of theses ftrace_ops and check their
+> > hashes to see if their callback should be called or not.  
 > 
-> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-> index d49a9ce34568..d9a2aad7b35f 100644
-> --- a/drivers/fpga/fpga-mgr.c
-> +++ b/drivers/fpga/fpga-mgr.c
-> @@ -148,11 +148,11 @@ static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
->  	int ret;
->  
->  	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
-> +	count = min(mgr->mops->initial_header_size, count);
+> Sure; I can see how that can be quite expensive.
+> 
+> What I'm trying to figure out is who this matters to and when, since the
+> implementation is going to come with a bunch of subtle/fractal
+> complexities, and likely a substantial overhead too when enabling or
+> disabling tracing of a patch-site. I'd like to understand the trade-offs
+> better.
+> 
+> > With dynamically allocated trampolines, each ftrace_ops will have their own
+> > trampoline, and that trampoline will be called directly if the function
+> > is only being traced by the one ftrace_ops. This is much more efficient.
+> > 
+> > If a function is traced by more than one ftrace_ops, then it falls back to
+> > the loop.  
+> 
+> I see -- so the dynamic trampoline is just to get the ops? Or is that
+> doing additional things?
 
-Move the line in 'else' block, cause the count is not used
-if(!mgr->mops->initial_header_size).
+It's to get both the ftrace_ops (as that's one of the parameters) as well
+as to call the callback directly. Not sure if arm is affected by spectre,
+but the "loop" function is filled with indirect function calls, where as
+the dynamic trampolines call the callback directly.
 
->  	if (!mgr->mops->initial_header_size)
->  		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
->  	else
-> -		ret = fpga_mgr_write_init(
-> -		    mgr, info, buf, min(mgr->mops->initial_header_size, count));
-> +		ret = fpga_mgr_write_init(mgr, info, buf, count);
->  
->  	if (ret) {
->  		dev_err(&mgr->dev, "Error preparing FPGA for writing\n");
-> diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
-> index b0ac18de4885..3864bf4f8920 100644
-> --- a/drivers/fpga/fpga-region.c
-> +++ b/drivers/fpga/fpga-region.c
-> @@ -18,9 +18,10 @@
->  static DEFINE_IDA(fpga_region_ida);
->  static struct class *fpga_region_class;
->  
-> -struct fpga_region *fpga_region_class_find(
-> -	struct device *start, const void *data,
-> -	int (*match)(struct device *, const void *))
-> +struct fpga_region *fpga_region_class_find(struct device *start,
-> +					   const void *data,
-> +					   int (*match)(struct device *,
-> +							const void *))
+Instead of:
 
-According to Joe's suggestion, it had better be:
+  bl ftrace_caller
 
-struct fpga_region *
-fpga_region_class_find(struct device *start, const void *data,
-		       int (*match)(struct device *, const void *))
+ftrace_caller:
+  [..]
+  bl ftrace_ops_list_func
+  [..]
 
 
->  {
->  	struct device *dev;
->  
-> diff --git a/drivers/fpga/of-fpga-region.c b/drivers/fpga/of-fpga-region.c
-> index 50b83057c048..55209737075f 100644
-> --- a/drivers/fpga/of-fpga-region.c
-> +++ b/drivers/fpga/of-fpga-region.c
-> @@ -189,9 +189,9 @@ static int child_regions_with_firmware(struct device_node *overlay)
->   *   fpga_image_info struct if there is an image to program.
->   *   error code for invalid overlay.
->   */
-> -static struct fpga_image_info *of_fpga_region_parse_ov(
-> -						struct fpga_region *region,
-> -						struct device_node *overlay)
-> +static struct fpga_image_info
-> +*of_fpga_region_parse_ov(struct fpga_region *region,
-> +			 struct device_node *overlay)
+void ftrace_ops_list_func(...)
+{
+	__do_for_each_ftrace_ops(op, ftrace_ops_list) {
+		if (ftrace_ops_test(op, ip)) // test the hash to see if it
+					     //	should trace this
+					     //	function.
+			op->func(...);
+	}
+}
 
-Don't put the '*' at the beginning, it should be:
+It does:
 
-static struct fpga_image_info *
-of_fpga_region_parse_ov(struct fpga_region *region,
-			struct device_node *overlay)
+  bl dyanmic_tramp
 
->  {
->  	struct device *dev = &region->dev;
->  	struct fpga_image_info *info;
-> diff --git a/include/linux/fpga/fpga-region.h b/include/linux/fpga/fpga-region.h
-> index 3b87f232425c..7ebf743b8f8a 100644
-> --- a/include/linux/fpga/fpga-region.h
-> +++ b/include/linux/fpga/fpga-region.h
-> @@ -52,9 +52,10 @@ struct fpga_region {
->  
->  #define to_fpga_region(d) container_of(d, struct fpga_region, dev)
->  
-> -struct fpga_region *fpga_region_class_find(
-> -	struct device *start, const void *data,
-> -	int (*match)(struct device *, const void *));
-> +struct fpga_region *fpga_region_class_find(struct device *start,
-> +					   const void *data,
-> +					   int (*match)(struct device *,
-> +							const void *));
-
-Please also follow Joe's suggestion:
-
-struct fpga_region *
-fpga_region_class_find(struct device *start, const void *data,
-		       int (*match)(struct device *, const void *));
+dynamic_tramp:
+  [..]
+  bl func  // call the op->func directly!
 
 
-Thanks,
-Yilun
+Much more efficient!
 
->  
->  int fpga_region_program_fpga(struct fpga_region *region);
->  
-> -- 
-> 2.25.1
+
+> 
+> There might be a middle-ground here where we patch the ftrace_ops
+> pointer into a literal pool at the patch-site, which would allow us to
+> handle this atomically, and would avoid the issues with out-of-range
+> trampolines.
+
+Have an example of what you are suggesting?
+
+-- Steve
