@@ -2,87 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 023D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE0AC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390491AbiDURCD (ORCPT
+        id S1390509AbiDURDK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42928 "EHLO
+        Thu, 21 Apr 2022 13:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232622AbiDURBy (ORCPT
+        with ESMTP id S232622AbiDURDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:01:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B140627B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:59:04 -0700 (PDT)
+        Thu, 21 Apr 2022 13:03:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBAD49259;
+        Thu, 21 Apr 2022 10:00:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C91A461DB3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 16:59:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1578C385A1;
-        Thu, 21 Apr 2022 16:59:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5D67B82779;
+        Thu, 21 Apr 2022 17:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E31FC385AE;
+        Thu, 21 Apr 2022 17:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650560343;
-        bh=+kLX02+pvp0VAy7mZikCPZm3m+jcmFNycfkdqROEoG4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W3SHqRLXFzShZFzr3y8krzbijHOnldDnMtuCLa00QdChMiuy1i4ZxmDQHLDToEZVs
-         uLkKjUbQDKEo9gAWBIOSxVduMi9GFtbXCF9K0GyP8lyf8tjYtQtk1C7RA4V2VkmwnA
-         iDlpWplntXOBBAvmzpsCiHsDb1f+qzCENxUUzez79+R71kn8SQAZoia12LIWfLkUQG
-         Lf5zODhiJF6dc6Sh4cL7tKS/saLhylN5FBGNauYIXEY6LpEvrZODapz8vmT4nwwyJq
-         sWhwTBF+RWkTpg4TPDgyi2uOMSBbByyYJmWvk5dmYz180M2wMXxvltygk4xCg4yhIP
-         DIZzbg9ZbzyqA==
-Date:   Thu, 21 Apr 2022 17:58:58 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     jbrunet@baylibre.com, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Dmitry Shmidt <dimitrysh@google.com>
-Subject: Re: [PATCH 1/2] Revert "ASoC: meson: axg-tdm-interface: manage
- formatters in trigger"
-Message-ID: <YmGNUoOIHMDkciR8@sirena.org.uk>
-References: <20220421155725.2589089-1-narmstrong@baylibre.com>
+        s=k20201202; t=1650560413;
+        bh=CoLsn958x3fiMjs8GjcOOZ+6XqtOgBdC9BJVZp5WP/I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TXW08gVXbWfdX4lpa2AvJjjmk5Pz3ioALOE52oDs0v+Kf7R+T1llkXz5CHvLQdkhL
+         sSjsQZWfrjJcSWOW6jkzpGarloo1F3MRgbtYPmNinLL9LeY8Swh+Qx+xbZ5gBSKRbF
+         ucppNxK4WtLS/CFHM34IeQFyQIffwDl347MXVSC78i/4jygbc33sy9KupNCEv2KOXP
+         e6wk2ti3O1vOszonWMPOO2MY4HZ0K2faVgCu8qzutulwGeMBWr1PlGz8fG7MuGsOjm
+         qkThU0C7iuOOAdTREMPfUEM0PLYGFrUFTl8xHdD3t+IM4vOgUq0m8BxBZwDfdzjVUG
+         Wwz7b7vUL9KXw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7EF14E8DBDA;
+        Thu, 21 Apr 2022 17:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3eyDRwkM/Maj7Zsh"
-Content-Disposition: inline
-In-Reply-To: <20220421155725.2589089-1-narmstrong@baylibre.com>
-X-Cookie: Two percent of zero is almost nothing.
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix prog_tests/uprobe_autoattach
+ compilation error
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165056041351.10585.8509341938702940506.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Apr 2022 17:00:13 +0000
+References: <20220421132317.1583867-1-asavkov@redhat.com>
+In-Reply-To: <20220421132317.1583867-1-asavkov@redhat.com>
+To:     Artem Savkov <asavkov@redhat.com>
+Cc:     alan.maguire@oracle.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello:
 
---3eyDRwkM/Maj7Zsh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-On Thu, Apr 21, 2022 at 05:57:24PM +0200, Neil Armstrong wrote:
-> This reverts commit bf5e4887eeddb48480568466536aa08ec7f179a5 because
-> the following and required commit e138233e56e9829e65b6293887063a1a3ccb2d68
-> causes the following system crash when using audio:
+On Thu, 21 Apr 2022 15:23:17 +0200 you wrote:
+> I am getting the following compilation error for prog_tests/uprobe_autoattach.c
+> 
+> tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c: In function ‘test_uprobe_autoattach’:
+> ./test_progs.h:209:26: error: pointer ‘mem’ may be used after ‘free’ [-Werror=use-after-free]
+> 
+> mem variable is now used in one of the asserts so it shouldn't be freed right
+> away. Move free(mem) after the assert block.
+> 
+> [...]
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
+Here is the summary with links:
+  - [bpf-next] selftests/bpf: fix prog_tests/uprobe_autoattach compilation error
+    https://git.kernel.org/bpf/bpf-next/c/6a12b8e20d7e
 
---3eyDRwkM/Maj7Zsh
-Content-Type: application/pgp-signature; name="signature.asc"
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJhjVEACgkQJNaLcl1U
-h9AZOAf+OjEB0rx20UWIL90pvczAy+XNaaircBEQ0cphHGKM9TrfcEbYFOlQm3qV
-o6k6orFrbhYlVELViEbuHsjPrZVY3/NEowdMEK5eBwG1V3OdrLFDgSqKjpmRiWrX
-eODgqxRNJ2U+7gBaBwJumlBUi2X0p5u5nVFlgvwmL87yKOl+Uom45nqL/ib7WMnM
-VtrFfTZPgATIq/S98eN1SuswUtyYrtN7i7C+5Q7qGiIKKr067Vium6gBIliiLY19
-pAT7lVyUEdDHWvNOrQdGveWoxe9Ospr+uvruoR8dGdp2BqC1tFXlrUHn9bm4S0Ai
-AgQu/b0xjh2BW63QSFeG7clYApQUOg==
-=5BRg
------END PGP SIGNATURE-----
-
---3eyDRwkM/Maj7Zsh--
