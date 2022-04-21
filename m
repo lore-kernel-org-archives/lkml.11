@@ -2,138 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B45C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E58C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390078AbiDURAd (ORCPT
+        id S1390477AbiDURB5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
+        Thu, 21 Apr 2022 13:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232622AbiDURAb (ORCPT
+        with ESMTP id S232177AbiDURBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:00:31 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B1449CA3;
-        Thu, 21 Apr 2022 09:57:40 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id f5so3433064ilj.13;
-        Thu, 21 Apr 2022 09:57:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=JOWG99CezT9lByIP5QyzIlz0ytuTThPln72bC4jEuqQ=;
-        b=LdSOVOjYpqZZ7kql6UX/EFKoFk95WADsdCGCV8z4YJRTwEpcRLUrYcXIrunkDDhDKA
-         l1aI8R9Va8PtUj26rWEyrLaPYRx+A0XhZNxi/MR0UDwg0rp4S3uRALguzRxGNm/lPrfH
-         hmGVkeNiZoYPEJCiNCkQjyg6Omewj5P3bxrv/rlYxeXZzUa15mmB2VrT7wgsTmitk4lH
-         Atuer9/68NRqZEgTiSDm7AuXA6pgrrfs6cU812oMs8IyaR6CKHz4bJQqPjeOUl0C+PGS
-         0GoZ9EcVuvy55r0n51mvgq38nuXTlXdNzalNEQ+Op6ZOr6m1FSdVWotFphjL4EU0iT0o
-         tlRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=JOWG99CezT9lByIP5QyzIlz0ytuTThPln72bC4jEuqQ=;
-        b=ZbqF1ivtnr8tGJWyH5T5rNSWg6LzV5bt9NpBIQBVQBaXsaOSmcW1cbD3F+Z7KucuVn
-         hUqtmZXGEeJlRVQ1MKwL3y2dS0SC+QmucLK7dD35DDSC62aGd5iWtAVaVMoW1BWHPKlz
-         OF2bwK90nAyV+lv+veJfvGyJpe6wYrpBcQ7L2Mr9ExPdYO4njNqqpfg0KXUmJmFN+irX
-         WjRD0yYVDuU5hE014kDOM8CTGo4OSLfUOzmUTr+UuZgrrVBekjqiwy+gf5D0rPO/fKCm
-         wKTHDrgoZsEn2uCQtmMvKYCW86NvF/8Rj47RbLRgV7z8ZplCNJbUTtpyW4h2eMEn9mZ9
-         +DnQ==
-X-Gm-Message-State: AOAM53033wKWd9CB5MGSTwcZkr65wQj6thhuOwQhoiB8+tSmjQ6OQAH8
-        ok6iNlorHd7LYWjbmWoMZZw9l/30zV6DLzhpTZk=
-X-Google-Smtp-Source: ABdhPJxsm1BwRT6hy515TdizAQQOua4mPXWGXy4+7UpEYv1iH2vkhNU9N6ad1G66PqSmvEwzcuabdnaEmnjsRhNezsU=
-X-Received: by 2002:a92:c247:0:b0:2cc:1798:74fe with SMTP id
- k7-20020a92c247000000b002cc179874femr284940ilo.239.1650560260212; Thu, 21 Apr
- 2022 09:57:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220421132317.1583867-1-asavkov@redhat.com> <e5919342-0697-65f0-063f-4941e74fe1ca@iogearbox.net>
-In-Reply-To: <e5919342-0697-65f0-063f-4941e74fe1ca@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 21 Apr 2022 09:57:29 -0700
-Message-ID: <CAEf4BzZPStrod9Yj7nrDmXeZ0g_ThnaxVum9nEAcwAwAj=8iNg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix prog_tests/uprobe_autoattach
- compilation error
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Artem Savkov <asavkov@redhat.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 21 Apr 2022 13:01:53 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3BB49CB1;
+        Thu, 21 Apr 2022 09:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650560343; x=1682096343;
+  h=from:to:cc:subject:date:message-id;
+  bh=HqgMig3aen+5pw0uDZjc5+jukF0A9E8DbTxEMgC0qo0=;
+  b=FUgkPjW/n/aFOPR+gK8EPaOoTJnWwVKotG2Bcu99eyN1HgdJHDRBi+em
+   6YGgZH4bBfqmiZrvllp5OvHs0iaMHcSe/b1qMsiP9GtPNeNcz/5Ls5CqI
+   LNxUiyCe8+9OyBAUL6nW5pbdXYbCm+SQTIM2Ed/eAnudmF0R4fVKpu6k4
+   85rc7n+vFfY0yidlzWQ96wO4+l0B+hIWSjdoJWmjsN7ID+le/fjtcwkrp
+   cNpAn/pZZRklvXDxU/ooCsRZdl9gQXWbxV1CwC4sJxtC9y5CthqTPUab+
+   /uD1z0lD1igFD5cL4pFKCG8PCWnqI/jfzl/AC5ohUGSfFORL8MhbQOFyn
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="251735182"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="251735182"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 09:58:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="555874855"
+Received: from srpawnik.iind.intel.com ([10.99.123.68])
+  by orsmga007.jf.intel.com with ESMTP; 21 Apr 2022 09:58:54 -0700
+From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+To:     rafael@kernel.org, lenb@kernel.org,
+        srinivas.pandruvada@linux.intel.com, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     sumeet.r.pawnikar@intel.com
+Subject: [PATCH] ACPI: DPTF: Correct description of INT3407 / INT3532 attributes
+Date:   Thu, 21 Apr 2022 22:25:43 +0530
+Message-Id: <20220421165543.435-1-sumeet.r.pawnikar@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 9:53 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
->
-> On 4/21/22 3:23 PM, Artem Savkov wrote:
-> > I am getting the following compilation error for prog_tests/uprobe_auto=
-attach.c
-> >
-> > tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c: In function=
- =E2=80=98test_uprobe_autoattach=E2=80=99:
-> > ./test_progs.h:209:26: error: pointer =E2=80=98mem=E2=80=99 may be used=
- after =E2=80=98free=E2=80=99 [-Werror=3Duse-after-free]
-> >
-> > mem variable is now used in one of the asserts so it shouldn't be freed=
- right
-> > away. Move free(mem) after the assert block.
->
-> Looks good, but I rephrased this a bit to avoid confusion. It's false pos=
-itive given we
-> only compare the addresses but don't deref mem, which the compiler might =
-not be able to
-> follow in this case.
->
+Remove duplicate comments of PBSS for Battery steady state power and
+correct the typo for PMAX Maximum platform power.
 
-Great, thanks Daniel!
+Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+---
+ drivers/acpi/dptf/dptf_power.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?=
-id=3D6a12b8e20d7e72386594a9dbe7bf2d7fae3b3aa6
->
-> Thanks,
-> Daniel
->
-> > Fixes: 1717e248014c ("selftests/bpf: Uprobe tests should verify param/r=
-eturn values")
-> > Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> > ---
-> >   tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c | 3 ++-
-> >   1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c=
- b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> > index d6003dc8cc99..35b87c7ba5be 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> > @@ -34,7 +34,6 @@ void test_uprobe_autoattach(void)
-> >
-> >       /* trigger & validate shared library u[ret]probes attached by nam=
-e */
-> >       mem =3D malloc(malloc_sz);
-> > -     free(mem);
-> >
-> >       ASSERT_EQ(skel->bss->uprobe_byname_parm1, trigger_val, "check_upr=
-obe_byname_parm1");
-> >       ASSERT_EQ(skel->bss->uprobe_byname_ran, 1, "check_uprobe_byname_r=
-an");
-> > @@ -44,6 +43,8 @@ void test_uprobe_autoattach(void)
-> >       ASSERT_EQ(skel->bss->uprobe_byname2_ran, 3, "check_uprobe_byname2=
-_ran");
-> >       ASSERT_EQ(skel->bss->uretprobe_byname2_rc, mem, "check_uretprobe_=
-byname2_rc");
-> >       ASSERT_EQ(skel->bss->uretprobe_byname2_ran, 4, "check_uretprobe_b=
-yname2_ran");
-> > +
-> > +     free(mem);
-> >   cleanup:
-> >       test_uprobe_autoattach__destroy(skel);
-> >   }
-> >
->
+diff --git a/drivers/acpi/dptf/dptf_power.c b/drivers/acpi/dptf/dptf_power.c
+index dc1f52a5b3f4..1f2e6c29773b 100644
+--- a/drivers/acpi/dptf/dptf_power.c
++++ b/drivers/acpi/dptf/dptf_power.c
+@@ -12,14 +12,12 @@
+ /*
+  * Presentation of attributes which are defined for INT3407 and INT3532.
+  * They are:
+- * PMAX : Maximum platform powe
++ * PMAX : Maximum platform power
+  * PSRC : Platform power source
+  * ARTG : Adapter rating
+  * CTYP : Charger type
+- * PBSS : Battery steady power
+  * PROP : Rest of worst case platform Power
+  * PBSS : Power Battery Steady State
+- * PBSS : Power Battery Steady State
+  * RBHF : High Frequency Impedance
+  * VBNL : Instantaneous No-Load Voltage
+  * CMPP : Current Discharge Capability
+-- 
+2.17.1
+
