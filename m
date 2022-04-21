@@ -2,85 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2667CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D90ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390744AbiDUR1t (ORCPT
+        id S1390760AbiDURaG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
+        Thu, 21 Apr 2022 13:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390580AbiDUR1r (ORCPT
+        with ESMTP id S1352322AbiDURaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:27:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE03EAD
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:24:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9799AB8287D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 17:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D343C385A9;
-        Thu, 21 Apr 2022 17:24:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650561894;
-        bh=Hm+I89eVrNyoJRbqZk91HLSchEvg3AO8RSEtWGOLKoo=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Dfp6quhOYeuRtwn65OAUcbicpbFm9dCk/TRcoYo3F2AnU2dZ2xMcu/vrHPR1FxTlJ
-         rtsb+fxjit/c3C5VK/dqYk2/pjhX65t/mS55HIwkK1u5a+0+lx6WK7Yv0JBvvNBM4+
-         c7mh25GPsHFghTYwivjBKjq4+ab/sge/cR2osOb2Mo8q6GvwFdm6s8vkrYzoKznHw3
-         zXM8li55buc9pBP9m/7f3M/GxdwfMUZf1nJr4iTVctng5j2MM9JXZILo1AxCUyYIl/
-         PHEgPldmTCzr6duwXjf0g2EubiHqh+z8sShkX3M/W8Hga4oYgE7QC+INs+rdaFYW2p
-         iHYWjRFV2zPRA==
-From:   Mark Brown <broonie@kernel.org>
-To:     steve.lee.analog@gmail.com, lgirdwood@gmail.com, tiwai@suse.com,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        perex@perex.cz
-Cc:     krzk@kernel.org, ryans.lee@analog.com, nuno.sa@analog.com
-In-Reply-To: <20220420044900.2989-1-steve.lee.analog@gmail.com>
-References: <20220420044900.2989-1-steve.lee.analog@gmail.com>
-Subject: Re: [V4 1/2] ASoC: max98390: Add reset gpio control
-Message-Id: <165056189236.376935.16493956574599176087.b4-ty@kernel.org>
-Date:   Thu, 21 Apr 2022 18:24:52 +0100
+        Thu, 21 Apr 2022 13:30:05 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D4B42A33
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:27:14 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:38236)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nhaaG-0075j1-0N; Thu, 21 Apr 2022 11:27:12 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35224 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nhaaE-00CsQK-DO; Thu, 21 Apr 2022 11:27:11 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        tj@kernel.org, linux-pm@vger.kernel.org
+References: <20220421150248.667412396@infradead.org>
+        <20220421150655.001952823@infradead.org>
+Date:   Thu, 21 Apr 2022 12:26:44 -0500
+In-Reply-To: <20220421150655.001952823@infradead.org> (Peter Zijlstra's
+        message of "Thu, 21 Apr 2022 17:02:53 +0200")
+Message-ID: <878rrys5yj.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nhaaE-00CsQK-DO;;;mid=<878rrys5yj.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/eM4M3vABt0zGjlkIS7dSJhVL77s2rIZ4=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v2 5/5] freezer,sched: Rewrite core freezer logic
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 13:48:59 +0900, Steve Lee wrote:
->  Add reset gpio control to support RESET PIN connected to gpio.
-> 
-> 
+Peter Zijlstra <peterz@infradead.org> writes:
 
-Applied to
+> --- a/kernel/ptrace.c
+> +++ b/kernel/ptrace.c
+> @@ -288,7 +288,7 @@ static int ptrace_check_attach(struct ta
+>  	}
+>  	__set_current_state(TASK_RUNNING);
+>  
+> -	if (!wait_task_inactive(child, TASK_TRACED) ||
+> +	if (!wait_task_inactive(child, TASK_TRACED|TASK_FREEZABLE) ||
+>  	    !ptrace_freeze_traced(child))
+>  		return -ESRCH;
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Do we mind that this is going to fail if the child is frozen
+during ptrace_check_attach?
 
-Thanks!
+I think to avoid that we need to safely get this to
+wait_task_inactive(child, 0), like the coredump code uses.
 
-[1/2] ASoC: max98390: Add reset gpio control
-      commit: 397ff024960634962af93e9e2775fc0e4fe7de92
-[2/2] ASoC: dt-bindings: max98390: add reset gpio bindings
-      commit: 68514c9f6aa676f98328844336fc4400244a8479
+I would like to say that we can do without the wait_task_inactive,
+but it looks like it is necessary to ensure that all of the userspace
+registers are saved where the tracer can get at them.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+Eric
