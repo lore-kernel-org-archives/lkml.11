@@ -2,264 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8629CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0258C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386874AbiDUIuK (ORCPT
+        id S1386888AbiDUIuP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        Thu, 21 Apr 2022 04:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386852AbiDUIuE (ORCPT
+        with ESMTP id S1386872AbiDUIuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:50:04 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BD813F90
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:47:14 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id t67so7523129ybi.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:47:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AAlP0SwMAgEokpC45b/8A58tbYCJ2ulOw6rDhTTZvu8=;
-        b=HQ6BuTHEFF7E7NWy+QGPf6QLh2//lK8EPrUZndG1ON8byVtII3jlIGEaBEO57I12WC
-         MgqGyzUrS3f8bvA19pZxab+kVKkLR65hJNwGVmDMp+YMoSn0YDsbHsGjm2BE70Ek3/hR
-         eLv2uK55IouOrUQ04aCsLxUn/l2gf6scgN4LNKWZvlUs8aH6qLVuSO/aqIcKZE7TG4cG
-         KjazkE097Ljmwb/nJfdx+NKgrKtdfv8SSs/KW3sZXtmR/UrhCQl30aTTZKLSOSGQka0B
-         Y47Ta+tv9R8jETrWSNHSaoT3uGhcgB25kspRm+ytwOW2AAju7vMFa5MYpv/xIfJ9T9EZ
-         /hZg==
+        Thu, 21 Apr 2022 04:50:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7C2F140C0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650530839;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cmuFO35zQUp1s4VhyCud3srWXPlk5AJzSrlDvha5upI=;
+        b=ZI1d3mTwo3AKBjUbqtJhR3SD2AIzw6ppBes3+gnMnPoAlHrztCfAhf3x4PjuPPY8brrtnC
+        Im/AYttT/5ufwIHQU/UAa9Qmm/To+gSOmxMOLsCJKdNmvjRxle1cS4tzVFFqzlDF+mJNxM
+        woBuLxcy9//LVtBO7thaSn2HV3gigL4=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-284-cc5BfymsPYGML0bIXIjCNg-1; Thu, 21 Apr 2022 04:47:18 -0400
+X-MC-Unique: cc5BfymsPYGML0bIXIjCNg-1
+Received: by mail-qv1-f72.google.com with SMTP id ke23-20020a056214301700b0044bba34469eso2302467qvb.17
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:47:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AAlP0SwMAgEokpC45b/8A58tbYCJ2ulOw6rDhTTZvu8=;
-        b=EhtfKHDGiAGPBaai1tJytiR46ZSVuiUh+YUGvDbvihjEro2mNmb3T4A8lk4wza7Zv5
-         JQJ1+ocJsnW7Zj18lm0eTx5BVBBWxOn60VleNpHMGfnMKJ4YZf8m2Dpn6Ch9gKBCZ4Jz
-         cXzfBEa1lL4GphvTL9/XbS895tP8DQH47CEqCGBrPNizysyRm4HmWf7YSA25CgwWxFNt
-         DXHafuB0RILbXoG0l9ekQk9MfrjGMOUc0iA+fVn36XL6AM9754QpgCdgrWlOueg2NxBF
-         kNm/kNFvpnBfcvWRwZx/Y8o9c8Wtxqr+VhA44pQTlicRYYjxLuvfXkfEWwuYUDOxXTd+
-         navw==
-X-Gm-Message-State: AOAM532G5hwVuZgbl9zuPI6+bYqzVn53jQOSL4UiGVxAucHldO/SmGuT
-        mKWEP3HU0g0RZKYDm36EYm7hPR8zPh1bcwgktWuhFA==
-X-Google-Smtp-Source: ABdhPJz+RB414Kbzmepfy09ll2ddoIKN2wFJH1Cn2piskeDAADKm3TADqvJf/y/fucrdpR9Niu+WaVP/H6QQarZT0T8=
-X-Received: by 2002:a25:aaa4:0:b0:641:3506:900 with SMTP id
- t33-20020a25aaa4000000b0064135060900mr23664506ybi.87.1650530833852; Thu, 21
- Apr 2022 01:47:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220420190805.152533-1-jcmvbkbc@gmail.com>
-In-Reply-To: <20220420190805.152533-1-jcmvbkbc@gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 21 Apr 2022 10:46:37 +0200
-Message-ID: <CANpmjNO4nXfqFYcS3xBREZ3TCTe_feOsBFqQ46YJUjSvLWUqGQ@mail.gmail.com>
-Subject: Re: [PATCH v2] xtensa: enable KCSAN
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     linux-xtensa@linux-xtensa.org, Chris Zankel <chris@zankel.net>,
-        linux-kernel@vger.kernel.org, Dmitry Vyukov <dvyukov@google.com>,
-        kasan-dev@googlegroups.com
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cmuFO35zQUp1s4VhyCud3srWXPlk5AJzSrlDvha5upI=;
+        b=Kz5P/LxkPSV9WFY24DbdmLS+M6T4z+ZXgbxaBZBh9Rg8vFlzx4F+e3gx2abribWuB6
+         qKxYx3xaNUohutDZIgu2Xk3wwInPW2W1CcBFtER9HVCYozSlIB2Lp8BUdnSfEC6Pu/ri
+         YBwoqai7ARBGA6b8bry5qILlOKlAyfFlZ2vefq4PJ/9GY1mzuy9t4Tvi1/joYUIvVcPS
+         7xlJ5KGdmLBUNMIUiX06ApjSAaqgbAqCSMiU4gFiX13zKS5CSG+VPgbnC5zMhQDfSsWs
+         83xjiDUmyJKp1mIHB5s0w6WBOYe2CtAhYqAZn2dDRrezfo18G/XRwPrhRSHzYhiemq10
+         kFsw==
+X-Gm-Message-State: AOAM531u6ruYEIC6ZxXDrx1ffk2cVJDLRzt3yaSY8fkbS08172OF4Tvr
+        b8w7RhdTaYg0U/OdZUXmjWzo3AI9jOD++Obyvv6NddA16dd+l9HBUFINqaBZvblP0K3VFk58G9w
+        ytu0F6OZks/6ZUaQsBxKiODzJ
+X-Received: by 2002:a05:6214:2a8d:b0:446:5a52:47f5 with SMTP id jr13-20020a0562142a8d00b004465a5247f5mr14666502qvb.131.1650530838155;
+        Thu, 21 Apr 2022 01:47:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx2GJ8m4EUIE8m8G2Vb5sGhuPqmE97xodK09lR4BsEnMPjsLVXYZ96WzI2QTuXoVzXWb0tD1w==
+X-Received: by 2002:a05:6214:2a8d:b0:446:5a52:47f5 with SMTP id jr13-20020a0562142a8d00b004465a5247f5mr14666492qvb.131.1650530837957;
+        Thu, 21 Apr 2022 01:47:17 -0700 (PDT)
+Received: from gerbillo.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id e13-20020a05620a12cd00b0069e908ab48dsm2559403qkl.106.2022.04.21.01.47.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 01:47:17 -0700 (PDT)
+Message-ID: <84310b72be223d736c8ac9fc58eb4936a98aa839.camel@redhat.com>
+Subject: Re: [PATCH] openvswitch: meter: Remove unnecessary int
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Solomon Tan <solomonbstoner@protonmail.ch>, pshelar@ovn.org,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+Date:   Thu, 21 Apr 2022 10:47:14 +0200
+In-Reply-To: <Yly1t/mE6QAGPS0e@ArchDesktop>
+References: <Yly1t/mE6QAGPS0e@ArchDesktop>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 at 21:08, Max Filippov <jcmvbkbc@gmail.com> wrote:
->
-> Prefix arch-specific barrier macros with '__' to make use of instrumented
-> generic macros.
-> Prefix arch-specific bitops with 'arch_' to make use of instrumented
-> generic functions.
-> Provide stubs for 64-bit atomics when building with KCSAN.
-> Disable KCSAN instrumentation in arch/xtensa/boot.
->
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+On Mon, 2022-04-18 at 00:50 +0000, Solomon Tan wrote:
+> This patch addresses the checkpatch.pl warning that long long is
+> preferred over long long int.
 
-Acked-by: Marco Elver <elver@google.com>
+Please don't do that. This kind of changes cause e.g. backporting issue
+for any later relevant bugfix touching the same area, for no real
+benefit. 
 
+Documentation/process/2.Process.rst
+
+explicltly states to avoid this kind of patches.
+> 
+> Signed-off-by: Solomon Tan <solomonbstoner@protonmail.ch>
 > ---
-> Changes v1->v2:
->
-> - fix __wmb definition to use __mb instead of mb
-> - provide __smp_{,r,w}mb definitions because definitions from the
->   asm-generic use mb/rmb/wmb instead of __mb/__rmb/__wmb, thus
->   doubling KCSAN instrumentation.
->
->   Both changes fix a few failures in the KCSAN testsuite.
->
->  arch/xtensa/Kconfig               |  1 +
->  arch/xtensa/boot/lib/Makefile     |  1 +
->  arch/xtensa/include/asm/barrier.h | 12 +++++--
->  arch/xtensa/include/asm/bitops.h  | 10 +++---
->  arch/xtensa/lib/Makefile          |  2 ++
->  arch/xtensa/lib/kcsan-stubs.c     | 54 +++++++++++++++++++++++++++++++
->  6 files changed, 73 insertions(+), 7 deletions(-)
->  create mode 100644 arch/xtensa/lib/kcsan-stubs.c
->
-> diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-> index 797355c142b3..c87f5ab493d9 100644
-> --- a/arch/xtensa/Kconfig
-> +++ b/arch/xtensa/Kconfig
-> @@ -29,6 +29,7 @@ config XTENSA
->         select HAVE_ARCH_AUDITSYSCALL
->         select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL
->         select HAVE_ARCH_KASAN if MMU && !XIP_KERNEL
-> +       select HAVE_ARCH_KCSAN
->         select HAVE_ARCH_SECCOMP_FILTER
->         select HAVE_ARCH_TRACEHOOK
->         select HAVE_CONTEXT_TRACKING
-> diff --git a/arch/xtensa/boot/lib/Makefile b/arch/xtensa/boot/lib/Makefile
-> index e3d717c7bfa1..162d10af36f3 100644
-> --- a/arch/xtensa/boot/lib/Makefile
-> +++ b/arch/xtensa/boot/lib/Makefile
-> @@ -16,6 +16,7 @@ CFLAGS_REMOVE_inffast.o = -pg
->  endif
->
->  KASAN_SANITIZE := n
-> +KCSAN_SANITIZE := n
->
->  CFLAGS_REMOVE_inflate.o += -fstack-protector -fstack-protector-strong
->  CFLAGS_REMOVE_zmem.o += -fstack-protector -fstack-protector-strong
-> diff --git a/arch/xtensa/include/asm/barrier.h b/arch/xtensa/include/asm/barrier.h
-> index d6f8d4ddc2bc..898ea397e9bc 100644
-> --- a/arch/xtensa/include/asm/barrier.h
-> +++ b/arch/xtensa/include/asm/barrier.h
-> @@ -11,9 +11,15 @@
->
->  #include <asm/core.h>
->
-> -#define mb()  ({ __asm__ __volatile__("memw" : : : "memory"); })
-> -#define rmb() barrier()
-> -#define wmb() mb()
-> +#define __mb()  ({ __asm__ __volatile__("memw" : : : "memory"); })
-> +#define __rmb() barrier()
-> +#define __wmb() __mb()
-> +
-> +#ifdef CONFIG_SMP
-> +#define __smp_mb() __mb()
-> +#define __smp_rmb() __rmb()
-> +#define __smp_wmb() __wmb()
-> +#endif
->
->  #if XCHAL_HAVE_S32C1I
->  #define __smp_mb__before_atomic()              barrier()
-> diff --git a/arch/xtensa/include/asm/bitops.h b/arch/xtensa/include/asm/bitops.h
-> index cd225896c40f..e02ec5833389 100644
-> --- a/arch/xtensa/include/asm/bitops.h
-> +++ b/arch/xtensa/include/asm/bitops.h
-> @@ -99,7 +99,7 @@ static inline unsigned long __fls(unsigned long word)
->  #if XCHAL_HAVE_EXCLUSIVE
->
->  #define BIT_OP(op, insn, inv)                                          \
-> -static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
-> +static inline void arch_##op##_bit(unsigned int bit, volatile unsigned long *p)\
->  {                                                                      \
->         unsigned long tmp;                                              \
->         unsigned long mask = 1UL << (bit & 31);                         \
-> @@ -119,7 +119,7 @@ static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
->
->  #define TEST_AND_BIT_OP(op, insn, inv)                                 \
->  static inline int                                                      \
-> -test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)       \
-> +arch_test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)  \
->  {                                                                      \
->         unsigned long tmp, value;                                       \
->         unsigned long mask = 1UL << (bit & 31);                         \
-> @@ -142,7 +142,7 @@ test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)    \
->  #elif XCHAL_HAVE_S32C1I
->
->  #define BIT_OP(op, insn, inv)                                          \
-> -static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
-> +static inline void arch_##op##_bit(unsigned int bit, volatile unsigned long *p)\
->  {                                                                      \
->         unsigned long tmp, value;                                       \
->         unsigned long mask = 1UL << (bit & 31);                         \
-> @@ -163,7 +163,7 @@ static inline void op##_bit(unsigned int bit, volatile unsigned long *p)\
->
->  #define TEST_AND_BIT_OP(op, insn, inv)                                 \
->  static inline int                                                      \
-> -test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)       \
-> +arch_test_and_##op##_bit(unsigned int bit, volatile unsigned long *p)  \
->  {                                                                      \
->         unsigned long tmp, value;                                       \
->         unsigned long mask = 1UL << (bit & 31);                         \
-> @@ -205,6 +205,8 @@ BIT_OPS(change, "xor", )
->  #undef BIT_OP
->  #undef TEST_AND_BIT_OP
->
-> +#include <asm-generic/bitops/instrumented-atomic.h>
-> +
->  #include <asm-generic/bitops/le.h>
->
->  #include <asm-generic/bitops/ext2-atomic-setbit.h>
-> diff --git a/arch/xtensa/lib/Makefile b/arch/xtensa/lib/Makefile
-> index 5848c133f7ea..d4e9c397e3fd 100644
-> --- a/arch/xtensa/lib/Makefile
-> +++ b/arch/xtensa/lib/Makefile
-> @@ -8,3 +8,5 @@ lib-y   += memcopy.o memset.o checksum.o \
->            divsi3.o udivsi3.o modsi3.o umodsi3.o mulsi3.o \
->            usercopy.o strncpy_user.o strnlen_user.o
->  lib-$(CONFIG_PCI) += pci-auto.o
-> +lib-$(CONFIG_KCSAN) += kcsan-stubs.o
-> +KCSAN_SANITIZE_kcsan-stubs.o := n
-> diff --git a/arch/xtensa/lib/kcsan-stubs.c b/arch/xtensa/lib/kcsan-stubs.c
-> new file mode 100644
-> index 000000000000..2b08faa62b86
-> --- /dev/null
-> +++ b/arch/xtensa/lib/kcsan-stubs.c
-> @@ -0,0 +1,54 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/bug.h>
-> +#include <linux/types.h>
-> +
-> +void __atomic_store_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_load_8(const volatile void *p, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_exchange_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +bool __atomic_compare_exchange_8(volatile void *p1, void *p2, u64 v, bool b, int i1, int i2)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_fetch_add_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_fetch_sub_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_fetch_and_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_fetch_or_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_fetch_xor_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> +
-> +u64 __atomic_fetch_nand_8(volatile void *p, u64 v, int i)
-> +{
-> +       BUG();
-> +}
-> --
-> 2.30.2
->
+>  net/openvswitch/meter.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+> index 04a060ac7fdf..a790920c11d6 100644
+> --- a/net/openvswitch/meter.c
+> +++ b/net/openvswitch/meter.c
+> @@ -592,8 +592,8 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
+>  bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
+>  		       struct sw_flow_key *key, u32 meter_id)
+>  {
+> -	long long int now_ms = div_u64(ktime_get_ns(), 1000 * 1000);
+> -	long long int long_delta_ms;
+> +	long long now_ms = div_u64(ktime_get_ns(), 1000 * 1000);
+> +	long long long_delta_ms;
+>  	struct dp_meter_band *band;
+>  	struct dp_meter *meter;
+>  	int i, band_exceeded_max = -1;
+
+Additionally the patch is mangled by non plain-text encoding.
+
+For any later submissions (regarding some other different topic) please
+ensure that your client/mailer send purely plain-text messages,
+
+Thanks,
+
+Paolo
+
