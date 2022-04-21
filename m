@@ -2,79 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F22A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53393C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391078AbiDUSAs (ORCPT
+        id S1391097AbiDUSAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55162 "EHLO
+        Thu, 21 Apr 2022 14:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391096AbiDUSAr (ORCPT
+        with ESMTP id S1391035AbiDUSAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:00:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D7544AE29
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:57:57 -0700 (PDT)
+        Thu, 21 Apr 2022 14:00:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D79146B14
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:57:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650563876;
+        s=mimecast20190719; t=1650563877;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Fe/IOGLeVKdooReU88aUvmgSHsxEqZOz3Fv5B7MP1bw=;
-        b=WZ8VXdx6H/um4z6ahOsSqPGXYCWnfJlknfcJ+rnmXnWXK68/B4t9yjCBxUVyyPNmFRJSv5
-        35LWXqn6yDQZq3kc2QQ0uQaHo33ofDafdWVKBku/y1scBtugsEvecQvDzqhVuwewiAuEBr
-        R+5d8XFrUksASknSt+sg52k6+wBMto0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=a4va1/Lq36cMvwBfvf9W3jL50NhUZUHTTW2j9bp+3cE=;
+        b=dzzV8x3XrqO5l+YuRW0cr14vKlSDjgOso5bkbyEibynUAYGDtsrvvalfbUWF6wiCd5/F+N
+        +TrXQU4Hq66AGHC8duoct6GodhtB0qw4tiNkBJo30y/GpegyeewSK03m85Nnq+gIx/YVa3
+        EfK8NRAetqOh/pZUrTEytEGgqRc8XgA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-648-RvEarh4NMHG-j4s5DuJLmA-1; Thu, 21 Apr 2022 13:57:52 -0400
-X-MC-Unique: RvEarh4NMHG-j4s5DuJLmA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+ us-mta-1-ryYKA82UMta93HSRiWfXaQ-1; Thu, 21 Apr 2022 13:57:51 -0400
+X-MC-Unique: ryYKA82UMta93HSRiWfXaQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D272838378A7;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1198F1014A64;
         Thu, 21 Apr 2022 17:57:51 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.36])
-        by smtp.corp.redhat.com (Postfix) with SMTP id BD427145BA47;
-        Thu, 21 Apr 2022 17:57:48 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Thu, 21 Apr 2022 19:57:51 +0200 (CEST)
-Date:   Thu, 21 Apr 2022 19:57:47 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, rjw@rjwysocki.net,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org, tj@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] freezer,sched: Rewrite core freezer logic
-Message-ID: <20220421175746.GB20402@redhat.com>
-References: <20220421150248.667412396@infradead.org>
- <20220421150655.001952823@infradead.org>
- <878rrys5yj.fsf@email.froward.int.ebiederm.org>
+Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9088240CFD22;
+        Thu, 21 Apr 2022 17:57:43 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <2067a5c7-4e24-f449-4676-811d12e9ab72@linux.alibaba.com>
+References: <2067a5c7-4e24-f449-4676-811d12e9ab72@linux.alibaba.com> <20220415123614.54024-3-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com> <1447543.1650552898@warthog.procyon.org.uk>
+To:     JeffleXu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
+Subject: Re: EMFILE/ENFILE mitigation needed in erofs?
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878rrys5yj.fsf@email.froward.int.ebiederm.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1484180.1650563860.1@warthog.procyon.org.uk>
+Date:   Thu, 21 Apr 2022 18:57:40 +0100
+Message-ID: <1484181.1650563860@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/21, Eric W. Biederman wrote:
->
-> I would like to say that we can do without the wait_task_inactive,
-> but it looks like it is necessary to ensure that all of the userspace
-> registers are saved where the tracer can get at them.
+JeffleXu <jefflexu@linux.alibaba.com> wrote:
 
-Yes, for example, fpu regs.
+> 2. Our user daemon will configure rlimit-nofile to a reasonably large
+> (e.g. 1 million) value, so that it won't fail when trying to allocate fds.
 
-But there are more problems. For example, if debugger changes TIF_BLOCKSTEP
-we need to ensure the child is already inactive and it will do another
-switch_to() after that.
+There's a system-wide limit also; simply increasing the rlimit won't override
+that.
 
-Oleg.
+David
 
