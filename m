@@ -2,153 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5860C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380318AbiDUTXH (ORCPT
+        id S1391831AbiDUTXM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        Thu, 21 Apr 2022 15:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388315AbiDUTWk (ORCPT
+        with ESMTP id S1388462AbiDUTWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 15:22:40 -0400
 Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62CD4C7B2;
-        Thu, 21 Apr 2022 12:19:49 -0700 (PDT)
-Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23LF1wKm019392;
-        Thu, 21 Apr 2022 19:19:40 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB904C7B5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:19:49 -0700 (PDT)
+Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23LEuwPg006984;
+        Thu, 21 Apr 2022 19:19:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version; s=pps0720;
- bh=3A5f9Suhha+0eDJ0zyTZanOaOqT5liWrdwGnwjRGCOc=;
- b=gpW0zA++9UpAsGJMgAjEll8OLh+bDYkW1SfSP525fOw+2izHDUsyM2lgofF1E3HRNJJS
- Dw4vQ8xA9APUfB5G0ftTgMcyx5U0xnkNZLYyLe1C0fsGVH8Xv4QfU5+XG8X7t0RbUs7y
- AAnaiZfRZJjWcL3w/pW/hizeTrTu7U1BwW45OYC7EFVbVHjNtGlx0rhvEdJpq4GrNKgk
- HY+ncReI/KyQoU0fpEEV/esRzptyOervpLEInMP3YGtg5yVybpe5cxgK1TyFrymMHw8G
- +koCB9Rs3D67zq7x6e2pvNLpDCq89TJTpacoqdYC6s4jx9UjKPe2Q+qNnpmwDgP1o4FG 6g== 
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=j1Y1DzH9ISSnb7M2FODHcYgjjsOSuiyXwwbYPdBFFig=;
+ b=fop+5BHCOuYdjJpHtJ/i/rO16nFlQSqimlSc41YArl3Z7zUIDwhDaYVo1+o8HiGwpio0
+ 1npFKtJfDsIr6Blquc3PBmK4/W2YMkaIHMI+KB01PqNRljjcjNjSy+0+FQWD01+z842A
+ jpZ0AIo26lWU0HJdm2kLJC/JNmLUkhLnm+fUFsuslOh2rvhOC6fZPeOxk5P1tOiqtpfZ
+ UDMeCwWHSvsjoR3WEwgEGpWuvXmfqG2q0U3m/wCLQwfzN8GQgSi6xi14A8h9i9OsU67u
+ ViGvmJIOdsL7JRd+hJEvouFIU81lx/Y0ZXRJYJBe1etE8/yRjAR79POSebjIS5cq2vSl 2g== 
 Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fk8q2aqh6-1
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fk9fkt6aq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Apr 2022 19:19:39 +0000
+        Thu, 21 Apr 2022 19:19:37 +0000
 Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g4t3427.houston.hpe.com (Postfix) with ESMTP id ED54966;
-        Thu, 21 Apr 2022 19:19:38 +0000 (UTC)
+        by g4t3427.houston.hpe.com (Postfix) with ESMTP id DA95E66;
+        Thu, 21 Apr 2022 19:19:36 +0000 (UTC)
 Received: from hpe.com (cigateway-dev.us.rdlabs.hpecorp.net [10.14.73.30])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id A7D914A;
-        Thu, 21 Apr 2022 19:19:38 +0000 (UTC)
+        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id A193251;
+        Thu, 21 Apr 2022 19:19:36 +0000 (UTC)
 From:   nick.hawkins@hpe.com
 To:     verdun@hpe.com, nick.hawkins@hpe.com, joel@jms.id.au,
         arnd@arndb.de, openbmc@lists.ozlabs.org
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v5 05/11] dt-bindings: timer: Add HPE GXP Timer Binding
-Date:   Thu, 21 Apr 2022 14:21:26 -0500
-Message-Id: <20220421192132.109954-6-nick.hawkins@hpe.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 01/11] archh: arm: mach-hpe: Introduce the HPE GXP architecture
+Date:   Thu, 21 Apr 2022 14:21:22 -0500
+Message-Id: <20220421192132.109954-2-nick.hawkins@hpe.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220421192132.109954-1-nick.hawkins@hpe.com>
 References: <20220421192132.109954-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: UsC7FtRHpRjhf58fbGvVb1lTLPLihuKx
-X-Proofpoint-ORIG-GUID: UsC7FtRHpRjhf58fbGvVb1lTLPLihuKx
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-GUID: 55cde3jEdUM_3h5vFMH8EDFoU8rlSWyo
+X-Proofpoint-ORIG-GUID: 55cde3jEdUM_3h5vFMH8EDFoU8rlSWyo
 X-HPE-SCL: -1
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-04-21_04,2022-04-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 suspectscore=0 phishscore=0 spamscore=0 impostorscore=0
- mlxscore=0 mlxlogscore=765 bulkscore=0 malwarescore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204210102
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 mlxscore=0 spamscore=0 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 mlxlogscore=999 impostorscore=0 phishscore=0
+ suspectscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204210102
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Creating binding for gxp timer in device tree hpe,gxp-timer
-Although there are multiple timers on the SoC we are only
-enabling one at this time.
+The GXP is the HPE BMC SoC that is used in the majority
+of HPE Generation 10 servers. Traditionally the asic will
+last multiple generations of server before being replaced.
+
+Info about SoC:
+
+HPE GXP is the name of the HPE Soc. This SoC is used to implement
+many BMC features at HPE. It supports ARMv7 architecture based on
+the Cortex A9 core. It is capable of using an AXI bus to which
+a memory controller is attached. It has multiple SPI interfaces
+to connect boot flash and BIOS flash. It uses a 10/100/1000 MAC
+for network connectivity. It has multiple i2c engines to drive
+connectivity with a host infrastructure. The initial patches
+enable the watchdog and timer enabling the host to be able to
+boot.
 
 Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
 ---
 v5:
-* Fix versioning
-* Fixed typo time -> timer
+* Fixed version log
+* Removed incorrect statement about reset.
 v4:
-* Made watchdog a child of timer
-* Added reference clock
+* Removed unecessary code: restart, iomap, init_machine
+* Reordered Kconfig depends
+* Removed SPARSE_IRQ, MULTI_IRQ_HANDLER, IRQ_DOMAIN, PINCTL from
+  Kconfig
 v3:
-* Removed maintainer change from patch
-* Verified there was no compilation errors
-* Added reference code in separate patch of patchset
+* Put into proper patchset format
 v2:
-* Converted from txt to yaml
+* No change
 ---
- .../bindings/timer/hpe,gxp-timer.yaml         | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+ arch/arm/Kconfig           |  2 ++
+ arch/arm/Makefile          |  1 +
+ arch/arm/mach-hpe/Kconfig  | 17 +++++++++++++++++
+ arch/arm/mach-hpe/Makefile |  1 +
+ arch/arm/mach-hpe/gxp.c    | 16 ++++++++++++++++
+ 5 files changed, 37 insertions(+)
+ create mode 100644 arch/arm/mach-hpe/Kconfig
+ create mode 100644 arch/arm/mach-hpe/Makefile
+ create mode 100644 arch/arm/mach-hpe/gxp.c
 
-diff --git a/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 2e8091e2d8a8..13f77eec7c40 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -620,6 +620,8 @@ source "arch/arm/mach-highbank/Kconfig"
+ 
+ source "arch/arm/mach-hisi/Kconfig"
+ 
++source "arch/arm/mach-hpe/Kconfig"
++
+ source "arch/arm/mach-imx/Kconfig"
+ 
+ source "arch/arm/mach-integrator/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index a2391b8de5a5..97a89023c10f 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -179,6 +179,7 @@ machine-$(CONFIG_ARCH_FOOTBRIDGE)	+= footbridge
+ machine-$(CONFIG_ARCH_GEMINI)		+= gemini
+ machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
+ machine-$(CONFIG_ARCH_HISI)		+= hisi
++machine-$(CONFIG_ARCH_HPE)		+= hpe
+ machine-$(CONFIG_ARCH_INTEGRATOR)	+= integrator
+ machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
+ machine-$(CONFIG_ARCH_IXP4XX)		+= ixp4xx
+diff --git a/arch/arm/mach-hpe/Kconfig b/arch/arm/mach-hpe/Kconfig
 new file mode 100644
-index 000000000000..a4572be8d89a
+index 000000000000..c075248b259e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/timer/hpe,gxp-timer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/arch/arm/mach-hpe/Kconfig
+@@ -0,0 +1,17 @@
++menuconfig ARCH_HPE
++	bool "HPE SoC support"
++	depends on ARCH_MULTI_V7
++	help
++	  This enables support for HPE ARM based SoC chips
++if ARCH_HPE
 +
-+title: HPE GXP TIMER
++config ARCH_HPE_GXP
++	bool "HPE GXP SoC"
++	depends on ARCH_MULTI_V7
++	select ARM_VIC
++	select GENERIC_IRQ_CHIP
++	select CLKSRC_MMIO
++	help
++	  Support for GXP SoCs
 +
-+maintainers:
-+  - Nick Hawkins <nick.hawkins@hpe.com>
-+  - Jean-Marie Verdun <verdun@hpe.com>
++endif
+diff --git a/arch/arm/mach-hpe/Makefile b/arch/arm/mach-hpe/Makefile
+new file mode 100644
+index 000000000000..8b0a91234df4
+--- /dev/null
++++ b/arch/arm/mach-hpe/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_ARCH_HPE_GXP) += gxp.o
+diff --git a/arch/arm/mach-hpe/gxp.c b/arch/arm/mach-hpe/gxp.c
+new file mode 100644
+index 000000000000..e2f0c3ae6bd8
+--- /dev/null
++++ b/arch/arm/mach-hpe/gxp.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2022 Hewlett-Packard Enterprise Development Company, L.P.*/
 +
-+properties:
-+  compatible:
-+    items:
-+      - const: hpe,gxp-timer
-+      - const: simple-mfd
++#include <linux/of_platform.h>
++#include <asm/mach/arch.h>
 +
-+  reg:
-+    maxItems: 1
++static const char * const gxp_board_dt_compat[] = {
++	"hpe,gxp",
++	NULL,
++};
 +
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: iopclk
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    timer0: timer@c0000000 {
-+        compatible = "hpe,gxp-timer","simple-mfd";
-+        reg = <0x80 0x16>;
-+        interrupts = <0>;
-+        interrupt-parent = <&vic0>;
-+        clocks = <&iopclk>;
-+        clock-names = "iopclk";
-+    };
++DT_MACHINE_START(GXP_DT, "HPE GXP")
++	.dt_compat	= gxp_board_dt_compat,
++	.l2c_aux_val = 0,
++	.l2c_aux_mask = 0,
++MACHINE_END
 -- 
 2.17.1
 
