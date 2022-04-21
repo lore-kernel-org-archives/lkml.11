@@ -2,155 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392349AbiDUU3E (ORCPT
+        id S1392353AbiDUU3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        Thu, 21 Apr 2022 16:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392334AbiDUU3A (ORCPT
+        with ESMTP id S1345361AbiDUU3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 16:29:00 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3AC49C90
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:26:09 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id bf11so7133398ljb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:26:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to;
-        bh=bOCI3XFea2q/xxFJgKExCkX7ISgseBMqDiJ+lR8tNBc=;
-        b=B1Ms+gHdTdEV79mFnP5ybY6oNIXTUchZGfSeBG1qm3r2CQMpPRaeGr88MKrf+f4eh2
-         ctdEY3cNoHH+v6cmuM5ZXI0K6rERayhyr/QqYyiFADYHF1yFGNX2ft8YBSbJYsuiCHC6
-         3GILIbaVhFAO7QXzEjpPCqjDWWvKN9NOnKCvpQod5K/Vy1KoIy9+peGfx2ucnaGpuw3n
-         C/AfVUeSJEc33+8xE0ZN21US/UYc3d2pviPLtNFtv8pVI4sM6hJ4+HDEo1zdknJzz4KA
-         m25Tl8tFQ+SY/vEreqKDggj7twoIoAPMMVV19Z3jdbPz9h7LaR4181q5eJ2tm7R+rVWM
-         qp7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to;
-        bh=bOCI3XFea2q/xxFJgKExCkX7ISgseBMqDiJ+lR8tNBc=;
-        b=p0oMHNpggdkmSCsP5Wq3c+/Jslh8DYyIWmNSvtcfKidxc8uN9GVhJy+P7CAtq3L9TP
-         tzb32ahpVrCuoyqTR+o7GN8u8Ddfc94poY/OxfjDijusboFTHs3ck3+jvHWpEzZ4pBds
-         PalCTaLswkH3HQa7VSaZZhxH+qGAk3MKMpd0xHPPjy+7+PiMZEc/umA4j1DsYROkjUw1
-         EU5Kxk92HUN0LTse8p1K8K44UM80bETOktLbsvQaf6tl/NPGc5agnstM1HHW0VXtrb6y
-         R5gO/r17fc/aZ6yJSE5o6lNYN+Z6GLQpZENHiV4imIvH84KWK+SzV+jpP/naJHsqqxOR
-         LLGA==
-X-Gm-Message-State: AOAM530euP6evAEAnVKaaBqC3haEvGVq4N7r3yL9TKwV8QeGpb5YP2Ew
-        9y7Rm06g/gLHSJaBJGrrZo0=
-X-Google-Smtp-Source: ABdhPJzyGhv1dqQJIx/WE8K+sydflcemDtAPR4C2BV+AVCJkoFz2RuZ/zunT/JwZe6tjlANYK2MHxA==
-X-Received: by 2002:a2e:a7ce:0:b0:24e:e213:ee14 with SMTP id x14-20020a2ea7ce000000b0024ee213ee14mr765087ljp.491.1650572767673;
-        Thu, 21 Apr 2022 13:26:07 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.225.17])
-        by smtp.gmail.com with ESMTPSA id v22-20020a2e9256000000b0024dbc6edecdsm1282919ljg.125.2022.04.21.13.26.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 13:26:07 -0700 (PDT)
-Message-ID: <83061bda-5a91-6123-a006-aaeb5458d5d7@gmail.com>
-Date:   Thu, 21 Apr 2022 23:26:05 +0300
+        Thu, 21 Apr 2022 16:29:37 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C594AE32
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:26:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650572806; x=1682108806;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=27nRDDImcKfHJf1wm1JKTnSBWmB9mhrPHfeNTW1C5QE=;
+  b=CS6YHeWXi0DDsMcOESjAUEbY6ARzzR9RQClOPeWeMcvTxvUWSkvssq1z
+   w7X1coovOhwjE7RqD59pBP/fZ0TmFETOPb3/LlE0nbhW5u0/0Kf+zl3vL
+   wJGTocajfHMOhYPCfJWSx2C+nMcrfzB+Zg2gXV0HY6bX+RO2JXo1G7c/Q
+   BG+XcFj3Uoe/3h4C4TyzpKm4XgFLx7JPpCLc8GNEmzjqkBLPajOtFeyXF
+   /j2zclYcovdJ8xHplPYBpDWCta+t1FTVRhsTASN0AY30z+cgn1vhUxs7X
+   2Nimx+283oP5qMoD5chRChl9uW+WVgQvIYbCdTAFZPZuQlekhF2jXHxcp
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244394619"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="244394619"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 13:26:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="593826722"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 13:26:45 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhdO0-0008lB-D7;
+        Thu, 21 Apr 2022 20:26:44 +0000
+Date:   Fri, 22 Apr 2022 04:25:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: mm/kasan/sw_tags.c:211:6: warning: no previous prototype for
+ function 'kasan_tag_mismatch'
+Message-ID: <202204220415.s2LILw6y-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [syzbot] general protection fault in ntfs_update_mftmirr
-Content-Language: en-US
-To:     syzbot <syzbot+c95173762127ad76a824@syzkaller.appspotmail.com>,
-        almaz.alexandrovich@paragon-software.com,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        nathan@kernel.org, ndesaulniers@google.com, ntfs3@lists.linux.dev,
-        syzkaller-bugs@googlegroups.com, trix@redhat.com
-References: <00000000000022487405dd25bd0d@google.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <00000000000022487405dd25bd0d@google.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------WYJmKsAde7MM8USQat5VktCr"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------WYJmKsAde7MM8USQat5VktCr
-Content-Type: multipart/mixed; boundary="------------dsXtaJ5yduLP6icDnkrHiATx";
- protected-headers="v1"
-From: Pavel Skripkin <paskripkin@gmail.com>
-To: syzbot <syzbot+c95173762127ad76a824@syzkaller.appspotmail.com>,
- almaz.alexandrovich@paragon-software.com, linux-kernel@vger.kernel.org,
- llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
- ntfs3@lists.linux.dev, syzkaller-bugs@googlegroups.com, trix@redhat.com
-Message-ID: <83061bda-5a91-6123-a006-aaeb5458d5d7@gmail.com>
-Subject: Re: [syzbot] general protection fault in ntfs_update_mftmirr
-References: <00000000000022487405dd25bd0d@google.com>
-In-Reply-To: <00000000000022487405dd25bd0d@google.com>
+Hi Peter,
 
---------------dsXtaJ5yduLP6icDnkrHiATx
-Content-Type: multipart/mixed; boundary="------------ssQyUC9tA0KRqpE4gITNPWZ9"
+FYI, the error/warning still remains.
 
---------------ssQyUC9tA0KRqpE4gITNPWZ9
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b253435746d9a4a701b5f09211b9c14d3370d0da
+commit: 1cbdf60bd1b74e397d48aa877367cfc621f45ffe kasan: arm64: support specialized outlined tag mismatch checks
+date:   11 months ago
+config: arm64-randconfig-r034-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220415.s2LILw6y-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1cbdf60bd1b74e397d48aa877367cfc621f45ffe
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 1cbdf60bd1b74e397d48aa877367cfc621f45ffe
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash mm/kasan/
 
-T24gNC8yMS8yMiAxMToxNywgc3l6Ym90IHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+IHN5emJv
-dCBmb3VuZCB0aGUgZm9sbG93aW5nIGlzc3VlIG9uOg0KPiANCj4gSEVBRCBjb21taXQ6ICAg
-IGIyNTM0MzU3NDZkOSBNZXJnZSB0YWcgJ3h0ZW5zYS0yMDIyMDQxNicgb2YgaHR0cHM6Ly9n
-aXRodWIuLg0KPiBnaXQgdHJlZTogICAgICAgdXBzdHJlYW0NCj4gY29uc29sZSBvdXRwdXQ6
-IGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvbG9nLnR4dD94PTExNTg4YmEyZjAw
-MDAwDQo+IGtlcm5lbCBjb25maWc6ICBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94
-Ly5jb25maWc/eD00Y2RjOTYxOWY0NTYzM2RmDQo+IGRhc2hib2FyZCBsaW5rOiBodHRwczov
-L3N5emthbGxlci5hcHBzcG90LmNvbS9idWc/ZXh0aWQ9Yzk1MTczNzYyMTI3YWQ3NmE4MjQN
-Cj4gY29tcGlsZXI6ICAgICAgIERlYmlhbiBjbGFuZyB2ZXJzaW9uIDEzLjAuMS0rKzIwMjIw
-MTI2MDkyMDMzKzc1ZTMzZjcxYzJkYS0xfmV4cDF+MjAyMjAxMjYyMTIxMTIuNjMsIEdOVSBs
-ZCAoR05VIEJpbnV0aWxzIGZvciBEZWJpYW4pIDIuMzUuMg0KPiBzeXogcmVwcm86ICAgICAg
-aHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20veC9yZXByby5zeXo/eD0xNzViMTNjMGYw
-MDAwMA0KPiBDIHJlcHJvZHVjZXI6ICAgaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20v
-eC9yZXByby5jP3g9MTUwMmY4NTRmMDAwMDANCj4gDQo+IElNUE9SVEFOVDogaWYgeW91IGZp
-eCB0aGUgaXNzdWUsIHBsZWFzZSBhZGQgdGhlIGZvbGxvd2luZyB0YWcgdG8gdGhlIGNvbW1p
-dDoNCj4gUmVwb3J0ZWQtYnk6IHN5emJvdCtjOTUxNzM3NjIxMjdhZDc2YTgyNEBzeXprYWxs
-ZXIuYXBwc3BvdG1haWwuY29tDQo+IA0KDQpJZiBudGZzX2ZpbGxfc3VwZXIgd2Fzbid0IGNh
-bGxlZCB0aGVuIHNiaS0+c2IgaXMgTlVMTC4NCg0KI3N5eiB0ZXN0Og0KZ2l0Oi8vZ2l0Lmtl
-cm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdCBt
-YXN0ZXINCg0KDQoNCg0KDQpXaXRoIHJlZ2FyZHMsDQpQYXZlbCBTa3JpcGtpbg0K
---------------ssQyUC9tA0KRqpE4gITNPWZ9
-Content-Type: text/plain; charset=UTF-8; name="ph"
-Content-Disposition: attachment; filename="ph"
-Content-Transfer-Encoding: base64
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-ZGlmZiAtLWdpdCBhL2ZzL250ZnMzL2ZzbnRmcy5jIGIvZnMvbnRmczMvZnNudGZzLmMKaW5k
-ZXggM2RlNTcwMGE5YjgzLi44OTExMjVjYTY4NDggMTAwNjQ0Ci0tLSBhL2ZzL250ZnMzL2Zz
-bnRmcy5jCisrKyBiL2ZzL250ZnMzL2ZzbnRmcy5jCkBAIC04MzEsMTAgKzgzMSwxNSBAQCBp
-bnQgbnRmc191cGRhdGVfbWZ0bWlycihzdHJ1Y3QgbnRmc19zYl9pbmZvICpzYmksIGludCB3
-YWl0KQogewogCWludCBlcnI7CiAJc3RydWN0IHN1cGVyX2Jsb2NrICpzYiA9IHNiaS0+c2I7
-Ci0JdTMyIGJsb2Nrc2l6ZSA9IHNiLT5zX2Jsb2Nrc2l6ZTsKKwl1MzIgYmxvY2tzaXplOwog
-CXNlY3Rvcl90IGJsb2NrMSwgYmxvY2syOwogCXUzMiBieXRlczsKIAorCWlmICghc2IpCisJ
-CXJldHVybiAtRUlOVkFMOworCisJYmxvY2tzaXplID0gc2ItPnNfYmxvY2tzaXplOworCiAJ
-aWYgKCEoc2JpLT5mbGFncyAmIE5URlNfRkxBR1NfTUZUTUlSUikpCiAJCXJldHVybiAwOwog
-Cg==
+All warnings (new ones prefixed by >>):
 
---------------ssQyUC9tA0KRqpE4gITNPWZ9--
+>> mm/kasan/sw_tags.c:211:6: warning: no previous prototype for function 'kasan_tag_mismatch' [-Wmissing-prototypes]
+   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+        ^
+   mm/kasan/sw_tags.c:211:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
+   ^
+   static 
+   1 warning generated.
 
---------------dsXtaJ5yduLP6icDnkrHiATx--
 
---------------WYJmKsAde7MM8USQat5VktCr
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+vim +/kasan_tag_mismatch +211 mm/kasan/sw_tags.c
 
------BEGIN PGP SIGNATURE-----
+   210	
+ > 211	void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
 
-wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJhvd0FAwAAAAAACgkQbk1w61LbBA3s
-7Q//fygiink/M03wffJG1qTJ2957UF3sTU0c5xlH5HHm9H/C0qxLX3HFj77JNCZE0GSTVpib0S08
-TZZH/1MlxG+oZUvB1HhPAaZ1f/6IpqkY4VEDgAgSlo+ALcQSIce9sGgHaFW3psiMvMJkWz7EP9kd
-ZODJK7vvgm26VyEFnMJ9VYeVopCO3rNjWsQ/JwlmlTU9zMABupGaR8oPWn0QDicO6fMNwqh1Uh0u
-Bgiv5ST9C7bh/qe9xZK9Ku7siEh3qt1yj2NzGAp5viKs5tQKPkO2FAj9LFww+FhrAqD7wbZJtIpu
-Vm/0P9b1uZAQEXZ3m+Ve2zq396z+kvZwLu/SE6aTlxKJaT0uHS5iKOJOdh3byIOah19fXpP5llQs
-a6BOWJUz9+JtQHKwNPbNUSlFauzS5Gv/sfs75TDPthkTdzllZrVSokpMruhPMPGu/9a4+9WmbPLa
-c4RQFBSsx9SYzD0Plxl/8gO8LhBeOTdmehjGM7kIjMQcrMKVjMOJJg9xG9T6NLrIytwellpmuEAt
-uCeHeOEeXkaHgIxl8f7L2fFzi7Lc8EjQp/nyQ43m2vyQj8nEjy2ZR6qGJvrOip+MFUB+1ghUIvbr
-rr+94RJsmXu1eG7Fd5NDOIPYN90cy8aM+khb0Y3CeEWRWW5qnd6CJSMSxDRKrLxyotOBv1ZmchZ9
-7jc=
-=u1KX
------END PGP SIGNATURE-----
-
---------------WYJmKsAde7MM8USQat5VktCr--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
