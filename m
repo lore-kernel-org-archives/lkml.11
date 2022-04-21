@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76349C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC610C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385110AbiDUGpf (ORCPT
+        id S1385115AbiDUGpq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
+        Thu, 21 Apr 2022 02:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385055AbiDUGop (ORCPT
+        with ESMTP id S1385056AbiDUGop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 02:44:45 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686A513F9C
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6418C13F93
         for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:41:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1650523312; x=1682059312;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wPEL/kw/JWNf7uKtzOagGZmEcIiBH/2teWadWxvGW8Q=;
-  b=jCsvQxHDc9xXnaJmEllbXR5x/6OI/odgYBj1SmT7+h0ppJX8+UtWJ+sk
-   R1cGmgfIcnUjKTi06/62qyR8J7iBvMsIs25yNtvDsNGvJTxNwbpR+3hnL
-   px8RHLzRA3PLfU7ZpTFUbBWWMdsR6ThOr1lQ4JB5KeG7lGWbMNR9FzH28
-   1AQyoOcOKU+dkNSioToLM1G8F/H24PJTiCo0Pn+nvE5RLNfhgzqsyoxOr
-   eAvuZKmvcCL7IinqFLBlMTtK4aXCbNts6xJUye9p1fmpt5ddx/FVP7RrC
-   D5RKOebifmcN8F20lk+8VAyAV943M9itzDDY58fp6ToLylhuts4GIwyUz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251569920"
+  bh=kjxm7bmTXROoEp5qjjuHC1mfS0kgObAooQ6XtDzjCoc=;
+  b=DgbhPm5QAHbiKMvX9Lbyv+MWI9Z2QHSmGbEQF6zAkW3V1Ee3iDS5GJ8q
+   kgBYt5dooqfrptCtonG053APo6qK7RD4Ev9MpWyXRZedFffS+a7dYm+ne
+   DDd4x0y4fFymMLO9gNgURbpkh3q7x44mFhfWcPN5tioB1Le42Q9vhRlQN
+   r5AkeM/18zVtwZj/whFCx2KLUVHOvi1dk/+7XgikT2RP8DbYp2MjZDvH0
+   d/IhtE7fqpwqV0De2x/VeevV9K91Sbyn0DiPQ+Yc5XN175s8JKQztQWHn
+   gjMJ0LiniB4+1qcR8O+X5Y1SIMQbMFTXKiiynDfqHZMPEazX2ckESxraM
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="246151200"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="251569920"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:41:51 -0700
+   d="scan'208";a="246151200"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:41:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="614756916"
+   d="scan'208";a="510917686"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Apr 2022 23:41:50 -0700
+  by orsmga003.jf.intel.com with ESMTP; 20 Apr 2022 23:41:50 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQVh-0007yT-QS;
+        id 1nhQVh-0007yR-Pl;
         Thu, 21 Apr 2022 06:41:49 +0000
-Date:   Thu, 21 Apr 2022 14:40:55 +0800
+Date:   Thu, 21 Apr 2022 14:40:51 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1453/2579] arch/mips/vdso/genvdso.c:21:10:
- fatal error: 'linux/mm_api.h' file not found
-Message-ID: <202204202323.l1gSemNN-lkp@intel.com>
+To:     Walker Chen <walker.chen@starfivetech.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Michael Yan <michael.yan@starfivetech.com>,
+        Jenny Zhang <jenny.zhang@starfivetech.com>
+Subject: [esmil:visionfive 39/54] sound/soc/starfive/pwmdac.h:145:6: warning:
+ no previous prototype for 'sf_pwmdac_pcm_push_tx'
+Message-ID: <202204202206.ZXx9bPpx-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -57,42 +59,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 4eb7f06cbb9a0539016473ab509c83b5c9c50127 [1453/2579] headers/deps: Add header dependencies to .c files: <linux/mm_api.h>
-config: mips-randconfig-r026-20220419 (https://download.01.org/0day-ci/archive/20220420/202204202323.l1gSemNN-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c1c49a356162b22554088d269f7689bdb044a9f1)
+tree:   https://github.com/esmil/linux visionfive
+head:   68fe13e37af4c8331cdd40841353c9725cb65925
+commit: bd837079985c8fbf12bd972a21ddacef9d4c4121 [39/54] ASoC: starfive: Add StarFive JH7100 audio drivers
+config: csky-randconfig-r004-20220420 (https://download.01.org/0day-ci/archive/20220420/202204202206.ZXx9bPpx-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=4eb7f06cbb9a0539016473ab509c83b5c9c50127
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 4eb7f06cbb9a0539016473ab509c83b5c9c50127
+        # https://github.com/esmil/linux/commit/bd837079985c8fbf12bd972a21ddacef9d4c4121
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout bd837079985c8fbf12bd972a21ddacef9d4c4121
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/ arch/mips/vdso/ drivers/media/tuners/ drivers/rtc/ kernel/ lib/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash sound/soc/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
->> arch/mips/vdso/genvdso.c:21:10: fatal error: 'linux/mm_api.h' file not found
-   #include <linux/mm_api.h>
-            ^~~~~~~~~~~~~~~~
-   1 error generated.
+   In file included from sound/soc/starfive/pwmdac.c:19:
+>> sound/soc/starfive/pwmdac.h:145:6: warning: no previous prototype for 'sf_pwmdac_pcm_push_tx' [-Wmissing-prototypes]
+     145 | void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/pwmdac.h:146:6: warning: no previous prototype for 'sf_pwmdac_pcm_pop_rx' [-Wmissing-prototypes]
+     146 | void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/pwmdac.h:147:5: warning: no previous prototype for 'sf_pwmdac_pcm_register' [-Wmissing-prototypes]
+     147 | int sf_pwmdac_pcm_register(struct platform_device *pdev)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +21 arch/mips/vdso/genvdso.c
+vim +/sf_pwmdac_pcm_push_tx +145 sound/soc/starfive/pwmdac.h
 
-  > 21	#include <linux/mm_api.h>
-    22	#include <sys/mman.h>
-    23	#include <sys/stat.h>
-    24	#include <sys/types.h>
-    25	
+   137	
+   138	
+   139	
+   140	#if IS_ENABLED(CONFIG_SND_STARFIVE_PWMDAC_PCM)
+   141	void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev);
+   142	void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev);
+   143	int sf_pwmdac_pcm_register(struct platform_device *pdev);
+   144	#else
+ > 145	void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
+ > 146	void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
+ > 147	int sf_pwmdac_pcm_register(struct platform_device *pdev)
+   148	{
+   149		return -EINVAL;
+   150	}
+   151	#endif
+   152	
 
 -- 
 0-DAY CI Kernel Test Service
