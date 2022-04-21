@@ -2,139 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 370A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 413DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390244AbiDUPlI (ORCPT
+        id S1390235AbiDUPm6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
+        Thu, 21 Apr 2022 11:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349678AbiDUPlH (ORCPT
+        with ESMTP id S1348309AbiDUPmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:41:07 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB7D47567;
-        Thu, 21 Apr 2022 08:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650555497; x=1682091497;
-  h=subject:from:to:cc:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=x3xS6cEt6lHXiNb+A1o9kWq7JklXoM+r+tP2gN5rJV4=;
-  b=Nfped+G9jtnauyMKN4Y3280vytBcN3IOLbF5Di6ZfGLfw1U/uHajWRJI
-   l4EaXaO1f1BNQirVHrQmcRPnxKXY4qLcjM1Cba8MkM5MtdD0iaYSsT+o9
-   nJaDq3ASlcK47+WWrm992j3TJ2D+5VN6hg3cjhEo+x/5quNI5Pksi7HRX
-   xv/fWnnHCK1jKry+ZTdQiX99xyVp2hQuU5BBI9RYgKiNvc2cIVPglSHci
-   LhWvZV8D8/X8iIF/VHX66UU18A9swzQLKtOwFooqprihu7kcg69WnyYM5
-   frLTs9vaR7G+SwKHT3T41E/dTQr26bWcGh9iefWIdsW7FjJExfke4y1gu
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263241291"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="263241291"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:33:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="530353769"
-Received: from dwillia2-desk3.jf.intel.com (HELO dwillia2-desk3.amr.corp.intel.com) ([10.54.39.25])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:33:51 -0700
-Subject: [PATCH v3 8/8] nvdimm: Fix firmware activation deadlock scenarios
-From:   Dan Williams <dan.j.williams@intel.com>
-To:     linux-cxl@vger.kernel.org
-Cc:     peterz@infradead.org, vishal.l.verma@intel.com,
-        alison.schofield@intel.com, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 21 Apr 2022 08:33:51 -0700
-Message-ID: <165055523099.3745911.9091010720291846249.stgit@dwillia2-desk3.amr.corp.intel.com>
-In-Reply-To: <165055518776.3745911.9346998911322224736.stgit@dwillia2-desk3.amr.corp.intel.com>
-References: <165055518776.3745911.9346998911322224736.stgit@dwillia2-desk3.amr.corp.intel.com>
-User-Agent: StGit/0.18-3-g996c
+        Thu, 21 Apr 2022 11:42:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B37E2FE4A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650555602;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=S9DMw1QVObZXzp5ejmL5d1FwtHhPc8XTYmN4X9Dq3O0=;
+        b=hXZGlethubjqRAQ5wj2M1pNDeC2VLDAJrH2rdhP5MNi2VWBMAEgp4kUF1bhZbkk5agWcIf
+        bwYjsJ1FG/qL21C2/6kNCg9pwLjwx7Io0pAjT7IrNo7zaeGA4gVUxY3kGox6o5uCNTWeQd
+        pjrBJjt8Uct72BajonfdQGl7ge3mnOU=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-539-ELeyo7YsNF-usjRsY-i0Cg-1; Thu, 21 Apr 2022 11:40:01 -0400
+X-MC-Unique: ELeyo7YsNF-usjRsY-i0Cg-1
+Received: by mail-qv1-f72.google.com with SMTP id gy6-20020a056214242600b0044656c198b0so4209018qvb.20
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:39:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S9DMw1QVObZXzp5ejmL5d1FwtHhPc8XTYmN4X9Dq3O0=;
+        b=NvEN46t/WaoLBzLNVaw+0yNQqem490V26Vd0YReJZ8q5ik6PV6i/8majfXuxyrunye
+         0QETpcyKgYPG/SLe8dBfK/z4DsY4Fxy+bLCrP4SnsLYjDdPAWqEk4ERSB2dwqaTot1Lm
+         G+QXvt6SszhTS2PWe4puJ9xxmaZ3aItR3svhQfOenMjeZfabuttSzMeDrsW9uf76XOEk
+         q2GDEMbpt/m3zNsro6cBR7FkayZQ9P6pInt/cyv/p8NiVf1EJio/uaNvWxNh8CUvbnph
+         ZjEWzjuqWd+9O4yJxLZjzCmFnmBhEQN0dPjNv+THfhIsfeJxhahh+Olih+USYxA6y8Ii
+         GkvA==
+X-Gm-Message-State: AOAM533KL+mKJEsJT8PojhkyPxqBDGTy0+ggDOscH29CyTmn9JoJyJbY
+        p5YIu2RzcKkeVFtvRfIR19EMMcih9Fy6KdwkGXk38PiwRP1YAWAzJ+G8rCcoU13HvcTxC121PVU
+        4+2mBJLhGve1a2SCJQR3FoBrJ
+X-Received: by 2002:a05:620a:2489:b0:69e:996d:7940 with SMTP id i9-20020a05620a248900b0069e996d7940mr12470766qkn.553.1650555599182;
+        Thu, 21 Apr 2022 08:39:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwCwL51TZHhleKjAOtyVvVuDn5ubOOLwr4iM0Tlnqh/J1qgACgnab0k7LSIjuU6d2UPFyXdzA==
+X-Received: by 2002:a05:620a:2489:b0:69e:996d:7940 with SMTP id i9-20020a05620a248900b0069e996d7940mr12470746qkn.553.1650555598818;
+        Thu, 21 Apr 2022 08:39:58 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id k14-20020ac85fce000000b002f344fc0e0bsm2401950qta.38.2022.04.21.08.39.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 08:39:58 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     dan.j.williams@intel.com, vishal.l.verma@intel.com,
+        dave.jiang@intel.com, ira.weiny@intel.com
+Cc:     nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] libnvdimm/security: change __nvdimm_security_overwrite_query from global to static
+Date:   Thu, 21 Apr 2022 11:39:51 -0400
+Message-Id: <20220421153951.35792-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Lockdep reports the following deadlock scenarios for CXL root device
-power-management, device_prepare(), operations, and device_shutdown()
-operations for 'nd_region' devices:
+Smatch reports this issue
+security.c:416:6: warning: symbol '__nvdimm_security_overwrite_query' was not declared. Should it be static?
 
+__nvdimm_security_overwrite_query is only used in security.c so change
+its storage-class specifier to static
+
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- Chain exists of:
-   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
+ drivers/nvdimm/security.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(system_transition_mutex);
-                                lock(&nvdimm_bus->reconfig_mutex);
-                                lock(system_transition_mutex);
-   lock(&nvdimm_region_key);
-
---
-
- Chain exists of:
-   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&cxl_root_key);
-                                lock(acpi_scan_lock);
-                                lock(&cxl_root_key);
-   lock(&cxl_nvdimm_bridge_key);
-
----
-
-These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
-which walks the entire system device topology taking device_lock() along
-the way. The nvdimm_bus_lock() is protecting against unregistration,
-multiple simultaneous ops callers, and preventing activate_show() from
-racing activate_store(). For the first 2, the lock is redundant.
-Unregistration already flushes all ops users, and sysfs already prevents
-multiple threads to be active in an ops handler at the same time. For
-the last userspace should already be waiting for its last
-activate_store() to complete, and does not need activate_show() to flush
-the write side, so this lock usage can be deleted in these attributes.
-
-Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
----
- drivers/nvdimm/core.c |    4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
-index 144926b7451c..7c7f4a43fd4f 100644
---- a/drivers/nvdimm/core.c
-+++ b/drivers/nvdimm/core.c
-@@ -395,10 +395,8 @@ static ssize_t activate_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
+index 4b80150e4afa..d3e782662bf4 100644
+--- a/drivers/nvdimm/security.c
++++ b/drivers/nvdimm/security.c
+@@ -413,7 +413,7 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
+ 	return rc;
+ }
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
--	nvdimm_bus_unlock(dev);
- 
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return -EOPNOTSUPP;
-@@ -443,7 +441,6 @@ static ssize_t activate_store(struct device *dev,
- 	else
- 		return -EINVAL;
- 
--	nvdimm_bus_lock(dev);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
- 
- 	switch (state) {
-@@ -461,7 +458,6 @@ static ssize_t activate_store(struct device *dev,
- 	default:
- 		rc = -ENXIO;
- 	}
--	nvdimm_bus_unlock(dev);
- 
- 	if (rc == 0)
- 		rc = len;
+-void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
++static void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
+ {
+ 	struct nvdimm_bus *nvdimm_bus = walk_to_nvdimm_bus(&nvdimm->dev);
+ 	int rc;
+-- 
+2.27.0
 
