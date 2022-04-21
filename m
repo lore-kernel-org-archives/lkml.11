@@ -2,104 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C24EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B799CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391974AbiDUTdd (ORCPT
+        id S1391976AbiDUTe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
+        Thu, 21 Apr 2022 15:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392125AbiDUTdU (ORCPT
+        with ESMTP id S1354925AbiDUTeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:33:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76884D272;
-        Thu, 21 Apr 2022 12:30:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B21961C37;
-        Thu, 21 Apr 2022 19:30:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B218C385A7;
-        Thu, 21 Apr 2022 19:30:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650569428;
-        bh=1fcM7MbSJnaL9wKR6U/KV+2HM2X4zh1upGfZEhayAjs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HhwdwnCMMh1LSC6sLGLFDqUbR2Um/PwIUo/WCsiiHGaJEznGIbiedeHKxUHIF8TR5
-         qX5lKEO9w97ZSbYzDVXmT5gkYResyHAFpO7hPNg+6eI2u9z8ykF1kKcnAHfAvai2yy
-         7DiFqaf7lNKoNDZJOEWu82LF9CfOsTWzmcUpeH2D4gkqLrV33+tHnkjbzOxDFzOG9A
-         UvOkkYg7MzM34MFwwpwMnQesVZuuf4tcPuYue6rvRfSkYkNkgjBwjF4/szpnGIw7Jq
-         SM2Exdsp2CDkxG9FSwQhJMbo+7OXrjKQsVBQ/KImiVAmdprk0H5dFhlPD0oqkbwYq0
-         DvShOoV4MZzpw==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Theodore Ts'o <tytso@mit.edu>,
-        "Jason A . Donenfeld " <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: [PATCH] random: avoid mis-detecting a slow counter as a cycle counter
-Date:   Thu, 21 Apr 2022 12:29:39 -0700
-Message-Id: <20220421192939.250680-1-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.35.2
+        Thu, 21 Apr 2022 15:34:25 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F355F4D637
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:31:34 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id p62so6458174iod.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7HO73uRyd1X43sVJIiW9KkHmXq3f6HmsCw1YIk6coAE=;
+        b=ekMuS1QzTvsonYzLao+l7J0dZQIQsAVZdPTHIQpineOOdoobgztqbHrGOhZoP5gnMG
+         xbM0imCTgCOzDLHsBxp38lXBVmBwac8dHOvMBPSkP3XzbpBEXR/FLgxWg8Axu8NEaw2j
+         NBYfJ0j+vNKusiUfPIbshPoEjqLRbPL8LUlBk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7HO73uRyd1X43sVJIiW9KkHmXq3f6HmsCw1YIk6coAE=;
+        b=n2S/yQCRUPoIFTKwFjuj4BxAcbLkw2MOqW5gegzhA/wu61l84LiQHUUH/4e/y6HOSt
+         KUJ2WjVD96CENNg5ZvvefueVP+/oNCHWnFbsqmtsWx9PdRdvuo4hjH8kLLT5+4j3j50A
+         L5UZZ8L5VaUMtpHYI2h1wHyIArD2UJo9/WbywvnhbtxVqIUWSpcKykMmK6NjaQVzMK5I
+         d+wJBYdb5ZU9W+8QvE3jRKzyQLjKkb7bKkEwiXs8T4wby4mUM+IfatzyEaUCaVdDL0Ij
+         6EwK1GxZYEa6QZMW8OvUE/shiKId45p59pPNw8TVF73La0QBk3xuyUHpjZTzuoHOf037
+         7HhA==
+X-Gm-Message-State: AOAM530DyBKHrqAwvJ4zjelTNLxuMOVt3AOTBrDOvzRlbjQNAAhNWI0a
+        lLGsCHc43Wm+wIrSL34lE/wxHA==
+X-Google-Smtp-Source: ABdhPJyyLsKZJlRbHN11h9x/HycYVP33FRQi2NRbguiHRjuWWF8Ezo+rPVk/UeaQLntzs1ANS+llIg==
+X-Received: by 2002:a05:6602:27c5:b0:631:a30f:143a with SMTP id l5-20020a05660227c500b00631a30f143amr597205ios.40.1650569494038;
+        Thu, 21 Apr 2022 12:31:34 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id t18-20020a056e02011200b002cbe6ce18e5sm12533395ilm.40.2022.04.21.12.31.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 12:31:33 -0700 (PDT)
+Subject: Re: [PATCH v2 1/4] selftest/vm: verify mmap addr in mremap_test
+To:     Sidhartha Kumar <sidhartha.kumar@oracle.com>, shuah@kernel.org,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220420215721.4868-1-sidhartha.kumar@oracle.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <ff3db00d-3e18-8168-9f7d-d91a5591c7f2@linuxfoundation.org>
+Date:   Thu, 21 Apr 2022 13:31:32 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220420215721.4868-1-sidhartha.kumar@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+On 4/20/22 3:57 PM, Sidhartha Kumar wrote:
+> Avoid calling mmap with requested addresses that are less than the system's
+> mmap_min_addr. When run as root, mmap returns EACCES when trying to map
+> addresses < mmap_min_addr. This is not one of the error codes for the
+> condition to retry the mmap in the test. Rather than arbitrarily retrying
+> on EACCES, don't attempt an mmap until addr > vm.mmap_min_addr.
+> 
+> Add a munmap call after an alignment check as the mappings are retained
+> after the retry and can reach the vm.max_map_count sysctl.
+> 
+> Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+> ---
+> v2:
+> -change comment for description of get_mmap_min_addr()
+> -fix commit message formatting
+> 
 
-The method that try_to_generate_entropy() uses to detect a cycle counter
-is to check whether two calls to random_get_entropy() return different
-values.  This is uncomfortably prone to false positives if
-random_get_entropy() is a slow counter, as the two calls could return
-different values if the counter happens to be on the cusp of a change.
-Making things worse, the task can be preempted between the calls.
+Thank you.
 
-This is problematic because try_to_generate_entropy() doesn't do any
-real entropy estimation later; it always credits 1 bit per loop
-iteration.  To avoid crediting garbage, it relies entirely on the
-preceding check for whether a cycle counter is present.
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-Therefore, increase the number of counter comparisons from 1 to 3, to
-greatly reduce the rate of false positive cycle counter detections.
+Andrew, please let me know if you would like me to take this
+through kselftest tree.
 
-Fixes: 50ee7529ec45 ("random: try to actively add entropy rather than passively wait for it")
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- drivers/char/random.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index bf89c6f27a192..9647c61345573 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1382,12 +1382,20 @@ static void try_to_generate_entropy(void)
- 		unsigned long entropy;
- 		struct timer_list timer;
- 	} stack;
-+	int i;
- 
- 	stack.entropy = random_get_entropy();
- 
--	/* Slow counter - or none. Don't even bother */
--	if (stack.entropy == random_get_entropy())
--		return;
-+	/*
-+	 * We must not proceed if we don't actually have a cycle counter.  To
-+	 * detect a cycle counter, check whether random_get_entropy() returns a
-+	 * different value each time.  Check it multiple times to avoid false
-+	 * positives where a slow counter could be just on the cusp of a change.
-+	 */
-+	for (i = 0; i < 3; i++) {
-+		if (stack.entropy == random_get_entropy())
-+			return;
-+	}
- 
- 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
- 	while (!crng_ready() && !signal_pending(current)) {
-
-base-commit: 939ee380b17589d026e132a1be91199409c3c934
--- 
-2.35.2
-
+thanks,
+-- Shuah
