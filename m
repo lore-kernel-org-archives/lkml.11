@@ -2,216 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FAFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39E5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391154AbiDUSBf (ORCPT
+        id S1390933AbiDUSDA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
+        Thu, 21 Apr 2022 14:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391152AbiDUSB1 (ORCPT
+        with ESMTP id S1391215AbiDUSCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:01:27 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAE44B40D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:58:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650563914; x=1682099914;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=EiJrpObUFh20LOT5nrmOYLiEoVE9LosThQ1DYPD1x30=;
-  b=SyrsoPSf3sU0TAV0ShqxrBPmhEsYEh04ZgFHB1wx4UOUiGreXNmFBKDx
-   7lKk7SOp94+jvkFmICKq87fQ5MsRdnDufHg8Kv1GpbHkUldbqG9cyU/WG
-   c0kDqY0NRC24BFXzPx4kfJG/MMJOvZzOTO30EcSHihzgDo10gfmeyZT0A
-   zUazyOqVtMDHg8lG/itTZVbjE0yTjTuvMosajH8x6Li/+c+MsQJBq4HHC
-   90NNTkycpL1LnfrdlBjQ1Tu93UwIja9TUMY7iUpGiX21MXKAIVwOca7U9
-   qVAmj/yN1aO+FlgEBM2Hw3BPLe/DqrevODHORBOG69y+IzwdaeMkJ3KKf
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="350875474"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="350875474"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 10:58:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="671155815"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 21 Apr 2022 10:58:30 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhb4X-0008dd-D1;
-        Thu, 21 Apr 2022 17:58:29 +0000
-Date:   Fri, 22 Apr 2022 01:57:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.04.19a] BUILD SUCCESS
- 7e8b5f16a9577ed3b7c2b9b06686de578b98032b
-Message-ID: <62619b17.L0re67OuKL9mi6C7%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 21 Apr 2022 14:02:53 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E39BE29;
+        Thu, 21 Apr 2022 11:00:02 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 10:59:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650564000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=k9KJFoROadhQEi217HirEqtdLkXBsecvLOO9CIt2GKE=;
+        b=GU+fP14UtB62v1iOUhU2TiO8Tiqpbg/dnJjCrtcQl6Lp7MGa9EyUFAlQNpj0j1rTfbFAmr
+        ZVJv/GJLYHVIE9+l0NHbkjyOMoQcQZHPDxoCBeMOaIczAgyyq/bilbi/9kSuTEsDEFBj4C
+        foH+6WlVvovyemQkAHrZ6cVl9IVCKWo=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Muchun Song <songmuchun@bytedance.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Yang Shi <shy828301@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH] mm/memcg: Free percpu stats memory of dying memcg's
+Message-ID: <YmGbmrH/Hg1VJlUc@carbon>
+References: <20220421145845.1044652-1-longman@redhat.com>
+ <YmGHYNuAp8957ouq@carbon>
+ <112a4d7f-bc53-6e59-7bb8-6fecb65d045d@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <112a4d7f-bc53-6e59-7bb8-6fecb65d045d@redhat.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.04.19a
-branch HEAD: 7e8b5f16a9577ed3b7c2b9b06686de578b98032b  doc: Document the rcutree.rcu_divisor kernel boot parameter
+On Thu, Apr 21, 2022 at 01:28:20PM -0400, Waiman Long wrote:
+> 
+> On 4/21/22 12:33, Roman Gushchin wrote:
+> > On Thu, Apr 21, 2022 at 10:58:45AM -0400, Waiman Long wrote:
+> > > For systems with large number of CPUs, the majority of the memory
+> > > consumed by the mem_cgroup structure is actually the percpu stats
+> > > memory. When a large number of memory cgroups are continuously created
+> > > and destroyed (like in a container host), it is possible that more
+> > > and more mem_cgroup structures remained in the dying state holding up
+> > > increasing amount of percpu memory.
+> > > 
+> > > We can't free up the memory of the dying mem_cgroup structure due to
+> > > active references in some other places. However, the percpu stats memory
+> > > allocated to that mem_cgroup is a different story.
+> > > 
+> > > This patch adds a new percpu_stats_disabled variable to keep track of
+> > > the state of the percpu stats memory. If the variable is set, percpu
+> > > stats update will be disabled for that particular memcg. All the stats
+> > > update will be forward to its parent instead. Reading of the its percpu
+> > > stats will return 0.
+> > > 
+> > > The flushing and freeing of the percpu stats memory is a multi-step
+> > > process. The percpu_stats_disabled variable is set when the memcg is
+> > > being set to offline state. After a grace period with the help of RCU,
+> > > the percpu stats data are flushed and then freed.
+> > > 
+> > > This will greatly reduce the amount of memory held up by dying memory
+> > > cgroups.
+> > > 
+> > > By running a simple management tool for container 2000 times per test
+> > > run, below are the results of increases of percpu memory (as reported
+> > > in /proc/meminfo) and nr_dying_descendants in root's cgroup.stat.
+> > Hi Waiman!
+> > 
+> > I've been proposing the same idea some time ago:
+> > https://lore.kernel.org/all/20190312223404.28665-7-guro@fb.com/T/ .
+> > 
+> > However I dropped it with the thinking that with many other fixes
+> > preventing the accumulation of the dying cgroups it's not worth the added
+> > complexity and a potential cpu overhead.
+> > 
+> > I think it ultimately comes to the number of dying cgroups. If it's low,
+> > memory savings are not worth the cpu overhead. If it's high, they are.
+> > I hope long-term to drive it down significantly (with lru-pages reparenting
+> > being the first major milestone), but it might take a while.
+> > 
+> > I don't have a strong opinion either way, just want to dump my thoughts
+> > on this.
+> 
+> I have quite a number of customer cases complaining about increasing percpu
+> memory usages. The number of dying memcg's can go to tens of thousands. From
+> my own investigation, I believe that those dying memcg's are not freed
+> because they are pinned down by references in the page structure. I am aware
+> that we support the use of objcg in the page structure which will allow easy
+> reparenting, but most pages don't do that and it is not easy to do this
+> conversion and it may take quite a while to do that.
 
-elapsed time: 1066m
+The big question is whether there is a memory pressure on those systems.
+If yes, and the number of dying cgroups is growing, it's worth investigating.
+It might be due to the sharing of pagecache pages and this will be ultimately
+fixed with implementing of the pagecache reparenting. But it also might be due
+to other bugs, which are fixable, so it would be great to understand.
 
-configs tested: 136
-configs skipped: 4
+So if there is a memory pressure and dying cgroups are still accumulating,
+we need to investigate and fix it.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+If there is (almost) no memory pressure, it's a proactive reclaim question.
+There are several discussions and projects going on in this area.
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-sh                   secureedge5410_defconfig
-arm                             ezx_defconfig
-sh                          r7780mp_defconfig
-powerpc                        cell_defconfig
-powerpc                     mpc83xx_defconfig
-arm                         nhk8815_defconfig
-powerpc                      makalu_defconfig
-arm                        mvebu_v7_defconfig
-sparc                            allyesconfig
-parisc64                            defconfig
-arm                        cerfcube_defconfig
-mips                           ip32_defconfig
-sh                         ecovec24_defconfig
-arm                        mini2440_defconfig
-parisc                generic-32bit_defconfig
-m68k                        mvme16x_defconfig
-mips                         cobalt_defconfig
-ia64                          tiger_defconfig
-arm                        keystone_defconfig
-sh                           se7619_defconfig
-arm                          pxa3xx_defconfig
-sparc                       sparc32_defconfig
-sh                          sdk7780_defconfig
-m68k                          amiga_defconfig
-alpha                            alldefconfig
-powerpc                 canyonlands_defconfig
-arm                     eseries_pxa_defconfig
-arm                           sunxi_defconfig
-powerpc                    sam440ep_defconfig
-powerpc                 mpc834x_mds_defconfig
-sh                        edosk7705_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220421
-arm                  randconfig-c002-20220420
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220420
-arc                  randconfig-r043-20220421
-s390                 randconfig-r044-20220421
-riscv                randconfig-r042-20220421
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+Releasing percpu memory is more a workaround of the problem rather than fix.
+In the end, if we're accumulating dying cgroups, we're still leaking memory,
+just at a smaller pace (which is good, of course).
 
-clang tested configs:
-riscv                randconfig-c006-20220420
-mips                 randconfig-c004-20220420
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-arm                  randconfig-c002-20220420
-powerpc              randconfig-c003-20220420
-mips                        bcm63xx_defconfig
-arm                         orion5x_defconfig
-arm                          pxa168_defconfig
-powerpc                 xes_mpc85xx_defconfig
-arm                           omap1_defconfig
-powerpc                      ppc44x_defconfig
-powerpc                     pseries_defconfig
-s390                       zfcpdump_defconfig
-arm                          pxa910_defconfig
-powerpc                    gamecube_defconfig
-arm                          pcm027_defconfig
-x86_64                           allyesconfig
-powerpc                     tqm5200_defconfig
-mips                malta_qemu_32r6_defconfig
-mips                      bmips_stb_defconfig
-hexagon                          alldefconfig
-arm                     davinci_all_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220420
-riscv                randconfig-r042-20220420
-hexagon              randconfig-r045-20220420
-s390                 randconfig-r044-20220420
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks!
