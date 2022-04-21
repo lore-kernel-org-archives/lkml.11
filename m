@@ -2,155 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 747E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4845AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390676AbiDURiY (ORCPT
+        id S1390810AbiDURjY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
+        Thu, 21 Apr 2022 13:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241579AbiDURiT (ORCPT
+        with ESMTP id S1345437AbiDURjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:38:19 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D854738C;
-        Thu, 21 Apr 2022 10:35:28 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id n17so6620672ljc.11;
-        Thu, 21 Apr 2022 10:35:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CDk3a6VgKrZuT8ZcRh1/xIe6Q0/s0tC/sVKTkENgNak=;
-        b=HeelgZvGa0y6CTancPNWQ6vJjNAi4x3ORh1p9cTFIepZtsgDrk5Ua6dZiycoOCMVcL
-         c4GF4hlUa93OAG6fjFG70QF72SD6PrFkoHV1ild6F5WtUNjX56+ZucwjS8QgIhLBMVk9
-         QpsHGI+ifnv0PcHajHaqLWcLbi6w0wTAcWOpYB3zsIgeoZ9PZxnuYeAEHKN8PiPUvTkW
-         tk4m8PijCv/+ZhESRdi9DypwJQb5g+NPDE9hd2T+FtJN+xX+UabFM0JJlhzrTcsSEnaq
-         LMZDZ1VM7onPn8PAGmVO+bscs7PfEfZGf9HRPC7G23BkqZwfoFO6cQHTQ2CHu1k4T6RK
-         OdrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CDk3a6VgKrZuT8ZcRh1/xIe6Q0/s0tC/sVKTkENgNak=;
-        b=6ja9LK+yBwBamsMfnmvQA32ZpfV8YWmYBoEr827m7A59WbHTJ3MoalQ7b1RBrLNpW/
-         3XssaFL/anituinIjFP8oAXqAEztaEZS0lNx9PG/TnnghxVndIlOsfwlkX4qZ3BICj8g
-         He3UZ0F6znyGCRsdV21s/hzUUrJ7qHGYYa2cfQUXueVFwqF4bwgg7hUWp1VEd3StN0FV
-         JghjVc8Cs8kE6W0/rAoM/ER0XYOJrtZXgP3dt3d5dn1KEpXyYMauv0W0sc+t2VVRmNCm
-         yqL8FqMWIMxfw+inY3je2a8hC4Y5aSf6Rx1BzcN8W6G2f2Nm5+S5mnil/++h+W2MNu3y
-         4gBg==
-X-Gm-Message-State: AOAM533HBIXfvEHK6NHMv/RsopXlGf4V2VqEuK8CNPfmywjR3hansVE8
-        YUPjQG/hyx+Ty6myThRHe28=
-X-Google-Smtp-Source: ABdhPJymumgPppR/Yl89vnqcwNccCGJXbwHpQ2AQqL54zDGwa3jfofsqs/k5W5r/iygpYJQNVkNePw==
-X-Received: by 2002:a2e:9e10:0:b0:24b:5cb5:867c with SMTP id e16-20020a2e9e10000000b0024b5cb5867cmr458277ljk.401.1650562526246;
-        Thu, 21 Apr 2022 10:35:26 -0700 (PDT)
-Received: from mobilestation ([95.79.183.147])
-        by smtp.gmail.com with ESMTPSA id m20-20020a194354000000b0046f8c68f965sm2004975lfj.166.2022.04.21.10.35.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 10:35:25 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 20:35:23 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Vladimir Murzin <vladimir.murzin@arm.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 03/25] dma-direct: take dma-ranges/offsets into account
- in resource mapping
-Message-ID: <20220421173523.ig62jtvj7qbno6q7@mobilestation>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
- <20220324014836.19149-4-Sergey.Semin@baikalelectronics.ru>
- <0baff803-b0ea-529f-095a-897398b4f63f@arm.com>
- <20220417224427.drwy3rchwplthelh@mobilestation>
- <20220420071217.GA5152@lst.de>
- <20220420083207.pd3hxbwezrm2ud6x@mobilestation>
- <20220420084746.GA11606@lst.de>
- <20220420085538.imgibqcyupvvjpaj@mobilestation>
- <20220421144536.GA23289@lst.de>
+        Thu, 21 Apr 2022 13:39:21 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBD14927E;
+        Thu, 21 Apr 2022 10:36:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650562591; x=1682098591;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IaH/Q0uLjbSzyYuYCFdaJrJyTkwHmv+BQlUtkUbRdWA=;
+  b=nJa2DnICHVEB8YMWRbK4kc6nGzE49IsGsR5kkaVISgUjA9IzLz/cptug
+   IuZmVonD0FzMaSa3F/VSYyO4+2Z23TzBzCbZdOEI2pRBKe2lkMRDtwYGe
+   Kvu9RPJCYlnICqJqiI95vjo15YoLv/gDwiOgnjs9co8KACj+8CQlFG4Yc
+   QQiDXXrXw6pzWo3n4aD0BNv4/5Ih7hALX9yQbYyahFbL91/8//jWDZB7N
+   cLHPrRbSgNQJ60Ayr6Jd4SBDEfB31k2yHQWeApRFQzhCkI8jrAMEhRY++
+   B62/D/Co88op8giCP4JkL9Xu2jRr2QC8DrfNHopY6pP4gQnGk6AhSjZcZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244353529"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="244353529"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 10:36:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="593761713"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 10:36:28 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhajD-0008ch-Kb;
+        Thu, 21 Apr 2022 17:36:27 +0000
+Date:   Fri, 22 Apr 2022 01:35:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Haowen Bai <baihaowen@meizu.com>,
+        Chris Mason <chris.mason@fusionio.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Haowen Bai <baihaowen@meizu.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] btrfs: Fix a memory leak in btrfs_ioctl_balance()
+Message-ID: <202204220132.EBMTHukr-lkp@intel.com>
+References: <1650534677-31554-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220421144536.GA23289@lst.de>
+In-Reply-To: <1650534677-31554-1-git-send-email-baihaowen@meizu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 04:45:36PM +0200, Christoph Hellwig wrote:
-> On Wed, Apr 20, 2022 at 11:55:38AM +0300, Serge Semin wrote:
-> > On Wed, Apr 20, 2022 at 10:47:46AM +0200, Christoph Hellwig wrote:
-> > > I can't really comment on the dma-ranges exlcusion for P2P mappings,
-> > > as that predates my involvedment, however:
-> > 
-> > My example wasn't specific to the PCIe P2P transfers, but about PCIe
-> > devices reaching some platform devices over the system interconnect
-> > bus.
-> 
-> So strike PCIe, but this our definition of Peer to Peer accesses.
-> 
-> > What if I get to have a physical address of a platform device and want
-> > have that device being accessed by a PCIe peripheral device? The
-> > dma_map_resource() seemed very much suitable for that. But considering
-> > what you say it isn't.
-> 
+Hi Haowen,
 
-> dma_map_resource is the right thing for that.  But the physical address
-> of MMIO ranges in the platform device should not have struct pages
-> allocated for it, and thus the other dma_map_* APIs should not work on
-> it to start with.
+Thank you for the patch! Perhaps something to improve:
 
-The problem is that the dma_map_resource() won't work for that, but
-presumably the dma_map_sg()-like methods will (after some hacking with
-the phys address, but anyway). Consider the system diagram in my
-previous email. Here is what I would do to initialize a DMA
-transaction between a platform device and a PCIe peripheral device:
+[auto build test WARNING on kdave/for-next]
+[also build test WARNING on v5.18-rc3 next-20220421]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-1) struct resource *rsc = platform_get_resource(plat_dev, IORESOURCE_MEM, 0);
+url:    https://github.com/intel-lab-lkp/linux/commits/Haowen-Bai/btrfs-Fix-a-memory-leak-in-btrfs_ioctl_balance/20220421-175644
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-next
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220422/202204220132.EBMTHukr-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9e36507b94d20118a936198b321a3544931217f0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Haowen-Bai/btrfs-Fix-a-memory-leak-in-btrfs_ioctl_balance/20220421-175644
+        git checkout 9e36507b94d20118a936198b321a3544931217f0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/btrfs/
 
-2) dma_addr_t dar = dma_map_resource(&pci_dev->dev, rsc->start, rsc->end - rsc->start + 1,
-                                      DMA_FROM_DEVICE, 0);
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-3) dma_addr_t sar;
-   void *tmp = dma_alloc_coherent(&pci_dev->dev, PAGE_SIZE, &sar, GFP_KERNEL);
-   memset(tmp, 0xaa, PAGE_SIZE);
+All warnings (new ones prefixed by >>):
 
-4) PCIe device: DMA.DAR=dar, DMA.SAR=sar. RUN.
+>> fs/btrfs/ioctl.c:4375:7: warning: variable 'need_unlock' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+                   if (!test_bit(BTRFS_FS_BALANCE_RUNNING, &fs_info->flags)) {
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   fs/btrfs/ioctl.c:4463:6: note: uninitialized use occurs here
+           if (need_unlock)
+               ^~~~~~~~~~~
+   fs/btrfs/ioctl.c:4375:3: note: remove the 'if' if its condition is always true
+                   if (!test_bit(BTRFS_FS_BALANCE_RUNNING, &fs_info->flags)) {
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   fs/btrfs/ioctl.c:4373:6: warning: variable 'need_unlock' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+           if (fs_info->balance_ctl) {
+               ^~~~~~~~~~~~~~~~~~~~
+   fs/btrfs/ioctl.c:4463:6: note: uninitialized use occurs here
+           if (need_unlock)
+               ^~~~~~~~~~~
+   fs/btrfs/ioctl.c:4373:2: note: remove the 'if' if its condition is always true
+           if (fs_info->balance_ctl) {
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   fs/btrfs/ioctl.c:4343:18: note: initialize the variable 'need_unlock' to silence this warning
+           bool need_unlock; /* for mut. excl. ops lock */
+                           ^
+                            = 0
+   2 warnings generated.
 
-If there is no dma-ranges specified in the PCIe Host controller
-DT-node, the PCIe peripheral devices will see the rest of the system
-memory as is (no offsets and remappings). But if there is dma-ranges
-with some specific system settings it may affect the PCIe MRd/MWr TLPs
-address translation including the addresses targeted to the MMIO
-space. In that case the mapping performed on step 2) will return a
-wrong DMA-address since the corresponding dma_direct_map_resource()
-just returns the passed physical address missing the
-'pci_dev->dma_range_map'-based mapping performed in
-translate_phys_to_dma().
 
-Note the mapping on step 3) works correctly because it calls the
-translate_phys_to_dma() of the direct DMA interface thus taking the
-PCie dma-ranges into account.
+vim +4375 fs/btrfs/ioctl.c
 
-To sum up as I see it either restricting dma_map_resource() to map
-just the intra-bus addresses was wrong or there must be some
-additional mapping infrastructure for the denoted systems. Though I
-don't see a way the dma_map_resource() could be fixed to be suitable
-for each considered cases.
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4336  
+9ba1f6e44ed7a1 Liu Bo               2012-05-11  4337  static long btrfs_ioctl_balance(struct file *file, void __user *arg)
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4338  {
+496ad9aa8ef448 Al Viro              2013-01-23  4339  	struct btrfs_root *root = BTRFS_I(file_inode(file))->root;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4340  	struct btrfs_fs_info *fs_info = root->fs_info;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4341  	struct btrfs_ioctl_balance_args *bargs;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4342  	struct btrfs_balance_control *bctl;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4343  	bool need_unlock; /* for mut. excl. ops lock */
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4344  	int ret;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4345  
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4346  	if (!capable(CAP_SYS_ADMIN))
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4347  		return -EPERM;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4348  
+e54bfa31044d60 Liu Bo               2012-06-29  4349  	ret = mnt_want_write_file(file);
+9ba1f6e44ed7a1 Liu Bo               2012-05-11  4350  	if (ret)
+9ba1f6e44ed7a1 Liu Bo               2012-05-11  4351  		return ret;
+9ba1f6e44ed7a1 Liu Bo               2012-05-11  4352  
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4353  	bargs = memdup_user(arg, sizeof(*bargs));
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4354  	if (IS_ERR(bargs)) {
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4355  		ret = PTR_ERR(bargs);
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4356  		goto out;
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4357  	}
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4358  
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4359  again:
+c3e1f96c37d0f8 Goldwyn Rodrigues    2020-08-25  4360  	if (btrfs_exclop_start(fs_info, BTRFS_EXCLOP_BALANCE)) {
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4361  		mutex_lock(&fs_info->balance_mutex);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4362  		need_unlock = true;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4363  		goto locked;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4364  	}
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4365  
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4366  	/*
+0132761017e012 Nicholas D Steeves   2016-05-19  4367  	 * mut. excl. ops lock is locked.  Three possibilities:
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4368  	 *   (1) some other op is running
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4369  	 *   (2) balance is running
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4370  	 *   (3) balance is paused -- special case (think resume)
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4371  	 */
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4372  	mutex_lock(&fs_info->balance_mutex);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4373  	if (fs_info->balance_ctl) {
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4374  		/* this is either (2) or (3) */
+3009a62f3b1823 David Sterba         2018-03-21 @4375  		if (!test_bit(BTRFS_FS_BALANCE_RUNNING, &fs_info->flags)) {
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4376  			mutex_unlock(&fs_info->balance_mutex);
+dccdb07bc996e9 David Sterba         2018-03-21  4377  			/*
+dccdb07bc996e9 David Sterba         2018-03-21  4378  			 * Lock released to allow other waiters to continue,
+dccdb07bc996e9 David Sterba         2018-03-21  4379  			 * we'll reexamine the status again.
+dccdb07bc996e9 David Sterba         2018-03-21  4380  			 */
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4381  			mutex_lock(&fs_info->balance_mutex);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4382  
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4383  			if (fs_info->balance_ctl &&
+3009a62f3b1823 David Sterba         2018-03-21  4384  			    !test_bit(BTRFS_FS_BALANCE_RUNNING, &fs_info->flags)) {
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4385  				/* this is (3) */
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4386  				need_unlock = false;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4387  				goto locked;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4388  			}
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4389  
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4390  			mutex_unlock(&fs_info->balance_mutex);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4391  			goto again;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4392  		} else {
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4393  			/* this is (2) */
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4394  			mutex_unlock(&fs_info->balance_mutex);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4395  			ret = -EINPROGRESS;
+9e36507b94d201 Haowen Bai           2022-04-21  4396  			goto out_bargs;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4397  		}
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4398  	} else {
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4399  		/* this is (1) */
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4400  		mutex_unlock(&fs_info->balance_mutex);
+e57138b3e96e45 Anand Jain           2013-08-21  4401  		ret = BTRFS_ERROR_DEV_EXCL_RUN_IN_PROGRESS;
+9e36507b94d201 Haowen Bai           2022-04-21  4402  		goto out_bargs;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4403  	}
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4404  
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4405  locked:
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4406  	if (bargs->flags & BTRFS_BALANCE_RESUME) {
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4407  		if (!fs_info->balance_ctl) {
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4408  			ret = -ENOTCONN;
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4409  			goto out_bargs;
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4410  		}
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4411  
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4412  		bctl = fs_info->balance_ctl;
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4413  		spin_lock(&fs_info->balance_lock);
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4414  		bctl->flags |= BTRFS_BALANCE_RESUME;
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4415  		spin_unlock(&fs_info->balance_lock);
+efc0e69c2feab8 Nikolay Borisov      2021-11-25  4416  		btrfs_exclop_balance(fs_info, BTRFS_EXCLOP_BALANCE);
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4417  
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4418  		goto do_balance;
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4419  	}
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4420  
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4421  	if (bargs->flags & ~(BTRFS_BALANCE_ARGS_MASK | BTRFS_BALANCE_TYPE_MASK)) {
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4422  		ret = -EINVAL;
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4423  		goto out_bargs;
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4424  	}
+0cb53767e6f475 Nikolay Borisov      2022-03-30  4425  
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4426  	if (fs_info->balance_ctl) {
+837d5b6e46d1a4 Ilya Dryomov         2012-01-16  4427  		ret = -EINPROGRESS;
+837d5b6e46d1a4 Ilya Dryomov         2012-01-16  4428  		goto out_bargs;
+837d5b6e46d1a4 Ilya Dryomov         2012-01-16  4429  	}
+837d5b6e46d1a4 Ilya Dryomov         2012-01-16  4430  
+8d2db7855e7b65 David Sterba         2015-11-04  4431  	bctl = kzalloc(sizeof(*bctl), GFP_KERNEL);
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4432  	if (!bctl) {
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4433  		ret = -ENOMEM;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4434  		goto out_bargs;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4435  	}
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4436  
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4437  	memcpy(&bctl->data, &bargs->data, sizeof(bctl->data));
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4438  	memcpy(&bctl->meta, &bargs->meta, sizeof(bctl->meta));
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4439  	memcpy(&bctl->sys, &bargs->sys, sizeof(bctl->sys));
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4440  
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4441  	bctl->flags = bargs->flags;
+de322263d3a6d4 Ilya Dryomov         2012-01-16  4442  do_balance:
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4443  	/*
+c3e1f96c37d0f8 Goldwyn Rodrigues    2020-08-25  4444  	 * Ownership of bctl and exclusive operation goes to btrfs_balance.
+c3e1f96c37d0f8 Goldwyn Rodrigues    2020-08-25  4445  	 * bctl is freed in reset_balance_state, or, if restriper was paused
+c3e1f96c37d0f8 Goldwyn Rodrigues    2020-08-25  4446  	 * all the way until unmount, in free_fs_info.  The flag should be
+c3e1f96c37d0f8 Goldwyn Rodrigues    2020-08-25  4447  	 * cleared after reset_balance_state.
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4448  	 */
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4449  	need_unlock = false;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4450  
+6fcf6e2bffb6cf David Sterba         2018-05-07  4451  	ret = btrfs_balance(fs_info, bctl, bargs);
+0f89abf56abbd0 Christian Engelmayer 2015-10-21  4452  	bctl = NULL;
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4453  
+6ad365fd1bfcde Nikolay Borisov      2022-03-30  4454  	if (ret == 0 || ret == -ECANCELED) {
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4455  		if (copy_to_user(arg, bargs, sizeof(*bargs)))
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4456  			ret = -EFAULT;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4457  	}
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4458  
+0f89abf56abbd0 Christian Engelmayer 2015-10-21  4459  	kfree(bctl);
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4460  out_bargs:
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4461  	kfree(bargs);
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4462  	mutex_unlock(&fs_info->balance_mutex);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4463  	if (need_unlock)
+c3e1f96c37d0f8 Goldwyn Rodrigues    2020-08-25  4464  		btrfs_exclop_finish(fs_info);
+ed0fb78fb6aa29 Ilya Dryomov         2013-01-20  4465  out:
+e54bfa31044d60 Liu Bo               2012-06-29  4466  	mnt_drop_write_file(file);
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4467  	return ret;
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4468  }
+c9e9f97bdfb64d Ilya Dryomov         2012-01-16  4469  
 
--Sergey
-   
-map the platforms
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
