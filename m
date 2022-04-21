@@ -2,184 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC248C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76391C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:51:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390932AbiDURxy (ORCPT
+        id S1390939AbiDURx5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
+        Thu, 21 Apr 2022 13:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390907AbiDURxv (ORCPT
+        with ESMTP id S1390925AbiDURxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:53:51 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD1E49CAE
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:51:00 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id q7so103308wrm.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:51:00 -0700 (PDT)
+        Thu, 21 Apr 2022 13:53:52 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66249240;
+        Thu, 21 Apr 2022 10:51:01 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id e2so1459393wrh.7;
+        Thu, 21 Apr 2022 10:51:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=M22h9UQjwXBYuhzU3iIzL65vslAk4PsiNxWDwMZ8FAo=;
-        b=hEECmpUnpB3qCAOGX3uyF12IUPH1WwYzm/Tv+tRwA2dyTdlvn18OlYA1n9edNZF9jH
-         Ci+i2S7I7ii5aaDUHP8i2cdgue9/jbgG2rvA+jU4zhZXdgUO4M8JGOgsAIB+9CtsAMxM
-         xiynn++9MRLsCGD9cPamO/O1MHYoRMPeXgiY3uy00vhonh76G8CS1aB6NcOw7AvL6TnQ
-         R0Ltzup4dT2T0mx6g7sYEab4LmX7jrTdMn7iKnnt4hrwi+kHFzhDgZ4vd8JkVBDjX6hW
-         5UeRkn4GlXT7c1UDq1QMzJpwglAcBUYi+yGXrPAz4c+U9lW5Wh4x7odRIJ1tSnan+S8Z
-         /zTA==
+        bh=t8UaNUL5oKbXOZlbqC77oKUrKBJ0bpPyiwRTd3rDL3U=;
+        b=ST8Zj6bL4HKEmzyE2IiiPecSgzSKwlq7kb7nrj/RdUL8RV1aWahGD8+9QlDqdUlV8E
+         GUupb5LVZl1GELr5CTYH2CqqeNtNDXGeXkjPE02aC/VDWn5Vz3FmIBekI9ImZdKWznoj
+         hPOjr/5K3Avx7E8aI1Jc24cb7S8FS3QPeEw2hp9ACFK5y0gjPXT2bEHeXA7VusY49gU0
+         Lu+v42RYB+XTIw2TMWj2l6/d7CwWwrtFbI9BYANkKQQ9w/NrsAM4SdK/JCDQSctviT6x
+         AvhL7scCPL8johCRU+ZqIvFQbzfU89rCtTCI0GP0pihpt3JWvLUjshVGyvyFG4LQRQnV
+         JfrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=M22h9UQjwXBYuhzU3iIzL65vslAk4PsiNxWDwMZ8FAo=;
-        b=LDCgD3L1nUr+IiCroxp25ro57I+RYMLB9XjrCJ0wLZbZfVHsDzosDNXwaylt13sfPL
-         qaMZHLEmlXZkH+h1aREluObYJjXjFgZjdWHEENTiB9mlqT0skqaY/cxix0XlP60dXpjC
-         gaKeoNT9iSYhqs8+gZV6xt+YwyFU+yQ7AosunpcFicj4rFN/uoZCkWUuw2ZcsT11yNVX
-         PpPyE2ZFn6MSrxOKD7zMmt7fQNG9J95En2Cfqq7QuaTC/fBinxyux5IOdBaKRekZ3D9x
-         Xb2j7teZkaTmfHBs6Tph2BVuiJ9RdjhLjAhvKdTkN9CKoKrVoK99byN3Afj2QUDUmbeo
-         TZbw==
-X-Gm-Message-State: AOAM533K68L/Dr4qCNl5om3dqFRJw8A8BJoItNdL5A2AAvztPlURaB40
-        2EQa+qSbeDnxrkoRH913LtE=
-X-Google-Smtp-Source: ABdhPJy90JiQaRGbP3+RdlApAiy5FRq5lCRQKdFczqp+z85MecKOuuhtXHTPf64gmnZmmiXjGp8Uhw==
-X-Received: by 2002:a05:6000:1f97:b0:20a:bb9d:c82d with SMTP id bw23-20020a0560001f9700b0020abb9dc82dmr656649wrb.302.1650563459174;
-        Thu, 21 Apr 2022 10:50:59 -0700 (PDT)
-Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id a18-20020adffb92000000b00207a257d47asm2798931wrr.95.2022.04.21.10.50.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=t8UaNUL5oKbXOZlbqC77oKUrKBJ0bpPyiwRTd3rDL3U=;
+        b=1h1v+5bYYMm0We+NR2wKVc1HCeJL8oxfPUePVMCJs4tmm7bNEYaTFgEHgvhnIk0C8F
+         DnGdGpeikx/3sFAUefU2d9eI3C35eA3T31UEHr45DAIo7nPgmadUft4chpHfQifkJRze
+         ZJPtyqE5Elz/aQ+Xk9y85KiE+Q4+nu+4JXBMcG59XEaJ2h8LPYkr5R7BIVil1DZzYwOI
+         8gTwdAa7NPQcMKQXnL0Jr2uSoAT5Z4XX9rOXbTVBkZAJN7BwckRMOsXyF0jWILaSPx7x
+         MWFiknWnLbQJcs0p7vQKW5zJ9RXkMUTGge0lc/CPKanYQe5ram0vmsJL/qY7gV4w39S/
+         ObMQ==
+X-Gm-Message-State: AOAM531MtKnvXkylvLlzwHteZJI/Gnublz+Ko1/1g1pGlT/6qMIiTFkd
+        Gyhj/n5TYAH6HdDAIrp5wk8=
+X-Google-Smtp-Source: ABdhPJydfQ5pFiUcN+2puVV/o6uCQ998PigwElqlg9csMTxYVk2T8+somUsREpKvrPheUDLDStLJ0A==
+X-Received: by 2002:a05:6000:156c:b0:20a:8397:6d28 with SMTP id 12-20020a056000156c00b0020a83976d28mr615523wrz.363.1650563460486;
+        Thu, 21 Apr 2022 10:51:00 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.37.128])
+        by smtp.gmail.com with ESMTPSA id l28-20020a05600c1d1c00b0038ece66f1b0sm2685634wms.8.2022.04.21.10.50.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 10:50:57 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Subject: Re: [PATCH v2] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Date:   Thu, 21 Apr 2022 19:50:56 +0200
-Message-ID: <12321324.iMDcRRXYNz@leap>
-In-Reply-To: <20220418175638.30018-1-fmdefrancesco@gmail.com>
-References: <20220418175638.30018-1-fmdefrancesco@gmail.com>
+        Thu, 21 Apr 2022 10:51:00 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     jikos@kernel.org
+Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH for-5.19/uclogic 0/5] DIGImend patches, part V
+Date:   Thu, 21 Apr 2022 19:50:47 +0200
+Message-Id: <20220421175052.911446-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On luned=C3=AC 18 aprile 2022 19:56:38 CEST Fabio M. De Francesco wrote:
-> `scripts/kernel-doc -none include/linux/highmem*` reports the following
-> warnings:
->=20
-> include/linux/highmem.h:160: warning: expecting prototype for=20
-kunmap_atomic(). Prototype was for nr_free_highpages() instead
-> include/linux/highmem-internal.h:256: warning: Function parameter or=20
-member '__addr' not described in 'kunmap_atomic'
-> include/linux/highmem-internal.h:256: warning: Excess function parameter=
-=20
-'addr' description in 'kunmap_atomic'
->=20
-> Fix these warnings by (1) move the kernel-doc comments from highmem.h to
-> highmem-internal.h (which is the file were the kunmap_atomic() macro is
-> actually defined), (2) merge it with the comment which already was in
-> highmem-internal.h, and (3) use correct parameter names.
->=20
-> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
->=20
-> v1->v2: Re-word the last sentence of the commit message and add a missing
-> 	number to the second entry in the fixes list. Add Mike Rapoport's
-> 	"Acked-by:" tag (thanks!).
->=20
->  include/linux/highmem-internal.h | 14 +++++++++++---
->  include/linux/highmem.h          | 13 +------------
->  2 files changed, 12 insertions(+), 15 deletions(-)
->=20
-> diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-
-internal.h
-> index a77be5630209..7307de391288 100644
-> --- a/include/linux/highmem-internal.h
-> +++ b/include/linux/highmem-internal.h
-> @@ -236,9 +236,17 @@ static inline unsigned long totalhigh_pages(void) {=
-=20
-return 0UL; }
-> =20
->  #endif /* CONFIG_HIGHMEM */
-> =20
-> -/*
-> - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
-> - * kunmap_atomic() should get the return value of kmap_atomic, not the=20
-page.
-> +/**
-> + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
-> + * @__addr:       Virtual address to be unmapped
-> + *
-> + * Counterpart to kmap_atomic().
-> + *
-> + * Effectively a wrapper around kunmap_local() which additionally undoes
-> + * the side effects of kmap_atomic(), i.e. reenabling pagefaults and
-> + * preemption. Prevent people trying to call kunmap_atomic() as if it
-> + * were kunmap() because kunmap_atomic() should get the return value of
-> + * kmap_atomic(), not its argument which is a pointer to struct page.
->   */
->  #define kunmap_atomic(__addr)				=09
-\
->  do {							=09
-\
-> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-> index 39bb9b47fa9c..0a7a89721e5d 100644
-> --- a/include/linux/highmem.h
-> +++ b/include/linux/highmem.h
-> @@ -37,7 +37,7 @@ static inline void *kmap(struct page *page);
-> =20
->  /**
->   * kunmap - Unmap the virtual address mapped by kmap()
-> - * @addr:	Virtual address to be unmapped
-> + * @page:	Virtual address to be unmapped
->   *
->   * Counterpart to kmap(). A NOOP for CONFIG_HIGHMEM=3Dn and for mappings=
-=20
-of
->   * pages in the low memory area.
-> @@ -145,17 +145,6 @@ static inline void *kmap_local_folio(struct folio=20
-*folio, size_t offset);
->   */
->  static inline void *kmap_atomic(struct page *page);
-> =20
-> -/**
-> - * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
-> - * @addr:	Virtual address to be unmapped
-> - *
-> - * Counterpart to kmap_atomic().
-> - *
-> - * Effectively a wrapper around kunmap_local() which additionally undoes
-> - * the side effects of kmap_atomic(), i.e. reenabling pagefaults and
-> - * preemption.
-> - */
-> -
->  /* Highmem related interfaces for management code */
->  static inline unsigned int nr_free_highpages(void);
->  static inline unsigned long totalhigh_pages(void);
-> --=20
-> 2.34.1
->=20
-Dear Maintainers,
+Hi everyone,
 
-Please drop this patch because it has been reworked and inserted as part of=
-=20
-a new series whose subject is "Extend and reorganize Highmem's=20
-documentation" and which is about to be submitted.
+This series is a follow up to [1], [2], [3] and [4] upstreaming 5 more
+patches authored by Nikolai from the DIGImend project.
 
-Thanks,
+Patches 1 and 2 are documentation improvements.
 
-=46abio M. De Francesco
+Patch 3 allows to create a keyboard interface to the tablets that have
+a "Usage (Keyboard)" in their descriptor, like for example the Huion
+HS611, which has media keys [5].
 
+However, some of the tablets that have a keyboard usage, also have an
+invalid pen usage, creating an invalid pen interface. Patches 4 and 5
+allow to disable it.
 
+As always, many thanks to Jiří and Nikolai for their work :D
 
+José Expósito
+
+[1] https://lore.kernel.org/linux-input/nycvar.YFH.7.76.2202161642180.11721@cbobk.fhfr.pm/T/
+[2] https://lore.kernel.org/linux-input/56454560-5f62-05b9-1a24-3f51a305140e@gmail.com/T/
+[3] https://lore.kernel.org/linux-input/nycvar.YFH.7.76.2204111653000.30217@cbobk.fhfr.pm/T/
+[4] https://lore.kernel.org/linux-input/nycvar.YFH.7.76.2204211005520.30217@cbobk.fhfr.pm/T/
+[5] https://www.huion.com/es/pen_tablet/HS/huion-hs611.html
+
+Nikolai Kondrashov (5):
+  HID: uclogic: Clarify params desc_size description
+  HID: uclogic: Clarify pen/frame desc_ptr description
+  HID: uclogic: Pass keyboard reports as is
+  HID: uclogic: Support disabling pen usage
+  HID: uclogic: Disable pen usage for Huion keyboard interfaces
+
+ drivers/hid/hid-uclogic-core.c   | 19 +++++++++++++++++++
+ drivers/hid/hid-uclogic-params.c |  9 +++++++--
+ drivers/hid/hid-uclogic-params.h | 17 ++++++++++++-----
+ 3 files changed, 38 insertions(+), 7 deletions(-)
+
+-- 
+2.25.1
 
