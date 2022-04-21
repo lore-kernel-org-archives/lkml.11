@@ -2,115 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05790C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2176CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384960AbiDUGmi (ORCPT
+        id S1384963AbiDUGnb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
+        Thu, 21 Apr 2022 02:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384922AbiDUGmX (ORCPT
+        with ESMTP id S1384938AbiDUGnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:42:23 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 521F3E0A9;
-        Wed, 20 Apr 2022 23:39:33 -0700 (PDT)
-Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 089D01C810D0;
-        Thu, 21 Apr 2022 14:39:31 +0800 (CST)
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS04.nuvoton.com
- (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 21
- Apr 2022 14:39:30 +0800
-Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Thu, 21 Apr 2022 14:39:30 +0800
-Message-ID: <caf4867f-7f71-9262-f190-463325eb13ab@nuvoton.com>
-Date:   Thu, 21 Apr 2022 14:39:30 +0800
+        Thu, 21 Apr 2022 02:43:25 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91CDD13F81
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650523236; x=1682059236;
+  h=mime-version:content-transfer-encoding:in-reply-to:
+   references:cc:subject:to:from:message-id:date;
+  bh=71JJ0eHi2arpf9/f536F1pmq5dhuMhUNGfpsM7vmudQ=;
+  b=klU8dIX5s+VaBkI8S2cVPJv5c3zMLq8QR6ER20DrZwe8oqkquTt03KcB
+   yrM7gO7y//lkNrVsmspfHTzZ3qcmH7Z3VMFJIpHFmYFf29O8TrrJnD+P0
+   CCjc4edURrL+u5EhT/2Mxen7uFraeZiU/gEX5Higyh7JdmCp9DgjHFZ3n
+   oVlSmUZOZnnvzR7nRzMe/3INtGYUYq2QTjpg2M2B7QaSg6gyUqbsMMULc
+   eNa2noZcCK6Ykwxfu3qQBiBhgtDxTZzvKaaQebW/FSlYMpAHxy5xLv2ta
+   hobLM1h1j6KFUf8HEnh5GVOMuTgp/I1tMsuShysaEHJbu2FNd7rAsyGvw
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="289368858"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="289368858"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:40:36 -0700
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="555608128"
+Received: from hyeongju-mobl2.ger.corp.intel.com (HELO localhost) ([10.252.54.203])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:40:31 -0700
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 5/5] dt-bindings: arm: Add initial bindings for Nuvoton
- Platform
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <ychuang570808@gmail.com>
-CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
-        <arnd@arndb.de>, <olof@lixom.net>, <will@kernel.org>,
-        <soc@kernel.org>, <cfli0@nuvoton.com>
-References: <20220418082738.11301-1-ychuang3@nuvoton.com>
- <20220418082738.11301-6-ychuang3@nuvoton.com>
- <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
-From:   Jacky Huang <ychuang3@nuvoton.com>
-In-Reply-To: <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220413144548.GR2120790@nvidia.com>
+References: <20220411141403.86980-1-hch@lst.de> <20220411141403.86980-6-hch@lst.de> <20220411152508.GH2120790@nvidia.com> <87zgkrha7c.fsf@intel.com> <20220411165121.GA26801@lst.de> <877d7tgo33.fsf@intel.com> <e8cdc103-f683-0b73-70a7-807f6fee0280@intel.com> <20220413134307.GC368031@nvidia.com> <86ee8fcc-e021-bb9f-fda6-a8e85cb1d9b4@intel.com> <20220413144548.GR2120790@nvidia.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 05/34] drm/i915/gvt: cleanup the Makefile
+To:     "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+From:   Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Message-ID: <165052322868.6597.3051928698772494571@jlahtine-mobl.ger.corp.intel.com>
+User-Agent: alot/0.8.1
+Date:   Thu, 21 Apr 2022 09:40:28 +0300
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
++ Tvrtko
 
+Quoting Jason Gunthorpe (2022-04-13 17:45:48)
+> On Wed, Apr 13, 2022 at 02:26:23PM +0000, Wang, Zhi A wrote:
+> > On 4/13/22 1:43 PM, Jason Gunthorpe wrote:
+> > > On Wed, Apr 13, 2022 at 01:39:35PM +0000, Wang, Zhi A wrote:
+> > >=20
+> > >> It seems Jani's makefile clean patch has already included this one, =
+I can
+> > >> just simply drop this one so that Christoph won't need to re-send ev=
+erything.
+> > >>
+> > >> For the branch to move on, I am merging the patches and will re-gene=
+rate the
+> > >> gvt-staging branch, which combines the newest drm-tip vfio-upstream =
+and other
+> > >> gvt branches.
+> > >>
+> > >> If you are in a rush of re-basing the patches of non-GVT-g stuff, yo=
+u can use
+> > >> gvt-staging branch until my pull request landed in drm-intel-next.
+> > >>
+> > >> Also our QA will test gvt-staging-branch before the pull request. I =
+suppose
+> > >> it will take one or two days.
+> > >=20
+> > > When you are wrangling the branches it would be great if Christoph's
+> > > series and it's minimal dependencies could be on a single branch that
+> > > could reasonably be pulled to the VFIO tree too, thanks
+> > >=20
+> > > Jason
+> > >=20
+> >=20
+> > Hi Jason:
+> >=20
+> > I am thinking about the process of merging process. Here are the depend=
+ence:
+> >=20
+> > 1) My patches depend on one patch in drm-intel/drm-intel-next. So it ha=
+s to
+> > go through drm.
+> > My patches of GVT-g will go through drm-intel-next -> drm -> upstream. =
 
-On 2022/4/18 下午 08:11, Krzysztof Kozlowski wrote:
-> On 18/04/2022 10:27, Jacky Huang wrote:
->> +properties:
->> +  $nodename:
->> +    const: '/'
->> +  compatible:
->> +    items:
->> +      - enum:
->> +          - nuvoton,ma35d1
->> +          - nuvoton,ma35d1-evb
->> +          - nuvoton,ma35d1-iot
->> +          - nuvoton,ma35d1-som512
->> +          - nuvoton,ma35d1-som1g
-> This does not match your DTS and does not look reasonable (SoC
-> compatible should not be part of this enum). Check some other board
-> bindings for examples.
->
->
-> Best regards,
-> Krzysztof
-
-I would like to modify it as follows:
-
-description: |
-   Boards with an ARMv8 based Nuvoton SoC shall have the following
-   properties.
-
-properties:
-   $nodename:
-     const: '/'
-   compatible:
-     oneOf:
-
-       - description: MA35D1 evaluation board
-         items:
-           - const: nuvoton,ma35d1-evb
-           - const: nuvoton,ma35d1
-
-       - description: MA35D1 IoT board
-         items:
-           - const: nuvoton,ma35d1-iot
-           - const: nuvoton,ma35d1
-
-       - description: MA35D1 SOM board with 512MB DDR
-         items:
-           - const: nuvoton,ma35d1-som512
-           - const: nuvoton,ma35d1
-
-       - description: MA35D1 SOM board with 1GB DDR
-         items:
-           - const: nuvoton,ma35d1-som1g
-           - const: nuvoton,ma35d1
-
-additionalProperties: true
-
-
-
-Thank you very much.
-Jacky Huang
-
+> >=20
+> > 2) Christoph's patches depends on my patches, but part of them are for =
+VFIO.
+> >=20
+> > a. If they are fully going through VFIO repo, they might have to wait my
+> > patches to get landed first.
+> >=20
+> > b. If only the GVT-g parts goes through GVT repo, and rest of them goes
+> > through VFIO, the rest part still needs to wait.
+> >=20
+> > What would be a better process?
+>=20
+> You should organize everything onto one simple branch based on a rc to
+> make this all work.
+>=20
+> Make your #1 patch as a single patch PR based on rc to drm-intel so it
+> gets to the right tree
+>=20
+> Make your MMIO series as PR on the branch above that first PR and merge to
+> the gvt tree
+>=20
+> Make Christoph's series as a PR on the branch above the second PR's
+> MMIO series and merge to the gvt tree
+>=20
+> Merge the gvt toward DRM in the normal way - ie the main merge path for
+> this should be through DRM.
+>=20
+> Then ask Alex to merge the 3rd PR as well.
+>=20
+> I don't see any intel-next stuff in linux-next yet so hopefully it is
+> early enough to get #1 OK.
+>=20
+> Jason
