@@ -2,102 +2,402 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D08C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389656AbiDUOui (ORCPT
+        id S1389652AbiDUOun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
+        Thu, 21 Apr 2022 10:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389639AbiDUOuf (ORCPT
+        with ESMTP id S1389646AbiDUOuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 10:50:35 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4B34338B
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E0CB42EFA
         for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:47:42 -0700 (PDT)
-Received: from mail-wm1-f43.google.com ([209.85.128.43]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MlsWZ-1o8K8k1yNf-00j55e for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022
- 16:47:41 +0200
-Received: by mail-wm1-f43.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso6075325wma.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:47:41 -0700 (PDT)
-X-Gm-Message-State: AOAM531+JEcwKbfBKT+gDx3J5LoQsdjjMZ3pmqFDUBrxlBFfEeaPCHxh
-        No5DqENg74HeMpT0mA7H6g7A3bum6XN4WIMSI38=
-X-Google-Smtp-Source: ABdhPJxpfQyeJ8FFSSRAVYsP7tX4SxkGVm3S8a1k62CpNiV8J87SliJxnOrtPTeyRtS6VZ24MDqHdm2WtoHwOU8AJN4=
-X-Received: by 2002:a7b:ce15:0:b0:38e:b7b0:79be with SMTP id
- m21-20020a7bce15000000b0038eb7b079bemr8870300wmc.71.1650552461083; Thu, 21
- Apr 2022 07:47:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650552461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VLrWjtc7m2YPAUBTVVwtoIkXOvWSSpY/9+OaSUBZTKs=;
+        b=dwci+HBQSZdlwgF+Mo6uszSh+EgNNd30YEr8Hu3tLrD2pfhRVKq24z/+oZrgRNSKW7NeTP
+        QQjgNdbJA+SEq+5RQeugZSl35RE+Smp4bqVqdDPqropD1kzOYrd1zG8G67Ku/6/30+20Y2
+        LkE78QqQ1fgOz+38W1D1CN7LWlKQDl8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-325-1Nzm7Wr3PpiJJfxG5ZxQMg-1; Thu, 21 Apr 2022 10:47:36 -0400
+X-MC-Unique: 1Nzm7Wr3PpiJJfxG5ZxQMg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1356B1857F08;
+        Thu, 21 Apr 2022 14:47:35 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3636554E88D;
+        Thu, 21 Apr 2022 14:47:32 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220415123614.54024-9-jefflexu@linux.alibaba.com>
+References: <20220415123614.54024-9-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
+Subject: Re: [PATCH v9 08/21] cachefiles: document on-demand read mode
 MIME-Version: 1.0
-References: <YlxAo5BAy+ARlvqj@arm.com> <Yl0jPdfdUkaStDN5@gondor.apana.org.au>
- <Yl2Vda/8S7qAvMjC@arm.com> <CAMj1kXEGdPageO3tb2=eLnGAR9-nZtmTGXcGf5CiTQFC4JiXOg@mail.gmail.com>
- <CAK8P3a1+GqbO5Kgf70nmR8rQg5OaLBsFZJWaOLuS7JRqXb-ZNA@mail.gmail.com>
- <YmEFttLxGbyJx8LK@infradead.org> <YmE60ufokRCYOj8W@arm.com>
- <CAK8P3a34UTmJ5Tn2vbFaJjQrvO-G5LJOqe_6oQwR6zp+PJ8fjA@mail.gmail.com>
- <YmFbQiSFyQ+W85Zx@arm.com> <CAK8P3a28NuZE628f1Bga_-gGSpHnPFx=2cBW0oDW4MFAzCSb+w@mail.gmail.com>
- <YmFtuJmdMZcsoWnO@arm.com>
-In-Reply-To: <YmFtuJmdMZcsoWnO@arm.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 21 Apr 2022 16:47:24 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2Z83TbY6N_TCA-VtE9g6HzP5sySnqqP-D27Uqng3nu9w@mail.gmail.com>
-Message-ID: <CAK8P3a2Z83TbY6N_TCA-VtE9g6HzP5sySnqqP-D27Uqng3nu9w@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:LVaoYcR/yzXToY4XQaCHMihnNd9WPKphM0R6+jq7LKxEFQeaGVz
- cvs2k21UEkXLzY/XqUx8f4IMkeeLQG54lmzG6HtZXAleGsvaSS9jAgAjxvvq8JTwyd0JGAh
- ZTJHaLED0VjixU//FV6R+JGvWRDiFsEvEKcPkhosUupCAFsjfQ46mjoOSmHYJID+yKwMZjy
- uWN9YKdQQLG5ZXzBU216A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:N7gcqfY2yGQ=:zUyyN9MiHDuco6NNg9SUIw
- xORNvRLX1N6Z/yt+sk6TaqePLr5pe6bxx/pM5+PQVaKjSjeESkJK0Jbrr9TEHJCJrvTVXBPZ7
- Mrgm34m+NAbmgD5M31kAaqnZhBC6VuAsApd52OnQ7z+jR6TNiZ8fCP714ZDWb704PuGQh0BhG
- G9FJTGl8qKOIMR34aHEwjWuQT32x/Ndwttcn9kvVimdQnnpCsvEQzuR4DGHBvrCUoSjoEnIbC
- Tz54sUiVvnJixr6BcO5egJjPAGgPEwwNRK5gj9eWOMxDsHH2MFvszx8BbrxDIedI+41jG91wK
- IC3wLzFZ9Nfva3+BmjAfwrMM3NO17s429zb2HmTzvHhppF1tf0k1b2D69IfzaVTk0fNRBViTz
- pM3G8yEBhdpeWe9GVJdTuw1V4TNlixr2UZQa2P+tKkKk3+DN4sP0rNR/mtxV8bFkHH3J2xdNF
- yJAvqB1TBFHzDgqRkLyqsRMGnrFqzthSAG14WmJ59v45COBBCC0vtUBt/hi2A8MPDApOn9she
- k66v1ENFHdrcdYTpw568RjSA1wWnyt0BNMBvHrjumufjRHIGT4hWpe5uZhMsl+JqqrvI59Fx5
- L8RXOYq8I2/PZ1OGSww8sNTF1PZiksfc4WtTFD43yG/nyTgvhX5mBQbxeEjjY86GXDMrIl7sO
- 4EzRv2jmrCi3TgrtAUbamXjKpzILPOtbZwbq7dxkl2Aejs3peoumymiSwjZsby2+1opf550xh
- bNhosKnEHpuaBu6I9IL9koQF8QQywFZy2ZoRhf3f94vgINcxhuJA0s5Q50IKtl9oIuBT8Fe25
- EqF/CWUsnUzkzEcqa9E0rUKGikGWalJ2WI/CEQDOYWhkTPzOJ4=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1447052.1650552451.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 21 Apr 2022 15:47:31 +0100
+Message-ID: <1447053.1650552451@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 4:44 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
-> On Thu, Apr 21, 2022 at 03:47:30PM +0200, Arnd Bergmann wrote:
-> > On Thu, Apr 21, 2022 at 3:25 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
-> > > On Thu, Apr 21, 2022 at 02:28:45PM +0200, Arnd Bergmann wrote:
-> > > > We also know that larger slabs are all cacheline aligned, so simply
-> > > > comparing the transfer size is enough to rule out most, in this case
-> > > > any transfer larger than 96 bytes must come from the kmalloc-128
-> > > > or larger cache, so that works like before.
-> > >
-> > > There's also the case with 128-byte cache lines and kmalloc-192.
-> >
-> > Sure, but that's much less common, as the few machines with 128 byte
-> > cache lines tend to also have cache coherent devices IIRC, so we'd
-> > skip the bounce buffer entirely.
->
-> Do you know which machines still have 128-byte cache lines _and_
-> non-coherent DMA? If there isn't any that matters, I'd reduce
-> ARCH_DMA_MINALIGN to 64 now (while trying to get to even smaller kmalloc
-> caches).
+Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 
-I think the last time this came up, someone pointed out one of the
-Qualcomm Snapdragon phone chips with their custom cores.
+> +When working in its original mode, cachefiles mainly
 
-        Arnd
+I'd delete "mainly" there.
+
+> serves as a local cache
+> +for a remote networking fs - while in on-demand read mode, cachefiles c=
+an boost
+> +the scenario where on-demand read semantics is
+
+is -> are.
+
+> +The essential difference between these two modes is that, in original m=
+ode,
+> +when a cache miss occurs, the netfs will fetch the data from the remote=
+ server
+> +and then write it to the cache file.  With on-demand read mode, however=
+,
+> +fetching the data and writing it into the cache is delegated to a user =
+daemon.
+
+The starting sentence seems off.  How about:
+
+  The essential difference between these two modes is seen when a cache mi=
+ss
+  occurs: In the original mode, the netfs will fetch the data from the rem=
+ote
+  server and then write it to the cache file; in on-demand read mode, fetc=
+hing
+  data and writing it into the cache is delegated to a user daemon.
+
+> +Protocol Communication
+> +----------------------
+> +
+> +The on-demand read mode relies on
+
+relies on -> uses
+
+> a simple protocol used
+
+Delete "used".
+
+> for communication
+> +between kernel and user daemon. The protocol can be modeled as::
+> +
+> +	kernel --[request]--> user daemon --[reply]--> kernel
+> +
+> +The cachefiles kernel module will send requests to the user daemon when=
+ needed.
+> +The user daemon needs to
+
+needs to -> should
+
+> poll on
+
+poll on -> poll
+
+> the devnode ('/dev/cachefiles') to check if
+> +there's a pending request to be processed.  A POLLIN event will be retu=
+rned
+> +when there's a pending request.
+> +
+> +The user daemon then reads the devnode to fetch a request and process i=
+t
+> +accordingly.
+
+Reading the devnode doesn't process the request, so I think something like=
+:
+
+"... and process it accordingly" -> "... that it can then process."
+
+or:
+
+"... and process it accordingly" -> "... to process."
+
+> It is worth noting
+
+"It should be noted"
+
+> that each read only gets one request. When
+
+... it has ...
+
+> +finished processing the request, the user daemon needs to
+
+needs to -> should write
+
+> write the reply to
+> +the devnode.
+> +
+> +Each request starts with a message header of the form::
+> +
+> +	struct cachefiles_msg {
+> +		__u32 msg_id;
+> +		__u32 opcode;
+> +		__u32 len;
+> +		__u32 object_id;
+> +		__u8  data[];
+> +	};
+> +
+> +	where:
+> +
+> +	* ``msg_id`` is a unique ID identifying this request among all pending
+> +	  requests.
+> +
+> +	* ``opcode`` indicates the type of this request.
+> +
+> +	* ``object_id`` is a unique ID identifying the cache file operated on.
+> +
+> +	* ``data`` indicates the payload of this request.
+> +
+> +	* ``len`` indicates the whole length of this request, including the
+> +	  header and following type-specific payload.
+> +
+> +
+> +Turn on On-demand Mode
+
+Turning on
+
+> +----------------------
+> +
+> +An optional parameter is added
+
+is added -> becomes available
+
+> to the "bind" command::
+> +
+> +	bind [ondemand]
+> +
+> +When the "bind" command takes without
+
+takes without -> is given no
+
+> argument, it defaults to the original
+> +mode.  When the "bind" command is given
+
+When it is given
+
+> the "ondemand" argument, i.e.
+> +"bind ondemand", on-demand read mode will be enabled.
+> +
+> +
+> +The OPEN Request
+> +----------------
+> +
+> +When the netfs opens a cache file for the first time, a request with th=
+e
+> +CACHEFILES_OP_OPEN opcode, a.k.a an OPEN request will be sent to the us=
+er
+> +daemon.  The payload format is of the form::
+> +
+> +	struct cachefiles_open {
+> +		__u32 volume_key_size;
+> +		__u32 cookie_key_size;
+> +		__u32 fd;
+> +		__u32 flags;
+> +		__u8  data[];
+> +	};
+> +
+> +	where:
+> +
+> +	* ``data`` contains the volume_key followed directly by the cookie_key=
+.
+> +	  The volume key is a NUL-terminated string; the cookie key is binary
+> +	  data.
+> +
+> +	* ``volume_key_size`` indicates the size of the volume key in bytes.
+> +
+> +	* ``cookie_key_size`` indicates the size of the cookie key in bytes.
+> +
+> +	* ``fd`` indicates an anonymous fd referring to the cache file, throug=
+h
+> +	  which the user daemon can perform write/llseek file operations on th=
+e
+> +	  cache file.
+> +
+> +
+> +The user daemon is able to distinguish the requested cache file with th=
+e given
+> +(volume_key, cookie_key) pair.
+
+"The user daemon can use the given (volume_key, cookie_key) pair to
+distinguish the requested cache file." might sound better.
+
+> Each cache file has a unique object_id, while it
+> +may have multiple anonymous fds. The user daemon may duplicate anonymou=
+s fds
+> +from the initial anonymous fd indicated by the @fd field through dup().=
+ Thus
+> +each object_id can be mapped to multiple anonymous fds, while the usr d=
+aemon
+> +itself needs to maintain the mapping.
+> +
+> +With the given anonymous fd, the user daemon can fetch data and write i=
+t to the
+> +cache file in the background, even when kernel has not triggered a cach=
+e miss
+> +yet.
+> +
+> +The user daemon should complete the READ request
+
+READ request -> OPEN request?
+
+> by issuing a "copen" (complete
+> +open) command on the devnode::
+> +
+> +	copen <msg_id>,<cache_size>
+> +
+> +	* ``msg_id`` must match the msg_id field of the previous OPEN request.
+> +
+> +	* When >=3D 0, ``cache_size`` indicates the size of the cache file;
+> +	  when < 0, ``cache_size`` indicates the
+
+the -> any
+
+> error code ecountered
+
+encountered
+
+> by the
+> +	  user daemon.
+> +
+> +
+> +The CLOSE Request
+> +-----------------
+> +
+> +When a cookie withdrawn, a CLOSE request (opcode CACHEFILES_OP_CLOSE) w=
+ill be
+> +sent to the user daemon. It will notify
+
+It will notify -> This tells
+
+> the user daemon to close all anonymous
+> +fds associated with the given object_id.  The CLOSE request has no exte=
+a
+
+extra
+
+> +payload.
+> +
+> +
+> +The READ Request
+> +----------------
+> +
+> +When on-demand read mode is turned on, and a cache miss encountered,
+
+"When a cache miss is encountered in on-demand read mode,"
+
+> the kernel
+> +will send a READ request (opcode CACHEFILES_OP_READ) to the user daemon=
+. This
+> +will tell
+
+will tell -> tells/asks
+
+> the user daemon to fetch data
+
+data -> the contents
+
+> of the requested file range. The payload
+> +is of the form::
+> +
+> +	struct cachefiles_read {
+> +		__u64 off;
+> +		__u64 len;
+> +	};
+> +
+> +	where:
+> +
+> +	* ``off`` indicates the starting offset of the requested file range.
+> +
+> +	* ``len`` indicates the length of the requested file range.
+> +
+> +
+> +When receiving
+
+receiving -> it receives
+
+> a READ request, the user daemon needs to
+
+needs to -> should
+
+> fetch the
+
+requested
+
+> data of the
+> +requested file range,
+
+"of the requested file range," -> "" (including the comma, I think)
+
+> and then
+
+"then" -> ""
+
+> write it to the cache file identified by
+> +object_id.
+> +
+> +To finish
+
+When it has finished
+
+> processing the READ request, the user daemon should reply with
+
+with -> by using
+
+> the
+> +CACHEFILES_IOC_CREAD ioctl on one of the anonymous fds associated with =
+the given
+> +object_id
+
+given object_id -> object_id given
+
+> in the READ request.  The ioctl is of the form::
+> +
+> +	ioctl(fd, CACHEFILES_IOC_CREAD, msg_id);
+> +
+> +	* ``fd`` is one of the anonymous fds associated with the given object_=
+id
+> +	  in the READ request.
+
+the given object_id in the READ request -> object_id
+
+> +
+> +	* ``msg_id`` must match the msg_id field of the previous READ request.
+
+By "previous READ request" is this referring to something different to "th=
+e
+READ request" you mentioned against the fd parameter?
+
+David
+
