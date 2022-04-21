@@ -2,96 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8845C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5168C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384784AbiDUGXs convert rfc822-to-8bit (ORCPT
+        id S1384793AbiDUG0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59922 "EHLO
+        Thu, 21 Apr 2022 02:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiDUGXn (ORCPT
+        with ESMTP id S229726AbiDUG0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:23:43 -0400
-X-Greylist: delayed 588 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 23:20:54 PDT
-Received: from mx2.uni-regensburg.de (mx2.uni-regensburg.de [IPv6:2001:638:a05:137:165:0:3:bdf8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E8E13DE1;
-        Wed, 20 Apr 2022 23:20:54 -0700 (PDT)
-Received: from mx2.uni-regensburg.de (localhost [127.0.0.1])
-        by localhost (Postfix) with SMTP id 1B71E600004D;
-        Thu, 21 Apr 2022 08:11:05 +0200 (CEST)
-Received: from gwsmtp.uni-regensburg.de (gwsmtp1.uni-regensburg.de [132.199.5.51])
-        by mx2.uni-regensburg.de (Postfix) with ESMTP id 0528B600004E;
-        Thu, 21 Apr 2022 08:11:05 +0200 (CEST)
-Received: from uni-regensburg-smtp1-MTA by gwsmtp.uni-regensburg.de
-        with Novell_GroupWise; Thu, 21 Apr 2022 08:11:05 +0200
-Message-Id: <6260F577020000A1000497D1@gwsmtp.uni-regensburg.de>
-X-Mailer: Novell GroupWise Internet Agent 18.4.0 
-Date:   Thu, 21 Apr 2022 08:11:03 +0200
-From:   "Ulrich Windl" <Ulrich.Windl@rz.uni-regensburg.de>
-To:     "open-iscsi" <open-iscsi@googlegroups.com>,
-        <haowenchao@huawei.com>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, "Chris Leech" <cleech@redhat.com>,
-        "Lee Duncan" <lduncan@suse.com>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>
-Cc:     <linfeilong@huawei.com>
-Subject: Antw: [EXT] Re: [PATCH v2] scsi: iscsi: Fix multiple iscsi
- session unbind event sent to userspace
-References: <20220418000627.474784-1-haowenchao@huawei.com>
- <938bca13-2dcc-24c0-51b5-26f7e7238776@oracle.com>
-In-Reply-To: <938bca13-2dcc-24c0-51b5-26f7e7238776@oracle.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+        Thu, 21 Apr 2022 02:26:19 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A0613EB5;
+        Wed, 20 Apr 2022 23:23:26 -0700 (PDT)
+X-UUID: 2b3dd1b70e574701b82cdee100969f99-20220421
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:f394c3dd-92b6-4aa6-b650-d66cc163b093,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.4,REQID:f394c3dd-92b6-4aa6-b650-d66cc163b093,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:faefae9,CLOUDID:775372f0-da02-41b4-b6df-58f4ccd36682,C
+        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
+        l,QS:0,BEC:nil
+X-UUID: 2b3dd1b70e574701b82cdee100969f99-20220421
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1665368436; Thu, 21 Apr 2022 14:23:21 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 21 Apr 2022 14:23:20 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 21 Apr 2022 14:23:20 +0800
+Message-ID: <02d4b85ae2595f4bf08ec7ddb2ec4dfb35a45f2a.camel@mediatek.com>
+Subject: Re: [PATCH v3 2/2] remoteproc: mediatek: allow reading
+ firmware-name from DT
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Mathieu Poirier" <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Hsin-Yi Wang <hsinyi@chromium.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-remoteproc@vger.kernel.org>
+Date:   Thu, 21 Apr 2022 14:23:19 +0800
+In-Reply-To: <20220419123331.14377-3-allen-kh.cheng@mediatek.com>
+References: <20220419123331.14377-1-allen-kh.cheng@mediatek.com>
+         <20220419123331.14377-3-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> Mike Christie <michael.christie@oracle.com> schrieb am 20.04.2022 um 18:28 in
-Nachricht <938bca13-2dcc-24c0-51b5-26f7e7238776@oracle.com>:
-
-...
+On Tue, 2022-04-19 at 20:33 +0800, Allen-KH Cheng wrote:
+> The SCP firmware blob differs between platforms and SoCs. We add
+> support in the SCP driver for reading the path of firmware file from
+> DT in order to allow these files to live in a generic file system
+> (or linux-firmware).
 > 
->> diff --git a/include/scsi/scsi_transport_iscsi.h 
-> b/include/scsi/scsi_transport_iscsi.h
->> index 9acb8422f680..877632c25e56 100644
->> --- a/include/scsi/scsi_transport_iscsi.h
->> +++ b/include/scsi/scsi_transport_iscsi.h
->> @@ -256,6 +256,7 @@ struct iscsi_cls_session {
->>  	struct workqueue_struct *workq;
->>  
->>  	unsigned int target_id;
->> +	int target_unbound;   /* make sure unbind session only once */
+> The firmware-name property is optional and the code falls back to the
+> old filename if the property isn't present.
 > 
-> 
-> We don't need the comment since the code using this is so simple
-> and the name of the variable tells us what it's for.
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
 
-Actually I think a comment may be worth it, but it should say what the variable expresses, not what it is used for
-(the use may change, but hopefully not the semantics (unless updated globally)).
-So maybe: /* is target unbound? */
-(the question mnark emphasizing that it is a boolean type of variable)
-But still, if the name is mostly identical to the comment, one may leave out the comment.
-
-Regards,
-Ulrich
-
-> 
-> 
->>  	bool ida_used;
->>  
->>  	/*
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups 
-> "open-iscsi" group.
-> To unsubscribe from this group and stop receiving emails from it, send an 
-> email to open-iscsi+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit 
-> https://groups.google.com/d/msgid/open-iscsi/938bca13-2dcc-24c0-51b5-26f7e723 
-> 8776%40oracle.com.
-
-
-
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
