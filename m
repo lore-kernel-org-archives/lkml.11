@@ -2,83 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E28FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94511C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390403AbiDUP57 (ORCPT
+        id S1390335AbiDUP7Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
+        Thu, 21 Apr 2022 11:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390372AbiDUP5p (ORCPT
+        with ESMTP id S232456AbiDUP7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:57:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D5D1C4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:54:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 308A9B826FC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0071EC385A1;
-        Thu, 21 Apr 2022 15:54:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650556492;
-        bh=T7XiAVUL8sheYGksXxGj8K3qqxrrGtPhdkaiEqHTACs=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=hw6L89O6MpP3wzh2EfqLuSEEQUQ3kSKg9s5AIz20lIp4m3r4SFiG6/Q4yIqG9BUlZ
-         mxkTiIM70TKbUhbk0djQsGo2IpTXnl3HLEzgabxRjzn8rjgAR956gyGOWR8CCn3Dxb
-         NoLa69P0rT1ZfDWXULE7OMt4QLpOfabpnVfsjvkSc95ghl1AqxGc41sb6ln7BbEdPf
-         CEptoaPUBp78imbbuSYzq5rTtrEBAV9PE0BU32xbknaxaXygz3C1AN49CCwx6SdqCK
-         9ERQxGCt+BdEWTB/I7ewUIvvdo7pvjeR/9uUYCHaEa4xMw94PIsj6GIrnbofk8Twas
-         N7X5D5+3K3taQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     briannorris@chromium.org, lgirdwood@gmail.com
-Cc:     linux-kernel@vger.kernel.org, mka@chromium.org
-In-Reply-To: <20220420141511.v2.1.I31ef0014c9597d53722ab513890f839f357fdfb3@changeid>
-References: <20220420141511.v2.1.I31ef0014c9597d53722ab513890f839f357fdfb3@changeid>
-Subject: Re: [PATCH v2 1/2] regulator: core: Rename _regulator_enable_delay()
-Message-Id: <165055649173.364578.18238924275518976830.b4-ty@kernel.org>
-Date:   Thu, 21 Apr 2022 16:54:51 +0100
+        Thu, 21 Apr 2022 11:59:14 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78DB40E70
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:56:23 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id x80so5407178pfc.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:56:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Tb6I/vNw4MkH6cXJACmThyQFIFSwo0v3WzOA2XSKmSs=;
+        b=hkeImdbTeSMXSMeckvO9JBqgK+ypyTZt/okKK7TMyp+Jj42kGAhZ/7QBcpqgOpnqZj
+         gGCX5b138SAqJNu67mSEPBS6HjBSc3NUwwii2N9q3VIj1j6hfggpfT0NzCG9RSRX5XzX
+         nem4EvlLHjThukcbQCBeuQSpwwkuANGAiKT4jdpMxO+QaID+CZCjyfdsqCFNkXN894SL
+         ibNTaINtlSpFjl1GBaz7n+xDgttL7ngW7o2eXndy6RqXfSveGmsHbAN72F463+yh9jhQ
+         LwpxF/i4bpdWG8LRcg6N36V32wZxeba+ZnbpooMdNjNU398VMLDoMlcqVKTjzjuxKwPh
+         7KWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Tb6I/vNw4MkH6cXJACmThyQFIFSwo0v3WzOA2XSKmSs=;
+        b=I88Q4OZJyBG/zmQZ7NN63Nu/WO98hG5VYTXWYC7lUn4CXrwRT3X3582y2WmQ2OJr69
+         +rFD7qsFXbcOw1i2FledxWKB1pXkLVV+TxMztTdRLdnCEQc7QosUi08cXycgxnnfBiYa
+         D/AY25pBk5F/aJuszYjREfnKxOaW9R+JSv5EsgICYTUMne5FwYAC5y3cdBeZONZ0RUFm
+         0Wgf7a4rJA+NXAC6YX5iipQbGShdWKEHjqNonkXBO03UzxxujmmcmFuUvfujR7GoKEL4
+         Xe7aC8arfbvJv4vJNiHuRjOdHj4ZCJA+0a6Ip2PYRtOlzSuMj8i1qq1m6GG4ERWeeVz0
+         YA7w==
+X-Gm-Message-State: AOAM531gv5QocmvjLkumWcVs/Ik/wgq7iPOXWdgMY7WaVw+1GNVOKHp9
+        8Xaf2+tLMrHBaafcsyIV2mtLREw3mHHe06wHFM+Giw==
+X-Google-Smtp-Source: ABdhPJzl3m2COqyb0vmSqE7CigU3O3oCUJAkex/AAQkQPfRDhlCItCldOZZiRmn4K+gJ/4u1hsqVXRz0RihG4QjuGGM=
+X-Received: by 2002:a63:9502:0:b0:386:3916:ca8e with SMTP id
+ p2-20020a639502000000b003863916ca8emr78805pgd.357.1650556582965; Thu, 21 Apr
+ 2022 08:56:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev> <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org>
+In-Reply-To: <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 21 Apr 2022 08:56:12 -0700
+Message-ID: <CALvZod47PARcupR4P41p5XJRfCaTqSuy-cfXs7Ky9=-aJQuoFA@mail.gmail.com>
+Subject: Re: [PATCH memcg RFC] net: set proper memcg for net_init hooks allocations
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 14:22:12 -0700, Brian Norris wrote:
-> I want to use it in other contexts besides _regulator_do_enable().
-> 
-> 
+On Sat, Apr 16, 2022 at 11:39 PM Vasily Averin <vvs@openvz.org> wrote:
+>
+> __register_pernet_operations() executes init hook of registered
+> pernet_operation structure in all existing net namespaces.
+>
+> Typically, these hooks are called by a process associated with
+> the specified net namespace, and all __GFP_ACCOUNTING marked
+> allocation are accounted for corresponding container/memcg.
+>
+> However __register_pernet_operations() calls the hooks in the same
+> context, and as a result all marked allocations are accounted
+> to one memcg for all processed net namespaces.
+>
+> This patch adjusts active memcg for each net namespace and helps
+> to account memory allocated inside ops_init() into the proper memcg.
+>
+> Signed-off-by: Vasily Averin <vvs@openvz.org>
+> ---
+> Dear Vlastimil, Roman,
+> I'm not sure that memcg is used correctly here,
+> is it perhaps some additional locking required?
+> ---
+>  net/core/net_namespace.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+> index a5b5bb99c644..171c6e0b2337 100644
+> --- a/net/core/net_namespace.c
+> +++ b/net/core/net_namespace.c
+> @@ -26,6 +26,7 @@
+>  #include <net/net_namespace.h>
+>  #include <net/netns/generic.h>
+>
+> +#include <linux/sched/mm.h>
+>  /*
+>   *     Our network namespace constructor/destructor lists
+>   */
+> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
+>                  * setup_net() and cleanup_net() are not possible.
+>                  */
+>                 for_each_net(net) {
+> +                       struct mem_cgroup *old, *memcg = NULL;
+> +#ifdef CONFIG_MEMCG
+> +                       memcg = (net == &init_net) ? root_mem_cgroup : mem_cgroup_from_obj(net);
 
-Applied to
+memcg from obj is unstable, so you need a reference on memcg. You can
+introduce get_mem_cgroup_from_kmem() which works for both
+MEMCG_DATA_OBJCGS and MEMCG_DATA_KMEM. For uncharged objects (like
+init_net) it should return NULL.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
-
-Thanks!
-
-[1/2] regulator: core: Rename _regulator_enable_delay()
-      commit: a38dce4cb1f1bcc4f6ef7f11e54b6507a4043ebe
-[2/2] regulator: core: Sleep (not delay) in set_voltage()
-      commit: 062920d2464715ef5cbba52a8573ba12cc882b8f
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+> +#endif
+> +                       old = set_active_memcg(memcg);
+>                         error = ops_init(ops, net);
+> +                       set_active_memcg(old);
+>                         if (error)
+>                                 goto out_undo;
+>                         list_add_tail(&net->exit_list, &net_exit_list);
+> --
+> 2.31.1
+>
