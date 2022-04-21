@@ -2,116 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71ECAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390422AbiDUQBb (ORCPT
+        id S1390444AbiDUQC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        Thu, 21 Apr 2022 12:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355636AbiDUQB3 (ORCPT
+        with ESMTP id S1390432AbiDUQCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:01:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3D3473A2;
-        Thu, 21 Apr 2022 08:58:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA61561CF6;
-        Thu, 21 Apr 2022 15:58:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC6E2C385A1;
-        Thu, 21 Apr 2022 15:58:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650556716;
-        bh=GBaeQIZyH2zKFDtCu8N9fQUuEoVr4FS7ju0xwsZnrzE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UI3OrqenLjCz9NhxoUMlbmYnm5yVaPVFY+RqlynSESYzrKiP/Q+8hatcs/qDGBSQY
-         a8HHQigTKd9CiD2fBfHYW0avTy8xdawamdz/qBTUThmqqSEziImsYNowyCmufbihtm
-         9J40SdKy3MTybV9lF1o6MHurc0unFu0Ic4fMJADrWYMt4fQKxPN7kTPbwre7VjTyWK
-         FBAvzjDa5Kk5fAMszDF8u6rbKmfFrOtICnO5K9Uq71WGsJddI7s6Y9cBILFgrNQPzm
-         3qiOVLCNIXddrJ6o30+mXqf+4fNVRflUcxuM2vhzPBKJMDDNdFYXjYDBZdperfKhXl
-         weCEyhONXLU1A==
-Date:   Thu, 21 Apr 2022 18:57:21 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-Cc:     David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        James Morris <jmorris@namei.org>,
-        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@linux.microsoft.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v7 3/5] certs: Make blacklist_vet_description() more
- strict
-Message-ID: <YmF+4ZZCZxH9OrS+@kernel.org>
-References: <20210312171232.2681989-4-mic@digikod.net>
- <20210312171232.2681989-1-mic@digikod.net>
- <648218.1650450548@warthog.procyon.org.uk>
- <YmF0eAh7dYmtLDVx@kernel.org>
- <01ec2ce7-986d-451a-4a36-f627263ef826@digikod.net>
+        Thu, 21 Apr 2022 12:02:54 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627D310FF9;
+        Thu, 21 Apr 2022 09:00:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650556804; x=1682092804;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Km40a1E7MdBXZjMmkalg5GAvHR3jO7GjMsaP0SncP9Q=;
+  b=kiqeBEAEMShJWEJrHTZ5Oe8IPWtB0e+oWKUWYiLVd+yYn9rX8tCfIJ9A
+   8k5Y37f22Ie221ORenGHR0PVzve2leYPJKSI68pQQNGiSNR4o7gKixwhe
+   kd/zu6dPVYXd2qe5tc6l8l321Ie84SsukEqB1C1b330TqNJuGh/rRaQ/H
+   EYEHFsoec0v2yUsIreD1kWxFVwoMRZXBN4OlHervEWWmeMMIyEnGVT7/3
+   O2tnwOMRX/jIpnj5pvUpraneaZT7sD7UWmIZpdNkQgKDmnmUxwteBodvo
+   vuTPu7Y7w8KuGxPFVmeSi9QQnu/ho0YqXU6PXeCLdgfoM5O4pYdqbnJBU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264567203"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="264567203"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 09:00:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="577313641"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 21 Apr 2022 09:00:00 -0700
+Date:   Thu, 21 Apr 2022 23:52:23 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        git@xilinx.com
+Subject: Re: [PATCH v5 1/5] fpga: zynq: Fix incorrect variable type
+Message-ID: <20220421155223.GB347460@yilunxu-OptiPlex-7050>
+References: <20220421044744.3777983-1-nava.manne@xilinx.com>
+ <20220421044744.3777983-2-nava.manne@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <01ec2ce7-986d-451a-4a36-f627263ef826@digikod.net>
+In-Reply-To: <20220421044744.3777983-2-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 05:27:42PM +0200, Mickaël Salaün wrote:
-> 
-> On 21/04/2022 17:12, Jarkko Sakkinen wrote:
-> > On Wed, Apr 20, 2022 at 11:29:08AM +0100, David Howells wrote:
-> > > Mickaël Salaün <mic@digikod.net> wrote:
-> > > 
-> > > > +	/* The following algorithm only works if prefix lengths match. */
-> > > > +	BUILD_BUG_ON(sizeof(tbs_prefix) != sizeof(bin_prefix));
-> > > > +	prefix_len = sizeof(tbs_prefix) - 1;
-> > > > +	for (i = 0; *desc; desc++, i++) {
-> > > > +		if (*desc == ':') {
-> > > > +			if (tbs_step == prefix_len)
-> > > > +				goto found_colon;
-> > > > +			if (bin_step == prefix_len)
-> > > > +				goto found_colon;
-> > > > +			return -EINVAL;
-> > > > +		}
-> > > > +		if (i >= prefix_len)
-> > > > +			return -EINVAL;
-> > > > +		if (*desc == tbs_prefix[i])
-> > > > +			tbs_step++;
-> > > > +		if (*desc == bin_prefix[i])
-> > > > +			bin_step++;
-> > > > +	}
-> > > 
-> > > I wonder if:
-> > > 
-> > > 	static const char tbs_prefix[] = "tbs:";
-> > > 	static const char bin_prefix[] = "bin:";
-> > > 
-> > > 	if (strncmp(desc, tbs_prefix, sizeof(tbs_prefix) - 1) == 0 ||
-> > > 	    strncmp(desc, bin_prefix, sizeof(bin_prefix) - 1) == 0)
-> > > 		goto found_colon;
-> > > 
-> > > might be better.
-> > > 
-> > > David
-> > 
-> > I think it'd be.
-> > 
-> > BR, Jarkko
-> 
-> I'm confused. Didn't you plan to send this patch series before v5.18-rc2?
-> It's been a while since I started working on this.
+On Thu, Apr 21, 2022 at 10:17:40AM +0530, Nava kishore Manne wrote:
+> zynq_fpga_has_sync () API is expecting "u8 *" but the
+> formal parameter that was passed is of type "const char *".
+> fixes this issue by changing the buf type to "const char *"
 
-That was my original plan but due to some other things, I've sent
-a PR for rc4. I CC'd you to the PR.
+  Fix this issue by ...
 
-BR, Jarkko
+> 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+
+With the minor fix, Acked-by: Xu Yilun <yilun.xu@intel.com>
+
+> ---
+> Changes for v2:
+>                 -None.
+> Changes for v3:
+>                - Changed arg buf type to "const char *" as suggested by Tom.
+>                - update zynq_fpga_has_sync () API description to align with API
+>                  functionality.
+> Changes for v4:
+>                - None.
+> 
+> Changes for v5:
+>                - Dropped the irrelevant doc update changes.
+> 
+>  drivers/fpga/zynq-fpga.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/fpga/zynq-fpga.c b/drivers/fpga/zynq-fpga.c
+> index 426aa34c6a0d..6beaba9dfe97 100644
+> --- a/drivers/fpga/zynq-fpga.c
+> +++ b/drivers/fpga/zynq-fpga.c
+> @@ -239,7 +239,7 @@ static irqreturn_t zynq_fpga_isr(int irq, void *data)
+>   * the correct byte order, and be dword aligned. The input is a Xilinx .bin
+>   * file with every 32 bit quantity swapped.
+>   */
+> -static bool zynq_fpga_has_sync(const u8 *buf, size_t count)
+> +static bool zynq_fpga_has_sync(const char *buf, size_t count)
+>  {
+>  	for (; count >= 4; buf += 4, count -= 4)
+>  		if (buf[0] == 0x66 && buf[1] == 0x55 && buf[2] == 0x99 &&
+> -- 
+> 2.25.1
