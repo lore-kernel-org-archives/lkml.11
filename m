@@ -2,77 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C573C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 472CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388290AbiDUKRa (ORCPT
+        id S1356588AbiDUKT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43998 "EHLO
+        Thu, 21 Apr 2022 06:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388288AbiDUKRR (ORCPT
+        with ESMTP id S231365AbiDUKTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:17:17 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7A92CCA6;
-        Thu, 21 Apr 2022 03:14:17 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 544DEE000C;
-        Thu, 21 Apr 2022 10:14:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650536055;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=an69hgvRkZo4fDphZoWRjZyAXfGzKRGmPZzwE3TFtww=;
-        b=UVU1MzSboPYmjJnNfcM3Qk71BBGbWaDl9mydrmQzASqiNP//6Bi6Fu7YwJTbLVt6SLIql3
-        2hUt6A5FNi+3wHF/DKZC3lnjDm378xiXMZKwensfWYZ7kwrQY1tBsq5+o1M0bNXD+WOp0l
-        0NKFeqwrqVqtEbBAcMb+LrMHJ7mb2mjJqnKBFspRVFslA63voqp+i1j0sS5AxTeGQWVolD
-        S3OMLJ5aW690aZdHUX2lgVPqt20ErhXno7ixftgee6PvkgoWMEAj+rz6NbczFSA+n5f7/A
-        3gD59XFMH3ld/VwWT4vyP8YjlG3rdn4sdY2RvHOcQC88fE90XMBL+LBbzWNMGQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH net-next] net: bridge: switchdev: check br_vlan_group() return value
-Date:   Thu, 21 Apr 2022 12:12:47 +0200
-Message-Id: <20220421101247.121896-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 21 Apr 2022 06:19:54 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914922124C;
+        Thu, 21 Apr 2022 03:17:05 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 88BB01F454B9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650536224;
+        bh=zcUtTncErR4CRvVEtBbI5bdyvkZNw/1895mBvZxu+JQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=CLFJ2OQnTmpOPkI+qfEMxYHQDG2qMiFXKFgHDWUlhxd2XxxK4NJg8TA8vN6gZvAh9
+         vgtYY0masQEDdTj21MnpGPTsjYb8l3PCPFLFWjWR6fG1hG50jyKEVdbH6wXy2qLPX6
+         1OuMLPVdKV8FbJBp7GtEv47mehCQVEO8SYxQ3l8GiDF0gwasPxg9Sk0U+jydpJnPqH
+         RQA3wS/mk3iGfVQAFLcoV4EhM1Bm9WkeUquB/4KNFhYqNV3D4r8WtQ+BfmeaESh6nC
+         EQAjHj44UaAfK3fn7oGl4Ker3MjhBdUp9C36/knC0+1poRtS2izIoQMdqQbnSe9jrX
+         a8A7NGNv9x5vg==
+Message-ID: <a92d3b46-ace4-2d19-fef9-c59cd1a596ce@collabora.com>
+Date:   Thu, 21 Apr 2022 12:17:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v6, 5/5] dt-bindings: pwm: Add interrupts property for
+ MediaTek MT8192
+Content-Language: en-US
+To:     xinlei.lee@mediatek.com, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        robh+dt@kernel.org, matthias.bgg@gmail.com
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, rex-bc.chen@mediatek.com,
+        jitao.shi@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
+ <1650284456-16407-6-git-send-email-xinlei.lee@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <1650284456-16407-6-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-br_vlan_group() can return NULL and thus return value must be checked
-to avoid dereferencing a NULL pointer.
+Il 18/04/22 14:20, xinlei.lee@mediatek.com ha scritto:
+> From: Xinlei Lee <xinlei.lee@mediatek.com>
+> 
+> Add interrupts property of pwm for MediaTek MT8192 SoC.
+> 
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Fixes: 6284c723d9b9 ("net: bridge: mst: Notify switchdev drivers of VLAN MSTI migrations")
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- net/bridge/br_switchdev.c | 2 ++
- 1 file changed, 2 insertions(+)
+Hello Xinlei,
+the pwm-mtk-disp.c driver does not support interrupts.
 
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index 81400e0b26ac..8f3d76c751dd 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -354,6 +354,8 @@ static int br_switchdev_vlan_attr_replay(struct net_device *br_dev,
- 	attr.orig_dev = br_dev;
- 
- 	vg = br_vlan_group(br);
-+	if (!vg)
-+		return 0;
- 
- 	list_for_each_entry(v, &vg->vlan_list, vlist) {
- 		if (v->msti) {
--- 
-2.34.1
+Please add interrupts support to the driver first, and only then
+add that in the dt-bindings.
+
+Regards,
+Angelo
 
