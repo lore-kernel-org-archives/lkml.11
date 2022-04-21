@@ -2,473 +2,881 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 04:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 840FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 04:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384075AbiDUET1 (ORCPT
+        id S1345370AbiDUEXr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 00:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
+        Thu, 21 Apr 2022 00:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346151AbiDUETU (ORCPT
+        with ESMTP id S1384088AbiDUEXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 00:19:20 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFE3FD31
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:16:30 -0700 (PDT)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220421041625epoutp0265ac2fe0356acafea1d51617251ee5d9~nzkVnVuI52774427744epoutp02g
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 04:16:25 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220421041625epoutp0265ac2fe0356acafea1d51617251ee5d9~nzkVnVuI52774427744epoutp02g
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1650514585;
-        bh=Uhme5diI4XEjVU+7qvpXN7OUOzEchtuyK8DtVF5hywQ=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=eh5i3snb77lslK1o0WNTQWRPtGAmu7h/CTU8gqhD9X9xB3iLXKFb+2Xrj45gi9xVf
-         hvWV23zYYR8jPDxZLytumm5QAJpVov5vPO0J+2hUDCo4Yu1Exulz4/dx8xLrmSsO64
-         qHSpDySKBbjLsf1QlmkPK1WwI5IPkzIhq4H0UPpY=
-Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220421041625epcas5p43f353e67d9e0e6a151c485ed6d5b054e~nzkVGuOQj0766607666epcas5p4l;
-        Thu, 21 Apr 2022 04:16:25 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        49.C2.09952.99AD0626; Thu, 21 Apr 2022 13:16:25 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680~nzkB_kF2F0066000660epcas5p48;
-        Thu, 21 Apr 2022 04:16:04 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220421041604epsmtrp279afb081ee7b7024bdd255f635e8562c~nzkB9GmeS0572705727epsmtrp28;
-        Thu, 21 Apr 2022 04:16:04 +0000 (GMT)
-X-AuditID: b6c32a4b-4b5ff700000226e0-eb-6260da99e803
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        85.C3.03370.48AD0626; Thu, 21 Apr 2022 13:16:04 +0900 (KST)
-Received: from localhost.localdomain (unknown [107.109.224.44]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220421041601epsmtip12ab9193fefba212f272bbabd8c0cd14e~nzj-FNF4X0994209942epsmtip1H;
-        Thu, 21 Apr 2022 04:16:01 +0000 (GMT)
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     mcgrof@kernel.org, pmladek@suse.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, akpm@linux-foundation.org,
-        wangkefeng.wang@huawei.com
-Cc:     v.narang@samsung.com, swboyd@chromium.org, ojeda@kernel.or,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        avimalin@gmail.com, atomlin@redhat.com, onkarnath.1@samsung.com,
-        Maninder Singh <maninder1.s@samsung.com>
-Subject: [PATCH modules-next 1/1] kallsyms: enhance %pS/s/b printing when
- KALLSYSMS is disabled
-Date:   Thu, 21 Apr 2022 09:45:42 +0530
-Message-Id: <20220421041542.9195-1-maninder1.s@samsung.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrEKsWRmVeSWpSXmKPExsWy7bCmpu7MWwlJBlt/81nMWb+GzaK3aTqT
-        xZH5a1gtHhy8zm5xedccNouG2d9ZLR7PmsdmcXh+G4vFjQlPGS1mfgEqWdHzgdXi/+OvrBb7
-        Oh4wWezeuIjN4vidp0wWh07OZbRo/Hyf0UHQY3bDRRaPnbPusnu07LsFJI68ZfX4cv08o8em
-        VZ1sHidm/GbxmHcy0ONCV7bH+31X2Tz6tqxi9Fi/5SqLx+dNcgG8UVw2Kak5mWWpRfp2CVwZ
-        NzfMYS1oTai42L6YvYFxt38XIyeHhICJRP+fuWxdjFwcQgK7GSWu/nvHDOF8YpQ4uO8jE4Tz
-        mVGi6+IBdpiWC73/2CESuxglJs08DdX/hVFiwvGzrCBVbAJ6Eqt27WEBSYgIXGCUuHJrD9hg
-        ZoE3jBJ3PzaCVQkLJEp8mf+YDcRmEVCVeL7nKAuIzStgLTFrYj8LxD55iZmXvrNDxAUlTs58
-        AhZnBoo3b53NDFFzgkNi/28rCNtFonP2HSYIW1ji1fEtUHdLSXx+txdoFweQXS6xdUI9yD0S
-        Ai2MEvvnTGGDqLGXeHJxIStIDbOApsT6XfoQYVmJqafWMUGs5ZPo/f0EajyvxI55MLaqRMvN
-        DawQtrTE548foc73kGj68wisRkggVuLglPOMExjlZyH5ZhaSb2YhbF7AyLyKUTK1oDg3PbXY
-        tMA4L7Vcrzgxt7g0L10vOT93EyM4GWp572B89OCD3iFGJg7GQ4wSHMxKIryhM+OThHhTEiur
-        Uovy44tKc1KLDzFKc7AoifOeSt+QKCSQnliSmp2aWpBaBJNl4uCUamBS2LCx3miVmIfsIVbJ
-        jX8uJe5frvaszyDSZLG9eaqk+PWVsZ5b7sqX3XFyWzHh75Ubm8N5vc31b82+ZODlHbBSi/vh
-        JM4T5l8vpN8XvXst37Xji+atFV6KQtoXdC+sys85m69pmfIx4XPF9uOM/0I6e6+42a+oXMZ8
-        1LXA3MtX4X2uJuuXBRFRPJKTFgs7+y1Y3uXBqamsvOphmfS5jEKLZEkpNQ7Znc1rny9/ffrf
-        uuV7nm9Y8dKrqLcv2mFPhnQDe9BZcfV5G6Ue1IQvm5Ixy9/j9gL7R0lhx/L6WXYe6he0S50a
-        967i85RJ0rXPlf4IfJD33H7p/bpJbO5H9KYdn2hbtvzp4+wLK0UdpxoosRRnJBpqMRcVJwIA
-        V0CqjvUDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpnkeLIzCtJLcpLzFFi42LZdlhJTrflVkKSQfN6XYs569ewWfQ2TWey
-        ODJ/DavFg4PX2S0u75rDZtEw+zurxeNZ89gsDs9vY7G4MeEpo8XML0AlK3o+sFr8f/yV1WJf
-        xwMmi90bF7FZHL/zlMni0Mm5jBaNn+8zOgh6zG64yOKxc9Zddo+WfbeAxJG3rB5frp9n9Ni0
-        qpPN48SM3ywe804GelzoyvZ4v+8qm0ffllWMHuu3XGXx+LxJLoA3issmJTUnsyy1SN8ugSvj
-        5oY5rAWtCRUX2xezNzDu9u9i5OSQEDCRuND7jx3EFhLYwSjx+2gSRFxa4ue/9ywQtrDEyn/P
-        gWq4gGo+MUrc7ZsJ1sAmoCexatceFpCEiMANRonFCzuZQRLMAt8YJfa054PYwgLxEvc+dYI1
-        sAioSjzfcxRsKq+AtcSsif1QG+QlZl76zg4RF5Q4OfMJC8QceYnmrbOZJzDyzUKSmoUktYCR
-        aRWjZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnBcaWntYNyz6oPeIUYmDsZDjBIczEoi
-        vKEz45OEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoEk2Xi4JRqYDoe
-        tT/mtp61KWfGn38LFvfsap2nvJ1TsNzsuVuFg1z74uZTz5zur1jEvvNUa09f7RSvU9v4dxXt
-        WPl106ujfiFv7Blj1udwHZk9Z9n+51VsB9RO579m9Nti+YZf5+9eodzHjOK+Bvb5nsnCj+UY
-        Z0m3R6wXZjinX/JdLsP79JfWVW3flXOLvlb2dwXy3Not5/7kfF/QhoiIZIObwSt+nrh445Pv
-        hvt1h6zZmSZxSsspV4TU+U38Jf7iy6aW2KN2DdOWOkas9DHvmNHhlR7avJjv4fcSw7mu9gsX
-        BDaV79qxZuKS+6cyHN/4rHX9ZttUdnghm7//7CWNgVvbrNgUteZznBK4pX3IL7hpz4YWCSWW
-        4oxEQy3mouJEAPi2BUIaAwAA
-X-CMS-MailID: 20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680
-References: <CGME20220421041604epcas5p414cf2e851d1bd828a151dc6b2b004680@epcas5p4.samsung.com>
+        Thu, 21 Apr 2022 00:23:43 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D3C11A2A
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:20:53 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id o16-20020a17090aac1000b001d4a25f5e26so1506939pjq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:20:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to;
+        bh=GnIL1wIqZyfgQgV0vypltggEybR8HjOpEbnmvrZXuR0=;
+        b=WBCAQDjljU006RSC7oEa3p/yFUIgQmva56z8FRaH13b1cbehY7qWjkWsFQtBQuUJnU
+         x4hMZZ4EcRLfxsDe27uZhtaR5BLLMdAI8ZL6b3HXlLiEA3fNGvQQ+gwagIVi0GWNsQqc
+         WJQFBX44Ty5xSmKHOzv9agzQhbXnxnE1HaQSdBahgQ0NmnKWohxwaVDpmA5QJVixeFZP
+         4y92P48R9Otdn4xgXOXZNtDAH3RLIpti+WKLuR/V12VCHHV9HIdoXbjyiN3g7IHTl9ob
+         xQ2HIuu5S+zS1F5RA0O5R7rxXW7TRN3gs+th0oncSTDPe31tcTMUBbxv23UDC/RDa0Zf
+         TxXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to;
+        bh=GnIL1wIqZyfgQgV0vypltggEybR8HjOpEbnmvrZXuR0=;
+        b=NyeQjBv5uKAQcEgx9CiMM0b3Y2Fmd0yV2FdjfL5chbWJFjr6mX0mkS/QOGr/Rfjy6e
+         CXEJgaiZOrsc3YR8vU4iYaoPj+zjCZH6LDboBCz8zjR9sNsRM4/5ei4XgU3NYkwV1YgM
+         sieG/SZ+GcCzLvqxX6umRJrpCG+rAG9Uk0jU8c75tXLBHrBFfbUyYINpjJJYLxo11FP8
+         c/BMD47wsknSYcAYdfH0Jd4Z3pXclZgoyvxlIe6SM2V5JmQN0YIXiEDH42Xsw9MYmX7D
+         a63JfTD7Tu3gAnlQUWMw7VI/DbI8JH+jX+ZCInk/P9IVRio6PQAozh5nREjgqUWiBot4
+         4gFA==
+X-Gm-Message-State: AOAM530nk99EuYT6cC84N6amKfP5pTOyWvEbsMG+kSWhL6olk6NKTQtL
+        wcgJ82VJa332tD3UBuU+ybeyXudTU8JG/Q==
+X-Google-Smtp-Source: ABdhPJz2j9ojkkV6FnP+I2HkDR9nKkCRTM+hA+Wr+9dmFQf/z/Lo7hBVacdbMjVkRlsHJL3I/q5NaRH3iS63DQ==
+X-Received: from zllamas.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:4c])
+ (user=cmllamas job=sendgmr) by 2002:a17:90b:2384:b0:1cb:5223:9dc4 with SMTP
+ id mr4-20020a17090b238400b001cb52239dc4mr260134pjb.1.1650514852797; Wed, 20
+ Apr 2022 21:20:52 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 04:20:36 +0000
+Message-Id: <20220421042040.759068-1-cmllamas@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+Subject: [PATCH] binder: add BINDER_GET_EXTENDED_ERROR ioctl
+From:   Carlos Llamas <cmllamas@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Carlos Llamas <cmllamas@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Li Li <dualli@google.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-print module information when KALLSYMS is disabled.
+Provide a userspace mechanism to pull precise error information upon
+failed operations. Extending the current error codes returned by the
+interfaces allows userspace to better determine the course of action.
+This could be for instance, retrying a failed transaction at a later
+point and thus offloading the error handling from the driver.
 
-init_build_id() function is moved to module/main.c as it can be
-independent of kallsyms.
+Some of the elements for logging failed transactions and similar are
+folded into this new logic to avoid duplication. Such is the case for
+error line numbers, which become irrelevant after assigning individual
+error messages instead.
 
-No change for %pB, as it needs to know symbol name to adjust address
-value which can't be done without KALLSYMS.
+This patch also adds BINDER_GET_EXTENDED_ERROR to the binderfs feature
+list, to help userspace determine if the new ioctl is supported by the
+driver.
 
-(A) original output with KALLSYMS:
-[8.842129] ps function_1 [crash]
-[8.842735] pS function_1+0x4/0x2c [crash]
-[8.842890] pSb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
-[8.843175] pB function_1+0x4/0x2c [crash]
-[8.843362] pBb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
-
-(B) original output without KALLSYMS:
-[12.487424] ps 0xffff800000eb008c
-[12.487598] pS 0xffff800000eb008c
-[12.487723] pSb 0xffff800000eb008c
-[12.487850] pB 0xffff800000eb008c
-[12.487967] pBb 0xffff800000eb008c
-
-(C) With patched kernel
-with KALLYSMS:
-[41.974576] ps function_1 [crash]
-[41.975173] pS function_1+0x4/0x2c [crash]
-[41.975386] pSb function_1+0x4/0x2c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
-[41.975879] pB function_1+0x4/0x2c [crash]
-[41.976076] pBb function_1+0x4/0x2c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
-
-without KALLSYMS:
-[9.624152] ps 0xffff800001bd008c [crash]	// similar to original, no changes
-[9.624548] pS 0x(____ptrval____)+0x8c [crash]   // base address hashed and offset is without hash
-[9.624847] pSb 0x(____ptrval____)+0x8c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
-[9.625388] pB 0x(____ptrval____)+0x8c [crash]
-[9.625594] pBb 0x(____ptrval____)+0x8c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
-
-with disable hashing:
-[8.563916] ps 0xffff800000f2008c [crash]
-[8.564574] pS 0xffff800000f20000+0x8c [crash]
-[8.564749] pSb 0xffff800000f20000+0x8c [crash 3423a8993a7033fb79e5add14bf9d8d6b56330ca]
-[8.565008] pB 0xffff800000f20000+0x8c [crash]
-[8.565154] pBb 0xffff800000f20000+0x8c [crash 3423a8993a7033fb79e5add14bf9d8d6b56330ca]
-
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Co-developed-by: Vaneet Narang <v.narang@samsung.com>
-Signed-off-by: Vaneet Narang <v.narang@samsung.com>
-Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Carlos Llamas <cmllamas@google.com>
 ---
- include/linux/kallsyms.h |  2 +
- include/linux/module.h   | 20 ++++++++++
- kernel/kallsyms.c        | 27 +++++++------
- kernel/module/internal.h | 11 +++---
- kernel/module/kallsyms.c | 20 ----------
- kernel/module/main.c     | 20 ++++++++++
- lib/vsprintf.c           | 85 ++++++++++++++++++++++++++++++++++------
- 7 files changed, 133 insertions(+), 52 deletions(-)
+ drivers/android/binder.c            | 355 +++++++++++++++-------------
+ drivers/android/binder_internal.h   |   9 +-
+ drivers/android/binderfs.c          |   8 +
+ include/uapi/linux/android/binder.h |  16 ++
+ 4 files changed, 219 insertions(+), 169 deletions(-)
 
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index ce1bd2fbf23e..72bd24e80545 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -89,6 +89,8 @@ extern int sprint_symbol_build_id(char *buffer, unsigned long address);
- extern int sprint_symbol_no_offset(char *buffer, unsigned long address);
- extern int sprint_backtrace(char *buffer, unsigned long address);
- extern int sprint_backtrace_build_id(char *buffer, unsigned long address);
-+extern int sprint_kallsym_common(char *buffer, unsigned long address, int build_id,
-+			    int backtrace, int symbol);
- 
- int lookup_symbol_name(unsigned long addr, char *symname);
- int lookup_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name);
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 46d4d5f2516e..66f4491249c5 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -682,6 +682,20 @@ static inline bool is_livepatch_module(struct module *mod)
- 
- void set_module_sig_enforced(void);
- 
-+static inline int fill_name_build_id(char *buffer, char *modname,
-+			    int add_buildid, const unsigned char *buildid,
-+			    int len)
-+{
-+	len += sprintf(buffer + len, " [%s", modname);
-+#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-+	if (add_buildid && buildid) {
-+		/* build ID should match length of sprintf */
-+		static_assert(sizeof(typeof_member(struct module, build_id)) == 20);
-+		len += sprintf(buffer + len, " %20phN", buildid);
-+	}
-+#endif
-+	return len + sprintf(buffer + len, "]");
-+}
- #else /* !CONFIG_MODULES... */
- 
- static inline struct module *__module_address(unsigned long addr)
-@@ -818,6 +832,12 @@ void *dereference_module_function_descriptor(struct module *mod, void *ptr)
- 	return ptr;
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index 8351c5638880..42a324634f25 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -2697,6 +2697,54 @@ static struct binder_node *binder_get_node_refs_for_txn(
+ 	return target_node;
  }
  
-+static inline int fill_name_build_id(char *buffer, char *modname,
-+			    int add_buildid, const unsigned char *buildid,
-+			    int len)
++#define binder_txn_error(x...)		binder_transaction_error(0, x)
++#define binder_user_txn_error(x...)	binder_transaction_error(1, x)
++static __printf(6, 7) void binder_transaction_error(int user,
++				struct binder_transaction_log_entry *e,
++				struct binder_extended_error *ee,
++				uint32_t command, int32_t param,
++				const char *format, ...)
 +{
++	struct va_format vaf;
++	va_list args;
++
++	/* don't override previous error */
++	if (command != BR_OK && ee->command != BR_OK)
++		return;
++
++	ee->command = command;
++	ee->param = param;
++
++	va_start(args, format);
++	vsnprintf(e->strerr, sizeof(e->strerr), format, args);
++
++	vaf.va = &args;
++	vaf.fmt = format;
++	if (user)
++		binder_user_error("%d:%d %pV\n",
++			e->from_proc, e->from_thread, &vaf);
++	else
++		binder_debug(BINDER_DEBUG_FAILED_TRANSACTION, "%d:%d %pV\n",
++			e->from_proc, e->from_thread, &vaf);
++	va_end(args);
++}
++
++static void binder_set_txn_from_error(struct binder_transaction *txn,
++				      struct binder_extended_error *ee)
++{
++	struct binder_thread *from = binder_get_txn_from_and_acq_inner(txn);
++
++	if (!from)
++		return;
++
++	/* don't override previous error */
++	if (ee->command != BR_OK && from->ee.command == BR_OK)
++		from->ee = *ee;
++
++	binder_inner_proc_unlock(from->proc);
++	binder_thread_dec_tmpref(from);
++}
++
+ static void binder_transaction(struct binder_proc *proc,
+ 			       struct binder_thread *thread,
+ 			       struct binder_transaction_data *tr, int reply,
+@@ -2716,9 +2764,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 	struct binder_node *target_node = NULL;
+ 	struct binder_transaction *in_reply_to = NULL;
+ 	struct binder_transaction_log_entry *e;
++	struct binder_extended_error ee;
+ 	uint32_t return_error = 0;
+-	uint32_t return_error_param = 0;
+-	uint32_t return_error_line = 0;
+ 	binder_size_t last_fixup_obj_off = 0;
+ 	binder_size_t last_fixup_min_off = 0;
+ 	struct binder_context *context = proc->context;
+@@ -2741,32 +2788,30 @@ static void binder_transaction(struct binder_proc *proc,
+ 	e->data_size = tr->data_size;
+ 	e->offsets_size = tr->offsets_size;
+ 	strscpy(e->context_name, proc->context->name, BINDERFS_MAX_NAME);
++	ee.id = t_debug_id;
++	ee.command = BR_OK;
++	ee.param = 0;
+ 
+ 	if (reply) {
+ 		binder_inner_proc_lock(proc);
+ 		in_reply_to = thread->transaction_stack;
+ 		if (in_reply_to == NULL) {
+ 			binder_inner_proc_unlock(proc);
+-			binder_user_error("%d:%d got reply transaction with no transaction stack\n",
+-					  proc->pid, thread->pid);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EPROTO;
+-			return_error_line = __LINE__;
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EPROTO,
++				"reply with no transaction stack");
+ 			goto err_empty_call_stack;
+ 		}
+ 		if (in_reply_to->to_thread != thread) {
+ 			spin_lock(&in_reply_to->lock);
+-			binder_user_error("%d:%d got reply transaction with bad transaction stack, transaction %d has target %d:%d\n",
+-				proc->pid, thread->pid, in_reply_to->debug_id,
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EPROTO,
++				"bad transaction stack in reply to %d %d:%d",
++				in_reply_to->debug_id,
+ 				in_reply_to->to_proc ?
+ 				in_reply_to->to_proc->pid : 0,
+ 				in_reply_to->to_thread ?
+ 				in_reply_to->to_thread->pid : 0);
+ 			spin_unlock(&in_reply_to->lock);
+ 			binder_inner_proc_unlock(proc);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EPROTO;
+-			return_error_line = __LINE__;
+ 			in_reply_to = NULL;
+ 			goto err_bad_call_stack;
+ 		}
+@@ -2777,20 +2822,17 @@ static void binder_transaction(struct binder_proc *proc,
+ 		if (target_thread == NULL) {
+ 			/* annotation for sparse */
+ 			__release(&target_thread->proc->inner_lock);
+-			return_error = BR_DEAD_REPLY;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, BR_DEAD_REPLY, 0,
++				"reply target not found");
+ 			goto err_dead_binder;
+ 		}
+ 		if (target_thread->transaction_stack != in_reply_to) {
+-			binder_user_error("%d:%d got reply transaction with bad target transaction stack %d, expected %d\n",
+-				proc->pid, thread->pid,
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EPROTO,
++				"bad target transaction stack %d vs %d",
+ 				target_thread->transaction_stack ?
+ 				target_thread->transaction_stack->debug_id : 0,
+ 				in_reply_to->debug_id);
+ 			binder_inner_proc_unlock(target_thread->proc);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EPROTO;
+-			return_error_line = __LINE__;
+ 			in_reply_to = NULL;
+ 			target_thread = NULL;
+ 			goto err_dead_binder;
+@@ -2812,15 +2854,15 @@ static void binder_transaction(struct binder_proc *proc,
+ 			binder_proc_lock(proc);
+ 			ref = binder_get_ref_olocked(proc, tr->target.handle,
+ 						     true);
+-			if (ref) {
++			if (ref)
+ 				target_node = binder_get_node_refs_for_txn(
+ 						ref->node, &target_proc,
+ 						&return_error);
+-			} else {
+-				binder_user_error("%d:%d got transaction to invalid handle, %u\n",
+-						  proc->pid, thread->pid, tr->target.handle);
+-				return_error = BR_FAILED_REPLY;
+-			}
++			else
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EINVAL,
++					"invalid transaction handle %u",
++					tr->target.handle);
+ 			binder_proc_unlock(proc);
+ 		} else {
+ 			mutex_lock(&context->context_mgr_node_lock);
+@@ -2833,11 +2875,9 @@ static void binder_transaction(struct binder_proc *proc,
+ 				return_error = BR_DEAD_REPLY;
+ 			mutex_unlock(&context->context_mgr_node_lock);
+ 			if (target_node && target_proc->pid == proc->pid) {
+-				binder_user_error("%d:%d got transaction to context manager from process owning it\n",
+-						  proc->pid, thread->pid);
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = -EINVAL;
+-				return_error_line = __LINE__;
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EINVAL,
++					"forbidden self transaction by context manager");
+ 				goto err_invalid_target_handle;
+ 			}
+ 		}
+@@ -2845,22 +2885,20 @@ static void binder_transaction(struct binder_proc *proc,
+ 			/*
+ 			 * return_error is set above
+ 			 */
+-			return_error_param = -EINVAL;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, return_error, -EINVAL,
++				"cannot find target node");
+ 			goto err_dead_binder;
+ 		}
+ 		e->to_node = target_node->debug_id;
+ 		if (WARN_ON(proc == target_proc)) {
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EINVAL;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++				"self transactions not allowed");
+ 			goto err_invalid_target_handle;
+ 		}
+ 		if (security_binder_transaction(proc->cred,
+ 						target_proc->cred) < 0) {
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EPERM;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, BR_FAILED_REPLY, -EPERM,
++				"transaction credentials failed");
+ 			goto err_invalid_target_handle;
+ 		}
+ 		binder_inner_proc_lock(proc);
+@@ -2878,12 +2916,9 @@ static void binder_transaction(struct binder_proc *proc,
+ 			 * the transaction, and nothing is queued to the
+ 			 * todo list while the thread is on waiting_threads.
+ 			 */
+-			binder_user_error("%d:%d new transaction not allowed when there is a transaction on thread todo\n",
+-					  proc->pid, thread->pid);
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EPROTO,
++				"bad state for new transaction");
+ 			binder_inner_proc_unlock(proc);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EPROTO;
+-			return_error_line = __LINE__;
+ 			goto err_bad_todo_list;
+ 		}
+ 
+@@ -2893,16 +2928,15 @@ static void binder_transaction(struct binder_proc *proc,
+ 			tmp = thread->transaction_stack;
+ 			if (tmp->to_thread != thread) {
+ 				spin_lock(&tmp->lock);
+-				binder_user_error("%d:%d got new transaction with bad transaction stack, transaction %d has target %d:%d\n",
+-					proc->pid, thread->pid, tmp->debug_id,
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EPROTO,
++					"bad transaction stack, %d has target %d:%d",
++					tmp->debug_id,
+ 					tmp->to_proc ? tmp->to_proc->pid : 0,
+ 					tmp->to_thread ?
+ 					tmp->to_thread->pid : 0);
+ 				spin_unlock(&tmp->lock);
+ 				binder_inner_proc_unlock(proc);
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = -EPROTO;
+-				return_error_line = __LINE__;
+ 				goto err_bad_call_stack;
+ 			}
+ 			while (tmp) {
+@@ -2929,9 +2963,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 	/* TODO: reuse incoming transaction for reply */
+ 	t = kzalloc(sizeof(*t), GFP_KERNEL);
+ 	if (t == NULL) {
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -ENOMEM;
+-		return_error_line = __LINE__;
++		binder_txn_error(e, &ee, BR_FAILED_REPLY, -ENOMEM,
++			"cannot allocate transaction");
+ 		goto err_alloc_t_failed;
+ 	}
+ 	INIT_LIST_HEAD(&t->fd_fixups);
+@@ -2940,9 +2973,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 
+ 	tcomplete = kzalloc(sizeof(*tcomplete), GFP_KERNEL);
+ 	if (tcomplete == NULL) {
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -ENOMEM;
+-		return_error_line = __LINE__;
++		binder_txn_error(e, &ee, BR_FAILED_REPLY, -ENOMEM,
++			"cannot allocate work for transaction");
+ 		goto err_alloc_tcomplete_failed;
+ 	}
+ 	binder_stats_created(BINDER_STAT_TRANSACTION_COMPLETE);
+@@ -2986,18 +3018,16 @@ static void binder_transaction(struct binder_proc *proc,
+ 		security_cred_getsecid(proc->cred, &secid);
+ 		ret = security_secid_to_secctx(secid, &secctx, &secctx_sz);
+ 		if (ret) {
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = ret;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++				"failed to get security context");
+ 			goto err_get_secctx_failed;
+ 		}
+ 		added_size = ALIGN(secctx_sz, sizeof(u64));
+ 		extra_buffers_size += added_size;
+ 		if (extra_buffers_size < added_size) {
+ 			/* integer overflow of extra_buffers_size */
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EINVAL;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++				"extra buffers size overflow");
+ 			goto err_bad_extra_size;
+ 		}
+ 	}
+@@ -3008,13 +3038,17 @@ static void binder_transaction(struct binder_proc *proc,
+ 		tr->offsets_size, extra_buffers_size,
+ 		!reply && (t->flags & TF_ONE_WAY), current->tgid);
+ 	if (IS_ERR(t->buffer)) {
+-		/*
+-		 * -ESRCH indicates VMA cleared. The target is dying.
+-		 */
+-		return_error_param = PTR_ERR(t->buffer);
+-		return_error = return_error_param == -ESRCH ?
+-			BR_DEAD_REPLY : BR_FAILED_REPLY;
+-		return_error_line = __LINE__;
++		char *s;
++
++		ret = PTR_ERR(t->buffer);
++		s = (ret == -ESRCH) ? ": vma cleared, target dead or dying"
++			: (ret == -ENOSPC) ? ": no space left"
++			: (ret == -ENOMEM) ? ": memory allocation failed"
++			: "";
++
++		binder_txn_error(e, &ee,
++			ret == -ESRCH ? BR_DEAD_REPLY : BR_FAILED_REPLY,
++			ret, "cannot allocate buffer%s", s);
+ 		t->buffer = NULL;
+ 		goto err_binder_alloc_buf_failed;
+ 	}
+@@ -3049,28 +3083,20 @@ static void binder_transaction(struct binder_proc *proc,
+ 				(const void __user *)
+ 					(uintptr_t)tr->data.ptr.offsets,
+ 				tr->offsets_size)) {
+-		binder_user_error("%d:%d got transaction with invalid offsets ptr\n",
+-				proc->pid, thread->pid);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -EFAULT;
+-		return_error_line = __LINE__;
++		binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EFAULT,
++			"invalid offsets ptr");
+ 		goto err_copy_data_failed;
+ 	}
+ 	if (!IS_ALIGNED(tr->offsets_size, sizeof(binder_size_t))) {
+-		binder_user_error("%d:%d got transaction with invalid offsets size, %lld\n",
+-				proc->pid, thread->pid, (u64)tr->offsets_size);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -EINVAL;
+-		return_error_line = __LINE__;
++		binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++			"invalid offsets size %lld",
++			(u64)tr->offsets_size);
+ 		goto err_bad_offset;
+ 	}
+ 	if (!IS_ALIGNED(extra_buffers_size, sizeof(u64))) {
+-		binder_user_error("%d:%d got transaction with unaligned buffers size, %lld\n",
+-				  proc->pid, thread->pid,
+-				  (u64)extra_buffers_size);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -EINVAL;
+-		return_error_line = __LINE__;
++		binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++			"unaligned buffers size %lld",
++			(u64)extra_buffers_size);
+ 		goto err_bad_offset;
+ 	}
+ 	off_start_offset = ALIGN(tr->data_size, sizeof(void *));
+@@ -3093,9 +3119,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 						  t->buffer,
+ 						  buffer_offset,
+ 						  sizeof(object_offset))) {
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EINVAL;
+-			return_error_line = __LINE__;
++			binder_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++				"copy offset from buffer failed");
+ 			goto err_bad_offset;
+ 		}
+ 
+@@ -3110,24 +3135,17 @@ static void binder_transaction(struct binder_proc *proc,
+ 					t->buffer, user_offset,
+ 					user_buffer + user_offset,
+ 					copy_size))) {
+-			binder_user_error("%d:%d got transaction with invalid data ptr\n",
+-					proc->pid, thread->pid);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EFAULT;
+-			return_error_line = __LINE__;
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EFAULT,
++				"invalid buffer ptr");
+ 			goto err_copy_data_failed;
+ 		}
+ 		object_size = binder_get_object(target_proc, user_buffer,
+ 				t->buffer, object_offset, &object);
+ 		if (object_size == 0 || object_offset < off_min) {
+-			binder_user_error("%d:%d got transaction with invalid offset (%lld, min %lld max %lld) or object.\n",
+-					  proc->pid, thread->pid,
+-					  (u64)object_offset,
+-					  (u64)off_min,
+-					  (u64)t->buffer->data_size);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EINVAL;
+-			return_error_line = __LINE__;
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++				"invalid object or offset %lld min %lld max %lld",
++				(u64)object_offset, (u64)off_min,
++				(u64)t->buffer->data_size);
+ 			goto err_bad_offset;
+ 		}
+ 		/*
+@@ -3151,9 +3169,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 							t->buffer,
+ 							object_offset,
+ 							fp, sizeof(*fp))) {
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
+-				return_error_line = __LINE__;
++				binder_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++					"translate binder failed");
+ 				goto err_translate_failed;
+ 			}
+ 		} break;
+@@ -3168,9 +3185,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 							t->buffer,
+ 							object_offset,
+ 							fp, sizeof(*fp))) {
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
+-				return_error_line = __LINE__;
++				binder_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++					"translate handle failed");
+ 				goto err_translate_failed;
+ 			}
+ 		} break;
+@@ -3188,9 +3204,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 							t->buffer,
+ 							object_offset,
+ 							fp, sizeof(*fp))) {
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
+-				return_error_line = __LINE__;
++				binder_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++					"translate fd failed");
+ 				goto err_translate_failed;
+ 			}
+ 		} break;
+@@ -3210,11 +3225,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 						    &parent_offset,
+ 						    num_valid);
+ 			if (!parent) {
+-				binder_user_error("%d:%d got transaction with invalid parent offset or type\n",
+-						  proc->pid, thread->pid);
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = -EINVAL;
+-				return_error_line = __LINE__;
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EINVAL, "bad parent offset or type");
+ 				goto err_bad_parent;
+ 			}
+ 			if (!binder_validate_fixup(target_proc, t->buffer,
+@@ -3223,11 +3235,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 						   fda->parent_offset,
+ 						   last_fixup_obj_off,
+ 						   last_fixup_min_off)) {
+-				binder_user_error("%d:%d got transaction with out-of-order buffer fixup\n",
+-						  proc->pid, thread->pid);
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = -EINVAL;
+-				return_error_line = __LINE__;
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EINVAL, "out-of-order buffer fixup");
+ 				goto err_bad_parent;
+ 			}
+ 			/*
+@@ -3238,13 +3247,10 @@ static void binder_transaction(struct binder_proc *proc,
+ 				binder_get_object(proc, user_buffer, t->buffer,
+ 						  parent_offset, &user_object);
+ 			if (user_parent_size != sizeof(user_object.bbo)) {
+-				binder_user_error("%d:%d invalid ptr object size: %zd vs %zd\n",
+-						  proc->pid, thread->pid,
+-						  user_parent_size,
+-						  sizeof(user_object.bbo));
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = -EINVAL;
+-				return_error_line = __LINE__;
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EINVAL, "bad object size %zd vs %zd",
++					user_parent_size,
++					sizeof(user_object.bbo));
+ 				goto err_bad_parent;
+ 			}
+ 			ret = binder_translate_fd_array(&pf_head, fda,
+@@ -3257,9 +3263,9 @@ static void binder_transaction(struct binder_proc *proc,
+ 								  object_offset,
+ 								  fda, sizeof(*fda));
+ 			if (ret) {
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret > 0 ? -EINVAL : ret;
+-				return_error_line = __LINE__;
++				binder_txn_error(e, &ee, BR_FAILED_REPLY,
++					ret > 0 ? -EINVAL : ret,
++					"translate fd array failed");
+ 				goto err_translate_failed;
+ 			}
+ 			last_fixup_obj_off = parent_offset;
+@@ -3273,20 +3279,16 @@ static void binder_transaction(struct binder_proc *proc,
+ 			size_t num_valid;
+ 
+ 			if (bp->length > buf_left) {
+-				binder_user_error("%d:%d got transaction with too large buffer\n",
+-						  proc->pid, thread->pid);
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = -EINVAL;
+-				return_error_line = __LINE__;
++				binder_user_txn_error(e, &ee, BR_FAILED_REPLY,
++					-EINVAL, "buffer too large");
+ 				goto err_bad_offset;
+ 			}
+ 			ret = binder_defer_copy(&sgc_head, sg_buf_offset,
+ 				(const void __user *)(uintptr_t)bp->buffer,
+ 				bp->length);
+ 			if (ret) {
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
+-				return_error_line = __LINE__;
++				binder_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++					"deferred copy failed");
+ 				goto err_translate_failed;
+ 			}
+ 			/* Fixup buffer pointer to target proc address space */
+@@ -3307,20 +3309,16 @@ static void binder_transaction(struct binder_proc *proc,
+ 							t->buffer,
+ 							object_offset,
+ 							bp, sizeof(*bp))) {
+-				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
+-				return_error_line = __LINE__;
++				binder_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++					"failed to fixup parent");
+ 				goto err_translate_failed;
+ 			}
+ 			last_fixup_obj_off = object_offset;
+ 			last_fixup_min_off = 0;
+ 		} break;
+ 		default:
+-			binder_user_error("%d:%d got transaction with invalid object type, %x\n",
+-				proc->pid, thread->pid, hdr->type);
+-			return_error = BR_FAILED_REPLY;
+-			return_error_param = -EINVAL;
+-			return_error_line = __LINE__;
++			binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EINVAL,
++				"bad object type %x", hdr->type);
+ 			goto err_bad_object_type;
+ 		}
+ 	}
+@@ -3330,22 +3328,16 @@ static void binder_transaction(struct binder_proc *proc,
+ 				t->buffer, user_offset,
+ 				user_buffer + user_offset,
+ 				tr->data_size - user_offset)) {
+-		binder_user_error("%d:%d got transaction with invalid data ptr\n",
+-				proc->pid, thread->pid);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -EFAULT;
+-		return_error_line = __LINE__;
++		binder_user_txn_error(e, &ee, BR_FAILED_REPLY, -EFAULT,
++			"invalid data ptr");
+ 		goto err_copy_data_failed;
+ 	}
+ 
+ 	ret = binder_do_deferred_txn_copies(&target_proc->alloc, t->buffer,
+ 					    &sgc_head, &pf_head);
+ 	if (ret) {
+-		binder_user_error("%d:%d got transaction with invalid offsets ptr\n",
+-				  proc->pid, thread->pid);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = ret;
+-		return_error_line = __LINE__;
++		binder_user_txn_error(e, &ee, BR_FAILED_REPLY, ret,
++			"deferred copy, invalid offsets ptr");
+ 		goto err_copy_data_failed;
+ 	}
+ 	if (t->buffer->oneway_spam_suspect)
+@@ -3414,7 +3406,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 	return;
+ 
+ err_dead_proc_or_thread:
+-	return_error_line = __LINE__;
++	binder_txn_error(e, &ee, return_error, -ESRCH,
++		"dead process or thread");
+ 	binder_dequeue_work(proc, tcomplete);
+ err_translate_failed:
+ err_bad_object_type:
+@@ -3459,17 +3452,19 @@ static void binder_transaction(struct binder_proc *proc,
+ 	}
+ 
+ 	binder_debug(BINDER_DEBUG_FAILED_TRANSACTION,
+-		     "%d:%d transaction failed %d/%d, size %lld-%lld line %d\n",
+-		     proc->pid, thread->pid, return_error, return_error_param,
++		     "transaction %s from %d:%d to %d:%d failed, size %lld/%lld, error %d/%d/%d\n",
++		     reply ? "reply" :
++		     (tr->flags & TF_ONE_WAY ? "async" : "call"),
++		     proc->pid, thread->pid,
++		     target_proc ? target_proc->pid : 0,
++		     target_thread ? target_thread->pid : 0,
+ 		     (u64)tr->data_size, (u64)tr->offsets_size,
+-		     return_error_line);
++		     ee.id, ee.command, ee.param);
+ 
+ 	{
+ 		struct binder_transaction_log_entry *fe;
+ 
+-		e->return_error = return_error;
+-		e->return_error_param = return_error_param;
+-		e->return_error_line = return_error_line;
++		e->ee = ee;
+ 		fe = binder_transaction_log_add(&binder_transaction_log_failed);
+ 		*fe = *e;
+ 		/*
+@@ -3483,11 +3478,15 @@ static void binder_transaction(struct binder_proc *proc,
+ 
+ 	BUG_ON(thread->return_error.cmd != BR_OK);
+ 	if (in_reply_to) {
++		binder_set_txn_from_error(in_reply_to, &ee);
+ 		thread->return_error.cmd = BR_TRANSACTION_COMPLETE;
+ 		binder_enqueue_thread_work(thread, &thread->return_error.work);
+-		binder_send_failed_reply(in_reply_to, return_error);
++		binder_send_failed_reply(in_reply_to, ee.command);
+ 	} else {
+-		thread->return_error.cmd = return_error;
++		thread->return_error.cmd = ee.command;
++		binder_inner_proc_lock(proc);
++		thread->ee = ee;
++		binder_inner_proc_unlock(proc);
+ 		binder_enqueue_thread_work(thread, &thread->return_error.work);
+ 	}
+ }
+@@ -4624,6 +4623,7 @@ static struct binder_thread *binder_get_thread_ilocked(
+ 	thread->return_error.cmd = BR_OK;
+ 	thread->reply_error.work.type = BINDER_WORK_RETURN_ERROR;
+ 	thread->reply_error.cmd = BR_OK;
++	thread->ee.command = BR_OK;
+ 	INIT_LIST_HEAD(&new_thread->waiting_thread_node);
+ 	return thread;
+ }
+@@ -5062,6 +5062,25 @@ static int binder_ioctl_get_freezer_info(
+ 	return 0;
+ }
+ 
++static int binder_ioctl_get_extended_error(struct binder_thread *thread,
++					   void __user *ubuf)
++{
++	struct binder_extended_error *ee = &thread->ee;
++
++	binder_inner_proc_lock(thread->proc);
++	if (copy_to_user(ubuf, ee, sizeof(*ee))) {
++		binder_inner_proc_unlock(thread->proc);
++		return -EFAULT;
++	}
++
++	ee->id = 0;
++	ee->command = BR_OK;
++	ee->param = 0;
++	binder_inner_proc_unlock(thread->proc);
++
 +	return 0;
 +}
- #endif /* CONFIG_MODULES */
- 
- #ifdef CONFIG_SYSFS
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 79f2eb617a62..e6e96b2e0257 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -465,19 +465,8 @@ static int __sprint_symbol(char *buffer, unsigned long address,
- 	if (add_offset)
- 		len += sprintf(buffer + len, "+%#lx/%#lx", offset, size);
- 
--	if (modname) {
--		len += sprintf(buffer + len, " [%s", modname);
--#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
--		if (add_buildid && buildid) {
--			/* build ID should match length of sprintf */
--#if IS_ENABLED(CONFIG_MODULES)
--			static_assert(sizeof(typeof_member(struct module, build_id)) == 20);
--#endif
--			len += sprintf(buffer + len, " %20phN", buildid);
--		}
--#endif
--		len += sprintf(buffer + len, "]");
--	}
-+	if (modname)
-+		len += fill_name_build_id(buffer, modname, add_buildid, buildid, len);
- 
- 	return len;
- }
-@@ -572,6 +561,18 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
- 	return __sprint_symbol(buffer, address, -1, 1, 1);
- }
- 
-+int sprint_kallsym_common(char *buffer, unsigned long address, int build_id,
-+			    int backtrace, int symbol)
-+{
-+	if (backtrace)
-+		return __sprint_symbol(buffer, address, -1, 1, build_id);
 +
-+	if (symbol)
-+		return __sprint_symbol(buffer, address, 0, 1, build_id);
-+
-+	return __sprint_symbol(buffer, address, 0, 0, 0);
-+}
-+
- /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
- struct kallsym_iter {
- 	loff_t pos;
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 3e23bef5884d..cfff130f7c5f 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -206,21 +206,20 @@ static inline void kmemleak_load_module(const struct module *mod,
- #endif /* CONFIG_DEBUG_KMEMLEAK */
- 
- #ifdef CONFIG_KALLSYMS
--void init_build_id(struct module *mod, const struct load_info *info);
- void layout_symtab(struct module *mod, struct load_info *info);
- void add_kallsyms(struct module *mod, const struct load_info *info);
- unsigned long find_kallsyms_symbol_value(struct module *mod, const char *name);
- 
--static inline bool sect_empty(const Elf_Shdr *sect)
--{
--	return !(sect->sh_flags & SHF_ALLOC) || sect->sh_size == 0;
--}
- #else /* !CONFIG_KALLSYMS */
--static inline void init_build_id(struct module *mod, const struct load_info *info) { }
- static inline void layout_symtab(struct module *mod, struct load_info *info) { }
- static inline void add_kallsyms(struct module *mod, const struct load_info *info) { }
- #endif /* CONFIG_KALLSYMS */
- 
-+static inline bool sect_empty(const Elf_Shdr *sect)
-+{
-+	return !(sect->sh_flags & SHF_ALLOC) || sect->sh_size == 0;
-+}
-+
- #ifdef CONFIG_SYSFS
- int mod_sysfs_setup(struct module *mod, const struct load_info *info,
- 		    struct kernel_param *kparam, unsigned int num_params);
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index 3e11523bc6f6..576a597615a7 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -209,26 +209,6 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	mod->core_kallsyms.num_symtab = ndst;
- }
- 
--#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
--void init_build_id(struct module *mod, const struct load_info *info)
--{
--	const Elf_Shdr *sechdr;
--	unsigned int i;
--
--	for (i = 0; i < info->hdr->e_shnum; i++) {
--		sechdr = &info->sechdrs[i];
--		if (!sect_empty(sechdr) && sechdr->sh_type == SHT_NOTE &&
--		    !build_id_parse_buf((void *)sechdr->sh_addr, mod->build_id,
--					sechdr->sh_size))
--			break;
--	}
--}
--#else
--void init_build_id(struct module *mod, const struct load_info *info)
--{
--}
--#endif
--
- /*
-  * This ignores the intensely annoying "mapping symbols" found
-  * in ARM ELF files: $a, $t and $d.
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 05a42d8fcd7a..d511a9c62b53 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -2657,6 +2657,26 @@ static int unknown_module_param_cb(char *param, char *val, const char *modname,
- 
- static void cfi_init(struct module *mod);
- 
-+#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-+static void init_build_id(struct module *mod, const struct load_info *info)
-+{
-+	const Elf_Shdr *sechdr;
-+	unsigned int i;
-+
-+	for (i = 0; i < info->hdr->e_shnum; i++) {
-+		sechdr = &info->sechdrs[i];
-+		if (!sect_empty(sechdr) && sechdr->sh_type == SHT_NOTE &&
-+		    !build_id_parse_buf((void *)sechdr->sh_addr, mod->build_id,
-+					sechdr->sh_size))
-+			break;
-+	}
-+}
-+#else
-+static inline void init_build_id(struct module *mod, const struct load_info *info)
-+{
-+}
-+#endif
-+
- /*
-  * Allocate and load the module: note that size of section 0 is always
-  * zero, and we rely on this for optional sections.
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 40d26a07a133..e0aba2c80b8e 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -999,33 +999,92 @@ char *bdev_name(char *buf, char *end, struct block_device *bdev,
- }
- #endif
- 
-+#if !defined(CONFIG_KALLSYMS) && defined(CONFIG_MODULES)
-+static int sprint_module_info(char *buf, unsigned long value,
-+			     int modbuildid, int backtrace, int symbol)
-+{
-+	struct module *mod;
-+	unsigned long offset;
-+	void *base;
-+	char *modname;
-+	int len;
-+	const unsigned char *buildid = NULL;
-+	bool add_offset;
-+
-+	if (is_ksym_addr(value))
-+		return 0;
-+
-+	if (backtrace || symbol)
-+		add_offset = true;
-+	else
-+		add_offset = false;
-+
-+	preempt_disable();
-+	mod = __module_address(value);
-+	if (mod) {
-+		modname = mod->name;
-+#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-+		if (modbuildid)
-+			buildid = mod->build_id;
-+#endif
-+		if (add_offset) {
-+			base = mod->core_layout.base;
-+			offset = value - (unsigned long)base;
-+		}
-+	}
-+	preempt_enable();
-+	if (!mod)
-+		return 0;
-+
-+	/* address belongs to module */
-+	if (add_offset)
-+		len = sprintf(buf, "0x%p+0x%lx", base, offset);
-+	else
-+		len = sprintf(buf, "0x%lx", value);
-+
-+	return len + fill_name_build_id(buf, modname, modbuildid, buildid, len);
-+}
-+#else
-+static inline int sprint_module_info(char *buf, unsigned long value,
-+			     int modbuildid, int backtrace, int symbol)
-+{
-+	return 0;
-+}
-+#endif
-+
- static noinline_for_stack
- char *symbol_string(char *buf, char *end, void *ptr,
- 		    struct printf_spec spec, const char *fmt)
+ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
  {
- 	unsigned long value;
--#ifdef CONFIG_KALLSYMS
- 	char sym[KSYM_SYMBOL_LEN];
--#endif
-+	int backtrace = 0, symbol = 0, build_id = 0;
+ 	int ret;
+@@ -5270,6 +5289,11 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 		binder_inner_proc_unlock(proc);
+ 		break;
+ 	}
++	case BINDER_GET_EXTENDED_ERROR:
++		ret = binder_ioctl_get_extended_error(thread, ubuf);
++		if (ret < 0)
++			goto err;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto err;
+@@ -6172,13 +6196,12 @@ static void print_binder_transaction_log_entry(struct seq_file *m,
+ 	 */
+ 	smp_rmb();
+ 	seq_printf(m,
+-		   "%d: %s from %d:%d to %d:%d context %s node %d handle %d size %d:%d ret %d/%d l=%d",
++		   "%d: %s from %d:%d to %d:%d context %s node %d handle %d size %d:%d err %d/%d/%d: %s",
+ 		   e->debug_id, (e->call_type == 2) ? "reply" :
+ 		   ((e->call_type == 1) ? "async" : "call "), e->from_proc,
+ 		   e->from_thread, e->to_proc, e->to_thread, e->context_name,
+ 		   e->to_node, e->target_handle, e->data_size, e->offsets_size,
+-		   e->return_error, e->return_error_param,
+-		   e->return_error_line);
++		   e->ee.id, e->ee.command, e->ee.param, e->strerr);
+ 	/*
+ 	 * read-barrier to guarantee read of debug_id_done after
+ 	 * done printing the fields of the entry
+diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
+index d6b6b8cb7346..ab52743baf95 100644
+--- a/drivers/android/binder_internal.h
++++ b/drivers/android/binder_internal.h
+@@ -119,6 +119,7 @@ DEFINE_SHOW_ATTRIBUTE(binder_transactions);
+ int binder_transaction_log_show(struct seq_file *m, void *unused);
+ DEFINE_SHOW_ATTRIBUTE(binder_transaction_log);
  
- 	if (fmt[1] == 'R')
- 		ptr = __builtin_extract_return_addr(ptr);
- 	value = (unsigned long)ptr;
++#define BINDER_STRERR_MAXLEN 63
+ struct binder_transaction_log_entry {
+ 	int debug_id;
+ 	int debug_id_done;
+@@ -131,9 +132,8 @@ struct binder_transaction_log_entry {
+ 	int to_node;
+ 	int data_size;
+ 	int offsets_size;
+-	int return_error_line;
+-	uint32_t return_error;
+-	uint32_t return_error_param;
++	struct binder_extended_error ee;
++	char strerr[BINDER_STRERR_MAXLEN + 1];
+ 	char context_name[BINDERFS_MAX_NAME + 1];
+ };
  
--#ifdef CONFIG_KALLSYMS
--	if (*fmt == 'B' && fmt[1] == 'b')
--		sprint_backtrace_build_id(sym, value);
--	else if (*fmt == 'B')
--		sprint_backtrace(sym, value);
--	else if (*fmt == 'S' && (fmt[1] == 'b' || (fmt[1] == 'R' && fmt[2] == 'b')))
--		sprint_symbol_build_id(sym, value);
--	else if (*fmt != 's')
--		sprint_symbol(sym, value);
--	else
--		sprint_symbol_no_offset(sym, value);
-+	if (fmt[0] == 'B' && fmt[1] == 'b') {
-+		backtrace = 1;
-+		build_id = 1;
-+	} else if (fmt[0] == 'B')
-+		backtrace = 1;
-+	else if (fmt[0] == 'S' && (fmt[1] == 'b' || (fmt[1] == 'R' && fmt[2] == 'b'))) {
-+		symbol = 1;
-+		build_id = 1;
-+	} else if (fmt[0] != 's')
-+		symbol = 1;
-+	else {
-+		/* Do Nothing, no offset */
-+	}
+@@ -480,6 +480,8 @@ struct binder_proc {
+  *                        (only accessed by this thread)
+  * @reply_error:          transaction errors reported by target thread
+  *                        (protected by @proc->inner_lock)
++ * @ee:                   extended error information from this thread
++ *                        (protected by @proc->inner_lock)
+  * @wait:                 wait queue for thread work
+  * @stats:                per-thread statistics
+  *                        (atomics, no lock needed)
+@@ -504,6 +506,7 @@ struct binder_thread {
+ 	bool process_todo;
+ 	struct binder_error return_error;
+ 	struct binder_error reply_error;
++	struct binder_extended_error ee;
+ 	wait_queue_head_t wait;
+ 	struct binder_stats stats;
+ 	atomic_t tmp_ref;
+diff --git a/drivers/android/binderfs.c b/drivers/android/binderfs.c
+index e3605cdd4335..6c5e94f6cb3a 100644
+--- a/drivers/android/binderfs.c
++++ b/drivers/android/binderfs.c
+@@ -60,6 +60,7 @@ enum binderfs_stats_mode {
  
-+#ifdef CONFIG_KALLSYMS
-+	sprint_kallsym_common(sym, value, build_id, backtrace, symbol);
- 	return string_nocheck(buf, end, sym, spec);
- #else
-+	if (sprint_module_info(sym, value, build_id, backtrace, symbol))
-+		return string_nocheck(buf, end, sym, spec);
+ struct binder_features {
+ 	bool oneway_spam_detection;
++	bool extended_error;
+ };
+ 
+ static const struct constant_table binderfs_param_stats[] = {
+@@ -75,6 +76,7 @@ static const struct fs_parameter_spec binderfs_fs_parameters[] = {
+ 
+ static struct binder_features binder_features = {
+ 	.oneway_spam_detection = true,
++	.extended_error = true,
+ };
+ 
+ static inline struct binderfs_info *BINDERFS_SB(const struct super_block *sb)
+@@ -615,6 +617,12 @@ static int init_binder_features(struct super_block *sb)
+ 	if (IS_ERR(dentry))
+ 		return PTR_ERR(dentry);
+ 
++	dentry = binderfs_create_file(dir, "extended_error",
++				      &binder_features_fops,
++				      &binder_features.extended_error);
++	if (IS_ERR(dentry))
++		return PTR_ERR(dentry);
 +
- 	return special_hex_number(buf, end, value, sizeof(void *));
- #endif
+ 	return 0;
  }
+ 
+diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
+index 11157fae8a8e..e6ee8cae303b 100644
+--- a/include/uapi/linux/android/binder.h
++++ b/include/uapi/linux/android/binder.h
+@@ -236,6 +236,21 @@ struct binder_frozen_status_info {
+ 	__u32            async_recv;
+ };
+ 
++/* struct binder_extened_error - extended error information
++ * @id:		identifier for the failed operation
++ * @command:	command as defined by binder_driver_return_protocol
++ * @param:	parameter holding a negative errno value
++ *
++ * Used with BINDER_GET_EXTENDED_ERROR. This extends the error information
++ * returned by the driver upon a failed operation. Userspace can pull this
++ * data to properly handle specific error scenarios.
++ */
++struct binder_extended_error {
++	__u32	id;
++	__u32	command;
++	__s32	param;
++};
++
+ #define BINDER_WRITE_READ		_IOWR('b', 1, struct binder_write_read)
+ #define BINDER_SET_IDLE_TIMEOUT		_IOW('b', 3, __s64)
+ #define BINDER_SET_MAX_THREADS		_IOW('b', 5, __u32)
+@@ -249,6 +264,7 @@ struct binder_frozen_status_info {
+ #define BINDER_FREEZE			_IOW('b', 14, struct binder_freeze_info)
+ #define BINDER_GET_FROZEN_INFO		_IOWR('b', 15, struct binder_frozen_status_info)
+ #define BINDER_ENABLE_ONEWAY_SPAM_DETECTION	_IOW('b', 16, __u32)
++#define BINDER_GET_EXTENDED_ERROR	_IOWR('b', 17, struct binder_extended_error)
+ 
+ /*
+  * NOTE: Two special error codes you should check for when calling
 -- 
-2.17.1
+2.36.0.rc0.470.gd361397f0d-goog
 
