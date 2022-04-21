@@ -2,402 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:47:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE7D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389652AbiDUOun (ORCPT
+        id S1389709AbiDUOu6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
+        Thu, 21 Apr 2022 10:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389646AbiDUOuf (ORCPT
+        with ESMTP id S1389671AbiDUOuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:50:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E0CB42EFA
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650552461;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VLrWjtc7m2YPAUBTVVwtoIkXOvWSSpY/9+OaSUBZTKs=;
-        b=dwci+HBQSZdlwgF+Mo6uszSh+EgNNd30YEr8Hu3tLrD2pfhRVKq24z/+oZrgRNSKW7NeTP
-        QQjgNdbJA+SEq+5RQeugZSl35RE+Smp4bqVqdDPqropD1kzOYrd1zG8G67Ku/6/30+20Y2
-        LkE78QqQ1fgOz+38W1D1CN7LWlKQDl8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-1Nzm7Wr3PpiJJfxG5ZxQMg-1; Thu, 21 Apr 2022 10:47:36 -0400
-X-MC-Unique: 1Nzm7Wr3PpiJJfxG5ZxQMg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1356B1857F08;
-        Thu, 21 Apr 2022 14:47:35 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3636554E88D;
-        Thu, 21 Apr 2022 14:47:32 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220415123614.54024-9-jefflexu@linux.alibaba.com>
-References: <20220415123614.54024-9-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-Subject: Re: [PATCH v9 08/21] cachefiles: document on-demand read mode
-MIME-Version: 1.0
+        Thu, 21 Apr 2022 10:50:52 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021018.outbound.protection.outlook.com [52.101.62.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9BF4348A;
+        Thu, 21 Apr 2022 07:47:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NM8wvD215pfXqf5Vy/igwIhikwyVMCbxOpRULchXDXjkIOSvKEM4SitJe2aEwOuTCZy7W1OXzZz3Eb8V/QoYHkbs07KSTOFVTAlPYOWk0CHJBcMuX0TO6iF9ge/zixCb64I/lnGcbMVwEr3rr8EX0AxmGbD2r3zzydFBMRgNrr+1az2w2yU1rnZGseFEGM3jADayl/QhE1RWXBnM1Pj4OtBKexBBt8yVVFr0QfzmDNXrL7gTGg/nVC+C3R5SFVfe69GTgxFV5Klz864ta2AiMq7Efaz/cwVBllpQPJxMOQs2xbc/P+g6dpkrycC9GUCxzb3cayFLW7rB+WjhEabevw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pghUWbu9emLzZYVpHnMM7dcL0LqHSNSa0W+F8XX0mxM=;
+ b=eP4bh/ENnSufGuyxZvHdVrkKeHk6PllMSxOJyy7hJriazCmHe/UNvNiXiwM4O+sgp41V3ykcIWMFjp8QnmxCQfprfEu0dIdRFN3VlsEOlAefO/yaBl8ozvzFRlrDRz6B2RFUTM7629qqeJuv3WLsX90FS+/0xKKN9Rx6I0lvtm7Jm2+bJhR96wWMxKseh2+txHMcx9wBN6Ynvregoxq3I3/C3vWkFDQtuB7ySlYerHOYOHfrowknmy90qmbX8xEBi2VuGDdgNISRoJ2g9FkPL9YEByh7e2UX7NOaK7GSHvbvvWimAOIJLkZNZnwnBKfQHHLqh89S7bDOuSi4Yj3lVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pghUWbu9emLzZYVpHnMM7dcL0LqHSNSa0W+F8XX0mxM=;
+ b=DvMnqxjT7e9mstSah8ii2eZl8cXArKcUbjpkIpTbsdu+Nv6hbGPHwyfIX88SA4e3wBtoXUesvInWkgSZpT3i37YKL+wd7UCsSDgq6u552PwiU5l0pyTWLRxcVHYYOZV03hqbA4dDIatNWexVJq7Be8yj7N0W2wwZZqNfcgN2CLE=
+Received: from DM6PR21MB1323.namprd21.prod.outlook.com (2603:10b6:5:175::10)
+ by MW2PR2101MB1819.namprd21.prod.outlook.com (2603:10b6:302:8::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.6; Thu, 21 Apr
+ 2022 14:47:55 +0000
+Received: from DM6PR21MB1323.namprd21.prod.outlook.com
+ ([fe80::921:87d4:16e8:128d]) by DM6PR21MB1323.namprd21.prod.outlook.com
+ ([fe80::921:87d4:16e8:128d%6]) with mapi id 15.20.5206.003; Thu, 21 Apr 2022
+ 14:47:55 +0000
+From:   Jarrett Schultz <jaschultz@microsoft.com>
+To:     Rob Herring <robh@kernel.org>,
+        Jarrett Schultz <jaschultzms@gmail.com>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        "rnayak@codeaurora.org" <rnayak@codeaurora.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>
+Subject: RE: [EXTERNAL] Re: [PATCH v5 1/4] dt-bindings: platform: microsoft:
+ Document surface xbl
+Thread-Topic: [EXTERNAL] Re: [PATCH v5 1/4] dt-bindings: platform: microsoft:
+ Document surface xbl
+Thread-Index: AQHYT2Q+xTtCZGJgoESLP31oIY2B9qz2ThnggAQvmRA=
+Date:   Thu, 21 Apr 2022 14:47:55 +0000
+Message-ID: <DM6PR21MB1323AB0E718426B14E13386CA5F49@DM6PR21MB1323.namprd21.prod.outlook.com>
+References: <20220405210750.619511-1-jaschultzMS@gmail.com>
+ <20220405210750.619511-2-jaschultzMS@gmail.com>
+ <YlcWD3dnqotAEnfA@robh.at.kernel.org>
+ <DM6PR21MB1323C72F2B37419069407AC8A5F39@DM6PR21MB1323.namprd21.prod.outlook.com>
+In-Reply-To: <DM6PR21MB1323C72F2B37419069407AC8A5F39@DM6PR21MB1323.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=e534c7fc-2671-40ff-858e-c7400d233291;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-04-18T22:48:37Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6691dce2-42e8-410c-4398-08da23a5eb8d
+x-ms-traffictypediagnostic: MW2PR2101MB1819:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <MW2PR2101MB181972276ACED8EB0BE59DACA5F49@MW2PR2101MB1819.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: T4QRa+K+bSLiBtWK9X0uVYl2wN6P0Txt+r1KpVCap+fCtjzhmIev46Py2PVqQz+PlqHbnJDMTvtnNG4/vOZhiLyDGVfoxOrwANn1i0TFIBPlZO5Rp+mr68wYjs1Kmr7cVY79O+6a6/6h9dGUnR5GoALlfhc96DiTi1pOWbZ3NyHDAwE3Ut56s+YK3eUGEaGrM/Wkf/dEn/mT4W190Gb9iNHh8Byzu/3mid5PoV6THNjJod+WKLFH+o4LJAYf18rxRUNkSkwNTb1z96vcXETWhZrFFrtNqbIAa5uYEg6a1PoaWQHL1aALTvk9y/yLkYuU7MC8sSbzBkXF4skVIAqIXyEaBeltB5jLFBYTPKuC0y+Nni0s4+g+VbAZpU7A/Zu/G8g1sulDBZgUuWmevQMK1aiAMHpZcPmF/eZ0ZYTtL5+ABim3dBCq/Ci3NGsfv8XA0rODlKC6JJD63CT8W5ROI0mxH8clCfCvqd8+jFjs2qPZANVrjs1RmZDFsXX/Rsb1nchF/soHMC6Om8DQiRNUd37UArQoW25NcU0EyQ38VpfFvZ0DHwBP0cTee+xwpXs75E/x/5kcSbPA309Zb8zx6PsHGn9KhoZZq+LWv0Uh/q/IZOB4pwqsLug6jVobogurvjmziOz+k2whh3Gcv4GhKP2cHJc+jlrIdvTAMivaaICaLup1IXE+CO3RtPsCd/7DhvkBFbj/+9CcJhHmWbq+JbDak0An3yj/LpqUb4WJc9NBAKZb0uo/yeSCBwJkPMP5
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1323.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(47530400004)(451199009)(26005)(186003)(55016003)(508600001)(52536014)(38070700005)(53546011)(6506007)(71200400001)(9686003)(7696005)(122000001)(38100700002)(33656002)(82960400001)(82950400001)(86362001)(5660300002)(66946007)(7416002)(8936002)(54906003)(66446008)(8990500004)(64756008)(66476007)(66556008)(10290500003)(110136005)(8676002)(4326008)(2906002)(76116006)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lywkbjlp7yX6/jki5WOH1SlqGh9ZVRTQQP4noPpExkCvgfgzU8R10mBJNw7H?=
+ =?us-ascii?Q?1L62VtnSWbQ67ibBc1Eos2kUrtRVC//APIfzJBna5AMj6So1wGuGvQFv1Mlc?=
+ =?us-ascii?Q?v4q/OPxflSGP7Kz5NOvTaG/wfE/Rt2yfthEvBUMGe2YWM4UrWvgPOTzQdmS/?=
+ =?us-ascii?Q?5pazUHX0/y8sY7kvY564roIrE0K9tCeFvXN2csUXZzSz7JlZcGjxkmX4D/Wh?=
+ =?us-ascii?Q?4eIEjc8iGrjsMv7PvvFrgvQpt6W/0VY4StZ+CAq3sxhXRPhgiW1yH3PMZtUs?=
+ =?us-ascii?Q?vFdYe6A5S02hJkvNFrSXQ5YE5VWpCTOaQxHdyX4UTVanIuLCsMKI+919UEd7?=
+ =?us-ascii?Q?jUblCd1KKGV0wHYv6Z4vkWYSzJa/zvdjBNyc5qj0EdgExKTZK1widCgnNjMG?=
+ =?us-ascii?Q?Jgx6WWO6tYpy1tDGErHCIuXl+m6gLSN/qV63xDYnvTkHTvVL+qjxm0EWYMVg?=
+ =?us-ascii?Q?YHEkulxsPVQ1M8LL6GCoggJDVXnyCfui69XlNY0Uc8+ezu7lVLrjlQQ8N8um?=
+ =?us-ascii?Q?taTEGB+7+0QRU3C/XTWji9DzvxPAnyURaVIi92AECqI69NlCtLJ/X34rWC/X?=
+ =?us-ascii?Q?yHUIozqrllGnVl72uSviYKtgRItHlR1jkoFdp9WhfNiafHRYjZu/EzlrQ5gK?=
+ =?us-ascii?Q?+AtzhLTAdpYacjzkfWe4J1thVR70Jf+iSMuONIO3Hgq2be/GJ/UamNFeuwYO?=
+ =?us-ascii?Q?QNgXWqQaW/uWJyMppp03n65w6jZbLTeNjBW+Q6bBZiMwxIxE4YLQtpdvhjWk?=
+ =?us-ascii?Q?vuk3257IN9GRDrHELPx9Pu871oOhl9tRwUixJWj0pAvuZ/NpeGTvb4yRsVYf?=
+ =?us-ascii?Q?pJA/LZjssXL5TgzfpywHtEtT8tjO80tbIk19pecYhZkd68Xrrg8kuRzM91KO?=
+ =?us-ascii?Q?LGi+dBXtRCyJ+6D1RnifAjjjKcglm808LgHUjeOejmb2udertl6YRUxMqh+o?=
+ =?us-ascii?Q?X4C5YavBBQBxQbezmzEwZBXclqfhlsaF5yYthiyNGeUOd5Ao/gvr2JCMSSEu?=
+ =?us-ascii?Q?hrnPW27gVY6IJNFXGb/5RfKyT54lT8LwsWjZDxA5611HDWYExNzlc8VrAh9L?=
+ =?us-ascii?Q?P5TCqq9asivUa95rle4Zyl9T37gkYcxvpV2JupGaPsHTgSNjj6fEho6zPdsZ?=
+ =?us-ascii?Q?V289x2iOf3MxCUPXzb2xsOTeUp9JXGS3INZ1BL0yHSa8FOuPMyWMufn+sddz?=
+ =?us-ascii?Q?DvAg2IF3zbyCW+opglGd04tjtCPrcx6qiO79Lo6272w8JFqmLx2v3ECcnpfc?=
+ =?us-ascii?Q?MSxMRuq3RaNqcLyi/Ri6abyTqAbzU+yIDHauUJrZr8n48W5XU6ttjwF1JJQw?=
+ =?us-ascii?Q?AnRf/IPOBX+8O1Mr3n5p7XOPIzUmN8vPVL+4H/aismsxDheh9AvAkBYyF+/R?=
+ =?us-ascii?Q?MKzC0HXhTuDcprfAQU3nLOiU+rHdjUBLqYiEtlZxLLLy+OL9+9nmTXjUA+E6?=
+ =?us-ascii?Q?TZuZJ6KWCOWQ+YGX31mWrW0n+I0JzEtbNTzoambr0kfw0zQCKk53fpPMcohN?=
+ =?us-ascii?Q?1VGPCmGwT+mbI7YVhZU/1/1WvSf+dxNa7DlzpeujK/Idq1FLdjzrvizVy26/?=
+ =?us-ascii?Q?BgP+NZLDC9kuWfGux9YuaAoCDkaHIKcXK1M9sSIaRbJm3gvOoJ7JifpAg7jR?=
+ =?us-ascii?Q?nnNtcayQMfGyNo4YPDK8BGX30/W5FGfkaIvuEuPeUDRWANpMQ5DaCpntvKO5?=
+ =?us-ascii?Q?xz3fXQ=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1447052.1650552451.1@warthog.procyon.org.uk>
 Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 21 Apr 2022 15:47:31 +0100
-Message-ID: <1447053.1650552451@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1323.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6691dce2-42e8-410c-4398-08da23a5eb8d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2022 14:47:55.4276
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WGY6Bc98ma+cO60Mk0w4Iu6dJOkeELhcb9qg9uQPNlxqWzBugtEeXIYNzzNOZmaEAkd+EWuFjIB1dqb3Rpyvbg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1819
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
-
-> +When working in its original mode, cachefiles mainly
-
-I'd delete "mainly" there.
-
-> serves as a local cache
-> +for a remote networking fs - while in on-demand read mode, cachefiles c=
-an boost
-> +the scenario where on-demand read semantics is
-
-is -> are.
-
-> +The essential difference between these two modes is that, in original m=
-ode,
-> +when a cache miss occurs, the netfs will fetch the data from the remote=
- server
-> +and then write it to the cache file.  With on-demand read mode, however=
-,
-> +fetching the data and writing it into the cache is delegated to a user =
-daemon.
-
-The starting sentence seems off.  How about:
-
-  The essential difference between these two modes is seen when a cache mi=
-ss
-  occurs: In the original mode, the netfs will fetch the data from the rem=
-ote
-  server and then write it to the cache file; in on-demand read mode, fetc=
-hing
-  data and writing it into the cache is delegated to a user daemon.
-
-> +Protocol Communication
-> +----------------------
-> +
-> +The on-demand read mode relies on
-
-relies on -> uses
-
-> a simple protocol used
-
-Delete "used".
-
-> for communication
-> +between kernel and user daemon. The protocol can be modeled as::
-> +
-> +	kernel --[request]--> user daemon --[reply]--> kernel
-> +
-> +The cachefiles kernel module will send requests to the user daemon when=
- needed.
-> +The user daemon needs to
-
-needs to -> should
-
-> poll on
-
-poll on -> poll
-
-> the devnode ('/dev/cachefiles') to check if
-> +there's a pending request to be processed.  A POLLIN event will be retu=
-rned
-> +when there's a pending request.
-> +
-> +The user daemon then reads the devnode to fetch a request and process i=
-t
-> +accordingly.
-
-Reading the devnode doesn't process the request, so I think something like=
-:
-
-"... and process it accordingly" -> "... that it can then process."
-
-or:
-
-"... and process it accordingly" -> "... to process."
-
-> It is worth noting
-
-"It should be noted"
-
-> that each read only gets one request. When
-
-... it has ...
-
-> +finished processing the request, the user daemon needs to
-
-needs to -> should write
-
-> write the reply to
-> +the devnode.
-> +
-> +Each request starts with a message header of the form::
-> +
-> +	struct cachefiles_msg {
-> +		__u32 msg_id;
-> +		__u32 opcode;
-> +		__u32 len;
-> +		__u32 object_id;
-> +		__u8  data[];
-> +	};
-> +
-> +	where:
-> +
-> +	* ``msg_id`` is a unique ID identifying this request among all pending
-> +	  requests.
-> +
-> +	* ``opcode`` indicates the type of this request.
-> +
-> +	* ``object_id`` is a unique ID identifying the cache file operated on.
-> +
-> +	* ``data`` indicates the payload of this request.
-> +
-> +	* ``len`` indicates the whole length of this request, including the
-> +	  header and following type-specific payload.
-> +
-> +
-> +Turn on On-demand Mode
-
-Turning on
-
-> +----------------------
-> +
-> +An optional parameter is added
-
-is added -> becomes available
-
-> to the "bind" command::
-> +
-> +	bind [ondemand]
-> +
-> +When the "bind" command takes without
-
-takes without -> is given no
-
-> argument, it defaults to the original
-> +mode.  When the "bind" command is given
-
-When it is given
-
-> the "ondemand" argument, i.e.
-> +"bind ondemand", on-demand read mode will be enabled.
-> +
-> +
-> +The OPEN Request
-> +----------------
-> +
-> +When the netfs opens a cache file for the first time, a request with th=
-e
-> +CACHEFILES_OP_OPEN opcode, a.k.a an OPEN request will be sent to the us=
-er
-> +daemon.  The payload format is of the form::
-> +
-> +	struct cachefiles_open {
-> +		__u32 volume_key_size;
-> +		__u32 cookie_key_size;
-> +		__u32 fd;
-> +		__u32 flags;
-> +		__u8  data[];
-> +	};
-> +
-> +	where:
-> +
-> +	* ``data`` contains the volume_key followed directly by the cookie_key=
-.
-> +	  The volume key is a NUL-terminated string; the cookie key is binary
-> +	  data.
-> +
-> +	* ``volume_key_size`` indicates the size of the volume key in bytes.
-> +
-> +	* ``cookie_key_size`` indicates the size of the cookie key in bytes.
-> +
-> +	* ``fd`` indicates an anonymous fd referring to the cache file, throug=
-h
-> +	  which the user daemon can perform write/llseek file operations on th=
-e
-> +	  cache file.
-> +
-> +
-> +The user daemon is able to distinguish the requested cache file with th=
-e given
-> +(volume_key, cookie_key) pair.
-
-"The user daemon can use the given (volume_key, cookie_key) pair to
-distinguish the requested cache file." might sound better.
-
-> Each cache file has a unique object_id, while it
-> +may have multiple anonymous fds. The user daemon may duplicate anonymou=
-s fds
-> +from the initial anonymous fd indicated by the @fd field through dup().=
- Thus
-> +each object_id can be mapped to multiple anonymous fds, while the usr d=
-aemon
-> +itself needs to maintain the mapping.
-> +
-> +With the given anonymous fd, the user daemon can fetch data and write i=
-t to the
-> +cache file in the background, even when kernel has not triggered a cach=
-e miss
-> +yet.
-> +
-> +The user daemon should complete the READ request
-
-READ request -> OPEN request?
-
-> by issuing a "copen" (complete
-> +open) command on the devnode::
-> +
-> +	copen <msg_id>,<cache_size>
-> +
-> +	* ``msg_id`` must match the msg_id field of the previous OPEN request.
-> +
-> +	* When >=3D 0, ``cache_size`` indicates the size of the cache file;
-> +	  when < 0, ``cache_size`` indicates the
-
-the -> any
-
-> error code ecountered
-
-encountered
-
-> by the
-> +	  user daemon.
-> +
-> +
-> +The CLOSE Request
-> +-----------------
-> +
-> +When a cookie withdrawn, a CLOSE request (opcode CACHEFILES_OP_CLOSE) w=
-ill be
-> +sent to the user daemon. It will notify
-
-It will notify -> This tells
-
-> the user daemon to close all anonymous
-> +fds associated with the given object_id.  The CLOSE request has no exte=
-a
-
-extra
-
-> +payload.
-> +
-> +
-> +The READ Request
-> +----------------
-> +
-> +When on-demand read mode is turned on, and a cache miss encountered,
-
-"When a cache miss is encountered in on-demand read mode,"
-
-> the kernel
-> +will send a READ request (opcode CACHEFILES_OP_READ) to the user daemon=
-. This
-> +will tell
-
-will tell -> tells/asks
-
-> the user daemon to fetch data
-
-data -> the contents
-
-> of the requested file range. The payload
-> +is of the form::
-> +
-> +	struct cachefiles_read {
-> +		__u64 off;
-> +		__u64 len;
-> +	};
-> +
-> +	where:
-> +
-> +	* ``off`` indicates the starting offset of the requested file range.
-> +
-> +	* ``len`` indicates the length of the requested file range.
-> +
-> +
-> +When receiving
-
-receiving -> it receives
-
-> a READ request, the user daemon needs to
-
-needs to -> should
-
-> fetch the
-
-requested
-
-> data of the
-> +requested file range,
-
-"of the requested file range," -> "" (including the comma, I think)
-
-> and then
-
-"then" -> ""
-
-> write it to the cache file identified by
-> +object_id.
-> +
-> +To finish
-
-When it has finished
-
-> processing the READ request, the user daemon should reply with
-
-with -> by using
-
-> the
-> +CACHEFILES_IOC_CREAD ioctl on one of the anonymous fds associated with =
-the given
-> +object_id
-
-given object_id -> object_id given
-
-> in the READ request.  The ioctl is of the form::
-> +
-> +	ioctl(fd, CACHEFILES_IOC_CREAD, msg_id);
-> +
-> +	* ``fd`` is one of the anonymous fds associated with the given object_=
-id
-> +	  in the READ request.
-
-the given object_id in the READ request -> object_id
-
-> +
-> +	* ``msg_id`` must match the msg_id field of the previous READ request.
-
-By "previous READ request" is this referring to something different to "th=
-e
-READ request" you mentioned against the fd parameter?
-
-David
-
+> On Monday, April 18, 2022 3:53 PM, Jarrett Schultz wrote:
+> From: Jarrett Schultz <jaschultz@microsoft.com>
+>
+> > From: Rob Herring <robh@kernel.org>
+> > On Wednesday, April 13, 2022 at 11:27 AM, Rob wrote:
+> >
+> > On Tue, Apr 05, 2022 at 02:07:47PM -0700, Jarrett Schultz wrote:
+> > > From: Jarrett Schultz <jaschultz@microsoft.com>
+> > >
+> > > Introduce yaml for surface xbl driver.
+> >
+> > From Bjorn's reply on v4, it sounds like the QCom folks need to work
+> > out how to describe 'imem' first. I'd think that would use 'mmio-sram'
+> > binding and then this could be a child of that. If it's DDR, then it
+> > belongs under /reserved-memory node. Either way, that's all kind of
+> > outside the scope of the binding unless there's something special about
+> 'imem'.
+> >
+> > >
+> > > Signed-off-by: Jarrett Schultz <jaschultz@microsoft.com>
+> > >
+>=20
+> Hi Rajendra and Vinod,
+>=20
+> I'm currently working with Felipe Balbi on submitting an XBL driver that =
+reads
+> from imem.
+> Could you help me properly describe the 'imem' binding for sm8150?
+>=20
+> Thank you,
+> Jarrett Schultz
+
+Oops, forgot to CC in Vinod and Rejendra.
+
+-Jarrett
