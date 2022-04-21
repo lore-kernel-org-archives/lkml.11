@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 659A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388997AbiDUONc (ORCPT
+        id S1389036AbiDUONg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        Thu, 21 Apr 2022 10:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389159AbiDUONU (ORCPT
+        with ESMTP id S1389111AbiDUONI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:13:20 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4B339801
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:31 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so5327629pjf.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:31 -0700 (PDT)
+        Thu, 21 Apr 2022 10:13:08 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D003968F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:18 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id j8-20020a17090a060800b001cd4fb60dccso5290088pjj.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yX2Rm860a2FPnjvkxlraogE+1n6tD0A0599HJAgUvAg=;
-        b=jsT0ubLxYr2PAs9MQccEF/bY8DOmorhOBKB14fD8aQWyoKeApKk6LINvqcZMdAwz9d
-         nnxKCOmlmkloQeczjlFnH6NDffKoT6LAWZ26v5BnLd/b3APNUiG9XeGPo5xU9sj6i8HL
-         7nG3Oa1I61OQsHgJ+YKuoz0/WUh2S3a6PSoxSLvIfjCedec9vordx7W3y1gIQEds43pQ
-         bWOcyvv982Wfq+HnaOkv/wy09E85kLwaJRIJVMuErfLU/7fCywmOa30MUf5Eg5LspkEu
-         ea9bFfAKBI69Um2hyVLxE1pY3HZb9p5SGp6WKcJSSpz1r6v3SrlGu6K49GbAllDeUMop
-         4kZg==
+        bh=vhqdV4bppKv2NJnLqEsRygbCN8xm6iT8adOuIjwb7P4=;
+        b=V96tI2wYuISOCbp1lDUZQBAMHT+LAjVjqnuxRitXqkXtuPpJY0DSTgsv4UZv7duHH2
+         JtoQcoh/Cz1vhiAoJF3ghX2h0j9Q9yM2J0qQpHhWaTTq+ZvEvMI+7YRTXvPkDlDDGfQw
+         Qd1/yvUVZlkbGmFiT1suuTurm5A3PueJPKlqNGIY7eEwzYVvf61nrYPlqz4NUp0dSYPu
+         deL1/H92jw7OFBC1Y/0yC+C55BWtz3v/8YtWrmIQRBBLVML/RTDVt7dg00EGha8eAxBb
+         uHuAUtMVTY7qyEtcloQG+jt6LmVHPsMk6SriskmsKR+ZFa0Kob/d7cq4Tf4yGur0Ik+1
+         hCLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yX2Rm860a2FPnjvkxlraogE+1n6tD0A0599HJAgUvAg=;
-        b=oC6VizmwNeNN7Hgq6leWR+IQ8ZGEScLqGAf68NgI7DGupIoo8whajccDIBzCYrTxn4
-         fsH+VauPWwKsJ8reeP5AE3OMb9HegHDPzIthOxIWpbxIj+e7NN9U3BfNbxMqBWBRvYUl
-         YIufk0cBjn5c/ymUzz/JFA7SWbQ0dcqf8oRUHmzx10YW5zwIyjTvf2uKmD+b5wa0tiaI
-         E1AJCIFA6Jfc18jwqTPauZU3Ut66gdQSvB5h4UNaT+Imy+ZIoIl4T19S8jEQ4F8Msp2S
-         kcTMtyL//Cwa4M8+nqmzVX/bW7nrW2tNXhMCS7nS5tpKVlO/WdOzG7WR1YjRY8Oe26B6
-         BBfQ==
-X-Gm-Message-State: AOAM532sruqnq0HMw6P7JRYepK+KhsELwDDbeNxwECJnoK3JICmUAjR/
-        +dI2+RKs6zlnQBC1ytREMsWjO8V0JTc=
-X-Google-Smtp-Source: ABdhPJwfysNYrUkSwt0GfUQ2TixKQwWoHFBsUZM/qYLpobWdN/RLLTd6L2lItR6rceTlAxKof9hh7g==
-X-Received: by 2002:a17:90b:4c45:b0:1d2:acdc:71d4 with SMTP id np5-20020a17090b4c4500b001d2acdc71d4mr10685468pjb.39.1650550230497;
-        Thu, 21 Apr 2022 07:10:30 -0700 (PDT)
+        bh=vhqdV4bppKv2NJnLqEsRygbCN8xm6iT8adOuIjwb7P4=;
+        b=jtacY+NKkcPfOqANojcDItqIcRa1D7gJlSv1kAgs3iX4a1NboODfxQrsB5ZA+R9PPs
+         Cvk2LiNnTizuMTPxvreOJF9bPc65weiXmTxVmg/GV0HKloKRVlp38n5n+WKFMv52Wb1z
+         t63SUOAE83PcFWsgfzNc4aFTMQJHi8sr0Tjz6tHHqjglMFnCfS9odNIuQ00uuHSgyzYD
+         CuD1jjRmxwO0rPvShCGxbnlbHE+Ibcu+g1AmM5C/VHFWbMGccg1gtBOou9emKn2YsPYU
+         GhWlLq9yHfVU1wdEbJeX2LzTYzPrzWU+C2D3cVFvVTEBMR/a2xFfzCE7ybixSQMo1QIP
+         oTwA==
+X-Gm-Message-State: AOAM530gV/isKkkkaPIshAByj5z3XyaQ3O1+vEMsZHs9c47n3w+d/IEk
+        y5L9PQo3Hn5JVRheIDh2ahQBlYH/UB0=
+X-Google-Smtp-Source: ABdhPJzs7x0iUgxo54kX5jLiEBQ7imBeXRblDMU6hzS7hH3vxGJzrTfIg4iBybrw08BAhIE5lE8pUw==
+X-Received: by 2002:a17:902:f690:b0:158:d6ee:b1f9 with SMTP id l16-20020a170902f69000b00158d6eeb1f9mr25232846plg.80.1650550217898;
+        Thu, 21 Apr 2022 07:10:17 -0700 (PDT)
 Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id 64-20020a17090a0fc600b001d5f22845bdsm2671853pjz.1.2022.04.21.07.10.29
+        by smtp.gmail.com with ESMTPSA id a133-20020a621a8b000000b0050acaab7b29sm6288193pfa.31.2022.04.21.07.10.16
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Apr 2022 07:10:30 -0700 (PDT)
+        Thu, 21 Apr 2022 07:10:17 -0700 (PDT)
 From:   Lai Jiangshan <jiangshanlai@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Borislav Petkov <bp@alien8.de>,
@@ -60,10 +60,13 @@ Cc:     Borislav Petkov <bp@alien8.de>,
         Lai Jiangshan <jiangshan.ljs@antgroup.com>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH V6 3/8] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-Date:   Thu, 21 Apr 2022 22:10:50 +0800
-Message-Id: <20220421141055.316239-4-jiangshanlai@gmail.com>
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>
+Subject: [PATCH V6 1/8] x86/traps: Move pt_regs only in fixup_bad_iret()
+Date:   Thu, 21 Apr 2022 22:10:48 +0800
+Message-Id: <20220421141055.316239-2-jiangshanlai@gmail.com>
 X-Mailer: git-send-email 2.19.1.6.gb485710b
 In-Reply-To: <20220421141055.316239-1-jiangshanlai@gmail.com>
 References: <20220421141055.316239-1-jiangshanlai@gmail.com>
@@ -75,74 +78,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-The macro idtentry calls error_entry() unconditionally even on XENPV.
-But the code XENPV needs in error_entry() is PUSH_AND_CLEAR_REGS only.
-And error_entry() also calls sync_regs() which has to deal with the
-case of XENPV via an extra branch so that it doesn't copy the pt_regs.
+Always stash the address error_entry() is going to return to, in %r12
+and get rid of the void *error_entry_ret; slot in struct bad_iret_stack
+which was supposed to account for it and pt_regs pushed on the stack.
 
-And PUSH_AND_CLEAR_REGS in error_entry() makes the stack not return to
-its original place when the function returns, which means it is not
-possible to convert it to a C function.
+After this, both fixup_bad_iret() and sync_regs() can work on a
+struct pt_regs pointer directly.
 
-Move PUSH_AND_CLEAR_REGS out of error_entry(), add a function to wrap
-PUSH_AND_CLEAR_REGS and call it before error_entry().
-
-The new function call adds two instructions (CALL and RET) for every
-interrupt or exception.  It will allow for error_entry() to be not
-called on XENPV which allows for sync_regs() to reduce a branch.  It
-will also allow for error_entry() to be converted to C code that can
-use inlined sync_regs() and save a function call again.
-
-Cc: Juergen Gross <jgross@suse.com>
 Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
- arch/x86/entry/entry_64.S | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/x86/entry/entry_64.S    |  5 ++++-
+ arch/x86/include/asm/traps.h |  2 +-
+ arch/x86/kernel/traps.c      | 18 ++++++------------
+ 3 files changed, 11 insertions(+), 14 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index ca3e99e08a44..b1cef3b0a7ab 100644
+index 73d958522b6a..ecbfca3cc18c 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -318,6 +318,14 @@ SYM_CODE_END(ret_from_fork)
+@@ -1061,9 +1061,12 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 * Pretend that the exception came from user mode: set up pt_regs
+ 	 * as if we faulted immediately after IRET.
+ 	 */
+-	mov	%rsp, %rdi
++	popq	%r12				/* save return addr in %12 */
++	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+ 	mov	%rax, %rsp
++	ENCODE_FRAME_POINTER
++	pushq	%r12
+ 	jmp	.Lerror_entry_from_usermode_after_swapgs
+ SYM_CODE_END(error_entry)
+ 
+diff --git a/arch/x86/include/asm/traps.h b/arch/x86/include/asm/traps.h
+index 35317c5c551d..47ecfff2c83d 100644
+--- a/arch/x86/include/asm/traps.h
++++ b/arch/x86/include/asm/traps.h
+@@ -13,7 +13,7 @@
+ #ifdef CONFIG_X86_64
+ asmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);
+ asmlinkage __visible notrace
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s);
++struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);
+ void __init trap_init(void);
+ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);
  #endif
- .endm
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index a4e2efde5d1f..111b18d57a54 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -898,13 +898,7 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *r
+ }
+ #endif
  
-+/* Save all registers in pt_regs */
-+SYM_CODE_START_LOCAL(push_and_clear_regs)
-+	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
-+	RET
-+SYM_CODE_END(push_and_clear_regs)
-+
- /**
-  * idtentry_body - Macro to emit code calling the C function
-  * @cfunc:		C function to be called
-@@ -325,6 +333,9 @@ SYM_CODE_END(ret_from_fork)
-  */
- .macro idtentry_body cfunc has_error_code:req
+-struct bad_iret_stack {
+-	void *error_entry_ret;
+-	struct pt_regs regs;
+-};
+-
+-asmlinkage __visible noinstr
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
++asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
+ {
+ 	/*
+ 	 * This is called from entry_64.S early in handling a fault
+@@ -914,19 +908,19 @@ struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
+ 	 * just below the IRET frame) and we want to pretend that the
+ 	 * exception came from the IRET target.
+ 	 */
+-	struct bad_iret_stack tmp, *new_stack =
+-		(struct bad_iret_stack *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
++	struct pt_regs tmp, *new_stack =
++		(struct pt_regs *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
  
-+	call push_and_clear_regs
-+	UNWIND_HINT_REGS
-+
- 	call	error_entry
- 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
- 	ENCODE_FRAME_POINTER
-@@ -985,13 +996,11 @@ SYM_CODE_START_LOCAL(paranoid_exit)
- SYM_CODE_END(paranoid_exit)
+ 	/* Copy the IRET target to the temporary storage. */
+-	__memcpy(&tmp.regs.ip, (void *)s->regs.sp, 5*8);
++	__memcpy(&tmp.ip, (void *)bad_regs->sp, 5*8);
  
- /*
-- * Save all registers in pt_regs, and switch GS if needed.
-+ * Switch GS and CR3 if needed.
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
--	PUSH_AND_CLEAR_REGS save_ret=1
--	ENCODE_FRAME_POINTER 8
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
+ 	/* Copy the remainder of the stack from the current stack. */
+-	__memcpy(&tmp, s, offsetof(struct bad_iret_stack, regs.ip));
++	__memcpy(&tmp, bad_regs, offsetof(struct pt_regs, ip));
  
+ 	/* Update the entry stack */
+ 	__memcpy(new_stack, &tmp, sizeof(tmp));
+ 
+-	BUG_ON(!user_mode(&new_stack->regs));
++	BUG_ON(!user_mode(new_stack));
+ 	return new_stack;
+ }
+ #endif
 -- 
 2.19.1.6.gb485710b
 
