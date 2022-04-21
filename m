@@ -2,88 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74FB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 05:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E52C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 05:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384226AbiDUFLH (ORCPT
+        id S1354217AbiDUFPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 01:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        Thu, 21 Apr 2022 01:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384219AbiDUFK6 (ORCPT
+        with ESMTP id S230025AbiDUFP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 01:10:58 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB8012AAB
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 22:08:10 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id s4so2889222qkh.0
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 22:08:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=BwurdqM9Z5tXNzsAhYUEG0DzBUJntj7ZcLP7S0znVjk=;
-        b=xgku3ptbkvczLZ8bQJO4N65FL30XJecblXXGEVrbR5zj8n8uOrzZnaFBAeNu06jdoj
-         NKBrloVOFmKr+IIGRK6DtJ/h81PEcUqQDZoeJoyouDM6UDG81wK9vQ1MrfNGQYB8VJdW
-         T0aE7J32up9pD1+VqrC8BNE12EQG0bjj4kFosFOwfywLLAGrFzENftXPoNrCAAoY7FkB
-         EuEwJFKLSvVDQ+3yC1Pxt8yNg8MmQ1qjB5ZN17JcoCWhyjvObv3WhIM6c00H2Ibb947b
-         nlXcKCvFsqtZCZadjbmjMwgLvCxsnAlhkIdMEMSC5Wg5R466/BiMkUNVEMRvUnI2fI1e
-         GQiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=BwurdqM9Z5tXNzsAhYUEG0DzBUJntj7ZcLP7S0znVjk=;
-        b=YTOfsPjTQun+IsHL3z3Dlnae++x2IIoRoAIRIBLJhl2JuVigbuQoUAyBNc5err70uw
-         9Qv9a7E9xm22AmkjFJj5+267Ld921esyQeQqDs9ULDsq8wffY/HfZFUjcNRmOLhGwEeu
-         HuTdEHEH4raBQJWLVRUPA7Me4KWT3MWqsc+GeKAiYqcKDz1phfWU9b/ZV3LfxPrvLk49
-         uqevslyvtpN4mHQby/jF2f2ysRecIZ4ROT/XyCmefkP+/kMIUf1QUZBl+uWopq/1cqdx
-         wM/Ab6jZOqpr+0qRah/lJth0QADoPzgFtqA8gI2yYNe9ftICPgAp1U/eD8jhc4h1nb1W
-         TZxQ==
-X-Gm-Message-State: AOAM531vEbGuIlC1zoswJGvYmzGMljn0lT6w5V2FybtbVbe/kzycUkTM
-        JzJfCdfwJAue7DnpSlvsLVi1kXciVcNDunzuTEYvlCxes9bGvg==
-X-Google-Smtp-Source: ABdhPJyrjarU56zOUEvZsiIm9neb6Hany7tW354ZNhxwR29RwQ4F3g1egEQTxXrFU7xyrNDCRxBMecl338qIGSmLPns=
-X-Received: by 2002:a37:5f87:0:b0:69c:4dff:ba77 with SMTP id
- t129-20020a375f87000000b0069c4dffba77mr14644558qkb.80.1650517689516; Wed, 20
- Apr 2022 22:08:09 -0700 (PDT)
+        Thu, 21 Apr 2022 01:15:27 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496D86563
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 22:12:33 -0700 (PDT)
+X-UUID: ff56b53171a0479bb86729f9ecb10c1e-20220421
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:777f2396-4f12-43fe-ae09-40b60f901263,OB:0,LO
+        B:0,IP:0,URL:8,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-12
+X-CID-META: VersionHash:faefae9,CLOUDID:af1170f0-da02-41b4-b6df-58f4ccd36682,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: ff56b53171a0479bb86729f9ecb10c1e-20220421
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 976878722; Thu, 21 Apr 2022 13:12:29 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 21 Apr 2022 13:12:27 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 21 Apr 2022 13:12:27 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>
+CC:     <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <yongqiang.niu@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v11 1/1] drm/mediatek: add display support for MT8186
+Date:   Thu, 21 Apr 2022 13:12:18 +0800
+Message-ID: <20220421051218.8652-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220421051218.8652-1-rex-bc.chen@mediatek.com>
+References: <20220421051218.8652-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-From:   Atul Khare <atulkhare@rivosinc.com>
-Date:   Wed, 20 Apr 2022 22:07:59 -0700
-Message-ID: <CABMhjYrvyrXNJrLaAS0RU7A-_LZhK50WvQsE2RdY=CQ0C_Xicw@mail.gmail.com>
-Subject: [PATCH 4/4] dt-bindings: sifive: add gpio-line-names
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes device tree schema validation messages like 'gpio-line-names'
-does not match any of the regexes: 'pinctrl-[0-9]+' From schema: ...
-sifive,gpio.yaml'.
+From: Yongqiang Niu <yongqiang.niu@mediatek.com>
 
-The bindings were missing the gpio-line-names element, which was
-causing the dt-schema checker to trip-up.
+Add mmsys driver data and compatible for MT8186 in mtk_drm_drv.c.
 
-Fixes: a2770b57d083 ("dt-bindings: timer: Add CLINT bindings")
-Cc: stable@vger.kernel.org
-Signed-off-by: Atul Khare <atulkhare@rivosinc.com>
+Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- Documentation/devicetree/bindings/gpio/sifive,gpio.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c | 29 ++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
-b/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
-index 427c5873f96a..0bdd39b7b3d5 100644
---- a/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
-+++ b/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
-@@ -47,6 +47,9 @@ properties:
-     default: 16
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+index b0e4e5d68927..6abe6bcacbdc 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+@@ -158,6 +158,24 @@ static const enum mtk_ddp_comp_id mt8183_mtk_ddp_ext[] = {
+ 	DDP_COMPONENT_DPI0,
+ };
+ 
++static const enum mtk_ddp_comp_id mt8186_mtk_ddp_main[] = {
++	DDP_COMPONENT_OVL0,
++	DDP_COMPONENT_RDMA0,
++	DDP_COMPONENT_COLOR0,
++	DDP_COMPONENT_CCORR,
++	DDP_COMPONENT_AAL0,
++	DDP_COMPONENT_GAMMA,
++	DDP_COMPONENT_POSTMASK0,
++	DDP_COMPONENT_DITHER,
++	DDP_COMPONENT_DSI0,
++};
++
++static const enum mtk_ddp_comp_id mt8186_mtk_ddp_ext[] = {
++	DDP_COMPONENT_OVL_2L0,
++	DDP_COMPONENT_RDMA1,
++	DDP_COMPONENT_DPI0,
++};
++
+ static const enum mtk_ddp_comp_id mt8192_mtk_ddp_main[] = {
+ 	DDP_COMPONENT_OVL0,
+ 	DDP_COMPONENT_OVL_2L0,
+@@ -221,6 +239,13 @@ static const struct mtk_mmsys_driver_data mt8183_mmsys_driver_data = {
+ 	.ext_len = ARRAY_SIZE(mt8183_mtk_ddp_ext),
+ };
+ 
++static const struct mtk_mmsys_driver_data mt8186_mmsys_driver_data = {
++	.main_path = mt8186_mtk_ddp_main,
++	.main_len = ARRAY_SIZE(mt8186_mtk_ddp_main),
++	.ext_path = mt8186_mtk_ddp_ext,
++	.ext_len = ARRAY_SIZE(mt8186_mtk_ddp_ext),
++};
++
+ static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data = {
+ 	.main_path = mt8192_mtk_ddp_main,
+ 	.main_len = ARRAY_SIZE(mt8192_mtk_ddp_main),
+@@ -461,6 +486,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DISP_MUTEX },
+ 	{ .compatible = "mediatek,mt8183-disp-mutex",
+ 	  .data = (void *)MTK_DISP_MUTEX },
++	{ .compatible = "mediatek,mt8186-disp-mutex",
++	  .data = (void *)MTK_DISP_MUTEX },
+ 	{ .compatible = "mediatek,mt8192-disp-mutex",
+ 	  .data = (void *)MTK_DISP_MUTEX },
+ 	{ .compatible = "mediatek,mt8173-disp-od",
+@@ -533,6 +560,8 @@ static const struct of_device_id mtk_drm_of_ids[] = {
+ 	  .data = &mt8173_mmsys_driver_data},
+ 	{ .compatible = "mediatek,mt8183-mmsys",
+ 	  .data = &mt8183_mmsys_driver_data},
++	{ .compatible = "mediatek,mt8186-mmsys",
++	  .data = &mt8186_mmsys_driver_data},
+ 	{ .compatible = "mediatek,mt8192-mmsys",
+ 	  .data = &mt8192_mmsys_driver_data},
+ 	{ }
+-- 
+2.18.0
 
-   gpio-controller: true
-+  gpio-line-names:
-+    minItems: 1
-+    maxItems: 32
-
- required:
-   - compatible
---
-2.35.1
