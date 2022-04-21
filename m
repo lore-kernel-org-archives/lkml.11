@@ -2,91 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2241BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391926AbiDUTYH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
+        id S243930AbiDUT1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 15:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391899AbiDUTXh (ORCPT
+        with ESMTP id S232117AbiDUT11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:23:37 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2034C7A6
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:20:45 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id d14so4013703qtw.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:20:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ul9FGVJ1sqTdARK0mUZLH5+vAqXgfv1Osb8Y+BayvnA=;
-        b=PboPQS2k7qvXDrE1qoUSXr2+VaPYMTv45/YlkkbxdwUA9owtd9aItiTqTE4Wi5GvNq
-         ZrzMhUzwkihHH0iR99HRnJOBjRQECZvU01YsruDLsSV6VVimkgIKpm5W/HB64MkeScMn
-         CHpY7/80p2iqBHHRyKMrt8OfL4vwyCD83efJWF1+XlngJLKRFaY1zbfGTMsZnzDRaeq4
-         8k7Jktm+/DyQqfUO9sa+x0Ncn0GTU4gOdWtqDlGxci0MgRBDRHf913iCRLhkwD+X0I2p
-         s3YxqejLxsNu2FiRHe09Xy/N/tByUvRd2K6SkV+GIgb9VH6ZRuBp8raJgw1vSJc32qsy
-         WzXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ul9FGVJ1sqTdARK0mUZLH5+vAqXgfv1Osb8Y+BayvnA=;
-        b=q0f+mStL5EiqOGlgxsfRF8XHzwAcYXqGJ6zC4ex1BHJXHl3RlkqEvnOsLh4rIvg3oJ
-         PMrRZGERxW/t7cy2JwdGXVa3jvn3tAS7zZD+7JtEQirT3WcQvX3HxWCG2JLsZ4G9gipi
-         Oh3wFAfJOYcnXi2pY+wY6/95a3fCrC7ogXCQrLSafW+rp9mz8P1T26Q3lxzgXmA5W9G1
-         bI9VO0oLSzYSFluQ2LaTMCXz3nIb82qwwtb17yhC0ChKwZk4C5gJIF/mhKxlu3+elf3Y
-         scmi8SRmgHb+ICnP6tx/NtsthsyYg5zcOY66xGuGIsatg4MrpEdcsIJefK5Kcv81EzqT
-         9l4w==
-X-Gm-Message-State: AOAM53133t5z2qgcZZpH5c9iCI5myPck/CyfsSsGrKXnQLxNX22IiKcI
-        zNqCFQ2rH2XYGBJVlMaWm1M=
-X-Google-Smtp-Source: ABdhPJydGXJP9BFb1WSRFH7cUBdCTIZqsh5XL7qhdz3craqFPk3UEPjmG7JCVH0Qt25hbQzNFkc5lA==
-X-Received: by 2002:a05:622a:446:b0:2e1:b95e:3b48 with SMTP id o6-20020a05622a044600b002e1b95e3b48mr758043qtx.310.1650568844562;
-        Thu, 21 Apr 2022 12:20:44 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme.wework.com ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id l9-20020a05622a174900b002f34421b01csm2567736qtk.23.2022.04.21.12.20.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 12:20:44 -0700 (PDT)
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     Larry.Finger@lwfinger.net
-Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev, jhpark1013@gmail.com
-Subject: [PATCH v4 5/7] staging: r8188eu: replace spaces with tabs
-Date:   Thu, 21 Apr 2022 15:20:30 -0400
-Message-Id: <fd4a66013be081bc5adb491c6dc7774362d1ac82.1650568579.git.jhpark1013@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1650568579.git.jhpark1013@gmail.com>
-References: <cover.1650568579.git.jhpark1013@gmail.com>
+        Thu, 21 Apr 2022 15:27:27 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3383D4CD61
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650569077; x=1682105077;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=dwpA2y5/Mr4NohdMef1IfUlBRaIig6iVEFzC/QrYRZE=;
+  b=MuqSlY/rTuWxo5U/qOxh14ZatVT7iCrmEbDFE5Ts5Ecp1+YfaPHL7zKT
+   1VhC78UaxFZw7MZoc3IVJRNl05MpAkQ/FDPCrov96U9N8ACRNu+sy7lQl
+   ryZ1MwCI6SZwHbDpdI68SCMhLlRueGPyUmHzJot2IDmoUeAt+uOfh3zzB
+   2kZNfWLV+G4mkFGzhAOEIoAHTEwl9P7ueLXDmVjxR1owg5x+Qe7+i3uGH
+   xcY19iYhD+gNlcSGqn89UjxhrtYhUqBpTyJGm0luq1ptpnIm+TGr2OKR4
+   zgLleRfo+qA1/PSsA7Bbc4q4x17J7CF4ZQR0qwgjd5dm+sdgZ95r7o1gj
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262057544"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="262057544"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 12:24:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="671191934"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 21 Apr 2022 12:24:35 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhcPq-0008hr-Jp;
+        Thu, 21 Apr 2022 19:24:34 +0000
+Date:   Fri, 22 Apr 2022 03:24:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        0day robot <lkp@intel.com>
+Subject: drivers/base/topology.c:158:45: error: 'boot_cpu_data' undeclared;
+ did you mean 'boot_cpu_init'?
+Message-ID: <202204220317.dri1BV0q-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use tabs instead of spaces. Issue found with checkpatch.
-WARNING: suspect code indent for conditional statements
+tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220422-002853/Luck-Tony/topology-sysfs-Fix-allnoconfig-build-breakage/20220421-235053
+head:   8aad1c48b8885d9febd55ecbc5915032cfe857bc
+commit: 8aad1c48b8885d9febd55ecbc5915032cfe857bc topology/sysfs: Fix allnoconfig build breakage.
+date:   3 hours ago
+config: microblaze-randconfig-r022-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220317.dri1BV0q-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/8aad1c48b8885d9febd55ecbc5915032cfe857bc
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review UPDATE-20220422-002853/Luck-Tony/topology-sysfs-Fix-allnoconfig-build-breakage/20220421-235053
+        git checkout 8aad1c48b8885d9febd55ecbc5915032cfe857bc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/base/
 
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_mlme.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index b943fb190e4c..7a90fe826d1d 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -722,7 +722,7 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
- 			pmlmepriv->to_join = false;
- 			s_ret = rtw_select_and_join_from_scanned_queue(pmlmepriv);
- 			if (s_ret == _SUCCESS) {
--			     _set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
-+				_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
- 			} else if (s_ret == 2) { /* there is no need to wait for join */
- 				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
- 				rtw_indicate_connect(adapter);
+All errors (new ones prefixed by >>):
+
+   In file included from include/asm-generic/bug.h:5,
+                    from ./arch/microblaze/include/generated/asm/bug.h:1,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:6,
+                    from drivers/base/topology.c:11:
+   drivers/base/topology.c: In function 'topology_is_visible':
+>> drivers/base/topology.c:158:45: error: 'boot_cpu_data' undeclared (first use in this function); did you mean 'boot_cpu_init'?
+     158 |         if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+         |                                             ^~~~~~~~~~~~~
+   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
+      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                    ^~~~
+   drivers/base/topology.c:158:9: note: in expansion of macro 'if'
+     158 |         if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+         |         ^~
+   drivers/base/topology.c:158:45: note: each undeclared identifier is reported only once for each function it appears in
+     158 |         if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+         |                                             ^~~~~~~~~~~~~
+   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
+      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                    ^~~~
+   drivers/base/topology.c:158:9: note: in expansion of macro 'if'
+     158 |         if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+         |         ^~
+
+
+vim +158 drivers/base/topology.c
+
+   154	
+   155	static umode_t topology_is_visible(struct kobject *kobj,
+   156					   struct attribute *attr, int unused)
+   157	{
+ > 158		if (attr == &dev_attr_ppin.attr && !boot_cpu_data.ppin)
+   159			return 0;
+   160	
+   161		return attr->mode;
+   162	}
+   163	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
