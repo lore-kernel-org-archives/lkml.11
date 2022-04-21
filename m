@@ -2,154 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE146C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392601AbiDUU4o (ORCPT
+        id S1392612AbiDUU5k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36602 "EHLO
+        Thu, 21 Apr 2022 16:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392600AbiDUU4j (ORCPT
+        with ESMTP id S1392607AbiDUU5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 16:56:39 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F364EA1B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:53:49 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id y32so10797703lfa.6
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:53:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B4VBOlm6iLOGzQv2TEwbkAlQp6pIkWL2NhOTXS+7ZNY=;
-        b=fdLo4s0Nu2zUGhClmHv8PKZgp1GL9H9AbH4jUaDUyIpGOsuxxDZNuAUWwM6pymGBqo
-         Hh7rWHGt2CLMO46r+IDFRUBjgL8+R10mpiAC2qlVvgI5oofaPA6N4YM5+QQT/hcMwT7M
-         JxMB9yKo/Ldr+Kv5PoeNQhXVG6UUfh1QDhz8ofxxrNwus5uj4WUH1qhmW+0uC5Ctk5Kx
-         L7SlfISj2Rr3kGv24ALM+khZcuOm2eFWFo11dZjrZMo+MMD+WS/8A5bVfeEIKwyv7gAX
-         Z+m5/tMtYt+0sNX8H1uhqw5iV1r9mmGvMZCspuV8XmSSQIofoOdPe9Fe09WQJpb9WdZg
-         pUiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B4VBOlm6iLOGzQv2TEwbkAlQp6pIkWL2NhOTXS+7ZNY=;
-        b=oo507n6giAFh9zfTHiErWo/hHI0ExsrLGjNq8qKGtaFVCbZthRfqri5xeqSC4DEiUU
-         BVbAPnrlvPMQWwkHZSHWhgPTk0SJkod/l3CP+1+lfBEufN57ad2vJOfttisPZgubFMQy
-         7l+nkOelk76BfLMr1u3cC+8WGB2pbMhMYsmAkNZHfgg906DliwJCWtDIlFIuyFmT9tmX
-         NDnUVDg/LpwmqhJpsxtISwdcHYAgHgqOLWqQR8RwS8V1Xe2K7bjnokzH0qIOUPQ9YChn
-         3c8ia1JsSbw/h5/2L24bvlswFAtjx0uyhJpYdrvXIrf5R8e4DQYVOB7mSYXUnbVgSw+Q
-         iYzQ==
-X-Gm-Message-State: AOAM530HrwaSx4uXyo8dZmiR1gGwwc9nX04YDd4QeJnDCUD2z9J7uWEc
-        unDAFPG5GGq4AM9w/gvA0aw=
-X-Google-Smtp-Source: ABdhPJzIbPyJ6oyHi/bK9nnaXuZ7z14Vq28pCBJBiE15yzKRuOWBae1IN3O2XYL3K0hksKoI4OVT2w==
-X-Received: by 2002:a05:6512:3193:b0:471:8eee:44d6 with SMTP id i19-20020a056512319300b004718eee44d6mr848240lfe.439.1650574427190;
-        Thu, 21 Apr 2022 13:53:47 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.225.17])
-        by smtp.gmail.com with ESMTPSA id m21-20020a197115000000b004719502fb63sm12703lfc.77.2022.04.21.13.53.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 13:53:46 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     almaz.alexandrovich@paragon-software.com, ntfs3@lists.linux.dev,
+        Thu, 21 Apr 2022 16:57:37 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809DE4EA20
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 13:54:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650574487; x=1682110487;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gaVn/25jgrMwzaFXLGnssnKEM3HuBCFYsCdGnJ71o2U=;
+  b=n4mTFAfzHE/xCnjj5/8oAdBPcBA1/eBxVBqD6ZKEdFTtK7VKqTX39/Rn
+   VGdvB8/QQIV84GnaDObPuO5x9QrVo8acscvg1DRzEtTYdBVbuAPPicAEb
+   ef9PhKZPRTMN29vsQcFLCuYayMY9AshkCxhWE/+eHtwXy8lGMQJbvMbvj
+   U3JWEHiagpMlIeAiQnnelBlqGYzMfw72AtmVKTfdJCIWP1FeLTnVK32TZ
+   8PHglTvWuEkGBN2wycvou3DLvM12o+bhqYQQrfDttX5OWqqfVeKP83h0C
+   7HSeESae+/pnBto1/Oo+CcriAVB9myUL1zoC6KCimQpR/L9tAQU8qSYoP
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="324927033"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="324927033"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 13:54:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="703244931"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Apr 2022 13:54:45 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhdp7-0008mm-6t;
+        Thu, 21 Apr 2022 20:54:45 +0000
+Date:   Fri, 22 Apr 2022 04:54:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Cc:     Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 2/2] ntfs3: make ntfs_update_mftmirr return void
-Date:   Thu, 21 Apr 2022 23:53:45 +0300
-Message-Id: <a6b74fe2eb5a15eec42d3488d289e105bffb94ee.1650574393.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <85293dd018cae78e4d48d74ca77710b11eed59ba.1650574393.git.paskripkin@gmail.com>
-References: <85293dd018cae78e4d48d74ca77710b11eed59ba.1650574393.git.paskripkin@gmail.com>
+Subject: [jirislaby:devel 40/70] drivers/tty/serial/amba-pl011.c:45:10: fatal
+ error: 'amba-pl011.h' file not found
+Message-ID: <202204220445.8rhFIlg0-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-None of callers check the return value of ntfs_update_mftmirr(), so make
-it return void to make code simpler.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
+head:   c73cb9009b8d130305afba38bbd407a58bf8f2c8
+commit: 01ba379ed8413be7b65a53ab02f0d044233857f3 [40/70] serial: amba-pl011: move header content to .c
+config: arm-randconfig-r013-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220445.8rhFIlg0-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=01ba379ed8413be7b65a53ab02f0d044233857f3
+        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
+        git fetch --no-tags jirislaby devel
+        git checkout 01ba379ed8413be7b65a53ab02f0d044233857f3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- fs/ntfs3/fsntfs.c  | 20 +++++++-------------
- fs/ntfs3/ntfs_fs.h |  2 +-
- 2 files changed, 8 insertions(+), 14 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/fs/ntfs3/fsntfs.c b/fs/ntfs3/fsntfs.c
-index 891125ca6848..938acb246b58 100644
---- a/fs/ntfs3/fsntfs.c
-+++ b/fs/ntfs3/fsntfs.c
-@@ -827,7 +827,7 @@ int ntfs_refresh_zone(struct ntfs_sb_info *sbi)
- /*
-  * ntfs_update_mftmirr - Update $MFTMirr data.
-  */
--int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
-+void ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
- {
- 	int err;
- 	struct super_block *sb = sbi->sb;
-@@ -836,12 +836,12 @@ int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
- 	u32 bytes;
- 
- 	if (!sb)
--		return -EINVAL;
-+		return;
- 
- 	blocksize = sb->s_blocksize;
- 
- 	if (!(sbi->flags & NTFS_FLAGS_MFTMIRR))
--		return 0;
-+		return;
- 
- 	err = 0;
- 	bytes = sbi->mft.recs_mirr << sbi->record_bits;
-@@ -852,16 +852,13 @@ int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
- 		struct buffer_head *bh1, *bh2;
- 
- 		bh1 = sb_bread(sb, block1++);
--		if (!bh1) {
--			err = -EIO;
--			goto out;
--		}
-+		if (!bh1)
-+			return;
- 
- 		bh2 = sb_getblk(sb, block2++);
- 		if (!bh2) {
- 			put_bh(bh1);
--			err = -EIO;
--			goto out;
-+			return;
- 		}
- 
- 		if (buffer_locked(bh2))
-@@ -881,13 +878,10 @@ int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait)
- 
- 		put_bh(bh2);
- 		if (err)
--			goto out;
-+			return;
- 	}
- 
- 	sbi->flags &= ~NTFS_FLAGS_MFTMIRR;
--
--out:
--	return err;
- }
- 
- /*
-diff --git a/fs/ntfs3/ntfs_fs.h b/fs/ntfs3/ntfs_fs.h
-index fb825059d488..061dafbdcedd 100644
---- a/fs/ntfs3/ntfs_fs.h
-+++ b/fs/ntfs3/ntfs_fs.h
-@@ -592,7 +592,7 @@ int ntfs_look_free_mft(struct ntfs_sb_info *sbi, CLST *rno, bool mft,
- void ntfs_mark_rec_free(struct ntfs_sb_info *sbi, CLST rno);
- int ntfs_clear_mft_tail(struct ntfs_sb_info *sbi, size_t from, size_t to);
- int ntfs_refresh_zone(struct ntfs_sb_info *sbi);
--int ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait);
-+void ntfs_update_mftmirr(struct ntfs_sb_info *sbi, int wait);
- enum NTFS_DIRTY_FLAGS {
- 	NTFS_DIRTY_CLEAR = 0,
- 	NTFS_DIRTY_DIRTY = 1,
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/serial/amba-pl011.c:45:10: fatal error: 'amba-pl011.h' file not found
+   #include "amba-pl011.h"
+            ^~~~~~~~~~~~~~
+   1 error generated.
+
+
+vim +45 drivers/tty/serial/amba-pl011.c
+
+^1da177e4c3f41 drivers/serial/amba-pl011.c     Linus Torvalds 2005-04-16  44  
+9f25bc510e960c drivers/tty/serial/amba-pl011.c Russell King   2015-11-03 @45  #include "amba-pl011.h"
+9f25bc510e960c drivers/tty/serial/amba-pl011.c Russell King   2015-11-03  46  
+
+:::::: The code at line 45 was first introduced by commit
+:::::: 9f25bc510e960c551dc295c2d1d60e3da334590c tty: amba-pl011: prepare REG_* register indexes
+
+:::::: TO: Russell King <rmk+kernel@arm.linux.org.uk>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
