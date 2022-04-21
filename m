@@ -2,116 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4865CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:55:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388284AbiDUN6G (ORCPT
+        id S1388397AbiDUN6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34522 "EHLO
+        Thu, 21 Apr 2022 09:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388151AbiDUN6A (ORCPT
+        with ESMTP id S1388321AbiDUN6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:58:00 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EAC42DAA1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:55:10 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id h27so8581889lfj.13
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:55:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T8/6RZqsX4Y8+GGfu5DCF/d/CPa1fdMxenVOZRfdbms=;
-        b=RPzzSjxZ+IEPH+YESnInHMnITKVYgu4Rz1224lkumOcc9SGPCe1fiirPUcvX5OEyFy
-         ce+ePo5sdn0zcfd0ezGV7Ij7vk3FjhkTiQHl5zxJ7GEbtx1xUgyTCijOMgFOmR6CvdIB
-         ZuKRAwlRvwyhVpCuFbL8URRdvt6lXVGY59rYqF2AlPhTtCaJFZzbOfLrWMUjDPUnFesR
-         ZQcl87Puuw9tYPWTuEh6FBUK+RfEsLZRBA6AXdYB3/yH9o7ew8DSpK9cg3KTmbaBLlUa
-         6+mURszP5Wm2pxm7r9TX+zNNZC8rWZ7FR6XdpBeFFk0/jwRTwgGLuLP+dy1Vvfw+LrXi
-         ec8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T8/6RZqsX4Y8+GGfu5DCF/d/CPa1fdMxenVOZRfdbms=;
-        b=MIuuosAZ9U8dFmDZ5+v7FQYB4Z/KGpWJDGV3Sj6wZZeH9WLbOfp7aa0nTkWfs5DCJt
-         3akBc/lKFM3PzZ27uVbrrUMfwfCLmgXwfuSkajaVHl+w58lb0QymJo/kLHhBt4zgOZz6
-         wKSbIDcq3OQ1cTJASjWTGwD26vX16IdBN07hLqT31yxCS4byA4ao0kOzV2AJlyGKaseN
-         /9ZYmbTbIAJ7QkNbz7qmJVZXeaJT1P7dgZIAb2HLpA+pBm9khh6LivtB4gokzVKc7E3T
-         QFP7W/+49hAU56HNmdGK3VEOyx5KKP6gqwqp1HMpIIGd1rrsXf/mJ3SDO9I7vdLy8gbK
-         Prdw==
-X-Gm-Message-State: AOAM532tD8H5qZofi/EDWZjPVTzTQrAJQaM/RBcDo6iYIXtNdNGgC5td
-        V1m7UfMrJDWdhFdL9QyEVts8F10SNeO9JOhQT/3x6515jXo=
-X-Google-Smtp-Source: ABdhPJxaQO00sbSc9Z1q44R2oZf6HOTaPfoLxj1RpODCpWNNiJ5tJPp2kYh7SFP2PIAWNe7MGxvMZdYNlBaAUXea6uM=
-X-Received: by 2002:a19:e007:0:b0:44a:a22d:2d49 with SMTP id
- x7-20020a19e007000000b0044aa22d2d49mr18478310lfg.254.1650549308344; Thu, 21
- Apr 2022 06:55:08 -0700 (PDT)
+        Thu, 21 Apr 2022 09:58:12 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51C22BB1B;
+        Thu, 21 Apr 2022 06:55:20 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id A07805FD06;
+        Thu, 21 Apr 2022 16:55:17 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1650549317;
+        bh=Vx0fQIL15yRo1tQ1B3ku9JZaBjnreUllysZQgmgiL3Q=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=Q0rv00JCvcd+EQczEOKRA9bRPlKgNKE7Y1QjVasvOVqwcM20f11lnPZtgBzKGYUKw
+         XRZT2hEcgLxEqmJNay40LOOvvGJis8d3a7eIccZc70NtSaQsmud2HnJxL7DR4cTQsA
+         5PtemGvEjCdN1U9FYdz4I1L3GIAykjayuMPmBvsRXlLFBIRCpW1ZVA1yaPwBpsFclp
+         temG3CF9lCjfb5C8zBUU7EJJSvFWFMnX15lZKQ91nDVJfXri5dNFaovsvtX1HCf55C
+         /bvljLoHkLpjIqVcekG9oQq5I4mOE6EB63WlBnWlvg04zmVQDqRk7kkDR+Yw1FOvmd
+         RowmP1v2/KFfA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 21 Apr 2022 16:55:14 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema for
+ msa311 accel driver
+Thread-Topic: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema
+ for msa311 accel driver
+Thread-Index: AQHYVASQQZC393Ji1keuDd+e+35bUqz4TVCAgAHnLgA=
+Date:   Thu, 21 Apr 2022 13:55:07 +0000
+Message-ID: <20220421135457.ldtsff6ii4nhjkh5@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
+ <20220419154555.24191-4-ddrokosov@sberdevices.ru>
+ <20220420095127.000059d4@Huawei.com>
+In-Reply-To: <20220420095127.000059d4@Huawei.com>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <9F4944C50A2B3F4CB31F52FCB5B5F289@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220414094945.457500-1-benchuanggli@gmail.com>
-In-Reply-To: <20220414094945.457500-1-benchuanggli@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 21 Apr 2022 15:54:31 +0200
-Message-ID: <CAPDyKFo2YhqgEStGcQb0ZWcuhrUcGeamgHk1Hov6_DzS=TNe3A@mail.gmail.com>
-Subject: Re: [RESEND, PATCH] mmc: sdhci-pci-gli: A workaround to allow GL9755
- to enter ASPM L1.2
-To:     Ben Chuang <benchuanggli@gmail.com>
-Cc:     adrian.hunter@intel.com, SeanHY.Chen@genesyslogic.com.tw,
-        ben.chuang@genesyslogic.com.tw, greg.tu@genesyslogic.com.tw,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/04/21 06:36:00 #19322218
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 at 11:49, Ben Chuang <benchuanggli@gmail.com> wrote:
->
-> From: Ben Chuang <ben.chuang@genesyslogic.com.tw>
->
-> When GL9755 enters ASPM L1 sub-states, it will stay at L1.1 and will not
-> enter L1.2. The workaround is to toggle PM state to allow GL9755 to enter
-> ASPM L1.2.
->
-> Signed-off-by: Ben Chuang <ben.chuang@genesyslogic.com.tw>
+Hello Jonathan,
 
-This didn't apply cleanly, I fixed it up this time. So, applied for
-next, thanks!
+Thank you for the quick feedback.
+I completely agree with all of your comments. Please find my notes below.
 
-Kind regards
-Uffe
+On Wed, Apr 20, 2022 at 09:51:27AM +0100, Jonathan Cameron wrote:
+> On Tue, 19 Apr 2022 15:45:58 +0000
+> Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru> wrote:
+>=20
+> > Introduce devicetree binding json-schema for MSA311 tri-axial,
+> > low-g accelerometer driver.
+> >=20
+> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> Hi Dmitry and welcome to IIO.
+>=20
+> Sign off generally matches the From: of the email.
+> Makes it easier for scripts to check than having different name forms.
+>=20
 
+Yes, looks like this problem is located on the corporative Exchange server =
+side.
+I use DavMail local proxy to send emails, so server changes From: statement=
+.
+I have already discussed it with our IT guys, it should be fixed starting f=
+rom current email.
 
-> ---
->  drivers/mmc/host/sdhci-pci-gli.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-> index 97035d77c18c..52230857388f 100644
-> --- a/drivers/mmc/host/sdhci-pci-gli.c
-> +++ b/drivers/mmc/host/sdhci-pci-gli.c
-> @@ -137,6 +137,9 @@
->  #define PCI_GLI_9755_SerDes  0x70
->  #define PCI_GLI_9755_SCP_DIS   BIT(19)
->
-> +#define PCI_GLI_9755_PM_CTRL     0xFC
-> +#define   PCI_GLI_9755_PM_STATE    GENMASK(1, 0)
-> +
->  #define GLI_MAX_TUNING_LOOP 40
->
->  /* Genesys Logic chipset */
-> @@ -597,6 +600,13 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
->                             GLI_9755_CFG2_L1DLY_VALUE);
->         pci_write_config_dword(pdev, PCI_GLI_9755_CFG2, value);
->
-> +       /* toggle PM state to allow GL9755 to enter ASPM L1.2 */
-> +       pci_read_config_dword(pdev, PCI_GLI_9755_PM_CTRL, &value);
-> +       value |= PCI_GLI_9755_PM_STATE;
-> +       pci_write_config_dword(pdev, PCI_GLI_9755_PM_CTRL, value);
-> +       value &= ~PCI_GLI_9755_PM_STATE;
-> +       pci_write_config_dword(pdev, PCI_GLI_9755_PM_CTRL, value);
-> +
->         gl9755_wt_off(pdev);
->  }
->
-> --
-> 2.35.1
->
+> > ---
+> >  .../bindings/iio/accel/memsensing,msa311.yaml      | 64 ++++++++++++++=
+++++++++
+> >  MAINTAINERS                                        |  1 +
+> >  2 files changed, 65 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/accel/memsens=
+ing,msa311.yaml
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/iio/accel/memsensing,msa=
+311.yaml b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.ya=
+ml
+> > new file mode 100644
+> > index 00000000..3e4660f
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yam=
+l
+> > @@ -0,0 +1,64 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +
+> > +%YAML 1.2
+> > +---
+> > +$id: "http://devicetree.org/schemas/iio/accel/memsensing,msa311.yaml#"
+> > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > +
+> > +title: MEMSensing digital 3-Axis accelerometer
+> > +
+> > +maintainers:
+> > +  - Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> > +
+> > +description: |
+> > +  MSA311 is a tri-axial, low-g accelerometer with I2C digital output f=
+or
+> > +  sensitivity consumer applications. It has dynamical user selectable =
+full
+> > +  scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measure=
+ments
+> > +  with output data rates from 1Hz to 1000Hz.
+> > +  Datasheet can be found at following URL
+> > +  https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: memsensing,msa311
+> > +
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 0
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +    description: I2C registers address
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +    description: optional I2C int pin can be freely mapped to specific=
+ func
+> > +
+> > +  interrupt-names:
+> > +    const: irq
+>=20
+> For a single IRQ giving it a name isn't that useful so I would drop this.
+>=20
+>=20
+
+Based on Documentation/devicetree/bindings/example-schema.yaml I thought
+interrupt-names must contain irq name regardless of interrupt count,
+because it helps to understand right property name.
+I'll delete it for v2.
+
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+>=20
+> Why have this?
+>=20
+
+I agree, this header is needed for GPIO constant values, which is not used =
+here.
+I'll remove it for the v2 then.
+
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    i2c0 {
+> > +        #address-cells =3D <1>;
+> > +        #size-cells =3D <0>;
+> > +
+> > +        msa311: msa311@62 {
+> Generic naming required.
+>            accelerometer@62 {
+>=20
+
+Okay, I will change it in the next version.
+
+> > +            compatible =3D "memsensing,msa311";
+> > +            reg =3D <0x62>;
+> > +            interrupt-parent =3D <&gpio_intc>;
+> > +            interrupts =3D <29 IRQ_TYPE_LEVEL_HIGH>;
+> > +            interrupt-names =3D "irq";
+> > +            status =3D "okay";
+>=20
+> We don't often have status in the examples.=20
+>=20
+
+Sure, status is useful for real dts declarations.
+It's there because I copied this declaration from by tested real board dts =
+:-)
+
+>=20
+> Otherwise looks good to me.
+>=20
+> Thanks,
+>=20
+> Jonathan
+>=20
+> > +        };
+> > +    };
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index c75be17..4227914 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -12482,6 +12482,7 @@ MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DR=
+IVER
+> >  M:	Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> >  L:	linux-iio@vger.kernel.org
+> >  S:	Maintained
+> > +F:	Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> >  F:	drivers/iio/accel/msa311.c
+> > =20
+> >  MEN A21 WATCHDOG DRIVER
+>=20
+
+--=20
+Thank you,
+Dmitry=
