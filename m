@@ -2,127 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B53C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF62C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442103AbiDUViA (ORCPT
+        id S1442120AbiDUVju (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 17:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        Thu, 21 Apr 2022 17:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbiDUVh7 (ORCPT
+        with ESMTP id S231443AbiDUVjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 17:37:59 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E0B3EA85
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:35:08 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id 21so8161182edv.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:35:08 -0700 (PDT)
+        Thu, 21 Apr 2022 17:39:48 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264424A3FB;
+        Thu, 21 Apr 2022 14:36:58 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id q129so7022806oif.4;
+        Thu, 21 Apr 2022 14:36:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nl/sxTqX3tPVuNmSVZ0W9Oabdpfd0rG/HOuhpDMx8IU=;
-        b=SGD9XjL10rEx9mfSetxfZDlzHyWhah/RqUC1yuJDs6G0kwXr3WaCGrlxPbDhZrektk
-         vMEv5vROGWM1yTs+l7MxtDylQphutpR87FxU5d1udkQrNd3uJmHojGgHG1MGJot8wiAh
-         JNzYAMieKMZP8RTasxN1p6T3tb37MEirFAfFE=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cUgxKgMIon74FgS8ThsTztXtidaROyVyoTKM0lJdMBY=;
+        b=IovDd6Zh7okx91S098LpEDbfV6osBUmc1Ups40tC7h4CV5p3aM5KTusoEj8Ua0RueS
+         NfY3lavbNz6esYDw1RY48nAFFogBFVDKzhpjktv/dioK7sZjpqvFd5jhD9nVGl8ns65t
+         l4VHCNfb/4yuUBzqTvB8Gt8NNx0pXZBogEZQtUWTDFC7yvFqqTfHwQiadZ1te0+u/6m1
+         pj2LhB/Cm5WW/UaeYEKYuHqy6T5XuLtTPPp+0jmiozT2tmmtiEUbcpMzEykbtDWsE3WE
+         7a4nL5ZO2FsVkZDEb5nHxCZtM4v6ngZbNKCUEWKwQ6tpg/dsAjx/zXwHbMwuTt/mf3pY
+         TRKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nl/sxTqX3tPVuNmSVZ0W9Oabdpfd0rG/HOuhpDMx8IU=;
-        b=Aep8XzOw8F0cVQuJcJe7pBtv4wD136Oz/57fQgRp9psglvhlqmMBUcwNr6XrVzFgqk
-         k+4ygmg9N7VASkabP8XImqVu8SnGHsjbjGChTVVLEhxfbhLGn0AFxkux0+I1LpS8LzlZ
-         b+0ditF9bYxR8GIYQkeu/MTGBcuBVURwFuGmct4A0qbIO+ZL3Yc5NTeHMUyU6OoNcg3I
-         x/kRRBlsmisC9fSFSiU38PPU7/OUlx5IrWmrzJOIVM29PDOnrMB8kk0l8elO45Smn75W
-         u5g2kdjF3rsgsiBxWvSsu7MF5jG16tNE0vwkkdWqfKAAEFFUq6DRjCVNVpK9ft2bIEPY
-         cImA==
-X-Gm-Message-State: AOAM531TLp7IDdyv+yMzd6g9MRh6WMOleuMywojR/gFlHXwSBmJO3NYs
-        3ec3zlP04o/QytsdDCmtFjI/Xkf/zQrEMaIZwZU=
-X-Google-Smtp-Source: ABdhPJwgXDcxWpzhkmAvdiUdszGBKF+Gc9VbVmMPuyndwwbFVQxJ2z0Nw5qYUTafIOpOShK/SXJbXQ==
-X-Received: by 2002:aa7:d311:0:b0:423:e539:8581 with SMTP id p17-20020aa7d311000000b00423e5398581mr1576439edq.111.1650576906446;
-        Thu, 21 Apr 2022 14:35:06 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
-        by smtp.gmail.com with ESMTPSA id t4-20020a1709067c0400b006ef810aab6fsm69301ejo.213.2022.04.21.14.34.50
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 14:34:51 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id u3so8414913wrg.3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:34:50 -0700 (PDT)
-X-Received: by 2002:a05:6512:108b:b0:470:90b9:fb51 with SMTP id
- j11-20020a056512108b00b0047090b9fb51mr927158lfg.52.1650576516819; Thu, 21 Apr
- 2022 14:28:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cUgxKgMIon74FgS8ThsTztXtidaROyVyoTKM0lJdMBY=;
+        b=kYy2ueEM+FhRFA5hiNrtQd5DJ+I0mv3DyBp9vElJSVo8bKbNbb/XXkLjb8eMD/T/d5
+         g6ub5vPKfX2lvgMHF/LLwr0Z/uThfpap4dj01xFBrOYF4WgzqUYm8G2cxzLIopRk29+y
+         mIaAhKu8osEzyO9h8IaMC3VxDfj+KHGyFoYJVNLMKE/DzD7tpFqmZK6sgfkQZE0tL6gF
+         Cq+cLcPrbdp7Hl8eeT8J/PC8HarH+EqDRZ0+S+588/8WSCluPMaaAht5saRHn9vQzYvt
+         fG7kwMd1BURdN/eSeGsIa5CxjeiOZFhyh/y/DVjQWMpw+YTuk5eEIkCX6JY2YYCbkEYB
+         xF4A==
+X-Gm-Message-State: AOAM5310UYrPvCb7IAzZHx7bIXDxZSIyJGt3tgWcykF4kmQRzwxvvyAB
+        /S25vqLo9dbBny3OyyeLzCs=
+X-Google-Smtp-Source: ABdhPJwL3mC33NuySTThTtMCGd0apoCnU6B//AN7X5pzrxPCBrNbgGaGZM/UCOe9BiFvtr9noplFiw==
+X-Received: by 2002:aca:b505:0:b0:322:a524:8859 with SMTP id e5-20020acab505000000b00322a5248859mr4963479oif.2.1650577017387;
+        Thu, 21 Apr 2022 14:36:57 -0700 (PDT)
+Received: from fstone04p1.aus.stglabs.ibm.com ([129.41.86.7])
+        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm51010otu.73.2022.04.21.14.36.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 14:36:56 -0700 (PDT)
+From:   Brandon Wyman <bjwyman@gmail.com>
+To:     Joel Stanley <joel@jms.id.au>, openbmc@lists.ozlabs.org,
+        Eddie James <eajames@linux.ibm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc:     Brandon Wyman <bjwyman@gmail.com>
+Subject: [PATCH] ARM: dts: aspeed: Everest and Rainier: Add power-ffs-sync-history GPIO
+Date:   Thu, 21 Apr 2022 21:36:38 +0000
+Message-Id: <20220421213638.1151193-1-bjwyman@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220421072212.608884-1-song@kernel.org> <CAHk-=wi3eu8mdKmXOCSPeTxABVbstbDg1q5Fkak+A9kVwF+fVw@mail.gmail.com>
- <CAADnVQKyDwXUMCfmdabbVE0vSGxdpqmWAwHRBqbPLW=LdCnHBQ@mail.gmail.com>
- <CAHk-=whFeBezdSrPy31iYv-UZNnNavymrhqrwCptE4uW8aeaHw@mail.gmail.com> <CAPhsuW7M6exGD3C1cPBGjhU0Y5efxtJ3=0BWNnbuH87TgQMzdg@mail.gmail.com>
-In-Reply-To: <CAPhsuW7M6exGD3C1cPBGjhU0Y5efxtJ3=0BWNnbuH87TgQMzdg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 21 Apr 2022 14:28:20 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh1mO5HdrOMTq68WHM51-=jdmQS=KipVYxS+5u3uRc5rg@mail.gmail.com>
-Message-ID: <CAHk-=wh1mO5HdrOMTq68WHM51-=jdmQS=KipVYxS+5u3uRc5rg@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: invalidate unused part of bpf_prog_pack
-To:     Song Liu <song@kernel.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 12:41 PM Song Liu <song@kernel.org> wrote:
->
-> The extra logic I had in the original patch was to erase the memory
-> when a BPF program is freed. In this case, the memory will be
-> returned to the bpf_prog_pack, and stays as RO+X. Actually, I
-> am not quite sure whether we need this logic. If not, we only need
-> the much simpler version.
+The IBM Everest and Rainier systems have a GPIO line that goes to the
+power supplies. It has a dual function: 1) Fans Full Speed, and 2) Sync
+input history.
 
-Oh, I think it would be good to do at free time too.
+Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
+---
+ arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts | 2 +-
+ arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-I just would want that to use the same function we already have for
-the allocation-time thing, instead of introducing completely new
-infrastructure. That was what looked very odd to me.
+diff --git a/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts b/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts
+index 578f9e2fc7ed..382da7934eaa 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts
+@@ -283,7 +283,7 @@ &gpio0 {
+ 	/*P0-P7*/	"","","","","led-pcieslot-power","","","",
+ 	/*Q0-Q7*/	"","","regulator-standby-faulted","","","","","",
+ 	/*R0-R7*/	"bmc-tpm-reset","power-chassis-control","power-chassis-good","","","I2C_FLASH_MICRO_N","","",
+-	/*S0-S7*/	"","","","","","","","",
++	/*S0-S7*/	"","","","","power-ffs-sync-history","","","",
+ 	/*T0-T7*/	"","","","","","","","",
+ 	/*U0-U7*/	"","","","","","","","",
+ 	/*V0-V7*/	"","BMC_3RESTART_ATTEMPT_P","","","","","","",
+diff --git a/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts b/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
+index 528b49e2c0f8..7213434695bf 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
+@@ -265,7 +265,7 @@ &gpio0 {
+ 	/*Q0-Q7*/	"cfam-reset","","regulator-standby-faulted","","","","","",
+ 	/*R0-R7*/	"bmc-tpm-reset","power-chassis-control","power-chassis-good","","","","","",
+ 	/*S0-S7*/	"presence-ps0","presence-ps1","presence-ps2","presence-ps3",
+-				"","","","",
++	"power-ffs-sync-history","","","",
+ 	/*T0-T7*/	"","","","","","","","",
+ 	/*U0-U7*/	"","","","","","","","",
+ 	/*V0-V7*/	"","","","","","","","",
+-- 
+2.25.1
 
-Now, the _smallest_ patch would likely be to just save away that
-'bpf_fill_ill_insns' function pointer in the 'struct bpf_prog_pack'
-thing.
-
-It's admittedly kind of silly to do, but it matches that whole silly
-"let's pass around a function pointer to a fixed function" model at
-allocation time.
-
-I say that's silly, because it's a fixed architecture function and we
-could just call it directly. The only valid function there is
-jit_fill_hole(), and the only reason it uses that function pointer
-seems to be that it's never been exposed as a real function.
-
-So passing it along as a function seems to be _purely_ for the silly
-reason that people haven't agreed on a name, and different
-architectures use different names (ie power uses
-'bpf_jit_fill_ill_insns()', RISC-V calls it 'bpf_fill_ill_insns()',
-and everybody else seems to use 'jit_fill_hole'.
-
-I don't know why that decision was made. It looks like a bad one to
-me, honestly.
-
-Why not just agree on a name - I suggest 'bpf_jit_fill_hole()' - and
-just get rid of that stupid 'bpf_jit_fill_hole_t' type name that only
-exists because of this thing?
-
-The bpf headers seem to literally have agreed on a name for that
-function -type- only in order to be able to disagree on the name of
-the function -name-, and then pass it along as a function pointer
-argument instead of just calling it directly.
-
-Very counter-productive.
-
-                 Linus
