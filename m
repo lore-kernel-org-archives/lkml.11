@@ -2,152 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD65BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386615AbiDUOBj (ORCPT
+        id S1387795AbiDUOFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
+        Thu, 21 Apr 2022 10:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244840AbiDUOBi (ORCPT
+        with ESMTP id S1388799AbiDUOFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:01:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD25C37BD9
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650549527;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FCDdTtfh+cTEbBhGHl6TDA/w0vVS1GSM5e8sY5ZehTw=;
-        b=dFsW2VqZ8e8caxzOPPndF7Ftv1Zo+Zm63zFtoCYvGUyM6AvJnZaTDiRdh8mCFFWyG2NlOQ
-        YiQvZVLLR+hk6DlNcjD+Su2+G0Fbtu6oi2JTIOr3MSucdHsDIc0du0bQcnuh5q0gIpQQyZ
-        lsN7KVukZyTCusivYnpzTK3hc4ZIFiw=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-380-uQnD5DjTNR2RuxE_BaAWRA-1; Thu, 21 Apr 2022 09:58:46 -0400
-X-MC-Unique: uQnD5DjTNR2RuxE_BaAWRA-1
-Received: by mail-ej1-f71.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso2549700ejs.12
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:58:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FCDdTtfh+cTEbBhGHl6TDA/w0vVS1GSM5e8sY5ZehTw=;
-        b=w3vElLmgo9G9QtgsSl6yqHU/5KTxWBvb2dBFrYoVrkOjAiQ4jV2wVB5F4f+0YalaCN
-         Yp4DoYVRdujTtp+GCvktmmLJ/QLW4zXFD7tE5UorN4tJGxE9IqNz+npFrIzv/5MN/Nw3
-         jQc8SIpmpI6ia1rjAqFYRnkeyj56D6eKQXe+7LFeTAWncnh+EwcdbGH+VNvEeOXEPwXN
-         UesQocmGaJJ33/11dXJS2ox1b5VxZlfSaO0gxzzSr2gWFN27i9SP/AuW2hChNdjZcsTQ
-         djthCYZHv7dey+EG2zNND2GaBvfDGfP+oZHm6sYIWt4zmQf4SAXBaGJCVe0jvBy1uW/p
-         pp2g==
-X-Gm-Message-State: AOAM531sw2axzNe7NkwB1Fvms0teri2tBM/H/U0bzE0vWnDdiTkLPQ2V
-        RugKwhCmZb8fetoYlqpSEARR1at5w34npyzwSB9vHP9zj1hnvOu4uHO9e1Kv8zP9JNM0mg2ys02
-        uqtYPCAhZLVHGxreeYZ17sD/v
-X-Received: by 2002:a05:6402:50d1:b0:423:f4a2:95c7 with SMTP id h17-20020a05640250d100b00423f4a295c7mr18677814edb.91.1650549525253;
-        Thu, 21 Apr 2022 06:58:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx4JGn8p7OAUTHSbJC7sBsOiSljB3wcQ48NL5S76jPutkqPECOtv4rN6ZvZhqHRw9AZzzPQ5Q==
-X-Received: by 2002:a05:6402:50d1:b0:423:f4a2:95c7 with SMTP id h17-20020a05640250d100b00423f4a295c7mr18677794edb.91.1650549525081;
-        Thu, 21 Apr 2022 06:58:45 -0700 (PDT)
-Received: from sgarzare-redhat ([217.171.75.76])
-        by smtp.gmail.com with ESMTPSA id s1-20020a056402036100b004240a3fc6b4sm3043298edw.82.2022.04.21.06.58.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 06:58:44 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 15:58:39 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] hv_sock: Copy packets sent by Hyper-V out of the
- ring buffer
-Message-ID: <20220421135839.2fj6fk6bvlrau73o@sgarzare-redhat>
-References: <20220420200720.434717-1-parri.andrea@gmail.com>
- <20220420200720.434717-3-parri.andrea@gmail.com>
+        Thu, 21 Apr 2022 10:05:12 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6F33B287;
+        Thu, 21 Apr 2022 07:02:15 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23LCNtng020172;
+        Thu, 21 Apr 2022 14:02:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=aI024WHC/bEMg8nvZ834auRImnWK7kVLOZ4xKww3Qfg=;
+ b=CRiCjvirWXl4MnbJVF7/otV8kD8HghhK81jWpyKyzW6Vw0YyWQCsVc6SWw7CUpVwhTir
+ R1oqH8ayvLY8Jchbmokq95DNYftbhjgiDLD5lFJ2p+7jkFXlyUthR4LlchklkzlXXHcv
+ ANvt+CiK9c6uMngU1TQ917DXmywz55JeDAKTNeBL6KlOfyst9U9Zz0/9cvbkOihVtCkk
+ DVXjAMaKjq5OVdf9QygnF+eRomXZe0iwwqTWe6yPsnOiyu51FNTIM7LgEF//ZkkfqreP
+ DW+ERxN9eX1WggA3NwqwqSkyXRLd0mr5jcMjw8zGEN+cKizqmcu1w8eclF1/Aiui/IwW 9w== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fk1ye94cq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Apr 2022 14:02:13 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23LDrCWM015800;
+        Thu, 21 Apr 2022 14:02:11 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ffne980hp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Apr 2022 14:02:11 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23LE28tQ25362744
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Apr 2022 14:02:08 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3793D11C054;
+        Thu, 21 Apr 2022 14:02:08 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EA16D11C04A;
+        Thu, 21 Apr 2022 14:02:07 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Thu, 21 Apr 2022 14:02:07 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        krebbel@linux.ibm.com, iii@linux.ibm.com, hca@linux.ibm.com,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: -Warray-bounds fun again
+Date:   Thu, 21 Apr 2022 16:02:07 +0200
+Message-ID: <yt9dzgkelelc.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220420200720.434717-3-parri.andrea@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: K4RxM8JLj-DcbUAXNWZRXoVGcuvmMJEe
+X-Proofpoint-GUID: K4RxM8JLj-DcbUAXNWZRXoVGcuvmMJEe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-21_01,2022-04-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ bulkscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 phishscore=0 mlxscore=0 clxscore=1011 adultscore=0
+ mlxlogscore=248 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204210077
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 10:07:17PM +0200, Andrea Parri (Microsoft) wrote:
->Pointers to VMbus packets sent by Hyper-V are used by the hv_sock driver
->within the guest VM.  Hyper-V can send packets with erroneous values or
->modify packet fields after they are processed by the guest.  To defend
->against these scenarios, copy the incoming packet after validating its
->length and offset fields using hv_pkt_iter_{first,next}().  In this way,
->the packet can no longer be modified by the host.
->
->Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
->---
-> net/vmw_vsock/hyperv_transport.c | 9 +++++++--
-> 1 file changed, 7 insertions(+), 2 deletions(-)
->
->diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
->index 943352530936e..8c37d07017fc4 100644
->--- a/net/vmw_vsock/hyperv_transport.c
->+++ b/net/vmw_vsock/hyperv_transport.c
->@@ -78,6 +78,9 @@ struct hvs_send_buf {
-> 					 ALIGN((payload_len), 8) + \
-> 					 VMBUS_PKT_TRAILER_SIZE)
->
->+/* Upper bound on the size of a VMbus packet for hv_sock */
->+#define HVS_MAX_PKT_SIZE	HVS_PKT_LEN(HVS_MTU_SIZE)
->+
-> union hvs_service_id {
-> 	guid_t	srv_id;
->
->@@ -378,6 +381,8 @@ static void hvs_open_connection(struct vmbus_channel *chan)
-> 		rcvbuf = ALIGN(rcvbuf, HV_HYP_PAGE_SIZE);
-> 	}
->
->+	chan->max_pkt_size = HVS_MAX_PKT_SIZE;
->+
+Hi,
 
-premise, I don't know HyperV channels :-(
+while compiling the latest upstream kernel on fedora 36 which
+uses gcc-12 by default, i got a lot of -Warray-bounds warnings:
 
-Is this change necessary to use hv_pkt_iter_first() instead of 
-hv_pkt_iter_first_raw()?
+(Note that this is on s390 arch)
 
-If yes, then please mention that you set this value in the commit 
-message, otherwise maybe better to have a separate patch.
+In function =E2=80=98preempt_count=E2=80=99,
+inlined from =E2=80=98do_one_initcall=E2=80=99 at init/main.c:1290:14:
+./include/asm-generic/rwonce.h:44:26: warning: array subscript 0 is outside=
+ array bounds of =E2=80=98const volatile int[0]=E2=80=99 [-Warray-bounds]
+44 | #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)=
+&(x))
+   |        ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   /include/asm-generic/rwonce.h:50:9: note: in expansion of macro =E2=80=
+=98__READ_ONCE=E2=80=99
+50 |         __READ_ONCE(x);
+   |         ^~~~~~~~~~~
+./arch/s390/include/asm/preempt.h:17:16: note: in expansion of macro =E2=80=
+=98READ_ONCE=E2=80=99
+17 |         return READ_ONCE(S390_lowcore.preempt_count) & ~PREEMPT_NEED_R=
+ESCHED;
+   |                ^~~~~~~~~
 
-Thanks,
-Stefano
+This is because S390_lowcore is defined as follows:
 
-> 	ret = vmbus_open(chan, sndbuf, rcvbuf, NULL, 0, hvs_channel_cb,
-> 			 conn_from_host ? new : sk);
-> 	if (ret != 0) {
->@@ -602,7 +607,7 @@ static ssize_t hvs_stream_dequeue(struct vsock_sock *vsk, struct msghdr *msg,
-> 		return -EOPNOTSUPP;
->
-> 	if (need_refill) {
->-		hvs->recv_desc = hv_pkt_iter_first_raw(hvs->chan);
->+		hvs->recv_desc = hv_pkt_iter_first(hvs->chan);
-> 		if (!hvs->recv_desc)
-> 			return -ENOBUFS;
-> 		ret = hvs_update_recv_data(hvs);
->@@ -618,7 +623,7 @@ static ssize_t hvs_stream_dequeue(struct vsock_sock *vsk, struct msghdr *msg,
->
-> 	hvs->recv_data_len -= to_read;
-> 	if (hvs->recv_data_len == 0) {
->-		hvs->recv_desc = hv_pkt_iter_next_raw(hvs->chan, hvs->recv_desc);
->+		hvs->recv_desc = hv_pkt_iter_next(hvs->chan, hvs->recv_desc);
-> 		if (hvs->recv_desc) {
-> 			ret = hvs_update_recv_data(hvs);
-> 			if (ret)
->-- 
->2.25.1
->
+#define S390_lowcore (*((struct lowcore *) 0))
 
+Lowcore is a 8K cpu-local memory region on s390 at fixed address 0.
+
+The obvious 'fix' is to use absolute_pointer():
+
+#define S390_lowcore (*((struct lowcore *)absolute_pointer(0)))
+
+That makes the warning go away, but unfortunately the compiler no longer
+knows that the memory access is fitting into a load/store with a 12 bit
+displacement.
+
+Without absolute_pointer(), reading the preempt count is just a single
+instruction: 'l %r11,936'
+
+static inline int preempt_count(void)
+{
+        return READ_ONCE(S390_lowcore.preempt_count) & ~PREEMPT_NEED_RESCHE=
+D;
+ 8c4:   58 b0 03 a8             l       %r11,936 <--- load preempt count
+ 8c8:   b9 04 00 92             lgr     %r9,%r2
+        int count =3D preempt_count();
+
+with absolute pointer(), the compiler no longer optimizes the read to
+one instruction and uses an additional base register:
+
+static inline int preempt_count(void)
+{
+        return READ_ONCE(S390_lowcore.preempt_count) & ~PREEMPT_NEED_RESCHE=
+D;
+ 8c4:   a7 19 00 00             lghi    %r1,0             <-- use %r1 as ba=
+se, load with 0
+ 8c8:   b9 04 00 92             lgr     %r9,%r2
+        int count =3D preempt_count();
+        char msgbuf[64];
+ 8cc:   d7 3f f0 a8 f0 a8       xc      168(64,%r15),168(%r15)
+ 8d2:   58 b0 13 a8             l       %r11,936(%r1)    <-- and finally ad=
+d the offset and fetch
+        int ret;
+
+The reason for gcc to not optimize that further is likely the asm
+statement in RELOC_HIDE (located in include/linux/compiler-gcc.h)
+
+#define RELOC_HIDE(ptr, off)                                    \
+({                                                              \
+        unsigned long __ptr;                                    \
+        __asm__ ("" : "=3Dr"(__ptr) : "0"(ptr));                  \
+        (typeof(ptr)) (__ptr + (off));                          \
+})
+
+
+For most of the code this wouldn't be a big problem, but we're storing
+information like preempt_count, current thread info, etc in lowcore
+because it is the fastest way. I would like to avoid to use additional
+instructions/registers just to avoid a warning.
+
+Does anyone have an idea about a different way to make this warning go
+away?
+
+Thanks
+Sven
