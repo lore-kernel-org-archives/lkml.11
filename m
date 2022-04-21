@@ -2,109 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45515C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C23ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389475AbiDUOke (ORCPT
+        id S1389514AbiDUOkh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
+        Thu, 21 Apr 2022 10:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389503AbiDUOkX (ORCPT
+        with ESMTP id S1389478AbiDUOk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:40:23 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CC140A07
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:37:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650551854; x=1682087854;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DsPJo/C0ybgqsg0hBbD7oY+lO1N2A92sGm7qEPTNZW0=;
-  b=HbQvEX6rkqj5V0R13ps+oXmIBOIy7SYt6kDxue3xJQZjK9bn5K6qCOBN
-   FEKJu558rvoh5I4I5n1I+U1XTdKG95zTm/HPLWA/S/uf1znV2hqVpkFZw
-   xYeV9qg9L+gYbGCsz8YA+HU61vwDnhymxvStCdjj2xxU9jvwa4E16ntKC
-   v6sc90FBSP/IAeCniagjxPNyolMgT3MLqFTxvR1Df25rnECnvtb4HYDC1
-   RJmyvPwww1lz1+BXyhzMC4emP9KSGPXwCAoIbWucTXRiyvh+owpBRVmiI
-   9iDw9aHlLrmOm+1vMG1gfor7azBBk0hNE6n0c4MItBGV3n698K4MFskOo
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246263223"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="246263223"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 07:37:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="593677144"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 07:37:20 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhXvs-0008U6-3Q;
-        Thu, 21 Apr 2022 14:37:20 +0000
-Date:   Thu, 21 Apr 2022 22:37:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops'
-Message-ID: <202204212201.GQb844HH-lkp@intel.com>
+        Thu, 21 Apr 2022 10:40:29 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FCB40E6A;
+        Thu, 21 Apr 2022 07:37:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650551860; x=1682087860;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=K74UEBmLaYYPtGiv03Iz6VjSItKV+R4s+M371HTlDWk=;
+  b=odXhMtRf2KJAN9/v+VqwWi/4PBTPGEFVZmMcJGfYsi5Puxnvl9F3xc3M
+   ee7gqJztaf3tvccI+vZetEL0UWkF21J2yllGbxFZLefvuPW/qN2UBFG0j
+   loeUd989AuW90GjwiEV0RAbxGndhz01YLmvg/rk1pU6SrC64azny9V8Lt
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Apr 2022 07:37:39 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 07:37:39 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 21 Apr 2022 07:37:38 -0700
+Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 21 Apr 2022 07:37:32 -0700
+From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        <robdclark@gmail.com>, <seanpaul@chromium.org>,
+        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
+        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
+        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
+        <quic_aravindh@quicinc.com>, <steev@kali.org>
+Subject: [PATCH v8 4/4] drm/msm/dp: Support the eDP modes given by panel
+Date:   Thu, 21 Apr 2022 20:06:51 +0530
+Message-ID: <1650551811-24319-5-git-send-email-quic_sbillaka@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650551811-24319-1-git-send-email-quic_sbillaka@quicinc.com>
+References: <1650551811-24319-1-git-send-email-quic_sbillaka@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yajun,
+The eDP controller does not have a reliable way keep panel
+powered on to read the sink capabilities. So, the controller
+driver cannot validate if a mode can be supported by the
+source. We will rely on the panel driver to populate only
+the supported modes for now.
 
-FYI, the error/warning still remains.
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+---
+Changes in v8:
+  - add the drm/msm/dp tag in the commit title
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b253435746d9a4a701b5f09211b9c14d3370d0da
-commit: e968b1b3e9b86c4751faea019a5d340fee9e9142 arp: Remove #ifdef CONFIG_PROC_FS
-date:   5 months ago
-config: hexagon-randconfig-r045-20220420 (https://download.01.org/0day-ci/archive/20220421/202204212201.GQb844HH-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e968b1b3e9b86c4751faea019a5d340fee9e9142
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e968b1b3e9b86c4751faea019a5d340fee9e9142
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ipv4/
+ drivers/gpu/drm/msm/dp/dp_display.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops' [-Wunused-const-variable]
-   static const struct seq_operations arp_seq_ops = {
-                                      ^
-   1 warning generated.
-
-
-vim +/arp_seq_ops +1412 net/ipv4/arp.c
-
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1411  
-f690808e17925f Stephen Hemminger 2007-03-12 @1412  static const struct seq_operations arp_seq_ops = {
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1413  	.start	= arp_seq_start,
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1414  	.next	= neigh_seq_next,
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1415  	.stop	= neigh_seq_stop,
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1416  	.show	= arp_seq_show,
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1417  };
-^1da177e4c3f41 Linus Torvalds    2005-04-16  1418  
-
-:::::: The code at line 1412 was first introduced by commit
-:::::: f690808e17925fc45217eb22e8670902ecee5c1b [NET]: make seq_operations const
-
-:::::: TO: Stephen Hemminger <shemminger@linux-foundation.org>
-:::::: CC: David S. Miller <davem@sunset.davemloft.net>
-
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 86948d6..7d71bdc 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -998,6 +998,14 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
+ 		return -EINVAL;
+ 	}
+ 
++	/*
++	 * The eDP controller currently does not have a reliable way of
++	 * enabling panel power to read sink capabilities. So, we rely
++	 * on the panel driver to populate only supported modes for now.
++	 */
++	if (dp->is_edp)
++		return MODE_OK;
++
+ 	if ((dp->max_pclk_khz <= 0) ||
+ 			(dp->max_pclk_khz > DP_MAX_PIXEL_CLK_KHZ) ||
+ 			(mode->clock > dp->max_pclk_khz))
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.7.4
+
