@@ -2,183 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81937C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17043C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391149AbiDUSGx (ORCPT
+        id S1391242AbiDUSHq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
+        Thu, 21 Apr 2022 14:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391202AbiDUSGp (ORCPT
+        with ESMTP id S1391218AbiDUSHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:06:45 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5794B84D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:03:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650564216; x=1682100216;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bQ+rneEE1x3jrND7Y9Wv3LGa2VxvPuk/c+WG8SdyEzQ=;
-  b=VI0lCMtpgyRWIR2MVpdVS39pWila2FnjFkisYts7EclQbKaB2jEBi7PF
-   DHJjqy5f6BRgFjWhIW+GVywioknnL7DP6I+GjVRMWm3UBJKL1rKcskKm0
-   yh5LO9oZKbJWyctYZGBrm+GDB5e6KrbSwvI2PrZTQqhPdSlTU5XKMuGAY
-   XAfayIuKjRn42OdC5cxY9+FY6lK3RAaNNoWnWGvv/P6kJ9dYCf50VJmgM
-   E/f9eS3pRE20w2wxxNk5zfxkrflLir118fJ2du6Ng6fbJQo69qmjbW71f
-   018e0FYAElEzV0dgOhnHuTNdgyuZ+chlUowoddJgzzkD5Azo/q1TkAwzb
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246335278"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="246335278"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 11:03:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="728116051"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 21 Apr 2022 11:03:30 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhb9N-0008e7-O6;
-        Thu, 21 Apr 2022 18:03:29 +0000
-Date:   Fri, 22 Apr 2022 02:02:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [dhowells-fs:netfs-lib 2/18] fs/netfs/objects.c:48:2: error: call to
- undeclared function 'netfs_proc_add_writeback'; ISO C99 and later do not
- support implicit function declarations
-Message-ID: <202204220100.5rFjj0Qv-lkp@intel.com>
+        Thu, 21 Apr 2022 14:07:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 599544B1DE
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:04:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650564288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5uIxmDi2O7UMGYDdP32IiG4VA/mcU5iBq1ojkCkRWbM=;
+        b=OooGlWJSnc5SJlJwwhJDLi37vxm0mO+GCs0qZ0nICzcOuFlTZnrviCF01NX3BdG95OWmf5
+        bN4eJ4gUcTChXApTlq+AnYV42dsjLl3jtyV3YWSgAwLv0gY4e0hXdJQIKIEnalyMIo89f6
+        +XTyZDMJUFpfyZ6v5OaW6V+Uh93cDnw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-626-DHhvKqsyPk660OSQyqxA7A-1; Thu, 21 Apr 2022 14:04:45 -0400
+X-MC-Unique: DHhvKqsyPk660OSQyqxA7A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D9811E1AE43;
+        Thu, 21 Apr 2022 18:04:44 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6802E40E80F5;
+        Thu, 21 Apr 2022 18:04:44 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     will@kernel.org, maz@kernel.org, apatel@ventanamicro.com,
+        atishp@rivosinc.com, seanjc@google.com, pgonda@google.com
+Subject: [PATCH 3/4] KVM: RISC-V: replace system_event.flags with ndata and data[0]
+Date:   Thu, 21 Apr 2022 14:04:42 -0400
+Message-Id: <20220421180443.1465634-4-pbonzini@redhat.com>
+In-Reply-To: <20220421180443.1465634-1-pbonzini@redhat.com>
+References: <20220421180443.1465634-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git netfs-lib
-head:   5b166ee5742c8a13e2958bad90e4b3a5d9bb0426
-commit: d2183d7d55ccea0042532727e540a4835aa0a266 [2/18] netfs: Add a procfile to list in-progress requests
-config: hexagon-randconfig-r045-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220100.5rFjj0Qv-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?id=d2183d7d55ccea0042532727e540a4835aa0a266
-        git remote add dhowells-fs https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-        git fetch --no-tags dhowells-fs netfs-lib
-        git checkout d2183d7d55ccea0042532727e540a4835aa0a266
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/netfs/
+The flags datum for KVM_EXIT_SYSTEM_EVENT exits has been
+removed because it was defined incorrectly; no padding was
+introduced between the 32-bit type and the 64-bit flags,
+resulting in different definitions for 32-bit and 64-bit
+userspace.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The replacement is a pair of fields, ndata and data[],
+with ndata saying how many items are valid in the data array.
+In the case of RISC-V that's one for the SRST SBI call (with
+flags simply moved to data[0]) and zero for the legacy v0.1
+call.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/riscv/include/asm/kvm_vcpu_sbi.h | 2 +-
+ arch/riscv/kvm/vcpu_sbi.c             | 5 +++--
+ arch/riscv/kvm/vcpu_sbi_replace.c     | 4 ++--
+ arch/riscv/kvm/vcpu_sbi_v01.c         | 2 +-
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
->> fs/netfs/objects.c:48:2: error: call to undeclared function 'netfs_proc_add_writeback'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           netfs_proc_add_writeback(rreq);
-           ^
-   fs/netfs/objects.c:48:2: note: did you mean 'netfs_proc_add_rreq'?
-   fs/netfs/internal.h:51:20: note: 'netfs_proc_add_rreq' declared here
-   static inline void netfs_proc_add_rreq(struct netfs_io_request *rreq) {}
-                      ^
->> fs/netfs/objects.c:80:2: error: call to undeclared function 'netfs_proc_del_writeback'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           netfs_proc_del_writeback(rreq);
-           ^
-   fs/netfs/objects.c:80:2: note: did you mean 'netfs_proc_del_rreq'?
-   fs/netfs/internal.h:52:20: note: 'netfs_proc_del_rreq' declared here
-   static inline void netfs_proc_del_rreq(struct netfs_io_request *rreq) {}
-                      ^
-   2 errors generated.
-
-
-vim +/netfs_proc_add_writeback +48 fs/netfs/objects.c
-
-    10	
-    11	/*
-    12	 * Allocate an I/O request and initialise it.
-    13	 */
-    14	struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
-    15						     struct file *file,
-    16						     loff_t start, size_t len,
-    17						     enum netfs_io_origin origin)
-    18	{
-    19		static atomic_t debug_ids;
-    20		struct inode *inode = file ? file_inode(file) : mapping->host;
-    21		struct netfs_i_context *ctx = netfs_i_context(inode);
-    22		struct netfs_io_request *rreq;
-    23		int ret;
-    24	
-    25		rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
-    26		if (!rreq)
-    27			return ERR_PTR(-ENOMEM);
-    28	
-    29		rreq->start	= start;
-    30		rreq->len	= len;
-    31		rreq->origin	= origin;
-    32		rreq->netfs_ops	= ctx->ops;
-    33		rreq->mapping	= mapping;
-    34		rreq->inode	= inode;
-    35		rreq->i_size	= i_size_read(inode);
-    36		rreq->debug_id	= atomic_inc_return(&debug_ids);
-    37		INIT_LIST_HEAD(&rreq->subrequests);
-    38		refcount_set(&rreq->ref, 1);
-    39		__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
-    40		if (rreq->netfs_ops->init_request) {
-    41			ret = rreq->netfs_ops->init_request(rreq, file);
-    42			if (ret < 0) {
-    43				kfree(rreq);
-    44				return ERR_PTR(ret);
-    45			}
-    46		}
-    47	
-  > 48		netfs_proc_add_writeback(rreq);
-    49		netfs_stat(&netfs_n_rh_rreq);
-    50		return rreq;
-    51	}
-    52	
-    53	void netfs_get_request(struct netfs_io_request *rreq, enum netfs_rreq_ref_trace what)
-    54	{
-    55		int r;
-    56	
-    57		__refcount_inc(&rreq->ref, &r);
-    58		trace_netfs_rreq_ref(rreq->debug_id, r + 1, what);
-    59	}
-    60	
-    61	void netfs_clear_subrequests(struct netfs_io_request *rreq, bool was_async)
-    62	{
-    63		struct netfs_io_subrequest *subreq;
-    64	
-    65		while (!list_empty(&rreq->subrequests)) {
-    66			subreq = list_first_entry(&rreq->subrequests,
-    67						  struct netfs_io_subrequest, rreq_link);
-    68			list_del(&subreq->rreq_link);
-    69			netfs_put_subrequest(subreq, was_async,
-    70					     netfs_sreq_trace_put_clear);
-    71		}
-    72	}
-    73	
-    74	static void netfs_free_request(struct work_struct *work)
-    75	{
-    76		struct netfs_io_request *rreq =
-    77			container_of(work, struct netfs_io_request, work);
-    78	
-    79		trace_netfs_rreq(rreq, netfs_rreq_trace_free);
-  > 80		netfs_proc_del_writeback(rreq);
-    81		netfs_clear_subrequests(rreq, false);
-    82		if (rreq->netfs_ops->free_request)
-    83			rreq->netfs_ops->free_request(rreq);
-    84		if (rreq->cache_resources.ops)
-    85			rreq->cache_resources.ops->end_operation(&rreq->cache_resources);
-    86		kfree_rcu(rreq, rcu);
-    87		netfs_stat_d(&netfs_n_rh_rreq);
-    88	}
-    89	
-
+diff --git a/arch/riscv/include/asm/kvm_vcpu_sbi.h b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+index 83d6d4d2b1df..c4b10c25264a 100644
+--- a/arch/riscv/include/asm/kvm_vcpu_sbi.h
++++ b/arch/riscv/include/asm/kvm_vcpu_sbi.h
+@@ -30,7 +30,7 @@ struct kvm_vcpu_sbi_extension {
+ void kvm_riscv_vcpu_sbi_forward(struct kvm_vcpu *vcpu, struct kvm_run *run);
+ void kvm_riscv_vcpu_sbi_system_reset(struct kvm_vcpu *vcpu,
+ 				     struct kvm_run *run,
+-				     u32 type, u64 flags);
++				     u32 type, bool have_reason, u64 reason);
+ const struct kvm_vcpu_sbi_extension *kvm_vcpu_sbi_find_ext(unsigned long extid);
+ 
+ #endif /* __RISCV_KVM_VCPU_SBI_H__ */
+diff --git a/arch/riscv/kvm/vcpu_sbi.c b/arch/riscv/kvm/vcpu_sbi.c
+index a09ecb97b890..2019ca01b44b 100644
+--- a/arch/riscv/kvm/vcpu_sbi.c
++++ b/arch/riscv/kvm/vcpu_sbi.c
+@@ -83,7 +83,7 @@ void kvm_riscv_vcpu_sbi_forward(struct kvm_vcpu *vcpu, struct kvm_run *run)
+ 
+ void kvm_riscv_vcpu_sbi_system_reset(struct kvm_vcpu *vcpu,
+ 				     struct kvm_run *run,
+-				     u32 type, u64 flags)
++				     u32 type, bool have_reason, u64 reason)
+ {
+ 	unsigned long i;
+ 	struct kvm_vcpu *tmp;
+@@ -94,7 +94,8 @@ void kvm_riscv_vcpu_sbi_system_reset(struct kvm_vcpu *vcpu,
+ 
+ 	memset(&run->system_event, 0, sizeof(run->system_event));
+ 	run->system_event.type = type;
+-	run->system_event.flags = flags;
++	run->system_event.ndata = have_reason;
++	run->system_event.data[0] = reason;
+ 	run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
+ }
+ 
+diff --git a/arch/riscv/kvm/vcpu_sbi_replace.c b/arch/riscv/kvm/vcpu_sbi_replace.c
+index 0f217365c287..a36414a5f59e 100644
+--- a/arch/riscv/kvm/vcpu_sbi_replace.c
++++ b/arch/riscv/kvm/vcpu_sbi_replace.c
+@@ -148,14 +148,14 @@ static int kvm_sbi_ext_srst_handler(struct kvm_vcpu *vcpu,
+ 		case SBI_SRST_RESET_TYPE_SHUTDOWN:
+ 			kvm_riscv_vcpu_sbi_system_reset(vcpu, run,
+ 						KVM_SYSTEM_EVENT_SHUTDOWN,
+-						reason);
++						true, reason);
+ 			*exit = true;
+ 			break;
+ 		case SBI_SRST_RESET_TYPE_COLD_REBOOT:
+ 		case SBI_SRST_RESET_TYPE_WARM_REBOOT:
+ 			kvm_riscv_vcpu_sbi_system_reset(vcpu, run,
+ 						KVM_SYSTEM_EVENT_RESET,
+-						reason);
++						true, reason);
+ 			*exit = true;
+ 			break;
+ 		default:
+diff --git a/arch/riscv/kvm/vcpu_sbi_v01.c b/arch/riscv/kvm/vcpu_sbi_v01.c
+index da4d6c99c2cf..9598bc6b4c0e 100644
+--- a/arch/riscv/kvm/vcpu_sbi_v01.c
++++ b/arch/riscv/kvm/vcpu_sbi_v01.c
+@@ -66,7 +66,7 @@ static int kvm_sbi_ext_v01_handler(struct kvm_vcpu *vcpu, struct kvm_run *run,
+ 		break;
+ 	case SBI_EXT_0_1_SHUTDOWN:
+ 		kvm_riscv_vcpu_sbi_system_reset(vcpu, run,
+-						KVM_SYSTEM_EVENT_SHUTDOWN, 0);
++						KVM_SYSTEM_EVENT_SHUTDOWN, false, 0);
+ 		*exit = true;
+ 		break;
+ 	case SBI_EXT_0_1_REMOTE_FENCE_I:
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.1
+
+
