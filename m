@@ -2,124 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B27C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347647AbiDUL4d (ORCPT
+        id S1354520AbiDUL5V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 07:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
+        Thu, 21 Apr 2022 07:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232649AbiDUL42 (ORCPT
+        with ESMTP id S230044AbiDUL5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 07:56:28 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700152E690
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 04:53:36 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id x12so3009544qtp.9
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 04:53:36 -0700 (PDT)
+        Thu, 21 Apr 2022 07:57:17 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECD22E690;
+        Thu, 21 Apr 2022 04:54:28 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id lc2so9458209ejb.12;
+        Thu, 21 Apr 2022 04:54:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:reply-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PT4LXQBfLiBOJRTfBJYUYM3WIFjfmxtBkNM0mqiYix8=;
-        b=YzRMCim8hi+BV5bLrRa6UuBuCUpXby6fe49piTZ/rxGtlpkUfvJ355BuHU/hHqBXLk
-         FpuyFzc5G5cST+1cCxTyFWGqOkXkuO5w6V8MI/itLH1es3N0fsKi/hAs++h6lGPdC1HL
-         9i6BJJ5f9BGT7ZovIAjdIVbT1qORO6dM67dpEmUaSvOOi+c2NKQ8doUJ9sAyB+MKMWnS
-         cgqUYMKYLy30WdsI+NbgW29mbNRY4YQrqW9gVL4uPoJRjMk/Xsg+H3x4mKbrIWb8wvBT
-         xOH2+xs7SMOShskwzd3Ev1bIXou/gY7DK7CU3chZGp8BO/aQPzJEGJomE4sQUzrOAK/k
-         mNFg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0DDzJn9dwy6iRA1ptiaHLy+Z13fMErKSI6cEup7orYQ=;
+        b=nTCs8/lVqO9JNaUDe6n1TeJ3r1YGN+/THNsa2TxgsPLGiObxiuBKXTjbyBJsVwORKv
+         wR+tefxOeWwvW8DzToxht90zkSC76/GFlQD4/KBJ0vh1fORneaO21UwCqGaDClSsWuVe
+         Y6/UGj7eyLg6kWoeX0WnebZ5+wPTivRoi+BpRAuYAB6SbanKxoKD9Y1pkJ45gXYNLjLm
+         OpJutZRnB7bJhoZ7/sWi0YCYg0z1u143hqxAKlM//z6rHADb+McGv9ZubXNyQtbrEGc8
+         9vmX+5+POEC9t3Rnc/gs4J8ydzYLHiPnTJXdQF+mCmm898hKfaOA34zuklWA92mmhYJT
+         IBsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :reply-to:references:mime-version:content-disposition:in-reply-to;
-        bh=PT4LXQBfLiBOJRTfBJYUYM3WIFjfmxtBkNM0mqiYix8=;
-        b=qUPfuxX0MfzhBdwuQSfT4gaCwwnb7ioOLIn/UFk57NqUAl2ZpZnaF+m9aXWtV95zU1
-         zy0sOEyhyF++0evPOIiPyWeSNOWO3XM7ez73+vpiHBDhX+rMwvKvPMLC6wVeUqU1VyvN
-         pzeqcRem/LZecPVDG8iVPBRlDZujCuAKxU4YCUJfTzZxJMAo4WSNz1mBSoGPMFzuEC0m
-         SWLrKUeuMVRY1OP4oENa8vXZq42pR1gV9CT8pGTpkXfpMzDWNgg618DMrwQQCzs+QUh9
-         LVaO2DpvvL/xvYOk4MrkvX9uoKsVRhwVgqsiplHA3NUGKq/XwgAlV3PSBH8y1mXQEuse
-         JRWQ==
-X-Gm-Message-State: AOAM533lBB0vCTH3un2R09SZhvasHe1m2JLRNqrghIZXtKlT/Ibdta6F
-        uuCWRTIhdopefj74j2XyJp4AuC2X2y5n
-X-Google-Smtp-Source: ABdhPJyD1deq/S91ZjUCxXT/nCjxV0i6aTWnkq7PKitz0Nn3z+sEmfKUTSRdqkNno0xncz1o0dMLhA==
-X-Received: by 2002:ac8:7d90:0:b0:2f3:4446:303f with SMTP id c16-20020ac87d90000000b002f34446303fmr4027883qtd.218.1650542015460;
-        Thu, 21 Apr 2022 04:53:35 -0700 (PDT)
-Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
-        by smtp.gmail.com with ESMTPSA id k2-20020a37ba02000000b0067dc1b0104asm2780044qkf.124.2022.04.21.04.53.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 04:53:35 -0700 (PDT)
-Sender: Corey Minyard <tcminyard@gmail.com>
-Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:a578:422:b82d:51be])
-        by serve.minyard.net (Postfix) with ESMTPSA id 18B6B1800BB;
-        Thu, 21 Apr 2022 11:53:34 +0000 (UTC)
-Date:   Thu, 21 Apr 2022 06:53:32 -0500
-From:   Corey Minyard <minyard@acm.org>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-Cc:     openipmi-developer@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
-Subject: Re: [PATCH] ipmi: ipmi_ipmb: Fix null-ptr-deref in
- ipmi_unregister_smi()
-Message-ID: <20220421115332.GZ426325@minyard.net>
-Reply-To: minyard@acm.org
-References: <20220421100835.1942677-1-weiyongjun1@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0DDzJn9dwy6iRA1ptiaHLy+Z13fMErKSI6cEup7orYQ=;
+        b=aCjJ95cyFcQ8auoAN4Am2DnL/+j4BhcqiyiIodURtc4xAIAEeMhQ6fBlulN+pKWnIQ
+         K6Y1GWxABkbfUx9y0JMynHg1MUP69J9lKcFjoeS/oBdjO+txZaAqddk8nYsGEBO7WRwm
+         Sxj2rryU590ql7dPZvTi+3vNLA9u7X9TOR5lqN1JeAzFwhKJkj4JgwxNik+8oZJmp3ZT
+         1tPayHnm7dBj4EEi+ymnFLUMfqNK3Cv70Y4Cdis+mPatQ2A6MtsM1UAP6M6uNQcVFsJC
+         vEomyT1R5Gf/4qIXVziNxPLRdq69Gh+b/Fq5TAdUMtCVJv+5UH/pCeTe9vY8dOMRClle
+         8q5w==
+X-Gm-Message-State: AOAM53205OArwqoK0sgUAiG8mUa35tMiO5JwuOQgmIsDGZ3vguPITUkg
+        A5oDugFdPf0w65Ertg+sTjChQrcjEFj70DT3Ra0=
+X-Google-Smtp-Source: ABdhPJyNmkwYSj+FO8ES8Jpx7ks0wQQHThabVQT7Jsm09lmVrOrNojpEErJNnkDp4wkhyYEm9gTUwmOjyRJvwVEM0T0=
+X-Received: by 2002:a17:907:3d91:b0:6df:a01c:f7cd with SMTP id
+ he17-20020a1709073d9100b006dfa01cf7cdmr22511350ejc.255.1650542066467; Thu, 21
+ Apr 2022 04:54:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421100835.1942677-1-weiyongjun1@huawei.com>
+References: <20220421094236.1052170-1-r33s3n6@gmail.com> <YmEs6BqcyM7fgLXg@kroah.com>
+In-Reply-To: <YmEs6BqcyM7fgLXg@kroah.com>
+From:   Fu Zixuan <r33s3n6@gmail.com>
+Date:   Thu, 21 Apr 2022 19:55:28 +0800
+Message-ID: <CAMvdLANp4jHnySOmpjXZdFwruLdvN9qR-B_Ew9_zeCiKYiLZSA@mail.gmail.com>
+Subject: Re: [PATCH] drivers: usb: host: fix NULL pointer dereferences
+ triggered by unhandled errors in xhci_create_rhub_port_array()
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     mathias.nyman@intel.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 10:08:35AM +0000, Wei Yongjun wrote:
-> KASAN report null-ptr-deref as follows:
-> 
-> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-> RIP: 0010:ipmi_unregister_smi+0x7d/0xd50 drivers/char/ipmi/ipmi_msghandler.c:3680
-> Call Trace:
->  ipmi_ipmb_remove+0x138/0x1a0 drivers/char/ipmi/ipmi_ipmb.c:443
->  ipmi_ipmb_probe+0x409/0xda1 drivers/char/ipmi/ipmi_ipmb.c:548
->  i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
->  really_probe+0x3f3/0xa70 drivers/base/dd.c:541
-> 
-> In ipmi_ipmb_probe(), 'iidev->intf' is not set before ipmi_register_smi() success.
-> And in the error handling case, ipmi_ipmb_remove() is called to release resources,
-> ipmi_unregister_smi() is called without check 'iidev->intf', this will cause KASAN
-> null-ptr-deref issue.
-> 
-> Fix by adding NULL check prior to calling ipmi_unregister_smi().
+On Thu, 21 Apr 2022 at 18:07, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Apr 21, 2022 at 05:42:36PM +0800, Zixuan Fu wrote:
+> > In xhci_create_rhub_port_array(), when rhub->num_ports is zero,
+> > rhub->ports would not be set; when kcalloc_node() fails, rhub->ports
+> > would be set to NULL. In these two cases, xhci_create_rhub_port_array()
+> > just returns void, and thus its callers are unaware of the error.
+> >
+> > Then rhub->ports is dereferenced in xhci_usb3_hub_descriptor() or
+> > xhci_usb2_hub_descriptor().
+> >
+> > To fix the bug, xhci_setup_port_arrays() should return an integer to
+> > indicate a possible error, and its callers should handle the error.
+> >
+> > Here is the log when this bug occurred in our fault-injection testing:
+> >
+> > [   24.001309] BUG: kernel NULL pointer dereference, address: 0000000000000000
+> > ...
+> > [   24.003992] RIP: 0010:xhci_hub_control+0x3f5/0x60d0 [xhci_hcd]
+> > ...
+> > [   24.009803] Call Trace:
+> > [   24.010014]  <TASK>
+> > [   24.011310]  usb_hcd_submit_urb+0x1233/0x1fd0
+> > [   24.017071]  usb_start_wait_urb+0x115/0x310
+> > [   24.017641]  usb_control_msg+0x28a/0x450
+> > [   24.019046]  hub_probe+0xb16/0x2320
+> > [   24.019757]  usb_probe_interface+0x4f1/0x930
+> > [   24.019765]  really_probe+0x33d/0x970
+> > [   24.019768]  __driver_probe_device+0x157/0x210
+> > [   24.019772]  driver_probe_device+0x4f/0x340
+> > [   24.019775]  __device_attach_driver+0x2ee/0x3a0
+> > ...
+> >
+> > Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> > Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+> > ---
+> >  drivers/usb/host/xhci-mem.c | 17 ++++++++++++-----
+> >  1 file changed, 12 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+> > index bbb27ee2c6a3..024515346c39 100644
+> > --- a/drivers/usb/host/xhci-mem.c
+> > +++ b/drivers/usb/host/xhci-mem.c
+> > @@ -2235,7 +2235,7 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
+> >       /* FIXME: Should we disable ports not in the Extended Capabilities? */
+> >  }
+> >
+> > -static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> > +static int xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> >                                       struct xhci_hub *rhub, gfp_t flags)
+> >  {
+> >       int port_index = 0;
+> > @@ -2243,11 +2243,11 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> >       struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
+> >
+> >       if (!rhub->num_ports)
+> > -             return;
+> > +             return -EINVAL;
+> >       rhub->ports = kcalloc_node(rhub->num_ports, sizeof(*rhub->ports),
+> >                       flags, dev_to_node(dev));
+> >       if (!rhub->ports)
+> > -             return;
+> > +             return -ENOMEM;
+> >
+> >       for (i = 0; i < HCS_MAX_PORTS(xhci->hcs_params1); i++) {
+> >               if (xhci->hw_ports[i].rhub != rhub ||
+> > @@ -2259,6 +2259,7 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> >               if (port_index == rhub->num_ports)
+> >                       break;
+> >       }
+> > +     return 0;
+> >  }
+> >
+> >  /*
+> > @@ -2277,6 +2278,7 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
+> >       int cap_count = 0;
+> >       u32 cap_start;
+> >       struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
+> > +     int ret;
+> >
+> >       num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
+> >       xhci->hw_ports = kcalloc_node(num_ports, sizeof(*xhci->hw_ports),
+> > @@ -2367,8 +2369,13 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
+> >        * Not sure how the USB core will handle a hub with no ports...
+> >        */
+> >
+> > -     xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
+> > -     xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
+> > +     ret = xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     ret = xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
+> > +     if (ret)
+> > +             return ret;
+>
+> What about the memory allocated by the first call to
+> xhci_create_rhub_port_array()?  Is that now lost?  Same for everything
+> else allocated before these calls, how is that cleaned up properly?
+>
+> thanks,
+>
+> greg k-h
 
-This bug is valid, but I'd like to fix it another way.  General kernel
-style is to allow NULL to be passed into these sorts of things and just
-return if it's NULL.  So I've fixed it that way.  Fix is in linux-next.
+Thanks for your swift reply. We understand your concern. In fact, we have
+checked the related code carefully and found that xhci_create_rhub_port_array()
+is only used in xhci_setup_port_arrays(). Moreover, only xhci_mem_init() calls
+xhci_setup_port_arrays() and does all cleanup work when it fails. Specifically,
+xhci_mem_init() calls xhci_mem_cleanup(), which eventually called
+kfree(xhci->usb2_rhub.ports) and kfree(xhci->usb3_rhub.ports).
 
 Thanks,
 
--corey
-
-> 
-> Fixes: 57c9e3c9a374 ("ipmi:ipmi_ipmb: Unregister the SMI on remove")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> ---
->  drivers/char/ipmi/ipmi_ipmb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/char/ipmi/ipmi_ipmb.c b/drivers/char/ipmi/ipmi_ipmb.c
-> index b81b862532fb..ea8fdb5ecfc9 100644
-> --- a/drivers/char/ipmi/ipmi_ipmb.c
-> +++ b/drivers/char/ipmi/ipmi_ipmb.c
-> @@ -437,7 +437,8 @@ static int ipmi_ipmb_remove(struct i2c_client *client)
->  	iidev->client = NULL;
->  	ipmi_ipmb_stop_thread(iidev);
->  
-> -	ipmi_unregister_smi(iidev->intf);
-> +	if (iidev->intf)
-> +		ipmi_unregister_smi(iidev->intf);
->  
->  	return 0;
->  }
-> -- 
-> 2.25.1
-> 
+Zixuan Fu
