@@ -2,116 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3019EC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE575C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:40:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385944AbiDUHm6 (ORCPT
+        id S1385979AbiDUHnJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32872 "EHLO
+        Thu, 21 Apr 2022 03:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386007AbiDUHmM (ORCPT
+        with ESMTP id S1386067AbiDUHmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:42:12 -0400
-X-Greylist: delayed 508 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Apr 2022 00:38:49 PDT
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3C61D0E8;
-        Thu, 21 Apr 2022 00:38:48 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 1B80030B2943;
-        Thu, 21 Apr 2022 09:29:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=KTD9Z
-        V8p2M5RwTqrWZsqKaCS5uVbljw+5gJNNUbPEM8=; b=DLI6+ZJeZCwh3CBG+aKCY
-        RKo7kn450DvBswU2vENANl3ZmvSlq0CiLLP9+T6XTGIIUcI99pP4yKva2S9BSbV0
-        WTAft8SVyWWGJX7dJNgNFf9qzk4negBlxNfHLsjWcmq/q/1wvFIOxeU1RQOkpPka
-        pT0PrtWZUWobo6W4BRqR48jNzGt2Co7Raz0qIeXUsFlvEMFXP44vbkcJ502X/ENq
-        X592uWjcyue7+R+AXoZJ4ZcvWLdJnfOMj0rYytElgBibHVl9Ok8sIJnI1fAP6GnV
-        5XkftzSdIyZXE1ep6LYV0FY0G1DzYXjDwnWn0VaONmO/3D+jJxXg8MUEPn3G6JaX
-        Q==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 6B3D530AE004;
-        Thu, 21 Apr 2022 09:29:48 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 23L7Tm9c029713;
-        Thu, 21 Apr 2022 09:29:48 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 23L7Tk2S029710;
-        Thu, 21 Apr 2022 09:29:46 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: linux-next: build warning after merge of the net-next tree
-Date:   Thu, 21 Apr 2022 09:29:46 +0200
-User-Agent: KMail/1.9.10
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220421170749.1c0b56db@canb.auug.org.au>
-In-Reply-To: <20220421170749.1c0b56db@canb.auug.org.au>
-X-KMail-QuotePrefix: > 
+        Thu, 21 Apr 2022 03:42:21 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183DD1B78B;
+        Thu, 21 Apr 2022 00:39:28 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8C43DC0006;
+        Thu, 21 Apr 2022 07:39:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650526767;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qYEuMKcRPLE7kv8cT5u0HPUdYyTsqKBj+98EErK/TJ0=;
+        b=cB4C5DPCEOYqaVr9TDlENrzgBO5YhoarBWOEZgIWnUCbvvjTlFrP03L1s5ToSBdMOUPO8m
+        dnq1jUaH8UIPO3XlNQhX1uCuKQI6QAill+P6dq5dTL5b5u9DFOOUg0b6ju7dUtPNY5+kLy
+        ohRTLazqOvlRjrQCy0V/ZTsCl2HZcvcbwFlDCui7i9IegCqRbHDt87bmhylkc7MVKEBn4w
+        UL80gxiE8d2mxED8UxMeuQtrpINohimKy2k5T5ddfmU2AgUkgcpEL66Kydzt28aowuN7ay
+        RabEWJWw9osi10CVeYQD+jyv4aYzANUS8n0jOOw2PCuNxCqLj9c7VHTQXyFIHg==
+Date:   Thu, 21 Apr 2022 09:38:03 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 08/12] net: dsa: rzn1-a5psw: add FDB support
+Message-ID: <20220421093803.64ad7cc8@fixe.home>
+In-Reply-To: <20220420195214.dnekbfhha53trbke@skbuf>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        <20220414122250.158113-9-clement.leger@bootlin.com>
+        <20220414175140.p2vyy7f7yk6vlomi@skbuf>
+        <20220420101648.7aa973b2@fixe.home>
+        <20220420195214.dnekbfhha53trbke@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202204210929.46477.pisa@cmp.felk.cvut.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Stephen,
+Le Wed, 20 Apr 2022 22:52:14 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-thanks for the notice.
+> > >=20
+> > > Shouldn't this contain something along the lines of a VID, FID, somet=
+hing? =20
+> >=20
+> > This is extracted directly from the datasheet [1]. The switch FDB table
+> > does not seems to store the VID with the entries (See page 300).
+> >=20
+> > [1]
+> > https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1=
+l-group-users-manual-r-engine-and-ethernet-peripherals =20
+>=20
+> Thanks for the link. I see that the switch has a non-partitionable
+> lookup table, not even by VLAN. A shame.
+>=20
+> This is also in contrast with the software bridge driver, where FDB and
+> MDB entries can have independent destinations per VID.
+>=20
+> So there's nothing you can do beyond limiting to a single offloaded
+> bridge and hoping for the best w.r.t. per-VLAN forwarding destinations.
+>=20
+> Note that if you limit to a single bridge does not mean that you can
+> declare ds->fdb_isolation =3D true. Declaring that would opt you into
+> unicast and multicast filtering towards the CPU, i.o.w. a method for
+> software to only receive the addresses it has expressed an interest in,
+> rather than all packets received on standalone ports. The way that is
+> implemented in DSA is by adding FDB and MDB entries on the management
+> port, and it would break a lot of things without a partitioning scheme
+> for the lookup table.
 
-On Thursday 21 of April 2022 09:07:49 Stephen Rothwell wrote:
-> After merging the net-next tree, today's linux-next build (htmldocs)
-> produced this warning:
->
-> Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst:
-> WARNING: document isn't included in any toctree
->
-> Introduced by commit
->
->   c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
-> documentation.")
+Thanks Vladimir, it confirms what I thought.
 
-I would be happy for suggestion for reference location.
-
-Is the next file right location 
-
-  Documentation/networking/device_drivers/can/index.rst
-
-for reference to
-
-  Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-
-It is documentation of the driver for CAN FD open-source
-IP core developed by the group formed at Czech Technical University.
-
-I have probably minor updates for the links to the external
-resources, AXI, APB and other documentation because
-it moves from site to site under Intel, ARM, Xilinx
-web sites hierarchies.   
-
-Best wishes,
-                Pavel
---
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
