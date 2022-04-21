@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E95B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7841C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389797AbiDUPB7 (ORCPT
+        id S1389817AbiDUPDD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
+        Thu, 21 Apr 2022 11:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbiDUPB6 (ORCPT
+        with ESMTP id S231559AbiDUPC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:01:58 -0400
-Received: from m228-13.mailgun.net (m228-13.mailgun.net [159.135.228.13])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 7D0D5443F0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:59:08 -0700 (PDT)
+        Thu, 21 Apr 2022 11:02:29 -0400
+Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 51C724550D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:59:39 -0700 (PDT)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1650553148; h=In-Reply-To: Content-Type: MIME-Version:
+ s=smtp; t=1650553179; h=In-Reply-To: Content-Type: MIME-Version:
  References: Message-ID: Subject: Subject: To: To: From: From: Date:
- Sender: Sender; bh=jxjD/BGpP33jL+RkZPJr5Lov9+ps4iGN0RwXmAZSh/4=; b=IpHmuKZ/BDsjjfWG1abuQ8M7A07yB6JQE2qtdIv3V65KzR7vAcRUcb5NBWE+4NepBHy4Xhx0
- X2KwTsHtVZpctZ/aSzA7S0twTdS4+iJQ6aQiEdODPZ5aQ0RO5Xvf1feXng6c+eGhOt6y+bLL
- cuB7CIZCtNbhsIIkiqwrhzuYjq3GllRjaOW2eVk1sBe5CupYjjJklF2aV2Ss/aGfHvgQSP9H
- lAhuU9+IlFDbo1YnSKtUHkSFYgNlal74+NjKo0ICszg7RAD05BDsxhf80joiBH50LSQUR2al
- zFseFxXBMXUuF85v+3zNx21pGBuhf0rdiItw+wyXORLEm+H/0Baqxw==
-X-Mailgun-Sending-Ip: 159.135.228.13
+ Sender: Sender; bh=2FfySmyUi61V40qd9e4vY+mMpu2WKzNDDsFY/pOvwG8=; b=DSmjlPIcVdLExJVg97Q5KGee/NX7gkkXivuTasF9zAzftf4olyEnnxW7TrOiFrgVqp0JKfgZ
+ wpPNSMV7nrse4ygpriYE40mnGTOQy+yoPY9uPYem899BZFlvKha/WHDdFVDvmG20mZYqdcFi
+ XaQdseHuZbCNV8itLfIP8NUDAbxVK4S+eqAuFJs3dqETpzBTcv42hLJ9wq8Ip9KWQxhW/sXn
+ uKrSP5bxC2fRnYK/0qn7a7A4F9zbgAVRFSclNLV09/LKtAkKNFhxKbOhPzys+2a5QnP9PT+D
+ le043xMvPzhtuAyLIKNYlrc4sXfPy1e32oCAmn6Wq0JReIsF9VS8PA==
+X-Mailgun-Sending-Ip: 159.135.228.62
 X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
 Received: from AN5Bruno (dynamic-user.170.84.57.33.mhnet.com.br
- [170.84.57.33]) by smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 6261713b2491c3e6d5b0d3a5 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Thu, 21 Apr 2022 14:59:07 GMT
+ [170.84.57.33]) by smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 6261715ab77b16c56e3e69e1 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
+ Thu, 21 Apr 2022 14:59:38 GMT
 Sender: codeagain@codeagain.dev
-Date:   Thu, 21 Apr 2022 11:59:02 -0300
+Date:   Thu, 21 Apr 2022 11:59:34 -0300
 From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Martyn Welch <martyn@welchs.me.uk>,
@@ -39,12 +39,12 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         outreachy@lists.linux.dev,
         Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: [PATCH v4 2/3] staging: vme: Add VME_BUS dependency to Kconfig
-Message-ID: <00de5644d7c2f8c8878eccf86b761e0602732089.1650544175.git.codeagain@codeagain.dev>
+Subject: [PATCH v4 3/3] staging: vme: Move 'vme/devices/' to 'vme_user/'
+Message-ID: <2cd7de9a426c443a5ea618682d605ecfd751d798.1650544175.git.codeagain@codeagain.dev>
 References: <cover.1650544175.git.codeagain@codeagain.dev>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ohvy3oop3iuwcwi5"
+        protocol="application/pgp-signature"; boundary="ysqdnui3ra2l3lsk"
 Content-Disposition: inline
 In-Reply-To: <cover.1650544175.git.codeagain@codeagain.dev>
 Precedence: bulk
@@ -52,62 +52,134 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---ohvy3oop3iuwcwi5
+--ysqdnui3ra2l3lsk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-The KConfig file for VME_USER ('drivers/staging/vme/devices/Kconfig')
-sourced at "drivers/vme/boards/KConfig" misses a `depends on` line for
-VME_BUS, which is unnoticeable for menuconfig users who aren't be able
-to select it through this interface without setting the CONFIG_VME_BUS
-option because it's nested on VME_BUS menu entry.
+In <db3b9e990e75573402cda22faf933760f076c033> ("Staging: VME: move VME=20
+drivers out of staging") the vme code, board and bridge drivers were
+moved out of the staging tree, remaining only the VME user device=20
+driver.
 
-A patch to move appropriately this driver to the "Staging" submenu
-([PATCH 1/3], originally sent as a single patch submitted at
-https://lore.kernel.org/linux-staging/3fbc5325e94b9ae0666a1f5a56a4e5372bfce=
-a1d.camel@codeagain.dev/T/#t),
-however, unveiled this missing `depends on` line, since it moved the
-`source` line for VME_USER's KConfig to somewhere else, allowing it to
-be compiled without the support for VME_BUS. While it compiles fine and
-seems to initialize the driver fine (tested both as module and as built-
-in), it seems to make no sense having VME_USER without VME_BUS.
+Since this driver is the only one remaining in staging, such multi-level
+structure confuses more than helps. The current structure is as follows:
 
-This patches addresses it by adding the VME_BUS to the `depends on` line
-at "drivers/staging/vme/devices/Kconfig".
+ - drivers/staging/vme/
+                       Makefile
+                       devices/
+                               Kconfig
+                               Makefile
+                               vme_user.c
+                               vme_user.h
+
+The top-level Makefile has the only function of calling another Makefile
+into the devices/ subdirectory. This latter only compiles the vme_user=20
+driver, since there is no other in the staging tree.
+
+This patch removes the unnecessary Makefile from the 'vme/' dir, move
+the contents of 'vme/devices' into the 'vme/' dir, and renames it to
+'vme_user/' (the driver name), allowing a straightforward understanding
+of this driver's contents. Furthermore, it updates the MAINTAINERS file
+to properly reflect the new paths.
 
 Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
 ---
- drivers/staging/vme/devices/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS                                          | 2 +-
+ drivers/staging/Kconfig                              | 3 +--
+ drivers/staging/Makefile                             | 2 +-
+ drivers/staging/vme/Makefile                         | 2 --
+ drivers/staging/{vme/devices =3D> vme_user}/Kconfig    | 0
+ drivers/staging/{vme/devices =3D> vme_user}/Makefile   | 0
+ drivers/staging/{vme/devices =3D> vme_user}/vme_user.c | 0
+ drivers/staging/{vme/devices =3D> vme_user}/vme_user.h | 0
+ 8 files changed, 3 insertions(+), 6 deletions(-)
+ delete mode 100644 drivers/staging/vme/Makefile
+ rename drivers/staging/{vme/devices =3D> vme_user}/Kconfig (100%)
+ rename drivers/staging/{vme/devices =3D> vme_user}/Makefile (100%)
+ rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.c (100%)
+ rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.h (100%)
 
-diff --git a/drivers/staging/vme/devices/Kconfig b/drivers/staging/vme/devi=
-ces/Kconfig
-index 5651bb16b28b..e8b4461bf27f 100644
---- a/drivers/staging/vme/devices/Kconfig
-+++ b/drivers/staging/vme/devices/Kconfig
-@@ -3,7 +3,7 @@ comment "VME Device Drivers"
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3ed62dcd144e..efc38961f792 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21010,7 +21010,7 @@ L:	linux-kernel@vger.kernel.org
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git
+ F:	Documentation/driver-api/vme.rst
+-F:	drivers/staging/vme/
++F:	drivers/staging/vme_user/
+ F:	drivers/vme/
+ F:	include/linux/vme*
 =20
- config VME_USER
- 	tristate "VME user space access driver"
--	depends on STAGING
-+	depends on STAGING && VME_BUS
- 	help
- 	  If you say Y here you want to be able to access a limited number of
- 	  VME windows in a manner at least semi-compatible with the interface
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index e4dcf411030d..e117811ec832 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -86,7 +86,6 @@ source "drivers/staging/fieldbus/Kconfig"
+=20
+ source "drivers/staging/qlge/Kconfig"
+=20
+-
+-source "drivers/staging/vme/devices/Kconfig"
++source "drivers/staging/vme_user/Kconfig"
+=20
+ endif # STAGING
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index 65e317922e3f..db7287de0faf 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -14,7 +14,7 @@ obj-$(CONFIG_OCTEON_ETHERNET)	+=3D octeon/
+ obj-$(CONFIG_OCTEON_USB)	+=3D octeon-usb/
+ obj-$(CONFIG_VT6655)		+=3D vt6655/
+ obj-$(CONFIG_VT6656)		+=3D vt6656/
+-obj-$(CONFIG_VME_BUS)		+=3D vme/
++obj-$(CONFIG_VME_BUS)		+=3D vme_user/
+ obj-$(CONFIG_IIO)		+=3D iio/
+ obj-$(CONFIG_FB_SM750)		+=3D sm750fb/
+ obj-$(CONFIG_USB_EMXX)		+=3D emxx_udc/
+diff --git a/drivers/staging/vme/Makefile b/drivers/staging/vme/Makefile
+deleted file mode 100644
+index cf2f686ccffe..000000000000
+--- a/drivers/staging/vme/Makefile
++++ /dev/null
+@@ -1,2 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-obj-y				+=3D devices/
+diff --git a/drivers/staging/vme/devices/Kconfig b/drivers/staging/vme_user=
+/Kconfig
+similarity index 100%
+rename from drivers/staging/vme/devices/Kconfig
+rename to drivers/staging/vme_user/Kconfig
+diff --git a/drivers/staging/vme/devices/Makefile b/drivers/staging/vme_use=
+r/Makefile
+similarity index 100%
+rename from drivers/staging/vme/devices/Makefile
+rename to drivers/staging/vme_user/Makefile
+diff --git a/drivers/staging/vme/devices/vme_user.c b/drivers/staging/vme_u=
+ser/vme_user.c
+similarity index 100%
+rename from drivers/staging/vme/devices/vme_user.c
+rename to drivers/staging/vme_user/vme_user.c
+diff --git a/drivers/staging/vme/devices/vme_user.h b/drivers/staging/vme_u=
+ser/vme_user.h
+similarity index 100%
+rename from drivers/staging/vme/devices/vme_user.h
+rename to drivers/staging/vme_user/vme_user.h
 --=20
 2.35.3
+=20
 
-
---ohvy3oop3iuwcwi5
+--ysqdnui3ra2l3lsk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYmFxNgAKCRAZtd3tyEY2
-krkrAP9vWAmZIIj6NA8HbLw+GMYp9wQ5BlflzgrnP/2yy93TqQD/QQNtmFw6kXlN
-QcKpNPAPEMDwVfroXGiVaqvlYxgj1Ac=
-=TL3i
+iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYmFxVgAKCRAZtd3tyEY2
+krlvAQDDn7lzGOuuR0sliolPWkeZtxB1Nst95cgEgmdl85zMYQD9E9OZC1NeH2NY
+/pqn13eWXlOs9OWZWrKcf26A/h57QwU=
+=JZHj
 -----END PGP SIGNATURE-----
 
---ohvy3oop3iuwcwi5--
+--ysqdnui3ra2l3lsk--
