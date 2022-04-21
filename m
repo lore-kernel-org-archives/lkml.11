@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 402FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:45:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386811AbiDUIsK (ORCPT
+        id S1386838AbiDUIso (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57506 "EHLO
+        Thu, 21 Apr 2022 04:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386821AbiDUIsG (ORCPT
+        with ESMTP id S1385732AbiDUIsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:48:06 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76381173;
-        Thu, 21 Apr 2022 01:45:16 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id q75so3074265qke.6;
-        Thu, 21 Apr 2022 01:45:16 -0700 (PDT)
+        Thu, 21 Apr 2022 04:48:38 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5D6B1F8;
+        Thu, 21 Apr 2022 01:45:50 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id j6so3072803qkp.9;
+        Thu, 21 Apr 2022 01:45:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LKD1G0TxQ0FViMYSyYhesbGvgSZMTzA6rl+8jw/l3Bw=;
-        b=WhBcXGi6CJ31duWMxgDx/pwBSst1ebEn8hrDU6caqcNA0X9gTJzReDF62DIY9AP8B5
-         NsMHWQDariVBc4Tj1q2rmKY3J91QMZEoY+EBx+bIuTvBMjUjJwWN9uB+t1TRU8IfkmSZ
-         QpzUulvEPPJHnQZZyyBZXA64kk4keSxHy8kUJretDVe/IjMwPsLGM2yIorIP5g1v4JJZ
-         OuZm5XVbB004kweaCRm1Pw81UAq0QCQSIRy61+6o08Fw5wHfHIOlSwZX2kfhepwVksR7
-         4wsb4OUVUEuqFN2l1kbistlj+gntugE7+IHQzzX3N2UPdBuMiDQw7N+vTkHkjH1qldOG
-         x5lw==
+        bh=vEFTLGDtfWVDHuldQRqU5lfCf1pN2Vgy21hTY3jHvgQ=;
+        b=QhpKmsYZOuFIkN4tj3pzITIfRmGL2Vw7l/+c8exFfYc6R07W66oKCSEfVx2uaiEotL
+         oMxreb9mw2xifvpnos2nFc3Y2+pdADJx2Mzr33z93JKDagA8B8gZ9M3RJmE/ZsUVBywj
+         6NhWmo/mn8Hailgt9VnTYmHQr8KdQLM3r7NM+f9mZYcbuA1IASqlV+ieBLPerESqtg+N
+         NnfHz6vOjwdViQaT6M6I0k1ZUuk8kYlViRnDQhJqf5nIpRDaGdrtG02MRkYw7umTQsbl
+         lPLjKRJ5bJUlzzEaxEWpz3NpIyokwG7NKEcnvJvD+TYn16T+Hhh1VEjwRCLAR5Txf8JU
+         pQQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LKD1G0TxQ0FViMYSyYhesbGvgSZMTzA6rl+8jw/l3Bw=;
-        b=0Cj/VD4UrEnHjc0yjSwai5smzreQdP0gBaNR+UnzVGL/06GVVTJ1M8k2HaA0Lv9ENv
-         Axvfb09qqc9iPzBFouyv5/afqbmCa/PtGuU/9tz6R3S99qySYRky/ROVlaQfmvtnvRBC
-         KY/hFefRPIdpqW9KXWaJMaxUtbVEzGdGTsBz+vu5+DydHaovjhUkE90qu+j3QcP/YMpy
-         Gep5jfgP61rssKHRyQdHdiNCKEFcfheWn8USY8AzNISW7dYtdgErGs8lPCloc7VBwJPX
-         ScBEsdFYdYWsurkjBBpUoWRx7gkOewUbjAEZViTbyeBZCgkAZz7DB8z2cLFjfGwmif42
-         cCXQ==
-X-Gm-Message-State: AOAM533qC6qnEhO8mhOmidMFXb9Y9ebP6AColVKh6ZjDvrHZtgmjGSRG
-        W3mUsN5rdPMp4YCA0fv9md0=
-X-Google-Smtp-Source: ABdhPJwvmYRFcj2yjb/bRmq2ixiLjbBQRMuVyg0QIfdvM5fW5Gxj+MFvIjgxnGImYjgI2SjsoHOibQ==
-X-Received: by 2002:a05:620a:4451:b0:69e:c6a0:7506 with SMTP id w17-20020a05620a445100b0069ec6a07506mr6975909qkp.313.1650530716017;
-        Thu, 21 Apr 2022 01:45:16 -0700 (PDT)
+        bh=vEFTLGDtfWVDHuldQRqU5lfCf1pN2Vgy21hTY3jHvgQ=;
+        b=LoAlNiZy/NhYaSF2L3cnPqzxmTkZo06m6HvdOeKSu+it7lNW9rw6mxADeXiluSTvYD
+         JonkmjVxAyb+IUtPWZTvi/hP7U8HgTA9owwWwzeXvb1tFw8RRRR84eh4oxAeHhXLU4ut
+         ZLjvVgDlXqpfhawbcy99QsjQ8ZgFaChuagGd4h9UP1VcP9FJCfG+Cy5B68hC4RuuXg25
+         DYdJASTSrhurCQn3Ed5IKiaHgcGRHvjifxwkQZkX1oW6FixWvL9ZqX3gs5GIbJJNdp00
+         PUg+/D8U+bF1Vguw/miDnvjp2vkFcKQPjsuQ3HBZkZHYC8EhurZdb10ut60lVxjkRuZm
+         DnEQ==
+X-Gm-Message-State: AOAM5315yxjUKICRYas4l6D8vzAgHM7Xp5ZIoY2u69KCemrNXSFB8gYR
+        8B2ToDyIBojtqgG3v7kM+p4=
+X-Google-Smtp-Source: ABdhPJy4CvLhO4p7WBjhapwu+eeHntufKSaitDCKftgQbXnaIlO7ZsLftW46MkYtHfvXRPLF2+8TbQ==
+X-Received: by 2002:a05:620a:4014:b0:69e:c20c:5064 with SMTP id h20-20020a05620a401400b0069ec20c5064mr7479298qko.111.1650530749339;
+        Thu, 21 Apr 2022 01:45:49 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id v14-20020a05622a144e00b002f1f32f86a6sm3070004qtx.5.2022.04.21.01.45.12
+        by smtp.gmail.com with ESMTPSA id t17-20020a05620a035100b0069ea7219390sm2528245qkm.55.2022.04.21.01.45.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 01:45:15 -0700 (PDT)
+        Thu, 21 Apr 2022 01:45:49 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     vkoul@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+To:     thierry.reding@gmail.com, airlied@linux.ie
+Cc:     daniel@ffwll.ch, jonathanh@nvidia.com,
+        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
         linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] dma: Make use of the helper function devm_platform_ioremap_resource()
-Date:   Thu, 21 Apr 2022 08:45:09 +0000
-Message-Id: <20220421084509.2615252-1-lv.ruyi@zte.com.cn>
+Subject: [PATCH] drm/tegra: Make use of the helper function devm_platform_ioremap_resource()
+Date:   Thu, 21 Apr 2022 08:45:42 +0000
+Message-Id: <20220421084542.2615381-1-lv.ruyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -69,36 +69,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
 Use the devm_platform_ioremap_resource() helper instead of calling
-platform_get_resource() and devm_ioremap_resource() separately.
+platform_get_resource() and devm_ioremap_resource() separately.Make the
+code simpler without functional changes.
 
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- drivers/dma/imx-sdma.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpu/drm/tegra/vic.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 6196a7b3956b..cf4667d10f6a 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -2073,7 +2073,6 @@ static int sdma_probe(struct platform_device *pdev)
- 	const char *fw_name;
- 	int ret;
- 	int irq;
--	struct resource *iores;
- 	struct resource spba_res;
- 	int i;
- 	struct sdma_engine *sdma;
-@@ -2096,8 +2095,7 @@ static int sdma_probe(struct platform_device *pdev)
- 	if (irq < 0)
- 		return irq;
+diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
+index 1e342fa3d27b..daba4f6cc328 100644
+--- a/drivers/gpu/drm/tegra/vic.c
++++ b/drivers/gpu/drm/tegra/vic.c
+@@ -409,7 +409,6 @@ static int vic_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct host1x_syncpt **syncpts;
+-	struct resource *regs;
+ 	struct vic *vic;
+ 	int err;
  
--	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	sdma->regs = devm_ioremap_resource(&pdev->dev, iores);
-+	sdma->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(sdma->regs))
- 		return PTR_ERR(sdma->regs);
+@@ -430,13 +429,7 @@ static int vic_probe(struct platform_device *pdev)
+ 	if (!syncpts)
+ 		return -ENOMEM;
+ 
+-	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!regs) {
+-		dev_err(&pdev->dev, "failed to get registers\n");
+-		return -ENXIO;
+-	}
+-
+-	vic->regs = devm_ioremap_resource(dev, regs);
++	vic->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vic->regs))
+ 		return PTR_ERR(vic->regs);
  
 -- 
 2.25.1
+
 
