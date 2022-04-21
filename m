@@ -2,75 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F25C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388727AbiDULOd (ORCPT
+        id S1388741AbiDULQE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 07:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
+        Thu, 21 Apr 2022 07:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232151AbiDULO0 (ORCPT
+        with ESMTP id S231339AbiDULQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 07:14:26 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E646DFEB;
-        Thu, 21 Apr 2022 04:11:37 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KkZbz6KDCzhXZq;
-        Thu, 21 Apr 2022 19:11:27 +0800 (CST)
-Received: from huawei.com (10.67.174.166) by canpemm500006.china.huawei.com
- (7.192.105.130) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Apr
- 2022 19:11:34 +0800
-From:   Zucheng Zheng <zhengzucheng@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <hpa@zytor.com>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] perf/x86/amd: Remove unused variable 'hwc'
-Date:   Thu, 21 Apr 2022 19:10:31 +0800
-Message-ID: <20220421111031.174698-1-zhengzucheng@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
+        Thu, 21 Apr 2022 07:16:01 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73BA25E82;
+        Thu, 21 Apr 2022 04:13:11 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R471e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VAeULO8_1650539585;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VAeULO8_1650539585)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 21 Apr 2022 19:13:07 +0800
+Date:   Thu, 21 Apr 2022 19:13:04 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
+Subject: Re: [PATCH v9 18/21] erofs: implement fscache-based data read for
+ non-inline layout
+Message-ID: <YmE8QG7eXrIT+TzO@B-P7TQMD6M-0146.local>
+Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
+        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
+References: <20220415123614.54024-1-jefflexu@linux.alibaba.com>
+ <20220415123614.54024-19-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.166]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220415123614.54024-19-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'hwc' is never used in amd_pmu_enable_all(), so remove it.
+On Fri, Apr 15, 2022 at 08:36:11PM +0800, Jeffle Xu wrote:
+> Implement the data plane of reading data from data blobs over fscache
+> for non-inline layout.
+> 
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+> ---
+>  fs/erofs/fscache.c  | 51 +++++++++++++++++++++++++++++++++++++++++++++
+>  fs/erofs/inode.c    |  4 ++++
+>  fs/erofs/internal.h |  2 ++
+>  3 files changed, 57 insertions(+)
+> 
+> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+> index 3f00eb34ac35..b799b0fe1b67 100644
+> --- a/fs/erofs/fscache.c
+> +++ b/fs/erofs/fscache.c
+> @@ -84,10 +84,61 @@ static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
+>  	return ret;
+>  }
+>  
+> +static int erofs_fscache_readpage(struct file *file, struct page *page)
+> +{
+> +	struct folio *folio = page_folio(page);
+> +	struct inode *inode = folio_mapping(folio)->host;
+> +	struct super_block *sb = inode->i_sb;
+> +	struct erofs_map_blocks map;
+> +	struct erofs_map_dev mdev;
+> +	erofs_off_t pos;
+> +	loff_t pstart;
+> +	int ret = 0;
 
--------------------------------
+Redundant assignment now?
 
-Signed-off-by: Zucheng Zheng <zhengzucheng@huawei.com>
----
- arch/x86/events/amd/core.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 8e1e818f8195..d7f9500b876d 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -714,14 +714,11 @@ static void amd_pmu_enable_event(struct perf_event *event)
- static void amd_pmu_enable_all(int added)
- {
- 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
--	struct hw_perf_event *hwc;
- 	int idx;
- 
- 	amd_brs_enable_all();
- 
- 	for (idx = 0; idx < x86_pmu.num_counters; idx++) {
--		hwc = &cpuc->events[idx]->hw;
--
- 		/* only activate events which are marked as active */
- 		if (!test_bit(idx, cpuc->active_mask))
- 			continue;
--- 
-2.18.0.huawei.25
-
+> +
+> +	DBG_BUGON(folio_size(folio) != EROFS_BLKSIZ);
+> +
+> +	pos = folio_pos(folio);
+> +	map.m_la = pos;
+> +
+> +	ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
+> +	if (ret)
+> +		goto out_unlock;
+> +
+> +	if (!(map.m_flags & EROFS_MAP_MAPPED)) {
+> +		folio_zero_range(folio, 0, folio_size(folio));
+> +		goto out_uptodate;
+> +	}
+> +
+> +	mdev = (struct erofs_map_dev) {
+> +		.m_deviceid = map.m_deviceid,
+> +		.m_pa = map.m_pa,
+> +	};
+> +
+> +	ret = erofs_map_dev(sb, &mdev);
+> +	if (ret)
+> +		goto out_unlock;
+> +
+> +	pstart = mdev.m_pa + (pos - map.m_la);
+> +	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
+> +			folio_mapping(folio), folio_pos(folio),
+> +			folio_size(folio), pstart);
+> +
+> +out_uptodate:
+> +	if (!ret)
+> +		folio_mark_uptodate(folio);
+> +out_unlock:
+> +	folio_unlock(folio);
+> +	return ret;
+> +}
+> +
+>  static const struct address_space_operations erofs_fscache_meta_aops = {
+>  	.readpage = erofs_fscache_meta_readpage,
+>  };
+>  
+> +const struct address_space_operations erofs_fscache_access_aops = {
+> +	.readpage = erofs_fscache_readpage,
+> +};
+> +
+>  /*
+>   * Create an fscache context for data blob.
+>   * Return: 0 on success and allocated fscache context is assigned to @fscache,
+> diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
+> index e8b37ba5e9ad..8d3f56c6469b 100644
+> --- a/fs/erofs/inode.c
+> +++ b/fs/erofs/inode.c
+> @@ -297,6 +297,10 @@ static int erofs_fill_inode(struct inode *inode, int isdir)
+>  		goto out_unlock;
+>  	}
+>  	inode->i_mapping->a_ops = &erofs_raw_access_aops;
+> +#ifdef CONFIG_EROFS_FS_ONDEMAND
+> +	if (erofs_is_fscache_mode(inode->i_sb))
+> +		inode->i_mapping->a_ops = &erofs_fscache_access_aops;
+> +#endif
+>  
+>  out_unlock:
+>  	erofs_put_metabuf(&buf);
+> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+> index fa488af8dfcf..c8f6ac910976 100644
+> --- a/fs/erofs/internal.h
+> +++ b/fs/erofs/internal.h
+> @@ -639,6 +639,8 @@ int erofs_fscache_register_cookie(struct super_block *sb,
+>  				  struct erofs_fscache **fscache,
+>  				  char *name, bool need_inode);
+>  void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
+> +
+> +extern const struct address_space_operations erofs_fscache_access_aops;
+>  #else
+>  static inline int erofs_fscache_register_fs(struct super_block *sb)
+>  {
+> -- 
+> 2.27.0
