@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA47C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391062AbiDUSAX (ORCPT
+        id S1351945AbiDUSA1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
+        Thu, 21 Apr 2022 14:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391025AbiDUSAH (ORCPT
+        with ESMTP id S1391029AbiDUSAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:00:07 -0400
+        Thu, 21 Apr 2022 14:00:08 -0400
 Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60084.outbound.protection.outlook.com [40.107.6.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFFC45AEE;
-        Thu, 21 Apr 2022 10:57:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DB84667E;
+        Thu, 21 Apr 2022 10:57:18 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b5nzZiXsLb21MAiA/JmCFiaDzTJ8ZePZfEY07U+9OD+kkBQqbC3bzFkzuo4HwitRmvnJgAfGDLiput2DyHescjloVlNyj68BDgO3QiDBF+ss3JKBCDCuvfmDgiak3kIECrOdQR2McXtFcDAEMWtQOPi6W2BLEHfd1pPbznXXxi6RonlnvHM00bhDYgtDkVAWvYw1FLsHINhojQK7Pz698k8+4el6cM1Ga5RTkXB0p+1uGeZ9F+s7luyVTPzB89J6/AbnZYG2VW+eROUpA0IdhFGY5H0vkCYIm9HD//R3AeB2ExFwgkLGTb4oxxHRz8qJ9JbJSQmmnrCXzwdIcg+Kwg==
+ b=gcYaZD05TYE/r4FEscaXCtPGaegrLYV7bwQxxc5OFEZ7QYUn6XFLmLCkPaPild5jVhyx/gVNLE498fF4dn/juvKmYWFbzHY0gZNdXZTFyFqBkPvNFc73ZDfGsYTWgEpKm2tI3NRMk2lFY8MSB1QICqHHtgzdeHum2ZGSc8w+WDRhUtpSzsTwngw0dbMI2pcIoiqvXQZenYYpl5TjzBl++lIIviyZrNvLbqhBrUSYHF26tdryrgnsAfXuorXDW1/tTvDwVGafCplUDIXNQn4D58SclahN6qjjiZYFmZK8hL8vNiwaoMNmY1/NpAVCnHGBe2wXnfDa/cJzMo+qHzTXrA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w8dAOtQlsdq4WVwLRPZWXOubavicTI4K16PvfjTUV+s=;
- b=ay2lakjymFOZqN0rKRCius6A8SIJzSBBjgL7oQBz+Jhspj9Cf3MCRfZgjMVfLPGf7g040oG8t/tKPz/5AHQo+ud/NJPF4B5nLtAwrySySTfwjz80R3Vn/gEBoqcrDgETSpMZbW7+Uy/Knoiw08anSwLJKOXfeR2Pm807GYc94qWNJqvtevIJNklBV4RqmHTlXlNY++KtP2YaJ1iOVswbvNOdzWz9F2VmM4a+Ad5YsV3qAPXVmCSy7YfmqItCu3iYKURoM60frda+xF/kQkgh3sqlpyrEz3W3fsjHsLJxkGrV6IJY4CXk+IU7UzXNxiH8gZZ56De2CT2iiEHT5YpGRA==
+ bh=RKtWCJ+oMHKuJx7NKMBdEqjNQftJAhInPLAmL4JBs+Y=;
+ b=KOJLI0a4M/YkEaZ5P4hN65Rghol6bDXGyUtHhlPZwezXZR3VmVnwF0eVz0z6hwTapo3+AJ/grvrfu1BpXtBF0rtCyPzOF54XAUPXRI32YjK9v2UkMMHuxm711p6cEG8cWsqXvp6hLiw+y0U6uHx/eO5coQypH7S5FtkZiMOrxIUaAZkWXZ82bDeyofh9wOSe0y3zFhxqx8H0uvfqjsnFe6M9ATa2aIYda/zmC+BH/UADnDdZyXIyuNQ0kl8vIP1gyfD0hpj1Mxlv/5QEA49w9i78uWmhSbYWMKsCRAk5rBjzFWVlmM8znDK8sXGo1oqirkY/s9GQG6IVEM9pAUij2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w8dAOtQlsdq4WVwLRPZWXOubavicTI4K16PvfjTUV+s=;
- b=ei6De5QLtlopJycIOP/VglK5CvCnfRkosRrbGY03KcMHyOUzNuO70yDc5N1zQ58dqF3jCbaNEqx7wRrSZKBiRPFAyNROo9Uem0DodlGj8eO8fETVyaF+vBfunFS0EEsOkdHeZGIA2UI25I3Eck7ZsZ3+yk+dTh6PknVVxPkUsKkWN9vI3083F5VEO4NPGEiSXBD7+obcWSvEX6FAqRumLUZorpoKSxCfDR4ho+9o5VMTTDxHIRkWL9ZdcnPtq8DJQyO1I3xiTC/EfPRNOp9GBNzXBzEZ97iCMYvQj054RaOGA6APjX56F2XNgmYCvqjKnTmmFdgrKzb8gMul6oFY7w==
+ bh=RKtWCJ+oMHKuJx7NKMBdEqjNQftJAhInPLAmL4JBs+Y=;
+ b=M0IVx2WthV3LN8ryKTf1JOAOhSd9Gu8nShkh11wEEwiy6rPQpy50jMF0Xse42l1zQrS75vFIm47sU8JGXr+0Ichk6foDAkavy7ZcBGOUXathXvh2pqQxDzBMppjfoXWdFcQxOnFj+Z9MrhvvUVz9sqtOYo79e3f8dH3LBR/re705fsVs95pmlcRzt19+hRG4mVJ9BRw2JDsUggww1OOcv9Xzk5ZiuZdaCBbIGxO7Bq7dMe9WfOk/XiZO93Um+Yo3bkj1V0ybOcmY83/dlGaOc0sO5sHZRszbLI2NxMhDeUIz5GAxVtPOdK5ymPSLZozDVlo8MsfoDryI4gXNscl+KQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by AS8PR03MB8101.eurprd03.prod.outlook.com (2603:10a6:20b:444::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Thu, 21 Apr
- 2022 17:57:15 +0000
+ 2022 17:57:17 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::714d:2b6:a995:51bd]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::714d:2b6:a995:51bd%4]) with mapi id 15.20.5186.015; Thu, 21 Apr 2022
- 17:57:15 +0000
+ 17:57:17 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 Cc:     Shawn Guo <shawnguo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
@@ -49,9 +49,9 @@ Cc:     Shawn Guo <shawnguo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Li Yang <leoyang.li@nxp.com>, linux-kernel@vger.kernel.org,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH 4/8] dt-bindings: nvmem: sfp: Add compatible binding for TA 2.1 SFPs
-Date:   Thu, 21 Apr 2022 13:56:53 -0400
-Message-Id: <20220421175657.1259024-5-sean.anderson@seco.com>
+Subject: [PATCH 5/8] arm64: dts: ls1028a: Update SFP binding to include clock
+Date:   Thu, 21 Apr 2022 13:56:54 -0400
+Message-Id: <20220421175657.1259024-6-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220421175657.1259024-1-sean.anderson@seco.com>
 References: <20220421175657.1259024-1-sean.anderson@seco.com>
@@ -62,91 +62,86 @@ X-ClientProxiedBy: BLAPR03CA0125.namprd03.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6f30ccfd-3c6d-4164-a2cd-08da23c05e99
+X-MS-Office365-Filtering-Correlation-Id: fc04cf7c-2a21-40ec-30d8-08da23c05f8f
 X-MS-TrafficTypeDiagnostic: AS8PR03MB8101:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR03MB810105D8FC0C3B1A0984919B96F49@AS8PR03MB8101.eurprd03.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <AS8PR03MB81019C19F68D88C5E7D7BF8F96F49@AS8PR03MB8101.eurprd03.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 15FjbG9idPCxMW2qbVK4IKa9T8aWgQjivF5ZIUvI0aNMxlxr8zAzR4Fej2JhA7MaxwtrclmIJM2kWIIgX7As46pZYijBPJ8Q46AHJQXjwLfmw8V4pb32IrHnO3riAMC+YK68WyA6ReKN7ZrePuBdv2RvW+GW2qpFigBDrzh/2Hw7vepERHQyMyu5RFkFMLnT+YB28lrGryrYD3sjdflTCcwkvyAIzsTeKDApk7P8fIJNgc0qOwd5Dv1jOpTfXWoyRiEq0SmVKQVOtIH409s0dQs5ck8d31x+PuRkD7aviw7YI2nywNMJHon6Z+F1H5dx7j6wXjf9UVhvhthbic+cDxLO8Cj+XhkeSdmPFKa9kLoiIPml/R8nu7P7KKHU1EcLD4JfU2u3xYXfQawEU18td9LsLzZSzqsHsf6tAp+kvR4ecgKppWakjBfn1PJWurQ6OZWi000k5mZrz1Ijgm/vVGYM01PU5MjrNFOs+v0WbQVWg8P1Fgr48X216IQ2uf8x7KH8nvV0Iw5D5JHh1qM9Jcd5dDuCiVCh7N3G8N/V6n3YmCFSscFz3bmuGKruwg6DuQZ6D5vdkogYKS6pwIIPsBoQEdabCTMaSm++lhyRrylSknrAtZK3jB9ivlsAydU8uvHc/eIFUOBHHR0C0tNROBlVf5KS01JOUu9Br2vGAZfpeYouE/OLzfc/kcDzuVOBdBz6lMpBXzd/8/06XjPcfg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(52116002)(86362001)(6512007)(2616005)(5660300002)(44832011)(6666004)(2906002)(26005)(1076003)(107886003)(8936002)(54906003)(186003)(38100700002)(38350700002)(508600001)(36756003)(6486002)(316002)(8676002)(4326008)(66476007)(66946007)(66556008)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: uAC+2fq+B2daL7lxYsMQCCGk1w3l49x1dXABmw/QDVznkTJidwNy6gxWkB/b+BWey9atmoo3yfw4lCZMxGsX1uQc50VHgFjGbha8Bjn978hfw9jko5sk3nE+vRWChQnLdVCzvQ25vPmbCNtFpRHa4FQ1ddRToNyyuXGxUKJgmaHY/47evY8iUaeVzX6Vox5qZeMlddrHkvgzLZEJW4TylK2XcYB5NO3Pc2K7Oj3gc9KKf52HCSxSr5tjehGQTBoYjJbQpELyK59MIJy+Iouzc9/Oogp2ZFlwoOmxJyp7+qrBZ7ualRG33h6PVB0VAF+85+a/fdTBzV+L5a2sQr8ZTn/dVogumf6VI6hT/NoG/7EU4JhnK9b0RDnSErLhaYZkjEEoxX9pIv6sMNEbsDSGeK+Gv3IBafGyhaYonvr8lW4kli6vq2BWDUtdpjmJ9XuSPcy14tKaTadZhg79RKiXtKV5BJIDXxORCtPUkYczcjwrnxza29eRu+znR0xx1aG2W5vAiLHzBNogETAXrIb1Gw31LV/rYAPmxl6RKsoxwla44dgeSU2qFu1Ad/o/n4Bt4cemsUP5WgmBScx8N+0nX7gG6d7vnV4OupE2FIkRHpwOGTbGljJtUycwkvrlEyDkkXZPGYHLo3Qe2VgCzPVSAfGvN/opLnXuzbUrOHDI8FA/YrcBFTxqpBgHCoYW4IDwSJJMP8SotVmzXp6UGlgYJA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(52116002)(86362001)(6512007)(2616005)(4744005)(5660300002)(44832011)(6666004)(2906002)(26005)(1076003)(107886003)(8936002)(54906003)(186003)(38100700002)(38350700002)(508600001)(36756003)(6486002)(316002)(8676002)(4326008)(66476007)(66946007)(66556008)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5tvFAXJwwDyRKwFpcKy1k+u9gHjjC7v9N7hNZb52b8eoHbD8trLjshLhvfJB?=
- =?us-ascii?Q?LJ1MmIPc3GWllPZ74IaEMOL7CFCrzJsoDdsqzTTYMlyswiPb6ISz1BMX1rB0?=
- =?us-ascii?Q?4U0dfmA5QBLS0HkNetmVDxHFBWTu9Y1giZdEwomYN46onSeA9eEV3GNbxKV4?=
- =?us-ascii?Q?/dXGUzoQhE8QsWZBjrdPUzzKzpq1EtwFVvxZusUw8/O3xHcJMmu4fvLkSQwF?=
- =?us-ascii?Q?9hzYDAwIhsjFzCvcwVHoVvlK8yINk6/neOKk70eBk2+hp6RpB8DaZQixlnsY?=
- =?us-ascii?Q?pWXdOje50T7opbReBFE7RA5KmEYaKFkenLbsbjPe2AimCkX7pahOYAN6liXX?=
- =?us-ascii?Q?+Ij308q1LXOkC5nUp/g/urXtl8wuRRr8ELrEFS/+l/DZ6bf3AgxNBMvM5oTo?=
- =?us-ascii?Q?t/Sl+5OgV5gukCee3S+Eco6dr5rrWZHXZigYnBmS9OKj/3sjorhbfImFuuLG?=
- =?us-ascii?Q?ZI1WmqaWhImtMwCGn/4QQFJ8sfGkdoQpw1BLhkao0U++M5WwrWwAOKXoCho2?=
- =?us-ascii?Q?6IZ3lpgaaB3Lc81dngT7vQHwvB5ruCLOHQAfQLiPerY/UbZKlCYU9ZDdLRpj?=
- =?us-ascii?Q?0qi1VBSTVjug1Xsq0/ik6izSxlsBTXdzxq7H7RfStsuPC+xSpfP33v8CT4xw?=
- =?us-ascii?Q?jtYWOh0x3T5VsOeBc3fdpV2bZQdhBo6W+F/OmwXhgnW78eCIHZ3UXmxMW1mu?=
- =?us-ascii?Q?5Z/MNxRwheZYjjkKY3jT8zx/t/yYRlFvSuFYwLR+8ldX2QAxMzb5l5yoo60b?=
- =?us-ascii?Q?Zz/3VPhb/iwsQV2X2G593wjHa/kvcirDPFI7F5CKgcm9ll/LcvoA/CVDqILM?=
- =?us-ascii?Q?+arVthsWQCRLtZupMdaiUnZ1Hpdt93NR08BAkuy12+OzMnJWFhXGyXQW0W1g?=
- =?us-ascii?Q?ahAIRE+m5mM2h0r069oLpHSi6/Yi2hExvODBWCqp7HpROuR5eRA454sk/FKT?=
- =?us-ascii?Q?LAhAhU/bKjNCYE5OSczxGPc7zUemvVgjiLwqKy7U3PHKaC/47auSWQI1A7ji?=
- =?us-ascii?Q?Vtb5N+2QcC+rKg3BpzOSBNaoAZ3r9b2PXM/rBzFsbP2R4UcKUQbMTgPhr6Mj?=
- =?us-ascii?Q?7P8QpxwxCHAxbR/RrWMnMFcNBnpPmGHkzZvXCBRNSiX/omCWanpgmsV3pLTZ?=
- =?us-ascii?Q?gB5P7RXGGHVUXnLrXtYMuDUNxKwAfAfCCoDV5ZjLKeVP1lUZLFeerORZAWKv?=
- =?us-ascii?Q?Zz8s+pGeaG0+KYd2jRwjl+MND/jgFy16RVfc2M3aJXgQAyC+ZtEUf1tj2UVt?=
- =?us-ascii?Q?1BwT3WwUt3hKfZgZ1kmqOJQG2cfUo4TbaITfiH/y1DtZtdXoC3fuv+hCgSUg?=
- =?us-ascii?Q?mTWxmjU8OuSutojLwM8yjvBwrYK/EIpbHnc/lU+S1My1SD2LKtgojaVZy8U/?=
- =?us-ascii?Q?rhZqq/2U8MgSkpjEEjU+iaiH6M+/aEp7nhHpu7ki4BD16qJ0CQWNXV9XocGW?=
- =?us-ascii?Q?liR6pl/ZzCskwiPTgLGmF4WBEO/tu9ChVRiq3DQUJ9igKj4KR3MHxkpQ6FQt?=
- =?us-ascii?Q?+PNUknd8QeySakauBC3Ieq03mUtrXo96jYKdEAKRp2euL3/FBtN3lI2I7X95?=
- =?us-ascii?Q?o2Bs5H7/AmsE8vbMfa3WP7GyRQMHlMW0dZhqkmYUnHYFEi7ULRf8Z6ECafNR?=
- =?us-ascii?Q?DRvgz26Bi9H6THz6KP5JSTACCNSQ+haTpWrLWyp4Hy0pcCt4verxsgiBMAxO?=
- =?us-ascii?Q?ZG3NHFROLS0Ss7Ogo6cytGB6m1ZMgo2odYtarrQe0eeHz7WewM4Or6OGLqxV?=
- =?us-ascii?Q?7w7WapeZY9VFYfwEuj8KtZGXGHCS3t0=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2V6zrzSPDZk4Ij75zM6yQ0xMT5GUnmN5joICFWNlZkb7zHdDpdUFkWeleypN?=
+ =?us-ascii?Q?zpvEDYMEqH/UZvONE83Mzv8UWmqIM460Bjs+nEGejMTiR867JlpTr5S5Bn72?=
+ =?us-ascii?Q?9hZ5yfmaT8t12M6sPNvy15hco2FxVMeL+Za29CjnjI2lZQT0TkihK1HonUSz?=
+ =?us-ascii?Q?H69GVmPQmxyslf5RnLxp+YPLfgtoQVJSO18OUZ1aM76BzZEqfi8VBLOaoNv1?=
+ =?us-ascii?Q?eVcS91kIkVuXMGBBXeblWYTsjAY6YOrzkvIWsiIWGNvaE1LCuLp7XyQKrqbD?=
+ =?us-ascii?Q?dRiDQLEaFi8gSMaZ+CSbQCPAWPWGd68e+rUha0iQvncuVlaOlptNeyVFO/Ch?=
+ =?us-ascii?Q?SO02wyMXIAAkxp7fnlLELOwX7T53T8Ixwfd6dkQhPsSNZV0dM5YywGV9pIZT?=
+ =?us-ascii?Q?Y4KXs3odcxl627Ng0XvI/8KhxjHw0VVCNBlkCreRp/SofBbWPgmKR5RpK8JI?=
+ =?us-ascii?Q?jBV7aa0cb3bSevePJt2qs5iTj31RKU22csJ7mHeE1vKahFoRlqvKjXatzxeF?=
+ =?us-ascii?Q?6iNl0xYaAquCO6IqTav+0OzCAwXVZ7zcmFwZovICghe0PhaQDYZE8XPrFs86?=
+ =?us-ascii?Q?NtfOIqPwl611BKbe0eL+Cb+PlDXrjVJGdgcJG9UK5PPLMqgGy2C/LK2UeqXU?=
+ =?us-ascii?Q?XwZfDDWknD2qaTggw7zuhPCuNMutUjiSG6srFtzMZu2W5pQaYA4L6lIo0bzB?=
+ =?us-ascii?Q?zpCXLzh4NVHBZj8+gx9RCi5Q6MOPvSSWXUxdpQ9IgFtVj4d8C1PsstB29MX6?=
+ =?us-ascii?Q?t97Lo1DeA4HSInnSdRQg+79HFAEMHBdWAd1/YVRfB/n3gufZ1mQZtddL1X7O?=
+ =?us-ascii?Q?/TfSxp3SYOGHRg5J3SVc6MBa6eBdJPsMW4uSmF4YSnCtP5nTqBzTVt3J6PW5?=
+ =?us-ascii?Q?70FeUWS8F8yfe161S2x8FUAbDgnku9ufacgm/1j2IpnD0ZgfSNTP7Pe1iD5Y?=
+ =?us-ascii?Q?IrfMDc8tI3LVkpc4C1gJNVOaI0u5TkuPmSeGp3pyCLw0cAgynBDj7rn22FN0?=
+ =?us-ascii?Q?hTcAulvxwLstso/qdt2mHXx/AP3UmwAIGGvt/4jK0NJFoEGeNNeGjtfuZc0E?=
+ =?us-ascii?Q?kyElepHDWMyHHb4imN2ezNSYlrxSaRPk15MHhj4sTrcF1Tav6MC1AP8sC9Rj?=
+ =?us-ascii?Q?cFqapeHnrNcMDa9GshB9Hqze5CaKiNIZAZO9ZZxHWpogqqGAMU2TI+9umdwD?=
+ =?us-ascii?Q?nTwbZR8m00dvFZJ7iUjNAYkvfTj2MiZqPqWPZlfS7gM1swyxcsPFAHSnDUMg?=
+ =?us-ascii?Q?txfY7UMSeK5+VtvFsOEY8N7P2rDx4P2DPwVvqP7B9D7vParQn5kLq1RBmDUC?=
+ =?us-ascii?Q?vjSJNKrNfmDriW779DonRmTCkkjGGgr5nz3yFREDqKj6t8PMsLQPgBEfMV5x?=
+ =?us-ascii?Q?tHG49FtICD7E+YeWJV4qImDXOdQmxmKRUieLV3wH8fpdwW9WvXiXwOHEftpb?=
+ =?us-ascii?Q?P9FO5RSNpk7x3la80PkcPFaefC9ayPQKipisblEiYVIWkUiAwY+VsiS+LkVU?=
+ =?us-ascii?Q?OK1pmihE73D0m/7RM8NCXkpVLMGJVXQv95KL1BP1i9uZHibrOTP9lK0HB9QB?=
+ =?us-ascii?Q?hOjdl8aLh6YQqd/npDL0a5v+6QV88ZfVVH6Takiu4DaTN5WASNqhbEQOpgsW?=
+ =?us-ascii?Q?XxfHSoiFrBeX/KpW6hPL8VmZMgrNHMWVjjb/OBPujG9V4ApjLR8Ugt1xy1r4?=
+ =?us-ascii?Q?HE/Iz8yrnmbklSY7boc2vg79kIxPgfk6gYOPveEIEsIR7zOFwbfMqMq1Rjbt?=
+ =?us-ascii?Q?ne2cuMWqoCDwIl+xqp50Kn+ZP29Pao8=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f30ccfd-3c6d-4164-a2cd-08da23c05e99
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc04cf7c-2a21-40ec-30d8-08da23c05f8f
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 17:57:15.6822
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 17:57:17.2602
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YkF6ulej7HAY3eHF+CSK8+hJt1TLSi8ApMhkcyxIXj/Ipo5yfOJ1VSpxPaCyhXxmrN+mfCL9PLALxYBJHOnZng==
+X-MS-Exchange-CrossTenant-UserPrincipalName: /cBBv3t1/I3AafoEx8xkV+9BOdYg/dy1g3mp7hAsA8ZttFuJrFTRYIQtggnCW6ov+Vw5gJxX1vF8L0nhOQ9FCA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB8101
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trust Architecture (TA) 2.1 devices include the LS1012A, LS1021A,
-LS1043A, and LS1046A. The SFP device on TA 2.1 devices is very similar
-to the SFP on TA 3.0 devices. The primary difference is a few fields in
-the control register. Add a compatible string.
+The clocks property is now mandatory. Add it.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- .../devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml    | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-index e7d1232fcd41..aa277f1eee7e 100644
---- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-+++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-@@ -18,8 +18,13 @@ allOf:
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+index 088271d49139..59b289b52a28 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+@@ -224,9 +224,12 @@ rst: syscon@1e60000 {
+ 			little-endian;
+ 		};
  
- properties:
-   compatible:
--    enum:
--      - fsl,ls1028a-sfp
-+    oneOf:
-+      - description: Trust architecture 2.1 SFP
-+        items:
-+          - const: fsl,ls1021a-sfp
-+      - description: Trust architecture 3.0 SFP
-+        items:
-+          - const: fsl,ls1028a-sfp
+-		efuse@1e80000 {
++		sfp: efuse@1e80000 {
+ 			compatible = "fsl,ls1028a-sfp";
+ 			reg = <0x0 0x1e80000 0x0 0x10000>;
++			clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
++					    QORIQ_CLK_PLL_DIV(4)>;
++			clock-names = "sfp";
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
  
-   reg:
-     maxItems: 1
 -- 
 2.35.1.1320.gc452695387.dirty
 
