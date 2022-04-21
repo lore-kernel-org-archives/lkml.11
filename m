@@ -2,269 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 03:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 04:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384056AbiDUDyc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 23:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        id S236020AbiDUECx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 00:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384026AbiDUDyN (ORCPT
+        with ESMTP id S242619AbiDUECg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 23:54:13 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637BBB877;
-        Wed, 20 Apr 2022 20:51:21 -0700 (PDT)
-X-UUID: a63d77e03b1b46b0b908218653b699d7-20220421
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:ef3c0007-0422-4d1a-bb1c-ed582f3e78f0,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:75
-X-CID-INFO: VERSION:1.1.4,REQID:ef3c0007-0422-4d1a-bb1c-ed582f3e78f0,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:75
-X-CID-META: VersionHash:faefae9,CLOUDID:fbcf6df0-da02-41b4-b6df-58f4ccd36682,C
-        OID:18f69364bfb7,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: a63d77e03b1b46b0b908218653b699d7-20220421
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1896838341; Thu, 21 Apr 2022 11:51:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 21 Apr 2022 11:51:14 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 21 Apr 2022 11:51:14 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH 2/4] arm64: dts: mediatek: Get rid of mediatek,larb for MM nodes
-Date:   Thu, 21 Apr 2022 11:51:09 +0800
-Message-ID: <20220421035111.7267-3-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220421035111.7267-1-allen-kh.cheng@mediatek.com>
-References: <20220421035111.7267-1-allen-kh.cheng@mediatek.com>
+        Thu, 21 Apr 2022 00:02:36 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68120BCB9;
+        Wed, 20 Apr 2022 20:59:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650513587; x=1682049587;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=X8xETJA2toTNhkNCch0WwO6orzXxhH9nFUDl7VCrAdI=;
+  b=O7qYw7SkVMKH63v8nt906Tbm3lv6vmSc3tWc/O/Lf0x5yRSmzkEBQKNb
+   8SP4Re4VOqDNcpTyx6hmbPd2yRvI7y/exH5SlOHNaFMFOeEN8XtVjntgc
+   YV9zly5r8N+UDwk6eNcHqf27xbGVw9erzpT/HGzKcglYo7KMaWX6cwn8n
+   gUjffCO14v6Q1lHMZyWSb/vHdWs10xixOXsJkJG3Tu5mvlISV2YkqJ0aT
+   Pn7bO+B5sHOtGRNET5+7OKJNFKQSxDnuAkjKSbwoqEc/NU3CTR0mDB2xN
+   uyBIi85KSufAgNg2ErSlNPDP2NgrThSz1syC+CXP3va6fv5cHIr9qKC2s
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263992034"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="263992034"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 20:59:46 -0700
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="702919211"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 20:59:46 -0700
+Message-ID: <8610206dac7bf538eaf8fa81569741a91e4b8dc7.camel@linux.intel.com>
+Subject: Re: [PATCH v3 0/4] tools/thermal: thermal library and tools
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Date:   Wed, 20 Apr 2022 20:59:45 -0700
+In-Reply-To: <20220420160933.347088-1-daniel.lezcano@linaro.org>
+References: <20220420160933.347088-1-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+On Wed, 2022-04-20 at 18:09 +0200, Daniel Lezcano wrote:
+> These changes are providing the following tools and library:
+> 
+>  - A thermal library doing the netlink abstraction from the kernel in
+>    order to make the userspace thermal implementation easier. Having
+>    the library integrated with the kernel tree is also a guarantee to
+>    keep the message format and their encoding/decoding aligned
+>                                                                        
+>                                                                        
+>                                                                        
+>                                                          
+>  - A thermal tools library providing a set of functions to deal with
+>    usual features like the log, the mainloop and the time. This
+>    library is used by the provided tools below
+> 
+>  - An data acquisition program to capture the temperature of the
+>    different thermal zone during an amount of time or during the
+>    execution of an application. The output is formated to be easily
+>    parsed by gnuplot, a spreadsheet program or a statistical command
+>    line utility. The timestamp is based on the system uptime, thus
+>    giving an indication of when a thermal event happened, that can
+>    help to spot or reproduce thermal issue in the long run
+> 
+>  - A thermal monitoring program based on the thermal library. It gives
+>    a skeleton to build any logic on top of it and shows how to use the
+>    thermal library. It does nothing except discovering the thermal
+>    zones, their trip points and listening for events like cooling
+>    devices state changes or trip point crossed
+> 
 
-After adding device_link between the IOMMU consumer and smi,
-the mediatek,larb is unnecessary now.
+Tested-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-CC: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: Evan Green <evgreen@chromium.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 16 ----------------
- arch/arm64/boot/dts/mediatek/mt8183.dtsi |  6 ------
- 2 files changed, 22 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 848e3f39c8ef..10291b2690ab 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -1010,7 +1010,6 @@
- 				 <&mmsys CLK_MM_MUTEX_32K>;
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			iommus = <&iommu M4U_PORT_MDP_RDMA0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,vpu = <&vpu>;
- 		};
- 
-@@ -1021,7 +1020,6 @@
- 				 <&mmsys CLK_MM_MUTEX_32K>;
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			iommus = <&iommu M4U_PORT_MDP_RDMA1>;
--			mediatek,larb = <&larb4>;
- 		};
- 
- 		mdp_rsz0: rsz@14003000 {
-@@ -1051,7 +1049,6 @@
- 			clocks = <&mmsys CLK_MM_MDP_WDMA>;
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			iommus = <&iommu M4U_PORT_MDP_WDMA>;
--			mediatek,larb = <&larb0>;
- 		};
- 
- 		mdp_wrot0: wrot@14007000 {
-@@ -1060,7 +1057,6 @@
- 			clocks = <&mmsys CLK_MM_MDP_WROT0>;
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			iommus = <&iommu M4U_PORT_MDP_WROT0>;
--			mediatek,larb = <&larb0>;
- 		};
- 
- 		mdp_wrot1: wrot@14008000 {
-@@ -1069,7 +1065,6 @@
- 			clocks = <&mmsys CLK_MM_MDP_WROT1>;
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			iommus = <&iommu M4U_PORT_MDP_WROT1>;
--			mediatek,larb = <&larb4>;
- 		};
- 
- 		ovl0: ovl@1400c000 {
-@@ -1079,7 +1074,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_OVL0>;
- 			iommus = <&iommu M4U_PORT_DISP_OVL0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xc000 0x1000>;
- 		};
- 
-@@ -1090,7 +1084,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_OVL1>;
- 			iommus = <&iommu M4U_PORT_DISP_OVL1>;
--			mediatek,larb = <&larb4>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xd000 0x1000>;
- 		};
- 
-@@ -1101,7 +1094,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_RDMA0>;
- 			iommus = <&iommu M4U_PORT_DISP_RDMA0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xe000 0x1000>;
- 		};
- 
-@@ -1112,7 +1104,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_RDMA1>;
- 			iommus = <&iommu M4U_PORT_DISP_RDMA1>;
--			mediatek,larb = <&larb4>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xf000 0x1000>;
- 		};
- 
-@@ -1123,7 +1114,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_RDMA2>;
- 			iommus = <&iommu M4U_PORT_DISP_RDMA2>;
--			mediatek,larb = <&larb4>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0 0x1000>;
- 		};
- 
-@@ -1134,7 +1124,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_WDMA0>;
- 			iommus = <&iommu M4U_PORT_DISP_WDMA0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x1000 0x1000>;
- 		};
- 
-@@ -1145,7 +1134,6 @@
- 			power-domains = <&spm MT8173_POWER_DOMAIN_MM>;
- 			clocks = <&mmsys CLK_MM_DISP_WDMA1>;
- 			iommus = <&iommu M4U_PORT_DISP_WDMA1>;
--			mediatek,larb = <&larb4>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x2000 0x1000>;
- 		};
- 
-@@ -1399,7 +1387,6 @@
- 			      <0 0x16027800 0 0x800>,	/* VDEC_HWB */
- 			      <0 0x16028400 0 0x400>;	/* VDEC_HWG */
- 			interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_LOW>;
--			mediatek,larb = <&larb1>;
- 			iommus = <&iommu M4U_PORT_HW_VDEC_MC_EXT>,
- 				 <&iommu M4U_PORT_HW_VDEC_PP_EXT>,
- 				 <&iommu M4U_PORT_HW_VDEC_AVC_MV_EXT>,
-@@ -1467,7 +1454,6 @@
- 			compatible = "mediatek,mt8173-vcodec-enc";
- 			reg = <0 0x18002000 0 0x1000>;	/* VENC_SYS */
- 			interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_LOW>;
--			mediatek,larb = <&larb3>;
- 			iommus = <&iommu M4U_PORT_VENC_RCPU>,
- 				 <&iommu M4U_PORT_VENC_REC>,
- 				 <&iommu M4U_PORT_VENC_BSDMA>,
-@@ -1495,7 +1481,6 @@
- 			clock-names = "jpgdec-smi",
- 				      "jpgdec";
- 			power-domains = <&spm MT8173_POWER_DOMAIN_VENC>;
--			mediatek,larb = <&larb3>;
- 			iommus = <&iommu M4U_PORT_JPGDEC_WDMA>,
- 				 <&iommu M4U_PORT_JPGDEC_BSDMA>;
- 		};
-@@ -1529,7 +1514,6 @@
- 				 <&iommu M4U_PORT_VENC_CUR_CHROMA_SET2>,
- 				 <&iommu M4U_PORT_VENC_REF_LUMA_SET2>,
- 				 <&iommu M4U_PORT_VENC_REC_CHROMA_SET2>;
--			mediatek,larb = <&larb5>;
- 			mediatek,vpu = <&vpu>;
- 			clocks = <&topckgen CLK_TOP_VENC_LT_SEL>;
- 			clock-names = "venc_lt_sel";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index d1448a0b86cb..be9728526ed3 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -1396,7 +1396,6 @@
- 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_OVL0>;
- 			iommus = <&iommu M4U_PORT_DISP_OVL0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x8000 0x1000>;
- 		};
- 
-@@ -1407,7 +1406,6 @@
- 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_OVL0_2L>;
- 			iommus = <&iommu M4U_PORT_DISP_2L_OVL0_LARB0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x9000 0x1000>;
- 		};
- 
-@@ -1418,7 +1416,6 @@
- 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_OVL1_2L>;
- 			iommus = <&iommu M4U_PORT_DISP_2L_OVL1_LARB0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xa000 0x1000>;
- 		};
- 
-@@ -1429,7 +1426,6 @@
- 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_RDMA0>;
- 			iommus = <&iommu M4U_PORT_DISP_RDMA0>;
--			mediatek,larb = <&larb0>;
- 			mediatek,rdma-fifo-size = <5120>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xb000 0x1000>;
- 		};
-@@ -1441,7 +1437,6 @@
- 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
- 			clocks = <&mmsys CLK_MM_DISP_RDMA1>;
- 			iommus = <&iommu M4U_PORT_DISP_RDMA1>;
--			mediatek,larb = <&larb0>;
- 			mediatek,rdma-fifo-size = <2048>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xc000 0x1000>;
- 		};
-@@ -1598,7 +1593,6 @@
- 			compatible = "mediatek,mt8183-jpgenc", "mediatek,mtk-jpgenc";
- 			reg = <0 0x17030000 0 0x1000>;
- 			interrupts = <GIC_SPI 249 IRQ_TYPE_LEVEL_LOW>;
--			mediatek,larb = <&larb4>;
- 			iommus = <&iommu M4U_PORT_JPGENC_RDMA>,
- 				 <&iommu M4U_PORT_JPGENC_BSDMA>;
- 			power-domains = <&spm MT8183_POWER_DOMAIN_VENC>;
--- 
-2.18.0
+But I still see these errors in applying patches:
+
+Applying: tools/lib/thermal: Add a thermal library
+Applying: tools/thermal: Add util library
+Applying: tools/thermal: Add a temperature capture tool
+.git/rebase-apply/patch:809: space before tab in indent.
+	      	polling = 100; }
+.git/rebase-apply/patch:90: new blank line at EOF.
++
+.git/rebase-apply/patch:221: new blank line at EOF.
++
+warning: 3 lines add whitespace errors.
+Applying: tools/thermal: Add thermal daemon skeleton
+.git/rebase-apply/patch:86: new blank line at EOF.
++
+warning: 1 line adds whitespace errors.
+
+Thanks,
+Srinivas
+
+
+
+>  Changelog:
+> 
+>  v3:
+> 
+>   - Fixed NULL pointer reference when there is no thermal zones, trip
+>     points or cooling device
+>   - Kill the child process when the duration ends or if there is an
+>     interruption in the thermometer
+>   - Add error messages in the main body for the thermal-engine
+> 
+>  v2:
+> 
+>   - Fixed all trailing whitespaces and some other checkpatch
+>     warnings. Some warnings remain but they can be considered as false
+>     positive
+> 
+>   - Added in the thermometer tool:
+>     - Usage/help option as well as a man page
+>     - The ability to execute a program
+>     - The capture duration
+>     - Create the output directory if it does not exist
+> 
+>   - Add in the thermal-engine tool:
+>     - A usage/help option
+>     - A message telling the userspace it is waiting for events
+>     - A daemonize option
+> 
+>   - Minor bug fixes here and there, as well as typos
+> 
+>  v1: Initial post after a RFC
+> 
+> Daniel Lezcano (4):
+>   tools/lib/thermal: Add a thermal library
+>   tools/thermal: Add util library
+>   tools/thermal: Add a temperature capture tool
+>   tools/thermal: Add thermal daemon skeleton
+> 
+>  MAINTAINERS                                   |   1 +
+>  tools/Makefile                                |  36 +-
+>  tools/lib/thermal/.gitignore                  |   2 +
+>  tools/lib/thermal/Build                       |   5 +
+>  tools/lib/thermal/Makefile                    | 165 +++++
+>  tools/lib/thermal/commands.c                  | 349 +++++++++++
+>  tools/lib/thermal/events.c                    | 164 +++++
+>  tools/lib/thermal/include/thermal.h           | 142 +++++
+>  tools/lib/thermal/libthermal.map              |  25 +
+>  tools/lib/thermal/libthermal.pc.template      |  12 +
+>  tools/lib/thermal/sampling.c                  |  75 +++
+>  tools/lib/thermal/thermal.c                   | 135 +++++
+>  tools/lib/thermal/thermal_nl.c                | 215 +++++++
+>  tools/lib/thermal/thermal_nl.h                |  46 ++
+>  tools/thermal/lib/Build                       |   3 +
+>  tools/thermal/lib/Makefile                    | 158 +++++
+>  .../thermal/lib/libthermal_tools.pc.template  |  12 +
+>  tools/thermal/lib/log.c                       |  77 +++
+>  tools/thermal/lib/log.h                       |  31 +
+>  tools/thermal/lib/mainloop.c                  | 120 ++++
+>  tools/thermal/lib/mainloop.h                  |  15 +
+>  tools/thermal/lib/thermal-tools.h             |  10 +
+>  tools/thermal/lib/uptimeofday.c               |  40 ++
+>  tools/thermal/lib/uptimeofday.h               |  12 +
+>  tools/thermal/thermal-engine/Build            |   2 +
+>  tools/thermal/thermal-engine/Makefile         |  28 +
+>  tools/thermal/thermal-engine/thermal-engine.c | 341 +++++++++++
+>  tools/thermal/thermometer/Build               |   2 +
+>  tools/thermal/thermometer/Makefile            |  26 +
+>  tools/thermal/thermometer/thermometer.8       |  93 +++
+>  tools/thermal/thermometer/thermometer.c       | 573 ++++++++++++++++++
+>  tools/thermal/thermometer/thermometer.conf    |   5 +
+>  32 files changed, 2917 insertions(+), 3 deletions(-)
+>  create mode 100644 tools/lib/thermal/.gitignore
+>  create mode 100644 tools/lib/thermal/Build
+>  create mode 100644 tools/lib/thermal/Makefile
+>  create mode 100644 tools/lib/thermal/commands.c
+>  create mode 100644 tools/lib/thermal/events.c
+>  create mode 100644 tools/lib/thermal/include/thermal.h
+>  create mode 100644 tools/lib/thermal/libthermal.map
+>  create mode 100644 tools/lib/thermal/libthermal.pc.template
+>  create mode 100644 tools/lib/thermal/sampling.c
+>  create mode 100644 tools/lib/thermal/thermal.c
+>  create mode 100644 tools/lib/thermal/thermal_nl.c
+>  create mode 100644 tools/lib/thermal/thermal_nl.h
+>  create mode 100644 tools/thermal/lib/Build
+>  create mode 100644 tools/thermal/lib/Makefile
+>  create mode 100644 tools/thermal/lib/libthermal_tools.pc.template
+>  create mode 100644 tools/thermal/lib/log.c
+>  create mode 100644 tools/thermal/lib/log.h
+>  create mode 100644 tools/thermal/lib/mainloop.c
+>  create mode 100644 tools/thermal/lib/mainloop.h
+>  create mode 100644 tools/thermal/lib/thermal-tools.h
+>  create mode 100644 tools/thermal/lib/uptimeofday.c
+>  create mode 100644 tools/thermal/lib/uptimeofday.h
+>  create mode 100644 tools/thermal/thermal-engine/Build
+>  create mode 100644 tools/thermal/thermal-engine/Makefile
+>  create mode 100644 tools/thermal/thermal-engine/thermal-engine.c
+>  create mode 100644 tools/thermal/thermometer/Build
+>  create mode 100644 tools/thermal/thermometer/Makefile
+>  create mode 100644 tools/thermal/thermometer/thermometer.8
+>  create mode 100644 tools/thermal/thermometer/thermometer.c
+>  create mode 100644 tools/thermal/thermometer/thermometer.conf
+> 
+
 
