@@ -2,124 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B50EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B29C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbiDUQ2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
+        id S230440AbiDUQ2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230208AbiDUQNq (ORCPT
+        with ESMTP id S1390639AbiDUQSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:13:46 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D322B24E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:10:55 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id y11so6372916ljh.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:10:55 -0700 (PDT)
+        Thu, 21 Apr 2022 12:18:38 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945423B2AC
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:15:47 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id b19so7363055wrh.11
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:15:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eMQI1rEiKnusZB415KCgTRyB4BP2JkpCOZ5UBRv9+2E=;
-        b=f1mereyCYHXjPh8nr0o+NjPZ4hXeoK1yRpk3KiyfgkGzBpbTRBcX8emLC6FZdsVZDf
-         rUdA58HHwqNqvkoajT1ACXwK+ClfcX9oae/fKbGBG7ZIJDeHpz/ShFS5+8IwhOWVtc9e
-         kWuk/nBRifTouLIu2MCAugIB+i6BGTPmk2EME=
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FiFPVEZ/890BOXHBWTr8Id5xWtU3CWG0g0Rj3LfZsEw=;
+        b=I3Xk5E68FZ0l1QV2yAN+r9zykHAnVbQhzvC5rfpMlNUkdiKdYhEjy8Kl+xrFsAATRJ
+         YLn7LWbwcKQ5kfNr524MjNa5Hpdcyl/S5UCC7kKiIyAsdk2p7SHvInDw/dBgbX5jpCL6
+         iYNoPAWiwSdkZ/9cjlNBIm+e/g7IU743QrL3ouvOvelnXZ6aqv3Ft6kUxKLf3eM9tJAS
+         z0bcUNcgTYaYhzAMIXHM+smMjjZ0a79g5mwbAxz1BhwEFcfyyHDRURdidSjV9DyY9TjI
+         xOR2o1EoJXbhzaidGfjAilEbahG3OUtCfvYkUUOhE1ZXRBc/LNHfblgbFgFLA7/emle8
+         2/xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eMQI1rEiKnusZB415KCgTRyB4BP2JkpCOZ5UBRv9+2E=;
-        b=ZtkwCuKuSKtHcnx2IID7G3dgm8R2gPz1reTQOc8n8Cr1pZ/vNcn85tKghxaiouFU74
-         x+NNd8tuGURmtDA5O28UuIyf/BobkOGo034WvDIBg6e4CXZKiqWCwsYLZ9kQavHoK8eJ
-         KtCPMq9jTxgKkUL6yXYjfTt0+4t2elZrqJD3xn7ioKG++gzpzq7oAKHVi+pF7unEAnfR
-         S3QQet6p3gl4YL34GoJdkpZlxMa9lJ+waRC/zrSkuh11hNi6XZaqQeZ90eQn3l9ab3yD
-         o7OaEGgoGHvd8V4wmDMBSdA10GgkiFi5IRk0fxXXZJQQ4Os8515KAEfx0FpXy9+bUTEX
-         0Rbg==
-X-Gm-Message-State: AOAM532XhGS6wAiuyGk3uus2dbBZSoi0/FHZXFFXhSdBaRa643NFqBol
-        +cl/PknNdSEF6LrE+F75NnApiMsmaZ3gh/Fl1QQ=
-X-Google-Smtp-Source: ABdhPJw5Ge5SQrVk+5Ac+PKMIhBcFQSbuXJLoCrNskKzZbnkYQ9vUS38ECT5zUkOpExSVIzG203i4g==
-X-Received: by 2002:a2e:bf04:0:b0:246:7ace:e157 with SMTP id c4-20020a2ebf04000000b002467acee157mr248298ljr.241.1650557453542;
-        Thu, 21 Apr 2022 09:10:53 -0700 (PDT)
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com. [209.85.167.52])
-        by smtp.gmail.com with ESMTPSA id h1-20020a2e9ec1000000b0024afb868455sm2077610ljk.5.2022.04.21.09.10.50
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 09:10:51 -0700 (PDT)
-Received: by mail-lf1-f52.google.com with SMTP id d6so9540418lfv.9
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:10:50 -0700 (PDT)
-X-Received: by 2002:a05:6512:108b:b0:470:90b9:fb51 with SMTP id
- j11-20020a056512108b00b0047090b9fb51mr175297lfg.52.1650557450232; Thu, 21 Apr
- 2022 09:10:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FiFPVEZ/890BOXHBWTr8Id5xWtU3CWG0g0Rj3LfZsEw=;
+        b=grJ4B5YVYSa1eODFLuLrQflRGglvSfX9yGf0/V+yghCLYpuSek5xdiSJptBLFfk5x6
+         36I1Nzj24GPu3vuUUnl43rUldWMPpNYCcfsdDOpWqtLHhRJdOPd3YvHaw3azuQ3mg2H1
+         rrdnntJxFFOop8jCaux8x8YkAhXhTQv83MUDqzAC+lQ30Vl5pFEcuDJsB1a2vSdJe4eR
+         3g+CSt5+ZgB25Q92bcmQWBVyZfyBDMkTyF8zoDRUEFz+jkpKkk/1XVri/Dl0noeyIda2
+         Nj7KaNL6aR1HiFKoMNmk3MzUPBhVYheRy6fKxSwOLY5BhukeLjCoYZQ/o4o+viTumUak
+         H59w==
+X-Gm-Message-State: AOAM531AHL8TpEVJONmJMicRKQs+y7b+YU5X4YOTzn/eETOUpahtkbBF
+        3lPgNJoyyHDfF1D0O6t7xSr92g==
+X-Google-Smtp-Source: ABdhPJwx38jxjjyoCbEDJI6s8Wwm3ARUG66bz7F/8861ht83YrP6P64Q5Ohy+DYQ6ywhuQBUZApdfQ==
+X-Received: by 2002:a5d:45c5:0:b0:20a:be8f:aca6 with SMTP id b5-20020a5d45c5000000b0020abe8faca6mr355261wrs.493.1650557746113;
+        Thu, 21 Apr 2022 09:15:46 -0700 (PDT)
+Received: from tsr-vdi-mbaerts.nix.tessares.net (static.23.216.130.94.clients.your-server.de. [94.130.216.23])
+        by smtp.gmail.com with ESMTPSA id i11-20020a5d584b000000b0020a8d859e5fsm2865667wrf.10.2022.04.21.09.15.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 09:15:45 -0700 (PDT)
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Chen Yu <yu.c.chen@intel.com>
+Cc:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH mptcp-next] x86/pm: fix false positive kmemleak report in msr_build_context()
+Date:   Thu, 21 Apr 2022 18:15:20 +0200
+Message-Id: <20220421161520.401946-1-matthieu.baerts@tessares.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <yt9dzgkelelc.fsf@linux.ibm.com>
-In-Reply-To: <yt9dzgkelelc.fsf@linux.ibm.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 21 Apr 2022 09:10:33 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgv4NLtEowsmX+0jq_nBWXFp8jtruX6U3SDm52N=ftkgg@mail.gmail.com>
-Message-ID: <CAHk-=wgv4NLtEowsmX+0jq_nBWXFp8jtruX6U3SDm52N=ftkgg@mail.gmail.com>
-Subject: Re: -Warray-bounds fun again
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hardening@vger.kernel.org, krebbel@linux.ibm.com,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 7:02 AM Sven Schnelle <svens@linux.ibm.com> wrote:
->
-> The obvious 'fix' is to use absolute_pointer():
->
-> #define S390_lowcore (*((struct lowcore *)absolute_pointer(0)))
->
-> That makes the warning go away, but unfortunately the compiler no longer
-> knows that the memory access is fitting into a load/store with a 12 bit
-> displacement.
+Since commit e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume"),
+kmemleak reports this issue:
 
-In the gcc bugzilla for us needing to do these games:
+  unreferenced object 0xffff888009cedc00 (size 256):
+    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
+    hex dump (first 32 bytes):
+      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      msr_build_context (include/linux/slab.h:621)
+      pm_check_save_msr (arch/x86/power/cpu.c:520)
+      do_one_initcall (init/main.c:1298)
+      kernel_init_freeable (init/main.c:1370)
+      kernel_init (init/main.c:1504)
+      ret_from_fork (arch/x86/entry/entry_64.S:304)
 
-    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
+It is easy to reproduce it on my side:
 
-one of the suggestions was "I recommend suppressing the warning either
-by #pragma GCC diagnostic or by making the pointer volatile".
+  - boot the VM with a debug kernel config [1]
+  - wait ~1 minute
+  - start a kmemleak scan
 
-But READ_ONCE() should already be doing that volatile thing, so that
-suggestion may not work with gcc-12 any more.
+It seems kmemleak has an issue with the array allocated in
+msr_build_context() and assigned to a pointer in a static structure
+(saved_context.saved_msrs->array): there is no leak then.
 
-It is *possible* that gcc-12 has now special-cased the very special
-issue of a cast of the constant zero. That is how NULL was
-traditionally defined.
+It looks like this is a limitation from kmemleak but that's alright,
+kmemleak_no_leak() can be used to avoid complaining about that.
 
-So just out of a perverse curiosity, what happens if you do something like this:
+Please note that it looks like this issue is not new, e.g.
 
-   #define S390_lowcore_end ((struct lowcore *)sizeof(struct lowcore))
-   #define S390_lowcore (S390_lowcore_end[-1])
+  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
+  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
 
-instead? It should get the same value in the end, but it doesn't have
-that special case of "cast an integer constant 0 to a pointer".
+But on my side, msr_build_context() is only used since:
 
-I suspect it probably doesn't help, because gcc will still see "oh,
-you're basing this off address zero".
+  commit e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume").
 
-Another thing to try might be to remove the initial 16 bytes of
-padding from 'struct lowcore' (it looks like the first 20 bytes are
-not used - so leave 4 bytes of padding still), and use
+Depending on their CPUs, others have probably the same issue since:
 
-   #define S390_lowcore (*((struct lowcore_nopad *)16))
+  commit 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume"),
 
-instead. Then gcc will never see that 0, and hopefully the "he's
-accessing based off a NULL pointer" logic will go away.
+hence the 'Fixes' tag here below to help with the backports. But I
+understand if someone says the origin of this issue is more on
+kmemleak's side. What is unclear to me is why this issue was not seen by
+other people and CIs. Maybe the kernel config [1]?
 
-Because right now, our absolute_pointer() protection against this
-horrible gcc mis-feature is literally based on hiding the value from
-the compiler with an inline asm, and by virtue of hiding the value
-then yes, gcc will have to go through a register base pointer and
-cannot see that it fits in 12 bits.
+[1] https://github.com/multipath-tcp/mptcp_net-next/files/8531660/kmemleak-cpu-sched-bisect.kconfig.txt
 
-.. or you just need to disable -Warray-bounds on s390.
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/268
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+---
+ arch/x86/power/cpu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-              Linus
+diff --git a/arch/x86/power/cpu.c b/arch/x86/power/cpu.c
+index 3822666fb73d..1467c6d1a966 100644
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -14,6 +14,7 @@
+ #include <linux/tboot.h>
+ #include <linux/dmi.h>
+ #include <linux/pgtable.h>
++#include <linux/kmemleak.h>
+ 
+ #include <asm/proto.h>
+ #include <asm/mtrr.h>
+@@ -413,6 +414,9 @@ static int msr_build_context(const u32 *msr_id, const int num)
+ 		return -ENOMEM;
+ 	}
+ 
++	/* The pointer is going to be stored in static struct (saved_context) */
++	kmemleak_not_leak(msr_array);
++
+ 	if (saved_msrs->array) {
+ 		/*
+ 		 * Multiple callbacks can invoke this function, so copy any
+-- 
+2.34.1
+
