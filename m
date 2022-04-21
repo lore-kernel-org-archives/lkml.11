@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B56C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391252AbiDUSHv (ORCPT
+        id S1391267AbiDUSH4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
+        Thu, 21 Apr 2022 14:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391224AbiDUSHk (ORCPT
+        with ESMTP id S1391237AbiDUSHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:07:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0D6F4B1CB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:04:49 -0700 (PDT)
+        Thu, 21 Apr 2022 14:07:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE431194
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:04:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650564288;
+        s=mimecast20190719; t=1650564291;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RmDy0KiOypH0ED0Pq5HN43KAHX+Fo77jYIn7zRippJk=;
-        b=OZUFsMinAR/PePZn7+NGJfp2ATWJluc/+QX0I6BanFv0wjlqVJxudurucvwEkR9b0OGupm
-        Rlu+PNWerOE4NKb0DAc70n2QpB0DvDO6eqB9i3yL9FnJZ36m1J2cce5kATOSYREn0hcBwC
-        hf2Z5RbSOqNVFnGVYDtnMoXAof0/W4A=
+        bh=qIkA5gS/4TcUB4YnwbAR5RigtqM4FKrO8JhqbEAAobM=;
+        b=f7cEpDrSiJaxqQV0v35p0ntsv6D4XtLWS6EAyjHDw68hp+fHcRjD2D1ENOCx5/Fc2b0Z/M
+        rZrg8X46PBM/KYGhZAa1M1Q2w+UfPa4HCvoypX2b/vk0rZ48MeSuiKS7OtJAcPSqtWYXUO
+        ypDR/PmQB/vT7LF8G1pD/zTmxvw4tsw=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-7Kl_lm7ZNimdk-Y0n1Mn8Q-1; Thu, 21 Apr 2022 14:04:45 -0400
-X-MC-Unique: 7Kl_lm7ZNimdk-Y0n1Mn8Q-1
+ us-mta-599-VEwMlOExPCGGZSZZiu9E-g-1; Thu, 21 Apr 2022 14:04:44 -0400
+X-MC-Unique: VEwMlOExPCGGZSZZiu9E-g-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA1FE101AA42;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 239B5801E67;
         Thu, 21 Apr 2022 18:04:44 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A555940E80F5;
-        Thu, 21 Apr 2022 18:04:44 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E287E40E80F5;
+        Thu, 21 Apr 2022 18:04:43 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     will@kernel.org, maz@kernel.org, apatel@ventanamicro.com,
         atishp@rivosinc.com, seanjc@google.com, pgonda@google.com
-Subject: [PATCH 4/4] KVM: tell userspace that system_event.ndata is valid
-Date:   Thu, 21 Apr 2022 14:04:43 -0400
-Message-Id: <20220421180443.1465634-5-pbonzini@redhat.com>
+Subject: [PATCH 1/4] KVM: x86: always initialize system_event.ndata
+Date:   Thu, 21 Apr 2022 14:04:40 -0400
+Message-Id: <20220421180443.1465634-2-pbonzini@redhat.com>
 In-Reply-To: <20220421180443.1465634-1-pbonzini@redhat.com>
 References: <20220421180443.1465634-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -56,101 +56,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that all architectures are fixed, introduce a new capability
-so that userspace knows that it can look at the ndata and data[]
-members of run->system_event.  Adjust the documentation.
+The KVM_SYSTEM_EVENT_NDATA_VALID mechanism that was introduced
+contextually with KVM_SYSTEM_EVENT_SEV_TERM is not a good match
+for ARM and RISC-V, which want to communicate information even
+for existing KVM_SYSTEM_EVENT_* constants.  Userspace is not ready
+to filter out bit 31 of type, and fails to process the
+KVM_EXIT_SYSTEM_EVENT exit.
+
+Therefore, tie the availability of ndata to a system capability
+(which will be added once all architectures are on board).
+Userspace written for released versions of Linux has no reason to
+check flags, since it was never written, so it is okay to replace
+it with ndata and data[0] (on 32-bit kernels) or with data[0]
+(on 64-bit kernels).
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- Documentation/virt/kvm/api.rst | 29 ++++++++++++++++-------------
- include/uapi/linux/kvm.h       |  1 +
- virt/kvm/kvm_main.c            |  1 +
- 3 files changed, 18 insertions(+), 13 deletions(-)
+ arch/x86/kvm/svm/sev.c   | 3 +--
+ arch/x86/kvm/x86.c       | 2 ++
+ include/uapi/linux/kvm.h | 1 -
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 72183ae628f7..fe5805ab0d75 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6089,21 +6089,18 @@ should put the acknowledged interrupt vector into the 'epr' field.
-   #define KVM_SYSTEM_EVENT_RESET          2
-   #define KVM_SYSTEM_EVENT_CRASH          3
-   #define KVM_SYSTEM_EVENT_SEV_TERM       4
--  #define KVM_SYSTEM_EVENT_NDATA_VALID    (1u << 31)
- 			__u32 type;
-                         __u32 ndata;
--			__u64 flags;
-                         __u64 data[16];
- 		} system_event;
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index a93f0d01bb90..51b963ec122b 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2739,8 +2739,7 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 			reason_set, reason_code);
  
- If exit_reason is KVM_EXIT_SYSTEM_EVENT then the vcpu has triggered
- a system-level event using some architecture specific mechanism (hypercall
- or some special instruction). In case of ARM64, this is triggered using
--HVC instruction based PSCI call from the vcpu. The 'type' field describes
--the system-level event type. The 'flags' field describes architecture
--specific flags for the system-level event.
-+HVC instruction based PSCI call from the vcpu.
+ 		vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
+-		vcpu->run->system_event.type = KVM_SYSTEM_EVENT_SEV_TERM |
+-					       KVM_SYSTEM_EVENT_NDATA_VALID;
++		vcpu->run->system_event.type = KVM_SYSTEM_EVENT_SEV_TERM;
+ 		vcpu->run->system_event.ndata = 1;
+ 		vcpu->run->system_event.data[1] = control->ghcb_gpa;
  
--Valid values for bits 30:0 of 'type' are:
-+The 'type' field describes the system-level event type.
-+Valid values for 'type' are:
- 
-  - KVM_SYSTEM_EVENT_SHUTDOWN -- the guest has requested a shutdown of the
-    VM. Userspace is not obliged to honour this, and if it does honour
-@@ -6117,16 +6114,23 @@ Valid values for bits 30:0 of 'type' are:
-    to ignore the request, or to gather VM memory core dump and/or
-    reset/shutdown of the VM.
-  - KVM_SYSTEM_EVENT_SEV_TERM -- an AMD SEV guest requested termination.
--   The guest physical address of the guest's GHCB is stored in `data[0]`.
- 
--Valid flags are:
-+If KVM_CAP_SYSTEM_EVENT_DATA is present, the 'data' field can contain
-+architecture specific information for the system-level event.  Only
-+the first `ndata` items (possibly zero) of the data array are valid.
-+
-+ - for arm64, data[0] is set to KVM_SYSTEM_EVENT_RESET_FLAG_PSCI_RESET2 if
-+   the guest issued a SYSTEM_RESET2 call according to v1.1 of the PSCI
-+   specification.
-+
-+ - for RISC-V, data[0] is set to the value of the second argument of the
-+   ``sbi_system_reset`` call.
- 
-- - KVM_SYSTEM_EVENT_RESET_FLAG_PSCI_RESET2 (arm64 only) -- the guest issued
--   a SYSTEM_RESET2 call according to v1.1 of the PSCI specification.
-+ - for x86, KVM_SYSTEM_EVENT_SEV_TERM stores the guest physical address of the
-+   guest's GHCB in `data[0]`.
- 
--Extra data for this event is stored in the `data[]` array, up to index
--`ndata-1` included, if bit 31 is set in `type`.  The data depends on the
--`type` field.  There is no extra data if bit 31 is clear or `ndata` is zero.
-+Previous versions of Linux defined a `flags` member in this struct.  The
-+field however was never written.
- 
- ::
- 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4e7f3a8da16a..517c0228881c 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10056,12 +10056,14 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 		if (kvm_check_request(KVM_REQ_HV_CRASH, vcpu)) {
+ 			vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
+ 			vcpu->run->system_event.type = KVM_SYSTEM_EVENT_CRASH;
++			vcpu->run->system_event.ndata = 0;
+ 			r = 0;
+ 			goto out;
+ 		}
+ 		if (kvm_check_request(KVM_REQ_HV_RESET, vcpu)) {
+ 			vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
+ 			vcpu->run->system_event.type = KVM_SYSTEM_EVENT_RESET;
++			vcpu->run->system_event.ndata = 0;
+ 			r = 0;
+ 			goto out;
+ 		}
 diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 5a57f74b4903..f76ffecda38a 100644
+index dd1d8167e71f..5a57f74b4903 100644
 --- a/include/uapi/linux/kvm.h
 +++ b/include/uapi/linux/kvm.h
-@@ -1147,6 +1147,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_PMU_CAPABILITY 212
- #define KVM_CAP_DISABLE_QUIRKS2 213
- #define KVM_CAP_VM_TSC_CONTROL 214
-+#define KVM_CAP_SYSTEM_EVENT_DATA 215
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index dfb7dabdbc63..ac57fc2c935f 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -4333,6 +4333,7 @@ static long kvm_vm_ioctl_check_extension_generic(struct kvm *kvm, long arg)
- 		return 0;
- #endif
- 	case KVM_CAP_BINARY_STATS_FD:
-+	case KVM_CAP_SYSTEM_EVENT_DATA:
- 		return 1;
- 	default:
- 		break;
+@@ -445,7 +445,6 @@ struct kvm_run {
+ #define KVM_SYSTEM_EVENT_RESET          2
+ #define KVM_SYSTEM_EVENT_CRASH          3
+ #define KVM_SYSTEM_EVENT_SEV_TERM       4
+-#define KVM_SYSTEM_EVENT_NDATA_VALID    (1u << 31)
+ 			__u32 type;
+ 			__u32 ndata;
+ 			__u64 data[16];
 -- 
 2.31.1
+
 
