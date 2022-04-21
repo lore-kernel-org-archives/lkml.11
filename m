@@ -2,106 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D66AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389113AbiDUOVY (ORCPT
+        id S1386962AbiDUOVj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57434 "EHLO
+        Thu, 21 Apr 2022 10:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386962AbiDUOVS (ORCPT
+        with ESMTP id S1357522AbiDUOVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:21:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0016A3BFAD
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:18:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650550708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=coOw4RfXiLNZzQ3xqdVQ85pRpofvZXMbbKbFNiXv7eM=;
-        b=HyOy5EH4jJgnZ1pdEJk5WY38Qdz4IdYstTU6Qd4kVO7DgoR/h9XXiPEix8aKm6aeJbUzbP
-        iDtAXpfBS775+nuir4DcBnUPj+j3fKytJkNy9Nd99ihwvCf6zKd/ajLem9Wf9zSH4RMGo7
-        WRSksxm9SssEPDmwN/GBrOCGtSGcoFY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-298-gRSGhd4YNJGFrIMlixXwVQ-1; Thu, 21 Apr 2022 10:18:23 -0400
-X-MC-Unique: gRSGhd4YNJGFrIMlixXwVQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5BA6B18019EF;
-        Thu, 21 Apr 2022 14:17:42 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DEAF240CFD22;
-        Thu, 21 Apr 2022 14:17:39 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220415123614.54024-7-jefflexu@linux.alibaba.com>
-References: <20220415123614.54024-7-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-Subject: Re: [PATCH v9 06/21] cachefiles: enable on-demand read mode
+        Thu, 21 Apr 2022 10:21:37 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2104.outbound.protection.outlook.com [40.107.255.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E803CA51
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:18:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z492i5x7FKTDF8PWMS3wJtb7uQ6uw/PYLdHJKOPGfRd6p74bBymJ0aKqr8WdgEG8gX1ZppEt3ekX1s1RF629gwT9sSiQLS4dkzgWPUx0QOs1Q+k9sLrraXQm2g0blc8ScGCa/ZH+obNbtRIQofPgM5+vI9adR22tSld+peApm6QxZAN/96FiRDoCq90WVqvS6Iel5BdGIw4vDQQ163MQXr6xWte3y4fhiv7crRvaI6TaJl14I0/EnY2j9+AlNNY2gBofxuk7mMbFq5xOGb4YSkwifpqh4SecGVrgt+fiKwtQbaz67lysssqVZ9Y1VryOg6IlSfZfaETdwMS5v114Bg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yN1e+JFFAguVQm2RiofE4OKFYt0KJE+BgY7S3WPhtCo=;
+ b=KsD9mzmvyBI7rrO2JL89x0ZhN6M2NGthg6tvZq5QrPv9ndw+2+OXpPfUjFsVU3kkv9Cu1itVtyEkMgbsWgLvXhshxqGPH8NPtV0jwItt9BJljCC/6KuMMxlM8atqjiLXh9HYITnlOlvZG6Nf7ZBReNDsjL9IooEqV1WfNj2sUzbXuwP7/4Fsesrx98n4kod3/BROKMDLOWvlSQGEAN3EdEMPHvDGUHmKk+H9CpMlLYfkF84BZeHiAzjnzqoxe57rM//DYgQAKra3Lkf6ZTyieD7TB/BnLzYgLBlLfm8IkI2AYvy7CfR1tGwEo8f8u0qLATZfzzy8Ve+oKcOaGhloXg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yN1e+JFFAguVQm2RiofE4OKFYt0KJE+BgY7S3WPhtCo=;
+ b=bvx+1xwzGcbUYXodWa4xGauygojG+/kPheWr0ZZt4SY9XWYdhIOkkVCAZJwmxdYgtIsZJXm71KI049qNZnoQoauCuaTYVbHW8YaK2BWfRRd5xWODiXdARzdoCSDQQ3smuES/puO//B5PzrDDUeispOe4lpZEPI0y/A4BSWNPM5s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
+ by HK0PR06MB2163.apcprd06.prod.outlook.com (2603:1096:203:49::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Thu, 21 Apr
+ 2022 14:18:42 +0000
+Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::d4bd:64f4:e1c0:25cb]) by TYZPR06MB4173.apcprd06.prod.outlook.com
+ ([fe80::d4bd:64f4:e1c0:25cb%4]) with mapi id 15.20.5164.025; Thu, 21 Apr 2022
+ 14:18:41 +0000
+From:   Yihao Han <hanyihao@vivo.com>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com, Yihao Han <hanyihao@vivo.com>
+Subject: [PATCH v2] macintosh: macio_asic: fix resource_size.cocci warnings
+Date:   Thu, 21 Apr 2022 07:18:07 -0700
+Message-Id: <20220421141821.11519-1-hanyihao@vivo.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0154.apcprd02.prod.outlook.com
+ (2603:1096:201:1f::14) To TYZPR06MB4173.apcprd06.prod.outlook.com
+ (2603:1096:400:26::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1445690.1650550659.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 21 Apr 2022 15:17:39 +0100
-Message-ID: <1445691.1650550659@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 890f61ec-dc2a-4d55-2600-08da23a1d639
+X-MS-TrafficTypeDiagnostic: HK0PR06MB2163:EE_
+X-Microsoft-Antispam-PRVS: <HK0PR06MB2163C0A52D5241002ACE3D44A2F49@HK0PR06MB2163.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zRb2xvaECjdOh3ZaiLZ6Aq19lWA03k/PS1TisE9Irm25tbsDPHz6RQ0+Jv/VGFRYaQP/VwJNxiOWaTF8y45vuYxqxxH5XIDubyOutw26R5Ehu7SUbpq9O/xlnsfFCQa/0QdKj5bURHRyYIpJEU+u1DZ1YxHp74D5s/JsMdGqwWmnWFccZIpmUeAEqYRY8jSkFgqfHx3kha4jYz2EhOMwwr4gU7miaVwhbPYqdZyeFtCQRv4miuO93DSFe0rD+4wH0iuYQKKSqAfnWHmT0Ko5eubSnbKAqJaKkOsFAR/AilMDIiSDqYoOWWqPDmtk3MNYMAksWbheOCGRWJX3nh8vScmbQqC22PctTETjc3rlJIqNGUAZvwxJwE4oxZlU2iw3+yYwKO5yG6KO4YIX8hkevCjovpprnXywAvysIuJb2sTgM0HAI3twyd8GjSEcIbrVDBviledrEGZ+c6CQAa4Cw8h0c/o3XYD0KsDi5pxFrzJJK5lPBSlBs2Jwv3KO9h4YCv9zkskyu5+z7kyUQ0ilzvRVh701CTp1/KVstaLYWb75dAyeJMJBdxDEDNqhHZt6BqAOrLMBHAkxVUWx8ZfquLJ1cZh/GREx/Ge04Vk8BnurXGLle5mqWYBjsdKzm4XP/7DRTwSdw/wP5g7WEkeEn4iu1GyCg0roiXqHvGiZnw9eQ57kHpkckiWdJr4Rqdm/1JHQnZ6ZM2f7GNk+unVkdApXarlYoYim97rSvLmhPvI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(2906002)(316002)(186003)(1076003)(38100700002)(38350700002)(7416002)(921005)(83380400001)(86362001)(8936002)(107886003)(5660300002)(6506007)(36756003)(8676002)(52116002)(6512007)(6666004)(26005)(66946007)(4326008)(66476007)(66556008)(110136005)(6486002)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UFZ6vpgCKJ7vU0WS09OMMXYSK9YgWRdx+29ypMZS5aG8Ul6t4mnmtJFRTNWZ?=
+ =?us-ascii?Q?s4Lw7pLEIgY3W8ADhZJvIejPDOx2wLSjqwVmcyA8ec0AMz3uSApeAk6SJ6t1?=
+ =?us-ascii?Q?z1sXyZOuW4+ywbEfsIb8SYlWIAFAz/ElHUYWMfVoToWF6R67ERly0Mw0b7SC?=
+ =?us-ascii?Q?SU6PUYDPjeQ+eN2be9JnN4cOrX6jNoDoJkNIoZWTuLUynLB/GOEGplGVdL5Q?=
+ =?us-ascii?Q?mcfWqzav2CZy/YaGAFeL9mtlUXfNM2irvaO+6xo+KgxbTduuRiRT8tNNAhGr?=
+ =?us-ascii?Q?Bry0yr1gFJ6L9ATS3QgogCtyUvJBh5YCTCejiuD4shZdCx/f6k+lysIW9aPz?=
+ =?us-ascii?Q?kUUCrcMIOYxO+jeyK6woJlygqdYv0Kt2Jl9iwA3pNxeQcWmOCgkmXbQIAdln?=
+ =?us-ascii?Q?knXUklx2yFsOwrnil9G/STN2acJY1aZbSkdktRnUFeGb95PSJ2V2W7ypR6Wb?=
+ =?us-ascii?Q?H7j7WrWR9Ij/npIO55MtFFWhF/VD3QS1a5uUJvwKeKJLIe/Ih0Hox3j/fDZr?=
+ =?us-ascii?Q?1O5G+KziqmEtzajw1SkerLdLvP348/gogJi28Qnmm9Eqtxy1L8Y7lCccQfmB?=
+ =?us-ascii?Q?FLYJkqC3tI4Kaam+BZSOb8YaHpNedUte0WrxAOND9rWRc2rcbkE2E5ZBgx2H?=
+ =?us-ascii?Q?CDUztdr1CLK0C0htIlET6/pBaBxpyTfjfSqnPrNS9yZ/cNgnLYDDjNvssitU?=
+ =?us-ascii?Q?aYtVNAA2q9hi3qLtL26r8tkv3NY64K7EfBHAKiCy1UM4hoNjTCqUx5JIp0SR?=
+ =?us-ascii?Q?X4ULwy0rxfxzQTiDrAXdhl59q/85APFT0m2CQq/tI9AxwaJhCXD1A2ZdTxam?=
+ =?us-ascii?Q?GwpLuHVYlwfaD8dwWv9ToAbJrCsm+liLVLPaTMQKg88pA8ArOHaYcZuXkang?=
+ =?us-ascii?Q?IIEnzyH9R7XmX58EXD8gWtt42Kvmudes7VqqeUVed7PBVlwnDTxqaRioVuiW?=
+ =?us-ascii?Q?4ocxHZt0v9KuxEV0Jn0cXHeXWRkF8NWq2FpjdZUy4Hfg3ByjY41XSaxYYU1K?=
+ =?us-ascii?Q?nHaFPQvB/tcsxxD49axLlYoqVSD4qxlcKweptGnSPpSgbTJFsQZ3Zh6q6bAu?=
+ =?us-ascii?Q?014JklFknm7Ela2wphtRYM4gUrDsZGYiIqCwXrPLOM+nWyGcaFB3sccnwF+d?=
+ =?us-ascii?Q?gfW8onPnV8i2GAKfXZWcslsUsCCd692DiKe0wZHhReb4pq+qgaEiCYAy1I3F?=
+ =?us-ascii?Q?Bu5oC1YBhF3bbkBvXjKtKFK6heRJGzWaE4BDUmFV2b3Yq/dAJm9jhZ126M73?=
+ =?us-ascii?Q?q06e3ZViq3Ex6QlInCxdVEHUg3LsDI7M+X/vGBZbR1dN4Ry5OOKwIW8BtMEI?=
+ =?us-ascii?Q?wuTxI6VpRyNVgU3OkzkFmt2qiWfLF3pZ+lXFagLtwhWvmrEY8Ao4rikx/hHM?=
+ =?us-ascii?Q?DlGrrojyk7DgVZ4FDomS1kBYZcr86wQwtryCUcUJi40m+UYuK4oup/w6pMEg?=
+ =?us-ascii?Q?nI8S2m3nPdooEMnTti05Mp309znaO3O+mLMOzzT4iojFQ3wpje81nJeICWM9?=
+ =?us-ascii?Q?258yZiLKj493MbdGa0FCPGv2QVjsrWdKvyqf+1WjSqOzHQEi9QVeyv0akLBW?=
+ =?us-ascii?Q?p38X6vAueh3Fa1+lrS01WdRDCuCLyPRSOzcXd0xUbudS4AfbzGAIA4PJffmO?=
+ =?us-ascii?Q?jWj54iSLbc1H/5kt4ELjNMdTKKWr0b5PQfH64+befw/Ut1yTCjSkm1N1/whY?=
+ =?us-ascii?Q?fSQt1HwemT6FAwV3dhb2FSdGNgxbU1Dng9fq4oPP0LaGwuhlEMVcATwy2Ck9?=
+ =?us-ascii?Q?9H2hmQ72ZA=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 890f61ec-dc2a-4d55-2600-08da23a1d639
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 14:18:41.8685
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4CaJySsynSHw0ZdEVxijAgNiXMgA9gChu7C0t3M7FhrUtI1xecz9aGIEmw7b0XTQRz/unq3yTPgarP0jeHhqIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB2163
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+drivers/macintosh/macio_asic.c:219:26-29: WARNING:Suspicious code. resource_size is maybe missing with res
+drivers/macintosh/macio_asic.c:221:26-29: WARNING:Suspicious code. resource_size is maybe missing with res
 
-> +	if (IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND) &&
-> +	    !strcmp(args, "ondemand")) {
-> +		set_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
-> +	} else if (*args) {
-> +		pr_err("'bind' command doesn't take an argument\n");
+Use resource_size function on resource object instead of
+explicit computation.
 
-The error message isn't true if CONFIG_CACHEFILES_ONDEMAND=3Dy.  It would =
-be
-better to say "Invalid argument to the 'bind' command".
+Generated by: scripts/coccinelle/api/resource_size.cocci
 
-> -retry:
->  	/* If the caller asked us to seek for data before doing the read, then
->  	 * we should do that now.  If we find a gap, we fill it with zeros.
->  	 */
-> @@ -120,16 +119,6 @@ static int cachefiles_read(struct netfs_cache_resou=
-rces *cres,
->  			if (read_hole =3D=3D NETFS_READ_HOLE_FAIL)
->  				goto presubmission_error;
->  =
+Signed-off-by: Yihao Han <hanyihao@vivo.com>
+---
+v2: drop parenthesis around resource_size(res) and edit commit message
+---
+ drivers/macintosh/macio_asic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> -			if (read_hole =3D=3D NETFS_READ_HOLE_ONDEMAND) {
-> -				ret =3D cachefiles_ondemand_read(object, off, len);
-> -				if (ret)
-> -					goto presubmission_error;
-> -
-> -				/* fail the read if no progress achieved */
-> -				read_hole =3D NETFS_READ_HOLE_FAIL;
-> -				goto retry;
-> -			}
-> -
-
-Unexplained deletion of newly added code.
-
-David
+diff --git a/drivers/macintosh/macio_asic.c b/drivers/macintosh/macio_asic.c
+index 1943a007e2d5..260fccb3863e 100644
+--- a/drivers/macintosh/macio_asic.c
++++ b/drivers/macintosh/macio_asic.c
+@@ -216,9 +216,9 @@ static int macio_resource_quirks(struct device_node *np, struct resource *res,
+ 	/* Some older IDE resources have bogus sizes */
+ 	if (of_node_name_eq(np, "IDE") || of_node_name_eq(np, "ATA") ||
+ 	    of_node_is_type(np, "ide") || of_node_is_type(np, "ata")) {
+-		if (index == 0 && (res->end - res->start) > 0xfff)
++		if (index == 0 && resource_size(res) > 0xfff)
+ 			res->end = res->start + 0xfff;
+-		if (index == 1 && (res->end - res->start) > 0xff)
++		if (index == 1 && resource_size(res) > 0xff)
+ 			res->end = res->start + 0xff;
+ 	}
+ 	return 0;
+-- 
+2.17.1
 
