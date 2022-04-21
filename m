@@ -2,123 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA87C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D37CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385555AbiDUHHs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
+        id S236684AbiDUHH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 03:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385559AbiDUHHe (ORCPT
+        with ESMTP id S1385553AbiDUHHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:07:34 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4181115704;
-        Thu, 21 Apr 2022 00:04:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=zBXWLNnXpk4rildATDLl07tkcfHH7qx/rs6eJc2jVvY=; b=QR0Xe8VEKwSitBZoLjmLhc8fq8
-        Lr97HHHJhJPho3My5cPAj3WFl0XUehAS9E+qEfCT/Lq6WDrFnYeWYcShZdet8No9amJuD3NdnhpXg
-        A2WH2R3rSaIEsCxFrj4AW4IgVwsRmuLSHamhv5gA1JmwuKLVy4Zwc1fRRbXymaAOFUWY/Fo25jO/Y
-        Rv07h3ZFVNmYVZsAr2+KfR9itkDS/IPJLGd4Zit2F7zasrKi43a339FOQVRyOyxnkylnHwxU0xPsw
-        c+T5CEboHhoU2XsgyUtATcYfhWl+O7Eg4aZlYpZqDsNyqmG71+b+KUGXTz4CsIQO92nqN/AR8/lSc
-        vuSIbYrQ==;
-Received: from [2001:4bb8:191:364b:7b50:153f:5622:82f7] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhQrr-00BwId-CM; Thu, 21 Apr 2022 07:04:43 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     akpm@linux-foundation.org
-Cc:     x86@kernel.org, linux-alpha@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] net: unexport csum_and_copy_{from,to}_user
-Date:   Thu, 21 Apr 2022 09:04:40 +0200
-Message-Id: <20220421070440.1282704-1-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
+        Thu, 21 Apr 2022 03:07:47 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5FB2AF3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:04:58 -0700 (PDT)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A4BEA3F1AE
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:04:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1650524697;
+        bh=6HdSC5MBPOMufV6HBiKEeWBhFc9GPRC0t6FN09g0Ni0=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Cw2hKVUc6XGwBB+Gjih/0VWVNIVc7Dp0qKge0i9JpzERau/+WbW88f6qq58S2RJlD
+         3qjXktxUjy4B2y60soDW/Kkm1I8bU2kHWTAYO0F69gAIN3Mk44KWa/kF5CVwulr1Et
+         FJfPUQ/jqGSBAqCj8ClZAzT9Ln3uI8qBQ8JMRWCIrKOY6q3aw0VNcnWOI7mwC767/J
+         JdnC0xjrZxEgeQedGIW3bEULykCJBPFYsPSxCeJ0Y/MdUg0RcKSit9bSuufsNWSh4H
+         jl9EtmHZKmzej+6HXTvx6dW8k3iDYXkOIIsYltEM2o8RBXqKjgCBsoHyGyuvtltfaA
+         p6krUlgwd9e5w==
+Received: by mail-ej1-f72.google.com with SMTP id gn13-20020a1709070d0d00b006efe23342c7so304941ejc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:04:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6HdSC5MBPOMufV6HBiKEeWBhFc9GPRC0t6FN09g0Ni0=;
+        b=MvX+qNYVEGIP5lZPYPkXArVKjB9yJoH56q0/JCp6ES873JLosTJ5iAD6SMimYzXm1e
+         X1wdVVjl1nGxVIOo7Zk3l+MZ4odTC23e8MSqI9AujPBsOoI6FXZNXq57rAmuxHVlF+YP
+         fHg5PYq1/FH388/2tL4WaDu6tNGLpy3vNmINI7NL+TlKkOibU+JI3WQ2NWGPMG+X9mjb
+         NIOS3RlrIn1tH1Za4LgFfPKVS1o7liifD2Uc2+LYGS/Bw935VQa11wB/qcKM8oWpqddQ
+         u42ESeue8i/hydY4xHgoiA9ADh8cWtFU+T0ttt2w9JCHD66ge3zmNe0LYNthwDZfZyct
+         wnvg==
+X-Gm-Message-State: AOAM532T5rI0w8ny1Lp2TmkRM007EqlW2WvSoEYH/JJzpIEg0KBMZC+9
+        BbAPJ+GDqMED/K6AFP28VjiiK2yqgnUSv4pEkacI968aa+za4M7gh1yATxZvVmdV40lDnh2imPd
+        ekRpc3fqZLtbC4eTnatSCxpOsa37wI3OZMq3sDVCIFQ==
+X-Received: by 2002:a17:906:5d04:b0:6db:7262:570e with SMTP id g4-20020a1709065d0400b006db7262570emr21773808ejt.8.1650524697233;
+        Thu, 21 Apr 2022 00:04:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJynJjrtS0hF16SVmG5l/ZQENi4TBpgJyFKjQc4HjrAuWcJ+5tpAdnARz6DxwRaPkxDgvSHyjw==
+X-Received: by 2002:a17:906:5d04:b0:6db:7262:570e with SMTP id g4-20020a1709065d0400b006db7262570emr21773783ejt.8.1650524697000;
+        Thu, 21 Apr 2022 00:04:57 -0700 (PDT)
+Received: from [192.168.123.94] (ip-088-152-144-107.um26.pools.vodafone-ip.de. [88.152.144.107])
+        by smtp.gmail.com with ESMTPSA id kb28-20020a1709070f9c00b006d5d8bf1b72sm7465162ejc.78.2022.04.21.00.04.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 00:04:56 -0700 (PDT)
+Message-ID: <3fa5215b-84c3-5e4c-cb53-6c05d05e4350@canonical.com>
+Date:   Thu, 21 Apr 2022 09:04:55 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3] RISC-V: Increase range and default value of NR_CPUS
+Content-Language: en-US
+To:     Anup Patel <apatel@ventanamicro.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220420112408.155561-1-apatel@ventanamicro.com>
+From:   Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+In-Reply-To: <20220420112408.155561-1-apatel@ventanamicro.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-csum_and_copy_from_user and csum_and_copy_to_user are exported by
-a few architectures, but not actually used in modular code.  Drop
-the exports.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/alpha/lib/csum_partial_copy.c   | 1 -
- arch/m68k/lib/checksum.c             | 2 --
- arch/powerpc/lib/checksum_wrappers.c | 2 --
- arch/x86/lib/csum-wrappers_64.c      | 2 --
- 4 files changed, 7 deletions(-)
 
-diff --git a/arch/alpha/lib/csum_partial_copy.c b/arch/alpha/lib/csum_partial_copy.c
-index 1931a04af85a2..4d180d96f09e4 100644
---- a/arch/alpha/lib/csum_partial_copy.c
-+++ b/arch/alpha/lib/csum_partial_copy.c
-@@ -353,7 +353,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 		return 0;
- 	return __csum_and_copy(src, dst, len);
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
-diff --git a/arch/m68k/lib/checksum.c b/arch/m68k/lib/checksum.c
-index 7e6afeae62177..5acb821849d30 100644
---- a/arch/m68k/lib/checksum.c
-+++ b/arch/m68k/lib/checksum.c
-@@ -265,8 +265,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 	return sum;
- }
- 
--EXPORT_SYMBOL(csum_and_copy_from_user);
--
- 
- /*
-  * copy from kernel space while checksumming, otherwise like csum_partial
-diff --git a/arch/powerpc/lib/checksum_wrappers.c b/arch/powerpc/lib/checksum_wrappers.c
-index f3999cbb2fcc4..1a14c8780278c 100644
---- a/arch/powerpc/lib/checksum_wrappers.c
-+++ b/arch/powerpc/lib/checksum_wrappers.c
-@@ -24,7 +24,6 @@ __wsum csum_and_copy_from_user(const void __user *src, void *dst,
- 	user_read_access_end();
- 	return csum;
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
- {
-@@ -38,4 +37,3 @@ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
- 	user_write_access_end();
- 	return csum;
- }
--EXPORT_SYMBOL(csum_and_copy_to_user);
-diff --git a/arch/x86/lib/csum-wrappers_64.c b/arch/x86/lib/csum-wrappers_64.c
-index 189344924a2be..145f9a0bde29a 100644
---- a/arch/x86/lib/csum-wrappers_64.c
-+++ b/arch/x86/lib/csum-wrappers_64.c
-@@ -32,7 +32,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 	user_access_end();
- 	return sum;
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- /**
-  * csum_and_copy_to_user - Copy and checksum to user space.
-@@ -57,7 +56,6 @@ csum_and_copy_to_user(const void *src, void __user *dst, int len)
- 	user_access_end();
- 	return sum;
- }
--EXPORT_SYMBOL(csum_and_copy_to_user);
- 
- /**
-  * csum_partial_copy_nocheck - Copy and checksum.
--- 
-2.30.2
+On 4/20/22 13:24, Anup Patel wrote:
+> Currently, the range and default value of NR_CPUS is too restrictive
+> for high-end RISC-V systems with large number of HARTs. The latest
+> QEMU virt machine supports upto 512 CPUs so the current NR_CPUS is
+> restrictive for QEMU as well. Other major architectures (such as
+> ARM64, x86_64, MIPS, etc) have a much higher range and default
+> value of NR_CPUS.
+> 
+> This patch increases NR_CPUS range to 2-512 and default value to
+> XLEN (i.e. 32 for RV32 and 64 for RV64).
+> 
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 
+Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+
+> ---
+> Changes since v2:
+>   - Rebased on Linux-5.18-rc3
+>   - Use a different range when SBI v0.1 is enabled
+> Changes since v1:
+>   - Updated NR_CPUS range to 2-512 which reflects maximum number of
+>     CPUs supported by QEMU virt machine.
+> ---
+>   arch/riscv/Kconfig | 9 ++++++---
+>   1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 00fd9c548f26..1823f281069f 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -275,10 +275,13 @@ config SMP
+>   	  If you don't know what to do here, say N.
+>   
+>   config NR_CPUS
+> -	int "Maximum number of CPUs (2-32)"
+> -	range 2 32
+> +	int "Maximum number of CPUs (2-512)"
+>   	depends on SMP
+> -	default "8"
+> +	range 2 512 if !SBI_V01
+> +	range 2 32 if SBI_V01 && 32BIT
+> +	range 2 64 if SBI_V01 && 64BIT
+> +	default "32" if 32BIT
+> +	default "64" if 64BIT
+>   
+>   config HOTPLUG_CPU
+>   	bool "Support for hot-pluggable CPUs"
