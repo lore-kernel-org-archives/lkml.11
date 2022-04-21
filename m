@@ -2,141 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72779C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E591C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384928AbiDUGgC (ORCPT
+        id S1384946AbiDUGgF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
+        Thu, 21 Apr 2022 02:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351139AbiDUGft (ORCPT
+        with ESMTP id S242783AbiDUGft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 02:35:49 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D87413F4F
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:32:52 -0700 (PDT)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B271713F36
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:32:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650522772; x=1682058772;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9BN+5/gRilYRA5GXVcxvfMJkC3SPAaCFfzoFOtk+W7w=;
-  b=IwVt78Na2jmf5Xa51cabiR7r31M+pLH6dscnXanRAIneYyDdO6ju2yTJ
-   PQO9ztenpDW1pgfBZvImA92D5TJwIUJcawe2QGOb12qTRMY/0Mg5Bww33
-   S0pPxY+epp05gsgwjI47nAa5NIJiO9LI37xmpct7+uXrm9ZHWeI7MGU2V
-   7KvqJIGtMd0/H+dUbkXMNn7Vp1sweuJMvedvI+0sjSqQ8dLowrYHlKJ9h
-   Q4/U9mYpnJIM1e33wPf3PHiWtDqinfIjYBEDggwVRv1hTSD+RSvtWMHSR
-   Mxu0Q7wlUA5cfvB0Xpmgg1z15eXC/F2GTauzWaTR2b3d03o/tIx8sXkFb
+  t=1650522771; x=1682058771;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=sDg8JlXhuBLvr3qealRzh/3gznsd9BkHgfOZj1Rn5T8=;
+  b=Jo5C6n9TA+F3oFPH4FMHQkn8S8j/n7dJGkGX+7AZC/Aer4BLeR3W3EM8
+   kmrJm9zxqb6yNEgvsq2p3gnfCN4j+ha9nu10p/2Od4QibyZcd4E/zDgOx
+   UppNWJV6sn+JKMAxYvVSlkxLsSbnkPNQFIpsZDT7B14es4O9VEZPWvN9y
+   jNMeoXLBP/Qwi3DcfrF9ZtvzFRMDCdx9RYIoUchv4dJ7mh4kM/Jk54ahH
+   YhOCepGS7WvFOahojCsZWkJkOg5kuZ0EMQtu6s1GxFzj/vQ2+Ami8IR2N
+   4nqCVwuZXkzMkmWxicTsNPY5tUmXYAU74BB0R4CD/0rtr8dV0fe8t4RrR
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264020402"
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="246149386"
 X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
-   d="scan'208";a="264020402"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:32:52 -0700
+   d="scan'208";a="246149386"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:32:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
-   d="scan'208";a="532784354"
+   d="scan'208";a="593505839"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 20 Apr 2022 23:32:48 -0700
+  by orsmga001.jf.intel.com with ESMTP; 20 Apr 2022 23:32:49 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQMy-0007wL-7s;
+        id 1nhQMy-0007wq-Eh;
         Thu, 21 Apr 2022 06:32:48 +0000
-Date:   Thu, 21 Apr 2022 14:32:00 +0800
+Date:   Thu, 21 Apr 2022 14:32:09 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Russ Weight <russell.h.weight@intel.com>, mcgrof@kernel.org,
-        rafael@kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, trix@redhat.com, lgoncalv@redhat.com,
-        yilun.xu@intel.com, hao.wu@intel.com,
-        matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: Re: [PATCH v4 4/8] firmware_loader: Add firmware-upload support
-Message-ID: <202204201956.1mdJkUkr-lkp@intel.com>
-References: <20220419231658.664388-5-russell.h.weight@intel.com>
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jpirko-mlxsw:jiri_devel_linecards 92/94]
+ drivers/net/netdevsim/dev.c:119:25: error: too few arguments to function
+ call, expected 5, have 4
+Message-ID: <202204202021.UKHPj2M9-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220419231658.664388-5-russell.h.weight@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Russ,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on driver-core/driver-core-testing]
-[also build test ERROR on shuah-kselftest/next mcgrof/sysctl-next linus/master v5.18-rc3 next-20220419]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Russ-Weight/Extend-FW-framework-for-user-FW-uploads/20220420-071906
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git 3123109284176b1532874591f7c81f3837bbdc17
-config: parisc-buildonly-randconfig-r006-20220420 (https://download.01.org/0day-ci/archive/20220420/202204201956.1mdJkUkr-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
+tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
+head:   653975cafc05a2ffc68d2cbd1c5a328c67ce7142
+commit: cb770dca23bd2c2fc957d64caeed00ba78a07e0b [92/94] TMP: devlink device type
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220420/202204202021.UKHPj2M9-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/9280379c623309746315a540c66b7bbcc980b32e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Russ-Weight/Extend-FW-framework-for-user-FW-uploads/20220420-071906
-        git checkout 9280379c623309746315a540c66b7bbcc980b32e
+        # https://github.com/jpirko/linux_mlxsw/commit/cb770dca23bd2c2fc957d64caeed00ba78a07e0b
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
+        git checkout cb770dca23bd2c2fc957d64caeed00ba78a07e0b
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/base/ drivers/scsi/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
->> drivers/base/firmware_loader/sysfs.c:113:5: error: redefinition of 'register_sysfs_loader'
-     113 | int register_sysfs_loader(void)
-         |     ^~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/base/firmware_loader/sysfs.c:9:
-   drivers/base/firmware_loader/sysfs.h:64:19: note: previous definition of 'register_sysfs_loader' with type 'int(void)'
-      64 | static inline int register_sysfs_loader(void)
-         |                   ^~~~~~~~~~~~~~~~~~~~~
-   drivers/base/firmware_loader/sysfs.c: In function 'register_sysfs_loader':
->> drivers/base/firmware_loader/sysfs.c:119:16: error: implicit declaration of function 'register_firmware_config_sysctl' [-Werror=implicit-function-declaration]
-     119 |         return register_firmware_config_sysctl();
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/base/firmware_loader/sysfs.c: At top level:
->> drivers/base/firmware_loader/sysfs.c:122:6: error: redefinition of 'unregister_sysfs_loader'
-     122 | void unregister_sysfs_loader(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/base/firmware_loader/sysfs.c:9:
-   drivers/base/firmware_loader/sysfs.h:69:20: note: previous definition of 'unregister_sysfs_loader' with type 'void(void)'
-      69 | static inline void unregister_sysfs_loader(void)
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/base/firmware_loader/sysfs.c: In function 'unregister_sysfs_loader':
->> drivers/base/firmware_loader/sysfs.c:124:9: error: implicit declaration of function 'unregister_firmware_config_sysctl' [-Werror=implicit-function-declaration]
-     124 |         unregister_firmware_config_sysctl();
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+>> drivers/net/netdevsim/dev.c:119:25: error: too few arguments to function call, expected 5, have 4
+                                                           nsim_dev_linecard);
+                                                                            ^
+   include/net/devlink.h:1607:1: note: 'devlink_linecard_device_create' declared here
+   devlink_linecard_device_create(struct devlink_linecard *linecard,
+   ^
+   drivers/net/netdevsim/dev.c:870:14: error: too many arguments to function call, expected 3, have 4
+                                             NULL, i);
+                                                   ^
+   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   drivers/net/netdevsim/dev.c:883:39: error: too many arguments to function call, expected single argument 'nsim_dev_port', have 3 arguments
+                           __nsim_dev_port_del(nsim_dev_port, NULL, i);
+                           ~~~~~~~~~~~~~~~~~~~                ^~~~~~~
+   include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+   #define NULL ((void *)0)
+                ^
+   drivers/net/netdevsim/dev.c:846:13: note: '__nsim_dev_port_del' declared here
+   static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port);
+               ^
+   drivers/net/netdevsim/dev.c:1625:12: error: conflicting types for '__nsim_dev_port_add'
+   static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+              ^
+   drivers/net/netdevsim/dev.c:844:1: note: previous declaration is here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   drivers/net/netdevsim/dev.c:1738:14: error: too many arguments to function call, expected 3, have 4
+                                             NULL, i);
+                                                   ^
+   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   drivers/net/netdevsim/dev.c:2213:27: error: too many arguments to function call, expected 3, have 4
+                                             nsim_dev_linecard, port_index);
+                                                                ^~~~~~~~~~
+   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   6 errors generated.
 
 
-vim +/register_sysfs_loader +113 drivers/base/firmware_loader/sysfs.c
+vim +119 drivers/net/netdevsim/dev.c
 
-cafe6fbc6b8a99 Russ Weight 2022-04-19  112  
-cafe6fbc6b8a99 Russ Weight 2022-04-19 @113  int register_sysfs_loader(void)
-cafe6fbc6b8a99 Russ Weight 2022-04-19  114  {
-cafe6fbc6b8a99 Russ Weight 2022-04-19  115  	int ret = class_register(&firmware_class);
-cafe6fbc6b8a99 Russ Weight 2022-04-19  116  
-cafe6fbc6b8a99 Russ Weight 2022-04-19  117  	if (ret != 0)
-cafe6fbc6b8a99 Russ Weight 2022-04-19  118  		return ret;
-cafe6fbc6b8a99 Russ Weight 2022-04-19 @119  	return register_firmware_config_sysctl();
-cafe6fbc6b8a99 Russ Weight 2022-04-19  120  }
-cafe6fbc6b8a99 Russ Weight 2022-04-19  121  
-cafe6fbc6b8a99 Russ Weight 2022-04-19 @122  void unregister_sysfs_loader(void)
-cafe6fbc6b8a99 Russ Weight 2022-04-19  123  {
-cafe6fbc6b8a99 Russ Weight 2022-04-19 @124  	unregister_firmware_config_sysctl();
-cafe6fbc6b8a99 Russ Weight 2022-04-19  125  	class_unregister(&firmware_class);
-cafe6fbc6b8a99 Russ Weight 2022-04-19  126  }
-cafe6fbc6b8a99 Russ Weight 2022-04-19  127  
+eae68f21fc5005 Jiri Pirko 2021-05-05  100  
+eae68f21fc5005 Jiri Pirko 2021-05-05  101  static int
+eae68f21fc5005 Jiri Pirko 2021-05-05  102  nsim_dev_linecard_devices_create(struct nsim_dev_linecard *nsim_dev_linecard)
+eae68f21fc5005 Jiri Pirko 2021-05-05  103  {
+eae68f21fc5005 Jiri Pirko 2021-05-05  104  	struct devlink_linecard_device *device;
+eae68f21fc5005 Jiri Pirko 2021-05-05  105  	char *component_name;
+eae68f21fc5005 Jiri Pirko 2021-05-05  106  	int err;
+eae68f21fc5005 Jiri Pirko 2021-05-05  107  	int i;
+eae68f21fc5005 Jiri Pirko 2021-05-05  108  
+eae68f21fc5005 Jiri Pirko 2021-05-05  109  	snprintf(nsim_dev_linecard->device_component_name,
+eae68f21fc5005 Jiri Pirko 2021-05-05  110  		 sizeof(nsim_dev_linecard->device_component_name), "lc%u_dev0",
+eae68f21fc5005 Jiri Pirko 2021-05-05  111  		 nsim_dev_linecard->linecard_index);
+eae68f21fc5005 Jiri Pirko 2021-05-05  112  	component_name = nsim_dev_linecard->device_component_name;
+eae68f21fc5005 Jiri Pirko 2021-05-05  113  
+eae68f21fc5005 Jiri Pirko 2021-05-05  114  	for (i = 0; i < NSIM_DEV_LINECARD_DEVICE_COUNT; i++) {
+eae68f21fc5005 Jiri Pirko 2021-05-05  115  		if (i > 0)
+eae68f21fc5005 Jiri Pirko 2021-05-05  116  			component_name = NULL;
+eae68f21fc5005 Jiri Pirko 2021-05-05  117  		device = devlink_linecard_device_create(nsim_dev_linecard->devlink_linecard,
+eae68f21fc5005 Jiri Pirko 2021-05-05  118  							i, component_name,
+eae68f21fc5005 Jiri Pirko 2021-05-05 @119  							nsim_dev_linecard);
+eae68f21fc5005 Jiri Pirko 2021-05-05  120  		if (IS_ERR(device)) {
+eae68f21fc5005 Jiri Pirko 2021-05-05  121  			err = PTR_ERR(device);
+eae68f21fc5005 Jiri Pirko 2021-05-05  122  			goto rollback;
+eae68f21fc5005 Jiri Pirko 2021-05-05  123  		}
+eae68f21fc5005 Jiri Pirko 2021-05-05  124  		nsim_dev_linecard->devlink_device[i] = device;
+eae68f21fc5005 Jiri Pirko 2021-05-05  125  	}
+eae68f21fc5005 Jiri Pirko 2021-05-05  126  	return 0;
+eae68f21fc5005 Jiri Pirko 2021-05-05  127  
+eae68f21fc5005 Jiri Pirko 2021-05-05  128  rollback:
+eae68f21fc5005 Jiri Pirko 2021-05-05  129  	for (i--; i >= 0; i--) {
+eae68f21fc5005 Jiri Pirko 2021-05-05  130  		device = nsim_dev_linecard->devlink_device[i];
+eae68f21fc5005 Jiri Pirko 2021-05-05  131  		devlink_linecard_device_destroy(nsim_dev_linecard->devlink_linecard,
+eae68f21fc5005 Jiri Pirko 2021-05-05  132  						device);
+eae68f21fc5005 Jiri Pirko 2021-05-05  133  	}
+eae68f21fc5005 Jiri Pirko 2021-05-05  134  	return err;
+eae68f21fc5005 Jiri Pirko 2021-05-05  135  }
+eae68f21fc5005 Jiri Pirko 2021-05-05  136  
+
+:::::: The code at line 119 was first introduced by commit
+:::::: eae68f21fc5005048b5b49a4c953ff76b724df98 netdevsim: create couple of devices on each linecard
+
+:::::: TO: Jiri Pirko <jiri@nvidia.com>
+:::::: CC: Jiri Pirko <jiri@nvidia.com>
 
 -- 
 0-DAY CI Kernel Test Service
