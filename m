@@ -2,184 +2,400 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7841C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D42EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389817AbiDUPDD (ORCPT
+        id S1389810AbiDUPDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        Thu, 21 Apr 2022 11:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbiDUPC3 (ORCPT
+        with ESMTP id S1389762AbiDUPCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:02:29 -0400
-Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 51C724550D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:59:39 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1650553179; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Subject: To: To: From: From: Date:
- Sender: Sender; bh=2FfySmyUi61V40qd9e4vY+mMpu2WKzNDDsFY/pOvwG8=; b=DSmjlPIcVdLExJVg97Q5KGee/NX7gkkXivuTasF9zAzftf4olyEnnxW7TrOiFrgVqp0JKfgZ
- wpPNSMV7nrse4ygpriYE40mnGTOQy+yoPY9uPYem899BZFlvKha/WHDdFVDvmG20mZYqdcFi
- XaQdseHuZbCNV8itLfIP8NUDAbxVK4S+eqAuFJs3dqETpzBTcv42hLJ9wq8Ip9KWQxhW/sXn
- uKrSP5bxC2fRnYK/0qn7a7A4F9zbgAVRFSclNLV09/LKtAkKNFhxKbOhPzys+2a5QnP9PT+D
- le043xMvPzhtuAyLIKNYlrc4sXfPy1e32oCAmn6Wq0JReIsF9VS8PA==
-X-Mailgun-Sending-Ip: 159.135.228.62
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from AN5Bruno (dynamic-user.170.84.57.33.mhnet.com.br
- [170.84.57.33]) by smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6261715ab77b16c56e3e69e1 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Thu, 21 Apr 2022 14:59:38 GMT
-Sender: codeagain@codeagain.dev
-Date:   Thu, 21 Apr 2022 11:59:34 -0300
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: [PATCH v4 3/3] staging: vme: Move 'vme/devices/' to 'vme_user/'
-Message-ID: <2cd7de9a426c443a5ea618682d605ecfd751d798.1650544175.git.codeagain@codeagain.dev>
-References: <cover.1650544175.git.codeagain@codeagain.dev>
+        Thu, 21 Apr 2022 11:02:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C00354550D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:59:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650553180;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cWd6qru6wspoNXU4GQsmi6gX1Vj8SZ+oMWu2nZbwu+g=;
+        b=WdNyM3cSJf1//vO2F730mlORBpjrt8oO8apXO6GeWYrf1ZJQWgpZGRuw3QllVxTtxbbgks
+        jGfbEH4SIKov3G9/mng1i7AEuHPsFCkQNk2ILEOiosXuzWjQO7L2WgA9QpMjuaUR60oItJ
+        Lb1bO1L+DFxPCTgFy2szfE9bPXUANSQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-225-DrzwyEEFOJWmRfe3Ssmnhg-1; Thu, 21 Apr 2022 10:59:37 -0400
+X-MC-Unique: DrzwyEEFOJWmRfe3Ssmnhg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EEE0D80005D;
+        Thu, 21 Apr 2022 14:59:36 +0000 (UTC)
+Received: from llong.com (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 945B1145BEE7;
+        Thu, 21 Apr 2022 14:59:36 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org, Muchun Song <songmuchun@bytedance.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Yang Shi <shy828301@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH] mm/memcg: Free percpu stats memory of dying memcg's
+Date:   Thu, 21 Apr 2022 10:58:45 -0400
+Message-Id: <20220421145845.1044652-1-longman@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ysqdnui3ra2l3lsk"
-Content-Disposition: inline
-In-Reply-To: <cover.1650544175.git.codeagain@codeagain.dev>
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+For systems with large number of CPUs, the majority of the memory
+consumed by the mem_cgroup structure is actually the percpu stats
+memory. When a large number of memory cgroups are continuously created
+and destroyed (like in a container host), it is possible that more
+and more mem_cgroup structures remained in the dying state holding up
+increasing amount of percpu memory.
 
---ysqdnui3ra2l3lsk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We can't free up the memory of the dying mem_cgroup structure due to
+active references in some other places. However, the percpu stats memory
+allocated to that mem_cgroup is a different story.
 
-In <db3b9e990e75573402cda22faf933760f076c033> ("Staging: VME: move VME=20
-drivers out of staging") the vme code, board and bridge drivers were
-moved out of the staging tree, remaining only the VME user device=20
-driver.
+This patch adds a new percpu_stats_disabled variable to keep track of
+the state of the percpu stats memory. If the variable is set, percpu
+stats update will be disabled for that particular memcg. All the stats
+update will be forward to its parent instead. Reading of the its percpu
+stats will return 0.
 
-Since this driver is the only one remaining in staging, such multi-level
-structure confuses more than helps. The current structure is as follows:
+The flushing and freeing of the percpu stats memory is a multi-step
+process. The percpu_stats_disabled variable is set when the memcg is
+being set to offline state. After a grace period with the help of RCU,
+the percpu stats data are flushed and then freed.
 
- - drivers/staging/vme/
-                       Makefile
-                       devices/
-                               Kconfig
-                               Makefile
-                               vme_user.c
-                               vme_user.h
+This will greatly reduce the amount of memory held up by dying memory
+cgroups.
 
-The top-level Makefile has the only function of calling another Makefile
-into the devices/ subdirectory. This latter only compiles the vme_user=20
-driver, since there is no other in the staging tree.
+By running a simple management tool for container 2000 times per test
+run, below are the results of increases of percpu memory (as reported
+in /proc/meminfo) and nr_dying_descendants in root's cgroup.stat.
 
-This patch removes the unnecessary Makefile from the 'vme/' dir, move
-the contents of 'vme/devices' into the 'vme/' dir, and renames it to
-'vme_user/' (the driver name), allowing a straightforward understanding
-of this driver's contents. Furthermore, it updates the MAINTAINERS file
-to properly reflect the new paths.
+  Unpatched kernel:
 
-Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+  Run    Percpu Memory Increase    nr_dying_descendants Increase
+  ---    ----------------------    -----------------------------
+   1           76032 kB                       209
+   2           74112 kB                       208
+   3           74112 kB                       207
+
+  Patched kernel:
+
+  Run    Percpu Memory Increase    nr_dying_descendants Increase
+  ---    ----------------------    -----------------------------
+   1            4224 kB                       207
+   2            1536 kB                       209
+   3               0 kB                       208
+
+The x86-64 test system has 2 sockets and 96 threads. For the compiled
+kernel, memcg_vmstats_percpu and lruvec_stats_percpu have a size of
+2424 and 656 bytes respectively.  The mem_cgroup structure is just a
+bit over 4k.  That translates to a percpu stats data size of 350.25
+kB per memcg. That means 72852 kB of percpu data for 208 memcg's. This
+matches pretty well with the unpatched kernel figures listed above.
+
+Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- MAINTAINERS                                          | 2 +-
- drivers/staging/Kconfig                              | 3 +--
- drivers/staging/Makefile                             | 2 +-
- drivers/staging/vme/Makefile                         | 2 --
- drivers/staging/{vme/devices =3D> vme_user}/Kconfig    | 0
- drivers/staging/{vme/devices =3D> vme_user}/Makefile   | 0
- drivers/staging/{vme/devices =3D> vme_user}/vme_user.c | 0
- drivers/staging/{vme/devices =3D> vme_user}/vme_user.h | 0
- 8 files changed, 3 insertions(+), 6 deletions(-)
- delete mode 100644 drivers/staging/vme/Makefile
- rename drivers/staging/{vme/devices =3D> vme_user}/Kconfig (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/Makefile (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.c (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.h (100%)
+ include/linux/memcontrol.h |  13 ++++
+ mm/memcontrol.c            | 122 +++++++++++++++++++++++++++++++------
+ 2 files changed, 115 insertions(+), 20 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3ed62dcd144e..efc38961f792 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21010,7 +21010,7 @@ L:	linux-kernel@vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git
- F:	Documentation/driver-api/vme.rst
--F:	drivers/staging/vme/
-+F:	drivers/staging/vme_user/
- F:	drivers/vme/
- F:	include/linux/vme*
-=20
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index e4dcf411030d..e117811ec832 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -86,7 +86,6 @@ source "drivers/staging/fieldbus/Kconfig"
-=20
- source "drivers/staging/qlge/Kconfig"
-=20
--
--source "drivers/staging/vme/devices/Kconfig"
-+source "drivers/staging/vme_user/Kconfig"
-=20
- endif # STAGING
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index 65e317922e3f..db7287de0faf 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -14,7 +14,7 @@ obj-$(CONFIG_OCTEON_ETHERNET)	+=3D octeon/
- obj-$(CONFIG_OCTEON_USB)	+=3D octeon-usb/
- obj-$(CONFIG_VT6655)		+=3D vt6655/
- obj-$(CONFIG_VT6656)		+=3D vt6656/
--obj-$(CONFIG_VME_BUS)		+=3D vme/
-+obj-$(CONFIG_VME_BUS)		+=3D vme_user/
- obj-$(CONFIG_IIO)		+=3D iio/
- obj-$(CONFIG_FB_SM750)		+=3D sm750fb/
- obj-$(CONFIG_USB_EMXX)		+=3D emxx_udc/
-diff --git a/drivers/staging/vme/Makefile b/drivers/staging/vme/Makefile
-deleted file mode 100644
-index cf2f686ccffe..000000000000
---- a/drivers/staging/vme/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--obj-y				+=3D devices/
-diff --git a/drivers/staging/vme/devices/Kconfig b/drivers/staging/vme_user=
-/Kconfig
-similarity index 100%
-rename from drivers/staging/vme/devices/Kconfig
-rename to drivers/staging/vme_user/Kconfig
-diff --git a/drivers/staging/vme/devices/Makefile b/drivers/staging/vme_use=
-r/Makefile
-similarity index 100%
-rename from drivers/staging/vme/devices/Makefile
-rename to drivers/staging/vme_user/Makefile
-diff --git a/drivers/staging/vme/devices/vme_user.c b/drivers/staging/vme_u=
-ser/vme_user.c
-similarity index 100%
-rename from drivers/staging/vme/devices/vme_user.c
-rename to drivers/staging/vme_user/vme_user.c
-diff --git a/drivers/staging/vme/devices/vme_user.h b/drivers/staging/vme_u=
-ser/vme_user.h
-similarity index 100%
-rename from drivers/staging/vme/devices/vme_user.h
-rename to drivers/staging/vme_user/vme_user.h
---=20
-2.35.3
-=20
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 89b14729d59f..3389b705e242 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -51,6 +51,13 @@ enum memcg_memory_event {
+ 	MEMCG_NR_MEMORY_EVENTS,
+ };
+ 
++enum percpu_stats_state {
++	MEMCG_PERCPU_STATS_ACTIVE = 0,
++	MEMCG_PERCPU_STATS_DISABLED,
++	MEMCG_PERCPU_STATS_FLUSHED,
++	MEMCG_PERCPU_STATS_FREED
++};
++
+ struct mem_cgroup_reclaim_cookie {
+ 	pg_data_t *pgdat;
+ 	unsigned int generation;
+@@ -299,6 +306,12 @@ struct mem_cgroup {
+ 	unsigned long		move_lock_flags;
+ 
+ 	MEMCG_PADDING(_pad1_);
++	/*
++	 * Disable percpu stats when offline, flush and free them after one
++	 * grace period.
++	 */
++	struct rcu_work		percpu_stats_rwork;
++	enum percpu_stats_state percpu_stats_disabled;
+ 
+ 	/* memory.stat */
+ 	struct memcg_vmstats	vmstats;
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 08cbe23a8b94..1a5ba7035249 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -665,6 +665,31 @@ static void flush_memcg_stats_dwork(struct work_struct *w)
+ 	queue_delayed_work(system_unbound_wq, &stats_flush_dwork, FLUSH_TIME);
+ }
+ 
++/*
++ * Return the active percpu stats memcg and optionally mem_cgroup_per_node.
++ *
++ * When percpu_stats_disabled, the percpu stats update is transferred to
++ * its parent.
++ */
++static inline struct mem_cgroup *
++percpu_stats_memcg(struct mem_cgroup *memcg, struct mem_cgroup_per_node **pn)
++{
++	while (unlikely(memcg->percpu_stats_disabled)) {
++		int nid;
++
++		if (pn) {
++			for_each_node(nid) {
++				if (*pn == memcg->nodeinfo[nid])
++					break;
++			}
++		}
++		memcg = parent_mem_cgroup(memcg);
++		if (pn)
++			*pn = memcg->nodeinfo[nid];
++	}
++	return memcg;
++}
++
+ /**
+  * __mod_memcg_state - update cgroup memory statistics
+  * @memcg: the memory cgroup
+@@ -676,6 +701,7 @@ void __mod_memcg_state(struct mem_cgroup *memcg, int idx, int val)
+ 	if (mem_cgroup_disabled())
+ 		return;
+ 
++	memcg = percpu_stats_memcg(memcg, NULL);
+ 	__this_cpu_add(memcg->vmstats_percpu->state[idx], val);
+ 	memcg_rstat_updated(memcg, val);
+ }
+@@ -686,6 +712,9 @@ static unsigned long memcg_page_state_local(struct mem_cgroup *memcg, int idx)
+ 	long x = 0;
+ 	int cpu;
+ 
++	if (unlikely(memcg->percpu_stats_disabled))
++		return 0;
++
+ 	for_each_possible_cpu(cpu)
+ 		x += per_cpu(memcg->vmstats_percpu->state[idx], cpu);
+ #ifdef CONFIG_SMP
+@@ -702,7 +731,7 @@ void __mod_memcg_lruvec_state(struct lruvec *lruvec, enum node_stat_item idx,
+ 	struct mem_cgroup *memcg;
+ 
+ 	pn = container_of(lruvec, struct mem_cgroup_per_node, lruvec);
+-	memcg = pn->memcg;
++	memcg = percpu_stats_memcg(pn->memcg, &pn);
+ 
+ 	/*
+ 	 * The caller from rmap relay on disabled preemption becase they never
+@@ -814,6 +843,7 @@ void __count_memcg_events(struct mem_cgroup *memcg, enum vm_event_item idx,
+ {
+ 	if (mem_cgroup_disabled())
+ 		return;
++	memcg = percpu_stats_memcg(memcg, NULL);
+ 
+ 	memcg_stats_lock();
+ 	__this_cpu_add(memcg->vmstats_percpu->events[idx], count);
+@@ -831,6 +861,9 @@ static unsigned long memcg_events_local(struct mem_cgroup *memcg, int event)
+ 	long x = 0;
+ 	int cpu;
+ 
++	if (unlikely(memcg->percpu_stats_disabled))
++		return 0;
++
+ 	for_each_possible_cpu(cpu)
+ 		x += per_cpu(memcg->vmstats_percpu->events[event], cpu);
+ 	return x;
+@@ -839,6 +872,8 @@ static unsigned long memcg_events_local(struct mem_cgroup *memcg, int event)
+ static void mem_cgroup_charge_statistics(struct mem_cgroup *memcg,
+ 					 int nr_pages)
+ {
++	memcg = percpu_stats_memcg(memcg, NULL);
++
+ 	/* pagein of a big page is an event. So, ignore page size */
+ 	if (nr_pages > 0)
+ 		__count_memcg_events(memcg, PGPGIN, 1);
+@@ -855,6 +890,8 @@ static bool mem_cgroup_event_ratelimit(struct mem_cgroup *memcg,
+ {
+ 	unsigned long val, next;
+ 
++	memcg = percpu_stats_memcg(memcg, NULL);
++
+ 	val = __this_cpu_read(memcg->vmstats_percpu->nr_page_events);
+ 	next = __this_cpu_read(memcg->vmstats_percpu->targets[target]);
+ 	/* from time_after() in jiffies.h */
+@@ -5051,7 +5088,6 @@ static void free_mem_cgroup_per_node_info(struct mem_cgroup *memcg, int node)
+ 	if (!pn)
+ 		return;
+ 
+-	free_percpu(pn->lruvec_stats_percpu);
+ 	kfree(pn);
+ }
+ 
+@@ -5061,7 +5097,6 @@ static void __mem_cgroup_free(struct mem_cgroup *memcg)
+ 
+ 	for_each_node(node)
+ 		free_mem_cgroup_per_node_info(memcg, node);
+-	free_percpu(memcg->vmstats_percpu);
+ 	kfree(memcg);
+ }
+ 
+@@ -5132,6 +5167,44 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
+ 	return ERR_PTR(error);
+ }
+ 
++/*
++ * Flush and free the percpu stats
++ */
++static void percpu_stats_free_rwork_fn(struct work_struct *work)
++{
++	struct mem_cgroup *memcg = container_of(to_rcu_work(work),
++						struct mem_cgroup,
++						percpu_stats_rwork);
++	int node;
++
++
++	cgroup_rstat_flush_hold(memcg->css.cgroup);
++	memcg->percpu_stats_disabled = MEMCG_PERCPU_STATS_FLUSHED;
++	cgroup_rstat_flush_release();
++
++	for_each_node(node) {
++		struct mem_cgroup_per_node *pn = memcg->nodeinfo[node];
++
++		if (pn)
++			free_percpu(pn->lruvec_stats_percpu);
++	}
++	free_percpu(memcg->vmstats_percpu);
++	memcg->percpu_stats_disabled = MEMCG_PERCPU_STATS_FREED;
++	mem_cgroup_id_put(memcg);
++}
++
++static void memcg_percpu_stats_disable(struct mem_cgroup *memcg)
++{
++	memcg->percpu_stats_disabled = MEMCG_PERCPU_STATS_DISABLED;
++	INIT_RCU_WORK(&memcg->percpu_stats_rwork, percpu_stats_free_rwork_fn);
++	queue_rcu_work(system_wq, &memcg->percpu_stats_rwork);
++}
++
++static inline bool memcg_percpu_stats_gone(struct mem_cgroup *memcg)
++{
++	return memcg->percpu_stats_disabled >= MEMCG_PERCPU_STATS_FLUSHED;
++}
++
+ static struct cgroup_subsys_state * __ref
+ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
+ {
+@@ -5227,7 +5300,7 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
+ 
+ 	drain_all_stock(memcg);
+ 
+-	mem_cgroup_id_put(memcg);
++	memcg_percpu_stats_disable(memcg);
+ }
+ 
+ static void mem_cgroup_css_released(struct cgroup_subsys_state *css)
+@@ -5308,11 +5381,13 @@ static void mem_cgroup_css_rstat_flush(struct cgroup_subsys_state *css, int cpu)
+ 		if (delta)
+ 			memcg->vmstats.state_pending[i] = 0;
+ 
+-		/* Add CPU changes on this level since the last flush */
+-		v = READ_ONCE(statc->state[i]);
+-		if (v != statc->state_prev[i]) {
+-			delta += v - statc->state_prev[i];
+-			statc->state_prev[i] = v;
++		if (!memcg_percpu_stats_gone(memcg)) {
++			/* Add CPU changes on this level since the last flush */
++			v = READ_ONCE(statc->state[i]);
++			if (v != statc->state_prev[i]) {
++				delta += v - statc->state_prev[i];
++				statc->state_prev[i] = v;
++			}
+ 		}
+ 
+ 		if (!delta)
+@@ -5329,10 +5404,12 @@ static void mem_cgroup_css_rstat_flush(struct cgroup_subsys_state *css, int cpu)
+ 		if (delta)
+ 			memcg->vmstats.events_pending[i] = 0;
+ 
+-		v = READ_ONCE(statc->events[i]);
+-		if (v != statc->events_prev[i]) {
+-			delta += v - statc->events_prev[i];
+-			statc->events_prev[i] = v;
++		if (!memcg_percpu_stats_gone(memcg)) {
++			v = READ_ONCE(statc->events[i]);
++			if (v != statc->events_prev[i]) {
++				delta += v - statc->events_prev[i];
++				statc->events_prev[i] = v;
++			}
+ 		}
+ 
+ 		if (!delta)
+@@ -5358,10 +5435,12 @@ static void mem_cgroup_css_rstat_flush(struct cgroup_subsys_state *css, int cpu)
+ 			if (delta)
+ 				pn->lruvec_stats.state_pending[i] = 0;
+ 
+-			v = READ_ONCE(lstatc->state[i]);
+-			if (v != lstatc->state_prev[i]) {
+-				delta += v - lstatc->state_prev[i];
+-				lstatc->state_prev[i] = v;
++			if (!memcg_percpu_stats_gone(memcg)) {
++				v = READ_ONCE(lstatc->state[i]);
++				if (v != lstatc->state_prev[i]) {
++					delta += v - lstatc->state_prev[i];
++					lstatc->state_prev[i] = v;
++				}
+ 			}
+ 
+ 			if (!delta)
+@@ -6730,6 +6809,7 @@ static inline void uncharge_gather_clear(struct uncharge_gather *ug)
+ static void uncharge_batch(const struct uncharge_gather *ug)
+ {
+ 	unsigned long flags;
++	struct mem_cgroup *memcg;
+ 
+ 	if (ug->nr_memory) {
+ 		page_counter_uncharge(&ug->memcg->memory, ug->nr_memory);
+@@ -6740,10 +6820,12 @@ static void uncharge_batch(const struct uncharge_gather *ug)
+ 		memcg_oom_recover(ug->memcg);
+ 	}
+ 
++	memcg = percpu_stats_memcg(ug->memcg, NULL);
++
+ 	local_irq_save(flags);
+-	__count_memcg_events(ug->memcg, PGPGOUT, ug->pgpgout);
+-	__this_cpu_add(ug->memcg->vmstats_percpu->nr_page_events, ug->nr_memory);
+-	memcg_check_events(ug->memcg, ug->nid);
++	__count_memcg_events(memcg, PGPGOUT, ug->pgpgout);
++	__this_cpu_add(memcg->vmstats_percpu->nr_page_events, ug->nr_memory);
++	memcg_check_events(memcg, ug->nid);
+ 	local_irq_restore(flags);
+ 
+ 	/* drop reference from uncharge_folio */
+-- 
+2.27.0
 
---ysqdnui3ra2l3lsk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYmFxVgAKCRAZtd3tyEY2
-krlvAQDDn7lzGOuuR0sliolPWkeZtxB1Nst95cgEgmdl85zMYQD9E9OZC1NeH2NY
-/pqn13eWXlOs9OWZWrKcf26A/h57QwU=
-=JZHj
------END PGP SIGNATURE-----
-
---ysqdnui3ra2l3lsk--
