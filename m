@@ -2,71 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E14C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389303AbiDUOaU (ORCPT
+        id S1389362AbiDUOa0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35430 "EHLO
+        Thu, 21 Apr 2022 10:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389237AbiDUOaK (ORCPT
+        with ESMTP id S1388988AbiDUOaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:30:10 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE2D3E5F1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:16 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-e2afb80550so5557944fac.1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:16 -0700 (PDT)
+        Thu, 21 Apr 2022 10:30:14 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0E23EAA6
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:23 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id i3-20020a056830010300b00605468119c3so3369467otp.11
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kDgsoi129ZtoHuQ+rTXyXieKhhLblR7vzAhQBtHIUe0=;
-        b=ZIujzzy08rxn0hfngK4WStnikFn+g7Y8IzH1/N6IlT+2UI9W380Cf+t8Q+6Un919it
-         IFdejc4ql+StqfsY5urY6KtTu7RWIaGVZeK6VS3LHBru9TsebkCz+ztAVsczd089Y9dv
-         6ewSdb4cH7QP4DrKkyHOb+vvlyccxOQuig3OHiFiMjZ12Kr5SYfNS8ETIYGLb3KqT4Cp
-         7vG3o7Z6mwBvqbPCBXjeLgP0KLb+6NmBqpW/Oy8GwsNGVtN21g5zpPRn5oyJ1ObGiNgT
-         LH2GnTWQ5oJQEBVvUWOAHjSWMjlN64UAFe8KZoF1p1loY6kTYs7UKsbDj7DW/cuSDMN3
-         Bb6Q==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=xI6ejrXLVmssCqEncIDoB7IblC4gDy//YC1MMp4Z9/k=;
+        b=lYw7AecTMbnPyXI/AE44KOVz4feOyRbKAa8OV03vqHz/HXfqbtTEwVvJBWWQyr0rjG
+         e0L4HRwtoI9Hwfe539jzCNOjsqimm84uSy4c9y0tddkHojDlF1qUDYtPZBqN9DkkEWa1
+         zwIfD+hCTZ7r6faUua+N6TLHCyUlE5C9GPruMt5kKjPr1WNy1qjqW2ip9gBeny/R48Yx
+         htU1LXtADu5gk11FsnTvsWQw6AYn4sGMtStzq9MgeAp/rLjENkgLFYaFTvKYMA+OxBZd
+         5wwh5JLfADNdtqT39UftX7w23I5Q6cVzxGXhzCSSgQ7c3CeWGp0gsz/GK9YoHWC5kzSH
+         DGeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kDgsoi129ZtoHuQ+rTXyXieKhhLblR7vzAhQBtHIUe0=;
-        b=tiq48Si3mLr8k03LIqEAI+eEXgJ52xlpWYJOW6i5Nqi5tg2QOdbhmxZnOK5DGaT99M
-         1+XtHM0D198noPcoQEas3E+K+caZhmPUlOoXDABQiBmWnl3f7PPbh72pUlux3RRwUZ1n
-         lIEQRaBg7FpDxvkEwhtM2SpsXo2i1MXsHBeh77dDHTFnJGIw0VMsJght2asE12TF8ozy
-         kSA3PAzisxR6I1JTuYKHa6rs1OgaEZ+z30cmPmkI/jNxMtw4J+LvlAETeFYh4bAfjfWA
-         9B9fLc7CMKB6ivUGRcYzCm0W9PCjQBce0e/waNRv62ii+Jos/fkg1OZo9YmmTBRqZNno
-         DbHg==
-X-Gm-Message-State: AOAM531CkQs028nlKHiKzea7pMUEOAUGYrqAPYwVW34JW2OPHjopE6Ml
-        DgIPewTkEw0Vl763XTBDtDAOlA==
-X-Google-Smtp-Source: ABdhPJzFW2dvWtIYFaaUj9JjINzXku3Vpzgn41MrM2kzsQSPJ4N6pSKOBN+zj2v9kPJ78IJW/RTSRg==
-X-Received: by 2002:a05:6870:b427:b0:d3:5044:db1b with SMTP id x39-20020a056870b42700b000d35044db1bmr3815973oap.2.1650551236061;
-        Thu, 21 Apr 2022 07:27:16 -0700 (PDT)
+        bh=xI6ejrXLVmssCqEncIDoB7IblC4gDy//YC1MMp4Z9/k=;
+        b=pz6lJhzOn0KqOTM7Dt0OalGp7SKimxJZbs4VhH+YpQJvWgQYw5+iEu5ZFIXva+qcrV
+         kNCYGiHLdFO+OAdnDt7hucTsYZpsjQeYSF6kr3whVDFsmBMWh0CRyPJ8BmLP1kuea0zT
+         yfCJAXB+/kZmVGhIJGF/GEOZoB8U5IOKGoy6VxmzgNdNcuAwacAVEUUl6uyalVZapIO8
+         apRYUj46poKVGms7A6HE8wstKcqWrOpSlI9ZJRVJx6ObXX9Vijhfm6JchWYDdZwzflFV
+         Sx5th61iTFjFE7BPhzU8suHT9U4Wd5/QVtyWlgU7Pq4SZkctTKFldBm8RGv1aU0ghoAy
+         8uDQ==
+X-Gm-Message-State: AOAM532IGKO3SRdpZAFCVdUoLpsWYhDiha0Jjpp912IA9T9DQRhNVbiQ
+        DWRaBum7ypb4bjjBYtt1mrvqfQ==
+X-Google-Smtp-Source: ABdhPJw2SPeKK+qI1yrvIsSdMq0ARbhqjqXaShJYBSvBUfYOmKZ6OP878pN593/MF6YBy4qR1J8D+w==
+X-Received: by 2002:a05:6830:18d:b0:605:4cfb:19cd with SMTP id q13-20020a056830018d00b006054cfb19cdmr7160776ota.177.1650551242369;
+        Thu, 21 Apr 2022 07:27:22 -0700 (PDT)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm4296295otu.73.2022.04.21.07.27.15
+        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm4296295otu.73.2022.04.21.07.27.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 07:27:15 -0700 (PDT)
+        Thu, 21 Apr 2022 07:27:21 -0700 (PDT)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Andy Gross <agross@kernel.org>, Joel Selvaraj <jo@jsfamily.in>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     devicetree@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, phone-devel@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>
-Subject: Re: (subset) [PATCH v2 1/3] drm/panel: nt36672a: add backlight support
-Date:   Thu, 21 Apr 2022 09:26:53 -0500
-Message-Id: <165055095990.2574292.8144216013869218124.b4-ty@linaro.org>
+To:     linux-pm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vamsi krishna Lanka <quic_vamslank@quicinc.com>
+Subject: Re: (subset) [PATCH 2/4] ARM: dts: qcom: sdx55: remove wrong unit address from RPMH RSC clocks
+Date:   Thu, 21 Apr 2022 09:26:58 -0500
+Message-Id: <165055095989.2574292.10959364254734483907.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <BY5PR02MB700935F5817128CB7C3991CDD9E09@BY5PR02MB7009.namprd02.prod.outlook.com>
-References: <20220401001810.81507-1-jo@jsfamily.in> <BY5PR02MB700935F5817128CB7C3991CDD9E09@BY5PR02MB7009.namprd02.prod.outlook.com>
+In-Reply-To: <20220411085935.130072-2-krzysztof.kozlowski@linaro.org>
+References: <20220411085935.130072-1-krzysztof.kozlowski@linaro.org> <20220411085935.130072-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -74,16 +71,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 05:48:08 +0530, Joel Selvaraj wrote:
-> Add support for backlight. This panel supports backlight control
-> through the QCOM WLED driver in Xiaomi Poco F1 device.
+On Mon, 11 Apr 2022 10:59:33 +0200, Krzysztof Kozlowski wrote:
+> The clock controller of RPMH RSC does not have 'reg' property, so should
+> not have unit address.
 > 
 > 
 
 Applied, thanks!
 
-[3/3] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable qcom wled backlight and link to panel
-      commit: 89561886191c0dcb6ce1491f14552eac16e14a80
+[2/4] ARM: dts: qcom: sdx55: remove wrong unit address from RPMH RSC clocks
+      commit: 97c246c825f73a018169834e56ffa9a89dea37a9
 
 Best regards,
 -- 
