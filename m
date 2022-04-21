@@ -2,122 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F401C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05790C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384914AbiDUGlw (ORCPT
+        id S1384960AbiDUGmi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
+        Thu, 21 Apr 2022 02:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiDUGlu (ORCPT
+        with ESMTP id S1384922AbiDUGmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:41:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3998DDFC7;
-        Wed, 20 Apr 2022 23:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523141; x=1682059141;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tRiylTZEyGnmok4xZrcOLzssYSLSFxbagoPYNhTAEf0=;
-  b=mxCJ1lxe9kcd0nqdUx/OeRoNxhhhvF6w6AemfjmAsu4/qvsjkcFpVMkv
-   rOGxCM8N+BtvOO1H0cPytPQd/WhIDBcBNhiBGLiDl4RXH1r+WHLPEDvSX
-   vV7vZ368kzbdocbeLRhb8Z8uiIjogbBVtdGr3p0ypDEg2kr9Q5d2R/NMk
-   AckkMjStM2QUCZ6Q9jd4GfR+ygEZ0zzE5d87Z2/bzgM5iyLhmRXEyOAZA
-   S8Xv5N162XAVhkhyZEsjTDjkVQzg0zokSuHdrgmMW5BxcAYXogjjhvQ/t
-   q7Oe0Hm6PFOXs95bH5ppNejCMEoTi7kbBl4XKbmZy0pENBbhdFLr90Jgm
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251569452"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="251569452"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:39:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="670043379"
-Received: from chenyu-dev.sh.intel.com ([10.239.158.170])
-  by orsmga004.jf.intel.com with ESMTP; 20 Apr 2022 23:38:59 -0700
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     Len Brown <len.brown@intel.com>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Chen Yu <yu.c.chen@intel.com>,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-Subject: [PATCH] tools/power turbostat: print the kernel boot commandline
-Date:   Thu, 21 Apr 2022 22:38:34 +0800
-Message-Id: <20220421143834.627841-1-yu.c.chen@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Apr 2022 02:42:23 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 521F3E0A9;
+        Wed, 20 Apr 2022 23:39:33 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 089D01C810D0;
+        Thu, 21 Apr 2022 14:39:31 +0800 (CST)
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 21
+ Apr 2022 14:39:30 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 21 Apr 2022 14:39:30 +0800
+Message-ID: <caf4867f-7f71-9262-f190-463325eb13ab@nuvoton.com>
+Date:   Thu, 21 Apr 2022 14:39:30 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 5/5] dt-bindings: arm: Add initial bindings for Nuvoton
+ Platform
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <ychuang570808@gmail.com>
+CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <will@kernel.org>,
+        <soc@kernel.org>, <cfli0@nuvoton.com>
+References: <20220418082738.11301-1-ychuang3@nuvoton.com>
+ <20220418082738.11301-6-ychuang3@nuvoton.com>
+ <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It would be handy to have cmdline in turbostat output. For example,
-according to the turbostat output, there are no C-states requested.
-In this case the user is very curious if something like
-intel_idle.max_cstate=0 was used, or may be idle=none too. It is
-also curious whether things like intel_pstate=nohwp were used.
 
-Print the boot command line accordingly:
-turbostat version 21.05.04 - Len Brown <lenb@kernel.org>
-Kernel command line: BOOT_IMAGE=/boot/vmlinuz-5.16.0+ root=UUID=
- b42359ed-1e05-42eb-8757-6bf2a1c19070 ro quiet splash vt.handoff=7
 
-Suggested-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-Signed-off-by: Chen Yu <yu.c.chen@intel.com>
----
- tools/power/x86/turbostat/turbostat.c | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+On 2022/4/18 下午 08:11, Krzysztof Kozlowski wrote:
+> On 18/04/2022 10:27, Jacky Huang wrote:
+>> +properties:
+>> +  $nodename:
+>> +    const: '/'
+>> +  compatible:
+>> +    items:
+>> +      - enum:
+>> +          - nuvoton,ma35d1
+>> +          - nuvoton,ma35d1-evb
+>> +          - nuvoton,ma35d1-iot
+>> +          - nuvoton,ma35d1-som512
+>> +          - nuvoton,ma35d1-som1g
+> This does not match your DTS and does not look reasonable (SoC
+> compatible should not be part of this enum). Check some other board
+> bindings for examples.
+>
+>
+> Best regards,
+> Krzysztof
 
-diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
-index bc5ae0872fed..bfcb6345510b 100644
---- a/tools/power/x86/turbostat/turbostat.c
-+++ b/tools/power/x86/turbostat/turbostat.c
-@@ -5976,6 +5976,29 @@ void print_version()
- 	fprintf(outf, "turbostat version 21.05.04" " - Len Brown <lenb@kernel.org>\n");
- }
- 
-+#define COMMAND_LINE_SIZE 2048
-+
-+void print_bootcmd(void)
-+{
-+	char bootcmd[COMMAND_LINE_SIZE];
-+	FILE *fp;
-+	int ret;
-+
-+	memset(bootcmd, 0, COMMAND_LINE_SIZE);
-+	fp = fopen("/proc/cmdline", "r");
-+	if (!fp)
-+		return;
-+
-+	ret = fread(bootcmd, sizeof(char), COMMAND_LINE_SIZE - 1, fp);
-+	if (ret) {
-+		bootcmd[ret] = '\0';
-+		/* the last character is already '\n' */
-+		fprintf(outf, "Kernel command line: %s", bootcmd);
-+	}
-+
-+	fclose(fp);
-+}
-+
- int add_counter(unsigned int msr_num, char *path, char *name,
- 		unsigned int width, enum counter_scope scope,
- 		enum counter_type type, enum counter_format format, int flags)
-@@ -6425,8 +6448,10 @@ int main(int argc, char **argv)
- 	outf = stderr;
- 	cmdline(argc, argv);
- 
--	if (!quiet)
-+	if (!quiet) {
- 		print_version();
-+		print_bootcmd();
-+	}
- 
- 	probe_sysfs();
- 
--- 
-2.25.1
+I would like to modify it as follows:
+
+description: |
+   Boards with an ARMv8 based Nuvoton SoC shall have the following
+   properties.
+
+properties:
+   $nodename:
+     const: '/'
+   compatible:
+     oneOf:
+
+       - description: MA35D1 evaluation board
+         items:
+           - const: nuvoton,ma35d1-evb
+           - const: nuvoton,ma35d1
+
+       - description: MA35D1 IoT board
+         items:
+           - const: nuvoton,ma35d1-iot
+           - const: nuvoton,ma35d1
+
+       - description: MA35D1 SOM board with 512MB DDR
+         items:
+           - const: nuvoton,ma35d1-som512
+           - const: nuvoton,ma35d1
+
+       - description: MA35D1 SOM board with 1GB DDR
+         items:
+           - const: nuvoton,ma35d1-som1g
+           - const: nuvoton,ma35d1
+
+additionalProperties: true
+
+
+
+Thank you very much.
+Jacky Huang
 
