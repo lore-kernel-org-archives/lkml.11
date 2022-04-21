@@ -2,110 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39EA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B04DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390381AbiDUP73 (ORCPT
+        id S1390375AbiDUP7c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
+        Thu, 21 Apr 2022 11:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390347AbiDUP7Q (ORCPT
+        with ESMTP id S1390351AbiDUP7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:59:16 -0400
+        Thu, 21 Apr 2022 11:59:18 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D803040E4D;
-        Thu, 21 Apr 2022 08:56:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684E440E76;
+        Thu, 21 Apr 2022 08:56:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650556587; x=1682092587;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=OD7nlJx/6iGBllBRTPaDLn52/B3dZkY8qzJCccA0fws=;
-  b=M+epw1OFXV21BEjI7LNo+zUvcWlEWjMbBr+ORTp6R+7psljNo2C/IOZt
-   e3a4u4fU5kwY+lwNHXBmz+b45Xgch50haBsM/d+Qm3MOhRIe1ZaqrOv1k
-   BHUXx6C6i7qMG8eCye/7ByprhcuFmyZN0MlWbbeWxsJPQsNG10jDcn2KQ
-   I=;
+  t=1650556588; x=1682092588;
+  h=from:to:cc:subject:date:message-id;
+  bh=yAuVAqWxYWEe5NqjErVFK/4t+1iFYT/C7MQ8E9+btfM=;
+  b=LZ9hXAnqLnERd82S/y6+/QrxxkLi+Seo+CbZ1fsc3geGGw5E2ZTSYNua
+   9+7AsiQ6hfO1wV9LUrSiu2caD9vMk5Hl6Jo9rEdEMAbt4EPKqM5zzvqFo
+   Aj4vqJFAzq44vjkgv6ppVjnSw1wVRM4QY8UrH2Il0yLtBneIs+YOqy4bs
+   g=;
 Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 21 Apr 2022 08:56:27 -0700
+  by alexa-out.qualcomm.com with ESMTP; 21 Apr 2022 08:56:28 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Apr 2022 08:56:25 -0700
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Apr 2022 08:56:27 -0700
 X-QCInternal: smtphost
 Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Apr 2022 21:26:14 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Apr 2022 21:26:12 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 299EF3C77; Thu, 21 Apr 2022 21:26:13 +0530 (+0530)
+        id 9DC983C77; Thu, 21 Apr 2022 21:26:10 +0530 (+0530)
 From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
         Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V6 2/2] arm64: dts: qcom: sc7280-qcard: Configure CTS pin to bias-bus-hold for bluetooth
-Date:   Thu, 21 Apr 2022 21:26:07 +0530
-Message-Id: <1650556567-4995-3-git-send-email-quic_vnivarth@quicinc.com>
+Subject: [V6 0/2] arm64: dts: qcom: Configure CTS pin to bias-bus-hold for bluetooth
+Date:   Thu, 21 Apr 2022 21:26:05 +0530
+Message-Id: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
-References: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-Change active and sleep pinctrl configurations to handle same.
+Change pinctrl configuration to handle same.
 
 Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
 ---
 v6: add code comments about how bias-bus-hold could save power
 v5: modify subject to include bluetooth
-v4: modify subject of patch to indicate file it is applying to
+v4: modify subject of each patch to indicate what it is applying to
 v3: apply same change to active state and other sc7280*.dts* as well
 v2: used bias-bus-hold as per review comments
 v1: intial patch used bias-disable for sleep pinctrl in sc7280-idp only
 ---
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-index b833ba1..98b5cd70 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-@@ -398,8 +398,14 @@ mos_bt_uart: &uart7 {
- 
- /* For mos_bt_uart */
- &qup_uart7_cts {
--	/* Configure a pull-down on CTS to match the pull of the Bluetooth module. */
--	bias-pull-down;
-+	/*
-+	 * Configure a bias-bus-hold on CTS to lower power
-+	 * usage when Bluetooth is turned off. Bus hold will
-+	 * maintain a low power state regardless of whether
-+	 * the Bluetooth module drives the pin in either
-+	 * direction or leaves the pin fully unpowered.
-+	 */
-+	bias-bus-hold;
- };
- 
- /* For mos_bt_uart */
-@@ -490,10 +496,13 @@ mos_bt_uart: &uart7 {
- 		pins = "gpio28";
- 		function = "gpio";
- 		/*
--		 * Configure a pull-down on CTS to match the pull of
--		 * the Bluetooth module.
-+		 * Configure a bias-bus-hold on CTS to lower power
-+		 * usage when Bluetooth is turned off. Bus hold will
-+		 * maintain a low power state regardless of whether
-+		 * the Bluetooth module drives the pin in either
-+		 * direction or leaves the pin fully unpowered.
- 		 */
--		bias-pull-down;
-+		bias-bus-hold;
- 	};
- 
- 	/* For mos_bt_uart */
+Vijaya Krishna Nivarthi (2):
+  arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for
+    bluetooth
+  arm64: dts: qcom: sc7280-qcard: Configure CTS pin to bias-bus-hold for
+    bluetooth
+
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi   | 18 ++++++++++++------
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 19 ++++++++++++++-----
+ 2 files changed, 26 insertions(+), 11 deletions(-)
+
 -- 
 Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
