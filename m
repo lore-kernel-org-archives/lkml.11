@@ -2,70 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F411BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385347AbiDUGyj (ORCPT
+        id S1385365AbiDUGy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:54:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
+        Thu, 21 Apr 2022 02:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386019AbiDUGxv (ORCPT
+        with ESMTP id S1385934AbiDUGxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:53:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4991836B;
-        Wed, 20 Apr 2022 23:49:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B948FB821B0;
-        Thu, 21 Apr 2022 06:49:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4907C385A5;
-        Thu, 21 Apr 2022 06:49:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650523780;
-        bh=JuzxgADo0HR49i0JgmCb45QoqigVSVD5kw+mijrOit4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mWm5xHWzgN0YrSZGeKqDtc2fgkKQxwu4bRiXF3nT9Q6ZySTiiARojnCzzCKtjc9Xm
-         pLbBtKNoRnReGhjCM1sJ0fP9xlR6AtlVnCRDfgqNYdZlezC4rc2f6crqOl5vpoa0pO
-         13B9qlZSAJkQypB6b884G63QVcEYwH9Qyebi5uQw=
-Date:   Thu, 21 Apr 2022 08:49:37 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Tony Luck <tony.luck@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the driver-core.current
- tree
-Message-ID: <YmD+geU9CmjoVnN9@kroah.com>
-References: <20220421152645.3a849198@canb.auug.org.au>
+        Thu, 21 Apr 2022 02:53:45 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC7B140CD;
+        Wed, 20 Apr 2022 23:49:17 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id g18so5218272wrb.10;
+        Wed, 20 Apr 2022 23:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ufzy6GPDCT+EdtxABpNGV4M1WRq60zj8Sw9h2+oqp74=;
+        b=DHdXFxPyfcpHgkSUAcXrGuzDeAjqa5UHlI+cGdFeoPbULu4EkX2UhzMtRctCGhBtcn
+         9ZaRyEnT9tt/8RzDKcNzwzTsmMBQXHCSsjuazlWOqRQSrJH8UYMTyEKk0fiPKgXKMg+j
+         A1cI7Y0+nsT0207B0m8KsAemhqf8ozCWtxQ7/2rYTK57metyxd2vUpx/Rkf7Rb7+n0Zi
+         T5ZNfEjX0FuPo2TmSnv9YBU6smDe7PjvYutBmhgQ302EOQqFWzzNVAuj0jEhxAUrxac+
+         Yy6KIdGFpgWTrkU24ecF2g1FocrjLsZSzHjOW/tZJgsMCAgcmeOU9M1Y+K9gXh6G+Riq
+         btvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ufzy6GPDCT+EdtxABpNGV4M1WRq60zj8Sw9h2+oqp74=;
+        b=U3+pTQYhqIvnX9NTrBA2aZk4tRffSylj6yrNxOhHFzRNlWwGstzmmaJO8UWGffKgiD
+         hTY+dxFwE6cqbhQ2S+2oEV238EYgGxfNLvZm0lSJqA9KlMKdJNgZGsxWyymKDMQIEBtM
+         5SA5CG3buupW1fPkd3u4BDcF9EmGT+3jKoIp+GLUX4yo+sy6VOEgD7oR2nHcHyHkZCn3
+         fFaMl26hiF0lawnEQrRsybuyQEV30vsyIMR4IJhhx3pkY2TiXoClMuvVI1Xf/BFjC9sd
+         A80K7Dmr6+clMXOjGFtKlOKSkIgq4DKeR+n7nh6+mhojGN+pefYcg24T1bxyUJNGP6Wj
+         Zjaw==
+X-Gm-Message-State: AOAM531gQRZjFwAGDn762jDE2zPZin2dJMqZ4QJ79x2sFedrETsii12H
+        +e9zZLXNaNOLxj23oXtbMTt6w+RtPtd4swCt
+X-Google-Smtp-Source: ABdhPJwwxoXgrrcitntGF+5u7JGyFz0T0yQA+xl3/MlX+vb1NLVPnUG1PgBpP1RfaJv1gvkTDHeS9w==
+X-Received: by 2002:adf:efc6:0:b0:207:b89b:232b with SMTP id i6-20020adfefc6000000b00207b89b232bmr17752793wrp.403.1650523756225;
+        Wed, 20 Apr 2022 23:49:16 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id d18-20020a05600c34d200b0038ed14b7ac3sm1223454wmq.40.2022.04.20.23.49.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 23:49:15 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 08:49:13 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCHv2 bpf-next 3/4] bpf: Resolve symbols with
+ kallsyms_lookup_names for kprobe multi link
+Message-ID: <YmD+aXZa/4pYM62C@krava>
+References: <20220418124834.829064-1-jolsa@kernel.org>
+ <20220418124834.829064-4-jolsa@kernel.org>
+ <CAEf4Bzau_RmREQwVQ6wPRbCHVXRuAr1k08btaft2jUwBYTeM-Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220421152645.3a849198@canb.auug.org.au>
+In-Reply-To: <CAEf4Bzau_RmREQwVQ6wPRbCHVXRuAr1k08btaft2jUwBYTeM-Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 03:26:45PM +1000, Stephen Rothwell wrote:
-> Hi all,
+On Wed, Apr 20, 2022 at 02:49:59PM -0700, Andrii Nakryiko wrote:
+> On Mon, Apr 18, 2022 at 5:49 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Using kallsyms_lookup_names function to speed up symbols lookup in
+> > kprobe multi link attachment and replacing with it the current
+> > kprobe_multi_resolve_syms function.
+> >
+> > This speeds up bpftrace kprobe attachment:
+> >
+> >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> >   ...
+> >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> >
+> > After:
+> >
+> >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> >   ...
+> >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
 > 
-> After merging the driver-core.current tree, today's linux-next build
-> (x86_64 allnoconfig) produced this warning:
+> LGTM.
 > 
-> drivers/base/topology.c: In function 'topology_is_visible':
-> drivers/base/topology.c:158:24: warning: unused variable 'dev' [-Wunused-variable]
->   158 |         struct device *dev = kobj_to_dev(kobj);
->       |                        ^~~
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 > 
-> Introduced by commit
+> >  kernel/trace/bpf_trace.c | 113 +++++++++++++++++++++++----------------
+> >  1 file changed, 67 insertions(+), 46 deletions(-)
+> >
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index b26f3da943de..f49cdc46a21f 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -2226,6 +2226,60 @@ struct bpf_kprobe_multi_run_ctx {
+> >         unsigned long entry_ip;
+> >  };
+> >
+> > +struct user_syms {
+> > +       const char **syms;
+> > +       char *buf;
+> > +};
+> > +
+> > +static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32 cnt)
+> > +{
+> > +       unsigned long __user usymbol;
+> > +       const char **syms = NULL;
+> > +       char *buf = NULL, *p;
+> > +       int err = -EFAULT;
+> > +       unsigned int i;
+> > +
+> > +       err = -ENOMEM;
+> > +       syms = kvmalloc(cnt * sizeof(*syms), GFP_KERNEL);
+> > +       if (!syms)
+> > +               goto error;
+> > +
+> > +       buf = kvmalloc(cnt * KSYM_NAME_LEN, GFP_KERNEL);
+> > +       if (!buf)
+> > +               goto error;
+> > +
+> > +       for (p = buf, i = 0; i < cnt; i++) {
+> > +               if (__get_user(usymbol, usyms + i)) {
+> > +                       err = -EFAULT;
+> > +                       goto error;
+> > +               }
+> > +               err = strncpy_from_user(p, (const char __user *) usymbol, KSYM_NAME_LEN);
+> > +               if (err == KSYM_NAME_LEN)
+> > +                       err = -E2BIG;
+> > +               if (err < 0)
+> > +                       goto error;
+> > +               syms[i] = p;
+> > +               p += err + 1;
+> > +       }
+> > +
+> > +       err = 0;
+> > +       us->syms = syms;
+> > +       us->buf = buf;
 > 
->   aa63a74d4535 ("topology/sysfs: Hide PPIN on systems that do not support it.")
+> return 0 here instead of falling through into error: block?
 
-Tony, can you please send a fixup patch for this, or should I just
-revert this commit for now?
+ok, will change
 
-thanks,
+jirka
 
-greg k-h
+> 
+> > +
+> > +error:
+> > +       if (err) {
+> > +               kvfree(syms);
+> > +               kvfree(buf);
+> > +       }
+> > +       return err;
+> > +}
+> > +
+> > +static void free_user_syms(struct user_syms *us)
+> > +{
+> > +       kvfree(us->syms);
+> > +       kvfree(us->buf);
+> > +}
+> > +
+> >  static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+> >  {
+> >         struct bpf_kprobe_multi_link *kmulti_link;
+> 
+> [...]
