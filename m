@@ -2,110 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2859CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0392C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387015AbiDUIzN (ORCPT
+        id S1387023AbiDUIzr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36324 "EHLO
+        Thu, 21 Apr 2022 04:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387006AbiDUIzH (ORCPT
+        with ESMTP id S1345809AbiDUIzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:55:07 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A26DF49
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650531138; x=1682067138;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3EC3KlKKZO/UYyJjPtajH9hjh9GX6FEadOKY32nXFaI=;
-  b=dyf3bwqRTHgzusycm2ePIBdNm6oZAhxuErMmoeFhIsxZSd9nV/CWsDPK
-   qD99O8QFL8vRuN8b8Gh+aXWM7Is6p8dx3WOls83b+DM+W/C+zh4oETJ8Y
-   DoctN13zu9v+Jfwn/bYyfeRd5psq4kKIbMcnA8gK5eFMk3DVyTxkfedwB
-   HxXQW4EAhgMuCzUk9hEYuDIh2v2a6BVhM/gpILu58dP1WIX8P46gHsthJ
-   TUw7YRDBTkIMIZ+beR4hxgWIjjeYmBkyWCZ5wk+fF/PGeMJaafkWZ7Bmh
-   5xoiYX7smuyHg+I7Uuf3+4nq2iCT98Im+XD4V8ED1SPDxljoXjVOExlNE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="327188634"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="327188634"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 01:52:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="703002903"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 21 Apr 2022 01:52:16 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhSXv-000893-S5;
-        Thu, 21 Apr 2022 08:52:15 +0000
-Date:   Thu, 21 Apr 2022 16:51:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1987/2579]
- arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for
- function 'sysenter_setup'
-Message-ID: <202204211627.pSYrSUgt-lkp@intel.com>
+        Thu, 21 Apr 2022 04:55:45 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D810120F4E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=5H5M+/nukyq+ClIyXnFYHWEZmwimqI4Y/2Onc+gYQxU=; b=gsjaTQGvOWmOn0vHz+72zmXEHr
+        AYkDtYPJmAcOsS9lf7AVqAfme9yuQPkQkw/vi+dYFCPealXjIdSjwBgO6MI62inuPu6chfWjeRvGW
+        9nk/cUwJJFa4vli7aGIOOLsn2CJWOi2NGaq3aopxw2ISsQ+Xj/5rk7Mdci1spKWyxgr5LQ+U+MisS
+        EdHi76NZzn49tlhhQ4OVZCNgYx22TbO8BrH3es2IrPp0q/pxXMYy9BjqTWvU0WnBYhhlF2oK/PtLU
+        uf8sOj+gPym7dLGXY+dvmtZAbs+uOOXHGTqkh0FfyavVrI6oCgUcuI2DdcJ+lhirJF3kRVgdxQmqJ
+        dTkB5b0g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nhSYQ-004vhL-R3; Thu, 21 Apr 2022 08:52:47 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id ACFC19861C1; Thu, 21 Apr 2022 10:52:44 +0200 (CEST)
+Date:   Thu, 21 Apr 2022 10:52:44 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Miroslav Benes <mbenes@suse.cz>, Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v3] scripts: Create objdump-func helper script
+Message-ID: <20220421085244.GL2731@worktop.programming.kicks-ass.net>
+References: <4d3ab1f17230f0188698cfbc7ba08696fe1abfe9.1650474927.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <4d3ab1f17230f0188698cfbc7ba08696fe1abfe9.1650474927.git.jpoimboe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 3edbef1e72915c9356080e1e09b29bd64b1673ae [1987/2579] headers/deps: x86/elf: Optimize <asm/elf.h> dependencies, split out <asm/elf_api.h>
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220421/202204211627.pSYrSUgt-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=3edbef1e72915c9356080e1e09b29bd64b1673ae
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 3edbef1e72915c9356080e1e09b29bd64b1673ae
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/crypto/ arch/x86/entry/ arch/x86/kernel/cpu/ arch/x86/pci/ kernel/bpf/ kernel/trace/ net/ipv6/
+On Wed, Apr 20, 2022 at 10:16:36AM -0700, Josh Poimboeuf wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +${OBJDUMP} -wdr $OBJ | gawk -M -v f=$FUNC '/^$/ { P=0; } $0 ~ "<" f ">:" { P=1; O=strtonum("0x" $1); } { if (P) { o=strtonum("0x" $1); printf("%04x ", o-O); print $0; } }'
 
-All warnings (new ones prefixed by >>):
+Two noteworthy changes:
 
->> arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for function 'sysenter_setup' [-Wmissing-prototypes]
-   int __init sysenter_setup(void)
-              ^
-   arch/x86/entry/vdso/vdso32-setup.c:55:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int __init sysenter_setup(void)
-   ^
-   static 
-   1 warning generated.
+ - $@ went missing, I've occasionally abused that to add extra argument
+   to objdump.
 
+ - you removed the glob after FUNC, I had that so that .cold and
+   .constprop etc.. variants of the function also show up.
 
-vim +/sysenter_setup +55 arch/x86/entry/vdso/vdso32-setup.c
+I don't suppose either one are super important, but esp. that latter one
+has been convenient.
 
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  54  
-a6c4e076ee4c1e arch/i386/kernel/sysenter.c        Jeremy Fitzhardinge 2007-05-02 @55  int __init sysenter_setup(void)
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  56  {
-0a6d1fa0d2b48f arch/x86/entry/vdso/vdso32-setup.c Andy Lutomirski     2015-10-05  57  	init_vdso_image(&vdso_image_32);
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  58  
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  59  	return 0;
-^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  60  }
-e6e5494cb23d19 arch/i386/kernel/sysenter.c        Ingo Molnar         2006-06-27  61  
-
-:::::: The code at line 55 was first introduced by commit
-:::::: a6c4e076ee4c1ea670e4faa55814e63dd08e3f29 [PATCH] i386: clean up identify_cpu
-
-:::::: TO: Jeremy Fitzhardinge <jeremy@goop.org>
-:::::: CC: Andi Kleen <andi@basil.nowhere.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
