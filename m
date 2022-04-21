@@ -2,112 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F93C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C34C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385085AbiDUGpV (ORCPT
+        id S1385069AbiDUGp0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44918 "EHLO
+        Thu, 21 Apr 2022 02:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385057AbiDUGoq (ORCPT
+        with ESMTP id S1385061AbiDUGos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:44:46 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB75813FA1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523312; x=1682059312;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=j8r4lW+miO7Wmw0PZa28Www49vm3FMDOfjP6ZPaNyQY=;
-  b=ihAMY3OAfiBzIpY77lC4PZqHuyh/9OrcowEhRhBgya6KIKnOitydizRf
-   a5w8mIIpe3LXnr+9M1VgNiqYThax+Ke0/3MNXmD3JgNUWBmqi8Xs79DW1
-   z6u89fMeEx9Xs4bGsl3ucgqKQt0cGS0rvn/dRd3v+3EUGVLIxK3z0QjoF
-   1en6GACHy2k9Qy2twwJbtXrUXzjypmLDa9Qxt7RZ9QiZUl6MbiliErsS2
-   37IFhC/Eryf9upaRKMyZTr5c8CsnQ5oAY232CCWuYceDeDXIu9pfxXVXU
-   uzWb0GXzDlE1jTrCj0p+tHyoSQA6rVkJIEHShehiRoHe+w6+fF+Orms3C
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264021868"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="264021868"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:41:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="670046916"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 20 Apr 2022 23:41:50 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhQVi-0007z7-5q;
-        Thu, 21 Apr 2022 06:41:50 +0000
-Date:   Thu, 21 Apr 2022 14:41:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [ammarfaizi2-block:paulmck/linux-rcu/dev.2022.04.18a 22/22]
- kernel/rcu/tree_nocb.h:1162:14: error: 'rcu_nocb_is_setup' undeclared; did
- you mean 'rcu_nocb_setup'?
-Message-ID: <202204210054.ZtsFVPYs-lkp@intel.com>
+        Thu, 21 Apr 2022 02:44:48 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25EE913F86;
+        Wed, 20 Apr 2022 23:42:00 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 50DAE1C810D0;
+        Thu, 21 Apr 2022 14:41:59 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 21
+ Apr 2022 14:41:59 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 21 Apr
+ 2022 14:41:58 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 21 Apr 2022 14:41:58 +0800
+Message-ID: <d24391c8-6153-d835-b17a-a013ed2c55c8@nuvoton.com>
+Date:   Thu, 21 Apr 2022 14:41:59 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/5] arm64: dts: nuvoton: Add initial support for
+ MA35D1
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <ychuang570808@gmail.com>
+CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <will@kernel.org>,
+        <soc@kernel.org>, <cfli0@nuvoton.com>
+References: <20220418082738.11301-1-ychuang3@nuvoton.com>
+ <20220418082738.11301-4-ychuang3@nuvoton.com>
+ <60e50c11-118d-431f-7120-95fcbb53eeb5@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <60e50c11-118d-431f-7120-95fcbb53eeb5@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev.2022.04.18a
-head:   d6932dca19b1a7cbccad9d4acede8229e61cf97a
-commit: d6932dca19b1a7cbccad9d4acede8229e61cf97a [22/22] rcu/nocb: Add an option to offload all CPUs on boot
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220421/202204210054.ZtsFVPYs-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/d6932dca19b1a7cbccad9d4acede8229e61cf97a
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev.2022.04.18a
-        git checkout d6932dca19b1a7cbccad9d4acede8229e61cf97a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from kernel/rcu/tree.c:5031:
-   kernel/rcu/tree_nocb.h: In function 'rcu_init_nohz':
->> kernel/rcu/tree_nocb.h:1162:14: error: 'rcu_nocb_is_setup' undeclared (first use in this function); did you mean 'rcu_nocb_setup'?
-    1162 |         if (!rcu_nocb_is_setup) {
-         |              ^~~~~~~~~~~~~~~~~
-         |              rcu_nocb_setup
-   kernel/rcu/tree_nocb.h:1162:14: note: each undeclared identifier is reported only once for each function it appears in
 
 
-vim +1162 kernel/rcu/tree_nocb.h
+On 2022/4/18 下午 08:20, Krzysztof Kozlowski wrote:
+> On 18/04/2022 10:27, Jacky Huang wrote:
+>> Add the initial device tree files for Nuvoton MA35D1 Soc.
+>>
+> (...)
+>
+>> +	gic: interrupt-controller@50800000 {
+> The unit address does not match first reg property. Don't you have
+> warnings with this?
 
-  1153	
-  1154	void __init rcu_init_nohz(void)
-  1155	{
-  1156		int cpu;
-  1157		bool need_rcu_nocb_mask = false;
-  1158		bool offload_all = false;
-  1159		struct rcu_data *rdp;
-  1160	
-  1161	#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
-> 1162		if (!rcu_nocb_is_setup) {
-  1163			need_rcu_nocb_mask = true;
-  1164			offload_all = true;
-  1165		}
-  1166	#endif
-  1167	
+Yes, I will modify it as
+gic: interrupt-controller@50801000
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+>> +		compatible = "arm,gic-400";
+>> +		#interrupt-cells = <3>;
+>> +		interrupt-parent = <&gic>;
+>> +		interrupt-controller;
+>> +		reg = <0x0 0x50801000 0x0 0x1000>,
+>> +		      <0x0 0x50802000 0x0 0x2000>,
+>> +		      <0x0 0x50804000 0x0 0x2000>,
+>> +		      <0x0 0x50806000 0x0 0x2000>;
+>> +		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
+>> +			      IRQ_TYPE_LEVEL_HIGH)>;
+>> +	};
+>> +};
+> Best regards,
+> Krzysztof
+
+Thanks for your review.
+
+Jacky Huang
