@@ -2,74 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 01:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 265BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 01:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383687AbiDUBqI (ORCPT
+        id S1383693AbiDUBuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 21:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        Wed, 20 Apr 2022 21:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383675AbiDUBqG (ORCPT
+        with ESMTP id S1383690AbiDUBuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 21:46:06 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA5D765E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 18:43:18 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
- 2022 09:43:17 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 21 Apr
- 2022 09:43:16 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <gregkh@linuxfoundation.org>
-CC:     <ardb@kernel.org>, <baihaowen@meizu.com>,
-        <bjorn.andersson@linaro.org>, <cristian.marussi@arm.com>,
-        <linux-kernel@vger.kernel.org>, <sudeep.holla@arm.com>
-Subject: [PATCH V2] firmware: edd: Remove redundant condition
-Date:   Thu, 21 Apr 2022 09:43:13 +0800
-Message-ID: <1650505393-19398-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <YmBDgRYGdcjz3ppn@kroah.com>
-References: <YmBDgRYGdcjz3ppn@kroah.com>
+        Wed, 20 Apr 2022 21:50:16 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A19E2
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 18:47:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=lCKFA+BDHuzLwKvYRaUjUjFnWJLUPF5Zhejj39N5OVY=; b=LOjZtvsMbVRyxck4upAdMThxEM
+        PNM2Mrd6ZAZcsOaI/cMjMeJGWzEjOnLJ29m7OUg7JApDDyUqu9nWTEDSzKl7xP9TK5X15VRUN1Ohf
+        3AoWWxQj/JwU0dYkvnekzkZk2chvGCJG0+En5flDsTUFRyoqw3Vp4MbsOEpwVB/zyoIxguSRNYqpd
+        1JQ8e9AlwltZ4JSgTO44Ch5PJevqxz+yJOun9Llg4qSti1LawAyagvYuYo9AQQX+db/Gqx5sl/ksG
+        5l3OHnZD+FlJU2QQZI0RBMjGri1/l9wWnwVWN4W7wSUPaQMdA6FQfn2kJtuY4mCwt+Gm6DubfO3op
+        Wime5y6A==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nhLum-00B3rr-5C; Thu, 21 Apr 2022 01:47:24 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Signed-off-by : Peter Xu" <peterx@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH -mmotm] hugetlb: use mm.h instead of mm_types.h
+Date:   Wed, 20 Apr 2022 18:47:23 -0700
+Message-Id: <20220421014723.5802-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The logic (!A || (A && B)) is equivalent to (!A || B). so we have
-to make code clear.
+mm_types.h does not have zap_flags_t in it so use mm.h instead
+in hugetlb.h.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Fixes this build error:
+
+In file included from ../drivers/virt/nitro_enclaves/ne_misc_dev.c:16:0:
+../include/linux/hugetlb.h:414:4: error: unknown type name ‘zap_flags_t’; did you mean ‘vm_flags_t’?
+    zap_flags_t zap_flags)
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Signed-off-by: Peter Xu <peterx@redhat.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: linux-mm@kvack.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
 ---
-V1->V2: 
-change changelog text
-1. !A || A && B -> (!A || (A && B))
-2. !A || B -> (!A || B)
+Fixes: mm-hugetlb-only-drop-uffd-wp-special-pte-if-required-fix.patch
 
- drivers/firmware/edd.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/linux/hugetlb.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/edd.c b/drivers/firmware/edd.c
-index 69353dd0ea22..5cc238916551 100644
---- a/drivers/firmware/edd.c
-+++ b/drivers/firmware/edd.c
-@@ -685,8 +685,7 @@ static void edd_populate_dir(struct edd_device * edev)
- 	int i;
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -2,7 +2,7 @@
+ #ifndef _LINUX_HUGETLB_H
+ #define _LINUX_HUGETLB_H
  
- 	for (i = 0; (attr = edd_attrs[i]) && !error; i++) {
--		if (!attr->test ||
--		    (attr->test && attr->test(edev)))
-+		if (!attr->test || attr->test(edev))
- 			error = sysfs_create_file(&edev->kobj,&attr->attr);
- 	}
- 
--- 
-2.7.4
-
+-#include <linux/mm_types.h>
++#include <linux/mm.h>
+ #include <linux/mmdebug.h>
+ #include <linux/fs.h>
+ #include <linux/hugetlb_inline.h>
