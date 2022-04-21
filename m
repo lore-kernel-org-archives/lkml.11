@@ -2,140 +2,417 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB03C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0E4C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344512AbiDUJaa (ORCPT
+        id S1387634AbiDUJaz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
+        Thu, 21 Apr 2022 05:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387657AbiDUJ1s (ORCPT
+        with ESMTP id S1387625AbiDUJay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:27:48 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80085.outbound.protection.outlook.com [40.107.8.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA21D54
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:24:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l4pXPkV3Xl3J2Kn8LItSpsdn9NzKjz+E6lBPrAFaRFCG5KYlybxj9NQXnOxbjuecFzLyiMtr1er/ZZx00vCDFoXiV19lBTRzLfpHl5zySpECTjPO5Y3e4jX4NaXsGfG63XzjXHFb8JnHIwYA4lxETh45CiyYia4Lbw3zXjuoB/mZy91LtEwPzJ/68qsYsPkb3uqhJO1VifEK8bPjmKdRaqamAhaBTdT5o7k1KJyE+z0Ba0DvVa7LNyxB+kJwsnNlvV4TQdx8UETt49FOGgXzwSHwU1BZRjPnprU/CZqDIozXuH8tJkY6qdGh74TftiTKLynPsnudRBzq2fjLuHe/XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BLlEpHFEuWTpGimyAlbGymQtTNYBDHueO983fD9jMK4=;
- b=VYuWnYaX01OR0Uhwq9p6YHND+wrf2bne5+5iAj5rDwj7Nabfxvm8CfFUqySiD9mBcz1SFEloVXs6synf5phfhPSH9jjv6N+PB4i+CvT5i16AnfoP7LPuI7FbM1sr5tD7R2Hl/pTxq4rrcFh8rsHNI51U3ywi/FSuLmlyImo7+9MFMxl9naOWETF8biKPDt/QhgK2QYV1f3rDy3a2qjKQQUbB9R7r1zC4ztPoZaOkb4OxR/6xjLl6u0CTHjRaSpx8wuSRm2JyspD3Hw4co2PU6IDYwkqCi3mmP+YgLSfZtXocEInfI4UjFSZvqmcLI0k20ihVqClhasC3vuD4bWA2jw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=diasemi.com; dmarc=pass action=none header.from=diasemi.com;
- dkim=pass header.d=diasemi.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=dialogsemiconductor.onmicrosoft.com;
- s=selector1-dialogsemiconductor-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BLlEpHFEuWTpGimyAlbGymQtTNYBDHueO983fD9jMK4=;
- b=RC0Ng51NuI+KE6LYupUgAUPv2hZDZ6wHgSakt8lCnJ7uzqCvQM0OSSTfPDYP0vbr+90EbWMDjkRykUn2PHdJVB6P6MapHntVtX0mg4BMaE8l8sGGieu8qQbPQg19q/4QShvlX72QIwDfkkhsRuMbrLB8Ffc3GxfjgYoFaH0SZKE=
-Received: from VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:12d::15)
- by PA4PR10MB5684.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:266::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Thu, 21 Apr
- 2022 09:24:50 +0000
-Received: from VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::900d:c198:84ab:680]) by VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::900d:c198:84ab:680%5]) with mapi id 15.20.5186.014; Thu, 21 Apr 2022
- 09:24:50 +0000
-From:   Adam Ward <Adam.Ward.opensource@diasemi.com>
-To:     Wei Yongjun <weiyongjun1@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Support Opensource <Support.Opensource@diasemi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Adam Ward <Adam.Ward.opensource@diasemi.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: RE: [PATCH] regulator: da9121: Fix uninit-value in
- da9121_assign_chip_model()
-Thread-Topic: [PATCH] regulator: da9121: Fix uninit-value in
- da9121_assign_chip_model()
-Thread-Index: AQHYVVyZGmQjckztX0y+MtXV3smQLKz6F3xQ
-Date:   Thu, 21 Apr 2022 09:24:50 +0000
-Message-ID: <VI1PR10MB31673DC2ED738C26A8D30046ECF49@VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM>
-References: <20220421090335.1876149-1-weiyongjun1@huawei.com>
-In-Reply-To: <20220421090335.1876149-1-weiyongjun1@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=diasemi.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ee8e8ecf-04ef-4d4a-543c-08da2378c941
-x-ms-traffictypediagnostic: PA4PR10MB5684:EE_
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-microsoft-antispam-prvs: <PA4PR10MB5684106066C2683D38B61573CBF49@PA4PR10MB5684.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7UQ5W+4u8ylCBkTYLzSvPQD48Z0NIYdtZ1/vMCswfxRC1dJpLrGddV4UCg7qXkIsBkQnnc6zD8DiN45Nzi9aCIN2XoHrN2J9XYSQST9yQCLTio6VAXWKhNHAkvWu+onQDGMeaErILdgYwSwsWzyPYLxiW5xIVrOCvgdkF9sBeDlkgza10yuCHIe6+FQTOUbi1HPy8FIJoYlmPHOcLXZGIoaP/D7A8ahZdCOj9MtaBTAXiY20B1t2j05HIrDvTjel8TpLDzPh1rWV9NTygsa+xf/ClkPz/Ej6t0pHovPNjNHsnOuutol6JC+aPR0XID/WR2Wg+72HFZ0XJ1gGY1vF6qVMWj3DEwAYJCGzte+M7oSub6NqyD38G3VkKO7x9A6MjqQCUYlv3ocaB0txWou6X+a+GOKurKCh8VVDjrFI6nlE8QgFvMTVtC1isdLbUZbgrHqaSa+CN+RJXnajRfYDeMYWecF8qiKTDmCesOX04Hb3DO+AllTBgq7UUKCoQPLg6BAhpm7vrPVL8xVxMhYH+crhJVBfAytnEmGpzyggPn7VhcPmjI54MoCJ6qdQrjRR7uMJt7fbGL9NGxCpZRMKhgvnZ6/DKXR+/8ExnScmFe4JBbgmrh96iPMgmGT/J47atkCqjGgRvz94zDIa2cMo4nGdAGC8Plk4+fwLhRuYrCU3y05zm/QHom2paDG+gZ9VJyBUV88cqhVO6uySlvYtZA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(55016003)(6506007)(2906002)(54906003)(7696005)(53546011)(5660300002)(4744005)(83380400001)(122000001)(33656002)(316002)(71200400001)(38100700002)(8676002)(66556008)(508600001)(76116006)(66476007)(66446008)(52536014)(8936002)(186003)(26005)(38070700005)(66946007)(64756008)(86362001)(9686003)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zBqcYikOq8FXzg4/94KUCdx0lliHVVo/VUaHW4GbyOmUGaXodSofQMiCEpy3?=
- =?us-ascii?Q?BNB9KoCyqQitEgEsCMU5JN+HVbOlege/9HVf3HyNbwEVEUSoWWbokX6NS5bR?=
- =?us-ascii?Q?apofqVNsG8MCEUsLvOsxQroXGIzslI2oH20ru1vtiy8BJyCbl/SOaIRPq/f9?=
- =?us-ascii?Q?scziD+O42EzOi54QP73rCeg4uvJjmIBr0uwHarqD5jLNPjyA/mds4psExQjc?=
- =?us-ascii?Q?D0PwgB80hFEFNb9eYjxKKZ0qCAZISlwfqsNbvTBknlsyRnTmOYNASoU/r3CW?=
- =?us-ascii?Q?bdwPw3oR9Y2iqrgxaryLprrhnZNKG4VhB+SpgLUMWURXIZgXzo0nGs4Z3bC/?=
- =?us-ascii?Q?ZyxMCA7KvZTInwnst4GwTzZVIhBSKYzgiLl7pZoGnDpQtTYxiFL8AtFcKsUs?=
- =?us-ascii?Q?BWFoJxjuoF63YZGVfPzL5SNUm9pTtVOgJZVRPvCk3EoJNUNkHEbtmyaZhDPk?=
- =?us-ascii?Q?ScKdhFD/uZdeEjkNfqOzXZo236Z4myPuH+hQonZGgJrlWNtpXGeQEVff+8yZ?=
- =?us-ascii?Q?9emOL4XIMWlDWSxAXwQ6fafj3dJIAZnoirZ1GZRqkJC9BJ7coPWDkOSHeSFx?=
- =?us-ascii?Q?S6dTt6NALP5b5GWEDrLNLkBs4rigJeoZSA3cHmZz6HLsCC5rI4cvYLn2raFv?=
- =?us-ascii?Q?h0NmOY1GZrqdmgMIQteEI3U6jEpeBa3ae9k8GsTqJXx+H0kghQ5urOAPHBEB?=
- =?us-ascii?Q?fbXWcdcjqes1aGAWIaEVFui2UU+8PpqimG2cTHRXwK6Z7OReZNaHC/7sxfe/?=
- =?us-ascii?Q?w+qkxgCRzT6a2KogbO5uvCsicNu6O1R8q1m/DV+LGDwxtufec9N/Remav+V9?=
- =?us-ascii?Q?SglnVRAYpb9cxFs6aD8IwkLuJUJn3blpugpd9jblACVRVBMBC2cnLCYUmD89?=
- =?us-ascii?Q?D6WevLQRe/5Tla9p0UuMQ6614XzAKPY2qgqCl1RszJNQNL23dLdf16Iqe9pm?=
- =?us-ascii?Q?0ANtjw0rht2Y9bRX/TqGukWKtEcvxMgnPlPqz7/MgekBQTC/WuK4uQCBZZLt?=
- =?us-ascii?Q?fY4EEiccdttBxEMygFrIeROa4+9eOY6TwSofhbYgAo1HVymkvDJAZb76uwgh?=
- =?us-ascii?Q?IxI9ZSXl9P9FTJfYEISCAE40DngT0xDJ3gNLSzv507t/iQI6rVe1G/j7wlxf?=
- =?us-ascii?Q?3D0Hd+I0R1W4CmJi6E1iLc5zivW47X/S6+f3FUqetrXBrE6qUoCJNEJRmpL6?=
- =?us-ascii?Q?XO6PelcP7m569Ff+IeCgAMkrj8HcdRZ0zzq1Dj/EKOyzFD4wum+bEvaNkudM?=
- =?us-ascii?Q?ywTLSBqYA/KLVfkys/V3iSfN7SBX58tMVsyIMubmgqsKZbZ4L/iPhNQTQ0+u?=
- =?us-ascii?Q?JaTU5+zcp6rbGpVFEGAX1ZjB9p+3OM6TIFwEM09Xy+tBwbaJfbRyvYLqd1At?=
- =?us-ascii?Q?35E25iLsPHzsGYVfRgjHRtW/mFFUEnRh06kqJjq35Ct+R2iKyWOS8WYXGuft?=
- =?us-ascii?Q?bx8NF8m7JBcF11KaPpGVsLo421i2WAEwI9m/S3n+VP0SUsy+9bvSLhvpb3lr?=
- =?us-ascii?Q?QC91Xp2azCRiaqtOuNBn/oA60ZEGgQGTlUbi/Xu7/niFeq3IwIYbvzCW0Z64?=
- =?us-ascii?Q?BR6FBTj1gI/u21LhCi/AekRaa9nwh3wjYiVWg7Fua0NhkAK8egjw/PSVr9q9?=
- =?us-ascii?Q?qQR9sOMkBROx3tjjRjr1fE/3guWry/thivObP4UOcxD9PMRLQ/PtlKbTODsK?=
- =?us-ascii?Q?+/5OyC2YVxpakR3Sd+ARiExgZYdP6qU6pTMASm9aN8+EfOHN/jALtH3oz+dF?=
- =?us-ascii?Q?e6YPn4lMHg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: diasemi.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee8e8ecf-04ef-4d4a-543c-08da2378c941
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2022 09:24:50.5739
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 511e3c0e-ee96-486e-a2ec-e272ffa37b7c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dwtI+BIgYnM+ir7LO8khugCp8D5mfltpMaDKmgffqQtVZgB1pNlFpbT/T0SHlSnEMTVmJR/FGhDksJk/w+llwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR10MB5684
+        Thu, 21 Apr 2022 05:30:54 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE25527CFC;
+        Thu, 21 Apr 2022 02:28:04 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23L9Nhm0007645;
+        Thu, 21 Apr 2022 09:27:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version; s=pp1; bh=UoyM7QuV4f6z+1Hig/YUjPae6yDBBRuV0rL44GgLXcc=;
+ b=VGhbb5JZsjkcE8KiFkF8H0JkPLnp9EJuF7c0fxXdizzW46Xk2Yngw2VLJa40AC3pvW0o
+ pXV7uwARt0mIr58uq3eGG9homohltz+qzGwEmxQv8riLcVkx1ahHnadQr9fQITsR0r6V
+ bjH6nDzWmtsMJiIibS9oS21oFXxxmgn+9K3FKhNr8iRAMVaebM7QfZaCXtstC10WO73y
+ QtG+OM7sIZ+p46FGhIZzDPdinVVbC6wiReHk2TPHI7RT7zXH7BLqvbA6Ye6WlLQUj/49
+ tMD49lo3qOhy6hrjKc3OHp2+R5oI/9pGi/40xAg68lM0pssk5yZ2Sc90XFZ7UkjezjB6 Pg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fk4kqg24c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Apr 2022 09:27:55 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23L9RtxE031320;
+        Thu, 21 Apr 2022 09:27:55 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fk4kqg23t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Apr 2022 09:27:55 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23L9RHsB004316;
+        Thu, 21 Apr 2022 09:27:53 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ffne97ku2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Apr 2022 09:27:53 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23L9RoF551905016
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Apr 2022 09:27:50 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0140BA4040;
+        Thu, 21 Apr 2022 09:27:50 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 59616A4051;
+        Thu, 21 Apr 2022 09:27:49 +0000 (GMT)
+Received: from sig-9-145-44-250.uk.ibm.com (unknown [9.145.44.250])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 21 Apr 2022 09:27:49 +0000 (GMT)
+Message-ID: <8225cf74d6d81c3ce149d677b5bf47689d8e3fd2.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 1/4] PCI: Clean up pci_scan_slot()
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org
+Date:   Thu, 21 Apr 2022 11:27:42 +0200
+In-Reply-To: <20220421021446.GA1356365@bhelgaas>
+References: <20220421021446.GA1356365@bhelgaas>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-kgosNNU3lYVX4dmGeFTy"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: YadYJuWXU6oE_qrkkIVQQ6l8oNS4W3n_
+X-Proofpoint-ORIG-GUID: nps0FDslBiQ6Y2ZyM1QFczbbbOUxjHb6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-20_06,2022-04-20_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
+ bulkscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501 spamscore=0
+ impostorscore=0 phishscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204210050
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21 April 2022 10:04, Wei Yongjun wrote:
 
-> This happend when da9121 device is probe by da9121_i2c_id, but with
-> invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
-> da9121_assign_chip_model() will access 'regmap' without init it.
->=20
-> Fix it by return -EINVAL from da9121_assign_chip_model() if
-> 'chip->subvariant_id' is invalid.
->=20
-> Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+--=-kgosNNU3lYVX4dmGeFTy
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Adam Ward <Adam.Ward.Opensource@diasemi.com>
+On Wed, 2022-04-20 at 21:14 -0500, Bjorn Helgaas wrote:
+> Hi Niklas,
+>=20
+> I'm sure this makes good sense, but I need a little more hand-holding.
+> Sorry this is long and rambling.
+>=20
+> On Tue, Apr 19, 2022 at 12:28:00PM +0200, Niklas Schnelle wrote:
+> > While determining the next PCI function is factored out of
+> > pci_scan_slot() into next_fn() the former still handles the first
+> > function as a special case duplicating the code from the scan loop and
+> > splitting the condition that the first function exits from it being
+> > multifunction which is tested in next_fn().
+> >=20
+> > Furthermore the non ARI branch of next_fn() mixes the case that
+> > multifunction devices may have non-contiguous function ranges and dev
+> > may thus be NULL with the multifunction requirement. It also signals
+> > that no further functions need to be scanned by returning 0 which is
+> > a valid function number.
+> >=20
+> > Improve upon this by moving all conditions for having to scan for more
+> > functions into next_fn() and make them obvious and commented.
+> >=20
+> > By changing next_fn() to return -ENODEV instead of 0 when there is no
+> > next function we can then handle the initial function inside the loop
+> > and deduplicate the shared handling.
+> >=20
+> > No functional change is intended.
+> >=20
+> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > ---
+> >  drivers/pci/probe.c | 41 +++++++++++++++++++----------------------
+> >  1 file changed, 19 insertions(+), 22 deletions(-)
+> >=20
+> > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> > index 17a969942d37..389aa1f9cb2c 100644
+> > --- a/drivers/pci/probe.c
+> > +++ b/drivers/pci/probe.c
+> > @@ -2579,33 +2579,35 @@ struct pci_dev *pci_scan_single_device(struct p=
+ci_bus *bus, int devfn)
+> >  }
+> >  EXPORT_SYMBOL(pci_scan_single_device);
+> > =20
+> > -static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+> > -			    unsigned int fn)
+> > +static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+> >  {
+> >  	int pos;
+> >  	u16 cap =3D 0;
+> >  	unsigned int next_fn;
+> > =20
+> > -	if (pci_ari_enabled(bus)) {
+> > -		if (!dev)
+> > -			return 0;
+> > +	if (dev && pci_ari_enabled(bus)) {
+>=20
+> I think this would be easier to verify if we kept the explicit error
+> return, e.g.,
+>=20
+>   if (pci_ari_enabled(bus)) {
+>     if (!dev)
+>       return -ENODEV;
+>     pos =3D pci_find_ext_capability(...);
+>=20
+> Otherwise we have to sort through the !dev cases below.  I guess
+> -ENODEV would come from either the "!fn && !dev" case or the "fn > 6"
+> case, but it's not obvious to me that those are equivalent to the
+> previous code.
+
+We could keep this the same for this patch but I think for jailhouse
+(patch 2) we need the "!dev" case not to fail here such that we can
+handle the missing function 0 below even if ARI is enabled. For s390
+this doesn't currently matter because pci_ari_enabled(bus) is always
+false but I assumed that this isn't necessarily so for jailhouse. I
+sent a follow up mail on a slight behavior change I can think of for
+this case for v2 but forgot to send it also for v3. Quoted below:
+
+"This part here theoretically changes the behavior slightly. If the ARI
+information is wrong/lands us in a "hole" we may look for more
+functions via the non-ARI path. Not sure if that is relevant though as
+in the worst case we might find functions that we otherwise wouldn't
+have seen. Seems rather obsure to me but I might be wrong, we currently
+don't see the ARI capability in Linux on IBM Z so I have less
+experience with this. I did of course boot test on my x86_64
+workstation."
+
+>=20
+> >  		pos =3D pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+> >  		if (!pos)
+> > -			return 0;
+> > +			return -ENODEV;
+> > =20
+> >  		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+> >  		next_fn =3D PCI_ARI_CAP_NFN(cap);
+> >  		if (next_fn <=3D fn)
+> > -			return 0;	/* protect against malformed list */
+> > +			return -ENODEV;	/* protect against malformed list */
+> > =20
+> >  		return next_fn;
+> >  	}
+> > =20
+> > -	/* dev may be NULL for non-contiguous multifunction devices */
+> > -	if (!dev || dev->multifunction)
+> > -		return (fn + 1) % 8;
+> > -
+> > -	return 0;
+> > +	/* only multifunction devices may have more functions */
+> > +	if (dev && !dev->multifunction)
+> > +		return -ENODEV;
+>=20
+> I don't understand why the "!dev || dev->multifunction" test needs to
+> change.  Isn't that valid even in the hypervisor case?  IIUC, you want
+> to return success in some cases that currently return failure, so this
+> case that was already success should be fine as it was.
+
+This isn't a change to the test. It's the negation of the logical
+condition *and* a switch of the branches i.e. keeps the overall
+behavior exactly the same. The equivalence is !(!A || B) =3D=3D (A && !B).
+There are two reasons I did this.
+
+1. I find (!dev || dev->multifunction) to be much harder to grasp than
+(dev && !dev->multifunction).
+
+2. The whole next_fn() in my opinion becomes easier to read if it bails
+for all bad cases early and the "this is the next fn" is the final
+return if we didn't bail. This becomes even more true as another
+condition is added in patch 2.
+
+>=20
+> Is this because "(fn + 1) % 8" may be zero, which previously
+> terminated the loop, but now it doesn't because "fn =3D=3D 0" is the
+> *first* execution of the loop?
+
+Yes with function 0 handled in the loop we can't use 0 as the
+termination indication. Also I find it generally weird to use a wrap
+around for this.
+
+>=20
+> If so, I wonder if we could avoid that case by adding:
+>=20
+>   if (fn >=3D 7)
+>     return -ENODEV;
+>=20
+> at the very beginning.  Maybe that would allow a more trivial patch
+> that just changed the error return from 0 to -ENODEV, i.e., leaving
+> all the logic in next_fn() unchanged?
+
+I think this is equivalent to the ternary at the return. Both return
+-ENODEV for fn >=3D 7. I do like your idea better though as it keeps with
+the scheme of my point 2 above and ternaries are ever so slightly
+harder to read.
+
+>=20
+> I'm wondering if this could end up like:
+>=20
+>     if (fn >=3D 7)
+>       return -ENODEV;
+>=20
+>     if (pci_ari_enabled(bus)) {
+>       if (!dev)
+> 	return -ENODEV;
+>       ...
+>       return next_fn;
+>     }
+>=20
+>     if (!dev || dev->multifunction)
+>       return (fn + 1) % 8;
+>=20
+>  +  if (hypervisor_isolated_pci_functions())
+>  +    return (fn + 1) % 8;
+>=20
+>     return -ENODEV;
+>=20
+> (The hypervisor part being added in a subsequent patch, and I'm not
+> sure exactly what logic you need there -- the point being that it's
+> just an additional success case.)
+
+Yes pretty much only that by negating the success case and switching
+the branches we end up with a list of fail/bail checks and a single
+success return even with the hyperisor check added. Also not sure if
+the "fn >=3D 7" check should rather go after the ARI path to keep them
+separate doesn't really matter of course.
+
+>=20
+> The "% 8" seems possibly superfluous then, since previously that
+> caused a zero return that terminated the loop.  If we're using -ENODEV
+> to terminate the loop, we probably don't care about the mod 8.
+
+Yes
+
+>=20
+> > +	/*
+> > +	 * A function 0 is required but multifunction devices may
+> > +	 * be non-contiguous so dev can be NULL otherwise.
+>=20
+> I understood the original "dev may be NULL ..." comment, but I can't
+> quite parse this.  "dev can be NULL" for non-zero functions?  That's
+> basically what it said before, but it's not clear what "otherwise"
+> refers to.
+
+I agree this can probably be improved. I'm trying to say that dev can
+be NULL if it is not function 0 which must exist. Maybe:
+
+"dev may be NULL as multifunction devices may be non-contiguous but a
+function 0 is required"
+
+>=20
+> > +	 */
+> > +	if (!fn && !dev)
+> > +		return -ENODEV;
+>=20
+> This part isn't obvious to me yet, partly because of the "!fn && !dev"
+> construction.  The negatives make it hard to parse.
+>=20
+> Since "fn" isn't a boolean or a pointer, I think "fn =3D=3D 0" is easier
+> to read than "!fn".  I would test "dev" first since it logically
+> precedes "fn".
+
+I agree about the "fn =3D=3D 0", I only used "!fn" because I remember
+getting checkpatch warnings for "foo =3D=3D 0" in the past. I'll change to
+fn =3D=3D 0. As for the order see below.
+
+>=20
+> IIUC !dev means we haven't found a function at this device number yet.
+> So this:
+>=20
+>   if (!dev && fn =3D=3D 0)
+>     return -ENODEV;
+>=20
+> means we called pci_scan_single_device(bus, devfn + 0) the first time
+> through the loop, and it didn't find a device so it returned NULL.
+
+Yes. This is "dev may be NULL unless we're looking at function 0". The
+fn came before dev because I wrote it as "function 0 must not be NULL"
+but it could also be "dev is NULL and we're looking at function 0",
+I have no clear preference.
+
+This is also the case that gets changed by patch 2 to become:
+
+"function 0 must not be NULL unless we have isolated PCI functions"
+
+or with the order switched:
+
+"dev is NULL and we're looking at function 0 and don't have isolated
+PCI functions"
+
+>=20
+> > +	return (fn <=3D 6) ? fn + 1 : -ENODEV;
+> >  }
+> > =20
+> >  static int only_one_child(struct pci_bus *bus)
+> > @@ -2643,24 +2645,19 @@ static int only_one_child(struct pci_bus *bus)
+> >   */
+> >  int pci_scan_slot(struct pci_bus *bus, int devfn)
+> >  {
+> > -	unsigned int fn, nr =3D 0;
+> > -	struct pci_dev *dev;
+> > +	int fn, nr =3D 0;
+> > +	struct pci_dev *dev =3D NULL;
+> > =20
+> >  	if (only_one_child(bus) && (devfn > 0))
+> >  		return 0; /* Already scanned the entire slot */
+> > =20
+> > -	dev =3D pci_scan_single_device(bus, devfn);
+> > -	if (!dev)
+> > -		return 0;
+> > -	if (!pci_dev_is_added(dev))
+> > -		nr++;
+> > -
+> > -	for (fn =3D next_fn(bus, dev, 0); fn > 0; fn =3D next_fn(bus, dev, fn=
+)) {
+> > +	for (fn =3D 0; fn >=3D 0; fn =3D next_fn(bus, dev, fn)) {
+> >  		dev =3D pci_scan_single_device(bus, devfn + fn);
+>=20
+> "devfn + fn" (in the existing, unchanged code) is a little bit weird.
+> In almost all cases, devfn is the result of "PCI_DEVFN(slot, 0)", so
+> we could make the interface:
+>=20
+>   pci_scan_slot(struct pci_bus *bus, int dev)
+>=20
+> where "dev" is 0-31.
+>=20
+> The only exceptions are a couple hotplug drivers where the fn probably
+> is or should be 0, too, but I haven't verified that.
+>=20
+> But this would be scope creep, so possibly something we could consider
+> in the future, but not for this series.
+
+Hmm, I see your point. It makes little sense to have a devfn that isn't
+from PCI_DEVFN(slot, 0) and not use pci_scan_single_device() instead.
+
+>=20
+> >  		if (dev) {
+> >  			if (!pci_dev_is_added(dev))
+> >  				nr++;
+> > -			dev->multifunction =3D 1;
+> > +			if (nr > 1)
+> > +				dev->multifunction =3D 1;
+> >  		}
+> >  	}
+> > =20
+> > --=20
+> > 2.32.0
+> >=20
+
+
+--=-kgosNNU3lYVX4dmGeFTy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSiikNOrnCUNbxSj4j7H22hwInkVgUCYmEjjgAKCRD7H22hwInk
+Vit4AQDprxiVgvFsILBgrF891xFGJG34rFju00CjqryS8efKjgEAndHSdBHZI/Gl
+z8qLGrpwFcLgsK/UIlE/qcQoTVt9UwE=
+=bjJh
+-----END PGP SIGNATURE-----
+
+--=-kgosNNU3lYVX4dmGeFTy--
 
