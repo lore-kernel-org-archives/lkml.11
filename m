@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C15E6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 04:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 744BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 04:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384110AbiDUE3r (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 00:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
+        id S230037AbiDUEgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 00:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384102AbiDUE3h (ORCPT
+        with ESMTP id S229988AbiDUEgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 00:29:37 -0400
-Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEB812600
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:26:46 -0700 (PDT)
-Received: by mail-ua1-x930.google.com with SMTP id m19so1385871uao.1
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:26:46 -0700 (PDT)
+        Thu, 21 Apr 2022 00:36:44 -0400
+Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B303912771
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:33:55 -0700 (PDT)
+Received: by mail-vk1-xa30.google.com with SMTP id i27so1759078vkr.5
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 21:33:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mxeNHXPH62p1MM3dViS8VMAv5lfRWtwrnUsQzK/+pk0=;
-        b=hpb65DWDNKWCr5K1UTnRgPuiUqPq07LZqLpUdOA/e/ZyiGO/WzZgPYchIFpzkCHtCn
-         7exSLTGUj9XRy6FwX6tZFQbEnPPFXUhH+fAkKwJTL5JuQl17w+FzTCX684ieIIuz0jMu
-         TojJq6o/GFGIC0ewKPSErd/7hlxnMbFe7EnOJnOVmlGOrmSZrAXtyQdnlP8Ldc7+qzo3
-         /2vqlHcEq8oFsKzgI5weLRywsxbIjxQZGweg/f0FAQSTgV3Ps9nya9on/achYoLpYk3L
-         OGwF4N7IjFeoiQpm6IVAAsznlt0igAZHMTruvifVvuSxMusXbyNwrj5hGQHSHYSt4mp/
-         6R3A==
+        bh=4NaD3m0FFo+3HdbSRqIQcjJTsM2LT433BpWcHX1lqVY=;
+        b=G6VBySzZ+j1UgjJy1MIdyQsy2GogIefZuA+42NaMjZiVCnQn2fB2ZV7S2GyyqNoj1z
+         IlKOWcxCOmCwdmWnaG605E6ocspt2pmTdRGz21s7l0OOGyUbvcAmkuXF0qlARV6QT4fs
+         6/W3bI8AmK7MN4pXBbdJOhB2ZgzdUZHY2bW69PIvG+a0vnXgVbmPKz3OTJchiO4kttbc
+         IALguwchYa1lF4m86RqH8vF5DfvHjnQruJSAQGE3dGLezEBVfvsUQYwRpR2cp/bFiQSe
+         BiU8hv9ysxvY25rFz5XLwNTIlb4MSBW6ctF/OVJfqh1j0Zb3yqyFStHZNSJD0A3qoHYi
+         2+SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mxeNHXPH62p1MM3dViS8VMAv5lfRWtwrnUsQzK/+pk0=;
-        b=DJlt8yGq0p+fiXytVNkpA4aVNmuGDDfWbOCkbJIM+/+/LTG7IwvSPSe/IBPnR/CQXp
-         7Gm5VePhWGKivy3ORmW7Tq6w5OW1JtSkzriQwQrNmqYQV7AOLAfJwYr907z03gnILISE
-         FlHLRD9xSRkZS08yIE3Ko+nqof4m60mqVKZW5pFBXS5UQ4RNy2PQ7ZDRXsnb8wdy7IPz
-         TnJ+A0/BX1971jiojiOFY75E+VBvFKvKSr0w5ANg3d7WoGFbcU09y/pV1e5/iqbNzdok
-         1YPz8G/RW6QZZATemARK6fmUmgdSK2evq108UdiMJm4apfQ1CfRYetqAqejTpwGegzGL
-         /Y+A==
-X-Gm-Message-State: AOAM532EdNbuNhz9RNWwLEZc18LTUMwBlh3ccZ5/dfBLVCLhuAPKjHgP
-        Yay3jm/h5cLGMosOjDRr6c87TMZzpiqP+koX8QhnFw==
-X-Google-Smtp-Source: ABdhPJyJa20VeKV+2tMqRgtLnWi8ys/9cj63Un+814wtWOubHE1RX3ONHhHbtG6SH7drv0LAbkjQ72wOSPnPt/JOmXg=
-X-Received: by 2002:a9f:2046:0:b0:35d:bfc:2c9 with SMTP id 64-20020a9f2046000000b0035d0bfc02c9mr6754804uam.119.1650515205811;
- Wed, 20 Apr 2022 21:26:45 -0700 (PDT)
+        bh=4NaD3m0FFo+3HdbSRqIQcjJTsM2LT433BpWcHX1lqVY=;
+        b=VThq0bL5ZqSggaY1cw1IGMKxmtIeVnuE+q+rnNaY2RqQEMmCiIgWdicRDNF4IOshUH
+         Rs6lNaV0RffFxp9QfsOLpMX5zbYxmOf2ScC9W4saBLpEHgJgvHiYzhHBTzKETcenq2KT
+         B9bq38qfP5vRMRi/Xc7bJV4G+BL9egvDilej6WHpjFOXA4FxMO0sjTzRjgevv2iZlCQ9
+         GbZGtxdlwgiEE+068IH8dF/92MDCRJQmIWEPHWdpfYJu04GMRszzG7MVPjFTzODrH7hS
+         ZduxtiD3wHi8/BysVuVTcTbKLlw6jcvkmJY+0n0/309blZEDb9bml6hI82oJuig+fP9s
+         NpIg==
+X-Gm-Message-State: AOAM532L3uhXkxU3wWEEJYWZgdjr1qgLF/najOEKkF08CAwN5lwkUNwS
+        2gB2kUcbyc+BElyCw6EDeDX5puZm1d3vAb4OA/sJFw==
+X-Google-Smtp-Source: ABdhPJz2aVKEpWT0axLPw9Q3y8Srgus56b2bNtZMGaQh7ZeNoiMOZ89rUdAz3ahmu2lwk+s06WB5AwlN6UNFBwjqsFY=
+X-Received: by 2002:ac5:c3d0:0:b0:344:44f4:25c3 with SMTP id
+ t16-20020ac5c3d0000000b0034444f425c3mr7247079vkk.23.1650515634751; Wed, 20
+ Apr 2022 21:33:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220413092206.73974-1-jvgediya@linux.ibm.com> <20220413092206.73974-4-jvgediya@linux.ibm.com>
-In-Reply-To: <20220413092206.73974-4-jvgediya@linux.ibm.com>
+References: <20220413092206.73974-1-jvgediya@linux.ibm.com> <20220413092206.73974-3-jvgediya@linux.ibm.com>
+In-Reply-To: <20220413092206.73974-3-jvgediya@linux.ibm.com>
 From:   Wei Xu <weixugc@google.com>
-Date:   Wed, 20 Apr 2022 21:26:34 -0700
-Message-ID: <CAAPL-u9OHuRWXvc0RAPvEtLQLy0AkLbAwjZtGERhmhn-yFZgrw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] mm: demotion: Add support to set targets from userspace
-To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Date:   Wed, 20 Apr 2022 21:33:43 -0700
+Message-ID: <CAAPL-u_xWwjJBoRE8Ce_oRFmmFHQ0DWTNn03zvPxX8HgtTrcWA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] mm: demotion: Add new node state N_DEMOTION_TARGETS
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Greg Thelen <gthelen@google.com>
 Cc:     Linux MM <linux-mm@kvack.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         aneesh.kumar@linux.ibm.com,
         Baolin Wang <baolin.wang@linux.alibaba.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>
+        Huang Ying <ying.huang@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -68,98 +68,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Wed, Apr 13, 2022 at 2:22 AM Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
 >
-> Add support to set node_states[N_DEMOTION_TARGETS] from
-> user space to override the default demotion targets.
+> Current implementation to find the demotion targets works
+> based on node state N_MEMORY, however some systems may have
+> dram only memory numa node which are N_MEMORY but not the
+> right choices as demotion targets.
 >
-> Restrict demotion targets to memory only numa nodes
-> while setting them from user space.
-
-Why should we restrict demotion targets to memory only nodes if they
-get set explicitly from user space? For example, if we use NUMA
-emulation to test demotion without actual hardware, these emulated
-NUMA nodes can have CPUs, but we still want some of them to serve as
-demotion targets.
-
-> Demotion targets can be set from userspace using command,
-> echo <nodelist> > /sys/kernel/mm/numa/demotion_target
+> Add new state N_DEMOTION_TARGETS, node_states[N_DEMOTION_TARGETS]
+> then can be used to hold the list of nodes which can be used
+> as demotion targets.
 >
 > Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
 > ---
->  .../ABI/testing/sysfs-kernel-mm-numa          | 12 +++++++
->  mm/migrate.c                                  | 35 +++++++++++++++++++
->  2 files changed, 47 insertions(+)
+>  drivers/base/node.c      | 4 ++++
+>  include/linux/nodemask.h | 1 +
+>  2 files changed, 5 insertions(+)
 >
-> diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-numa b/Documentation/ABI/testing/sysfs-kernel-mm-numa
-> index 77e559d4ed80..10e9e643845c 100644
-> --- a/Documentation/ABI/testing/sysfs-kernel-mm-numa
-> +++ b/Documentation/ABI/testing/sysfs-kernel-mm-numa
-> @@ -22,3 +22,15 @@ Description: Enable/disable demoting pages during reclaim
->                 the guarantees of cpusets.  This should not be enabled
->                 on systems which need strict cpuset location
->                 guarantees.
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index ec8bb24a5a22..cd79815b0f7a 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -1038,6 +1038,9 @@ static struct node_attr node_state_attr[] = {
+>         [N_CPU] = _NODE_ATTR(has_cpu, N_CPU),
+>         [N_GENERIC_INITIATOR] = _NODE_ATTR(has_generic_initiator,
+>                                            N_GENERIC_INITIATOR),
+> +       [N_DEMOTION_TARGETS] = _NODE_ATTR(has_demotion_targets,
+> +                                         N_DEMOTION_TARGETS),
+
+These nodes are demotion targets themselves. It is not the case that
+they have demotion targets. Let's rename "has_demotion_targets" to
+"demotion_targets"?
+
 > +
-> +What:          /sys/kernel/mm/numa/demotion_target
-> +Date:          April 2022
-> +Contact:       Linux memory management mailing list <linux-mm@kvack.org>
-> +Description:   Configure demotion target nodes
-> +
-> +               Page migration during reclaim is intended for systems
-> +               with tiered memory configurations. Preferred migration target
-> +               nodes can be configured in a system using this interface, based
-> +               on which demotion table is prepared in kernel. If demotion is
-> +               enabled then pages will be migrated to set demotion targets
-> +               during reclaim.
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 516f4e1348c1..4d3d80ca0a7f 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -2564,12 +2564,47 @@ static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
->         return count;
->  }
+>  };
 >
-> +
-> +static ssize_t numa_demotion_target_show(struct kobject *kobj,
-> +                                         struct kobj_attribute *attr, char *buf)
-> +{
-> +       return sysfs_emit(buf, "%*pbl\n",
-> +                         nodemask_pr_args(&node_states[N_DEMOTION_TARGETS]));
-> +}
-> +
-> +static ssize_t numa_demotion_target_store(struct kobject *kobj,
-> +                                         struct kobj_attribute *attr,
-> +                                         const char *nodelist, size_t count)
-> +{
-> +       nodemask_t nodes;
-> +
-> +       if (nodelist_parse(nodelist, nodes))
-> +               return -EINVAL;
-> +
-> +       if (!nodes_subset(nodes, node_states[N_MEMORY]))
-> +               return -EINVAL;
-> +
-> +       if (nodes_intersects(nodes, node_states[N_CPU]))
-> +               return -EINVAL;
-> +
-> +       node_states[N_DEMOTION_TARGETS] = nodes;
-> +
-> +       set_migration_target_nodes();
-> +
-> +       return count;
-> +}
-> +
->  static struct kobj_attribute numa_demotion_enabled_attr =
->         __ATTR(demotion_enabled, 0644, numa_demotion_enabled_show,
->                numa_demotion_enabled_store);
+>  static struct attribute *node_state_attrs[] = {
+> @@ -1050,6 +1053,7 @@ static struct attribute *node_state_attrs[] = {
+>         &node_state_attr[N_MEMORY].attr.attr,
+>         &node_state_attr[N_CPU].attr.attr,
+>         &node_state_attr[N_GENERIC_INITIATOR].attr.attr,
+> +       &node_state_attr[N_DEMOTION_TARGETS].attr.attr,
+>         NULL
+>  };
 >
-> +static struct kobj_attribute numa_demotion_target_attr =
-> +       __ATTR(demotion_target, 0644, numa_demotion_target_show,
-> +              numa_demotion_target_store);
-> +
->  static struct attribute *numa_attrs[] = {
->         &numa_demotion_enabled_attr.attr,
-> +       &numa_demotion_target_attr.attr,
->         NULL,
+> diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
+> index 567c3ddba2c4..17844300fd57 100644
+> --- a/include/linux/nodemask.h
+> +++ b/include/linux/nodemask.h
+> @@ -400,6 +400,7 @@ enum node_states {
+>         N_MEMORY,               /* The node has memory(regular, high, movable) */
+>         N_CPU,          /* The node has one or more cpus */
+>         N_GENERIC_INITIATOR,    /* The node has one or more Generic Initiators */
+> +       N_DEMOTION_TARGETS,     /* Nodes that should be considered as demotion targets */
+>         NR_NODE_STATES
 >  };
 >
 > --
