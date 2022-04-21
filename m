@@ -2,80 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C14C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355454AbiDUMcG (ORCPT
+        id S1384904AbiDUMce (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
+        Thu, 21 Apr 2022 08:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384659AbiDUMcA (ORCPT
+        with ESMTP id S238064AbiDUMc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:32:00 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC663152D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:29:11 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id u18-20020a5d8712000000b0064c7a7c497aso3163678iom.18
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:29:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=2LH/TUAXgyjFg87lmutVH/Zh/Ig4GTObkpnNk61xg+4=;
-        b=1DMFWBrlgm3JrNKVM65/sbUxj0O+4q09V/BxYhWz7lhDfcYVCMy8SOxT/S2wojSsDJ
-         bqz61S3Xq1hB7Ddz2xdVIs2jWhw/IypyJxyi8fU9aaDZSfvilQnuKEQpMYvAV1o8V+w5
-         hJG8/MW3OL6RVyKzU5dKIN5KtNkk9QMrqMGmgZc7gETokC6ioGLASonNHAAvl0qMDxdY
-         a2fFYhpmPpyO0opkzr7+k2ZHea2GFVnhmiv4Rxc7f/GLzlEvrhtbT80GHqlKGHC/fl3N
-         /94LudNIsUBqOj6fJrrYPBVqRsepIwASc/Bahfw5uCdTMVcxY3FWM0wbAAikYVNvqxMR
-         d8vA==
-X-Gm-Message-State: AOAM5303+91wapLq6ntpvo4LHybk6aKpHjqK3pdeHOKngDwXoboyrK4I
-        pWGHAjH985n6HsRL4ZD+sUk1G8jNW1r6BJDOwIGIPlnvKFQR
-X-Google-Smtp-Source: ABdhPJw9cDZEQPn7qRg5XxIXfP++kvVm4Mw1mTgznR6D5YpBs5CrAp8bCEiEqG9rWSv0a5q9ra/l7nk55Ugc5U+QM+RiN92OCC+2
+        Thu, 21 Apr 2022 08:32:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2B53135E;
+        Thu, 21 Apr 2022 05:29:36 -0700 (PDT)
+Received: from kwepemi500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KkcH93Ds9zFqWR;
+        Thu, 21 Apr 2022 20:27:01 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi500010.china.huawei.com (7.221.188.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Apr 2022 20:29:33 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.175) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Apr 2022 20:29:32 +0800
+From:   Lu Jialin <lujialin4@huawei.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>
+CC:     Lu Jialin <lujialin4@huawei.com>,
+        Wang Weiyang <wangweiyang2@huawei.com>,
+        <cgroups@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>
+Subject: [PATCH -next] mm/memcontrol.c: remove unused private flag of memory.oom_control
+Date:   Thu, 21 Apr 2022 20:27:55 +0800
+Message-ID: <20220421122755.40899-1-lujialin4@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1cab:b0:2ca:b397:a2e0 with SMTP id
- x11-20020a056e021cab00b002cab397a2e0mr10720692ill.104.1650544150570; Thu, 21
- Apr 2022 05:29:10 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 05:29:10 -0700
-In-Reply-To: <000000000000f8b5ef05dd25b963@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c7ede805dd2941b2@google.com>
-Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in ntfs_fill_super
-From:   syzbot <syzbot+1631f09646bc214d2e76@syzkaller.appspotmail.com>
-To:     almaz.alexandrovich@paragon-software.com, chao@kernel.org,
-        davem@davemloft.net, jaegeuk@kernel.org, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        luiz.dentz@gmail.com, marcel@holtmann.org, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org,
-        ntfs3@lists.linux.dev, syzkaller-bugs@googlegroups.com,
-        trix@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.175]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+There is no use for the private value, __OOM_TYPE and OOM notifier
+OOM_CONTROL. Therefore remove them to make the code clean.
 
-commit adf9ea89c719c1d23794e363f631e376b3ff8cbc
-Author: Chao Yu <chao@kernel.org>
-Date:   Thu Aug 26 02:03:15 2021 +0000
+Signed-off-by: Lu Jialin <lujialin4@huawei.com>
+---
+ mm/memcontrol.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-    f2fs: fix unexpected ENOENT comes from f2fs_map_blocks()
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 725f76723220..3aea256bfe7a 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -209,7 +209,6 @@ static struct move_charge_struct {
+ enum res_type {
+ 	_MEM,
+ 	_MEMSWAP,
+-	_OOM_TYPE,
+ 	_KMEM,
+ 	_TCP,
+ };
+@@ -217,8 +216,6 @@ enum res_type {
+ #define MEMFILE_PRIVATE(x, val)	((x) << 16 | (val))
+ #define MEMFILE_TYPE(val)	((val) >> 16 & 0xffff)
+ #define MEMFILE_ATTR(val)	((val) & 0xffff)
+-/* Used for OOM notifier */
+-#define OOM_CONTROL		(0)
+ 
+ /*
+  * Iteration constructs for visiting all cgroups (under a tree).  If
+@@ -4883,7 +4880,6 @@ static struct cftype mem_cgroup_legacy_files[] = {
+ 		.name = "oom_control",
+ 		.seq_show = mem_cgroup_oom_control_read,
+ 		.write_u64 = mem_cgroup_oom_control_write,
+-		.private = MEMFILE_PRIVATE(_OOM_TYPE, OOM_CONTROL),
+ 	},
+ 	{
+ 		.name = "pressure_level",
+-- 
+2.17.1
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=101dd0fcf00000
-start commit:   b253435746d9 Merge tag 'xtensa-20220416' of https://github..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=121dd0fcf00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=141dd0fcf00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ff9f8140cbb3af7
-dashboard link: https://syzkaller.appspot.com/bug?extid=1631f09646bc214d2e76
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e13cfcf00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=135e3008f00000
-
-Reported-by: syzbot+1631f09646bc214d2e76@syzkaller.appspotmail.com
-Fixes: adf9ea89c719 ("f2fs: fix unexpected ENOENT comes from f2fs_map_blocks()")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
