@@ -2,151 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E373DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D92EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385629AbiDUMuI (ORCPT
+        id S1385682AbiDUMun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        Thu, 21 Apr 2022 08:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385569AbiDUMuH (ORCPT
+        with ESMTP id S1385644AbiDUMul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:50:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E2D32059;
-        Thu, 21 Apr 2022 05:47:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAFAEB82293;
-        Thu, 21 Apr 2022 12:47:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E266EC385A5;
-        Thu, 21 Apr 2022 12:47:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650545235;
-        bh=UcQO2s3LFwB24HB203UWRaa916KVKDAPA2bum0jrpc4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=R7beJJ2o0zop79DQR1f+UbtCD11yR8gBGKvpCJLoJE/nMNl0GlhnVeDWDeonVDuOF
-         yke27azpRE3Ub9kmnzUxrZAjKBUoLEgWILu/wgXgOW3ND0+0MUe6YEBrvWxQ09kP1u
-         q8tr63py9kKxJTOXaR19kT+7WhpTyRfxDBzEkFxyZiMRez3tMqmA8Mh6Q2u9VNRECv
-         IOkCQdSvairDgghDeGbgwKCilr5T1vICYdH/0716vfI7kftADKY9D3EpLEswKEvv4B
-         3ORpcMSvMM2lZ/WZF48+hN4CKg5RJDcArz1Njk+SDAfQJ/cj8zgyuVRQtD1QwyujhM
-         DvZytEy+g7c8Q==
-Date:   Thu, 21 Apr 2022 18:17:11 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     dma <dmaengine@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL]: dmaengine updates for v5.18
-Message-ID: <YmFST5F0AdoaM7om@matsya>
+        Thu, 21 Apr 2022 08:50:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0976A326F0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:47:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650545270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TnOf3NHeZTSr4cEYbvvix37pw/apJI2q+GJ3+PP81w0=;
+        b=adeGPANgsejNeCirqbYaCpwDV7+aiUoGLVQRuZu8oJW0OMimCRCyUDSLPq7Bbaoimt17HY
+        0WRRzr7NDg/qGC6sSpwebf/GQuuynV6gvFLuXkEtq6SYXOP9zgM9nUo8BWr/bT4rKxbGGs
+        k/3ipA5IyXEIc05/T+qzuhyey25WvRA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-98-a3NyEnswOcmBcCql8A1jTA-1; Thu, 21 Apr 2022 08:47:49 -0400
+X-MC-Unique: a3NyEnswOcmBcCql8A1jTA-1
+Received: by mail-wm1-f72.google.com with SMTP id v191-20020a1cacc8000000b0038ce818d2efso2331601wme.1
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:47:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TnOf3NHeZTSr4cEYbvvix37pw/apJI2q+GJ3+PP81w0=;
+        b=MzXaAS3KfNq4gVQZfjJ264c0RlUuXwxhhp5VbbDLBgac7D4jthQEQXGPyhGnTGR3dA
+         6Jsb+WgE3GjeovqVIp9OmU8eG/HqtwnwImauZR1IvV4lO2eP7kN9WnRz5oxJwKasZb7f
+         32Ms8OKsDo93FeovTj2kMsFc5mHeGF/aKRs+wuGn7JAj+XLNk84J2qFACTofhJ5AzfA2
+         TFataMVQ/nqQn9aTqCV4o9+0aRTyuj8Qg+zIP3tEGuvVg5MD7ku09FTRUUsPAaU13WDH
+         T//7YtQsbjfee6fadM1vLpvum3ffo+XlGinBGp/X0U3WmChyM/y9BH050QV/xawSC/XU
+         wPGw==
+X-Gm-Message-State: AOAM532Q91zkleMuQvHTSUhYDdV3ICer2619Och7Xr3yxYfQYveB4Eza
+        /c8Eq24zBPmg39DcgQdpyGRV9WVHLC3v+uo9MzTI9VAjRdC5RmOsTwSGZzDUTWH+9Jk8bkT6FHj
+        zvs1eSmIH7Q/Btswj34Xdo4Gh
+X-Received: by 2002:adf:9581:0:b0:1ed:c341:4ed1 with SMTP id p1-20020adf9581000000b001edc3414ed1mr18446929wrp.299.1650545267313;
+        Thu, 21 Apr 2022 05:47:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwM7PKieGr1IEXIphps56gblQ+HazfGrEHkPNWi6ZMSTtd09VlmmzSO/ZCY16iuoKF1G1KUhw==
+X-Received: by 2002:adf:9581:0:b0:1ed:c341:4ed1 with SMTP id p1-20020adf9581000000b001edc3414ed1mr18446919wrp.299.1650545267042;
+        Thu, 21 Apr 2022 05:47:47 -0700 (PDT)
+Received: from [192.168.1.129] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id d18-20020a05600c34d200b0038ed14b7ac3sm1955281wmq.40.2022.04.21.05.47.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 05:47:46 -0700 (PDT)
+Message-ID: <dce29330-e40c-860e-2c72-7ddebdd96e20@redhat.com>
+Date:   Thu, 21 Apr 2022 14:47:45 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="j9vAgKPCw9M1b6nK"
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3] drm/gma500: depend on framebuffer
+Content-Language: en-US
+To:     Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     David Airlie <airlied@linux.ie>,
+        James Hilliard <james.hilliard1@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>
+References: <20220409042321.3184493-1-james.hilliard1@gmail.com>
+ <b3f7e288-3341-8c6f-1b95-e553ac5ebc35@suse.de>
+ <CAMeQTsbh-Fy4CORBTX=AfZ+K-fZYUQ=hY=ctLFyu9KcJ5NgFUA@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAMeQTsbh-Fy4CORBTX=AfZ+K-fZYUQ=hY=ctLFyu9KcJ5NgFUA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Patrik,
 
---j9vAgKPCw9M1b6nK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 4/21/22 14:39, Patrik Jakobsson wrote:
+> On Thu, Apr 21, 2022 at 1:49 PM Thomas Zimmermann <tzimmermann@suse.de> wrote:
+>>
+>> Hi
+>>
+>> Am 09.04.22 um 06:23 schrieb James Hilliard:
+>>> Select the efi framebuffer if efi is enabled.
+>>>
+>>> This appears to be needed for video output to function correctly.
+>>>
+>>> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+>>> ---
+>>> Changes v2 -> v3:
+>>>    - select EFI_FB instead of depending on it
+>>> Changes v1 -> v2:
+>>>    - use depends instead of select
+>>> ---
+>>>   drivers/gpu/drm/gma500/Kconfig | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/gpu/drm/gma500/Kconfig b/drivers/gpu/drm/gma500/Kconfig
+>>> index 0cff20265f97..a422fa84d53b 100644
+>>> --- a/drivers/gpu/drm/gma500/Kconfig
+>>> +++ b/drivers/gpu/drm/gma500/Kconfig
+>>> @@ -2,11 +2,13 @@
+>>>   config DRM_GMA500
+>>>       tristate "Intel GMA500/600/3600/3650 KMS Framebuffer"
+>>>       depends on DRM && PCI && X86 && MMU
+>>> +     depends on FB
+>>
+>> Why do we need FB here? Framebuffer support should be hidden by DRM's
+>> fbdev helpers.
+> 
+> It is not needed but gives him video output since it enables the drm
+> fbdev emulation.
+>
 
-Hello Linus,
+I'm not sure to understand this. Shouldn't depend on DRM_FBDEV_EMULATION then?
+ 
+> I looked some more at the logs and it seems weston doesn't work on his
+> system without the fbdev backend. So the question is why weston isn't
+> working without fbdev? Perhaps this is just a Weston configuration
+> issue?
+> 
 
-Please pull to receive the dmanegine fixes for v5.18. This contains
-bunch of driver fixes.
+But is weston using the fbdev emulated by DRM or the one registered by
+efifb? I thought that the latter from what was mentioned in this thread.
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+-- 
+Best regards,
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git tags/dm=
-aengine-fix-5.18
-
-for you to fetch changes up to 7495a5bbf89f68c8880757c112fd0994f5dba309:
-
-  dt-bindings: dmaengine: qcom: gpi: Add minItems for interrupts (2022-04-2=
-0 18:11:20 +0530)
-
-----------------------------------------------------------------
-dmaengine fixes for v5.17
-
-Bunch of driver fixes for:
- - idxd device RO checks and device cleanup
- - dw-edma unaligned access and alignment
- - qcom: missing minItems in binding
- - mediatek pm usage fix
- - imx init script
-
-----------------------------------------------------------------
-Dave Jiang (6):
-      dmaengine: idxd: fix device cleanup on disable
-      dmaengine: idxd: match type for retries var in idxd_enqcmds()
-      dmaengine: idxd: fix retry value to be constant for duration of funct=
-ion call
-      dmaengine: idxd: add RO check for wq max_batch_size write
-      dmaengine: idxd: add RO check for wq max_transfer_size write
-      dmaengine: idxd: skip clearing device context when device is read-only
-
-Herve Codina (1):
-      dmaengine: dw-edma: Fix unaligned 64bit access
-
-Jiapeng Chong (1):
-      dmaengine: dw-edma: Fix inconsistent indenting
-
-Kevin Groeneveld (1):
-      dmaengine: imx-sdma: fix init of uart scripts
-
-Miaoqian Lin (1):
-      dmaengine: imx-sdma: Fix error checking in sdma_event_remap
-
-Vinod Koul (1):
-      dt-bindings: dmaengine: qcom: gpi: Add minItems for interrupts
-
-Xiaomeng Tong (1):
-      dma: at_xdmac: fix a missing check on list iterator
-
-zhangqilong (1):
-      dmaengine: mediatek:Fix PM usage reference leak of mtk_uart_apdma_all=
-oc_chan_resources
-
- .../devicetree/bindings/dma/qcom,gpi.yaml          |  1 +
- drivers/dma/at_xdmac.c                             | 12 ++++----
- drivers/dma/dw-edma/dw-edma-v0-core.c              | 16 +++++++----
- drivers/dma/idxd/device.c                          |  6 ++--
- drivers/dma/idxd/submit.c                          |  5 ++--
- drivers/dma/idxd/sysfs.c                           |  6 ++++
- drivers/dma/imx-sdma.c                             | 32 +++++++++++-------=
-----
- drivers/dma/mediatek/mtk-uart-apdma.c              |  9 ++++--
- 8 files changed, 53 insertions(+), 34 deletions(-)
-
---=20
-~Vinod
-
---j9vAgKPCw9M1b6nK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE+vs47OPLdNbVcHzyfBQHDyUjg0cFAmJhUk4ACgkQfBQHDyUj
-g0ejww//Z7azCwLVGY4hQ8uzjaD+T3SBidzeVMyNBzVarx61OUycGfb6c4Jikno9
-HaE6vWKfDz7fVEYqHUFVn3N4ic59dCJ1VZtAYGfDb2W8wHVVJNmYkR/YyQglHTgt
-3sdrh45nGlzS788ygXczFSUxQI2tIyOVsG0pDMLcdqDZD4ttI+TY/xVVvXP2kfe6
-0ZmlYkckJFAErnHwB2VFzv+tdNuCz7QIXXPo1iySl84IoIZOuhyctp0+Qsgxw7RT
-GV99Dge55WB+ro7nqtvi02IA4KVRQ230Libbxxr2yALo4Lsnt60TTVfHCY9uuzLi
-2Sp2EsDVRtTDGY0h56rf/T2dR0Uaf+jrJl8fZ7MGu5iz76ZfIzUAGBJ3w4P0bHdL
-0qA5pDa/q6i8YnTWMn2uD3wI/z6L+gRRmVMZpqT12BenDPRuk6DAnfW5cq+QuDEV
-jWPzzaIbU9dEycAmJrGuEwCKHdGfahd+P66QMHk/jrTpAVxXWQUiFipSU+VuVYD0
-ZQ9VeaE5RmubDBDff1SUAn/B+UDmo0GxZPQrfF9ACaXDfrx1rmrfMNcmu/ARJdAv
-PK+TmVhoaU/r94pJcu0/IwyUETlR1d0BNKXrqzz1hiBuIy0kEewGT69fkHYKxyzl
-YEb8rR6440aIRE6Srbo4bqO5JQbzGaHbp+/4oirNMV8ATMWF5Wc=
-=1GRt
------END PGP SIGNATURE-----
-
---j9vAgKPCw9M1b6nK--
