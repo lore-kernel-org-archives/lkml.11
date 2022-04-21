@@ -2,141 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E20C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 17:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390764AbiDURbV (ORCPT
+        id S1390769AbiDURbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
+        Thu, 21 Apr 2022 13:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbiDURbT (ORCPT
+        with ESMTP id S1390607AbiDURbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:31:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9F0C443CB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:28:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650562107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C2uOipi3GKnpM62yNx2qLO8Kw4BDhZHaF3HCYYZ6xuI=;
-        b=OIdPswRC36WWPIzCIPr5AtdFYC4T8/w+g2KXunJhSvUd9kA8fOigUv9jjZSn4mzwFk9O/i
-        Fy4KDwsBDlordBv9DzxiXwh8jovrULaZkTOOSbzZxafpOIRF9K9tIl/6uCtyRT87gbtFrS
-        i5K8obDIBhz9B8ViwQOCjj3jBtbCOa8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-424-osLykL0TPRmq8Lq9ucUMbQ-1; Thu, 21 Apr 2022 13:28:22 -0400
-X-MC-Unique: osLykL0TPRmq8Lq9ucUMbQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B68981C07386;
-        Thu, 21 Apr 2022 17:28:21 +0000 (UTC)
-Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1B788C28126;
-        Thu, 21 Apr 2022 17:28:21 +0000 (UTC)
-Message-ID: <112a4d7f-bc53-6e59-7bb8-6fecb65d045d@redhat.com>
-Date:   Thu, 21 Apr 2022 13:28:20 -0400
+        Thu, 21 Apr 2022 13:31:53 -0400
+Received: from smtp-42aa.mail.infomaniak.ch (smtp-42aa.mail.infomaniak.ch [IPv6:2001:1600:4:17::42aa])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E83A4706A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 10:29:03 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Kkkzd1GFJzMq0wj;
+        Thu, 21 Apr 2022 19:29:01 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KkkzZ4twRzljsTN;
+        Thu, 21 Apr 2022 19:28:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1650562141;
+        bh=AWCSMTsYxeqMfpT4j3/IgWzaiuTFvDGAFKxBu/PEs7A=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=z/OZ9pMPUnN5igC3T/CamIvR4CIXw3gz6R7fedUtl/VSHSza2ngjhZy0EATPOaHDm
+         agAxEYfJstLZ6XqTARPrKMFOzlTvA9/IQvygJjWfIK3xUJfZKaSnsL7Vk5jCIofP9l
+         RzFPfwpm0yireL020AbdYTSvdNbgMY7Uw0+hj3fw=
+Message-ID: <329a078d-29e3-e41e-3118-cd8f3e00b003@digikod.net>
+Date:   Thu, 21 Apr 2022 19:29:10 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] mm/memcg: Free percpu stats memory of dying memcg's
+User-Agent: 
 Content-Language: en-US
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, Muchun Song <songmuchun@bytedance.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-References: <20220421145845.1044652-1-longman@redhat.com>
- <YmGHYNuAp8957ouq@carbon>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <YmGHYNuAp8957ouq@carbon>
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        James Morris <jmorris@namei.org>,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+References: <20210312171232.2681989-4-mic@digikod.net>
+ <20210312171232.2681989-1-mic@digikod.net>
+ <648218.1650450548@warthog.procyon.org.uk> <YmF0eAh7dYmtLDVx@kernel.org>
+ <01ec2ce7-986d-451a-4a36-f627263ef826@digikod.net>
+ <YmF+4ZZCZxH9OrS+@kernel.org>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v7 3/5] certs: Make blacklist_vet_description() more
+ strict
+In-Reply-To: <YmF+4ZZCZxH9OrS+@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 4/21/22 12:33, Roman Gushchin wrote:
-> On Thu, Apr 21, 2022 at 10:58:45AM -0400, Waiman Long wrote:
->> For systems with large number of CPUs, the majority of the memory
->> consumed by the mem_cgroup structure is actually the percpu stats
->> memory. When a large number of memory cgroups are continuously created
->> and destroyed (like in a container host), it is possible that more
->> and more mem_cgroup structures remained in the dying state holding up
->> increasing amount of percpu memory.
+On 21/04/2022 17:57, Jarkko Sakkinen wrote:
+> On Thu, Apr 21, 2022 at 05:27:42PM +0200, Mickaël Salaün wrote:
 >>
->> We can't free up the memory of the dying mem_cgroup structure due to
->> active references in some other places. However, the percpu stats memory
->> allocated to that mem_cgroup is a different story.
+>> On 21/04/2022 17:12, Jarkko Sakkinen wrote:
+>>> On Wed, Apr 20, 2022 at 11:29:08AM +0100, David Howells wrote:
+>>>> Mickaël Salaün <mic@digikod.net> wrote:
+>>>>
+>>>>> +	/* The following algorithm only works if prefix lengths match. */
+>>>>> +	BUILD_BUG_ON(sizeof(tbs_prefix) != sizeof(bin_prefix));
+>>>>> +	prefix_len = sizeof(tbs_prefix) - 1;
+>>>>> +	for (i = 0; *desc; desc++, i++) {
+>>>>> +		if (*desc == ':') {
+>>>>> +			if (tbs_step == prefix_len)
+>>>>> +				goto found_colon;
+>>>>> +			if (bin_step == prefix_len)
+>>>>> +				goto found_colon;
+>>>>> +			return -EINVAL;
+>>>>> +		}
+>>>>> +		if (i >= prefix_len)
+>>>>> +			return -EINVAL;
+>>>>> +		if (*desc == tbs_prefix[i])
+>>>>> +			tbs_step++;
+>>>>> +		if (*desc == bin_prefix[i])
+>>>>> +			bin_step++;
+>>>>> +	}
+>>>>
+>>>> I wonder if:
+>>>>
+>>>> 	static const char tbs_prefix[] = "tbs:";
+>>>> 	static const char bin_prefix[] = "bin:";
+>>>>
+>>>> 	if (strncmp(desc, tbs_prefix, sizeof(tbs_prefix) - 1) == 0 ||
+>>>> 	    strncmp(desc, bin_prefix, sizeof(bin_prefix) - 1) == 0)
+>>>> 		goto found_colon;
+>>>>
+>>>> might be better.
+>>>>
+>>>> David
+>>>
+>>> I think it'd be.
+>>>
+>>> BR, Jarkko
 >>
->> This patch adds a new percpu_stats_disabled variable to keep track of
->> the state of the percpu stats memory. If the variable is set, percpu
->> stats update will be disabled for that particular memcg. All the stats
->> update will be forward to its parent instead. Reading of the its percpu
->> stats will return 0.
->>
->> The flushing and freeing of the percpu stats memory is a multi-step
->> process. The percpu_stats_disabled variable is set when the memcg is
->> being set to offline state. After a grace period with the help of RCU,
->> the percpu stats data are flushed and then freed.
->>
->> This will greatly reduce the amount of memory held up by dying memory
->> cgroups.
->>
->> By running a simple management tool for container 2000 times per test
->> run, below are the results of increases of percpu memory (as reported
->> in /proc/meminfo) and nr_dying_descendants in root's cgroup.stat.
-> Hi Waiman!
->
-> I've been proposing the same idea some time ago:
-> https://lore.kernel.org/all/20190312223404.28665-7-guro@fb.com/T/ .
->
-> However I dropped it with the thinking that with many other fixes
-> preventing the accumulation of the dying cgroups it's not worth the added
-> complexity and a potential cpu overhead.
->
-> I think it ultimately comes to the number of dying cgroups. If it's low,
-> memory savings are not worth the cpu overhead. If it's high, they are.
-> I hope long-term to drive it down significantly (with lru-pages reparenting
-> being the first major milestone), but it might take a while.
->
-> I don't have a strong opinion either way, just want to dump my thoughts
-> on this.
+>> I'm confused. Didn't you plan to send this patch series before v5.18-rc2?
+>> It's been a while since I started working on this.
+> 
+> That was my original plan but due to some other things, I've sent
+> a PR for rc4. I CC'd you to the PR.
 
-I have quite a number of customer cases complaining about increasing 
-percpu memory usages. The number of dying memcg's can go to tens of 
-thousands. From my own investigation, I believe that those dying memcg's 
-are not freed because they are pinned down by references in the page 
-structure. I am aware that we support the use of objcg in the page 
-structure which will allow easy reparenting, but most pages don't do 
-that and it is not easy to do this conversion and it may take quite a 
-while to do that.
-
-In term of overhead, it is mostly one more memory read from the 
-mem_cgroup structure in the update path. I don't expect there will be 
-that many updates when the memcg is in an offline state as updates will 
-be slower in this case. Freeing the dying memcg will take a bit longer 
-though, but its impact on the overall system performance should still be 
-negligible.
-
-I am also thinking about using a static_key for turning it on only for 
-systems with more than, say, 20 cpus as the percpu memory overhead 
-increases linearly with the number of possible cpus.
-
-Any other suggestions and improvements are welcome.
-
-Cheers,
-Longman
-
+OK, I missed it. My micro-optimization isn't worth it, strncmp is much 
+simple indeed.
