@@ -2,109 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE575C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68672C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385979AbiDUHnJ (ORCPT
+        id S229986AbiDUHnb convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
+        Thu, 21 Apr 2022 03:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386067AbiDUHmV (ORCPT
+        with ESMTP id S1386109AbiDUHnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:42:21 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183DD1B78B;
-        Thu, 21 Apr 2022 00:39:28 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8C43DC0006;
-        Thu, 21 Apr 2022 07:39:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650526767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qYEuMKcRPLE7kv8cT5u0HPUdYyTsqKBj+98EErK/TJ0=;
-        b=cB4C5DPCEOYqaVr9TDlENrzgBO5YhoarBWOEZgIWnUCbvvjTlFrP03L1s5ToSBdMOUPO8m
-        dnq1jUaH8UIPO3XlNQhX1uCuKQI6QAill+P6dq5dTL5b5u9DFOOUg0b6ju7dUtPNY5+kLy
-        ohRTLazqOvlRjrQCy0V/ZTsCl2HZcvcbwFlDCui7i9IegCqRbHDt87bmhylkc7MVKEBn4w
-        UL80gxiE8d2mxED8UxMeuQtrpINohimKy2k5T5ddfmU2AgUkgcpEL66Kydzt28aowuN7ay
-        RabEWJWw9osi10CVeYQD+jyv4aYzANUS8n0jOOw2PCuNxCqLj9c7VHTQXyFIHg==
-Date:   Thu, 21 Apr 2022 09:38:03 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 08/12] net: dsa: rzn1-a5psw: add FDB support
-Message-ID: <20220421093803.64ad7cc8@fixe.home>
-In-Reply-To: <20220420195214.dnekbfhha53trbke@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-9-clement.leger@bootlin.com>
-        <20220414175140.p2vyy7f7yk6vlomi@skbuf>
-        <20220420101648.7aa973b2@fixe.home>
-        <20220420195214.dnekbfhha53trbke@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Thu, 21 Apr 2022 03:43:24 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4C651C101
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:40:29 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-320-RjXwMqAnPfqhoyE6QW4dlQ-1; Thu, 21 Apr 2022 08:40:26 +0100
+X-MC-Unique: RjXwMqAnPfqhoyE6QW4dlQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Thu, 21 Apr 2022 08:40:25 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Thu, 21 Apr 2022 08:40:25 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Yury Norov' <yury.norov@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "Vasily Gorbik" <gor@linux.ibm.com>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Subject: RE: [PATCH 2/4] lib: add bitmap_{from,to}_arr64
+Thread-Topic: [PATCH 2/4] lib: add bitmap_{from,to}_arr64
+Thread-Index: AQHYVQdrgrXWaR3sCEGGbig0LA6aC6z5+Nxw
+Date:   Thu, 21 Apr 2022 07:40:25 +0000
+Message-ID: <b7fe319a66914a9e88d2830101e6319f@AcuMS.aculab.com>
+References: <20220420222530.910125-1-yury.norov@gmail.com>
+ <20220420222530.910125-3-yury.norov@gmail.com>
+In-Reply-To: <20220420222530.910125-3-yury.norov@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, 20 Apr 2022 22:52:14 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+From: Yury Norov
+> Sent: 20 April 2022 23:25
+> 
+> Manipulating 64-bit arrays with bitmap functions is potentially dangerous
+> because on 32-bit BE machines the order of halfwords doesn't match. Another
+> issue is that compiler may throw a warning about out-of-boundary access.
+> 
+> This patch adds bitmap_{from,to}_arr64 functions in addition to existing
+> bitmap_{from,to}_arr32.
+> 
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  include/linux/bitmap.h | 23 +++++++++++++++++----
+>  lib/bitmap.c           | 47 ++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 66 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+> index 10d805c2893c..f78c534fb814 100644
+> --- a/include/linux/bitmap.h
+> +++ b/include/linux/bitmap.h
+> @@ -292,6 +292,24 @@ void bitmap_to_arr32(u32 *buf, const unsigned long *bitmap,
+>  			(const unsigned long *) (bitmap), (nbits))
+>  #endif
+> 
+> +/*
+> + * On 64-bit systems bitmaps are represented as u64 arrays internally. On LE32
+> + * machines the order of hi and lo parts of nubmers match the bitmap structure.
+> + * In both cases conversion is not needed when copying data from/to arrays of
+> + * u64.
+> + */
+> +#if (BITS_PER_LONG == 32) && defined(__BIG_ENDIAN)
 
-> > >=20
-> > > Shouldn't this contain something along the lines of a VID, FID, somet=
-hing? =20
-> >=20
-> > This is extracted directly from the datasheet [1]. The switch FDB table
-> > does not seems to store the VID with the entries (See page 300).
-> >=20
-> > [1]
-> > https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1=
-l-group-users-manual-r-engine-and-ethernet-peripherals =20
->=20
-> Thanks for the link. I see that the switch has a non-partitionable
-> lookup table, not even by VLAN. A shame.
->=20
-> This is also in contrast with the software bridge driver, where FDB and
-> MDB entries can have independent destinations per VID.
->=20
-> So there's nothing you can do beyond limiting to a single offloaded
-> bridge and hoping for the best w.r.t. per-VLAN forwarding destinations.
->=20
-> Note that if you limit to a single bridge does not mean that you can
-> declare ds->fdb_isolation =3D true. Declaring that would opt you into
-> unicast and multicast filtering towards the CPU, i.o.w. a method for
-> software to only receive the addresses it has expressed an interest in,
-> rather than all packets received on standalone ports. The way that is
-> implemented in DSA is by adding FDB and MDB entries on the management
-> port, and it would break a lot of things without a partitioning scheme
-> for the lookup table.
+I think I'd change the condition to (inverting it):
+#if (BITS_PER_LONG == 64) || defined(__LITTLE_ENDIAN)
+since that is the condition when the layout matches.
 
-Thanks Vladimir, it confirms what I thought.
+> +void bitmap_from_arr64(unsigned long *bitmap, const u64 *buf, unsigned int nbits);
+> +void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits);
+> +#else
+> +#define bitmap_from_arr64(bitmap, buf, nbits)			\
+> +	bitmap_copy_clear_tail((unsigned long *) (bitmap),	\
+> +			(const unsigned long *) (buf), (nbits))
+> +#define bitmap_to_arr64(buf, bitmap, nbits)			\
+> +	bitmap_copy_clear_tail((unsigned long *) (buf),		\
+> +			(const unsigned long *) (bitmap), (nbits))
+> +#endif
+> +
+>  static inline int bitmap_and(unsigned long *dst, const unsigned long *src1,
+>  			const unsigned long *src2, unsigned int nbits)
+>  {
+> @@ -596,10 +614,7 @@ static inline void bitmap_next_set_region(unsigned long *bitmap,
+>   */
+>  static inline void bitmap_from_u64(unsigned long *dst, u64 mask)
+>  {
+> -	dst[0] = mask & ULONG_MAX;
+> -
+> -	if (sizeof(mask) > sizeof(unsigned long))
+> -		dst[1] = mask >> 32;
+> +	bitmap_from_arr64(dst, &mask, 64);
+>  }
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+I'd leave this alone.
+
+> 
+>  /**
+> diff --git a/lib/bitmap.c b/lib/bitmap.c
+> index d9a4480af5b9..aea9493f4216 100644
+> --- a/lib/bitmap.c
+> +++ b/lib/bitmap.c
+> @@ -1533,5 +1533,52 @@ void bitmap_to_arr32(u32 *buf, const unsigned long *bitmap, unsigned int nbits)
+>  		buf[halfwords - 1] &= (u32) (UINT_MAX >> ((-nbits) & 31));
+>  }
+>  EXPORT_SYMBOL(bitmap_to_arr32);
+> +#endif
+> +
+> +#if (BITS_PER_LONG == 32) && defined(__BIG_ENDIAN)
+> +/**
+> + * bitmap_from_arr64 - copy the contents of u64 array of bits to bitmap
+> + *	@bitmap: array of unsigned longs, the destination bitmap
+> + *	@buf: array of u64 (in host byte order), the source bitmap
+> + *	@nbits: number of bits in @bitmap
+> + */
+> +void bitmap_from_arr64(unsigned long *bitmap, const u64 *buf, unsigned int nbits)
+> +{
+> +	while (nbits > 0) {
+
+This looks like a for look to me...
+
+> +		u64 val = *buf++;
+> +
+> +		*bitmap++ = (unsigned long)val;
+> +		if (nbits > 32)
+> +			*bitmap++ = (unsigned long)(val >> 32);
+
+No need for either cast.
+
+> +		nbits -= 64;
+> +	}
+> 
+> +	/* Clear tail bits in last word beyond nbits. */
+> +	if (nbits % BITS_PER_LONG)
+> +		bitmap[-1] &= BITMAP_LAST_WORD_MASK(nbits);
+> +}
+> +EXPORT_SYMBOL(bitmap_from_arr64);
+> +
+> +/**
+> + * bitmap_to_arr64 - copy the contents of bitmap to a u64 array of bits
+> + *	@buf: array of u64 (in host byte order), the dest bitmap
+> + *	@bitmap: array of unsigned longs, the source bitmap
+> + *	@nbits: number of bits in @bitmap
+> + */
+> +void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
+> +{
+> +	unsigned long *end = bitmap + BITS_TO_LONGS(nbits);
+> +
+> +	while (bitmap < end) {
+
+Another for loop...
+
+> +		*buf = *bitmap++;
+> +		if (bitmap < end)
+> +			*buf |= *bitmap++ << 32;
+
+That is UB.
+Did you even compile this??
+
+	David
+
+> +		buf++;
+> +	}
+> +
+> +	/* Clear tail bits in last element of array beyond nbits. */
+> +	if (nbits % 64)
+> +		buf[-1] &= GENMASK_ULL(nbits, 0);
+> +}
+> +EXPORT_SYMBOL(bitmap_to_arr64);
+>  #endif
+> --
+> 2.32.0
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
