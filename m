@@ -2,97 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15582C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A06BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383754AbiDUMVz (ORCPT
+        id S1383829AbiDUMXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
+        Thu, 21 Apr 2022 08:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383743AbiDUMVx (ORCPT
+        with ESMTP id S1383805AbiDUMW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:21:53 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD07D2E09C;
-        Thu, 21 Apr 2022 05:19:02 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-d39f741ba0so5169172fac.13;
-        Thu, 21 Apr 2022 05:19:02 -0700 (PDT)
+        Thu, 21 Apr 2022 08:22:56 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0911CBCB8;
+        Thu, 21 Apr 2022 05:20:07 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id r13so9663493ejd.5;
+        Thu, 21 Apr 2022 05:20:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CxlyVsgZL3AxNiJHWyBQrkItp0FP2CX+DnsKzRAeJgI=;
+        b=EI0pFGruT33m/Kewoj/hIJzLzvi651eJq5WZH7Ezl2qCdSjKVdL7Thl33BNdeIS3bI
+         iLqEMxl5J0iJKJoTPhlbAgIrQBQ0plBsrauQF/fkIa1akHf7Jk/fvp7YXc38vfRGlvSl
+         +T3oew5yzBr4MQYK0qjkXmM0Bstn5qnUys18eYR6iJMJ7JxsXe2RfaksJTnl9F5Ui8Zn
+         FpYb5sr5QoSywS+xBSR6uvyhF0ooQ5DphZeRMtv0HEWgRI0KxvC6iPOYBfFQ9snqpau1
+         0Ir2+IknNSFoo1uVHaR3LlH8MhD4uRnWUy2P7saUbOeKVsJ7MorWuIAwt5A6tTfJzYRN
+         m8aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Bkyl59+yJGYlxOaG8bBfXwq3Mtz9w1jqTJhIUpZWLg0=;
-        b=WyuSLUeZD7PNGDOnQa4d6kLHCpfmyIVHkK20/jddjAOtyEAn17O5oQRxB+vVsQRzhY
-         0RgQbtGVXZKD48a0zpcudkpWOAjKXmG4Kx65FUCpJzJdoSTL+IF1G+C1uUfb7Bf5YCNr
-         HNlbPG5L+aibhDj5/eDQbR2ZIh7SkAA2KgRLzZ+R0VVmw5QeaO97kCwqrORGE/8U7Nb/
-         N5waX8y3w8FGToBLaw0Ng7FKGaKt/Rx1JjoaLPYTItvo8zo/frT+ARqoZAxWt6w1Rozo
-         6mgzAblk+2fLr6ONdt30YJtfLQY3D42z5EntEjuedkGpuKzb8QKFlv66r2bAmZCXtEX8
-         D4pQ==
-X-Gm-Message-State: AOAM533K5WZlm97L7L8fpu28aUxP7jL9exDD8xRYbCPSqUvpIA/opFm+
-        585gR6DoP/GpwGdbyVRPgw==
-X-Google-Smtp-Source: ABdhPJz96N7FmG2EahVdoLhvdwuy+bFDrSdoqpthix7QaE430aGKa4RhnG4KqOPXRu13Qv+Dq6w90g==
-X-Received: by 2002:a05:6870:460f:b0:dd:cd0e:d931 with SMTP id z15-20020a056870460f00b000ddcd0ed931mr3869779oao.196.1650543542181;
-        Thu, 21 Apr 2022 05:19:02 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id fz13-20020a056870ed8d00b000e593f1f26fsm1023756oab.18.2022.04.21.05.19.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 05:19:01 -0700 (PDT)
-Received: (nullmailer pid 3204418 invoked by uid 1000);
-        Thu, 21 Apr 2022 12:19:00 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Medad CChien <medadyoung@gmail.com>
-Cc:     tali.perry1@gmail.com, devicetree@vger.kernel.org,
-        KWLIU@nuvoton.com, james.morse@arm.com, ctcchien@nuvoton.com,
-        rric@kernel.org, avifishman70@gmail.com, openbmc@lists.ozlabs.org,
-        JJLIU0@nuvoton.com, tmaimon77@gmail.com, tony.luck@intel.com,
-        venture@google.com, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, benjaminfair@google.com, YSCHU@nuvoton.com,
-        bp@alien8.de, linux-edac@vger.kernel.org, KFTING@nuvoton.com,
-        mchehab@kernel.org, yuenn@google.com
-In-Reply-To: <20220421062836.16662-3-ctcchien@nuvoton.com>
-References: <20220421062836.16662-1-ctcchien@nuvoton.com> <20220421062836.16662-3-ctcchien@nuvoton.com>
-Subject: Re: [PATCH v7 2/3] dt-bindings: edac: nuvoton: add NPCM memory controller
-Date:   Thu, 21 Apr 2022 07:19:00 -0500
-Message-Id: <1650543540.622713.3204417.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CxlyVsgZL3AxNiJHWyBQrkItp0FP2CX+DnsKzRAeJgI=;
+        b=l8aWqjDjhm5H7XCp0Pdq2mULyQr09JlMCpho+mors8CdcjEm+GbQVntvThmMvSZDFT
+         JMY4oqGsAHLgGC+Z07gYvz4atQqPUQ7ZGy9OibDyW1G9hdE2FGjqYuIup8ZwVpdjGIoa
+         ByqjBQ6GYKxElmeX7rHOZaw9ci6E7ynNge4fhOUdrBckHn3eEbaFMtGJR/5Y7of0oCEo
+         n3PpOC8EogcNC3EBWaCgIWB+YfQTnWAXJo+14Tp4noJl4hq7l4VB730zMZYrARQwzeaH
+         jXZRDj/o0IQuMpqioRqvJ5lhebSfDStfJUYtX32tt0Y4rK4EiZJAjXwA7wsDL0L+ughl
+         cz5Q==
+X-Gm-Message-State: AOAM5333CDYoE9GlspV7Ii5N+YVuZ4c6/YwhSWjU3EgihzF+AzWxwqW6
+        TDw0rFQhEXCwdGTCDOIjXUU5IPdOF2ib7lsbziY=
+X-Google-Smtp-Source: ABdhPJw9cMc7AJXhQVeYqONilvzQqwKKDcikI610x1DPMaVZnjhGl01pbo2p49fLYoLuCLjzhqzs4gZxYaM+VNP5O+E=
+X-Received: by 2002:a17:906:9c84:b0:6e0:7c75:6f01 with SMTP id
+ fj4-20020a1709069c8400b006e07c756f01mr22623677ejc.103.1650543605370; Thu, 21
+ Apr 2022 05:20:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220421094236.1052170-1-r33s3n6@gmail.com> <YmEs6BqcyM7fgLXg@kroah.com>
+ <CAMvdLANp4jHnySOmpjXZdFwruLdvN9qR-B_Ew9_zeCiKYiLZSA@mail.gmail.com> <YmFIqPeGQYKl33vh@kroah.com>
+In-Reply-To: <YmFIqPeGQYKl33vh@kroah.com>
+From:   Fu Zixuan <r33s3n6@gmail.com>
+Date:   Thu, 21 Apr 2022 20:21:07 +0800
+Message-ID: <CAMvdLANGW35m0-mg_00wM2FPivmk-wVfqE379iNjE=gFL3u-5A@mail.gmail.com>
+Subject: Re: [PATCH] drivers: usb: host: fix NULL pointer dereferences
+ triggered by unhandled errors in xhci_create_rhub_port_array()
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     mathias.nyman@intel.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Apr 2022 14:28:35 +0800, Medad CChien wrote:
-> Document devicetree bindings for the Nuvoton BMC NPCM memory controller.
-> 
-> Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Borislav Petkov <bp@alien8.de>
-> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-> ---
->  .../edac/nuvoton,npcm-memory-controller.yaml  | 61 +++++++++++++++++++
->  1 file changed, 61 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
-> 
+On Thu, 21 Apr 2022 at 20:06, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Apr 21, 2022 at 07:55:28PM +0800, Fu Zixuan wrote:
+> > On Thu, 21 Apr 2022 at 18:07, Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Thu, Apr 21, 2022 at 05:42:36PM +0800, Zixuan Fu wrote:
+> > > > In xhci_create_rhub_port_array(), when rhub->num_ports is zero,
+> > > > rhub->ports would not be set; when kcalloc_node() fails, rhub->ports
+> > > > would be set to NULL. In these two cases, xhci_create_rhub_port_array()
+> > > > just returns void, and thus its callers are unaware of the error.
+> > > >
+> > > > Then rhub->ports is dereferenced in xhci_usb3_hub_descriptor() or
+> > > > xhci_usb2_hub_descriptor().
+> > > >
+> > > > To fix the bug, xhci_setup_port_arrays() should return an integer to
+> > > > indicate a possible error, and its callers should handle the error.
+> > > >
+> > > > Here is the log when this bug occurred in our fault-injection testing:
+> > > >
+> > > > [   24.001309] BUG: kernel NULL pointer dereference, address: 0000000000000000
+> > > > ...
+> > > > [   24.003992] RIP: 0010:xhci_hub_control+0x3f5/0x60d0 [xhci_hcd]
+> > > > ...
+> > > > [   24.009803] Call Trace:
+> > > > [   24.010014]  <TASK>
+> > > > [   24.011310]  usb_hcd_submit_urb+0x1233/0x1fd0
+> > > > [   24.017071]  usb_start_wait_urb+0x115/0x310
+> > > > [   24.017641]  usb_control_msg+0x28a/0x450
+> > > > [   24.019046]  hub_probe+0xb16/0x2320
+> > > > [   24.019757]  usb_probe_interface+0x4f1/0x930
+> > > > [   24.019765]  really_probe+0x33d/0x970
+> > > > [   24.019768]  __driver_probe_device+0x157/0x210
+> > > > [   24.019772]  driver_probe_device+0x4f/0x340
+> > > > [   24.019775]  __device_attach_driver+0x2ee/0x3a0
+> > > > ...
+> > > >
+> > > > Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> > > > Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+> > > > ---
+> > > >  drivers/usb/host/xhci-mem.c | 17 ++++++++++++-----
+> > > >  1 file changed, 12 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+> > > > index bbb27ee2c6a3..024515346c39 100644
+> > > > --- a/drivers/usb/host/xhci-mem.c
+> > > > +++ b/drivers/usb/host/xhci-mem.c
+> > > > @@ -2235,7 +2235,7 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
+> > > >       /* FIXME: Should we disable ports not in the Extended Capabilities? */
+> > > >  }
+> > > >
+> > > > -static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> > > > +static int xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> > > >                                       struct xhci_hub *rhub, gfp_t flags)
+> > > >  {
+> > > >       int port_index = 0;
+> > > > @@ -2243,11 +2243,11 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> > > >       struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
+> > > >
+> > > >       if (!rhub->num_ports)
+> > > > -             return;
+> > > > +             return -EINVAL;
+> > > >       rhub->ports = kcalloc_node(rhub->num_ports, sizeof(*rhub->ports),
+> > > >                       flags, dev_to_node(dev));
+> > > >       if (!rhub->ports)
+> > > > -             return;
+> > > > +             return -ENOMEM;
+> > > >
+> > > >       for (i = 0; i < HCS_MAX_PORTS(xhci->hcs_params1); i++) {
+> > > >               if (xhci->hw_ports[i].rhub != rhub ||
+> > > > @@ -2259,6 +2259,7 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
+> > > >               if (port_index == rhub->num_ports)
+> > > >                       break;
+> > > >       }
+> > > > +     return 0;
+> > > >  }
+> > > >
+> > > >  /*
+> > > > @@ -2277,6 +2278,7 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
+> > > >       int cap_count = 0;
+> > > >       u32 cap_start;
+> > > >       struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
+> > > > +     int ret;
+> > > >
+> > > >       num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
+> > > >       xhci->hw_ports = kcalloc_node(num_ports, sizeof(*xhci->hw_ports),
+> > > > @@ -2367,8 +2369,13 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
+> > > >        * Not sure how the USB core will handle a hub with no ports...
+> > > >        */
+> > > >
+> > > > -     xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
+> > > > -     xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
+> > > > +     ret = xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
+> > > > +     if (ret)
+> > > > +             return ret;
+> > > > +
+> > > > +     ret = xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
+> > > > +     if (ret)
+> > > > +             return ret;
+> > >
+> > > What about the memory allocated by the first call to
+> > > xhci_create_rhub_port_array()?  Is that now lost?  Same for everything
+> > > else allocated before these calls, how is that cleaned up properly?
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
+> >
+> > Thanks for your swift reply. We understand your concern. In fact, we have
+> > checked the related code carefully and found that xhci_create_rhub_port_array()
+> > is only used in xhci_setup_port_arrays(). Moreover, only xhci_mem_init() calls
+> > xhci_setup_port_arrays() and does all cleanup work when it fails. Specifically,
+> > xhci_mem_init() calls xhci_mem_cleanup(), which eventually called
+> > kfree(xhci->usb2_rhub.ports) and kfree(xhci->usb3_rhub.ports).
+>
+> Great, can you mention this in the changelog text to show that you have
+> thought this through and it can be documented as such?
+>
+> thanks,
+>
+> greg k-h
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Thanks for your reply! We will do that and submit the patch v2 soon.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml:61:7: [error] no new line character at the end of file (new-line-at-end-of-file)
+Thanks,
 
-dtschema/dtc warnings/errors:
-
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Zixuan Fu
