@@ -2,153 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51137C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D652CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230497AbiDUQ24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
+        id S230127AbiDUQ3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390511AbiDUQKw (ORCPT
+        with ESMTP id S231679AbiDUQRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:10:52 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFCC4739D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:08:02 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id z99so7129117ede.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:08:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r/PzIKSjMeAOGbI6c4RWxm0pVUCyssgrVjMCd8c5Dag=;
-        b=nSF4LY4d2BN1+JKzCgg54cIZdi/67BsPH/yDBzQffgGlo9dfl+XlmWXoZzWzMAXnIp
-         qdZnwGxZTweXi0UkZvcPT3csTHegVQ7l9Yr8NqemyuxGmINZvpE6WVK/kWcyEnj1B29C
-         R+2ri3hviOx0Pn502v6FXWj/8GgnrITxJ4CN8=
+        Thu, 21 Apr 2022 12:17:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85F3F2B24E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:14:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650557673;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ngZ3ZDY9ywW927Z5RN+MQNpAIO8k9NmG/nkTnk+1Gs=;
+        b=RQV6R/OB43yQqrkm5oggp9zm3OQVzwmouCHF2z78ixodK8OWZ+73QtiVn5v5sLXs/47n/e
+        LBEFsbpvqxHeeZj870spCCxizcQfMiXe9l8nIRG/ZqVnUtZVauDPYTWM8n3jqP48B57MtD
+        I1PDHote2fMra8vv+o1SdBPcIs4Yu+I=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-282-C-KLB3WxNg2XuWs8uBQeAg-1; Thu, 21 Apr 2022 12:14:32 -0400
+X-MC-Unique: C-KLB3WxNg2XuWs8uBQeAg-1
+Received: by mail-lj1-f199.google.com with SMTP id e3-20020a2e9303000000b00249765c005cso1689192ljh.17
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:14:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=r/PzIKSjMeAOGbI6c4RWxm0pVUCyssgrVjMCd8c5Dag=;
-        b=G2e5R/X1j+mUAsOJ+zW/Dy4Hwu0HOuDJeqU+Ycvm1jzGyFnYYVvr6Z2KDnG2vaRJVz
-         irDObq5hsfQoJhFn03UgaHhWa/4l8LbKo4Q08t1/UteVL25279pYXlF5EpoHVPQAt/qD
-         FmEcaeN5pLd1pP5INxIJVALgjgd4pMnYkhAPDOJM7+B9fJLKcU1AcdTSCB9DDGFU0k4P
-         WItsp7eVqUJQYPA48rf/TU/4RgztC7sEt5OhL9RAOUu3Y6+GqzHpLjVRAG940laxt/bp
-         +hBfrdrbL7yhy5ijS3sUsOcSRf5FOvWsO28ovk/HpZnvFGzCN+GU9VeChn9YqFms3FwC
-         c77Q==
-X-Gm-Message-State: AOAM530k3WtiKVvMwXbYmyU/hP4qdq9LkeDUAHNk9bnkbiwtD95zJltw
-        m/jL3zoAQjI4+RXn1TqQif3GOVZ2CdA5wn4dFxw=
-X-Google-Smtp-Source: ABdhPJxHf7i9KoQrXf8NcD5Go2gtZVZFBsJRS8r5qjEl6AQndl6oZ5uOSJa964gZIceJsIQ9nOv6SA==
-X-Received: by 2002:aa7:d915:0:b0:41d:8b43:f929 with SMTP id a21-20020aa7d915000000b0041d8b43f929mr267955edr.131.1650557280508;
-        Thu, 21 Apr 2022 09:08:00 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id r3-20020aa7cb83000000b0041b573e2654sm11562919edt.94.2022.04.21.09.07.58
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 09:07:58 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id p18so7371061wru.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:07:58 -0700 (PDT)
-X-Received: by 2002:adf:a29c:0:b0:20a:a246:a826 with SMTP id
- s28-20020adfa29c000000b0020aa246a826mr355251wra.422.1650557277978; Thu, 21
- Apr 2022 09:07:57 -0700 (PDT)
+        bh=1ngZ3ZDY9ywW927Z5RN+MQNpAIO8k9NmG/nkTnk+1Gs=;
+        b=nKUVr3nlGjaIv3HWWZo07VB5F3lYJLp1HgfhCw7soKawSlkLni6GsJ8ncbY0FC0z9i
+         nuH73gGyQz0HgoXJwn/BPU12PkMWpcOALBrsJ21zwcQy+moTW/hVygpDGFX93VxO+dcW
+         jbOi2eJ3pVMob5POUA9532b0Xu1PhuHrZx9XoXK041yEDKlc95295zw6JQMHkZqsFJtt
+         XQt+i5JxU+A3gf0L2lq5l3Hr+gtno6X4La22/oUYkyAb6Je6YPhv/jpIpha9OKZnfTgu
+         /Ufp0EG4v7NOhxv7KmUet49f5ythQuU5e/BWSRq7HukkT3zr9w4QyFxq8cWDoJnmMwfY
+         D7rw==
+X-Gm-Message-State: AOAM5325AJi1G5O0iLrHj9P/GvpMwaDnms4vrLTaPPrWyYLtsRaWQA+3
+        LxTlSdJ/VwU8k6Ea8udPV7nIwkfNgaTKnRI5hm+y180YQ/I64DtPiRiTSeSad3Xmpx2iaHKOcyQ
+        YLTtUm8/VkfKK6et0j+YvWtxHLKmy15lVuBDJ70uu
+X-Received: by 2002:a05:6512:68b:b0:471:d466:979b with SMTP id t11-20020a056512068b00b00471d466979bmr145638lfe.519.1650557671047;
+        Thu, 21 Apr 2022 09:14:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyH8/DjjuvvyMkckIHc+m1v/FBNR0YvL8JTrt6ayXJd/rtn7oBKbgJ1GEaT0nlskTay3z63zTKH5i8fe1g198I=
+X-Received: by 2002:a05:6512:68b:b0:471:d466:979b with SMTP id
+ t11-20020a056512068b00b00471d466979bmr145622lfe.519.1650557670855; Thu, 21
+ Apr 2022 09:14:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <1650551811-24319-1-git-send-email-quic_sbillaka@quicinc.com>
- <1650551811-24319-2-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=Ug-ZRiMrVyVH+OT1fMhyUnAixP2FfWKTQpLZXka0U_=g@mail.gmail.com> <MW4PR02MB718603608E45FB53A8D942C7E1F49@MW4PR02MB7186.namprd02.prod.outlook.com>
-In-Reply-To: <MW4PR02MB718603608E45FB53A8D942C7E1F49@MW4PR02MB7186.namprd02.prod.outlook.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 21 Apr 2022 09:07:44 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UOALugpmgJK8dHxK=b_GO+c12d3xmGE3HiqJK+yznViA@mail.gmail.com>
-Message-ID: <CAD=FV=UOALugpmgJK8dHxK=b_GO+c12d3xmGE3HiqJK+yznViA@mail.gmail.com>
-Subject: Re: [PATCH v8 1/4] drm/msm/dp: Add eDP support via aux_bus
-To:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Steev Klimaszewski <steev@kali.org>
+References: <20220420200720.434717-1-parri.andrea@gmail.com>
+ <20220420200720.434717-4-parri.andrea@gmail.com> <20220421140805.qg4cwqhsq5vuqkut@sgarzare-redhat>
+ <20220421152827.GB4679@anparri>
+In-Reply-To: <20220421152827.GB4679@anparri>
+From:   Stefano Garzarella <sgarzare@redhat.com>
+Date:   Thu, 21 Apr 2022 18:14:19 +0200
+Message-ID: <CAGxU2F6UCiFQrXu4Nn=jNPbuE8i5hYe=Hkwak43kTMQoCQQy2A@mail.gmail.com>
+Subject: Re: [PATCH 3/5] hv_sock: Add validation for untrusted Hyper-V values
+To:     Andrea Parri <parri.andrea@gmail.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Thu, Apr 21, 2022 at 9:00 AM Sankeerth Billakanti (QUIC)
-<quic_sbillaka@quicinc.com> wrote:
+On Thu, Apr 21, 2022 at 5:30 PM Andrea Parri <parri.andrea@gmail.com> wrote:
 >
-> >> +       }
-> >> +
-> >> +       /*
-> >> +        * External bridges are mandatory for eDP interfaces: one has to
-> >> +        * provide at least an eDP panel (which gets wrapped into panel-
-> >bridge).
-> >> +        *
-> >> +        * For DisplayPort interfaces external bridges are optional, so
-> >> +        * silently ignore an error if one is not present (-ENODEV).
-> >> +        */
-> >> +       rc = dp_parser_find_next_bridge(dp_priv->parser);
-> >> +       if (rc && dp->is_edp) {
-> >> +               DRM_ERROR("eDP: cannot find the next bridge, rc = %d\n", rc);
-> >> +               goto edp_error;
-> >> +       } else if (rc && rc != -ENODEV) {
-> >> +               DRM_ERROR("DP: cannot find the next bridge, rc = %d\n", rc);
-> >> +               goto error;
-> >> +       }
+> > > @@ -577,12 +577,19 @@ static bool hvs_dgram_allow(u32 cid, u32 port)
+> > > static int hvs_update_recv_data(struct hvsock *hvs)
+> > > {
+> > >     struct hvs_recv_buf *recv_buf;
+> > > -   u32 payload_len;
+> > > +   u32 pkt_len, payload_len;
+> > > +
+> > > +   pkt_len = hv_pkt_len(hvs->recv_desc);
+> > > +
+> > > +   /* Ensure the packet is big enough to read its header */
+> > > +   if (pkt_len < HVS_HEADER_LEN)
+> > > +           return -EIO;
+> > >
+> > >     recv_buf = (struct hvs_recv_buf *)(hvs->recv_desc + 1);
+> > >     payload_len = recv_buf->hdr.data_size;
+> > >
+> > > -   if (payload_len > HVS_MTU_SIZE)
+> > > +   /* Ensure the packet is big enough to read its payload */
+> > > +   if (payload_len > pkt_len - HVS_HEADER_LEN || payload_len > HVS_MTU_SIZE)
 > >
-> >The above wouldn't be my favorite way of doing this. Instead, I would have
-> >written:
-> >
-> >  if (rc) {
-> >    DRM_ERROR("Cannot find the next bridge, rc = %d\n", rc);
-> >    goto err;
-> >  }
-> >  ...
-> >
-> >err:
-> >  if (dp->is_edp) {
-> >    disable_irq(...);
-> >    dp_display_host_phy_exit(...);
-> >    dp_display_host_deinit(...);
-> >  }
-> >  return rc;
-> >
+> > checkpatch warns that we exceed 80 characters, I do not have a strong
+> > opinion on this, but if you have to resend better break the condition into 2
+> > lines.
 >
-> If rc is ENODEV for DP, then we need to return 0. Shall I add like below ?
+> Will break if preferred.  (but does it really warn??  I understand that
+> the warning was deprecated and the "limit" increased to 100 chars...)
+
+I see the warn here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220420200720.434717-4-parri.andrea@gmail.com/
+
+in the kernel doc [1] we still say we prefer 80 columns, so I try to
+follow, especially when it doesn't make things worse.
+
+[1] https://docs.kernel.org/process/coding-style.html#breaking-long-lines-and-strings
+
 >
-> err:
->   if (dp->is_edp) {
->     disable_irq(...);
->     dp_display_host_phy_exit(...);
->     dp_display_host_deinit(...);
->   } else
->         If (rc == -ENODEV)
->             rc = 0;
->   return rc;
+>
+> > Maybe even update or remove the comment? (it only describes the first
+> > condition, but the conditions are pretty clear, so I don't think it adds
+> > much).
+>
+> Works for me.  (taking it as this applies to the previous comment too.)
 
-I wouldn't. Then you're essentially going to "err" for a case that you
-don't consider an error. I would instead have just handled it right
-away.
+Yep.
 
-rc = dp_parser_find_next_bridge(dp_priv->parser);
-if (!dp->is_edp && rc == -ENODEV)
-  return 0;
+Thanks,
+Stefano
 
-This also is better IMO because it means you aren't assuming that
-`dp_priv->parser->next_bridge` is "valid" (or at least NULL) after
-dp_parser_find_next_bridge() returned an error.
-
--Doug
