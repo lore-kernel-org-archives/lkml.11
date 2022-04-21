@@ -2,39 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80899C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 02:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B81C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 02:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383844AbiDUCwn (ORCPT
+        id S1383835AbiDUCzC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 22:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
+        Wed, 20 Apr 2022 22:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383832AbiDUCwm (ORCPT
+        with ESMTP id S229462AbiDUCzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 22:52:42 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A3DDEB7;
-        Wed, 20 Apr 2022 19:49:53 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
- 2022 10:49:54 +0800
+        Wed, 20 Apr 2022 22:55:01 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB93DF1B
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 19:52:12 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
+ 2022 10:52:12 +0800
 Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
  (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 21 Apr
- 2022 10:49:51 +0800
+ 2022 10:52:10 +0800
 From:   Haowen Bai <baihaowen@meizu.com>
-To:     Vinod Koul <vkoul@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        "Sascha Hauer" <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-CC:     Haowen Bai <baihaowen@meizu.com>, <dmaengine@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linuxppc-dev@lists.ozlabs.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH] dmaengine: imx-sdma: Remove useless null check before call of_node_put()
-Date:   Thu, 21 Apr 2022 10:49:50 +0800
-Message-ID: <1650509390-26877-1-git-send-email-baihaowen@meizu.com>
+Subject: [PATCH] powerpc/pci: Remove useless null check before call of_node_put()
+Date:   Thu, 21 Apr 2022 10:52:08 +0800
+Message-ID: <1650509529-27525-1-git-send-email-baihaowen@meizu.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -50,23 +47,24 @@ implementation of of_node_put() has done it.
 
 Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/dma/imx-sdma.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/powerpc/kernel/pci_dn.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 6196a7b3956b..b8a1299b93f0 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -1933,8 +1933,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	}
+diff --git a/arch/powerpc/kernel/pci_dn.c b/arch/powerpc/kernel/pci_dn.c
+index 61571ae23953..ba3bbc9bec2d 100644
+--- a/arch/powerpc/kernel/pci_dn.c
++++ b/arch/powerpc/kernel/pci_dn.c
+@@ -357,8 +357,8 @@ void pci_remove_device_node_info(struct device_node *dn)
  
- out:
--	if (gpr_np)
--		of_node_put(gpr_np);
-+	of_node_put(gpr_np);
+ 	/* Drop the parent pci_dn's ref to our backing dt node */
+ 	parent = of_get_parent(dn);
+-	if (parent)
+-		of_node_put(parent);
++
++	of_node_put(parent);
  
- 	return ret;
- }
+ 	/*
+ 	 * At this point we *might* still have a pci_dev that was
 -- 
 2.7.4
 
