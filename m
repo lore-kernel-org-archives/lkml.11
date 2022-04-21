@@ -2,71 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7E9C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F907C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386480AbiDUIMa (ORCPT
+        id S1386514AbiDUINH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
+        Thu, 21 Apr 2022 04:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386464AbiDUIMY (ORCPT
+        with ESMTP id S1386472AbiDUIM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:12:24 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB4C1DA7D;
-        Thu, 21 Apr 2022 01:09:35 -0700 (PDT)
-Received: from localhost (mdns.lwn.net [45.79.72.68])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 5FC582D7;
-        Thu, 21 Apr 2022 08:09:34 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 5FC582D7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1650528575; bh=5Pv2XFkNCv+/OrUz+c2muD9XTwPx9utQOZAWaseH+80=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=TMn8Tq9xsV+ljsIBhf7BQ+NBRvgL96yjrOVlobZT4/LWrrUZJiyEXG3USj/QIGnjx
-         iqoQvfX1sZS1dsNpG1KwamXCU9JQMiSrHEV9gjNAbK8NmXu//f6BBTetEkTU+ynExk
-         SEzYGtpY4rWMYFX+RYxHUNmV/j++stHxAvcENIhwd/paOOBlZSzCw4VDyW7789NYv9
-         TSW6y6OM7sXKzc+tTfvF7J+IjS0F8oq00I6h+rwN0hhHoSPfen6o8dMkyudIYlfRNs
-         pPg2S+wJbx+RwPkTjspn4YMjcZArUNx6Cv8fV6EMrPktrVrmA/pFLwFhxY3VQ+72pW
-         8aBzWSNVwKWOg==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Bruno Moreira-Guedes <codeagain@codeagain.dev>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: Re: [PATCH v2 0/2] Docs: Update information at changes.rst
-In-Reply-To: <2f4c72d2-4669-4217-f322-9d4f34c3053e@gmail.com>
-References: <cover.1650376049.git.codeagain@codeagain.dev>
- <8735i83xo1.fsf@meer.lwn.net> <20220420172731.ru7kfrdkmprybtu7@AN5Bruno>
- <878rrz30d9.fsf@meer.lwn.net>
- <2f4c72d2-4669-4217-f322-9d4f34c3053e@gmail.com>
-Date:   Thu, 21 Apr 2022 02:09:31 -0600
-Message-ID: <874k2m3lj8.fsf@meer.lwn.net>
+        Thu, 21 Apr 2022 04:12:26 -0400
+X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Apr 2022 01:09:38 PDT
+Received: from mo-csw-fb.securemx.jp (mo-csw-fb1514.securemx.jp [210.130.202.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6691E3FA;
+        Thu, 21 Apr 2022 01:09:37 -0700 (PDT)
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1514) id 23L82Bu4008355; Thu, 21 Apr 2022 17:02:11 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 23L81pou023347; Thu, 21 Apr 2022 17:01:51 +0900
+X-Iguazu-Qid: 34trpTYxFGvHYfA6HI
+X-Iguazu-QSIG: v=2; s=0; t=1650528111; q=34trpTYxFGvHYfA6HI; m=C7/iOvyqr0mp6XzSqSaLODep2G3TdSKSUIk0yN+KuYg=
+Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
+        by relay.securemx.jp (mx-mr1511) id 23L81oNu017170
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 21 Apr 2022 17:01:50 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: [PATCH] arm64: dts: visconti: Add clock controller support for TMPV7708
+Date:   Thu, 21 Apr 2022 17:01:43 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220421080143.2135566-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bagas Sanjaya <bagasdotme@gmail.com> writes:
+Adds node of clock controller support for Toshiba Visconti TMPV7708.
 
-> On 4/21/22 04:34, Jonathan Corbet wrote:
->>> Thanks, Jon! I have also been thinking whether this filename
->>> ('changes.rst') is a good description of the file contents. Do you think
->>> renaming it to something like 'requirements.rst' and updating its
->>> references would be a good patch?
->> 
->> It's best not to rename things unnecessarily, especially relatively
->> well-known files that a lot of people expect to find in a specific
->> place.  We've done a lot of renaming over the last few years, but this
->> is one I might let slide for now.
->> 
->
-> Did you mean the rename will be benefical?
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+---
+ arch/arm64/boot/dts/toshiba/tmpv7708.dtsi | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-No, I would not do the rename at this time.
+diff --git a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
+index 01d7ee61ad25..1683113a3c43 100644
+--- a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
++++ b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
+@@ -7,6 +7,7 @@
+  *
+  */
+ 
++#include <dt-bindings/clock/toshiba,tmpv770x.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ 
+@@ -182,6 +183,12 @@ wdt_clk: wdt-clk {
+ 		#clock-cells = <0>;
+ 	};
+ 
++	osc2_clk: osc2-clk {
++		compatible = "fixed-clock";
++		clock-frequency = <20000000>;
++		#clock-cells = <0>;
++	};
++
+ 	soc {
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+@@ -216,6 +223,20 @@ gpio: gpio@28020000 {
+ 			interrupt-parent = <&gic>;
+ 		};
+ 
++		pipllct: clock-controller@24220000 {
++			compatible = "toshiba,tmpv7708-pipllct";
++			reg = <0 0x24220000 0 0x820>;
++			#clock-cells = <1>;
++			clocks = <&osc2_clk>;
++		};
++
++		pismu: syscon@24200000 {
++			compatible = "toshiba,tmpv7708-pismu", "syscon";
++			reg = <0 0x24200000 0 0x2140>;
++			#clock-cells = <1>;
++			#reset-cells = <1>;
++		};
++
+ 		uart0: serial@28200000 {
+ 			compatible = "arm,pl011", "arm,primecell";
+ 			reg = <0 0x28200000 0 0x1000>;
+-- 
+2.34.1
 
-jon
+
