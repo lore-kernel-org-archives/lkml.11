@@ -2,92 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F06C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9228CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390155AbiDUPcb (ORCPT
+        id S1390103AbiDUPe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:32:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58384 "EHLO
+        Thu, 21 Apr 2022 11:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233545AbiDUPcG (ORCPT
+        with ESMTP id S1390157AbiDUPcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:32:06 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FFC42A3F;
-        Thu, 21 Apr 2022 08:29:15 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A2AD921112;
-        Thu, 21 Apr 2022 15:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650554954; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5prPCFHB7tTpkq+k4vcAxkUxCclepioM3qt4/48E8Q=;
-        b=2Z74KBSTI+RRW3GVqizC7kuz1hDkLz4U4zUBxmnuybv0YQL24y8MZ/NB4Xll2RqEmewWUh
-        ImYL2fb/kOneaW3yh1blQ3OZGTLcKxh7ij8YZ8tGSnCx+Hdd8PSEi8xWQ2NhKyqMqddyAD
-        WY5J7zo3N49wwyZK533B8iE3ajDLr5U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650554954;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5prPCFHB7tTpkq+k4vcAxkUxCclepioM3qt4/48E8Q=;
-        b=cDTswGpjMsuGJ40wpUPWQRFhzrHaBSYb6Oq9VLny/QKIAhXFq2nockljSqAHs15IeQZYTv
-        Q+OSzGO1KvMe6nDA==
-Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
-        by relay2.suse.de (Postfix) with ESMTP id 8F5832C141;
-        Thu, 21 Apr 2022 15:29:14 +0000 (UTC)
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Nick Terrell <terrelln@fb.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 3/5] selftests: firmware: Fix the request_firmware_into_buf() test for XZ format
-Date:   Thu, 21 Apr 2022 17:29:06 +0200
-Message-Id: <20220421152908.4718-4-tiwai@suse.de>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220421152908.4718-1-tiwai@suse.de>
-References: <20220421152908.4718-1-tiwai@suse.de>
+        Thu, 21 Apr 2022 11:32:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2459443FB;
+        Thu, 21 Apr 2022 08:29:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 518FAB826C3;
+        Thu, 21 Apr 2022 15:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D584C385A1;
+        Thu, 21 Apr 2022 15:29:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650554977;
+        bh=EKJGYb/V8GuIQV2zCWM7O0DO+UDppn4OJfYvUz7po+4=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=KBNkMN0czT2PfINytqkWxw1iGN4gSdEllXA54JqEFZuLV9p9bixBRSxFeZKAU9/0s
+         7BPtvbembm1+MwxHSY0i4mtQ5XPeZ0WRnQD38MTtlsrQCFPxPHuZE+AIz7jnHaG8f8
+         0FP9oiLMkEk3tFOFZBrJ2XzSi86RFOCp9KzTYcwj8ozU0LDgvNRbYPG37sctnCBvRs
+         +kXi5SWfTAEmJ+q6KKcefT+QlZEEl8HsxdaknJpbDBAUojHtkGtOZL4Y/o9eHxqqaU
+         POI5VH07vxnQHLGMsfaPBIKlnmrAPnMgkDxdJLxrVHtViSsGnXnq5waTbQnfV4qDB1
+         YnS1BncQVESGg==
+From:   Mark Brown <broonie@kernel.org>
+To:     p.yadav@ti.com
+Cc:     tudor.ambarus@microchip.com, linux-spi@vger.kernel.org,
+        tkuw584924@gmail.com, michael@walle.cc, miquel.raynal@bootlin.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220420102022.3310970-1-p.yadav@ti.com>
+References: <20220420102022.3310970-1-p.yadav@ti.com>
+Subject: Re: [PATCH v2] spi: spi-mem: check if data buffers are on stack
+Message-Id: <165055497529.347641.5916575094061881222.b4-ty@kernel.org>
+Date:   Thu, 21 Apr 2022 16:29:35 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The test uses a different firmware name, and we forgot to adapt for
-the XZ compressed file tests.
+On Wed, 20 Apr 2022 15:50:22 +0530, Pratyush Yadav wrote:
+> The buffers passed in the data phase must be DMA-able. Programmers often
+> don't realise this requirement and pass in buffers that reside on the
+> stack. This can be hard to spot when reviewing code. Reject ops if their
+> data buffer is on the stack to avoid this.
+> 
+> 
 
-Fixes: 1798045900b7 ("selftests: firmware: Add request_firmware_into_buf tests")
-https://lore.kernel.org/all/20210127154939.13288-1-tiwai@suse.de/
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
----
- tools/testing/selftests/firmware/fw_filesystem.sh | 2 ++
- 1 file changed, 2 insertions(+)
+Applied to
 
-diff --git a/tools/testing/selftests/firmware/fw_filesystem.sh b/tools/testing/selftests/firmware/fw_filesystem.sh
-index 731f011def78..3ac09b401a83 100755
---- a/tools/testing/selftests/firmware/fw_filesystem.sh
-+++ b/tools/testing/selftests/firmware/fw_filesystem.sh
-@@ -504,6 +504,7 @@ test "$HAS_FW_LOADER_COMPRESS" != "yes" && exit 0
- 
- # test with both files present
- $RUN_XZ -k $FW
-+$RUN_XZ -k $FW_INTO_BUF
- config_set_name $NAME
- echo
- echo "Testing with both plain and xz files present..."
-@@ -529,6 +530,7 @@ done
- 
- # test with only xz file present
- mv "$FW" "${FW}-orig"
-+mv "$FW_INTO_BUF" "${FW_INTO_BUF}-orig"
- echo
- echo "Testing with only xz file present..."
- for i in $(seq 1 5); do
--- 
-2.31.1
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
+Thanks!
+
+[1/1] spi: spi-mem: check if data buffers are on stack
+      commit: 8868c03f3ca584abec7bb53d6c3f7c5ab6b60949
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
