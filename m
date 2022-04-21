@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 123A2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C16C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442859AbiDUXxg (ORCPT
+        id S1442895AbiDUXxn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
+        Thu, 21 Apr 2022 19:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442809AbiDUXvw (ORCPT
+        with ESMTP id S1442855AbiDUXwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:51:52 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AE8434B5;
-        Thu, 21 Apr 2022 16:49:00 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id ke5so2635997qvb.5;
-        Thu, 21 Apr 2022 16:49:00 -0700 (PDT)
+        Thu, 21 Apr 2022 19:52:22 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E76347541;
+        Thu, 21 Apr 2022 16:49:03 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id b68so4762799qkc.4;
+        Thu, 21 Apr 2022 16:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gx/pEzK/Si3DJxK25M0+mRodztZR2hxnPp00eWVAa1k=;
-        b=Md/LjYEF9f+pRuz8KZH8oR8ODzAl6LE1NdwDO9B7yhhTbHjC1XjY6StBiio3j2Nvo1
-         JelKkMUZhH6wK9SIieCBlHRjkPiXecMX7lbXfg/XqFWogYyaitQ4MdWK8BXZq7mkhu1O
-         OFnyhM+ibntll36tPPZSueMUXCwouOzvP6eHH1utH55G/gzIVvvomUfh32hDdsmMbf5j
-         ior9XaGlQzyXxpuadInYd2sY51uzIco7yCLiu8jNyncc1IUMQD2y1/lU0BMZz4BOsCG/
-         YfI4zjIBitflaOo7HONdKt45CVTiopIOyKsTTpjmD6y0c5WL8ulhg5/2E53m0J0N/wOI
-         +Qdw==
+        bh=OX+ZZxfUCa6AeznhtMYBa3lbAYkGql05KEYmpApGJvc=;
+        b=fWoFdNFoTzuTeyd37gJBh3UEJqZnL5c7olLDqlVchiUDB4EfzgpzArPgDksaoxFYSV
+         lFcwfvuY2O4d+01Q5Zj7FApRfnsx10MrvqIQjieDrYqKS8oTMogkpDCLe6b+tIvGeoDg
+         oZ25deodeMYYdcb4msCQZ95tNwqLOpZL1GqFWlCJbzyzHA0RXWkB1OWPmvNGxWqOFk0Z
+         NMobe8u2+R7aXU1cBxhn6C/5a3nl/GRTkhDG3IY39MAnvrmCeWGVgd8OH0FEk9JXcTV+
+         sT/ZRPNX+2nh2YnvFSNMks5fpzsFDvBjYXVsugVKFszq5lRjdggcfrPmLI1vTlpoRedw
+         R7eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gx/pEzK/Si3DJxK25M0+mRodztZR2hxnPp00eWVAa1k=;
-        b=SpsmedleUlNsICzdnEvYumm35OBa5oSpxxBCG6LU4eWfN8S43dnrXBYaHIksYEMEsA
-         /X4o6rdX2gPDDmnEoFDV0dBg+AdFSDXACyLFWI0N4F3Ox73rShQCBx+Er+9zsvAHsYfc
-         A+aDTgqGeGLXVoM5MOizIeMvcBhcyrbstOX7fLPBIZAIb4JKLd6Mu/iaDyj4YeEXW+Vo
-         KjK/q/NtODtV0opmODsmLBU3XIiXj28ZgSJQHYlurNfjaC1iJcPyy9ctcQVVrgvJLPr8
-         dIKyNPUrdFtanfi5Fn7IxHoRkEwrJGuIg9f+oH/zz0MCAm5EyD+4FobyB8mDSnjYTth8
-         6Xug==
-X-Gm-Message-State: AOAM530a89CvO2mrP+SMOw2boDCMYmnTAIdImUV4P8GWf1ft5+Hx5lNR
-        1LaPy1F+AxsoXyz/T7qaO2EhMUo3ytFZ
-X-Google-Smtp-Source: ABdhPJy1nyPXDBoL0+vXyPBBH/+kX8pkeabBh3Ms+kkb3pWns3FlAR3mANJ7k+SatBCK1YhmRDDm8g==
-X-Received: by 2002:a05:6214:262c:b0:446:3464:57cd with SMTP id gv12-20020a056214262c00b00446346457cdmr1758402qvb.89.1650584939257;
-        Thu, 21 Apr 2022 16:48:59 -0700 (PDT)
+        bh=OX+ZZxfUCa6AeznhtMYBa3lbAYkGql05KEYmpApGJvc=;
+        b=nMilll6iPLoM+F+QT3W8u2m/mt9pOQQ+r+uClq6+uxtqAsTZHZsi3mubEJq80i/3rW
+         92p/R1IxcuNU3NOxPJLFta3QIlZ5FXa0+yW9lfj6Pob7UadwO6veTKjz0ESnboTA7oRz
+         K0cUUazZ8jEAPuMiFqwFwqqtypPDCZAQKFE0Cw+9MRC+5qqAvgESV3rO0OV02zyOvuVf
+         7OYo3zvhSr2/j7rgAYhCxzohUrpuXhTXzyTuX2Ph8kw6T3R5VPZ2wcv6xQsTAflE4TDY
+         s8pPm0unxCaDvIbQEfpW3qZUrtFlhT8f6+rpoPf4umy2GChXQmnUJm6a1IUuHv/IZR8W
+         VYvg==
+X-Gm-Message-State: AOAM532Kk/qKbRjROAObwT3eLJ8R7VN8CV0T+ouaAkDKc3i6ZMwyJzMM
+        rpseF8w2ZwpqEb4uiWXBlsUPfsyodICm
+X-Google-Smtp-Source: ABdhPJy4AfRMSM5fE/ShUTn41jLAMSbQ5zXgowJp+WmfgN33q5UIkYcEB9ug5C7qJVU5PFjSL7Hzbg==
+X-Received: by 2002:a05:620a:2805:b0:67d:5c7e:c43a with SMTP id f5-20020a05620a280500b0067d5c7ec43amr1216746qkp.84.1650584942298;
+        Thu, 21 Apr 2022 16:49:02 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm287372qtx.72.2022.04.21.16.48.57
+        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm287372qtx.72.2022.04.21.16.49.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 16:48:58 -0700 (PDT)
+        Thu, 21 Apr 2022 16:49:01 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         linux-fsdevel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     Kent Overstreet <kent.overstreet@gmail.com>, hch@lst.de,
         hannes@cmpxchg.org, akpm@linux-foundation.org,
         linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-input@vger.kernel.org, roman.gushchin@linux.dev
-Subject: [PATCH v2 5/8] mm: Add a .to_text() method for shrinkers
-Date:   Thu, 21 Apr 2022 19:48:34 -0400
-Message-Id: <20220421234837.3629927-11-kent.overstreet@gmail.com>
+Subject: [PATCH v2 7/8] mm: Move lib/show_mem.c to mm/
+Date:   Thu, 21 Apr 2022 19:48:36 -0400
+Message-Id: <20220421234837.3629927-13-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220421234837.3629927-1-kent.overstreet@gmail.com>
 References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
@@ -68,152 +68,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a new callback method to shrinkers which they can use to
-describe anything relevant to memory reclaim about their internal state,
-for example object dirtyness.
-
-This uses the new printbufs to output to heap allocated strings, so that
-the .to_text() methods can be used both for messages logged to the
-console, and also sysfs/debugfs.
-
-This patch also adds shrinkers_to_text(), which reports on the top 10
-shrinkers - by object count - in sorted order, to be used in OOM
-reporting.
+show_mem.c is really mm specific, and the next patch in the series is
+going to require mm/slab.h, so let's move it before doing more work on
+it.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- include/linux/shrinker.h |  5 +++
- mm/vmscan.c              | 78 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 83 insertions(+)
+ lib/Makefile           | 2 +-
+ mm/Makefile            | 2 +-
+ {lib => mm}/show_mem.c | 0
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+ rename {lib => mm}/show_mem.c (100%)
 
-diff --git a/include/linux/shrinker.h b/include/linux/shrinker.h
-index 76fbf92b04..b5f411768b 100644
---- a/include/linux/shrinker.h
-+++ b/include/linux/shrinker.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_SHRINKER_H
- #define _LINUX_SHRINKER_H
+diff --git a/lib/Makefile b/lib/Makefile
+index 31a3904eda..c5041d33d0 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -30,7 +30,7 @@ endif
+ lib-y := ctype.o string.o vsprintf.o cmdline.o \
+ 	 rbtree.o radix-tree.o timerqueue.o xarray.o \
+ 	 idr.o extable.o sha1.o irq_regs.o argv_split.o \
+-	 flex_proportions.o ratelimit.o show_mem.o \
++	 flex_proportions.o ratelimit.o \
+ 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
+ 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
+ 	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
+diff --git a/mm/Makefile b/mm/Makefile
+index 70d4309c9c..97c0be12f3 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -54,7 +54,7 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
+ 			   mm_init.o percpu.o slab_common.o \
+ 			   compaction.o vmacache.o \
+ 			   interval_tree.o list_lru.o workingset.o \
+-			   debug.o gup.o mmap_lock.o $(mmu-y)
++			   debug.o gup.o mmap_lock.o show_mem.o $(mmu-y)
  
-+struct printbuf;
-+
- /*
-  * This struct is used to pass information from page reclaim to the shrinkers.
-  * We consolidate the values for easier extension later.
-@@ -58,10 +60,12 @@ struct shrink_control {
-  * @flags determine the shrinker abilities, like numa awareness
-  */
- struct shrinker {
-+	char name[32];
- 	unsigned long (*count_objects)(struct shrinker *,
- 				       struct shrink_control *sc);
- 	unsigned long (*scan_objects)(struct shrinker *,
- 				      struct shrink_control *sc);
-+	void (*to_text)(struct printbuf *, struct shrinker *);
- 
- 	long batch;	/* reclaim batch size, 0 = default */
- 	int seeks;	/* seeks to recreate an obj */
-@@ -94,4 +98,5 @@ extern int register_shrinker(struct shrinker *shrinker);
- extern void unregister_shrinker(struct shrinker *shrinker);
- extern void free_prealloced_shrinker(struct shrinker *shrinker);
- extern void synchronize_shrinkers(void);
-+void shrinkers_to_text(struct printbuf *);
- #endif
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 59b14e0d69..905bc23800 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -50,6 +50,7 @@
- #include <linux/printk.h>
- #include <linux/dax.h>
- #include <linux/psi.h>
-+#include <linux/printbuf.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/div64.h>
-@@ -702,6 +703,83 @@ void synchronize_shrinkers(void)
- }
- EXPORT_SYMBOL(synchronize_shrinkers);
- 
-+void shrinker_to_text(struct printbuf *out, struct shrinker *shrinker)
-+{
-+	struct shrink_control sc = { .gfp_mask = GFP_KERNEL, };
-+
-+	if (shrinker->name[0])
-+		pr_buf(out, "%s", shrinker->name);
-+	else
-+		pr_buf(out, "%ps:", shrinker->scan_objects);
-+
-+	pr_buf(out, " objects: %lu", shrinker->count_objects(shrinker, &sc));
-+	pr_newline(out);
-+
-+	if (shrinker->to_text) {
-+		pr_indent_push(out, 2);
-+		shrinker->to_text(out, shrinker);
-+		pr_indent_pop(out, 2);
-+		pr_newline(out);
-+	}
-+}
-+
-+/**
-+ * shrinkers_to_text - Report on shrinkers with highest usage
-+ *
-+ * This reports on the top 10 shrinkers, by object counts, in sorted order:
-+ * intended to be used for OOM reporting.
-+ */
-+void shrinkers_to_text(struct printbuf *out)
-+{
-+	struct shrinker *shrinker;
-+	struct shrinker_by_mem {
-+		struct shrinker	*shrinker;
-+		unsigned long	mem;
-+	} shrinkers_by_mem[10];
-+	int i, nr = 0;
-+
-+	if (!down_read_trylock(&shrinker_rwsem)) {
-+		pr_buf(out, "(couldn't take shrinker lock)");
-+		return;
-+	}
-+
-+	list_for_each_entry(shrinker, &shrinker_list, list) {
-+		struct shrink_control sc = { .gfp_mask = GFP_KERNEL, };
-+		unsigned long mem = shrinker->count_objects(shrinker, &sc);
-+
-+		if (!mem || mem == SHRINK_STOP || mem == SHRINK_EMPTY)
-+			continue;
-+
-+		for (i = 0; i < nr; i++)
-+			if (mem < shrinkers_by_mem[i].mem)
-+				break;
-+
-+		if (nr < ARRAY_SIZE(shrinkers_by_mem)) {
-+			memmove(&shrinkers_by_mem[i + 1],
-+				&shrinkers_by_mem[i],
-+				sizeof(shrinkers_by_mem[0]) * (nr - i));
-+			nr++;
-+		} else if (i) {
-+			i--;
-+			memmove(&shrinkers_by_mem[0],
-+				&shrinkers_by_mem[1],
-+				sizeof(shrinkers_by_mem[0]) * i);
-+		} else {
-+			continue;
-+		}
-+
-+		shrinkers_by_mem[i] = (struct shrinker_by_mem) {
-+			.shrinker = shrinker,
-+			.mem = mem,
-+		};
-+	}
-+
-+	for (i = nr - 1; i >= 0; --i)
-+		shrinker_to_text(out, shrinkers_by_mem[i].shrinker);
-+
-+	up_read(&shrinker_rwsem);
-+}
-+
- #define SHRINK_BATCH 128
- 
- static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
+ # Give 'page_alloc' its own module-parameter namespace
+ page-alloc-y := page_alloc.o
+diff --git a/lib/show_mem.c b/mm/show_mem.c
+similarity index 100%
+rename from lib/show_mem.c
+rename to mm/show_mem.c
 -- 
 2.35.2
 
