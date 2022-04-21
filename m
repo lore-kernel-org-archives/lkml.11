@@ -2,104 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F34CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392462AbiDUXGB (ORCPT
+        id S1392499AbiDUXGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
+        Thu, 21 Apr 2022 19:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbiDUXF7 (ORCPT
+        with ESMTP id S230377AbiDUXGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:05:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD0D4839F;
-        Thu, 21 Apr 2022 16:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vL/W45Gfjw/HwQhtvjL88yNghuAlDto3M3aCv6IU0jU=; b=sDu4foEfZtxvuMNTu1o48+078H
-        MzUI2mLzlyLnOxDjWVMcCz5jo5w6ilUE5KOUrdmndCsPEBHMfBrjaGw7fnaXvOJqDZNVJ/1n3JNSR
-        EbyqUlj7NZHVjwX/qrCRALCeDP0C0gJsjbFn/vKybeiKnw9ydw3uhD0LKTkh5Iz+zGd0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nhfpB-00GsVH-SL; Fri, 22 Apr 2022 01:02:57 +0200
-Date:   Fri, 22 Apr 2022 01:02:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 3/8] dt-bindings: nvmem: sfp: Add TA_PROG_SFP supply
-Message-ID: <YmHiofjPdWux1BJ6@lunn.ch>
-References: <20220421175657.1259024-1-sean.anderson@seco.com>
- <20220421175657.1259024-4-sean.anderson@seco.com>
- <YmHTwPsZ2QNoFmAF@lunn.ch>
- <535b1363-1d74-1068-7270-16a5e582b403@seco.com>
+        Thu, 21 Apr 2022 19:06:41 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CC2483A9;
+        Thu, 21 Apr 2022 16:03:50 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id d15so6944653pll.10;
+        Thu, 21 Apr 2022 16:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6lETE4tLzS4hKJ1u/oePk2fhU7jHe/s3/pNmvXVjZcU=;
+        b=UhzbFZk/OF9avjf1Dw5CvpdHDR7o/YhO54wS+drjkdZVgv+x1Zmf7Vp2/nMFu/vHNQ
+         aB0zvD92+OaAXYCHpSddb8B2J0GGlDIoT1SeXVFjwLBa5DGckLhQAzd7xM7QCwcgHcFX
+         rw6/5k4C9qqA7idqS4r7oLTvtN59UvRAi4xQzBbJW9ea6tOQJlcJVGx8TwnF6kiVd/WV
+         Ymxgf8KMJWr0WebEPvlomFEHHgZ/yaQDjQBqlzo4fdyrV87W/t98TbfjECfH3D0DBEjb
+         WR4B7bDrIJp3j7TAcvmMURrm2rbubhPYxv7ykIISQg+eupAuhBJqd5998L3Cut2YY+n9
+         9nDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6lETE4tLzS4hKJ1u/oePk2fhU7jHe/s3/pNmvXVjZcU=;
+        b=S1+B8TS495LApofUfvuNWxLNZ6Hs82IwPr/eoOkKctuEuLeylgd7qyG8Saexwdk093
+         4276Yq8yGe4d+eHpirJQDrnEJm8jhtvYPNb/gn7ty1uf2NTd1gUUV8wAtc9uED91RkAh
+         Tx4cAWnDsF7F2bUjE+SMECkNdAGRBBjmjOHfxAs+jJxDEHH0wRYY48AagN+z4nIArpOF
+         GwLUuyOBNa9U4YDjgyc4GYts4ItoMTqMSCsjcHF3rjtD8jzELquevhxvFZV5F6kuKqbA
+         UfYqYFscpx7uSNrFl9XfvYoO6A+nwZmkdgvNQMHzDqqj74DtsyI8UdkO941sclqSniWY
+         ahGg==
+X-Gm-Message-State: AOAM532vDhOxPn09R9UTLCNB+0H9Zz1N+nnu/PnyBkMiHqdMgZ4EgVj7
+        mffzTCt+qBnzZsVjQTHabgs=
+X-Google-Smtp-Source: ABdhPJzW+XA9jMQWSiTiZveW2YDJbye/xVxh8r5uT5ngeig1q9drkro5hFvvGcxMHBf+ET2adpzZ8Q==
+X-Received: by 2002:a17:902:f688:b0:15b:45ea:b682 with SMTP id l8-20020a170902f68800b0015b45eab682mr1472088plg.134.1650582230362;
+        Thu, 21 Apr 2022 16:03:50 -0700 (PDT)
+Received: from localhost.localdomain (c-73-241-94-58.hsd1.ca.comcast.net. [73.241.94.58])
+        by smtp.gmail.com with ESMTPSA id t2-20020a17090a448200b001cd4989fee7sm3810238pjg.51.2022.04.21.16.03.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 16:03:49 -0700 (PDT)
+From:   Ryan Lee <ryan.lee.analog@gmail.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, perex@perex.cz, tiwai@suse.com,
+        srinivas.kandagatla@linaro.org, ckeepax@opensource.cirrus.com,
+        tanureal@opensource.cirrus.com, cy_huang@richtek.com,
+        pierre-louis.bossart@linux.intel.com,
+        drhodes@opensource.cirrus.com, pbrobinson@gmail.com,
+        hdegoede@redhat.com, lukas.bulwahn@gmail.com, stephan@gerhold.net,
+        arnd@arndb.de, ryan.lee.analog@gmail.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ryans.lee@analog.com
+Subject: [PATCH V2 1/2] ASoC: dt-bindings: max98396: add amplifier driver
+Date:   Thu, 21 Apr 2022 16:02:52 -0700
+Message-Id: <20220421230253.823798-1-ryan.lee.analog@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <535b1363-1d74-1068-7270-16a5e582b403@seco.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 06:06:39PM -0400, Sean Anderson wrote:
-> Hi Andrew,
-> 
-> On 4/21/22 5:59 PM, Andrew Lunn wrote:
-> > On Thu, Apr 21, 2022 at 01:56:52PM -0400, Sean Anderson wrote:
-> >> The TA_PROG_SFP supply must be enabled to program the fuses, and
-> >> disabled to read the fuses (such as at power-on-reset). On many boards,
-> >> this supply is controlled by a jumper. The user must manually insert or
-> >> remove it at the appropriate time in the programming process. However,
-> >> on other boards this supply is controlled by and FPGA or a GPIO. In
-> >> these cases, the driver can automatically enabled and disable it as
-> >> necessary.
-> >> 
-> >> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> >> ---
-> >> 
-> >>  .../devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml        | 5 +++++
-> >>  1 file changed, 5 insertions(+)
-> >> 
-> >> diff --git a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> >> index 54086f50157d..e7d1232fcd41 100644
-> >> --- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> >> +++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> >> @@ -32,6 +32,11 @@ properties:
-> >>    clock-names:
-> >>      const: sfp
-> >>  
-> >> +  ta-prog-sfp-supply:
-> >> +    description:
-> >> +      The TA_PROG_SFP supply. It will be enabled for programming and disabled
-> >> +      for reading.
-> >> +
-> > 
-> > Doesn't there need to be some indication what this is? Is it a GPIO,
-> > or maybe a regulator?
-> 
-> There is a pin on these processors named "TA_PROG_SFP". The supply here should
-> be for whatever regulator supplies that pin. So it could be a fixed-regulator
-> or perhaps a sub-node of the board's FPGA (no such node exists yet, but it
-> certainly could). There's a pattern property under
-> Documentation/devicetree/bindings/regulator/regulator.yaml for these sorts
-> of nodes.
+From: Ryan Lee <ryans.lee@analog.com>
 
-Ah, so -supply means regulator. I would spell it out for dumb people
-like my:
+This patch adds dt-bindings information for Analog Devices MAX98396
+and MAX98397 Smart Amplifier.
 
-  ta-prog-sfp-supply:
-    description:
-      The regulator supplying TA_PROG_SFP. It will be enabled for programming and disabled
-      for reading.
+Signed-off-by: Ryan Lee <ryans.lee@analog.com>
+---
+  Changes from v1:
+    Fixed yamllint/dtschema/dtc warnings and errors
 
-      Andrew
+ .../bindings/sound/adi,max98396.yaml          | 79 +++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/adi,max98396.yaml
+
+diff --git a/Documentation/devicetree/bindings/sound/adi,max98396.yaml b/Documentation/devicetree/bindings/sound/adi,max98396.yaml
+new file mode 100644
+index 000000000000..ec4c10c2598a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/adi,max98396.yaml
+@@ -0,0 +1,79 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/adi,max98396.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices MAX98396 Speaker Amplifier Device Tree Bindings
++
++maintainers:
++  - Ryan Lee <ryans.lee@analog.com>
++
++description:
++  The MAX98396 is a mono Class-DG speaker amplifier with I/V sense.
++  The device provides a PCM interface for audio data and a standard
++  I2C interface for control data communication.
++  The MAX98397 is a variant of MAX98396 with wide input supply range.
++
++properties:
++  compatible:
++    enum:
++      - adi,max98396
++      - adi,max98397
++  reg:
++    maxItems: 1
++    description: I2C address of the device.
++
++  adi,vmon-slot-no:
++    description: slot number of the voltage sense monitor
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    minimum: 0
++    maximum: 15
++    default: 0
++
++  adi,imon-slot-no:
++    description: slot number of the current sense monitor
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    minimum: 0
++    maximum: 15
++    default: 0
++
++  adi,spkfb-slot-no:
++    description: slot number of speaker DSP monitor
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    minimum: 0
++    maximum: 15
++    default: 0
++
++  adi,interleave-mode:
++    description:
++      For cases where a single combined channel for the I/V sense data
++      is not sufficient, the device can also be configured to share
++      a single data output channel on alternating frames.
++      In this configuration, the current and voltage data will be frame
++      interleaved on a single output channel.
++    type: boolean
++
++  reset-gpios:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        max98396: amplifier@39 {
++            compatible = "adi,max98396";
++            reg = <0x39>;
++            adi,vmon-slot-no = <0>;
++            adi,imon-slot-no = <1>;
++            reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
++        };
++    };
+-- 
+2.25.1
+
