@@ -2,118 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B679C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390416AbiDUQAa (ORCPT
+        id S1390422AbiDUQBb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
+        Thu, 21 Apr 2022 12:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390408AbiDUQAW (ORCPT
+        with ESMTP id S1355636AbiDUQB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:00:22 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C9141304
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:57:32 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id t6so3890022wra.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:57:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c5v2dcbpfIREeY44tdPJXPJiKXCQO1isQe1PN8hnmtA=;
-        b=x7mIAao/XjRhFqxaq69esUVD9gaSAFe7pBZaCn5vqPJ7FGAfIcxMddEd/ZwhipP4xe
-         adLF8gMXeI+5Lr2Vr6CL40gna2y9IIhkZ19d1Kk17qzehiOtRLwt0VEWd5VamUDeaQMs
-         xzeNByKjw9cAqJpO9CPiyjTLidYUSP84vxCflxxes3yEc40nRsQS7DNzcbMT6FyGVp4A
-         ajm565I5vOTyqmV9Vqb9UHeQZhhoHlk9JHUiTrC/fEuvyTkAZ3XGkhwi8Cc75rAs9/qJ
-         Brkd+R0DlIuzJ878hwMF9F8pQg9hkmzm8h6EoiAyMKBBplvmBjqaw2Mrq/Fo7uODcUhH
-         HGpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c5v2dcbpfIREeY44tdPJXPJiKXCQO1isQe1PN8hnmtA=;
-        b=rHq5k10BoiCZbm/PPtIKV6DPI82B0DR5NTsjf6b7G58ZnqbnPQ5kZKioTS36LcnW+U
-         0QtLU26PI+sWD1P4IVbjoj+QUsOl6Ec+FKn/jlTT4kIzyBrRjH3aMZR84HSK2Uk1Z4VO
-         1e6WGplQYN9BqmVWLzQh9n0XWDIghyKkz8bYVZhEW3JG75nqqkXNanr2+M8sNkIeG5dw
-         +IWruaAXpA9ulpj4hY8SqLuFoOTEDhwK71jKo3kcAXOsAgKWfbZClJ8a0YKdimlwKW9d
-         7Jkf3xjHZMUKI5rNsAidISgfBKs0pYWpNwJHGBPMXvxwEHq2RHs+jCawuVpYApZLTAmW
-         H8Ww==
-X-Gm-Message-State: AOAM533HG3P4iBhPybUKMvlwqUfjpX2xurKL1Jc58fmL/VM1M1vEitX8
-        8J4nTMFYcK9PLqTXKpp7+dW52Q==
-X-Google-Smtp-Source: ABdhPJz8PBGJzTWGkvR9SDIvidKwEabWHonllUxUaq2TEm4JZ76WETtMHbtWwFFwMYrsLL0Ek3CKbw==
-X-Received: by 2002:a05:6000:713:b0:20a:92f1:c057 with SMTP id bs19-20020a056000071300b0020a92f1c057mr289175wrb.241.1650556651171;
-        Thu, 21 Apr 2022 08:57:31 -0700 (PDT)
-Received: from localhost.localdomain ([2001:861:44c0:66c0:35ba:2677:956:980d])
-        by smtp.gmail.com with ESMTPSA id 61-20020adf8143000000b002061d8d807esm2623140wrm.87.2022.04.21.08.57.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 08:57:30 -0700 (PDT)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     jbrunet@baylibre.com, broonie@kernel.org
-Cc:     alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Dmitry Shmidt <dimitrysh@google.com>
-Subject: [PATCH 2/2] Revert "ASoC: meson: axg-card: make links nonatomic"
-Date:   Thu, 21 Apr 2022 17:57:25 +0200
-Message-Id: <20220421155725.2589089-2-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421155725.2589089-1-narmstrong@baylibre.com>
-References: <20220421155725.2589089-1-narmstrong@baylibre.com>
+        Thu, 21 Apr 2022 12:01:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3D3473A2;
+        Thu, 21 Apr 2022 08:58:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA61561CF6;
+        Thu, 21 Apr 2022 15:58:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC6E2C385A1;
+        Thu, 21 Apr 2022 15:58:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650556716;
+        bh=GBaeQIZyH2zKFDtCu8N9fQUuEoVr4FS7ju0xwsZnrzE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UI3OrqenLjCz9NhxoUMlbmYnm5yVaPVFY+RqlynSESYzrKiP/Q+8hatcs/qDGBSQY
+         a8HHQigTKd9CiD2fBfHYW0avTy8xdawamdz/qBTUThmqqSEziImsYNowyCmufbihtm
+         9J40SdKy3MTybV9lF1o6MHurc0unFu0Ic4fMJADrWYMt4fQKxPN7kTPbwre7VjTyWK
+         FBAvzjDa5Kk5fAMszDF8u6rbKmfFrOtICnO5K9Uq71WGsJddI7s6Y9cBILFgrNQPzm
+         3qiOVLCNIXddrJ6o30+mXqf+4fNVRflUcxuM2vhzPBKJMDDNdFYXjYDBZdperfKhXl
+         weCEyhONXLU1A==
+Date:   Thu, 21 Apr 2022 18:57:21 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
+Cc:     David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        James Morris <jmorris@namei.org>,
+        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@linux.microsoft.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v7 3/5] certs: Make blacklist_vet_description() more
+ strict
+Message-ID: <YmF+4ZZCZxH9OrS+@kernel.org>
+References: <20210312171232.2681989-4-mic@digikod.net>
+ <20210312171232.2681989-1-mic@digikod.net>
+ <648218.1650450548@warthog.procyon.org.uk>
+ <YmF0eAh7dYmtLDVx@kernel.org>
+ <01ec2ce7-986d-451a-4a36-f627263ef826@digikod.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <01ec2ce7-986d-451a-4a36-f627263ef826@digikod.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit e138233e56e9829e65b6293887063a1a3ccb2d68 causes the
-following system crash when using audio on G12A/G12B & SM1 systems:
- BUG: sleeping function called from invalid context at kernel/locking/mutex.c:282
-  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 0, name: swapper/0
- preempt_count: 10001, expected: 0
- RCU nest depth: 0, expected: 0
- Preemption disabled at:
- schedule_preempt_disabled+0x20/0x2c
- CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         5.17.0-rc6-03747-gd403c3588f77-dirty #957
- Hardware name: SEI Robotics SEI610 (DT)
- Call trace:
- dump_backtrace+0xd8/0xf4
- show_stack+0x18/0x30
- dump_stack_lvl+0x70/0x8c
- dump_stack+0x18/0x38
- __might_resched+0x154/0x164
- __might_sleep+0x48/0x78
- mutex_lock+0x24/0x60
- _snd_pcm_stream_lock_irqsave+0x20/0x3c
- snd_pcm_period_elapsed+0x24/0xa4
- axg_fifo_pcm_irq_block+0x64/0xdc
- __handle_irq_event_percpu+0x104/0x264
- handle_irq_event+0x48/0xb4
- ...
- start_kernel+0x3f0/0x484
- __primary_switched+0xc0/0xc8
+On Thu, Apr 21, 2022 at 05:27:42PM +0200, Mickaël Salaün wrote:
+> 
+> On 21/04/2022 17:12, Jarkko Sakkinen wrote:
+> > On Wed, Apr 20, 2022 at 11:29:08AM +0100, David Howells wrote:
+> > > Mickaël Salaün <mic@digikod.net> wrote:
+> > > 
+> > > > +	/* The following algorithm only works if prefix lengths match. */
+> > > > +	BUILD_BUG_ON(sizeof(tbs_prefix) != sizeof(bin_prefix));
+> > > > +	prefix_len = sizeof(tbs_prefix) - 1;
+> > > > +	for (i = 0; *desc; desc++, i++) {
+> > > > +		if (*desc == ':') {
+> > > > +			if (tbs_step == prefix_len)
+> > > > +				goto found_colon;
+> > > > +			if (bin_step == prefix_len)
+> > > > +				goto found_colon;
+> > > > +			return -EINVAL;
+> > > > +		}
+> > > > +		if (i >= prefix_len)
+> > > > +			return -EINVAL;
+> > > > +		if (*desc == tbs_prefix[i])
+> > > > +			tbs_step++;
+> > > > +		if (*desc == bin_prefix[i])
+> > > > +			bin_step++;
+> > > > +	}
+> > > 
+> > > I wonder if:
+> > > 
+> > > 	static const char tbs_prefix[] = "tbs:";
+> > > 	static const char bin_prefix[] = "bin:";
+> > > 
+> > > 	if (strncmp(desc, tbs_prefix, sizeof(tbs_prefix) - 1) == 0 ||
+> > > 	    strncmp(desc, bin_prefix, sizeof(bin_prefix) - 1) == 0)
+> > > 		goto found_colon;
+> > > 
+> > > might be better.
+> > > 
+> > > David
+> > 
+> > I think it'd be.
+> > 
+> > BR, Jarkko
+> 
+> I'm confused. Didn't you plan to send this patch series before v5.18-rc2?
+> It's been a while since I started working on this.
 
-Revert this commit until the crash is fixed.
+That was my original plan but due to some other things, I've sent
+a PR for rc4. I CC'd you to the PR.
 
-Reported-by: Dmitry Shmidt <dimitrysh@google.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
----
- sound/soc/meson/axg-card.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/sound/soc/meson/axg-card.c b/sound/soc/meson/axg-card.c
-index cbbaa55d92a6..2b77010c2c5c 100644
---- a/sound/soc/meson/axg-card.c
-+++ b/sound/soc/meson/axg-card.c
-@@ -320,7 +320,6 @@ static int axg_card_add_link(struct snd_soc_card *card, struct device_node *np,
- 
- 	dai_link->cpus = cpu;
- 	dai_link->num_cpus = 1;
--	dai_link->nonatomic = true;
- 
- 	ret = meson_card_parse_dai(card, np, &dai_link->cpus->of_node,
- 				   &dai_link->cpus->dai_name);
--- 
-2.25.1
-
+BR, Jarkko
