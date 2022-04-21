@@ -2,95 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38479C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388918AbiDULlt (ORCPT
+        id S1385009AbiDULoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 07:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        Thu, 21 Apr 2022 07:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388912AbiDULlm (ORCPT
+        with ESMTP id S231752AbiDULoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 07:41:42 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7232C111
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 04:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650541131; x=1682077131;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TlJ1+MVmh4jBiR+OUjOQpWZePfw1j7kEuRwY1xJFAsk=;
-  b=Jtf4JQyjLKDURaBJyxF1trWLqhaSkS8nWANhkEZygxiWJEcqlU3DnNOu
-   wj8sgILxScmm43BnNUexyWxx4ARtXw2FE2PVSGH6SMcOyCplJtgrg8vfp
-   C3m4LtSwqaLvop8RTxurTBjATrnEsbYsSbptdnUc83sW4lkWUjyugBQKU
-   tk1Rw+wpJYYEL8Pd/q7frzsU0tQ5hf0FbsJp0eg9z7q4ulcZjdoYKjyXl
-   +6JlIoVTqUgO9C5sYNS21X7dquuoQyiMMwDKs11Uk+YomvGwjXFjdPCbl
-   9hEXQpwAUzbTpchsDQvtupaaEHg6AleY7GDqkeUo2UaUthFrg2+TsYL8v
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264492206"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="264492206"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 04:38:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="703047964"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 21 Apr 2022 04:38:49 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>
-Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 4/4] iommu/vt-d: Size Page Request Queue to avoid overflow condition
-Date:   Thu, 21 Apr 2022 19:35:58 +0800
-Message-Id: <20220421113558.3504874-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
-References: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
+        Thu, 21 Apr 2022 07:44:04 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A920D222A3;
+        Thu, 21 Apr 2022 04:41:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=iXYVGbF3ixeNyAq4kutRGrMygWxyhM6LeblM6gz0/Sk=; b=ytbKjW0ri609Ivn6UdOLdYEJRA
+        hefxttXa9YRcq6mDgqruzU8i+8xjtNoR19zaN/MrfmcLAmSZoqD5JpzA+bQ49KVCuGPqTew/0z7M2
+        w2Q1ok9zjURaNMIoJ5k3RBYnx410I7bI0VE43C4EpbbsV7Ftz/ld6q2+QafJC1mgJb5Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nhVB8-00GnGX-Mf; Thu, 21 Apr 2022 13:40:54 +0200
+Date:   Thu, 21 Apr 2022 13:40:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] net: mdio: Mask PHY only when its ACPI node is
+ present
+Message-ID: <YmFCxnYdRnnk41QQ@lunn.ch>
+References: <20220420124053.853891-1-kai.heng.feng@canonical.com>
+ <20220420124053.853891-2-kai.heng.feng@canonical.com>
+ <YmAc+dzroa4D1ny2@lunn.ch>
+ <CAAd53p5Wwn+HOMm1Z0VWcR_WrTzRvAGZOYg4X_txugSFd+EsDQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p5Wwn+HOMm1Z0VWcR_WrTzRvAGZOYg4X_txugSFd+EsDQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PRQ overflow may cause I/O throughput congestion, resulting in unnecessary
-degradation of I/O performance. Appropriately increasing the length of PRQ
-can greatly reduce the occurrence of PRQ overflow. The count of maximum
-page requests that can be generated in parallel by a PCIe device is
-statically defined in the Outstanding Page Request Capacity field of the
-PCIe ATS configure space.
+On Thu, Apr 21, 2022 at 10:58:40AM +0800, Kai-Heng Feng wrote:
+> On Wed, Apr 20, 2022 at 10:47 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Wed, Apr 20, 2022 at 08:40:48PM +0800, Kai-Heng Feng wrote:
+> > > Not all PHY has an ACPI node, for those nodes auto probing is still
+> > > needed.
+> >
+> > Why do you need this?
+> >
+> > Documentation/firmware-guide/acpi/dsd/phy.rst
+> >
+> > There is nothing here about there being PHYs which are not listed in
+> > ACPI. If you have decided to go the ACPI route, you need to list the
+> > PHYs.
+> 
+> This is for backward-compatibility. MAC can have ACPI node but PHY may
+> not have one.
 
-The new length of PRQ is calculated by summing up the value of Outstanding
-Page Request Capacity register across all devices where Page Requests are
-supported on the real PR-capable platform (Intel Sapphire Rapids). The
-result is round to the nearest higher power of 2.
+And if the PHY does not have an ACPI node, fall back to
+mdiobus_register(). This is what of_mdiobus_register() does. If
+np=NULL, it calls mdiobus_register() and skips all the OF stuff.
 
-The PRQ length is also double sized as the VT-d IOMMU driver only updates
-the Page Request Queue Head Register (PQH_REG) after processing the entire
-queue.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/intel-svm.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index b3b125b332aa..207ef06ba3e1 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -9,7 +9,7 @@
- #define __INTEL_SVM_H__
- 
- /* Page Request Queue depth */
--#define PRQ_ORDER	2
-+#define PRQ_ORDER	4
- #define PRQ_RING_MASK	((0x1000 << PRQ_ORDER) - 0x20)
- #define PRQ_DEPTH	((0x1000 << PRQ_ORDER) >> 5)
- 
--- 
-2.25.1
-
+	 Andrew
