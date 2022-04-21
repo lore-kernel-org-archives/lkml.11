@@ -2,142 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 22:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B77C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 22:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391895AbiDUWsV (ORCPT
+        id S1391929AbiDUWwz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 18:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
+        Thu, 21 Apr 2022 18:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383069AbiDUWsS (ORCPT
+        with ESMTP id S1391912AbiDUWwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 18:48:18 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E77C4552A;
-        Thu, 21 Apr 2022 15:45:27 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id hf18so4392245qtb.0;
-        Thu, 21 Apr 2022 15:45:27 -0700 (PDT)
+        Thu, 21 Apr 2022 18:52:31 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B7F46164
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:49:39 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f4cd508549so42237677b3.22
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:49:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Avzb9cPznIodZfUy9syBNKrwQrszHEnglyfet/YgVsc=;
-        b=JAKqUSyQ//H2HGk1D1Uz4/fNWeCFHlMXaS4F2SznucIZZY9cksMSToyNDoypUzpxNH
-         GNOrp1wkR6lpzZutDFVGWRMPcY0HsXYsR0lttjn8OARMFErUNog6JC/kR0En/taRgXS3
-         DVMExq8xhuTgb58ELb3NBLEdUM9evw85yOv8gdPzT3NjLAmzCRdHBTmn2EbEAX+Cvcfc
-         5hPRcmAUMio8/PNeTRBA+vgCnbmFzf98SqZj/TKWMLhKAhaj+aM0e9fa8e5PXWcI2JGw
-         vUPuQ3QBpSb00023UwbV+es3e7Lu6RY/VoccMxSqfwAmDaYlC1ykLJAmz1OmtsMrVT4h
-         iIgg==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=xa3gPtQxiIaZQi4cOdGfuCjGLSoIDga5By+KnB16kpE=;
+        b=WDlmKDHDZdMB81vcHg2wWwoZSgM+ke7xK/5wdN1pMuGhi2snEtkLZRZojK+iBRPim8
+         j2+0mQW+4OmahwojdP5OQ9Bbj8QhExOsbr3qCM3HO4JesmgSTyiqJqnaQUlk1fxXIYDq
+         eMtNdpAESyzwOwHEP01uBBXFslQy4/EPjk5FrJQ5z86PhWDSqoOA5OyfI7wyu0Iwd0Z2
+         CZIB3lS9ph+NQvfYLwZ0w4NhZI6PRNorTGePhPTk9SpAoDEysEFQOYIvUYIjI5yH02dF
+         0qQfaKFYxHfeKQk035UW+lrYG5/G2ok2BQt4OI3iVW5xNSv67TCS8nig7Ddiqn9vC776
+         +fGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Avzb9cPznIodZfUy9syBNKrwQrszHEnglyfet/YgVsc=;
-        b=jXyG48y5HlqkmfxNtJvUzVm4umNDbKlMvvsaPic2qmxz4aos367eBo9K1Uw1/MEKft
-         GOkd4MGKJ6U3ltktyrAO5NLIl2GsvjXhjA2bY6QFZZGkwjaFlOqFiR7swQFKAWSjMWTG
-         g82mUeX2scf0p68kfO4Fal97k8p0lwQPtWmyAI64e97Nd6dCFmGzPc5dYr92CEWPDZhp
-         3llZlHDnBFSpEwbort7pkJ8wbkBLYMXixPei6USWK7OyiSnXEtsps+BnsWJ+mbCGFlHk
-         BczY9vNWl6ZmNSbKTCi9APK7eiURjQ9D8OBWPLwoQPjcRygciD2vylIHGGk6zem5Dpf1
-         RXZQ==
-X-Gm-Message-State: AOAM531BCOls2iiWripbmEq+fMkElLvUXDJyEWhUWfgTOyj2nvh/a6xi
-        tTekIdWP4NC4D5ZwYVw+0g==
-X-Google-Smtp-Source: ABdhPJz1DMMf+A8vueHnenV7mmSzpnr3Fl/F2nXEDYp5Wig7ajZ3KKZppvGQDl/fxIa+sxsdtJ2hSg==
-X-Received: by 2002:ac8:5855:0:b0:2f3:3eb4:51ee with SMTP id h21-20020ac85855000000b002f33eb451eemr1252301qth.644.1650581126629;
-        Thu, 21 Apr 2022 15:45:26 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id x13-20020a05620a258d00b0069c7468e123sm129831qko.122.2022.04.21.15.45.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 15:45:26 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net-next 2/2] ip6_gre: Make IP6GRE and IP6GRETAP devices always NETIF_F_LLTX
-Date:   Thu, 21 Apr 2022 15:45:02 -0700
-Message-Id: <f3d8ad04d0652fcbd95d3b22490123815cf66ba7.1650580763.git.peilin.ye@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1650580763.git.peilin.ye@bytedance.com>
-References: <cover.1650580763.git.peilin.ye@bytedance.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=xa3gPtQxiIaZQi4cOdGfuCjGLSoIDga5By+KnB16kpE=;
+        b=pCxh7PGwsVeIh1HS+sjCQzRkOvJxxTjZBBPqXw7c/KGgcHn+QhAFg1efqWI/Vv/aex
+         19UKyeEts+WIzS2Bmp0+JCiQ3NPZGes1KOdvHm3ni69ITXbT4DlKMxS9zL+Fk/ogKs1K
+         fMXZWH7v6c1AmW3+JN+MZfLdLNlVnrGi72sCZD+SKc8rxcwk3U+LgbQDawLGpOmw9gBc
+         kJpNbMcsNAYw6qBE414a/yQbU8A7agG19T9xKgMZ+3CgcpN06RXwL0UOgzOy025MLjH1
+         7RT77GcPUlNr/Q8VMVlxB7RnI1y8PyQJelVbhVHnSP69WzaLTJIjWO52OWSvVhUlCNEV
+         nImg==
+X-Gm-Message-State: AOAM531KjeZMqs6qYAmZdNMfKjAlz7HzrcduAJsnoBqRhxnJO/YWO58l
+        uDt+XklrJtfhpprlJ9DSmLvDcYKE2sCtLBK6tG6j
+X-Google-Smtp-Source: ABdhPJyTTCf2svggIwr9nVzNCUTwcDrim/NzWmwq3A8at+Bmgx+n1PF/K5eXW8gfPrSMeg8bcOnzbQUvmcRh2a6eONb+
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:1cc4:3b55:a67d:61fa])
+ (user=axelrasmussen job=sendgmr) by 2002:a5b:24e:0:b0:63d:cba0:3d55 with SMTP
+ id g14-20020a5b024e000000b0063dcba03d55mr1880487ybp.613.1650581378449; Thu,
+ 21 Apr 2022 15:49:38 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 15:49:28 -0700
+In-Reply-To: <20220421224928.1848230-1-axelrasmussen@google.com>
+Message-Id: <20220421224928.1848230-2-axelrasmussen@google.com>
+Mime-Version: 1.0
+References: <20220421224928.1848230-1-axelrasmussen@google.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH 2/2] selftests: vm: fix shellcheck warnings in run_vmtests.sh
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Axel Rasmussen <axelrasmussen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+These might not be issues yet, but they make the script more fragile.
+Also by fixing them we give a better example to future readers, who
+might copy/paste or otherwise re-use snippets from our script.
 
-Recently we made o_seqno atomic_t.  Stop special-casing TUNNEL_SEQ, and
-always mark IP6GRE[TAP] devices as NETIF_F_LLTX, since we no longer need
-the TX lock (&txq->_xmit_lock).
+- Use "read -r", since we don't ever want read to be interpreting '\'
+  characters as escape sequences...
+- Quote variables, to deal with spaces properly.
+- Use $() instead of the older and harder-to-nest ``.
+- Get rid of superfluous "$" prefixes inside arithmetic $(()).
 
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
 ---
- net/ipv6/ip6_gre.c | 34 +++++++++++++---------------------
- 1 file changed, 13 insertions(+), 21 deletions(-)
+ tools/testing/selftests/vm/run_vmtests.sh | 55 +++++++++++------------
+ 1 file changed, 27 insertions(+), 28 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 5136959b3dc5..4e37f7c29900 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -382,11 +382,6 @@ static struct ip6_tnl *ip6gre_tunnel_locate(struct net *net,
- 		goto failed_free;
+diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
+index 2d5a3da42cbe..a2302b5faaf2 100755
+--- a/tools/testing/selftests/vm/run_vmtests.sh
++++ b/tools/testing/selftests/vm/run_vmtests.sh
+@@ -9,12 +9,12 @@ mnt=./huge
+ exitcode=0
  
- 	ip6gre_tnl_link_config(nt, 1);
--
--	/* Can use a lockless transmit, unless we generate output sequences */
--	if (!(nt->parms.o_flags & TUNNEL_SEQ))
--		dev->features |= NETIF_F_LLTX;
--
- 	ip6gre_tunnel_link(ign, nt);
- 	return nt;
+ #get huge pagesize and freepages from /proc/meminfo
+-while read name size unit; do
++while read -r name size unit; do
+ 	if [ "$name" = "HugePages_Free:" ]; then
+-		freepgs=$size
++		freepgs="$size"
+ 	fi
+ 	if [ "$name" = "Hugepagesize:" ]; then
+-		hpgsize_KB=$size
++		hpgsize_KB="$size"
+ 	fi
+ done < /proc/meminfo
  
-@@ -1445,26 +1440,23 @@ static void ip6gre_tunnel_setup(struct net_device *dev)
- static void ip6gre_tnl_init_features(struct net_device *dev)
- {
- 	struct ip6_tnl *nt = netdev_priv(dev);
-+	__be16 flags;
+@@ -30,27 +30,26 @@ needmem_KB=$((half_ufd_size_MB * 2 * 1024))
  
--	dev->features		|= GRE6_FEATURES;
-+	dev->features		|= GRE6_FEATURES | NETIF_F_LLTX;
- 	dev->hw_features	|= GRE6_FEATURES;
+ #set proper nr_hugepages
+ if [ -n "$freepgs" ] && [ -n "$hpgsize_KB" ]; then
+-	nr_hugepgs=`cat /proc/sys/vm/nr_hugepages`
++	nr_hugepgs=$(cat /proc/sys/vm/nr_hugepages)
+ 	needpgs=$((needmem_KB / hpgsize_KB))
+ 	tries=2
+-	while [ $tries -gt 0 ] && [ $freepgs -lt $needpgs ]; do
+-		lackpgs=$(( $needpgs - $freepgs ))
++	while [ "$tries" -gt 0 ] && [ "$freepgs" -lt "$needpgs" ]; do
++		lackpgs=$((needpgs - freepgs))
+ 		echo 3 > /proc/sys/vm/drop_caches
+-		echo $(( $lackpgs + $nr_hugepgs )) > /proc/sys/vm/nr_hugepages
+-		if [ $? -ne 0 ]; then
++		if ! echo $((lackpgs + nr_hugepgs)) > /proc/sys/vm/nr_hugepages; then
+ 			echo "Please run this test as root"
+ 			exit $ksft_skip
+ 		fi
+-		while read name size unit; do
++		while read -r name size unit; do
+ 			if [ "$name" = "HugePages_Free:" ]; then
+ 				freepgs=$size
+ 			fi
+ 		done < /proc/meminfo
+ 		tries=$((tries - 1))
+ 	done
+-	if [ $freepgs -lt $needpgs ]; then
++	if [ "$freepgs" -lt "$needpgs" ]; then
+ 		printf "Not enough huge pages available (%d < %d)\n" \
+-		       $freepgs $needpgs
++		       "$freepgs" "$needpgs"
+ 		exit 1
+ 	fi
+ else
+@@ -60,11 +59,11 @@ fi
  
--	if (!(nt->parms.o_flags & TUNNEL_SEQ)) {
--		/* TCP offload with GRE SEQ is not supported, nor
--		 * can we support 2 levels of outer headers requiring
--		 * an update.
--		 */
--		if (!(nt->parms.o_flags & TUNNEL_CSUM) ||
--		    nt->encap.type == TUNNEL_ENCAP_NONE) {
--			dev->features    |= NETIF_F_GSO_SOFTWARE;
--			dev->hw_features |= NETIF_F_GSO_SOFTWARE;
--		}
-+	flags = nt->parms.o_flags;
+ #filter 64bit architectures
+ ARCH64STR="arm64 ia64 mips64 parisc64 ppc64 ppc64le riscv64 s390x sh64 sparc64 x86_64"
+-if [ -z $ARCH ]; then
+-  ARCH=`uname -m 2>/dev/null | sed -e 's/aarch64.*/arm64/'`
++if [ -z "$ARCH" ]; then
++	ARCH=$(uname -m 2>/dev/null | sed -e 's/aarch64.*/arm64/')
+ fi
+ VADDR64=0
+-echo "$ARCH64STR" | grep $ARCH && VADDR64=1
++echo "$ARCH64STR" | grep "$ARCH" && VADDR64=1
  
--		/* Can use a lockless transmit, unless we generate
--		 * output sequences
--		 */
--		dev->features |= NETIF_F_LLTX;
--	}
-+	/* TCP offload with GRE SEQ is not supported, nor can we support 2
-+	 * levels of outer headers requiring an update.
-+	 */
-+	if (flags & TUNNEL_SEQ)
-+		return;
-+	if (flags & TUNNEL_CSUM && nt->encap.type != TUNNEL_ENCAP_NONE)
-+		return;
-+
-+	dev->features |= NETIF_F_GSO_SOFTWARE;
-+	dev->hw_features |= NETIF_F_GSO_SOFTWARE;
+ # Usage: run_test [test binary] [arbitrary test arguments...]
+ run_test() {
+@@ -85,28 +84,28 @@ run_test() {
+ 	fi
  }
  
- static int ip6gre_tunnel_init_common(struct net_device *dev)
+-mkdir $mnt
+-mount -t hugetlbfs none $mnt
++mkdir "$mnt"
++mount -t hugetlbfs none "$mnt"
+ 
+ run_test ./hugepage-mmap
+ 
+-shmmax=`cat /proc/sys/kernel/shmmax`
+-shmall=`cat /proc/sys/kernel/shmall`
++shmmax=$(cat /proc/sys/kernel/shmmax)
++shmall=$(cat /proc/sys/kernel/shmall)
+ echo 268435456 > /proc/sys/kernel/shmmax
+ echo 4194304 > /proc/sys/kernel/shmall
+ run_test ./hugepage-shm
+-echo $shmmax > /proc/sys/kernel/shmmax
+-echo $shmall > /proc/sys/kernel/shmall
++echo "$shmmax" > /proc/sys/kernel/shmmax
++echo "$shmall" > /proc/sys/kernel/shmall
+ 
+ run_test ./map_hugetlb
+ 
+-run_test ./hugepage-mremap $mnt/huge_mremap
+-rm -f $mnt/huge_mremap
++run_test ./hugepage-mremap "$mnt"/huge_mremap
++rm -f "$mnt"/huge_mremap
+ 
+ run_test ./hugepage-vmemmap
+ 
+-run_test ./hugetlb-madvise $mnt/madvise-test
+-rm -f $mnt/madvise-test
++run_test ./hugetlb-madvise "$mnt"/madvise-test
++rm -f "$mnt"/madvise-test
+ 
+ echo "NOTE: The above hugetlb tests provide minimal coverage.  Use"
+ echo "      https://github.com/libhugetlbfs/libhugetlbfs.git for"
+@@ -124,13 +123,13 @@ run_test ./gup_test -ct -F 0x1 0 19 0x1000
+ run_test ./userfaultfd anon 20 16
+ # Test requires source and destination huge pages.  Size of source
+ # (half_ufd_size_MB) is passed as argument to test.
+-run_test ./userfaultfd hugetlb $half_ufd_size_MB 32
++run_test ./userfaultfd hugetlb "$half_ufd_size_MB" 32
+ run_test ./userfaultfd shmem 20 16
+ 
+ #cleanup
+-umount $mnt
+-rm -rf $mnt
+-echo $nr_hugepgs > /proc/sys/vm/nr_hugepages
++umount "$mnt"
++rm -rf "$mnt"
++echo "$nr_hugepgs" > /proc/sys/vm/nr_hugepages
+ 
+ run_test ./compaction_test
+ 
 -- 
-2.20.1
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
