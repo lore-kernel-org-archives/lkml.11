@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC45C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC128C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389053AbiDUONj (ORCPT
+        id S1354323AbiDUONq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        Thu, 21 Apr 2022 10:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389136AbiDUONO (ORCPT
+        with ESMTP id S1388989AbiDUONc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:13:14 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8536D3969A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:24 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id z16so5123078pfh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:24 -0700 (PDT)
+        Thu, 21 Apr 2022 10:13:32 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE3B39801
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:37 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id j17so5111469pfi.9
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:10:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iWDAJ1Qy8kTssfxxRg0WHjshQinm3EhF18pt1sufO9Y=;
-        b=ARPhf0+NIPljSItpJM/3qj1GaiPnpOIQ5yiVhM1As9J7K+JOxJfNF20z3PkzsiOwYd
-         Yo8LecDRlqngIlzqPbzLcoRlEKg1uaTK2BI1fzyBuWTLYxpxGu7Gc05Ln3q/TP3e9Dce
-         3f8ROuCrT9qDT1gwWUzZULiehRFjdhHnqmj/AGdMiUZMh/EYVDXY9xEdYfOiNcwpM2et
-         laP1GRGLV1fhKfmZJyufXp20C79TS6IGDKus+0roiaZ1DTGQr+B+ilSZYXwpY6ahAl5E
-         gLk4P+pI2M2CXedHrafGP9HxxCxdGBItw1lXxv0EvUR4N70W/Z0LgQjzW+zeSVxv7xms
-         Iy7Q==
+        bh=xotWSQoi2wlC3vMI8lQ8RpO96nR6JNjKt6GYA46wjrE=;
+        b=pjNI1Q77AFi1u+2joRb0n9LSA4X44lF8YcvmFtsrruF/a/zCTo5TK5y5YqePbWVxmY
+         YDSgkD0uIWOyy7ksc2kRKGtVYubOS13sQfyEuXJbnEK0YJDWcJoT+OmXPHMy98yL4j+x
+         d4FoRqX/+hfZLxwgwm7E6TeDCZAeeMjiv7S1yhN2Jh+RD63jE/7FSBMKwGd2mXdDL1gV
+         TIgcQOM12/b/8RA3t0DpMZG++C5r47qKmKNHTU5vPGvRX4G0tBUbGcF4dzP1ZgNLVph7
+         D+H9ZItAjMy7kOGJL+RueOqGvZIAiJCHxzxlgxK669spcxZYaRBf1zQwsrMdtwO/Q8Om
+         6hqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iWDAJ1Qy8kTssfxxRg0WHjshQinm3EhF18pt1sufO9Y=;
-        b=GuFDVdz1u5MbOe4XoswgWk1hF6Pgm5bDgvbDlzobgZAmIhE7+zNdqNAROS20I3BbJT
-         Ao9SIy5HLVSOY9f+3uB+/QJdULENWdvBFXdMoc/pGy3C06SwhZJ9tJEHDhhYL4vcS1FT
-         q1pimgy4cAGQFN1hXVAiSu7WaJt7qELUNb4b5Aeq+H0KQAC5lmLVLA5FhymWFA8ju0It
-         67hKErN7xfZjnNK/iezCETiTnNwbjqnUeoVLa0ZwYCmDx69SuqP8WqTb1qM9ug4adGlM
-         +c5JdhOtebbmZIX9ppnnCbU4SERH3isWgkxMv4p3rqfmUdKzRn0yBu/AUF856LaZNBFu
-         OnZw==
-X-Gm-Message-State: AOAM5316otuJwLZphdfc+FSRxAsRSpxYcWjDlH/KwnGuxbfeBlUijvxY
-        CiOSOwsbC7V3Y7G/zy7p1FIkB+/X2Ro=
-X-Google-Smtp-Source: ABdhPJzFYS2iztHsIYjhhFQF6BoLF2p9jFo0suVT8qTBXhqQw2Ler+RCk+rJWsrVfl3sGRT8kmCulw==
-X-Received: by 2002:a62:170b:0:b0:50a:6901:b633 with SMTP id 11-20020a62170b000000b0050a6901b633mr24003552pfx.34.1650550223798;
-        Thu, 21 Apr 2022 07:10:23 -0700 (PDT)
+        bh=xotWSQoi2wlC3vMI8lQ8RpO96nR6JNjKt6GYA46wjrE=;
+        b=t6d59nKsoP7NwUHExNMMFXNqNwqtRUYWAVjHZaUVzxE9A0cuO/SPlnr6Jh6bGba3LV
+         b2AtsdTMeqLREEXsAdPoNgTvdAn84C3mYufUCoy8WhJhbD7FnF6SVS+ox7K8Flcx9Jxy
+         MkfECstBaKDL33ZmIbWOhjP2iMw3UzNktc6OAvaZQ2twKjh8+Nm2M1p2/VJsxy+vBQ5o
+         7/mVSEwt4JMmTgNKpjMlO1hnjbDCsUiOOlqND6l4K+vxMspKvPYm9KdeqEJ8uTkTv8em
+         cdy1Th48uKJkYViZh/aSVqxFktkacUoIxEkc+3K0Z7vrDSCZo8QwuNpbF3Owbx0QpFk6
+         PnGg==
+X-Gm-Message-State: AOAM530NHXdaozUefqrIrTQ+CDgCD8lB0opQotv2/bMpoiWoH79QSlX9
+        B4DGXDx1NRffJMD6fmPbFhCkb/X24F0=
+X-Google-Smtp-Source: ABdhPJw83mvSMViR2B7qB7NFwgKLwu8gRFDFTiq5fcykxX1b8HibPFkvTIxPGHXq7xlNZ+v659WgSg==
+X-Received: by 2002:a63:4945:0:b0:398:efe8:3b7a with SMTP id y5-20020a634945000000b00398efe83b7amr24313534pgk.106.1650550236962;
+        Thu, 21 Apr 2022 07:10:36 -0700 (PDT)
 Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id y30-20020a056a001c9e00b004fa9246adcbsm23261881pfw.144.2022.04.21.07.10.22
+        by smtp.gmail.com with ESMTPSA id i1-20020a17090a650100b001cd8e9ea22asm2908963pjj.52.2022.04.21.07.10.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Apr 2022 07:10:23 -0700 (PDT)
+        Thu, 21 Apr 2022 07:10:36 -0700 (PDT)
 From:   Lai Jiangshan <jiangshanlai@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Borislav Petkov <bp@alien8.de>,
@@ -61,9 +61,9 @@ Cc:     Borislav Petkov <bp@alien8.de>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH V6 2/8] x86/entry: Switch the stack after error_entry() returns
-Date:   Thu, 21 Apr 2022 22:10:49 +0800
-Message-Id: <20220421141055.316239-3-jiangshanlai@gmail.com>
+Subject: [PATCH V6 4/8] x86/entry: Move cld to the start of idtentry macro
+Date:   Thu, 21 Apr 2022 22:10:51 +0800
+Message-Id: <20220421141055.316239-5-jiangshanlai@gmail.com>
 X-Mailer: git-send-email 2.19.1.6.gb485710b
 In-Reply-To: <20220421141055.316239-1-jiangshanlai@gmail.com>
 References: <20220421141055.316239-1-jiangshanlai@gmail.com>
@@ -75,74 +75,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-error_entry() calls sync_regs(), and fixup_bad_iret() before sync_regs()
-if it is a fault from bad IRET, to copy the pt_regs to the kernel stack
-and switches the kernel stack directly after sync_regs().
+Make it next to CLAC
 
-But error_entry() itself is also a function call, so the code has to
-stash the address error_entry() is going to return to, in %r12 and
-makes the work complicated.
-
-Move the code of switching stack after error_entry() and get rid of the
-need to handle the return address.
-
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
 Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
- arch/x86/entry/entry_64.S | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ arch/x86/entry/entry_64.S | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index ecbfca3cc18c..ca3e99e08a44 100644
+index b1cef3b0a7ab..ab6ab6d3dab5 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -326,6 +326,8 @@ SYM_CODE_END(ret_from_fork)
- .macro idtentry_body cfunc has_error_code:req
+@@ -371,6 +371,7 @@ SYM_CODE_START(\asmsym)
+ 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
+ 	ENDBR
+ 	ASM_CLAC
++	cld
  
- 	call	error_entry
-+	movq	%rax, %rsp			/* switch to the task stack if from userspace */
-+	ENCODE_FRAME_POINTER
- 	UNWIND_HINT_REGS
+ 	.if \has_error_code == 0
+ 		pushq	$-1			/* ORIG_RAX: no syscall to restart */
+@@ -439,6 +440,7 @@ SYM_CODE_START(\asmsym)
+ 	UNWIND_HINT_IRET_REGS
+ 	ENDBR
+ 	ASM_CLAC
++	cld
  
- 	movq	%rsp, %rdi			/* pt_regs pointer into 1st argument*/
-@@ -1002,14 +1004,10 @@ SYM_CODE_START_LOCAL(error_entry)
- 	/* We have user CR3.  Change to kernel CR3. */
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
+ 	pushq	$-1			/* ORIG_RAX: no syscall to restart */
  
-+	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- .Lerror_entry_from_usermode_after_swapgs:
- 	/* Put us onto the real thread stack. */
--	popq	%r12				/* save return addr in %12 */
--	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
- 	call	sync_regs
--	movq	%rax, %rsp			/* switch stack */
--	ENCODE_FRAME_POINTER
--	pushq	%r12
- 	RET
+@@ -495,6 +497,7 @@ SYM_CODE_START(\asmsym)
+ 	UNWIND_HINT_IRET_REGS
+ 	ENDBR
+ 	ASM_CLAC
++	cld
  
  	/*
-@@ -1041,6 +1039,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 */
- .Lerror_entry_done_lfence:
- 	FENCE_SWAPGS_KERNEL_ENTRY
-+	leaq	8(%rsp), %rax			/* return pt_regs pointer */
- 	RET
+ 	 * If the entry is from userspace, switch stacks and treat it as
+@@ -557,6 +560,7 @@ SYM_CODE_START(\asmsym)
+ 	UNWIND_HINT_IRET_REGS offset=8
+ 	ENDBR
+ 	ASM_CLAC
++	cld
  
- .Lbstep_iret:
-@@ -1061,12 +1060,9 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * Pretend that the exception came from user mode: set up pt_regs
- 	 * as if we faulted immediately after IRET.
- 	 */
--	popq	%r12				/* save return addr in %12 */
--	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
-+	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- 	call	fixup_bad_iret
--	mov	%rax, %rsp
--	ENCODE_FRAME_POINTER
--	pushq	%r12
-+	mov	%rax, %rdi
- 	jmp	.Lerror_entry_from_usermode_after_swapgs
- SYM_CODE_END(error_entry)
+ 	/* paranoid_entry returns GS information for paranoid_exit in EBX. */
+ 	call	paranoid_entry
+@@ -882,7 +886,6 @@ SYM_CODE_END(xen_failsafe_callback)
+  */
+ SYM_CODE_START_LOCAL(paranoid_entry)
+ 	UNWIND_HINT_FUNC
+-	cld
+ 	PUSH_AND_CLEAR_REGS save_ret=1
+ 	ENCODE_FRAME_POINTER 8
  
+@@ -1000,7 +1003,6 @@ SYM_CODE_END(paranoid_exit)
+  */
+ SYM_CODE_START_LOCAL(error_entry)
+ 	UNWIND_HINT_FUNC
+-	cld
+ 	testb	$3, CS+8(%rsp)
+ 	jz	.Lerror_kernelspace
+ 
+@@ -1134,6 +1136,7 @@ SYM_CODE_START(asm_exc_nmi)
+ 	 */
+ 
+ 	ASM_CLAC
++	cld
+ 
+ 	/* Use %rdx as our temp variable throughout */
+ 	pushq	%rdx
+@@ -1153,7 +1156,6 @@ SYM_CODE_START(asm_exc_nmi)
+ 	 */
+ 
+ 	swapgs
+-	cld
+ 	FENCE_SWAPGS_USER_ENTRY
+ 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdx
+ 	movq	%rsp, %rdx
 -- 
 2.19.1.6.gb485710b
 
