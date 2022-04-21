@@ -2,93 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238523AbiDUJRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52914 "EHLO
+        id S1387445AbiDUJSB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 05:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381323AbiDUJRC (ORCPT
+        with ESMTP id S1387477AbiDUJRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:17:02 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9570924F1A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:13 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23L8AQm2001812
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=gbTkmP4OC3+yQ08kGFbROr+SigHxueVMyVvJ18BOaGc=;
- b=AqFjd4BcS7L37OpSYyEDJpQrEoQO61lMqAPq3hXub5ihjhDx/GWOWoEgWl44crzz7LIe
- Sr3U8UJ/UygSBtU7AVoBnCJoXw7Y1/HKdGrlbP/QOXZ30vqoVQjZ+N3tBruNdaj7iBzb
- 2/ov/q4FvP3SGdBjg5Kyn5VzgpTe7CxsosM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fhub7epjj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:12 -0700
-Received: from twshared8053.07.ash9.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 02:14:11 -0700
-Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
-        id DD73F7CA75F8; Thu, 21 Apr 2022 02:14:01 -0700 (PDT)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     <io-uring@vger.kernel.org>
-CC:     <axboe@kernel.dk>, <asml.silence@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
-        Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH 0/6] return an error when cqe is dropped
-Date:   Thu, 21 Apr 2022 02:13:39 -0700
-Message-ID: <20220421091345.2115755-1-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 21 Apr 2022 05:17:44 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9A4EB3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:55 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ec04a2ebadso45126067b3.12
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:14:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V1uWVuZ6+A0BASrhtcS2ivTUwFpVOwbpQq4d16gjWgQ=;
+        b=KfviBbNUxTMiBSnCXE3OrnaDK39G+p2hghIMD25j0KUp7ZLrh+Bw0OZCCeC1hIrSfM
+         pTwQMys9R1SkEgZPN+U1YplF3DXwzr61jkkU3Mwwa78nUXpDeRMWrFKrBUAfDTLhyPsM
+         ciErq4lfgYuxNGVDSG40Gj/QRvjJLmtgAGJLU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V1uWVuZ6+A0BASrhtcS2ivTUwFpVOwbpQq4d16gjWgQ=;
+        b=Ta2So1GZ+R4XdCu1JOFZKTSnd991kAp3MCAfiD98AgO2V8XOF6qBKxOrEM/2aGp6zv
+         k/Wa9BQ+CvnB91Dy9CM+VduU0oWzCrbAn6KCZBoAjGxuJeba8HJgBmH++NLiOfnpVDKX
+         jo2+0tomTaeqZC7sDP15Zn1iPWJbAbLui19jy9OVtApA1AHXvWAQUpljM30+j0ObV+qr
+         5Dzyp7CJ0g72rs5r2UlTvEbudT32OpTc8WpmcfQl6mOW0Ly0AMBY+vXNeptjNME0Uxno
+         m7KSVQOjMCrrNpj+ZMmtUeX2OzukOEZ05WmwUtMYvSreubh1xUPtcJxxuIiXyB/g4+qN
+         kOtw==
+X-Gm-Message-State: AOAM5318PMYu5lkFCE5KtMssr42CB4pd9Gr35Zmaymtpb8HjRKpEg6+J
+        mQAK82vTBiwWvYysgcf4wfm+2NqKPldbx69VOlUuMA==
+X-Google-Smtp-Source: ABdhPJy9nYqH8i9c1NYzIrrrk2RUAbZ7bXTS0+WD7NPVL44tYER6HZDSPvwCms4t/XCM0TjMDZvIAjxJ9Py7xiUDcss=
+X-Received: by 2002:a0d:eb46:0:b0:2ef:4946:544 with SMTP id
+ u67-20020a0deb46000000b002ef49460544mr25008925ywe.286.1650532494832; Thu, 21
+ Apr 2022 02:14:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: TCUf6VxSuEbk3ZuBvun3zowAf_6ATtlM
-X-Proofpoint-ORIG-GUID: TCUf6VxSuEbk3ZuBvun3zowAf_6ATtlM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_06,2022-04-20_01,2022-02-23_01
+References: <20220420130527.23200-1-rex-bc.chen@mediatek.com>
+ <20220420130527.23200-6-rex-bc.chen@mediatek.com> <90ad46a5-8b67-e9ca-25df-2a7cc6110bff@collabora.com>
+In-Reply-To: <90ad46a5-8b67-e9ca-25df-2a7cc6110bff@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Thu, 21 Apr 2022 17:14:43 +0800
+Message-ID: <CAGXv+5FL=YdjonwBWV9ZkRf3jstCsxCEonmH02g2+1PAopObYg@mail.gmail.com>
+Subject: Re: [PATCH V2 05/12] clk: mediatek: reset: Add reset.h
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
+        sboyd@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
+        chun-jie.chen@mediatek.com, runyang.chen@mediatek.com,
+        linux-kernel@vger.kernel.org, allen-kh.cheng@mediatek.com,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series addresses a rare but real error condition when a CQE is
-dropped. Many applications rely on 1 SQE resulting in 1 CQE and may even
-block waiting for the CQE. In overflow conditions if the GFP_ATOMIC
-allocation fails, the CQE is dropped and a counter is incremented. Howeve=
-r
-the application is not actively signalled that something bad has
-happened. We would like to indicate this error condition to the
-application but in a way that does not rely on the application doing
-invasive changes such as checking a flag before each wait.
+On Thu, Apr 21, 2022 at 5:07 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> Il 20/04/22 15:05, Rex-BC Chen ha scritto:
+> > Add a new file "reset.h" to place some definitions for clock reset.
+> >
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+>
+> Right now, you're adding the enum mtk_reset_version and *then* you're
+> moving it to the new reset.h header, but does that really make sense?
+>
+> I think that this series would be cleaner if you add this header from
+> the start, so that you place the aforementioned enumeration directly
+> in here...
+>
+> ...so we would have a commit that moves the mtk_clk_register_rst_ctrl()
+> function from clk-mtk.h to a newly created reset.h, mentioning in the
+> commit description that it's all about preparing for a coming cleanup,
+> then the addition of enum mtk_reset_version would be in
+> `clk: mediatek: reset: Merge and revise reset register function` directly
+> into reset.h.
 
-This series returns an error code to the application when the error hits,
-and then resets the error condition. If the application is ok with this
-error it can continue as is, or more likely it can clean up sanely.
+And probably name it mtk-reset.h ? 'reset.h' is a bit too generic, and
+I'm sure there are multiple files with the same name throughout the
+kernel source tree.
 
-Patches 1&2 add tracing for overflows
-Patches 3&4 prep for adding this error
-Patch 5 is the main one returning an error
-Patch 6 allows liburing to test these conditions more easily with IOPOLL
-
-Dylan Yudaken (6):
-  io_uring: add trace support for CQE overflow
-  io_uring: trace cqe overflows
-  io_uring: rework io_uring_enter to simplify return value
-  io_uring: use constants for cq_overflow bitfield
-  io_uring: return an error when cqe is dropped
-  io_uring: allow NOP opcode in IOPOLL mode
-
- fs/io_uring.c                   | 89 ++++++++++++++++++++++-----------
- include/trace/events/io_uring.h | 42 +++++++++++++++-
- 2 files changed, 102 insertions(+), 29 deletions(-)
-
-
-base-commit: 7c648b7d6186c59ed3a0e0ae4b774aaf4b415ef2
---=20
-2.30.2
-
+ChenYu
