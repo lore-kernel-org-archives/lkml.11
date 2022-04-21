@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 244CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB547C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387343AbiDUJLE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S236314AbiDUJLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 05:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387331AbiDUJKs (ORCPT
+        with ESMTP id S1387348AbiDUJKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:10:48 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5581B22BD9;
-        Thu, 21 Apr 2022 02:07:59 -0700 (PDT)
+        Thu, 21 Apr 2022 05:10:54 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D8323179;
+        Thu, 21 Apr 2022 02:08:04 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 649651F45275
+        with ESMTPSA id 90C341F45275
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650532078;
-        bh=q7E0XYrULEygpCoWTbaEgauMlG2r6aEoMPACx1vJZxI=;
+        s=mail; t=1650532083;
+        bh=keF4Fz3OGotsfU3GInulCO4PoeVxbMwTjw3d7ZbAlvk=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oIE5TBnrzrghqjpm4TSR7PTB7dNpeBWr/7Q3Ecj72RH+o3zHcPL58jnTXHnQ1RIXA
-         s03A8H/qYgLvjQ4nxquXduNnxKevOwn2KSOJlO9WuEkLSNvYlGN7kdHVq5c8AI3Xv7
-         7wmHlJkTV1uKNWG1+Fs/0dia/jYVf6f9PfBgkxi/mfc8EhCy20eZ2OA497lmh6fkfZ
-         XIGfVQV3c6lW43W2jwBjw/lkffjipZ5tB4EwMVa34mV64fBoXUmz6ZA3fHvGNPoI0s
-         pfKHq77r3dPGun57eNVlM7jiBrR4ElloWCAUxJrACpMBxQ1YwVGucF9btcoLJS57L5
-         xtQ/jmhwHEcGA==
-Message-ID: <90ad46a5-8b67-e9ca-25df-2a7cc6110bff@collabora.com>
-Date:   Thu, 21 Apr 2022 11:07:54 +0200
+        b=Bb1MiLDt5WVRhc5pZQS6j2l7V3Hq4uHiDP+kCfIHKQuV+aqzqwjwxvIDAWQu97Lzh
+         LfdVIirABReOnE3Hqa2Ebv9ZPH8R/SoHojTpqfPSdOvAHH3i7is1k0KSG5xjO64gwU
+         zTv9w+MhorhEHNU1QJtAQcUiDAjyfEnjChnJm+ANNQik4bWt2fn865cvQ0S2Nm2rIN
+         cifi7lYzgGPRKdltTgbi5YuO81S3l5lhwbQXuQAd/q4L8ycRcZCGkPp7c6zfPGbM+x
+         d8EldGH3a4j1KWXNZ0dAWWgsgjG/0t0VfbOTMhGVdSNluigdh2CrTfQlx3Xq+sfbet
+         oeUtk2OFWpRLQ==
+Message-ID: <d833bb7f-ee48-602d-9793-5d717d3b5582@collabora.com>
+Date:   Thu, 21 Apr 2022 11:07:59 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH V2 05/12] clk: mediatek: reset: Add reset.h
+Subject: Re: [PATCH V2 03/12] clk: mediatek: reset: Refine functions of
+ set_clr
 Content-Language: en-US
 To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
         sboyd@kernel.org
@@ -46,10 +46,10 @@ Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de,
         linux-mediatek@lists.infradead.org,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220420130527.23200-1-rex-bc.chen@mediatek.com>
- <20220420130527.23200-6-rex-bc.chen@mediatek.com>
+ <20220420130527.23200-4-rex-bc.chen@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220420130527.23200-6-rex-bc.chen@mediatek.com>
+In-Reply-To: <20220420130527.23200-4-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -57,26 +57,33 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 20/04/22 15:05, Rex-BC Chen ha scritto:
-> Add a new file "reset.h" to place some definitions for clock reset.
+> To make driver more readable, revise functions of set_clr.
+> - Add to_rst_data().
+> - Extract common code within assert and deassert to
+>    mtk_reset_update_set_clr().
 > 
 > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>   drivers/clk/mediatek/reset.c | 32 +++++++++++++++++++++-----------
+>   1 file changed, 21 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+> index 9110d0b4229f..6574b19daf0f 100644
+> --- a/drivers/clk/mediatek/reset.c
+> +++ b/drivers/clk/mediatek/reset.c
+> @@ -20,26 +20,36 @@ struct mtk_reset {
+>   	struct reset_controller_dev rcdev;
+>   };
+>   
+> -static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+> -	unsigned long id)
+> +static inline struct mtk_reset *to_rst_data(struct reset_controller_dev *rcdev)
 
-Right now, you're adding the enum mtk_reset_version and *then* you're
-moving it to the new reset.h header, but does that really make sense?
+to_mtk_reset() looks more consistent, as many developers are using the naming
+"to_{struct_name}".
 
-I think that this series would be cleaner if you add this header from
-the start, so that you place the aforementioned enumeration directly
-in here...
+Also, can you please mention the indentation fixes in the commit description?
 
-...so we would have a commit that moves the mtk_clk_register_rst_ctrl()
-function from clk-mtk.h to a newly created reset.h, mentioning in the
-commit description that it's all about preparing for a coming cleanup,
-then the addition of enum mtk_reset_version would be in
-`clk: mediatek: reset: Merge and revise reset register function` directly
-into reset.h.
-
-Does that sound right to you?
-
-Cheers,
+Thanks,
 Angelo
 
