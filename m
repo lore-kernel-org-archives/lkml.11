@@ -2,100 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F95EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386489AbiDUINf (ORCPT
+        id S1386535AbiDUINk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
+        Thu, 21 Apr 2022 04:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386526AbiDUIM5 (ORCPT
+        with ESMTP id S1386558AbiDUINC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:12:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955FC6398;
-        Thu, 21 Apr 2022 01:10:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E69EB8233C;
-        Thu, 21 Apr 2022 08:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA53C385B7;
-        Thu, 21 Apr 2022 08:10:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650528605;
-        bh=/W8IliiCajYPso0oJDKeh6+LCmFpM9Iq4B+vqL+KHZ4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UtxzIvoNdabVELeWIz3V4TclK6xXmq9BMhzfujlm+gFWBoT8rY4aF9GfRX2ccT1vn
-         wDcqT+y+x552llxpM0QL7xb0FLdoLZIo54LK520enQwUc0BbOcQrzNYQiwfY0jTUpi
-         4qNX03YnasClaEAYsxgd8xc9OOZJfmG9mYcvjA+pDQdP70iw48miJ+2lz2WSgyuBbq
-         tmIpimyZgrqkiOqSIOS0XySlX/JLBOUliDNfhAYHogz26OJgf2EClSsKjy3h8/tJZB
-         X4KNgNCuxEid0pr34FAxb4UcPVrvYQRtv4HO3faFNFitLqqrQosV4+qH8YLlMGH9LJ
-         cYb7+DzLwXx7g==
-Received: by mail-wr1-f41.google.com with SMTP id x18so5538452wrc.0;
-        Thu, 21 Apr 2022 01:10:04 -0700 (PDT)
-X-Gm-Message-State: AOAM532gQMIQslZvDRR/JDrpCg7+UnB5TuMBR/wPI+cl36iApq4b3aAc
-        1BMSjNNEWyVyaARlUmKsGksttyissLHt1+hFBjU=
-X-Google-Smtp-Source: ABdhPJw9RSqdGWpafgMW97qQu7yaTHgV5jKD56P0eBxUAQhkvQ6X95c920XjmeJj56kP8+QCXLYB93ISvku4scoF6r4=
-X-Received: by 2002:a5d:6389:0:b0:207:a7d8:2b64 with SMTP id
- p9-20020a5d6389000000b00207a7d82b64mr18151004wru.12.1650528603264; Thu, 21
- Apr 2022 01:10:03 -0700 (PDT)
+        Thu, 21 Apr 2022 04:13:02 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48418167D1;
+        Thu, 21 Apr 2022 01:10:12 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AY/H+3qoHaQWaOJZTSW6YX/fDBHNeBmIOZBIvgKr?=
+ =?us-ascii?q?LsJaIsI5as4F+vmoWCmuHbqmOMWH1eNxzaIm1pBkGsZXXzYdmTlNspHg3QiMRo?=
+ =?us-ascii?q?6IpJ/zDcB6oYHn6wu4v7a5fx5xHLIGGdajYd1eEzvuWGuWn/SkUOZ2gHOKmUra?=
+ =?us-ascii?q?eYnkpHGeIdQ964f5ds79g6mJXqYjha++9kYuaT/z3YDdJ6RYtWo4nw/7rRCdUg?=
+ =?us-ascii?q?RjHkGhwUmrSyhx8lAS2e3E9VPrzLEwqRpfyatE88uWSH44vwFwll1418SvBCvv?=
+ =?us-ascii?q?9+lr6WkYMBLDPPwmSkWcQUK+n6vRAjnVqlP9la7xHMgEK49mKt4kZJNFlr4G5T?=
+ =?us-ascii?q?xw4eKPKg/g1XQRaEj1lIOtN/7qvzX2X6JbIkBeZLSW9qxlpJARsVWECwc57CH9?=
+ =?us-ascii?q?P+dQWMjcIaQqJhv7wy7W+IsFsjcQLLc/lJooTt3hsizbDAp4OTZnFBaeM+t5c2?=
+ =?us-ascii?q?DY5g9tmHPDCas5fYj1qBDzMYQJIPFg/C58kmuqswH7lfFVwrFOTuLpy5m37zxJ?=
+ =?us-ascii?q?427urN8DaEvSMW8lUm0OwomPd43+/BhAcKczZxTebmlqsje/nmTjnHo4ffJW+/?=
+ =?us-ascii?q?/l7iRuTwXYSBwAdVVqTp/SyzEW5Xrp3KUUS92wlrbUa81aiRd3wGRa/pRasuh8?=
+ =?us-ascii?q?aRsoVHfY25R+AzoLK7AuDQGsJVDhMbJohrsBebTgr0EKZ2tDkHzpitJWLRn+Hs?=
+ =?us-ascii?q?LSZtzW/PW4SN2BqTSsFSxYVpsntu6ktgR/VCNVuCqi4ipvyAz6Y/twghEDSnJ1?=
+ =?us-ascii?q?K1YhSifr9pguB3lqRSlHyZlZdzm3qsqiNtWuVvLKYWrE=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AxTKq7qkEOHZg80dk9grC0W0QV93pDfLI3DAb?=
+ =?us-ascii?q?v31ZSRFFG/Fxl6iV7ZYmPHjP+U8ssRAb6La90ca7Lk80maQFhbX5eI3SOzUO21?=
+ =?us-ascii?q?HHEGgB1+ffKlTbckWUnINgPOVbAs1D4bbLbWSS4/yKgzVQX+xA/DCYytHUuc7u?=
+ =?us-ascii?q?i2dqURpxa7xtqyNwCgOgGEVwQwVcbKBJb6a0145WoSa6Y3QLYoCeDnkBZeLKoN?=
+ =?us-ascii?q?rGj9bIehgDbiRXkjWmvHe57qLgCRiE0lM7WzNL+70r9m/IiEjYy8yYwomG9iM?=
+ =?us-ascii?q?=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="123727669"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 21 Apr 2022 16:10:11 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id 0E35C4D17172;
+        Thu, 21 Apr 2022 16:10:09 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Thu, 21 Apr 2022 16:10:09 +0800
+Received: from [192.168.22.28] (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Thu, 21 Apr 2022 16:10:06 +0800
+Message-ID: <685f3191-d454-88c0-277a-05b65b831dc5@fujitsu.com>
+Date:   Thu, 21 Apr 2022 16:10:08 +0800
 MIME-Version: 1.0
-References: <20220421074204.1284072-1-hch@lst.de> <20220421074204.1284072-8-hch@lst.de>
-In-Reply-To: <20220421074204.1284072-8-hch@lst.de>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 21 Apr 2022 10:09:47 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3Y9F8Xb-uON8b+X5bUW9BeWkb6dBuXvdkhL4g15+7_uQ@mail.gmail.com>
-Message-ID: <CAK8P3a3Y9F8Xb-uON8b+X5bUW9BeWkb6dBuXvdkhL4g15+7_uQ@mail.gmail.com>
-Subject: Re: [PATCH 7/7] ARM: use dma-direct unconditionally
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v13 2/7] mm: factor helpers for memory_failure_dev_pagemap
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
+        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "djwong@kernel.org" <djwong@kernel.org>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "david@fromorbit.com" <david@fromorbit.com>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        Christoph Hellwig <hch@lst.de>
+References: <20220419045045.1664996-1-ruansy.fnst@fujitsu.com>
+ <20220419045045.1664996-3-ruansy.fnst@fujitsu.com>
+ <20220421061344.GA3607858@hori.linux.bs1.fc.nec.co.jp>
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+In-Reply-To: <20220421061344.GA3607858@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-yoursite-MailScanner-ID: 0E35C4D17172.A4D4C
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 9:42 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> Use dma-direct unconditionally on arm.  It has already been used for
-> some time for LPAE and nommu configurations.
->
-> This mostly changes the streaming mapping implementation and the (simple)
-> coherent allocator for device that are DMA coherent.  The existing
-> complex allocator for uncached mappings for non-coherent devices is still
-> used as is using the arch_dma_alloc/arch_dma_free hooks.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/arm/Kconfig                   |   4 +-
->  arch/arm/include/asm/dma-mapping.h |  24 --
->  arch/arm/mach-highbank/highbank.c  |   2 +-
->  arch/arm/mach-mvebu/coherency.c    |   2 +-
->  arch/arm/mm/dma-mapping.c          | 365 ++---------------------------
->  5 files changed, 19 insertions(+), 378 deletions(-)
->  delete mode 100644 arch/arm/include/asm/dma-mapping.h
 
-The diffstat looks really nice!
 
-I can't really tell from looking at the code if this is an equivalent
-conversion,
-so I have to trust you on that. I did make sure this passes the basic tests
-on kernelci.org, which tests a large number of machines, which is a good
-sign.
+在 2022/4/21 14:13, HORIGUCHI NAOYA(堀口 直也) 写道:
+> On Tue, Apr 19, 2022 at 12:50:40PM +0800, Shiyang Ruan wrote:
+>> memory_failure_dev_pagemap code is a bit complex before introduce RMAP
+>> feature for fsdax.  So it is needed to factor some helper functions to
+>> simplify these code.
+>>
+>> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+>> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> 
+> Thanks for the refactoring.  As I commented to 0/7, the conflict with
+> "mm/hwpoison: fix race between hugetlb free/demotion and memory_failure_hugetlb()"
+> can be trivially resolved.
+> 
+> Another few comment below ...
+> 
+>> ---
+>>   mm/memory-failure.c | 157 ++++++++++++++++++++++++--------------------
+>>   1 file changed, 87 insertions(+), 70 deletions(-)
+>>
+>> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+>> index e3fbff5bd467..7c8c047bfdc8 100644
+>> --- a/mm/memory-failure.c
+>> +++ b/mm/memory-failure.c
+>> @@ -1498,6 +1498,90 @@ static int try_to_split_thp_page(struct page *page, const char *msg)
+>>   	return 0;
+>>   }
+>>
+>> +static void unmap_and_kill(struct list_head *to_kill, unsigned long pfn,
+>> +		struct address_space *mapping, pgoff_t index, int flags)
+>> +{
+>> +	struct to_kill *tk;
+>> +	unsigned long size = 0;
+>> +
+>> +	list_for_each_entry(tk, to_kill, nd)
+>> +		if (tk->size_shift)
+>> +			size = max(size, 1UL << tk->size_shift);
+>> +
+>> +	if (size) {
+>> +		/*
+>> +		 * Unmap the largest mapping to avoid breaking up device-dax
+>> +		 * mappings which are constant size. The actual size of the
+>> +		 * mapping being torn down is communicated in siginfo, see
+>> +		 * kill_proc()
+>> +		 */
+>> +		loff_t start = (index << PAGE_SHIFT) & ~(size - 1);
+>> +
+>> +		unmap_mapping_range(mapping, start, size, 0);
+>> +	}
+>> +
+>> +	kill_procs(to_kill, flags & MF_MUST_KILL, false, pfn, flags);
+>> +}
+>> +
+>> +static int mf_generic_kill_procs(unsigned long long pfn, int flags,
+>> +		struct dev_pagemap *pgmap)
+>> +{
+>> +	struct page *page = pfn_to_page(pfn);
+>> +	LIST_HEAD(to_kill);
+>> +	dax_entry_t cookie;
+>> +	int rc = 0;
+>> +
+>> +	/*
+>> +	 * Pages instantiated by device-dax (not filesystem-dax)
+>> +	 * may be compound pages.
+>> +	 */
+>> +	page = compound_head(page);
+>> +
+>> +	/*
+>> +	 * Prevent the inode from being freed while we are interrogating
+>> +	 * the address_space, typically this would be handled by
+>> +	 * lock_page(), but dax pages do not use the page lock. This
+>> +	 * also prevents changes to the mapping of this pfn until
+>> +	 * poison signaling is complete.
+>> +	 */
+>> +	cookie = dax_lock_page(page);
+>> +	if (!cookie)
+>> +		return -EBUSY;
+>> +
+>> +	if (hwpoison_filter(page)) {
+>> +		rc = -EOPNOTSUPP;
+>> +		goto unlock;
+>> +	}
+>> +
+>> +	if (pgmap->type == MEMORY_DEVICE_PRIVATE) {
+>> +		/*
+>> +		 * TODO: Handle HMM pages which may need coordination
+>> +		 * with device-side memory.
+>> +		 */
+>> +		return -EBUSY;
+> 
+> Don't we need to go to dax_unlock_page() as the origincal code do?
+> 
+>> +	}
+>> +
+>> +	/*
+>> +	 * Use this flag as an indication that the dax page has been
+>> +	 * remapped UC to prevent speculative consumption of poison.
+>> +	 */
+>> +	SetPageHWPoison(page);
+>> +
+>> +	/*
+>> +	 * Unlike System-RAM there is no possibility to swap in a
+>> +	 * different physical page at a given virtual address, so all
+>> +	 * userspace consumption of ZONE_DEVICE memory necessitates
+>> +	 * SIGBUS (i.e. MF_MUST_KILL)
+>> +	 */
+>> +	flags |= MF_ACTION_REQUIRED | MF_MUST_KILL;
+>> +	collect_procs(page, &to_kill, true);
+>> +
+>> +	unmap_and_kill(&to_kill, pfn, page->mapping, page->index, flags);
+>> +unlock:
+>> +	dax_unlock_page(page, cookie);
+>> +	return rc;
+>> +}
+>> +
+>>   /*
+>>    * Called from hugetlb code with hugetlb_lock held.
+>>    *
+>> @@ -1644,12 +1728,8 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
+>>   		struct dev_pagemap *pgmap)
+>>   {
+>>   	struct page *page = pfn_to_page(pfn);
+>> -	unsigned long size = 0;
+>> -	struct to_kill *tk;
+>>   	LIST_HEAD(tokill);
+> 
+> Is this variable unused in this function?
 
-Tested-by: Arnd Bergmann <arnd@arndb.de>
+Yes, this one and the one above are mistakes I didn't notice when I 
+resolving conflicts with the newer next- branch.  I'll fix them in next 
+version.
+
+
+--
+Thanks,
+Ruan.
+
+> 
+> Thanks,
+> Naoya Horiguchi
+
+
