@@ -2,93 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02CB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1412BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390471AbiDUQIw (ORCPT
+        id S1390478AbiDUQ1Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        Thu, 21 Apr 2022 12:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbiDUQIt (ORCPT
+        with ESMTP id S231180AbiDUQOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:08:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2323542EF0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:06:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE88761D09
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 16:05:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1128BC385A1;
-        Thu, 21 Apr 2022 16:05:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650557159;
-        bh=VVe3j0YQ+Cidqf5v6vAbgMUL/5uLwWmI3G/CApfYCig=;
-        h=Date:From:To:Subject:References:In-Reply-To:From;
-        b=or6jC1vCCTurM4j5pClK6zvbFvQ2JvEIHkWSQciAvTyrHMZH8A5ukoCq0d2uORHS+
-         BoxqGZp5c/YzEIBmg6T2J0jl5mBLpcxvD8exCYcKF4U9G3tzLwSFidg2Yo3RNoSkVQ
-         1zGz0d3nuSK9ZGPC34/U3Km7oIjxm8Bngpn/SS770L868tlhrUYGjAp6mEXzueWadX
-         THAO6YSe9zyY4IpJnXAoTkS4UbsSblME3HHt33iGRDgPVOAoMuYcFeu28eqtcaslQe
-         YKDLZC5SE79CxEi5swtmi3De4ZnNj2MceQ1W3C7EwRTL53PAfvOG3CPYCrr8R5zEmT
-         aPZDZUP050OjA==
-Date:   Thu, 21 Apr 2022 09:05:57 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Subject: Re: [PATCH v2] f2fs: use flush command instead of FUA for zoned
- device
-Message-ID: <YmGA5X4mtmXc3p/m@google.com>
-References: <20220419215703.1271395-1-jaegeuk@kernel.org>
+        Thu, 21 Apr 2022 12:14:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7E42B241
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:11:58 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650557517;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Co+vGxQAnvjE28xN2iS2qSyvQ7+qNi2mwvNPw4R/fZk=;
+        b=BaypSsIzdcER11NDsYhBqeiO6h0kW1VoNrXw1mRnOiGjw3zHAcrg4LrD53LAUGez4e1C6+
+        jHr7Fp2APUeu3QTYZmVAhm2BRkitxZF5ud6TcRQ9fGMoTMeYRwhBPVRRhjvai6KzZ5EHKA
+        0dnpx2UM0sCZ5fV8DbyY1Gb8CXi6+y+WkjrVpg2SmWsgSlTdJ4j4dhFi+Z27KY9Gr3yxX/
+        JdOWhxwu84Nhn3EtEqrih12el44uy3fu7hybJwXJGib1INO194dEaCv8GNHE8F6759DL8t
+        1vDYugl5oVAakWK7O0xugEAt8j+DczJsOLJmyXjtIzkXaTQMPQnvAfFmHKoVlg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650557517;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Co+vGxQAnvjE28xN2iS2qSyvQ7+qNi2mwvNPw4R/fZk=;
+        b=fHDsl12W3lskK/WA5YoKeFFXgA5KMSxzJTX0I707X/zEBoI1l9pDlwdCg+GJuE7vBBVcKF
+        3GShvFgeXx5JODDA==
+To:     Pingfan Liu <kernelfans@gmail.com>, linux-kernel@vger.kernel.org
+Cc:     Pingfan Liu <kernelfans@gmail.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Baokun Li <libaokun1@huawei.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH 7/9] irq: remove needless lock in takedown_cpu()
+In-Reply-To: <20220420140521.45361-8-kernelfans@gmail.com>
+References: <20220420140521.45361-1-kernelfans@gmail.com>
+ <20220420140521.45361-8-kernelfans@gmail.com>
+Date:   Thu, 21 Apr 2022 18:11:56 +0200
+Message-ID: <87y1zys9f7.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419215703.1271395-1-jaegeuk@kernel.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The block layer for zoned disk can reorder the FUA'ed IOs. Let's use flush
-command to keep the write order.
+On Wed, Apr 20 2022 at 22:05, Pingfan Liu wrote:
 
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
----
+First of all, the subject prefix for the core interrupt subsystem is
+'genirq' and the sentence after the colon starts with an uppercase
+letter. See:
 
- change log from v1:
-  - minor clean up
+https://www.kernel.org/doc/html/latest/process/maintainer-tip.html
 
- fs/f2fs/file.c | 3 ++-
- fs/f2fs/node.c | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+> diff --git a/kernel/cpu.c b/kernel/cpu.c
+> index d0a9aa0b42e8..94a6b512c26d 100644
+> --- a/kernel/cpu.c
+> +++ b/kernel/cpu.c
+> @@ -1033,18 +1033,16 @@ static int takedown_cpu(unsigned int cpu)
+>  	kthread_park(st->thread);
+>  
+>  	/*
+> -	 * Prevent irq alloc/free while the dying cpu reorganizes the
+> -	 * interrupt affinities.
+> +	 * RCU keeps watching 'cpu' until do_idle()->rcu_report_dead().
+> +	 * And cpu_stopper's fn is dispatched with preemption disabled.
+> +	 * So it can not occur to release a irq_desc.
+>  	 */
+> -	irq_lock_sparse();
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index f08e6208e183..eae2e7908072 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -372,7 +372,8 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
- 	f2fs_remove_ino_entry(sbi, ino, APPEND_INO);
- 	clear_inode_flag(inode, FI_APPEND_WRITE);
- flush_out:
--	if (!atomic && F2FS_OPTION(sbi).fsync_mode != FSYNC_MODE_NOBARRIER)
-+	if ((!atomic && F2FS_OPTION(sbi).fsync_mode != FSYNC_MODE_NOBARRIER) ||
-+	    (atomic && !test_opt(sbi, NOBARRIER) && f2fs_sb_has_blkzoned(sbi)))
- 		ret = f2fs_issue_flush(sbi, inode->i_ino);
- 	if (!ret) {
- 		f2fs_remove_ino_entry(sbi, ino, UPDATE_INO);
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index c45d341dcf6e..144f9f966690 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -1631,7 +1631,7 @@ static int __write_node_page(struct page *page, bool atomic, bool *submitted,
- 		goto redirty_out;
- 	}
- 
--	if (atomic && !test_opt(sbi, NOBARRIER))
-+	if (atomic && !test_opt(sbi, NOBARRIER) && !f2fs_sb_has_blkzoned(sbi))
- 		fio.op_flags |= REQ_PREFLUSH | REQ_FUA;
- 
- 	/* should add to global list before clearing PAGECACHE status */
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+Not everything is about RCU here. You really need to look at all moving
+parts:
 
+irq_migrate_all_off_this_cpu() relies on the allocated_irqs bitmap and
+the sparse tree to be in consistent state, which is only guaranteed when
+the sparse lock is held.
+
+I'm not sure what you are trying to solve here. Not taking sparse_irq_lock
+here is not gaining anything.
+
+Thanks,
+
+        tglx
