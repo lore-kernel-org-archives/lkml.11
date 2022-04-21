@@ -2,125 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D10F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 13:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbiDUNCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        id S229725AbiDUNDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 09:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiDUNCg (ORCPT
+        with ESMTP id S229669AbiDUNDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:02:36 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17EF326DC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:59:46 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id n18so4780454plg.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s/mm3H1SPdbVSVF5q8GMmt5AG1eAPVhbbMFtPZ5gmF0=;
-        b=f/4x3TRQbfLQYK2wf2fI4LiXJLA/xuTn2/zuQ5h4FNcIqPebKzIj3Mu+LZD9qSGt3q
-         7r3NWBvQ0GlSbO1MJWJB9MkQkyw2UXZqJ4l2C4jkBt7w7KK1TYqgqw0guhAXjRI20eMD
-         ZYMnaXTbzk67K2Dy0P29lfOwP8oq3zsGUfdkItqlN1u1gJvudUETpeuRKsdfCgUmHwW9
-         flD6ujjRByHR6sELi9LpJ4ndC1Fa97xpoyPVa1R00ucChSOwggTMCj9zpsb5ZhOZgTdz
-         d/8mekOhurg2SxfWsrsKQ8nYGwJEH13AA74mM5WFRdMQ+Cpg8OMgf4ENDRyC0WW/w4Y3
-         9QiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s/mm3H1SPdbVSVF5q8GMmt5AG1eAPVhbbMFtPZ5gmF0=;
-        b=lpYHNsSJpg8CFmiEJtgpWKMgixLYjPfu7ono3VsCCC4XLLasUA/Krt9Bfhfpbsqahn
-         cVOfxF7vuGjtyp7Q5gFOFR/l08Dwz11RlkC1TbJaJsp5IS0tMNNjruSrx7J+tSYC/P+8
-         EK7jnbR9owIn6ASYlHy1kyA1EwwIkCyihU4QpQ9AzQ3eiGbMvfDPLQh7T5PV/FWqoS98
-         wSxUvhnpMaLb28Qb6NXXPu/DYwZU5LuE0sZCTALxb88/+d9/uVdRqsv19DQvH8gGOZR2
-         abvmMXzUOwyzIL01PkFxQEQj6+yKl1yDsI9hcAcPQ5ZXPCX1foHfyhAz+y1SydCppDCc
-         9aPw==
-X-Gm-Message-State: AOAM530Y38208/cojD17BlaGoK+441t+U3FadtLrzL3AAWt+ieaypC0V
-        umoGZUq4n7JZkRTDIZMLjD6ROjnaqiM+vVo=
-X-Google-Smtp-Source: ABdhPJyg/0dPj0nmGckOC1lt/WKBz3sspU7E/M3G9Z71+qC8IE96p18QYTgZP9D2A1PqZACZoT5nJQ==
-X-Received: by 2002:a17:90b:1809:b0:1d2:6345:b000 with SMTP id lw9-20020a17090b180900b001d26345b000mr10513099pjb.98.1650545986181;
-        Thu, 21 Apr 2022 05:59:46 -0700 (PDT)
-Received: from ubuntu.lan (64.64.231.132.16clouds.com. [64.64.231.132])
-        by smtp.gmail.com with ESMTPSA id ck14-20020a056a00328e00b0050a3c5f415csm21458351pfb.23.2022.04.21.05.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 05:59:45 -0700 (PDT)
-From:   Hailong Tu <tuhailong@gmail.com>
-To:     tuhailong@gmail.com, akpm@linux-foundation.org, sj@kernel.org,
-        torvalds@linux-foundation.org, gregkh@google.com,
-        surenb@google.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     tuhailong@oppo.com, lichunpeng@oppo.com, aaron.qiu@oppo.com,
-        fanguoze@oppo.com, wangdesuo@oppo.com, lizhihua@oppo.com
-Subject: [PATCH v5] mm/damon/reclaim: Fix the timer always stays active
-Date:   Thu, 21 Apr 2022 20:59:11 +0800
-Message-Id: <20220421125910.1052459-1-tuhailong@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 21 Apr 2022 09:03:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0453894;
+        Thu, 21 Apr 2022 06:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 372CEB8245E;
+        Thu, 21 Apr 2022 13:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CD5C6C385A8;
+        Thu, 21 Apr 2022 13:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650546012;
+        bh=u+fTpf0LKqlrNXsOjKkONBHQScd20FGQHEw3f+GMdV0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ftdA+ZufYL/pLeA6VzNkSa/bOeSxDZLwAsEVn1E5KZdOwwOCSr7sTDHhuWDEskxjT
+         veUroQSH3Mi+4qPCztbgAJMt7L98nTqV9VXOhQcmHbsgDEc8ZevPPce7K+Zbos/ZE6
+         +9DJSHFAmp2G1zRRt1ZxYi1Ks3KJKr8dqORPRbNRSP4OXN8rYRytwroS5GFFQcf5Tx
+         hK4hmbOETARYY/O/xF7r0P+lPanIy+YbC0f6Fs6zKwpY2/rXOnwIN6oh4FBqKQU43d
+         sX1KipmJhMlbXy3ZgNPFTTydoZDsaKG/qWPAwvT++12LGvveTl0QNsDt6fSL/y6+qU
+         j7pswRnkUV1jQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA013EAC09C;
+        Thu, 21 Apr 2022 13:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: eql: Use kzalloc instead of kmalloc/memset
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165054601269.6081.6899957117612196905.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Apr 2022 13:00:12 +0000
+References: <1650277333-31090-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1650277333-31090-1-git-send-email-baihaowen@meizu.com>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The timer stays active even if the reclaim mechanism is never enabled.
-It is unnecessary overhead can be completely avoided by using module_param_cb() for enabled flag.
+Hello:
 
-Signed-off-by: Hailong Tu <tuhailong@gmail.com>
----
- mm/damon/reclaim.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index e34c4d0c4d93..75cfd96a6060 100644
---- a/mm/damon/reclaim.c
-+++ b/mm/damon/reclaim.c
-@@ -28,7 +28,6 @@
-  * this.
-  */
- static bool enabled __read_mostly;
--module_param(enabled, bool, 0600);
- 
- /*
-  * Time threshold for cold memory regions identification in microseconds.
-@@ -358,11 +357,35 @@ static void damon_reclaim_timer_fn(struct work_struct *work)
- 			enabled = last_enabled;
- 	}
- 
--	schedule_delayed_work(&damon_reclaim_timer,
-+	if (enabled)
-+		schedule_delayed_work(&damon_reclaim_timer,
- 			msecs_to_jiffies(ENABLE_CHECK_INTERVAL_MS));
- }
- static DECLARE_DELAYED_WORK(damon_reclaim_timer, damon_reclaim_timer_fn);
- 
-+static int enabled_store(const char *val,
-+		const struct kernel_param *kp)
-+{
-+	int rc = param_set_bool(val, kp);
-+
-+	if (rc < 0)
-+		return rc;
-+
-+	if (enabled)
-+		schedule_delayed_work(&damon_reclaim_timer, 0);
-+
-+	return 0;
-+}
-+
-+static const struct kernel_param_ops enabled_param_ops = {
-+	.set = enabled_store,
-+	.get = param_get_bool,
-+};
-+
-+module_param_cb(enabled, &enabled_param_ops, &enabled, 0600);
-+MODULE_PARM_DESC(enabled,
-+	"Enable or disable DAMON_RECLAIM (default: disabled)");
-+
- static int damon_reclaim_after_aggregation(struct damon_ctx *c)
- {
- 	struct damos *s;
+On Mon, 18 Apr 2022 18:22:13 +0800 you wrote:
+> Use kzalloc rather than duplicating its implementation, which
+> makes code simple and easy to understand.
+> 
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  drivers/net/eql.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+
+Here is the summary with links:
+  - net: eql: Use kzalloc instead of kmalloc/memset
+    https://git.kernel.org/netdev/net-next/c/9c8774e629a1
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
