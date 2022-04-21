@@ -2,178 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 786DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387531AbiDUJU0 (ORCPT
+        id S1387479AbiDUJUq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
+        Thu, 21 Apr 2022 05:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387432AbiDUJT7 (ORCPT
+        with ESMTP id S1387582AbiDUJUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:19:59 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB8F14084
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:17:10 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 23L7Ai0A007753
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:17:10 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=dOWQsXWrlscVSXwcUY7oiVZY2tYgB27g3OF+R0KAHOY=;
- b=WEvYnH9zQRwSv6ZKHLUbnYlZjK+jq2oQfTyBOKE6CgPCYnKWiiGnGeLZpC6UtreFRoj0
- Q+c7aTTJ3zzmQLFXb6bIgdE0A6EYY7U1EOFYqn3DqBPox+XlSu3knR63b9+wio3BNzt/
- W2Both0ib1XKM/HIPKMxxwmHfI88ScbQ51k= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3fj7k3heu4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:17:09 -0700
-Received: from twshared6486.05.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 02:17:09 -0700
-Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
-        id 152E37CA7602; Thu, 21 Apr 2022 02:14:02 -0700 (PDT)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     <io-uring@vger.kernel.org>
-CC:     <axboe@kernel.dk>, <asml.silence@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
-        Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH 5/6] io_uring: return an error when cqe is dropped
-Date:   Thu, 21 Apr 2022 02:13:44 -0700
-Message-ID: <20220421091345.2115755-6-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220421091345.2115755-1-dylany@fb.com>
-References: <20220421091345.2115755-1-dylany@fb.com>
+        Thu, 21 Apr 2022 05:20:35 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08AB25C47;
+        Thu, 21 Apr 2022 02:17:40 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
+ 2022 17:17:40 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 21 Apr
+ 2022 17:17:38 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Basavaraj Natikar <basavaraj.natikar@amd.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-input@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] HID: amd_sfh: Drop redundant memset
+Date:   Thu, 21 Apr 2022 17:17:36 +0800
+Message-ID: <1650532656-27602-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: GQIaF4f8cj-vLgfg9JIArUfSqgNLG8Zm
-X-Proofpoint-GUID: GQIaF4f8cj-vLgfg9JIArUfSqgNLG8Zm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-20_06,2022-04-20_01,2022-02-23_01
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Right now io_uring will not actively inform userspace if a CQE is
-dropped. This is extremely rare, requiring a CQ ring overflow, as well as
-a GFP_ATOMIC kmalloc failure. However the consequences could cause for
-example applications to go into an undefined state, possibly waiting for =
-a
-CQE that never arrives.
+The region set by the call to memset is immediately overwritten by the
+subsequent call to memcpy. So we drop redundant memset.
 
-Return an error code (EBADR) in these cases. Since this is expected to be
-incredibly rare, try and avoid as much as possible affecting the hot code
-paths, and so it only is returned lazily and when there is no other
-available CQEs.
-
-Once the error is returned, reset the error condition assuming the user i=
-s
-either ok with it or will clean up appropriately.
-
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- fs/io_uring.c | 32 ++++++++++++++++++++++++++++----
- 1 file changed, 28 insertions(+), 4 deletions(-)
+ drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index db878c114e16..e46dc67c917c 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -905,6 +905,7 @@ struct io_cqe {
-=20
- enum {
- 	IO_CHECK_CQ_OVERFLOW_BIT,
-+	IO_CHECK_CQ_DROPPED_BIT,
- };
-=20
- /*
-@@ -2119,6 +2120,7 @@ static bool io_cqring_event_overflow(struct io_ring=
-_ctx *ctx, u64 user_data,
- 		 * on the floor.
- 		 */
- 		io_account_cq_overflow(ctx);
-+		set_bit(IO_CHECK_CQ_DROPPED_BIT, &ctx->check_cq);
- 		return false;
- 	}
- 	if (list_empty(&ctx->cq_overflow_list)) {
-@@ -2959,16 +2961,26 @@ static int io_iopoll_check(struct io_ring_ctx *ct=
-x, long min)
+diff --git a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
+index 76095bd53c65..26ccdcfbcda5 100644
+--- a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
++++ b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
+@@ -33,27 +33,22 @@ int get_report_descriptor(int sensor_idx, u8 *rep_desc)
  {
- 	unsigned int nr_events =3D 0;
- 	int ret =3D 0;
-+	unsigned long check_cq;
-=20
- 	/*
- 	 * Don't enter poll loop if we already have events pending.
- 	 * If we do, we can potentially be spinning for commands that
- 	 * already triggered a CQE (eg in error).
- 	 */
--	if (test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq))
-+	check_cq =3D READ_ONCE(ctx->check_cq);
-+	if (check_cq & BIT(IO_CHECK_CQ_OVERFLOW_BIT))
- 		__io_cqring_overflow_flush(ctx, false);
- 	if (io_cqring_events(ctx))
- 		return 0;
-+
-+	/*
-+	 * Similarly do not spin if we have not informed the user of any
-+	 * dropped CQE.
-+	 */
-+	if (unlikely(check_cq & BIT(IO_CHECK_CQ_DROPPED_BIT)))
-+		return -EBADR;
-+
- 	do {
- 		/*
- 		 * If a submit got punted to a workqueue, we can have the
-@@ -8298,15 +8310,18 @@ static inline int io_cqring_wait_schedule(struct =
-io_ring_ctx *ctx,
- 					  ktime_t timeout)
- {
- 	int ret;
-+	unsigned long check_cq;
-=20
- 	/* make sure we run task_work before checking for signals */
- 	ret =3D io_run_task_work_sig();
- 	if (ret || io_should_wake(iowq))
- 		return ret;
-+	check_cq =3D READ_ONCE(ctx->check_cq);
- 	/* let the caller flush overflows, retry */
--	if (test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq))
-+	if (check_cq & BIT(IO_CHECK_CQ_OVERFLOW_BIT))
- 		return 1;
--
-+	if (unlikely(check_cq & BIT(IO_CHECK_CQ_DROPPED_BIT)))
-+		return -EBADR;
- 	if (!schedule_hrtimeout(&timeout, HRTIMER_MODE_ABS))
- 		return -ETIME;
- 	return 1;
-@@ -10958,9 +10973,18 @@ SYSCALL_DEFINE6(io_uring_enter, unsigned int, fd=
-, u32, to_submit,
- 			}
- 		}
-=20
--		if (!ret)
-+		if (!ret) {
- 			ret =3D ret2;
-=20
-+			/*
-+			 * EBADR indicates that one or more CQE were dropped.
-+			 * Once the user has been informed we can clear the bit
-+			 * as they are obviously ok with those drops.
-+			 */
-+			if (unlikely(ret2 =3D=3D -EBADR))
-+				clear_bit(IO_CHECK_CQ_DROPPED_BIT,
-+					  &ctx->check_cq);
-+		}
- 	}
-=20
- out:
---=20
-2.30.2
+ 	switch (sensor_idx) {
+ 	case accel_idx: /* accel */
+-		memset(rep_desc, 0, sizeof(accel3_report_descriptor));
+ 		memcpy(rep_desc, accel3_report_descriptor,
+ 		       sizeof(accel3_report_descriptor));
+ 		break;
+ 	case gyro_idx: /* gyro */
+-		memset(rep_desc, 0, sizeof(gyro3_report_descriptor));
+ 		memcpy(rep_desc, gyro3_report_descriptor,
+ 		       sizeof(gyro3_report_descriptor));
+ 		break;
+ 	case mag_idx: /* Magnetometer */
+-		memset(rep_desc, 0, sizeof(comp3_report_descriptor));
+ 		memcpy(rep_desc, comp3_report_descriptor,
+ 		       sizeof(comp3_report_descriptor));
+ 		break;
+ 	case als_idx: /* ambient light sensor */
+-		memset(rep_desc, 0, sizeof(als_report_descriptor));
+ 		memcpy(rep_desc, als_report_descriptor,
+ 		       sizeof(als_report_descriptor));
+ 		break;
+ 	case HPD_IDX: /* HPD sensor */
+-		memset(rep_desc, 0, sizeof(hpd_report_descriptor));
+ 		memcpy(rep_desc, hpd_report_descriptor,
+ 		       sizeof(hpd_report_descriptor));
+ 		break;
+-- 
+2.7.4
 
