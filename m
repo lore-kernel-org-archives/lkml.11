@@ -2,225 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD74BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB03C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:27:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387624AbiDUJ3B (ORCPT
+        id S1344512AbiDUJaa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38436 "EHLO
+        Thu, 21 Apr 2022 05:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231185AbiDUJ25 (ORCPT
+        with ESMTP id S1387657AbiDUJ1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:28:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A2A275D6;
-        Thu, 21 Apr 2022 02:26:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A92EB8239E;
-        Thu, 21 Apr 2022 09:26:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 190B4C385A5;
-        Thu, 21 Apr 2022 09:25:59 +0000 (UTC)
-Message-ID: <9565c089-03a7-0936-fd20-ae40644300fb@xs4all.nl>
-Date:   Thu, 21 Apr 2022 11:25:57 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] media: Add P010 video format
+        Thu, 21 Apr 2022 05:27:48 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80085.outbound.protection.outlook.com [40.107.8.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA21D54
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:24:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l4pXPkV3Xl3J2Kn8LItSpsdn9NzKjz+E6lBPrAFaRFCG5KYlybxj9NQXnOxbjuecFzLyiMtr1er/ZZx00vCDFoXiV19lBTRzLfpHl5zySpECTjPO5Y3e4jX4NaXsGfG63XzjXHFb8JnHIwYA4lxETh45CiyYia4Lbw3zXjuoB/mZy91LtEwPzJ/68qsYsPkb3uqhJO1VifEK8bPjmKdRaqamAhaBTdT5o7k1KJyE+z0Ba0DvVa7LNyxB+kJwsnNlvV4TQdx8UETt49FOGgXzwSHwU1BZRjPnprU/CZqDIozXuH8tJkY6qdGh74TftiTKLynPsnudRBzq2fjLuHe/XQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BLlEpHFEuWTpGimyAlbGymQtTNYBDHueO983fD9jMK4=;
+ b=VYuWnYaX01OR0Uhwq9p6YHND+wrf2bne5+5iAj5rDwj7Nabfxvm8CfFUqySiD9mBcz1SFEloVXs6synf5phfhPSH9jjv6N+PB4i+CvT5i16AnfoP7LPuI7FbM1sr5tD7R2Hl/pTxq4rrcFh8rsHNI51U3ywi/FSuLmlyImo7+9MFMxl9naOWETF8biKPDt/QhgK2QYV1f3rDy3a2qjKQQUbB9R7r1zC4ztPoZaOkb4OxR/6xjLl6u0CTHjRaSpx8wuSRm2JyspD3Hw4co2PU6IDYwkqCi3mmP+YgLSfZtXocEInfI4UjFSZvqmcLI0k20ihVqClhasC3vuD4bWA2jw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=diasemi.com; dmarc=pass action=none header.from=diasemi.com;
+ dkim=pass header.d=diasemi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=dialogsemiconductor.onmicrosoft.com;
+ s=selector1-dialogsemiconductor-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BLlEpHFEuWTpGimyAlbGymQtTNYBDHueO983fD9jMK4=;
+ b=RC0Ng51NuI+KE6LYupUgAUPv2hZDZ6wHgSakt8lCnJ7uzqCvQM0OSSTfPDYP0vbr+90EbWMDjkRykUn2PHdJVB6P6MapHntVtX0mg4BMaE8l8sGGieu8qQbPQg19q/4QShvlX72QIwDfkkhsRuMbrLB8Ffc3GxfjgYoFaH0SZKE=
+Received: from VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:12d::15)
+ by PA4PR10MB5684.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:266::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Thu, 21 Apr
+ 2022 09:24:50 +0000
+Received: from VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::900d:c198:84ab:680]) by VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::900d:c198:84ab:680%5]) with mapi id 15.20.5186.014; Thu, 21 Apr 2022
+ 09:24:50 +0000
+From:   Adam Ward <Adam.Ward.opensource@diasemi.com>
+To:     Wei Yongjun <weiyongjun1@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Support Opensource <Support.Opensource@diasemi.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Adam Ward <Adam.Ward.opensource@diasemi.com>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: RE: [PATCH] regulator: da9121: Fix uninit-value in
+ da9121_assign_chip_model()
+Thread-Topic: [PATCH] regulator: da9121: Fix uninit-value in
+ da9121_assign_chip_model()
+Thread-Index: AQHYVVyZGmQjckztX0y+MtXV3smQLKz6F3xQ
+Date:   Thu, 21 Apr 2022 09:24:50 +0000
+Message-ID: <VI1PR10MB31673DC2ED738C26A8D30046ECF49@VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM>
+References: <20220421090335.1876149-1-weiyongjun1@huawei.com>
+In-Reply-To: <20220421090335.1876149-1-weiyongjun1@huawei.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jernej.skrabec@gmail.com, p.zabel@pengutronix.de,
-        nicolas@ndufresne.ca, kernel@collabora.com,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>
-References: <20220404090116.353034-1-benjamin.gaignard@collabora.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220404090116.353034-1-benjamin.gaignard@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=diasemi.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ee8e8ecf-04ef-4d4a-543c-08da2378c941
+x-ms-traffictypediagnostic: PA4PR10MB5684:EE_
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-microsoft-antispam-prvs: <PA4PR10MB5684106066C2683D38B61573CBF49@PA4PR10MB5684.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7UQ5W+4u8ylCBkTYLzSvPQD48Z0NIYdtZ1/vMCswfxRC1dJpLrGddV4UCg7qXkIsBkQnnc6zD8DiN45Nzi9aCIN2XoHrN2J9XYSQST9yQCLTio6VAXWKhNHAkvWu+onQDGMeaErILdgYwSwsWzyPYLxiW5xIVrOCvgdkF9sBeDlkgza10yuCHIe6+FQTOUbi1HPy8FIJoYlmPHOcLXZGIoaP/D7A8ahZdCOj9MtaBTAXiY20B1t2j05HIrDvTjel8TpLDzPh1rWV9NTygsa+xf/ClkPz/Ej6t0pHovPNjNHsnOuutol6JC+aPR0XID/WR2Wg+72HFZ0XJ1gGY1vF6qVMWj3DEwAYJCGzte+M7oSub6NqyD38G3VkKO7x9A6MjqQCUYlv3ocaB0txWou6X+a+GOKurKCh8VVDjrFI6nlE8QgFvMTVtC1isdLbUZbgrHqaSa+CN+RJXnajRfYDeMYWecF8qiKTDmCesOX04Hb3DO+AllTBgq7UUKCoQPLg6BAhpm7vrPVL8xVxMhYH+crhJVBfAytnEmGpzyggPn7VhcPmjI54MoCJ6qdQrjRR7uMJt7fbGL9NGxCpZRMKhgvnZ6/DKXR+/8ExnScmFe4JBbgmrh96iPMgmGT/J47atkCqjGgRvz94zDIa2cMo4nGdAGC8Plk4+fwLhRuYrCU3y05zm/QHom2paDG+gZ9VJyBUV88cqhVO6uySlvYtZA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(55016003)(6506007)(2906002)(54906003)(7696005)(53546011)(5660300002)(4744005)(83380400001)(122000001)(33656002)(316002)(71200400001)(38100700002)(8676002)(66556008)(508600001)(76116006)(66476007)(66446008)(52536014)(8936002)(186003)(26005)(38070700005)(66946007)(64756008)(86362001)(9686003)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zBqcYikOq8FXzg4/94KUCdx0lliHVVo/VUaHW4GbyOmUGaXodSofQMiCEpy3?=
+ =?us-ascii?Q?BNB9KoCyqQitEgEsCMU5JN+HVbOlege/9HVf3HyNbwEVEUSoWWbokX6NS5bR?=
+ =?us-ascii?Q?apofqVNsG8MCEUsLvOsxQroXGIzslI2oH20ru1vtiy8BJyCbl/SOaIRPq/f9?=
+ =?us-ascii?Q?scziD+O42EzOi54QP73rCeg4uvJjmIBr0uwHarqD5jLNPjyA/mds4psExQjc?=
+ =?us-ascii?Q?D0PwgB80hFEFNb9eYjxKKZ0qCAZISlwfqsNbvTBknlsyRnTmOYNASoU/r3CW?=
+ =?us-ascii?Q?bdwPw3oR9Y2iqrgxaryLprrhnZNKG4VhB+SpgLUMWURXIZgXzo0nGs4Z3bC/?=
+ =?us-ascii?Q?ZyxMCA7KvZTInwnst4GwTzZVIhBSKYzgiLl7pZoGnDpQtTYxiFL8AtFcKsUs?=
+ =?us-ascii?Q?BWFoJxjuoF63YZGVfPzL5SNUm9pTtVOgJZVRPvCk3EoJNUNkHEbtmyaZhDPk?=
+ =?us-ascii?Q?ScKdhFD/uZdeEjkNfqOzXZo236Z4myPuH+hQonZGgJrlWNtpXGeQEVff+8yZ?=
+ =?us-ascii?Q?9emOL4XIMWlDWSxAXwQ6fafj3dJIAZnoirZ1GZRqkJC9BJ7coPWDkOSHeSFx?=
+ =?us-ascii?Q?S6dTt6NALP5b5GWEDrLNLkBs4rigJeoZSA3cHmZz6HLsCC5rI4cvYLn2raFv?=
+ =?us-ascii?Q?h0NmOY1GZrqdmgMIQteEI3U6jEpeBa3ae9k8GsTqJXx+H0kghQ5urOAPHBEB?=
+ =?us-ascii?Q?fbXWcdcjqes1aGAWIaEVFui2UU+8PpqimG2cTHRXwK6Z7OReZNaHC/7sxfe/?=
+ =?us-ascii?Q?w+qkxgCRzT6a2KogbO5uvCsicNu6O1R8q1m/DV+LGDwxtufec9N/Remav+V9?=
+ =?us-ascii?Q?SglnVRAYpb9cxFs6aD8IwkLuJUJn3blpugpd9jblACVRVBMBC2cnLCYUmD89?=
+ =?us-ascii?Q?D6WevLQRe/5Tla9p0UuMQ6614XzAKPY2qgqCl1RszJNQNL23dLdf16Iqe9pm?=
+ =?us-ascii?Q?0ANtjw0rht2Y9bRX/TqGukWKtEcvxMgnPlPqz7/MgekBQTC/WuK4uQCBZZLt?=
+ =?us-ascii?Q?fY4EEiccdttBxEMygFrIeROa4+9eOY6TwSofhbYgAo1HVymkvDJAZb76uwgh?=
+ =?us-ascii?Q?IxI9ZSXl9P9FTJfYEISCAE40DngT0xDJ3gNLSzv507t/iQI6rVe1G/j7wlxf?=
+ =?us-ascii?Q?3D0Hd+I0R1W4CmJi6E1iLc5zivW47X/S6+f3FUqetrXBrE6qUoCJNEJRmpL6?=
+ =?us-ascii?Q?XO6PelcP7m569Ff+IeCgAMkrj8HcdRZ0zzq1Dj/EKOyzFD4wum+bEvaNkudM?=
+ =?us-ascii?Q?ywTLSBqYA/KLVfkys/V3iSfN7SBX58tMVsyIMubmgqsKZbZ4L/iPhNQTQ0+u?=
+ =?us-ascii?Q?JaTU5+zcp6rbGpVFEGAX1ZjB9p+3OM6TIFwEM09Xy+tBwbaJfbRyvYLqd1At?=
+ =?us-ascii?Q?35E25iLsPHzsGYVfRgjHRtW/mFFUEnRh06kqJjq35Ct+R2iKyWOS8WYXGuft?=
+ =?us-ascii?Q?bx8NF8m7JBcF11KaPpGVsLo421i2WAEwI9m/S3n+VP0SUsy+9bvSLhvpb3lr?=
+ =?us-ascii?Q?QC91Xp2azCRiaqtOuNBn/oA60ZEGgQGTlUbi/Xu7/niFeq3IwIYbvzCW0Z64?=
+ =?us-ascii?Q?BR6FBTj1gI/u21LhCi/AekRaa9nwh3wjYiVWg7Fua0NhkAK8egjw/PSVr9q9?=
+ =?us-ascii?Q?qQR9sOMkBROx3tjjRjr1fE/3guWry/thivObP4UOcxD9PMRLQ/PtlKbTODsK?=
+ =?us-ascii?Q?+/5OyC2YVxpakR3Sd+ARiExgZYdP6qU6pTMASm9aN8+EfOHN/jALtH3oz+dF?=
+ =?us-ascii?Q?e6YPn4lMHg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: diasemi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR10MB3167.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee8e8ecf-04ef-4d4a-543c-08da2378c941
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2022 09:24:50.5739
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 511e3c0e-ee96-486e-a2ec-e272ffa37b7c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dwtI+BIgYnM+ir7LO8khugCp8D5mfltpMaDKmgffqQtVZgB1pNlFpbT/T0SHlSnEMTVmJR/FGhDksJk/w+llwA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR10MB5684
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benjamin,
+On 21 April 2022 10:04, Wei Yongjun wrote:
 
-On 04/04/2022 11:01, Benjamin Gaignard wrote:
-> P010 is a YUV format with 10-bits per pixel with interleaved UV.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> ---
-> Note that P010 is already known in GStreamer, only the mapping with
-> v4l2 pixel format is missing.
-> 
-> This patch has been acked in this series but never merged:
-> https://patchwork.kernel.org/project/linux-rockchip/patch/20210618131526.566762-5-benjamin.gaignard@collabora.com/
-> After rebased it on v5.18-rc1, resend in standalone mode.
-> 
->  .../media/v4l/pixfmt-yuv-planar.rst           | 76 +++++++++++++++++++
->  drivers/media/v4l2-core/v4l2-common.c         |  1 +
->  drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
->  include/uapi/linux/videodev2.h                |  1 +
->  4 files changed, 79 insertions(+)
-> 
-> diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-> index 8dff5906639b..6d65c8ac44f0 100644
-> --- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-> +++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-> @@ -102,6 +102,13 @@ All components are stored with the same number of bits per component.
->        - 64x32 tiles
->  
->          Horizontal Z order
-> +    * - V4L2_PIX_FMT_P010
-> +      - 'P010'
-> +      - 16
-> +      - 4:2:0
-> +      - Cb, Cr
-> +      - No
-> +      - Linear
+> This happend when da9121 device is probe by da9121_i2c_id, but with
+> invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
+> da9121_assign_chip_model() will access 'regmap' without init it.
+>=20
+> Fix it by return -EINVAL from da9121_assign_chip_model() if
+> 'chip->subvariant_id' is invalid.
+>=20
+> Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-This entry should go after V4L2_PIX_FMT_NV12MT_16X16...
-
->      * - V4L2_PIX_FMT_NV12MT_16X16
->        - 'VM12'
->        - 8
-
-...and the V4L2_PIX_FMT_NV12MT_16X16 entry should be fixed: it says 4:2:2 for the Subsampling
-column, but that should be 4:2:0.
-
-> @@ -171,6 +178,7 @@ horizontally.
->  .. _V4L2-PIX-FMT-NV21:
->  .. _V4L2-PIX-FMT-NV12M:
->  .. _V4L2-PIX-FMT-NV21M:
-> +.. _V4L2-PIX-FMT-P010:
->  
->  NV12, NV21, NV12M and NV21M
->  ---------------------------
-> @@ -519,6 +527,74 @@ number of lines as the luma plane.
->        - Cb\ :sub:`33`
->        - Cr\ :sub:`33`
->  
-> +.. _V4L2_PIX_FMT_P010:
-> +
-> +P010
-> +----
-> +
-> +The number of bytes in one luminance row must be divisible by 16,
-
-Um, isn't that something that the driver enforces in the bytesperline field
-of struct v4l2_pix_format? I don't think this should be a limitation of the
-format.
-
-> +which means there will be padded 0 in the right edge when necessary.
-> +
-> +.. raw:: latex
-> +
-> +    \begingroup
-> +    \small
-> +    \setlength{\tabcolsep}{2pt}
-> +
-> +.. tabularcolumns:: |p{2.6cm}|p{0.70cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|p{0.22cm}|
-> +
-> +.. flat-table:: P010 16 Bits per component
-> +    :header-rows:  2
-> +    :stub-columns: 0
-> +
-> +    * - Identifier
-> +      - Code
-> +      - :cspan:`7` Byte 0 in memory
-> +
-> +      - :cspan:`7` Byte 1
-> +    * -
-> +      -
-> +      - 7
-> +      - 6
-> +      - 5
-> +      - 4
-> +      - 3
-> +      - 2
-> +      - 1
-> +      - 0
-> +
-> +      - 7
-> +      - 6
-> +      - 5
-> +      - 4
-> +      - 3
-> +      - 2
-> +      - 1
-> +      - 0
-> +    * - ``V4L2_PIX_FMT_P010``
-> +      - 'P010'
-> +
-> +      - Y\ :sub:`9`
-> +      - Y\ :sub:`8`
-> +      - Y\ :sub:`7`
-> +      - Y\ :sub:`6`
-> +      - Y\ :sub:`5`
-> +      - Y\ :sub:`4`
-> +      - Y\ :sub:`3`
-> +      - Y\ :sub:`2`
-> +
-> +      - Y\ :sub:`1`
-> +      - Y\ :sub:`0`
-> +      - 0
-> +      - 0
-> +      - 0
-> +      - 0
-> +      - 0
-> +      - 0
-
-This just shows the Y component, but not the CbCr components. I would expect to see
-something similar to the 'Sample 4x4 NV12M Image' table in section 2.7.1.2.1.1.
-
-Regards,
-
-	Hans
-
-> +
-> +.. raw:: latex
-> +
-> +    \endgroup
->  
->  Fully Planar YUV Formats
->  ========================
-> diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-> index df34b2a283bc..1e38ad8906a2 100644
-> --- a/drivers/media/v4l2-core/v4l2-common.c
-> +++ b/drivers/media/v4l2-core/v4l2-common.c
-> @@ -266,6 +266,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
->  		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
->  		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
->  		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
-> +		{ .format = V4L2_PIX_FMT_P010,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
->  
->  		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
->  		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
-> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-> index 96e307fe3aab..e14d7e1a038e 100644
-> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
-> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-> @@ -1301,6 +1301,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
->  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
->  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
->  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
-> +	case V4L2_PIX_FMT_P010:		descr = "10-bit Y/CrCb 4:2:0"; break;
->  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
->  	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
->  	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
-> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-> index 4c09969e7112..2e451c454db3 100644
-> --- a/include/uapi/linux/videodev2.h
-> +++ b/include/uapi/linux/videodev2.h
-> @@ -601,6 +601,7 @@ struct v4l2_pix_format {
->  #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
->  #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
->  #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
-> +#define V4L2_PIX_FMT_P010    v4l2_fourcc('P', '0', '1', '0') /* 15  Y/CbCr 4:2:0 10-bit per pixel*/
->  
->  /* two non contiguous planes - one Y, one Cr + Cb interleaved  */
->  #define V4L2_PIX_FMT_NV12M   v4l2_fourcc('N', 'M', '1', '2') /* 12  Y/CbCr 4:2:0  */
+Reviewed-by: Adam Ward <Adam.Ward.Opensource@diasemi.com>
 
