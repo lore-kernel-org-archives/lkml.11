@@ -2,127 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386872AbiDUIvP (ORCPT
+        id S1386896AbiDUIvX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        Thu, 21 Apr 2022 04:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235734AbiDUIvM (ORCPT
+        with ESMTP id S1386880AbiDUIvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:51:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA50013E86
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:48:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BA83B82241
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:48:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D1FC385A5;
-        Thu, 21 Apr 2022 08:48:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650530901;
-        bh=hf+uN+DOEUfJ4SXFL2ay+Ktv9zuCbZ7eg0Jv5GbHOLM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AaDok+boFNahUH9LjNJUsGOxDTEOnAcirJWjZj52vBXTVijgQh6lN2oM5pokq++1Q
-         f8JDpDK3MvO/5DLhMqsGkeeSF6JF1nILpbCfHUwkrZMtgrH1RWaH/2aevX+XKet5ZX
-         8jyWHJCc0juJwKDwgXDVdKBK/9pyvj9j+PFhhENMsv/tiqOJ/SVQzafUljE70Y3aeV
-         0vbQAhciAEqfBkcD2sR6GxCIINreBxL9N1ty9JRFfhi8kZUH2Fno9zHj0+Ej7+r1s7
-         Qn5dSwpapw+cOw8z+2uuSZIEIIxgrqciCf+SIe/nCQWLk3BohKKV9aGkxZcdcgGJFa
-         Rkq+tiW25g+0A==
-From:   SeongJae Park <sj@kernel.org>
-To:     Hailong Tu <tuhailong@gmail.com>
-Cc:     akpm@linux-foundation.org, sj@kernel.org,
-        torvalds@linux-foundation.org, gregkh@google.com,
-        surenb@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, willy@infradead.org,
-        tuhailong@oppo.com, lichunpeng@oppo.com, aaron.qiu@oppo.com,
-        fanguoze@oppo.com
-Subject: Re: [PATCH v3] mm/damon: Fix the timer always stays active
-Date:   Thu, 21 Apr 2022 08:48:06 +0000
-Message-Id: <20220421084806.72553-1-sj@kernel.org>
+        Thu, 21 Apr 2022 04:51:22 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CF7B1F8;
+        Thu, 21 Apr 2022 01:48:33 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KkWQ91zG0zfZQG;
+        Thu, 21 Apr 2022 16:47:45 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Apr 2022 16:48:31 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Apr
+ 2022 16:48:31 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>
+CC:     <wsa@kernel.org>, <narmstrong@baylibre.com>, <tanure@linux.com>
+Subject: [PATCH -next] i2c: meson: fix missing clk_disable_unprepare() on error in meson_i2c_probe()
+Date:   Thu, 21 Apr 2022 17:00:42 +0800
+Message-ID: <20220421090042.2278081-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421010640.383365-1-tuhailong@gmail.com>
-References: 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hailong,
+Fix the missing clk_disable_unprepare() before return
+from meson_i2c_probe() in the error handling case.
 
+Fixes: a57f9b4dd6f5 ("i2c: meson: Use 50% duty cycle for I2C clock")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/i2c/busses/i2c-meson.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-On Thu, 21 Apr 2022 09:06:41 +0800 Hailong Tu <tuhailong@gmail.com> wrote:
+diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
+index 50dab123380a..195a9716da31 100644
+--- a/drivers/i2c/busses/i2c-meson.c
++++ b/drivers/i2c/busses/i2c-meson.c
+@@ -520,8 +520,10 @@ static int meson_i2c_probe(struct platform_device *pdev)
+ 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
+ 			   REG_SLV_SDA_FILTER_MASK | REG_SLV_SCL_FILTER_MASK, 0);
+ 
+-	if (!i2c->data->set_clk_div)
++	if (!i2c->data->set_clk_div) {
++		clk_disable_unprepare(i2c->clk);
+ 		return -EINVAL;
++	}
+ 	i2c->data->set_clk_div(i2c, timings.bus_freq_hz);
+ 
+ 	ret = i2c_add_adapter(&i2c->adap);
+-- 
+2.25.1
 
-> The timer stays active even if the reclaim mechanism is never enabled.
-
-I'd like to make it clear that this change is for DAMON_RECLAIM by making the
-first part of the subject 'mm/damon/reclaim:', and adjusting above sentence.
-
-> It is unnecessary overhead can be completely avoided by using module_param_call() for enabled flag.
-
-Let's wrap the line at 75 columns
-(https://docs.kernel.org/process/submitting-patches.html#the-canonical-patch-format).
-
-> 
-> Signed-off-by: Hailong Tu <tuhailong@gmail.com>
-> ---
->  mm/damon/reclaim.c | 19 +++++++++++++++++--
->  1 file changed, 17 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-> index e34c4d0c4d93..46505c501cd6 100644
-> --- a/mm/damon/reclaim.c
-> +++ b/mm/damon/reclaim.c
-> @@ -28,7 +28,6 @@
->   * this.
->   */
->  static bool enabled __read_mostly;
-> -module_param(enabled, bool, 0600);
->  
->  /*
->   * Time threshold for cold memory regions identification in microseconds.
-> @@ -358,11 +357,27 @@ static void damon_reclaim_timer_fn(struct work_struct *work)
->  			enabled = last_enabled;
->  	}
->  
-> -	schedule_delayed_work(&damon_reclaim_timer,
-> +	if (enabled)
-> +		schedule_delayed_work(&damon_reclaim_timer,
->  			msecs_to_jiffies(ENABLE_CHECK_INTERVAL_MS));
->  }
->  static DECLARE_DELAYED_WORK(damon_reclaim_timer, damon_reclaim_timer_fn);
->  
-> +static int enabled_store(const char *val,
-> +		const struct kernel_param *kp)
-> +{
-> +	int rc = param_set_bool(val, kp);
-> +
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	if (enabled)
-> +		schedule_delayed_work(&damon_reclaim_timer, 0);
-> +
-> +	return 0;
-> +}
-> +module_param_call(enabled, enabled_store, param_get_bool, &enabled, 0600);
-
-module_param_call() is commented as obsolete.  Could we use module_param_cb()
-instead as suggested by the comment?
-
-> +
->  static int damon_reclaim_after_aggregation(struct damon_ctx *c)
->  {
->  	struct damos *s;
-> -- 
-> 2.25.1
-> 
-
-
-Thanks,
-SJ
