@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA011C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238429AbiDUKVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        id S1388385AbiDUKWA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 06:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388294AbiDUKV0 (ORCPT
+        with ESMTP id S1387249AbiDUKVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:21:26 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59202F39E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:17:55 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id p18so712191edr.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:17:55 -0700 (PDT)
+        Thu, 21 Apr 2022 06:21:34 -0400
+X-Greylist: delayed 1080 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Apr 2022 03:18:06 PDT
+Received: from corp-front09-corp.i.nease.net (corp-front09-corp.i.nease.net [59.111.134.159])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418C22CC8A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:18:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=J8Pn8rUD1/67P2tIwIl9jn0IKf5NiUvBQMzixzEqf/Q=;
-        b=B+CHHscwnn2+GacbCaiG+xNaVwl86dTG9X33TRd5Haj/UzFu/OV15iRoZllAENs/fn
-         5XstadFRJB3u1VfDeP+s3zylVwkFvGzVU3svaIoI/BMK831NIwb+J4/jvC2EnJgtYjuE
-         u3RJnmV6ZgpYlM3CDwblSTZnb31nQSo+Zc4t1lb7/h+mWIHZaaY7ICn8yJRS2PuiGcG4
-         tBjaxKYkOyhllGC+0Do+fYZuG0jXcZxdQQUuRl6hQvVKeNdY0rVejVCNvpW1PFpyrvuX
-         CNylqIrGqgLLsfAIdw4NI898sqFykbiuymAcEhsfEYtnf1AgsTVfSyQysnsa7tZhz4Bi
-         4T3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=J8Pn8rUD1/67P2tIwIl9jn0IKf5NiUvBQMzixzEqf/Q=;
-        b=T2mBv+jRpPYjLFVM5ObNunwU0wY5Myge92C97+m8CauEMvmcwpEmo1IF+eJ7Q9XPHq
-         xgFzpfylc6XIDTEK2IR7Tpjn5TRN64LMQw9BhebUlU/z2C8yVOIkQWg7p+MXwpwcTwaY
-         mTTvPcUThdKxSmXU5bJSjRmVYmtPfgVsEx7Hx8U5pKO84KA4nsh/FNvFtO3XH3XBeR14
-         l6VcUJCV2TePUOJjuPYPr9ARhoNLae48vijIQi3QH5lh6GyISqhVlgygPjbepBNNqg9v
-         56tv2DlrruWhtwLBKcsKoUjIT+sUe5CNR+1fNPFzg5boYteNJYN3BsdQMGLY3/nGO4bZ
-         jd9Q==
-X-Gm-Message-State: AOAM531VR8lOXxQFO0lXEDgGyIUHeVN0hSZkiySs0/MoWqJl0LhFQ0zh
-        soZLg1GW620Xflskk2cwnOUO+A==
-X-Google-Smtp-Source: ABdhPJxYj9pp3y6xMvUGAE9H+e7IXXi/Z76cQeSVwqvG2gC/kdL6xiYyU7QpLXbffYAK3KRvQEpSTQ==
-X-Received: by 2002:a05:6402:26d1:b0:423:fc04:8e78 with SMTP id x17-20020a05640226d100b00423fc048e78mr14943798edd.133.1650536274027;
-        Thu, 21 Apr 2022 03:17:54 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id s1-20020a056402036100b004240a3fc6b4sm2805757edw.82.2022.04.21.03.17.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 03:17:53 -0700 (PDT)
-Message-ID: <c945ebff-02fe-f2d5-656f-6bdfc46416f1@blackwall.org>
-Date:   Thu, 21 Apr 2022 13:17:51 +0300
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:MIME-Version:Content-Transfer-Encoding; bh=YFvbv
+        yq+VCvdHQqmn2kiqnIUVvbxcDPO7+3LCOe1kPc=; b=JTBf6cQKutfbKxV9WeMpX
+        bzNcqNn+jBBL1UrIYAOwoQiLKnWYAAXZOrsIVDrZucCfJ7c938asvNlMxLE4FPXq
+        SKeB7da7YIBg/LuNDVJS7CTKa5RazLM9yFtfM+42Qnx2ifjNum/VJSCpJvSxPIO6
+        9J2o04xJkLz8KJds44ADLU=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front09-corp.i.nease.net (Coremail) with SMTP id nxDICgCHjGGMJmFiMCBSAA--.46336S2;
+        Thu, 21 Apr 2022 17:40:29 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Subject: [PATCH net] net/smc: sync err code when tcp connection was refused
+Date:   Thu, 21 Apr 2022 17:40:27 +0800
+Message-Id: <20220421094027.683992-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next] net: bridge: switchdev: check br_vlan_group()
- return value
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220421101247.121896-1-clement.leger@bootlin.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220421101247.121896-1-clement.leger@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: nxDICgCHjGGMJmFiMCBSAA--.46336S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZr48CF15CFy5KF1rtFWkZwb_yoWkuFbEkF
+        1Ig3WxGa1jvr1rC3y7ZrsxZwsYqa48CrWrWrnIyrWkt3409w45ZFs5urn8Gwn7Cr4a9Fnx
+        Jw45Kas5C34IyjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbXAYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
+        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
+        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
+        Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7
+        xvwVC2z280aVCY1x0267AKxVW0oVCq3wAawVAFpfBj4fn0lVCYm3Zqqf926ryUJw1UKr1v
+        6r18M2kK6xCIbVAIwIAEc20F6c8GOVW8Jr15Jr4le2I262IYc4CY6c8Ij28IcVAaY2xG8w
+        AqjxCE34x0Y48IcwAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lw4CEc2x0rVAKj4xxMx02cVAKzwCY0x0Ix7I2
+        Y4AK64vIr41l42xK82IYc2Ij64vIr41l4x8a64kIII0Yj41l4I8I3I0E4IkC6x0Yz7v_Jr
+        0_Gr1l4IxY624lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2
+        zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF
+        4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWU
+        CwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIda
+        VFxhVjvjDU0xZFpf9x0pRp6wAUUUUU=
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQADCVt76hFlaAABsY
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/04/2022 13:12, Clément Léger wrote:
-> br_vlan_group() can return NULL and thus return value must be checked
-> to avoid dereferencing a NULL pointer.
-> 
-> Fixes: 6284c723d9b9 ("net: bridge: mst: Notify switchdev drivers of VLAN MSTI migrations")
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  net/bridge/br_switchdev.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-> index 81400e0b26ac..8f3d76c751dd 100644
-> --- a/net/bridge/br_switchdev.c
-> +++ b/net/bridge/br_switchdev.c
-> @@ -354,6 +354,8 @@ static int br_switchdev_vlan_attr_replay(struct net_device *br_dev,
->  	attr.orig_dev = br_dev;
->  
->  	vg = br_vlan_group(br);
-> +	if (!vg)
-> +		return 0;
->  
->  	list_for_each_entry(v, &vg->vlan_list, vlist) {
->  		if (v->msti) {
+From: liuyacan <liuyacan@corp.netease.com>
 
+In the current implementation, when TCP initiates a connection
+to an unavailable [ip,port], ECONNREFUSED will be stored in the
+TCP socket, but SMC will not. However, some apps (like curl) use
+getsockopt(,,SO_ERROR,,) to get the error information, which makes
+them miss the error message and behave strangely.
 
-Good catch.
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+ net/smc/af_smc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fc7b6eb22..bbb1a4ce5 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1475,6 +1475,8 @@ static void smc_connect_work(struct work_struct *work)
+ 		smc->sk.sk_state = SMC_CLOSED;
+ 		if (rc == -EPIPE || rc == -EAGAIN)
+ 			smc->sk.sk_err = EPIPE;
++		else if (rc == -ECONNREFUSED)
++			smc->sk.sk_err = ECONNREFUSED;
+ 		else if (signal_pending(current))
+ 			smc->sk.sk_err = -sock_intr_errno(timeo);
+ 		sock_put(&smc->sk); /* passive closing */
+-- 
+2.20.1
+
