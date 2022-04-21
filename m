@@ -2,61 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E41C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956CDC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377074AbiDUXwJ (ORCPT
+        id S1442847AbiDUXwP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        Thu, 21 Apr 2022 19:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381619AbiDUXvl (ORCPT
+        with ESMTP id S1442787AbiDUXvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:51:41 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59C943AC0;
-        Thu, 21 Apr 2022 16:48:49 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id b189so4743205qkf.11;
-        Thu, 21 Apr 2022 16:48:49 -0700 (PDT)
+        Thu, 21 Apr 2022 19:51:46 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA98042EF1;
+        Thu, 21 Apr 2022 16:48:55 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id c1so4878901qvl.3;
+        Thu, 21 Apr 2022 16:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hiSsrCjlwcoYpl0/USGlx4MhgXt3RiZFVish54MSnok=;
-        b=RhU5SczM7MVxuNqxZsysmmyBQLNaVLb/iEEH6obfC/a+trx9CedfZtJBll0IWekfih
-         tuXO0eYVjBPdozagT3PrGnVNP8+XjxRjuR9WLfymxj+0Xua835Q13Gw8Lpni5Io2OEmI
-         b1bn/4zKQFkNEU3LLPoUKMFik3eBOJePUJ1x6G2jrK6itl1IAIa4rl7ySv4bP4evNGXT
-         AErbwlrchxqc9UBwE2MEpLDhgcphNu5M1F4hviCtf/mrA9756zSZ5wseB6rbk2SwIL2t
-         6ukPAOCy90+zZIZfiWPuyhv9GPPVm9C3ICs5PJhv6LFGh3/qIz6/ZNt8Eq04DVVBw3OO
-         nwKg==
+        bh=SE94/Kbz0iYkWqSiwiZXgkxJUhacoUay8DsU/fM4rGc=;
+        b=O+Cm9zSSCAsfuY1cv1uyHWIfLd6AHQdXHkxkvQ1owHl1q4ed7gdNQPhDpX5U39ujmv
+         yxHn/O7exq1vCm2R4Di+f5GdGcazARxVpYR+LbOz/om50ZJUiuhNwSe/W6O8i7ARpSGQ
+         sY60BVfp3B8pLDaUfDS918qDgPQvki6XTXv1SXJUne0mHecVCvAkhP5SeB7Jl11anPcV
+         tOw2oSITm50Hq0EvbwOmG5qp2GC/7aihcvhgAY7xt6OtbutHsyMm6T/DKNO72WWyzLXb
+         2+dFGD2ybpnAYizCWKXrnWd+g1rkN8/gCfZSr+xRjYSlsTPkWNm/Ms8qB1RnC85iuZTd
+         JJzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hiSsrCjlwcoYpl0/USGlx4MhgXt3RiZFVish54MSnok=;
-        b=djnKYsgwkmM0Ba2KAHoZ0vn0nd9qcXxPdz1weC5vHKknVtiSAdosj+X/2iKJY11W0n
-         VIG8+cY0vNw9OhWL8Gj80fdCs35drBi60RQxLFghMzUGypWQOAH1piy4JodVjlikEbGZ
-         zTPADbndg2txB5fsYRsGlhjwexpBRJUqHEfxLcXjeiJTKAxn94y64a4Sxt5VYXAtu/uT
-         Kj8AgMspEmayDodGDt907Xt+eDyFbOXft170w5VM9LmxsXk+JntWxNJQAj+eROGhOogX
-         wZ19L8S+3V651DeQ5NPJQD9kZR55JFlMZzhlYUtE+t27xwtwjTVTnqNvP1V8R5XKYq28
-         WFwg==
-X-Gm-Message-State: AOAM530BIW8GzFG8sGacCq0eKlV9HDBwtU85hQ3yZRgsjJVnsxb9Uxx9
-        FKV8xe8FX1A3Mr0jCMHSTB308oVlgffd
-X-Google-Smtp-Source: ABdhPJzdKXxkO6fb4T06NqccHoQlgynEHMHYXfdQlfuIRpxfcMHi3GVv+ul+UsxLxNvOJg/4zsKRuA==
-X-Received: by 2002:a05:620a:4504:b0:69e:eb76:1d83 with SMTP id t4-20020a05620a450400b0069eeb761d83mr1211556qkp.92.1650584928386;
-        Thu, 21 Apr 2022 16:48:48 -0700 (PDT)
+        bh=SE94/Kbz0iYkWqSiwiZXgkxJUhacoUay8DsU/fM4rGc=;
+        b=kI9ve79GTJP9TH4fUIhtIe5rbWwpMg09m529I99NoFP92ggHBzvgDOFdVLW//LyuSI
+         QQv/t3PTRFkcr2a0HrW+0ff+qZW8srkY6nuZ5PLLCEGSUgTQDBZM/OKrAHQ1ofdWaI6r
+         wcFXc3c7PZ48sI+5BMBe9n///RV1ohx0dcB5h843+WoRG9Zz93zGTlRf3kkqislbh3d2
+         zZJ0w82kE+jRoeJtoMgmaSnIk64vU7RrdTEhzPDqNdoNKkJepVrpK7liw8R+Z2N4SKQA
+         U6th1P+TpRPJfkHwutHbSGJHlhSpvHu6PkLrxzx9KGreOpxF6nKQT6ibVYxAXOfig0FU
+         Wnsw==
+X-Gm-Message-State: AOAM530O4wDXdsjvYsqWJBZr4jAsjkAj9W0VTNP7flGuK6RKE8FdE/pJ
+        6z2PM2nMyyhnOLHBIBHC5wMkcVnVpzjD
+X-Google-Smtp-Source: ABdhPJy1Vx4dCLoAejscY+AlE0uvjsIV8mL4rJ+39tNdmbaMB3K37JbaK9DmVM8bGfz4EduxkZW3sw==
+X-Received: by 2002:a05:6214:c85:b0:441:2b1c:dd46 with SMTP id r5-20020a0562140c8500b004412b1cdd46mr1437161qvr.41.1650584934575;
+        Thu, 21 Apr 2022 16:48:54 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm287372qtx.72.2022.04.21.16.48.46
+        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm287372qtx.72.2022.04.21.16.48.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 16:48:47 -0700 (PDT)
+        Thu, 21 Apr 2022 16:48:53 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         linux-fsdevel@vger.kernel.org
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        roman.gushchin@linux.dev, hannes@cmpxchg.org
-Subject: [PATCH 3/4] mm: Centralize & improve oom reporting in show_mem.c
-Date:   Thu, 21 Apr 2022 19:48:27 -0400
-Message-Id: <20220421234837.3629927-4-kent.overstreet@gmail.com>
+Cc:     Kent Overstreet <kent.overstreet@gmail.com>, hch@lst.de,
+        hannes@cmpxchg.org, akpm@linux-foundation.org,
+        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-input@vger.kernel.org, roman.gushchin@linux.dev
+Subject: [PATCH v2 2/8] Input/joystick/analog: Convert from seq_buf -> printbuf
+Date:   Thu, 21 Apr 2022 19:48:31 -0400
+Message-Id: <20220421234837.3629927-8-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220421234837.3629927-1-kent.overstreet@gmail.com>
 References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
@@ -66,243 +68,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch:
- - Moves lib/show_mem.c to mm/show_mem.c
- - Changes show_mem() to always report on slab usage
- - Instead of reporting on all slabs, we only report on top 10 slabs,
-   and in sorted order
- - Also reports on shrinkers, with the new shrinkers_to_text().
+seq_buf is being deprecated, this converts to printbuf which is similar
+but heap allocates the string buffer.
 
-More OOM reporting can be moved to show_mem.c and improved, this patch
-is only a small start.
+This means we have to consider memory allocation context & failure: Here
+we're in device initialization so GFP_KERNEL should be fine, and also as
+we're in device initialization returning -ENOMEM is fine.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- lib/Makefile           |  2 +-
- mm/Makefile            |  2 +-
- mm/oom_kill.c          | 23 ------------------
- {lib => mm}/show_mem.c | 14 +++++++++++
- mm/slab.h              |  6 +++--
- mm/slab_common.c       | 53 +++++++++++++++++++++++++++++++++++-------
- 6 files changed, 65 insertions(+), 35 deletions(-)
- rename {lib => mm}/show_mem.c (78%)
+ drivers/input/joystick/analog.c | 37 ++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 14 deletions(-)
 
-diff --git a/lib/Makefile b/lib/Makefile
-index 31a3904eda..c5041d33d0 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -30,7 +30,7 @@ endif
- lib-y := ctype.o string.o vsprintf.o cmdline.o \
- 	 rbtree.o radix-tree.o timerqueue.o xarray.o \
- 	 idr.o extable.o sha1.o irq_regs.o argv_split.o \
--	 flex_proportions.o ratelimit.o show_mem.o \
-+	 flex_proportions.o ratelimit.o \
- 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
- 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
- 	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
-diff --git a/mm/Makefile b/mm/Makefile
-index 70d4309c9c..97c0be12f3 100644
---- a/mm/Makefile
-+++ b/mm/Makefile
-@@ -54,7 +54,7 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
- 			   mm_init.o percpu.o slab_common.o \
- 			   compaction.o vmacache.o \
- 			   interval_tree.o list_lru.o workingset.o \
--			   debug.o gup.o mmap_lock.o $(mmu-y)
-+			   debug.o gup.o mmap_lock.o show_mem.o $(mmu-y)
- 
- # Give 'page_alloc' its own module-parameter namespace
- page-alloc-y := page_alloc.o
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-index 832fb33037..659c7d6376 100644
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -171,27 +171,6 @@ static bool oom_unkillable_task(struct task_struct *p)
- 	return false;
- }
- 
--/*
-- * Check whether unreclaimable slab amount is greater than
-- * all user memory(LRU pages).
-- * dump_unreclaimable_slab() could help in the case that
-- * oom due to too much unreclaimable slab used by kernel.
--*/
--static bool should_dump_unreclaim_slab(void)
--{
--	unsigned long nr_lru;
--
--	nr_lru = global_node_page_state(NR_ACTIVE_ANON) +
--		 global_node_page_state(NR_INACTIVE_ANON) +
--		 global_node_page_state(NR_ACTIVE_FILE) +
--		 global_node_page_state(NR_INACTIVE_FILE) +
--		 global_node_page_state(NR_ISOLATED_ANON) +
--		 global_node_page_state(NR_ISOLATED_FILE) +
--		 global_node_page_state(NR_UNEVICTABLE);
--
--	return (global_node_page_state_pages(NR_SLAB_UNRECLAIMABLE_B) > nr_lru);
--}
--
- /**
-  * oom_badness - heuristic function to determine which candidate task to kill
-  * @p: task struct of which task we should calculate
-@@ -465,8 +444,6 @@ static void dump_header(struct oom_control *oc, struct task_struct *p)
- 		mem_cgroup_print_oom_meminfo(oc->memcg);
- 	else {
- 		show_mem(SHOW_MEM_FILTER_NODES, oc->nodemask);
--		if (should_dump_unreclaim_slab())
--			dump_unreclaimable_slab();
- 	}
- 	if (sysctl_oom_dump_tasks)
- 		dump_tasks(oc);
-diff --git a/lib/show_mem.c b/mm/show_mem.c
-similarity index 78%
-rename from lib/show_mem.c
-rename to mm/show_mem.c
-index 1c26c14ffb..c9f37f13d6 100644
---- a/lib/show_mem.c
-+++ b/mm/show_mem.c
-@@ -7,11 +7,15 @@
- 
- #include <linux/mm.h>
- #include <linux/cma.h>
+diff --git a/drivers/input/joystick/analog.c b/drivers/input/joystick/analog.c
+index 3088c5b829..72e1e30d19 100644
+--- a/drivers/input/joystick/analog.c
++++ b/drivers/input/joystick/analog.c
+@@ -19,7 +19,7 @@
+ #include <linux/input.h>
+ #include <linux/gameport.h>
+ #include <linux/jiffies.h>
+-#include <linux/seq_buf.h>
 +#include <linux/printbuf.h>
-+
-+#include "slab.h"
+ #include <linux/timex.h>
+ #include <linux/timekeeping.h>
  
- void show_mem(unsigned int filter, nodemask_t *nodemask)
+@@ -337,26 +337,32 @@ static void analog_calibrate_timer(struct analog_port *port)
+  * analog_name() constructs a name for an analog joystick.
+  */
+ 
+-static void analog_name(struct analog *analog)
++static int analog_name(struct analog *analog)
  {
- 	pg_data_t *pgdat;
- 	unsigned long total = 0, reserved = 0, highmem = 0;
+-	struct seq_buf s;
 +	struct printbuf buf = PRINTBUF;
++	int ret = 0;
  
- 	printk("Mem-Info:\n");
- 	show_free_areas(filter, nodemask);
-@@ -41,4 +45,14 @@ void show_mem(unsigned int filter, nodemask_t *nodemask)
- #ifdef CONFIG_MEMORY_FAILURE
- 	printk("%lu pages hwpoisoned\n", atomic_long_read(&num_poisoned_pages));
- #endif
+-	seq_buf_init(&s, analog->name, sizeof(analog->name));
+-	seq_buf_printf(&s, "Analog %d-axis %d-button",
+-		 hweight8(analog->mask & ANALOG_AXES_STD),
+-		 hweight8(analog->mask & ANALOG_BTNS_STD) + !!(analog->mask & ANALOG_BTNS_CHF) * 2 +
+-		 hweight16(analog->mask & ANALOG_BTNS_GAMEPAD) + !!(analog->mask & ANALOG_HBTN_CHF) * 4);
++	pr_buf(&buf, "Analog %d-axis %d-button",
++	       hweight8(analog->mask & ANALOG_AXES_STD),
++	       hweight8(analog->mask & ANALOG_BTNS_STD) + !!(analog->mask & ANALOG_BTNS_CHF) * 2 +
++	       hweight16(analog->mask & ANALOG_BTNS_GAMEPAD) + !!(analog->mask & ANALOG_HBTN_CHF) * 4);
+ 
+ 	if (analog->mask & ANALOG_HATS_ALL)
+-		seq_buf_printf(&s, " %d-hat",
+-			       hweight16(analog->mask & ANALOG_HATS_ALL));
++		pr_buf(&buf, " %d-hat",
++		       hweight16(analog->mask & ANALOG_HATS_ALL));
+ 
+ 	if (analog->mask & ANALOG_HAT_FCS)
+-		seq_buf_printf(&s, " FCS");
++		pr_buf(&buf, " FCS");
+ 	if (analog->mask & ANALOG_ANY_CHF)
+-		seq_buf_printf(&s, (analog->mask & ANALOG_SAITEK) ? " Saitek" : " CHF");
++		pr_buf(&buf, (analog->mask & ANALOG_SAITEK) ? " Saitek" : " CHF");
+ 
+-	seq_buf_printf(&s, (analog->mask & ANALOG_GAMEPAD) ? " gamepad" : " joystick");
++	pr_buf(&buf, (analog->mask & ANALOG_GAMEPAD) ? " gamepad" : " joystick");
 +
-+	pr_info("Unreclaimable slab info:\n");
-+	dump_unreclaimable_slab(&buf);
-+	printk("%s", buf.buf);
-+	printbuf_reset(&buf);
-+
-+	printk("Shrinkers:\n");
-+	shrinkers_to_text(&buf);
-+	printk("%s", buf.buf);
++	ret = buf.allocation_failure ? -ENOMEM : 0;
++	if (!ret)
++		strlcpy(analog->name, buf.buf, sizeof(analog->name));
 +	printbuf_exit(&buf);
- }
-diff --git a/mm/slab.h b/mm/slab.h
-index c7f2abc2b1..abefbf7674 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -788,10 +788,12 @@ static inline struct kmem_cache_node *get_node(struct kmem_cache *s, int node)
- 
- #endif
- 
-+struct printbuf;
-+
- #if defined(CONFIG_SLAB) || defined(CONFIG_SLUB_DEBUG)
--void dump_unreclaimable_slab(void);
-+void dump_unreclaimable_slab(struct printbuf *);
- #else
--static inline void dump_unreclaimable_slab(void)
-+static inline void dump_unreclaimable_slab(struct printbuf *out)
- {
- }
- #endif
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 23f2ab0713..cb1c548c73 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -24,6 +24,7 @@
- #include <asm/tlbflush.h>
- #include <asm/page.h>
- #include <linux/memcontrol.h>
-+#include <linux/printbuf.h>
- 
- #define CREATE_TRACE_POINTS
- #include <trace/events/kmem.h>
-@@ -1084,10 +1085,15 @@ static int slab_show(struct seq_file *m, void *p)
- 	return 0;
++	return ret;
  }
  
--void dump_unreclaimable_slab(void)
-+void dump_unreclaimable_slab(struct printbuf *out)
- {
- 	struct kmem_cache *s;
- 	struct slabinfo sinfo;
-+	struct slab_by_mem {
-+		struct kmem_cache *s;
-+		size_t total, active;
-+	} slabs_by_mem[10], n;
-+	int i, nr = 0;
+ /*
+@@ -369,7 +375,10 @@ static int analog_init_device(struct analog_port *port, struct analog *analog, i
+ 	int i, j, t, v, w, x, y, z;
+ 	int error;
  
- 	/*
- 	 * Here acquiring slab_mutex is risky since we don't prefer to get
-@@ -1097,12 +1103,11 @@ void dump_unreclaimable_slab(void)
- 	 * without acquiring the mutex.
- 	 */
- 	if (!mutex_trylock(&slab_mutex)) {
--		pr_warn("excessive unreclaimable slab but cannot dump stats\n");
-+		pr_buf(out, "excessive unreclaimable slab but cannot dump stats\n");
- 		return;
- 	}
- 
--	pr_info("Unreclaimable slab info:\n");
--	pr_info("Name                      Used          Total\n");
-+	buf->atomic++;
- 
- 	list_for_each_entry(s, &slab_caches, list) {
- 		if (s->flags & SLAB_RECLAIM_ACCOUNT)
-@@ -1110,11 +1115,43 @@ void dump_unreclaimable_slab(void)
- 
- 		get_slabinfo(s, &sinfo);
- 
--		if (sinfo.num_objs > 0)
--			pr_info("%-17s %10luKB %10luKB\n", s->name,
--				(sinfo.active_objs * s->size) / 1024,
--				(sinfo.num_objs * s->size) / 1024);
-+		if (!sinfo.num_objs)
-+			continue;
+-	analog_name(analog);
++	error = analog_name(analog);
++	if (error)
++		return error;
 +
-+		n.s = s;
-+		n.total = sinfo.num_objs * s->size;
-+		n.active = sinfo.active_objs * s->size;
-+
-+		for (i = 0; i < nr; i++)
-+			if (n.total < slabs_by_mem[i].total)
-+				break;
-+
-+		if (nr < ARRAY_SIZE(slabs_by_mem)) {
-+			memmove(&slabs_by_mem[i + 1],
-+				&slabs_by_mem[i],
-+				sizeof(slabs_by_mem[0]) * (nr - i));
-+			nr++;
-+		} else if (i) {
-+			i--;
-+			memmove(&slabs_by_mem[0],
-+				&slabs_by_mem[1],
-+				sizeof(slabs_by_mem[0]) * i);
-+		} else {
-+			continue;
-+		}
-+
-+		slabs_by_mem[i] = n;
-+	}
-+
-+	for (i = nr - 1; i >= 0; --i) {
-+		pr_buf(out, "%-17s total: ", slabs_by_mem[i].s->name);
-+		pr_human_readable_u64(out, slabs_by_mem[i].total);
-+		pr_buf(out, " active: ");
-+		pr_human_readable_u64(out, slabs_by_mem[i].active);
-+		pr_newline(out);
- 	}
-+
-+	--buf->atomic;
- 	mutex_unlock(&slab_mutex);
- }
- 
+ 	snprintf(analog->phys, sizeof(analog->phys),
+ 		 "%s/input%d", port->gameport->phys, index);
+ 	analog->buttons = (analog->mask & ANALOG_GAMEPAD) ? analog_pad_btn : analog_joy_btn;
 -- 
 2.35.2
 
