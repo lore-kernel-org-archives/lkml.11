@@ -2,91 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82950C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2292C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389231AbiDUOaE (ORCPT
+        id S1389228AbiDUOaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35366 "EHLO
+        Thu, 21 Apr 2022 10:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389208AbiDUOaC (ORCPT
+        with ESMTP id S1389235AbiDUOaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:30:02 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF043DA46;
-        Thu, 21 Apr 2022 07:27:12 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e5c42b6e31so5506945fac.12;
-        Thu, 21 Apr 2022 07:27:12 -0700 (PDT)
+        Thu, 21 Apr 2022 10:30:10 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1603E5C2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:15 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-e2442907a1so5528266fac.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9VwmgAIE3C/SlM3FCg1mKc45JuOL6JcnrTvihhf7z+8=;
+        b=gT3MpU79adYbNmR619A7KZwgwzy1/l+VS3jcW/0aVqreIbPUeSR1kvM5Jb7X6iaMLF
+         hepxgbkIFjyA0lyb2iKgUwyiDlRYoiWHEJrXRCvMKilJQPOGCZjQO93YBqW9A8zXqKz2
+         ddqB/FLDaRO3w5C3ai/PqyTaro2lIa3UlF+YO6ipQG6wrUV3SRwNIdPY/NgMEWEeCdhF
+         etGVz6KBFTfhWl223r61PYEJfc/dgFRYslxc5evi9EDmvyjx4McoH3H/DoV2DdHOhc1y
+         3DeCaQkI0oWrYrwImQwK9jmEitPo6bYdMWDwKG2j1xWSDt4LcvUEZHNLYBOskJSW66kT
+         PB5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=BQKvyTXErlpSLbUeZkAqUZtd6lsEQb/vXCrtLmWTwLk=;
-        b=vmIwPXNkys8de+c8SlEfAIpf96MluDGNzeZ6gq5HVKJPFzRbAmMMI+bm0AML28zRhQ
-         VM79ZZYo+yGFXeRztR7JiUJcuRCjhd0FfZfWIzhvDKBqUXJjVnowbJ9yl4/oLoUnV2pC
-         epZwh8l0yF24xfHU1mwPo1KM8bG8LCGOvNIE5rfW5YwG24R1f1cwGFI1tHxqKd9yZB0t
-         VE07j7MImGpmyjxqAa3MwBu6+nh31XNWrm0w9idjUffIJK14knnh36HVgP4zj5SkiZ1U
-         SFVG2UB9MAD44mNaY9qi74RwllVlgtSM5PgeLOOBNrCFrJwuYMjaNcNC+qrCE8X7OeCZ
-         kSBQ==
-X-Gm-Message-State: AOAM5329z3CQNEM2f0N55JpIj7wXlLNsNaq7dJDA4Ebe2yCKQNWHvtQu
-        mRUQMQ53tUn973zlEu6LDg==
-X-Google-Smtp-Source: ABdhPJy6fvPhSR4FPWrtZ8cYTzUqxxQrEHtByGvOfgjE8lr08QjiBEG9A3qmcnCXZ3jZwtWIRFxWxg==
-X-Received: by 2002:a05:6870:5829:b0:de:ab74:44cf with SMTP id r41-20020a056870582900b000deab7444cfmr3862916oap.17.1650551231912;
-        Thu, 21 Apr 2022 07:27:11 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x15-20020a056830408f00b006054688cba0sm5769853ott.52.2022.04.21.07.27.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9VwmgAIE3C/SlM3FCg1mKc45JuOL6JcnrTvihhf7z+8=;
+        b=6qlfMRzAFUefrSBhhTbTwOD0TBkjXQqhzwp9mrkQrTVb/YcuQhLY/hiwXP8FqBW9RZ
+         IrpLVNOtA2bDoqYszdUtvjO6jw92WEsIMz/T6o+Mrv5ZdmCZGgf/BeCtq6TdKvBeyR6U
+         R/Ype3Sc7j/UWaZQZuRbE38OqIuHHx8fVo0sXnfz7JS84uFyrvpGij0YPF+GkhR7WtCf
+         c+0+Jyq66xU6/YyQHKh5JDjOpjNy+pPxMudyl9VG5NMddowDG0uokfr784qxOnHxAkHD
+         wkIAS65TEUHs2hV1Bb28PXodG8mLi2oCGGGD1mCnEFifYItzvFY5SkD4Uud4yLcj1sXd
+         F4pQ==
+X-Gm-Message-State: AOAM530WzAixPVkUI+tpCaxo+f0QSjLfs+QLtcDWrISAk4LmfLdtxiDF
+        C3wk6KSDAUw9FmxM6rb5fy+e4w==
+X-Google-Smtp-Source: ABdhPJzWNi+qzNkI0Z6gcAFg1/3ClDqHJiyimleT4ouAEJm0pBZSjF3lzP64rQX+WtyZnNbDDrP/xw==
+X-Received: by 2002:a05:6870:538c:b0:da:f5e5:5b56 with SMTP id h12-20020a056870538c00b000daf5e55b56mr3993013oan.241.1650551235008;
+        Thu, 21 Apr 2022 07:27:15 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id s14-20020a0568302a8e00b006054e841915sm4296295otu.73.2022.04.21.07.27.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 07:27:11 -0700 (PDT)
-Received: (nullmailer pid 3426512 invoked by uid 1000);
-        Thu, 21 Apr 2022 14:27:10 -0000
-Date:   Thu, 21 Apr 2022 09:27:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jerry Huang <jerry.huang@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [EXT] Re: [PATCH 1/2 v4] dt-bindings: dspi: added for semtech
- sx1301
-Message-ID: <YmFpvtZ9WtYWoFYZ@robh.at.kernel.org>
-References: <20220420073146.38086-1-jerry.huang@nxp.com>
- <d74f62d7-7aea-b31f-1c2f-540c54df289c@linaro.org>
- <VE1PR04MB6477553510B6EB35D7C22C13FEF49@VE1PR04MB6477.eurprd04.prod.outlook.com>
+        Thu, 21 Apr 2022 07:27:14 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andy Gross <agross@kernel.org>, Joel Selvaraj <jo@jsfamily.in>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        phone-devel@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>
+Subject: Re: [PATCH 1/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: change firmware path and use mbn format
+Date:   Thu, 21 Apr 2022 09:26:52 -0500
+Message-Id: <165055095990.2574292.4581684573517329144.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <BY5PR02MB700966DEE6F6044EBEB5B892D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
+References: <20220330064505.243799-1-jo@jsfamily.in> <BY5PR02MB700966DEE6F6044EBEB5B892D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <VE1PR04MB6477553510B6EB35D7C22C13FEF49@VE1PR04MB6477.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 09:11:59AM +0000, Jerry Huang wrote:
+On Wed, 30 Mar 2022 12:15:02 +0530, Joel Selvaraj wrote:
+> The "qcom/sdm845/" path conflicts with db845c's firmware that are
+> present in the linux-firmware package. Xiaomi uses their own signed
+> firmware for Poco F1 and can't use the db845c's firmware. So let's
+> use "qcom/sdm845/beryllium/" to distinguish Poco F1's firmware files.
 > 
+> For easier handling and packaging, the mdt+bXX files are squashed
+> using Bjorn Andersson's pil-squasher tool from this link:
+> https://github.com/andersson/pil-squasher
 > 
-> 
-> Best Regards
-> Jerry Huang
-> 
-> -----Original Message-----
-> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 
-> Sent: 2022年4月20日 20:06
-> To: Jerry Huang <jerry.huang@nxp.com>; broonie@kernel.org; robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org; linux-spi@vger.kernel.org; devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; shawnguo@kernel.org; Leo Li <leoyang.li@nxp.com>; linux-arm-kernel@lists.infradead.org
-> Subject: [EXT] Re: [PATCH 1/2 v4] dt-bindings: dspi: added for semtech sx1301
-> 
-> Caution: EXT Email
+> [...]
 
-Please fix your email client/setup to not change the subject, use the 
-right reply quoting (1 line, not quoting To, Subject, etc.), and 
-not corrupting urls.
+Applied, thanks!
 
-Rob
+[1/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: change firmware path and use mbn format
+      commit: efbd3599154cb3d947564a9dce419a6754d233ef
+[2/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable qcom ipa driver
+      commit: 84b6c2420415767079baa24ffd70d048cd35bdd8
+[3/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: fix typo in panel's vddio-supply property
+      commit: 1f1c494082a1f10d03ce4ee1485ee96d212e22ff
+[4/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable second wifi channel
+      commit: 3213b3741a147db59ed6f1ebc5f569854725b91f
+
+Best regards,
+-- 
+Bjorn Andersson <bjorn.andersson@linaro.org>
