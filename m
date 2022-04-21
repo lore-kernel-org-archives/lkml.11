@@ -2,648 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 271C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385560AbiDUHJ2 (ORCPT
+        id S1385566AbiDUHJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
+        Thu, 21 Apr 2022 03:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiDUHJ0 (ORCPT
+        with ESMTP id S229902AbiDUHJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:09:26 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6B916585;
-        Thu, 21 Apr 2022 00:06:36 -0700 (PDT)
-Received: from philip-t440p.fritz.box (dynamic-077-004-052-073.77.4.pool.telefonica.de [77.4.52.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pro@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 176D3833EC;
-        Thu, 21 Apr 2022 09:06:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1650524794;
-        bh=Ei/QxoHsTpLBorI44lNRKXjS/yyeJn3fAVsuoOCLizg=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=qwmJSfRG/nuFyOwSvQf1TFYgOi4+Up3HEdhMiScyRidloZmvnTIERhkkAgTgSfmNG
-         Z+9Os2rWZNnPSOAWRaboA0nAsPJ81qBJSFBqW/Ij99OIbKPOxvemvGWEAkWc5qcGeB
-         qajmkgf6uc34TgrEZpGKEzgH8IMN2eJmfXBIAXmXTy3AHitqTRSebk2+Iqkle34ARm
-         J3Kkpw4f9awNq3WRFl3L+cdGKHMt621RCdx5XtqgWlJgKmm/7wtx0iS6l1Kft7QW0P
-         eRkP68cr2GqnRBCmXoZxwloSLx9BUYsLm8YiIBDTJQ3ZSEP1i71blO2r7NVDj3llHm
-         giQwYlEKQpXQg==
-Message-ID: <cd7546a341d475eca99a446b6c8a5141056b3bc8.camel@denx.de>
-Subject: Re: [PATCH 2/2] arm: dts: Add device tree for bosch acc board
-From:   Philip Oberfichtner <pro@denx.de>
-To:     Krzysztof Kozlowski <krzk@kernel.org>, devicetree@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Winker Matthias <Matthias.Winker@de.bosch.com>
-Date:   Thu, 21 Apr 2022 09:06:33 +0200
-In-Reply-To: <f2b1359d-a003-ae38-e8af-ab6aa1d0fe72@kernel.org>
-References: <20220412101905.514310-1-pro@denx.de>
-         <20220412101905.514310-3-pro@denx.de>
-         <f2b1359d-a003-ae38-e8af-ab6aa1d0fe72@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Thu, 21 Apr 2022 03:09:44 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F21A16585
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:06:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650524815; x=1682060815;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=WYxovo6fYu6pP21wbxbUzNXnneCANdbhHpH49GnDGis=;
+  b=BLGHEacNoBGHTAPEQElTqGfDtiF2/c+ONYlZKNwZqEVBt+72JZv2UUd4
+   8w3ILCo8C1GbpyalcYm4dyPsTUOlbRSb+KL61x/VYjfGRq8hQHtSvToFY
+   hGII8v/K7bQeJoABZGZWOtXXWm8pPvtCdgkY66AvR7N8tKpiy9xYroNI/
+   WwbrwY4742w6wEQlQ+of3JYznLOv+2mOY2/yMwy6mOySi7P1cltSHFtUs
+   vMr8gT7XSyLETq2JKmEdgBF4rotjDq4ueL5Arfz9CI3Fr7UjGEWVkLU0D
+   A9EMSgKhPxXnIgKK5l54+IbsbiA4FQkoMwsjiI7kr81fKzZf3H0UurlMo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251575635"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="251575635"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 00:06:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="510926204"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 21 Apr 2022 00:06:53 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhQtw-00084H-Vk;
+        Thu, 21 Apr 2022 07:06:52 +0000
+Date:   Thu, 21 Apr 2022 15:05:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1822/2579] kernel/signal.c:2990:2: error:
+ implicit declaration of function 'cgroup_threadgroup_change_begin' is
+ invalid in C99
+Message-ID: <202204211446.ajV6GlxA-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-12 at 13:10 +0200, Krzysztof Kozlowski wrote:
-> On 12/04/2022 12:19, Philip Oberfichtner wrote:
-> > Add device tree for the Bosch ACC board, based on i.MX6 Dual.
-> > 
-> 
-> Thank you for your patch. There is something to discuss/improve.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
+commit: 5256e0b3a0d316629bf14a3e23258fc69496eee1 [1822/2579] headers/deps: cgroup: Move the cgroup_threadgroup_*() inline functions from <linux/cgroup_types.h> to <linux/cgroup_api.h>
+config: mips-randconfig-r026-20220419 (https://download.01.org/0day-ci/archive/20220421/202204211446.ajV6GlxA-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c1c49a356162b22554088d269f7689bdb044a9f1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=5256e0b3a0d316629bf14a3e23258fc69496eee1
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 5256e0b3a0d316629bf14a3e23258fc69496eee1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-Hi Krzysztof,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-thank you for the feedback. I will fix most of your comments in V2, but
-there are open questions left:
+All errors (new ones prefixed by >>):
 
-> 
-> > +	};
-> > +
-> > +	backlight {
-> > +		status = "okay";
-> 
-> Are you overriding any node? Looks like not, so status is not needed.
-> 
-> > +
-> > +		compatible = "pwm-backlight";
-> > +		/* The last value is the PWM period in nano-seconds!
-> > +		 * -> 5 kHz = 200 µS = 200.000 ns
-> > +		 */
-> > +		pwms = <&pwm1 0 200000>;
-> > +		brightness-levels = <0 61 499 1706 4079 8022 13938
-> > 22237 33328 47623 65535>;
-> > +		num-interpolated-steps = <10>;
-> > +		default-brightness-level = <60>;
-> > +		power-supply = <&reg_lcd0_pwr>;
-> > +	};
-> > +
-> > +	usb3503_refclk: usb3503_refclk {
-> 
-> hyphens in node names, not underscores. Node names should be generic,
-> but if you need a specific prefix, it's ok.
-> 
-> > +		compatible = "fixed-factor-clock";
-> > +		#clock-cells = <0>;
-> > +
-> > +		clocks = <&clks IMX6QDL_CLK_CKO2>;
-> > +		clock-div = <1>;
-> > +		clock-mult = <1>;
-> > +		clock-output-names = "12mhz_refclk";
-> > +
-> > +		assigned-clocks = <&clks IMX6QDL_CLK_CKO>,
-> > +				  <&clks IMX6QDL_CLK_CKO2>,
-> > +				  <&clks IMX6QDL_CLK_CKO2_SEL>;
-> > +		assigned-clock-parents = <&clks IMX6QDL_CLK_CKO2>,
-> > +					 <&clks IMX6QDL_CLK_CKO2_PODF>,
-> > +					 <&clks IMX6QDL_CLK_OSC>;
-> > +		assigned-clock-rates = <0>, <12000000>, <0>;
-> > +	};
-> > +
-> > +	cpus {
-> > +		/* Override operating points with board-specific values
-> > */
-> > +		cpu0: cpu@0 {
-> > +			operating-points = <
-> 
-> Anything blocking from using OPP v2 bindings?
-> 
-> > +				/* kHz    uV */
-> > +				1200000 1275000
-> > +				996000  1225000
-> > +				852000  1225000
-> > +				792000  1150000
-> > +				396000  950000
-> > +			>;
-> > +			fsl,soc-operating-points = <
-> 
-> This seems undocumented and actually - why do you need it if you have
-> generic operating points?
+   kernel/signal.c:190:6: error: implicit declaration of function 'cgroup_task_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+               cgroup_task_frozen(t)) {
+               ^
+   kernel/signal.c:2325:3: error: implicit declaration of function 'cgroup_enter_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   cgroup_enter_frozen();
+                   ^
+   kernel/signal.c:2328:3: error: implicit declaration of function 'cgroup_leave_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   cgroup_leave_frozen(true);
+                   ^
+   kernel/signal.c:2328:3: note: did you mean 'cgroup_enter_frozen'?
+   kernel/signal.c:2325:3: note: 'cgroup_enter_frozen' declared here
+                   cgroup_enter_frozen();
+                   ^
+   kernel/signal.c:2516:3: error: implicit declaration of function 'cgroup_enter_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   cgroup_enter_frozen();
+                   ^
+   kernel/signal.c:2595:2: error: implicit declaration of function 'cgroup_enter_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           cgroup_enter_frozen();
+           ^
+   kernel/signal.c:2763:16: error: implicit declaration of function 'cgroup_task_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   if (unlikely(cgroup_task_frozen(current))) {
+                                ^
+   kernel/signal.c:2765:4: error: implicit declaration of function 'cgroup_leave_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                           cgroup_leave_frozen(false);
+                           ^
+   kernel/signal.c:2865:4: error: implicit declaration of function 'cgroup_leave_frozen' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                           cgroup_leave_frozen(true);
+                           ^
+>> kernel/signal.c:2990:2: error: implicit declaration of function 'cgroup_threadgroup_change_begin' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           cgroup_threadgroup_change_begin(tsk);
+           ^
+>> kernel/signal.c:2994:3: error: implicit declaration of function 'cgroup_threadgroup_change_end' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   cgroup_threadgroup_change_end(tsk);
+                   ^
+   kernel/signal.c:2994:3: note: did you mean 'cgroup_threadgroup_change_begin'?
+   kernel/signal.c:2990:2: note: 'cgroup_threadgroup_change_begin' declared here
+           cgroup_threadgroup_change_begin(tsk);
+           ^
+   kernel/signal.c:3005:2: error: implicit declaration of function 'cgroup_threadgroup_change_end' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           cgroup_threadgroup_change_end(tsk);
+           ^
+   11 errors generated.
 
-The "operating-points" and "fsl,soc-operating-points" properties are
-defined in imx6q.dtsi. We are just overwriting them here.              
-                                          
 
-> 
-> > +				/* ARM kHz  SOC-PU uV */
-> > +				1200000 1225000
-> > +				996000	1175000
-> > +				852000	1175000
-> > +				792000	1150000
-> > +				396000	1150000
-> > +			>;
-> > +		};
-> > +
-> > +		cpu1: cpu@1 {
-> > +			operating-points = <
-> > +				/* kHz    uV */
-> > +				1200000 1275000
-> > +				996000  1225000
-> > +				852000  1225000
-> > +				792000  1150000
-> > +				396000  950000
-> > +			>;
-> > +			fsl,soc-operating-points = <
-> > +				/* ARM kHz  SOC-PU uV */
-> > +				1200000 1225000
-> > +				996000	1175000
-> > +				852000	1175000
-> > +				792000	1150000
-> > +				396000	1150000
-> > +			>;
-> > +		};
-> > +	};
-> > +
-> > +	leds {
-> > +		compatible = "pwm-leds";
-> > +
-> > +		led_red: red {
-> 
-> Generic node names, so led-0.
-> 
-> Add common properties for color and function.
-> 
-> > +			label = "red";
-> > +			max-brightness = <248>;
-> > +			default-state = "off";
-> > +			pwms = <&pwm2 0 500000>;
-> > +		};
-> > +
-> > +		led_white: white {
-> 
-> The same.
-> 
-> > +			label = "white";
-> > +			max-brightness = <248>;
-> > +			default-state = "off";
-> > +			pwms = <&pwm3 0 500000>;
-> > +			linux,default-trigger = "heartbeat";
-> > +		};
-> > +	};
-> > +
-> > +	memory {
-> > +		reg = <0x10000000 0x40000000>;
-> > +	};
-> > +
-> > +	regulators: regulators {
-> > +		compatible = "simple-bus";
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> 
-> This should not be a bus. Instead "regulator-0" and so on.
-> 
-> > +
-> > +		supply_5P0: regulator@0 {
-> > +			compatible = "regulator-fixed";
-> > +			reg = <0>;
-> 
-> Please run `make dtbs_check` (see Docs for this) and fix the
-> warnings.
-> Please fix automated check warnings before using reviewers time.
+vim +/cgroup_threadgroup_change_begin +2990 kernel/signal.c
 
-I built with W=1 and used checkpatch.pl. But I'm having trouble using
-make dtbs_check. Seems like I get all warnings for all possible dts. Is
-there a way to get warnings for a single dt only?
+0edceb7bcd82802 Oleg Nesterov     2011-04-27  2980  
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2981  void exit_signals(struct task_struct *tsk)
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2982  {
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2983  	int group_stop = 0;
+f646e227b88a164 Oleg Nesterov     2011-04-27  2984  	sigset_t unblocked;
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2985  
+77e4ef99d1c596a Tejun Heo         2011-12-12  2986  	/*
+77e4ef99d1c596a Tejun Heo         2011-12-12  2987  	 * @tsk is about to have PF_EXITING set - lock out users which
+77e4ef99d1c596a Tejun Heo         2011-12-12  2988  	 * expect stable threadgroup.
+77e4ef99d1c596a Tejun Heo         2011-12-12  2989  	 */
+780de9dd2720deb Ingo Molnar       2017-02-02 @2990  	cgroup_threadgroup_change_begin(tsk);
+77e4ef99d1c596a Tejun Heo         2011-12-12  2991  
+49697335e0b441b Eric W. Biederman 2021-06-24  2992  	if (thread_group_empty(tsk) || (tsk->signal->flags & SIGNAL_GROUP_EXIT)) {
+b5b5c995e31d80e Ingo Molnar       2022-04-14  2993  		task_flags(tsk) |= PF_EXITING;
+780de9dd2720deb Ingo Molnar       2017-02-02 @2994  		cgroup_threadgroup_change_end(tsk);
+5dee1707dfbfc55 Oleg Nesterov     2008-02-08  2995  		return;
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2996  	}
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2997  
+5dee1707dfbfc55 Oleg Nesterov     2008-02-08  2998  	spin_lock_irq(&tsk->sighand->siglock);
+d12619b5ff56646 Oleg Nesterov     2008-02-08  2999  	/*
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3000  	 * From now this task is not visible for group-wide signals,
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3001  	 * see wants_signal(), do_signal_stop().
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3002  	 */
+b5b5c995e31d80e Ingo Molnar       2022-04-14  3003  	task_flags(tsk) |= PF_EXITING;
+77e4ef99d1c596a Tejun Heo         2011-12-12  3004  
+780de9dd2720deb Ingo Molnar       2017-02-02  3005  	cgroup_threadgroup_change_end(tsk);
+77e4ef99d1c596a Tejun Heo         2011-12-12  3006  
+5c251e9dc0e127b Jens Axboe        2020-10-26  3007  	if (!task_sigpending(tsk))
+5dee1707dfbfc55 Oleg Nesterov     2008-02-08  3008  		goto out;
+5dee1707dfbfc55 Oleg Nesterov     2008-02-08  3009  
+ec2f4babb822f72 Ingo Molnar       2022-01-28  3010  	unblocked = per_task(tsk, blocked);
+f646e227b88a164 Oleg Nesterov     2011-04-27  3011  	signotset(&unblocked);
+f646e227b88a164 Oleg Nesterov     2011-04-27  3012  	retarget_shared_pending(tsk, &unblocked);
+5dee1707dfbfc55 Oleg Nesterov     2008-02-08  3013  
+a8f072c1d624a62 Tejun Heo         2011-06-02  3014  	if (unlikely(tsk->jobctl & JOBCTL_STOP_PENDING) &&
+e5c1902e9260a00 Tejun Heo         2011-03-23  3015  	    task_participate_group_stop(tsk))
+edf2ed153bcae52 Tejun Heo         2011-03-23  3016  		group_stop = CLD_STOPPED;
+5dee1707dfbfc55 Oleg Nesterov     2008-02-08  3017  out:
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3018  	spin_unlock_irq(&tsk->sighand->siglock);
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3019  
+62bcf9d992ecc19 Tejun Heo         2011-03-23  3020  	/*
+62bcf9d992ecc19 Tejun Heo         2011-03-23  3021  	 * If group stop has completed, deliver the notification.  This
+62bcf9d992ecc19 Tejun Heo         2011-03-23  3022  	 * should always go to the real parent of the group leader.
+62bcf9d992ecc19 Tejun Heo         2011-03-23  3023  	 */
+ae6d2ed7bb3877f Roland McGrath    2009-09-23  3024  	if (unlikely(group_stop)) {
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3025  		read_lock(&tasklist_lock);
+62bcf9d992ecc19 Tejun Heo         2011-03-23  3026  		do_notify_parent_cldstop(tsk, false, group_stop);
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3027  		read_unlock(&tasklist_lock);
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3028  	}
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3029  }
+d12619b5ff56646 Oleg Nesterov     2008-02-08  3030  
 
-Best regards,
-Philip Oberfichtner                                                
+:::::: The code at line 2990 was first introduced by commit
+:::::: 780de9dd2720debc14c501dab4dc80d1f75ad50e sched/headers, cgroups: Remove the threadgroup_change_*() wrappery
 
-> 
-> > +			regulator-name = "5P0";
-> > +			regulator-min-microvolt = <5000000>;
-> > +			regulator-max-microvolt = <5000000>;
-> > +			regulator-always-on;
-> 
-> Why do you need it? There is no control here, it's only used as a
-> supply
-> for other uncontrollable regulators (unless I missed something).
-> 
-> > +		};
-> > +
-> > +		supply_VIN: regulator@1 {
-> > +			compatible = "regulator-fixed";
-> > +			reg = <1>;
-> > +			regulator-name = "VIN";
-> > +			regulator-min-microvolt = <4500000>;
-> > +			regulator-max-microvolt = <4500000>;
-> > +			regulator-always-on;
-> > +			vin-supply = <&supply_5P0>;
-> > +		};
-> > +
-> > +		reg_usb_otg_vbus: regulator@2 {
-> > +			compatible = "regulator-fixed";
-> > +			reg = <2>;
-> > +			regulator-name = "usb_otg_vbus";
-> > +			regulator-min-microvolt = <5000000>;
-> > +			regulator-max-microvolt = <5000000>;
-> > +		};
-> > +
-> > +		reg_usb_h1_vbus: regulator@3 {
-> > +			compatible = "regulator-fixed";
-> > +			reg = <3>;
-> > +			regulator-name = "usb_h1_vbus";
-> > +			regulator-min-microvolt = <5000000>;
-> > +			regulator-max-microvolt = <5000000>;
-> > +			regulator-always-on;
-> > +			vin-supply = <&supply_5P0>;
-> > +		};
-> > +
-> > +		supply_VSNVS_3V0: regulator@4 {
-> > +			compatible = "regulator-fixed";
-> > +			reg = <4>;
-> > +			regulator-name = "VSNVS_3V0";
-> > +			regulator-min-microvolt = <3000000>;
-> > +			regulator-max-microvolt = <3000000>;
-> > +			regulator-always-on;
-> > +			vin-supply = <&supply_5P0>;
-> > +		};
-> > +
-> > +		reg_lcd0_pwr: regulator-lcd0-pwr {
-> > +			compatible = "regulator-fixed";
-> > +			regulator-name = "LCD0 POWER";
-> > +			regulator-min-microvolt = <5000000>;
-> > +			regulator-max-microvolt = <5000000>;
-> > +			pinctrl-names = "default";
-> > +			pinctrl-0 = <&pinctrl_lcd_enable>;
-> > +			gpio = <&gpio3 23 GPIO_ACTIVE_HIGH>;
-> > +			enable-active-high;
-> > +			regulator-boot-on;
-> > +		};
-> > +
-> > +		reg_usb_h2_vbus: regulator@6 {
-> > +			compatible = "regulator-fixed";
-> > +			reg = <6>;
-> > +			regulator-name = "usb_h2_vbus";
-> > +			regulator-min-microvolt = <5000000>;
-> > +			regulator-max-microvolt = <5000000>;
-> > +			vin-supply = <&supply_5P0> ;
-> > +			regulator-always-on;
-> > +		};
-> > +
-> > +		supply_vref_dac: vref_dac {
-> 
-> 1. No underscores in node names.
-> 2. Did you compile dts with W=1 and fixed warnings?
-> 
-> 
-> > +			compatible = "regulator-fixed";
-> > +			regulator-name = "vref_dac";
-> > +			regulator-min-microvolt = <20000>;
-> > +			regulator-max-microvolt = <20000>;
-> > +			vin-supply = <&supply_5P0> ;
-> > +			regulator-boot-on;
-> > +		};
-> > +	};
-> > +
-> > +	reset_gpio_led {
-> > +		compatible = "gpio-leds";
-> > +		pinctrl-names = "default";
-> > +		pinctrl-0 = <&pinctrl_reset_gpio_led>;
-> > +
-> > +		reset {
-> > +			label = "red_reset";
-> > +			gpios = <&gpio5 18 0>;
-> > +			default-state = "off";
-> > +		};
-> > +	};
-> > +
-> > +	soc {
-> > +		aips1: bus@2000000 {};
-> > +	};
-> > +};
-> > +
-> > +&reg_arm {
-> > +	vin-supply = <&pmic_sw2>;
-> > +};
-> > +
-> > +&reg_soc {
-> > +	vin-supply = <&pmic_sw1abc>;
-> > +};
-> > +
-> > +&reg_vdd1p1 {
-> > +	vin-supply = <&supply_VSNVS_3V0>;
-> > +};
-> > +
-> > +&reg_vdd2p5 {
-> > +	vin-supply = <&supply_VSNVS_3V0>;
-> > +};
-> > +
-> > +&reg_vdd3p0 {
-> > +	vin-supply = <&supply_VSNVS_3V0>;
-> > +};
-> > +
-> > +&audmux {
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&pinctrl_audmux>;
-> > +	status = "okay";
-> > +};
-> > +
-> > +&fec {
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&pinctrl_enet>;
-> > +	status = "okay";
-> > +
-> > +	clocks = <&clks IMX6QDL_CLK_ENET>,
-> > +		<&clks IMX6QDL_CLK_ENET>,
-> > +		<&clks IMX6QDL_CLK_ENET>,
-> > +		<&clks IMX6QDL_CLK_ENET_REF>;
-> > +	clock-names = "ipg", "ahb", "ptp", "enet_out";
-> > +	phy-mode = "rmii";
-> > +	phy-supply = <&supply_sw4_3V3>;
-> > +	phy-handle = <&ethphy>;
-> > +
-> > +	mdio {
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> > +		ethphy: ethernet-phy@0 {
-> > +			compatible = "ethernet-phy-ieee802.3-c22";
-> > +			reg = <0>;
-> > +			interrupt-parent = <&gpio1>;
-> > +			interrupts = <23 IRQ_TYPE_EDGE_FALLING>;
-> > +			smsc,disable-energy-detect;
-> > +		};
-> > +	};
-> > +};
-> > +
-> > +
-> 
-> No need for two blank lines.
-> 
-> > +&gpu_vg {
-> > +	status = "disabled";
-> > +};
-> > +
-> > +&gpu_2d {
-> > +	status = "disabled";
-> > +};
-> > +
-> > +&i2c1 {
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&pinctrl_i2c1>;
-> > +	clock-frequency = <400000>;
-> > +	status = "okay";
-> > +
-> > +	eeprom: eeprom@50 {
-> > +		compatible = "atmel,24c32";
-> > +		reg = <0x50>;
-> > +		pagesize = <32>;
-> > +		bytelen = <4096>;
-> > +		bus-id = <0>;
-> > +		flags = <0x80>;		/* AT24_FLAG_ADDR16 */
-> > +	};
-> > +
-> > +	lm75: lm75@49 {
-> 
-> Generic node name.
-> 
-> > +		pinctrl-names = "default";
-> > +		pinctrl-0 = <&pinctrl_lm75>;
-> > +
-> > +		compatible = "national,lm75b";
-> > +		reg = <0x49>;
-> > +
-> > +		interrupts = <7 0x4>;
-> > +		interrupt-parent = <&gpio4>;
-> > +	};
-> > +
-> > +	pmic: pfuze100@8 {
-> 
-> pmic, not pfuze
-> 
-> > +		compatible = "fsl,pfuze100";
-> > +		reg = <0x08>;
-> > +		uboot,bootcounter;
-> 
-> Do not add undocumented properties. Please check all entire DTS for
-> such
-> undocumented stuff.
-> 
-> > +
-> > +		VGEN1-supply = <&supply_AUX_3V15>;
-> > +		VGEN2-supply = <&supply_AUX_3V15>;
-> > +		VGEN3-supply = <&supply_sw4_3V3>;
-> > +		VGEN4-supply = <&supply_sw4_3V3>;
-> > +		VGEN5-supply = <&supply_SYS_4V2>;
-> > +		VGEN6-supply = <&supply_SYS_4V2>;
-> > +
-> > +		VREFDDR-supply = <&supply_DDR_1V5>;
-> > +
-> > +		SW1AB-supply = <&supply_SYS_4V2>;
-> > +		SW1C-supply = <&supply_SYS_4V2>;
-> > +		SW2-supply = <&supply_SYS_4V2>;
-> > +		SW3A-supply = <&supply_SYS_4V2>;
-> > +		SW3B-supply = <&supply_SYS_4V2>;
-> > +		SW4-supply = <&supply_SYS_4V2>;
-> > +
-> > +		regulators {
-> > +			/*
-> > +			 * VDD_CORE is connected to SW1 ABC
-> > +			 * We need to define sw1ab and sw1c, but later
-> > it is controlled solely with
-> > +			 * sw1c and therefore only this is named
-> > "VDD_SOC".
-> > +			 * See PMIC datasheet Rev. 18, chapter
-> > 6.4.4.3.1: "The feedback and all
-> > +			 * other controls are accomplished by use of
-> > pin SW1CFB and SW1C control
-> > +			 * registers, respectively."
-> > +			 * Setting min and max according to SOC
-> > datasheet
-> > +			 */
-> > +			pmic_sw1abc: sw1c {
-> > +				regulator-name = "VDD_SOC (sw1abc)";
-> > +				regulator-min-microvolt = <1275000>;
-> > +				regulator-max-microvolt = <1500000>;
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +				regulator-ramp-delay = <6250>;
-> > +
-> > +				default-voltage = <1300000>;
-> > +			};
-> > +
-> > +			pmic_sw2: sw2{
-> 
-> Missing space.
-> 
-> > +				regulator-name = "VDD_ARM (sw2)";
-> > +
-> 
-> Why blank line here and not in other places?
-> 
-> > +				regulator-min-microvolt = <1050000>;
-> > +				regulator-max-microvolt = <1500000>;
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +				regulator-ramp-delay = <6250>;
-> > +
-> > +				default-voltage = <1300000>;
-> > +			};
-> > +
-> > +			pmic_sw3a: sw3a {
-> > +				/* U-Boot sets correct voltage, shall
-> > not be touched by the OS */
-> > +				compatible = "regulator-fixed";
-> > +				regulator-name = "DDR_1V5a";
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +
-> > +			};
-> > +
-> > +			supply_DDR_1V5: sw3b {
-> > +				/* U-Boot sets correct voltage, shall
-> > not be touched by the OS */
-> > +				compatible = "regulator-fixed";
-> > +				regulator-name = "DDR_1V5b";
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +
-> > +			};
-> > +
-> > +			supply_AUX_3V15: sw4 {
-> > +				regulator-name = "AUX 3V15 (sw4)";
-> > +				regulator-min-microvolt = <800000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +
-> > +				default-voltage = <3150000>;
-> > +
-> > +			};
-> > +
-> > +			swbst_reg: swbst {
-> > +				status = "disabled";
-> > +				regulator-min-microvolt = <5000000>;
-> > +				regulator-max-microvolt = <5150000>;
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +
-> > +			};
-> > +
-> > +			snvs_reg: vsnvs {
-> > +				regulator-min-microvolt = <1200000>;
-> > +				regulator-max-microvolt = <3000000>;
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +
-> > +				default-voltage = <3000000>;
-> > +			};
-> > +
-> > +			vref_reg: vrefddr {
-> > +				regulator-boot-on;
-> > +				regulator-always-on;
-> > +
-> > +				default-voltage = <675000>;
-> > +			};
-> > +
-> > +			vgen1_reg: vgen1 {
-> > +				regulator-min-microvolt = <800000>;
-> > +				regulator-max-microvolt = <1550000>;
-> > +				regulator-always-on;
-> > +
-> > +				default-voltage = <1500000>;
-> > +			};
-> > +
-> > +			vgen2_reg: vgen2 {
-> > +				regulator-min-microvolt = <800000>;
-> > +				regulator-max-microvolt = <1550000>;
-> > +				regulator-always-on;
-> > +
-> > +				default-voltage = <1200000>;
-> > +			};
-> > +
-> > +			vgen3_reg: vgen3 {
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +				regulator-always-on;
-> > +
-> > +				default-voltage = <2500000>;
-> > +			};
-> > +
-> > +			vgen4_reg: vgen4 {
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +
-> > +				default-voltage = <1800000>;
-> > +			};
-> > +
-> > +			vgen5_reg: vgen5 {
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +				regulator-always-on;
-> > +				regulator-boot-on;
-> > +
-> > +				default-voltage = <2800000>;
-> > +			};
-> > +
-> > +			vgen6_reg: vgen6 {
-> > +				regulator-min-microvolt = <1800000>;
-> > +				regulator-max-microvolt = <3300000>;
-> > +				regulator-always-on;
-> > +
-> > +				default-voltage = <2800000>;
-> > +			};
-> > +
-> > +		};
-> > +	};
-> > +
-> > +	rtc: rtcpcf8563@51 {
-> 
-> Generic node names.
-> 
-> > +		pinctrl-names = "default";
-> > +		pinctrl-0 = <&pinctrl_rtc>;
-> > +
-> > +		compatible = "nxp,pcf8563";
-> > +		reg = <0x51>;
-> > +	};
-> > +};
-> > +
-> > +&i2c2 {
-> > +	pinctrl-names = "default";
-> > +	pinctrl-0 = <&pinctrl_i2c2>;
-> > +	clock-frequency = <100000>;
-> > +	status = "okay";
-> > +
-> > +	adc101c: ac101c@54 {
-> 
-> Ugh...
-> 
-> > +		compatible = "ti,adc101c";
-> > +		reg = <0x54>;
-> > +		status = "okay";
-> > +		vref-supply = <&supply_vref_dac>;
-> > +		vcc-supply = <&supply_vref_dac>;
-> > +	};
-> > +
-> > +	ad5602: ad5602@c {
-> > +		compatible = "adi,ad5602";
-> > +		reg = <0x0c>;
-> > +		status = "okay";
-> > +		vcc-supply = <&supply_vref_dac>;
-> > +	};
-> > +
-> > +	eeprom_ext: eeprom_ext@50 {
-> 
-> Generic node names, no underscores in node names.
-> 
-> OK, I'll stop for now. :)
-> 
-> 
-> Best regards,
-> Krzysztof
+:::::: TO: Ingo Molnar <mingo@kernel.org>
+:::::: CC: Ingo Molnar <mingo@kernel.org>
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
