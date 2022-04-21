@@ -2,178 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC296C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 11:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354520AbiDUL5V (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 07:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
+        id S241229AbiDUL63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 07:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230044AbiDUL5R (ORCPT
+        with ESMTP id S230044AbiDUL61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 07:57:17 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECD22E690;
-        Thu, 21 Apr 2022 04:54:28 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id lc2so9458209ejb.12;
-        Thu, 21 Apr 2022 04:54:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0DDzJn9dwy6iRA1ptiaHLy+Z13fMErKSI6cEup7orYQ=;
-        b=nTCs8/lVqO9JNaUDe6n1TeJ3r1YGN+/THNsa2TxgsPLGiObxiuBKXTjbyBJsVwORKv
-         wR+tefxOeWwvW8DzToxht90zkSC76/GFlQD4/KBJ0vh1fORneaO21UwCqGaDClSsWuVe
-         Y6/UGj7eyLg6kWoeX0WnebZ5+wPTivRoi+BpRAuYAB6SbanKxoKD9Y1pkJ45gXYNLjLm
-         OpJutZRnB7bJhoZ7/sWi0YCYg0z1u143hqxAKlM//z6rHADb+McGv9ZubXNyQtbrEGc8
-         9vmX+5+POEC9t3Rnc/gs4J8ydzYLHiPnTJXdQF+mCmm898hKfaOA34zuklWA92mmhYJT
-         IBsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0DDzJn9dwy6iRA1ptiaHLy+Z13fMErKSI6cEup7orYQ=;
-        b=aCjJ95cyFcQ8auoAN4Am2DnL/+j4BhcqiyiIodURtc4xAIAEeMhQ6fBlulN+pKWnIQ
-         K6Y1GWxABkbfUx9y0JMynHg1MUP69J9lKcFjoeS/oBdjO+txZaAqddk8nYsGEBO7WRwm
-         Sxj2rryU590ql7dPZvTi+3vNLA9u7X9TOR5lqN1JeAzFwhKJkj4JgwxNik+8oZJmp3ZT
-         1tPayHnm7dBj4EEi+ymnFLUMfqNK3Cv70Y4Cdis+mPatQ2A6MtsM1UAP6M6uNQcVFsJC
-         vEomyT1R5Gf/4qIXVziNxPLRdq69Gh+b/Fq5TAdUMtCVJv+5UH/pCeTe9vY8dOMRClle
-         8q5w==
-X-Gm-Message-State: AOAM53205OArwqoK0sgUAiG8mUa35tMiO5JwuOQgmIsDGZ3vguPITUkg
-        A5oDugFdPf0w65Ertg+sTjChQrcjEFj70DT3Ra0=
-X-Google-Smtp-Source: ABdhPJyNmkwYSj+FO8ES8Jpx7ks0wQQHThabVQT7Jsm09lmVrOrNojpEErJNnkDp4wkhyYEm9gTUwmOjyRJvwVEM0T0=
-X-Received: by 2002:a17:907:3d91:b0:6df:a01c:f7cd with SMTP id
- he17-20020a1709073d9100b006dfa01cf7cdmr22511350ejc.255.1650542066467; Thu, 21
- Apr 2022 04:54:26 -0700 (PDT)
+        Thu, 21 Apr 2022 07:58:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F822317A;
+        Thu, 21 Apr 2022 04:55:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08CCCB823A5;
+        Thu, 21 Apr 2022 11:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1701DC385A1;
+        Thu, 21 Apr 2022 11:55:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650542135;
+        bh=PuqGZunpyyiWzzX8ODWt+Mql3d5o7hixevyuNaxcyGU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XRZp0BD1xCoNdNZ31afyMvfQOHP4rJBP0sJYbkiIeEItJNwH9pJdpRE9y/kCkzA7G
+         zXWUxdZLKOl6pCym18ubq5LehbvFERZ7kQxBjJBhtZGE1fg+3D5lEXD8uj+D7bkfIh
+         wc8oPxrF6od9um3HMB8M2MuXZAH+Rjt4szRolt74u/D0uVGdmzz67SRLbYb5aUMRdI
+         xzCMK4r2CZ9ERBWIiqCMOUJqr/of5RtsebbcBFTSFMnJM38wqrCIP1JXf19ghTwRgN
+         YtxnoF0NHM4EXzXv/+uZflaAwvvQbojWwwKg5hJqJsEqieihKnXhx7mzeDMzrhk0iQ
+         GLHj1yY5MJ8+w==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] arm64: dts: qcom: sc7280: Add GPI DMAengines
+Date:   Thu, 21 Apr 2022 17:25:24 +0530
+Message-Id: <20220421115526.1828659-1-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220421094236.1052170-1-r33s3n6@gmail.com> <YmEs6BqcyM7fgLXg@kroah.com>
-In-Reply-To: <YmEs6BqcyM7fgLXg@kroah.com>
-From:   Fu Zixuan <r33s3n6@gmail.com>
-Date:   Thu, 21 Apr 2022 19:55:28 +0800
-Message-ID: <CAMvdLANp4jHnySOmpjXZdFwruLdvN9qR-B_Ew9_zeCiKYiLZSA@mail.gmail.com>
-Subject: Re: [PATCH] drivers: usb: host: fix NULL pointer dereferences
- triggered by unhandled errors in xhci_create_rhub_port_array()
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     mathias.nyman@intel.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Apr 2022 at 18:07, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Apr 21, 2022 at 05:42:36PM +0800, Zixuan Fu wrote:
-> > In xhci_create_rhub_port_array(), when rhub->num_ports is zero,
-> > rhub->ports would not be set; when kcalloc_node() fails, rhub->ports
-> > would be set to NULL. In these two cases, xhci_create_rhub_port_array()
-> > just returns void, and thus its callers are unaware of the error.
-> >
-> > Then rhub->ports is dereferenced in xhci_usb3_hub_descriptor() or
-> > xhci_usb2_hub_descriptor().
-> >
-> > To fix the bug, xhci_setup_port_arrays() should return an integer to
-> > indicate a possible error, and its callers should handle the error.
-> >
-> > Here is the log when this bug occurred in our fault-injection testing:
-> >
-> > [   24.001309] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> > ...
-> > [   24.003992] RIP: 0010:xhci_hub_control+0x3f5/0x60d0 [xhci_hcd]
-> > ...
-> > [   24.009803] Call Trace:
-> > [   24.010014]  <TASK>
-> > [   24.011310]  usb_hcd_submit_urb+0x1233/0x1fd0
-> > [   24.017071]  usb_start_wait_urb+0x115/0x310
-> > [   24.017641]  usb_control_msg+0x28a/0x450
-> > [   24.019046]  hub_probe+0xb16/0x2320
-> > [   24.019757]  usb_probe_interface+0x4f1/0x930
-> > [   24.019765]  really_probe+0x33d/0x970
-> > [   24.019768]  __driver_probe_device+0x157/0x210
-> > [   24.019772]  driver_probe_device+0x4f/0x340
-> > [   24.019775]  __device_attach_driver+0x2ee/0x3a0
-> > ...
-> >
-> > Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-> > Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-> > ---
-> >  drivers/usb/host/xhci-mem.c | 17 ++++++++++++-----
-> >  1 file changed, 12 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
-> > index bbb27ee2c6a3..024515346c39 100644
-> > --- a/drivers/usb/host/xhci-mem.c
-> > +++ b/drivers/usb/host/xhci-mem.c
-> > @@ -2235,7 +2235,7 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
-> >       /* FIXME: Should we disable ports not in the Extended Capabilities? */
-> >  }
-> >
-> > -static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
-> > +static int xhci_create_rhub_port_array(struct xhci_hcd *xhci,
-> >                                       struct xhci_hub *rhub, gfp_t flags)
-> >  {
-> >       int port_index = 0;
-> > @@ -2243,11 +2243,11 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
-> >       struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
-> >
-> >       if (!rhub->num_ports)
-> > -             return;
-> > +             return -EINVAL;
-> >       rhub->ports = kcalloc_node(rhub->num_ports, sizeof(*rhub->ports),
-> >                       flags, dev_to_node(dev));
-> >       if (!rhub->ports)
-> > -             return;
-> > +             return -ENOMEM;
-> >
-> >       for (i = 0; i < HCS_MAX_PORTS(xhci->hcs_params1); i++) {
-> >               if (xhci->hw_ports[i].rhub != rhub ||
-> > @@ -2259,6 +2259,7 @@ static void xhci_create_rhub_port_array(struct xhci_hcd *xhci,
-> >               if (port_index == rhub->num_ports)
-> >                       break;
-> >       }
-> > +     return 0;
-> >  }
-> >
-> >  /*
-> > @@ -2277,6 +2278,7 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
-> >       int cap_count = 0;
-> >       u32 cap_start;
-> >       struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
-> > +     int ret;
-> >
-> >       num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
-> >       xhci->hw_ports = kcalloc_node(num_ports, sizeof(*xhci->hw_ports),
-> > @@ -2367,8 +2369,13 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
-> >        * Not sure how the USB core will handle a hub with no ports...
-> >        */
-> >
-> > -     xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
-> > -     xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
-> > +     ret = xhci_create_rhub_port_array(xhci, &xhci->usb2_rhub, flags);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     ret = xhci_create_rhub_port_array(xhci, &xhci->usb3_rhub, flags);
-> > +     if (ret)
-> > +             return ret;
->
-> What about the memory allocated by the first call to
-> xhci_create_rhub_port_array()?  Is that now lost?  Same for everything
-> else allocated before these calls, how is that cleaned up properly?
->
-> thanks,
->
-> greg k-h
+The Qualcomm SC7280 has two GPI DMAengines, add definitions for these.
 
-Thanks for your swift reply. We understand your concern. In fact, we have
-checked the related code carefully and found that xhci_create_rhub_port_array()
-is only used in xhci_setup_port_arrays(). Moreover, only xhci_mem_init() calls
-xhci_setup_port_arrays() and does all cleanup work when it fails. Specifically,
-xhci_mem_init() calls xhci_mem_cleanup(), which eventually called
-kfree(xhci->usb2_rhub.ports) and kfree(xhci->usb3_rhub.ports).
+Co-developed-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 44 ++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-Thanks,
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index f0b64be63c21..20dd0f7ab322 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -901,6 +901,28 @@ opp-384000000 {
+ 
+ 		};
+ 
++		gpi_dma0: dma-controller@900000 {
++			#dma-cells = <3>;
++			compatible = "qcom,sc7280-gpi-dma";
++			reg = <0 0x00900000 0 0x60000>;
++			interrupts = <GIC_SPI 244 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 247 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 248 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 249 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 250 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 253 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 254 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>;
++			dma-channels = <12>;
++			dma-channel-mask = <0x7f>;
++			iommus = <&apps_smmu 0x0136 0x0>;
++			status = "disabled";
++		};
++
+ 		qupv3_id_0: geniqup@9c0000 {
+ 			compatible = "qcom,geni-se-qup";
+ 			reg = <0 0x009c0000 0 0x2000>;
+@@ -1330,6 +1352,28 @@ uart7: serial@99c000 {
+ 			};
+ 		};
+ 
++		gpi_dma1: dma-controller@a00000 {
++			#dma-cells = <3>;
++			compatible = "qcom,sc7280-gpi-dma";
++			reg = <0 0x00a00000 0 0x60000>;
++			interrupts = <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 281 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 282 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 283 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 284 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 293 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 294 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 295 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 296 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 297 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>;
++			dma-channels = <12>;
++			dma-channel-mask = <0x1e>;
++			iommus = <&apps_smmu 0x56 0x0>;
++			status = "disabled";
++		};
++
+ 		qupv3_id_1: geniqup@ac0000 {
+ 			compatible = "qcom,geni-se-qup";
+ 			reg = <0 0x00ac0000 0 0x2000>;
+-- 
+2.34.1
 
-Zixuan Fu
