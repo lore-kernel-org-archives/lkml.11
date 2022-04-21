@@ -2,194 +2,341 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 22:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 414BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 22:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442398AbiDUWPT (ORCPT
+        id S1442408AbiDUWPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 18:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        Thu, 21 Apr 2022 18:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442407AbiDUWPQ (ORCPT
+        with ESMTP id S1442409AbiDUWPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 18:15:16 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 556474EDD4;
-        Thu, 21 Apr 2022 15:12:24 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.90,279,1643641200"; 
-   d="scan'208";a="117607401"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 22 Apr 2022 07:12:24 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 8A819400967A;
-        Fri, 22 Apr 2022 07:12:20 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        devicetree@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 1/2] dt-bindings: interrupt-controller: Add Renesas RZ/G2L Interrupt Controller
-Date:   Thu, 21 Apr 2022 23:11:58 +0100
-Message-Id: <20220421221159.31729-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220421221159.31729-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220421221159.31729-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Thu, 21 Apr 2022 18:15:25 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012EF4EF55
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:12:32 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 23LK2EB7019054
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:12:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=G6rlygQZPrpBjvB65Kbu9kY1rlCgvxyLiiFozge986E=;
+ b=QBjGcimjRu89+ihM2082TXPj3rDpaYenEWxhUTHu4t+Uef2rgSPb26O1xou5MttsefqU
+ ZutMLOBbw9ph7v14CkrI2EZwwVbP/LsbyZqQxgOId5Na4vceIxRPI+PzxXYGKdYW2MmH
+ 6ut6XrOZIHkVop6LISVlqfAQ2vSJQe4yL/8= 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2168.outbound.protection.outlook.com [104.47.56.168])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3fkc2v9p48-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 15:12:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K/rCTj1kc24pXjgsdIRbcDswt06NPNOgkMLV0FTdzLqbbXKNdkE2Bvj3q2G4U92KQ06LezBquQeKjZTlI1miGWnufDulYdLFclHU27mJMED6Ir02p78pVtbOqAuPWhYySt+ffNU0uJpPBLqZ+Oh+XFy3cpRQzGse/nefXsuo7Ke7CjsjdI4kgZn/cnwmcHV/wlttNzn3+665fzyuCK8Ptf7zgjgFhHZLS21M8R2fA8t/LuF5IezGMiinc19La9Oq7/6A7CM6zKZ9Dew9P0PIR8VnQBTY/cGgyx4qf8b6qONo/GFniX/BJXh51jndxedMevqVziHuSYLwUb+wP942sA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G6rlygQZPrpBjvB65Kbu9kY1rlCgvxyLiiFozge986E=;
+ b=DB3rDlAUuKsIGOaYUHYIaBwSGh1U2PC4JBHw8hFd7RbPrKFTkJU/D/KsEiHqXp2CDaDtUGA+i28nEx17yhYF3yFFALKjgETfG809nXp45a+BHtEs9xMmKf4F0fSHJlIKa6R6KR+1zhZQwd75wPhJOaLoNucfwFFVFLKtoWk/8GNHuE2H0EgAM67+Izz4a9RhxSYloIevLtcjnFIUzeME3SYpyJzBWZwIvHLenXx3NnL60n+fVrgJeC+szxlx8Tz/8opCw9a+TGgGZkXMofTlAt7kreplaAnJDTgIMUrk03e8EsTCpyfqain1+E+8kA0FQxcMojTSLxsdScJ/coKLGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SJ0PR15MB5154.namprd15.prod.outlook.com (2603:10b6:a03:423::6)
+ by BN8PR15MB3043.namprd15.prod.outlook.com (2603:10b6:408:8b::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Thu, 21 Apr
+ 2022 22:12:25 +0000
+Received: from SJ0PR15MB5154.namprd15.prod.outlook.com
+ ([fe80::b5e0:1df4:e09d:6b5b]) by SJ0PR15MB5154.namprd15.prod.outlook.com
+ ([fe80::b5e0:1df4:e09d:6b5b%4]) with mapi id 15.20.5186.014; Thu, 21 Apr 2022
+ 22:12:25 +0000
+From:   Delyan Kratunov <delyank@fb.com>
+To:     "valentin.schneider@arm.com" <valentin.schneider@arm.com>
+CC:     "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
+        "adharmap@quicinc.com" <adharmap@quicinc.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "legion@kernel.org" <legion@kernel.org>,
+        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "x86@kernel.org" <x86@kernel.org>
+Subject: [PATCH] sched/tracing: append prev_state to tp args instead
+Thread-Topic: [PATCH] sched/tracing: append prev_state to tp args instead
+Thread-Index: AQHYVczhnUORkDZpQkKGkRu2ddUCjg==
+Date:   Thu, 21 Apr 2022 22:12:25 +0000
+Message-ID: <93a20759600c05b6d9e4359a1517c88e06b44834.camel@fb.com>
+References: <20220120162520.570782-1-valentin.schneider@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8be1eec0-6a97-4747-6160-08da23e403ef
+x-ms-traffictypediagnostic: BN8PR15MB3043:EE_
+x-microsoft-antispam-prvs: <BN8PR15MB304330ABB99CB8FD9A1F36B2C1F49@BN8PR15MB3043.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5k9VcZnldMmy6846i4gd6/RMZSF6/SB/brczL+s3AfyTe4wXAIm8PxTOTjAoiTxQd6Rx9+mwDrei7SzEV/HLmAuI3r1BJy255q6hs4rb1cJgI0I/6r6vxu2UdufeLgsm7glmDihp7cFQ18xs8RaD6A4nd/seNXwJrx2Dq3TYv/z2FaPEMv3iZobb7q0nbuLeimg3DkvYNBVA0nLKv3CtH0QCyC7/R4bc7bS8WOMlUTUhb7y2JyhIWPHehkW9QNYne5Rg9ZeZB6uyh/VpGjs4dZqtgSS0+WDTTmWKscn1AcCMXx6fY0HL8AV7suUiUrDEijaQdum/JVt5Z/QF+ZWTRo9cwkbwBWMois5TN5YUquoXYjX9iDwIeELL8oKKHsJKszcdz3dC5h8H8kVTs7nqBkl6S7jtPzXNJdx9HjUjBlffmzR3ep+YcpvVWFamqApRalHjuMt69vWS4/LsY5JkICb9Df6nUSDRO9ZBr+3re5Znij2x1l9EagmBpu4DoDlU8hJOEArjRr6aSflpJgPzi/U8mCpeA3Y7mq1zdFNVR/DsSpvjssfDC/EngQmuHeF3lLOSUhnuVVA2dGrJf9/Qa5KAN/E3zLRiaoLn/3uzd7ztqgcSP3WiCma9xpi9lXh6rgv1+KNh381PpX+OFk9/90eOjGu2i/XAPDYZNmf9ycxcT1BJViYrbIQnO5RRIbcRZkfiJJJzxCAkkdE8Lh1g8A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR15MB5154.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7416002)(66446008)(2616005)(6506007)(6916009)(66946007)(316002)(66476007)(54906003)(66556008)(91956017)(4326008)(36756003)(8676002)(76116006)(64756008)(71200400001)(6486002)(83380400001)(38100700002)(5660300002)(38070700005)(6512007)(186003)(86362001)(8936002)(122000001)(2906002)(508600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?06XMO6KRMvrhQdgfryLP/t1T6GaOPr8qQKqq1XlxYczGr/GKxfIdg+uKko?=
+ =?iso-8859-1?Q?rsWY3LN1qXFYUUOfLR66IrpOeMzDQUJKW/AGQ0pttoQ+hoVa0CmXA4gDbT?=
+ =?iso-8859-1?Q?B6QMPSiJ35l6gIwLOLCzSJyhfckZIS5fHRj2kkZfJbWN0lYMnd/mvo3e1l?=
+ =?iso-8859-1?Q?MVJ5dE/i5WKpFj2iS3BOgHTRjTlxE/SVeRA9lP0gqjsryxubwOXMDoGZdI?=
+ =?iso-8859-1?Q?E/nIvSrbSuoKOsXNRY7ByV7lBkVXygc8WGHog/WdpkDvWYWZ+dpn2eRepY?=
+ =?iso-8859-1?Q?vSY0nM97aeLwYxPVjkMFCI94pJT/QIRINtlvNv5yOya/HZqKHNLSn9NeFQ?=
+ =?iso-8859-1?Q?pbvJnJU36l3AFdQHXrftbTRCbCsXhVm5aR1mmTIONN7Iti4kNh5DV14a1e?=
+ =?iso-8859-1?Q?lV6gN0dJ15fOSXBwHi1KOs817C/8eWliHkZrJVInps6g2VTVhT3pVCO/yw?=
+ =?iso-8859-1?Q?xM/uW6zq45BnxCKhaB506+UDK85pdFnQDFxNxDGP9usBBmACCnHe9JtA8Y?=
+ =?iso-8859-1?Q?Lp6j6vo+OSii6OGUHgyVJE79sBVPCOgWT5jS4Xrx08JUNH77OjWVE5liIG?=
+ =?iso-8859-1?Q?n4BeYdWFt2eJutkiMbvVNbhjprlTc+soQZWz+x9TlOK4Hgyg01j+aZxCcb?=
+ =?iso-8859-1?Q?kgDDklMq/w/Kdgqk8VGpSnXO63rZBW2EPcrA6RPKwFWv1CuWc1hBYKG31g?=
+ =?iso-8859-1?Q?JYh3UTIrWFjQXCBm/0GjnSiDvQAJ7j4CA4HKX5rIp4xzr2NL84illkH6N8?=
+ =?iso-8859-1?Q?5lPUcaycYn3AVMtIg2Tb2U8y/+CQgf5XS4Chwv809LmsbN9W7GBFIp/ZC3?=
+ =?iso-8859-1?Q?wKZgOgLXCLZjpQ7L6NDGBTsBwMR0X87+BGMa4oiLWioZHQX7nrKOUw4OKq?=
+ =?iso-8859-1?Q?7IcVhWBExFci83LUHjoYAHmFPWJHf89bN7W8czn8fvCZvGAGmi485l4R3G?=
+ =?iso-8859-1?Q?Yrvhid5CW/q6TY3ATp/db+SJTd7kynK3YlThYLU1rbm+6NL+XF0YQ1VyQh?=
+ =?iso-8859-1?Q?K8PLe4RBjDhFBNs3bfnEPE5GSnS5j6unI/Bh2tFyRtyVjjFepnf3ifoctU?=
+ =?iso-8859-1?Q?vKX128AsVjFoD8YWs0hSrNOC//yDqR0w2H/WijJOug7bMnG1U/iF5g5Xy7?=
+ =?iso-8859-1?Q?kKpF5HGz3SEUPo5gh6Wcfrc6k24+Jo3UnE9UHor67S9tU/wNVe2niKSokU?=
+ =?iso-8859-1?Q?Wr2jyxx865Z8w5q1znRs1D1yC5SBiXpFGuqql7lBKPr8iZSKoBILmk8fW3?=
+ =?iso-8859-1?Q?Hw0mxI/F4S+tT5Ay6j8cWpdPonK49PuTHBQtUAtZ+lHQvc4fqSKeD+w4NN?=
+ =?iso-8859-1?Q?3UMtfAXuG/gC3C+N8o3T+FFVw0ykXta3UntItw6J3GnxM6toIlTEgjr/qF?=
+ =?iso-8859-1?Q?dbl6HIB6OQ0CtKrWzkGr2aLu5apBH2nO41rJPl38Dme7re/b9CjCp2Xm/6?=
+ =?iso-8859-1?Q?/nr/kXFeZGMfN/YwhABHmig6Fk8tjp0sdYbPYvirDiqQxAuaC8vLMXL6/h?=
+ =?iso-8859-1?Q?DcwXUG/a0lAfouk9lZBrj2t7rgNSweMLV72woGeQrPvpNSMg/Ri1Smcc/W?=
+ =?iso-8859-1?Q?QsMBRty/rLra10CwLSurqCfsxzbcTgVnXMQeuqyP6ropqpQ2BnQ1ZvkNL6?=
+ =?iso-8859-1?Q?LBWoIpYz9tf2p5CM0fZmxM/jAF69RBSEyiqH7ypgnQDsRHSkq0e/ROu0mm?=
+ =?iso-8859-1?Q?GW1PKX/GaOmhVH7D99d1QrdHlfy8JONIJgE4yigF9L6vXvRC6GJ8eJpVla?=
+ =?iso-8859-1?Q?toLu02VRqrfv0zpRtM4XfSzD7PcuapxBGTWkhwpAKgZhpv5djKvbhWiCLu?=
+ =?iso-8859-1?Q?EdndLOLU3k3nKVuMWq/VA2Q1LTtfn2J+6DJfZuJWxz2v0Ngk/nhQ?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR15MB5154.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8be1eec0-6a97-4747-6160-08da23e403ef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2022 22:12:25.1569
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: R3rfh5Mb9xlBUwkmF/J//Lqx1UtCUl/RgTN8QmbciZqrVzFlEFA9zgsYw1RuKrJq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB3043
+X-Proofpoint-GUID: JzQMESgWyQ1TDdAcw_oh7ztBGEgH39ys
+X-Proofpoint-ORIG-GUID: JzQMESgWyQ1TDdAcw_oh7ztBGEgH39ys
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-21_05,2022-04-21_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for the Renesas RZ/G2L Interrupt Controller.
+Hi folks,
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+While working on bpf tooling, we noticed that the sched_switch tracepoint
+signature recently changed in an incompatible manner. This affects the
+runqslower tools in the kernel tree, as well as multiple libbpf tools in io=
+visor/bcc.
+
+It would be a fair amount of churn to fix all these tools, not to mention a=
+ny
+non-public tools people may be using. If you are open to it, here's a
+description and a patch that moves the new argument to the end,
+so existing tools can continue working without change (the new argument
+just won't be extracted in existing programs):
+
+Commit fa2c3254d7cf (sched/tracing: Don't re-read p->state when emitting
+sched_switch event, 2022-01-20) added a new prev_state argument to the
+sched_switch tracepoint, before the prev task_struct pointer.
+
+This reordering of arguments broke BPF programs that use the raw
+tracepoint (e.g. tp_btf programs). The type of the second argument has
+changed and existing programs that assume a task_struct* argument
+(e.g. for bpf_task_storage or member access) will now fail to verify.
+
+If we instead append the new argument to the end, all existing programs
+will continue to work and can conditionally extract the prev_state
+argument on supported kernel versions.
+
+Fixes: fa2c3254d7cf (sched/tracing: Don't re-read p->state when emitting sc=
+hed_switch event, 2022-01-20)
+Signed-off-by: Delyan Kratunov <delyank@fb.com>
 ---
- .../renesas,rzg2l-irqc.yaml                   | 131 ++++++++++++++++++
- 1 file changed, 131 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
+ include/trace/events/sched.h      | 6 +++---
+ kernel/sched/core.c               | 2 +-
+ kernel/trace/fgraph.c             | 4 ++--
+ kernel/trace/ftrace.c             | 4 ++--
+ kernel/trace/trace_events.c       | 8 ++++----
+ kernel/trace/trace_osnoise.c      | 4 ++--
+ kernel/trace/trace_sched_switch.c | 4 ++--
+ kernel/trace/trace_sched_wakeup.c | 4 ++--
+ 8 files changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-new file mode 100644
-index 000000000000..5f2e1dd1d42a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-@@ -0,0 +1,131 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/renesas,rzg2l-irqc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Renesas RZ/G2L (and alike SoC's) Interrupt Controller (IA55)
-+
-+maintainers:
-+  - Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-+  - Geert Uytterhoeven <geert+renesas@glider.be>
-+
-+description: |
-+  IA55 performs various interrupt controls including synchronization for the external
-+  interrupts of NMI, IRQ, and GPIOINT and the interrupts of the built-in peripheral
-+  interrupts output by each IP. And it notifies the interrupt to the GIC
-+    - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
-+    - GPIO pins used as external interrupt input pins, mapped to 32 GIC SPI interrupts
-+    - NMI edge select (NMI is not treated as NMI exception and supports fall edge and
-+      stand-up edge detection interrupts)
-+
-+allOf:
-+  - $ref: /schemas/interrupt-controller.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - renesas,r9a07g044-irqc    # RZ/G2L
-+      - const: renesas,rzg2l-irqc
-+
-+  '#interrupt-cells':
-+    const: 2
-+
-+  '#address-cells':
-+    const: 0
-+
-+  interrupt-controller: true
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 41
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: clk
-+      - const: pclk
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - '#interrupt-cells'
-+  - '#address-cells'
-+  - interrupt-controller
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - power-domains
-+  - resets
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/r9a07g044-cpg.h>
-+
-+    irqc: interrupt-controller@110a0000 {
-+            compatible = "renesas,r9a07g044-irqc", "renesas,rzg2l-irqc";
-+            reg = <0x110a0000 0x10000>;
-+            #interrupt-cells = <2>;
-+            #address-cells = <0>;
-+            interrupt-controller;
-+            interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 444 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 445 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 448 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 453 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 454 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 461 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 464 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 465 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 466 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 467 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 468 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 469 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 470 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 471 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 472 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 475 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&cpg CPG_MOD R9A07G044_IA55_CLK>,
-+                     <&cpg CPG_MOD R9A07G044_IA55_PCLK>;
-+            clock-names = "clk", "pclk";
-+            power-domains = <&cpg>;
-+            resets = <&cpg R9A07G044_IA55_RESETN>;
-+    };
--- 
-2.17.1
+diff --git a/include/trace/events/sched.h b/include/trace/events/sched.h
+index 65e786756321..fbb99a61f714 100644
+--- a/include/trace/events/sched.h
++++ b/include/trace/events/sched.h
+@@ -222,11 +222,11 @@ static inline long __trace_sched_switch_state(bool pr=
+eempt,
+ TRACE_EVENT(sched_switch,
 
+ 	TP_PROTO(bool preempt,
+-		 unsigned int prev_state,
+ 		 struct task_struct *prev,
+-		 struct task_struct *next),
++		 struct task_struct *next,
++		 unsigned int prev_state),
+
+-	TP_ARGS(preempt, prev_state, prev, next),
++	TP_ARGS(preempt, prev, next, prev_state),
+
+ 	TP_STRUCT__entry(
+ 		__array(	char,	prev_comm,	TASK_COMM_LEN	)
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 51efaabac3e4..d58c0389eb23 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6382,7 +6382,7 @@ static void __sched notrace __schedule(unsigned int s=
+ched_mode)
+ 		migrate_disable_switch(rq, prev);
+ 		psi_sched_switch(prev, next, !task_on_rq_queued(prev));
+
+-		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev_state, prev, next)=
+;
++		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev, next, prev_state)=
+;
+
+ 		/* Also unlocks the rq: */
+ 		rq =3D context_switch(rq, prev, next, &rf);
+diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
+index 8f4fb328133a..a7e84c8543cb 100644
+--- a/kernel/trace/fgraph.c
++++ b/kernel/trace/fgraph.c
+@@ -404,9 +404,9 @@ static int alloc_retstack_tasklist(struct ftrace_ret_st=
+ack **ret_stack_list)
+
+ static void
+ ftrace_graph_probe_sched_switch(void *ignore, bool preempt,
+-				unsigned int prev_state,
+ 				struct task_struct *prev,
+-				struct task_struct *next)
++				struct task_struct *next,
++				unsigned int prev_state)
+ {
+ 	unsigned long long timestamp;
+ 	int index;
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 4f1d2f5e7263..af899b058c8d 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -7420,9 +7420,9 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *=
+ops)
+
+ static void
+ ftrace_filter_pid_sched_switch_probe(void *data, bool preempt,
+-				     unsigned int prev_state,
+ 				     struct task_struct *prev,
+-				     struct task_struct *next)
++				     struct task_struct *next,
++				     unsigned int prev_state)
+ {
+ 	struct trace_array *tr =3D data;
+ 	struct trace_pid_list *pid_list;
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index e11e167b7809..f97de82d1342 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -773,9 +773,9 @@ void trace_event_follow_fork(struct trace_array *tr, bo=
+ol enable)
+
+ static void
+ event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
+-					unsigned int prev_state,
+ 					struct task_struct *prev,
+-					struct task_struct *next)
++					struct task_struct *next,
++					unsigned int prev_state)
+ {
+ 	struct trace_array *tr =3D data;
+ 	struct trace_pid_list *no_pid_list;
+@@ -799,9 +799,9 @@ event_filter_pid_sched_switch_probe_pre(void *data, boo=
+l preempt,
+
+ static void
+ event_filter_pid_sched_switch_probe_post(void *data, bool preempt,
+-					 unsigned int prev_state,
+ 					 struct task_struct *prev,
+-					 struct task_struct *next)
++					 struct task_struct *next,
++					 unsigned int prev_state)
+ {
+ 	struct trace_array *tr =3D data;
+ 	struct trace_pid_list *no_pid_list;
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index e9ae1f33a7f0..afb92e2f0aea 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1168,9 +1168,9 @@ thread_exit(struct osnoise_variables *osn_var, struct=
+ task_struct *t)
+  */
+ static void
+ trace_sched_switch_callback(void *data, bool preempt,
+-			    unsigned int prev_state,
+ 			    struct task_struct *p,
+-			    struct task_struct *n)
++			    struct task_struct *n,
++			    unsigned int prev_state)
+ {
+ 	struct osnoise_variables *osn_var =3D this_cpu_osn_var();
+
+diff --git a/kernel/trace/trace_sched_switch.c b/kernel/trace/trace_sched_s=
+witch.c
+index 45796d8bd4b2..c9ffdcfe622e 100644
+--- a/kernel/trace/trace_sched_switch.c
++++ b/kernel/trace/trace_sched_switch.c
+@@ -22,8 +22,8 @@ static DEFINE_MUTEX(sched_register_mutex);
+
+ static void
+ probe_sched_switch(void *ignore, bool preempt,
+-		   unsigned int prev_state,
+-		   struct task_struct *prev, struct task_struct *next)
++		   struct task_struct *prev, struct task_struct *next,
++		   unsigned int prev_state)
+ {
+ 	int flags;
+
+diff --git a/kernel/trace/trace_sched_wakeup.c b/kernel/trace/trace_sched_w=
+akeup.c
+index 46429f9a96fa..330aee1c1a49 100644
+--- a/kernel/trace/trace_sched_wakeup.c
++++ b/kernel/trace/trace_sched_wakeup.c
+@@ -426,8 +426,8 @@ tracing_sched_wakeup_trace(struct trace_array *tr,
+
+ static void notrace
+ probe_wakeup_sched_switch(void *ignore, bool preempt,
+-			  unsigned int prev_state,
+-			  struct task_struct *prev, struct task_struct *next)
++			  struct task_struct *prev, struct task_struct *next,
++			  unsigned int prev_state)
+ {
+ 	struct trace_array_cpu *data;
+ 	u64 T0, T1, delta;
+--
+2.35.1=
