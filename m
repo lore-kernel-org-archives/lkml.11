@@ -2,127 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 009CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390313AbiDUPv3 (ORCPT
+        id S1390320AbiDUPvc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        Thu, 21 Apr 2022 11:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiDUPv2 (ORCPT
+        with ESMTP id S1390302AbiDUPv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 11:51:28 -0400
-Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0AA164738D;
-        Thu, 21 Apr 2022 08:48:35 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by ha.nfschina.com (Postfix) with ESMTP id 71E1D1E80D0B;
-        Thu, 21 Apr 2022 23:46:02 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from ha.nfschina.com ([127.0.0.1])
-        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 5oMn8UwNA64M; Thu, 21 Apr 2022 23:45:59 +0800 (CST)
-Received: from ubuntu.localdomain (unknown [101.228.255.56])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by ha.nfschina.com (Postfix) with ESMTPA id EA9491E80CF9;
-        Thu, 21 Apr 2022 23:45:58 +0800 (CST)
-From:   Yu Zhe <yuzhe@nfschina.com>
-To:     mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        kernel-janitors@vger.kernel.org, Yu Zhe <yuzhe@nfschina.com>
-Subject: [PATCH] batman-adv: remove unnecessary type castings
-Date:   Thu, 21 Apr 2022 08:48:29 -0700
-Message-Id: <20220421154829.9775-1-yuzhe@nfschina.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649F51AF2A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:48:38 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id s18so11009683ejr.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=99zPGQDcBvB2eneXnR+UDPkr2FlkHpg0OSrd18ZV4Fg=;
+        b=VLywufJWMlVFxqcfNnZ5LLc0KyAM4UcVKWw+3U/dmyzmkYUl66eNLXln+J8wdYeFib
+         TFyQctG/3jB/BbqgBgIkmvyVe+j+kUwysGydwnvXU5g4OFlIiLrRR8CbwW/1kcOqrDS+
+         k0cjhjdEuKA9oz6o6ZI4+lhEkSrErxxRSEcNrzW34RIWL52UoIMChNYDRaHpCNE9iMIV
+         60vSWFF+QCw7DM/nHF6PHQih9JoZHz7nKTTuQuC2JzA1lYWsULBpVaziblXAfpywWIj6
+         7dnAXZKJS1yem3+vHGn6UQEIyt4JSgqGoBuYdFziAgX7DDF3NJAd76xP+qrOxF4jsiZD
+         kJgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=99zPGQDcBvB2eneXnR+UDPkr2FlkHpg0OSrd18ZV4Fg=;
+        b=Ha2Dyc4OBQ9hutuCyFNOr/WeQDeIcYv0EwEf+8Rc71uf3CkPbUiRXHsIVHrPztuDV8
+         k9dGaHzA5sOMWQ1RIKa9gBvhjV6W8bgfi9PnZ+4ELxoB1ez2ifqiX7c1JGC4O6+xMcpM
+         510P8RezuWwQZ2RDOhqA4GT6aM/Ye5csNpiozcfW9/OcV+nrUw1vT0HlxqkgeduNgUz0
+         k6BG8qIxdFwJ7gYvb+BEydC0ZRwH+iEXNlVHa+MWvjbERix7CUxMl/q6YmmGHIxiCCCy
+         LpIy5tLLQTWe0ZKxH9IzbnYhZTbb/jmnorKeDqSZYiyriySPBRqd5kauED2G0FQgsjFc
+         Shlw==
+X-Gm-Message-State: AOAM530nN5tC0swClcnxfLwoqR9nrmYhUCTIh2nhdK7X+oSAU2MYWioy
+        FEN/RfJ53HoDIFe192dgPr6ptSVJ1jTbdfdqugLph2r3DUxisQ==
+X-Google-Smtp-Source: ABdhPJwZmx55dd2ozNjrym2eOBStotYqhCTvy4duFqRmIX0adxyFMMBT3BVbRgBAgiRzqcsobnw2+YrQW3eqbI1gKqU=
+X-Received: by 2002:a17:906:1841:b0:6e8:872d:8999 with SMTP id
+ w1-20020a170906184100b006e8872d8999mr162746eje.492.1650556113446; Thu, 21 Apr
+ 2022 08:48:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220421070631.1273879-1-anshuman.khandual@arm.com>
+In-Reply-To: <20220421070631.1273879-1-anshuman.khandual@arm.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Thu, 21 Apr 2022 11:47:57 -0400
+Message-ID: <CA+CK2bDMqxkzmyaoi8DD7eTRG7bS-6H=U-h_SYRLDy7Y54gOmg@mail.gmail.com>
+Subject: Re: [PATCH V2] mm/page_table_check: Drop all redundant EXPORT_SYMBOL()
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-mm <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-remove unnecessary void* type castings.
+On Thu, Apr 21, 2022 at 3:05 AM Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
+>
+> Function definitions need not be exported via EXPORT_SYMBOL() mechanism. In
+> this case these functions just get called only inside their wrappers. Even
+> __page_table_check_zero() gets called without such an export. Just drop all
+> these redundant EXPORT_SYMBOL().
+>
+> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
----
- net/batman-adv/bridge_loop_avoidance.c |  4 ++--
- net/batman-adv/translation-table.c     | 10 +++++-----
- 2 files changed, 7 insertions(+), 7 deletions(-)
+Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 
-diff --git a/net/batman-adv/bridge_loop_avoidance.c b/net/batman-adv/bridge_loop_avoidance.c
-index 7f8a14d99cdb..38cc21370eda 100644
---- a/net/batman-adv/bridge_loop_avoidance.c
-+++ b/net/batman-adv/bridge_loop_avoidance.c
-@@ -65,7 +65,7 @@ batadv_bla_send_announce(struct batadv_priv *bat_priv,
-  */
- static inline u32 batadv_choose_claim(const void *data, u32 size)
- {
--	struct batadv_bla_claim *claim = (struct batadv_bla_claim *)data;
-+	struct batadv_bla_claim *claim = data;
- 	u32 hash = 0;
- 
- 	hash = jhash(&claim->addr, sizeof(claim->addr), hash);
-@@ -86,7 +86,7 @@ static inline u32 batadv_choose_backbone_gw(const void *data, u32 size)
- 	const struct batadv_bla_backbone_gw *gw;
- 	u32 hash = 0;
- 
--	gw = (struct batadv_bla_backbone_gw *)data;
-+	gw = data;
- 	hash = jhash(&gw->orig, sizeof(gw->orig), hash);
- 	hash = jhash(&gw->vid, sizeof(gw->vid), hash);
- 
-diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-table.c
-index 8478034d3abf..f579060aa503 100644
---- a/net/batman-adv/translation-table.c
-+++ b/net/batman-adv/translation-table.c
-@@ -106,7 +106,7 @@ static inline u32 batadv_choose_tt(const void *data, u32 size)
- 	struct batadv_tt_common_entry *tt;
- 	u32 hash = 0;
- 
--	tt = (struct batadv_tt_common_entry *)data;
-+	tt = data;
- 	hash = jhash(&tt->addr, ETH_ALEN, hash);
- 	hash = jhash(&tt->vid, sizeof(tt->vid), hash);
- 
-@@ -2766,7 +2766,7 @@ static void batadv_tt_tvlv_generate(struct batadv_priv *bat_priv,
- 	u32 i;
- 
- 	tt_tot = batadv_tt_entries(tt_len);
--	tt_change = (struct batadv_tvlv_tt_change *)tvlv_buff;
-+	tt_change = tvlv_buff;
- 
- 	if (!valid_cb)
- 		return;
-@@ -3994,7 +3994,7 @@ static void batadv_tt_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
- 	if (tvlv_value_len < sizeof(*tt_data))
- 		return;
- 
--	tt_data = (struct batadv_tvlv_tt_data *)tvlv_value;
-+	tt_data = tvlv_value;
- 	tvlv_value_len -= sizeof(*tt_data);
- 
- 	num_vlan = ntohs(tt_data->num_vlan);
-@@ -4037,7 +4037,7 @@ static int batadv_tt_tvlv_unicast_handler_v1(struct batadv_priv *bat_priv,
- 	if (tvlv_value_len < sizeof(*tt_data))
- 		return NET_RX_SUCCESS;
- 
--	tt_data = (struct batadv_tvlv_tt_data *)tvlv_value;
-+	tt_data = tvlv_value;
- 	tvlv_value_len -= sizeof(*tt_data);
- 
- 	tt_vlan_len = sizeof(struct batadv_tvlv_tt_vlan_data);
-@@ -4129,7 +4129,7 @@ static int batadv_roam_tvlv_unicast_handler_v1(struct batadv_priv *bat_priv,
- 		goto out;
- 
- 	batadv_inc_counter(bat_priv, BATADV_CNT_TT_ROAM_ADV_RX);
--	roaming_adv = (struct batadv_tvlv_roam_adv *)tvlv_value;
-+	roaming_adv = tvlv_value;
- 
- 	batadv_dbg(BATADV_DBG_TT, bat_priv,
- 		   "Received ROAMING_ADV from %pM (client %pM)\n",
--- 
-2.25.1
+Thank you,
+Pasha
 
+> ---
+> This applies on v5.18-rc3
+>
+> Changes in V2:
+>
+> - Restored EXPORT_SYMBOL for __page_table_check_pte_set() per Pasha
+>
+>  mm/page_table_check.c | 5 -----
+>  1 file changed, 5 deletions(-)
+>
+> diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+> index 2458281bff89..627c5025d786 100644
+> --- a/mm/page_table_check.c
+> +++ b/mm/page_table_check.c
+> @@ -167,7 +167,6 @@ void __page_table_check_pte_clear(struct mm_struct *mm, unsigned long addr,
+>                                        PAGE_SIZE >> PAGE_SHIFT);
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pte_clear);
+>
+>  void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
+>                                   pmd_t pmd)
+> @@ -180,7 +179,6 @@ void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
+>                                        PMD_PAGE_SIZE >> PAGE_SHIFT);
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pmd_clear);
+>
+>  void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+>                                   pud_t pud)
+> @@ -193,7 +191,6 @@ void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+>                                        PUD_PAGE_SIZE >> PAGE_SHIFT);
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pud_clear);
+>
+>  void __page_table_check_pte_set(struct mm_struct *mm, unsigned long addr,
+>                                 pte_t *ptep, pte_t pte)
+> @@ -223,7 +220,6 @@ void __page_table_check_pmd_set(struct mm_struct *mm, unsigned long addr,
+>                                      pmd_write(pmd));
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pmd_set);
+>
+>  void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
+>                                 pud_t *pudp, pud_t pud)
+> @@ -238,7 +234,6 @@ void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
+>                                      pud_write(pud));
+>         }
+>  }
+> -EXPORT_SYMBOL(__page_table_check_pud_set);
+>
+>  void __page_table_check_pte_clear_range(struct mm_struct *mm,
+>                                         unsigned long addr,
+> --
+> 2.20.1
+>
