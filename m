@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F43C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377883AbiDUJKy (ORCPT
+        id S1387355AbiDUJLD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
+        Thu, 21 Apr 2022 05:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387326AbiDUJKp (ORCPT
+        with ESMTP id S1387344AbiDUJKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:10:45 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF5622BF6;
-        Thu, 21 Apr 2022 02:07:56 -0700 (PDT)
+        Thu, 21 Apr 2022 05:10:53 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EBF23169;
+        Thu, 21 Apr 2022 02:08:01 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 7D53E1F45276
+        with ESMTPSA id 6F36F1F45276
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650532075;
-        bh=in1WLxPVVCjDPJ4EL6wvt2BCn3AyEU6pduFeta4ETjM=;
+        s=mail; t=1650532080;
+        bh=b12S/GGfLM+hr9wK/Kd71hajyO38MEtI8nnnJ80yYtE=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=HQdr9LBA3nMNCABpEBbccneExg2Kec1Fq6tMeqJer4rYWtm4+7ehM2fqRJdKZNJ+Q
-         iJuQ6pvh10ZE9sBEgNzhPJpyQ9QTDbxOUh5b93lw/dQ2WQSBKOB9JheRb4NW3js5Yx
-         dTabKGMbcZeMoDMSADtmMmT0X595tYKAjLNODAdW9AJ2ZQTbcEl9J1gBeiPu5Ca+AY
-         cY2yEcBahv1rmocxGyqS9CdhvKGUUD7qemBDDhw+4NWUSjuDItUrcZUYZd7Irn6n0H
-         fJxUwjhwuVfxzJ2mA4j6HNs7VqTSRkjXzM676lohzitKM5lv24Bjl4Mp8DzRKOfuj9
-         nPl68NFt8YcQA==
-Message-ID: <801c6a22-1772-2673-1fcf-5cfed54efab1@collabora.com>
-Date:   Thu, 21 Apr 2022 11:07:52 +0200
+        b=kPrjkyumGDlUZvYYyc2UvX8vjPLZe/bwNGl5Km4Ya5MNPeQ1aRr1HfiYV0n2Nj59T
+         7xn2w23N7m0oEIl8NVXR8w67DXmzlizmOtBd6+JkgrDOjjGK381HAQO0KJwfTXDuJs
+         JxqxyPlrllgybpybDB8eYWmwJuR+sHL/NDxGNhptwMrhBJhPHZIwiSegY0p3Yri5XU
+         97ShgEuIuUhSv3G1zPckAV2edbxsHCcFRes6LK1ehfvzu3djyPgztPEsmUOTAouxht
+         TATNzmcIRPNoBdgj/yt9nKxrq/RVtZn5JBSW6Hq04domx5ipZh/cDvvoelLuhpFOug
+         DZeEGCJfSHIuA==
+Message-ID: <a2341eae-3a3a-ca26-8ce7-a4ba9219566c@collabora.com>
+Date:   Thu, 21 Apr 2022 11:07:57 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH V2 06/12] clk: mediatek: reset: Revise structure to
- control reset register
+Subject: Re: [PATCH V2 04/12] clk: mediatek: reset: Merge and revise reset
+ register function
 Content-Language: en-US
 To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
         sboyd@kernel.org
@@ -47,10 +47,10 @@ Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de,
         linux-mediatek@lists.infradead.org,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220420130527.23200-1-rex-bc.chen@mediatek.com>
- <20220420130527.23200-7-rex-bc.chen@mediatek.com>
+ <20220420130527.23200-5-rex-bc.chen@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220420130527.23200-7-rex-bc.chen@mediatek.com>
+In-Reply-To: <20220420130527.23200-5-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -58,55 +58,99 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 20/04/22 15:05, Rex-BC Chen ha scritto:
-> Add mtk_clk_rst_desc to input the reset register data, and replace the
-> structure "struct mtk_reset" to reset.h, and rename it as
-> "mtk_clk_rst_data". We use them to store reset register data and
-> store reset controller device.
+> Merge the reset register function of simple and set_clr into one function.
+> - Input the version number to determine which version we will use.
+> - Rename reset register function to "mtk_clk_register_rst_ctrl"
 > 
 > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 > ---
->   drivers/clk/mediatek/clk-mt2701-eth.c |  8 +++++-
->   drivers/clk/mediatek/clk-mt2701-g3d.c |  8 +++++-
->   drivers/clk/mediatek/clk-mt2701-hif.c |  8 +++++-
->   drivers/clk/mediatek/clk-mt2701.c     | 19 ++++++++++++--
->   drivers/clk/mediatek/clk-mt2712.c     | 19 ++++++++++++--
->   drivers/clk/mediatek/clk-mt7622-eth.c |  8 +++++-
->   drivers/clk/mediatek/clk-mt7622-hif.c | 10 ++++++--
->   drivers/clk/mediatek/clk-mt7622.c     | 19 ++++++++++++--
->   drivers/clk/mediatek/clk-mt7629-eth.c |  8 +++++-
->   drivers/clk/mediatek/clk-mt7629-hif.c | 10 ++++++--
->   drivers/clk/mediatek/clk-mt8135.c     | 19 ++++++++++++--
->   drivers/clk/mediatek/clk-mt8173.c     | 19 ++++++++++++--
->   drivers/clk/mediatek/clk-mt8183.c     |  9 +++++--
->   drivers/clk/mediatek/reset.c          | 36 +++++++++++++--------------
->   drivers/clk/mediatek/reset.h          | 15 ++++++++++-
->   15 files changed, 174 insertions(+), 41 deletions(-)
+>   drivers/clk/mediatek/clk-mt2701-eth.c |  2 +-
+>   drivers/clk/mediatek/clk-mt2701-g3d.c |  2 +-
+>   drivers/clk/mediatek/clk-mt2701-hif.c |  2 +-
+>   drivers/clk/mediatek/clk-mt2701.c     |  4 +--
+>   drivers/clk/mediatek/clk-mt2712.c     |  4 +--
+>   drivers/clk/mediatek/clk-mt7622-eth.c |  2 +-
+>   drivers/clk/mediatek/clk-mt7622-hif.c |  4 +--
+>   drivers/clk/mediatek/clk-mt7622.c     |  4 +--
+>   drivers/clk/mediatek/clk-mt7629-eth.c |  2 +-
+>   drivers/clk/mediatek/clk-mt7629-hif.c |  4 +--
+>   drivers/clk/mediatek/clk-mt8135.c     |  4 +--
+>   drivers/clk/mediatek/clk-mt8173.c     |  4 +--
+>   drivers/clk/mediatek/clk-mt8183.c     |  3 ++-
+>   drivers/clk/mediatek/clk-mtk.h        | 13 ++++++----
+>   drivers/clk/mediatek/reset.c          | 35 ++++++++++++---------------
+>   15 files changed, 44 insertions(+), 45 deletions(-)
 > 
 
 ..snip..
 
 > diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-> index 8e42deee80a3..d67c13958458 100644
+> index 6574b19daf0f..8e42deee80a3 100644
 > --- a/drivers/clk/mediatek/reset.c
 > +++ b/drivers/clk/mediatek/reset.c
-> @@ -14,25 +14,19 @@
+> @@ -65,14 +65,23 @@ static const struct reset_control_ops mtk_reset_ops_set_clr = {
+>   	.reset = mtk_reset_set_clr,
+>   };
 >   
->   #include "clk-mtk.h"
->   
-> -struct mtk_reset {
-> -	struct regmap *regmap;
-> -	int regofs;
-> -	struct reset_controller_dev rcdev;
-> -};
-> -
-> -static inline struct mtk_reset *to_rst_data(struct reset_controller_dev *rcdev)
-> +static inline struct mtk_clk_rst_data *to_rst_data(struct reset_controller_dev *rcdev)
+> -static void mtk_register_reset_controller_common(struct device_node *np,
+> -			unsigned int num_regs, int regofs,
+> -			const struct reset_control_ops *reset_ops)
+> +static const struct reset_control_ops *rst_op[MTK_RST_MAX] = {
+> +	[MTK_RST_SIMPLE] = &reset_simple_ops,
+> +	[MTK_RST_SET_CLR] = &mtk_reset_ops_set_clr,
+> +};
+
+I don't think that we really need this to go to .rodata to get an improvement
+in boot times in the order of nanoseconds....
+
+> +
+> +void mtk_clk_register_rst_ctrl(struct device_node *np,
+> +			       u32 reg_num, u16 reg_ofs, u8 version)
 >   {
+>   	struct mtk_reset *data;
+>   	int ret;
+>   	struct regmap *regmap;
+>   
+> +	if (version >= MTK_RST_MAX) {
+> +		pr_err("Error version number: %d\n", version);
+> +		return;
+> +	}
+> +
+>   	regmap = device_node_to_regmap(np);
+>   	if (IS_ERR(regmap)) {
+>   		pr_err("Cannot find regmap for %pOF: %pe\n", np, regmap);
+> @@ -84,10 +93,10 @@ static void mtk_register_reset_controller_common(struct device_node *np,
+>   		return;
+>   
+>   	data->regmap = regmap;
+> -	data->regofs = regofs;
+> +	data->regofs = reg_ofs;
+>   	data->rcdev.owner = THIS_MODULE;
+> -	data->rcdev.nr_resets = num_regs * 32;
+> -	data->rcdev.ops = reset_ops;
+> +	data->rcdev.nr_resets = reg_num * 32;
+> +	data->rcdev.ops = rst_op[version];
+>   	data->rcdev.of_node = np;
 
-to_mtk_clk_rst_data()...
-by the way, it's probably better if you introduce this helper here directly,
-instead of introducing it in commit 03/12 and changing it entirely in 06/12.
+...hence, I would prefer to see something like:
 
-The rest of the code looks good to me, I'm sure that you'll get my R-b in the
-next version.
+	switch (version) {
+	case MTK_RST_SIMPLE:
+		data->rcdev.ops = &reset_simple_ops;
+		break;
+	case MTK_RST_SET_CLR:
+		data->rcdev.ops = &mtk_reset_ops_set_clr;
+		break;
+	default:
+		pr_err("Unknown reset version %d\n", version);
+		return;
+	}
 
+Like that, you'd also replace that if branch at the beginning where you
+do the reset version sanity check.
+If you don't want to allocate a struct mtk_reset before running this switch,
+you can also declare a `struct reset_control_ops *rcops = NULL;` locally and
+then assign `data->rcdev.ops = rcops;` later: that would also be acceptable.
+
+Cheers,
+Angelo
