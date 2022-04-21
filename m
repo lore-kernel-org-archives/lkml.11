@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15166C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 660CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387441AbiDUJUD (ORCPT
+        id S1387467AbiDUJUG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
+        Thu, 21 Apr 2022 05:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387465AbiDUJTt (ORCPT
+        with ESMTP id S1387546AbiDUJTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 05:19:49 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9715F2898A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:16:56 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23L6iga7001913
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:16:55 -0700
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF55289BA
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:16:57 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 23L0VLZ0019884
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:16:57 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=crGBemUctK2aDiXsGbr+Y1XDXp3SStzaORv3NA8oNCo=;
- b=L2RAueuJTX4ZLpLHMg2Gr/69UroX8HuWGqK6brm8b02sB4l0xEguqeO1B5tdnmMpQxSp
- 47U3Zwozjj0wNPXLbCHnyVKGQ+BQeh7IIbMR/GhnalBA5RO2xynP/ACz41HRwm0dveQJ
- TGk6zE1sn9d+cS+EJQwOQILj9GOxH/NdJtA= 
+ bh=mjM0wwI9pOqSPCCC1KVwggul7a+EfCAqQSAjGkjuJtg=;
+ b=Sx64OVf8J+WH+y0eMsjwIVf5rQ0Q4rYMvJdDeS+OFZfhyJte/5yXAf0oPhy5gqetuKol
+ WqmEp/iVaO4YgLwHD4K3vsqLwM0LtCB8i66aIxch6f46po9+6a02CScUq5nMLsF+Sxv6
+ ELgjr9IBarWVwaNykaJbdM/CwJ3VyB6K8+A= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fhub7eq2v-1
+        by m0089730.ppops.net (PPS) with ESMTPS id 3fjvsvstve-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:16:55 -0700
-Received: from snc-exhub201.TheFacebook.com (2620:10d:c085:21d::7) by
- snc-exhub204.TheFacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 02:16:54 -0700
-Received: from twshared4937.07.ash9.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 02:16:57 -0700
+Received: from twshared8053.07.ash9.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Thu, 21 Apr 2022 02:16:54 -0700
 Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
-        id 09E967CA7600; Thu, 21 Apr 2022 02:14:02 -0700 (PDT)
+        id DF8B97CA75FA; Thu, 21 Apr 2022 02:14:01 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     <io-uring@vger.kernel.org>
 CC:     <axboe@kernel.dk>, <asml.silence@gmail.com>,
         <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
         Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH 4/6] io_uring: use constants for cq_overflow bitfield
-Date:   Thu, 21 Apr 2022 02:13:43 -0700
-Message-ID: <20220421091345.2115755-5-dylany@fb.com>
+Subject: [PATCH 1/6] io_uring: add trace support for CQE overflow
+Date:   Thu, 21 Apr 2022 02:13:40 -0700
+Message-ID: <20220421091345.2115755-2-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220421091345.2115755-1-dylany@fb.com>
 References: <20220421091345.2115755-1-dylany@fb.com>
@@ -55,8 +51,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: 7FUjQCvhspEopY8cC78AN458oIziRsfq
-X-Proofpoint-ORIG-GUID: 7FUjQCvhspEopY8cC78AN458oIziRsfq
+X-Proofpoint-GUID: UVXTBXW7w1RsjO1ZzC6SPKEHESpra43r
+X-Proofpoint-ORIG-GUID: UVXTBXW7w1RsjO1ZzC6SPKEHESpra43r
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-04-20_06,2022-04-20_01,2022-02-23_01
@@ -64,110 +60,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prepare to use this bitfield for more flags by using constants instead of
-magic value 0
+Add trace function for overflowing CQ ring.
 
 Signed-off-by: Dylan Yudaken <dylany@fb.com>
 ---
- fs/io_uring.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+ include/trace/events/io_uring.h | 42 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 41 insertions(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 1837b3afa47f..db878c114e16 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -431,7 +431,7 @@ struct io_ring_ctx {
- 	struct wait_queue_head	sqo_sq_wait;
- 	struct list_head	sqd_list;
+diff --git a/include/trace/events/io_uring.h b/include/trace/events/io_ur=
+ing.h
+index cddf5b6fbeb4..42534ec2ab9d 100644
+--- a/include/trace/events/io_uring.h
++++ b/include/trace/events/io_uring.h
+@@ -530,7 +530,7 @@ TRACE_EVENT(io_uring_req_failed,
+ 	),
 =20
--	unsigned long		check_cq_overflow;
-+	unsigned long		check_cq;
+ 	TP_printk("ring %p, req %p, user_data 0x%llx, "
+-		"op %d, flags 0x%x, prio=3D%d, off=3D%llu, addr=3D%llu, "
++		  "op %d, flags 0x%x, prio=3D%d, off=3D%llu, addr=3D%llu, "
+ 		  "len=3D%u, rw_flags=3D0x%x, buf_index=3D%d, "
+ 		  "personality=3D%d, file_index=3D%d, pad=3D0x%llx/%llx, error=3D%d",
+ 		  __entry->ctx, __entry->req, __entry->user_data,
+@@ -543,6 +543,46 @@ TRACE_EVENT(io_uring_req_failed,
+ 		  (unsigned long long) __entry->pad2, __entry->error)
+ );
 =20
- 	struct {
- 		/*
-@@ -903,6 +903,10 @@ struct io_cqe {
- 	};
- };
-=20
-+enum {
-+	IO_CHECK_CQ_OVERFLOW_BIT,
-+};
 +
- /*
-  * NOTE! Each of the iocb union members has the file pointer
-  * as the first entry in their struct definition. So you can
-@@ -2024,7 +2028,7 @@ static bool __io_cqring_overflow_flush(struct io_ri=
-ng_ctx *ctx, bool force)
++/*
++ * io_uring_cqe_overflow - a CQE overflowed
++ *
++ * @ctx:		pointer to a ring context structure
++ * @user_data:		user data associated with the request
++ * @res:		CQE result
++ * @cflags:		CQE flags
++ * @ocqe:		pointer to the overflow cqe (if available)
++ *
++ */
++TRACE_EVENT(io_uring_cqe_overflow,
++
++	TP_PROTO(void *ctx, unsigned long long user_data, s32 res, u32 cflags,
++		 void *ocqe),
++
++	TP_ARGS(ctx, user_data, res, cflags, ocqe),
++
++	TP_STRUCT__entry (
++		__field(  void *,		ctx		)
++		__field(  unsigned long long,	user_data	)
++		__field(  s32,			res		)
++		__field(  u32,			cflags		)
++		__field(  void *,		ocqe		)
++	),
++
++	TP_fast_assign(
++		__entry->ctx		=3D ctx;
++		__entry->user_data	=3D user_data;
++		__entry->res		=3D res;
++		__entry->cflags		=3D cflags;
++		__entry->ocqe		=3D ocqe;
++	),
++
++	TP_printk("ring %p, user_data 0x%llx, res %d, flags %x, "
++		  "overflow_cqe %p",
++		  __entry->ctx, __entry->user_data, __entry->res,
++		  __entry->cflags, __entry->ocqe)
++);
++
+ #endif /* _TRACE_IO_URING_H */
 =20
- 	all_flushed =3D list_empty(&ctx->cq_overflow_list);
- 	if (all_flushed) {
--		clear_bit(0, &ctx->check_cq_overflow);
-+		clear_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq);
- 		WRITE_ONCE(ctx->rings->sq_flags,
- 			   ctx->rings->sq_flags & ~IORING_SQ_CQ_OVERFLOW);
- 	}
-@@ -2040,7 +2044,7 @@ static bool io_cqring_overflow_flush(struct io_ring=
-_ctx *ctx)
- {
- 	bool ret =3D true;
-=20
--	if (test_bit(0, &ctx->check_cq_overflow)) {
-+	if (test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq)) {
- 		/* iopoll syncs against uring_lock, not completion_lock */
- 		if (ctx->flags & IORING_SETUP_IOPOLL)
- 			mutex_lock(&ctx->uring_lock);
-@@ -2118,7 +2122,7 @@ static bool io_cqring_event_overflow(struct io_ring=
-_ctx *ctx, u64 user_data,
- 		return false;
- 	}
- 	if (list_empty(&ctx->cq_overflow_list)) {
--		set_bit(0, &ctx->check_cq_overflow);
-+		set_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq);
- 		WRITE_ONCE(ctx->rings->sq_flags,
- 			   ctx->rings->sq_flags | IORING_SQ_CQ_OVERFLOW);
-=20
-@@ -2961,7 +2965,7 @@ static int io_iopoll_check(struct io_ring_ctx *ctx,=
- long min)
- 	 * If we do, we can potentially be spinning for commands that
- 	 * already triggered a CQE (eg in error).
- 	 */
--	if (test_bit(0, &ctx->check_cq_overflow))
-+	if (test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq))
- 		__io_cqring_overflow_flush(ctx, false);
- 	if (io_cqring_events(ctx))
- 		return 0;
-@@ -8271,7 +8275,8 @@ static int io_wake_function(struct wait_queue_entry=
- *curr, unsigned int mode,
- 	 * Cannot safely flush overflowed CQEs from here, ensure we wake up
- 	 * the task, and the next invocation will do it.
- 	 */
--	if (io_should_wake(iowq) || test_bit(0, &iowq->ctx->check_cq_overflow))
-+	if (io_should_wake(iowq) ||
-+	    test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &iowq->ctx->check_cq))
- 		return autoremove_wake_function(curr, mode, wake_flags, key);
- 	return -1;
- }
-@@ -8299,7 +8304,7 @@ static inline int io_cqring_wait_schedule(struct io=
-_ring_ctx *ctx,
- 	if (ret || io_should_wake(iowq))
- 		return ret;
- 	/* let the caller flush overflows, retry */
--	if (test_bit(0, &ctx->check_cq_overflow))
-+	if (test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq))
- 		return 1;
-=20
- 	if (!schedule_hrtimeout(&timeout, HRTIMER_MODE_ABS))
-@@ -10094,7 +10099,8 @@ static __poll_t io_uring_poll(struct file *file, =
-poll_table *wait)
- 	 * Users may get EPOLLIN meanwhile seeing nothing in cqring, this
- 	 * pushs them to do the flush.
- 	 */
--	if (io_cqring_events(ctx) || test_bit(0, &ctx->check_cq_overflow))
-+	if (io_cqring_events(ctx) ||
-+	    test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq))
- 		mask |=3D EPOLLIN | EPOLLRDNORM;
-=20
- 	return mask;
+ /* This part must be outside protection */
 --=20
 2.30.2
 
