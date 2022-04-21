@@ -2,91 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391282AbiDUSID (ORCPT
+        id S1391173AbiDUSIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
+        Thu, 21 Apr 2022 14:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391215AbiDUSHi (ORCPT
+        with ESMTP id S1391211AbiDUSII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:07:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEB894B1CB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650564287;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=YOH2Qpi3OWvJdj6PxZT56UXJ38oEXRy/KfJlwINMGqU=;
-        b=g23RXpC7LHNp8HWTpOxSGjnDtLKr/KBMgpIsj4p46tzkczISsKOqTVpcYV77BpE3dqXV4G
-        gmOXx8WVsXyNBy+5dfhu5YSSCOBfBCld2b5lnp3+l37PbAl7ZG9bQkOUkiH+J9JWGjFGZ9
-        f+GRB5m/ylbDI+66aS+xljeGSMOUBus=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-547-ZUyglecdOV2CRHb3TKRkZA-1; Thu, 21 Apr 2022 14:04:44 -0400
-X-MC-Unique: ZUyglecdOV2CRHb3TKRkZA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DAA72811E78;
-        Thu, 21 Apr 2022 18:04:43 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97A0140E80F5;
-        Thu, 21 Apr 2022 18:04:43 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     will@kernel.org, maz@kernel.org, apatel@ventanamicro.com,
-        atishp@rivosinc.com, seanjc@google.com, pgonda@google.com
-Subject: [PATCH 0/4] KVM: fix KVM_EXIT_SYSTEM_EVENT mess
-Date:   Thu, 21 Apr 2022 14:04:39 -0400
-Message-Id: <20220421180443.1465634-1-pbonzini@redhat.com>
+        Thu, 21 Apr 2022 14:08:08 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA14A13DC4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:05:13 -0700 (PDT)
+Received: from [192.168.1.107] ([37.4.249.94]) by mrelayeu.kundenserver.de
+ (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1M1pk0-1njn2M0Qm0-002H3L; Thu, 21 Apr 2022 20:05:10 +0200
+Message-ID: <7be89f17-8993-c0e9-3965-4ca5db3c4b57@i2se.com>
+Date:   Thu, 21 Apr 2022 20:05:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: linux-next: build warning after merge of the pinctrl tree
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220421171116.6dbe87cb@canb.auug.org.au>
+ <CACRpkdYW81iLveJoNu2RDEpySqRcXWqq4XGhGFMYdLvBzhRsUw@mail.gmail.com>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <CACRpkdYW81iLveJoNu2RDEpySqRcXWqq4XGhGFMYdLvBzhRsUw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:EVtiik8/dSmwP3H2lw0tuXN//9pN2Fsr+moOQlE9wMzlbK6EuzT
+ 9nf5OwVSCP1J8JA9lr/Rc0Ln8/3HFyIWJK3NooRSblS+uWSg8LQ/6N1hqvu34QkLEb2FFFf
+ mGOhGK9Cwnt0nzJ8OAxXqpgAoBQ9g8GkdkgvBRy2xzYzf/gXYoPZIZFg3DHGkUTRUT/6yGJ
+ bcWWcwhUydvEgi3qc3IQg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:fd9QVqU1P1I=:jGO4Bn+H2VFYkTGkuqNQN1
+ Z5zrqQPDYRHvgi2bxghgnovyX1b3g3ucyVWKocGZePrtZmn7AwbyNCke/hMr/fXxlKhUjIi4N
+ 9KA/H9louOSJq4mu6F/9H0UqcS7v2Qla4ddSet63AY2DMnRSUXq5JK0blD2eFTgt+S9kOPgPM
+ 6bTXZ3dZhohdlBOuRBw6jCmM8TF1r8+Z2HytVbWgKd7XSaQjvq2+lw6A+Fhw2HzAl8jx1c4Ly
+ sPU2iqI5J//0q/IhRiNXvLOVaqZKXKuBNSoO4HKV44S5G1gKWZVjDPJluviF2sd79/VLhYbnF
+ rQNJ4f5xwYluM33PqJfnD4gqZJS85Moiw6zOM8tHsdg3Pocbp/Qf6gQFF1zenoKKvHml1Ilgr
+ J4vIYBL+v3KTsuKQ+mlz6m4dGqMwEDzMW8v2vbn19FL6WICw2Wd6OfjRA2h72PYjFvtUhVlP8
+ WI2pwxesu/87J9tk5QTFyxL/C4aH4W1O7yiCJcR4e76+9XZeNtb3m5IGj6NdOmdt1IRbfK2dO
+ H0AwFbXd6XYd8LNyEA9VZ8BPMGWbEAXROIOgvcT8HhYiqo9XZDjihIszJWLkSGi+vnPQB0vVy
+ pSw72ivtcLFJRJqyKSh2Hf/jipdBBdLEpRpPsKA5/Y5Qa2FM/uY0AwBpzTPXrjbUAS0+RoJTA
+ kiIuJKtRFV/4WwwLV7F1K+HjgwyNH308lhrKNiFgiubXgeDUNGeTJEnEXdvsEdSXvLlpQ8NaD
+ Dw/P28FdVjL9KMEp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The KVM_SYSTEM_EVENT_NDATA_VALID mechanism that was introduced
-contextually with KVM_SYSTEM_EVENT_SEV_TERM is not a good match
-for ARM and RISC-V, which want to communicate information even
-for existing KVM_SYSTEM_EVENT_* constants.  Userspace is not ready
-to filter out bit 31 of type, and fails to process the
-KVM_EXIT_SYSTEM_EVENT exit.
-
-Therefore, tie the availability of ndata to a system capability;
-if the capability is present, ndata is always valid, so patch 1
-makes x86 always initialize it.  Then patches 2 and 3 fix
-ARM and RISC-V compilation and patch 4 enables the capability.
-
-Only compiled on x86, waiting for acks.
-
-Paolo
-
-Paolo Bonzini (4):
-  KVM: x86: always initialize system_event.ndata
-  KVM: ARM: replace system_event.flags with ndata and data[0]
-  KVM: RISC-V: replace system_event.flags with ndata and data[0]
-  KVM: tell userspace that system_event.ndata is valid
-
- Documentation/virt/kvm/api.rst        | 29 +++++++++++++++------------
- arch/arm64/kvm/psci.c                 |  3 ++-
- arch/riscv/include/asm/kvm_vcpu_sbi.h |  2 +-
- arch/riscv/kvm/vcpu_sbi.c             |  5 +++--
- arch/riscv/kvm/vcpu_sbi_replace.c     |  4 ++--
- arch/riscv/kvm/vcpu_sbi_v01.c         |  2 +-
- arch/x86/kvm/svm/sev.c                |  3 +--
- arch/x86/kvm/x86.c                    |  2 ++
- include/uapi/linux/kvm.h              |  2 +-
- virt/kvm/kvm_main.c                   |  1 +
- 10 files changed, 30 insertions(+), 23 deletions(-)
-
--- 
-2.31.1
-
+Am 21.04.22 um 16:12 schrieb Linus Walleij:
+> On Thu, Apr 21, 2022 at 9:11 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+>> After merging the pinctrl tree, today's linux-next build (htmldocs)
+>> produced this warning:
+>>
+>> include/linux/gpio/driver.h:507: warning: Incorrect use of kernel-doc format:          * @of_gpio_ranges_fallback
+>> include/linux/gpio/driver.h:518: warning: Function parameter or member 'of_gpio_ranges_fallback' not described in 'gpio_chip'
+>>
+>> Introduced by commit
+>>
+>>    a9491df0c4ae ("gpiolib: of: Introduce hook for missing gpio-ranges")
+> Thanks, I just folded in a quick fix into the offending commit, a
+> single missing colon.
+Thanks
+>
+> Yours,
+> Linus Walleij
