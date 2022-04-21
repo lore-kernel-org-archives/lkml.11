@@ -2,85 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50567C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388657AbiDUOFi (ORCPT
+        id S1387768AbiDUOGQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38962 "EHLO
+        Thu, 21 Apr 2022 10:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386439AbiDUOF1 (ORCPT
+        with ESMTP id S1386591AbiDUOGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:05:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99C053A5D4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650549745;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aPltoNX3v1MHdmgBq0oIkCAldNZyXJBcZt6C3pWO+9Q=;
-        b=Ae16fq2DK+53wxe9VFpG3bbRhVpp297Ke8U9CahCGrGQBisLegYK5WKyXtjaNEJMBStx8v
-        1wRTmecqhOT+xr6GmpiFJsssp+Bht2VcD3I2AKqoztsIs4vhiUXxstzZZ8SgLs9asy4d13
-        5kteeiL3izVAtUPujnmEpYDnW2TvCcA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-318-VGILzSB1Pqmxx7WgsHszIg-1; Thu, 21 Apr 2022 10:02:24 -0400
-X-MC-Unique: VGILzSB1Pqmxx7WgsHszIg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0503F811E76;
-        Thu, 21 Apr 2022 14:02:22 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8B44340CFD22;
-        Thu, 21 Apr 2022 14:02:19 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220415123614.54024-4-jefflexu@linux.alibaba.com>
-References: <20220415123614.54024-4-jefflexu@linux.alibaba.com> <20220415123614.54024-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-Subject: Re: [PATCH v9 03/21] cachefiles: unbind cachefiles gracefully in on-demand mode
+        Thu, 21 Apr 2022 10:06:13 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F843981E;
+        Thu, 21 Apr 2022 07:03:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: shreeya)
+        with ESMTPSA id 3E3E51F44D87
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650549761;
+        bh=ArSK0XPQphXlFdSa1AUStb79K0fJdl464mogrdyEK+I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Cw5mO+y272o8w7brCUpjWVzuzJG6QunIgxNqk3DODnjXlHopNT9mRolToPZ0NaXbO
+         jQGbBbIbCuOmSDQTtQ46QvqDYY9BIKNcmSzYCzR/WkHyE3gFArsQLRTZEsEswo2Ykg
+         7XhECACuJzwXOtkEsway3v0dPOM+nIRU4mkjF88/kqJjYG7oSUUHWGzt1P3/SwAUOa
+         GSaIncfyTTueJWhN0P8CBT7JPoT1ZG2wfTrEtzyaoqw4O0Q2TisvSZgDltmvXgKhz8
+         iRQldRyNVv3zaH5aAtkbIoGQIP/uBF12oEFqfAdPRf2S8l7qbhkDUmQp+JpfXOSdYm
+         1oW9u8GFBrgTg==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krzk@kernel.org, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v2 0/3] Add LTRF216A Driver
+Date:   Thu, 21 Apr 2022 19:31:30 +0530
+Message-Id: <20220421140133.354498-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1444915.1650549738.1@warthog.procyon.org.uk>
-Date:   Thu, 21 Apr 2022 15:02:18 +0100
-Message-ID: <1444916.1650549738@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+This patchset adds support for ltrf216a Ambient Light Sensor
+and documents the DT bindings for the same.
 
-> +	struct kref			unbind_pincount;/* refcount to do daemon unbind */
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+  - Add interrupt and power supply property in DT bindings
+  - Add vendor prefix name as per the alphabetical order.
 
-Please use refcount_t or atomic_t, especially as this isn't the refcount for
-the structure.
+Shreeya Patel (3):
+  dt-bindings: vendor-prefixes: Add 'ltr' as deprecated vendor prefix
+  dt-bindings: Document ltrf216a light sensor bindings
+  iio: light: Add support for ltrf216a sensor
 
-> -	cachefiles_daemon_unbind(cache);
-> -
->  	/* clean up the control file interface */
->  	cache->cachefilesd = NULL;
->  	file->private_data = NULL;
->  	cachefiles_open = 0;
+ .../bindings/iio/light/liteon,ltrf216a.yaml   |  52 +++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   3 +
+ drivers/iio/light/Kconfig                     |  10 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/ltrf216a.c                  | 349 ++++++++++++++++++
+ 5 files changed, 415 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+ create mode 100644 drivers/iio/light/ltrf216a.c
 
-Please call cachefiles_daemon_unbind() before the cleanup.
-
-David
+-- 
+2.30.2
 
