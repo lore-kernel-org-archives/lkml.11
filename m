@@ -2,168 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4165C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D79C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392076AbiDUTsl (ORCPT
+        id S1392084AbiDUTt1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52074 "EHLO
+        Thu, 21 Apr 2022 15:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392059AbiDUTsi (ORCPT
+        with ESMTP id S1355803AbiDUTtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:48:38 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10E64D25D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:45:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650570347; x=1682106347;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qUbnApxe0ifMuycVX45OPy6G9l25JluiNKetU6KZUyg=;
-  b=G0sGHg+xRqRjQQudF5nN+WlCJPhhBkMYPE+Ps0SkBM21iwRlgTTfAf6h
-   WK/ieQ4S0j2tiCZNTK8dpLikRhbHxRlreTETtr0ziQ2knAA/3pD7NSUdF
-   tHqiqO0W2FK+CQLXnF3T8TGhBnbal5stSe0BrGJ4pQEB225BA3xIMUkBj
-   9jSXSG1XaU58mzf5roR74eUyAGNb2dBseXLDIwhpcuVY2Zf0ej/gGFl4z
-   FoN3Ts2R31Ao+i9WiHwJL4IofFRfLVrBCXEntRrJ6laZ5mDozPXcaM5pv
-   cM4l9xuEf4uq41IJXvFeYoq1w/LMhkA+77b6eiueu5TkfhRIKoUK5gjHs
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264630241"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="264630241"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 12:45:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="533569869"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 21 Apr 2022 12:45:36 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhckB-0008j5-RU;
-        Thu, 21 Apr 2022 19:45:35 +0000
-Date:   Fri, 22 Apr 2022 03:44:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa-dev@sang-engineering.com>
-Subject: drivers/i2c/busses/i2c-mxs.c:802:18: warning: cast to smaller
- integer type 'enum mxs_i2c_devtype' from 'const void *'
-Message-ID: <202204220355.TdCb2zsz-lkp@intel.com>
+        Thu, 21 Apr 2022 15:49:24 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2059.outbound.protection.outlook.com [40.107.94.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F2D4D608;
+        Thu, 21 Apr 2022 12:46:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ij8QpbNmMQcBQ5O5uSXqJnXBLxPl9HpmuDZ2Qcf7QUCLLKS4NZAH9qsaeWjOmnp98ainslqb2xmHPU4gzNvl5QgPXdzbjVFpSg2EjRtdoV57t0ATu9v+UFeMy/4tJ9ndzANClwDKmIbPt8V62eoQiS0X9ybmwHni/a8Z3oAtNVe2G8DNTsFrLSuClUyKVWEP7jvOFjmiepQDK4z4/x0KBQy8tfjIjJsMOCwLog3lfYciPHEVcjiZui8EgCC0i29e5RQCX4XnyVdLM9OxJUh/notb7Z7yF+CGdEyaPj9NKjw/1JAvjQnbrWgzy4ghmRMOQ8nT0KJ5fS3zIOJNzor+UQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ll9qGamCYjrqDd1n4RuM8O805tkwLUxA5SOasBS0xNw=;
+ b=CvC/0qhi8mNXAuF78fqZTUC7bwAEYqTmFi9/LLzalCGaPowQoxbsiWZH7bf5hfG6HoldH4iLJyAgTUVFNgQlCvw8QaTfP6WGYwl3vP+t2UMFzs3+GePCru78kvVt9dh7wSaUj9YzyOdRUttyjmrVUKkG0mNHujv/bkfazQDgRMWurmZWOYPWGvfdYt+eQQhsUgzn6wKcdA7bT38mjCSAGDa4VuTWewkzrLUvaqDdvMFenGy6KxgAYML0KgQGEyhwyArMKKqstQIvoMda8rtHIMdK421dnXO8b9YN6F40vemSGk0+Czx8Cd4sUD6rsSwziK24XaQj3MiMkO4EzXwFDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=eideticom.com; dmarc=pass action=none
+ header.from=eideticom.com; dkim=pass header.d=eideticom.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=eideticcom.onmicrosoft.com; s=selector2-eideticcom-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ll9qGamCYjrqDd1n4RuM8O805tkwLUxA5SOasBS0xNw=;
+ b=PHcvepv5aEQew8zg37jUwxc09T/f99E8tWmO4juGrtQl8QhpogHmNFeI+GYkw1YbUOOxLw5OeDH9PYkTqCqSjp5uucZtZjMxd0D1of6ZzpBHM4LXfKBaYJhIXZWcx9OoelJdkI2g1F8x0ASmcdovVPzZWTG4wYAmPpwiT31LRvY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=eideticom.com;
+Received: from MWHPR19MB0925.namprd19.prod.outlook.com (2603:10b6:300:a3::10)
+ by PH0PR19MB4758.namprd19.prod.outlook.com (2603:10b6:510:20::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Thu, 21 Apr
+ 2022 19:46:30 +0000
+Received: from MWHPR19MB0925.namprd19.prod.outlook.com
+ ([fe80::dd25:71ab:56fa:b1e6]) by MWHPR19MB0925.namprd19.prod.outlook.com
+ ([fe80::dd25:71ab:56fa:b1e6%3]) with mapi id 15.20.5186.014; Thu, 21 Apr 2022
+ 19:46:30 +0000
+From:   David Sloan <david.sloan@eideticom.com>
+To:     Song Liu <song@kernel.org>, linux-raid@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Logan Gunthorpe <logang@deltatee.com>,
+        David Sloan <david.sloan@eideticom.com>
+Subject: [PATCH] md: Replace role magic numbers with defined constants
+Date:   Thu, 21 Apr 2022 13:45:58 -0600
+Message-Id: <20220421194558.59667-1-david.sloan@eideticom.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR04CA0024.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::34) To MWHPR19MB0925.namprd19.prod.outlook.com
+ (2603:10b6:300:a3::10)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ae708a66-1cad-4930-9119-08da23cfa145
+X-MS-TrafficTypeDiagnostic: PH0PR19MB4758:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR19MB47587E6A3A8DE01B24AD644CEBF49@PH0PR19MB4758.namprd19.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +xLnUXsgqpIpZ8Zhs6KimVMKlqOCF01bH7T7SruvJa6SzIFtDtT3qXWNo6pPDphK4h3MV0bKAsVTTXJ1l0+AF8EVgG0ma1N/eDGvMdBYmVnm37UctvN8Ej7Xt375X5UpqaYmZuKClCYQsuVhtOxooTAVcHuAPSQRkqkmW6zgLu0wivmSgK0oaQyZfRnn6KLEdNljIlb2U4CS27HaRvgOrL/v7oRW45gaC0aMBbWgT2+ZcAd+/t78V4sxsTMwvFWB+L0WzFlxAAwOD5+AdHR4FXE4OSosT+/c2MwLp3BrKHAh6kS4jfKywgqNiqfozEc58tdkXDsdTt5eEjC0WJG08MVFinXdi30ld6TiC2RCyJM6Eubh67rlmcUUciBI69L5oiJvKaYqIFZgH8eBjTnXJ1Jov5J/gG9T9ZsKPS3PzLJwpAshEpIR4/u5sOJxLAjPnWPnnvnHmuY5MRWeGvXInEi3ERtyJO+pbMQnrVwc41rGf7/kUWVnT0d+CvKqWMQ82bJZInA4B9WSpdtjFcUZ3wXXGVM5I1YkdjvwCxfmaDULwSyoqGNQ63iy/LTRFfVSU5jVJMp/tIcH5t4nzHag/6baHnGcDcwUb2r+ODigVV5Cm7WtxA88H2JDCt4FY8w6D3gFB0RW0Ekg8zQztNMYDuMGOawiu9M1mjB2ejbnNgFLoVw+1pcnang59tB6zhUT+Opg0ili5C5hpsEkRe0zGA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0925.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(346002)(366004)(136003)(39830400003)(376002)(52116002)(44832011)(66556008)(83380400001)(36756003)(186003)(66476007)(2616005)(6666004)(8676002)(4326008)(6506007)(6512007)(2906002)(66946007)(5660300002)(1076003)(107886003)(508600001)(6486002)(26005)(38350700002)(38100700002)(316002)(54906003)(8936002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AblxrGiG0wbKmv+Qgfp0N00Hr8XowbaKG21faW27Uyu5wZdEl8Df2HQwJxwa?=
+ =?us-ascii?Q?MKc9WMJcvJB6MHah1bgtAfXh+w8n5hpngGqpIT++el23IkBykhf/Qadczibq?=
+ =?us-ascii?Q?yAOd2Nj9wqtygyLMFbZkqyCqfdCeK38QSN6Cga6q0RcZnpYMmDt8TSXpTvqK?=
+ =?us-ascii?Q?q/OigAemmH8IAiORnFpnEpqWPNsIo7nQ7fMW0lnJgP03Lz+LC05DtkjGVN/w?=
+ =?us-ascii?Q?Vd8bH7+ErrFBYV3jU6QQxOcQpELovrW5LQ8F70oPzG3ZvHKhHE8y0oKWqS7w?=
+ =?us-ascii?Q?kCzp6Huq/Z5N/1gNYcXN1WAWAYbAyOZtQ+SjWFUmltoFiKXv/4dMRYhvvCjb?=
+ =?us-ascii?Q?F5tmWADUXFqUtaEO3QlXhT2c0VBeMKkdvTVCX48jcb2cpbvt6XRmDYvaEpHd?=
+ =?us-ascii?Q?Z2HQCVqPPtpYrgjjXPymHSnCIzR7x3rKs4x/nsmD2gN0PCUscb7b2fHd8enw?=
+ =?us-ascii?Q?Ql0KoHG/eoTqiV+ZhCnxKPoF49odVtsLh28OBm9cDL1UBmksEHeKzyV2Im6y?=
+ =?us-ascii?Q?VaNz/g+62sQGn3/kwxF61f8sJmn/IBUOXDNe9k394X261MTVFZA/8svUGh/y?=
+ =?us-ascii?Q?LQcN1CY4Fwy2MJfNtWtnSmy43mFBOPbuhOAC9iRuVDHHlpEr4jtaqblpcShY?=
+ =?us-ascii?Q?PS9bMeQ/byBrMBK6MMjrRxkM9U77KZwbQthBcFIiAX67tYKnaxcCRPTZEdpm?=
+ =?us-ascii?Q?s+D/S3pJW+4/SEnXf1tHkk41bY6oRHihf08N7FC2OAR6YfvRpIJmoIs83kMm?=
+ =?us-ascii?Q?/fOP6FUG0A2DX3/MDGXMlwtWUXnLlrB8Ryc4Wuli2MPGHRsr/UjSgwDbPES8?=
+ =?us-ascii?Q?aI3s0uupw+SAseIjt1kyo3TzkWaDFKapJwo9IxrzkusVDlmHeLkgIc8H/7Sg?=
+ =?us-ascii?Q?IzN1QL6cK+aw2UJZpmI/3t7gkpbWFFqGxKI9DX6Z9bOTwcvEO8BfTw/ENgNG?=
+ =?us-ascii?Q?PbvoTtGci+gbHOP2mMV8ap15vkM5W+ZYSOIDh17jTfce0JvklJFyKDgO+dRR?=
+ =?us-ascii?Q?yOUZWGYEej60BdV+bMxemr0AidFPY4JSycWf495Czvu2s09mY9LiNTeRVloY?=
+ =?us-ascii?Q?/2h64HYW0xluCqBpbbEq6HJZHN4zSegPAQndk/ggry5fMS/xJFcOkwh/G991?=
+ =?us-ascii?Q?QfO6C+XgT0FQGoKxmyJKEtKwCS2xwtgvLF1S5tMJ9PPWkGXsfR+y3Hzt1I4R?=
+ =?us-ascii?Q?0HNgUDMpNBLj++qGPGS5OLaDmNWixdSO/U9QvUXEGXlRpcxEsqZ67YdiYTzB?=
+ =?us-ascii?Q?jneNyCsyLDZE9TJVoRPeymGbzrCFiNCKVUi79IF7BSrv7DkELLCRrGZs7MrL?=
+ =?us-ascii?Q?DPzlwyu2QuI8mS8cNySEE04zvLQ0akq076ifWGfnTarNv2isYVMxzu4Iah2w?=
+ =?us-ascii?Q?h5eF0Sr/nploQ6B9GrcYG2SRSAf9SCB4cmctnjMLX4vtwvTleNyiqPYKiQEc?=
+ =?us-ascii?Q?o+flwtRmIkFc9CS6dZnQ5XtMbty2Lztn9YGbNRTeKUMrgO2+k+OGxs0Dady+?=
+ =?us-ascii?Q?X+8RevBAi2uHUALV2KXLnfdd3ylUGUgQ4KCnjh80x6LsRMeS9CyTDjJLNsN9?=
+ =?us-ascii?Q?eIhArxWEa2FrNQUCD+ebrCSikHwoB0w3asZmkON2+yVnmQBJJfhR+oDs7f40?=
+ =?us-ascii?Q?JHIDPduTWjR0o4RZQxGcdPL6Yj4TT38LtU7WaltDjuoWr87qXRyX/xowonie?=
+ =?us-ascii?Q?8l8Xh1JU7u74Ht6IMylY73qgaHXvnPgv34Zl45rvAq4y6Vd+ejSzlm2VV3mh?=
+ =?us-ascii?Q?A3O0+JyD1Z3l0KAKUVEe3EaAGpCtmFE=3D?=
+X-OriginatorOrg: eideticom.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae708a66-1cad-4930-9119-08da23cfa145
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0925.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 19:46:29.9270
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3490cd4b-0360-4377-abb1-15f8c5af8fc2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0f7r+noA2zjYvhIX3+We8ka84eQSLdSc3ByAr6kgob+YaMSw/gGAf0hcBV/bDJ9Em4mBIM2Os/zYTG4R2y4KOf4kIetFruaQ2TS4I48mSks=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR19MB4758
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio,
+There are several instances where magic numbers are used in md.c instead
+of the defined constants in md_p.h. This patch set improves code
+readability by replacing all occurrences of 0xffff, 0xfffe, and 0xfffd when
+relating to md roles with their equivalent defined constant.
 
-FYI, the error/warning still remains.
+Signed-off-by: David Sloan <david.sloan@eideticom.com>
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/md.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b253435746d9a4a701b5f09211b9c14d3370d0da
-commit: c32abd8b569144b20c9c9b6dd7232828c612452f i2c: mxs: Remove unneeded platform_device_id
-date:   1 year, 5 months ago
-config: arm64-randconfig-r034-20220421 (https://download.01.org/0day-ci/archive/20220422/202204220355.TdCb2zsz-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c32abd8b569144b20c9c9b6dd7232828c612452f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout c32abd8b569144b20c9c9b6dd7232828c612452f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/i2c/busses/
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 309b3af906ad..b34b72fc5887 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -2645,11 +2645,12 @@ static bool does_sb_need_changing(struct mddev *mddev)
+ 	rdev_for_each(rdev, mddev) {
+ 		role = le16_to_cpu(sb->dev_roles[rdev->desc_nr]);
+ 		/* Device activated? */
+-		if (role == 0xffff && rdev->raid_disk >=0 &&
++		if (role == MD_DISK_ROLE_SPARE && rdev->raid_disk >= 0 &&
+ 		    !test_bit(Faulty, &rdev->flags))
+ 			return true;
+ 		/* Device turned faulty? */
+-		if (test_bit(Faulty, &rdev->flags) && (role < 0xfffd))
++		if (test_bit(Faulty, &rdev->flags) &&
++		    role < MD_DISK_ROLE_JOURNAL)
+ 			return true;
+ 	}
+ 
+@@ -9671,7 +9672,7 @@ static void check_sb_changes(struct mddev *mddev, struct md_rdev *rdev)
+ 		role = le16_to_cpu(sb->dev_roles[rdev2->desc_nr]);
+ 
+ 		if (test_bit(Candidate, &rdev2->flags)) {
+-			if (role == 0xfffe) {
++			if (role == MD_DISK_ROLE_FAULTY) {
+ 				pr_info("md: Removing Candidate device %s because add failed\n", bdevname(rdev2->bdev,b));
+ 				md_kick_rdev_from_array(rdev2);
+ 				continue;
+@@ -9684,7 +9685,8 @@ static void check_sb_changes(struct mddev *mddev, struct md_rdev *rdev)
+ 			/*
+ 			 * got activated except reshape is happening.
+ 			 */
+-			if (rdev2->raid_disk == -1 && role != 0xffff &&
++			if (rdev2->raid_disk == -1 &&
++			    role != MD_DISK_ROLE_SPARE &&
+ 			    !(le32_to_cpu(sb->feature_map) &
+ 			      MD_FEATURE_RESHAPE_ACTIVE)) {
+ 				rdev2->saved_raid_disk = role;
+@@ -9701,7 +9703,8 @@ static void check_sb_changes(struct mddev *mddev, struct md_rdev *rdev)
+ 			 * as faulty. The recovery is performed by the
+ 			 * one who initiated the error.
+ 			 */
+-			if ((role == 0xfffe) || (role == 0xfffd)) {
++			if (role == MD_DISK_ROLE_FAULTY ||
++			    role == MD_DISK_ROLE_JOURNAL) {
+ 				md_error(mddev, rdev2);
+ 				clear_bit(Blocked, &rdev2->flags);
+ 			}
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/i2c/busses/i2c-mxs.c:802:18: warning: cast to smaller integer type 'enum mxs_i2c_devtype' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-           i2c->dev_type = (enum mxs_i2c_devtype)of_device_get_match_data(&pdev->dev);
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +802 drivers/i2c/busses/i2c-mxs.c
-
-   790	
-   791	static int mxs_i2c_probe(struct platform_device *pdev)
-   792	{
-   793		struct device *dev = &pdev->dev;
-   794		struct mxs_i2c_dev *i2c;
-   795		struct i2c_adapter *adap;
-   796		int err, irq;
-   797	
-   798		i2c = devm_kzalloc(dev, sizeof(*i2c), GFP_KERNEL);
-   799		if (!i2c)
-   800			return -ENOMEM;
-   801	
- > 802		i2c->dev_type = (enum mxs_i2c_devtype)of_device_get_match_data(&pdev->dev);
-   803	
-   804		i2c->regs = devm_platform_ioremap_resource(pdev, 0);
-   805		if (IS_ERR(i2c->regs))
-   806			return PTR_ERR(i2c->regs);
-   807	
-   808		irq = platform_get_irq(pdev, 0);
-   809		if (irq < 0)
-   810			return irq;
-   811	
-   812		err = devm_request_irq(dev, irq, mxs_i2c_isr, 0, dev_name(dev), i2c);
-   813		if (err)
-   814			return err;
-   815	
-   816		i2c->dev = dev;
-   817	
-   818		init_completion(&i2c->cmd_complete);
-   819	
-   820		if (dev->of_node) {
-   821			err = mxs_i2c_get_ofdata(i2c);
-   822			if (err)
-   823				return err;
-   824		}
-   825	
-   826		/* Setup the DMA */
-   827		i2c->dmach = dma_request_chan(dev, "rx-tx");
-   828		if (IS_ERR(i2c->dmach)) {
-   829			dev_err(dev, "Failed to request dma\n");
-   830			return PTR_ERR(i2c->dmach);
-   831		}
-   832	
-   833		platform_set_drvdata(pdev, i2c);
-   834	
-   835		/* Do reset to enforce correct startup after pinmuxing */
-   836		err = mxs_i2c_reset(i2c);
-   837		if (err)
-   838			return err;
-   839	
-   840		adap = &i2c->adapter;
-   841		strlcpy(adap->name, "MXS I2C adapter", sizeof(adap->name));
-   842		adap->owner = THIS_MODULE;
-   843		adap->algo = &mxs_i2c_algo;
-   844		adap->quirks = &mxs_i2c_quirks;
-   845		adap->dev.parent = dev;
-   846		adap->nr = pdev->id;
-   847		adap->dev.of_node = pdev->dev.of_node;
-   848		i2c_set_adapdata(adap, i2c);
-   849		err = i2c_add_numbered_adapter(adap);
-   850		if (err) {
-   851			writel(MXS_I2C_CTRL0_SFTRST,
-   852					i2c->regs + MXS_I2C_CTRL0_SET);
-   853			return err;
-   854		}
-   855	
-   856		return 0;
-   857	}
-   858	
-
+base-commit: b2d229d4ddb17db541098b83524d901257e93845
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
