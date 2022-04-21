@@ -2,61 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782F3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B2EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442816AbiDUXv4 (ORCPT
+        id S1442822AbiDUXwB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
+        Thu, 21 Apr 2022 19:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442774AbiDUXvj (ORCPT
+        with ESMTP id S1442780AbiDUXvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:51:39 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0803535A9C;
-        Thu, 21 Apr 2022 16:48:48 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id j6so4752975qkp.9;
-        Thu, 21 Apr 2022 16:48:47 -0700 (PDT)
+        Thu, 21 Apr 2022 19:51:46 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6F7434B5;
+        Thu, 21 Apr 2022 16:48:52 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id b68so4762558qkc.4;
+        Thu, 21 Apr 2022 16:48:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eAsTyebn2Y4pYis3+WZXuPp8TzH7j4PwV2amK3FTGx8=;
-        b=OOmnTYCAoQCRnBz8ZGchOn9i8U2hOeNPorJb87M3/pnKbf8r4wczk8AvZCUmTkG3mo
-         xGWgYzNqWvYNey8z+NvJMhfgd1eg+nk1HGXrD25zDFPAUgk72Sa+LB7v6gfUO57Dvvme
-         PUKAn+DVRz1g0IvpX6xC/IKenendQESOW7zlAWGHCNmpC2LVNI+AasWrGx5DlnqpEhuH
-         GBs/HApRFPWfFJP9NkeR/a/P7ve/PSSxLMXaBDwU6FpPrKr9LlUltYvmFz5OWhNH5XKG
-         T9QQFV9TmX/Y3Wc645Fpqp/Pqb4neHuqNYITdF61bPOzKiNfbMor6CQBRbRA0xBGNKNF
-         hC3g==
+        bh=oNDSaAZDG6c0X/AAevWMv+Hj9gwc9S8Gx1Ep4WfFpAo=;
+        b=VMU6PqlaX0QEhB+kkqlvjU1fkuHokcH7krOoWy5GOTHB8xoeliEuXGVXpsNB0Dz+Xd
+         BbBATqDrqEH9zXyhcIYU8xg7bZ1JhBV8iGp3kkSWUqKMomusN/sgcMfT+gW3paOL0z3D
+         xu+vNW1zW7yY6vvYvHo0CFYHAFF9dyoP3mhjAP98M6NsbPyd+evObJBdpFzWsd4+lEZR
+         OH5d2DANgk2raeqFASbkpduWa1goBPgzND0tgfUA3jO11r4ld93k7+lDwMyGGi1W1Fuk
+         Cs/ulF5PpUoDQGVoea0bxdhTSej86O9eKfFC9FOSsryEROrxk/2xDFa7k9hHEFctVbCg
+         an4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eAsTyebn2Y4pYis3+WZXuPp8TzH7j4PwV2amK3FTGx8=;
-        b=7DrS0+Z3mThWH+nQRLrzh6PdMedrZOjHURx5Rx5y4t2ET3SAO4ziFe2f0RYFM8VyG3
-         qSlYr3Ek70PnEv7cgcuvalIfWDas/Imv7z11eNgW3aXTuNfEdgEkBBnUbtf6o2ZKBgzM
-         HfUWwSYuw4+3B0TzdKtMOk4RpbdXK3bciGSFtBu9SznZwgAR4CMTp+QP8F1RsN1Oyjqm
-         I3D9zaX0QPY4J7MKfWwV1f7h1hSOS8ste2qB7vcgDSrmwZlGgrC/8fNwd66zkiHZ+Mj3
-         DwBBoMbKnq45riI/qt/FUgrfpipsty4jwwD7mCtllnKDvTLObl24kTtcpGmBbVEoYYpJ
-         WHpg==
-X-Gm-Message-State: AOAM5332H2udxrushDNYsfFxAj7yTT6O/mNwdGb+3f0fkcC+q5SxYsme
-        f8dCnWFLpHHLPt4DETQKnswMdWEZy1K5
-X-Google-Smtp-Source: ABdhPJznB8ohPd49EoVGQUtsW/9dkOtNQzD1SuXVh4IxjthK+x2h94gl7xGMY9HG+LZtHfOVU1TYjw==
-X-Received: by 2002:a05:620a:4001:b0:69e:d9cf:d957 with SMTP id h1-20020a05620a400100b0069ed9cfd957mr1185369qko.678.1650584926675;
-        Thu, 21 Apr 2022 16:48:46 -0700 (PDT)
+        bh=oNDSaAZDG6c0X/AAevWMv+Hj9gwc9S8Gx1Ep4WfFpAo=;
+        b=zvZD2+KXFR7ErAUA09ghtb6T9XLMquCpY3Enj6uqWALyWyno5sOfmAFJRsSqX9X2Fv
+         H/XsbxX1F8sdEfuv1Q2vV3+wHkfhPrZgFJA6Cgwe8swqBqU2SekhG7cYNiVF8TQxfE19
+         ME/B3d0PVtdKecBWc4mLfh1k+ufCSZNsjKvgVRzOzl0MLXJe69Tpep81E97YoF8Xn5Ss
+         x1fF3JusvyJsM2c9sx8G1jisT2j9q+eSueYGkW4nDX8ay6E/XHmRZZT1D1GAP7pdYYmM
+         O9FNNr5hlm5o7Pa6LSZ3bpbNQOCzFl+yDV3/K5IWvvol57PicBC0Ur5dGSYQg40M3B9r
+         jGRw==
+X-Gm-Message-State: AOAM530+UxCYO45spay9BArpG2kleWCnssSXlX7fSEBW0qf8Rcirbcco
+        WNTnNS7CvXpE1SuNsg9i6gsdpOQfVESu
+X-Google-Smtp-Source: ABdhPJzQcjTL3dqTlGkITB2iTWhj3H7yjo6OI6wlcQC1KEOsTaT9FApw/Jt+AfmjLr6ymBNQvEZ7iQ==
+X-Received: by 2002:a05:620a:24c6:b0:69e:9d81:1e15 with SMTP id m6-20020a05620a24c600b0069e9d811e15mr1188307qkn.270.1650584931201;
+        Thu, 21 Apr 2022 16:48:51 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm287372qtx.72.2022.04.21.16.48.45
+        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm287372qtx.72.2022.04.21.16.48.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 16:48:46 -0700 (PDT)
+        Thu, 21 Apr 2022 16:48:50 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         linux-fsdevel@vger.kernel.org
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        roman.gushchin@linux.dev, hannes@cmpxchg.org
-Subject: [PATCH 2/4] mm: Add a .to_text() method for shrinkers
-Date:   Thu, 21 Apr 2022 19:48:26 -0400
-Message-Id: <20220421234837.3629927-3-kent.overstreet@gmail.com>
+Cc:     Kent Overstreet <kent.overstreet@gmail.com>, hch@lst.de,
+        hannes@cmpxchg.org, akpm@linux-foundation.org,
+        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-input@vger.kernel.org, roman.gushchin@linux.dev
+Subject: [PATCH v2 0/8] Printbufs & improved shrinker debugging
+Date:   Thu, 21 Apr 2022 19:48:29 -0400
+Message-Id: <20220421234837.3629927-6-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220421234837.3629927-1-kent.overstreet@gmail.com>
 References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
@@ -66,149 +68,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a new callback method to shrinkers which they can use to
-describe anything relevant to memory reclaim about their internal state,
-for example object dirtyness.
+v1 of this patch series here:
+https://lore.kernel.org/linux-mm/20220419203202.2670193-1-kent.overstreet@gmail.com/T/
 
-This uses the new printbufs to output to heap allocated strings, so that
-the .to_text() methods can be used both for messages logged to the
-console, and also sysfs/debugfs.
+Changes since v1:
 
-This patch also adds shrinkers_to_text(), which reports on the top 10
-shrinkers - by object count - in sorted order, to be used in OOM
-reporting.
+ - Converted some, not all, seq_buf code to printbufs (thanks Christoph for
+   pointing out seq_buf).
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
----
- include/linux/shrinker.h |  5 +++
- mm/vmscan.c              | 75 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 80 insertions(+)
+   The seq_buf code I didn't convert is arch specific code where the memory
+   allocation context is unclear, and they're using seq_buf to do everything on
+   the stack. I'm considering adding a mode to printbufs where we point it at an
+   external buffer instead - it wouldn't be much code, but OTOH seq_buf isn't
+   much code either and it seems to be somewhat tied to tracing infrastructure.
+   Deferring a decision on what to do for now.
 
-diff --git a/include/linux/shrinker.h b/include/linux/shrinker.h
-index 76fbf92b04..b5f411768b 100644
---- a/include/linux/shrinker.h
-+++ b/include/linux/shrinker.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_SHRINKER_H
- #define _LINUX_SHRINKER_H
- 
-+struct printbuf;
-+
- /*
-  * This struct is used to pass information from page reclaim to the shrinkers.
-  * We consolidate the values for easier extension later.
-@@ -58,10 +60,12 @@ struct shrink_control {
-  * @flags determine the shrinker abilities, like numa awareness
-  */
- struct shrinker {
-+	char name[32];
- 	unsigned long (*count_objects)(struct shrinker *,
- 				       struct shrink_control *sc);
- 	unsigned long (*scan_objects)(struct shrinker *,
- 				      struct shrink_control *sc);
-+	void (*to_text)(struct printbuf *, struct shrinker *);
- 
- 	long batch;	/* reclaim batch size, 0 = default */
- 	int seeks;	/* seeks to recreate an obj */
-@@ -94,4 +98,5 @@ extern int register_shrinker(struct shrinker *shrinker);
- extern void unregister_shrinker(struct shrinker *shrinker);
- extern void free_prealloced_shrinker(struct shrinker *shrinker);
- extern void synchronize_shrinkers(void);
-+void shrinkers_to_text(struct printbuf *);
- #endif
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 59b14e0d69..09c483dfd3 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -50,6 +50,7 @@
- #include <linux/printk.h>
- #include <linux/dax.h>
- #include <linux/psi.h>
-+#include <linux/printbuf.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/div64.h>
-@@ -702,6 +703,80 @@ void synchronize_shrinkers(void)
- }
- EXPORT_SYMBOL(synchronize_shrinkers);
- 
-+/**
-+ * shrinkers_to_text - Report on shrinkers with highest usage
-+ *
-+ * This reports on the top 10 shrinkers, by object counts, in sorted order:
-+ * intended to be used for OOM reporting.
-+ */
-+void shrinkers_to_text(struct printbuf *out)
-+{
-+	struct shrinker *shrinker;
-+	struct shrinker_by_mem {
-+		struct shrinker	*shrinker;
-+		unsigned long	mem;
-+	} shrinkers_by_mem[10];
-+	int i, nr = 0;
-+
-+	if (!down_read_trylock(&shrinker_rwsem)) {
-+		pr_buf(out, "(couldn't take shrinker lock)");
-+		return;
-+	}
-+
-+	list_for_each_entry(shrinker, &shrinker_list, list) {
-+		struct shrink_control sc = { .gfp_mask = GFP_KERNEL, };
-+		unsigned long mem = shrinker->count_objects(shrinker, &sc);
-+
-+		if (!mem || mem == SHRINK_STOP || mem == SHRINK_EMPTY)
-+			continue;
-+
-+		for (i = 0; i < nr; i++)
-+			if (mem < shrinkers_by_mem[i].mem)
-+				break;
-+
-+		if (nr < ARRAY_SIZE(shrinkers_by_mem)) {
-+			memmove(&shrinkers_by_mem[i + 1],
-+				&shrinkers_by_mem[i],
-+				sizeof(shrinkers_by_mem[0]) * (nr - i));
-+			nr++;
-+		} else if (i) {
-+			i--;
-+			memmove(&shrinkers_by_mem[0],
-+				&shrinkers_by_mem[1],
-+				sizeof(shrinkers_by_mem[0]) * i);
-+		} else {
-+			continue;
-+		}
-+
-+		shrinkers_by_mem[i] = (struct shrinker_by_mem) {
-+			.shrinker = shrinker,
-+			.mem = mem,
-+		};
-+	}
-+
-+	for (i = nr - 1; i >= 0; --i) {
-+		struct shrink_control sc = { .gfp_mask = GFP_KERNEL, };
-+		shrinker = shrinkers_by_mem[i].shrinker;
-+
-+		if (shrinker->name[0])
-+			pr_buf(out, "%s", shrinker->name);
-+		else
-+			pr_buf(out, "%ps:", shrinker->scan_objects);
-+
-+		pr_buf(out, " objects: %lu", shrinker->count_objects(shrinker, &sc));
-+		pr_newline(out);
-+
-+		if (shrinker->to_text) {
-+			pr_indent_push(out, 2);
-+			shrinker->to_text(out, shrinker);
-+			pr_indent_pop(out, 2);
-+			pr_newline(out);
-+		}
-+	}
-+
-+	up_read(&shrinker_rwsem);
-+}
-+
- #define SHRINK_BATCH 128
- 
- static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
+ - pr_human_readable_u64() now uses string_get_size() (thanks Matthew for
+   pointing this one out)
+
+ - added new helpers printbuf_str() for getting a guaranteed-null-terminated
+   string, and printbuf_atomic_inc() and printbuf_atomic_dec() for marking
+   sections where allocations must be GFP_ATOMIC.
+
+ - Broke out shrinker_to_text(): this new helper could be used by new sysfs or
+   debugfs code, for displaying information about a single shrinker (as Roman is
+   working on)
+
+ - Added new tracking, per shrinker, for # of objects requested to be freed and
+   # actually freed. Shrinkers won't necessarily free all objects requested for
+   perfectly legitimate reasons, but if the two numbers are wildly off then
+   that's going to lead to memory reclaim issues - these are both also included
+   in shrinker_to_text().
+
+Kent Overstreet (8):
+  lib/printbuf: New data structure for heap-allocated strings
+  Input/joystick/analog: Convert from seq_buf -> printbuf
+  mm/memcontrol.c: Convert to printbuf
+  clk: tegra: bpmp: Convert to printbuf
+  mm: Add a .to_text() method for shrinkers
+  mm: Count requests to free & nr freed per shrinker
+  mm: Move lib/show_mem.c to mm/
+  mm: Centralize & improve oom reporting in show_mem.c
+
+ drivers/clk/tegra/clk-bpmp.c    |  21 ++-
+ drivers/input/joystick/analog.c |  37 +++--
+ include/linux/printbuf.h        | 164 +++++++++++++++++++
+ include/linux/shrinker.h        |   8 +
+ lib/Makefile                    |   4 +-
+ lib/printbuf.c                  | 274 ++++++++++++++++++++++++++++++++
+ mm/Makefile                     |   2 +-
+ mm/memcontrol.c                 |  68 ++++----
+ mm/oom_kill.c                   |  23 ---
+ {lib => mm}/show_mem.c          |  14 ++
+ mm/slab.h                       |   6 +-
+ mm/slab_common.c                |  53 +++++-
+ mm/vmscan.c                     |  88 ++++++++++
+ 13 files changed, 666 insertions(+), 96 deletions(-)
+ create mode 100644 include/linux/printbuf.h
+ create mode 100644 lib/printbuf.c
+ rename {lib => mm}/show_mem.c (77%)
+
 -- 
 2.35.2
 
