@@ -2,389 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F392C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385305AbiDUGyW (ORCPT
+        id S1385332AbiDUGy0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
+        Thu, 21 Apr 2022 02:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385650AbiDUGxH (ORCPT
+        with ESMTP id S1386018AbiDUGxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:53:07 -0400
-Received: from out203-205-221-173.mail.qq.com (out203-205-221-173.mail.qq.com [203.205.221.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98A61DA7E
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1650523649;
-        bh=UCAgP/sZs/C6j2bxf30J77uiXRtYuq1jRK0KgNfK59E=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=G5zUiA2D+OCQecjUCUTlPmsrYdLnYuit3HNuMclLTkCMba0xsF6Bql5h6cPGpvjMQ
-         4f3PfThd8KF1wPrf70Py3Hl1sAsguUgK2iTYLo23Dg7vZBbE4sxiptxLZp0CP9kYyj
-         Xlf4kV+F6lCIyukalC++mUrRk3B/njkdg1Twb3sU=
-Received: from [IPv6:240e:362:431:df00:4c4b:c9ad:7c98:c56e] ([240e:362:431:df00:4c4b:c9ad:7c98:c56e])
-        by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
-        id BD801CAE; Thu, 21 Apr 2022 14:47:24 +0800
-X-QQ-mid: xmsmtpt1650523644tcdazw0uv
-Message-ID: <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
-X-QQ-XMAILINFO: OZZSS56D9fAj7I0kuNy93BRXcT9WEUGATwHKfBaw0xOuVEqDfP3LayA0ouGdGF
-         /4H8mX73reyQrAo6p6HB8IoYEWR/SmddMLsbz7tU5gxmX19LmTzPXP9z4y/TmS/AyAFglCtVhFK5
-         ZlTjz+G2ZEySnL5cXkgb4KvdIMBfz2yulpB00Zfv/9uIYnEZKCT4igawk9KF8eo+aZHCEty1ZuGG
-         hpPEA4BJ+hQnHVz9iSSkUCxfpbNJMehdiY55FzTAxIJHt6ioTfKjpmumKans6H7OHxKnN8DUDV0l
-         Q0CaudGokCm03Kf9r20ccXSJ7z8vlXxC89ganeUxYSM9gVdnOYDfkT2UIzTo5pRhxag7HH1/IzmZ
-         +uN1dzWzUu7YMhnp38Bwy9VcJRu5r1DHjYyNUIDm9ih66cfYHmncPA9UccU+wGd3YLzZv+i4nzEn
-         btGz0C/E6yvTrraPNH2bONi5g6AAJQj9Zyy5BEe/XabkSfYTjY6m1Qcb2NG/KZoBKgOXsaGeC0DM
-         LjaWOLQ2anfskq3Wfa/xWWMFtAyH2hKO12GS81/9hz/zkgxXKTsNtR0RX4eLlZ/7j4DIToMUebTS
-         fwRNqZvK8bvcnwipVb13d/PUQzvkPyKWwUxECt7KdiWQZjvMt0ZK1DhaqLYyyA0NRGMmGhOwNkNU
-         eHYkBLZeOXDLuOP0y0JthzMfot65jt1UZeypM3iPDZ6LzR+CaTbc4/yEilQy3HF2RRKUHBSQNVPR
-         buFMK4nHw+QpvIU7uBdz1NgpIny8pR6ko5CJN6zz4RKIMDsxMwEuAfxwdHs8FK3P1NDZHmNQxH53
-         2z5PIROo/EU3ydXH9PY6p2RwTRtVUy6kaRCLM5wZktdHrzUKj5j8R1PSyppY+q0yQEDor27iFUbo
-         lXzrXVlhc2GSrttpcNmSlb0MsqrDR9lM+UVscGjy7+WVA8/89Mxj+WN+B31kuEKf8ANd2Uci16vD
-         kUetcFqmCafT4PrKihsqSMCZomAz5L
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        robin.murphy@arm.com
-References: <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
- <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
- <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
- <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
- <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
- <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
- <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
- <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
- <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
- <YllADL6uMoLllzQo@fyu1.sc.intel.com> <YmA4pbgevqln/jSO@myrica>
-From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-X-OQ-MSGID: <ccf6e9c3-99b2-cd60-40e0-44827145933c@foxmail.com>
-Date:   Thu, 21 Apr 2022 14:47:23 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Thu, 21 Apr 2022 02:53:51 -0400
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AC21836C
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:49:43 -0700 (PDT)
+Received: by mail-ua1-x92f.google.com with SMTP id az19so1175008uab.13
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:49:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4AUqu/jxej5xPCjRO5++yve7PSFGlHxYIgV1DXKiQa8=;
+        b=aqtSDqWkzO+VS7tRq2TShHpEHWanSkVcGwENTB4J6aPbTgHrUQ2hbPM3s3r85BYiZH
+         vevzYlxbVpX5W1yyVxu3APN4kHYk7uwa7BV5/zsyTXEu3JRIBVFujPmr7XH1W5TDYwcV
+         ZVcc43yWOvRq7bK5k2Mlq0H3Rqp4Qg4Aku7XVzbr13uQFbQWoWt5UrqJJ800HPzPdzYP
+         O9+kDXruLmjPu9Cpv1pWF3UqQ8E8/udRdqqnVrsn/Za0VSzSv4i3VwsB3yFow7WfyQyL
+         b/F1bldRb8IJ3LsP+ptSy1/cwM7ZV/HFdfcBU3ZCaK31ry1FvlvfvqapqC86ofbXcEhd
+         idBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4AUqu/jxej5xPCjRO5++yve7PSFGlHxYIgV1DXKiQa8=;
+        b=sYg0cpliVTMr+iZB673T6IEKfvo10tYKIIIPcZ/O0QMQYKpBPb2eNQ3YjEVrQ/qmpb
+         c4r4RMQsGyV1xbnkbi7Bu1vgV34xubLt5QAhvtjWA3ENUFonLlrX6/oqmGLr2YeXOHoU
+         4tGjS+8GLQUnQS1hPuc2p0AE4KDRtzdFop/e+RQ6GVa2TUs9BIKJYb3vOytciwCEn8HM
+         QiSKPpFrq5LnVQhdkYLBWf7MYPNhOevLaIUek6LM1LS/dq01oGeyV09KPqlykOCjGl8q
+         bXHNueSDNXF/DKw1C0hOOmJLgKVuZkfUyMi2rrpxD3rOkW29rIIhof+T6E3umT1KH/RP
+         ut8g==
+X-Gm-Message-State: AOAM530cCgZcAlAxoHd/BfH8hMPGCP+JcJwNo+FyLsoVxiVfbrivnvNM
+        aqUTC1K+oP1tzgUHuzaNKM4Tn2PqdE3EtroblHEwFw==
+X-Google-Smtp-Source: ABdhPJxFO9f3ofsgNNiayb7ipF2vbER2Hmstq3ELrJtMqVeWEIfyWPKOdcXZmQzITAEUj8eSwwPOm2ljUvtm1GuCYQs=
+X-Received: by 2002:ab0:349a:0:b0:35c:b898:a733 with SMTP id
+ c26-20020ab0349a000000b0035cb898a733mr6879799uar.85.1650523782787; Wed, 20
+ Apr 2022 23:49:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YmA4pbgevqln/jSO@myrica>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20220413092206.73974-1-jvgediya@linux.ibm.com>
+ <6365983a8fbd8c325bb18959c51e9417fd821c91.camel@intel.com>
+ <CAHbLzkpGzEaSDfM=GBzBxw=dZTBy12vgDDhMG+q4dbG+bCgR6A@mail.gmail.com>
+ <CAAPL-u9=-OHuUk=ZkNRDf3Dm_+3cBd2APL5MQpQr3_sVk_voJg@mail.gmail.com> <de1bc3647c8696fd931a37d314ccd60a2c8cc0db.camel@intel.com>
+In-Reply-To: <de1bc3647c8696fd931a37d314ccd60a2c8cc0db.camel@intel.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Wed, 20 Apr 2022 23:49:31 -0700
+Message-ID: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state N_DEMOTION_TARGETS
+To:     "ying.huang@intel.com" <ying.huang@intel.com>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/4/21 上午12:45, Jean-Philippe Brucker wrote:
-> Hi,
+On Wed, Apr 20, 2022 at 11:24 PM ying.huang@intel.com
+<ying.huang@intel.com> wrote:
 >
-> On Fri, Apr 15, 2022 at 02:51:08AM -0700, Fenghua Yu wrote:
->>  From a6444e1e5bd8076f5e5c5e950d3192de327f0c9c Mon Sep 17 00:00:00 2001
->> From: Fenghua Yu <fenghua.yu@intel.com>
->> Date: Fri, 15 Apr 2022 00:51:33 -0700
->> Subject: [RFC PATCH] iommu/sva: Fix PASID use-after-free issue
->>
->> A PASID might be still used even though it is freed on mm exit.
->>
->> process A:
->> 	sva_bind();
->> 	ioasid_alloc() = N; // Get PASID N for the mm
->> 	fork(): // spawn process B
->> 	exit();
->> 	ioasid_free(N);
->>
->> process B:
->> 	device uses PASID N -> failure
->> 	sva_unbind();
->>
->> Dave Hansen suggests to take a refcount on the mm whenever binding the
->> PASID to a device and drop the refcount on unbinding. The mm won't be
->> dropped if the PASID is still bound to it.
->>
->> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID allocation and free it on mm exit")
->>
->> Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
->> Suggested-by: Dave Hansen" <dave.hansen@linux.intel.com>
->> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
->> ---
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 6 ++++++
->>   drivers/iommu/intel/svm.c                       | 4 ++++
->>   2 files changed, 10 insertions(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> index 22ddd05bbdcd..3fcb842a0df0 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
->> @@ -7,6 +7,7 @@
->>   #include <linux/mmu_context.h>
->>   #include <linux/mmu_notifier.h>
->>   #include <linux/slab.h>
->> +#include <linux/sched/mm.h>
->>   
->>   #include "arm-smmu-v3.h"
->>   #include "../../iommu-sva-lib.h"
->> @@ -363,6 +364,9 @@ arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
->>   
->>   	mutex_lock(&sva_lock);
->>   	handle = __arm_smmu_sva_bind(dev, mm);
->> +	/* Take an mm refcount on a successful bind. */
->> +	if (!IS_ERR(handle))
->> +		mmget(mm);
->>   	mutex_unlock(&sva_lock);
->>   	return handle;
->>   }
->> @@ -372,6 +376,8 @@ void arm_smmu_sva_unbind(struct iommu_sva *handle)
->>   	struct arm_smmu_bond *bond = sva_to_bond(handle);
->>   
->>   	mutex_lock(&sva_lock);
->> +	/* Drop an mm refcount. */
->> +	mmput(bond->mm);
-> I do like the idea because it will simplify the driver. We can't call
-> mmput() here, though, because it may call the release() MMU notifier which
-> will try to grab sva_lock, already held.
+> On Wed, 2022-04-20 at 22:41 -0700, Wei Xu wrote:
+> > On Wed, Apr 20, 2022 at 8:12 PM Yang Shi <shy828301@gmail.com> wrote:
+> > >
+> > > On Thu, Apr 14, 2022 at 12:00 AM ying.huang@intel.com
+> > > <ying.huang@intel.com> wrote:
+> > > >
+> > > > On Wed, 2022-04-13 at 14:52 +0530, Jagdish Gediya wrote:
+> > > > > Current implementation to find the demotion targets works
+> > > > > based on node state N_MEMORY, however some systems may have
+> > > > > dram only memory numa node which are N_MEMORY but not the
+> > > > > right choices as demotion targets.
+> > > > >
+> > > > > This patch series introduces the new node state
+> > > > > N_DEMOTION_TARGETS, which is used to distinguish the nodes which
+> > > > > can be used as demotion targets, node_states[N_DEMOTION_TARGETS]
+> > > > > is used to hold the list of nodes which can be used as demotion
+> > > > > targets, support is also added to set the demotion target
+> > > > > list from user space so that default behavior can be overridden.
+> > > >
+> > > > It appears that your proposed user space interface cannot solve all
+> > > > problems.  For example, for system as follows,
+> > > >
+> > > > Node 0 & 2 are cpu + dram nodes and node 1 are slow memory node near
+> > > > node 0,
+> > > >
+> > > > available: 3 nodes (0-2)
+> > > > node 0 cpus: 0 1
+> > > > node 0 size: n MB
+> > > > node 0 free: n MB
+> > > > node 1 cpus:
+> > > > node 1 size: n MB
+> > > > node 1 free: n MB
+> > > > node 2 cpus: 2 3
+> > > > node 2 size: n MB
+> > > > node 2 free: n MB
+> > > > node distances:
+> > > > node   0   1   2
+> > > >   0:  10  40  20
+> > > >   1:  40  10  80
+> > > >   2:  20  80  10
+> > > >
+> > > > Demotion order 1:
+> > > >
+> > > > node    demotion_target
+> > > >  0              1
+> > > >  1              X
+> > > >  2              X
+> > > >
+> > > > Demotion order 2:
+> > > >
+> > > > node    demotion_target
+> > > >  0              1
+> > > >  1              X
+> > > >  2              1
+> > > >
+> > > > The demotion order 1 is preferred if we want to reduce cross-socket
+> > > > traffic.  While the demotion order 2 is preferred if we want to take
+> > > > full advantage of the slow memory node.  We can take any choice as
+> > > > automatic-generated order, while make the other choice possible via user
+> > > > space overridden.
+> > > >
+> > > > I don't know how to implement this via your proposed user space
+> > > > interface.  How about the following user space interface?
+> > > >
+> > > > 1. Add a file "demotion_order_override" in
+> > > >         /sys/devices/system/node/
+> > > >
+> > > > 2. When read, "1" is output if the demotion order of the system has been
+> > > > overridden; "0" is output if not.
+> > > >
+> > > > 3. When write "1", the demotion order of the system will become the
+> > > > overridden mode.  When write "0", the demotion order of the system will
+> > > > become the automatic mode and the demotion order will be re-generated.
+> > > >
+> > > > 4. Add a file "demotion_targets" for each node in
+> > > >         /sys/devices/system/node/nodeX/
+> > > >
+> > > > 5. When read, the demotion targets of nodeX will be output.
+> > > >
+> > > > 6. When write a node list to the file, the demotion targets of nodeX
+> > > > will be set to the written nodes.  And the demotion order of the system
+> > > > will become the overridden mode.
+> > >
+> > > TBH I don't think having override demotion targets in userspace is
+> > > quite useful in real life for now (it might become useful in the
+> > > future, I can't tell). Imagine you manage hundred thousands of
+> > > machines, which may come from different vendors, have different
+> > > generations of hardware, have different versions of firmware, it would
+> > > be a nightmare for the users to configure the demotion targets
+> > > properly. So it would be great to have the kernel properly configure
+> > > it *without* intervening from the users.
+> > >
+> > > So we should pick up a proper default policy and stick with that
+> > > policy unless it doesn't work well for the most workloads. I do
+> > > understand it is hard to make everyone happy. My proposal is having
+> > > every node in the fast tier has a demotion target (at least one) if
+> > > the slow tier exists sounds like a reasonable default policy. I think
+> > > this is also the current implementation.
+> > >
+> >
+> > This is reasonable.  I agree that with a decent default policy,
+> >
 >
-> I also found another use-after-free in arm_smmu_free_shared_cd(), where we
-> call arm64_mm_context_put() when the mm could already be freed. There used
-> to be an mmgrab() preventing this but it went away during a rewrite.
+> I agree that a decent default policy is important.  As that was enhanced
+> in [1/5] of this patchset.
 >
-> To fix both we could just move mmput() at the end of unbind() but I'd
-> rather do a proper cleanup removing the release() notifier right away.
-> Zhangfei, could you try the patch below?
+> > the
+> > overriding of per-node demotion targets can be deferred.  The most
+> > important problem here is that we should allow the configurations
+> > where memory-only nodes are not used as demotion targets, which this
+> > patch set has already addressed.
 >
-> Thanks,
-> Jean
+> Do you mean the user space interface proposed by [3/5] of this patchset?
+
+Yes.
+
+> IMHO, if we want to add a user space interface, I think that it should
+> be powerful enough to address all existing issues and some potential
+> future issues, so that it can be stable.  I don't think it's a good idea
+> to define a partial user space interface that works only for a specific
+> use case and cannot be extended for other use cases.
+
+I actually think that they can be viewed as two separate problems: one
+is to define which nodes can be used as demotion targets (this patch
+set), and the other is how to initialize the per-node demotion path
+(node_demotion[]).  We don't have to solve both problems at the same
+time.
+
+If we decide to go with a per-node demotion path customization
+interface to indirectly set N_DEMOTION_TARGETS, I'd prefer that there
+is a single global control to turn off all demotion targets (for the
+machines that don't use memory-only nodes for demotion).
+
+> Best Regards,
+> Huang, Ying
 >
-> --- 8< ---
+> [snip]
 >
->  From 4e09c0d71dfb35fc90915bd1e36545027fbf8a03 Mon Sep 17 00:00:00 2001
-> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Date: Wed, 20 Apr 2022 10:19:24 +0100
-> Subject: [PATCH] iommu/arm-smmu-v3-sva: Fix PASID and mm use-after-free issues
+> > >
 >
-> Commit 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
-> allocation and free it on mm exit") frees the PASID earlier than what
-> the SMMUv3 driver expects. At the moment the SMMU driver handles mm exit
-> in the release() MMU notifier by quiescing the context descriptor. The
-> context descriptor is only made invalid in unbind(), after the device
-> driver ensured the PASID is not used anymore. Releasing the PASID on mm
-> exit may cause it to be reallocated while it is still used by the
-> context descriptor.
 >
-> There is another use-after-free, present since the beginning, where we
-> call arm64_mm_context_put() without a guarantee that mm_count is held.
->
-> Dave Hansen suggests to grab mm_users whenever binding the mm to a
-> device and drop it on unbinding. With that we can fix both issues and
-> simplify the driver by removing the release() notifier.
->
-> Fixes: 32784a9562fb ("iommu/arm-smmu-v3: Implement iommu_sva_bind/unbind()")
-> Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
-> Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  1 -
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 49 +++++--------------
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 14 +-----
->   3 files changed, 15 insertions(+), 49 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index cd48590ada30..d50d215d946c 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -735,7 +735,6 @@ static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
->   
->   extern struct xarray arm_smmu_asid_xa;
->   extern struct mutex arm_smmu_asid_lock;
-> -extern struct arm_smmu_ctx_desc quiet_cd;
->   
->   int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->   			    struct arm_smmu_ctx_desc *cd);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 22ddd05bbdcd..f9dff0f6cdd4 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -6,6 +6,7 @@
->   #include <linux/mm.h>
->   #include <linux/mmu_context.h>
->   #include <linux/mmu_notifier.h>
-> +#include <linux/sched/mm.h>
->   #include <linux/slab.h>
->   
->   #include "arm-smmu-v3.h"
-> @@ -15,7 +16,6 @@
->   struct arm_smmu_mmu_notifier {
->   	struct mmu_notifier		mn;
->   	struct arm_smmu_ctx_desc	*cd;
-> -	bool				cleared;
->   	refcount_t			refs;
->   	struct list_head		list;
->   	struct arm_smmu_domain		*domain;
-> @@ -96,9 +96,14 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
->   	struct arm_smmu_ctx_desc *cd;
->   	struct arm_smmu_ctx_desc *ret = NULL;
->   
-> +	/* Prevent mm exit as long as it is used by the context descriptor */
-> +	mmget(mm);
-> +
->   	asid = arm64_mm_context_get(mm);
-> -	if (!asid)
-> -		return ERR_PTR(-ESRCH);
-> +	if (!asid) {
-> +		err = -ESRCH;
-> +		goto out_put_mm;
-> +	}
->   
->   	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
->   	if (!cd) {
-> @@ -165,6 +170,8 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
->   	kfree(cd);
->   out_put_context:
->   	arm64_mm_context_put(mm);
-> +out_put_mm:
-> +	mmput(mm);
->   	return err < 0 ? ERR_PTR(err) : ret;
->   }
->   
-> @@ -173,6 +180,7 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
->   	if (arm_smmu_free_asid(cd)) {
->   		/* Unpin ASID */
->   		arm64_mm_context_put(cd->mm);
-> +		mmput(cd->mm);
->   		kfree(cd);
->   	}
->   }
-> @@ -191,30 +199,6 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
->   	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
->   }
->   
-> -static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
-> -{
-> -	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
-> -	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
-> -
-> -	mutex_lock(&sva_lock);
-> -	if (smmu_mn->cleared) {
-> -		mutex_unlock(&sva_lock);
-> -		return;
-> -	}
-> -
-> -	/*
-> -	 * DMA may still be running. Keep the cd valid to avoid C_BAD_CD events,
-> -	 * but disable translation.
-> -	 */
-> -	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &quiet_cd);
-> -
-> -	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-> -	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
-> -
-> -	smmu_mn->cleared = true;
-> -	mutex_unlock(&sva_lock);
-> -}
-> -
->   static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
->   {
->   	kfree(mn_to_smmu(mn));
-> @@ -222,7 +206,6 @@ static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
->   
->   static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
->   	.invalidate_range	= arm_smmu_mm_invalidate_range,
-> -	.release		= arm_smmu_mm_release,
->   	.free_notifier		= arm_smmu_mmu_notifier_free,
->   };
->   
-> @@ -290,14 +273,8 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
->   	list_del(&smmu_mn->list);
->   	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, NULL);
->   
-> -	/*
-> -	 * If we went through clear(), we've already invalidated, and no
-> -	 * new TLB entry can have been formed.
-> -	 */
-> -	if (!smmu_mn->cleared) {
-> -		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-> -		arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
-> -	}
-> +	arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-> +	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
->   
->   	/* Frees smmu_mn */
->   	mmu_notifier_put(&smmu_mn->mn);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 627a3ed5ee8f..246670318eda 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -76,12 +76,6 @@ struct arm_smmu_option_prop {
->   DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
->   DEFINE_MUTEX(arm_smmu_asid_lock);
->   
-> -/*
-> - * Special value used by SVA when a process dies, to quiesce a CD without
-> - * disabling it.
-> - */
-> -struct arm_smmu_ctx_desc quiet_cd = { 0 };
-> -
->   static struct arm_smmu_option_prop arm_smmu_options[] = {
->   	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
->   	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-> @@ -1047,9 +1041,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->   	 * (2) Install a secondary CD, for SID+SSID traffic.
->   	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
->   	 *     CD, then invalidate the old entry and mappings.
-> -	 * (4) Quiesce the context without clearing the valid bit. Disable
-> -	 *     translation, and ignore any translation fault.
-> -	 * (5) Remove a secondary CD.
-> +	 * (4) Remove a secondary CD.
->   	 */
->   	u64 val;
->   	bool cd_live;
-> @@ -1065,10 +1057,8 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->   	val = le64_to_cpu(cdptr[0]);
->   	cd_live = !!(val & CTXDESC_CD_0_V);
->   
-> -	if (!cd) { /* (5) */
-> +	if (!cd) { /* (4) */
->   		val = 0;
-> -	} else if (cd == &quiet_cd) { /* (4) */
-> -		val |= CTXDESC_CD_0_TCR_EPD0;
->   	} else if (cd_live) { /* (3) */
->   		val &= ~CTXDESC_CD_0_ASID;
->   		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
-Thanks Jean
-
-Have tested, still got some issue with our openssl-engine.
-
-1. If openssl-engine does not register rsa, nginx works well.
-
-2. If openssl-engine register rsa, nginx also works, but ioasid is not 
-freed when nginx stop.
-
-IMPLEMENT_DYNAMIC_BIND_FN(bind_fn)
-bind_fn
-ENGINE_set_RSA(e, rsa_methods())
-
-destroy_fn
-
-If ENGINE_set_RSA is set, nginx start and stop will NOT call destroy_fn.
-Even rsa_methods is almost new via RSA_meth_new.
-
-In 5.18-rcx, this caused ioasid  not freed in nginx start and stop.
-In 5.17, though destroy_fn is not called, but ioasid is freed when nginx 
-stop, so not noticed this issue before.
-
-Still in checking why ENGINE_set_RSA blocks destroy_fn.
-
-Thanks
-
