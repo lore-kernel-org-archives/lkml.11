@@ -2,79 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8443C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6618FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386394AbiDUIF2 (ORCPT
+        id S1376840AbiDUIHU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
+        Thu, 21 Apr 2022 04:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386395AbiDUIFX (ORCPT
+        with ESMTP id S230143AbiDUIHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:05:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872461CFFE;
-        Thu, 21 Apr 2022 01:02:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 232BE61ABA;
-        Thu, 21 Apr 2022 08:02:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83C1BC385C5;
-        Thu, 21 Apr 2022 08:02:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650528154;
-        bh=85ztGE8SAOJYsSsE/m/ye56564WWRnDCXfBI1VMh6w8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gx80Hh2cCildDpD/QBFdHR9o5EQI4TZJNxY+M5H7fSxIckh3WEkeA61atMMdcjAs3
-         S1eAqplyh6FpSWhZlnE0zDt0DMoZ8vQJuuaC4Dyt6mtvcJHJGQlslG5tWAyufFpN7U
-         +m0rH/jQNDvZtdE/ERPjRIKmMtCRfEgSCJgh2GuB0cb3cWfOQPdDoOuidIcQKuG0iY
-         Sm9In6QEX7I7ZUBytG03Y7EH+G6pbZrkiy+sLch/OlLXMVfSl9zmTeQMB6R8FT7Xr5
-         vWGQ0s3//ga4gycac/gtSC/F4l8SxARO/sZm4JlDqEsV2KSP7jzaKcflBXrbYPAdoM
-         n/ugXKlhfRznQ==
-Received: by mail-wr1-f53.google.com with SMTP id i20so5451740wrb.13;
-        Thu, 21 Apr 2022 01:02:34 -0700 (PDT)
-X-Gm-Message-State: AOAM5336s/lqLWJqUNhdXZXKtbE1EVKn3nShpPnB/r7QTkBTeoLYM1ET
-        lCvzBB9vXlUTwTgdpgXr3jqQWrak8iOCQkcIclk=
-X-Google-Smtp-Source: ABdhPJwd18r+4oxvbBvNk4Ssn0sgurWbN+G4WyUL66cAw98TCXAYMvuBOOjMpSguCZLqOVEc5MnPUhcs76UVW8oNVSU=
-X-Received: by 2002:a5d:6983:0:b0:207:a226:df4b with SMTP id
- g3-20020a5d6983000000b00207a226df4bmr18349140wru.192.1650528152748; Thu, 21
- Apr 2022 01:02:32 -0700 (PDT)
+        Thu, 21 Apr 2022 04:07:15 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7F221C920;
+        Thu, 21 Apr 2022 01:04:25 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id C80FA1C810F7;
+        Thu, 21 Apr 2022 16:04:24 +0800 (CST)
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 21
+ Apr 2022 16:04:24 +0800
+Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 21 Apr 2022 16:04:24 +0800
+Message-ID: <80994f4b-136f-7669-4674-0c9826e88248@nuvoton.com>
+Date:   Thu, 21 Apr 2022 16:04:24 +0800
 MIME-Version: 1.0
-References: <20220421074204.1284072-1-hch@lst.de> <20220421074204.1284072-6-hch@lst.de>
-In-Reply-To: <20220421074204.1284072-6-hch@lst.de>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 21 Apr 2022 10:02:16 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2M-R+S9SFe2ti3j41qy3KCVgc-povo6GwDQn_Dj_AB4A@mail.gmail.com>
-Message-ID: <CAK8P3a2M-R+S9SFe2ti3j41qy3KCVgc-povo6GwDQn_Dj_AB4A@mail.gmail.com>
-Subject: Re: [PATCH 5/7] ARM: use dma_to_phys/phys_to_dma in the dma-mapping code
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 5/5] dt-bindings: arm: Add initial bindings for Nuvoton
+ Platform
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <ychuang570808@gmail.com>
+CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <will@kernel.org>,
+        <soc@kernel.org>, <cfli0@nuvoton.com>
+References: <20220418082738.11301-1-ychuang3@nuvoton.com>
+ <20220418082738.11301-6-ychuang3@nuvoton.com>
+ <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
+ <caf4867f-7f71-9262-f190-463325eb13ab@nuvoton.com>
+ <4e9eaede-2208-bd73-35ae-89e128562653@linaro.org>
+From:   Jacky Huang <ychuang3@nuvoton.com>
+In-Reply-To: <4e9eaede-2208-bd73-35ae-89e128562653@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 9:42 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> Use the helpers as expected by the dma-direct code in the old arm
-> dma-mapping code to ease a gradual switch to the common DMA code.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+
+On 2022/4/21 下午 02:56, Krzysztof Kozlowski wrote:
+> On 21/04/2022 08:39, Jacky Huang wrote:
+>>
+>> On 2022/4/18 下午 08:11, Krzysztof Kozlowski wrote:
+>>> On 18/04/2022 10:27, Jacky Huang wrote:
+>>>> +properties:
+>>>> +  $nodename:
+>>>> +    const: '/'
+>>>> +  compatible:
+>>>> +    items:
+>>>> +      - enum:
+>>>> +          - nuvoton,ma35d1
+>>>> +          - nuvoton,ma35d1-evb
+>>>> +          - nuvoton,ma35d1-iot
+>>>> +          - nuvoton,ma35d1-som512
+>>>> +          - nuvoton,ma35d1-som1g
+>>> This does not match your DTS and does not look reasonable (SoC
+>>> compatible should not be part of this enum). Check some other board
+>>> bindings for examples.
+>>>
+>>>
+>>> Best regards,
+>>> Krzysztof
+>> I would like to modify it as follows:
+>>
+>> description: |
+>>     Boards with an ARMv8 based Nuvoton SoC shall have the following
+>>     properties.
+>>
+>> properties:
+>>     $nodename:
+>>       const: '/'
+>>     compatible:
+>>       oneOf:
+>>
+>>         - description: MA35D1 evaluation board
+>>           items:
+>>             - const: nuvoton,ma35d1-evb
+>>             - const: nuvoton,ma35d1
+>>
+>>         - description: MA35D1 IoT board
+>>           items:
+>>             - const: nuvoton,ma35d1-iot
+> Instead just enum with all board compatibles.
+
+How about to modify it as the follows:
+
+   compatible:
+     oneOf:
+
+       - description: MA35D1 evaluation board
+         items:
+           - enum:
+               - nuvoton,ma35d1-evb
+           - const: nuvoton,ma35d1
+
+       - description: MA35D1 IoT board
+         items:
+           - enum:
+               - nuvoton,ma35d1-iot
+           - const: nuvoton,ma35d1
+
+       - description: MA35D1 SOM board
+         items:
+           - enum:
+               - nuvoton,ma35d1-som512
+               - nuvoton,ma35d1-som1g
+           - const: nuvoton,ma35d1
+
+>> Thank you very much.
+>> Jacky Huang
+>>
+>
+> Best regards,
+> Krzysztof
+
+Sincerely,
+Jacky Huang
+
+
