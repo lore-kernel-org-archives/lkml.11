@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9723AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384903AbiDUGfk (ORCPT
+        id S1379895AbiDUGfw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38600 "EHLO
+        Thu, 21 Apr 2022 02:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242783AbiDUGfi (ORCPT
+        with ESMTP id S1384894AbiDUGfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:35:38 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E39213F36
+        Thu, 21 Apr 2022 02:35:39 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D5A13F38
         for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:32:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1650522770; x=1682058770;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HjVQanIuM1BYBElba6NqAn0zIn/a7OPVDnlc56p23Zg=;
-  b=Eqi394mzorZCeOFs14NbmYvA97WcOf+OOsm0npHdLO6ArSHXCGiWEZGH
-   LMxW5zi2pnJ4ZokxlAc8xh3/BO5kJFeqxgLgTBq7x0okBkQVsjs6uWIyo
-   3Hh5h6g306hCaRKqVDAofssHUCn905vs99OE6rWdcX5DHsQx23vjrRPRk
-   z6upDWtin4bMtODMJ9+4p7MZhh45WD1MdNAbNtbT+HXYt3ZTVfOB8t+b0
-   oi9KE1AxZjVx1FI3AtVNA18IvPXfoNYfVYQhTmyvsxTGuxP51nAdzfw/K
-   rX5rfyb00xk9MH7Y6HNIRQuXj7S9gVjKFQiXTbJUvNhLah+f4zg9dBJRn
+  bh=oKPg+tpiSpX9Wpw4vkgYV22QaJbqsuKkT3aScwSSehU=;
+  b=OMfg+KMkF/sVtCNb2G/KaqOfiWJ/VDJzv8+pVXb7+yGQ12u1aA54pn+D
+   lxv7ZLXjWKwVT0WW+BwaNcQ6XVuDD8NmMCMyatm52diiKYBSQcx9q8cSd
+   VowKvdLLWnOXnBtTxzk80UbuTv1Knu8eNygDqNf/i8SBnqDO0NDJxpJiD
+   leQmqbDosaSwb+800xTrYCBoGc7Q8meCf6fNn7HIgWmL44RGMZX5ONbKQ
+   LQTd8BBCZqlYWaAgdBIXODvQV6qKlOB37RTjnaacqrVif9uc14ifJFd3+
+   x+MbuUPl6TpJxklfdYcMGvyN1bIYbS+bmDdaaGgIqk6OPooowixJl0qdf
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263107510"
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="261855837"
 X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
-   d="scan'208";a="263107510"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:32:50 -0700
+   d="scan'208";a="261855837"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:32:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
-   d="scan'208";a="530128322"
+   d="scan'208";a="658389108"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2022 23:32:49 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 20 Apr 2022 23:32:49 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQMy-0007wn-EA;
+        id 1nhQMy-0007wk-De;
         Thu, 21 Apr 2022 06:32:48 +0000
-Date:   Thu, 21 Apr 2022 14:32:04 +0800
+Date:   Thu, 21 Apr 2022 14:31:58 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1952/2579]
- arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for
- 'sysenter_setup'
-Message-ID: <202204202001.5zD2lyss-lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2352/2579]
+ arch/powerpc/include/asm/cmpxchg.h:80:1: error: use of undeclared identifier
+ 'BITS_PER_BYTE'
+Message-ID: <202204201949.xIif2NO7-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -59,44 +60,156 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
 head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 143f41d47c158e8acbbce44c87a78966d3e9f62f [1952/2579] headers/deps: x86/cpu, arm64/cpu: Split out <asm/processor_api.h> from <asm/processor.h>
-config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220420/202204202001.5zD2lyss-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+commit: 021ec7b4f3ec8280761a254fd8241779fd7b5bfb [2352/2579] headers/deps: bvec: Reduce <linux/bvec.h> dependencies, remove <linux/bvec_api.h> inclusion
+config: powerpc64-randconfig-r015-20220420 (https://download.01.org/0day-ci/archive/20220420/202204201949.xIif2NO7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=143f41d47c158e8acbbce44c87a78966d3e9f62f
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install powerpc64 cross compiling tool for clang build
+        # apt-get install binutils-powerpc64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=021ec7b4f3ec8280761a254fd8241779fd7b5bfb
         git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
         git fetch --no-tags mingo-tip sched/headers
-        git checkout 143f41d47c158e8acbbce44c87a78966d3e9f62f
+        git checkout 021ec7b4f3ec8280761a254fd8241779fd7b5bfb
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vdso/ arch/x86/kernel/cpu/mtrr/ kernel/trace/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc prepare
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
->> arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for 'sysenter_setup' [-Wmissing-prototypes]
-      55 | int __init sysenter_setup(void)
-         |            ^~~~~~~~~~~~~~
+   In file included from kernel/bounds.c:12:
+   In file included from include/linux/page-flags.h:9:
+   In file included from include/linux/jump_label.h:257:
+   In file included from include/linux/atomic_api.h:8:
+   In file included from arch/powerpc/include/asm/atomic.h:11:
+>> arch/powerpc/include/asm/cmpxchg.h:80:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   XCHG_GEN(u8, _local, "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:22:11: note: expanded from macro 'XCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:81:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   XCHG_GEN(u8, _relaxed, "cc");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:22:11: note: expanded from macro 'XCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:82:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   XCHG_GEN(u16, _local, "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:22:11: note: expanded from macro 'XCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:83:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   XCHG_GEN(u16, _relaxed, "cc");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:22:11: note: expanded from macro 'XCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:206:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u8, , PPC_ATOMIC_ENTRY_BARRIER, PPC_ATOMIC_EXIT_BARRIER, "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:207:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u8, _local, , , "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:208:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u8, _acquire, , PPC_ACQUIRE_BARRIER, "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:209:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u8, _relaxed, , , "cc");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:210:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u16, , PPC_ATOMIC_ENTRY_BARRIER, PPC_ATOMIC_EXIT_BARRIER, "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:211:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u16, _local, , , "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:212:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u16, _acquire, , PPC_ACQUIRE_BARRIER, "memory");
+   ^
+   arch/powerpc/include/asm/cmpxchg.h:47:11: note: expanded from macro 'CMPXCHG_GEN'
+           bitoff = BITOFF_CAL(sizeof(type), off);                 \
+                    ^
+   arch/powerpc/include/asm/cmpxchg.h:11:61: note: expanded from macro 'BITOFF_CAL'
+   #define BITOFF_CAL(size, off)   ((sizeof(u32) - size - off) * BITS_PER_BYTE)
+                                                                 ^
+   arch/powerpc/include/asm/cmpxchg.h:213:1: error: use of undeclared identifier 'BITS_PER_BYTE'
+   CMPXCHG_GEN(u16, _relaxed, , , "cc");
 
 
-vim +/sysenter_setup +55 arch/x86/entry/vdso/vdso32-setup.c
+vim +/BITS_PER_BYTE +80 arch/powerpc/include/asm/cmpxchg.h
 
-^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  54  
-a6c4e076ee4c1ea6 arch/i386/kernel/sysenter.c        Jeremy Fitzhardinge 2007-05-02 @55  int __init sysenter_setup(void)
-^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  56  {
-0a6d1fa0d2b48fba arch/x86/entry/vdso/vdso32-setup.c Andy Lutomirski     2015-10-05  57  	init_vdso_image(&vdso_image_32);
-^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  58  
-^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  59  	return 0;
-^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  60  }
-e6e5494cb23d1933 arch/i386/kernel/sysenter.c        Ingo Molnar         2006-06-27  61  
+d0563a1297e234 Pan Xinhui    2016-04-27  72  
+ae3a197e3d0bfe David Howells 2012-03-28  73  /*
+ae3a197e3d0bfe David Howells 2012-03-28  74   * Atomic exchange
+ae3a197e3d0bfe David Howells 2012-03-28  75   *
+26760fc19a7e66 Boqun Feng    2015-12-15  76   * Changes the memory location '*p' to be val and returns
+ae3a197e3d0bfe David Howells 2012-03-28  77   * the previous value stored there.
+ae3a197e3d0bfe David Howells 2012-03-28  78   */
+26760fc19a7e66 Boqun Feng    2015-12-15  79  
+d0563a1297e234 Pan Xinhui    2016-04-27 @80  XCHG_GEN(u8, _local, "memory");
+d0563a1297e234 Pan Xinhui    2016-04-27  81  XCHG_GEN(u8, _relaxed, "cc");
+d0563a1297e234 Pan Xinhui    2016-04-27  82  XCHG_GEN(u16, _local, "memory");
+d0563a1297e234 Pan Xinhui    2016-04-27  83  XCHG_GEN(u16, _relaxed, "cc");
+d0563a1297e234 Pan Xinhui    2016-04-27  84  
 
-:::::: The code at line 55 was first introduced by commit
-:::::: a6c4e076ee4c1ea670e4faa55814e63dd08e3f29 [PATCH] i386: clean up identify_cpu
+:::::: The code at line 80 was first introduced by commit
+:::::: d0563a1297e234ed37f6b51c2e9321accebd1839 powerpc: Implement {cmp}xchg for u8 and u16
 
-:::::: TO: Jeremy Fitzhardinge <jeremy@goop.org>
-:::::: CC: Andi Kleen <andi@basil.nowhere.org>
+:::::: TO: Pan Xinhui <xinhui.pan@linux.vnet.ibm.com>
+:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
 
 -- 
 0-DAY CI Kernel Test Service
