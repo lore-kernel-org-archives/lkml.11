@@ -2,202 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C955EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6228DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385746AbiDUH1c (ORCPT
+        id S1385765AbiDUH1r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47326 "EHLO
+        Thu, 21 Apr 2022 03:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385733AbiDUH13 (ORCPT
+        with ESMTP id S1385755AbiDUH1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:27:29 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E93183B5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:24:40 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id r83so3951838pgr.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:24:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=kSUnnvJTV6dNmB2mN9DrMiibs+rULUql9Nla3IWhGM4=;
-        b=dVwZGpiMDl7qOHSARU9WfPhrvfWXoS7J2FfOViqrrazKPqnHRMXgKYQFrMB3txh+Im
-         lj9fbnCn/VIEQvPMmWWQFPxBdhJLdLUUFvt78s+5RMjQDeVS/cVFNexaWtPrPOEiO3ZZ
-         ouRZrVdr2/pzmQfbQpsxrOmCI5MmRlCGRoiOawHXDgt23MqMg6qSKjjDilR5EGEkvSow
-         F/oBkodTJiTNwwBuB+ZAKjmJfASQ3GnaIdubUk9N6OQ5t9QZEirAwVGlTMNtTF64xmGe
-         EXVWmGF32fA0m7HmTVPcQM+4YBApsaLh2QrnCTap8DdkNB6Vwr5GFkc/3yEvnp9kUD+q
-         y7uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kSUnnvJTV6dNmB2mN9DrMiibs+rULUql9Nla3IWhGM4=;
-        b=1ETnSMe3WMhEdjylCRAEKGJdmf5p66NymUkQdhFu/ZADF6ZovSHWNHMecbbZX01IeJ
-         VPhkvE6YVt0/+QhNOmp2Fi75HAienBQTcSKHKXKjL41GsLmHnRgzLfw2Pbgd8M4fVYHg
-         qY3XOM14aSJYsKZbiesOnZGx1RSLzUO/5t7xgVsaW556bpgXGRRLiWLQ/xWCcWvCqDZY
-         ROhMWCZZr64s8yidCPzXWcsF/LtoeFHshSSKBrIDzL+YVYzSNmccVd03yzW4qx/JJUsS
-         5mGRfoayGVC1EQsaUg6P2HCXVmFmLvvvn20krzakILdT8898BPBfqpXdznUmaZsXBIta
-         y9Sw==
-X-Gm-Message-State: AOAM533qOakTdCHAPPKW4EU5J1iPZudWHbmp1LHAilpMHVYgcTOwFTuL
-        EprRvb6vbK4oqtAuHfctXuvHRQ==
-X-Google-Smtp-Source: ABdhPJzPm2MwQXX0FyCGQAAvhJC7iG9geQ4YDFYVQXgl6L14srgxw6b0TNMg4tjfsPfmcyOMRlxN7A==
-X-Received: by 2002:a65:6e0e:0:b0:399:26d7:a224 with SMTP id bd14-20020a656e0e000000b0039926d7a224mr22734041pgb.437.1650525880180;
-        Thu, 21 Apr 2022 00:24:40 -0700 (PDT)
-Received: from [10.85.115.102] ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id m13-20020a17090b068d00b001cd4989fee0sm1461880pjz.44.2022.04.21.00.24.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 00:24:39 -0700 (PDT)
-Message-ID: <84f61791-8cf2-b955-5d71-1cab15129ab2@bytedance.com>
-Date:   Thu, 21 Apr 2022 15:24:33 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [External] Re: [PATCH] sched/core: Avoid obvious double
- update_rq_clock warning
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, rostedt@goodmis.org,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        linux-kernel@vger.kernel.org
-References: <20220418090929.54005-1-jiahao.os@bytedance.com>
- <20220419104828.GQ2731@worktop.programming.kicks-ass.net>
- <c1e7fc17-b091-1da1-7fa8-0490cc7f7e4b@bytedance.com>
- <df0c4d87-68be-7aef-597f-043b3c7fea59@arm.com>
-From:   Hao Jia <jiahao.os@bytedance.com>
-In-Reply-To: <df0c4d87-68be-7aef-597f-043b3c7fea59@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Thu, 21 Apr 2022 03:27:42 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E80B49;
+        Thu, 21 Apr 2022 00:24:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650525891; x=1682061891;
+  h=from:to:cc:subject:date:message-id;
+  bh=5i2QjPQG+ow+ZD5MP6LoJVVxJRKvV2NNUYuaxiC+6pM=;
+  b=mKPSNgzP53i/pYgNiH+fPMgF1k21LU+RknuSO8ux8RbZPAuKNEONBtlL
+   Sn7vMAc/VIwy5OH7JhJDAO+rRtntgIM1s3yY6DczvbY6VfwWFtTUg+A17
+   mwOvEM0T/Xi02lWyeE/CNAtS6VXr5XmdxHM6kBxxL4N785u5+0s3SalED
+   CknnxFj74HM6U1qozI5CTVQKdmhiIKLz8iu+ZvbjUcI3mXHpOVqnIJxxN
+   9J1hMSbhDk93q31WleGIf89n777+DnWugIwao2L/mrlLebBUi+3gtUAH9
+   ydzGZ01HgMVRzD/BVRbKndwNgnLko0YNZXZNRGAXlVA1GFaLTyyEIRaFC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="324709279"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="324709279"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 00:24:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="727860203"
+Received: from chenyi-pc.sh.intel.com ([10.239.159.73])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 00:24:47 -0700
+From:   Chenyi Qiang <chenyi.qiang@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 0/3] Introduce Notify VM exit
+Date:   Thu, 21 Apr 2022 15:29:55 +0800
+Message-Id: <20220421072958.16375-1-chenyi.qiang@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Virtual machines can exploit Intel ISA characterstics to cause
+functional denial of service to the VMM. This series introduces a new
+feature named Notify VM exit, which can help mitigate such kind of
+attacks.
 
+Patch 1: An extension of KVM_SET_VCPU_EVENTS ioctl to inject a
+synthesized shutdown event from user space. This is also a fix for other
+synthesized triple fault, e.g. the RSM patch or nested_vmx_abort(),
+which could get lost when exit to userspace to do migrate.
 
-On 2022/4/21 Dietmar Eggemann wrote:
-> On 20/04/2022 10:29, Hao Jia wrote:
->> On 4/19/22 6:48 PM, Peter Zijlstra wrote:
->>> On Mon, Apr 18, 2022 at 05:09:29PM +0800, Hao Jia wrote:
-> 
-> [...]
-> 
->>> I'm really not sure about this part though. This is a bit of a mess. The
->>> balancer doesn't really need the pinning stuff. I realize you did that
->>> because we got the clock annotation mixed up with that, but urgh.
->>>
->>> Basically we want double_rq_lock() / double_lock_balance() to clear
->>> RQCF_UPDATED, right? Perhaps do that directly?
->>>
->>> (maybe with an inline helper and a wee comment?)
->>>
->>> The only immediate problem with this would appear to be that
->>> _double_rq_lock() behaves differently when it returns 0. Not sure that
->>> matters.
->>>
->>> Hmm?
->>
->> Thanks for your review comments.
->> As you have prompted, the WARN_DOUBLE_CLOCK warning is still triggered
->> when _double_rq_lock() returns 0.
->> Please review the solution below, and based on your review, I will
->> submit the v2 patch as soon as possible.
->> Thanks.
-> 
-> 
-> [...]
-> 
-> Maybe something like this:
-> 
-> -->8--
-> 
-> From: Dietmar Eggemann <dietmar.eggemann@arm.com>
-> Date: Wed, 20 Apr 2022 11:12:10 +0200
-> Subject: [PATCH] sched/core: Clear RQCF_UPDATED in _double_lock_balance() &
->   double_rq_lock()
-> 
-> Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-> ---
->   kernel/sched/core.c  |  6 +++---
->   kernel/sched/sched.h | 20 ++++++++++++++++----
->   2 files changed, 19 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 068c088e9584..f4cfe7eea861 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -610,10 +610,10 @@ void double_rq_lock(struct rq *rq1, struct rq *rq2)
->   		swap(rq1, rq2);
->   
->   	raw_spin_rq_lock(rq1);
-> -	if (__rq_lockp(rq1) == __rq_lockp(rq2))
-> -		return;
-> +	if (__rq_lockp(rq1) != __rq_lockp(rq2))
-> +		raw_spin_rq_lock_nested(rq2, SINGLE_DEPTH_NESTING);
->   
-> -	raw_spin_rq_lock_nested(rq2, SINGLE_DEPTH_NESTING);
-> +	rq_clock_clear_update(rq1, rq2);
->   }
->   #endif
->   
-> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> index 58263f90c559..3a77b10d7cc4 100644
-> --- a/kernel/sched/sched.h
-> +++ b/kernel/sched/sched.h
-> @@ -2515,6 +2515,16 @@ static inline bool rq_order_less(struct rq *rq1, struct rq *rq2)
->   
->   extern void double_rq_lock(struct rq *rq1, struct rq *rq2);
->   
-> +#ifdef CONFIG_SCHED_DEBUG
-> +static inline void rq_clock_clear_update(struct rq *rq1, struct rq *rq2)
-> +{
-> +	rq1->clock_update_flags &= (RQCF_REQ_SKIP|RQCF_ACT_SKIP);
-> +	rq2->clock_update_flags &= (RQCF_REQ_SKIP|RQCF_ACT_SKIP);
-> +}
-> +#else
-> +static inline void rq_clock_clear_update(struct rq *rq1, struct rq *rq2) {}
-> +#endif
-> +
->   #ifdef CONFIG_PREEMPTION
->   
->   /*
-> @@ -2549,14 +2559,15 @@ static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
->   	__acquires(busiest->lock)
->   	__acquires(this_rq->lock)
->   {
-> -	if (__rq_lockp(this_rq) == __rq_lockp(busiest))
-> -		return 0;
-> -
-> -	if (likely(raw_spin_rq_trylock(busiest)))
-> +	if (__rq_lockp(this_rq) == __rq_lockp(busiest) ||
-> +	    likely(raw_spin_rq_trylock(busiest))) {
-> +		rq_clock_clear_update(this_rq, busiest);
->   		return 0;
-> +	}
->   
->   	if (rq_order_less(this_rq, busiest)) {
->   		raw_spin_rq_lock_nested(busiest, SINGLE_DEPTH_NESTING);
-> +		rq_clock_clear_update(this_rq, busiest);
->   		return 0;
->   	}
->   
-> @@ -2650,6 +2661,7 @@ static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
->   	BUG_ON(rq1 != rq2);
->   	raw_spin_rq_lock(rq1);
->   	__acquire(rq2->lock);	/* Fake it out ;) */
-> +	rq_clock_clear_update(rq1, rq2);
+Patch 2: A selftest about get/set triple fault event.
 
-Thanks for your review.
-This is very helpful to me.
-If CONFIG_SMP is not enabled, should we just clear the RQCF_UPDATED of 
-one of rq1 and q2?
+Patch 3: The main patch to enable Notify VM exit.
 
-like this:
-rq1->clock_update_flags &= (RQCF_REQ_SKIP|RQCF_ACT_SKIP);
+---
+Change logs:
+v5 -> v6
+- Do some changes in document.
+- Add a selftest about get/set triple fault event. (Sean)
+- extend the argument to include both the notify window and some flags
+  when enabling KVM_CAP_X86_BUS_LOCK_EXIT CAP. (Sean)
+- Change to use KVM_VCPUEVENT_VALID_TRIPE_FAULT in flags field and add
+  pending_triple_fault field in struct kvm_vcpu_events, which allows
+  userspace to make/clear triple fault request. (Sean)
+- Add a flag in kvm_x86_ops to avoid the kvm_has_notify_vmexit global
+  varialbe and its export.(Sean)
+- v5: https://lore.kernel.org/lkml/20220318074955.22428-1-chenyi.qiang@intel.com/
 
-Thanks.
+v4 -> v5
+- rename KVM_VCPUEVENTS_SHUTDOWN to KVM_VCPUEVENTS_TRIPLE_FAULT. Make it
+  bidirection and add it to get_vcpu_events. (Sean)
+- v4: https://lore.kernel.org/all/20220310084001.10235-1-chenyi.qiang@intel.com/
 
->   }
->   
->   /*
+v3 -> v4
+- Change this feature to per-VM scope. (Jim)
+- Once VM_CONTEXT_INVALID set in exit_qualification, exit to user space
+  notify this fatal case, especially the notify VM exit happens in L2.
+  (Jim)
+- extend KVM_SET_VCPU_EVENTS to allow user space to inject a shutdown
+  event. (Jim)
+- A minor code changes.
+- Add document for the new KVM capability.
+- v3: https://lore.kernel.org/lkml/20220223062412.22334-1-chenyi.qiang@intel.com/
+
+v2 -> v3
+- add a vcpu state notify_window_exits to record the number of
+  occurence as well as a pr_warn output. (Sean)
+- Add the handling in nested VM to prevent L1 bypassing the restriction
+  through launching a L2. (Sean)
+- Only kill L2 when L2 VM is context invalid, synthesize a
+  EXIT_REASON_TRIPLE_FAULT to L1 (Sean)
+- To ease the current implementation, make module parameter
+  notify_window read-only. (Sean)
+- Disable notify window exit by default.
+- v2: https://lore.kernel.org/lkml/20210525051204.1480610-1-tao3.xu@intel.com/
+
+v1 -> v2
+- Default set notify window to 0, less than 0 to disable.
+- Add more description in commit message.
+---
+
+Chenyi Qiang (2):
+  KVM: X86: Save&restore the triple fault request
+  KVM: selftests: Add a test to get/set triple fault event
+
+Tao Xu (1):
+  KVM: VMX: Enable Notify VM exit
+
+ Documentation/virt/kvm/api.rst                | 55 +++++++++++
+ arch/x86/include/asm/kvm_host.h               |  9 ++
+ arch/x86/include/asm/vmx.h                    |  7 ++
+ arch/x86/include/asm/vmxfeatures.h            |  1 +
+ arch/x86/include/uapi/asm/kvm.h               |  4 +-
+ arch/x86/include/uapi/asm/vmx.h               |  4 +-
+ arch/x86/kvm/vmx/capabilities.h               |  6 ++
+ arch/x86/kvm/vmx/nested.c                     |  8 ++
+ arch/x86/kvm/vmx/vmx.c                        | 48 +++++++++-
+ arch/x86/kvm/x86.c                            | 33 ++++++-
+ arch/x86/kvm/x86.h                            |  5 +
+ include/uapi/linux/kvm.h                      | 10 ++
+ tools/testing/selftests/kvm/.gitignore        |  1 +
+ tools/testing/selftests/kvm/Makefile          |  1 +
+ .../kvm/x86_64/triple_fault_event_test.c      | 96 +++++++++++++++++++
+ 15 files changed, 280 insertions(+), 8 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/triple_fault_event_test.c
+
+-- 
+2.17.1
+
