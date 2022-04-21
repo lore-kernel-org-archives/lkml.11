@@ -2,77 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79246C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384696AbiDUGNO (ORCPT
+        id S1384615AbiDUGQZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        Thu, 21 Apr 2022 02:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbiDUGNK (ORCPT
+        with ESMTP id S1348136AbiDUGQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:13:10 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BAC13CD5;
-        Wed, 20 Apr 2022 23:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=18xk0KT5B86gCiyEjqVUpD20TLPm7YxWiS57uAbCHcY=; b=zeJ+OM3dBqjlIlEfQ2ghD0PZm7
-        kLxWTmdUZn3/hB2WTYhFVFFKzMVq/Z+XjALwi6wWZNAMOETDdH3HvbPN3VIer4Iz56Z247wQ/fJtJ
-        Leqet9JRS0A5FjxbciRT6B8w8HoQWitihRJQSlq0WZ4mjCzGmxrCc2typkG/B2hyRRy3Rbru/e3Zp
-        4Nvn+9wv4iRXLZZTjDCcB8rOiz4HY559iiiyQLTWrDYGfBRcy87mOi0rJJXrZ56+0HDcNw2LTA7oB
-        nPuqXSbr9sPCx6WQk/nrsZsJAHTJ2hjm6XyZE4FyIaCd70GuwsYRHtvNNH5Ez4AkZdQZXzP443Nh2
-        w70JBZ2A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhQ1F-00BdlH-Ia; Thu, 21 Apr 2022 06:10:21 +0000
-Date:   Wed, 20 Apr 2022 23:10:21 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-Subject: Re: [PATCH v2 04/12] md/raid5: Move common stripe count increment
- code into __find_stripe()
-Message-ID: <YmD1Tenc2Ylu+biA@infradead.org>
-References: <20220420195425.34911-1-logang@deltatee.com>
- <20220420195425.34911-5-logang@deltatee.com>
+        Thu, 21 Apr 2022 02:16:21 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D408D13CF7
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:13:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650521612; x=1682057612;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=bPy112I2qKfmRbUBQ7cTMQX6EYgFATh9vK03t+Q3nnY=;
+  b=fLMDqCRd1JqOyzt2OJrhgdz+55XGuvh6Yyyx3UO5OtvFx+/mgGRcy3y7
+   I0wiLYB1x68K/O0XIsDJDtfIrSz0U+O4chESBXYr5k48OKD89MucTWXSB
+   F3LZqGnSA3TEGEhYtVV5nVPZl0rgDev7aIDo2msxDy3D4I7rtX3JFW/nS
+   4Lr46kZMnQS+2kpwvjDGZVGEPZL0HGajuuvrzxhTfk2Jq1e9+LvJlq83O
+   INFpqsY49MGsaBDXHLQt/0Pe8aX5rtW7RV3uLxxkkXfqiUCw4WIIaSrfR
+   cdiT3oHaGJ80oCo3juFlITYDAxcOahr+lVJP424nNru/YMvcWNDXezyCS
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="324693147"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="324693147"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:13:32 -0700
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="555597936"
+Received: from hanyulon-mobl1.ccr.corp.intel.com ([10.254.214.143])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:13:30 -0700
+Message-ID: <36fbefd663b2956f99fb60eaa0e8318819dffeb5.camel@intel.com>
+Subject: Re: [PATCH v2 1/5] mm: demotion: Set demotion list differently
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
+Date:   Thu, 21 Apr 2022 14:13:27 +0800
+In-Reply-To: <20220413092206.73974-2-jvgediya@linux.ibm.com>
+References: <20220413092206.73974-1-jvgediya@linux.ibm.com>
+         <20220413092206.73974-2-jvgediya@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420195425.34911-5-logang@deltatee.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 01:54:17PM -0600, Logan Gunthorpe wrote:
-> Both uses of find_stripe() require a fairly complicated dance to
-> increment the reference count. Move this into a common find_get_stripe()
-> helper.
-> 
-> No functional changes intended.
+> [PATCH v2 1/5] mm: demotion: Set demotion list differently
 
-The subject is wrong now.
+I think the subject of the patch isn't good.  It's too general, let's be
+more specific.  For example, supoort to share demotion targets among
+sources, etc.
 
->  static struct stripe_head *__find_stripe(struct r5conf *conf, sector_t sector,
-> -					 short generation)
-> +					 short generation, int hash)
->  {
->  	struct stripe_head *sh;
->  
-> @@ -624,6 +624,49 @@ static struct stripe_head *__find_stripe(struct r5conf *conf, sector_t sector,
->  	return NULL;
->  }
+Best Regards,
+Huang, Ying
 
-And the new hash argument here is not needed.
 
-Otherwise looks good:
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
