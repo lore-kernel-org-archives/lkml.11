@@ -2,365 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5070BC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388960AbiDUOLI (ORCPT
+        id S1388936AbiDUOLM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
+        Thu, 21 Apr 2022 10:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388953AbiDUOK5 (ORCPT
+        with ESMTP id S1388967AbiDUOK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 10:10:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 144DA3969C
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:08:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650550084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hi5GUSbAAds08X4ZJP7ddUqEMtipRWnoAKsCpMXwBrE=;
-        b=Q+mprm14ss93fwo6insKjQS+zPtv9dv8L9I30mfBnLagrce7gbSnDbRfQf83og3dVQx9b0
-        xv7i7jfhCwSkjY5c/fk1krMGnijaEegdhUMNa5IqArwgFxfLZic4lnPc/Bj+6EbILlDil2
-        +Acku09i2mZtdg0y5sm7OjivEy6aK2w=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-lT9cCk2hPNGRU7F2P6C5hQ-1; Thu, 21 Apr 2022 10:08:00 -0400
-X-MC-Unique: lT9cCk2hPNGRU7F2P6C5hQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EF23480346F;
-        Thu, 21 Apr 2022 14:07:59 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.194.205])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 93CAB40EC002;
-        Thu, 21 Apr 2022 14:07:57 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [RFC bpf-next v4 6/7] samples/bpf: add new hid_mouse example
-Date:   Thu, 21 Apr 2022 16:07:39 +0200
-Message-Id: <20220421140740.459558-7-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220421140740.459558-1-benjamin.tissoires@redhat.com>
-References: <20220421140740.459558-1-benjamin.tissoires@redhat.com>
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6AC3B00C
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:08:07 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id bu29so8979698lfb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:08:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zZKj1C/7IWF1iYJGVivOJHvLTfKPwwnbxFO7kqmcYXc=;
+        b=VVH2HU+P5/bdjm7H3wzAdQ7BcWbgJCF7v1P82ysb8AVZD3iccsTHzkFCl8Y/gMyyBl
+         qPbuNS8l4NofUrpKlHZ8maQ+cDnVSeKdOdR57Eujj79fMAkNWAmnuY3kE0AC86rXN3uj
+         eTSAqUDNMsVZoAtc1ZBbeRlRtzOT+2rF/wZlnYOzxRmj/AIQgvBrba3TaAG6t90YVqI/
+         P+rI4f1hCrPlbWZP2vjCOsIxACq1zH/0UT1K8dXDNPHGBGqFC1w1DuiP1icoaXrBNjyS
+         ERYqfURAbUs0JEAKRxF8EMGd5dNnQJcLngybujXSNP9rgYZ4jIudsK8WAbSPXmjjKaWx
+         y9FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zZKj1C/7IWF1iYJGVivOJHvLTfKPwwnbxFO7kqmcYXc=;
+        b=i23wpzHp4c2NGWXNbqbhZQbP1F7Kq2QwzNEKj6ExTo7NqthNELmepGhsppKydqWT8U
+         yRJBSwpAlTBEPnuU8RCKfWDrNAhiCNpWPMhy2LHn8C90yS+4DzrkL/G7rVLf4zCalqZS
+         nOGECcjlHIzWj/k8GTfwasYplg5vOkUj0UPh4if82LHJkksSTUlvhimFISARBZd24lMH
+         0uqwSPWrIv3B/38l6mKvRsO02IUCGgUlH/3x6x+nNq4GxTRbp7IRHg0JnVJzPprk9y9i
+         hpktP4SLFX17pCM6StzdxdD0weZPXFxzoJlfnqCOaZ+6sHUFH4BBDEd3/mJ2uR82g+jU
+         JBWg==
+X-Gm-Message-State: AOAM530Qo1J0qEVGBawOR3PXcKo47YQ24JKju5zvcvW7SoMqwAUAXas2
+        7y7dhuzdtuQYEZbTJPqCybliKIix2zt620+6nNyCEw==
+X-Google-Smtp-Source: ABdhPJw98b2hHI0MkVoCHhTocWu+CF6auK8Paa8Q5ZmRRVEYZylYEkvr/IJyDyAPKTDyS3ZiOItIHGQjaDcjfjEeFHA=
+X-Received: by 2002:a05:6512:c12:b0:471:a932:cfe1 with SMTP id
+ z18-20020a0565120c1200b00471a932cfe1mr9020055lfu.358.1650550085053; Thu, 21
+ Apr 2022 07:08:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+References: <20220409034849.3717231-1-zheyuma97@gmail.com> <20220410165425.6c2f60e7@jic23-huawei>
+ <CACRpkdaFgB55HHR8a3vyVbZphu5fpguutBYemyVvGz=tcn6j+A@mail.gmail.com>
+In-Reply-To: <CACRpkdaFgB55HHR8a3vyVbZphu5fpguutBYemyVvGz=tcn6j+A@mail.gmail.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 21 Apr 2022 16:07:28 +0200
+Message-ID: <CAPDyKFr50QirUvkUy+b665=2prMkGz=EXtbyc+Bty1woT=qO3w@mail.gmail.com>
+Subject: Re: [PATCH] iio: magnetometer: ak8974: Fix the error handling of ak8974_probe()
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Zheyu Ma <zheyuma97@gmail.com>, lars@metafoo.de,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Everything should be available in the selftest part of the tree, but
-providing an example without uhid and hidraw will be more easy to
-follow for users.
+On Thu, 21 Apr 2022 at 01:14, Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Sun, Apr 10, 2022 at 5:46 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Sat,  9 Apr 2022 11:48:48 +0800
+> > Zheyu Ma <zheyuma97@gmail.com> wrote:
+> >
+> > > When the driver fail at devm_regmap_init_i2c(), we will get the
+> > > following splat:
+> > >
+> > > [  106.797388] WARNING: CPU: 4 PID: 413 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+> > > [  106.802183] RIP: 0010:_regulator_put+0x3ec/0x4e0
+> > > [  106.811237] Call Trace:
+> > > [  106.811515]  <TASK>
+> > > [  106.811695]  regulator_bulk_free+0x82/0xe0
+> > > [  106.812032]  devres_release_group+0x319/0x3d0
+> > > [  106.812425]  i2c_device_probe+0x766/0x940
+> > >
+> > > Fix this by disabling the regulators at the error path.
+> > >
+> > > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> > + CC Linus W as it's his driver.
+> >
+> > Fix looks correct to me, though the handling of runtime pm in here is
+> > probably more complex than it needs to be (and hence this odd error
+> > handling for this one place in the probe).
+>
+> At the time I discussed how to do runtime pm with Ulf Hansson a lot
+> and I think it was the state of the art at that time. It might have
+> changed since.
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+It still looks good to me. One could switch the order of the calls to
+pm_runtime_disable() and pm_runtime_put_noidle(), but it's not a big
+thing.
 
----
+Whether it looks complicated or not, that's a different story. :-)
 
-changes in v4:
-- dropped the not-yet-implemented rdesc_fixup
-- use the new API
+Note that some drivers are always being built with CONFIG_PM being
+set, which allows some simplifications. Although, I don't think that's
+the case here, right?
 
-changes in v3:
-- use the new hid_get_data API
-- add a comment for the report descriptor fixup to explain what is done
+>
+> > > ---
+> > >  drivers/iio/magnetometer/ak8974.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> > > index e54feacfb980..84bbf7ccc887 100644
+> > > --- a/drivers/iio/magnetometer/ak8974.c
+> > > +++ b/drivers/iio/magnetometer/ak8974.c
+> > > @@ -862,6 +862,7 @@ static int ak8974_probe(struct i2c_client *i2c,
+> > >               dev_err(&i2c->dev, "failed to allocate register map\n");
+> > >               pm_runtime_put_noidle(&i2c->dev);
+> > >               pm_runtime_disable(&i2c->dev);
+> > > +             regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> Yours,
+> Linus Walleij
 
-changes in v2:
-- split the series by bpf/libbpf/hid/selftests and samples
----
- samples/bpf/.gitignore      |   1 +
- samples/bpf/Makefile        |  23 +++++++
- samples/bpf/hid_mouse.bpf.c |  59 ++++++++++++++++
- samples/bpf/hid_mouse.c     | 131 ++++++++++++++++++++++++++++++++++++
- 4 files changed, 214 insertions(+)
- create mode 100644 samples/bpf/hid_mouse.bpf.c
- create mode 100644 samples/bpf/hid_mouse.c
-
-diff --git a/samples/bpf/.gitignore b/samples/bpf/.gitignore
-index 0e7bfdbff80a..65440bd618b2 100644
---- a/samples/bpf/.gitignore
-+++ b/samples/bpf/.gitignore
-@@ -2,6 +2,7 @@
- cpustat
- fds_example
- hbm
-+hid_mouse
- ibumad
- lathist
- lwt_len_hist
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 8fff5ad3444b..dffca4b04a94 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -60,6 +60,8 @@ tprogs-y += xdp_redirect_map
- tprogs-y += xdp_redirect
- tprogs-y += xdp_monitor
- 
-+tprogs-y += hid_mouse
-+
- # Libbpf dependencies
- LIBBPF_SRC = $(TOOLS_PATH)/lib/bpf
- LIBBPF_OUTPUT = $(abspath $(BPF_SAMPLES_PATH))/libbpf
-@@ -125,6 +127,8 @@ xdp_redirect-objs := xdp_redirect_user.o $(XDP_SAMPLE)
- xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
- xdp_router_ipv4-objs := xdp_router_ipv4_user.o $(XDP_SAMPLE)
- 
-+hid_mouse-objs := hid_mouse.o
-+
- # Tell kbuild to always build the programs
- always-y := $(tprogs-y)
- always-y += sockex1_kern.o
-@@ -349,6 +353,8 @@ $(obj)/hbm_out_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
- $(obj)/hbm.o: $(src)/hbm.h
- $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
- 
-+$(obj)/hid_mouse.o: $(obj)/hid_mouse.skel.h
-+
- # Override includes for xdp_sample_user.o because $(srctree)/usr/include in
- # TPROGS_CFLAGS causes conflicts
- XDP_SAMPLE_CFLAGS += -Wall -O2 \
-@@ -434,6 +440,23 @@ $(BPF_SKELS_LINKED): $(BPF_OBJS_LINKED) $(BPFTOOL)
- 	@echo "  BPF GEN-SKEL" $(@:.skel.h=)
- 	$(Q)$(BPFTOOL) gen skeleton $(@:.skel.h=.lbpf.o) name $(notdir $(@:.skel.h=)) > $@
- 
-+# Generate BPF skeletons for non XDP progs
-+OTHER_BPF_SKELS := hid_mouse.skel.h
-+
-+hid_mouse.skel.h-deps := hid_mouse.bpf.o
-+
-+OTHER_BPF_SRCS_LINKED := $(patsubst %.skel.h,%.bpf.c, $(OTHER_BPF_SKELS))
-+OTHER_BPF_OBJS_LINKED := $(patsubst %.bpf.c,$(obj)/%.bpf.o, $(OTHER_BPF_SRCS_LINKED))
-+OTHER_BPF_SKELS_LINKED := $(addprefix $(obj)/,$(OTHER_BPF_SKELS))
-+
-+$(OTHER_BPF_SKELS_LINKED): $(OTHER_BPF_OBJS_LINKED) $(BPFTOOL)
-+	@echo "  BPF GEN-OBJ " $(@:.skel.h=)
-+	$(Q)$(BPFTOOL) gen object $(@:.skel.h=.lbpf.o) $(addprefix $(obj)/,$($(@F)-deps))
-+	@echo "  BPF GEN-SKEL" $(@:.skel.h=)
-+	$(Q)$(BPFTOOL) gen skeleton $(@:.skel.h=.lbpf.o) name $(notdir $(@:.skel.h=_lskel)) > $@
-+#	$(call msg,GEN-SKEL,$@)
-+#	$(Q)$(BPFTOOL) gen skeleton $< > $@
-+
- # asm/sysreg.h - inline assembly used by it is incompatible with llvm.
- # But, there is no easy way to fix it, so just exclude it since it is
- # useless for BPF samples.
-diff --git a/samples/bpf/hid_mouse.bpf.c b/samples/bpf/hid_mouse.bpf.c
-new file mode 100644
-index 000000000000..45cc26b70f5f
---- /dev/null
-+++ b/samples/bpf/hid_mouse.bpf.c
-@@ -0,0 +1,59 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Note: for the following code to compile, we need HID to be included
-+ * in vmlinuz (CONFIG_HID=y).
-+ * If HID is compiled as a separate module, we need to use the vmlinux.h
-+ * which contains the various hid symbols, it can be generated through:
-+ *
-+ * $> ./tools/bpf/bpftool/bpftool btf dump \
-+ *        file /sys/kernel/btf/hid format c > samples/bpf/vmlinux.h
-+ *
-+ * Once the code is compiled, the fact that HID is a separate module
-+ * or not is not an issue, the same binary will run similarily.
-+ */
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+extern __u8 *hid_bpf_kfunc_get_data(struct hid_bpf_ctx *ctx,
-+				    unsigned int offset,
-+				    const size_t __sz) __ksym;
-+extern void hid_bpf_kfunc_data_release(__u8 *data) __ksym;
-+extern int hid_bpf_kfunc_hw_request(struct hid_bpf_ctx *ctx) __ksym;
-+
-+#define BUS_USB 3
-+
-+SEC("fentry/hid_bpf_device_event")
-+int BPF_KPROBE(hid_event, struct hid_bpf_ctx *hctx, __s64 type)
-+{
-+	__u8 *rw_data = hid_bpf_kfunc_get_data(hctx, 0, 5);
-+
-+	if (!rw_data)
-+		return 0;
-+
-+	if (hctx->bus == BUS_USB) {
-+		/* note: the following call prevents the program to be loaded:
-+		 * hid_bpf_device_event() is not sleepable when this function is.
-+		 */
-+		hid_bpf_kfunc_hw_request(hctx);
-+
-+		bpf_printk("data: %02x %02x %02x", rw_data[0], rw_data[1], rw_data[4]);
-+	}
-+
-+	hid_bpf_kfunc_data_release(rw_data);
-+
-+	return 0;
-+}
-+
-+SEC("fmod_ret/hid_bpf_device_event")
-+int BPF_PROG(hid_mod_event, struct hid_bpf_ctx *hctx, __s64 type)
-+{
-+	/* prevent any USB event to go through the HID stack */
-+	if (hctx->bus == BUS_USB)
-+		return -1;
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/samples/bpf/hid_mouse.c b/samples/bpf/hid_mouse.c
-new file mode 100644
-index 000000000000..aace0b959d3b
---- /dev/null
-+++ b/samples/bpf/hid_mouse.c
-@@ -0,0 +1,131 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Benjamin Tissoires
-+ */
-+
-+/* not sure why but this doesn't get preoperly imported */
-+#define __must_check
-+
-+#include <assert.h>
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <libgen.h>
-+#include <signal.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/resource.h>
-+#include <unistd.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/err.h>
-+
-+#include "bpf_util.h"
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include "hid_mouse.skel.h"
-+
-+static char *sysfs_path;
-+static int sysfs_fd;
-+static int prog_count;
-+
-+static bool running = true;
-+
-+struct prog {
-+	int fd;
-+	struct bpf_link *link;
-+	enum bpf_attach_type type;
-+};
-+
-+static struct prog progs[10];
-+
-+static void int_exit(int sig)
-+{
-+	running = false;
-+	exit(0);
-+}
-+
-+static void usage(const char *prog)
-+{
-+	fprintf(stderr,
-+		"%s: %s /sys/bus/hid/devices/0BUS:0VID:0PID:00ID/uevent\n\n",
-+		__func__, prog);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	struct hid_mouse_lskel *skel;
-+	int prog_fd, err;
-+	const char *optstr = "";
-+	int opt;
-+	char filename[256];
-+
-+	LIBBPF_OPTS(bpf_test_run_opts, topts,
-+		    .repeat = 1,
-+	);
-+
-+	while ((opt = getopt(argc, argv, optstr)) != -1) {
-+		switch (opt) {
-+		default:
-+			usage(basename(argv[0]));
-+			return 1;
-+		}
-+	}
-+
-+	if (optind == argc) {
-+		usage(basename(argv[0]));
-+		return 1;
-+	}
-+
-+	sysfs_path = argv[optind];
-+	if (!sysfs_path) {
-+		perror("sysfs");
-+		return 1;
-+	}
-+
-+	skel = hid_mouse_lskel__open_and_load();
-+	if (!skel) {
-+		fprintf(stderr, "%s  %s:%d", __func__, __FILE__, __LINE__);
-+		return -1;
-+	}
-+
-+	err = hid_mouse_lskel__attach(skel);
-+	if (err)
-+		goto cleanup;
-+
-+	//prog_fd = bpf_program__fd(skel->progs.hid_event);
-+	//err = bpf_prog_test_run_opts(prog_fd, &topts);
-+
-+//	sysfs_fd = open(sysfs_path, O_RDONLY);
-+//
-+////	bpf_object__for_each_program(prog, obj) {
-+////		progs[prog_count].fd = bpf_program__fd(prog);
-+////		progs[prog_count].type = bpf_program__get_expected_attach_type(prog);
-+////		progs[prog_count].link = bpf_program__attach(prog);
-+////		if (libbpf_get_error(progs[prog_count].link)) {
-+////			fprintf(stderr, "bpf_prog_attach: err=%m\n");
-+////			progs[prog_count].fd = 0;
-+////			progs[prog_count].link = NULL;
-+////			goto cleanup;
-+////		}
-+////		prog_count++;
-+////	}
-+//
-+	signal(SIGINT, int_exit);
-+	signal(SIGTERM, int_exit);
-+//
-+////	err = bpf_obj_get_info_by_fd(progs[0].fd, &info, &info_len);
-+////	if (err) {
-+////		printf("can't get prog info - %s\n", strerror(errno));
-+////		goto cleanup;
-+////	}
-+//
-+	while (running)
-+		;
-+
-+ cleanup:
-+	hid_mouse_lskel__destroy(skel);
-+
-+	return err;
-+}
--- 
-2.35.1
-
+Kind regards
+Uffe
