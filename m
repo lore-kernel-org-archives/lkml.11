@@ -2,138 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC34C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389339AbiDUOtK (ORCPT
+        id S1389626AbiDUOtU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54810 "EHLO
+        Thu, 21 Apr 2022 10:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389238AbiDUOtH (ORCPT
+        with ESMTP id S1389341AbiDUOtR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:49:07 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B226218B36;
-        Thu, 21 Apr 2022 07:46:17 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:42960)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nhY4V-00FHvT-FV; Thu, 21 Apr 2022 08:46:15 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35186 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nhY4U-00C6Nm-DU; Thu, 21 Apr 2022 08:46:15 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Oleg Nesterov <oleg@redhat.com>, rjw@rjwysocki.net,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org, tj@kernel.org,
-        linux-pm@vger.kernel.org
-References: <20220414115410.GA32752@redhat.com>
-        <20220414183433.GC32752@redhat.com>
-        <YlikBjA3kL3XEQP5@hirez.programming.kicks-ass.net>
-        <20220415101644.GA10421@redhat.com>
-        <20220415105755.GA15217@redhat.com>
-        <Yllep6B8eva2VURJ@hirez.programming.kicks-ass.net>
-        <20220418170104.GA16199@redhat.com>
-        <20220420131731.GF2731@worktop.programming.kicks-ass.net>
-        <20220420180323.GA14947@redhat.com>
-        <875yn3zdag.fsf_-_@email.froward.int.ebiederm.org>
-        <20220421072138.GI2731@worktop.programming.kicks-ass.net>
-Date:   Thu, 21 Apr 2022 09:45:54 -0500
-In-Reply-To: <20220421072138.GI2731@worktop.programming.kicks-ass.net> (Peter
-        Zijlstra's message of "Thu, 21 Apr 2022 09:21:38 +0200")
-Message-ID: <87k0bixzod.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 21 Apr 2022 10:49:17 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76712253A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:46:27 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id iq10so1396572pjb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:46:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T0eW8wslz84hb8l3ajVs1uODly7DzBA5g8vw9TiMQg4=;
+        b=ZVX7th7rXfoSR88e3u33hPEHJaDKG4gE74opdCHLOgw+uCLlTVbNrQR2bXeEyR9koK
+         d+r86oC6+ZR59Qk/byJXsUN/PoB4mnPj/kWl8tgHByJsc2OW5u+CNAq4KK67D6izQmpV
+         oxZa/kc/zZLws8p5RpxH91ix6tQet3mEGUi97SpXqTleQ9cVRPCHBZ2OnnopaVslf+yp
+         uzR1eMh8iqwkuGuhSeDtkNkGdeia3fYbOpalNiX74xejuK8LPXhyVPNe9RGS+HSs8y0v
+         k4siBh4AZa+FJ2A4jzCqXatD3bFvg7haaIkEwGz4tXbQunAdVAOGA8L5nijjQ+sXQo6w
+         11gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T0eW8wslz84hb8l3ajVs1uODly7DzBA5g8vw9TiMQg4=;
+        b=DgzkmqslxffBErWu/o71pJsa46Uz/ca3es6cKv/MWl9mfkp73+KLhrIgY6vdgJ6j/T
+         9PxiWITMuR/Fe7ABbvv5ievxbnPL4506IukyKMQgThv91nylk1yBAHFZxXaKWKRuWgMd
+         3RVg5Tma2c2yKn7Bg0lhGjqrKPza/MYXJBE31FfOJ9Tz7sNgO6nIRVccUYcl5f17sXYi
+         iytdOIBPZlP63hFuOu9+Rwzzy6K72LRTtZnArBompNz0jJy19TKF3tD99hk13peS+t1J
+         A6D3UFNV81Int0HFZheFumlgdUS+xH/tU/8IPa7i5nawDIVhgW8W9c/fcc4LWG9FQjKP
+         eHiA==
+X-Gm-Message-State: AOAM531e22txkZesT5rCiGeJw9QHu+tFKe7lrMGumPP3yMjGLiNMEtIV
+        HdrzPfPWUGj7yQYpD9LX+apBjw==
+X-Google-Smtp-Source: ABdhPJyyC4XWzMYGFBSp0eyOLoQthv2TCc+r+u6ANhTWcBsnL3cHjy8j0Ol0Az1JSYiJXscCNNQgOw==
+X-Received: by 2002:a17:90b:4f44:b0:1d2:c5f4:1a8d with SMTP id pj4-20020a17090b4f4400b001d2c5f41a8dmr38780pjb.4.1650552387145;
+        Thu, 21 Apr 2022 07:46:27 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id j19-20020a056a00235300b0050a858af58fsm14007109pfj.145.2022.04.21.07.46.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 07:46:26 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 14:46:23 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     Mingwei Zhang <mizhang@google.com>, kvm <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] KVM: SEV: Add cond_resched() to loop in
+ sev_clflush_pages()
+Message-ID: <YmFuP/J01eVJ4/8+@google.com>
+References: <20220330164306.2376085-1-pgonda@google.com>
+ <CAL715W+S-SJwXBhYO=_T-9uAPLt6cQ-Hn+_+ehefAh6+kQ_zOA@mail.gmail.com>
+ <YkYdlfYM/FWlMqMg@google.com>
+ <CAL715WLhy7EkJCyO7vzak3O8iw8GDRHkPF8aRtDedPXO1vx_Qw@mail.gmail.com>
+ <Yk3bSmQTspjZHUZf@google.com>
+ <CAMkAt6obVDW_LFvQzUYw6v7okiNq1KAbUOMoM3bN6zeJUGg6Xw@mail.gmail.com>
+ <Yl2IN6CHQzkts4XE@google.com>
+ <CAMkAt6qEazsM1qMbg3EaKHD3BD_xrUrqORqg4XmNu-aqGmK0iQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nhY4U-00C6Nm-DU;;;mid=<87k0bixzod.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/z+LKMx7ZRZNtGzHHMAiSTq140t24TiUQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [RFC][PATCH] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMkAt6qEazsM1qMbg3EaKHD3BD_xrUrqORqg4XmNu-aqGmK0iQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Zijlstra <peterz@infradead.org> writes:
+On Thu, Apr 21, 2022, Peter Gonda wrote:
+> On Mon, Apr 18, 2022 at 9:48 AM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > On Wed, Apr 06, 2022, Peter Gonda wrote:
+> > > On Wed, Apr 6, 2022 at 12:26 PM Sean Christopherson <seanjc@google.com> wrote:
+> > > >
+> > > > On Wed, Apr 06, 2022, Mingwei Zhang wrote:
+> > > > > Hi Sean,
+> > > > >
+> > > > > > > > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> > > > > > > > index 75fa6dd268f0..c2fe89ecdb2d 100644
+> > > > > > > > --- a/arch/x86/kvm/svm/sev.c
+> > > > > > > > +++ b/arch/x86/kvm/svm/sev.c
+> > > > > > > > @@ -465,6 +465,7 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
+> > > > > > > >                 page_virtual = kmap_atomic(pages[i]);
+> > > > > > > >                 clflush_cache_range(page_virtual, PAGE_SIZE);
+> > > > > > > >                 kunmap_atomic(page_virtual);
+> > > > > > > > +               cond_resched();
+> > > > > > >
+> > > > > > > If you add cond_resched() here, the frequency (once per 4K) might be
+> > > > > > > too high. You may want to do it once per X pages, where X could be
+> > > > > > > something like 1G/4K?
+> > > > > >
+> > > > > > No, every iteration is perfectly ok.  The "cond"itional part means that this will
+> > > > > > reschedule if and only if it actually needs to be rescheduled, e.g. if the task's
+> > > > > > timeslice as expired.  The check for a needed reschedule is cheap, using
+> > > > > > cond_resched() in tight-ish loops is ok and intended, e.g. KVM does a reched
+> > > > > > check prior to enterring the guest.
+> > > > >
+> > > > > Double check on the code again. I think the point is not about flag
+> > > > > checking. Obviously branch prediction could really help. The point I
+> > > > > think is the 'call' to cond_resched(). Depending on the kernel
+> > > > > configuration, cond_resched() may not always be inlined, at least this
+> > > > > is my understanding so far? So if that is true, then it still might
+> > > > > not always be the best to call cond_resched() that often.
+> > > >
+> > > > Eh, compared to the cost of 64 back-to-back CLFLUSHOPTs, the cost of __cond_resched()
+> > > > is peanuts.  Even accounting for the rcu_all_qs() work, it's still dwarfed by the
+> > > > cost of flushing data from the cache.  E.g. based on Agner Fog's wonderful uop
+> > > > latencies[*], the actual flush time for a single page is going to be upwards of
+> > > > 10k cycles, whereas __cond_resched() is going to well under 100 cycles in the happy
+> > > > case of no work.  Even if those throughput numbers are off by an order of magnitude,
+> > > > e.g. CLFLUSHOPT can complete in 15 cycles, that's still ~1k cycles.
+> > > >
+> > > > Peter, don't we also theoretically need cond_resched() in the loops in
+> > > > sev_launch_update_data()?  AFAICT, there's no articifical restriction on the size
+> > > > of the payload, i.e. the kernel is effectively relying on userspace to not update
+> > > > large swaths of memory.
+> > >
+> > > Yea we probably do want to cond_resched() in the for loop inside of
+> > > sev_launch_update_data(). Ithink in  sev_dbg_crypt() userspace could
+> > > request a large number of pages to be decrypted/encrypted for
+> > > debugging but se have a call to sev_pin_memory() in the loop so that
+> > > will have a cond_resded() inside of __get_users_pages(). Or should we
+> > > have a cond_resded() inside of the loop in sev_dbg_crypt() too?
+> >
+> > I believe sev_dbg_crypt() needs a cond_resched() of its own, sev_pin_memory()
+> > isn't guaranteed to get into the slow path of internal_get_user_pages_fast().
+> 
+> Ah, understood thanks. I'll send out patches for those two paths. I
+> personally haven't seen any warning logs from them though.
 
-> On Wed, Apr 20, 2022 at 03:54:15PM -0500, Eric W. Biederman wrote:
->> 
->> I was thinking about this and I have an approach from a different
->> direction.  In particular it removes the need for ptrace_freeze_attach
->> and ptrace_unfreeze_attach to change __state.  Instead a jobctl
->> bit is used to suppress waking up a process with TASK_WAKEKILL.
->> 
->> I think this would be a good technique to completely decouple
->> PREEMPT_RT from the work that ptrace_freeze_attach does.
->> 
->> Comments?
->
-> On first read-through, I like it! A few comments down below..
->
->> @@ -216,13 +217,11 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
->>  	 * PTRACE_LISTEN can allow ptrace_trap_notify to wake us up remotely.
->>  	 * Recheck state under the lock to close this race.
->>  	 */
->> -	spin_lock_irq(&task->sighand->siglock);
->> -	if (READ_ONCE(task->__state) == __TASK_TRACED) {
->> -		if (__fatal_signal_pending(task))
->> -			wake_up_state(task, __TASK_TRACED);
->> -		else
->> -			WRITE_ONCE(task->__state, TASK_TRACED);
->> -	}
->> +	spin_unlock_irq(&task->sighand->siglock);
->
->   ^^^^ this should be spin_lock_irq(...)
-
-Doh!
-
-Thank you for spotting that.  That solves my nasty splat in
-__send_signal.
-
-
->
->> +	WARN_ON(!(task->jobctl & JOBCTL_DELAY_WAKEKILL));
->> +	task->jobctl &= ~JOBCTL_DELAY_WAKEKILL;
->> +	if (fatal_signal_pending(task))
->> +		wake_up_state(task, TASK_WAKEKILL);
->>  	spin_unlock_irq(&task->sighand->siglock);
->>  }
->>  
->> @@ -256,7 +255,7 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
->>  	 */
->>  	read_lock(&tasklist_lock);
->>  	if (child->ptrace && child->parent == current) {
->> -		WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
->> +		WARN_ON(child->jobctl & JOBCTL_DELAY_WAKEKILL);
->>  		/*
->>  		 * child->sighand can't be NULL, release_task()
->>  		 * does ptrace_unlink() before __exit_signal().
->> @@ -267,13 +266,13 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
->>  	read_unlock(&tasklist_lock);
->>  
->>  	if (!ret && !ignore_state) {
->> -		if (!wait_task_inactive(child, __TASK_TRACED)) {
->> +		if (!wait_task_inactive(child, TASK_TRACED)) {
->
-> This is still very dubious, there are spinlocks between
-> set_current_state(TASK_TRACED) and schedule(), so wait_task_inactive()
-> can fail where we don't want it to due to TASK_TRACED being temporarily
-> held in ->saved_state.
-
-When it comes to PREEMPT_RT yes.
-
-I think we might be able to remove the wait_task_inactive, I am
-not certain what it gets us.
-
-All this change gets us is the removal of playing with __state.
-
-Eric
+Do you have test cases that deliberately attempt to decrypt+read pages upon pages
+of guest memory at a time?  Unless someone has wired up a VMM to do a full dump
+of guest memory, I highly doubt a "real" VMM will do more than read a handful of
+bytes at a time.
