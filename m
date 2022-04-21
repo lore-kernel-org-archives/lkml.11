@@ -2,139 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 009CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390320AbiDUPvc (ORCPT
+        id S1390332AbiDUP4x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
+        Thu, 21 Apr 2022 11:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390302AbiDUPv2 (ORCPT
+        with ESMTP id S244480AbiDUP4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:51:28 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649F51AF2A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:48:38 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id s18so11009683ejr.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:48:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=99zPGQDcBvB2eneXnR+UDPkr2FlkHpg0OSrd18ZV4Fg=;
-        b=VLywufJWMlVFxqcfNnZ5LLc0KyAM4UcVKWw+3U/dmyzmkYUl66eNLXln+J8wdYeFib
-         TFyQctG/3jB/BbqgBgIkmvyVe+j+kUwysGydwnvXU5g4OFlIiLrRR8CbwW/1kcOqrDS+
-         k0cjhjdEuKA9oz6o6ZI4+lhEkSrErxxRSEcNrzW34RIWL52UoIMChNYDRaHpCNE9iMIV
-         60vSWFF+QCw7DM/nHF6PHQih9JoZHz7nKTTuQuC2JzA1lYWsULBpVaziblXAfpywWIj6
-         7dnAXZKJS1yem3+vHGn6UQEIyt4JSgqGoBuYdFziAgX7DDF3NJAd76xP+qrOxF4jsiZD
-         kJgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=99zPGQDcBvB2eneXnR+UDPkr2FlkHpg0OSrd18ZV4Fg=;
-        b=Ha2Dyc4OBQ9hutuCyFNOr/WeQDeIcYv0EwEf+8Rc71uf3CkPbUiRXHsIVHrPztuDV8
-         k9dGaHzA5sOMWQ1RIKa9gBvhjV6W8bgfi9PnZ+4ELxoB1ez2ifqiX7c1JGC4O6+xMcpM
-         510P8RezuWwQZ2RDOhqA4GT6aM/Ye5csNpiozcfW9/OcV+nrUw1vT0HlxqkgeduNgUz0
-         k6BG8qIxdFwJ7gYvb+BEydC0ZRwH+iEXNlVHa+MWvjbERix7CUxMl/q6YmmGHIxiCCCy
-         LpIy5tLLQTWe0ZKxH9IzbnYhZTbb/jmnorKeDqSZYiyriySPBRqd5kauED2G0FQgsjFc
-         Shlw==
-X-Gm-Message-State: AOAM530nN5tC0swClcnxfLwoqR9nrmYhUCTIh2nhdK7X+oSAU2MYWioy
-        FEN/RfJ53HoDIFe192dgPr6ptSVJ1jTbdfdqugLph2r3DUxisQ==
-X-Google-Smtp-Source: ABdhPJwZmx55dd2ozNjrym2eOBStotYqhCTvy4duFqRmIX0adxyFMMBT3BVbRgBAgiRzqcsobnw2+YrQW3eqbI1gKqU=
-X-Received: by 2002:a17:906:1841:b0:6e8:872d:8999 with SMTP id
- w1-20020a170906184100b006e8872d8999mr162746eje.492.1650556113446; Thu, 21 Apr
- 2022 08:48:33 -0700 (PDT)
+        Thu, 21 Apr 2022 11:56:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5629515722;
+        Thu, 21 Apr 2022 08:54:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 159A8B82427;
+        Thu, 21 Apr 2022 15:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E3D0C385A5;
+        Thu, 21 Apr 2022 15:53:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650556439;
+        bh=SPGqcsm/mPwauQNxS2M/UVf4wunx/J8ixR6fXQi/vgw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ay6LPA6X8qf16TL6LPrVDn82pO394X1oys0Gg86eGgMOUBFHPdE7kbPEmagMSDVKk
+         KtMKJWvM+bPeCDzG93MJlYzItvrfr4lDAYKbSaXO1iCJhyYXx7TVvusObmjjpAzEqC
+         C/H5vbcG+IegQVh0FegjgBnNYH0flpf4c6cxi4M8=
+Date:   Thu, 21 Apr 2022 17:53:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: [PATCH] topology/sysfs: Fix allnoconfig build breakage.
+Message-ID: <YmF+FTxgu2U4/oPA@kroah.com>
+References: <20220421152645.3a849198@canb.auug.org.au>
+ <YmD+geU9CmjoVnN9@kroah.com>
+ <YmF8Hrq5kgDdfvtS@agluck-desk3.sc.intel.com>
 MIME-Version: 1.0
-References: <20220421070631.1273879-1-anshuman.khandual@arm.com>
-In-Reply-To: <20220421070631.1273879-1-anshuman.khandual@arm.com>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Thu, 21 Apr 2022 11:47:57 -0400
-Message-ID: <CA+CK2bDMqxkzmyaoi8DD7eTRG7bS-6H=U-h_SYRLDy7Y54gOmg@mail.gmail.com>
-Subject: Re: [PATCH V2] mm/page_table_check: Drop all redundant EXPORT_SYMBOL()
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-mm <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmF8Hrq5kgDdfvtS@agluck-desk3.sc.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 3:05 AM Anshuman Khandual
-<anshuman.khandual@arm.com> wrote:
->
-> Function definitions need not be exported via EXPORT_SYMBOL() mechanism. In
-> this case these functions just get called only inside their wrappers. Even
-> __page_table_check_zero() gets called without such an export. Just drop all
-> these redundant EXPORT_SYMBOL().
->
-> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-mm@kvack.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-
-Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-
-Thank you,
-Pasha
-
+On Thu, Apr 21, 2022 at 08:45:34AM -0700, Luck, Tony wrote:
+> drivers/base/topology.c: In function 'topology_is_visible':
+> drivers/base/topology.c:158:24: warning: unused variable 'dev' [-Wunused-variable]
+>   158 |         struct device *dev = kobj_to_dev(kobj);
+> 
+> This is because the topology_ppin(dev->id) macro expands to:
+> 
+> 	(cpu_data(dev->id).ppin)
+> 
+> and with CONFIG_SMP=n the cpu_data() macro expands to boot_cpu_data
+> (ignoring its argument) with the end result:
+> 
+> 	boot_cpu_data.ppin
+> 
+> My CPP-fu wasn't up to a modification to topology_ppin(), so I added a
+> (probably redundant) check for "dev" being a NULL pointer.
+> 
+> Fixes: c3702a746ff5 ("topology/sysfs: Hide PPIN on systems that do not support it.")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Tony Luck <tony.luck@intel.com>
+> 
 > ---
-> This applies on v5.18-rc3
->
-> Changes in V2:
->
-> - Restored EXPORT_SYMBOL for __page_table_check_pte_set() per Pasha
->
->  mm/page_table_check.c | 5 -----
->  1 file changed, 5 deletions(-)
->
-> diff --git a/mm/page_table_check.c b/mm/page_table_check.c
-> index 2458281bff89..627c5025d786 100644
-> --- a/mm/page_table_check.c
-> +++ b/mm/page_table_check.c
-> @@ -167,7 +167,6 @@ void __page_table_check_pte_clear(struct mm_struct *mm, unsigned long addr,
->                                        PAGE_SIZE >> PAGE_SHIFT);
->         }
->  }
-> -EXPORT_SYMBOL(__page_table_check_pte_clear);
->
->  void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
->                                   pmd_t pmd)
-> @@ -180,7 +179,6 @@ void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
->                                        PMD_PAGE_SIZE >> PAGE_SHIFT);
->         }
->  }
-> -EXPORT_SYMBOL(__page_table_check_pmd_clear);
->
->  void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
->                                   pud_t pud)
-> @@ -193,7 +191,6 @@ void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
->                                        PUD_PAGE_SIZE >> PAGE_SHIFT);
->         }
->  }
-> -EXPORT_SYMBOL(__page_table_check_pud_clear);
->
->  void __page_table_check_pte_set(struct mm_struct *mm, unsigned long addr,
->                                 pte_t *ptep, pte_t pte)
-> @@ -223,7 +220,6 @@ void __page_table_check_pmd_set(struct mm_struct *mm, unsigned long addr,
->                                      pmd_write(pmd));
->         }
->  }
-> -EXPORT_SYMBOL(__page_table_check_pmd_set);
->
->  void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
->                                 pud_t *pudp, pud_t pud)
-> @@ -238,7 +234,6 @@ void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
->                                      pud_write(pud));
->         }
->  }
-> -EXPORT_SYMBOL(__page_table_check_pud_set);
->
->  void __page_table_check_pte_clear_range(struct mm_struct *mm,
->                                         unsigned long addr,
-> --
-> 2.20.1
->
+> Better fixes with clever CPP macro tricks gratefully welcomed
+> ---
+>  drivers/base/topology.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/topology.c b/drivers/base/topology.c
+> index 706dbf8bf249..31fae51fd340 100644
+> --- a/drivers/base/topology.c
+> +++ b/drivers/base/topology.c
+> @@ -157,7 +157,7 @@ static umode_t topology_is_visible(struct kobject *kobj,
+>  {
+>  	struct device *dev = kobj_to_dev(kobj);
+>  
+> -	if (attr == &dev_attr_ppin.attr && !topology_ppin(dev->id))
+> +	if (!dev || (attr == &dev_attr_ppin.attr && !topology_ppin(dev->id)))
+
+!dev is impossible to ever hit, that's the sign that the code is wrong
+and needs to be fixed :(
+
+Sorry, this is not going to be an acceptable change.
+
+greg k-h
