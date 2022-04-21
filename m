@@ -2,55 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:45:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DD7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385143AbiDUGr1 (ORCPT
+        id S1385318AbiDUGrl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
+        Thu, 21 Apr 2022 02:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385152AbiDUGqh (ORCPT
+        with ESMTP id S1385187AbiDUGp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:46:37 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECA816582
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:43:00 -0700 (PDT)
+        Thu, 21 Apr 2022 02:45:59 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E6615817
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:42:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523381; x=1682059381;
+  t=1650523372; x=1682059372;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IyqTtKl8pfWrORbTfBAnzI+EZwggZHYfLzrZbrWNmAw=;
-  b=jqt4/KQqqYuAg40nhwo1UR+Bk5uCJww76Fl21fA4LYbQ+KgsUuuoNC/K
-   y9220BdRaKMjQUkDs3XbGbz1wzNa2+JcwGhhA9wn9PDZXvOXH3rjAhwKO
-   cdjcbR3rfDCcxazUQmEaliCnQ6v4R8EwEKalTYJcvXRlFHUduk4sW1G1J
-   GEfqm8eeNlnwcGkOLkSCJGNRidVoA2DgdngJEL+4yCWI+EFEzlsVl8ed9
-   udGxicOcZ3bbsCikiPnAGiwncF2XmD4zIYNSQDLotyZZISgRfKrO0jTvg
-   C6yoCUWmrBK+yg/pRow5i0Lq+jy4tp8totCDyorO0qGVNsFr18MbAiN0o
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263109252"
+  bh=5x/GaOdy39Ig7Apy9+wqMzr77VRml13pyAZosPYaShY=;
+  b=bm3AYcplvp7fVD/US08gz5+atk6IVpgywLflo9XFzCIoQIYQ6pT9RIiW
+   UCzhXpQYirdsx1n1rTTp0I+ni6pVMIfHgYPzhkH1Esp6CKF0zVHdzQs4w
+   lq8FiOSMi1tpvql81ImReOOcYEs90fSHqC9k8yRjPJ6e7zWYs0xpwSpYD
+   F5evbzMtXgCGrMc0JNFUADVGoPWRAzfwkx4VQG+d1jaePAJpoOLSP2OWP
+   hAf26htd5lCUmCJ6LEbB5wRHtX3Prt8ET5PzhDY6vcFEpzbLVXxU8Qj8y
+   l/U9lLhPea7i2KjtDe/OlcZjU1NucUyVRGZxng7vsGn/0BUL5AmL5FcxL
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264429184"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="263109252"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:42:52 -0700
+   d="scan'208";a="264429184"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:42:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="865402049"
+   d="scan'208";a="530131476"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 20 Apr 2022 23:42:51 -0700
+  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2022 23:42:50 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQWg-000808-Ph;
+        id 1nhQWg-0007zZ-9h;
         Thu, 21 Apr 2022 06:42:50 +0000
-Date:   Thu, 21 Apr 2022 14:41:51 +0800
+Date:   Thu, 21 Apr 2022 14:42:32 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 2360/2579] include/linux/signal.h:97:11:
- error: array index 3 is past the end of the array (which contains 2
- elements)
-Message-ID: <202204210229.ZtiUn30E-lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1760/2579] fs/ceph/cache.h:130:16: error:
+ implicit declaration of function 'filemap_dirty_folio'; did you mean
+ 'filemap_get_folio'?
+Message-ID: <202204210519.7NXwmnKd-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -60,177 +59,89 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
 head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: e43870d97c8fb5c656b4592457df87ac2ee05f7a [2360/2579] headers/deps: mm: Optimize <linux/mm_api.h> dependencies, remove <linux/mmzone_api.h> dependency
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220421/202204210229.ZtiUn30E-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+commit: 5906052f724ace8783a32193d743f4db58a3bfee [1760/2579] headers/deps: writeback: Remove the <linux/writeback_api.h> header from <linux/writeback.h>
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220421/202204210519.7NXwmnKd-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=e43870d97c8fb5c656b4592457df87ac2ee05f7a
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=5906052f724ace8783a32193d743f4db58a3bfee
         git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
         git fetch --no-tags mingo-tip sched/headers
-        git checkout e43870d97c8fb5c656b4592457df87ac2ee05f7a
+        git checkout 5906052f724ace8783a32193d743f4db58a3bfee
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kvm/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/ fs/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   In file included from include/linux/pgtable_api.h:15:
-   In file included from include/linux/mmzone_api.h:33:
-   In file included from arch/x86/include/asm/highmem.h:26:
-   In file included from arch/x86/include/asm/tlbflush.h:5:
-   In file included from include/linux/mm_api.h:393:
-   include/linux/huge_mm.h:207:10: error: implicit declaration of function 'pmd_none' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           return !pmd_none(pmd) && !pmd_present(pmd);
-                   ^
-   include/linux/huge_mm.h:207:28: error: implicit declaration of function 'pmd_present' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           return !pmd_none(pmd) && !pmd_present(pmd);
-                                     ^
-   include/linux/huge_mm.h:214:27: error: implicit declaration of function 'pmd_trans_huge' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd))
-                                    ^
-   include/linux/huge_mm.h:214:51: error: implicit declaration of function 'pmd_devmap' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd))
-                                                            ^
-   include/linux/huge_mm.h:222:6: error: implicit declaration of function 'pud_trans_huge' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           if (pud_trans_huge(*pud) || pud_devmap(*pud))
-               ^
-   include/linux/huge_mm.h:222:30: error: implicit declaration of function 'pud_devmap' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           if (pud_trans_huge(*pud) || pud_devmap(*pud))
-                                       ^
-   include/linux/huge_mm.h:254:37: error: implicit declaration of function 'pmd_pfn' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           return READ_ONCE(huge_zero_pfn) == pmd_pfn(pmd) && pmd_present(pmd);
-                                              ^
-   include/linux/huge_mm.h:254:53: error: implicit declaration of function 'pmd_present' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           return READ_ONCE(huge_zero_pfn) == pmd_pfn(pmd) && pmd_present(pmd);
-                                                              ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   In file included from include/linux/pgtable_api.h:19:
-   arch/x86/include/asm/pgtable.h:209:29: error: static declaration of 'pmd_pfn' follows non-static declaration
-   static inline unsigned long pmd_pfn(pmd_t pmd)
-                               ^
-   include/linux/huge_mm.h:254:37: note: previous implicit declaration is here
-           return READ_ONCE(huge_zero_pfn) == pmd_pfn(pmd) && pmd_present(pmd);
-                                              ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   In file included from include/linux/pgtable_api.h:19:
-   arch/x86/include/asm/pgtable.h:250:19: error: static declaration of 'pmd_trans_huge' follows non-static declaration
-   static inline int pmd_trans_huge(pmd_t pmd)
-                     ^
-   include/linux/huge_mm.h:214:27: note: previous implicit declaration is here
-           if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd))
-                                    ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   In file included from include/linux/pgtable_api.h:19:
-   arch/x86/include/asm/pgtable.h:744:19: error: static declaration of 'pmd_present' follows non-static declaration
-   static inline int pmd_present(pmd_t pmd)
-                     ^
-   include/linux/huge_mm.h:207:28: note: previous implicit declaration is here
-           return !pmd_none(pmd) && !pmd_present(pmd);
-                                     ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   In file included from include/linux/pgtable_api.h:19:
-   arch/x86/include/asm/pgtable.h:773:19: error: static declaration of 'pmd_none' follows non-static declaration
-   static inline int pmd_none(pmd_t pmd)
-                     ^
-   include/linux/huge_mm.h:207:10: note: previous implicit declaration is here
-           return !pmd_none(pmd) && !pmd_present(pmd);
-                   ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   include/linux/pgtable_api.h:1201:19: error: static declaration of 'pmd_devmap' follows non-static declaration
-   static inline int pmd_devmap(pmd_t pmd)
-                     ^
-   include/linux/huge_mm.h:214:51: note: previous implicit declaration is here
-           if (is_swap_pmd(*pmd) || pmd_trans_huge(*pmd) || pmd_devmap(*pmd))
-                                                            ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   include/linux/pgtable_api.h:1205:19: error: static declaration of 'pud_devmap' follows non-static declaration
-   static inline int pud_devmap(pud_t pud)
-                     ^
-   include/linux/huge_mm.h:222:30: note: previous implicit declaration is here
-           if (pud_trans_huge(*pud) || pud_devmap(*pud))
-                                       ^
-   In file included from arch/x86/kvm/vmx/nested.c:9:
-   include/linux/pgtable_api.h:1218:19: error: static declaration of 'pud_trans_huge' follows non-static declaration
-   static inline int pud_trans_huge(pud_t pud)
-                     ^
-   include/linux/huge_mm.h:222:6: note: previous implicit declaration is here
-           if (pud_trans_huge(*pud) || pud_devmap(*pud))
-               ^
-   In file included from arch/x86/kvm/vmx/nested.c:25:
-   In file included from arch/x86/kvm/cpuid.h:5:
-   In file included from arch/x86/kvm/x86.h:5:
-   In file included from include/linux/kvm_host.h:17:
->> include/linux/signal.h:97:11: error: array index 3 is past the end of the array (which contains 2 elements) [-Werror,-Warray-bounds]
-                   return (set->sig[3] | set->sig[2] |
-                           ^        ~
-   arch/x86/include/asm/signal.h:24:2: note: array 'sig' declared here
-           unsigned long sig[_NSIG_WORDS];
-           ^
-   In file included from arch/x86/kvm/vmx/nested.c:25:
-   In file included from arch/x86/kvm/cpuid.h:5:
-   In file included from arch/x86/kvm/x86.h:5:
-   In file included from include/linux/kvm_host.h:17:
-   include/linux/signal.h:97:25: error: array index 2 is past the end of the array (which contains 2 elements) [-Werror,-Warray-bounds]
-                   return (set->sig[3] | set->sig[2] |
-                                         ^        ~
-   arch/x86/include/asm/signal.h:24:2: note: array 'sig' declared here
-           unsigned long sig[_NSIG_WORDS];
-           ^
-   In file included from arch/x86/kvm/vmx/nested.c:25:
-   In file included from arch/x86/kvm/cpuid.h:5:
-   In file included from arch/x86/kvm/x86.h:5:
-   In file included from include/linux/kvm_host.h:17:
-   include/linux/signal.h:113:11: error: array index 3 is past the end of the array (which contains 2 elements) [-Werror,-Warray-bounds]
-                   return  (set1->sig[3] == set2->sig[3]) &&
-                            ^         ~
-   arch/x86/include/asm/signal.h:24:2: note: array 'sig' declared here
-           unsigned long sig[_NSIG_WORDS];
-           ^
-   In file included from arch/x86/kvm/vmx/nested.c:25:
-   In file included from arch/x86/kvm/cpuid.h:5:
-   In file included from arch/x86/kvm/x86.h:5:
-   In file included from include/linux/kvm_host.h:17:
-   include/linux/signal.h:113:27: error: array index 3 is past the end of the array (which contains 2 elements) [-Werror,-Warray-bounds]
-                   return  (set1->sig[3] == set2->sig[3]) &&
-                                            ^         ~
-   arch/x86/include/asm/signal.h:24:2: note: array 'sig' declared here
-           unsigned long sig[_NSIG_WORDS];
-           ^
-   fatal error: too many errors emitted, stopping now [-ferror-limit=]
-   20 errors generated.
+   In file included from fs/ceph/super.c:31:
+   fs/ceph/cache.h: In function 'ceph_fscache_dirty_folio':
+>> fs/ceph/cache.h:130:16: error: implicit declaration of function 'filemap_dirty_folio'; did you mean 'filemap_get_folio'? [-Werror=implicit-function-declaration]
+     130 |         return filemap_dirty_folio(mapping, folio);
+         |                ^~~~~~~~~~~~~~~~~~~
+         |                filemap_get_folio
+   cc1: some warnings being treated as errors
+--
+   In file included from include/net/sock.h:49,
+                    from fs/afs/internal.h:29,
+                    from fs/afs/file.c:31:
+   include/linux/netdevice.h:171:9: error: unknown type name 'local_t'
+     171 |         local_t         rx_dropped;
+         |         ^~~~~~~
+   include/linux/netdevice.h:172:9: error: unknown type name 'local_t'
+     172 |         local_t         tx_dropped;
+         |         ^~~~~~~
+   include/linux/netdevice.h:173:9: error: unknown type name 'local_t'
+     173 |         local_t         rx_nohandler;
+         |         ^~~~~~~
+   In file included from include/linux/compiler_types.h:73,
+                    from <command-line>:
+   include/linux/netdevice.h:174:24: error: 'local_t' undeclared here (not in a function)
+     174 | } __aligned(4 * sizeof(local_t));
+         |                        ^~~~~~~
+   include/linux/compiler_attributes.h:33:68: note: in definition of macro '__aligned'
+      33 | #define __aligned(x)                    __attribute__((__aligned__(x)))
+         |                                                                    ^
+   In file included from include/net/neighbour.h:7,
+                    from include/net/dst.h:21,
+                    from include/net/sock.h:66,
+                    from fs/afs/internal.h:29,
+                    from fs/afs/file.c:31:
+   include/linux/netdevice_api.h: In function 'dev_core_stats_rx_dropped_inc':
+   include/linux/netdevice_api.h:1807:17: error: implicit declaration of function 'local_inc'; did you mean 'local_lock'? [-Werror=implicit-function-declaration]
+    1807 |                 local_inc(&p->FIELD);                                           \
+         |                 ^~~~~~~~~
+   include/linux/netdevice_api.h:1810:1: note: in expansion of macro 'DEV_CORE_STATS_INC'
+    1810 | DEV_CORE_STATS_INC(rx_dropped)
+         | ^~~~~~~~~~~~~~~~~~
+   In file included from fs/afs/file.c:31:
+   fs/afs/file.c: At top level:
+>> fs/afs/internal.h:1540:25: error: 'filemap_dirty_folio' undeclared here (not in a function); did you mean 'filemap_get_folio'?
+    1540 | #define afs_dirty_folio filemap_dirty_folio
+         |                         ^~~~~~~~~~~~~~~~~~~
+   fs/afs/file.c:67:27: note: in expansion of macro 'afs_dirty_folio'
+      67 |         .dirty_folio    = afs_dirty_folio,
+         |                           ^~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
-vim +97 include/linux/signal.h
+vim +130 fs/ceph/cache.h
 
-^1da177e4c3f41 Linus Torvalds  2005-04-16   92  
-71fabd5e483530 George Anzinger 2006-01-08   93  static inline int sigisemptyset(sigset_t *set)
-71fabd5e483530 George Anzinger 2006-01-08   94  {
-71fabd5e483530 George Anzinger 2006-01-08   95  	switch (_NSIG_WORDS) {
-71fabd5e483530 George Anzinger 2006-01-08   96  	case 4:
-71fabd5e483530 George Anzinger 2006-01-08  @97  		return (set->sig[3] | set->sig[2] |
-71fabd5e483530 George Anzinger 2006-01-08   98  			set->sig[1] | set->sig[0]) == 0;
-71fabd5e483530 George Anzinger 2006-01-08   99  	case 2:
-71fabd5e483530 George Anzinger 2006-01-08  100  		return (set->sig[1] | set->sig[0]) == 0;
-71fabd5e483530 George Anzinger 2006-01-08  101  	case 1:
-71fabd5e483530 George Anzinger 2006-01-08  102  		return set->sig[0] == 0;
-71fabd5e483530 George Anzinger 2006-01-08  103  	default:
-1c3bea0e71892e Oleg Nesterov   2014-10-13  104  		BUILD_BUG();
-71fabd5e483530 George Anzinger 2006-01-08  105  		return 0;
-71fabd5e483530 George Anzinger 2006-01-08  106  	}
-71fabd5e483530 George Anzinger 2006-01-08  107  }
-71fabd5e483530 George Anzinger 2006-01-08  108  
+400e1286c0ec3f Jeff Layton             2021-12-07  126  
+8fb72b4a76933a Matthew Wilcox (Oracle  2022-02-09  127) static inline int ceph_fscache_dirty_folio(struct address_space *mapping,
+8fb72b4a76933a Matthew Wilcox (Oracle  2022-02-09  128) 		struct folio *folio)
+400e1286c0ec3f Jeff Layton             2021-12-07  129  {
+8fb72b4a76933a Matthew Wilcox (Oracle  2022-02-09 @130) 	return filemap_dirty_folio(mapping, folio);
+400e1286c0ec3f Jeff Layton             2021-12-07  131  }
+400e1286c0ec3f Jeff Layton             2021-12-07  132  
 
-:::::: The code at line 97 was first introduced by commit
-:::::: 71fabd5e4835309b4feca6209122ce56c595c461 [PATCH] sigaction should clear all signals on SIG_IGN, not just < 32
+:::::: The code at line 130 was first introduced by commit
+:::::: 8fb72b4a76933ae6f86725cc8e4a8190ba84d755 fscache: Convert fscache_set_page_dirty() to fscache_dirty_folio()
 
-:::::: TO: George Anzinger <george@mvista.com>
-:::::: CC: Linus Torvalds <torvalds@g5.osdl.org>
+:::::: TO: Matthew Wilcox (Oracle) <willy@infradead.org>
+:::::: CC: Matthew Wilcox (Oracle) <willy@infradead.org>
 
 -- 
 0-DAY CI Kernel Test Service
