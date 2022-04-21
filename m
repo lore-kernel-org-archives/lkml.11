@@ -2,390 +2,613 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4BAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386669AbiDUIdT (ORCPT
+        id S1386676AbiDUIdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
+        Thu, 21 Apr 2022 04:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbiDUIc2 (ORCPT
+        with ESMTP id S1386661AbiDUIdR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:32:28 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E528C13EB0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:29:37 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2ef4a241cc5so44276117b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:29:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5DsAwiLdIzm2TrVJ0U2gFbJkr1AO6nQ1MwuMxT9Gufk=;
-        b=JFP/eenSEeqTuECaWL0dZKMDNqCJw3jNgLUk2NBSzBqSGQgws1VPfDGnI67js8+Gj/
-         ToGOVRF9nWzAnZxnpTKp+7LvDbO2AhHXyc+SHPgc9gmD3esmm7vaNSKlAFQPcIy7vbWb
-         mDfPjZ/sEKcu3wlURN7VHnEBhGA4zm+KSNSBCwdCWtRxj3LfOsrJ2Gd0myLLy0VRBr9Q
-         93DLv4mEwExjRdQNGLnKeQzcTxioJPmc9+0CCo6HpJpJguxkR2+pdpKuSxcnkBXvqBXo
-         Jnq4kBL5FvgsuyGrxhRI3cQzRZ2Fp2/OpJfesGFXf5r6qKiIrGsoLbWCb+jdvu3Qm1vb
-         e+vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5DsAwiLdIzm2TrVJ0U2gFbJkr1AO6nQ1MwuMxT9Gufk=;
-        b=kpfKWzeoD1urSa+ipCkGWzIs//sjCvNwWLyf8Sk7wp5vVUjBmQimHpeW7NpjclEh/1
-         l+mDxBSMjoX9LIeyLsFUDnrmvuKMmpSeDNJ028y2HxrqGyeCcqsh3UjINGnATQdyI7++
-         6Tgd0S/NWv/spZJNkOWiWns/3vAGIm12x8IwucfZsugwsuvoHJD+mSMgoX3K1a0JyE4I
-         oZHepKySFaiwOLQakmKgVJ7yK2oLs/iBv9xBDz4ZNZaKvFCybiB8WC3g2u8r4xpO5HNd
-         fPzGglmKl8DmiMHOc4f5t8z3yKfoDujWtg3gKKqJ3z+zVVAeGoJSwi0mFyg8RlpEgg8z
-         /Hbw==
-X-Gm-Message-State: AOAM530XXZInXp1npDm8iq9VlVfozWXGvRt64hA4tSL+2oS7/nQe3yrS
-        cNWhaFpBIlwbsvdCL4dwQneO3NkCxGxHndeL6M2NVg==
-X-Google-Smtp-Source: ABdhPJzoFHPTXfVPQ8gal6T0wp2v6pRDE4EUla+k200AjOTtBOu2t7377CqvR1YjbCj3YIrIB3Vqeot0wsKOQHHQ/OE=
-X-Received: by 2002:a0d:fa01:0:b0:2d6:595d:81d4 with SMTP id
- k1-20020a0dfa01000000b002d6595d81d4mr24676462ywf.86.1650529776959; Thu, 21
- Apr 2022 01:29:36 -0700 (PDT)
+        Thu, 21 Apr 2022 04:33:17 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5327C13CC6;
+        Thu, 21 Apr 2022 01:30:27 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id EE06621115;
+        Thu, 21 Apr 2022 08:30:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650529825; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xlmbm8LpaibRLrd6TfWo85Bfv3gGjQqthjQLvxH79Y4=;
+        b=1uIFsLScyZ4RJAile6OiTBfiVrunZpWpPgvs9GQNn8V5khKnaZjp2CMIO3wKjM8yP2aSKU
+        nlXF64pGFIRfk3NyhJLDNxVzGWRS/vFfWxqs67y3ibdJFONxhOZVF6guD6YqYagw2YjFUh
+        JcGH85fHAKeKEyM21GW9IhNez+8piR0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650529825;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xlmbm8LpaibRLrd6TfWo85Bfv3gGjQqthjQLvxH79Y4=;
+        b=Aq5KHuhgrE1Tz/XlDSCn4PcOJSh2ZmFr/p4rDNayON+GXWRSguArjHkkvLrJ4zTpddthrW
+        SY9Z0jTar5jT+YAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AA1BD13446;
+        Thu, 21 Apr 2022 08:30:25 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +O2ZKCEWYWJfKgAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Thu, 21 Apr 2022 08:30:25 +0000
+Message-ID: <2aeee5a2-b5a5-348e-ccf7-04f49e1119da@suse.de>
+Date:   Thu, 21 Apr 2022 10:30:25 +0200
 MIME-Version: 1.0
-References: <20220407051932.4071-1-xuewen.yan@unisoc.com> <02350916-aa36-ea53-2c98-91b97f49d27e@arm.com>
- <CAB8ipk-KenZaVWQwWqVMksQXLP5r19BQ1OGAdmwHRbjwv3qFHg@mail.gmail.com>
- <9bb00bcb-f984-1cf6-39aa-c11dcf7f07cb@arm.com> <f100bd49-7a1d-5265-29ce-1092195bb2dd@arm.com>
- <CAB8ipk8v1-jyU0Q0k-EXCArsS6Sh=U+fW6NutW+6m+kQ=LKrJA@mail.gmail.com>
- <CAKfTPtDsNSW0JH4phAtZB7ackJFKuJfAGkhQ7JjWG_C2tzQYSw@mail.gmail.com>
- <24631a27-42d9-229f-d9b0-040ac993b749@arm.com> <CAKfTPtAnHmm0T+FKF251YcjM3Nw66Wqs2a16yU9Ptiip+jyNLA@mail.gmail.com>
- <e536ef07-4dd3-affd-0e27-6ff89a7f647f@arm.com>
-In-Reply-To: <e536ef07-4dd3-affd-0e27-6ff89a7f647f@arm.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Thu, 21 Apr 2022 10:29:25 +0200
-Message-ID: <CAKfTPtBfjnWoiTbhRBj4Ve65ukRdm90ri84dNivKuLDBMWhUAQ@mail.gmail.com>
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-To:     Lukasz Luba <Lukasz.Luba@arm.com>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Xuewen Yan <xuewen.yan@unisoc.com>, rafael@kernel.org,
-        viresh.kumar@linaro.org, mingo@redhat.com, peterz@infradead.org,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
-        di.shen@unisoc.com, Xuewen Yan <xuewen.yan94@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+Subject: Re: [PATCH 2/2] drm/nvdla: Add driver support for NVDLA
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+References: <20220419135908.39606-1-cai.huoqing@linux.dev>
+ <20220419135908.39606-3-cai.huoqing@linux.dev>
+Content-Language: en-US
+In-Reply-To: <20220419135908.39606-3-cai.huoqing@linux.dev>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------FoLe0iC4P4R0ttfxKUrmqTpq"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 at 16:13, Lukasz Luba <lukasz.luba@arm.com> wrote:
->
->
->
-> On 4/19/22 13:51, Vincent Guittot wrote:
-> > On Tue, 19 Apr 2022 at 14:01, Lukasz Luba <lukasz.luba@arm.com> wrote:
-> >>
-> >>
-> >>
-> >> On 4/19/22 08:14, Vincent Guittot wrote:
-> >>> On Sat, 16 Apr 2022 at 04:47, Xuewen Yan <xuewen.yan94@gmail.com> wrote:
-> >>>>
-> >>>> Hi Luba  / Dietmar
-> >>>>
-> >>>> On Wed, Apr 13, 2022 at 9:26 PM Lukasz Luba <lukasz.luba@arm.com> wrote:
-> >>>>>
-> >>>>>
-> >>>>>
-> >>>>> On 4/11/22 15:07, Dietmar Eggemann wrote:
-> >>>>>> On 11/04/2022 10:52, Xuewen Yan wrote:
-> >>>>>>> HI Dietmar
-> >>>>>>>
-> >>>>>>> On Mon, Apr 11, 2022 at 4:21 PM Dietmar Eggemann
-> >>>>>>> <dietmar.eggemann@arm.com> wrote:
-> >>>>>>>>
-> >>>>>>>> On 07/04/2022 07:19, Xuewen Yan wrote:
-> >>>>>>>>> There are cases when the cpu max capacity might be reduced due to thermal.
-> >>>>>>>>> Take into the thermal pressure into account when judge whether the rt task
-> >>>>>>>>> fits the cpu. And when schedutil govnor get cpu util, the thermal pressure
-> >>>>>>>>> also should be considered.
-> >>>>>>>>>
-> >>>>>>>>> Signed-off-by: Xuewen Yan <xuewen.yan@unisoc.com>
-> >>>>>>>>> ---
-> >>>>>>>>>     kernel/sched/cpufreq_schedutil.c | 1 +
-> >>>>>>>>>     kernel/sched/rt.c                | 1 +
-> >>>>>>>>>     2 files changed, 2 insertions(+)
-> >>>>>>>>>
-> >>>>>>>>> diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
-> >>>>>>>>> index 3dbf351d12d5..285ad51caf0f 100644
-> >>>>>>>>> --- a/kernel/sched/cpufreq_schedutil.c
-> >>>>>>>>> +++ b/kernel/sched/cpufreq_schedutil.c
-> >>>>>>>>> @@ -159,6 +159,7 @@ static void sugov_get_util(struct sugov_cpu *sg_cpu)
-> >>>>>>>>>          struct rq *rq = cpu_rq(sg_cpu->cpu);
-> >>>>>>>>>          unsigned long max = arch_scale_cpu_capacity(sg_cpu->cpu);
-> >>>>>>>>>
-> >>>>>>>>> +     max -= arch_scale_thermal_pressure(sg_cpu->cpu);
-> >>>>>>>>
-> >>>>>>>> max' = arch_scale_cpu_capacity() - arch_scale_thermal_pressure()
-> >>>>>>>>
-> >>>>>>>> For the energy part (A) we use max' in compute_energy() to cap sum_util
-> >>>>>>>> and max_util at max' and to call em_cpu_energy(..., max_util, sum_util,
-> >>>>>>>> max'). This was done to match (B)'s `policy->max` capping.
-> >>>>>>>>
-> >>>>>>>> For the frequency part (B) we have freq_qos_update_request() in:
-> >>>>>>>>
-> >>>>>>>> power_actor_set_power()
-> >>>>>>>>      ...
-> >>>>>>>>      cdev->ops->set_cur_state()
-> >>>>>>>>
-> >>>>>>>>        cpufreq_set_cur_state()
-> >>>>>>>>          freq_qos_update_request()      <-- !
-> >>>>>>>>          arch_update_thermal_pressure()
-> >>>>>>>>
-> >>>>>>>> restricting `policy->max` which then clamps `target_freq` in:
-> >>>>>>>>
-> >>>>>>>>      cpufreq_update_util()
-> >>>>>>>>        ...
-> >>>>>>>>        get_next_freq()
-> >>>>>>>>          cpufreq_driver_resolve_freq()
-> >>>>>>>>            __resolve_freq()
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> Do you mean that the "max" here will not affect the frequency
-> >>>>>>> conversion, so there is no need to change it?
-> >>>>>>> But is it better to reflect the influence of thermal here?
-> >>>>>>
-> >>>>>> I guess your point is that even though max' has no effect on frequency
-> >>>>>> since QOS caps policy->max anyway, it is still easier to understand the
-> >>>>>> dependency between schedutil and EAS/EM when it comes to the use of
-> >>>>>> thermal pressure.
-> >>>>>>
-> >>>>>> I agree. The way how the "hidden" policy->max capping guarantees that
-> >>>>>> schedutil and EAS/EM are doing the same even when only the latter uses
-> >>>>>> max' is not obvious.
-> >>>>>
-> >>>>> +1 here, IMO we shouldn't rely on hidden stuff. There are two which set
-> >>>>> the thermal pressure, but one is not setting the freq_qos which causes
-> >>>>> the update of the 'policy->max'. So the schedutil will send that high
-> >>>>> frequency but that driver would just ignore and clamp internally. In the
-> >>>>> end we might argue it still works, but is it clean and visible from the
-> >>>>> code? Funny thing might start to happen then the driver, which might be
-> >>>>> the last safety net cannot capture this.
-> >>>
-> >>> schedutil reflects what scheduler wants not what HW can do. If you
-> >>> start to cap the freq with arch_scale_thermal_pressure() in schedutil,
-> >>
-> >> s/freq/util ?
-> >
-> > Isn't it the same at the end if you cap util to orig capacity -
-> > arch_scale_thermal_pressure ?
->
-> No, as I have showed you in the example calculation the 'max_freq'
-> is always taken as a start then scaled by current 'util/max'.
-> If the 'max' was 1024 in both cases, then you might claim that
-> we made a mistake and end up with obviously too low frequency.
->
-> That's why I asked you to be precised with your statements in the
-> description while mentioning variables and signals.
->
-> >
-> >>
-> >> To be precised and maybe fix some potential design issues. We are
-> >> talking here about utilization and set max capacity in function:
-> >> sugov_get_util()
-> >> so fields:
-> >>
-> >> sugov_cpu::util
-> >> sugov_cpu::max /* max capacity */
-> >
-> > Yes. With this patch ,util will be lower than current thermal
-> > mitigation whereas util normally reflects what we need  not what can
-> > be provided
->
-> This is a different requirements: util has to be max capacity and
-> max capacity has to be original max CPU capacity - for the SchedUtil.
-> OK, why? What this requirement adds in the design and final values?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------FoLe0iC4P4R0ttfxKUrmqTpq
+Content-Type: multipart/mixed; boundary="------------DkYIbK1v6bqi1PxCfNnf2XXq";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Cai Huoqing <cai.huoqing@linux.dev>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Airlie <airlied@linux.ie>,
+ Daniel Vetter <daniel@ffwll.ch>, Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Message-ID: <2aeee5a2-b5a5-348e-ccf7-04f49e1119da@suse.de>
+Subject: Re: [PATCH 2/2] drm/nvdla: Add driver support for NVDLA
+References: <20220419135908.39606-1-cai.huoqing@linux.dev>
+ <20220419135908.39606-3-cai.huoqing@linux.dev>
+In-Reply-To: <20220419135908.39606-3-cai.huoqing@linux.dev>
 
-Because the calculation you are proposing is wrong and doesn't make
-sense. Util is the average utilization of the cpu that has to be
-compared with its original capacity max in order to get the freq that
-matches with this utilization.
+--------------DkYIbK1v6bqi1PxCfNnf2XXq
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-We have freq = util / max * max_freq and cpufreq will then capp freq
-if mitigation is applied. Once the mitigation disappear, the request
-will be back to targeted freq.
+KFJlc2VuZGluZywgYXMgc29tZSBNTHMgZGlkbid0IGxpa2UgdGhlIHNpemUgb2YgdGhlIG9y
+aWduaW5hbCBtYWlsLikNCg0KSGksDQoNCnRoYW5rcyBmb3IgeW91ciBzdWJtaXNzaW9uLiBT
+b21lIGdlbmVyYWwgY29tbWVudHM6DQoNCiAgICogc29tZSBmdW5jdGlvbnMgYXJlIHByZWZp
+eGVkIHdpdGggZGxhXywgb3RoZXJzIHVzZSBudmRsYV8uIEl0IHNlZW1zIA0KYXJiaXRyYXJ5
+IHRvIG1lLiBQbGVhc2UgdXNlIG52ZGxhXyBjb25zaXN0ZW50bHkgdGhyb3VnaG91dCB0aGUg
+c291cmNlIGNvZGUuDQoNCiAgICogRm9yIHJlcG9ydGluZyBlcnJvcnMsIHBsZWFzZSB1c2Ug
+ZHJtX2VycigpLCBkcm1fd2FybigpLCBldGMuIEkgDQpzdWdnZXN0IHRvIHJlYXJyYW5nZSB0
+aGUgZXJyb3IgbWVzc2FnZXMgdG8gbm90IGJlIGxvY2F0ZWQgaW4gdGhlIA0KaW5uZXJtb3N0
+IGZ1bmN0aW9ucy4NCg0KICAgKiBDb3VsZCB5b3UgcGxlYXNlIHNwbGl0IHRoaXMgcGF0Y2gg
+aW50byBzbWFsbGVyIHBpZWNlcz8gSXQgY3VycmVudGx5IA0KaGl0cyBzaXplIGxpbWl0cyBv
+ZiBzb21lIG1haWxpbmcgbGlzdHMuIE1heWJlIGFkZCB0aGUgcmVnaXN0ZXIgY29uc3RhbnRz
+IA0Kc2VwYXJhdGVseS4NCg0KUGxlYXNlIGZpbmQgbW9yZSByZXZpZXcgY29tbWVudHMgYmVs
+b3cuIEl0J3Mgbm90IGEgZnVsbCByZXZpZXcsIGJ1dCBhdCANCmxlYXN0IHNvbWV0aGluZyB0
+byBzdGFydCB3aXRoLg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQpBbSAxOS4wNC4yMiB1
+bSAxNTo1OSBzY2hyaWViIENhaSBIdW9xaW5nOg0KPiBUaGUgTlZJRElBIERlZXAgTGVhcm5p
+bmcgQWNjZWxlcmF0b3IgKE5WRExBKSBpcyBhbiBvcGVuIHNvdXJjZSBJUA0KPiB3aGljaCBp
+cyBpbnRlZ3JhdGVkIGludG8gTlZJRElBIEpldHNvbiBBR1ggWGF2aWVyLA0KPiBzbyBhZGQg
+ZHJpdmVyIHN1cHBvcnQgZm9yIHRoaXMgYWNjZWxlcmF0b3IuDQo+IA0KPiBTaWduZWQtb2Zm
+LWJ5OiBDYWkgSHVvcWluZyA8Y2FpLmh1b3FpbmdAbGludXguZGV2Pg0KPiAtLS0NCj4gICBk
+cml2ZXJzL2dwdS9kcm0vS2NvbmZpZyAgICAgICAgICAgICAgICAgfCAgICAyICsNCj4gICBk
+cml2ZXJzL2dwdS9kcm0vTWFrZWZpbGUgICAgICAgICAgICAgICAgfCAgICAxICsNCj4gICBk
+cml2ZXJzL2dwdS9kcm0vbnZkbGEvS2NvbmZpZyAgICAgICAgICAgfCAgICA4ICsNCj4gICBk
+cml2ZXJzL2dwdS9kcm0vbnZkbGEvTWFrZWZpbGUgICAgICAgICAgfCAgIDE5ICsNCj4gICBk
+cml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfYmRtYS5jICAgICAgfCAgMjAwICsNCj4gICBk
+cml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfY2FjaGUuYyAgICAgfCAgMjE1ICsNCj4gICBk
+cml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfY2RwLmMgICAgICAgfCAgMzAwICsrDQo+ICAg
+ZHJpdmVycy9ncHUvZHJtL252ZGxhL252ZGxhX2NvbW1vbi5jICAgIHwgIDI5NSArKw0KPiAg
+IGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9jb21tb24uaCAgICB8ICA4MzUgKysrDQo+
+ICAgZHJpdmVycy9ncHUvZHJtL252ZGxhL252ZGxhX2NvbnYuYyAgICAgIHwgIDY4MyArKysN
+Cj4gICBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfZHJtLmMgICAgICAgfCAgNjk1ICsr
+Kw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9kcm0uaCAgICAgICB8ICAxMjcg
+Kw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9lbmdpbmUuYyAgICB8ICAyMzMg
+Kw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9lbmdpbmUuaCAgICB8ICAyNzIg
+Kw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9nZW0uYyAgICAgICB8ICAzOTMg
+KysNCj4gICBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfaW9jdGwuaCAgICAgfCAgIDk5
+ICsNCj4gICBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfcGRwLmMgICAgICAgfCAgNDQ2
+ICsrDQo+ICAgZHJpdmVycy9ncHUvZHJtL252ZGxhL252ZGxhX3JlZy5oICAgICAgIHwgNjQx
+MSArKysrKysrKysrKysrKysrKysrKysrKw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9u
+dmRsYV9ydWJpay5jICAgICB8ICAyMTcgKw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9u
+dmRsYV9zY2hlZC5oICAgICB8ICAgNTIgKw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRsYS9u
+dmRsYV9zY2hlZHVsZXIuYyB8IDEwMDUgKysrKw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9udmRs
+YS9udmRsYV9zZHAuYyAgICAgICB8ICA3MjggKysrDQo+ICAgMjIgZmlsZXMgY2hhbmdlZCwg
+MTMyMzYgaW5zZXJ0aW9ucygrKQ0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dw
+dS9kcm0vbnZkbGEvS2NvbmZpZw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dw
+dS9kcm0vbnZkbGEvTWFrZWZpbGUNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9n
+cHUvZHJtL252ZGxhL252ZGxhX2JkbWEuYw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2
+ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfY2FjaGUuYw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0
+NCBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfY2RwLmMNCj4gICBjcmVhdGUgbW9kZSAx
+MDA2NDQgZHJpdmVycy9ncHUvZHJtL252ZGxhL252ZGxhX2NvbW1vbi5jDQo+ICAgY3JlYXRl
+IG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9jb21tb24uaA0KPiAg
+IGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfY29udi5j
+DQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9k
+cm0uYw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZk
+bGFfZHJtLmgNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9ncHUvZHJtL252ZGxh
+L252ZGxhX2VuZ2luZS5jDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3B1L2Ry
+bS9udmRsYS9udmRsYV9lbmdpbmUuaA0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJz
+L2dwdS9kcm0vbnZkbGEvbnZkbGFfZ2VtLmMNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJp
+dmVycy9ncHUvZHJtL252ZGxhL252ZGxhX2lvY3RsLmgNCj4gICBjcmVhdGUgbW9kZSAxMDA2
+NDQgZHJpdmVycy9ncHUvZHJtL252ZGxhL252ZGxhX3BkcC5jDQo+ICAgY3JlYXRlIG1vZGUg
+MTAwNjQ0IGRyaXZlcnMvZ3B1L2RybS9udmRsYS9udmRsYV9yZWcuaA0KPiAgIGNyZWF0ZSBt
+b2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfcnViaWsuYw0KPiAgIGNy
+ZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfc2NoZWQuaA0K
+PiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0vbnZkbGEvbnZkbGFfc2No
+ZWR1bGVyLmMNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9ncHUvZHJtL252ZGxh
+L252ZGxhX3NkcC5jDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL0tjb25m
+aWcgYi9kcml2ZXJzL2dwdS9kcm0vS2NvbmZpZw0KPiBpbmRleCA1MTMzYzNmMDI4YWIuLmE1
+NWNmZjM3NGFiZCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL0tjb25maWcNCj4g
+KysrIGIvZHJpdmVycy9ncHUvZHJtL0tjb25maWcNCj4gQEAgLTQwOSw2ICs0MDksOCBAQCBz
+b3VyY2UgImRyaXZlcnMvZ3B1L2RybS9zb2xvbW9uL0tjb25maWciDQo+ICAgDQo+ICAgc291
+cmNlICJkcml2ZXJzL2dwdS9kcm0vc3ByZC9LY29uZmlnIg0KPiAgIA0KPiArc291cmNlICJk
+cml2ZXJzL2dwdS9kcm0vbnZkbGEvS2NvbmZpZyINCj4gKw0KPiAgIGNvbmZpZyBEUk1fSFlQ
+RVJWDQo+ICAgCXRyaXN0YXRlICJEUk0gU3VwcG9ydCBmb3IgSHlwZXItViBzeW50aGV0aWMg
+dmlkZW8gZGV2aWNlIg0KPiAgIAlkZXBlbmRzIG9uIERSTSAmJiBQQ0kgJiYgTU1VICYmIEhZ
+UEVSVg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL01ha2VmaWxlIGIvZHJpdmVy
+cy9ncHUvZHJtL01ha2VmaWxlDQo+IGluZGV4IGMyZWY1ZjlmY2U1NC4uOGZhMzUzN2YzMDhh
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vTWFrZWZpbGUNCj4gKysrIGIvZHJp
+dmVycy9ncHUvZHJtL01ha2VmaWxlDQo+IEBAIC0xMzQsMyArMTM0LDQgQEAgb2JqLXkJCQkr
+PSBndWQvDQo+ICAgb2JqLSQoQ09ORklHX0RSTV9IWVBFUlYpICs9IGh5cGVydi8NCj4gICBv
+YmoteQkJCSs9IHNvbG9tb24vDQo+ICAgb2JqLSQoQ09ORklHX0RSTV9TUFJEKSArPSBzcHJk
+Lw0KPiArb2JqLSQoQ09ORklHX0RSTV9OVkRMQSkgKz0gbnZkbGEvDQo+IGRpZmYgLS1naXQg
+YS9kcml2ZXJzL2dwdS9kcm0vbnZkbGEvS2NvbmZpZyBiL2RyaXZlcnMvZ3B1L2RybS9udmRs
+YS9LY29uZmlnDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAwMDAw
+MC4uMTFjMDRmNWRhODc3DQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJpdmVycy9ncHUv
+ZHJtL252ZGxhL0tjb25maWcNCj4gQEAgLTAsMCArMSw4IEBADQo+ICsjIFNQRFgtTGljZW5z
+ZS1JZGVudGlmaWVyOiBHUEwtMi4wLW9ubHkNCj4gK2NvbmZpZyBEUk1fTlZETEENCj4gKwl0
+cmlzdGF0ZSAiTlZETEEgRFJNIg0KPiArCWRlcGVuZHMgb24gRFJNDQo+ICsJc2VsZWN0IERS
+TV9HRU1fQ01BX0hFTFBFUg0KPiArCWhlbHANCj4gKwkgIENob29zZSB0aGlzIG9wdGlvbiBm
+b3Igb3Blbi1zb3VyY2UgTlZJRElBIERMQSBzdXBwb3J0Lg0KPiArCSAgSWYgTSBpcyBzZWxl
+Y3RlZCB0aGUgbW9kdWxlIHdpbGwgYmUgY2FsbGVkIG52ZGxhLWRybS4NCj4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvZ3B1L2RybS9udmRsYS9NYWtlZmlsZSBiL2RyaXZlcnMvZ3B1L2RybS9u
+dmRsYS9NYWtlZmlsZQ0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiBpbmRleCAwMDAwMDAw
+MDAwMDAuLjc0ZjM3ZDI1OGY4ZA0KPiAtLS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMv
+Z3B1L2RybS9udmRsYS9NYWtlZmlsZQ0KPiBAQCAtMCwwICsxLDE5IEBADQo+ICsNCj4gKyMg
+U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjANCj4gK252ZGxhLWRybS15IDo9IFwN
+Cj4gKwludmRsYV9kcm0ubyBcDQo+ICsJbnZkbGFfZ2VtLm8gXA0KPiArCW52ZGxhX3NjaGVk
+dWxlci5vIFwNCj4gKwludmRsYV9lbmdpbmUubyBcDQo+ICsJbnZkbGFfYmRtYS5vIFwNCj4g
+KwludmRsYV9jb252Lm8gXA0KPiArCW52ZGxhX3NkcC5vIFwNCj4gKwludmRsYV9jZHAubyBc
+DQo+ICsJbnZkbGFfcGRwLm8gXA0KPiArCW52ZGxhX3J1YmlrLm8gXA0KPiArCW52ZGxhX2Nh
+Y2hlLm8gXA0KPiArCW52ZGxhX2NvbW1vbi5vIFwNCj4gKwludmRsYV9lbmdpbmVfZGF0YS5v
+IFwNCj4gKwludmRsYV9lbmdpbmVfZGVidWcubyBcDQoNCkZpbGUgbmFtZXMgc2hvdWxkIGJl
+IHNvcnRlZCBhbHBoYWJldGljYWxseSBoZXJlLg0KDQo+ICsNCj4gK29iai0kKENPTkZJR19E
+Uk1fTlZETEEpICs9IG52ZGxhLWRybS5vDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9k
+cm0vbnZkbGEvbnZkbGFfYmRtYS5jIGIvZHJpdmVycy9ncHUvZHJtL252ZGxhL252ZGxhX2Jk
+bWEuYw0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiBpbmRleCAwMDAwMDAwMDAwMDAuLjIy
+NTYxM2YyN2FjZg0KPiAtLS0gL2Rldi9udWxsDQp9DQoNCg0KPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9ncHUvZHJtL252ZGxhL252ZGxhX2RybS5jIGIvZHJpdmVycy9ncHUvZHJtL252ZGxh
+L252ZGxhX2RybS5jDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAw
+MDAwMC4uOTIxN2VlZTFkZTNiDQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJpdmVycy9n
+cHUvZHJtL252ZGxhL252ZGxhX2RybS5jDQo+IEBAIC0wLDAgKzEsNjk1IEBADQo+ICsvLyBT
+UERYLUxpY2Vuc2UtSWRlbnRpZmllcjogQlNELTMtQ2xhdXNlIE9SIEdQTC0yLjANCj4gKy8q
+DQo+ICsgKiBDb3B5cmlnaHQgKEMpIDIwMTctMjAxOCBOVklESUEgQ09SUE9SQVRJT04NCj4g
+KyAqIENvcHlyaWdodCAoQykgMjAyMiBDYWkgSHVvcWluZw0KPiArICovDQo+ICsNCj4gKyNp
+bmNsdWRlIDxsaW51eC9kbWEtYnVmLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBp
+bmcuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9mcy5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2lu
+dGVycnVwdC5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2lycS5oPg0KPiArI2luY2x1ZGUgPGxp
+bnV4L2lycWRvbWFpbi5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiArI2lu
+Y2x1ZGUgPGxpbnV4L29mLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvb2ZfZGV2aWNlLmg+DQo+
+ICsjaW5jbHVkZSA8bGludXgvb2ZfaXJxLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvb2ZfcGxh
+dGZvcm0uaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4NCj4gKyNp
+bmNsdWRlIDxsaW51eC9wcmludGsuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+
+ICsjaW5jbHVkZSA8bGludXgvc3BpbmxvY2suaD4NCj4gKyNpbmNsdWRlIDxsaW51eC90aW1l
+Lmg+DQo+ICsjaW5jbHVkZSA8bGludXgvdWFjY2Vzcy5oPg0KPiArI2luY2x1ZGUgPGxpbnV4
+L3R5cGVzLmg+DQo+ICsNCj4gKyNpbmNsdWRlICJudmRsYV9kcm0uaCINCj4gKyNpbmNsdWRl
+ICJudmRsYV9pb2N0bC5oIg0KPiArI2luY2x1ZGUgIm52ZGxhX2VuZ2luZS5oIg0KPiArDQo+
+ICtzdGF0aWMgc3RydWN0IG52ZGxhX2NvbmZpZyBudmRsYV9jb25maWdfb3NfaW5pdGlhbCA9
+IHsNCj4gKwkuYXRvbV9zaXplID0gMzIsDQo+ICsJLmJkbWFfZW5hYmxlID0gdHJ1ZSwNCj4g
+KwkucnViaWtfZW5hYmxlID0gdHJ1ZSwNCj4gKwkud2VpZ2h0X2NvbXByZXNzX3N1cHBvcnQg
+PSB0cnVlLA0KPiArfTsNCj4gKw0KPiArc3RhdGljIHN0cnVjdCBudmRsYV9jb25maWcgbnZk
+bGFfY29uZmlnX3NtYWxsID0gew0KPiArCS8vLmF0b21fc2l6ZSA9IDgsDQo+ICsJLmF0b21f
+c2l6ZSA9IDMyLCAgLy8gbnZfbGFyZ2UgY29uZmlnDQo+ICsJLmJkbWFfZW5hYmxlID0gZmFs
+c2UsDQo+ICsJLnJ1YmlrX2VuYWJsZSA9IGZhbHNlLA0KPiArCS53ZWlnaHRfY29tcHJlc3Nf
+c3VwcG9ydCA9IGZhbHNlLA0KPiArfTsNCj4gKw0KPiAraW50NjRfdCBkbGFfZ2V0X3RpbWVf
+dXModm9pZCkNCj4gK3sNCj4gKwlyZXR1cm4ga3RpbWVfZ2V0X25zKCkgLyBOU0VDX1BFUl9V
+U0VDOw0KPiArfQ0KPiArDQo+ICt2b2lkIGRsYV9yZWdfd3JpdGUodm9pZCAqZHJpdmVyX2Nv
+bnRleHQsIHVpbnQzMl90IGFkZHIsIHVpbnQzMl90IHJlZykNCj4gK3sNCj4gKwlzdHJ1Y3Qg
+bnZkbGFfZGV2aWNlICpudmRsYV9kZXYgPQ0KPiArCQkJKHN0cnVjdCBudmRsYV9kZXZpY2Ug
+Kilkcml2ZXJfY29udGV4dDsNCj4gKw0KPiArCWlmICghbnZkbGFfZGV2KQ0KPiArCQlyZXR1
+cm47DQo+ICsNCj4gKwl3cml0ZWwocmVnLCBudmRsYV9kZXYtPmJhc2UgKyBhZGRyKTsNCj4g
+K30NCj4gKw0KPiArdWludDMyX3QgZGxhX3JlZ19yZWFkKHZvaWQgKmRyaXZlcl9jb250ZXh0
+LCB1aW50MzJfdCBhZGRyKQ0KPiArew0KPiArCXN0cnVjdCBudmRsYV9kZXZpY2UgKm52ZGxh
+X2RldiA9DQo+ICsJCQkoc3RydWN0IG52ZGxhX2RldmljZSAqKWRyaXZlcl9jb250ZXh0Ow0K
+PiArDQo+ICsJaWYgKCFudmRsYV9kZXYpDQo+ICsJCXJldHVybiAwOw0KPiArDQo+ICsJcmV0
+dXJuIHJlYWRsKG52ZGxhX2Rldi0+YmFzZSArIGFkZHIpOw0KPiArfQ0KPiArDQo+ICtzdGF0
+aWMgaXJxcmV0dXJuX3QgbnZkbGFfZW5naW5lX2lzcihpbnQzMl90IGlycSwgdm9pZCAqZGF0
+YSkNCj4gK3sNCj4gKwl1bnNpZ25lZCBsb25nIGZsYWdzOw0KPiArCXVpbnQzMl90IG1hc2s7
+DQo+ICsJdWludDMyX3QgcmVnOw0KPiArCXN0cnVjdCBkbGFfcHJvY2Vzc29yICpwcm9jZXNz
+b3IgPSBOVUxMOw0KPiArCXN0cnVjdCBkbGFfcHJvY2Vzc29yX2dyb3VwICpncm91cDsNCj4g
+KwlzdHJ1Y3QgZGxhX2VuZ2luZSAqZW5naW5lOw0KPiArCXN0cnVjdCBudmRsYV9kZXZpY2Ug
+Km52ZGxhX2RldiA9IChzdHJ1Y3QgbnZkbGFfZGV2aWNlICopZGF0YTsNCj4gKw0KPiArCWlm
+ICghbnZkbGFfZGV2KQ0KPiArCQlyZXR1cm4gSVJRX05PTkU7DQo+ICsNCj4gKwllbmdpbmUg
+PSBudmRsYV9kZXYtPmVuZ2luZV9jb250ZXh0Ow0KPiArCXNwaW5fbG9ja19pcnFzYXZlKCZu
+dmRsYV9kZXYtPm52ZGxhX2xvY2ssIGZsYWdzKTsNCj4gKw0KPiArCW1hc2sgPSBnbGJfcmVn
+X3JlYWQoZW5naW5lLCBTX0lOVFJfTUFTSyk7DQo+ICsJcmVnID0gZ2xiX3JlZ19yZWFkKGVu
+Z2luZSwgU19JTlRSX1NUQVRVUyk7DQo+ICsNCj4gKwlpZiAocmVnICYgTUFTSyhHTEJfU19J
+TlRSX1NUQVRVU18wLCBDQUNDX0RPTkVfU1RBVFVTMCkpIHsNCj4gKwkJcHJvY2Vzc29yID0g
+JmVuZ2luZS0+cHJvY2Vzc29yc1tETEFfT1BfQ09OVl07DQo+ICsJCWdyb3VwID0gJnByb2Nl
+c3Nvci0+Z3JvdXBzWzBdOw0KPiArCQlncm91cC0+ZXZlbnRzIHw9ICgxIDw8IERMQV9FVkVO
+VF9PUF9DT01QTEVURUQpOw0KPiArCX0NCj4gKwlpZiAocmVnICYgTUFTSyhHTEJfU19JTlRS
+X1NUQVRVU18wLCBDQUNDX0RPTkVfU1RBVFVTMSkpIHsNCj4gKwkJcHJvY2Vzc29yID0gJmVu
+Z2luZS0+cHJvY2Vzc29yc1tETEFfT1BfQ09OVl07DQo+ICsJCWdyb3VwID0gJnByb2Nlc3Nv
+ci0+Z3JvdXBzWzFdOw0KPiArCQlncm91cC0+ZXZlbnRzIHw9ICgxIDw8IERMQV9FVkVOVF9P
+UF9DT01QTEVURUQpOw0KPiArCX0NCj4gKwlpZiAocmVnICYgTUFTSyhHTEJfU19JTlRSX1NU
+QVRVU18wLCBTRFBfRE9ORV9TVEFUVVMwKSkgew0KPiArCQlwcm9jZXNzb3IgPSAmZW5naW5l
+LT5wcm9jZXNzb3JzW0RMQV9PUF9TRFBdOw0KPiArCQlncm91cCA9ICZwcm9jZXNzb3ItPmdy
+b3Vwc1swXTsNCj4gKwkJZ3JvdXAtPmV2ZW50cyB8PSAoMSA8PCBETEFfRVZFTlRfT1BfQ09N
+UExFVEVEKTsNCj4gKwl9DQo+ICsJaWYgKHJlZyAmIE1BU0soR0xCX1NfSU5UUl9TVEFUVVNf
+MCwgU0RQX0RPTkVfU1RBVFVTMSkpIHsNCj4gKwkJcHJvY2Vzc29yID0gJmVuZ2luZS0+cHJv
+Y2Vzc29yc1tETEFfT1BfU0RQXTsNCj4gKwkJZ3JvdXAgPSAmcHJvY2Vzc29yLT5ncm91cHNb
+MV07DQo+ICsJCWdyb3VwLT5ldmVudHMgfD0gKDEgPDwgRExBX0VWRU5UX09QX0NPTVBMRVRF
+RCk7DQo+ICsJfQ0KPiArCWlmIChyZWcgJiBNQVNLKEdMQl9TX0lOVFJfU1RBVFVTXzAsIENE
+UF9ET05FX1NUQVRVUzApKSB7DQo+ICsJCXByb2Nlc3NvciA9ICZlbmdpbmUtPnByb2Nlc3Nv
+cnNbRExBX09QX0NEUF07DQo+ICsJCWdyb3VwID0gJnByb2Nlc3Nvci0+Z3JvdXBzWzBdOw0K
+PiArCQlncm91cC0+ZXZlbnRzIHw9ICgxIDw8IERMQV9FVkVOVF9PUF9DT01QTEVURUQpOw0K
+PiArCX0NCj4gKwlpZiAocmVnICYgTUFTSyhHTEJfU19JTlRSX1NUQVRVU18wLCBDRFBfRE9O
+RV9TVEFUVVMxKSkgew0KPiArCQlwcm9jZXNzb3IgPSAmZW5naW5lLT5wcm9jZXNzb3JzW0RM
+QV9PUF9DRFBdOw0KPiArCQlncm91cCA9ICZwcm9jZXNzb3ItPmdyb3Vwc1sxXTsNCj4gKwkJ
+Z3JvdXAtPmV2ZW50cyB8PSAoMSA8PCBETEFfRVZFTlRfT1BfQ09NUExFVEVEKTsNCj4gKwl9
+DQo+ICsJaWYgKHJlZyAmIE1BU0soR0xCX1NfSU5UUl9TVEFUVVNfMCwgUlVCSUtfRE9ORV9T
+VEFUVVMwKSkgew0KPiArCQlwcm9jZXNzb3IgPSAmZW5naW5lLT5wcm9jZXNzb3JzW0RMQV9P
+UF9SVUJJS107DQo+ICsJCWdyb3VwID0gJnByb2Nlc3Nvci0+Z3JvdXBzWzBdOw0KPiArCQln
+cm91cC0+ZXZlbnRzIHw9ICgxIDw8IERMQV9FVkVOVF9PUF9DT01QTEVURUQpOw0KPiArCX0N
+Cj4gKwlpZiAocmVnICYgTUFTSyhHTEJfU19JTlRSX1NUQVRVU18wLCBSVUJJS19ET05FX1NU
+QVRVUzEpKSB7DQo+ICsJCXByb2Nlc3NvciA9ICZlbmdpbmUtPnByb2Nlc3NvcnNbRExBX09Q
+X1JVQklLXTsNCj4gKwkJZ3JvdXAgPSAmcHJvY2Vzc29yLT5ncm91cHNbMV07DQo+ICsJCWdy
+b3VwLT5ldmVudHMgfD0gKDEgPDwgRExBX0VWRU5UX09QX0NPTVBMRVRFRCk7DQo+ICsJfQ0K
+PiArCWlmIChyZWcgJiBNQVNLKEdMQl9TX0lOVFJfU1RBVFVTXzAsIFBEUF9ET05FX1NUQVRV
+UzApKSB7DQo+ICsJCXByb2Nlc3NvciA9ICZlbmdpbmUtPnByb2Nlc3NvcnNbRExBX09QX1BE
+UF07DQo+ICsJCWdyb3VwID0gJnByb2Nlc3Nvci0+Z3JvdXBzWzBdOw0KPiArCQlncm91cC0+
+ZXZlbnRzIHw9ICgxIDw8IERMQV9FVkVOVF9PUF9DT01QTEVURUQpOw0KPiArCX0NCj4gKwlp
+ZiAocmVnICYgTUFTSyhHTEJfU19JTlRSX1NUQVRVU18wLCBQRFBfRE9ORV9TVEFUVVMxKSkg
+ew0KPiArCQlwcm9jZXNzb3IgPSAmZW5naW5lLT5wcm9jZXNzb3JzW0RMQV9PUF9QRFBdOw0K
+PiArCQlncm91cCA9ICZwcm9jZXNzb3ItPmdyb3Vwc1sxXTsNCj4gKwkJZ3JvdXAtPmV2ZW50
+cyB8PSAoMSA8PCBETEFfRVZFTlRfT1BfQ09NUExFVEVEKTsNCj4gKwl9DQo+ICsJaWYgKHJl
+ZyAmIE1BU0soR0xCX1NfSU5UUl9TVEFUVVNfMCwgQkRNQV9ET05FX1NUQVRVUzApKSB7DQo+
+ICsJCXByb2Nlc3NvciA9ICZlbmdpbmUtPnByb2Nlc3NvcnNbRExBX09QX0JETUFdOw0KPiAr
+CQlncm91cCA9ICZwcm9jZXNzb3ItPmdyb3Vwc1swXTsNCj4gKwkJZ3JvdXAtPmV2ZW50cyB8
+PSAoMSA8PCBETEFfRVZFTlRfT1BfQ09NUExFVEVEKTsNCj4gKwl9DQo+ICsJaWYgKHJlZyAm
+IE1BU0soR0xCX1NfSU5UUl9TVEFUVVNfMCwgQkRNQV9ET05FX1NUQVRVUzEpKSB7DQo+ICsJ
+CXByb2Nlc3NvciA9ICZlbmdpbmUtPnByb2Nlc3NvcnNbRExBX09QX0JETUFdOw0KPiArCQln
+cm91cCA9ICZwcm9jZXNzb3ItPmdyb3Vwc1sxXTsNCj4gKwkJZ3JvdXAtPmV2ZW50cyB8PSAo
+MSA8PCBETEFfRVZFTlRfT1BfQ09NUExFVEVEKTsNCj4gKwl9DQo+ICsJaWYgKHJlZyAmIE1B
+U0soR0xCX1NfSU5UUl9TVEFUVVNfMCwgQ0RNQV9EQVRfRE9ORV9TVEFUVVMwKSkgew0KPiAr
+CQlwcm9jZXNzb3IgPSAmZW5naW5lLT5wcm9jZXNzb3JzW0RMQV9PUF9DT05WXTsNCj4gKwkJ
+Z3JvdXAgPSAmcHJvY2Vzc29yLT5ncm91cHNbMF07DQo+ICsJCWdyb3VwLT5ldmVudHMgfD0g
+KDEgPDwgRExBX0VWRU5UX0NETUFfRFRfRE9ORSk7DQo+ICsJfQ0KPiArCWlmIChyZWcgJiBN
+QVNLKEdMQl9TX0lOVFJfU1RBVFVTXzAsIENETUFfREFUX0RPTkVfU1RBVFVTMSkpIHsNCj4g
+KwkJcHJvY2Vzc29yID0gJmVuZ2luZS0+cHJvY2Vzc29yc1tETEFfT1BfQ09OVl07DQo+ICsJ
+CWdyb3VwID0gJnByb2Nlc3Nvci0+Z3JvdXBzWzFdOw0KPiArCQlncm91cC0+ZXZlbnRzIHw9
+ICgxIDw8IERMQV9FVkVOVF9DRE1BX0RUX0RPTkUpOw0KPiArCX0NCj4gKwlpZiAocmVnICYg
+TUFTSyhHTEJfU19JTlRSX1NUQVRVU18wLCBDRE1BX1dUX0RPTkVfU1RBVFVTMCkpIHsNCj4g
+KwkJcHJvY2Vzc29yID0gJmVuZ2luZS0+cHJvY2Vzc29yc1tETEFfT1BfQ09OVl07DQo+ICsJ
+CWdyb3VwID0gJnByb2Nlc3Nvci0+Z3JvdXBzWzBdOw0KPiArCQlncm91cC0+ZXZlbnRzIHw9
+ICgxIDw8IERMQV9FVkVOVF9DRE1BX1dUX0RPTkUpOw0KPiArCX0NCj4gKwlpZiAocmVnICYg
+TUFTSyhHTEJfU19JTlRSX1NUQVRVU18wLCBDRE1BX1dUX0RPTkVfU1RBVFVTMSkpIHsNCj4g
+KwkJcHJvY2Vzc29yID0gJmVuZ2luZS0+cHJvY2Vzc29yc1tETEFfT1BfQ09OVl07DQo+ICsJ
+CWdyb3VwID0gJnByb2Nlc3Nvci0+Z3JvdXBzWzFdOw0KPiArCQlncm91cC0+ZXZlbnRzIHw9
+ICgxIDw8IERMQV9FVkVOVF9DRE1BX1dUX0RPTkUpOw0KPiArCX0NCj4gKw0KPiArCWdsYl9y
+ZWdfd3JpdGUoZW5naW5lLCBTX0lOVFJfU1RBVFVTLCByZWcpOw0KPiArCW1hc2sgPSBnbGJf
+cmVnX3JlYWQoZW5naW5lLCBTX0lOVFJfTUFTSyk7DQo+ICsJcmVnID0gZ2xiX3JlZ19yZWFk
+KGVuZ2luZSwgU19JTlRSX1NUQVRVUyk7DQo+ICsNCj4gKwljb21wbGV0ZSgmbnZkbGFfZGV2
+LT5ldmVudF9ub3RpZmllcik7DQo+ICsJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmbnZkbGFf
+ZGV2LT5udmRsYV9sb2NrLCBmbGFncyk7DQo+ICsNCj4gKwlyZXR1cm4gSVJRX0hBTkRMRUQ7
+DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBpbnQzMl90IGRsYV9yZWFkX2RtYV9hZGRyZXNzKHZv
+aWQgKmRyaXZlcl9jb250ZXh0LCB2b2lkICp0YXNrX2RhdGEsDQo+ICsJCQkJCQlpbnQxNl90
+IGluZGV4LCB2b2lkICpkc3QpDQo+ICt7DQo+ICsJaW50MzJfdCByZXQgPSAwOw0KPiArCXN0
+cnVjdCBudmRsYV9tZW1faGFuZGxlICpoYW5kbGVzOw0KPiArCWRtYV9hZGRyX3QgKnBoeXNf
+YWRkciA9IChkbWFfYWRkcl90ICopKGRzdCk7DQo+ICsJc3RydWN0IG52ZGxhX2RldmljZSAq
+bnZkbGFfZGV2ID0NCj4gKwkJCShzdHJ1Y3QgbnZkbGFfZGV2aWNlICopZHJpdmVyX2NvbnRl
+eHQ7DQo+ICsJc3RydWN0IG52ZGxhX3Rhc2sgKnRhc2sgPSAoc3RydWN0IG52ZGxhX3Rhc2sg
+Kil0YXNrX2RhdGE7DQo+ICsNCj4gKwlpZiAoaW5kZXggPT0gLTEgfHwgaW5kZXggPiB0YXNr
+LT5udW1fYWRkcmVzc2VzKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCWhhbmRs
+ZXMgPSAoc3RydWN0IG52ZGxhX21lbV9oYW5kbGUgKil0YXNrLT5hZGRyZXNzX2xpc3Q7DQo+
+ICsJcmV0ID0gbnZkbGFfZ2VtX2RtYV9hZGRyKG52ZGxhX2Rldi0+ZHJtLCB0YXNrLT5maWxl
+LA0KPiArCQkJCQloYW5kbGVzW2luZGV4XS5oYW5kbGUsDQo+ICsJCQkJCXBoeXNfYWRkcik7
+DQo+ICsNCj4gKwkvKiBBZGQgb2Zmc2V0IHRvIElPVkEgYWRkcmVzcyAqLw0KPiArCSpwaHlz
+X2FkZHIgPSAqcGh5c19hZGRyICsgaGFuZGxlc1tpbmRleF0ub2Zmc2V0Ow0KPiArDQo+ICsJ
+cmV0dXJuIHJldDsNCj4gK30NCj4gKw0KPiArc3RhdGljIGludDMyX3QgZGxhX3JlYWRfY3B1
+X2FkZHJlc3Modm9pZCAqZHJpdmVyX2NvbnRleHQsIHZvaWQgKnRhc2tfZGF0YSwNCj4gKwkJ
+CQkJCWludDE2X3QgaW5kZXgsIHZvaWQgKmRzdCkNCj4gK3sNCj4gKwl1aW50NjRfdCAqdGVt
+cCA9ICh1aW50NjRfdCAqKWRzdDsNCj4gKwlzdHJ1Y3QgbnZkbGFfdGFzayAqdGFzayA9IChz
+dHJ1Y3QgbnZkbGFfdGFzayAqKXRhc2tfZGF0YTsNCj4gKw0KPiArCWlmIChpbmRleCA9PSAt
+MSB8fCBpbmRleCA+IHRhc2stPm51bV9hZGRyZXNzZXMpDQo+ICsJCXJldHVybiAtRUlOVkFM
+Ow0KPiArDQo+ICsJKnRlbXAgPSAodWludDY0X3QpaW5kZXg7DQo+ICsJcmV0dXJuIDA7DQo+
+ICt9DQo+ICsNCj4gK2ludDMyX3QgZGxhX2dldF9kbWFfYWRkcmVzcyh2b2lkICpkcml2ZXJf
+Y29udGV4dCwgdm9pZCAqdGFza19kYXRhLA0KPiArCQkJCQlpbnQxNl90IGluZGV4LCB2b2lk
+ICpkc3RfcHRyLA0KPiArCQkJCQl1aW50MzJfdCBkZXN0aW5hdGlvbikNCj4gK3sNCj4gKwlp
+bnQzMl90IHJldCA9IDA7DQo+ICsNCj4gKwlpZiAoZGVzdGluYXRpb24gPT0gREVTVElOQVRJ
+T05fUFJPQ0VTU09SKSB7DQo+ICsJCXJldCA9IGRsYV9yZWFkX2NwdV9hZGRyZXNzKGRyaXZl
+cl9jb250ZXh0LCB0YXNrX2RhdGEsDQo+ICsJCQkJCQlpbmRleCwgZHN0X3B0cik7DQo+ICsJ
+fSBlbHNlIGlmIChkZXN0aW5hdGlvbiA9PSBERVNUSU5BVElPTl9ETUEpIHsNCj4gKwkJcmV0
+ID0gZGxhX3JlYWRfZG1hX2FkZHJlc3MoZHJpdmVyX2NvbnRleHQsIHRhc2tfZGF0YSwNCj4g
+KwkJCQkJCWluZGV4LCBkc3RfcHRyKTsNCj4gKwl9IGVsc2Ugew0KPiArCQlyZXQgPSAtRUlO
+VkFMOw0KPiArCX0NCj4gKw0KPiArCXJldHVybiByZXQ7DQo+ICt9DQo+ICsNCj4gK2ludDMy
+X3QgZGxhX2RhdGFfd3JpdGUodm9pZCAqZHJpdmVyX2NvbnRleHQsIHZvaWQgKnRhc2tfZGF0
+YSwNCj4gKwkJCQl2b2lkICpzcmMsIHVpbnQ2NF90IGRzdCwNCj4gKwkJCQl1aW50MzJfdCBz
+aXplLCB1aW50NjRfdCBvZmZzZXQpDQo+ICt7DQo+ICsJaW50MzJfdCByZXQ7DQo+ICsJdm9p
+ZCAqcHRyID0gTlVMTDsNCj4gKwlzdHJ1Y3QgZG1hX2J1ZiAqYnVmOw0KPiArCXN0cnVjdCBp
+b3N5c19tYXAgbWFwOw0KPiArCXN0cnVjdCBudmRsYV9tZW1faGFuZGxlICpoYW5kbGVzOw0K
+PiArCXN0cnVjdCBudmRsYV90YXNrICp0YXNrID0gKHN0cnVjdCBudmRsYV90YXNrICopdGFz
+a19kYXRhOw0KPiArDQo+ICsJaGFuZGxlcyA9IHRhc2stPmFkZHJlc3NfbGlzdDsNCj4gKwli
+dWYgPSBkbWFfYnVmX2dldChoYW5kbGVzW2RzdF0uaGFuZGxlKTsNCj4gKwlpZiAoSVNfRVJS
+KGJ1ZikpIHsNCj4gKwkJcHJfZXJyKCIlczogRmFpbGVkIGdldCBkbWFfYnVmIGZvciBoYW5k
+bGU9JWRcbiIsIF9fZnVuY19fLA0KPiArCQkJCQkJaGFuZGxlc1tkc3RdLmhhbmRsZSk7DQo+
+ICsJCXJldHVybiAtRUZBVUxUOw0KPiArCX0NCj4gKw0KPiArCXJldCA9IGRtYV9idWZfYmVn
+aW5fY3B1X2FjY2VzcyhidWYsIERNQV9CSURJUkVDVElPTkFMKTsNCj4gKwlpZiAocmV0KQ0K
+PiArCQlnb3RvIHB1dF9kbWFfYnVmOw0KPiArDQo+ICsJcmV0ID0gZG1hX2J1Zl92bWFwKGJ1
+ZiwgJm1hcCk7DQo+ICsJcHRyID0gcmV0ID8gTlVMTCA6IG1hcC52YWRkcjsNCg0KTmV2ZXIg
+ZXh0cmFjdCB0aGUgcG9pbnRlcidzIGFkZHJlc3Mgd2l0aG91dCBnb29kIHJlYXNvbi4gWW91
+IGRvbid0IGtub3cgDQppZiB0aGlzIHBvaW50cyB0byBhIGxvY2F0aW9uIGluIEkvTyBtZW1v
+cnkuDQoNCj4gKwlpZiAoIXB0cikgew0KDQpTaW1wbHkgdGVzdCBmb3IgcmV0IGhlcmUuDQoN
+Cj4gKwkJcHJfZXJyKCIlczogRmFpbGVkIHRvIHZtYXAgZG1hX2J1ZiBmb3IgaGFuZGxlPSVk
+XG4iLCBfX2Z1bmNfXywNCj4gKwkJCQkJCWhhbmRsZXNbZHN0XS5oYW5kbGUpOw0KPiArCQly
+ZXQgPSAtRU5PTUVNOw0KDQpZb3UgYWxyZWFkeSBnb3QgYW4gZXJybm8gY29kZS4gRG9uJ3Qg
+b3ZlcnJpZGUgaXQuDQoNCj4gKwkJZ290byBlbmRfY3B1X2FjY2VzczsNCj4gKwl9DQo+ICsN
+Cj4gKw0KPiArCW1lbWNweSgodm9pZCAqKSgodWludDhfdCAqKXB0ciArIG9mZnNldCksIHNy
+Yywgc2l6ZSk7DQoNClVzZSBpb3N5c19tYXBfbWVtY3B5X3RvKCkgaGVyZS4gIEl0IGRvZXMg
+dGhlIHJpZ2h0IHRoaW5nDQoNCj4gKw0KPiArCWRtYV9idWZfdnVubWFwKGJ1ZiwgcHRyKTsN
+Cg0KWW91IGhhdmUgdG8gcGFzcyBtYXAgYXMgdGhlIHNlY29uZCBhcmd1bWVudC4NCg0KPiAr
+DQo+ICtlbmRfY3B1X2FjY2VzczoNCj4gKwlkbWFfYnVmX2VuZF9jcHVfYWNjZXNzKGJ1Ziwg
+RE1BX0JJRElSRUNUSU9OQUwpOw0KPiArDQo+ICtwdXRfZG1hX2J1ZjoNCj4gKwlkbWFfYnVm
+X3B1dChidWYpOw0KPiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gKw0KPiAraW50MzJf
+dCBkbGFfZGF0YV9yZWFkKHZvaWQgKmRyaXZlcl9jb250ZXh0LCB2b2lkICp0YXNrX2RhdGEs
+DQo+ICsJCQkJdWludDY0X3Qgc3JjLCB2b2lkICpkc3QsDQo+ICsJCQkJdWludDMyX3Qgc2l6
+ZSwgdWludDY0X3Qgb2Zmc2V0KQ0KPiArew0KPiArCWludDMyX3QgcmV0Ow0KPiArCXZvaWQg
+KnB0ciA9IE5VTEw7DQo+ICsJc3RydWN0IGRtYV9idWYgKmJ1ZjsNCj4gKwlzdHJ1Y3QgaW9z
+eXNfbWFwIG1hcDsNCj4gKwlzdHJ1Y3QgbnZkbGFfbWVtX2hhbmRsZSAqaGFuZGxlczsNCj4g
+KwlzdHJ1Y3QgbnZkbGFfdGFzayAqdGFzayA9IChzdHJ1Y3QgbnZkbGFfdGFzayAqKXRhc2tf
+ZGF0YTsNCj4gKw0KPiArCWhhbmRsZXMgPSB0YXNrLT5hZGRyZXNzX2xpc3Q7DQo+ICsNCj4g
+KwlidWYgPSBkbWFfYnVmX2dldChoYW5kbGVzW3NyY10uaGFuZGxlKTsNCj4gKwlpZiAoSVNf
+RVJSKGJ1ZikpIHsNCj4gKwkJcHJfZXJyKCIlczogRmFpbGVkIGdldCBkbWFfYnVmIGZvciBo
+YW5kbGU9JWRcbiIsIF9fZnVuY19fLA0KPiArCQkJCQkJaGFuZGxlc1tzcmNdLmhhbmRsZSk7
+DQo+ICsJCXJldHVybiAtRUZBVUxUOw0KPiArCX0NCj4gKw0KPiArCXJldCA9IGRtYV9idWZf
+YmVnaW5fY3B1X2FjY2VzcyhidWYsIERNQV9CSURJUkVDVElPTkFMKTsNCj4gKwlpZiAocmV0
+KQ0KPiArCQlnb3RvIHB1dF9kbWFfYnVmOw0KPiArDQo+ICsJcmV0ID0gZG1hX2J1Zl92bWFw
+KGJ1ZiwgJm1hcCk7DQo+ICsJcHRyID0gcmV0ID8gTlVMTCA6IG1hcC52YWRkcjsNCj4gKwlp
+ZiAoIXB0cikgew0KPiArCQlwcl9lcnIoIiVzOiBGYWlsZWQgdG8gdm1hcCBkbWFfYnVmIGZv
+ciBoYW5kbGU9JWRcbiIsIF9fZnVuY19fLA0KPiArCQkJCQkJaGFuZGxlc1tzcmNdLmhhbmRs
+ZSk7DQo+ICsJCXJldCA9IC1FTk9NRU07DQo+ICsJCWdvdG8gZW5kX2NwdV9hY2Nlc3M7DQo+
+ICsJfQ0KDQpBbGwgdGhlIHNhbWUgcHJvYmxlbXMgYXMgaW4gZGxhX2RhdGFfd3JpdGUoKS4N
+Cg0KPiArDQo+ICsJbWVtY3B5KGRzdCwgKHZvaWQgKikoKCh1aW50OF90ICopcHRyKSArIG9m
+ZnNldCksIHNpemUpOw0KDQpVc2UgaW9zeXNfbWFwX21lbWNweV9mcm9tKCkgaGVyZS4NCg0K
+PiArDQo+ICsJZG1hX2J1Zl92dW5tYXAoYnVmLCBwdHIpOw0KDQonbWFwJyBpbnN0ZWFkIG9m
+ICdwdHInDQoNCj4gKw0KPiArZW5kX2NwdV9hY2Nlc3M6DQo+ICsJZG1hX2J1Zl9lbmRfY3B1
+X2FjY2VzcyhidWYsIERNQV9CSURJUkVDVElPTkFMKTsNCj4gKw0KPiArcHV0X2RtYV9idWY6
+DQo+ICsJZG1hX2J1Zl9wdXQoYnVmKTsNCj4gKw0KPiArCXJldHVybiByZXQ7DQo+ICt9DQo+
+ICsNCg0KPiArDQo+ICtzdGF0aWMgaW50MzJfdCBudmRsYV9zdWJtaXQoc3RydWN0IGRybV9k
+ZXZpY2UgKmRybSwgdm9pZCAqYXJnLA0KPiArCQkJCQlzdHJ1Y3QgZHJtX2ZpbGUgKmZpbGUp
+DQo+ICt7DQo+ICsJaW50MzJfdCBlcnIgPSAwOw0KPiArCXN0cnVjdCBudmRsYV90YXNrICp0
+YXNrOw0KPiArCXN0cnVjdCBudmRsYV9pb2N0bF9zdWJtaXRfdGFzayBsb2NhbF90YXNrOw0K
+PiArCXN0cnVjdCBudmRsYV9pb2N0bF9zdWJtaXRfdGFzayBfX3VzZXIgKnVzZXJfdGFzazsN
+Cj4gKwlzdHJ1Y3QgbnZkbGFfZGV2aWNlICpudmRsYV9kZXYgPSBkZXZfZ2V0X2RydmRhdGEo
+ZHJtLT5kZXYpOw0KPiArCXN0cnVjdCBudmRsYV9zdWJtaXRfYXJncyAqYXJncyA9DQo+ICsJ
+CQkoc3RydWN0IG52ZGxhX3N1Ym1pdF9hcmdzICopYXJnOw0KPiArDQo+ICsJdXNlcl90YXNr
+ID0gKHN0cnVjdCBudmRsYV9pb2N0bF9zdWJtaXRfdGFzayBfX3VzZXIgKikNCj4gKwkJCSh1
+aW50cHRyX3QpYXJncy0+dGFza3M7DQo+ICsJaWYgKCF1c2VyX3Rhc2spDQo+ICsJCXJldHVy
+biAtRUlOVkFMOw0KPiArDQo+ICsJLyogSU9DVEwgY29weSBkZXNjcmlwdG9ycyAqLw0KPiAr
+CWlmIChjb3B5X2Zyb21fdXNlcigmbG9jYWxfdGFzaywgKHZvaWQgX191c2VyICopdXNlcl90
+YXNrLA0KPiArCQkJKHNpemVvZigqdXNlcl90YXNrKSkpKQ0KPiArCQlyZXR1cm4gLUVGQVVM
+VDsNCj4gKw0KPiArCXRhc2sgPSBremFsbG9jKHNpemVvZigqdGFzayksIEdGUF9LRVJORUwp
+Ow0KPiArCWlmICh0YXNrID09IE5VTEwpDQo+ICsJCXJldHVybiAtRUZBVUxUOw0KPiArDQo+
+ICsJbnZkbGFfZGV2LT50YXNrID0gdGFzazsNCj4gKwlrcmVmX2luaXQoJnRhc2stPnJlZik7
+DQo+ICsJdGFzay0+bnZkbGFfZGV2ID0gbnZkbGFfZGV2Ow0KPiArCXRhc2stPmZpbGUgPSBm
+aWxlOw0KPiArDQo+ICsJLyogdXBkYXRlIHRhc2sgZGVzYyBmaWVsZHMgKi8NCj4gKwllcnIg
+PSBudmRsYV9maWxsX3Rhc2tfZGVzYygmbG9jYWxfdGFzaywgdGFzayk7DQo+ICsJaWYgKGVy
+cikNCj4gKwkJZ290byBmcmVlX3Rhc2tfZGVzYzsNCj4gKw0KPiArCWVyciA9IG52ZGxhX3Rh
+c2tfc3VibWl0KG52ZGxhX2RldiwgdGFzayk7DQo+ICsNCj4gKwlrZnJlZSh0YXNrLT5hZGRy
+ZXNzX2xpc3QpOw0KPiArDQo+ICtmcmVlX3Rhc2tfZGVzYzoNCj4gKwlrZnJlZSh0YXNrKTsN
+Cj4gKwlyZXR1cm4gZXJyOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgaW50MzJfdCBudmRsYV9n
+ZW1fYWxsb2Moc3RydWN0IG52ZGxhX2dlbV9vYmplY3QgKm5vYmopDQo+ICt7DQo+ICsJc3Ry
+dWN0IGRybV9nZW1fb2JqZWN0ICpkb2JqID0gJm5vYmotPm9iamVjdDsNCj4gKwlzdHJ1Y3Qg
+ZHJtX2RldmljZSAqZHJtID0gZG9iai0+ZGV2Ow0KPiArDQo+ICsJbm9iai0+ZG1hX2F0dHJz
+ID0gRE1BX0FUVFJfV1JJVEVfQ09NQklORTsNCj4gKw0KPiArCW5vYmotPmt2YWRkciA9IGRt
+YV9hbGxvY19hdHRycyhkcm0tPmRldiwgZG9iai0+c2l6ZSwgJm5vYmotPmRtYV9hZGRyLA0K
+PiArCQkJCQkJR0ZQX0tFUk5FTCwgbm9iai0+ZG1hX2F0dHJzKTsNCj4gKw0KDQpTdG9yZSBh
+biBpb3N5cy1tYXAgYWRkcmVzcyBpbiBub2JqIGFuZCBpbml0aWFsaXplIGl0IHdpdGggDQpp
+b3N5c19tYXBfc2V0X3ZhZGRyKCk7IG9yIGlvc3lzX21hcF9zZXRfdmFkZHJfaW9tZW0oKSBp
+ZiB5b3UncmUgd29ya2luZyANCndpdGggSS9PIG1lbW9yeS4NCg0KPiArCWlmICghbm9iai0+
+a3ZhZGRyKQ0KPiArCQlyZXR1cm4gLUVOT01FTTsNCj4gKw0KPiArCXJldHVybiAwOw0KPiAr
+fQ0KPiArDQo+ICtzdGF0aWMgdm9pZCBudmRsYV9nZW1fZnJlZShzdHJ1Y3QgbnZkbGFfZ2Vt
+X29iamVjdCAqbm9iaikNCj4gK3sNCj4gKwlzdHJ1Y3QgZHJtX2dlbV9vYmplY3QgKmRvYmog
+PSAmbm9iai0+b2JqZWN0Ow0KPiArCXN0cnVjdCBkcm1fZGV2aWNlICpkcm0gPSBkb2JqLT5k
+ZXY7DQo+ICsNCj4gKwlkbWFfZnJlZV9hdHRycyhkcm0tPmRldiwgZG9iai0+c2l6ZSwgbm9i
+ai0+a3ZhZGRyLCBub2JqLT5kbWFfYWRkciwNCj4gKwkJCQlub2JqLT5kbWFfYXR0cnMpOw0K
+PiArfQ0KPiArDQo+ICtzdGF0aWMgdm9pZCBudmRsYV9nZW1fZnJlZV9vYmplY3Qoc3RydWN0
+IGRybV9nZW1fb2JqZWN0ICpkb2JqKQ0KPiArew0KPiArCXN0cnVjdCBudmRsYV9nZW1fb2Jq
+ZWN0ICpub2JqOw0KPiArDQo+ICsJZHJtX2dlbV9mcmVlX21tYXBfb2Zmc2V0KGRvYmopOw0K
+PiArDQo+ICsJbm9iaiA9IHRvX252ZGxhX29iaihkb2JqKTsNCj4gKw0KPiArCW52ZGxhX2dl
+bV9mcmVlKG5vYmopOw0KPiArDQo+ICsJa2ZyZWUobm9iaik7DQo+ICt9DQo+ICsNCj4gK3N0
+YXRpYyBzdHJ1Y3QgbnZkbGFfZ2VtX29iamVjdCAqDQo+ICtudmRsYV9nZW1fY3JlYXRlX29i
+amVjdChzdHJ1Y3QgZHJtX2RldmljZSAqZHJtLCB1aW50MzJfdCBzaXplKQ0KPiArew0KPiAr
+CWludDMyX3QgcmV0Ow0KPiArCXN0cnVjdCBkcm1fZ2VtX29iamVjdCAqZG9iajsNCj4gKwlz
+dHJ1Y3QgbnZkbGFfZ2VtX29iamVjdCAqbm9iajsNCj4gKw0KPiArCXNpemUgPSByb3VuZF91
+cChzaXplLCBQQUdFX1NJWkUpOw0KPiArDQo+ICsJbm9iaiA9IGt6YWxsb2Moc2l6ZW9mKCpu
+b2JqKSwgR0ZQX0tFUk5FTCk7DQo+ICsJaWYgKCFub2JqKQ0KPiArCQlyZXR1cm4gRVJSX1BU
+UigtRU5PTUVNKTsNCj4gKw0KPiArCWRvYmogPSAmbm9iai0+b2JqZWN0Ow0KPiArDQo+ICsJ
+ZHJtX2dlbV9wcml2YXRlX29iamVjdF9pbml0KGRybSwgZG9iaiwgc2l6ZSk7DQo+ICsNCj4g
+KwlyZXQgPSBudmRsYV9nZW1fYWxsb2Mobm9iaik7DQo+ICsJaWYgKHJldCkNCj4gKwkJZ290
+byBmcmVlX252ZGxhX29iajsNCj4gKw0KPiArCXJldHVybiBub2JqOw0KPiArDQo+ICtmcmVl
+X252ZGxhX29iajoNCj4gKwlrZnJlZShub2JqKTsNCj4gKwlyZXR1cm4gRVJSX1BUUihyZXQp
+Ow0KPiArfQ0KPiArDQo+ICtzdGF0aWMgc3RydWN0IHNnX3RhYmxlKg0KPiArbnZkbGFfZHJt
+X2dlbV9wcmltZV9nZXRfc2dfdGFibGUoc3RydWN0IGRybV9nZW1fb2JqZWN0ICpkb2JqKQ0K
+PiArew0KPiArCWludDMyX3QgcmV0Ow0KPiArCXN0cnVjdCBzZ190YWJsZSAqc2d0Ow0KPiAr
+CXN0cnVjdCBkcm1fZGV2aWNlICpkcm0gPSBkb2JqLT5kZXY7DQo+ICsJc3RydWN0IG52ZGxh
+X2dlbV9vYmplY3QgKm5vYmogPSB0b19udmRsYV9vYmooZG9iaik7DQo+ICsNCj4gKwlzZ3Qg
+PSBremFsbG9jKHNpemVvZigqc2d0KSwgR0ZQX0tFUk5FTCk7DQo+ICsJaWYgKCFzZ3QpDQo+
+ICsJCXJldHVybiBFUlJfUFRSKC1FTk9NRU0pOw0KPiArDQo+ICsJcmV0ID0gZG1hX2dldF9z
+Z3RhYmxlX2F0dHJzKGRybS0+ZGV2LCBzZ3QsIG5vYmotPmt2YWRkciwNCj4gKwkJCQkgICAg
+bm9iai0+ZG1hX2FkZHIsIGRvYmotPnNpemUsDQo+ICsJCQkJICAgIG5vYmotPmRtYV9hdHRy
+cyk7DQo+ICsJaWYgKHJldCkgew0KPiArCQlEUk1fRVJST1IoImZhaWxlZCB0byBhbGxvY2F0
+ZSBzZ3QsICVkXG4iLCByZXQpOw0KPiArCQlrZnJlZShzZ3QpOw0KPiArCQlyZXR1cm4gRVJS
+X1BUUihyZXQpOw0KPiArCX0NCj4gKw0KPiArCXJldHVybiBzZ3Q7DQo+ICt9DQo+ICsNCj4g
+K3N0YXRpYyBpbnQgbnZkbGFfZHJtX2dlbV9wcmltZV92bWFwKHN0cnVjdCBkcm1fZ2VtX29i
+amVjdCAqb2JqLCBzdHJ1Y3QgaW9zeXNfbWFwICptYXApDQo+ICt7DQo+ICsJc3RydWN0IG52
+ZGxhX2dlbV9vYmplY3QgKm5vYmogPSB0b19udmRsYV9vYmoob2JqKTsNCj4gKw0KPiArCW1h
+cC0+dmFkZHIgPSBub2JqLT5rdmFkZHI7DQoNCkluc3RlYWQgb2Yga3ZhZGRyLCBzdG9yZSB0
+aGUgcG9pbnRlciBhcyBzdHJ1Y3QgaW9zeXNfbWFwLiBUaGVuIHNpbXBseSANCmNvcHkgaXQg
+aGVyZSwgYXMgaW4NCg0KICAgICptYXAgPSBub2JqLT5tYXA7DQoNCj4gKw0KPiArCXJldHVy
+biAwOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgdm9pZCBudmRsYV9kcm1fZ2VtX3ByaW1lX3Z1
+bm1hcChzdHJ1Y3QgZHJtX2dlbV9vYmplY3QgKm9iaiwgc3RydWN0IGlvc3lzX21hcCAqbWFw
+KQ0KPiArew0KPiArCS8qIE5vdGhpbmcgdG8gZG8gKi8NCj4gK30NCj4gKw0KPiArc3RhdGlj
+IGludDMyX3QgbnZkbGFfZHJtX2dlbV9vYmplY3RfbW1hcChzdHJ1Y3QgZHJtX2dlbV9vYmpl
+Y3QgKmRvYmosDQo+ICsJCQkJCXN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hKQ0KPiArew0K
+PiArCWludDMyX3QgcmV0Ow0KPiArCXN0cnVjdCBudmRsYV9nZW1fb2JqZWN0ICpub2JqID0g
+dG9fbnZkbGFfb2JqKGRvYmopOw0KPiArCXN0cnVjdCBkcm1fZGV2aWNlICpkcm0gPSBkb2Jq
+LT5kZXY7DQo+ICsNCj4gKwl2bWEtPnZtX2ZsYWdzICY9IH5WTV9QRk5NQVA7DQo+ICsJdm1h
+LT52bV9wZ29mZiA9IDA7DQoNCkl0J3MgY2xlYW5lciB0byBkbyB0aGlzIGFzDQoNCiAgICB2
+bWEtPnZtX3Bnb2ZmIC09IGRybV92bWFfbm9kZV9zdGFydCgmb2JqLT52bWFfbm9kZSkNCg0K
+PiArDQo+ICsJcmV0ID0gZG1hX21tYXBfYXR0cnMoZHJtLT5kZXYsIHZtYSwgbm9iai0+a3Zh
+ZGRyLCBub2JqLT5kbWFfYWRkciwNCj4gKwkJCSAgICAgZG9iai0+c2l6ZSwgbm9iai0+ZG1h
+X2F0dHJzKTsNCj4gKwlpZiAocmV0KQ0KPiArCQlkcm1fZ2VtX3ZtX2Nsb3NlKHZtYSk7DQo+
+ICsNCj4gKwlyZXR1cm4gcmV0Ow0KPiArfQ0KPiArDQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0
+IGRybV9nZW1fb2JqZWN0X2Z1bmNzIG52ZGxhX2dlbV9vYmplY3RfZnVuY3MgPSB7DQo+ICsJ
+LmZyZWUgPSBudmRsYV9nZW1fZnJlZV9vYmplY3QsDQo+ICsJLmdldF9zZ190YWJsZSA9IG52
+ZGxhX2RybV9nZW1fcHJpbWVfZ2V0X3NnX3RhYmxlLA0KPiArCS52bWFwID0gbnZkbGFfZHJt
+X2dlbV9wcmltZV92bWFwLA0KPiArCS52dW5tYXAgPSBudmRsYV9kcm1fZ2VtX3ByaW1lX3Z1
+bm1hcCwNCj4gKwkubW1hcCA9IG52ZGxhX2RybV9nZW1fb2JqZWN0X21tYXAsDQo+ICt9Ow0K
+PiArDQo+ICtzdGF0aWMgc3RydWN0IG52ZGxhX2dlbV9vYmplY3QqDQo+ICtudmRsYV9nZW1f
+Y3JlYXRlX3dpdGhfaGFuZGxlKHN0cnVjdCBkcm1fZmlsZSAqZmlsZV9wcml2LA0KPiArCQkJ
+CQkJCSBzdHJ1Y3QgZHJtX2RldmljZSAqZHJtLCB1aW50MzJfdCBzaXplLA0KPiArCQkJCQkJ
+CSB1aW50MzJfdCAqaGFuZGxlKQ0KPiArew0KPiArCWludDMyX3QgcmV0Ow0KPiArCXN0cnVj
+dCBkcm1fZ2VtX29iamVjdCAqZG9iajsNCj4gKwlzdHJ1Y3QgbnZkbGFfZ2VtX29iamVjdCAq
+bm9iajsNCj4gKw0KPiArCW5vYmogPSBudmRsYV9nZW1fY3JlYXRlX29iamVjdChkcm0sIHNp
+emUpOw0KPiArCWlmIChJU19FUlIobm9iaikpDQo+ICsJCXJldHVybiBFUlJfQ0FTVChub2Jq
+KTsNCj4gKw0KPiArCWRvYmogPSAmbm9iai0+b2JqZWN0Ow0KPiArCWRvYmotPmZ1bmNzID0g
+Jm52ZGxhX2dlbV9vYmplY3RfZnVuY3M7DQo+ICsJcmV0ID0gZHJtX2dlbV9oYW5kbGVfY3Jl
+YXRlKGZpbGVfcHJpdiwgZG9iaiwgaGFuZGxlKTsNCj4gKwlpZiAocmV0KQ0KPiArCQlnb3Rv
+IGZyZWVfZHJtX29iamVjdDsNCj4gKw0KPiArCWRybV9nZW1fb2JqZWN0X3B1dChkb2JqKTsN
+Cj4gKw0KPiArCXJldHVybiBub2JqOw0KPiArDQo+ICtmcmVlX2RybV9vYmplY3Q6DQo+ICsJ
+bnZkbGFfZ2VtX2ZyZWVfb2JqZWN0KGRvYmopOw0KPiArDQo+ICsJcmV0dXJuIEVSUl9QVFIo
+cmV0KTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGludDMyX3QgbnZkbGFfZ2VtX2NyZWF0ZShz
+dHJ1Y3QgZHJtX2RldmljZSAqZHJtLCB2b2lkICpkYXRhLA0KPiArCQkJCQkJCQlzdHJ1Y3Qg
+ZHJtX2ZpbGUgKmZpbGUpDQo+ICt7DQo+ICsJc3RydWN0IG52ZGxhX2dlbV9vYmplY3QgKm5v
+Ymo7DQo+ICsJc3RydWN0IG52ZGxhX2dlbV9jcmVhdGVfYXJncyAqYXJncyA9IGRhdGE7DQo+
+ICsNCj4gKwlub2JqID0gbnZkbGFfZ2VtX2NyZWF0ZV93aXRoX2hhbmRsZShmaWxlLCBkcm0s
+IGFyZ3MtPnNpemUsDQo+ICsJCQkJCSAmYXJncy0+aGFuZGxlKTsNCj4gKwlpZiAoSVNfRVJS
+KG5vYmopKQ0KPiArCQlyZXR1cm4gUFRSX0VSUihub2JqKTsNCj4gKw0KPiArCXJldHVybiAw
+Ow0KPiArfQ0KPiArDQo+ICtzdGF0aWMgaW50MzJfdCBudmRsYV9kcm1fZ2VtX21tYXBfYnVm
+KHN0cnVjdCBkcm1fZ2VtX29iamVjdCAqb2JqLA0KPiArCQkJCQkJCQkJICBzdHJ1Y3Qgdm1f
+YXJlYV9zdHJ1Y3QgKnZtYSkNCj4gK3sNCj4gKwlpbnQzMl90IHJldDsNCj4gKw0KPiArCXJl
+dCA9IGRybV9nZW1fbW1hcF9vYmoob2JqLCBvYmotPnNpemUsIHZtYSk7DQo+ICsJaWYgKHJl
+dCkNCj4gKwkJcmV0dXJuIHJldDsNCj4gKw0KPiArCXJldHVybiBudmRsYV9kcm1fZ2VtX29i
+amVjdF9tbWFwKG9iaiwgdm1hKTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGludDMyX3QgbnZk
+bGFfZHJtX2dlbV9tbWFwKHN0cnVjdCBmaWxlICpmaWxwLCBzdHJ1Y3Qgdm1fYXJlYV9zdHJ1
+Y3QgKnZtYSkNCj4gK3sNCj4gKwlpbnQzMl90IHJldDsNCj4gKwlzdHJ1Y3QgZHJtX2dlbV9v
+YmplY3QgKm9iajsNCj4gKw0KPiArCXJldCA9IGRybV9nZW1fbW1hcChmaWxwLCB2bWEpOw0K
+PiArCWlmIChyZXQpDQo+ICsJCXJldHVybiByZXQ7DQo+ICsNCj4gKwlvYmogPSB2bWEtPnZt
+X3ByaXZhdGVfZGF0YTsNCj4gKw0KPiArCXJldHVybiBudmRsYV9kcm1fZ2VtX29iamVjdF9t
+bWFwKG9iaiwgdm1hKTsNCg0KSSBkb24ndCB1bmRlcnN0YW5kIHRoZXNlIHR3byBsaW5lcy4g
+VGhpcyBpcyBwYXJ0IG9mIHdoYXQgZHJtX2dlbV9tbWFwKCkgDQpkb2VzLiBJdCBzaG91bGRu
+J3QgYmUgbmVjZXNzYXJ5IGhlcmUuDQoNCj4gK30NCj4gKw0KPiAraW50MzJfdCBudmRsYV9n
+ZW1fZG1hX2FkZHIoc3RydWN0IGRybV9kZXZpY2UgKmRldiwgc3RydWN0IGRybV9maWxlICpm
+aWxlLA0KPiArCQkJCQkJICAgdWludDMyX3QgZmQsIGRtYV9hZGRyX3QgKmFkZHIpDQo+ICt7
+DQo+ICsJaW50MzJfdCByZXQ7DQo+ICsJdWludDMyX3QgaGFuZGxlOw0KPiArCXN0cnVjdCBu
+dmRsYV9nZW1fb2JqZWN0ICpub2JqOw0KPiArCXN0cnVjdCBkcm1fZ2VtX29iamVjdCAqZG9i
+ajsNCj4gKw0KPiArCXJldCA9IGRybV9nZW1fcHJpbWVfZmRfdG9faGFuZGxlKGRldiwgZmls
+ZSwgZmQsICZoYW5kbGUpOw0KPiArCWlmIChyZXQpDQo+ICsJCXJldHVybiByZXQ7DQo+ICsN
+Cj4gKwlkb2JqID0gZHJtX2dlbV9vYmplY3RfbG9va3VwKGZpbGUsIGhhbmRsZSk7DQo+ICsJ
+aWYgKCFkb2JqKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCW5vYmogPSB0b19u
+dmRsYV9vYmooZG9iaik7DQo+ICsNCj4gKwkqYWRkciA9IG5vYmotPmRtYV9hZGRyOw0KPiAr
+DQo+ICsJZHJtX2dlbV9vYmplY3RfcHV0KGRvYmopOw0KPiArDQo+ICsJcmV0dXJuIDA7DQo+
+ICt9DQo+ICsNCj4gK3N0YXRpYyBpbnQzMl90IG52ZGxhX2dlbV9tYXBfb2Zmc2V0KHN0cnVj
+dCBkcm1fZGV2aWNlICpkcm0sIHZvaWQgKmRhdGEsDQo+ICsJCQkJCQkJCQlzdHJ1Y3QgZHJt
+X2ZpbGUgKmZpbGUpDQo+ICt7DQo+ICsJc3RydWN0IG52ZGxhX2dlbV9tYXBfb2Zmc2V0X2Fy
+Z3MgKmFyZ3MgPSBkYXRhOw0KPiArDQo+ICsJcmV0dXJuIGRybV9nZW1fZHVtYl9tYXBfb2Zm
+c2V0KGZpbGUsIGRybSwgYXJncy0+aGFuZGxlLA0KPiArCQkJCQkJCQkgICAmYXJncy0+b2Zm
+c2V0KTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVjdCBmaWxlX29wZXJhdGlv
+bnMgbnZkbGFfZHJtX2ZvcHMgPSB7DQo+ICsJLm93bmVyID0gVEhJU19NT0RVTEUsDQo+ICsJ
+Lm9wZW4gPSBkcm1fb3BlbiwNCj4gKwkucmVsZWFzZSA9IGRybV9yZWxlYXNlLA0KPiArCS51
+bmxvY2tlZF9pb2N0bCA9IGRybV9pb2N0bCwNCj4gKwkubW1hcCA9IG52ZGxhX2RybV9nZW1f
+bW1hcCwNCg0KSXQgc2hvdWxkIGJlIGZpbmUgdG8gdXNlIGRybV9nZW1fbW1hcCBoZXJlLiBU
+aGVuIHlvdSBzaG91bGQgdXNlIA0KREVGSU5FX0RSTV9HRU1fRk9QUygpIHRvIGRlZmluZSBu
+dmRsYV9kcm1fZm9wcy4NCg0KPiArCS5wb2xsID0gZHJtX3BvbGwsDQo+ICsJLnJlYWQgPSBk
+cm1fcmVhZCwNCj4gKyNpZmRlZiBDT05GSUdfQ09NUEFUDQo+ICsJLmNvbXBhdF9pb2N0bCA9
+IGRybV9jb21wYXRfaW9jdGwsDQo+ICsjZW5kaWYNCj4gKwkubGxzZWVrID0gbm9vcF9sbHNl
+ZWssDQo+ICt9Ow0KPiArDQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGRybV9pb2N0bF9kZXNj
+IG52ZGxhX2RybV9pb2N0bHNbXSA9IHsNCj4gKwlEUk1fSU9DVExfREVGX0RSVihOVkRMQV9T
+VUJNSVQsIG52ZGxhX3N1Ym1pdCwgRFJNX1JFTkRFUl9BTExPVyksDQo+ICsJRFJNX0lPQ1RM
+X0RFRl9EUlYoTlZETEFfR0VNX0NSRUFURSwgbnZkbGFfZ2VtX2NyZWF0ZSwgRFJNX1JFTkRF
+Ul9BTExPVyksDQo+ICsJRFJNX0lPQ1RMX0RFRl9EUlYoTlZETEFfR0VNX01NQVAsIG52ZGxh
+X2dlbV9tYXBfb2Zmc2V0LCBEUk1fUkVOREVSX0FMTE9XKSwNCj4gKwkvKiB1c2UgRFJNX0lP
+Q1RMX01PREVfREVTVFJPWV9EVU1CIHRvIGRlc3RvcnkgKi8NCj4gK307DQo+ICsNCj4gK3N0
+YXRpYyBzdHJ1Y3QgZHJtX2RyaXZlciBudmRsYV9kcm1fZHJpdmVyID0gew0KPiArCS5kcml2
+ZXJfZmVhdHVyZXMgPSBEUklWRVJfR0VNIHwgRFJJVkVSX1JFTkRFUiwNCj4gKw0KPiArCS5p
+b2N0bHMgPSBudmRsYV9kcm1faW9jdGxzLA0KPiArCS5udW1faW9jdGxzID0gQVJSQVlfU0la
+RShudmRsYV9kcm1faW9jdGxzKSwNCj4gKwkuZm9wcyA9ICZudmRsYV9kcm1fZm9wcywNCj4g
+KwkuZ2VtX3ByaW1lX21tYXAJCT0gbnZkbGFfZHJtX2dlbV9tbWFwX2J1ZiwNCg0KVXNlIGRy
+bV9nZW1fcHJpbWVfbW1hcCgpIGhlcmUuDQoNClNvbWUgY29udGV4dDogdGhlIHNpdHVhdGlv
+biB3aXRoIHRoZXNlIG1tYXAgZnVuY3Rpb25zIGhhcyBiZWVuIGNvbmZ1c2luZyANCmFuZCBp
+bmNvbnNpc3RlbnQgYW1vbmcgRFJNIGRyaXZlcnMuIEJ1dCB3ZSBjbGVhbmVkIGl0IHVwIHNv
+IHRoYXQgeW91IA0Kb25seSBoYXZlIHRvIHByb3ZpZGUgYSBtaW5pbWFsIGltcGxlbWVudGF0
+aW9uIG9mIHN0cnVjdCANCmRybV9nZW1fb2JqZWN0X2Z1bmNzLm1tYXAuICBBbGwgb3RoZXIg
+bW1hcCBjYWxsYmFja3MgY2FuIHRoZW4gYmUgZmlsbGVkIA0Kd2l0aCBzdGFuZGFyZCBEUk0g
+aGVscGVycy4NCg0KPiArDQo+ICsJLm5hbWUgPSAibnZkbGEiLA0KPiArCS5kZXNjID0gIk5W
+RExBIGRyaXZlciIsDQo+ICsJLmRhdGUgPSAiMjAxNzEwMTciLA0KPiArCS5tYWpvciA9IDAs
+DQo+ICsJLm1pbm9yID0gMCwNCj4gKwkucGF0Y2hsZXZlbCA9IDAsDQo+ICt9Ow0KPiArDQo+
+ICtpbnQzMl90IG52ZGxhX2RybV9wcm9iZShzdHJ1Y3QgbnZkbGFfZGV2aWNlICpudmRsYV9k
+ZXYpDQo+ICt7DQo+ICsJaW50MzJfdCBlcnI7DQo+ICsJc3RydWN0IGRybV9kZXZpY2UgKmRy
+bTsNCj4gKwlzdHJ1Y3QgZHJtX2RyaXZlciAqZHJpdmVyID0gJm52ZGxhX2RybV9kcml2ZXI7
+DQo+ICsNCj4gKwlkcm0gPSBkcm1fZGV2X2FsbG9jKGRyaXZlciwgJm52ZGxhX2Rldi0+cGRl
+di0+ZGV2KTsNCj4gKwlpZiAoSVNfRVJSKGRybSkpDQo+ICsJCXJldHVybiBQVFJfRVJSKGRy
+bSk7DQo+ICsNCj4gKwludmRsYV9kZXYtPmRybSA9IGRybTsNCj4gKw0KPiArCWVyciA9IGRy
+bV9kZXZfcmVnaXN0ZXIoZHJtLCAwKTsNCj4gKwlpZiAoZXJyIDwgMCkNCj4gKwkJZ290byB1
+bnJlZjsNCj4gKw0KPiArCXJldHVybiAwOw0KPiArDQo+ICt1bnJlZjoNCj4gKwlkcm1fZGV2
+X3B1dChkcm0pOw0KPiArCXJldHVybiBlcnI7DQo+ICt9DQo+ICsNCj4gK3ZvaWQgbnZkbGFf
+ZHJtX3JlbW92ZShzdHJ1Y3QgbnZkbGFfZGV2aWNlICpudmRsYV9kZXYpDQo+ICt7DQo+ICsJ
+ZHJtX2Rldl91bnJlZ2lzdGVyKG52ZGxhX2Rldi0+ZHJtKTsNCj4gKwlkcm1fZGV2X3B1dChu
+dmRsYV9kZXYtPmRybSk7DQo+ICt9DQoNCi0tIA0KVGhvbWFzIFppbW1lcm1hbm4NCkdyYXBo
+aWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkg
+R21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJnLCBHZXJtYW55DQooSFJCIDM2
+ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
 
-If you replace max by max' = max - arch_scale_thermal_pressure then :
+--------------DkYIbK1v6bqi1PxCfNnf2XXq--
 
-- by the time you do the calculation, arch_scale_thermal_pressure can
-have changed and the result is meaningless. This is true whatever the
-pace of updating arch_scale_thermal_pressure
+--------------FoLe0iC4P4R0ttfxKUrmqTpq
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-- you change the range of capacity to max'= max -
-arch_scale_thermal_pressure and you scale it to max_freq. if util >
-max', then you will ask for max_freq whatever the util being really
-close to max or not. Also you will ask for max freq even if util is
-close but below max' whereas the mitigation doesn't impact utilization
+-----BEGIN PGP SIGNATURE-----
 
->
-> >
-> >>
-> >>> you will loose some opportunity to run at higher frequency because
-> >>> arch_scale_thermal_pressure() is transient and might change just after
-> >>> using it. This means that you will stay at lower freq after mitigation
-> >>> stops until a new cpufreq_update_util() happens. ANd I don't vene
-> >>> mentioned when thermal mitigation is managed by HW at a much higher
-> >>> frequency than what Linux can handle
-> >>>
-> >>> arch_scale_thermal_pressure() must not be used but thermal_load_avg()
-> >>> like scale_rt_capacity() what Dietmar suggested
-> >>>
-> >>
-> >> First, I would like to see your view to this topic and why you are
-> >> making such strong statements. I have slightly different view and
-> >> made dozen of experiments with this thermal pressure in last ~2-3y.
-> >>
-> >> The code flow is like this and operates on those fields from above:
-> >>
-> >> util, max <--- sugov_get_util()
-> >> util <--- sugov_iowait_apply()  <--- util, max /* ignore this now */
-> >>
-> >> get_next_freq():
-> >> util <--- map_util_perf() <--- util (1)
-> >> freq <--- map_util_freq() <--- util, max, max_freq (2)
-> >>
-> >>
-> >> At (1) we add +25% util, at (2) we do the conversion to frequency:
-> >> freq = max_freq * util / max
-> >>
-> >> As you can see with the patch we would still end up with bigger
-> >> frequency than max_freq (since it can happen: max < util).
-> >> It's also true currently in mainline, when
-> >> max=1024 and util=1024+256=1280
-> >> I would be similar if we cap max capacity:
-> >> max=800 and util=800+200=1000
-> >
-> > It's not because you end up with a similar value that it's ok. You
-> > can't use one side to compensate for the other one. 1.25 is there to
-> > provide spare cycles to a change in the cpu load (load meaning what is
-> > running on the cpu not load_avg)
->
-> It's different. You've made a hard statement that we are going to break
-> this frequency selected value, while IMO we aren't. It would behave
-> the same. I don't compensate anything, the divider ('max') has changed
-> as well. The patch sets 'sg_cpu->max' not just uses 'max' locally, so
-> it produces lower 'util' but then might have 'max=1024'. It's not the
-> case.
->
-> >
-> >> but then in both cases are multiplied by 'max_freq' in (2)
-> >>
-> >> As you can see this is not the situation that you have described, is it?
-> >> And the transient or non-transient is minor here IMO.
-> >
-> > If max is 512 then util = 640 which is much lower than 1024.
->
-> What scenario is this?
-> Is 1024 the utilization that we might have from the CPU rq?
-> What is the original CPU capacity, 1024?
->
-> >
-> >>
-> >> Secondly, you have mentioned the mitigation in HW and issue between
-> >> instantaneous vs. PELT-one thermal pressure information. This is
-> >> something that I'm stretching my head for long. I'm trying to
-> >> develop this for new Arm FW thermal. You have mentioned:
-> >> 'thermal mitigation is managed by HW at a much higher
-> >> frequency than what Linux can handle' - I would be also more
-> >> precised here: HW or FW? How often the HW can change max freq or
-> >> how often FW can change that? If we don't have those numbers
-> >> than statement: 'a much higher' doesn't help in solving this
-> >
-> > By much higher means that Linux can't react fast enough and should not
-> > try to sync because it's a lost game
->
-> As I said, 'much higher' is not a number to base a design on it.
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJhFiEFAwAAAAAACgkQlh/E3EQov+Bj
++BAAxFHVTsSj73OU2JtRbG58sjYYq7QLouFfjOgm2dzRCUY4ch7rhNbQ0CatQJpSmTsaIKEodsKV
+xn1yC2C+JXzCuIYZ0QrEgsQNEKgZuKKf8LzM2EKSQjQGBZat4zygzF1zqY1uRRG8wleHP8qp0ugK
+yVx5iLJG5ZsEfej+QGgnjPIkSlLPFwJx4PCr1MMIF2WGtXxkVpsmXBaklhDgoyAqlhkKzFEyPh8u
+9mWoPNPKSWWHF8MI+eUU/5MUZLbIuCeUnJ9XEPlzl08rt8qfKq/ZUPxaOEY9WD+RHS657h6qlHMY
+g3h/vr3hbcfd8+iG0r4hSOnmFXWXlsSwsjqgZ9pI+2foFjhwdkJEZcwmF9BPXgJCaYWQkXdkttUM
+E+pAYB9v/9GhuubNZg/4Uapxq7CegzxpvcQgpgbjhOICgCrBclvEWYpf+Pk51Y/V4GvwjyupYxfz
+mycqkwB24l+CvjsHvezaNnrhywDVx/JBHhtedD6VLS2NFxOgQBE9ZPzo/gK+BmCXr9gjWiZAtVtT
+dGdYvXzjSpwUvnDYEFOZNVstIjZTy3NmdXHaiJrVKIuUDuzGyJmBC/NjZZFY5VucrdqYGRwYQLbX
+3Cyyk/QrQXWwZAcRKjwA4tzBQvloxJvrWoLlCcxLlBqlPhhnMgCnLn2OfUEGAfbC0Hp8Mn86Bn/P
+J3Y=
+=ekcT
+-----END PGP SIGNATURE-----
 
-But that gives you the constraint that you can't expect to be always
-synced with up to date value which is the most important here. This
-means that  cpu_cap -= arch_scale_thermal_pressure(cpu) can be wrong
-just after you computed it and your decision is wrong.
-
-
-> We need real numbers from real platforms. Currently we have two
-> places where the thermal pressure is set:
-> 1) cpufreq_cooling.c [1]
-> 2) Qcom driver [2]
-> (we might have 3rd soon for Arm SCMI+FW)
-
-I don't have details but i have khz in mind
-
->
-> For the 2nd I would like to see numbers. For the 1st one when
-> kernel thermal is used (which supports higher number of platforms
-> comparing to Qcom driver) as it's by design kernel tries to control
-> thermal, so changes are not that frequent.
->
-> As for now, I can see in experiments the 1st is suffering long decay
-> delays and also corner cases with long idle CPUs.
->
-> >
-> >> problem that Xuewen (and others) faces. IMO it's not technical
-> >> argument for blocking the patch and incremental development.
-> >>
-> >> It's about timing, when we talk about thermal pressure signals and
-> >> those two information. For the PELT-one there are also two use cases:
-> >> raising time and decay time (where we're actually increasing the
-> >> visible capacity of the CPU). The decay period is quite long,
-> >> e.g.
-> >> Thermal pressure of 140 is removed, signal should converge to 0 from 140
-> >> in 130ms (90% decayed),
-> >> in 230ms (fully decayed).
-> >> The default kernel code allows to slow down the decay period, which is
-> >> a derivative from current global PELT default setting.
-> >> We can slow it down, but we cannot make it to react faster (BTW I made
-> >> such change to compare experiments). It's not always good to have
-> >> such long delays.
-> >>
-> >> For asymmetric CPUs that I was describing and also Xuewen, where mid
-> >> core might be faster than big, we need this information in RT class.
-> >> Android is such system, so the situation is real (DL is not used there).
-> >> You have questioned this that:
-> >> 'arch_scale_thermal_pressure() must not be used'
-> >> I wouldn't be so sure for the RT change.
-> >> Are you sure about that? Do you have experiments for it? I would
-> >> like to see them. I have run dozen of experiments and measurements
-> >> for this thermal pressure information on a few platforms. How
-> >> they behave on those task placements and what are the thermal
-> >> signal decay delay impacts. I'm still not sure which one is
-> >> best and thus not proposed any changes. But I'll refactor my
-> >> test code and send a patch with trace event for the new
-> >> topology_update_thermal_pressure(), which then allows to compare
-> >> those two designs and nasty timings issues. We would than see
-> >> how often (if 'much higher' is true) platforms set this value.
-> >> Currently, in mainline there are two clients which set this
-> >> value.
-> >>
-> >> I've been investigating this PELT signal ~1-2 year ago and found
-> >> an issue when it's actually updated with delays for the long idle CPU.
-> >> When one CPU was running fast and thermal throttling kicked in, while
-> >> the other was idle, the idle one didn't have recent thermal information,
-> >> but could be picked as a candidate because visible capacity was ~max
-> >> possible - which is wrong because they both share the clock.
-> >> Check the function others_have_blocked() and the design around it.
-> >>
-> >> That's why I'm a bit more careful with statements that one type of
-> >> information is better that other.
-> >>
-> >> Furthermore, check the code in rt_task_fits_capacity(), there is no
-> >> PELT signal from the RT task. There is only uclamp_eff_value() from
-> >> task 'p', which is not PELT information. So all involved variables
-> >> are not PELT, why you recommend the PELT thermal pressure here?
-> >>
-> >> As I said, this patch for the RT class is an incremental step into the
-> >> right direction.
-> >>
-> >>
->
-> You haven't answered my questions, which are about technical details of
-> your recommendations and statements.
->
-> I'm trying to help Xuewen to solve his/her issues with the RT class
-> incrementally. I don't want to push him/her into a deep dark water
-> of PELT signals, to what variable compare them, corner cases when they
-> are (or not) updated or completely not implemented. I'm not even sure
-> if those extra complexities make sense for the RT/DL (since they
-> make some difference on big.mid.little specific platforms but not for
-> the rest).
+--------------FoLe0iC4P4R0ttfxKUrmqTpq--
