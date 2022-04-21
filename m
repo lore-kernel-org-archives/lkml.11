@@ -2,136 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A210BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389160AbiDUOXQ (ORCPT
+        id S1389145AbiDUOXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        Thu, 21 Apr 2022 10:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389234AbiDUOXJ (ORCPT
+        with ESMTP id S1389176AbiDUOWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:23:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BDF93B54E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650550818;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cgfeAm2iEB905RN1m/pwZv+PSShsBs0z05aWSrdVjJo=;
-        b=XXGhuPwgEKb0vfRkFcHc9pysB7r8mfDnb4IrSyAt703aP94J4/eVa+RVEmOzDxeozzXwEL
-        L50jMse/4f9+MArm/zD1oOvzoMu5Bris0g0wTH9zZzsqMHu6IgZoUbBqj4Wj4/ayOxzF3X
-        h9Slcmx1KndImdZjuIwAA5r/GzDx4ps=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-568-fRxWr0urPfulMSsc5U38FA-1; Thu, 21 Apr 2022 10:20:17 -0400
-X-MC-Unique: fRxWr0urPfulMSsc5U38FA-1
-Received: by mail-wm1-f70.google.com with SMTP id t187-20020a1c46c4000000b0038ebc45dbfcso2421271wma.2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:20:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=cgfeAm2iEB905RN1m/pwZv+PSShsBs0z05aWSrdVjJo=;
-        b=scBVb6Yz1bsCa2oGadAnUqMvrRoY20H8KX1WbH+e2EOTSVSuFFsR+GsVurOImKClqg
-         ouxCADuBm68m2W9KQQ3QtupTvfui4cAqt05QCvE/0kirjzTdo7tk9mrJKFKoqLu5PbXd
-         brlbeqqRR/V41uHu00wDgMfQKgMz2spmEBwPqhJBX5JXOIGXU4LDI57Pp5bfoCxZZJGe
-         g1vkXcQVK4XycQRovS7ZX57I1YU+RFovYdiQYoWNzzSDKB4mOxcy8Oo8p4GboC8NRcXY
-         juUOoTnUpBmGzl2VLK2WkxEC14EIw0c5CeGkeq765mF+kmC7dUXd/+GtLjusy9q0mHMi
-         oAFg==
-X-Gm-Message-State: AOAM532OUcAzDctBzGbe1aO+8ucmNEjjpJfk2cv4KkfwqqXhgZhOsNGY
-        fsVevstD7n6vIJIwQTgs6rBBZpxqVfQeo9JZ7RfE9A5vsoaAm6hJYEizbobMmo/H+3xM16kBcbG
-        ENFLzCXNUEC7im3coP4/FIjjL
-X-Received: by 2002:a05:6000:1a86:b0:20a:a933:ba16 with SMTP id f6-20020a0560001a8600b0020aa933ba16mr9480787wry.583.1650550816037;
-        Thu, 21 Apr 2022 07:20:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzRRbpKnJ9/eE6gsD+4QxEmdPqcDEaUEUINsFTdWmYyAgvU0MGDBkJJuVh1969nuIV7H33eeA==
-X-Received: by 2002:a05:6000:1a86:b0:20a:a933:ba16 with SMTP id f6-20020a0560001a8600b0020aa933ba16mr9480767wry.583.1650550815692;
-        Thu, 21 Apr 2022 07:20:15 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c702:de00:711b:76af:b335:9b70? (p200300cbc702de00711b76afb3359b70.dip0.t-ipconnect.de. [2003:cb:c702:de00:711b:76af:b335:9b70])
-        by smtp.gmail.com with ESMTPSA id d11-20020adfa34b000000b0020ab3201c50sm2395559wrb.17.2022.04.21.07.20.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 07:20:15 -0700 (PDT)
-Message-ID: <8fae51af-b12f-4232-1330-54f7b0943907@redhat.com>
-Date:   Thu, 21 Apr 2022 16:20:13 +0200
+        Thu, 21 Apr 2022 10:22:49 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7E5B1EF;
+        Thu, 21 Apr 2022 07:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650550799; x=1682086799;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=TwcUHqQHYfAAOW5huQGXmfw4fzGa1qXTNH6RBZWbtYo=;
+  b=lNJj5Us8M979t8Q2f7VYLToqgwObaY7RCmUa/OAVNCvGZJaFnIx65No3
+   nzKOO6mtsOO6DGXKq8hLrOa+Z/loMCANJP7ieSbQhoKYNWjnlrrjocfS3
+   ZI9DPIRZnpwxcp2R7co79nrRpvAPSSijH7y60HvYKTAQX2FG8W5viOSrJ
+   c=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Apr 2022 07:19:59 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 07:19:58 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 21 Apr 2022 07:19:57 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 21 Apr 2022 07:19:53 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <quic_rjendra@quicinc.com>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH] arm64: dts: qcom: sc7280: Add ldo_l17b regulator node
+Date:   Thu, 21 Apr 2022 19:49:39 +0530
+Message-ID: <1650550779-8133-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Oscar Salvador <osalvador@suse.de>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>
-References: <20220421135129.19767-1-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH] mm/memory_hotplug: avoid consuming corrupted data when
- offline pages
-In-Reply-To: <20220421135129.19767-1-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.04.22 15:51, Miaohe Lin wrote:
-> When trying to offline pages, HWPoisoned hugepage is migrated without
-> checking PageHWPoison first. So corrupted data could be consumed. Fix
-> it by deferring isolate_huge_page until PageHWPoison is handled.
-> 
+Add ldo_l17b in pm7325 regulator, which is required for
+wcd codec vdd buck supply.
 
-CCing Oscar, Mike and Naoya
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+---
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/memory_hotplug.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-> index 4c6065e5d274..093f85ec5c5c 100644
-> --- a/mm/memory_hotplug.c
-> +++ b/mm/memory_hotplug.c
-> @@ -1600,11 +1600,9 @@ do_migrate_range(unsigned long start_pfn, unsigned long end_pfn)
->  		folio = page_folio(page);
->  		head = &folio->page;
->  
-> -		if (PageHuge(page)) {
-> +		if (PageHuge(page))
->  			pfn = page_to_pfn(head) + compound_nr(head) - 1;
-> -			isolate_huge_page(head, &source);
-> -			continue;
-> -		} else if (PageTransHuge(page))
-> +		else if (PageTransHuge(page))
->  			pfn = page_to_pfn(head) + thp_nr_pages(page) - 1;
->  
->  		/*
-> @@ -1622,6 +1620,11 @@ do_migrate_range(unsigned long start_pfn, unsigned long end_pfn)
->  			continue;
->  		}
->  
-> +		if (PageHuge(page)) {
-> +			isolate_huge_page(head, &source);
-> +			continue;
-> +		}
-> +
->  		if (!get_page_unless_zero(page))
->  			continue;
->  		/*
-
-The problem statement makes sense to me but I am not sure about the
-details if we run into the "PageHWPoison" path with a huge page. I have
-the gut feeling that we have to do more for huge pages in the
-PageHWPoison() path, because we might be dealing with a free huge page
-after unmap succeeds. I might be wrong.
-
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index b833ba1..17d0c05 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -113,6 +113,11 @@
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 
++		vreg_l17b_1p8: ldo17 {
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <1900000>;
++		};
++
+ 		vdd_px_wcd9385:
+ 		vdd_txrx:
+ 		vddpx_0:
 -- 
-Thanks,
-
-David / dhildenb
+2.7.4
 
