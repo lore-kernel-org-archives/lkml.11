@@ -2,118 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386347AbiDUIES (ORCPT
+        id S1386357AbiDUIFA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
+        Thu, 21 Apr 2022 04:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386340AbiDUIEO (ORCPT
+        with ESMTP id S236251AbiDUIE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:04:14 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D217212621
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:01:25 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id v15so5411317edb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:01:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=MjMj7j2b58g3Fs2GDoRx9AQenU1ytemGpXtMCrxETUc=;
-        b=NYdGQxPPwnRdIBVwF7pPrMR6GN1BDIcM0wDpBYNTF+2n4Gad4PqA8rEEzED/xk+1eZ
-         0lK1WjBy/qAX+TXrQ9FmP/n605QPm6LIUb/UsG8afL/FClUWaRvec/X4CyIxCtEKTgYO
-         dYYgoG+shjdDoy+zLXCAY2BZDZgZ33JGo0aady4rulQeCfiBwZsbBsyRYAchXtrns/A1
-         RA6WiEvyzMX4/E4z8oOLj8yKedcICvBAatoOyNtI+4sm1ax121UKcpFFPVP9OrPbIoga
-         kMpy0my6M1Wg/f9Oczhtb6NdZS69ufzTgEP7bKH2SOdQNZxyNKmHtJxZ9PY1NoFfznf7
-         UOOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MjMj7j2b58g3Fs2GDoRx9AQenU1ytemGpXtMCrxETUc=;
-        b=loCl8II6tAHwhTqzRdHWK6Av+4BhcLWoQKRcr754fHCpPRDWrf5j6dUNwKiNEx4lO1
-         bVk50HA9BEwjQhG8rH5MUwU3OSI6IqvbFbAccaXV4fGSk9KuTRw7LbyHZJZS1qPZiRUu
-         11GgjZnR+WuPMHf3SmV/Itg8w2Fa0/TGRH9QF7SisMuDkFwcQ0IAt5KjGtocj/2TAswc
-         2TC00jJd/VkJ1GNQT+Cl07xm/ggRAokBIvyTdXKIyUefl62y+vAxnQrHE+XimOm1LECb
-         kXTq9+2pfYVizSu+n0c0uTkTZEa0maDgGJOOjRU13v2/K8xOZiWpIypZHMFQYJ4ew5CP
-         cllQ==
-X-Gm-Message-State: AOAM533bXCF4B8MkZfjr9mcr97Qi17cjfNs0bC31TlSw+59y0ibQwnmH
-        nIxVfT4ByG53HRbDqg7GMYI8jg==
-X-Google-Smtp-Source: ABdhPJyarBv6DNgivhvvzolW+CQw8vVO1R8UHNq38QMh0dgBHplqLk+dS95uG2+e9Egg0If3tYFQzA==
-X-Received: by 2002:a05:6402:2547:b0:423:f342:e0e3 with SMTP id l7-20020a056402254700b00423f342e0e3mr17476265edb.371.1650528084407;
-        Thu, 21 Apr 2022 01:01:24 -0700 (PDT)
-Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id j10-20020aa7de8a000000b004215209b077sm10565025edv.37.2022.04.21.01.01.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 01:01:23 -0700 (PDT)
-Message-ID: <f7c5c3f9-0083-c0b0-dc49-e66139268312@linaro.org>
-Date:   Thu, 21 Apr 2022 10:01:23 +0200
+        Thu, 21 Apr 2022 04:04:56 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E292326F5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:02:06 -0700 (PDT)
+Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KkVPG3y7HzhY36;
+        Thu, 21 Apr 2022 16:01:54 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Apr 2022 16:02:03 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Apr 2022 16:02:02 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: [PATCH -next v5 0/5]mm: page_table_check: add support on arm64 and riscv
+Date:   Thu, 21 Apr 2022 08:20:37 +0000
+Message-ID: <20220421082042.1167967-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] arm64: dts: mt8183-kukui: align SPI NOR node name with
- dtschema
-Content-Language: en-US
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220407142143.293740-1-krzysztof.kozlowski@linaro.org>
- <165044570803.75184.17759035800452933385.b4-ty@linaro.org>
- <38f29c29-e3c2-240a-23a0-509c4febf1ca@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <38f29c29-e3c2-240a-23a0-509c4febf1ca@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/04/2022 14:35, Matthias Brugger wrote:
-> 
-> 
-> On 20/04/2022 11:10, Krzysztof Kozlowski wrote:
->> On Thu, 7 Apr 2022 16:21:43 +0200, Krzysztof Kozlowski wrote:
->>> The node names should be generic and SPI NOR dtschema expects "flash".
->>>
->>>
->>
->> Looks like no one wants to take this, so let me take care of it.
->>
-> 
-> First thing would have been a ping on the patch, don't you think? 
+Page table check performs extra verifications at the time when new
+pages become accessible from the userspace by getting their page
+table entries (PTEs PMDs etc.) added into the table. It is supported
+on X86[1].
 
-And what does it change? The operating-points clean up [1] was sent in
-August last year, then in this April, and you responded only when I
-wrote pick-up. The Google cros-ec clean up was sent in Feb and two weeks
-later pinged [2].
+This patchset made some simple changes and make it easier to support
+new architecture, then we support this feature on ARM64 and RISCV.
 
-Pinging and resending apparently does not help. It's okay, happens, we
-are all extra busy and we all pretty often do it as part of
-community/hobby/spare time.
+[1]https://lore.kernel.org/lkml/20211123214814.3756047-1-pasha.tatashin@soleen.com/
 
-> Anyway as I 
-> said the last time, if you take DTS patches for mediatek
+v4 -> v5:
+ According to Anshuman's suggestion, using PxD_SIZE instead of
+ PxD_PAGE_SIZE in mm/page_table_check.c and it is checked by Pasha.
 
-I don't want to take the patches for Mediatek. But I also don't want to
-resend and ping each one of them because it did not work in the past.
+v3 -> v4:
+ Adapt to next-20220414
 
-> , I'd need a stable 
-> branch I can merge so that we don't have any merge conflicts in the end.
+v2 -> v3:
+ Modify ptep_clear() in include/linux/pgtable.h, using IS_ENABLED according
+ to the suggestions of Pasha.
 
-Can you just pick the patch?
+v1 -> v2:
+ 1. Fix arm64's pte/pmd/pud_user_accessible_page() according to the
+    suggestions of Catalin.
+ 2. Also fix riscv's pte_pmd_pud_user_accessible_page().
 
+Kefeng Wang (2):
+  mm: page_table_check: move pxx_user_accessible_page into x86
+  arm64: mm: add support for page table check
 
-[1]
-https://lore.kernel.org/all/?q=%22arm64%3A+dts%3A+mediatek%3A+align+operating-points+table+name+with+dtschema%22
+Tong Tiangen (3):
+  mm: page_table_check: using PxD_SIZE instead of PxD_PAGE_SIZE
+  mm: page_table_check: add hooks to public helpers
+  riscv: mm: add support for page table check
 
-[2]
-https://lore.kernel.org/all/?q=%22arm64%3A+dts%3A+mt8183%3A+align+Google+CROS+EC+PWM+node+name+with+dtschema%22
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h | 65 ++++++++++++++++++++++++---
+ arch/riscv/Kconfig               |  1 +
+ arch/riscv/include/asm/pgtable.h | 77 +++++++++++++++++++++++++++++---
+ arch/x86/include/asm/pgtable.h   | 29 +++++++-----
+ include/linux/pgtable.h          | 26 +++++++----
+ mm/page_table_check.c            | 25 ++---------
+ 7 files changed, 174 insertions(+), 50 deletions(-)
 
-Best regards,
-Krzysztof
+-- 
+2.25.1
+
