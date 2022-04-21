@@ -2,147 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 266BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73026C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbiDUM2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        id S1384321AbiDUM3Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 08:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384038AbiDUM2A (ORCPT
+        with ESMTP id S1384650AbiDUM3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:28:00 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E0313F1C
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:25:10 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id t12so4685599pll.7
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:25:10 -0700 (PDT)
+        Thu, 21 Apr 2022 08:29:16 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10B0326C3;
+        Thu, 21 Apr 2022 05:26:16 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id x9so1337846ybe.11;
+        Thu, 21 Apr 2022 05:26:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DKhg142Wlk6AFjo5SyNKNuZ+EL/BpZej/wWvDH5mY50=;
-        b=KQYDKUEOG7XGEF9CzfRneviC28oNECGV9wp4aaL6EO+HgbCyRazvNKSFAbOT3P3Byi
-         hlSbIYZ3jvc+HU0wFz+UMeUTJrvJ9CsmhF+gAWZU9Zrj7C82UCPP1ug/4U2oFVyDkpJr
-         EnuQMngI1SmLb7LmceYO+/yMj6t5yugx1ealPoYKNV9Zf8cnxf/zRCS3qkYKYcYKHjsi
-         W5tynycj2yVt1Ga8MfNUhR53+S+i1hXYVncuX6A/c6P3azWo3kC5jMi6tjBa0C63HrNd
-         IlTQdDg01AaKjBz79yKG18xannJDGgPdxk5A30kKhVlS+cmk1xPdjRNB3kXAwQZwWfhI
-         Pm6g==
+         :cc:content-transfer-encoding;
+        bh=nsgj5qaghKeF2XHWS+0rsyHkdR0OmiGHDh6c2bZuVsk=;
+        b=OdtP1Cr2hmhb7IMyvCgq4gFY76MvKyzo8lN2Xs/fO0shVPFqDWfqlaczCoeMaoqNaV
+         sytvMCQ3ZL5VX82elSNJEDwpGwRDexAn3PMI0YjfFsdMASxagDZNYNaPDlyk3iNHOqH/
+         2wVoclktZJLRDiNjpJI0lzYNZ3Amnkn1U5IyrBC1pxlfkZbjOj0+fwGwqEWiFI0Ye06t
+         rC2Y2HCaZ+WahplcjQGG6ICkBGE9ceDwfxzWWVJ0d3/fvmhP337/4+NbRzNTaxJWbZH6
+         +0U6Md1mL9w4YbnNr4oreWDaZ/b445wn2Ri3Gnr4cz1V3h5AOn4DqRd/T/BN1p9zdtFy
+         grZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DKhg142Wlk6AFjo5SyNKNuZ+EL/BpZej/wWvDH5mY50=;
-        b=3FT+0vbL4JiqRT++HLGZlmamO2BXfI/9L5dyAryKx9UEqI/QZBePgw8XXOcOWkHBud
-         DUWxCuc4YtXdYNm+ufCMX0IuqG696diacLxOEfWUSdRkf5tnObftrBhs/IGGZSg1UfXO
-         fhMKV+zf0q9dBlsNAgc9K7r85U1QpIx647LUJP2fZB8lkoELL2iceNxGNjslF7tJ3Tx1
-         qX+porZcQmf+LEhA6F7ffp/ftKW4pwisYLJDjPZNcNwQaZUGHTvKjz0jreDZWF/IBr8t
-         ulWj/Zd68WukktfxIylkBVv9y0n/pbo13IEqbxgSmaASro7+qkf/Xj6AtMS36OTRXM1t
-         Q7Cg==
-X-Gm-Message-State: AOAM5305z3/wp/spaUqX50ZJSG4cu8QgbxEkj6K6aPrW5c72qDe0MvwB
-        OXPFUf5dGOCWWdGr8+MQzAo8cfJTIdHtzjfBIG7rvg==
-X-Google-Smtp-Source: ABdhPJzzylUC2KC2I6WRbmhpdKZNMmOHuFcuihTnLQb/yX1aMnKuJbhRKQxowIfN7z1NZ/z1KaCl7oplC8mRCrBTnRY=
-X-Received: by 2002:a17:90b:124c:b0:1bc:369b:7db5 with SMTP id
- gx12-20020a17090b124c00b001bc369b7db5mr10066726pjb.179.1650543910393; Thu, 21
- Apr 2022 05:25:10 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nsgj5qaghKeF2XHWS+0rsyHkdR0OmiGHDh6c2bZuVsk=;
+        b=wzgeolBu/5f0lqFCk5SLow0/+jo011uO+p8ybtX6wCiuTooe9R1yAnqJdglR2GySvY
+         mgvS5O94WScURuNlrlgU4oiMhrNA3dhMYf9/bk6M8qSqYB0/5rR/oFV2CERjCKNn7Sa6
+         97jwVfaFiknqrlAH67HFG3ENA4kz3INQxP1cz15U4SGOUWb+duxScHHJP68WWYVGpOfV
+         ewaviiuOFrQvgPsYn8H3kEdFMA2ZRFcqO1MtGwvr1mPYfJU0H9DsXATfbXuNDK60Os0p
+         1LsMfaoBAxalTO3q+413WK7ghBYxX1u4GkXcBzG8vva7lXkoyaXKbJK4nkL9lJcs/D/Y
+         wfiA==
+X-Gm-Message-State: AOAM531BR/tm5VaNcukVGldw3qlNha+KG5o3PK/VhtMqBOddBPWS7F4a
+        0FsZ6cPUcdTpln3hW6KS5Jyq8ybbvI904te1uvcGoIq6V8ym1A3r
+X-Google-Smtp-Source: ABdhPJx5Iu9QrmzFQknHWLvrDJpVaMuJmsemK3qL6bwrACB6ruJg6TpZl/4HveskdoIawPbTcU3orlYFA2+U+6HNowg=
+X-Received: by 2002:a05:6902:1083:b0:633:d1f:2e01 with SMTP id
+ v3-20020a056902108300b006330d1f2e01mr25155773ybu.222.1650543976226; Thu, 21
+ Apr 2022 05:26:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <202204031935.5SkYsM2M-lkp@intel.com> <20220420011644.25730-1-linmq006@gmail.com>
-In-Reply-To: <20220420011644.25730-1-linmq006@gmail.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Thu, 21 Apr 2022 14:24:59 +0200
-Message-ID: <CAG3jFyt5EG=OBk+pVwwHeeh_XgsCV82p-KiLcnL_yv8L1wUZ8Q@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/bridge: Fix error handling in analogix_dp_probe
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Jyri Sarha <jyri.sarha@iki.fi>, Lyude Paul <lyude@redhat.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Yakir Yang <kuankuan.y@gmail.com>,
-        Inki Dae <inki.dae@samsung.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
+ <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
+From:   yanteng si <siyanteng01@gmail.com>
+Date:   Thu, 21 Apr 2022 20:26:05 +0800
+Message-ID: <CAEensMxtk8zJPAM-u7hvYkaNTBrVdmhKA7YzVsKmTw0TcOE=Pw@mail.gmail.com>
+Subject: Re: [PATCH 0/2] sync with original text Documentation/vm/page_owner.rst
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     Alex Shi <alexs@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Alex Shi <seakeel@gmail.com>,
+        Yanteng Si <siyanteng@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 at 03:16, Miaoqian Lin <linmq006@gmail.com> wrote:
+Haowen Bai <baihaowen@meizu.com> =E4=BA=8E2022=E5=B9=B44=E6=9C=8820=E6=97=
+=A5=E5=91=A8=E4=B8=89 11:07=E5=86=99=E9=81=93=EF=BC=9A
 >
-> In the error handling path, the clk_prepare_enable() function
-> call should be balanced by a corresponding 'clk_disable_unprepare()'
-> call , as already done in the remove function.
+> This patches series will sync the translation of zh_CN as below:
 >
-> Fixes: 3424e3a4f844 ("drm: bridge: analogix/dp: split exynos dp driver to bridge directory")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
-> changes in v2:
-> - remove the wrong return statement.
-> ---
->  .../gpu/drm/bridge/analogix/analogix_dp_core.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
+> Commit 8bd16bc0a081 ("tools/vm/page_owner_sort.c: support sorting blocks
+> by multiple keys") add sorting blocks by multiple keys usage
+> description.
 >
-> diff --git a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-> index eb590fb8e8d0..474ef88015ae 100644
-> --- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-> +++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-> @@ -1698,8 +1698,10 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
->         res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> Commit 78a0b94f3829 ("tools/vm/page_owner_sort.c: support for multi-value
+> selection in single argument") add multi-value selection in single
+> argument usage description.
 >
->         dp->reg_base = devm_ioremap_resource(&pdev->dev, res);
-> -       if (IS_ERR(dp->reg_base))
-> -               return ERR_CAST(dp->reg_base);
-> +       if (IS_ERR(dp->reg_base)) {
-> +               ret = PTR_ERR(dp->reg_base);
-> +               goto err_disable_clk;
-> +       }
+> Commit c89b3ad2dea2 ("doc/vm/page_owner.rst: remove content related to -c
+> option") remove  -c option usage description.
 >
->         dp->force_hpd = of_property_read_bool(dev->of_node, "force-hpd");
+> Commit 9c8a0a8e599f ("tools/vm/page_owner_sort.c: support for user-define=
+d
+> culling rules") add user-defined culling rules usage description.
 >
-> @@ -1711,7 +1713,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
->         if (IS_ERR(dp->hpd_gpiod)) {
->                 dev_err(dev, "error getting HDP GPIO: %ld\n",
->                         PTR_ERR(dp->hpd_gpiod));
-> -               return ERR_CAST(dp->hpd_gpiod);
-> +               ret = PTR_ERR(dp->hpd_gpiod);
-> +               goto err_disable_clk;
->         }
+> Commit 8ea8613a616a ("tools/vm/page_owner_sort.c: support for selecting b=
+y
+> PID, TGID or task command name") add selecting by PID, TGID or task
+> command name usage description.
 >
->         if (dp->hpd_gpiod) {
-> @@ -1731,7 +1734,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
+> Commit 194d52d771b8 ("tools/vm/page_owner_sort: support for sorting by
+> task command name") add sorting by task command name usage description.
 >
->         if (dp->irq == -ENXIO) {
->                 dev_err(&pdev->dev, "failed to get irq\n");
-> -               return ERR_PTR(-ENODEV);
-> +               ret = -ENODEV;
-> +               goto err_disable_clk;
->         }
+> But the original text table which is made of tab will display all
+> by one line. so we make a standard table for STANDARD FORMAT SPECIFIERS
+> description. I fix it up togeter by this patches series.
 >
->         ret = devm_request_threaded_irq(&pdev->dev, dp->irq,
-> @@ -1740,11 +1744,15 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
->                                         irq_flags, "analogix-dp", dp);
->         if (ret) {
->                 dev_err(&pdev->dev, "failed to request irq\n");
-> -               return ERR_PTR(ret);
-> +               goto err_disable_clk;
->         }
->         disable_irq(dp->irq);
 >
->         return dp;
-> +
-> +err_disable_clk:
-> +       clk_disable_unprepare(dp->clock);
-> +       return ERR_PTR(ret);
->  }
->  EXPORT_SYMBOL_GPL(analogix_dp_probe);
->
+> Haowen Bai (2):
+>   docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+>   doc/vm/page_owner.rst: Fix table display confusion
+hi haowen,
 
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+I'm not sure why, your different versions of the patch are in one
+thread and they look like this inside
+<https://lore.kernel.org/linux-doc/>=EF=BC=9A
 
-Applied to drm-misc-next.
+[PATCH V3] docs/zh_CN: sync with original text Documentation/vm/page_owner.=
+rst
+ 2022-04-20 12:46 UTC  (22+ messages)
+    ` [PATCH V4] "
+            ` [PATCH V5] "
+                  ` [PATCH V6] "
+                    ` [PATCH V7] "
+                      ` [PATCH V8] "
+                          ` [PATCH 0/2] "
+                            ` [PATCH 1/2] docs/zh_CN: "
+                            ` [PATCH 2/2] doc/vm/page_owner.rst: Fix
+table display confusion
+
+This will make trouble for the maintainer=EF=BC=8CUsually, they should look=
+ like this=EF=BC=9A
+
+[PATCH 0/2] docs/zh_CN: add hmm and numa translation
+ 2022-04-21 11:59 UTC  (3+ messages)
+` [PATCH 1/2] docs/zh_CN: add vm hmm translation
+` [PATCH 2/2] docs/zh_CN: add vm numa translation
+
+
+Thanks,
+Yanteng
+
+>
+>  Documentation/translations/zh_CN/vm/page_owner.rst | 61 ++++++++++++++++=
++++++-
+>  Documentation/vm/page_owner.rst                    | 34 +++++++-----
+>  2 files changed, 80 insertions(+), 15 deletions(-)
+>
+> --
+> 2.7.4
+>
