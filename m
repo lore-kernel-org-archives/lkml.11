@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5189CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442058AbiDUV0M (ORCPT
+        id S1442069AbiDUV0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 17:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
+        Thu, 21 Apr 2022 17:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441959AbiDUVZr (ORCPT
+        with ESMTP id S238700AbiDUVZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 17:25:47 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AD54EA35
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FD04E39D
         for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:22:56 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650576175;
+        s=2020; t=1650576174;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=14DH9D9z/wsVNr1YB0yRgxAkaymy7LahF3OZ0YxbsMU=;
-        b=qEHcEde1G39Z96HjK+qY+oc122TuO6hLarUIhkTbmxLbDgzadHM2r+BNvnxjjysyFZ+4V+
-        wiERWviABrtE6UQg2xIIpUEO3gTjNJo4JnIseA8Elxy/gjpr0FbwkBlCE3CHP2rFY3AETm
-        p3VrMy66LdG3Va5/nYiLw77TuGfDJgCJdGPpVOLKKQnUbaZIupjQo3cNbfuwyWc+ZouXjH
-        c62C6u4Ih8H8jqt9ciKjfclrcxmKYGvNunGMrUFxhxFTZtviRarkNcUtCXdCGWLe7OIRCh
-        bHP6DeYG/2ntpC8DiNhDug86S2CUryr3MkXi0z5tx+qcdX86wR1iwOD0KuAiiQ==
+        bh=Z8HgeKR0CZMoWO++V1pVUUlbCNoJ4piAd7ilhw+cap0=;
+        b=UcLUK5uo3jvclyMjO4+rAYJUOEin9m9BMg2Fpbr79nemLt+rDoyof6tChUzLO2Zgg2Fhje
+        UCN+SAkLMOjGcJ/edXyJo7XVAnbejDnhxekQbJ4jZ8Ia9/Xh5dYWAZhlz8ANm4Hpzd/YaT
+        mBm/ypNfgauImrIkZ9YK5X7S7FSo0ZE+NIehHTeRFVT3t66ZHu49B9TKbvHt5mLmqyUOHz
+        NfBq5W/8q3hXUPaes5wvRai/xr6kfZTak8vp1mwXJ5rjLNYIbeGAPPdSFWTH5ocpHqiBOJ
+        UHx3K/rQwezDdbbDZzSC1J91OOOdpT55Uyiuk80XwKguSyLBprYxPNC/tVIkNA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650576175;
+        s=2020e; t=1650576174;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=14DH9D9z/wsVNr1YB0yRgxAkaymy7LahF3OZ0YxbsMU=;
-        b=80lpftAwGXpKnaH2szbwo0RNv0eFwnj0SSyLtxFN1+tEQ1MsEPSXTOeH2TuT0u4q0c8Gmn
-        vPO7vqg03UssgyBw==
+        bh=Z8HgeKR0CZMoWO++V1pVUUlbCNoJ4piAd7ilhw+cap0=;
+        b=WOP1UbiqA8zbCyj81tPJTpVOXuP4t6C+aXzU1r5ifWXj7C+hU4Zzv93RMJUcpFNH5hqd/b
+        tiKk0uGwQc/BlTCA==
 To:     Petr Mladek <pmladek@suse.com>
 Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH printk v4 08/15] printk: add con_printk() macro for console details
-Date:   Thu, 21 Apr 2022 23:28:43 +0206
-Message-Id: <20220421212250.565456-9-john.ogness@linutronix.de>
+Subject: [PATCH printk v4 06/15] printk: get caller_id/timestamp after migration disable
+Date:   Thu, 21 Apr 2022 23:28:41 +0206
+Message-Id: <20220421212250.565456-7-john.ogness@linutronix.de>
 In-Reply-To: <20220421212250.565456-1-john.ogness@linutronix.de>
 References: <20220421212250.565456-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
@@ -54,57 +54,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is useful to generate log messages that include details about
-the related console. Rather than duplicate the code to assemble
-the details, put that code into a macro con_printk().
+Currently the local CPU timestamp and caller_id for the record are
+collected while migration is enabled. Since this information is
+CPU-specific, it should be collected with migration disabled.
 
-Once console printers become threaded, this macro will find more
-users.
+Migration is disabled immediately after collecting this information
+anyway, so just move the information collection to after the
+migration disabling.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
 Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/printk/printk.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ kernel/printk/printk.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 2f99e0b383b9..e36d3ed41afa 100644
+index 7bb148a1debb..82ad3d3d0d4a 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -3015,6 +3015,11 @@ static void try_enable_default_console(struct console *newcon)
- 		newcon->flags |= CON_CONSDEV;
+@@ -2063,7 +2063,7 @@ static inline void printk_delay(void)
+ static inline u32 printk_caller_id(void)
+ {
+ 	return in_task() ? task_pid_nr(current) :
+-		0x80000000 + raw_smp_processor_id();
++		0x80000000 + smp_processor_id();
  }
  
-+#define con_printk(lvl, con, fmt, ...)			\
-+	printk(lvl pr_fmt("%sconsole [%s%d] " fmt),	\
-+	       (con->flags & CON_BOOT) ? "boot" : "",	\
-+	       con->name, con->index, ##__VA_ARGS__)
+ /**
+@@ -2145,7 +2145,6 @@ int vprintk_store(int facility, int level,
+ 		  const struct dev_printk_info *dev_info,
+ 		  const char *fmt, va_list args)
+ {
+-	const u32 caller_id = printk_caller_id();
+ 	struct prb_reserved_entry e;
+ 	enum printk_info_flags flags = 0;
+ 	struct printk_record r;
+@@ -2155,10 +2154,14 @@ int vprintk_store(int facility, int level,
+ 	u8 *recursion_ptr;
+ 	u16 reserve_size;
+ 	va_list args2;
++	u32 caller_id;
+ 	u16 text_len;
+ 	int ret = 0;
+ 	u64 ts_nsec;
+ 
++	if (!printk_enter_irqsave(recursion_ptr, irqflags))
++		return 0;
 +
- /*
-  * The console driver calls this routine during kernel initialization
-  * to register the console printing procedure with printk() and to
-@@ -3153,9 +3158,7 @@ void register_console(struct console *newcon)
- 	 * users know there might be something in the kernel's log buffer that
- 	 * went to the bootconsole (that they do not see on the real console)
+ 	/*
+ 	 * Since the duration of printk() can vary depending on the message
+ 	 * and state of the ringbuffer, grab the timestamp now so that it is
+@@ -2167,8 +2170,7 @@ int vprintk_store(int facility, int level,
  	 */
--	pr_info("%sconsole [%s%d] enabled\n",
--		(newcon->flags & CON_BOOT) ? "boot" : "" ,
--		newcon->name, newcon->index);
-+	con_printk(KERN_INFO, newcon, "enabled\n");
- 	if (bootcon_enabled &&
- 	    ((newcon->flags & (CON_CONSDEV | CON_BOOT)) == CON_CONSDEV) &&
- 	    !keep_bootcon) {
-@@ -3174,9 +3177,7 @@ int unregister_console(struct console *console)
- 	struct console *con;
- 	int res;
+ 	ts_nsec = local_clock();
  
--	pr_info("%sconsole [%s%d] disabled\n",
--		(console->flags & CON_BOOT) ? "boot" : "" ,
--		console->name, console->index);
-+	con_printk(KERN_INFO, console, "disabled\n");
+-	if (!printk_enter_irqsave(recursion_ptr, irqflags))
+-		return 0;
++	caller_id = printk_caller_id();
  
- 	res = _braille_unregister_console(console);
- 	if (res < 0)
+ 	/*
+ 	 * The sprintf needs to come first since the syslog prefix might be
 -- 
 2.30.2
 
