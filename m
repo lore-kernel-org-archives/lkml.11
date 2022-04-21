@@ -2,135 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A650C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D38FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386239AbiDUM4q (ORCPT
+        id S1386298AbiDUM5S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        Thu, 21 Apr 2022 08:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385925AbiDUM4l (ORCPT
+        with ESMTP id S241689AbiDUM5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:56:41 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A6C732ED2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:53:52 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B92B1480;
-        Thu, 21 Apr 2022 05:53:51 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3143F3F73B;
-        Thu, 21 Apr 2022 05:53:50 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 13:53:44 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Wang ShaoBo <bobo.shaobowang@huawei.com>
-Cc:     cj.chengjian@huawei.com, huawei.libin@huawei.com,
-        xiexiuqi@huawei.com, liwei391@huawei.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        catalin.marinas@arm.com, will@kernel.org, rostedt@goodmis.org,
-        zengshun.wu@outlook.com
-Subject: Re: [RFC PATCH -next v2 0/4] arm64/ftrace: support dynamic trampoline
-Message-ID: <YmFT2DtlcQd7k4Tt@lakrids>
-References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+        Thu, 21 Apr 2022 08:57:13 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92DB32ED2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 05:54:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1650545661; x=1682081661;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pgtX4YON8Zrq5OpIcU6N0ns6NSZEzAs8X3R7e2dHKOA=;
+  b=UQB6oI0xmOOj/vNyXetAohL/9eJTvswv9+wmr0tCoHsSXxsVEcxGS1UX
+   ghvsj3EYbHPfYYi5FLheqK+nkngELWKGZ4g1jwrnl9fFGfxL76Xd5VvwJ
+   AcRSnhzXQuPCYa+MjX2lv4xWW0syfk3MADCCZrnNqidtECalEaRmz/AfV
+   AAUTGOILjS3aULNdN/97QI51Jl43CvpPfB17kU7yDQICKNI9Iw8nSC30N
+   LVd2vTHPdJXVKkS254ycSkjVnj9gSVtL/AHtYHPMzJyL10AkAwivFfqPm
+   fu6E9u0N1FE30MV/nlHWtCQZUuccYUhxyViJIK9grVcJWaAqI469xuTKd
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,278,1643698800"; 
+   d="scan'208";a="161255136"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Apr 2022 05:54:21 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 21 Apr 2022 05:54:20 -0700
+Received: from rob-ult-m19940.amer.actel.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 21 Apr 2022 05:54:17 -0700
+From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+To:     <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
+        <alexandre.belloni@bootlin.com>, <sha@pengutronix.de>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Subject: [PATCH 1/2] Revert "ASoC: dmaengine: do not use a NULL prepare_slave_config() callback"
+Date:   Thu, 21 Apr 2022 15:54:02 +0300
+Message-ID: <20220421125403.2180824-1-codrin.ciubotariu@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 06:01:28PM +0800, Wang ShaoBo wrote:
-> This implements dynamic trampoline in ARM64, as reference said, we
-> complete whole design of supporting long jump in dynamic trampoline:
-> 
->    .text section:
->      funcA:         |    funcA():        funcB():|
->       `->  +-----+  |    |   ...         mov x9  |
->            | ... |  |    |   adrp   <-   bl  <>  |
->            | nop |  |    |   mov
->            | nop |  |    |   br   x16 ---+
->      funcB | nop |  |                    | ftrace_(regs_)caller_tramp:
->       `->  +-----+  |                    `--> +---------------------+
->            | nop |  |                         | ...                 |
->            | nop |  |       ftrace callsite   +---------------------+
->            | ... |  |                `----->  | PLT entry:          |
->            | nop |  |                         |       adrp          |
->            | nop |  |                         |       add           |
->     funcC: | nop |  | ftrace graph callsite   |       br   x16      |
->       `->  +-----+  |                `----->  +---------------------+
->            | nop |  |                         | ...                 |
->            | nop |  |                         +---------------------+
-> 
-> But there is still a tricky problem that is how to adjust tracing ip,
-> waiting to be solved:
-> 
-> For ARM64, somecases there may be extra instructions inserted into the
-> head of tracable functions(but not all) by compiler, for instance BTI[1].
-> 
-> This dump vmlinux with CONFIG_BTI=y:
-> 
-> (1) function gic_handle_irq has bti in its head, so we adjust rec->ip+=5 to last nop
->     ffffffc0080100e0:       d53cd042        mrs     x2, tpidr_el2
->             ...
->     ffffffc0080100f0:       d503201f        nop     //__mcount_loc tells the rec->ip
->     ffffffc0080100f4:       d503201f        nop
->     ffffffc0080100f8:       d503201f        nop
-> 
->     ffffffc0080100fc <gic_handle_irq>:
->     ffffffc0080100fc:       d503245f        bti     c
->     ffffffc008010100:       d503201f        nop
->     ffffffc008010104:       d503201f        nop     //we adjust origin rec->ip+5 to here
->     ffffffc008010108:       d503233f        paciasp
-> (2) name_to_dev_t.part.0 do not has bti in its head, so we should adjust rec->ip+=4 to last nop
->     ffff8000080137d4:       d503201f        nop
->     ffff8000080137d8:       d503201f        nop
->     ffff8000080137dc:       d503201f        nop
->     
->     ffff8000080137e0 <name_to_dev_t.part.0>:
->     ffff8000080137e0:       d503201f        nop
->     ffff8000080137e4:       d503201f        nop
->     ffff8000080137e8:       d503233f        paciasp
-> 
-> So at this time we have no idea to identify rec->ip for each tracable function.
+This reverts commit 9a1e13440a4f2e7566fd4c5eae6a53e6400e08a4.
 
-When I had looked into this in the past, I had assumed we could figure
-this out at ftrace_init_nop() time, and adjust rec->ip there.
+As pointed out by Sascha Hauer, this patch changes:
+if (pmc->config && !pcm->config->prepare_slave_config)
+        <do nothing>
+to:
+if (pmc->config && !pcm->config->prepare_slave_config)
+        snd_dmaengine_pcm_prepare_slave_config()
 
-However, placing code *before* the function entry point will also break
-stacktracing and will require adjustment, and I'd been intending to
-clean up the stacktrace code first, so I haven't looked at that in a
-while.
+This breaks the drivers that do not need a call to
+dmaengine_slave_config(). Drivers that still need to call
+snd_dmaengine_pcm_prepare_slave_config(), but have a NULL
+pcm->config->prepare_slave_config should use
+snd_dmaengine_pcm_prepare_slave_config() as their prepare_slave_config
+callback.
 
-I'll take a look at the rest of the series shortly.
+Fixes: 9a1e13440a4f ("ASoC: dmaengine: do not use a NULL prepare_slave_config() callback")
+Reported-by: Sascha Hauer <sha@pengutronix.de>
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+---
+ sound/soc/soc-generic-dmaengine-pcm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thanks,
-Mark.
+diff --git a/sound/soc/soc-generic-dmaengine-pcm.c b/sound/soc/soc-generic-dmaengine-pcm.c
+index 2ab2ddc1294dd..285441d6aeed4 100644
+--- a/sound/soc/soc-generic-dmaengine-pcm.c
++++ b/sound/soc/soc-generic-dmaengine-pcm.c
+@@ -86,10 +86,10 @@ static int dmaengine_pcm_hw_params(struct snd_soc_component *component,
+ 
+ 	memset(&slave_config, 0, sizeof(slave_config));
+ 
+-	if (pcm->config && pcm->config->prepare_slave_config)
+-		prepare_slave_config = pcm->config->prepare_slave_config;
+-	else
++	if (!pcm->config)
+ 		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
++	else
++		prepare_slave_config = pcm->config->prepare_slave_config;
+ 
+ 	if (prepare_slave_config) {
+ 		int ret = prepare_slave_config(substream, params, &slave_config);
+-- 
+2.32.0
 
-> 
-> we are looking forward to follow-up discussions.
-> 
-> References:
-> [1] https://developer.arm.com/documentation/100076/0100/a64-instruction-set-reference/a64-general-instructions/bti
-> [2] https://lore.kernel.org/linux-arm-kernel/20200109142736.1122-1-cj.chengjian@huawei.com/
-> 
-> Cheng Jian (4):
->   arm64: introduce aarch64_insn_gen_load_literal
->   arm64/ftrace: introduce ftrace dynamic trampoline entrances
->   arm64/ftrace: support dynamically allocated trampolines
->   arm64/ftrace: implement long jump for dynamic trampolines
-> 
->  arch/arm64/Makefile              |   2 +-
->  arch/arm64/include/asm/ftrace.h  |  10 +-
->  arch/arm64/include/asm/insn.h    |   6 +
->  arch/arm64/include/asm/module.h  |   9 +
->  arch/arm64/kernel/entry-ftrace.S |  88 ++++++--
->  arch/arm64/kernel/ftrace.c       | 366 ++++++++++++++++++++++++++++---
->  arch/arm64/kernel/module-plts.c  |  50 +++++
->  arch/arm64/lib/insn.c            |  49 +++++
->  8 files changed, 532 insertions(+), 48 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
