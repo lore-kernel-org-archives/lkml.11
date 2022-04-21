@@ -2,75 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C67F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9723AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384890AbiDUGe6 (ORCPT
+        id S1384903AbiDUGfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
+        Thu, 21 Apr 2022 02:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242783AbiDUGex (ORCPT
+        with ESMTP id S242783AbiDUGfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:34:53 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BE8513F36;
-        Wed, 20 Apr 2022 23:32:05 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id F2B92811B;
-        Thu, 21 Apr 2022 06:29:13 +0000 (UTC)
-Date:   Thu, 21 Apr 2022 09:32:03 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-omap@vger.kernel.org, aaro.koskinen@iki.fi,
-        jmkrzyszt@gmail.com, Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 24/41] ARM: omap: un-merge plat/sram.c
-Message-ID: <YmD6Y2BlGWjLWw8d@atomide.com>
-References: <20220419133723.1394715-1-arnd@kernel.org>
- <20220419133723.1394715-25-arnd@kernel.org>
+        Thu, 21 Apr 2022 02:35:38 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E39213F36
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:32:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650522770; x=1682058770;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HjVQanIuM1BYBElba6NqAn0zIn/a7OPVDnlc56p23Zg=;
+  b=Eqi394mzorZCeOFs14NbmYvA97WcOf+OOsm0npHdLO6ArSHXCGiWEZGH
+   LMxW5zi2pnJ4ZokxlAc8xh3/BO5kJFeqxgLgTBq7x0okBkQVsjs6uWIyo
+   3Hh5h6g306hCaRKqVDAofssHUCn905vs99OE6rWdcX5DHsQx23vjrRPRk
+   z6upDWtin4bMtODMJ9+4p7MZhh45WD1MdNAbNtbT+HXYt3ZTVfOB8t+b0
+   oi9KE1AxZjVx1FI3AtVNA18IvPXfoNYfVYQhTmyvsxTGuxP51nAdzfw/K
+   rX5rfyb00xk9MH7Y6HNIRQuXj7S9gVjKFQiXTbJUvNhLah+f4zg9dBJRn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263107510"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="263107510"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:32:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="530128322"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2022 23:32:49 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhQMy-0007wn-EA;
+        Thu, 21 Apr 2022 06:32:48 +0000
+Date:   Thu, 21 Apr 2022 14:32:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1952/2579]
+ arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for
+ 'sysenter_setup'
+Message-ID: <202204202001.5zD2lyss-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220419133723.1394715-25-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Arnd Bergmann <arnd@kernel.org> [220419 13:37]:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The sram initialization code is the only shared omap1/2 code that
-> is not a standalone driver, but it is very short. Having two copies
-> of this code means some duplication of the sources, but actually
-> saves object code size as it can be inlined better.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
+commit: 143f41d47c158e8acbbce44c87a78966d3e9f62f [1952/2579] headers/deps: x86/cpu, arm64/cpu: Split out <asm/processor_api.h> from <asm/processor.h>
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220420/202204202001.5zD2lyss-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=143f41d47c158e8acbbce44c87a78966d3e9f62f
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 143f41d47c158e8acbbce44c87a78966d3e9f62f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vdso/ arch/x86/kernel/cpu/mtrr/ kernel/trace/
 
-FYI, the sram code should eventually be updated to use drivers/misc/sram.c,
-I recall there being some issues to deal with for PM related code though.
-Probably the PM related save and restore could be now handled with cpu_pm.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Regards,
+All warnings (new ones prefixed by >>):
 
-Tony
+>> arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for 'sysenter_setup' [-Wmissing-prototypes]
+      55 | int __init sysenter_setup(void)
+         |            ^~~~~~~~~~~~~~
 
+
+vim +/sysenter_setup +55 arch/x86/entry/vdso/vdso32-setup.c
+
+^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  54  
+a6c4e076ee4c1ea6 arch/i386/kernel/sysenter.c        Jeremy Fitzhardinge 2007-05-02 @55  int __init sysenter_setup(void)
+^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  56  {
+0a6d1fa0d2b48fba arch/x86/entry/vdso/vdso32-setup.c Andy Lutomirski     2015-10-05  57  	init_vdso_image(&vdso_image_32);
+^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  58  
+^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  59  	return 0;
+^1da177e4c3f4152 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  60  }
+e6e5494cb23d1933 arch/i386/kernel/sysenter.c        Ingo Molnar         2006-06-27  61  
+
+:::::: The code at line 55 was first introduced by commit
+:::::: a6c4e076ee4c1ea670e4faa55814e63dd08e3f29 [PATCH] i386: clean up identify_cpu
+
+:::::: TO: Jeremy Fitzhardinge <jeremy@goop.org>
+:::::: CC: Andi Kleen <andi@basil.nowhere.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
