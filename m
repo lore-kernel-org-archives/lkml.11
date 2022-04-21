@@ -2,101 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F907C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F282BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386514AbiDUINH (ORCPT
+        id S1386578AbiDUINP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
+        Thu, 21 Apr 2022 04:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386472AbiDUIM0 (ORCPT
+        with ESMTP id S1386501AbiDUIMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:12:26 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Apr 2022 01:09:38 PDT
-Received: from mo-csw-fb.securemx.jp (mo-csw-fb1514.securemx.jp [210.130.202.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6691E3FA;
-        Thu, 21 Apr 2022 01:09:37 -0700 (PDT)
-Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1514) id 23L82Bu4008355; Thu, 21 Apr 2022 17:02:11 +0900
-Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 23L81pou023347; Thu, 21 Apr 2022 17:01:51 +0900
-X-Iguazu-Qid: 34trpTYxFGvHYfA6HI
-X-Iguazu-QSIG: v=2; s=0; t=1650528111; q=34trpTYxFGvHYfA6HI; m=C7/iOvyqr0mp6XzSqSaLODep2G3TdSKSUIk0yN+KuYg=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1511) id 23L81oNu017170
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 21 Apr 2022 17:01:50 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH] arm64: dts: visconti: Add clock controller support for TMPV7708
-Date:   Thu, 21 Apr 2022 17:01:43 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220421080143.2135566-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.34.1
+        Thu, 21 Apr 2022 04:12:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A707E59
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:09:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650528593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p5mkp6RgcSobuU7TrowdyzROdlgIwSdHC604GfrT0MY=;
+        b=XqADFnvMV1d4VAhOFkM/AyTvFwFbwu3ollVd7T0tqJyNbEeAm4oWpYTfMtusAfepEFbQ++
+        j7BHjk1T6OZYfdt8eGhYLcdIIqhOToGnJxeWakGRo14JmF8PR0PdNBrYijrsXt/CQ8YoAB
+        kx76NfD1/ctLVpXezbAPhvuOAMl6wzY=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-621-e2gf34BiOLGJNpsfnZ8EqQ-1; Thu, 21 Apr 2022 04:09:52 -0400
+X-MC-Unique: e2gf34BiOLGJNpsfnZ8EqQ-1
+Received: by mail-qk1-f199.google.com with SMTP id k15-20020a05620a07ef00b0069eab7275d5so2864463qkk.5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:09:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=p5mkp6RgcSobuU7TrowdyzROdlgIwSdHC604GfrT0MY=;
+        b=tCGRKEvyjxO44gehIexBxy2mUflCIplOcd5BJaQutHvkg1TlwkaM6zc9eHvP+u2P6/
+         bqjWd1jj+sp2copr5gLpEhlst9eIFtnmG2M986borhwnxHNJZD6iRufa46euDoGJT8ks
+         Us5TuBChmz5kq9uAHWYeNVqsETPvRusVgFACyd01tDWiOZ7Oyb0350q/CuQdMngCphM4
+         znA2EIp7y/PBtrlvDSnC2GfIkgClAmP7YK/BZ6EMvi/SOmwxXPdViJ88fSFis3mz0bNj
+         HPf0zrZRSVxsa86rnP9aNTsqS0we7mtnfsZuKlzURYQg4MGS0qgXzU1xEM7Zjve9U7CQ
+         39tQ==
+X-Gm-Message-State: AOAM531zYFWMBWa1H1AF9VaPrtijtbgsZUMARakyrS9KHrg1x281srdw
+        g1rLWwLYvOSb59AxS1bTVRAZoMwIjuGw+mQEMA7S0PBnsTyJC/c/kx/bRTT9V/q/mPiPySXLbtx
+        aq7cykaFOj5CEDHs6oL9lAF5l
+X-Received: by 2002:ac8:5d8e:0:b0:2f1:fbc6:ae89 with SMTP id d14-20020ac85d8e000000b002f1fbc6ae89mr13320685qtx.647.1650528591620;
+        Thu, 21 Apr 2022 01:09:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxSWl/IdeBjalShp/k7O4K9i4aFpme9ARCm4osm7hX2EifpK6owbeUtv7Nf9MMUd0R2II36pw==
+X-Received: by 2002:ac8:5d8e:0:b0:2f1:fbc6:ae89 with SMTP id d14-20020ac85d8e000000b002f1fbc6ae89mr13320674qtx.647.1650528591406;
+        Thu, 21 Apr 2022 01:09:51 -0700 (PDT)
+Received: from gerbillo.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id c131-20020a379a89000000b0069c903625absm2686220qke.102.2022.04.21.01.09.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 01:09:50 -0700 (PDT)
+Message-ID: <a3596a37f72d6df35a6de4e0cf912d2f6d434bbc.camel@redhat.com>
+Subject: Re: [PATCH] net/smc: sync err info when TCP connection is refused
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     yacanliu@163.com, kgraul@linux.ibm.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
+Date:   Thu, 21 Apr 2022 10:09:48 +0200
+In-Reply-To: <20220417123307.1094747-1-yacanliu@163.com>
+References: <20220417123307.1094747-1-yacanliu@163.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds node of clock controller support for Toshiba Visconti TMPV7708.
+On Sun, 2022-04-17 at 20:33 +0800, yacanliu@163.com wrote:
+> From: liuyacan <liuyacan@corp.netease.com>
+> 
+> In the current implementation, when TCP initiates a connection
+> to an unavailable [ip,port], ECONNREFUSED will be stored in the
+> TCP socket, but SMC will not. However, some apps (like curl) use
+> getsockopt(,,SO_ERROR,,) to get the error information, which makes
+> them miss the error message and behave strangely.
+> 
+> Signed-off-by: liuyacan <liuyacan@corp.netease.com>
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- arch/arm64/boot/dts/toshiba/tmpv7708.dtsi | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+Could you please formally re-submit for -net (inclusing NET into the
+patch subj) with a suitable 'fixes' tag? You can retain the already
+collected reviewed/ack-by tags.
 
-diff --git a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
-index 01d7ee61ad25..1683113a3c43 100644
---- a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
-+++ b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
-@@ -7,6 +7,7 @@
-  *
-  */
- 
-+#include <dt-bindings/clock/toshiba,tmpv770x.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
- 
-@@ -182,6 +183,12 @@ wdt_clk: wdt-clk {
- 		#clock-cells = <0>;
- 	};
- 
-+	osc2_clk: osc2-clk {
-+		compatible = "fixed-clock";
-+		clock-frequency = <20000000>;
-+		#clock-cells = <0>;
-+	};
-+
- 	soc {
- 		#address-cells = <2>;
- 		#size-cells = <2>;
-@@ -216,6 +223,20 @@ gpio: gpio@28020000 {
- 			interrupt-parent = <&gic>;
- 		};
- 
-+		pipllct: clock-controller@24220000 {
-+			compatible = "toshiba,tmpv7708-pipllct";
-+			reg = <0 0x24220000 0 0x820>;
-+			#clock-cells = <1>;
-+			clocks = <&osc2_clk>;
-+		};
-+
-+		pismu: syscon@24200000 {
-+			compatible = "toshiba,tmpv7708-pismu", "syscon";
-+			reg = <0 0x24200000 0 0x2140>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+		};
-+
- 		uart0: serial@28200000 {
- 			compatible = "arm,pl011", "arm,primecell";
- 			reg = <0 0x28200000 0 0x1000>;
--- 
-2.34.1
+Thanks!
 
+Paolo
 
