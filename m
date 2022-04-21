@@ -2,139 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A83C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 894B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388410AbiDUK1V (ORCPT
+        id S1388365AbiDUK2s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51028 "EHLO
+        Thu, 21 Apr 2022 06:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388319AbiDUK00 (ORCPT
+        with ESMTP id S1388531AbiDUK1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:26:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED3015710;
-        Thu, 21 Apr 2022 03:23:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B4FBB823EF;
-        Thu, 21 Apr 2022 10:23:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6AE8C385AD;
-        Thu, 21 Apr 2022 10:23:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650536613;
-        bh=OPcQi8PNLxtf9QqmHXSHr2vOBK8ZZT68KQP3kx1rv+E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qbA6edcrA92ddaDuiDgGIQ8er1FIBNdhw16dpGwwZRTMNAZmAWJ4MjfSCPscdF4BU
-         5qI71065k50tiLpfjRfpHEr1H926epJOCV9jebBB7ROGCIIUbLkFnAbmSVFzH4rbl4
-         maIrJTsdNvzsYVTzKl+ew6rtiqGgHtM+s/mX39cQRVHiaIFibeWk6+X0H7lOzS7f/8
-         c66O4O1FCb0nxGFiGN3YVPpVnYJLyMasC4O5HZe/mrQ2ocitChiZ+y+oTmzUYVVj8Y
-         dxzndsOM+XUXlziAoTjs2F9+CfXj0kTpYtfV+hq2QNxaDMgLudsjOlZi/oULOZ+Fob
-         guX8zs+eUWbsQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1nhTyA-0004Xc-Fq; Thu, 21 Apr 2022 12:23:27 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "Stephen Boyd" <swboyd@chromium.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH RFC 0/5] phy: qcom-qmp: add support for pipe clock muxing
-Date:   Thu, 21 Apr 2022 12:20:36 +0200
-Message-Id: <20220421102041.17345-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 21 Apr 2022 06:27:48 -0400
+Received: from mail.meizu.com (edge01.meizu.com [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79461116;
+        Thu, 21 Apr 2022 03:24:58 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 21 Apr
+ 2022 18:25:00 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 21 Apr
+ 2022 18:24:56 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Saurav Kashyap <skashyap@marvell.com>,
+        Javed Hasan <jhasan@marvell.com>,
+        <GR-QLogic-Storage-Upstream@marvell.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-scsi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] scsi: qedf: Remove useless code
+Date:   Thu, 21 Apr 2022 18:24:53 +0800
+Message-ID: <1650536693-13089-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some QMP PHYs need to remux to their pipe clock input to the pipe clock
-output generated by the PHY before powering on the PHY and restore the
-default source during power down.
+buf msg only memset but no use at all, so we drop it.
 
-         +---------------+
-         |   PHY block   |<<---------------------------------------+
-         |               |                   +-----+               |
-         |   +-------+   |                   | GCC |               |
-   I/P---^-->|  PLL  |---^--->pipe_clksrc--->|-\   |		   |
-    clk  |   +-------+   |                   |  +--|--->pipe_clk---+
-    	 |		 |	       xo--->|-/   |  
-         +---------------+	             +-----|
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/scsi/qedf/qedf_attr.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-This series moves the pipe clock mux handling from PCIe controller
-driver into the PHY driver which already manages the pipe clock as the
-PHY is both the producer of the pipe clock as well as its (primary)
-consumer.
-
-This is an alternative to the series posted here
-
-	https://lore.kernel.org/r/20220413233144.275926-1-dmitry.baryshkov@linaro.org
-
-which instead moves the mux handling into the clock drivers and ties
-remuxing to the gating/ungating of the pipe clock in the GCC. That
-approach means that it is still possible to have the pipe clock ungated
-without providing a valid source, somethings which can cause hangs when
-enabling/disabling the GDSC (presumably as some entity is consuming the
-pipe clock).
-
-Implementing this in the clock drivers also means that the
-implementation is spread out over multiple files and makes it harder to
-add support for new SoCs as it may not be clear that every pipe clock
-mux definition needs to be updated with safe and non-safe parent-clock
-indexes and an ad-hoc mux ops implementation.
-
-The custom mux implementation currently also hides the actual topology
-of the clock tree by always reporting the pipe mux source as being
-provided by the PHY (e.g. as reported by debugfs).
-
-This series, by contrast, ties the muxing to when the pipe clock source
-is enabled, that is, when the PHY is powered on, so that the GCC pipe
-clock always has a valid source.
-
-The implementation is more straight-forward, avoids the one-off clock
-mux implementation, and allows for documenting this once and for all in
-the PHY driver.
-
-Note that the devicetree bindings remains to be updated but that this
-was left out of this RFC.
-
-This series depends on the two qcom-qmp fixlets posted here:
-
-	https://lore.kernel.org/all/20220420152331.5527-1-johan+linaro@kernel.org/
-
-Johan
-
-
-Dmitry Baryshkov (1):
-  PCI: qcom: Remove unnecessary pipe_clk handling
-
-Johan Hovold (4):
-  phy: qcom-qmp: add support for pipe clock muxing
-  arm64: dts: qcom: sc7280: move pipe mux handling to phy
-  PCI: qcom: Drop pipe clock muxing
-  PCI: qcom: Drop unused post-init callbacks
-
- arch/arm64/boot/dts/qcom/sc7280.dtsi   | 18 ++---
- drivers/pci/controller/dwc/pcie-qcom.c | 96 ++------------------------
- drivers/phy/qualcomm/phy-qcom-qmp.c    | 71 +++++++++++++++++--
- 3 files changed, 76 insertions(+), 109 deletions(-)
-
+diff --git a/drivers/scsi/qedf/qedf_attr.c b/drivers/scsi/qedf/qedf_attr.c
+index fdc66d294813..8d8c760eee43 100644
+--- a/drivers/scsi/qedf/qedf_attr.c
++++ b/drivers/scsi/qedf/qedf_attr.c
+@@ -131,7 +131,6 @@ qedf_sysfs_write_grcdump(struct file *filep, struct kobject *kobj,
+ 	struct qedf_ctx *qedf = NULL;
+ 	long reading;
+ 	int ret = 0;
+-	char msg[40];
+ 
+ 	if (off != 0)
+ 		return ret;
+@@ -148,7 +147,6 @@ qedf_sysfs_write_grcdump(struct file *filep, struct kobject *kobj,
+ 		return ret;
+ 	}
+ 
+-	memset(msg, 0, sizeof(msg));
+ 	switch (reading) {
+ 	case 0:
+ 		memset(qedf->grcdump, 0, qedf->grcdump_size);
 -- 
-2.35.1
+2.7.4
 
