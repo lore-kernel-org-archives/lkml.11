@@ -2,110 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8939BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 870D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389368AbiDUOty (ORCPT
+        id S1389636AbiDUOu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
+        Thu, 21 Apr 2022 10:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389625AbiDUOtu (ORCPT
+        with ESMTP id S1389393AbiDUOuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:49:50 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4291240A5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:46:58 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.48:52588.517396403
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 1C49728009B;
-        Thu, 21 Apr 2022 22:46:49 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 858e0d6bc8d647be9ed84338be167c44 for wim@linux-watchdog.org;
-        Thu, 21 Apr 2022 22:46:55 CST
-X-Transaction-ID: 858e0d6bc8d647be9ed84338be167c44
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     wim@linux-watchdog.org, linux@roeck-us.net
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH] Watchdog: Checking timeout invalid if hardware heartbeat range is configured
-Date:   Thu, 21 Apr 2022 22:22:18 +0800
-Message-Id: <1650550938-24608-1-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Thu, 21 Apr 2022 10:50:22 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1268A2253A;
+        Thu, 21 Apr 2022 07:47:31 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VAfplXu_1650552445;
+Received: from 192.168.31.65(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VAfplXu_1650552445)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 21 Apr 2022 22:47:27 +0800
+Message-ID: <62301f0e-8623-80ac-b351-a1b475a7004c@linux.alibaba.com>
+Date:   Thu, 21 Apr 2022 22:47:25 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v9 02/21] cachefiles: notify user daemon when looking up
+ cookie
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>
+Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
+        linux-erofs@lists.ozlabs.org, torvalds@linux-foundation.org,
+        gregkh@linuxfoundation.org, willy@infradead.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com,
+        tianzichen@kuaishou.com, fannaihao@baidu.com,
+        zhangjiachen.jaycee@bytedance.com
+References: <20220415123614.54024-3-jefflexu@linux.alibaba.com>
+ <20220415123614.54024-1-jefflexu@linux.alibaba.com>
+ <1444650.1650549423@warthog.procyon.org.uk>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <1444650.1650549423@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The timeout should be invalid when it is out of the hardware
-timeout range.
+Hi David,
 
-ACPI watchdog: Using watchdog_timeout_invalid to check parameter
-timeout invalid
+Thanks for reviewing :)
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
----
- drivers/watchdog/wdat_wdt.c |  3 +--
- include/linux/watchdog.h    | 17 ++++++++++++-----
- 2 files changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-index 195c8c004b69..d166d33ce7ae 100644
---- a/drivers/watchdog/wdat_wdt.c
-+++ b/drivers/watchdog/wdat_wdt.c
-@@ -450,8 +450,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 	 * watchdog properly after it has opened the device. In some cases
- 	 * the BIOS default is too short and causes immediate reboot.
- 	 */
--	if (timeout * 1000 < wdat->wdd.min_hw_heartbeat_ms ||
--	    timeout * 1000 > wdat->wdd.max_hw_heartbeat_ms) {
-+	if (watchdog_timeout_invalid(&wdat->wdd, timeout)) {
- 		dev_warn(dev, "Invalid timeout %d given, using %d\n",
- 			 timeout, WDAT_DEFAULT_TIMEOUT);
- 		timeout = WDAT_DEFAULT_TIMEOUT;
-diff --git a/include/linux/watchdog.h b/include/linux/watchdog.h
-index 99660197a36c..e82daeef0b26 100644
---- a/include/linux/watchdog.h
-+++ b/include/linux/watchdog.h
-@@ -167,6 +167,15 @@ static inline void watchdog_stop_ping_on_suspend(struct watchdog_device *wdd)
- /* Use the following function to check if a timeout value is invalid */
- static inline bool watchdog_timeout_invalid(struct watchdog_device *wdd, unsigned int t)
- {
-+	/*
-+	 * If a maximum/minimum hardware timeout is configured,
-+	 * the timeout is invalid when it is out of the range.
-+	 */
-+	if (wdd->max_hw_heartbeat_ms)
-+		return t * 1000 > wdd->max_hw_heartbeat_ms;
-+	if (wdd->min_hw_heartbeat_ms)
-+		return t * 1000 < wdd->min_hw_heartbeat_ms;
-+
- 	/*
- 	 * The timeout is invalid if
- 	 * - the requested value is larger than UINT_MAX / 1000
-@@ -174,13 +183,11 @@ static inline bool watchdog_timeout_invalid(struct watchdog_device *wdd, unsigne
- 	 * or
- 	 * - the requested value is smaller than the configured minimum timeout,
- 	 * or
--	 * - a maximum hardware timeout is not configured, a maximum timeout
--	 *   is configured, and the requested value is larger than the
--	 *   configured maximum timeout.
-+	 * - maximum timeout is configured, and the requested value is larger than
-+	 * the configured maximum timeout.
- 	 */
- 	return t > UINT_MAX / 1000 || t < wdd->min_timeout ||
--		(!wdd->max_hw_heartbeat_ms && wdd->max_timeout &&
--		 t > wdd->max_timeout);
-+		(wdd->max_timeout && t > wdd->max_timeout);
- }
- 
- /* Use the following function to check if a pretimeout value is invalid */
+On 4/21/22 9:57 PM, David Howells wrote:
+> Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+> 
+>> +	help
+>> +	  This permits on-demand read mode of cachefiles.  In this mode, when
+>> +	  cache miss, the cachefiles backend instead of netfs, is responsible
+>> +	  for fetching data, e.g. through user daemon.
+> 
+> How about:
+> 
+> 	help
+> 	  This permits userspace to enable the cachefiles on-demand read mode.
+> 	  In this mode, when a cache miss occurs, responsibility for fetching
+> 	  the data lies with the cachefiles backend instead of with the netfs
+> 	  and is delegated to userspace.
+> 
+>> +	/*
+>> +	 * 1) Cache has been marked as dead state, and then 2) flush all
+>> +	 * pending requests in @reqs xarray. The barrier inside set_bit()
+>> +	 * will ensure that above two ops won't be reordered.
+>> +	 */
+> 
+> What set_bit()?  
+
+"set_bit(CACHEFILES_DEAD, &cache->flags);" in cachefiles_daemon_release()
+
+> What "above two ops"? 
+
+The two operations I mentioned in the comment:
+1) Cache has been marked as dead state, and then
+2) flush all pending requests in @reqs xarray.
+
+
+> And that's not how barriers work; they
+
+
+> provide a partial ordering relative to another pair of barriered ops.
+> 
+> Also, set_bit() can't be relied upon to imply a barrier - see
+> Documentation/memory-barriers.txt.
+
+Yeah, it seems that set_bit() doesn't imply with a memory barrier,
+though the x86 implementation (arch/x86/boot/bitops.h) indeed implies a
+barrier, which may misleads me. Thanks for pointing it out. Then maybe a
+full barrier is needed here before flushing the @reqs xarray.
+
+> 
+>> +	if (IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND) &&
+>> +	    test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags)) {
+> 
+> It might be worth abstracting this into an inline function in internal.h:
+> 
+> 	static inline bool cachefiles_in_ondemand_mode(cache)
+> 	{
+> 		return IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND) &&
+> 			test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags)
+> 	}
+
+Okay, will be fixed in the next version.
+
+> 
+>> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+> 
+> This looks like it ought to be superfluous, given the preceding test - though
+> I can see why you need it:
+
+Sorry I can't see the context. But I guess you are referring to the
+snippet of cachefiles_daemon_poll()?
+
+```
++	if (IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND) &&
++	    test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags)) {
++#ifdef CONFIG_CACHEFILES_ONDEMAND
++		if (!xa_empty(&cache->reqs))
++			mask |= EPOLLIN;
+```
+
+Yes the implementation here is indeed not elegant enough. As you
+described below, if @reqs is defined non-conditionally in struct
+cachefiles_cache, then the superfluous magic here is not needed then.
+
+> 
+>> +#ifdef CONFIG_CACHEFILES_ONDEMAND
+>> +	struct xarray			reqs;		/* xarray of pending on-demand requests */
+>> +	struct xarray			ondemand_ids;	/* xarray for ondemand_id allocation */
+>> +	u32				ondemand_id_next;
+>> +#endif
+> 
+> I'm tempted to say that you should just make them non-conditional.  It's not
+> like there's likely to be more than one or two cachefiles_cache structs on a
+> system.
+
+Okay, sounds reasonable.
+
+
 -- 
-2.23.0
-
+Thanks,
+Jeffle
