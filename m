@@ -2,152 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B29C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbiDUQ2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
+        id S229839AbiDUQ2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390639AbiDUQSi (ORCPT
+        with ESMTP id S1390499AbiDUQKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:18:38 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945423B2AC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:15:47 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id b19so7363055wrh.11
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:15:47 -0700 (PDT)
+        Thu, 21 Apr 2022 12:10:24 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAA14739D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:07:34 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 17-20020a05600c021100b00393a19f8f98so708346wmi.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:07:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FiFPVEZ/890BOXHBWTr8Id5xWtU3CWG0g0Rj3LfZsEw=;
-        b=I3Xk5E68FZ0l1QV2yAN+r9zykHAnVbQhzvC5rfpMlNUkdiKdYhEjy8Kl+xrFsAATRJ
-         YLn7LWbwcKQ5kfNr524MjNa5Hpdcyl/S5UCC7kKiIyAsdk2p7SHvInDw/dBgbX5jpCL6
-         iYNoPAWiwSdkZ/9cjlNBIm+e/g7IU743QrL3ouvOvelnXZ6aqv3Ft6kUxKLf3eM9tJAS
-         z0bcUNcgTYaYhzAMIXHM+smMjjZ0a79g5mwbAxz1BhwEFcfyyHDRURdidSjV9DyY9TjI
-         xOR2o1EoJXbhzaidGfjAilEbahG3OUtCfvYkUUOhE1ZXRBc/LNHfblgbFgFLA7/emle8
-         2/xw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W/2Za70C1RHKqi8XDzjUDlZrNvCkjmOJSSy94nVWdeo=;
+        b=V6zMP4bR03OtSHzQnhQ8C07/7liPhzxks7VIQDG9UyNJlBm3gL9cl4qycYdZpw/6/8
+         gnRZzPoPbAm6EteTZIlMDohqau4tlXHabCZVBb8CNbV34fkBdNicaT8J7KVwITEkZ202
+         MF+Jc+m5W5Nd6ChFOK7ImjudxfaZq5yp7KfW4iFKia9NQ2gtarCUKeCP1t3Ij7iJphyq
+         bxp3IJ8k2nd9DtzjAWA/30ru4FTtDp8Cfli7RMLYwxFFZynSMhKH+hYRChs7nfdIceq7
+         gc3SzrGQ7nDluILkLngZeZYVy8TBLepLx6mbM/bq0f9FBLKpE9t00Ah4un9atburVfsZ
+         nBOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FiFPVEZ/890BOXHBWTr8Id5xWtU3CWG0g0Rj3LfZsEw=;
-        b=grJ4B5YVYSa1eODFLuLrQflRGglvSfX9yGf0/V+yghCLYpuSek5xdiSJptBLFfk5x6
-         36I1Nzj24GPu3vuUUnl43rUldWMPpNYCcfsdDOpWqtLHhRJdOPd3YvHaw3azuQ3mg2H1
-         rrdnntJxFFOop8jCaux8x8YkAhXhTQv83MUDqzAC+lQ30Vl5pFEcuDJsB1a2vSdJe4eR
-         3g+CSt5+ZgB25Q92bcmQWBVyZfyBDMkTyF8zoDRUEFz+jkpKkk/1XVri/Dl0noeyIda2
-         Nj7KaNL6aR1HiFKoMNmk3MzUPBhVYheRy6fKxSwOLY5BhukeLjCoYZQ/o4o+viTumUak
-         H59w==
-X-Gm-Message-State: AOAM531AHL8TpEVJONmJMicRKQs+y7b+YU5X4YOTzn/eETOUpahtkbBF
-        3lPgNJoyyHDfF1D0O6t7xSr92g==
-X-Google-Smtp-Source: ABdhPJwx38jxjjyoCbEDJI6s8Wwm3ARUG66bz7F/8861ht83YrP6P64Q5Ohy+DYQ6ywhuQBUZApdfQ==
-X-Received: by 2002:a5d:45c5:0:b0:20a:be8f:aca6 with SMTP id b5-20020a5d45c5000000b0020abe8faca6mr355261wrs.493.1650557746113;
-        Thu, 21 Apr 2022 09:15:46 -0700 (PDT)
-Received: from tsr-vdi-mbaerts.nix.tessares.net (static.23.216.130.94.clients.your-server.de. [94.130.216.23])
-        by smtp.gmail.com with ESMTPSA id i11-20020a5d584b000000b0020a8d859e5fsm2865667wrf.10.2022.04.21.09.15.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 09:15:45 -0700 (PDT)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Chen Yu <yu.c.chen@intel.com>
-Cc:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH mptcp-next] x86/pm: fix false positive kmemleak report in msr_build_context()
-Date:   Thu, 21 Apr 2022 18:15:20 +0200
-Message-Id: <20220421161520.401946-1-matthieu.baerts@tessares.net>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W/2Za70C1RHKqi8XDzjUDlZrNvCkjmOJSSy94nVWdeo=;
+        b=NI1WuebuGKkwoVC1n7BqUE4Tav7yXj0fSFuWnMdLvNVOH5IvNvgNASRogJWvJik6ie
+         Lb73ktDll3m7yldg9oIdLIURD4w3BjMg5M9bbEzoeer+LHW9PTb/hovcsKspr9kU+N24
+         EI6epcgXOkP12TsUptqGuylLRUQvgsmXTSZqxaDpq2jk2wk68AwRpqIOkFoaOGzD8Eca
+         6oLwupsOKAnPXyPc1Mf+rM/TsHOy/+ENiaoaaiPcDyzZYq090pjs+Dq6KCC+ArSLnSp1
+         if2Hjqj1qpI+Rh4lYYe+Y+W6/+/6I+ECwzi5xLP3mOdVzp7FI9f5VBRhDV8kvgfOKxqy
+         JAxw==
+X-Gm-Message-State: AOAM532fsXtZswL3pYnP6spH2QLi4jHLWS/XoV0oU8cn8D4RRPCIWh/N
+        6suWeAtO9oApYkn1UYJxmDvE+YnDwe80n0mM4WH+Cw==
+X-Google-Smtp-Source: ABdhPJxqUYobkFKPsjnyNIvJy+aGvbRCq3IvWHSrRSfKqva8aaJVNAP6j8VnjdlZbx3EmrWdD1hpjE86W6KLq8k0p9U=
+X-Received: by 2002:a05:600c:1990:b0:392:7119:b55d with SMTP id
+ t16-20020a05600c199000b003927119b55dmr75078wmq.49.1650557252813; Thu, 21 Apr
+ 2022 09:07:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220419163749.1.Ica39bd8d1494f750a70a668e5929f6e5e63241f2@changeid>
+ <c8f5ada2-c5cc-fe1b-bdeb-8b7d134250ee@molgen.mpg.de>
+In-Reply-To: <c8f5ada2-c5cc-fe1b-bdeb-8b7d134250ee@molgen.mpg.de>
+From:   Jes Klinke <jbk@google.com>
+Date:   Thu, 21 Apr 2022 09:07:21 -0700
+Message-ID: <CANMTAZRp5GPwrJNO4RY1KpvABgiuOMYEtwm+jdYfX5JRH8FpSA@mail.gmail.com>
+Subject: Re: [PATCH v2] tpm: cr50: Add new device/vendor ID 0x504a6666
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     "Jes B. Klinke" <jbk@chromium.org>,
+        linux-integrity@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Peter Huewe <peterhuewe@gmx.de>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume"),
-kmemleak reports this issue:
+Dear Paul,
 
-  unreferenced object 0xffff888009cedc00 (size 256):
-    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    backtrace:
-      msr_build_context (include/linux/slab.h:621)
-      pm_check_save_msr (arch/x86/power/cpu.c:520)
-      do_one_initcall (init/main.c:1298)
-      kernel_init_freeable (init/main.c:1370)
-      kernel_init (init/main.c:1504)
-      ret_from_fork (arch/x86/entry/entry_64.S:304)
+On Wed, Apr 20, 2022 at 3:52 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Dear Jes,
+>
+>
+> Am 20.04.22 um 01:37 schrieb Jes B. Klinke:
+> > Accept one additional numerical value of DID:VID for next generation
+> > Google TPM with new firmware, to be used in future Chromebooks.
+> >
+> > The TPM with the new firmware has the code name TI50, and is going to
+> > use the same interfaces.
+> >
+> > Signed-off-by: Jes B. Klinke <jbk@chromium.org>
+> > Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > ---
+> >
+> >   drivers/char/tpm/tpm_tis_i2c_cr50.c | 7 ++++---
+> >   1 file changed, 4 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm=
+_tis_i2c_cr50.c
+> > index f6c0affbb4567..4ddb8ff3a8569 100644
+> > --- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
+> > +++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
+> > @@ -31,6 +31,7 @@
+> >   #define TPM_CR50_TIMEOUT_SHORT_MS   2               /* Short timeout =
+during transactions */
+> >   #define TPM_CR50_TIMEOUT_NOIRQ_MS   20              /* Timeout for TP=
+M ready without IRQ */
+> >   #define TPM_CR50_I2C_DID_VID                0x00281ae0L     /* Device=
+ and vendor ID reg value */
+> > +#define TPM_TI50_I2C_DID_VID         0x504a6666L     /* Device and ven=
+dor ID reg value */
+> >   #define TPM_CR50_I2C_MAX_RETRIES    3               /* Max retries du=
+e to I2C errors */
+> >   #define TPM_CR50_I2C_RETRY_DELAY_LO 55              /* Min usecs betw=
+een retries on I2C */
+> >   #define TPM_CR50_I2C_RETRY_DELAY_HI 65              /* Max usecs betw=
+een retries on I2C */
+> > @@ -742,15 +743,15 @@ static int tpm_cr50_i2c_probe(struct i2c_client *=
+client)
+> >       }
+> >
+> >       vendor =3D le32_to_cpup((__le32 *)buf);
+> > -     if (vendor !=3D TPM_CR50_I2C_DID_VID) {
+> > +     if (vendor !=3D TPM_CR50_I2C_DID_VID && vendor !=3D TPM_TI50_I2C_=
+DID_VID) {
+> >               dev_err(dev, "Vendor ID did not match! ID was %08x\n", ve=
+ndor);
+> >               tpm_cr50_release_locality(chip, true);
+> >               return -ENODEV;
+> >       }
+> >
+> > -     dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
+> > +     dev_info(dev, "%s TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
+> > +              vendor =3D=3D TPM_TI50_I2C_DID_VID ? "ti50" : "cr50",
+> >                client->addr, client->irq, vendor >> 16);
+> > -
+>
+> Remove this blank line wasn=E2=80=99t needed, I gues.
 
-It is easy to reproduce it on my side:
+You are right, I should probably have left the blank line untouched.
+It does not hurt the readability of the code much to remove it,
+though.
 
-  - boot the VM with a debug kernel config [1]
-  - wait ~1 minute
-  - start a kmemleak scan
+> >       return tpm_chip_register(chip);
+> >   }
+> >
+>
+> Thank for addressing the other comments, and congratulations on getting
+> your first commit into the Linux kernel.
 
-It seems kmemleak has an issue with the array allocated in
-msr_build_context() and assigned to a pointer in a static structure
-(saved_context.saved_msrs->array): there is no leak then.
+When I think about it, I did propose a kernel patch in 2002, to
+introduce /proc/sys/kernel/core_pattern, so this is my second patch.
+All the mailing lists, and formal review process this time seemed
+daunting at first, though, so thank you for guiding me through the
+process.
 
-It looks like this is a limitation from kmemleak but that's alright,
-kmemleak_no_leak() can be used to avoid complaining about that.
-
-Please note that it looks like this issue is not new, e.g.
-
-  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
-  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
-
-But on my side, msr_build_context() is only used since:
-
-  commit e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume").
-
-Depending on their CPUs, others have probably the same issue since:
-
-  commit 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume"),
-
-hence the 'Fixes' tag here below to help with the backports. But I
-understand if someone says the origin of this issue is more on
-kmemleak's side. What is unclear to me is why this issue was not seen by
-other people and CIs. Maybe the kernel config [1]?
-
-[1] https://github.com/multipath-tcp/mptcp_net-next/files/8531660/kmemleak-cpu-sched-bisect.kconfig.txt
-
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/268
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
----
- arch/x86/power/cpu.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/x86/power/cpu.c b/arch/x86/power/cpu.c
-index 3822666fb73d..1467c6d1a966 100644
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -14,6 +14,7 @@
- #include <linux/tboot.h>
- #include <linux/dmi.h>
- #include <linux/pgtable.h>
-+#include <linux/kmemleak.h>
- 
- #include <asm/proto.h>
- #include <asm/mtrr.h>
-@@ -413,6 +414,9 @@ static int msr_build_context(const u32 *msr_id, const int num)
- 		return -ENOMEM;
- 	}
- 
-+	/* The pointer is going to be stored in static struct (saved_context) */
-+	kmemleak_not_leak(msr_array);
-+
- 	if (saved_msrs->array) {
- 		/*
- 		 * Multiple callbacks can invoke this function, so copy any
--- 
-2.34.1
-
+Regards
+Jes
