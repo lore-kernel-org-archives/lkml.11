@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F01AC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385194AbiDUGrb (ORCPT
+        id S1385099AbiDUGsP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        Thu, 21 Apr 2022 02:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385150AbiDUGqh (ORCPT
+        with ESMTP id S1381410AbiDUGrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:46:37 -0400
+        Thu, 21 Apr 2022 02:47:21 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B5315FD5
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:42:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7EB1570C
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:43:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523379; x=1682059379;
+  t=1650523433; x=1682059433;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CEezHFZ8jbSAO8++FIRw/wHkdTizh/6PCQxkqG4AIcA=;
-  b=RCjmm4PANfdYwjMCOzaFIsZU/QMGrHXQoknOuGNhSRevIOs1O+VLgDc8
-   BQh6cuoc6GPfNYXgt70+L5YDLCRGbyEdNs/QpUjejyPXDO8+Rq9ObKEB9
-   ttmqRxlz/88dQc8dXPPDYTShbLKA4X9Q8rGHMkKbSzKm50R5Ek3re+MOO
-   Omom29oORkTsZ/2RY2AKhCzzwgMhpVAjEGFaHz1woei36Yr5hZdYKfOSn
-   qtjSciMd+2Z1vFIp3MykXWDSAiwjRVZdONImE0LilcTxvRGZz6Nu8ULw8
-   wCMcDhgckF3+KqyXbR/WX0aEL+eaXwlKHfa7Mk/IMCzklH662QacL1zPz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="350704630"
+  bh=ToGkXtQX+ir0RIfYEWcQB7wd9RoHuPc+n6U8jCMV6pE=;
+  b=k9WJXHDcHFZ7ngd2dm4vgEq3GEIHWgSKoxXVZbA3dwAhvtNosNDhR1w+
+   dKRsHUSCBSjrQSztjjj414kb8LS2L50uGdRdCvXgBdwrPPKO+mUGHY19I
+   XN0A0wAsTVf6xwMC9JVsKJrgEoYIMYWvlLnMbOO5ZcZiAgUtFSs85YszP
+   DxJC8UO3gXMI65dliyhCyXcSBe10PosIN/zlvs0DxgUdcudFSYUjh3OZ6
+   0WWLxdBj53+eS5hOuRjmZpxllYXrcY/e2xlKB6FHNvOdm4ObdWZ1tRx6v
+   2sUbCk3fI5n8Q55eFybeG8WJeqd7JA4Jv+Hd4tp6QZ56l8J44Y5+DtQff
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="350704798"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="350704630"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:42:52 -0700
+   d="scan'208";a="350704798"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:43:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="614757523"
+   d="scan'208";a="658391762"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Apr 2022 23:42:51 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 20 Apr 2022 23:43:51 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQWg-0007zt-Iv;
-        Thu, 21 Apr 2022 06:42:50 +0000
-Date:   Thu, 21 Apr 2022 14:42:30 +0800
+        id 1nhQXe-00080P-R3;
+        Thu, 21 Apr 2022 06:43:50 +0000
+Date:   Thu, 21 Apr 2022 14:43:45 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Ingo Molnar <mingo@kernel.org>
 Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1926/2579]
- drivers/mfd/intel_soc_pmic_core.c:70:2: error: implicit declaration of
- function 'irq_domain_update_bus_token' is invalid in C99
-Message-ID: <202204210402.MWlYLHyS-lkp@intel.com>
+Subject: [mingo-tip:sched/headers 2327/2579]
+ arch/x86/kernel/cpu/mtrr/mtrr.c:570:5: warning: no previous prototype for
+ function 'arch_phys_wc_add'
+Message-ID: <202204210827.G48SY3cg-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -60,99 +60,128 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
 head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 762e2c31017f8004327c678d499aa24693a9d465 [1926/2579] headers/deps: ACPI: Optimize <linux/acpi.h> dependencies, remove <linux/irqdomain.h> inclusion
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220421/202204210402.MWlYLHyS-lkp@intel.com/config)
+commit: 461fdf14bb97fa52bde6588dfdf116899a79a74d [2327/2579] headers/deps: mm: Optimize <linux/dmapool.h> dependencies, remove <linux/scatterlist.h> and <asm/io.h> inclusion
+config: i386-randconfig-a011 (https://download.01.org/0day-ci/archive/20220421/202204210827.G48SY3cg-lkp@intel.com/config)
 compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=762e2c31017f8004327c678d499aa24693a9d465
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=461fdf14bb97fa52bde6588dfdf116899a79a74d
         git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
         git fetch --no-tags mingo-tip sched/headers
-        git checkout 762e2c31017f8004327c678d499aa24693a9d465
+        git checkout 461fdf14bb97fa52bde6588dfdf116899a79a74d
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/ fs/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/cpu/mtrr/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
->> drivers/mfd/intel_soc_pmic_core.c:70:2: error: implicit declaration of function 'irq_domain_update_bus_token' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           irq_domain_update_bus_token(regmap_irq_get_domain(pmic->irq_chip_data),
-           ^
->> drivers/mfd/intel_soc_pmic_core.c:71:9: error: use of undeclared identifier 'DOMAIN_BUS_NEXUS'
-                                       DOMAIN_BUS_NEXUS);
-                                       ^
-   2 errors generated.
+>> arch/x86/kernel/cpu/mtrr/mtrr.c:570:5: warning: no previous prototype for function 'arch_phys_wc_add' [-Wmissing-prototypes]
+   int arch_phys_wc_add(unsigned long base, unsigned long size)
+       ^
+   arch/x86/kernel/cpu/mtrr/mtrr.c:570:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int arch_phys_wc_add(unsigned long base, unsigned long size)
+   ^
+   static 
+>> arch/x86/kernel/cpu/mtrr/mtrr.c:596:6: warning: no previous prototype for function 'arch_phys_wc_del' [-Wmissing-prototypes]
+   void arch_phys_wc_del(int handle)
+        ^
+   arch/x86/kernel/cpu/mtrr/mtrr.c:596:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void arch_phys_wc_del(int handle)
+   ^
+   static 
+>> arch/x86/kernel/cpu/mtrr/mtrr.c:616:5: warning: no previous prototype for function 'arch_phys_wc_index' [-Wmissing-prototypes]
+   int arch_phys_wc_index(int handle)
+       ^
+   arch/x86/kernel/cpu/mtrr/mtrr.c:616:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int arch_phys_wc_index(int handle)
+   ^
+   static 
+   3 warnings generated.
 
 
-vim +/irq_domain_update_bus_token +70 drivers/mfd/intel_soc_pmic_core.c
+vim +/arch_phys_wc_add +570 arch/x86/kernel/cpu/mtrr/mtrr.c
 
-a3aa9a93df9fc8 Shobhit Kumar   2015-06-26  29  
-5165238460068e Zhu, Lejun      2014-06-03  30  static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
-5165238460068e Zhu, Lejun      2014-06-03  31  				    const struct i2c_device_id *i2c_id)
-5165238460068e Zhu, Lejun      2014-06-03  32  {
-5165238460068e Zhu, Lejun      2014-06-03  33  	struct device *dev = &i2c->dev;
-5165238460068e Zhu, Lejun      2014-06-03  34  	struct intel_soc_pmic_config *config;
-5165238460068e Zhu, Lejun      2014-06-03  35  	struct intel_soc_pmic *pmic;
-5165238460068e Zhu, Lejun      2014-06-03  36  	int ret;
-5165238460068e Zhu, Lejun      2014-06-03  37  
-5b78223f55a0f5 Hans de Goede   2021-12-06  38  	if (soc_intel_is_byt())
-b01e9348e10654 Hans de Goede   2017-09-04  39  		config = &intel_soc_pmic_config_byt_crc;
-5b78223f55a0f5 Hans de Goede   2021-12-06  40  	else
-b01e9348e10654 Hans de Goede   2017-09-04  41  		config = &intel_soc_pmic_config_cht_crc;
-5165238460068e Zhu, Lejun      2014-06-03  42  
-5165238460068e Zhu, Lejun      2014-06-03  43  	pmic = devm_kzalloc(dev, sizeof(*pmic), GFP_KERNEL);
-0a65fbf64dad89 Kiran Padwal    2015-02-11  44  	if (!pmic)
-0a65fbf64dad89 Kiran Padwal    2015-02-11  45  		return -ENOMEM;
-0a65fbf64dad89 Kiran Padwal    2015-02-11  46  
-5165238460068e Zhu, Lejun      2014-06-03  47  	dev_set_drvdata(dev, pmic);
-5165238460068e Zhu, Lejun      2014-06-03  48  
-5165238460068e Zhu, Lejun      2014-06-03  49  	pmic->regmap = devm_regmap_init_i2c(i2c, config->regmap_config);
-db43b8d04d7a9f Pan Bian        2017-04-23  50  	if (IS_ERR(pmic->regmap))
-db43b8d04d7a9f Pan Bian        2017-04-23  51  		return PTR_ERR(pmic->regmap);
-db43b8d04d7a9f Pan Bian        2017-04-23  52  
-159ee7578a7453 Andy Shevchenko 2017-02-21  53  	pmic->irq = i2c->irq;
-5165238460068e Zhu, Lejun      2014-06-03  54  
-5165238460068e Zhu, Lejun      2014-06-03  55  	ret = regmap_add_irq_chip(pmic->regmap, pmic->irq,
-5165238460068e Zhu, Lejun      2014-06-03  56  				  config->irq_flags | IRQF_ONESHOT,
-5165238460068e Zhu, Lejun      2014-06-03  57  				  0, config->irq_chip,
-5165238460068e Zhu, Lejun      2014-06-03  58  				  &pmic->irq_chip_data);
-5165238460068e Zhu, Lejun      2014-06-03  59  	if (ret)
-5165238460068e Zhu, Lejun      2014-06-03  60  		return ret;
-5165238460068e Zhu, Lejun      2014-06-03  61  
-5165238460068e Zhu, Lejun      2014-06-03  62  	ret = enable_irq_wake(pmic->irq);
-5165238460068e Zhu, Lejun      2014-06-03  63  	if (ret)
-5165238460068e Zhu, Lejun      2014-06-03  64  		dev_warn(dev, "Can't enable IRQ as wake source: %d\n", ret);
-5165238460068e Zhu, Lejun      2014-06-03  65  
-a3aa9a93df9fc8 Shobhit Kumar   2015-06-26  66  	/* Add lookup table for crc-pwm */
-a3aa9a93df9fc8 Shobhit Kumar   2015-06-26  67  	pwm_add_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
-a3aa9a93df9fc8 Shobhit Kumar   2015-06-26  68  
-f49f43371b8a68 Hans de Goede   2021-12-25  69  	/* To distuingish this domain from the GPIO/charger's irqchip domains */
-f49f43371b8a68 Hans de Goede   2021-12-25 @70  	irq_domain_update_bus_token(regmap_irq_get_domain(pmic->irq_chip_data),
-f49f43371b8a68 Hans de Goede   2021-12-25 @71  				    DOMAIN_BUS_NEXUS);
-f49f43371b8a68 Hans de Goede   2021-12-25  72  
-5165238460068e Zhu, Lejun      2014-06-03  73  	ret = mfd_add_devices(dev, -1, config->cell_dev,
-5165238460068e Zhu, Lejun      2014-06-03  74  			      config->n_cell_devs, NULL, 0,
-5165238460068e Zhu, Lejun      2014-06-03  75  			      regmap_irq_get_domain(pmic->irq_chip_data));
-5165238460068e Zhu, Lejun      2014-06-03  76  	if (ret)
-5165238460068e Zhu, Lejun      2014-06-03  77  		goto err_del_irq_chip;
-5165238460068e Zhu, Lejun      2014-06-03  78  
-5165238460068e Zhu, Lejun      2014-06-03  79  	return 0;
-5165238460068e Zhu, Lejun      2014-06-03  80  
-5165238460068e Zhu, Lejun      2014-06-03  81  err_del_irq_chip:
-5165238460068e Zhu, Lejun      2014-06-03  82  	regmap_del_irq_chip(pmic->irq, pmic->irq_chip_data);
-5165238460068e Zhu, Lejun      2014-06-03  83  	return ret;
-5165238460068e Zhu, Lejun      2014-06-03  84  }
-5165238460068e Zhu, Lejun      2014-06-03  85  
+^1da177e4c3f41 arch/i386/kernel/cpu/mtrr/main.c Linus Torvalds    2005-04-16  554  
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  555  /**
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  556   * arch_phys_wc_add - add a WC MTRR and handle errors if PAT is unavailable
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  557   * @base: Physical base address
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  558   * @size: Size of region
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  559   *
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  560   * If PAT is available, this does nothing.  If PAT is unavailable, it
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  561   * attempts to add a WC MTRR covering size bytes starting at base and
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  562   * logs an error if this fails.
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  563   *
+2f9e897353fcb9 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26  564   * The called should provide a power of two size on an equivalent
+2f9e897353fcb9 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26  565   * power of two boundary.
+2f9e897353fcb9 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26  566   *
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  567   * Drivers must store the return value to pass to mtrr_del_wc_if_needed,
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  568   * but drivers should not try to interpret that return value.
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  569   */
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13 @570  int arch_phys_wc_add(unsigned long base, unsigned long size)
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  571  {
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  572  	int ret;
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  573  
+cb32edf65bf219 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26  574  	if (pat_enabled() || !mtrr_enabled())
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  575  		return 0;  /* Success!  (We don't need to do anything.) */
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  576  
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  577  	ret = mtrr_add(base, size, MTRR_TYPE_WRCOMB, true);
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  578  	if (ret < 0) {
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  579  		pr_warn("Failed to add WC MTRR for [%p-%p]; performance may suffer.",
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  580  			(void *)base, (void *)(base + size - 1));
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  581  		return ret;
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  582  	}
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  583  	return ret + MTRR_TO_PHYS_WC_OFFSET;
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  584  }
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  585  EXPORT_SYMBOL(arch_phys_wc_add);
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  586  
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  587  /*
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  588   * arch_phys_wc_del - undoes arch_phys_wc_add
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  589   * @handle: Return value from arch_phys_wc_add
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  590   *
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  591   * This cleans up after mtrr_add_wc_if_needed.
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  592   *
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  593   * The API guarantees that mtrr_del_wc_if_needed(error code) and
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  594   * mtrr_del_wc_if_needed(0) do nothing.
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  595   */
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13 @596  void arch_phys_wc_del(int handle)
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  597  {
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  598  	if (handle >= 1) {
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  599  		WARN_ON(handle < MTRR_TO_PHYS_WC_OFFSET);
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  600  		mtrr_del(handle - MTRR_TO_PHYS_WC_OFFSET, 0, 0);
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  601  	}
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  602  }
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  603  EXPORT_SYMBOL(arch_phys_wc_del);
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  604  
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  605  /*
+7d010fdf299929 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26  606   * arch_phys_wc_index - translates arch_phys_wc_add's return value
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  607   * @handle: Return value from arch_phys_wc_add
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  608   *
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  609   * This will turn the return value from arch_phys_wc_add into an mtrr
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  610   * index suitable for debugging.
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  611   *
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  612   * Note: There is no legitimate use for this function, except possibly
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  613   * in printk line.  Alas there is an illegitimate use in some ancient
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  614   * drm ioctls.
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  615   */
+7d010fdf299929 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26 @616  int arch_phys_wc_index(int handle)
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  617  {
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  618  	if (handle < MTRR_TO_PHYS_WC_OFFSET)
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  619  		return -1;
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  620  	else
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  621  		return handle - MTRR_TO_PHYS_WC_OFFSET;
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  622  }
+7d010fdf299929 arch/x86/kernel/cpu/mtrr/main.c  Luis R. Rodriguez 2015-05-26  623  EXPORT_SYMBOL_GPL(arch_phys_wc_index);
+d0d98eedee2178 arch/x86/kernel/cpu/mtrr/main.c  Andy Lutomirski   2013-05-13  624  
 
-:::::: The code at line 70 was first introduced by commit
-:::::: f49f43371b8a680c5972d052598d7c120f1a05d3 mfd: intel_soc_pmic_crc: Set main IRQ domain bus token to DOMAIN_BUS_NEXUS
+:::::: The code at line 570 was first introduced by commit
+:::::: d0d98eedee2178c803dd824bb09f52b0e2ac1811 Add arch_phys_wc_{add, del} to manipulate WC MTRRs if needed
 
-:::::: TO: Hans de Goede <hdegoede@redhat.com>
-:::::: CC: Lee Jones <lee.jones@linaro.org>
+:::::: TO: Andy Lutomirski <luto@amacapital.net>
+:::::: CC: Dave Airlie <airlied@redhat.com>
 
 -- 
 0-DAY CI Kernel Test Service
