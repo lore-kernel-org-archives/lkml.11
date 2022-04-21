@@ -2,52 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A96C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391257AbiDUSH6 (ORCPT
+        id S1391282AbiDUSID (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        Thu, 21 Apr 2022 14:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391231AbiDUSHm (ORCPT
+        with ESMTP id S1391215AbiDUSHi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:07:42 -0400
+        Thu, 21 Apr 2022 14:07:38 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CAC14B1FC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:04:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEB894B1CB
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:04:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650564290;
+        s=mimecast20190719; t=1650564287;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E6dh0F8rlY2iLG036JSLaiRrNHBRLRC4zYjjDnhEuYs=;
-        b=I51ez0RCsy4xJzlwcAlGhpky4j+echmpunkiNCh7sCdtOLxRAyY8dM/7l84xLS4t09QNsm
-        PJ573B5gI3DSeY1rj+R2yypqMvqK0T8Ac2nGxdFriIjlCEogClygtJZZArJKgIGSog3b5T
-        5twN8FqZNWLl0TouSiBF8EWxFlJZmSk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=YOH2Qpi3OWvJdj6PxZT56UXJ38oEXRy/KfJlwINMGqU=;
+        b=g23RXpC7LHNp8HWTpOxSGjnDtLKr/KBMgpIsj4p46tzkczISsKOqTVpcYV77BpE3dqXV4G
+        gmOXx8WVsXyNBy+5dfhu5YSSCOBfBCld2b5lnp3+l37PbAl7ZG9bQkOUkiH+J9JWGjFGZ9
+        f+GRB5m/ylbDI+66aS+xljeGSMOUBus=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-613-YrqlrF3aPsmwb-9ZeiHAQA-1; Thu, 21 Apr 2022 14:04:45 -0400
-X-MC-Unique: YrqlrF3aPsmwb-9ZeiHAQA-1
+ us-mta-547-ZUyglecdOV2CRHb3TKRkZA-1; Thu, 21 Apr 2022 14:04:44 -0400
+X-MC-Unique: ZUyglecdOV2CRHb3TKRkZA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 604E43C0F09E;
-        Thu, 21 Apr 2022 18:04:44 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DAA72811E78;
+        Thu, 21 Apr 2022 18:04:43 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B47A40E80F5;
-        Thu, 21 Apr 2022 18:04:44 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 97A0140E80F5;
+        Thu, 21 Apr 2022 18:04:43 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     will@kernel.org, maz@kernel.org, apatel@ventanamicro.com,
         atishp@rivosinc.com, seanjc@google.com, pgonda@google.com
-Subject: [PATCH 2/4] KVM: ARM: replace system_event.flags with ndata and data[0]
-Date:   Thu, 21 Apr 2022 14:04:41 -0400
-Message-Id: <20220421180443.1465634-3-pbonzini@redhat.com>
-In-Reply-To: <20220421180443.1465634-1-pbonzini@redhat.com>
-References: <20220421180443.1465634-1-pbonzini@redhat.com>
+Subject: [PATCH 0/4] KVM: fix KVM_EXIT_SYSTEM_EVENT mess
+Date:   Thu, 21 Apr 2022 14:04:39 -0400
+Message-Id: <20220421180443.1465634-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -56,37 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The flags datum for KVM_EXIT_SYSTEM_EVENT exits has been
-removed because it was defined incorrectly; no padding was
-introduced between the 32-bit type and the 64-bit flags,
-resulting in different definitions for 32-bit and 64-bit
-userspace.
+The KVM_SYSTEM_EVENT_NDATA_VALID mechanism that was introduced
+contextually with KVM_SYSTEM_EVENT_SEV_TERM is not a good match
+for ARM and RISC-V, which want to communicate information even
+for existing KVM_SYSTEM_EVENT_* constants.  Userspace is not ready
+to filter out bit 31 of type, and fails to process the
+KVM_EXIT_SYSTEM_EVENT exit.
 
-The replacement is a pair of fields, ndata and data[],
-with ndata saying how many items are valid in the data array.
-In the case of ARM that's one, as flags can be simply moved
-to data[0].
+Therefore, tie the availability of ndata to a system capability;
+if the capability is present, ndata is always valid, so patch 1
+makes x86 always initialize it.  Then patches 2 and 3 fix
+ARM and RISC-V compilation and patch 4 enables the capability.
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/arm64/kvm/psci.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Only compiled on x86, waiting for acks.
 
-diff --git a/arch/arm64/kvm/psci.c b/arch/arm64/kvm/psci.c
-index baac2b405f23..708d80e8e60d 100644
---- a/arch/arm64/kvm/psci.c
-+++ b/arch/arm64/kvm/psci.c
-@@ -181,7 +181,8 @@ static void kvm_prepare_system_event(struct kvm_vcpu *vcpu, u32 type, u64 flags)
- 
- 	memset(&vcpu->run->system_event, 0, sizeof(vcpu->run->system_event));
- 	vcpu->run->system_event.type = type;
--	vcpu->run->system_event.flags = flags;
-+	vcpu->run->system_event.ndata = 1;
-+	vcpu->run->system_event.data[0] = flags;
- 	vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
- }
- 
+Paolo
+
+Paolo Bonzini (4):
+  KVM: x86: always initialize system_event.ndata
+  KVM: ARM: replace system_event.flags with ndata and data[0]
+  KVM: RISC-V: replace system_event.flags with ndata and data[0]
+  KVM: tell userspace that system_event.ndata is valid
+
+ Documentation/virt/kvm/api.rst        | 29 +++++++++++++++------------
+ arch/arm64/kvm/psci.c                 |  3 ++-
+ arch/riscv/include/asm/kvm_vcpu_sbi.h |  2 +-
+ arch/riscv/kvm/vcpu_sbi.c             |  5 +++--
+ arch/riscv/kvm/vcpu_sbi_replace.c     |  4 ++--
+ arch/riscv/kvm/vcpu_sbi_v01.c         |  2 +-
+ arch/x86/kvm/svm/sev.c                |  3 +--
+ arch/x86/kvm/x86.c                    |  2 ++
+ include/uapi/linux/kvm.h              |  2 +-
+ virt/kvm/kvm_main.c                   |  1 +
+ 10 files changed, 30 insertions(+), 23 deletions(-)
+
 -- 
 2.31.1
-
 
