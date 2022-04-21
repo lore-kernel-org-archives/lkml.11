@@ -2,83 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E58C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 023D0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390477AbiDURB5 (ORCPT
+        id S1390491AbiDURCD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 13:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
+        Thu, 21 Apr 2022 13:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232177AbiDURBx (ORCPT
+        with ESMTP id S232622AbiDURBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 13:01:53 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3BB49CB1;
-        Thu, 21 Apr 2022 09:59:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650560343; x=1682096343;
-  h=from:to:cc:subject:date:message-id;
-  bh=HqgMig3aen+5pw0uDZjc5+jukF0A9E8DbTxEMgC0qo0=;
-  b=FUgkPjW/n/aFOPR+gK8EPaOoTJnWwVKotG2Bcu99eyN1HgdJHDRBi+em
-   6YGgZH4bBfqmiZrvllp5OvHs0iaMHcSe/b1qMsiP9GtPNeNcz/5Ls5CqI
-   LNxUiyCe8+9OyBAUL6nW5pbdXYbCm+SQTIM2Ed/eAnudmF0R4fVKpu6k4
-   85rc7n+vFfY0yidlzWQ96wO4+l0B+hIWSjdoJWmjsN7ID+le/fjtcwkrp
-   cNpAn/pZZRklvXDxU/ooCsRZdl9gQXWbxV1CwC4sJxtC9y5CthqTPUab+
-   /uD1z0lD1igFD5cL4pFKCG8PCWnqI/jfzl/AC5ohUGSfFORL8MhbQOFyn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="251735182"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="251735182"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 09:58:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="555874855"
-Received: from srpawnik.iind.intel.com ([10.99.123.68])
-  by orsmga007.jf.intel.com with ESMTP; 21 Apr 2022 09:58:54 -0700
-From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-To:     rafael@kernel.org, lenb@kernel.org,
-        srinivas.pandruvada@linux.intel.com, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     sumeet.r.pawnikar@intel.com
-Subject: [PATCH] ACPI: DPTF: Correct description of INT3407 / INT3532 attributes
-Date:   Thu, 21 Apr 2022 22:25:43 +0530
-Message-Id: <20220421165543.435-1-sumeet.r.pawnikar@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 21 Apr 2022 13:01:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B140627B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:59:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C91A461DB3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 16:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1578C385A1;
+        Thu, 21 Apr 2022 16:59:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650560343;
+        bh=+kLX02+pvp0VAy7mZikCPZm3m+jcmFNycfkdqROEoG4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W3SHqRLXFzShZFzr3y8krzbijHOnldDnMtuCLa00QdChMiuy1i4ZxmDQHLDToEZVs
+         uLkKjUbQDKEo9gAWBIOSxVduMi9GFtbXCF9K0GyP8lyf8tjYtQtk1C7RA4V2VkmwnA
+         iDlpWplntXOBBAvmzpsCiHsDb1f+qzCENxUUzez79+R71kn8SQAZoia12LIWfLkUQG
+         Lf5zODhiJF6dc6Sh4cL7tKS/saLhylN5FBGNauYIXEY6LpEvrZODapz8vmT4nwwyJq
+         sWhwTBF+RWkTpg4TPDgyi2uOMSBbByyYJmWvk5dmYz180M2wMXxvltygk4xCg4yhIP
+         DIZzbg9ZbzyqA==
+Date:   Thu, 21 Apr 2022 17:58:58 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     jbrunet@baylibre.com, alsa-devel@alsa-project.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dmitry Shmidt <dimitrysh@google.com>
+Subject: Re: [PATCH 1/2] Revert "ASoC: meson: axg-tdm-interface: manage
+ formatters in trigger"
+Message-ID: <YmGNUoOIHMDkciR8@sirena.org.uk>
+References: <20220421155725.2589089-1-narmstrong@baylibre.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3eyDRwkM/Maj7Zsh"
+Content-Disposition: inline
+In-Reply-To: <20220421155725.2589089-1-narmstrong@baylibre.com>
+X-Cookie: Two percent of zero is almost nothing.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove duplicate comments of PBSS for Battery steady state power and
-correct the typo for PMAX Maximum platform power.
 
-Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
----
- drivers/acpi/dptf/dptf_power.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+--3eyDRwkM/Maj7Zsh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/acpi/dptf/dptf_power.c b/drivers/acpi/dptf/dptf_power.c
-index dc1f52a5b3f4..1f2e6c29773b 100644
---- a/drivers/acpi/dptf/dptf_power.c
-+++ b/drivers/acpi/dptf/dptf_power.c
-@@ -12,14 +12,12 @@
- /*
-  * Presentation of attributes which are defined for INT3407 and INT3532.
-  * They are:
-- * PMAX : Maximum platform powe
-+ * PMAX : Maximum platform power
-  * PSRC : Platform power source
-  * ARTG : Adapter rating
-  * CTYP : Charger type
-- * PBSS : Battery steady power
-  * PROP : Rest of worst case platform Power
-  * PBSS : Power Battery Steady State
-- * PBSS : Power Battery Steady State
-  * RBHF : High Frequency Impedance
-  * VBNL : Instantaneous No-Load Voltage
-  * CMPP : Current Discharge Capability
--- 
-2.17.1
+On Thu, Apr 21, 2022 at 05:57:24PM +0200, Neil Armstrong wrote:
+> This reverts commit bf5e4887eeddb48480568466536aa08ec7f179a5 because
+> the following and required commit e138233e56e9829e65b6293887063a1a3ccb2d68
+> causes the following system crash when using audio:
 
+Please submit patches using subject lines reflecting the style for the
+subsystem, this makes it easier for people to identify relevant patches.
+Look at what existing commits in the area you're changing are doing and
+make sure your subject lines visually resemble what they're doing.
+There's no need to resubmit to fix this alone.
+
+--3eyDRwkM/Maj7Zsh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJhjVEACgkQJNaLcl1U
+h9AZOAf+OjEB0rx20UWIL90pvczAy+XNaaircBEQ0cphHGKM9TrfcEbYFOlQm3qV
+o6k6orFrbhYlVELViEbuHsjPrZVY3/NEowdMEK5eBwG1V3OdrLFDgSqKjpmRiWrX
+eODgqxRNJ2U+7gBaBwJumlBUi2X0p5u5nVFlgvwmL87yKOl+Uom45nqL/ib7WMnM
+VtrFfTZPgATIq/S98eN1SuswUtyYrtN7i7C+5Q7qGiIKKr067Vium6gBIliiLY19
+pAT7lVyUEdDHWvNOrQdGveWoxe9Ospr+uvruoR8dGdp2BqC1tFXlrUHn9bm4S0Ai
+AgQu/b0xjh2BW63QSFeG7clYApQUOg==
+=5BRg
+-----END PGP SIGNATURE-----
+
+--3eyDRwkM/Maj7Zsh--
