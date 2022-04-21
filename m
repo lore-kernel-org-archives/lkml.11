@@ -2,68 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA832C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385916AbiDUHl0 (ORCPT
+        id S1386028AbiDUHlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        Thu, 21 Apr 2022 03:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385953AbiDUHkx (ORCPT
+        with ESMTP id S1385996AbiDUHlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 03:40:53 -0400
-Received: from mail.coredeal.pl (mail.coredeal.pl [51.75.73.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103FD1D302
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:37:20 -0700 (PDT)
-Received: by mail.coredeal.pl (Postfix, from userid 1002)
-        id D1148A2935; Thu, 21 Apr 2022 07:36:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=coredeal.pl; s=mail;
-        t=1650526605; bh=9KGuIG62LgzC9aYmjKxzocuYLRCVghXg6v9Q1q2LHec=;
-        h=Date:From:To:Subject:From;
-        b=U0BKJShAInm3wUnSILGvUN1nJV6gx1OLBHydjqpjHl+bj8TUNMSeThVmvnr4yd/d4
-         trpiIlBlH9yZdfWWFcfZI134lELSlIwMzoOZMBhgyGD8bc683WocMfJLu5kIic/950
-         gAsEJiuUJ+4AtIb/AfkJ2/ssiDJL6Tg3t/rA+jblMq1OBL+umZCwkRuKq9yRfL/8Mc
-         BMVzF7QDg+VnqrgHaTKNyG5sBbsiL3Thr3mnuRyMUB1b4N5omgC2jKxmZagTf7MJTs
-         2MVIVjrSBm1m9ROBAf2QEpdKLA3hciPT7rkTzb7Hv29R41DiyBzX086iEf0J3xRAuw
-         Dsg21VB1oNhaA==
-Received: by mail.coredeal.pl for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:36:06 GMT
-Message-ID: <20220421064500-0.1.2o.h714.0.3tajefweez@coredeal.pl>
-Date:   Thu, 21 Apr 2022 07:36:06 GMT
-From:   "Krzysztof Maj" <krzysztof.maj@coredeal.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: Biznesowy angielski
-X-Mailer: mail.coredeal.pl
+        Thu, 21 Apr 2022 03:41:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884581E3EB;
+        Thu, 21 Apr 2022 00:37:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2459A61A7B;
+        Thu, 21 Apr 2022 07:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C824CC385A5;
+        Thu, 21 Apr 2022 07:37:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650526662;
+        bh=b4j2Og9/SHRS5yriha4XC4sLIfkB0bYffFlnNixYDWw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZZ6HUp3wvTEaNG7Mw8epF95SxeJikxuAkdqStSkmLHepPkDsSFRLbQKroGifJWfnR
+         VvNuaw5N4TpA9s0fPLMAQ29qEyJpItOibp8aYlZsrzzIuhSEm3zhDOzlHklGox2Yli
+         a20fwHjqp1Kmdw9w6Jl9r2QBIObBhpU35K7Gvf5aH06Or223GhOwSzKKgRW2Aq8emx
+         rNgM59shHOV6fuIAutcp/OsKZjOY5akFJIZ5kxO0UaIGiJC2aFTWYvA2FDg9NVtpYD
+         VL/kLawYoGx+BbFG9RXh0ApvS9d1dJzU8gJThsF63WngBGBoH/iSkKMNisG1Wa+VTm
+         KlSeWvl2NbQ1A==
+Message-ID: <af9a8506-7c8e-d76c-c14f-1bf1c913a18c@kernel.org>
+Date:   Thu, 21 Apr 2022 09:37:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/2] arm: dts: Add device tree for bosch acc board
+Content-Language: en-US
+To:     Philip Oberfichtner <pro@denx.de>, devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Winker Matthias <Matthias.Winker@de.bosch.com>
+References: <20220412101905.514310-1-pro@denx.de>
+ <20220412101905.514310-3-pro@denx.de>
+ <f2b1359d-a003-ae38-e8af-ab6aa1d0fe72@kernel.org>
+ <cd7546a341d475eca99a446b6c8a5141056b3bc8.camel@denx.de>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <cd7546a341d475eca99a446b6c8a5141056b3bc8.camel@denx.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,=20
+On 21/04/2022 09:06, Philip Oberfichtner wrote:
+> 
+> The "operating-points" and "fsl,soc-operating-points" properties are
+> defined in imx6q.dtsi. We are just overwriting them here.     
 
-czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
-swoich pracownik=C3=B3w?
+OK, thanks for explanation.
 
-Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
-w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
-ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
-=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
+(...)
 
-Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
-=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
-re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
-o=C5=BCliwo=C5=9Bci biznesowe.=20
+>> Please run `make dtbs_check` (see Docs for this) and fix the
+>> warnings.
+>> Please fix automated check warnings before using reviewers time.
+> 
+> I built with W=1 and used checkpatch.pl. But I'm having trouble using
+> make dtbs_check. Seems like I get all warnings for all possible dts. Is
+> there a way to get warnings for a single dt only?
 
-Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
- kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
-za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
-=2E
+I think no, it is not possible at the moment. I understand it's a pain
+and already someone proposed to have a ability to check only subset of
+DTS files.
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
-w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
+Workaround is to build imx defconfig, run dtbs_check, touch your files
+and run dtbs_check again looking for results.
 
-
-Pozdrawiam
-Krzysztof Maj
+Best regards,
+Krzysztof
