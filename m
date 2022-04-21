@@ -2,200 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390382AbiDUPpm (ORCPT
+        id S1390270AbiDUPpo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42528 "EHLO
+        Thu, 21 Apr 2022 11:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390259AbiDUPpd (ORCPT
+        with ESMTP id S1390247AbiDUPpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 11:45:33 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF5548335
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:42:08 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so5568670pjf.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:42:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=L2BkpTCz5akLsohhEIIUYuv1LmfI2RQS6LEGsp/sj6w=;
-        b=m1gyy5dvpwSTVTH1w7nGbqrC6fljhM2QZ8C6huIyhVBYkcXMS4azkaDXSl+hJRAhxK
-         pmC6BhzshY1KUxMRPHX0/UlFJsqlZkAYRZqPEKDKaoTuxlmkGikKXmRKlYugk0gFMnZh
-         +zqsTkAumqipfpplHayGys82rP5jCL6o9cWOg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=L2BkpTCz5akLsohhEIIUYuv1LmfI2RQS6LEGsp/sj6w=;
-        b=HWKVQvOdPxYgS7YHsbdUACO4bXQgVL6tHDh7g2QUD371lizFEAxSZ4pxwhN84vTEBP
-         CFR7dZSgthVyx/sS0dKHn6ZTm5B0vAHZ5cD2I0JyZ87PxhE4NfnKxnqjLKRjen/MWgVV
-         6+CwOrVHsHj+ubAolTBClfYmvu/FJO+evBiiTIFlGJxJ6r9CPTZ/vXXktchZJRWyPAfX
-         wtRY4MwwIpgILWTtSvgYs6eAIEs7mivn7xm0ZrjIsEefXBSv5ByKjgx2iGfOXHD5F8bN
-         7e5SO6thivkjm81cUb16fBVyW0q5Wx8Pk9Mknq6L9LkY65m8nxsUvvs085ilggK+iwdc
-         MUAA==
-X-Gm-Message-State: AOAM5310ma3DXG8bN43tpwbfnmTeKxCzRNn8mbH90YER6CL15/KKvZCy
-        lZBrsKgs4KuSBeXWuW6bkNEhjA==
-X-Google-Smtp-Source: ABdhPJwYo4k73WHrantPhUBUqbwFNdVAqpeNInsw9CuK++22pbLVzGNiv9Mxabafa/NNcHZgLnRoIQ==
-X-Received: by 2002:a17:90a:c781:b0:1d0:c23e:5842 with SMTP id gn1-20020a17090ac78100b001d0c23e5842mr11130978pjb.182.1650555727697;
-        Thu, 21 Apr 2022 08:42:07 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
-        by smtp.gmail.com with UTF8SMTPSA id t66-20020a628145000000b0050ca37e60eesm1153066pfd.57.2022.04.21.08.42.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 08:42:07 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 08:42:05 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v8 2/4] arm64: dts: qcom: sc7280: Add nodes for wcd9385
- and max98360a codec
-Message-ID: <YmF7TRlxUWWQ394e@google.com>
-References: <1650291252-30398-1-git-send-email-quic_srivasam@quicinc.com>
- <1650291252-30398-3-git-send-email-quic_srivasam@quicinc.com>
- <Yl2VmW18QAJl9v+m@google.com>
- <5ac149ac-4862-e8c9-185c-524c4b111961@quicinc.com>
- <5d4b7c44-62e1-aaa6-3116-f58e1a1b437b@quicinc.com>
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA848338;
+        Thu, 21 Apr 2022 08:42:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650555729; x=1682091729;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iyrtmVX8R4qF7b2JnARY9AoUPuBqnatgrb6GHKPVUl8=;
+  b=ADHoZnqL2pTqR2zIOmGchApPNq0NStekraZsNUiFiRSkNE+g/ftJhJDD
+   kh3uKS959Rrhb6qPpiQNof3BxKKAaaMMa1dsRvC+0UabfQeBrbwb6rx47
+   OXmKdEWZF5tNoZQg1sQwFbYCk3nmJfzt+7qk1JQbToC1Ht5PIq2BlXTdc
+   rvJCJqlXOb78nDzGWEBx/8NvRF46nFqP72hgPrsHKTczE4xsA6n4k06cv
+   Rfgw+5nwYkfYykQpecauAXfJ1nuLjgn5AIxpmw0FWDta3xGMl7WCGnjms
+   eBExlgr6mEFcDVVgp9jlTpgUbzGNMn3T22zN83FGdZd1eIa/TlhGwtXSV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="261993861"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="261993861"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 08:41:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="577302302"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 21 Apr 2022 08:41:48 -0700
+Date:   Thu, 21 Apr 2022 23:34:11 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        git@xilinx.com
+Subject: Re: [PATCH v5 2/5] fpga: fix for coding style issues
+Message-ID: <20220421153411.GA347460@yilunxu-OptiPlex-7050>
+References: <20220421044744.3777983-1-nava.manne@xilinx.com>
+ <20220421044744.3777983-3-nava.manne@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5d4b7c44-62e1-aaa6-3116-f58e1a1b437b@quicinc.com>
+In-Reply-To: <20220421044744.3777983-3-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 12:31:52PM +0530, Srinivasa Rao Mandadapu wrote:
+On Thu, Apr 21, 2022 at 10:17:41AM +0530, Nava kishore Manne wrote:
+> fixes the below checks reported by checkpatch.pl:
+> - Lines should not end with a '('
+> - Alignment should match open parenthesis
 > 
-> On 4/19/2022 4:54 PM, Srinivasa Rao Mandadapu wrote:
-> > 
-> > On 4/18/2022 10:15 PM, Matthias Kaehlcke wrote:
-> > Thanks for your time and valuable inputs Matthias!!!
-> > > On Mon, Apr 18, 2022 at 07:44:10PM +0530, Srinivasa Rao Mandadapu wrote:
-> > > > Add wcd938x and  max98360a codecs for audio use case on
-> > > > sc7280 based platforms.
-> > > > Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
-> > > > Add amp_en node for  max98360a codec.
-> > > General note: I don't think it's a good practice to add stuff like
-> > > this to
-> > > multiple boards in a single patch. Why?
-> > > 
-> > > First the subject of such a patch tends to be vague ("arm64: dts: qcom:
-> > > sc7280: Add nodes for wcd9385 and max98360a codec"), in this case it
-> > > gives
-> > > no hint about the boards. If someone was interested in picking changes
-> > > for a given board they can't easily identify from the subject that the
-> > > change is relevant for them.
-> > > 
-> > > Changes touching multiple boards are more likely to cause conflicts when
-> > > being picked (or reverted), both upstream and in downstream trees (which
-> > > unfortunately have to exist for product development). Downstream trees
-> > > might only pick changes for the board(s) they target, patches that touch
-> > > mutiple boards often cause conflicts due to context deltas in the
-> > > 'irrelevant' boards.
-> > > 
-> > > Lastly it's usually easier to get a patch reviewed (in the sense of
-> > > getting a 'Reviewed-by' tag) and landed that does a single thing.
-> > 
-> > Yes, agree to your opinion. In a nutshell, we will include board
-> > name(ex: herobrine)
-> > 
-> > in commit message and split the patches per external codec.
-> > 
-> > Actually, in Initial herobrine boards, EVT and IDP, has both maxim
-> > speaker and WCD codec,
-> > 
-> > hence we included in same patch.
-> > 
-> > > > Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> > > > Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> > > > Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> > > > ---
-> > > >   arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts     |  6 ++
-> > > >   arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  8 +++
-> > > >   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 97
-> > > > ++++++++++++++++++++++++++
-> > > >   3 files changed, 111 insertions(+)
-> > > > 
-> > > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-> > > > b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-> > > > index 344338a..aa0bf6e2 100644
-> > > > --- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-> > > > +++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-> > > > @@ -87,6 +87,12 @@ ap_ts_pen_1v8: &i2c13 {
-> > > >       pins = "gpio51";
-> > > >   };
-> > > >   +&wcd938x {
-> > > > +    pinctrl-names = "default";
-> > > > +    pinctrl-0 = <&us_euro_hs_sel>;
-> > > > +    us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-> > > > +};
-> > > Since this is added for the CRD rev3 it probably should also be added to
-> > > sc7280-herobrine-crd.dts
-> > Okay. Will add in corresponding latest herobrine CRD dts file also.
-> > > 
-> > > > +
-> > > >   &tlmm {
-> > > >       tp_int_odl: tp-int-odl {
-> > > >           pins = "gpio7";
-> > > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> > > > b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> > > > index d58045d..f247403 100644
-> > > > --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> > > > +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-> > > > @@ -20,6 +20,14 @@
-> > > >   #include "sc7280-chrome-common.dtsi"
-> > > >     / {
-> > > > +    max98360a: audio-codec-0 {
-> > > > +        compatible = "maxim,max98360a";
-> > > > +        pinctrl-names = "default";
-> > > > +        pinctrl-0 = <&amp_en>;
-> > > > +        sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
-> > > > +        #sound-dai-cells = <0>;
-> > > > +    };
-> > > > +
-> > > >       chosen {
-> > > >           stdout-path = "serial0:115200n8";
-> > > >       };
-> > > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > > > b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > > > index 2f863c0..8dad599 100644
-> > > > --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > > > +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> > > > @@ -20,6 +20,42 @@
-> > > >           serial1 = &uart7;
-> > > >       };
-> > > >   +    max98360a: audio-codec-0 {
-> > > > +        compatible = "maxim,max98360a";
-> > > > +        pinctrl-names = "default";
-> > > > +        pinctrl-0 = <&amp_en>;
-> > > > +        sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
-> > > > +        #sound-dai-cells = <0>;
-> > > > +    };
-> > > > +
-> > > > +    wcd938x: audio-codec-1 {
-> > > Why 'wcd938x' and not 'wcd9385'?
-> > 
-> > Actually same driver is used for both wcd9380 and wcd9385. Here we can
-> > use specific name as per board.
-> > 
-> > Will change accordingly.
-> 
-> At present, dt-bindgs also has wcd938x. So will update the name in bindings
-> and here post this series.
-> 
-> is it okay?
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> Acked-by: Xu Yilun <yilun.xu@intel.com>
 
-I don't think it's strictly necessary to update the binding, as
-'wcd938x' is only used in the example, and also it's not really
-wrong. Then again, if the example in the binding uses a
-specific wcd version it might make it less likely that the
-wildcard name is used in future board DTs. Up to you :)
+Sorry, the checkpatch maintainer Joe gives comments after my Acked-by,
+so maybe more changes should be made, see my comments inline.
+
+And if you have more changes than expectation, it is better to remove the
+Acked-by/Reviewed-by tags, otherwise people thought the reviewers are
+good to new changes which are actually not checked at all.
+
+> ---
+> Changes for v2:
+>                 -None.
+> Changes for v3:
+>                -Fixed similar issue exists in "drivers/fpga/*".
+> Changes for v4:
+>                -None.
+> Changes for v5:
+>               - Reduced the length of the 'fpga_mgr_write_init(...)' API
+>                 as suggested by Joe.
+>               - To align Include declaration and definition of APIs updated
+>                 the FPGA-region.h file as suggested by joe.
+
+The of_fpga_region_parse_ov() changes are also new to us.
+
+> 
+>  drivers/fpga/fpga-mgr.c          | 4 ++--
+>  drivers/fpga/fpga-region.c       | 7 ++++---
+>  drivers/fpga/of-fpga-region.c    | 6 +++---
+>  include/linux/fpga/fpga-region.h | 7 ++++---
+>  4 files changed, 13 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+> index d49a9ce34568..d9a2aad7b35f 100644
+> --- a/drivers/fpga/fpga-mgr.c
+> +++ b/drivers/fpga/fpga-mgr.c
+> @@ -148,11 +148,11 @@ static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
+>  	int ret;
+>  
+>  	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
+> +	count = min(mgr->mops->initial_header_size, count);
+
+Move the line in 'else' block, cause the count is not used
+if(!mgr->mops->initial_header_size).
+
+>  	if (!mgr->mops->initial_header_size)
+>  		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
+>  	else
+> -		ret = fpga_mgr_write_init(
+> -		    mgr, info, buf, min(mgr->mops->initial_header_size, count));
+> +		ret = fpga_mgr_write_init(mgr, info, buf, count);
+>  
+>  	if (ret) {
+>  		dev_err(&mgr->dev, "Error preparing FPGA for writing\n");
+> diff --git a/drivers/fpga/fpga-region.c b/drivers/fpga/fpga-region.c
+> index b0ac18de4885..3864bf4f8920 100644
+> --- a/drivers/fpga/fpga-region.c
+> +++ b/drivers/fpga/fpga-region.c
+> @@ -18,9 +18,10 @@
+>  static DEFINE_IDA(fpga_region_ida);
+>  static struct class *fpga_region_class;
+>  
+> -struct fpga_region *fpga_region_class_find(
+> -	struct device *start, const void *data,
+> -	int (*match)(struct device *, const void *))
+> +struct fpga_region *fpga_region_class_find(struct device *start,
+> +					   const void *data,
+> +					   int (*match)(struct device *,
+> +							const void *))
+
+According to Joe's suggestion, it had better be:
+
+struct fpga_region *
+fpga_region_class_find(struct device *start, const void *data,
+		       int (*match)(struct device *, const void *))
+
+
+>  {
+>  	struct device *dev;
+>  
+> diff --git a/drivers/fpga/of-fpga-region.c b/drivers/fpga/of-fpga-region.c
+> index 50b83057c048..55209737075f 100644
+> --- a/drivers/fpga/of-fpga-region.c
+> +++ b/drivers/fpga/of-fpga-region.c
+> @@ -189,9 +189,9 @@ static int child_regions_with_firmware(struct device_node *overlay)
+>   *   fpga_image_info struct if there is an image to program.
+>   *   error code for invalid overlay.
+>   */
+> -static struct fpga_image_info *of_fpga_region_parse_ov(
+> -						struct fpga_region *region,
+> -						struct device_node *overlay)
+> +static struct fpga_image_info
+> +*of_fpga_region_parse_ov(struct fpga_region *region,
+> +			 struct device_node *overlay)
+
+Don't put the '*' at the beginning, it should be:
+
+static struct fpga_image_info *
+of_fpga_region_parse_ov(struct fpga_region *region,
+			struct device_node *overlay)
+
+>  {
+>  	struct device *dev = &region->dev;
+>  	struct fpga_image_info *info;
+> diff --git a/include/linux/fpga/fpga-region.h b/include/linux/fpga/fpga-region.h
+> index 3b87f232425c..7ebf743b8f8a 100644
+> --- a/include/linux/fpga/fpga-region.h
+> +++ b/include/linux/fpga/fpga-region.h
+> @@ -52,9 +52,10 @@ struct fpga_region {
+>  
+>  #define to_fpga_region(d) container_of(d, struct fpga_region, dev)
+>  
+> -struct fpga_region *fpga_region_class_find(
+> -	struct device *start, const void *data,
+> -	int (*match)(struct device *, const void *));
+> +struct fpga_region *fpga_region_class_find(struct device *start,
+> +					   const void *data,
+> +					   int (*match)(struct device *,
+> +							const void *));
+
+Please also follow Joe's suggestion:
+
+struct fpga_region *
+fpga_region_class_find(struct device *start, const void *data,
+		       int (*match)(struct device *, const void *));
+
+
+Thanks,
+Yilun
+
+>  
+>  int fpga_region_program_fpga(struct fpga_region *region);
+>  
+> -- 
+> 2.25.1
