@@ -2,98 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1412BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:24:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E886CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390478AbiDUQ1Q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
+        id S229848AbiDUQ1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231180AbiDUQOs (ORCPT
+        with ESMTP id S230113AbiDUQR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:14:48 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7E42B241
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:11:58 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650557517;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Co+vGxQAnvjE28xN2iS2qSyvQ7+qNi2mwvNPw4R/fZk=;
-        b=BaypSsIzdcER11NDsYhBqeiO6h0kW1VoNrXw1mRnOiGjw3zHAcrg4LrD53LAUGez4e1C6+
-        jHr7Fp2APUeu3QTYZmVAhm2BRkitxZF5ud6TcRQ9fGMoTMeYRwhBPVRRhjvai6KzZ5EHKA
-        0dnpx2UM0sCZ5fV8DbyY1Gb8CXi6+y+WkjrVpg2SmWsgSlTdJ4j4dhFi+Z27KY9Gr3yxX/
-        JdOWhxwu84Nhn3EtEqrih12el44uy3fu7hybJwXJGib1INO194dEaCv8GNHE8F6759DL8t
-        1vDYugl5oVAakWK7O0xugEAt8j+DczJsOLJmyXjtIzkXaTQMPQnvAfFmHKoVlg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650557517;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Co+vGxQAnvjE28xN2iS2qSyvQ7+qNi2mwvNPw4R/fZk=;
-        b=fHDsl12W3lskK/WA5YoKeFFXgA5KMSxzJTX0I707X/zEBoI1l9pDlwdCg+GJuE7vBBVcKF
-        3GShvFgeXx5JODDA==
-To:     Pingfan Liu <kernelfans@gmail.com>, linux-kernel@vger.kernel.org
-Cc:     Pingfan Liu <kernelfans@gmail.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Baokun Li <libaokun1@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 7/9] irq: remove needless lock in takedown_cpu()
-In-Reply-To: <20220420140521.45361-8-kernelfans@gmail.com>
-References: <20220420140521.45361-1-kernelfans@gmail.com>
- <20220420140521.45361-8-kernelfans@gmail.com>
-Date:   Thu, 21 Apr 2022 18:11:56 +0200
-Message-ID: <87y1zys9f7.ffs@tglx>
+        Thu, 21 Apr 2022 12:17:26 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519462B241;
+        Thu, 21 Apr 2022 09:14:36 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VAgYtNo_1650557669;
+Received: from 30.15.235.48(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VAgYtNo_1650557669)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 22 Apr 2022 00:14:31 +0800
+Message-ID: <2067a5c7-4e24-f449-4676-811d12e9ab72@linux.alibaba.com>
+Date:   Fri, 22 Apr 2022 00:14:29 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: EMFILE/ENFILE mitigation needed in erofs?
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>
+Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
+        linux-erofs@lists.ozlabs.org, torvalds@linux-foundation.org,
+        gregkh@linuxfoundation.org, willy@infradead.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com,
+        tianzichen@kuaishou.com, fannaihao@baidu.com,
+        zhangjiachen.jaycee@bytedance.com
+References: <20220415123614.54024-3-jefflexu@linux.alibaba.com>
+ <20220415123614.54024-1-jefflexu@linux.alibaba.com>
+ <1447543.1650552898@warthog.procyon.org.uk>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <1447543.1650552898@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20 2022 at 22:05, Pingfan Liu wrote:
 
-First of all, the subject prefix for the core interrupt subsystem is
-'genirq' and the sentence after the colon starts with an uppercase
-letter. See:
 
-https://www.kernel.org/doc/html/latest/process/maintainer-tip.html
+On 4/21/22 10:54 PM, David Howells wrote:
+> Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+> 
+>> +	fd_install(fd, file);
+> 
+> Do you need to mitigate potential EMFILE/ENFILE problems?  You're potentially
+> trebling up the number of accounted systemwide fds: one for erofs itself, one
+> anonfd per cache object file to communicate with the daemon and one in the
+> daemon to talk to the server.  Cachefiles has a fourth internally, but it's
+> kept off the books - further, cachefiles closes them fairly quickly after a
+> period of nonuse.
+> 
 
-> diff --git a/kernel/cpu.c b/kernel/cpu.c
-> index d0a9aa0b42e8..94a6b512c26d 100644
-> --- a/kernel/cpu.c
-> +++ b/kernel/cpu.c
-> @@ -1033,18 +1033,16 @@ static int takedown_cpu(unsigned int cpu)
->  	kthread_park(st->thread);
->  
->  	/*
-> -	 * Prevent irq alloc/free while the dying cpu reorganizes the
-> -	 * interrupt affinities.
-> +	 * RCU keeps watching 'cpu' until do_idle()->rcu_report_dead().
-> +	 * And cpu_stopper's fn is dispatched with preemption disabled.
-> +	 * So it can not occur to release a irq_desc.
->  	 */
-> -	irq_lock_sparse();
+Hi, thanks for pointing it out.
 
-Not everything is about RCU here. You really need to look at all moving
-parts:
+1. Actually in our using scenarios, one erofs filesystem is formed of
+several chunk-deduplicated blobs (which are really cached by
+Cachefiles), while each blob can contain many files of erofs. For
+example, one container image for node.js will correspond to ~20 blob
+files in total. Only these blob files are cached by Cachefiles. In
+densely employed environment, there could be hundreds of containers and
+thus thousands of backing files on one machine. That is, only tens of
+thousands of fds/files is needed in this case.
 
-irq_migrate_all_off_this_cpu() relies on the allocated_irqs bitmap and
-the sparse tree to be in consistent state, which is only guaranteed when
-the sparse lock is held.
+2. Our user daemon will configure rlimit-nofile to a reasonably large
+(e.g. 1 million) value, so that it won't fail when trying to allocate fds.
 
-I'm not sure what you are trying to solve here. Not taking sparse_irq_lock
-here is not gaining anything.
+https://github.com/dragonflyoss/image-service/blob/master/src/bin/nydusd/main.rs#L152
 
+3. Our user daemon will close the anonymous fd once the corresponding
+backing file has fully downloaded, to free the fd resources.
+
+4. Even if fd/file allocation fails (in cachefiles_ondemand_get_fd()),
+the INIT request will fail, and thus the erofs mount will fail then.
+That is, it won't break the upper erofs in this case.
+
+5. If later we find that the number of fds/files is indeed an issue,
+then we also plan to make the user daemon close some fds to spare some
+free resources. And then the Cachefiles kernel module needs to
+reallocate an anonymous fd for the backing file when cache miss. But it
+remains to be done later if it's really needed.
+
+
+-- 
 Thanks,
-
-        tglx
+Jeffle
