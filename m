@@ -2,267 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A644C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 02:38:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E007C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 02:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383790AbiDUClD (ORCPT
+        id S1383794AbiDUCpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 20 Apr 2022 22:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
+        Wed, 20 Apr 2022 22:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiDUClA (ORCPT
+        with ESMTP id S229462AbiDUCo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 20 Apr 2022 22:41:00 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401F8B15;
-        Wed, 20 Apr 2022 19:38:07 -0700 (PDT)
-X-UUID: a0f131c2464946d9a9b14408e478bcbc-20220421
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:fb0aff0c-6df5-4f66-a068-ca5330ba6bd7,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:4dea6af0-da02-41b4-b6df-58f4ccd36682,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: a0f131c2464946d9a9b14408e478bcbc-20220421
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 583641003; Thu, 21 Apr 2022 10:38:02 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 21 Apr 2022 10:38:01 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 21 Apr 2022 10:38:01 +0800
-Message-ID: <b57a6d06385187afd3c2aed7886d880639ea6928.camel@mediatek.com>
-Subject: Re: [PATCH v1, 1/1] drm/mediatek: add lut diff flag for new gamma
- hardware support
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        "Dennis YC Hsieh" <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
-Date:   Thu, 21 Apr 2022 10:38:01 +0800
-In-Reply-To: <20220420130617.814-2-yongqiang.niu@mediatek.com>
-References: <20220420130617.814-1-yongqiang.niu@mediatek.com>
-         <20220420130617.814-2-yongqiang.niu@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 20 Apr 2022 22:44:59 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35F3B3E;
+        Wed, 20 Apr 2022 19:42:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650508930; x=1682044930;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QvTMlm8zkmv6XEevm736zdXwgrbOlcTEqT+gBwIB7y4=;
+  b=caKcb+/QUTyH4FNxoZQxr+8dwFpzmMnRMR/C0971aMoF+8dyRUlM2UYD
+   kH2ZbPVQQI5v9ezlgqD7nlugtMf2favJunhWHJXrmjBGh+GeSATZ61ZNg
+   5shjaKRjQ60q3hA+K8niJB/kBXD29IBNGMM8Md2wpHyvID8dFozEey5eD
+   Zsp3roEB80MGp8zgyIWdwXf5hOjuZ8HdLsvuZ1hGysJRJ59paaDVQvLYv
+   XYQjSV1RNSkcjwpxr6Z+SqHvX8ePLzxTfXLWgiczwjskIcuNkzNAuVzPB
+   t00DH0IYd7BtK0I8l3kE09IEZ3VgGtbh0h6hhMEwro0YGpPaJKe05l5ht
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244798148"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="244798148"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 19:42:10 -0700
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; 
+   d="scan'208";a="555520403"
+Received: from dmertma-mobl4.amr.corp.intel.com (HELO [10.209.83.57]) ([10.209.83.57])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 19:42:09 -0700
+Message-ID: <1e184b44-8024-b8ae-98a8-cf2b6f78df61@linux.intel.com>
+Date:   Wed, 20 Apr 2022 19:42:06 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, isaku.yamahata@gmail.com
+References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <b209ee09b74394ab7aed85e0244e2191ee3d4171.camel@intel.com>
+ <e0e2e399-2cac-cf75-2a64-9d017e6d7189@linux.intel.com>
+ <420a4d689f73f9f7dc1ef71c61da75b7c9777a3f.camel@intel.com>
+From:   Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <420a4d689f73f9f7dc1ef71c61da75b7c9777a3f.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-20 at 21:06 +0800, Yongqiang Niu wrote:
-> From: Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
+
+
+On 4/20/22 5:11 PM, Kai Huang wrote:
+> On Wed, 2022-04-20 at 16:45 -0700, Sathyanarayanan Kuppuswamy wrote:
+>> If we want to support multiple GetQuote requests in parallel, then we
+>> need some way to uniquely identify the GetQuote requests. So that when
+>> we get completion notification, we can understand which request is
+>> completed. This part is not mentioned/discussed in ABI spec. So we want
+>> to serialize the requests for now.
+>>
 > 
-> mt8183 gamma module usage is different with before soc,
-> gamma odd(index start from 0) lut value set to hardware
-> register should be
-> the difference of current lut value with last lut value.
+> Yes it's unfortunate that this part (whether concurrent GetQuote requests are
+> supported by TDX architecture) is not explicitly mentioned in GHCI spec.  I am
+> fine with only supporting GetQuote requests one by one.  AFAICT there's no
+> request to support concurrent GetQuote requests anyway.  What concerns me is
+> exactly how explain this.
+> 
+> As I said, we have GET_QUOTE_IN_FLIGHT flag now.  Theoretically, you can queue
+> multiple GetQuote requests, and when you receive the interrupt, you check which
+> buffer has GET_QUOTE_IN_FLIGHT cleared.  That buffer is the one with Quote
+> ready.  However I am not 100% sure whether above will always work.  Interrupt
+> can get lost when there are multiple Quotes ready in multiple buffer in very
+> short time period, etc?  Perhaps Isaku can provide more input here.
+
+Either supported or not, it should be mentioned in the GHCI spec. 
+Currently, there are no details related to it. If it is supported, the 
+specification should include the protocol to use.
+
+I will check with Isaku about it.
+
+> 
+> Anyway, how about explaining in this way:
+> 
+> "The GHCI spec doesn't clearly say whether TDX can support or how to support
+> multiple GetQuote requests in parallel.  Attestation request is not supposed to
+> be frequent and should not be in performance critical path.  Only support
+> GetQuote requests in serialized way for now."
+
+It seems good enough. I will use it.
+
+> 
 > 
 
-Hello Yongqiang,
-
-Do you mean for SoCs before 8183 (like 8173) are using original
-method(setting without lut diff) and for 8183/8192/8195/8186, we
-need to use the method of lut diff?
-
-> gamma function support both increase and decrease lut.
-> chrome os app set increase lut normally.
-> 
-> for increase lut example, chrome os user space set lut
-> like this(only r chanel for example):
-> 2 4 6 8 10 12.
-> 1) mt8183 gamma driver should set the gamma lut to hardware
-> register like this:
-> 2 [2] 6 [8] 10 [2]
-
-this should be something like this?
-2 [2] 6 [2] 10 [2]
-
-> the value with [] is the difference value
-> 2) gamma hardware will restore the lut when apply gamma
-> function to display
-> 
-> Signed-off-by: Yongqiang Niu <
-> yongqiang.niu@mediatek.corp-partner.google.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_disp_aal.c   |  4 ++-
->  drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 +-
->  drivers/gpu/drm/mediatek/mtk_disp_gamma.c | 34 +++++++++++++++++++
-> ----
->  3 files changed, 32 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-> b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-> index f46d4ab73d6a..e6378b074a17 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
-> @@ -23,6 +23,7 @@
->  
->  struct mtk_disp_aal_data {
->  	bool has_gamma;
-> +	bool lut_diff;
->  };
->  
->  /**
-> @@ -66,7 +67,7 @@ void mtk_aal_gamma_set(struct device *dev, struct
-> drm_crtc_state *state)
->  	struct mtk_disp_aal *aal = dev_get_drvdata(dev);
->  
->  	if (aal->data && aal->data->has_gamma)
-> -		mtk_gamma_set_common(aal->regs, state);
-> +		mtk_gamma_set_common(aal->regs, state, aal->data-
-> >lut_diff);
->  }
->  
->  void mtk_aal_start(struct device *dev)
-> @@ -148,6 +149,7 @@ static int mtk_disp_aal_remove(struct
-> platform_device *pdev)
->  
->  static const struct mtk_disp_aal_data mt8173_aal_driver_data = {
->  	.has_gamma = true,
-> +	.lut_diff = false,
->  };
->  
->  static const struct of_device_id mtk_disp_aal_driver_dt_match[] = {
-> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-> b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-> index 86c3068894b1..3380651c6707 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-> +++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-> @@ -51,7 +51,7 @@ void mtk_gamma_config(struct device *dev, unsigned
-> int w,
->  		      unsigned int h, unsigned int vrefresh,
->  		      unsigned int bpc, struct cmdq_pkt *cmdq_pkt);
->  void mtk_gamma_set(struct device *dev, struct drm_crtc_state
-> *state);
-> -void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
-> *state);
-> +void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
-> *state, bool lut_diff);
->  void mtk_gamma_start(struct device *dev);
->  void mtk_gamma_stop(struct device *dev);
->  
-> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-> b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-> index 3a5815ab4079..fec2e9a5b60d 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
-> @@ -27,6 +27,7 @@
->  
->  struct mtk_disp_gamma_data {
->  	bool has_dither;
-> +	bool lut_diff;
->  };
->  
->  /*
-> @@ -53,12 +54,13 @@ void mtk_gamma_clk_disable(struct device *dev)
->  	clk_disable_unprepare(gamma->clk);
->  }
->  
-> -void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
-> *state)
-> +void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
-> *state, bool lut_diff)
->  {
->  	unsigned int i, reg;
->  	struct drm_color_lut *lut;
->  	void __iomem *lut_base;
->  	u32 word;
-> +	u32 diff[3] = {0};
->  
->  	if (state->gamma_lut) {
->  		reg = readl(regs + DISP_GAMMA_CFG);
-> @@ -67,9 +69,20 @@ void mtk_gamma_set_common(void __iomem *regs,
-> struct drm_crtc_state *state)
->  		lut_base = regs + DISP_GAMMA_LUT;
->  		lut = (struct drm_color_lut *)state->gamma_lut->data;
->  		for (i = 0; i < MTK_LUT_SIZE; i++) {
-> -			word = (((lut[i].red >> 6) & LUT_10BIT_MASK) <<
-> 20) +
-> -				(((lut[i].green >> 6) & LUT_10BIT_MASK)
-> << 10) +
-> -				((lut[i].blue >> 6) & LUT_10BIT_MASK);
-> +
-> +			if (!lut_diff || (i % 2 == 0)) {
-
-if it's not used lut_diff for the MT8173, it is strange for this
-condition.
-
-BRs,
-Rex
-
-> +				word = (((lut[i].red >> 6) &
-> LUT_10BIT_MASK) << 20) +
-> +					(((lut[i].green >> 6) &
-> LUT_10BIT_MASK) << 10) +
-> +					((lut[i].blue >> 6) &
-> LUT_10BIT_MASK);
-> +			} else {
-> +				diff[0] = abs((lut[i].red >> 6) -
-> (lut[i - 1].red >> 6));
-> +				diff[1] = abs((lut[i].green >> 6) -
-> (lut[i - 1].green >> 6));
-> +				diff[2] = abs((lut[i].blue >> 6) -
-> (lut[i - 1].blue >> 6));
-> +
-> +				word = ((diff[0] & LUT_10BIT_MASK) <<
-> 20) +
-> +					((diff[1] & LUT_10BIT_MASK) <<
-> 10) +
-> +					(diff[2] & LUT_10BIT_MASK);
-> +			}
->  			writel(word, (lut_base + i * 4));
->  		}
->  	}
-> @@ -78,8 +91,12 @@ void mtk_gamma_set_common(void __iomem *regs,
-> struct drm_crtc_state *state)
->  void mtk_gamma_set(struct device *dev, struct drm_crtc_state *state)
->  {
->  	struct mtk_disp_gamma *gamma = dev_get_drvdata(dev);
-> +	bool lut_diff = false;
-> +
-> +	if (gamma->data)
-> +		lut_diff = gamma->data->lut_diff;
->  
-> -	mtk_gamma_set_common(gamma->regs, state);
-> +	mtk_gamma_set_common(gamma->regs, state, lut_diff);
->  }
->  
->  void mtk_gamma_config(struct device *dev, unsigned int w,
-> @@ -176,10 +193,15 @@ static const struct mtk_disp_gamma_data
-> mt8173_gamma_driver_data = {
->  	.has_dither = true,
->  };
->  
-> +static const struct mtk_disp_gamma_data mt8183_gamma_driver_data = {
-> +	.lut_diff = true,
-> +};
-> +
->  static const struct of_device_id mtk_disp_gamma_driver_dt_match[] =
-> {
->  	{ .compatible = "mediatek,mt8173-disp-gamma",
->  	  .data = &mt8173_gamma_driver_data},
-> -	{ .compatible = "mediatek,mt8183-disp-gamma"},
-> +	{ .compatible = "mediatek,mt8183-disp-gamma",
-> +	  .data = &mt8183_gamma_driver_data},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, mtk_disp_gamma_driver_dt_match);
-
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
