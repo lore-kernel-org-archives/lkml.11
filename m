@@ -2,144 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E83CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05900C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391753AbiDUTJB (ORCPT
+        id S1391764AbiDUTJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
+        Thu, 21 Apr 2022 15:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391758AbiDUTI6 (ORCPT
+        with ESMTP id S1391759AbiDUTI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 15:08:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1D3F4C7A5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:06:02 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B6354C792
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:06:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1650567962;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oUgm1roGZlmo/RSKHWbU35ZXLzR9iF1b4LYL8/84k2k=;
-        b=iw1l7RlLaAgIdIHnZVvMKskhBJPPrsH35boflvmPyzTwETvRxTmcMDkrKOiD/TkfniuKlR
-        uQQveWXbrxjlyFyLBKOytitOJvjRwVcxuprn0mxWcuxZY9NJBe1l+nTanCjgfPXsgTgyUX
-        c0VmJvK3v4nmJNtqAEplyxHVXfEcyK4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rCckTxEGpZ1EVMsAo2ha3TZ2uY37q9vb0mlqr9I+LWs=;
+        b=FB5Tb6boPNqXUKYuHnZpGLu6z8cC9qudBf/Tkg0Y6aGpO2nXuIZ1rCcAUgN5e1DNOyyHSg
+        OMvbdETlAnKmuI0OszGBMAB9AEk8eZfpUSwFEHyQ6N3ksH2Ua8XE4WaEWJE4+mG7iAO2ec
+        3V5BKxKkI0J0FmH66+HpMwSYaGz+n+U=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-274-5iCbuT0xPWGEZic1BuHduA-1; Thu, 21 Apr 2022 15:05:48 -0400
-X-MC-Unique: 5iCbuT0xPWGEZic1BuHduA-1
+ us-mta-133-RCwAzGfcNrObe1TDu-_vuA-1; Thu, 21 Apr 2022 15:05:53 -0400
+X-MC-Unique: RCwAzGfcNrObe1TDu-_vuA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 94B8D1C05AB7;
-        Thu, 21 Apr 2022 19:05:47 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 61D49811E9B;
+        Thu, 21 Apr 2022 19:05:50 +0000 (UTC)
 Received: from localhost.localdomain.com (unknown [10.22.16.253])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 88C99C27E81;
-        Thu, 21 Apr 2022 19:05:44 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 04D7EC27E81;
+        Thu, 21 Apr 2022 19:05:48 +0000 (UTC)
 From:   Nico Pache <npache@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Hugh Dickins <hughd@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>,
-        Arjan van de Ven <arjan@infradead.org>,
-        Ulrich Drepper <drepper@redhat.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: [RFC 0/3] Slight improvements for OOM/Futex
-Date:   Thu, 21 Apr 2022 15:05:30 -0400
-Message-Id: <20220421190533.1601879-1-npache@redhat.com>
+Cc:     David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: [RFC 3/3] exit: Check for MMF_OOM_SKIP in exit_mmap
+Date:   Thu, 21 Apr 2022 15:05:33 -0400
+Message-Id: <20220421190533.1601879-4-npache@redhat.com>
+In-Reply-To: <20220421190533.1601879-1-npache@redhat.com>
+References: <20220421190533.1601879-1-npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following 3 patches were developed while working on the OOM/Futex
-fix. 
+The MMF_OOM_SKIP bit is used to indicate weather a mm_struct can not be
+invalided or has already been invalided. exit_mmap currently calls
+__oom_reap_task_mm unconditionally despite the fact that the oom reaper
+may have already called this.
 
-Patch 1: This is a nonfunctional change. The vma_is_anonymous function
-originally led to some confusion about what the oom reaper is checking
-for in __oom_reap_task_mm. This patch makes that function name more 
-verbose.
+Add a check for the MMF_OOM_SKIP bit being set in exit_mmap to avoid
+unnessary calls to the invalidate code.
 
-Patch 2: Futex cleanup was designed with silent failures. Printing this
-failure would have led to more quickly finding the issue. This
-introduces a pr_info if the exit path has any issues walking the
-userspace list.
+A slight race can occur on the MMF_OOM_SKIP bit that will still allow
+this to run twice. My testing has shown an ~66% decrease in double calls
+to _oom_reap_task_mm.
 
-Patch 3: During the debug process I noticed that the oom_reap_task_mm
-function was always running twice for the same mm_struct; Once in the
-exit path and once in the oom_reaper. By checking the MMF_OOM_SKIP we
-can prevent these unnecissary double calls. I'd like some input from
-David Rientjes here with regards to CVE-2018-1000200, I want to make
-sure we are not reintroducing that CVE.
-
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Logan Gunthorpe <logang@deltatee.com>
-Cc: Hari Bathini <hbathini@linux.ibm.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: Miaohe Lin <linmiaohe@huawei.com>
-Cc: William Kucharski <william.kucharski@oracle.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
-Cc: "André Almeida" <andrealmeid@collabora.com>
-Cc: Arjan van de Ven <arjan@infradead.org>
-Cc: Ulrich Drepper <drepper@redhat.com>
+Fixes: 27ae357fa82b ("mm, oom: fix concurrent munlock and oom reaper unmap, v3")
+Cc: David Rientjes <rientjes@google.com>
 Cc: Michal Hocko <mhocko@suse.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
 Signed-off-by: Nico Pache <npache@redhat.com>
+---
+ mm/mmap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Nico Pache (3):
-  mm: change vma_is_anonymous to vma_is_private_anon
-  futex: exit: Print a warning when futex_cleanup fails
-  exit: Check for MMF_OOM_SKIP in exit_mmap
-
- arch/powerpc/mm/book3s64/pgtable.c |  2 +-
- fs/userfaultfd.c                   |  2 +-
- include/linux/huge_mm.h            |  2 +-
- include/linux/mm.h                 |  2 +-
- kernel/futex/core.c                | 44 ++++++++++++++++++------------
- mm/gup.c                           |  4 +--
- mm/huge_memory.c                   | 10 +++----
- mm/madvise.c                       |  4 +--
- mm/memory.c                        | 10 +++----
- mm/migrate_device.c                |  6 ++--
- mm/mincore.c                       |  2 +-
- mm/mmap.c                          |  7 +++--
- mm/oom_kill.c                      |  2 +-
- mm/userfaultfd.c                   |  8 +++---
- 14 files changed, 57 insertions(+), 48 deletions(-)
-
+diff --git a/mm/mmap.c b/mm/mmap.c
+index a2968669fd4e..b867f408dacd 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -3113,7 +3113,8 @@ void exit_mmap(struct mm_struct *mm)
+ 	/* mm's last user has gone, and its about to be pulled down */
+ 	mmu_notifier_release(mm);
+ 
+-	if (unlikely(mm_is_oom_victim(mm))) {
++	if (unlikely(mm_is_oom_victim(mm)) &&
++			!test_bit(MMF_OOM_SKIP, &mm->flags)) {
+ 		/*
+ 		 * Manually reap the mm to free as much memory as possible.
+ 		 * Then, as the oom reaper does, set MMF_OOM_SKIP to disregard
 -- 
 2.35.1
 
