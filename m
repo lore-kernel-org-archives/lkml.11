@@ -2,204 +2,389 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 617E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384741AbiDUGyT (ORCPT
+        id S1385305AbiDUGyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
+        Thu, 21 Apr 2022 02:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385400AbiDUGwA (ORCPT
+        with ESMTP id S1385650AbiDUGxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:52:00 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1DE19C3B;
-        Wed, 20 Apr 2022 23:46:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523592; x=1682059592;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7178CiCoImQ+f/EA4vdj+Vck0criqevbU3FVIO5GGOw=;
-  b=QBxlQveBE1UHvx3pkn0Sj7FZyvBN7NC6hIB/aLO9bUXLQzZYqo6z2KyS
-   cIqCddWfjTpqrEXqO7E80uLPDs9eJ1ICQCzvUudNCdgtidWIUyC3m0YvR
-   uuoYYyL48oxb31fRlgWv0exU8MLzJnfo9JbsVZt29r32vJ2mADcEdh8l7
-   h4917yjChM3KTKIOlIRfG8he6g1I9jg5e4PZMA8xyFXBoyOshKrdTyRHm
-   wLWkP1JsWU8cRRwBzadtUGkhwwkqCMIYoeBp7I/OgZXnDBsWGjitWwt/d
-   0zeyZnElVZDANdDSwp15tvMeDdQIUpyMDFllseK4VDGB+dC2t8Ef2C6/l
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263109847"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="263109847"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:45:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="530132418"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2022 23:45:52 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhQZb-00082l-RB;
-        Thu, 21 Apr 2022 06:45:51 +0000
-Date:   Thu, 21 Apr 2022 14:45:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jagath Jog J <jagathjog1996@gmail.com>, dan@dlrobertson.com,
-        jic23@kernel.org, andy.shevchenko@gmail.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 9/9] iio: accel: bma400: Add support for activity and
- inactivity events
-Message-ID: <202204211211.febbJ6fy-lkp@intel.com>
-References: <20220420211105.14654-10-jagathjog1996@gmail.com>
+        Thu, 21 Apr 2022 02:53:07 -0400
+Received: from out203-205-221-173.mail.qq.com (out203-205-221-173.mail.qq.com [203.205.221.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98A61DA7E
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:47:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1650523649;
+        bh=UCAgP/sZs/C6j2bxf30J77uiXRtYuq1jRK0KgNfK59E=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=G5zUiA2D+OCQecjUCUTlPmsrYdLnYuit3HNuMclLTkCMba0xsF6Bql5h6cPGpvjMQ
+         4f3PfThd8KF1wPrf70Py3Hl1sAsguUgK2iTYLo23Dg7vZBbE4sxiptxLZp0CP9kYyj
+         Xlf4kV+F6lCIyukalC++mUrRk3B/njkdg1Twb3sU=
+Received: from [IPv6:240e:362:431:df00:4c4b:c9ad:7c98:c56e] ([240e:362:431:df00:4c4b:c9ad:7c98:c56e])
+        by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
+        id BD801CAE; Thu, 21 Apr 2022 14:47:24 +0800
+X-QQ-mid: xmsmtpt1650523644tcdazw0uv
+Message-ID: <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
+X-QQ-XMAILINFO: OZZSS56D9fAj7I0kuNy93BRXcT9WEUGATwHKfBaw0xOuVEqDfP3LayA0ouGdGF
+         /4H8mX73reyQrAo6p6HB8IoYEWR/SmddMLsbz7tU5gxmX19LmTzPXP9z4y/TmS/AyAFglCtVhFK5
+         ZlTjz+G2ZEySnL5cXkgb4KvdIMBfz2yulpB00Zfv/9uIYnEZKCT4igawk9KF8eo+aZHCEty1ZuGG
+         hpPEA4BJ+hQnHVz9iSSkUCxfpbNJMehdiY55FzTAxIJHt6ioTfKjpmumKans6H7OHxKnN8DUDV0l
+         Q0CaudGokCm03Kf9r20ccXSJ7z8vlXxC89ganeUxYSM9gVdnOYDfkT2UIzTo5pRhxag7HH1/IzmZ
+         +uN1dzWzUu7YMhnp38Bwy9VcJRu5r1DHjYyNUIDm9ih66cfYHmncPA9UccU+wGd3YLzZv+i4nzEn
+         btGz0C/E6yvTrraPNH2bONi5g6AAJQj9Zyy5BEe/XabkSfYTjY6m1Qcb2NG/KZoBKgOXsaGeC0DM
+         LjaWOLQ2anfskq3Wfa/xWWMFtAyH2hKO12GS81/9hz/zkgxXKTsNtR0RX4eLlZ/7j4DIToMUebTS
+         fwRNqZvK8bvcnwipVb13d/PUQzvkPyKWwUxECt7KdiWQZjvMt0ZK1DhaqLYyyA0NRGMmGhOwNkNU
+         eHYkBLZeOXDLuOP0y0JthzMfot65jt1UZeypM3iPDZ6LzR+CaTbc4/yEilQy3HF2RRKUHBSQNVPR
+         buFMK4nHw+QpvIU7uBdz1NgpIny8pR6ko5CJN6zz4RKIMDsxMwEuAfxwdHs8FK3P1NDZHmNQxH53
+         2z5PIROo/EU3ydXH9PY6p2RwTRtVUy6kaRCLM5wZktdHrzUKj5j8R1PSyppY+q0yQEDor27iFUbo
+         lXzrXVlhc2GSrttpcNmSlb0MsqrDR9lM+UVscGjy7+WVA8/89Mxj+WN+B31kuEKf8ANd2Uci16vD
+         kUetcFqmCafT4PrKihsqSMCZomAz5L
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Fenghua Yu <fenghua.yu@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        robin.murphy@arm.com
+References: <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
+ <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
+ <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
+ <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
+ <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+ <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+ <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
+ <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
+ <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
+ <YllADL6uMoLllzQo@fyu1.sc.intel.com> <YmA4pbgevqln/jSO@myrica>
+From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <ccf6e9c3-99b2-cd60-40e0-44827145933c@foxmail.com>
+Date:   Thu, 21 Apr 2022 14:47:23 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420211105.14654-10-jagathjog1996@gmail.com>
+In-Reply-To: <YmA4pbgevqln/jSO@myrica>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jagath,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v5.18-rc3 next-20220420]
-[cannot apply to linux/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Jagath-Jog-J/iio-accel-bma400-Add-buffer-step-and-activity-inactivity/20220421-051244
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-config: mips-randconfig-r031-20220420 (https://download.01.org/0day-ci/archive/20220421/202204211211.febbJ6fy-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/b33d9910aa7588ec8db7c1694dbc03c3ed200ebb
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jagath-Jog-J/iio-accel-bma400-Add-buffer-step-and-activity-inactivity/20220421-051244
-        git checkout b33d9910aa7588ec8db7c1694dbc03c3ed200ebb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/iio/accel/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iio/accel/bma400_core.c:1047:17: warning: result of comparison of constant 18446744073709551615 with expression of type 'typeof (_Generic((msk), char: (unsigned char)0, unsigned char: (unsigned char)0, signed char: (unsigned char)0, unsigned short: (unsigned short)0, short: (unsigned short)0, unsigned int: (unsigned int)0, int: (unsigned int)0, unsigned long: (unsigned long)0, long: (unsigned long)0, unsigned long long: (unsigned long long)0, long long: (unsigned long long)0, default: (msk)))' (aka 'unsigned int') is always false [-Wtautological-constant-out-of-range-compare]
-                   field_value = FIELD_PREP(msk, state);
-                                 ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:114:3: note: expanded from macro 'FIELD_PREP'
-                   __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:71:53: note: expanded from macro '__BF_FIELD_CHECK'
-                   BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   include/linux/build_bug.h:39:58: note: expanded from macro 'BUILD_BUG_ON_MSG'
-   #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-                                       ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
-   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   drivers/iio/accel/bma400_core.c:1053:17: warning: result of comparison of constant 18446744073709551615 with expression of type 'typeof (_Generic((msk), char: (unsigned char)0, unsigned char: (unsigned char)0, signed char: (unsigned char)0, unsigned short: (unsigned short)0, short: (unsigned short)0, unsigned int: (unsigned int)0, int: (unsigned int)0, unsigned long: (unsigned long)0, long: (unsigned long)0, unsigned long long: (unsigned long long)0, long long: (unsigned long long)0, default: (msk)))' (aka 'unsigned int') is always false [-Wtautological-constant-out-of-range-compare]
-                   field_value = FIELD_PREP(msk, state);
-                                 ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:114:3: note: expanded from macro 'FIELD_PREP'
-                   __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");    \
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:71:53: note: expanded from macro '__BF_FIELD_CHECK'
-                   BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   include/linux/build_bug.h:39:58: note: expanded from macro 'BUILD_BUG_ON_MSG'
-   #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-                                       ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
-   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
-           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
-                   if (!(condition))                                       \
-                         ^~~~~~~~~
-   2 warnings generated.
 
 
-vim +1047 drivers/iio/accel/bma400_core.c
+On 2022/4/21 上午12:45, Jean-Philippe Brucker wrote:
+> Hi,
+>
+> On Fri, Apr 15, 2022 at 02:51:08AM -0700, Fenghua Yu wrote:
+>>  From a6444e1e5bd8076f5e5c5e950d3192de327f0c9c Mon Sep 17 00:00:00 2001
+>> From: Fenghua Yu <fenghua.yu@intel.com>
+>> Date: Fri, 15 Apr 2022 00:51:33 -0700
+>> Subject: [RFC PATCH] iommu/sva: Fix PASID use-after-free issue
+>>
+>> A PASID might be still used even though it is freed on mm exit.
+>>
+>> process A:
+>> 	sva_bind();
+>> 	ioasid_alloc() = N; // Get PASID N for the mm
+>> 	fork(): // spawn process B
+>> 	exit();
+>> 	ioasid_free(N);
+>>
+>> process B:
+>> 	device uses PASID N -> failure
+>> 	sva_unbind();
+>>
+>> Dave Hansen suggests to take a refcount on the mm whenever binding the
+>> PASID to a device and drop the refcount on unbinding. The mm won't be
+>> dropped if the PASID is still bound to it.
+>>
+>> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID allocation and free it on mm exit")
+>>
+>> Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
+>> Suggested-by: Dave Hansen" <dave.hansen@linux.intel.com>
+>> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 6 ++++++
+>>   drivers/iommu/intel/svm.c                       | 4 ++++
+>>   2 files changed, 10 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> index 22ddd05bbdcd..3fcb842a0df0 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> @@ -7,6 +7,7 @@
+>>   #include <linux/mmu_context.h>
+>>   #include <linux/mmu_notifier.h>
+>>   #include <linux/slab.h>
+>> +#include <linux/sched/mm.h>
+>>   
+>>   #include "arm-smmu-v3.h"
+>>   #include "../../iommu-sva-lib.h"
+>> @@ -363,6 +364,9 @@ arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
+>>   
+>>   	mutex_lock(&sva_lock);
+>>   	handle = __arm_smmu_sva_bind(dev, mm);
+>> +	/* Take an mm refcount on a successful bind. */
+>> +	if (!IS_ERR(handle))
+>> +		mmget(mm);
+>>   	mutex_unlock(&sva_lock);
+>>   	return handle;
+>>   }
+>> @@ -372,6 +376,8 @@ void arm_smmu_sva_unbind(struct iommu_sva *handle)
+>>   	struct arm_smmu_bond *bond = sva_to_bond(handle);
+>>   
+>>   	mutex_lock(&sva_lock);
+>> +	/* Drop an mm refcount. */
+>> +	mmput(bond->mm);
+> I do like the idea because it will simplify the driver. We can't call
+> mmput() here, though, because it may call the release() MMU notifier which
+> will try to grab sva_lock, already held.
+>
+> I also found another use-after-free in arm_smmu_free_shared_cd(), where we
+> call arm64_mm_context_put() when the mm could already be freed. There used
+> to be an mmgrab() preventing this but it went away during a rewrite.
+>
+> To fix both we could just move mmput() at the end of unbind() but I'd
+> rather do a proper cleanup removing the release() notifier right away.
+> Zhangfei, could you try the patch below?
+>
+> Thanks,
+> Jean
+>
+> --- 8< ---
+>
+>  From 4e09c0d71dfb35fc90915bd1e36545027fbf8a03 Mon Sep 17 00:00:00 2001
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Date: Wed, 20 Apr 2022 10:19:24 +0100
+> Subject: [PATCH] iommu/arm-smmu-v3-sva: Fix PASID and mm use-after-free issues
+>
+> Commit 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
+> allocation and free it on mm exit") frees the PASID earlier than what
+> the SMMUv3 driver expects. At the moment the SMMU driver handles mm exit
+> in the release() MMU notifier by quiescing the context descriptor. The
+> context descriptor is only made invalid in unbind(), after the device
+> driver ensured the PASID is not used anymore. Releasing the PASID on mm
+> exit may cause it to be reallocated while it is still used by the
+> context descriptor.
+>
+> There is another use-after-free, present since the beginning, where we
+> call arm64_mm_context_put() without a guarantee that mm_count is held.
+>
+> Dave Hansen suggests to grab mm_users whenever binding the mm to a
+> device and drop it on unbinding. With that we can fix both issues and
+> simplify the driver by removing the release() notifier.
+>
+> Fixes: 32784a9562fb ("iommu/arm-smmu-v3: Implement iommu_sva_bind/unbind()")
+> Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
+> Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  1 -
+>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 49 +++++--------------
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 14 +-----
+>   3 files changed, 15 insertions(+), 49 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index cd48590ada30..d50d215d946c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -735,7 +735,6 @@ static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>   
+>   extern struct xarray arm_smmu_asid_xa;
+>   extern struct mutex arm_smmu_asid_lock;
+> -extern struct arm_smmu_ctx_desc quiet_cd;
+>   
+>   int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>   			    struct arm_smmu_ctx_desc *cd);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 22ddd05bbdcd..f9dff0f6cdd4 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -6,6 +6,7 @@
+>   #include <linux/mm.h>
+>   #include <linux/mmu_context.h>
+>   #include <linux/mmu_notifier.h>
+> +#include <linux/sched/mm.h>
+>   #include <linux/slab.h>
+>   
+>   #include "arm-smmu-v3.h"
+> @@ -15,7 +16,6 @@
+>   struct arm_smmu_mmu_notifier {
+>   	struct mmu_notifier		mn;
+>   	struct arm_smmu_ctx_desc	*cd;
+> -	bool				cleared;
+>   	refcount_t			refs;
+>   	struct list_head		list;
+>   	struct arm_smmu_domain		*domain;
+> @@ -96,9 +96,14 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+>   	struct arm_smmu_ctx_desc *cd;
+>   	struct arm_smmu_ctx_desc *ret = NULL;
+>   
+> +	/* Prevent mm exit as long as it is used by the context descriptor */
+> +	mmget(mm);
+> +
+>   	asid = arm64_mm_context_get(mm);
+> -	if (!asid)
+> -		return ERR_PTR(-ESRCH);
+> +	if (!asid) {
+> +		err = -ESRCH;
+> +		goto out_put_mm;
+> +	}
+>   
+>   	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
+>   	if (!cd) {
+> @@ -165,6 +170,8 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+>   	kfree(cd);
+>   out_put_context:
+>   	arm64_mm_context_put(mm);
+> +out_put_mm:
+> +	mmput(mm);
+>   	return err < 0 ? ERR_PTR(err) : ret;
+>   }
+>   
+> @@ -173,6 +180,7 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
+>   	if (arm_smmu_free_asid(cd)) {
+>   		/* Unpin ASID */
+>   		arm64_mm_context_put(cd->mm);
+> +		mmput(cd->mm);
+>   		kfree(cd);
+>   	}
+>   }
+> @@ -191,30 +199,6 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+>   	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
+>   }
+>   
+> -static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+> -{
+> -	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
+> -	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
+> -
+> -	mutex_lock(&sva_lock);
+> -	if (smmu_mn->cleared) {
+> -		mutex_unlock(&sva_lock);
+> -		return;
+> -	}
+> -
+> -	/*
+> -	 * DMA may still be running. Keep the cd valid to avoid C_BAD_CD events,
+> -	 * but disable translation.
+> -	 */
+> -	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &quiet_cd);
+> -
+> -	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
+> -	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
+> -
+> -	smmu_mn->cleared = true;
+> -	mutex_unlock(&sva_lock);
+> -}
+> -
+>   static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
+>   {
+>   	kfree(mn_to_smmu(mn));
+> @@ -222,7 +206,6 @@ static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
+>   
+>   static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
+>   	.invalidate_range	= arm_smmu_mm_invalidate_range,
+> -	.release		= arm_smmu_mm_release,
+>   	.free_notifier		= arm_smmu_mmu_notifier_free,
+>   };
+>   
+> @@ -290,14 +273,8 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
+>   	list_del(&smmu_mn->list);
+>   	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, NULL);
+>   
+> -	/*
+> -	 * If we went through clear(), we've already invalidated, and no
+> -	 * new TLB entry can have been formed.
+> -	 */
+> -	if (!smmu_mn->cleared) {
+> -		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
+> -		arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
+> -	}
+> +	arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
+> +	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
+>   
+>   	/* Frees smmu_mn */
+>   	mmu_notifier_put(&smmu_mn->mn);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 627a3ed5ee8f..246670318eda 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -76,12 +76,6 @@ struct arm_smmu_option_prop {
+>   DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
+>   DEFINE_MUTEX(arm_smmu_asid_lock);
+>   
+> -/*
+> - * Special value used by SVA when a process dies, to quiesce a CD without
+> - * disabling it.
+> - */
+> -struct arm_smmu_ctx_desc quiet_cd = { 0 };
+> -
+>   static struct arm_smmu_option_prop arm_smmu_options[] = {
+>   	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+>   	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
+> @@ -1047,9 +1041,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>   	 * (2) Install a secondary CD, for SID+SSID traffic.
+>   	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
+>   	 *     CD, then invalidate the old entry and mappings.
+> -	 * (4) Quiesce the context without clearing the valid bit. Disable
+> -	 *     translation, and ignore any translation fault.
+> -	 * (5) Remove a secondary CD.
+> +	 * (4) Remove a secondary CD.
+>   	 */
+>   	u64 val;
+>   	bool cd_live;
+> @@ -1065,10 +1057,8 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>   	val = le64_to_cpu(cdptr[0]);
+>   	cd_live = !!(val & CTXDESC_CD_0_V);
+>   
+> -	if (!cd) { /* (5) */
+> +	if (!cd) { /* (4) */
+>   		val = 0;
+> -	} else if (cd == &quiet_cd) { /* (4) */
+> -		val |= CTXDESC_CD_0_TCR_EPD0;
+>   	} else if (cd_live) { /* (3) */
+>   		val &= ~CTXDESC_CD_0_ASID;
+>   		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
+Thanks Jean
 
-  1035	
-  1036	static int bma400_activity_event_en(struct bma400_data *data,
-  1037					    enum iio_event_direction dir,
-  1038					    int state)
-  1039	{
-  1040		int ret, reg, msk, value, field_value;
-  1041	
-  1042		switch (dir) {
-  1043		case IIO_EV_DIR_RISING:
-  1044			reg = BMA400_GEN1INT_CONFIG0;
-  1045			msk = BMA400_INT_GEN1_MSK;
-  1046			value = 2;
-> 1047			field_value = FIELD_PREP(msk, state);
-  1048			break;
-  1049		case IIO_EV_DIR_FALLING:
-  1050			reg = BMA400_GEN2INT_CONFIG0;
-  1051			msk = BMA400_INT_GEN2_MSK;
-  1052			value = 0;
-  1053			field_value = FIELD_PREP(msk, state);
-  1054			break;
-  1055		default:
-  1056			return -EINVAL;
-  1057		}
-  1058	
-  1059		/* Enabling all axis for interrupt evaluation */
-  1060		ret = regmap_write(data->regmap, reg, 0xF8);
-  1061		if (ret)
-  1062			return ret;
-  1063	
-  1064		/* OR combination of all axis for interrupt evaluation */
-  1065		ret = regmap_write(data->regmap, reg + BMA400_GEN_CONFIG1_OFF, value);
-  1066		if (ret)
-  1067			return ret;
-  1068	
-  1069		/* Initial value to avoid interrupts while enabling*/
-  1070		ret = regmap_write(data->regmap, reg + BMA400_GEN_CONFIG2_OFF, 0x0A);
-  1071		if (ret)
-  1072			return ret;
-  1073	
-  1074		/* Initial duration value to avoid interrupts while enabling*/
-  1075		ret = regmap_write(data->regmap, reg + BMA400_GEN_CONFIG31_OFF, 0x0F);
-  1076		if (ret)
-  1077			return ret;
-  1078	
-  1079		ret = regmap_update_bits(data->regmap, BMA400_INT1_MAP_REG, msk,
-  1080					 field_value);
-  1081		if (ret)
-  1082			return ret;
-  1083	
-  1084		ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG0_REG, msk,
-  1085					 field_value);
-  1086		if (ret)
-  1087			return ret;
-  1088	
-  1089		set_mask_bits(&data->generic_event_en, msk, field_value);
-  1090		return 0;
-  1091	}
-  1092	
+Have tested, still got some issue with our openssl-engine.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+1. If openssl-engine does not register rsa, nginx works well.
+
+2. If openssl-engine register rsa, nginx also works, but ioasid is not 
+freed when nginx stop.
+
+IMPLEMENT_DYNAMIC_BIND_FN(bind_fn)
+bind_fn
+ENGINE_set_RSA(e, rsa_methods())
+
+destroy_fn
+
+If ENGINE_set_RSA is set, nginx start and stop will NOT call destroy_fn.
+Even rsa_methods is almost new via RSA_meth_new.
+
+In 5.18-rcx, this caused ioasid  not freed in nginx start and stop.
+In 5.17, though destroy_fn is not called, but ioasid is freed when nginx 
+stop, so not noticed this issue before.
+
+Still in checking why ENGINE_set_RSA blocks destroy_fn.
+
+Thanks
+
