@@ -2,110 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 09:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387908AbiDUJst (ORCPT
+        id S1387843AbiDUJtD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
+        Thu, 21 Apr 2022 05:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387890AbiDUJsf (ORCPT
+        with ESMTP id S1387824AbiDUJs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:48:35 -0400
-Received: from ZXBJCAS.zhaoxin.com (zxbjcas.zhaoxin.com [124.127.214.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C810D19023;
-        Thu, 21 Apr 2022 02:45:45 -0700 (PDT)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXBJCAS.zhaoxin.com
- (10.29.252.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 21 Apr
- 2022 17:43:37 +0800
-Received: from zx-HX001EM1.zhaoxin.com (10.29.8.9) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Thu, 21 Apr
- 2022 17:43:37 +0800
-From:   Runa Guo-oc <RunaGuo-oc@zhaoxin.com>
-To:     <damien.lemoal@opensource.wdc.com>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/2] ahci: Add PhyRdy Change control on actual LPM capability
-Date:   Thu, 21 Apr 2022 17:43:36 +0800
-Message-ID: <1650534217-14052-2-git-send-email-RunaGuo-oc@zhaoxin.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650534217-14052-1-git-send-email-RunaGuo-oc@zhaoxin.com>
-References: <1650534217-14052-1-git-send-email-RunaGuo-oc@zhaoxin.com>
+        Thu, 21 Apr 2022 05:48:59 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE30825C7F;
+        Thu, 21 Apr 2022 02:45:57 -0700 (PDT)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nhTNj-00056z-AL; Thu, 21 Apr 2022 11:45:47 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nhTNj-000LG7-0a; Thu, 21 Apr 2022 11:45:47 +0200
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220419115620.65580586@canb.auug.org.au>
+ <20220421103200.2b4e8424@canb.auug.org.au>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ac093b0a-dba7-b8b8-8a70-fccbed8fee76@iogearbox.net>
+Date:   Thu, 21 Apr 2022 11:45:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.29.8.9]
-X-ClientProxiedBy: zxbjmbx1.zhaoxin.com (10.29.252.163) To
- zxbjmbx1.zhaoxin.com (10.29.252.163)
+In-Reply-To: <20220421103200.2b4e8424@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26518/Wed Apr 20 10:25:31 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some platform, when OS enables LPM by default (eg, min_power),
-then, PhyRdy Change cannot be detected if ahci supports no LPM.
+On 4/21/22 2:32 AM, Stephen Rothwell wrote:
+> Hi all,
 
-In ahci spec, PhyRdy Change cannot coexist with LPM.
+Maciej, I presume you are already working on a follow-up for the below?
 
-Adds support to control this case on actual LPM capability.
-
-Signed-off-by: Runa Guo-oc <RunaGuo-oc@zhaoxin.com>
----
- drivers/ata/ahci.c      | 9 +++++++++
- drivers/ata/libata-eh.c | 4 ++++
- include/linux/libata.h  | 4 ++++
- 3 files changed, 17 insertions(+)
-
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index 397dfd2..03f0cb3 100644
---- a/drivers/ata/ahci.c
-+++ b/drivers/ata/ahci.c
-@@ -1870,6 +1870,15 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	else
- 		dev_info(&pdev->dev, "SSS flag set, parallel bus scan disabled\n");
- 
-+	if (hpriv->cap & HOST_CAP_PART)
-+		host->flags |= ATA_HOST_PART;
-+
-+	if (hpriv->cap & HOST_CAP_SSC)
-+		host->flags |= ATA_HOST_SSC;
-+
-+	if (hpriv->cap2 & HOST_CAP2_SDS)
-+		host->flags |= ATA_HOST_DEVSLP;
-+
- 	if (pi.flags & ATA_FLAG_EM)
- 		ahci_reset_em(host);
- 
-diff --git a/drivers/ata/libata-eh.c b/drivers/ata/libata-eh.c
-index 3307ed4..05b1043 100644
---- a/drivers/ata/libata-eh.c
-+++ b/drivers/ata/libata-eh.c
-@@ -3246,6 +3246,10 @@ static int ata_eh_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
- 	unsigned int err_mask;
- 	int rc;
- 
-+	/* if controller does not support lpm, then sets no LPM flags*/
-+	if (!(ap->host->flags & (ATA_HOST_PART | ATA_HOST_SSC | ATA_HOST_DEVSLP)))
-+		link->flags |= ATA_LFLAG_NO_LPM;
-+
- 	/* if the link or host doesn't do LPM, noop */
- 	if (!IS_ENABLED(CONFIG_SATA_HOST) ||
- 	    (link->flags & ATA_LFLAG_NO_LPM) || (ap && !ap->ops->set_lpm))
-diff --git a/include/linux/libata.h b/include/linux/libata.h
-index 732de90..7a243f4 100644
---- a/include/linux/libata.h
-+++ b/include/linux/libata.h
-@@ -216,6 +216,10 @@ enum {
- 	ATA_HOST_PARALLEL_SCAN	= (1 << 2),	/* Ports on this host can be scanned in parallel */
- 	ATA_HOST_IGNORE_ATA	= (1 << 3),	/* Ignore ATA devices on this host. */
- 
-+	ATA_HOST_PART		= (1 << 4), /* Host support partial.*/
-+	ATA_HOST_SSC		= (1 << 5), /* Host support slumber.*/
-+	ATA_HOST_DEVSLP		= (1 << 6), /* Host support devslp.*/
-+
- 	/* bits 24:31 of host->flags are reserved for LLD specific flags */
- 
- 	/* various lengths of time */
--- 
-2.7.4
+> On Tue, 19 Apr 2022 11:56:20 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>>
+>> After merging the bpf-next tree, today's linux-next build
+>> (x86_64 allmodconfig) failed like this:
+>>
+>> In file included from include/linux/compiler_types.h:73,
+>>                   from <command-line>:
+>> drivers/net/ethernet/intel/i40e/i40e_xsk.c: In function 'i40e_run_xdp_zc':
+>> include/linux/compiler_attributes.h:222:41: error: attribute 'fallthrough' not preceding a case label or default label [-Werror]
+>>    222 | # define fallthrough                    __attribute__((__fallthrough__))
+>>        |                                         ^~~~~~~~~~~~~
+>> drivers/net/ethernet/intel/i40e/i40e_xsk.c:192:17: note: in expansion of macro 'fallthrough'
+>>    192 |                 fallthrough; /* handle aborts by dropping packet */
+>>        |                 ^~~~~~~~~~~
+>> cc1: all warnings being treated as errors
+>> In file included from include/linux/compiler_types.h:73,
+>>                   from <command-line>:
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c: In function 'ixgbe_run_xdp_zc':
+>> include/linux/compiler_attributes.h:222:41: error: attribute 'fallthrough' not preceding a case label or default label [-Werror]
+>>    222 | # define fallthrough                    __attribute__((__fallthrough__))
+>>        |                                         ^~~~~~~~~~~~~
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c:147:17: note: in expansion of macro 'fallthrough'
+>>    147 |                 fallthrough; /* handle aborts by dropping packet */
+>>        |                 ^~~~~~~~~~~
+>> cc1: all warnings being treated as errors
+>>
+>> Caused by commits
+>>
+>>    b8aef650e549 ("i40e, xsk: Terminate Rx side of NAPI when XSK Rx queue gets full")
+>>    c7dd09fd4628 ("ixgbe, xsk: Terminate Rx side of NAPI when XSK Rx queue gets full")
+>>
+>> I have used the bpf-next tree from next-20220414 for today.
+> 
+> I am still getting these failures ...
+> 
 
