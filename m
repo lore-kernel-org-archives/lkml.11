@@ -2,94 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7598C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392451AbiDUUja (ORCPT
+        id S1392458AbiDUUjf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
+        Thu, 21 Apr 2022 16:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392428AbiDUUjZ (ORCPT
+        with ESMTP id S1392435AbiDUUjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 16:39:25 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79C704DF64;
-        Thu, 21 Apr 2022 13:36:31 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.90,279,1643641200"; 
-   d="scan'208";a="118731528"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 22 Apr 2022 05:36:31 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id AEDF340197BC;
-        Fri, 22 Apr 2022 05:36:27 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
-Cc:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 2/3] ASoC: sh: rz-ssi: Propagate error codes returned from platform_get_irq_byname()
-Date:   Thu, 21 Apr 2022 21:35:54 +0100
-Message-Id: <20220421203555.29011-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220421203555.29011-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220421203555.29011-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407F84DF6B;
+        Thu, 21 Apr 2022 13:36:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52019B82915;
+        Thu, 21 Apr 2022 20:36:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C07B9C385AA;
+        Thu, 21 Apr 2022 20:36:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650573391;
+        bh=TotSHD6NiH+c/cQs+3AC5P1AE81U2W4GDZDFViL3gQg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=nGmyJ77Cqt/Q+5c39e+8bqydS7/XQ7dXYwE9S/28uX/Nk0rZ5inItdEFGnYn0CuAQ
+         11ii8h7BKfOQAOABimpOfT80cwFpowkOPgqRsP//AliF6KOOJ8wjvb9q90M9Yz0CMg
+         CLLRZEEJwQWXEuoMHPMufQvygvhYDehNu3wjN6JA1C9yzdUnV1IdCn9AGqqFQe7iwa
+         H5/sL0LyK3wqYp38H0CANRIC7hPL1FyUT8/ysqGNbB+99ONJVfrIbNALzBz2UUA1RQ
+         LX30I1CtpJ8UXr3uk1XhxIB34iv1V9vCS6TmDYSoY4NcRTWfa3kNWJekyYCTMuc/Nc
+         /m3/c6WOA5d9g==
+Date:   Thu, 21 Apr 2022 15:36:29 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Vidya Sagar <vidyas@nvidia.com>,
+        "Kenneth R. Crudup" <kenny@panix.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, hkallweit1@gmail.com,
+        wangxiongfeng2@huawei.com, mika.westerberg@linux.intel.com,
+        chris.packham@alliedtelesis.co.nz, yangyicong@hisilicon.com,
+        treding@nvidia.com, jonathanh@nvidia.com, abhsahu@nvidia.com,
+        sagupta@nvidia.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+        Ricky Wu <ricky_wu@realtek.com>,
+        Rajat Jain <rajatja@google.com>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Victor Ding <victording@google.com>
+Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for
+ suspend/resume
+Message-ID: <20220421203629.GA1424868@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p6jh7Jx3pzg9TzrSrW8+3pzLN6EBAFjFv+7T4tMODmX+g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Propagate error codes returned from platform_get_irq_byname() instead of
-returning -ENODEV. platform_get_irq_byname() may return -EPROBE_DEFER, to
-handle such cases propagate the error codes.
+On Thu, Apr 21, 2022 at 02:16:29PM +0800, Kai-Heng Feng wrote:
+> On Sat, Apr 16, 2022 at 5:25 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Fri, Apr 15, 2022 at 10:26:19PM +0800, Kai-Heng Feng wrote:
+> > ...
 
-While at it drop the dev_err_probe() messages as platform_get_irq_byname()
-already does this for us in case of error.
+> > > So I forced the pcie_aspm_pm_state_change() calling path to eventually
+> > > call aspm_calc_l1ss_info() which solved the problem for me.
+> >
+> > This would update T_PwrOn and LTR1.2_Threshold, so I guess it makes
+> > sense that this would help.  But I think we need to figure out the
+> > reason why pcie_aspm_pm_state_change() exists and get rid of it or at
+> > least better integrate it with pci_restore_state().
+> >
+> > If we call pcie_aspm_pm_state_change() after D3cold or reset, things
+> > still aren't going to work because the LTR cap isn't restored or
+> > programmed.
+> 
+> More than that, the ASPM sysfs won't be restored correctly after
+> resume [1] because of it.
+> So I'd like to post a patch to drop pcie_aspm_pm_state_change() if
+> there's no objection.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- sound/soc/sh/rz-ssi.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+Please do :)  Obviously somebody thought we needed
+pcie_aspm_pm_state_change() for some reason or it wouldn't have been
+added.  But I didn't figure out since it was included in the very
+first ASPM support: 6c723d5bd89f ("PCI: PCIE ASPM support").
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index cec458b8c507..d9a684e71ec3 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -977,8 +977,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
--		return dev_err_probe(&pdev->dev, -ENODEV,
--				     "Unable to get SSI int_req IRQ\n");
-+		return ssi->irq_int;
- 
- 	ret = devm_request_irq(&pdev->dev, ssi->irq_int, &rz_ssi_interrupt,
- 			       0, dev_name(&pdev->dev), ssi);
-@@ -990,8 +989,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 		/* Tx and Rx interrupts (pio only) */
- 		ssi->irq_tx = platform_get_irq_byname(pdev, "dma_tx");
- 		if (ssi->irq_tx < 0)
--			return dev_err_probe(&pdev->dev, -ENODEV,
--					     "Unable to get SSI dma_tx IRQ\n");
-+			return ssi->irq_tx;
- 
- 		ret = devm_request_irq(&pdev->dev, ssi->irq_tx,
- 				       &rz_ssi_interrupt, 0,
-@@ -1002,8 +1000,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 
- 		ssi->irq_rx = platform_get_irq_byname(pdev, "dma_rx");
- 		if (ssi->irq_rx < 0)
--			return dev_err_probe(&pdev->dev, -ENODEV,
--					     "Unable to get SSI dma_rx IRQ\n");
-+			return ssi->irq_rx;
- 
- 		ret = devm_request_irq(&pdev->dev, ssi->irq_rx,
- 				       &rz_ssi_interrupt, 0,
--- 
-2.17.1
+Maybe the comment that "devices changed PM state, we should recheck if
+latency meets all functions' requirement" is a clue but I haven't
+followed up.
 
+> [1] https://lore.kernel.org/linux-pci/20211021035159.1117456-2-kai.heng.feng@canonical.com/
+> 
+> Kai-Heng
