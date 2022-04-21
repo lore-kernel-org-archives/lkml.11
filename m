@@ -2,77 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386896AbiDUIvX (ORCPT
+        id S1386911AbiDUIve (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        Thu, 21 Apr 2022 04:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386880AbiDUIvW (ORCPT
+        with ESMTP id S1386902AbiDUIv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:51:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CF7B1F8;
-        Thu, 21 Apr 2022 01:48:33 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KkWQ91zG0zfZQG;
-        Thu, 21 Apr 2022 16:47:45 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+        Thu, 21 Apr 2022 04:51:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5A615805
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:48:37 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KkWQy2zQ3zhY3w;
+        Thu, 21 Apr 2022 16:48:26 +0800 (CST)
+Received: from localhost.localdomain (10.175.102.38) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 16:48:31 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 21 Apr
- 2022 16:48:31 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>
-CC:     <wsa@kernel.org>, <narmstrong@baylibre.com>, <tanure@linux.com>
-Subject: [PATCH -next] i2c: meson: fix missing clk_disable_unprepare() on error in meson_i2c_probe()
-Date:   Thu, 21 Apr 2022 17:00:42 +0800
-Message-ID: <20220421090042.2278081-1-yangyingliang@huawei.com>
+ 15.1.2375.24; Thu, 21 Apr 2022 16:48:35 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Adam Ward <Adam.Ward.opensource@diasemi.com>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH] regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
+Date:   Thu, 21 Apr 2022 09:03:35 +0000
+Message-ID: <20220421090335.1876149-1-weiyongjun1@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+X-Originating-IP: [10.175.102.38]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the missing clk_disable_unprepare() before return
-from meson_i2c_probe() in the error handling case.
+KASAN report slab-out-of-bounds in __regmap_init as follows:
 
-Fixes: a57f9b4dd6f5 ("i2c: meson: Use 50% duty cycle for I2C clock")
+BUG: KASAN: slab-out-of-bounds in __regmap_init drivers/base/regmap/regmap.c:841
+Read of size 1 at addr ffff88803678cdf1 by task xrun/9137
+
+CPU: 0 PID: 9137 Comm: xrun Tainted: G        W         5.18.0-rc2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x15a lib/dump_stack.c:88
+ print_report.cold+0xcd/0x69b mm/kasan/report.c:313
+ kasan_report+0x8e/0xc0 mm/kasan/report.c:491
+ __regmap_init+0x4540/0x4ba0 drivers/base/regmap/regmap.c:841
+ __devm_regmap_init+0x7a/0x100 drivers/base/regmap/regmap.c:1266
+ __devm_regmap_init_i2c+0x65/0x80 drivers/base/regmap/regmap-i2c.c:394
+ da9121_i2c_probe+0x386/0x6d1 drivers/regulator/da9121-regulator.c:1039
+ i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
+
+This happend when da9121 device is probe by da9121_i2c_id, but with
+invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
+da9121_assign_chip_model() will access 'regmap' without init it.
+
+Fix it by return -EINVAL from da9121_assign_chip_model() if
+'chip->subvariant_id' is invalid.
+
+Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
 Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
- drivers/i2c/busses/i2c-meson.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/regulator/da9121-regulator.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
-index 50dab123380a..195a9716da31 100644
---- a/drivers/i2c/busses/i2c-meson.c
-+++ b/drivers/i2c/busses/i2c-meson.c
-@@ -520,8 +520,10 @@ static int meson_i2c_probe(struct platform_device *pdev)
- 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
- 			   REG_SLV_SDA_FILTER_MASK | REG_SLV_SCL_FILTER_MASK, 0);
+diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
+index eb9df485bd8a..76e0e23bf598 100644
+--- a/drivers/regulator/da9121-regulator.c
++++ b/drivers/regulator/da9121-regulator.c
+@@ -1030,6 +1030,8 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
+ 		chip->variant_id = DA9121_TYPE_DA9142;
+ 		regmap = &da9121_2ch_regmap_config;
+ 		break;
++	default:
++		return -EINVAL;
+ 	}
  
--	if (!i2c->data->set_clk_div)
-+	if (!i2c->data->set_clk_div) {
-+		clk_disable_unprepare(i2c->clk);
- 		return -EINVAL;
-+	}
- 	i2c->data->set_clk_div(i2c, timings.bus_freq_hz);
- 
- 	ret = i2c_add_adapter(&i2c->adap);
+ 	/* Set these up for of_regulator_match call which may want .of_map_modes */
 -- 
 2.25.1
 
