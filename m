@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381300AbiDUS5T (ORCPT
+        id S1391612AbiDUS5n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
+        Thu, 21 Apr 2022 14:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391608AbiDUS5S (ORCPT
+        with ESMTP id S1380232AbiDUS5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:57:18 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5D04C41F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:54:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bLnVB+tVD2jOb/IzrnNs0kvAJIWBHT0xqP4MSQCF2/g=; b=FQeAXayWhnYNyiBkExcDn0AOpk
-        ZUjYMdSMmpSkuBpxHbzmS/FooiikDmBpjoD+uM8yKpL31AfuTXrG2bKVvG+ofXe74EUUIhLFcp54B
-        g7Gdtndy6UBqGFZ2bhz+qze/DEGk8vOwK1q1wdjovIqiV6G/nBQk7aNCXa1xDly8Cf7rkPKhLhL24
-        xW7lmtgspqqYmnn8gzQPuQquD7Fvkg/cuV89b+CQLRij/Jvu6ANXQGUHM77IjA6s/LHm2EjorLNG2
-        OHogJQzX+dz60MAdTLXeiz4TwUIaH1MHAU+087FSxlGHtQ4fNC/FK+aNzdljao/5+GUvoMUdZ3ZYB
-        1Y7m8kJA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhbwJ-00EiJB-VK; Thu, 21 Apr 2022 18:54:03 +0000
-Date:   Thu, 21 Apr 2022 11:54:03 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     YueHaibing <yuehaibing@huawei.com>, mingo@redhat.com,
-        xiaowei66@huawei.com, patches@lists.linux.dev,
+        Thu, 21 Apr 2022 14:57:40 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0299E4C7BA
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:54:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650567281; x=1682103281;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rnJ8AOQ+F107nQufb8ck2W0XHYKcNKoRr+IZqyjKpwg=;
+  b=MT0dhvE+FBbTyj4c8xafwBsN8cUDEMbKQz6sk0zhxj28Oeefq3WVz5MD
+   s1Ls9cj8TlI9ixnYpqvuMoCr1km8mvw1rJOUxEiqhmgPAxyg6S2TkRF84
+   Xju72U81fgxoOKEydZ3x5SOGKL/b67HfHc8N/L1bWmTW5cWiiwm5kLJ3z
+   UDDVNILOntx+a7I2L8bY1U7jT847OOdit10Y2+/rQ2ZvR9JGU0NwHOHM6
+   bc2eJlx9b4cr6CflY+m9fq9wNTcSe+jFh5Knc7SVQnsiNk92Z7g0ESwQL
+   wO3n6fCGTyqrDGHZgS9oqcTFnQKigz4v4F8uIj1c3zKVbV3dsBCyzmzsh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262049276"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="262049276"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 11:54:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="615041508"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 21 Apr 2022 11:54:33 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhbwm-0008gD-Uh;
+        Thu, 21 Apr 2022 18:54:32 +0000
+Date:   Fri, 22 Apr 2022 02:53:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH sysctl-next] ftrace: fix building with SYSCTL=n but
- DYNAMIC_FTRACE=y
-Message-ID: <YmGoS+5Ixaud2xkO@bombadil.infradead.org>
-References: <YlnpfHuZGC8H0iNZ@bombadil.infradead.org>
- <20220420192807.75a70b44@gandalf.local.home>
+Subject: [dhowells-fs:rxrpc-ringless 17/21] ld.lld: error: undefined symbol:
+ udpv6_sendmsg
+Message-ID: <202204220240.iPx7FQgd-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220420192807.75a70b44@gandalf.local.home>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 07:28:07PM -0400, Steven Rostedt wrote:
-> On Fri, 15 Apr 2022 14:54:04 -0700
-> Luis Chamberlain <mcgrof@kernel.org> wrote:
-> 
-> > Steven,
-> > 
-> > As with the other fixes I can take this in through sysctl-next if you
-> > are OK with that, please let me know.
-> 
-> Honestly I would love to just nuke the ftrace_enabled sysctl, it's totally
-> obsolete. Perhaps I should have it trigger some kind of warning message
-> that it will be going away soon, and perhaps we can remove it?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git rxrpc-ringless
+head:   c388a8388ad238ffbe0cd204c3eacaf200055751
+commit: d24f75894c69b625aaa8f2b937072e750a5787df [17/21] rxrpc: Call udp_sendmsg() directly
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220422/202204220240.iPx7FQgd-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?id=d24f75894c69b625aaa8f2b937072e750a5787df
+        git remote add dhowells-fs https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+        git fetch --no-tags dhowells-fs rxrpc-ringless
+        git checkout d24f75894c69b625aaa8f2b937072e750a5787df
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-I'm not sure if we can remove proc sysctls, that can break userpace
-interaction. But deprecating it.. yeah I think it's fine to strive
-for it, and just make the code do at least what it used to. In fact
-sadly I don't see this documented well, we do have the documentation in
-Documentation/admin-guide/sysctl/ but we don't really spell it out if
-we can nuke some. Eric, do you have any thoughts on eventually
-*removing* sysctls? Maybe we should document this.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-BTW yeah another thing I noticed while looking at ftrace.c file was it could
-probably use some spring cleaning by splitting the file up into multiple
-files. Hey I'm not volunteering :) just an idea.
+All errors (new ones prefixed by >>):
 
-> Anyway, yeah, take this through your tree.
+>> ld.lld: error: undefined symbol: udpv6_sendmsg
+   >>> referenced by output.c
+   >>>               rxrpc/output.o:(rxrpc_send_abort_packet) in archive net/built-in.a
+   >>> referenced by output.c
+   >>>               rxrpc/output.o:(rxrpc_reject_packets) in archive net/built-in.a
+   >>> referenced by output.c
+   >>>               rxrpc/output.o:(rxrpc_send_keepalive) in archive net/built-in.a
+   >>> referenced 3 more times
 
-OK thanks, 0day found one last issue, I'll send a patch for that just
-now. Let me know if you're OK for me to just squash that into this
-patch.
-
-> Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-
-  Luis
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
