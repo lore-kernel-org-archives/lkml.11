@@ -2,166 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2466AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FC7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiDUQ12 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
+        id S229575AbiDUQ1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231929AbiDUQPv (ORCPT
+        with ESMTP id S231837AbiDUQMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:15:51 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0512B241
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:13:01 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:47922)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nhZQO-00FgfU-0E; Thu, 21 Apr 2022 10:12:56 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35204 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nhZQM-009wda-SP; Thu, 21 Apr 2022 10:12:55 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Zhang Qiao <zhangqiao22@huawei.com>
-Cc:     lkml <linux-kernel@vger.kernel.org>, <keescook@chromium.org>,
-        <tglx@linutronix.de>, Peter Zijlstra <peterz@infradead.org>,
-        <elver@google.com>, <legion@kernel.org>, <oleg@redhat.com>,
-        <brauner@kernel.org>
-References: <aff07d75-622c-9bab-863c-0917c79da3c4@huawei.com>
-        <fff65bc3-0b73-3c5e-0f31-bd5404f75353@huawei.com>
-        <e70b350e-abfc-7f8d-4590-d18801a9a722@huawei.com>
-        <87ilrd2dfj.fsf@email.froward.int.ebiederm.org>
-        <58223bd3-b63b-0c2b-abcc-e1136090d060@huawei.com>
-Date:   Thu, 21 Apr 2022 11:12:48 -0500
-In-Reply-To: <58223bd3-b63b-0c2b-abcc-e1136090d060@huawei.com> (Zhang Qiao's
-        message of "Thu, 14 Apr 2022 19:40:47 +0800")
-Message-ID: <874k2mtny7.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 21 Apr 2022 12:12:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3624739D;
+        Thu, 21 Apr 2022 09:09:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA5F861D0C;
+        Thu, 21 Apr 2022 16:09:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B061AC385A1;
+        Thu, 21 Apr 2022 16:09:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650557379;
+        bh=gGW2aD1FiS7/o994OIGCeUWbCVF8Zet/5/0xuKOzlak=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=z1qv8JOuNYeGATk1P16N6jzvaM5CJNIaFkczBUjHLlOqzzOqfHe7Rio7fsMmxC2CM
+         pXe9g+UlNnk6AM88R+oAtchjgd8nr4nypdvT6SVilCIJBh5h0cXJfCgBWioJIlDA2+
+         7Dmy5h3EkvqhRmP6CeTqCgYMj6HafJSoorqxAxo0=
+Date:   Thu, 21 Apr 2022 18:09:36 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     linux-cxl@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        vishal.l.verma@intel.com, alison.schofield@intel.com,
+        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 7/8] device-core: Kill the lockdep_mutex
+Message-ID: <YmGBwKEGSNqh0x8P@kroah.com>
+References: <165055518776.3745911.9346998911322224736.stgit@dwillia2-desk3.amr.corp.intel.com>
+ <165055522548.3745911.14298368286915484086.stgit@dwillia2-desk3.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nhZQM-009wda-SP;;;mid=<874k2mtny7.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+x09LpwF9rV/Vq/NcUAUTBtxTT3Ay+Q9s=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: Question about kill a process group
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <165055522548.3745911.14298368286915484086.stgit@dwillia2-desk3.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zhang Qiao <zhangqiao22@huawei.com> writes:
+On Thu, Apr 21, 2022 at 08:33:45AM -0700, Dan Williams wrote:
+> Per Peter [1], the lockdep API has native support for all the use cases
+> lockdep_mutex was attempting to enable. Now that all lockdep_mutex users
+> have been converted to those APIs, drop this lock.
+> 
+> Link: https://lore.kernel.org/r/Ylf0dewci8myLvoW@hirez.programming.kicks-ass.net [1]
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Suggested-by: Peter Zijlstra <peterz@infradead.org>
+> Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 
-> 在 2022/4/13 23:47, Eric W. Biederman 写道:
->> To do something about this is going to take a deep and fundamental
->> redesign of how we maintain process lists to handle a parent
->> with millions of children well.
->> 
->> Is there any real world reason to care about this case?  Without
->> real world motivation I am inclined to just note that this is
->
-> I just foune it while i ran ltp test.
+YES!!!!!
 
-So I looked and fork12 has been around since 2002 in largely it's
-current form.  So I am puzzled why you have run into problems
-and other people have not.
-
-Did you perhaps have lock debugging enabled?
-
-Did you run on a very large machine where a ridiculous number processes
-could be created?
-
-Did you happen to run fork12 on a machine where locks are much more
-expensive than on most machines?
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 
->> Is there a real world use case that connects to this?
->> 
->> How many children are being created in this test?  Several million?
->
->   There are about 300,000+ processes.
-
-Not as many as I was guessing, but still enough to cause a huge
-wait on locks.
-
->> I would like to blame this on the old issue that tasklist_lock being
->> a global lock.  Given the number of child processes (as many as can be
->> created) I don't think we are hurt much by using a global lock.  The
->> problem for solubility is that we have a lock.
->> 
->> Fundamentally there must be a lock taken to maintain the parent's
->> list of children.
->> 
->> I only see SIGQUIT being called once in the parent process so that
->> should not be an issue.
->
->
->   In fork12, every child will call kill(0, SIGQUIT) at cleanup().
-> There are a lot of kill(0, SIGQUIT) calls.
-
-I had missed that.  I can see that stressing out a lot.
-
-At the same time as I read fork12.c that is very much a bug.  The
-children in fork12.c should call _exit() instead of exit().  Which
-would suppress calling the atexit() handlers and let fork12.c
-test what it is trying to test.
-
-That doesn't mean there isn't a mystery here, but more that if
-we really want to test lots of processes calling the same
-signal at the same time it should be a test that means to do that.
-
-
->> There is a minor issue in fork12 that it calls exit(0) instead of
->> _exit(0) in the children.  Not the problem you are dealing with
->> but it does look like it can be a distraction.
->> 
->> I suspect the issue really is the thundering hurd of a million+
->> processes synchronizing on a single lock.
->> 
->> I don't think this is a hard lockup, just a global slow down.
->> I expect everything will eventually exit.
->> 
->
->  But according to the vmcore, this is a hardlockup issue, and i think
-> there may be the following scenarios:
-
-Let me rewind a second.  I just realized that I don't have a clue what
-a hard lockup is (outside of the linux hard lockup detector).
-
-The two kinds of lockups that I understand with a technical meaning are
-deadlock (such taking two locks in opposite orders which can never be
-escaped), and livelock (where things are so busy no progress is made for
-an extended period of time).
-
-I meant to say this is not a deadlock situation.  This looks like a
-livelock, but I think given enough time the code would make progress and
-get out of it.
-
-I do agree over 1 second for holding a spin lock is ridiculous and a
-denial of service attack.
-
-
-
-What I unfortunately do not see is a real world scenario where this will
-happen.  Without a real world scenario it is hard to find motivation to
-spend the year or so it would take to rework all of the data structures.
-The closest I can imagine to a real world scenario is that this
-situation can be used as a denial of service attack.
-
-The hardest part of the problem is that signals sent to a group need to
-be sent to the group atomically.  That is the signals need to be sent to
-every member of the group.
-
-Anyway I am very curious why you are the only one seeing a problem with
-fork12.  That we can definitely investigate as tracking down what is
-different about your setup versus other people who have run ltp seems
-much easier than redesigning all of the signal processing data
-structures from scratch.
-
-Eric
+Nice work.
