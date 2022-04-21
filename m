@@ -2,61 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52A2C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442082AbiDUXRm (ORCPT
+        id S1442165AbiDUXUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
+        Thu, 21 Apr 2022 19:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392628AbiDUXRk (ORCPT
+        with ESMTP id S1392628AbiDUXUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:17:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D000E49CB1;
-        Thu, 21 Apr 2022 16:14:49 -0700 (PDT)
+        Thu, 21 Apr 2022 19:20:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ADA30F7C;
+        Thu, 21 Apr 2022 16:17:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75EC5B8298E;
-        Thu, 21 Apr 2022 23:14:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ACB3C385A5;
-        Thu, 21 Apr 2022 23:14:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C05A6B82978;
+        Thu, 21 Apr 2022 23:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35D4DC385A7;
+        Thu, 21 Apr 2022 23:17:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650582887;
-        bh=2AUhV09QcV4bVrn9tzKu+nrcgxu6wlvvxLmWeOytq9g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LyXaGuTekR73pGtwEJeHZNKqU9cy/aBWp4F10gdT7juWedSGhcfUkcda5DXXH9wll
-         0QP8S1stfGlGHQzQE8DHtpO4/jhjfNJLSUuz3TIMhP+J1FfjtkozUn/PHU+flGf7sB
-         Rpwt6KuleiLgf9rI/dt4xbfLFvu+v7yt/vw8lvScliNp8vmc7zKvS8pQOCoCdvNrAV
-         ft5bXptIPU68u6LRzVxV0AXVbIw+oPhuUSUkSHJNDRpnIn8Mfw06Wpx1riWrlt7Smb
-         9+dsUWQLuevoeoGMYJUbHPYQp2KJGr+HfhLfk7O4b2zG9Afb/AaW9z0orR89+B+sAq
-         Ea3k8vq+10ujA==
-Date:   Thu, 21 Apr 2022 16:14:45 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Theodore Ts'o <tytso@mit.edu>, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, Andy Polyakov <appro@cryptogams.org>
-Subject: Re: [PATCH] random: avoid mis-detecting a slow counter as a cycle
- counter
-Message-ID: <YmHlZX4q4xVKZvsC@sol.localdomain>
-References: <20220421192939.250680-1-ebiggers@kernel.org>
- <YmG8k1JrVexBGmJL@zx2c4.com>
- <YmHDctbEAmJhinoz@sol.localdomain>
- <YmHhx5IrxDKeqJnc@zx2c4.com>
+        s=k20201202; t=1650583041;
+        bh=7ZTWzXdUo5/Xd7sMk8LeC/OokYQbt6jUM/9BzNl6nzE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=RztVbP8GpwM+JTXX3VkA9TnF2nqs3mHWbjmq1xYgvV7mVOOuSqtIru9fsvUp3Q7TA
+         joWQqv0XEJi5aD8/R091tZWrZCz/aUdIJN3aw/Vl64QSBk6LwtN3wgTeWbH6U1sX6T
+         TMz6B95UNhhO9CxtqCx8eylAtXztmpTzfctD3bedwoeNj4mdH2LY5gj2DwOV9eDleX
+         KEQlJQ3VWYZamtEZ0PCDH5SL12AfyvZGREelL5+6aMhbeuJ+Ph/F3aw7Qsk8pJx7IE
+         rbg8ke58jGo7Zh6EzLU1YystwtWkkuuk8cLnqoWi3pUqi0tTSraFw5La+7x1g48PAJ
+         UhO+B6nhYKBAQ==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 45F562D1E68; Fri, 22 Apr 2022 01:17:18 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     Alexander Lobakin <alobakin@pm.me>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf 00/11] bpf: random unpopular userspace fixes (32
+ bit et al)
+In-Reply-To: <20220421223201.322686-1-alobakin@pm.me>
+References: <20220421003152.339542-1-alobakin@pm.me>
+ <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
+ <20220421223201.322686-1-alobakin@pm.me>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 22 Apr 2022 01:17:18 +0200
+Message-ID: <871qxqgh6p.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmHhx5IrxDKeqJnc@zx2c4.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:59:19AM +0200, Jason A. Donenfeld wrote:
-> 
-> I suspect what you actually meant to do here is check adjacent counters,
+Alexander Lobakin <alobakin@pm.me> writes:
 
-Yeah, I messed that up.  I'll send a v2.
+> From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> Date: Wed, 20 Apr 2022 17:40:34 -0700
+>
+>> On Wed, Apr 20, 2022 at 5:38 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>>
+>> Again?
+>>
+>> -----BEGIN PGP MESSAGE-----
+>> Version: ProtonMail
+>>
+>> wcFMA165ASBBe6s8AQ/8C9y4TqXgASA5xBT7UIf2GyTQRjKWcy/6kT1dkjkF
+>> FldAOhehhgLYjLJzNAIkecOQfz/XNapW3GdrQDq11pq9Bzs1SJJekGXlHVIW
+>>
+>> Sorry I'm tossing the series out of patchwork.
+>
+> Oh sorry, I was hoping upgrading Bridge would help >_<
+>
+> Let me know if you're reading this particular message in your inbox
+> finely. Toke guessed it precisely regarding the per-recipient lists
+> -- Proton by default saves every address I've ever sent mails to to
+> Contacts and then tries to fetch PGP public keys for each contact.
+> Again, for some reason, for a couple addresses, including
+> ast@kernel.org, it managed to fetch something, but that something
+> was sorta broken. So at the end I've been having broken PGP for
+> the address I've never manually set or ev
+> en wanted PGP.
+> If it's still messed, I'll contact support then. Sorry again for
+> this.
 
-- Eric
+Heh, yeah, now that I was in the direct Cc list, I got your message in
+encrypted form as well. So, erm, I'm reading it "fine" now that I
+figured out how to get my MUA to decrypt it. Probably not what you want
+for patch submissions, though... :P
+
+-Toke
