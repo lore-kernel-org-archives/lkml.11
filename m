@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442208AbiDUVqq (ORCPT
+        id S1442203AbiDUVqw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 17:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37788 "EHLO
+        Thu, 21 Apr 2022 17:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343498AbiDUVqi (ORCPT
+        with ESMTP id S1442183AbiDUVqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 17:46:38 -0400
+        Thu, 21 Apr 2022 17:46:39 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A124E3BD;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3284EA17;
         Thu, 21 Apr 2022 14:43:39 -0700 (PDT)
 Received: from g550jk.arnhem.chello.nl (a246182.upc-a.chello.nl [62.163.246.182])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id C76B5CC10C;
-        Thu, 21 Apr 2022 21:43:07 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 8A60BCEA6C;
+        Thu, 21 Apr 2022 21:43:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1650577387; bh=2Hlmv3hxYGQtorTzm2FTGISpw7EMEoWJ0bemUHHve7U=;
-        h=From:To:Cc:Subject:Date;
-        b=KBa5XWHVsFAtQ801Vou6rRucnYY4LyS32bVHYsnnYLKleuCwi545v/jP+mazJWR1N
-         hP2Yb4e2tPbxuvldTAFNutuaWkap1Psbn9wl8y/YtdUo1v+++2ETpIvybqYCQB8N83
-         6oYVZaczCP8MNcISb8taI8Eq0E73IX0fS6t6CJak=
+        t=1650577388; bh=6w4PjTbvMri6YwaZlRpH1JvWgO5hcx7ol4Tgm/AT9/k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=b7GcoQrUF7xhbrV45zD7UUuYkQ0bajE5HXmkgLjrTdwWcQ7xV11Vrj27GHickDNVA
+         Os+MidcW3bibyiHpeRSUUTfLu+1fcxAcRoLS1ppbWqg5ygJ6GoQ115Vu/41yI8hmQA
+         DCIAlMd/sUbB/0rw48zdB6KHfUMJw1hQYoBEpodE=
 From:   Luca Weiss <luca@z3ntu.xyz>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -33,54 +33,48 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] ARM: dts: msm8974-FP2: Add support for touchscreen
-Date:   Thu, 21 Apr 2022 23:42:41 +0200
-Message-Id: <20220421214243.352469-1-luca@z3ntu.xyz>
+Subject: [PATCH 3/3] ARM: dts: msm8974-FP2: Add supplies for remoteprocs
+Date:   Thu, 21 Apr 2022 23:42:43 +0200
+Message-Id: <20220421214243.352469-3-luca@z3ntu.xyz>
 X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220421214243.352469-1-luca@z3ntu.xyz>
+References: <20220421214243.352469-1-luca@z3ntu.xyz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Configure the touchscreen found on the new display module of the FP2.
-To add some detail, FP2 has two different screen/touchscreen variants
-("display module"), the old module has Synaptics touchscreen, the new
-one this Ilitek touchscreen.
-
-We're only supporting the new display module for now.
+Those were removed from msm8974.dtsi as part of a recent cleanup commit,
+so add them back for FP2.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- .../boot/dts/qcom-msm8974pro-fairphone-fp2.dts    | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
-index 96427d75ea82..8f07d8e363aa 100644
+index 34266126d5a2..0700a0008caa 100644
 --- a/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
 +++ b/arch/arm/boot/dts/qcom-msm8974pro-fairphone-fp2.dts
-@@ -57,6 +57,21 @@ vibrator {
+@@ -189,6 +189,17 @@ wcnss {
  	};
  };
  
-+&blsp1_i2c2 {
-+	status = "okay";
-+
-+	touchscreen@41 {
-+		compatible = "ilitek,ili2120";
-+		reg = <0x41>;
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
-+		reset-gpios = <&tlmm 55 GPIO_ACTIVE_LOW>;
-+
-+		touchscreen-size-x = <1080>;
-+		touchscreen-size-y = <1920>;
-+	};
++&remoteproc_adsp {
++	cx-supply = <&pm8841_s2>;
 +};
 +
- &blsp1_uart2 {
- 	status = "okay";
- };
++&remoteproc_mss {
++	cx-supply = <&pm8841_s2>;
++	mss-supply = <&pm8841_s3>;
++	mx-supply = <&pm8841_s1>;
++	pll-supply = <&pm8941_l12>;
++};
++
+ &rpm_requests {
+ 	pm8841-regulators {
+ 		compatible = "qcom,rpm-pm8841-regulators";
 -- 
 2.36.0
 
