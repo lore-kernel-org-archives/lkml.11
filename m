@@ -2,75 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 576D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391545AbiDUSwv (ORCPT
+        id S1391557AbiDUSwz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37734 "EHLO
+        Thu, 21 Apr 2022 14:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391525AbiDUSwt (ORCPT
+        with ESMTP id S1391548AbiDUSww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:52:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6B162E1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:49:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35F8DB82870
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 18:49:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16044C385A5;
-        Thu, 21 Apr 2022 18:49:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1650566995;
-        bh=vUwF+jiRY0HlIRxcoc5KSc+V9HpW3TZPlhrBSGwnsxs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p5oxIyp/Odc9gfIf1LgMsuTmdW7ZI2a1ocCs6BYTa0CfR0g005pfX97pyh1w0u8Cn
-         +Deu2b8lFX9UMVOkUfClfHcBGZu+VNnzTKmV3WEJc0xE1p4tBGJc7PGtM+KeedHGRj
-         rLbOnErbadGA3p74byWTCrQPu9i1tnfFvyuZYAHg=
-Date:   Thu, 21 Apr 2022 11:49:54 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Nico Pache <npache@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Darren Hart <dvhart@infradead.org>, stable@kernel.org
-Subject: Re: [PATCH v9] oom_kill.c: futex: Delay the OOM reaper to allow
- time for proper futex cleanup
-Message-Id: <20220421114954.25b88bf0bbabbbc67a66f8d7@linux-foundation.org>
-In-Reply-To: <5653e751-f81d-f64e-b4b5-b251949d13d9@redhat.com>
-References: <20220414144042.677008-1-npache@redhat.com>
-        <874k2mts8p.ffs@tglx>
-        <5653e751-f81d-f64e-b4b5-b251949d13d9@redhat.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 21 Apr 2022 14:52:52 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880CE65E8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:50:01 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 3847F1F45CF0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650567000;
+        bh=yZDfYMtfaZRY0QUffB9LSGM0LIHt1Kf7UYxXwd7bE5k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oSejeR8mZo48sUCSg/D19AOa9v17fg1XWYSUwTud1NFSX7ncRKnUYStorKm256GtP
+         kNesIRHC+glAR72Mn1axW8iVOr23cWVszvJobO4N4erIO0u+hqwFX2mZfX7PdTJzWd
+         NCHniphsK/xrgvlqnJ7GHC9J/USnexT8jySpEMCy8etj3mf7X+A7znen0rHuKFyCaw
+         Lab9hIvvFcyRmTUuWeJ3G2O2oEXQFnC7sHIgffNZ9qw1T5s7It0sZM7wJYP4ivEAuH
+         mQuAK9OuMygrMAk3pQqaeHdMqurM9JmJ07WWxIOa3iH7As0229ikVR7StqUwVztn1U
+         9jUszKkxIgagg==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 4/6] drm/i915: ttm backend dont provide mmap_offset for kernel buffers
+Date:   Thu, 21 Apr 2022 18:49:39 +0000
+Message-Id: <20220421184941.428639-5-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220421184941.428639-1-bob.beckett@collabora.com>
+References: <20220421184941.428639-1-bob.beckett@collabora.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Apr 2022 12:25:58 -0400 Nico Pache <npache@redhat.com> wrote:
+stolen/kernel buffers should not be mmapable by userland.
+do not provide callbacks to facilitate this for these buffers.
 
-> can you please update the link when you add the ACKs.
-> 
-> Here is a more stable link:
-> [1] https://elixir.bootlin.com/glibc/glibc-2.35/source/nptl/allocatestack.c#L370
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+---
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 32 +++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
-Done.  Thanks, all.
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index a878910a563c..b20f81836c54 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1092,8 +1092,8 @@ static void i915_ttm_unmap_virtual(struct drm_i915_gem_object *obj)
+ 	ttm_bo_unmap_virtual(i915_gem_to_ttm(obj));
+ }
+ 
+-static const struct drm_i915_gem_object_ops i915_gem_ttm_obj_ops = {
+-	.name = "i915_gem_object_ttm",
++static const struct drm_i915_gem_object_ops i915_gem_ttm_user_obj_ops = {
++	.name = "i915_gem_object_ttm_user",
+ 	.flags = I915_GEM_OBJECT_IS_SHRINKABLE |
+ 		 I915_GEM_OBJECT_SELF_MANAGED_SHRINK_LIST,
+ 
+@@ -1111,6 +1111,21 @@ static const struct drm_i915_gem_object_ops i915_gem_ttm_obj_ops = {
+ 	.mmap_ops = &vm_ops_ttm,
+ };
+ 
++static const struct drm_i915_gem_object_ops i915_gem_ttm_kern_obj_ops = {
++	.name = "i915_gem_object_ttm_kern",
++	.flags = I915_GEM_OBJECT_IS_SHRINKABLE |
++		 I915_GEM_OBJECT_SELF_MANAGED_SHRINK_LIST,
++
++	.get_pages = i915_ttm_get_pages,
++	.put_pages = i915_ttm_put_pages,
++	.truncate = i915_ttm_truncate,
++	.shrink = i915_ttm_shrink,
++
++	.adjust_lru = i915_ttm_adjust_lru,
++	.delayed_free = i915_ttm_delayed_free,
++	.migrate = i915_ttm_migrate,
++};
++
+ void i915_ttm_bo_destroy(struct ttm_buffer_object *bo)
+ {
+ 	struct drm_i915_gem_object *obj = i915_ttm_to_gem(bo);
+@@ -1165,10 +1180,19 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 		.no_wait_gpu = false,
+ 	};
+ 	enum ttm_bo_type bo_type;
++	const struct drm_i915_gem_object_ops *ops;
+ 	int ret;
+ 
+ 	drm_gem_private_object_init(&i915->drm, &obj->base, size);
+-	i915_gem_object_init(obj, &i915_gem_ttm_obj_ops, &lock_class, flags);
++
++	if (flags & I915_BO_ALLOC_USER && intel_region_to_ttm_type(mem) != I915_PL_STOLEN) {
++		bo_type = ttm_bo_type_device;
++		ops = &i915_gem_ttm_user_obj_ops;
++	} else {
++		bo_type = ttm_bo_type_kernel;
++		ops = &i915_gem_ttm_kern_obj_ops;
++	}
++	i915_gem_object_init(obj, ops, &lock_class, flags);
+ 
+ 	obj->bo_offset = offset;
+ 
+@@ -1178,8 +1202,6 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 
+ 	INIT_RADIX_TREE(&obj->ttm.get_io_page.radix, GFP_KERNEL | __GFP_NOWARN);
+ 	mutex_init(&obj->ttm.get_io_page.lock);
+-	bo_type = (obj->flags & I915_BO_ALLOC_USER) ? ttm_bo_type_device :
+-		ttm_bo_type_kernel;
+ 
+ 	obj->base.vma_node.driver_private = i915_gem_to_ttm(obj);
+ 
+-- 
+2.25.1
+
