@@ -2,139 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C041CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F95EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 08:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386522AbiDUIN2 (ORCPT
+        id S1386489AbiDUINf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
+        Thu, 21 Apr 2022 04:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386513AbiDUIMu (ORCPT
+        with ESMTP id S1386526AbiDUIM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:12:50 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B35C2BE9
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 01:10:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650528600; x=1682064600;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cLE6xmcyejVNPvTSv0CwIrdK3A7MUJeex/f7C9SJaSE=;
-  b=jcmW1boO6Ivks8xfR+u6BTjuEnPr6f4Qo4UOXd6Rux/KVZigyh0f6ub0
-   +1naLcGNVtxpJWiwGd6KEbiSKOuz+3zaLMaH5VLKu3c7+WkADhvKiesgQ
-   c4vVq/BigreXNjdqjVCmibLrzM7p38rv8RsO9M15hdlqljv6cS5RsKQ9m
-   PfHdDyI8/PEg6TQavxv2s9JPa328tYVuCWwdVh3PGpoqwW0vMi1eOf3+0
-   fXtYNSEihQ7lE9NJxlYmprH/4RDl1ndZPaq2J3Ol5oLomLE4WeIhN5Ppm
-   2hOSQxxV40pMIDdTadhm8NgQ52tHjVjvm/YNPD5NfRLLfNifLtMF0fbml
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244857080"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="244857080"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 01:10:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="614783287"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Apr 2022 01:09:58 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhRt0-00086k-7D;
-        Thu, 21 Apr 2022 08:09:58 +0000
-Date:   Thu, 21 Apr 2022 16:09:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Haowen Bai <baihaowen@meizu.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, Haowen Bai <baihaowen@meizu.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4] staging: rtl8192e: Fix signedness bug in
- rtllib_rx_assoc_resp()
-Message-ID: <202204211558.TapLZO4j-lkp@intel.com>
-References: <1650504854-17576-1-git-send-email-baihaowen@meizu.com>
+        Thu, 21 Apr 2022 04:12:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955FC6398;
+        Thu, 21 Apr 2022 01:10:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E69EB8233C;
+        Thu, 21 Apr 2022 08:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA53C385B7;
+        Thu, 21 Apr 2022 08:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650528605;
+        bh=/W8IliiCajYPso0oJDKeh6+LCmFpM9Iq4B+vqL+KHZ4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UtxzIvoNdabVELeWIz3V4TclK6xXmq9BMhzfujlm+gFWBoT8rY4aF9GfRX2ccT1vn
+         wDcqT+y+x552llxpM0QL7xb0FLdoLZIo54LK520enQwUc0BbOcQrzNYQiwfY0jTUpi
+         4qNX03YnasClaEAYsxgd8xc9OOZJfmG9mYcvjA+pDQdP70iw48miJ+2lz2WSgyuBbq
+         tmIpimyZgrqkiOqSIOS0XySlX/JLBOUliDNfhAYHogz26OJgf2EClSsKjy3h8/tJZB
+         X4KNgNCuxEid0pr34FAxb4UcPVrvYQRtv4HO3faFNFitLqqrQosV4+qH8YLlMGH9LJ
+         cYb7+DzLwXx7g==
+Received: by mail-wr1-f41.google.com with SMTP id x18so5538452wrc.0;
+        Thu, 21 Apr 2022 01:10:04 -0700 (PDT)
+X-Gm-Message-State: AOAM532gQMIQslZvDRR/JDrpCg7+UnB5TuMBR/wPI+cl36iApq4b3aAc
+        1BMSjNNEWyVyaARlUmKsGksttyissLHt1+hFBjU=
+X-Google-Smtp-Source: ABdhPJw9RSqdGWpafgMW97qQu7yaTHgV5jKD56P0eBxUAQhkvQ6X95c920XjmeJj56kP8+QCXLYB93ISvku4scoF6r4=
+X-Received: by 2002:a5d:6389:0:b0:207:a7d8:2b64 with SMTP id
+ p9-20020a5d6389000000b00207a7d82b64mr18151004wru.12.1650528603264; Thu, 21
+ Apr 2022 01:10:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650504854-17576-1-git-send-email-baihaowen@meizu.com>
+References: <20220421074204.1284072-1-hch@lst.de> <20220421074204.1284072-8-hch@lst.de>
+In-Reply-To: <20220421074204.1284072-8-hch@lst.de>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 21 Apr 2022 10:09:47 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Y9F8Xb-uON8b+X5bUW9BeWkb6dBuXvdkhL4g15+7_uQ@mail.gmail.com>
+Message-ID: <CAK8P3a3Y9F8Xb-uON8b+X5bUW9BeWkb6dBuXvdkhL4g15+7_uQ@mail.gmail.com>
+Subject: Re: [PATCH 7/7] ARM: use dma-direct unconditionally
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Haowen,
+On Thu, Apr 21, 2022 at 9:42 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> Use dma-direct unconditionally on arm.  It has already been used for
+> some time for LPAE and nommu configurations.
+>
+> This mostly changes the streaming mapping implementation and the (simple)
+> coherent allocator for device that are DMA coherent.  The existing
+> complex allocator for uncached mappings for non-coherent devices is still
+> used as is using the arch_dma_alloc/arch_dma_free hooks.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/arm/Kconfig                   |   4 +-
+>  arch/arm/include/asm/dma-mapping.h |  24 --
+>  arch/arm/mach-highbank/highbank.c  |   2 +-
+>  arch/arm/mach-mvebu/coherency.c    |   2 +-
+>  arch/arm/mm/dma-mapping.c          | 365 ++---------------------------
+>  5 files changed, 19 insertions(+), 378 deletions(-)
+>  delete mode 100644 arch/arm/include/asm/dma-mapping.h
 
-Thank you for the patch! Yet something to improve:
+The diffstat looks really nice!
 
-[auto build test ERROR on v5.18-rc3]
-[also build test ERROR on next-20220421]
-[cannot apply to staging/staging-testing]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I can't really tell from looking at the code if this is an equivalent
+conversion,
+so I have to trust you on that. I did make sure this passes the basic tests
+on kernelci.org, which tests a large number of machines, which is a good
+sign.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Haowen-Bai/staging-rtl8192e-Fix-signedness-bug-in-rtllib_rx_assoc_resp/20220421-093531
-base:    b2d229d4ddb17db541098b83524d901257e93845
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220421/202204211558.TapLZO4j-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e1395cdafd4dea7a368f2d9599832636035a03d2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Haowen-Bai/staging-rtl8192e-Fix-signedness-bug-in-rtllib_rx_assoc_resp/20220421-093531
-        git checkout e1395cdafd4dea7a368f2d9599832636035a03d2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/staging/rtl8192e/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/staging/rtl8192e/rtllib_softmac.c: In function 'auth_parse':
->> drivers/staging/rtl8192e/rtllib_softmac.c:1792:29: error: 'ieee' undeclared (first use in this function)
-    1792 |                 netdev_info(ieee->dev, "auth_parse() failed");
-         |                             ^~~~
-   drivers/staging/rtl8192e/rtllib_softmac.c:1792:29: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +/ieee +1792 drivers/staging/rtl8192e/rtllib_softmac.c
-
-  1766	
-  1767	static inline int auth_parse(struct net_device *dev, struct sk_buff *skb,
-  1768				     u8 **challenge, int *chlen)
-  1769	{
-  1770		struct rtllib_authentication *a;
-  1771		u8 *t;
-  1772	
-  1773		if (skb->len <  (sizeof(struct rtllib_authentication) -
-  1774		    sizeof(struct rtllib_info_element))) {
-  1775			netdev_dbg(dev, "invalid len in auth resp: %d\n", skb->len);
-  1776			return -EINVAL;
-  1777		}
-  1778		*challenge = NULL;
-  1779		a = (struct rtllib_authentication *) skb->data;
-  1780		if (skb->len > (sizeof(struct rtllib_authentication) + 3)) {
-  1781			t = skb->data + sizeof(struct rtllib_authentication);
-  1782	
-  1783			if (*(t++) == MFIE_TYPE_CHALLENGE) {
-  1784				*chlen = *(t++);
-  1785				*challenge = kmemdup(t, *chlen, GFP_ATOMIC);
-  1786				if (!*challenge)
-  1787					return -ENOMEM;
-  1788			}
-  1789		}
-  1790	
-  1791		if (a->status) {
-> 1792			netdev_info(ieee->dev, "auth_parse() failed");
-  1793			return -EINVAL;
-  1794		}
-  1795	
-  1796		return 0;
-  1797	}
-  1798	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Tested-by: Arnd Bergmann <arnd@arndb.de>
