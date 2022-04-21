@@ -2,145 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D055C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E52C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389397AbiDUOhJ (ORCPT
+        id S1389415AbiDUOiK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
+        Thu, 21 Apr 2022 10:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389243AbiDUOhF (ORCPT
+        with ESMTP id S1389500AbiDUOiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:37:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88403E5F8
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:34:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BE61B82585
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:34:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32156C385A8;
-        Thu, 21 Apr 2022 14:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650551653;
-        bh=bnxq7xY6hJG0vnk6nNy70/Pfu3qfybGU0cw7vx4Vjn4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MeEJHHPsGHAvWel1AYF953PR0H5gqulQaCXN/FnzXdgWyNdR7lRAtJSuXiFgKg3H1
-         Vlqqxdrb4kWRmH93DGO8lq2CdCLyM2ezXYk+8wOYqrUFcYNZ0LJKiqLaiv30jKfAdQ
-         krRXez5nqEyjtzw96GJdog4UEGZFg5qWH83SqOysdVZkQDabovoN6xEA0Ba8jstEer
-         CWEuYbYVsxLxPCAArbdpDyVFkHnMH9w+D6KPPIF2QeQe1Bcau3dijuzxIuAbk55YvS
-         EZSF6lszNcJDkfi/KMPQXNkg8eB+gTSl89RfdNyp9m5JgbkF6RfYKhjCEtUDHjquZD
-         UFGmA37ZAvUHA==
-Date:   Thu, 21 Apr 2022 17:34:05 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] memblock tests: update style of comments for
- memblock_add_*() functions
-Message-ID: <YmFrXaBvhJy2auYK@kernel.org>
-References: <cover.1650452552.git.remckee0@gmail.com>
- <0004a1a720c5c15ba16cb9f2fb226f57276de2c0.1650452552.git.remckee0@gmail.com>
- <436b1fd0-16a6-0f77-7ff4-a68252d6b117@redhat.com>
+        Thu, 21 Apr 2022 10:38:04 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43453AE40
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:35:15 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E18AC1515;
+        Thu, 21 Apr 2022 07:35:14 -0700 (PDT)
+Received: from [10.57.41.251] (unknown [10.57.41.251])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8161A3F73B;
+        Thu, 21 Apr 2022 07:35:13 -0700 (PDT)
+Message-ID: <665d2b46-c9e2-2543-cad5-9adf022e4bcb@arm.com>
+Date:   Thu, 21 Apr 2022 15:35:08 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <436b1fd0-16a6-0f77-7ff4-a68252d6b117@redhat.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 0/3] More ARM DMA ops cleanup
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
+        m.szyprowski@samsung.com, arnd@kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <cover.1650539846.git.robin.murphy@arm.com>
+ <20220421141300.GC20492@lst.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220421141300.GC20492@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 09:12:02AM +0200, David Hildenbrand wrote:
-> On 20.04.22 13:19, Rebecca Mckeever wrote:
-> > Update comments in memblock_add_*() functions to match the style used
-> > in tests/alloc_*.c by rewording to make the expected outcome more apparent
-> > and, if more than one memblock is involved, adding a visual of the
-> > memory blocks.
-> > 
-> > Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> > ---
-> >  tools/testing/memblock/tests/basic_api.c | 75 +++++++++++++++++-------
-> >  1 file changed, 54 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-> > index fbc1ce160303..cdf112d25343 100644
-> > --- a/tools/testing/memblock/tests/basic_api.c
-> > +++ b/tools/testing/memblock/tests/basic_api.c
-> > @@ -26,8 +26,8 @@ static int memblock_initialization_check(void)
-> >  /*
-> >   * A simple test that adds a memory block of a specified base address
-> >   * and size to the collection of available memory regions (memblock.memory).
-> > - * It checks if a new entry was created and if region counter and total memory
-> > - * were correctly updated.
-> > + * Expect to create a new entry. The region counter and total memory get
-> > + * updated.
-> >   */
-> >  static int memblock_add_simple_check(void)
-> >  {
-> > @@ -55,8 +55,8 @@ static int memblock_add_simple_check(void)
-> >  /*
-> >   * A simple test that adds a memory block of a specified base address, size
-
-Can you please add coma after size  ...                                        ^
-
-> >   * NUMA node and memory flags to the collection of available memory regions.
-> > - * It checks if the new entry, region counter and total memory size have
-> > - * expected values.
-> > + * Expect to create a new entry. The region counter and total memory get
-> > + * updated.
-> >   */
-> >  static int memblock_add_node_simple_check(void)
-> >  {
-
-...
-
-> > @@ -125,10 +131,20 @@ static int memblock_add_disjoint_check(void)
-> >  
-> >  /*
-> >   * A test that tries to add two memory blocks, where the second one overlaps
-> > - * with the beginning of the first entry (that is r1.base < r2.base + r2.size).
-> > - * After this, it checks if two entries are merged into one region that starts
-> > - * at r2.base and has size of two regions minus their intersection. It also
-> > - * verifies the reported total size of the available memory and region counter.
-> > + * with the beginning of the first entry (that is r1.base < r2.base + r2.size):
-> > + *
-> > + *  |    +----+----+------------+          |
-> > + *  |    |   r|2   |   r1       |          |
-> > + *  +----+----+----+------------+----------+
-
-I'd move | separator outside the block name, e.g
-
-	*  |    +----+----+------------+          |
-	*  |    |   | r2  |   r1       |          |
-	*  +----+----+----+------------+----------+
-
-but no strong feelings about this :)
-
-> > + *       ^    ^
-> > + *       |    |
-> > + *       |    r1.base
-> > + *       |
-> > + *       r2.base
-> > + *
-> > + * Expect to merge the two entries into one region that starts at r2.base
-> > + * and has size of two regions minus their intersection. The total size of
-> > + * the available memory is updated, and the region counter stays the same.
-> >   */
-> >  static int memblock_add_overlap_top_check(void)
-
-...
- 
-> Reviewed-by: David Hildenbrand <david@redhat.com>
+On 2022-04-21 15:13, Christoph Hellwig wrote:
+> On Thu, Apr 21, 2022 at 12:36:56PM +0100, Robin Murphy wrote:
+>> Hi all,
+>>
+>> Thanks to Christoph's latest series, I'm reminded that, if we're going
+>> to give the ARM DMA ops some cleanup this cycle, it's as good a time as
+>> any to dust off these old patches and add them on top as well. I've
+>> based these on the arm-dma-direct branch which I assume matches the
+>> patches posted at [1].
 > 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
-> 
-> 
+> All these do look sensible to me.  But weren't you working on replacing
+> the ARM iommu dma_ops with dma-іommu anyway?
 
--- 
-Sincerely yours,
-Mike.
+Yes, that's somewhat entangled with the IOMMU bus ops stuff, so I'll 
+probably get to the point of having to revisit it in a couple of months 
+or so. These patches are off the bottom of that stack from my first 
+attempt, where the aim was to make the current ops the same shape first 
+so that the switch is then easier to reason about (particularly in terms 
+of sounding out any issues with the hooking up of dev->dma_coherent, 
+although your series will now be taking most of the load off there).
+
+Cheers,
+Robin.
