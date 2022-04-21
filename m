@@ -2,141 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D6CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48764C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbiDUQ2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        id S229458AbiDUQ22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232402AbiDUQUV (ORCPT
+        with ESMTP id S230160AbiDUQKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:20:21 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E872F3879C
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:17:30 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id n33-20020a17090a5aa400b001d28f5ee3f9so5617058pji.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:17:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8Fty8QNXfrAs0BV6klkEKYRiPAtqj4wdItJ/oZdWShw=;
-        b=kRX5k9piGdMkSNkFjTIMS1g8v4ZUcKqn+BMMV0eG4CnXV3Zj9/qyJRQiXSZiY2v3AR
-         qIBYYn5FczOPbiYThonWlEwbb/0x3ufJaykEhq6VS1IPmNvnuFeQJe61+hYwuxT2qZGK
-         X6kAYxgcUYWg5u1pcH3zKB3sTp1SVjddn2srA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8Fty8QNXfrAs0BV6klkEKYRiPAtqj4wdItJ/oZdWShw=;
-        b=B4pCLyRRyCXkEN9FN3k0rcoQLVhpDSVLYDyH4SWfp4D4/yPoPauwgcxdLMjtCX7AiN
-         MbR8zjYxJmSVr1nBcqvJnf++v1Dt+T/rkJhqyN0xB4bq1oC3AukKYpybGWS3rrww8+Jw
-         qZsaMeWV2yhC+P23NqUBqFSBwUDZbj6I1+t7b2sIpY/XbsANqQTBXSYg5hz46iSWLII1
-         rPL7rMTVos0SXI86s4GjduiQg1N+vZevXZ12T6bzs7nf91ub2HqiVGAzMxh432XhNu/Z
-         tFEgBLcJ7ntyd6OtQbXsnYOsFd1f6eY5JfCH31+kZFGdiS3Ci/7geLORUdP03M6RJ4Zs
-         y6LA==
-X-Gm-Message-State: AOAM533MxgF7k+6bAZ7wjNIk8vji1D4SZ/RD5ckNts/9hoheci9an4hT
-        gxFmdpEPp0xekl3viPQV9wWTaQ==
-X-Google-Smtp-Source: ABdhPJz0jVyZiWkJb5eJkw4mj6V9lFamfYYK+Z0tLblE59uEzfuw9mcwUtLalS/qcqGqoxv1GYXr0g==
-X-Received: by 2002:a17:902:8b8a:b0:158:983d:2689 with SMTP id ay10-20020a1709028b8a00b00158983d2689mr241189plb.173.1650557850191;
-        Thu, 21 Apr 2022 09:17:30 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
-        by smtp.gmail.com with UTF8SMTPSA id t21-20020a17090a951500b001d77f392280sm513587pjo.30.2022.04.21.09.17.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 09:17:29 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 09:17:27 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v9 02/12] arm64: dts: qcom: sc7280: Enable digital codecs
- and soundwire for CRD 1.0 and CRD 2.0
-Message-ID: <YmGDl4+os6Wkxn1G@google.com>
-References: <1650552459-21077-1-git-send-email-quic_srivasam@quicinc.com>
- <1650552459-21077-3-git-send-email-quic_srivasam@quicinc.com>
+        Thu, 21 Apr 2022 12:10:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FC447541;
+        Thu, 21 Apr 2022 09:07:55 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 18:07:51 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650557273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=K14QTM7Qe+PKqSGcrLG7jOzYp3yn8ozz6G/LoWNfiyc=;
+        b=JUA6dHEJm3WZyKKktnpAyxcAqobaMl08V0hDiBfciCFoUfwe1jPmDFiVrx7QfXQDMCRc6f
+        jdxE6uDh6ZvSTjIW4FE4O1pjHjP4pQMkt/SSbp1HeclEyWVEWfAG1uU0RPxegrS4P4zcg9
+        eLYSfIDIV9mIKK7OLeDDD5Tz48EvUHdc97mTrg0r6gy7KLFKuPYZYobbnauyENilQvvtyA
+        wPcDwu3clBssqlgzOpEVscM7m1ImjIPJBelG49x12/paOgiymFmGNFwpOm45SNVQ+hZ4tJ
+        MwuJhN8CRrtBa7lkJNsangSxMbAhdtf+joXQLIF1FO6ZV/IgXWGqiMtZ6BjpHA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650557273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=K14QTM7Qe+PKqSGcrLG7jOzYp3yn8ozz6G/LoWNfiyc=;
+        b=k68WP7D8eVaPd0RnakYM6Medmw/sl7gr/TCpP+ZXibP350SD9mtpEiqCzWktttbdNPSZ+F
+        7V/NTmtP7qGzXTDQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [ANNOUNCE] v5.18-rc3-rt1
+Message-ID: <YmGBVzuZLRVNs3C2@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1650552459-21077-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:17:29PM +0530, Srinivasa Rao Mandadapu wrote:
+Dear RT folks!
 
-> Subject: arm64: dts: qcom: sc7280: Enable digital codecs and soundwire for CRD 1.0 and CRD 2.0
+I'm pleased to announce the v5.18-rc3-rt1 patch set. 
 
-This also enables things for IDP boards, right? If that isn't intended
-then these changes should be in sc7280-crd-r3.dts
+Changes since v5.17.1-rt17:
 
-> Enable rx, tx and va macro codecs and soundwire nodes on revision 3
-> and 4 (aka CRD 1.0 and 2.0) boards.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 35 ++++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index 2f863c0..6cb5fc4 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -238,6 +238,19 @@
->  	modem-init;
->  };
->  
-> +&lpass_rx_macro {
-> +	status = "okay";
-> +};
-> +
-> +&lpass_tx_macro {
-> +	status = "okay";
-> +};
-> +
-> +&lpass_va_macro {
-> +	status = "okay";
-> +	vdd-micb-supply = <&vreg_bob>;
-> +};
-> +
->  &pcie1 {
->  	status = "okay";
->  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
-> @@ -298,6 +311,28 @@
->  	cd-gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
->  };
->  
-> +&swr0 {
-> +	status = "okay";
-> +
-> +	wcd_rx: codec@0,4 {
-> +		compatible = "sdw20217010d00";
-> +		reg = <0 4>;
-> +		#sound-dai-cells = <1>;
-> +		qcom,rx-port-mapping = <1 2 3 4 5>;
-> +	};
-> +};
-> +
-> +&swr1 {
-> +	status = "okay";
-> +
-> +	wcd_tx: codec@0,3 {
-> +		compatible = "sdw20217010d00";
-> +		reg = <0 3>;
-> +		#sound-dai-cells = <1>;
-> +		qcom,tx-port-mapping = <1 2 3 4>;
-> +	};
-> +};
-> +
->  &uart5 {
->  	compatible = "qcom,geni-debug-uart";
->  	status = "okay";
-> -- 
-> 2.7.4
-> 
+  - Rebase to v5.18-rc3.
+
+  - Update John's printk series to v3.
+
+  - Include v5 of "smp: Make softirq handling RT friendly" as posted by
+    Thomas Gleixner.
+
+Known issues
+     - Valentin Schneider reported a few splats on ARM64, see
+          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
+
+You can get this release via the git tree at:
+
+    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.18-rc3-rt1
+
+The RT patch against v5.18-rc3 can be found here:
+
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/older/patch-5.18-rc3-rt1.patch.xz
+
+The split quilt queue is available at:
+
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.18/older/patches-5.18-rc3-rt1.tar.xz
+
+Sebastian
