@@ -2,131 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E01CC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EE7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 16:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbiDUQdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 12:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        id S231872AbiDUQeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 12:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390650AbiDUQdl (ORCPT
+        with ESMTP id S230086AbiDUQdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 12:33:41 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7002D48E4D
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:28:53 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id bx5so5414736pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:28:53 -0700 (PDT)
+        Thu, 21 Apr 2022 12:33:43 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40B54990A
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:29:11 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id o20-20020a05600c511400b0038ebbbb2ad8so3788723wms.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 09:29:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WkdhlTGKvN68SlRLMJdx437G/wIo/jBpfIeJhDG0Jck=;
-        b=g39jc98KyMqzeT74PT79TxjVzfhAFziSDBuq3v+ZuzvRsVporGEnbMVsRQ1b6C3o5X
-         54Vr2jaUQIApND2TCOlwd7uaPlyoPFPRpa5ytuI8OzdU9IqVVanwrl/aFYoyA6qIC44R
-         2rrP+NXlVDCcuyelWumY9NhKgwTvxPswO/qAo=
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=vrEs/2pEILP9d1ISDp34/8wtCsJViJ6D/+Hs3vTnWsI=;
+        b=kiRnNazcdTuefZZxff/Lv7MqYKxC82ka2qvvv0JcQaQ5eXgb3C1Td1A6Yjqd9oSHjW
+         cMbnQC3KtAdteb6sdIvj+QXOwx4ornXjnKbeU5vSxw0jCC17VrGZfmOrM4sXwlVVndEH
+         JPAKQS8ZxSqC6VQv1Z9KYKx9e6oAIIg3+US9C7QWCuam4Z+S244I7ecKXVgyO9+PsZvW
+         esjoVzMxM+KA87KPOtThU5FRSN9h4WqEZXzc7y2IlFAi9oejv6HKiIsgCkuGcnDbUzeV
+         qWmJ6gqtGwT9I3hN8m64D4R4cyImSkG161BjeGoRFRYFJOzDk+XHe3yAisQDlDb7PhdY
+         Xa9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WkdhlTGKvN68SlRLMJdx437G/wIo/jBpfIeJhDG0Jck=;
-        b=bVKkH8MawpiZdTvfrBvuzKMLwKSLdGRZkIn9lab8iDAehegHSXp2X6zuhUWQn+6bxo
-         IBf4FP2QotDRO/XfEAfClYV5eREHqvYy3ysyeJhkfOZ4lQK6sQMLqjXN06jt0hhdLv+E
-         NTGNk1dZLeGSMqccg1jFoswwBdNU0eSlkMSBxpoa0gIL3n6Jn3EK1QFAfDDZyO1I3gKu
-         ZRp2e4vJrpFpg+e395EJqm9W/RaeTFZzKcIffMKO4/0DXVGjNSZLO9Efv/5foW7Ka0FS
-         BqQQJRRLB4pcCkV/0udbV4I1zbO5xMp7HMLoRMaHWMJCqMxU08ymaOQGPTe+xME5GjqY
-         bm1w==
-X-Gm-Message-State: AOAM531iq+Gw/p+orBqD1gAyb4faF4rDJWty8990smBTtQ3q7H9Wmudy
-        bsBHuK6H4NhOouAFHefJHPhPCQ==
-X-Google-Smtp-Source: ABdhPJwwEZAKewcyO4Htm0T4aE9t8nchCjvROAy5B3s0/2c0AxEY8XyA/EVhcuqsUwTSeh7+7XgOtw==
-X-Received: by 2002:a17:902:8306:b0:158:2d58:a36a with SMTP id bd6-20020a170902830600b001582d58a36amr82271plb.55.1650558533004;
-        Thu, 21 Apr 2022 09:28:53 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:d426:5807:a72:7b27])
-        by smtp.gmail.com with UTF8SMTPSA id h13-20020a056a00230d00b004f427ffd485sm26982254pfh.143.2022.04.21.09.28.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 09:28:52 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 09:28:50 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH v9 03/12] arm64: dts: qcom: sc7280: Enable digital codecs
- and soundwire for CRD 3.0/3.1
-Message-ID: <YmGGQiD0L2GipcRt@google.com>
-References: <1650552459-21077-1-git-send-email-quic_srivasam@quicinc.com>
- <1650552459-21077-4-git-send-email-quic_srivasam@quicinc.com>
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=vrEs/2pEILP9d1ISDp34/8wtCsJViJ6D/+Hs3vTnWsI=;
+        b=GLGqAxitR+/xm/7/w6Hx8Gmt1XgykhTQCtFxgpHAgewYKIbTDPZ3FlSDSnbRtVFMmK
+         RcDI1ZAHNFTR9hZCA2UW14GJfQsoOpVsenkzPTg84Qo8xhMv5tH5xIgNh/vg9hN6o+AP
+         95GFw/UDRCqYj9BXMUtWyvmVTeulkqaIzYYPlIxYiJVBA8G0sJkKPPSL8013GYyih/XE
+         EB/7/2bF1L9eNs43WBj/cN9rcPaD4zhfj0ddGpg09ybyhBw9T+gQUHTt3A9n4Z+dnok7
+         KN/TT19gACoJiaGMrTpSfx0LViqmGuFjyeJX2lxk+W97oXG08mRGJlsv3Aab3/v9TWSH
+         LKdw==
+X-Gm-Message-State: AOAM533jXD3QLRiAENsoSKQ3xWSJ8TT+MgnQFvk16TkQluuEfbGOTo7d
+        OXz6qUHRWXQGwLIJBEz5xbKwyg==
+X-Google-Smtp-Source: ABdhPJyQaNKtS9rLLBu7H6jeDjbWV36SMhQuTvDDlstfthSmDE74vKvCmC4ESH0lxl25edccn/nitw==
+X-Received: by 2002:a05:600c:a06:b0:37b:fdd8:4f8 with SMTP id z6-20020a05600c0a0600b0037bfdd804f8mr9664089wmp.41.1650558550287;
+        Thu, 21 Apr 2022 09:29:10 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id bg20-20020a05600c3c9400b0037fa5c422c8sm2576235wmb.48.2022.04.21.09.29.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 09:29:09 -0700 (PDT)
+References: <20220421155725.2589089-1-narmstrong@baylibre.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>, broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dmitry Shmidt <dimitrysh@google.com>
+Subject: Re: [PATCH 1/2] Revert "ASoC: meson: axg-tdm-interface: manage
+ formatters in trigger"
+Date:   Thu, 21 Apr 2022 18:17:02 +0200
+In-reply-to: <20220421155725.2589089-1-narmstrong@baylibre.com>
+Message-ID: <1jwnfixuwc.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1650552459-21077-4-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:17:30PM +0530, Srinivasa Rao Mandadapu wrote:
-> Enable rx, tx and va macro codecs and soundwire nodes for
-> CRD rev5 (aka CRD 3.0/3.1) boards.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 35 +++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> index fd6eadc..d0794f2 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-> @@ -69,6 +69,19 @@ ap_ts_pen_1v8: &i2c13 {
->  	};
->  };
->  
-> +&lpass_rx_macro {
-> +	status = "okay";
-> +};
-> +
-> +&lpass_tx_macro {
-> +	status = "okay";
-> +};
-> +
-> +&lpass_va_macro {
-> +	status = "okay";
-> +	vdd-micb-supply = <&vreg_bob>;
-> +};
-> +
->  /* For nvme */
->  &pcie1 {
->  	status = "okay";
-> @@ -89,6 +102,28 @@ ap_ts_pen_1v8: &i2c13 {
->  	status = "okay";
->  };
->  
-> +&swr0 {
-> +	status = "okay";
-> +
-> +	wcd_rx: codec@0,4 {
-> +		compatible = "sdw20217010d00";
-> +		reg = <0 4>;
-> +		#sound-dai-cells = <1>;
-> +		qcom,rx-port-mapping = <1 2 3 4 5>;
-> +	};
-> +};
-> +
-> +&swr1 {
-> +	status = "okay";
-> +
-> +	wcd_tx: codec@0,3 {
-> +		compatible = "sdw20217010d00";
-> +		reg = <0 3>;
-> +		#sound-dai-cells = <1>;
-> +		qcom,tx-port-mapping = <1 2 3 4>;
-> +	};
-> +};
 
-The wcd9385 is on the qcard, so the wcd_tx/rx nodes should probably
-be added to sc7280-qcard.dtsi, and the CRD DT would only set 'status'.
+On Thu 21 Apr 2022 at 17:57, Neil Armstrong <narmstrong@baylibre.com> wrote:
+
+> This reverts commit bf5e4887eeddb48480568466536aa08ec7f179a5 because
+> the following and required commit e138233e56e9829e65b6293887063a1a3ccb2d68
+> causes the following system crash when using audio:
+>  BUG: sleeping function called from invalid context at kernel/locking/mutex.c:282
+>
+> Reported-by: Dmitry Shmidt <dimitrysh@google.com>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+
+For both:
+Acked-by: Jerome Brunet <jbrunet@baylibre.com>
+
+The main reason for the this was to be able to configure the start order
+between the DPCM Backend and Frontend. Only the trigger() callback has
+that capability for now.
+
+This HW require the BE to start before FE, otherwise channels get randomly
+shifted in the output stream if there is more than 2 slots on the link,
+mainly on the capture path.
+
+This HW require mutexes to handle the TDM formatters (because it uses
+the CCF API). This why I moved to non-atomic to use trigger(),
+forgetting that doing so would make period_elapsed() take a mutex from
+the IRQ ... :/
+
+To properly fix this, I'll need to extend ASoC so the prepare() callback
+BE/FE call order can also be configured.
+
