@@ -2,124 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 19:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392060AbiDUTrr (ORCPT
+        id S1392068AbiDUTsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 15:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
+        Thu, 21 Apr 2022 15:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392057AbiDUTrd (ORCPT
+        with ESMTP id S1392057AbiDUTr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 15:47:33 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9746E4CD6E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:44:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11ACF153B;
-        Thu, 21 Apr 2022 12:44:42 -0700 (PDT)
-Received: from [10.57.80.98] (unknown [10.57.80.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4A64E3F5A1;
-        Thu, 21 Apr 2022 12:44:39 -0700 (PDT)
-Message-ID: <9c6819ec-9189-c6dd-b9ba-3687beebc538@arm.com>
-Date:   Thu, 21 Apr 2022 20:44:33 +0100
+        Thu, 21 Apr 2022 15:47:59 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422B9140F9
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:45:08 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id q22so6467922iod.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 12:45:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=1tgz+X24f6XnX4f1yXTxoEYQUjnBY33NG2UKa/wMACk=;
+        b=rfKqO1m+RUvn+rJMgR7Xk6wcQBoywjMk4RP/njbPPdsig4lYlb7gHyIDwktnpEBIiC
+         U+GpNV25/elY5gDks9t3mgjdkykIrlpzvzr6SFQYmYbWwVCHfe3u0+tJHnE6gRZwXgVe
+         xWmvaXHPpH4OFMDVHHjqFhZ80+TWUbEihGCReMIxAlloOoVAUWw4pilRllile6vNoguJ
+         zwUkUdBrpPf0OiupMaiDcuKkNMTsTIJnE0nCi8ncYulFEpayJTO9OV5or3gOEk1exOiK
+         JmnEIqhOuTUdr3w9OuKOCyesCopz0Y7RQjX0Kp/sc7w2scwxXE507YgGrmQEXQBlrBqe
+         5nzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=1tgz+X24f6XnX4f1yXTxoEYQUjnBY33NG2UKa/wMACk=;
+        b=iRA0eI2+Kjk9zJ2IhUw5HqP8Kzwejg9hTaQtWLsVZq+WMQf7PGHHaVbhaYJINyBEfU
+         93rh/VY9wkTMd/Itl52OfZLYV+bjuLkLq0JieiJheFJt770dA0lLElko9rFMQt7hbdrc
+         orjM1IOWpnzDna/0RtgdT4xBQBDV3ZOfyMdWcovCulI8zduXhThcfoNbvb2JsO3wfV2Y
+         iTE+GbY+86+Npy7TjJaNY4Ht7XL3fZuz3rv0J40DQSatgXbjFCyFr427PfK6dOJY9+Nu
+         PE3yzQewO9lT/5cNZVwoNH5v0WRwVM/gFMXu0k8EOrFdUUI+29YyM7jzegoCjHeIFhBD
+         K9ow==
+X-Gm-Message-State: AOAM533sSDd5uuwXQaCtvoOOcf+A7lb6/jY+cA7RtA/nVOoPfyyz8xUt
+        IWSqQke5RH4Llh+izn3CCLuYFg==
+X-Google-Smtp-Source: ABdhPJxnmjYyEBvl3tBa4XmCQ75rxDL2W5WvAVzWXw/AvNBhlAe7CyRBsApwpMMayd0C/pfomXn15Q==
+X-Received: by 2002:a05:6602:2dcf:b0:656:d2f8:9dee with SMTP id l15-20020a0566022dcf00b00656d2f89deemr576107iow.29.1650570307512;
+        Thu, 21 Apr 2022 12:45:07 -0700 (PDT)
+Received: from [127.0.1.1] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id z18-20020a05660229d200b0064c719946a8sm15215671ioq.34.2022.04.21.12.45.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 12:45:06 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     dylany@fb.com, io-uring@vger.kernel.org
+Cc:     asml.silence@gmail.com, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+In-Reply-To: <20220421091345.2115755-1-dylany@fb.com>
+References: <20220421091345.2115755-1-dylany@fb.com>
+Subject: Re: [PATCH 0/6] return an error when cqe is dropped
+Message-Id: <165057030672.167153.10167028049673775527.b4-ty@kernel.dk>
+Date:   Thu, 21 Apr 2022 13:45:06 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 12/13] iommu/virtio: Clean up bus_set_iommu()
-Content-Language: en-GB
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org,
-        sven@svenpeter.dev, robdclark@gmail.com, m.szyprowski@samsung.com,
-        baolu.lu@linux.intel.com, yong.wu@mediatek.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <cover.1649935679.git.robin.murphy@arm.com>
- <4db34a35e07f3741a658465045b78c96a569c591.1649935679.git.robin.murphy@arm.com>
- <YmGQjYZMtaqSf87a@myrica>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YmGQjYZMtaqSf87a@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-21 18:12, Jean-Philippe Brucker wrote:
-> On Thu, Apr 14, 2022 at 01:42:41PM +0100, Robin Murphy wrote:
->> Stop calling bus_set_iommu() since it's now unnecessary, and simplify
->> the probe failure path accordingly.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/virtio-iommu.c | 24 ------------------------
->>   1 file changed, 24 deletions(-)
->>
->> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
->> index 25be4b822aa0..371f8657c0ce 100644
->> --- a/drivers/iommu/virtio-iommu.c
->> +++ b/drivers/iommu/virtio-iommu.c
->> @@ -7,7 +7,6 @@
->>   
->>   #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->>   
->> -#include <linux/amba/bus.h>
->>   #include <linux/delay.h>
->>   #include <linux/dma-iommu.h>
->>   #include <linux/dma-map-ops.h>
+On Thu, 21 Apr 2022 02:13:39 -0700, Dylan Yudaken wrote:
+> This series addresses a rare but real error condition when a CQE is
+> dropped. Many applications rely on 1 SQE resulting in 1 CQE and may even
+> block waiting for the CQE. In overflow conditions if the GFP_ATOMIC
+> allocation fails, the CQE is dropped and a counter is incremented. However
+> the application is not actively signalled that something bad has
+> happened. We would like to indicate this error condition to the
+> application but in a way that does not rely on the application doing
+> invasive changes such as checking a flag before each wait.
 > 
-> <linux/platform_device.h> isn't needed anymore either. In any case it
-> looks great, thanks
+> [...]
 
-Ha, it totally passed me by that this one *isn't* a platform driver, derp :)
+Applied, thanks!
 
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> 
-> and tested on QEMU (so only PCI for now)
+[1/6] io_uring: add trace support for CQE overflow
+      commit: f457ab8deb017140aef05be3027a00a18a7d16b7
+[2/6] io_uring: trace cqe overflows
+      commit: 2a847e6faf76810ae68a6e81bd9ac3a7c81534d0
+[3/6] io_uring: rework io_uring_enter to simplify return value
+      commit: db9bb58b391c9e62da68bc139598e8470d892c77
+[4/6] io_uring: use constants for cq_overflow bitfield
+      commit: b293240e2634b2100196d7314aeeb84299ce6d5b
+[5/6] io_uring: return an error when cqe is dropped
+      commit: 34a7ee8a42c8496632465f3f0b444b3a7b908c46
+[6/6] io_uring: allow NOP opcode in IOPOLL mode
+      commit: ebbe59f49556822b9bcc7b0d4d96bae31f522905
 
-Thanks!
+Best regards,
+-- 
+Jens Axboe
 
-Robin.
 
->> @@ -1146,26 +1145,6 @@ static int viommu_probe(struct virtio_device *vdev)
->>   
->>   	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
->>   
->> -#ifdef CONFIG_PCI
->> -	if (pci_bus_type.iommu_ops != &viommu_ops) {
->> -		ret = bus_set_iommu(&pci_bus_type, &viommu_ops);
->> -		if (ret)
->> -			goto err_unregister;
->> -	}
->> -#endif
->> -#ifdef CONFIG_ARM_AMBA
->> -	if (amba_bustype.iommu_ops != &viommu_ops) {
->> -		ret = bus_set_iommu(&amba_bustype, &viommu_ops);
->> -		if (ret)
->> -			goto err_unregister;
->> -	}
->> -#endif
->> -	if (platform_bus_type.iommu_ops != &viommu_ops) {
->> -		ret = bus_set_iommu(&platform_bus_type, &viommu_ops);
->> -		if (ret)
->> -			goto err_unregister;
->> -	}
->> -
->>   	vdev->priv = viommu;
->>   
->>   	dev_info(dev, "input address: %u bits\n",
->> @@ -1174,9 +1153,6 @@ static int viommu_probe(struct virtio_device *vdev)
->>   
->>   	return 0;
->>   
->> -err_unregister:
->> -	iommu_device_sysfs_remove(&viommu->iommu);
->> -	iommu_device_unregister(&viommu->iommu);
->>   err_free_vqs:
->>   	vdev->config->del_vqs(vdev);
->>   
->> -- 
->> 2.28.0.dirty
->>
