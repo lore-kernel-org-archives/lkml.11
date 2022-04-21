@@ -2,475 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B3E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B984C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441996AbiDUVZe (ORCPT
+        id S1442011AbiDUVZu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 17:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
+        Thu, 21 Apr 2022 17:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388645AbiDUVZH (ORCPT
+        with ESMTP id S1442003AbiDUVZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 17:25:07 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCED4D62A
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:22:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650576136; x=1682112136;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xZi6TKTjcwV3mUOQUK9fpnAfu9BV2UuNn6oIwFVtv3M=;
-  b=DfhBfvqTgQ+Mq025tV6UGR3HlVQwvsNoRbqvrRPX3lQFYlxOYpFf9aLI
-   Zu98aaz04DFVLw8VlTtiG3xHn0YayqnAMfHcOXn9xd43yapg0Yv1V4dMZ
-   FZ1sIVYaXfYLTJ7bW1WjSWtAEc1tExP6BWNZ/iqH0AAWWZl73TXslKdkZ
-   R5MjYB/n+g692HRXgp6CKaZb60EpoiFmwZdOH3sDN3F5XxxbkDKLrCa25
-   xzvkngdlrHqx8RiQyxkHd+lh5T9pp1fr5wMKzTuB3Ju7O24dz0neT35Dw
-   mjsRdQxTNEUtaZaCFvm+0E8wAnbVqWeyGELeatf8rwTSBMvWLT4CiiS3x
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="350925003"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="350925003"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 14:22:12 -0700
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="658704099"
-Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.56.239])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 14:22:11 -0700
-From:   Russ Weight <russell.h.weight@intel.com>
-To:     mcgrof@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
-        yilun.xu@intel.com, hao.wu@intel.com,
-        matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v5 6/8] test_firmware: Add test support for firmware upload
-Date:   Thu, 21 Apr 2022 14:22:02 -0700
-Message-Id: <20220421212204.36052-7-russell.h.weight@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220421212204.36052-1-russell.h.weight@intel.com>
-References: <20220421212204.36052-1-russell.h.weight@intel.com>
+        Thu, 21 Apr 2022 17:25:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F2B4D26A;
+        Thu, 21 Apr 2022 14:22:53 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650576172;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8gmUY81SNptAD3CDWEkaKXdJ4XucqcW0xuaGxHRqtCU=;
+        b=c36rgdaqxz38sULcWqwk3G6Udz0kBy50qYRBTRtoM8I/fOmlM22mbp6jNkpjPmyJsZqM5u
+        8UATj844pKGOcMPFOjM6LwB5qW21aQXTKS1mzXk9cXvVOq8L/P3uDfIqJMnD5womNCbitb
+        Yh3OXqPsR4BAKda9QMDNA44HC5oxMR0GVFEHv7XR2j1MDLvxCNVdHgpBh5BmH7Lwk5q5Hu
+        4G/vr/p808w1iXprTBHUx27Vp7MJELTH0qQ7Gy2OnqsYtDJYn8zGjsZGvy/FYEp9wQUljd
+        sdejP2qyLfk5jLgUzYtVyq2zK55pzFuwYxHm6+IMsSNhzZ31XE8Jz7L8t/+NcQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650576172;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8gmUY81SNptAD3CDWEkaKXdJ4XucqcW0xuaGxHRqtCU=;
+        b=zjx+60fy1lZASOZeylFWmhy5sOK7lgqz1gFHpNTmAKajfPizmMOGNRzn72bsneg1gMoG22
+        Hv8Y9msrGtbpzCAA==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marco Elver <elver@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Corey Minyard <cminyard@mvista.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: [PATCH printk v4 00/15] implement threaded console printing
+Date:   Thu, 21 Apr 2022 23:28:35 +0206
+Message-Id: <20220421212250.565456-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for testing the firmware upload driver. There are four sysfs
-nodes added:
+This is v4 of a series to implement a kthread for each registered
+console. v3 is here [0]. The kthreads locklessly retrieve the
+records from the printk ringbuffer and also do not cause any lock
+contention between each other. This allows consoles to run at full
+speed. For example, a netconsole is able to dump records much
+faster than a serial or vt console. Also, during normal operation,
+printk() callers are completely decoupled from console printing.
 
-upload_register: write-only
-  Write the name of the firmware device node to be created
+There are situations where kthread printing is not sufficient. For
+example, during panic situations, where the kthreads may not get a
+chance to schedule. In such cases, the current method of attempting
+to print directly within the printk() caller context is used. New
+functions printk_prefer_direct_enter() and
+printk_prefer_direct_exit() are made available to mark areas of the
+kernel where direct printing is preferred. (These should only be
+areas that do not occur during normal operation.)
 
-upload_unregister: write-only
-  Write the name of the firmware device node to be destroyed
+This series also introduces pr_flush(): a might_sleep() function
+that will block until all active printing threads have caught up
+to the latest record at the time of the pr_flush() call. This
+function is useful, for example, to wait until pending records
+are flushed to consoles before suspending.
 
-config_upload_name: read/write
-  Set the name to be used by upload_read
+Note that this series does *not* increase the reliability of console
+printing. Rather it focuses on the non-interference aspect of
+printk() by decoupling printk() callers from printing (during normal
+operation). Nonetheless, the reliability aspect should not worsen
+due to this series.
 
-upload_read: read-only
-  Read back the data associated with the firmware device node named
-  in config_upload_name
+John Ogness
 
-You can create multiple, concurrent firmware device nodes for firmware
-upload testing. Read firmware back and validate it using config_upload_name
-and upload_red.
+[0] https://lore.kernel.org/lkml/20220419234637.357112-1-john.ogness@linutronix.de
 
-Example:
-    $ cd /sys/devices/virtual/misc/test_firmware
-    $ echo -n fw1 > upload_register
-    $ ls fw1
-    cancel  data  device  error  loading  power  remaining_size  status
-    subsystem  uevent
-    $ dd if=/dev/urandom of=/tmp/random-firmware.bin bs=512 count=4
-    4+0 records in
-    4+0 records out
-    2048 bytes (2.0 kB, 2.0 KiB) copied, 0.000131959 s, 15.5 MB/s
-    $ echo 1 > fw1/loading
-    $ cat /tmp/random-firmware.bin > fw1/data
-    $ echo 0 > fw1/loading
-    $ cat fw1/status
-    idle
-    $ cat fw1/error
-    $ echo -n fw1 > config_upload_name
-    $ cmp /tmp/random-firmware.bin upload_read
-    $ echo $?
-    0
-    $ echo -n fw1 > upload_unregister
+Changes since v3:
 
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-Reviewed-by: Tianfei zhang <tianfei.zhang@intel.com>
-Tested-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
----
-v2:
-  - No changes from v1
-v3:
-  - Added Reviewed-by tag
-v4:
-  - Added Reviewed-by tag
-v5:
-  - Added Tested-by tag
----
- lib/test_firmware.c | 261 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 261 insertions(+)
+- For defer_console_output(), call allow_direct_printing() instead
+  of only checking @printk_prefer_direct.
 
-diff --git a/lib/test_firmware.c b/lib/test_firmware.c
-index 1bccd6cd5f48..2b8c56d7bf37 100644
---- a/lib/test_firmware.c
-+++ b/lib/test_firmware.c
-@@ -31,9 +31,12 @@ MODULE_IMPORT_NS(TEST_FIRMWARE);
- #define TEST_FIRMWARE_NAME	"test-firmware.bin"
- #define TEST_FIRMWARE_NUM_REQS	4
- #define TEST_FIRMWARE_BUF_SIZE	SZ_1K
-+#define TEST_UPLOAD_MAX_SIZE	SZ_2K
-+#define TEST_UPLOAD_BLK_SIZE	37	/* Avoid powers of two in testing */
- 
- static DEFINE_MUTEX(test_fw_mutex);
- static const struct firmware *test_firmware;
-+static LIST_HEAD(test_upload_list);
- 
- struct test_batched_req {
- 	u8 idx;
-@@ -63,6 +66,7 @@ struct test_batched_req {
-  * @reqs: stores all requests information
-  * @read_fw_idx: index of thread from which we want to read firmware results
-  *	from through the read_fw trigger.
-+ * @upload_name: firmware name to be used with upload_read sysfs node
-  * @test_result: a test may use this to collect the result from the call
-  *	of the request_firmware*() calls used in their tests. In order of
-  *	priority we always keep first any setup error. If no setup errors were
-@@ -101,6 +105,7 @@ struct test_config {
- 	bool send_uevent;
- 	u8 num_requests;
- 	u8 read_fw_idx;
-+	char *upload_name;
- 
- 	/*
- 	 * These below don't belong her but we'll move them once we create
-@@ -112,8 +117,28 @@ struct test_config {
- 			    struct device *device);
- };
- 
-+struct test_firmware_upload {
-+	char *name;
-+	struct list_head node;
-+	char *buf;
-+	size_t size;
-+	bool cancel_request;
-+	struct fw_upload *fwl;
-+};
-+
- static struct test_config *test_fw_config;
- 
-+static struct test_firmware_upload *upload_lookup_name(const char *name)
-+{
-+	struct test_firmware_upload *tst;
-+
-+	list_for_each_entry(tst, &test_upload_list, node)
-+		if (strncmp(name, tst->name, strlen(tst->name)) == 0)
-+			return tst;
-+
-+	return NULL;
-+}
-+
- static ssize_t test_fw_misc_read(struct file *f, char __user *buf,
- 				 size_t size, loff_t *offset)
- {
-@@ -198,6 +223,7 @@ static int __test_firmware_config_init(void)
- 	test_fw_config->req_firmware = request_firmware;
- 	test_fw_config->test_result = 0;
- 	test_fw_config->reqs = NULL;
-+	test_fw_config->upload_name = NULL;
- 
- 	return 0;
- 
-@@ -277,6 +303,13 @@ static ssize_t config_show(struct device *dev,
- 			test_fw_config->sync_direct ? "true" : "false");
- 	len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"read_fw_idx:\t%u\n", test_fw_config->read_fw_idx);
-+	if (test_fw_config->upload_name)
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+				"upload_name:\t%s\n",
-+				test_fw_config->upload_name);
-+	else
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+				"upload_name:\tEMTPY\n");
- 
- 	mutex_unlock(&test_fw_mutex);
- 
-@@ -392,6 +425,32 @@ static ssize_t config_name_show(struct device *dev,
- }
- static DEVICE_ATTR_RW(config_name);
- 
-+static ssize_t config_upload_name_store(struct device *dev,
-+					struct device_attribute *attr,
-+					const char *buf, size_t count)
-+{
-+	struct test_firmware_upload *tst;
-+	int ret = count;
-+
-+	mutex_lock(&test_fw_mutex);
-+	tst = upload_lookup_name(buf);
-+	if (tst)
-+		test_fw_config->upload_name = tst->name;
-+	else
-+		ret = -EINVAL;
-+	mutex_unlock(&test_fw_mutex);
-+
-+	return ret;
-+}
-+
-+static ssize_t config_upload_name_show(struct device *dev,
-+				       struct device_attribute *attr,
-+				       char *buf)
-+{
-+	return config_test_show_str(buf, test_fw_config->upload_name);
-+}
-+static DEVICE_ATTR_RW(config_upload_name);
-+
- static ssize_t config_num_requests_store(struct device *dev,
- 					 struct device_attribute *attr,
- 					 const char *buf, size_t count)
-@@ -989,6 +1048,167 @@ ssize_t trigger_batched_requests_async_store(struct device *dev,
- }
- static DEVICE_ATTR_WO(trigger_batched_requests_async);
- 
-+static void upload_release(struct test_firmware_upload *tst)
-+{
-+	firmware_upload_unregister(tst->fwl);
-+	kfree(tst->buf);
-+	kfree(tst->name);
-+	kfree(tst);
-+}
-+
-+static void upload_release_all(void)
-+{
-+	struct test_firmware_upload *tst, *tmp;
-+
-+	list_for_each_entry_safe(tst, tmp, &test_upload_list, node) {
-+		list_del(&tst->node);
-+		upload_release(tst);
-+	}
-+	test_fw_config->upload_name = NULL;
-+}
-+
-+static enum fw_upload_err test_fw_upload_prepare(struct fw_upload *fwl,
-+						 const u8 *data, u32 size)
-+{
-+	struct test_firmware_upload *tst = fwl->dd_handle;
-+
-+	tst->cancel_request = false;
-+
-+	if (!size || size > TEST_UPLOAD_MAX_SIZE)
-+		return FW_UPLOAD_ERR_INVALID_SIZE;
-+
-+	memset(tst->buf, 0, TEST_UPLOAD_MAX_SIZE);
-+	tst->size = size;
-+
-+	return FW_UPLOAD_ERR_NONE;
-+}
-+
-+static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
-+					       const u8 *data, u32 offset,
-+					       u32 size, u32 *written)
-+{
-+	struct test_firmware_upload *tst = fwl->dd_handle;
-+	u32 blk_size;
-+
-+	if (tst->cancel_request)
-+		return FW_UPLOAD_ERR_CANCELED;
-+
-+	blk_size = min_t(u32, TEST_UPLOAD_BLK_SIZE, size);
-+	memcpy(tst->buf + offset, data + offset, blk_size);
-+
-+	*written = blk_size;
-+	return FW_UPLOAD_ERR_NONE;
-+}
-+
-+static enum fw_upload_err test_fw_upload_complete(struct fw_upload *fwl)
-+{
-+	struct test_firmware_upload *tst = fwl->dd_handle;
-+
-+	if (tst->cancel_request)
-+		return FW_UPLOAD_ERR_CANCELED;
-+
-+	return FW_UPLOAD_ERR_NONE;
-+}
-+
-+static void test_fw_upload_cancel(struct fw_upload *fwl)
-+{
-+	struct test_firmware_upload *tst = fwl->dd_handle;
-+
-+	tst->cancel_request = true;
-+}
-+
-+static const struct fw_upload_ops upload_test_ops = {
-+	.prepare = test_fw_upload_prepare,
-+	.write = test_fw_upload_write,
-+	.poll_complete = test_fw_upload_complete,
-+	.cancel = test_fw_upload_cancel,
-+};
-+
-+static ssize_t upload_register_store(struct device *dev,
-+				     struct device_attribute *attr,
-+				     const char *buf, size_t count)
-+{
-+	struct test_firmware_upload *tst;
-+	struct fw_upload *fwl;
-+	char *name;
-+	int ret;
-+
-+	name = kstrndup(buf, count, GFP_KERNEL);
-+	if (!name)
-+		return -ENOMEM;
-+
-+	mutex_lock(&test_fw_mutex);
-+	tst = upload_lookup_name(name);
-+	if (tst) {
-+		ret = -EEXIST;
-+		goto free_name;
-+	}
-+
-+	tst = kzalloc(sizeof(*tst), GFP_KERNEL);
-+	if (!tst) {
-+		ret = -ENOMEM;
-+		goto free_name;
-+	}
-+
-+	tst->name = name;
-+	tst->buf = kzalloc(TEST_UPLOAD_MAX_SIZE, GFP_KERNEL);
-+	if (!tst->buf) {
-+		ret = -ENOMEM;
-+		goto free_tst;
-+	}
-+
-+	fwl = firmware_upload_register(THIS_MODULE, dev, tst->name,
-+				       &upload_test_ops, tst);
-+	if (IS_ERR(fwl)) {
-+		ret = PTR_ERR(fwl);
-+		goto free_buf;
-+	}
-+
-+	tst->fwl = fwl;
-+	list_add_tail(&tst->node, &test_upload_list);
-+	mutex_unlock(&test_fw_mutex);
-+	return count;
-+
-+free_buf:
-+	kfree(tst->buf);
-+
-+free_tst:
-+	kfree(tst);
-+
-+free_name:
-+	mutex_unlock(&test_fw_mutex);
-+	kfree(name);
-+
-+	return ret;
-+}
-+static DEVICE_ATTR_WO(upload_register);
-+
-+static ssize_t upload_unregister_store(struct device *dev,
-+				       struct device_attribute *attr,
-+				       const char *buf, size_t count)
-+{
-+	struct test_firmware_upload *tst;
-+	int ret = count;
-+
-+	mutex_lock(&test_fw_mutex);
-+	tst = upload_lookup_name(buf);
-+	if (!tst) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (test_fw_config->upload_name == tst->name)
-+		test_fw_config->upload_name = NULL;
-+
-+	list_del(&tst->node);
-+	upload_release(tst);
-+
-+out:
-+	mutex_unlock(&test_fw_mutex);
-+	return ret;
-+}
-+static DEVICE_ATTR_WO(upload_unregister);
-+
- static ssize_t test_result_show(struct device *dev,
- 				struct device_attribute *attr,
- 				char *buf)
-@@ -1051,6 +1271,42 @@ static ssize_t read_firmware_show(struct device *dev,
- }
- static DEVICE_ATTR_RO(read_firmware);
- 
-+static ssize_t upload_read_show(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf)
-+{
-+	struct test_firmware_upload *tst;
-+	int ret = -EINVAL;
-+
-+	if (!test_fw_config->upload_name) {
-+		pr_err("Set config_upload_name before using upload_read\n");
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&test_fw_mutex);
-+	list_for_each_entry(tst, &test_upload_list, node)
-+		if (tst->name == test_fw_config->upload_name)
-+			break;
-+
-+	if (tst->name != test_fw_config->upload_name) {
-+		pr_err("Firmware name not found: %s\n",
-+		       test_fw_config->upload_name);
-+		goto out;
-+	}
-+
-+	if (tst->size > PAGE_SIZE) {
-+		pr_err("Testing interface must use PAGE_SIZE firmware for now\n");
-+		goto out;
-+	}
-+
-+	memcpy(buf, tst->buf, tst->size);
-+	ret = tst->size;
-+out:
-+	mutex_unlock(&test_fw_mutex);
-+	return ret;
-+}
-+static DEVICE_ATTR_RO(upload_read);
-+
- #define TEST_FW_DEV_ATTR(name)          &dev_attr_##name.attr
- 
- static struct attribute *test_dev_attrs[] = {
-@@ -1066,6 +1322,7 @@ static struct attribute *test_dev_attrs[] = {
- 	TEST_FW_DEV_ATTR(config_sync_direct),
- 	TEST_FW_DEV_ATTR(config_send_uevent),
- 	TEST_FW_DEV_ATTR(config_read_fw_idx),
-+	TEST_FW_DEV_ATTR(config_upload_name),
- 
- 	/* These don't use the config at all - they could be ported! */
- 	TEST_FW_DEV_ATTR(trigger_request),
-@@ -1082,6 +1339,9 @@ static struct attribute *test_dev_attrs[] = {
- 	TEST_FW_DEV_ATTR(release_all_firmware),
- 	TEST_FW_DEV_ATTR(test_result),
- 	TEST_FW_DEV_ATTR(read_firmware),
-+	TEST_FW_DEV_ATTR(upload_read),
-+	TEST_FW_DEV_ATTR(upload_register),
-+	TEST_FW_DEV_ATTR(upload_unregister),
- 	NULL,
- };
- 
-@@ -1128,6 +1388,7 @@ static void __exit test_firmware_exit(void)
- 	mutex_lock(&test_fw_mutex);
- 	release_firmware(test_firmware);
- 	misc_deregister(&test_fw_misc_device);
-+	upload_release_all();
- 	__test_firmware_config_free();
- 	kfree(test_fw_config);
- 	mutex_unlock(&test_fw_mutex);
+- Remove console_lock_single_hold() and
+  console_unlock_single_release() functions. Use the console_lock
+  for console_stop(), console_start(), unregister_console(),
+  printk_kthread_func().
+
+- Introduce macros console_flags_set() and console_flags_clear() to
+  adjust con->flags using READ_ONCE()/WRITE_ONCE() in order to
+  guarantee consistent values for the variable. (This does not make
+  the RMW operations atomic, but the console_lock and con->lock are
+  still used to synchronize between tasks that modify con->flags.)
+
+- Add and/or expand comments for allow_direct_printing(),
+  console_cpu_notify(), __console_unlock(), console_stop(),
+  console_start(), unregister_console(), printk_kthread_func(),
+  defer_console_output().
+
+John Ogness (15):
+  printk: rename cpulock functions
+  printk: cpu sync always disable interrupts
+  printk: add missing memory barrier to wake_up_klogd()
+  printk: wake up all waiters
+  printk: wake waiters for safe and NMI contexts
+  printk: get caller_id/timestamp after migration disable
+  printk: call boot_delay_msec() in printk_delay()
+  printk: add con_printk() macro for console details
+  printk: refactor and rework printing logic
+  printk: move buffer definitions into console_emit_next_record() caller
+  printk: add pr_flush()
+  printk: add functions to prefer direct printing
+  printk: add kthread console printers
+  printk: extend console_lock for proper kthread support
+  printk: remove @console_locked
+
+ drivers/tty/sysrq.c     |    2 +
+ include/linux/console.h |   19 +
+ include/linux/printk.h  |   82 ++-
+ kernel/hung_task.c      |   11 +-
+ kernel/panic.c          |    4 +
+ kernel/printk/printk.c  | 1234 +++++++++++++++++++++++++++++----------
+ kernel/rcu/tree_stall.h |    2 +
+ kernel/reboot.c         |   14 +-
+ kernel/watchdog.c       |    4 +
+ kernel/watchdog_hld.c   |    4 +
+ lib/dump_stack.c        |    4 +-
+ lib/nmi_backtrace.c     |    4 +-
+ 12 files changed, 1059 insertions(+), 325 deletions(-)
+
+
+base-commit: 84d7df104dbab9c3dda8f2c5b46f9a6fc256fe02
 -- 
-2.25.1
+2.30.2
 
