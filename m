@@ -2,81 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B57C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 18:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391171AbiDUSQ1 (ORCPT
+        id S1391185AbiDUSS2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 14:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41546 "EHLO
+        Thu, 21 Apr 2022 14:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378746AbiDUSQY (ORCPT
+        with ESMTP id S242648AbiDUSSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 14:16:24 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9804A4B1C0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 11:13:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650564813; x=1682100813;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2XbpHfj76wTOxRN5DgEq9y72XHmkJxs4XTPwn0whqI8=;
-  b=CqT+rz/cb/rjT3TO1vS7SRNwYHA6RJJSdxR1TTfcljXLp/sI4BDxJ6gw
-   5argfzH96HMubTNgCQQrOqsCwOFCxcFTb7fq2sMjkOo8NavmKK1u39o7R
-   EPfSg8LZr/EJ/P+rX7JJWaz1GjfRpjWCaLEyIFiKKzhj8DwFYUNmmXFF/
-   cwzdIqq9trRxeKxnZb8V7o21v4vOjLHOemxQi/Os1Xy6V2sjZNT+mm1AG
-   57D9hJLGFDvocMvxEjbMjb9J3waLTPuyiH42Fcl83pcMYZzBzR+S25RDf
-   aix/JtsgATe1fok5Z8OpX/QizfEujBL+GHUOgGKhP+LJRxCyR5GfCj+D9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246338435"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="246338435"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 11:13:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="615027932"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Apr 2022 11:13:31 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhbJ5-0008eT-5P;
-        Thu, 21 Apr 2022 18:13:31 +0000
-Date:   Fri, 22 Apr 2022 02:12:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [dhowells-fs:rxrpc-ringless 17/21] ERROR: modpost: "udpv6_sendmsg"
- [net/rxrpc/rxrpc.ko] undefined!
-Message-ID: <202204220234.BwE2yOwW-lkp@intel.com>
+        Thu, 21 Apr 2022 14:18:24 -0400
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2588D13EA7;
+        Thu, 21 Apr 2022 11:15:34 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2ebf3746f87so61154487b3.6;
+        Thu, 21 Apr 2022 11:15:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ll9RiONHC6ecqkUVPX4Bwn7OsJSalGQ2+DEVyJxjcMM=;
+        b=k3cPRCzEJZgibwRKBPHXk/gT0wJUriuZ78x8RqPwl2taYAjVDeSplElw7OuyEOVD3J
+         CaCqupQCrF8nAcrhOcmZ08Iq4Re6y5LHX2Qpkojcsmwp8CFAbng56pW0Y947AwtLzd4z
+         rP8MUtNibaHuTOr7424yOt6WHK4Ady2kuaHy3Aw3jentM0L4dwosyl66gsKfu4J/mWNy
+         vVoUbRj+krBDVmR25M+SToUvGD/jOODnQEr+GMjsHm/r7Np7TWXkro74fw8TWzAfuM1J
+         u3NtQFkpKhlSE+QDqdgNXh91NaVMhVta5FnbBz/Plbf0C4Ln12lGhpkJQTEUVuzjtp1C
+         t9eQ==
+X-Gm-Message-State: AOAM532HpXWp7aDqr+EA6luk4Olx+qLvcePWFU0DCx8IXNi/P7F6qZ4b
+        pXKpFWYrpbiZG7jNu3dqBD9dhHqkLfSC8GiGoGM=
+X-Google-Smtp-Source: ABdhPJyaXa/pSh+pQ0m8rAF5rFqr3ho9+/BS4Jh4qfZXoe5jLLqB/C2heFmLZMRpvgUg9WBAY9TAV/5WuAYxLgp45wc=
+X-Received: by 2002:a81:260a:0:b0:2f4:ca82:a42f with SMTP id
+ m10-20020a81260a000000b002f4ca82a42fmr1024201ywm.149.1650564933352; Thu, 21
+ Apr 2022 11:15:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220421165504.3173244-1-keescook@chromium.org>
+In-Reply-To: <20220421165504.3173244-1-keescook@chromium.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 21 Apr 2022 20:15:22 +0200
+Message-ID: <CAJZ5v0gw_KZS0ZrWP1rwnrxbUjNJbb-KtgChqutDyYkUZVAMQQ@mail.gmail.com>
+Subject: Re: [PATCH] thermal: int340x: Fix attr.show callback prototype
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Stable <stable@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuansheng Liu <chuansheng.liu@intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git rxrpc-ringless
-head:   c388a8388ad238ffbe0cd204c3eacaf200055751
-commit: d24f75894c69b625aaa8f2b937072e750a5787df [17/21] rxrpc: Call udp_sendmsg() directly
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220422/202204220234.BwE2yOwW-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?id=d24f75894c69b625aaa8f2b937072e750a5787df
-        git remote add dhowells-fs https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-        git fetch --no-tags dhowells-fs rxrpc-ringless
-        git checkout d24f75894c69b625aaa8f2b937072e750a5787df
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Thu, Apr 21, 2022 at 6:55 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> Control Flow Integrity (CFI) instrumentation of the kernel noticed that
+> the caller, dev_attr_show(), and the callback, odvp_show(), did not have
+> matching function prototypes, which would cause a CFI exception to be
+> raised. Correct the prototype by using struct device_attribute instead
+> of struct kobj_attribute.
+>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Amit Kucheria <amitk@kernel.org>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Cc: linux-pm@vger.kernel.org
+> Reported-and-tested-by: Joao Moreira <joao@overdrivepizza.com>
+> Link: https://lore.kernel.org/lkml/067ce8bd4c3968054509831fa2347f4f@overdrivepizza.com/
+> Fixes: 006f006f1e5c ("thermal/int340x_thermal: Export OEM vendor variables")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Applied as 5.18-rc material, thanks!
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "udpv6_sendmsg" [net/rxrpc/rxrpc.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> index 4954800b9850..d97f496bab9b 100644
+> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> @@ -68,7 +68,7 @@ static int evaluate_odvp(struct int3400_thermal_priv *priv);
+>  struct odvp_attr {
+>         int odvp;
+>         struct int3400_thermal_priv *priv;
+> -       struct kobj_attribute attr;
+> +       struct device_attribute attr;
+>  };
+>
+>  static ssize_t data_vault_read(struct file *file, struct kobject *kobj,
+> @@ -311,7 +311,7 @@ static int int3400_thermal_get_uuids(struct int3400_thermal_priv *priv)
+>         return result;
+>  }
+>
+> -static ssize_t odvp_show(struct kobject *kobj, struct kobj_attribute *attr,
+> +static ssize_t odvp_show(struct device *dev, struct device_attribute *attr,
+>                          char *buf)
+>  {
+>         struct odvp_attr *odvp_attr;
+> --
+> 2.32.0
+>
