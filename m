@@ -2,109 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15895C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0906AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 10:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388075AbiDUKGp (ORCPT
+        id S1388083AbiDUKHt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
+        Thu, 21 Apr 2022 06:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388067AbiDUKGm (ORCPT
+        with ESMTP id S1388096AbiDUKHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:06:42 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0BF27B36
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650535432; x=1682071432;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OMzQtmCQFnmtn5Rs2jNRiC4gUmVh9lme1wrqau20DQs=;
-  b=Sv13zTOAmsV2JXs7keHw2Of2M3fKJXO7vkoJVJKwNQopD2XszDgQWRq7
-   EJPyFpVrn7uOplXRP2WOxher0PeXhAYltrH5vO5IROkZs6fwis9U8CZ/4
-   nqW+eAOhmvgO+oC1AlKkpR6IS9Le843vksKuQTVQtDphWr1N7TJ5vkkBz
-   lMAgrKAwOIvRNJRTt67WcR3sz8LpcvMzteL2hTWZPfVayY+b+HtEZMKas
-   kndtTdAuXX3/Q3/w1+z5giqco2v/XSobhdyKpy03TnNyl4wI5MhzK8VGY
-   v0ZSymftZ7yI2n0nC8nepSUslISG6IAs7YHd6d/JcR6jeHIvndkkbtG7u
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263153421"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="263153421"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 03:03:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="805444187"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Apr 2022 03:03:50 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhTfC-0008CH-Au;
-        Thu, 21 Apr 2022 10:03:50 +0000
-Date:   Thu, 21 Apr 2022 18:03:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 2110/2579] include/linux/fscrypt.h:757:37:
- error: implicit declaration of function 'file_inode'; did you mean
- 'd_inode'?
-Message-ID: <202204211758.YJrVhXva-lkp@intel.com>
+        Thu, 21 Apr 2022 06:07:44 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D701123
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:04:54 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s25so1049223wrb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 03:04:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=3F324L+2J98n+Lan1RyT/eWUeM6GkGX/RXQR6LB0/4k=;
+        b=oZScCh8tKhUHn5IqyR7GetNckEnYLsAay36jS+dQX5N4WkKbSHqHnAUndORk3Wdv21
+         c0tVl1PkJXKqOwZJYB6taoPSsfczNdpWaRAUKLP5jTWp0kLb7jpPHwje5iZSLWVQ78Wa
+         aUETFfwp2F58i5av3tKbzNeF14/0N04ld0d/IEgEANj3DWimHAasAU2Mab1fm9WL/RvY
+         g4uSoxn4RwesXTnD6Dd2wicyrLmQViYv5zU/11EeXnJjbwCw9QkmlESsvKTRkZ5hh/gm
+         gwL8AYVVYMUlnlX0mXVn6Fz1bABeGyyr31dYdeVy9SQPLHdbO7acyEqccGtX7seQAspK
+         kdoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=3F324L+2J98n+Lan1RyT/eWUeM6GkGX/RXQR6LB0/4k=;
+        b=ENr4ppeaNcL2UgqCyOW9IzMiim5KzFyl74Bx5zM7mvlm1y+6nMdLySE0z2DWpNgMQc
+         wYcG4lhTdipcScdfBr4FwhbZRskY00edxl2LQcf6G39I5LCX4r42dsrwOoI9cBQF0ELZ
+         4StIjRLo734GqcPxWCEPdw2xst2mVfTEZHNcr0q9Fq6ddA3EPwrpP5J/WDhpzioiLiIs
+         KpOd1zk/jSZmZxJ6mdm6WyFq0mK0lA6gSMK080AAq/0HH7Mt8MNA6QwmtDWsayoKQkxw
+         S976dwjMQdoxGn0d3oZUm9Z+MTQAILB38Y0tsXA9QOsi7LOT8SV1pcj8VJxqSBim3de+
+         YU7A==
+X-Gm-Message-State: AOAM530tmjdGbVM/vz2oulaGtuumA6jbGc/6A6qQrV6T3xS7vsbvYhTf
+        l8fUFTdOMotb/W0HEw3W6YUybQ==
+X-Google-Smtp-Source: ABdhPJzPcTNEggQIdZUTB+ITMSuLWsBKyApCBNUoQNpjDvesu8eXr2DyijjlfhOx5peSt7JVHgLyQA==
+X-Received: by 2002:a05:6000:178a:b0:20a:b841:e245 with SMTP id e10-20020a056000178a00b0020ab841e245mr2445214wrg.480.1650535492968;
+        Thu, 21 Apr 2022 03:04:52 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:35ba:2677:956:980d? ([2001:861:44c0:66c0:35ba:2677:956:980d])
+        by smtp.gmail.com with ESMTPSA id u20-20020a05600c19d400b003929c4bf23asm1770295wmq.44.2022.04.21.03.04.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 03:04:52 -0700 (PDT)
+Message-ID: <e524328e-5e91-a550-45a6-053ac73cc8e5@baylibre.com>
+Date:   Thu, 21 Apr 2022 12:04:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH -next] i2c: meson: fix missing clk_disable_unprepare() on
+ error in meson_i2c_probe()
+Content-Language: en-US
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org
+Cc:     wsa@kernel.org, tanure@linux.com
+References: <20220421090042.2278081-1-yangyingliang@huawei.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220421090042.2278081-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 1cb1e496fc95fd250b11d4ae7bd593cbe22bb5f6 [2110/2579] headers/deps: fs: Optimize <linux/fs.h> dependencies, remove <linux/fs_api.h> inclusion
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220421/202204211758.YJrVhXva-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=1cb1e496fc95fd250b11d4ae7bd593cbe22bb5f6
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 1cb1e496fc95fd250b11d4ae7bd593cbe22bb5f6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 21/04/2022 11:00, Yang Yingliang wrote:
+> Fix the missing clk_disable_unprepare() before return
+> from meson_i2c_probe() in the error handling case.
+> 
+> Fixes: a57f9b4dd6f5 ("i2c: meson: Use 50% duty cycle for I2C clock")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>   drivers/i2c/busses/i2c-meson.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
+> index 50dab123380a..195a9716da31 100644
+> --- a/drivers/i2c/busses/i2c-meson.c
+> +++ b/drivers/i2c/busses/i2c-meson.c
+> @@ -520,8 +520,10 @@ static int meson_i2c_probe(struct platform_device *pdev)
+>   	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
+>   			   REG_SLV_SDA_FILTER_MASK | REG_SLV_SCL_FILTER_MASK, 0);
+>   
+> -	if (!i2c->data->set_clk_div)
+> +	if (!i2c->data->set_clk_div) {
+> +		clk_disable_unprepare(i2c->clk);
+>   		return -EINVAL;
+> +	}
+>   	i2c->data->set_clk_div(i2c, timings.bus_freq_hz);
+>   
+>   	ret = i2c_add_adapter(&i2c->adap);
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from fs/crypto/fscrypt_private.h:14,
-                    from fs/crypto/fname.c:23:
-   include/linux/fscrypt.h: In function 'fscrypt_dio_supported':
->> include/linux/fscrypt.h:757:37: error: implicit declaration of function 'file_inode'; did you mean 'd_inode'? [-Werror=implicit-function-declaration]
-     757 |         const struct inode *inode = file_inode(iocb->ki_filp);
-         |                                     ^~~~~~~~~~
-         |                                     d_inode
-   include/linux/fscrypt.h:757:37: warning: initialization of 'const struct inode *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-   cc1: some warnings being treated as errors
-
-
-vim +757 include/linux/fscrypt.h
-
-c6c89783eba05a Eric Biggers 2022-01-28  753  
-c6c89783eba05a Eric Biggers 2022-01-28  754  static inline bool fscrypt_dio_supported(struct kiocb *iocb,
-c6c89783eba05a Eric Biggers 2022-01-28  755  					 struct iov_iter *iter)
-c6c89783eba05a Eric Biggers 2022-01-28  756  {
-c6c89783eba05a Eric Biggers 2022-01-28 @757  	const struct inode *inode = file_inode(iocb->ki_filp);
-c6c89783eba05a Eric Biggers 2022-01-28  758  
-c6c89783eba05a Eric Biggers 2022-01-28  759  	return !fscrypt_needs_contents_encryption(inode);
-c6c89783eba05a Eric Biggers 2022-01-28  760  }
-c6c89783eba05a Eric Biggers 2022-01-28  761  
-
-:::::: The code at line 757 was first introduced by commit
-:::::: c6c89783eba05a5e159b07cfd8c68d841cc5de42 fscrypt: add functions for direct I/O support
-
-:::::: TO: Eric Biggers <ebiggers@google.com>
-:::::: CC: Eric Biggers <ebiggers@google.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
