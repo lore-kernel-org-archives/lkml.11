@@ -2,110 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B724C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:56:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 15:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390397AbiDUP7h (ORCPT
+        id S1390407AbiDUQAD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52312 "EHLO
+        Thu, 21 Apr 2022 12:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390357AbiDUP71 (ORCPT
+        with ESMTP id S1390439AbiDUP7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:59:27 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFB042A20;
-        Thu, 21 Apr 2022 08:56:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650556590; x=1682092590;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=uBe+1cUaX06F3zI/+9m15S2W79Zc/DobrqA4zpkLk00=;
-  b=krbaVWV9PS6zAFKucOvAgbA7zzG/iXImo1Heh4ZBm6v9/anQF31VhARx
-   9KhVj5b3hnmNhqHctgkTLADoF6S4t+FOStu8AJvgbpVvKAA9s4TFuqict
-   WUlWh66jeyKJHEdaupAPuhmtZ48tZhcvaEBHNZbDGN/seTiWFPKORtKcP
-   s=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 21 Apr 2022 08:56:30 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Apr 2022 08:56:29 -0700
-X-QCInternal: smtphost
-Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Apr 2022 21:26:13 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id DAE193C82; Thu, 21 Apr 2022 21:26:11 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V6 1/2] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
-Date:   Thu, 21 Apr 2022 21:26:06 +0530
-Message-Id: <1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
-References: <1650556567-4995-1-git-send-email-quic_vnivarth@quicinc.com>
+        Thu, 21 Apr 2022 11:59:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDC9548E42
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:56:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650556617;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kTeK/qAo71TOtFSLAt36q1Ck1F47EJBRXs8RHdefg1E=;
+        b=QddvzlnKhsW2BZeob9ga3fG8IPvj/7eZxhPwSAvGKbExEQqia4miPIfZ9RxwgMSn0pmZeU
+        AXiVGFshYtAabTNr3SVMoDCGO2fqvOBH7f575aX/Zhc8bveoK3DYV/Ifz9jctaVPsasfsZ
+        cox/LdxCJo0OfC6ASNLQiDj/zLAl0u8=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-325-u3iMFzUcNOiEJiL5CD7iUw-1; Thu, 21 Apr 2022 11:56:56 -0400
+X-MC-Unique: u3iMFzUcNOiEJiL5CD7iUw-1
+Received: by mail-wr1-f69.google.com with SMTP id p18-20020adf9592000000b00207bc12decbso1283316wrp.21
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 08:56:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=kTeK/qAo71TOtFSLAt36q1Ck1F47EJBRXs8RHdefg1E=;
+        b=sgE80nd4NmY4aGP2eELid/yh6ZRtUF9myNOToY+H0Rt7u/gZE3+ZLU8o+/lt5p3U97
+         Q9psfH40FoGI8+3h1iV6kUNYOCq088SeduYEDgDadooV69hVXSm798J7r9vVFcqVAv7V
+         XSzAogKkQmYaYraFTj5YHvZzDrviE6j35AnLj/iNcceRW0Oxv3tsj7jZQShrGjTQ9+Ff
+         kkeFUAAmRB0tA83P+A8+01PXMhD80PkjIVAHcAW349ujcCbBglNWL+OkoNRO4zNC8OsH
+         gtqVEAmWbF+f/cEBOKtraY/4jspZZOhQ1pWOXP/xtRLoixCIL+E2CnMsuUjQUNfk9yle
+         8zrg==
+X-Gm-Message-State: AOAM532K2jQhKNUHNZZyaGuMRNEcwHWS27Xqn7+4QCs9eCmgmY9zmsZX
+        SMz9qmcroaj7B1sfQt43UPcH6PHiDKxeyvlaDKjhBKqaPFZStk34EpGlmRVIrhbteUaifvT8F+d
+        1MDHO4qSAlc8LsH8c1QrYYzpZ
+X-Received: by 2002:a05:600c:1553:b0:392:8de8:9dfa with SMTP id f19-20020a05600c155300b003928de89dfamr9333054wmg.71.1650556614807;
+        Thu, 21 Apr 2022 08:56:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy0vnAguST9pNCVtCDxTQ4/Al3Ko2yn2bs4Mmrfapj6XXW5P+04XyixAwoJmjwNo7AIJIlKpg==
+X-Received: by 2002:a05:600c:1553:b0:392:8de8:9dfa with SMTP id f19-20020a05600c155300b003928de89dfamr9333046wmg.71.1650556614571;
+        Thu, 21 Apr 2022 08:56:54 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id l10-20020a05600002aa00b0020a7cc29000sm2769430wry.75.2022.04.21.08.56.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 08:56:53 -0700 (PDT)
+Message-ID: <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com>
+Date:   Thu, 21 Apr 2022 17:56:52 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Peter Gonda <pgonda@google.com>,
+        John Sperbeck <jsperbeck@google.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220407195908.633003-1-pgonda@google.com>
+ <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
+ <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
+ <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
+In-Reply-To: <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-Change active and sleep pinctrl configurations to handle same.
+On 4/20/22 22:14, Peter Gonda wrote:
+>>>> svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
+>>>> source and target vcpu->locks. Mark the nested subclasses to avoid false
+>>>> positives from lockdep.
+>> Nope. Good catch, I didn't realize there was a limit 8 subclasses:
+> Does anyone have thoughts on how we can resolve this vCPU locking with
+> the 8 subclass max?
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
----
-v6: add code comments about how bias-bus-hold could save power
-v5: modify subject to include bluetooth
-v4: modify subject of patch to indicate file it is applying to
-v3: apply same change to active state and other sc7280*.dts* as well
-v2: used bias-bus-hold as per review comments
-v1: intial patch used bias-disable for sleep pinctrl in sc7280-idp only
----
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+The documentation does not have anything.  Maybe you can call 
+mutex_release manually (and mutex_acquire before unlocking).
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 015a347..6c2aab6 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -400,10 +400,13 @@
- 
- &qup_uart7_cts {
- 	/*
--	 * Configure a pull-down on CTS to match the pull of
--	 * the Bluetooth module.
-+	 * Configure a bias-bus-hold on CTS to lower power
-+	 * usage when Bluetooth is turned off. Bus hold will
-+	 * maintain a low power state regardless of whether
-+	 * the Bluetooth module drives the pin in either
-+	 * direction or leaves the pin fully unpowered.
- 	 */
--	bias-pull-down;
-+	bias-bus-hold;
- };
- 
- &qup_uart7_rts {
-@@ -495,10 +498,13 @@
- 		pins = "gpio28";
- 		function = "gpio";
- 		/*
--		 * Configure a pull-down on CTS to match the pull of
--		 * the Bluetooth module.
-+		 * Configure a bias-bus-hold on CTS to lower power
-+		 * usage when Bluetooth is turned off. Bus hold will
-+		 * maintain a low power state regardless of whether
-+		 * the Bluetooth module drives the pin in either
-+		 * direction or leaves the pin fully unpowered.
- 		 */
--		bias-pull-down;
-+		bias-bus-hold;
- 	};
- 
- 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
--- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+Paolo
 
