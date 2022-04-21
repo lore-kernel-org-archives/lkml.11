@@ -2,124 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2258FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388007AbiDUOGY (ORCPT
+        id S1388792AbiDUOG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
+        Thu, 21 Apr 2022 10:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387094AbiDUOGN (ORCPT
+        with ESMTP id S1388527AbiDUOGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:06:13 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08D63B54C;
-        Thu, 21 Apr 2022 07:03:05 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: shreeya)
-        with ESMTPSA id CC8D81F45A49
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650549776;
-        bh=KobM/YFW6qteihzgQdGfGwxjmqXEnE6MKH2uFqLZGwM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E9dM1kX+AH8Lm+1VoU/JwvMvyv/43aRbTsEa3rmcMoMbNLkHpsFR/GHzto4acWYOF
-         c4uB4iqq4KaF+u/uN68AkwSUvs1lY8OpV/go3rfkNP87vuJsdJeVFbRJ7YSlApMc2M
-         9u3Zv94nLhAr2HgLUJfzFnk3XfiJhOBc9xkItX5yYObE5LmKMki4q/CT9+1bymk0YP
-         eY89JuYMIagA6do3njYZR3seXw7KO3LwsTw6stndZJw50iupK5GvGenZ2DHryYsmyw
-         f7DLCm6oXp5gfxQk1D+66wTmZsEpnmvKGwHOqrGzzD2uV/oJu4VBRtxN6/l/5gFGHH
-         X0r+o8EbaRNng==
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        Zhigang.Shi@liteon.com, krzk@kernel.org, krisman@collabora.com
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        alvaro.soliverez@collabora.com,
-        Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH v2 2/3] dt-bindings: Document ltrf216a light sensor bindings
-Date:   Thu, 21 Apr 2022 19:31:32 +0530
-Message-Id: <20220421140133.354498-3-shreeya.patel@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220421140133.354498-1-shreeya.patel@collabora.com>
-References: <20220421140133.354498-1-shreeya.patel@collabora.com>
+        Thu, 21 Apr 2022 10:06:17 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1AE3A701
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:03:11 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id h25so814811wrc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:03:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wQKtX8WQCvG5ejnoi5Tx3qqomca9PHBF2mLes/stX7M=;
+        b=AgEJXmMrcJiYHb/zC+7om2oCRjpYUw8xNsSKSQV9uECuRMPTThufzJ1NJY+df/hfKK
+         XV9IBzJaoUikKzxvhHEXHe7kK+RqS6k4BEZ6Vyq3uQySxeXxYfJO9sgcVe5o2Xx6G4tt
+         vFjNsdML7fETc24SqP/5MXFeTEpuRO5k+/4dC65zh312CKWKi2DgDWFQxeruHy4fmuOG
+         jmhD9RwDHKfa4qmANxzECjdjQeC2h1IavNVWNTyDvuKztgwbmIfc9OMRPfFYV82O+9Ma
+         wUyY6IxNyvlJtIxV1WW3gW9lseMJcOwoLKSuuBDd2FfImpLXdYUjm1o9Uw+kFrwC2ms4
+         1m1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wQKtX8WQCvG5ejnoi5Tx3qqomca9PHBF2mLes/stX7M=;
+        b=zerFiJNpjpAYPOfvLdAS4JhpSPgA0Ogys0oklcspzEHtmFpYRJhUVNzFkfx+zc4Bo4
+         hTyuSamg12W+UqlrsP62UsPepYK5OlGC5yDbanTTRdlB6JyWQeIPTij5N0505jZTxgLs
+         bRN8VGIhxIH37bunr1V7jOUBhq6tqG7IdukUL3nzik79xo9r2wifvN8rzoRWP3z2BC12
+         7Cw0Rap2cHLVeUB2XvUtPqGRSky0T0kNes090NH0vzUTgmAg7PNNk/2z8kyxkzw57UY6
+         aKnm7N9SfoO0yL7nCJp3760tL5YoTbSPITd7O7ZOxbRFWJ2TkbYyOdOEdJgndSSqf4MC
+         0xWg==
+X-Gm-Message-State: AOAM532rw4vowy9LK0/DKEIhWhka68JZ10evAWfBJSElMeqCEhOjE2j/
+        0i2WxG4qzW8f3aL7Q1GH6yQ3jw==
+X-Google-Smtp-Source: ABdhPJwNBbP3ZT3FPSvScQRH2EbIoBe4I+WYo8GwVldT54PatPc9ePoTluWLxh6Mkgyejmraj+GshA==
+X-Received: by 2002:a5d:53cb:0:b0:207:ab75:3ce7 with SMTP id a11-20020a5d53cb000000b00207ab753ce7mr20360816wrw.171.1650549788683;
+        Thu, 21 Apr 2022 07:03:08 -0700 (PDT)
+Received: from groot.home ([2a01:cb19:85e6:1900:e19f:c42c:d783:89c1])
+        by smtp.gmail.com with ESMTPSA id g5-20020adfd1e5000000b0020a97e7ba9fsm2899192wrd.92.2022.04.21.07.03.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 07:03:08 -0700 (PDT)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Fengping Yu <fengping.yu@mediatek.com>
+Cc:     Kevin Hilman <khilman@baylibre.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Subject: [PATCH] dt-bindings: input: mediatek,mt6779-keypad: update maintainer
+Date:   Thu, 21 Apr 2022 16:02:55 +0200
+Message-Id: <20220421140255.2781505-1-mkorpershoek@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree bindings for ltrf216a ambient light sensor.
+Fengping has no longer interest and time to maintain this driver so he
+agreed to transfer maintainership over to me.
 
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
 ---
+ .../devicetree/bindings/input/mediatek,mt6779-keypad.yaml       | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v2
-  - Take over the maintainership for the bindings
-  - Add interrupt and power supply property in DT bindings
-
-
- .../bindings/iio/light/liteon,ltrf216a.yaml   | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-new file mode 100644
-index 000000000000..61008bcc6b88
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/liteon,ltrf216a.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: LTRF216A Ambient Light Sensor
-+
-+maintainers:
-+  - Shreeya Patel <shreeya.patel@collabora.com>
-+
-+description: |
-+  Ambient light sensing with an i2c interface.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: liteon,ltrf216a
-+      - const: ltr,ltrf216a
-+        deprecated: true
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vdd-supply:
-+    description: Regulator that provides power to the sensor.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        light-sensor@53 {
-+                compatible = "liteon,ltrf216a";
-+                reg = <0x53>;
-+                vdd-supply = <&vdd_regulator>;
-+                interrupt-parent = <&gpio0>;
-+                interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
-+        };
-+    };
+diff --git a/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml b/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+index b1770640f94b..03ebd2665d07 100644
+--- a/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
++++ b/Documentation/devicetree/bindings/input/mediatek,mt6779-keypad.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: Mediatek's Keypad Controller device tree bindings
+ 
+ maintainers:
+-  - Fengping Yu <fengping.yu@mediatek.com>
++  - Mattijs Korpershoek <mkorpershoek@baylibre.com>
+ 
+ allOf:
+   - $ref: "/schemas/input/matrix-keymap.yaml#"
 -- 
-2.30.2
+2.32.0
 
