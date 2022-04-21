@@ -2,78 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB92C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 21:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441916AbiDUVYT (ORCPT
+        id S1441926AbiDUVYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 17:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
+        Thu, 21 Apr 2022 17:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240192AbiDUVYQ (ORCPT
+        with ESMTP id S240192AbiDUVYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 17:24:16 -0400
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5205C4BFE3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:21:25 -0700 (PDT)
-Received: by mail-oi1-f180.google.com with SMTP id e189so6953169oia.8
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 14:21:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kCJdiFVySz3ZBRZQEgE+lVkDnd9MX7+W0ULxHOPXzMU=;
-        b=ksXYuWxK7LJFIAH2oo4QnU1NFaiHEd6xxrQhfIzmlMURFMHMRelmnM4jDduWc5U8B3
-         sH7F214R7B3T6Ow6ccnoPgUJDPAwtd4XRnSCr2Innxhzfh/mA+99o/YJvDRGpDFRK/m3
-         wDOi01ToZdjY2RQbI4BZra9YMhFoxoKKsSWZE9RvcSBE2lAUCFBQYTKWBeTzWUBfMCka
-         C/1RCnw3buu0vcfLPOAEhOglefABy2D5YpGyOVJz8UfjKlTMX+WMFL7Fsl9TCPpg4Z5d
-         6HCDKO5Q3srqztZdAkMkSFf+qx9fe9ENWJZeNbcGdYYg7YlKZpSL4gW5HnjYW9ABAbgF
-         9+dg==
-X-Gm-Message-State: AOAM532RO1XfIvQSd00yGQ+j9xOC9z0aJBvd5epbvZRTTIcEpWdKyg0l
-        iXRdzJeKpWtSgLjcpWTkvfWL75ddvA==
-X-Google-Smtp-Source: ABdhPJwhfeGFzzUge0j3Sk5rX41y12JDOFWnU6XMEigRK/9G2DBGOowqlmfresqtc9kB3YLSYXGyaA==
-X-Received: by 2002:a05:6808:1189:b0:322:3293:4b30 with SMTP id j9-20020a056808118900b0032232934b30mr728919oil.277.1650576084612;
-        Thu, 21 Apr 2022 14:21:24 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id oq12-20020a0568707d8c00b000e2deaf9a65sm22415oab.40.2022.04.21.14.21.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 14:21:24 -0700 (PDT)
-Received: (nullmailer pid 127292 invoked by uid 1000);
-        Thu, 21 Apr 2022 21:21:23 -0000
-Date:   Thu, 21 Apr 2022 16:21:23 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Gene Chen <gene.chen.richtek@gmail.com>
-Cc:     matthias.bgg@gmail.com, lee.jones@linaro.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        gene_chen@richtek.com, Wilma.Wu@mediatek.com,
-        shufan_lee@richtek.com, cy_huang@richtek.com,
-        benjamin.chao@mediatek.com
-Subject: Re: [PATCH resend] dt-bindings: mfd: mediatek: Add bindings for
- MT6360 PMIC
-Message-ID: <YmHK02g1pC19Oyh6@robh.at.kernel.org>
-References: <1608779989-9641-1-git-send-email-gene.chen.richtek@gmail.com>
+        Thu, 21 Apr 2022 17:24:40 -0400
+Received: from mailbackend.panix.com (mailbackend.panix.com [166.84.1.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6910A4BFE3;
+        Thu, 21 Apr 2022 14:21:49 -0700 (PDT)
+Received: from [192.168.125.3] (ip98-164-213-246.oc.oc.cox.net [98.164.213.246])
+        by mailbackend.panix.com (Postfix) with ESMTPSA id 4Kkr853YyLz1BtK;
+        Thu, 21 Apr 2022 17:21:41 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=panix.com; s=panix;
+        t=1650576108; bh=fVX3MybKfqxHVC1WTpeImN5OO1kCXc9ZMVIQAFODbxE=;
+        h=Date:From:Reply-To:To:cc:Subject:In-Reply-To:References;
+        b=Zsq1WiIZciZv4GGp62D/tglpwK1U1NUJ+6hjUpt+nQqq09lXQ2Kz11NquQiI8QEG4
+         YlL7RHRQGDqJEEaejN+C81Tiit7FUGDAgJaAs1hNCkoNbeK8oH8h6UXRi/YT0pehoX
+         riM3wVlh6GYI72Pz5k9LOLiviKudPfU46zChvT5k=
+Date:   Thu, 21 Apr 2022 14:21:38 -0700 (PDT)
+From:   "Kenneth R. Crudup" <kenny@panix.com>
+Reply-To: "Kenneth R. Crudup" <kenny@panix.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Vidya Sagar <vidyas@nvidia.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, hkallweit1@gmail.com,
+        wangxiongfeng2@huawei.com, mika.westerberg@linux.intel.com,
+        chris.packham@alliedtelesis.co.nz, yangyicong@hisilicon.com,
+        treding@nvidia.com, jonathanh@nvidia.com, abhsahu@nvidia.com,
+        sagupta@nvidia.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+        Ricky Wu <ricky_wu@realtek.com>,
+        Rajat Jain <rajatja@google.com>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Victor Ding <victording@google.com>,
+        "Kenneth R. Crudup" <kenny@panix.com>
+Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for
+ suspend/resume
+In-Reply-To: <20220421211103.GA1426981@bhelgaas>
+Message-ID: <2ff87bc9-2061-d0c-8cdf-13266a6b1343@panix.com>
+References: <20220421211103.GA1426981@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1608779989-9641-1-git-send-email-gene.chen.richtek@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Dec 24, 2020 at 11:19:49AM +0800, Gene Chen wrote:
-> From: Gene Chen <gene_chen@richtek.com>
-> 
-> Add bindings for MT6360 PMIC
-> 
-> Signed-off-by: Gene Chen <gene_chen@richtek.com>
-> ---
->  Documentation/devicetree/bindings/mfd/mt6360.yaml | 69 +++++++++++++++++++++++
->  1 file changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mt6360.yaml
 
-Applying this old patch as "mediatek,mt6360" is used, but not documented 
-(causing warnings). Please send a follow-up patch adding the child 
-nodes as promised.
+On Thu, 21 Apr 2022, Bjorn Helgaas wrote:
 
-Rob
+> Vidya's original patch [1] is not upstream, at least AFAIK.  Well, it
+> *was* merged as 4257f7e008ea [2] in v5.11-rc1, but then reverted by
+> 40fb68c7725a [3] in v5.11-rc7.
+
+Ah, you're absolutely right- now that I think of it, you guys had me cherry-
+pick the commit and IIRC it didn't fail when I'd done so:
+
+----
+Date: Sat, 5 Feb 2022 09:30:07 -0800 (PST)
+From: Kenneth R. Crudup <kenny@panix.com>
+To: Vidya Sagar <vidyas@nvidia.com>
+Message-ID: <12fe557f-7336-1970-d8f0-5a93529cf8c1@panix.com>
+...
+
+I just reapplied it on top of Linus' master and not only did it go in cleanly(!),
+NOW I'm not getting any issues after a suspend/resume. I've attached the output
+of "lspci -vvvvnn" before a hibernation (but not the very *first* one; if you
+need that output, let me know) and will submit the same post-hibernation (which
+is the same as the pre-hibernation case) and the post-suspend case (which is
+slightly different) in subsequent E-mails (due to attachment size).
+----
+
+	-Kenny
+
+-- 
+Kenneth R. Crudup / Sr. SW Engineer, Scott County Consulting, Orange County CA
