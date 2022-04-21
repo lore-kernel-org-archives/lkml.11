@@ -2,68 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE83CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3943C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiDUGSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54322 "EHLO
+        id S229520AbiDUGTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 02:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384807AbiDUGRY (ORCPT
+        with ESMTP id S229533AbiDUGTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:17:24 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EA413DE1;
-        Wed, 20 Apr 2022 23:14:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=QeRKGkvFLelyG9rKu/uS3aYOVkHHkLrkP5MDRe1pwmg=; b=wiDd3TG/zR4xbQ1k1sNrzkbJbt
-        d4A3NhDoa+q1NV5tCat1rp+GtM7uVB731PtAaP8cNQSeY7u8opVortfQMfJIvOB98JVz0XVMIl+DR
-        HfKoAjIMyk7VQF41j6kAWBmSP0XMha9IVXyGvi+ATAm+2QIBGTZZFWwYZLOKSxAE4KX8ppuQRcgQ8
-        6ji+2FJPZjdxcFlUND26o10iUJFvXKJ+HO93+/qtWC44SpitrmFiRe7GhIQHg/9oRGL6nJt7Nr6hP
-        8dinfSHCnSYtFh7Qm7TFIClOsSUT4SRFSH+gpd+/DBSqZX3qsGZMJ1Muh+SFP1yZKG18U3ZN346LC
-        CRtS0bWA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhQ5H-00BeYW-SX; Thu, 21 Apr 2022 06:14:31 +0000
-Date:   Wed, 20 Apr 2022 23:14:31 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-Subject: Re: [PATCH v2 05/12] md/raid5: Factor out helper from
- raid5_make_request() loop
-Message-ID: <YmD2R0AJ54yPRZhR@infradead.org>
-References: <20220420195425.34911-1-logang@deltatee.com>
- <20220420195425.34911-6-logang@deltatee.com>
+        Thu, 21 Apr 2022 02:19:34 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF67B851
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:16:46 -0700 (PDT)
+Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com [209.85.160.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 326FA3FD8E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 06:16:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1650521804;
+        bh=4rIquQnSrrUbcKOnnaDzSBZiVnXkNjP1A1/q1C21TSs=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=Sz6YMc0A0CKjAqWwpxlLOsChDZRKoSduwNWtgRlwZvuOfH8Go28m4OohiVRLZj7Vl
+         B/wXZi3hYh3AewgnRLzuG+XYUy7ygs9vtFm374QFz6Kc7OZKFWhbqWEqojkSgfQgtc
+         rIKE5OEQ0id/4yuT4QGRCzyWLDzwDIJkA8vhwTQvnlEJB0e6bqCeoGMSpPbp4/W/nZ
+         +POjFEhw3MnlTgsOojPI712wNPk/m/pGiq7MSoMAiPmMp6kHhNBGII92dTdntWRbRh
+         1XwPVkwjjulnAgjx0a6VREpYuVqCL4eM4UhhlMohXtfr0I11EZc/7DUNt3ZfXrApaa
+         R1TZxFSM7YvnA==
+Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-db2a59fdc8so1695424fac.6
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:16:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4rIquQnSrrUbcKOnnaDzSBZiVnXkNjP1A1/q1C21TSs=;
+        b=HVTzAPD04oxzY9fb7xCkMxCHAQsMKKpqlfOVaT0SzdA0yfwpRNAiWIPWQqjBTtJRnP
+         o6KPQaQRlCQFqnzKPrcVrgKaVc5yuNP0DZV+aCZatTJP0M0vguSjvxvEc05Hv4ROJ8Pp
+         xzOVMZE8PiX/tJxUmBqqMc5ktlA+behHUDCBT5fbuBv2VXyg4eQ29e7jWVSZaBITu7AL
+         AFeZyxa09ttAUlTn7bHmCBkUbXlr9NSjNgmnbkDThSuUJr9fWoPx2n94xtF9a1G67Wyd
+         irLasD0wFmK8EkS7zVmmWMDrJNuhFrIoQWze1QBijlY5TpV1hnJQp8akyNoEyafIZuMn
+         mjCA==
+X-Gm-Message-State: AOAM532bagVYYebXC9pnkGi941QX18XIcUAuTSX961pS3oAPw9iFC6sy
+        dHeNu17nfyPuKWVP5ATEG45Ju4HzZZiseKtmIvnMFR/Q2iLy+d3MEs+RFpPXDX2Skey+lFxiWPl
+        Tt+4zxyn64rkERuTkfZZVC2hrW+JDm5Met0GjGvTFhIY/AWMWfofWNUJmyA==
+X-Received: by 2002:a9d:7603:0:b0:605:5078:69 with SMTP id k3-20020a9d7603000000b0060550780069mr5395438otl.269.1650521802887;
+        Wed, 20 Apr 2022 23:16:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxCNA8XcD5V5QoiDwf06vQV9VRrHk+sxaun0nN5hpwSl8XQIwhBA52+WCfQnkLejNKzN1rC6Iz2plhTlsOk6Jk=
+X-Received: by 2002:a9d:7603:0:b0:605:5078:69 with SMTP id k3-20020a9d7603000000b0060550780069mr5395413otl.269.1650521802610;
+ Wed, 20 Apr 2022 23:16:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420195425.34911-6-logang@deltatee.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <CAAd53p6DX2C7KVRV=uu_mmPTTjE7=RsXfNPxjbOBLRbf-pXi5A@mail.gmail.com>
+ <20220415212533.GA844147@bhelgaas>
+In-Reply-To: <20220415212533.GA844147@bhelgaas>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Thu, 21 Apr 2022 14:16:29 +0800
+Message-ID: <CAAd53p6jh7Jx3pzg9TzrSrW8+3pzLN6EBAFjFv+7T4tMODmX+g@mail.gmail.com>
+Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for suspend/resume
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Vidya Sagar <vidyas@nvidia.com>,
+        "Kenneth R. Crudup" <kenny@panix.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, hkallweit1@gmail.com,
+        wangxiongfeng2@huawei.com, mika.westerberg@linux.intel.com,
+        chris.packham@alliedtelesis.co.nz, yangyicong@hisilicon.com,
+        treding@nvidia.com, jonathanh@nvidia.com, abhsahu@nvidia.com,
+        sagupta@nvidia.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+        Ricky Wu <ricky_wu@realtek.com>,
+        Rajat Jain <rajatja@google.com>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Victor Ding <victording@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +	if (unlikely(conf->reshape_progress != MaxSector)) {
-> +		/* spinlock is needed as reshape_progress may be
+On Sat, Apr 16, 2022 at 5:25 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Fri, Apr 15, 2022 at 10:26:19PM +0800, Kai-Heng Feng wrote:
+> > On Fri, Apr 15, 2022 at 12:41 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > On Wed, Apr 13, 2022 at 08:19:26AM +0800, Kai-Heng Feng wrote:
+> > > > On Wed, Apr 13, 2022 at 6:50 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > > ...
+> > >
+> > > > >   - For L1 PM Substates configuration, sec 5.5.4 says that both ports
+> > > > >     must be configured while ASPM L1 is disabled, but I don't think we
+> > > > >     currently guarantee this: we restore all the upstream component
+> > > > >     state first, and we don't know the ASPM state of the downstream
+> > > > >     one.  Maybe we need to:
+> > > > >
+> > > > >       * When restoring upstream component,
+> > > > >           + disable its ASPM
+> > > > >
+> > > > >       * When restoring downstream component,
+> > > > >           + disable its ASPM
+> > > > >           + restore upstream component's LTR, L1SS
+> > > > >           + restore downstream component's LTR, L1SS
+> > > > >           + restore upstream component's ASPM
+> > > > >           + restore downstream component's ASPM
+> > > >
+> > > > Right now L1SS isn't reprogrammed after S3, and that causes WD NVMe
+> > > > starts to spew lots of AER errors.
+> > >
+> > > Right now we don't fully restore L1SS-related state after S3, so maybe
+> > > there's some inconsistency that leads to the AER errors.
+>
+> > > Could you collect the "lspci -vv" state before and after S3 so we can
+> > > compare them?
+> > >
+> > > > So yes please restore L1SS upon resume. Meanwhile I am asking vendor
+> > > > _why_ restoring L1SS is crucial for it to work.
+> > > >
+> > > > I also wonder what's the purpose of pcie_aspm_pm_state_change()? Can't
+> > > > we just restore ASPM bits like other configs?
+> > >
+> > > Good question.  What's the context?  This is in the
+> > > pci_raw_set_power_state() path, not the pci_restore_state() path, so
+> > > seems like a separate discussion.
+> >
+> > Because this patch alone doesn't restore T_PwrOn and LTR1.2_Threshold.
+>
+> I assume the post-S3 path is basically this:
+>
+>   pci_pm_resume_noirq
+>     pci_pm_default_resume_early
+>       pci_power_up
+>         pci_raw_set_power_state(D0)
+>           pcie_aspm_pm_state_change
+>             pcie_config_aspm_path
+>               pcie_config_aspm_link
+>                 pcie_config_aspm_l1ss
+>                   clear PCI_EXP_LNKCTL_ASPM_L1 etc
+>                   set PCI_L1SS_CTL1_ASPM_L1_1 etc
+>                 pcie_config_aspm_dev
+>                   set PCI_EXP_LNKCTL_ASPM_L1 etc
+>       pci_restore_state
+>         pci_restore_ltr_state
+>         pci_restore_aspm_l1ss_state     # after this patch
+>         pci_restore_pcie_state
+>
+> Hmm...  I think I see what you're saying.  pcie_aspm_pm_state_change()
+> fiddles with ASPM and L1SS enable bits.  It likely disables L1,
+> enables L1SS, enables L1, but never restores the LTR capability or the
+> T_PwrOn and LTR1.2_Threshold bits you mention.
+>
+> Then we turn around and overwrite all that stuff (and the LTR cap) in
+> pci_restore_state().  That all seems fairly broken, and I agree, I
+> don't know why pcie_aspm_pm_state_change() exists.
 
-Normal kernel style is to stat with a
+I went through the whole discussion again, maybe Kenneth's case is
+also the result of pcie_aspm_pm_state_change()?
+Since Kenneth is using TLP to switch ASPM between performance and
+powersaving/powersupersaving, that means 'aspm_disabled' is false.
+Hence the KOXIA NVMe stops working post suspend and Realtek card
+reader toggles L1ss post hibernation.
 
-		/*
+Kenneth, can you please see if removing pcie_aspm_pm_state_change()
+from pci_raw_set_power_state() helps?
 
-line and to captalize the first word.  (also applies for a few other
-comments).
+Anyway, this can be easier to spot if dmesg was attached.
 
-> +		if (must_retry) {
-> +			raid5_release_stripe(sh);
-> +			return STRIPE_SCHEDULE_AND_RETRY;
+>
+> > So I forced the pcie_aspm_pm_state_change() calling path to eventually
+> > call aspm_calc_l1ss_info() which solved the problem for me.
+>
+> This would update T_PwrOn and LTR1.2_Threshold, so I guess it makes
+> sense that this would help.  But I think we need to figure out the
+> reason why pcie_aspm_pm_state_change() exists and get rid of it or at
+> least better integrate it with pci_restore_state().
+>
+> If we call pcie_aspm_pm_state_change() after D3cold or reset, things
+> still aren't going to work because the LTR cap isn't restored or
+> programmed.
 
-The raid5_release_stripe cleanup is duplicated a few times.  I think
-using goto based unwinding would be hepful in this function.
+More than that, the ASPM sysfs won't be restored correctly after
+resume [1] because of it.
+So I'd like to post a patch to drop pcie_aspm_pm_state_change() if
+there's no objection.
+
+[1] https://lore.kernel.org/linux-pci/20211021035159.1117456-2-kai.heng.feng@canonical.com/
+
+Kai-Heng
