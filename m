@@ -2,53 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7243C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E73C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 06:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385063AbiDUGrR (ORCPT
+        id S1385253AbiDUGrh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 02:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
+        Thu, 21 Apr 2022 02:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385059AbiDUGqB (ORCPT
+        with ESMTP id S1385151AbiDUGqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 02:46:01 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A91215839
-        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:42:54 -0700 (PDT)
+        Thu, 21 Apr 2022 02:46:37 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6DE15FE1
+        for <linux-kernel@vger.kernel.org>; Wed, 20 Apr 2022 23:43:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650523374; x=1682059374;
+  t=1650523380; x=1682059380;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=c4IkYSZXLCjXG4g7tl7kyeRPolu7AVMDtR8tvivn94U=;
-  b=IcY4PIK04JrhqrpGZImBG8A3MK9RURELDIPZZvgiaXUu+jsboUxohofu
-   bNtu3jIOEW6z0+k6Cjtgk8etJJr/EeE3XdYrmJQw3iGaE50OeS0aHlSuy
-   kMpafnkbym/UOTHz+JUQAoPQfn/K8zjfEDYV+8o3qEzYsLBUAGICi6J7M
-   Glhc5W52wQtjgxhs8ar0UK6ygFfayJV0HYPKOQIUzGjNzB7XZspqjcBr5
-   +opppeZ/Ib4WnlQDQHb/Vh1bMS7NxgiiiFZWigzxZ67tGs+rGKccX2MO7
-   O8L02eo0Y/QSU/CL3YWP3Q8gJBUlPmLERKUGShCxy7JnBs7rGiEShKzHi
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264429185"
+  bh=hP+HJeiujUXVOn/pXwmLSvx5EzeoI053mksxSLnbVSk=;
+  b=nguVb86CLKWk8Fkwvtd6cVRTD0NyAl5a7mcztAvTaWijo7zp02YRuguS
+   6pk2IdxUFnBbEDIGv6Ysh6bMJfrfc4Ip8I8PHu0cZsYtJOOefPRa/rkMd
+   ae023W9ahczqYtkxkCdKBUOya+wGjpleNtdYrfwILelVtJy4Pu7WxYUgK
+   7reBmUVM/N8Owrt+aK/qQgVFW65pzaefdoVKBC7wbcI+hqwCt+WlV23Cv
+   lzXazahOAnoUK9zVbTMviz0GY3HQh1ke4yRscJ6t3swP9ala3v8A3eXNt
+   MJTV0YEPMGBUKSowPTF/lNppky/W0u83yLRBYNwqdPczIUXhoXPkpEVl5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="350704633"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="264429185"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:42:52 -0700
+   d="scan'208";a="350704633"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 23:42:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="530131478"
+   d="scan'208";a="532792000"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2022 23:42:51 -0700
+  by orsmga002.jf.intel.com with ESMTP; 20 Apr 2022 23:42:51 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhQWg-0007zo-GO;
+        id 1nhQWg-000805-P6;
         Thu, 21 Apr 2022 06:42:50 +0000
-Date:   Thu, 21 Apr 2022 14:42:31 +0800
+Date:   Thu, 21 Apr 2022 14:42:26 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 408/2579] kernel/bpf/core.c:63:6: warning:
- no previous prototype for 'bpf_jit_dump'
-Message-ID: <202204210436.0BDJbqN7-lkp@intel.com>
+To:     Ilya Novikov <i.m.novikov@yadro.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [vkoul-dmaengine:next 26/38]
+ drivers/dma/ptdma/ptdma-dmaengine.c:262:1: warning: no previous prototype
+ for 'pt_tx_status'
+Message-ID: <202204210451.7D2dVECE-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,46 +58,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: e4ad6815a1dd068fce426ddb025055ac7f698a29 [408/2579] headers/uninline: Uninline multi-use function: bpf_jit_dump()
-config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220421/202204210436.0BDJbqN7-lkp@intel.com/config)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git next
+head:   643a4a85b0bc7efeb5732fb4563c43c77ba0c6ac
+commit: d965068259d13fde49487b45064106d3d0c57a74 [26/38] dmaengine: PTDMA: support polled mode
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220421/202204210451.7D2dVECE-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=e4ad6815a1dd068fce426ddb025055ac7f698a29
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout e4ad6815a1dd068fce426ddb025055ac7f698a29
+        # https://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git/commit/?id=d965068259d13fde49487b45064106d3d0c57a74
+        git remote add vkoul-dmaengine https://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git
+        git fetch --no-tags vkoul-dmaengine next
+        git checkout d965068259d13fde49487b45064106d3d0c57a74
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/pci/ fs/crypto/ kernel/bpf/ lib/ net/ipv6/
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/dma/ptdma/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> kernel/bpf/core.c:63:6: warning: no previous prototype for 'bpf_jit_dump' [-Wmissing-prototypes]
-      63 | void bpf_jit_dump(unsigned int flen, unsigned int proglen, u32 pass, void *image)
-         |      ^~~~~~~~~~~~
-   kernel/bpf/core.c:1655:12: warning: no previous prototype for 'bpf_probe_read_kernel' [-Wmissing-prototypes]
-    1655 | u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
-         |            ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/dma/ptdma/ptdma-dmaengine.c:262:1: warning: no previous prototype for 'pt_tx_status' [-Wmissing-prototypes]
+     262 | pt_tx_status(struct dma_chan *c, dma_cookie_t cookie,
+         | ^~~~~~~~~~~~
 
 
-vim +/bpf_jit_dump +63 kernel/bpf/core.c
+vim +/pt_tx_status +262 drivers/dma/ptdma/ptdma-dmaengine.c
 
-    62	
-  > 63	void bpf_jit_dump(unsigned int flen, unsigned int proglen, u32 pass, void *image)
-    64	{
-    65		pr_err("flen=%u proglen=%u pass=%u image=%pK from=%s pid=%d\n", flen,
-    66		       proglen, pass, image, current->comm, task_pid_nr(current));
-    67	
-    68		if (image)
-    69			print_hex_dump(KERN_ERR, "JIT code: ", DUMP_PREFIX_OFFSET,
-    70				       16, 1, image, proglen, false);
-    71	}
-    72	
+   260	
+   261	enum dma_status
+ > 262	pt_tx_status(struct dma_chan *c, dma_cookie_t cookie,
+   263			struct dma_tx_state *txstate)
+   264	{
+   265		struct pt_device *pt = to_pt_chan(c)->pt;
+   266		struct pt_cmd_queue *cmd_q = &pt->cmd_q;
+   267	
+   268		pt_check_status_trans(pt, cmd_q);
+   269		return dma_cookie_status(c, cookie, txstate);
+   270	}
+   271	
 
 -- 
 0-DAY CI Kernel Test Service
