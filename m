@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A993C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 07:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385537AbiDUHHm (ORCPT
+        id S1385546AbiDUHHq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 03:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        Thu, 21 Apr 2022 03:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385568AbiDUHHg (ORCPT
+        with ESMTP id S1385571AbiDUHHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 03:07:36 -0400
-Received: from m1390.mail.163.com (m1390.mail.163.com [220.181.13.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CFE2815725
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 00:04:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=n3Was
-        +XBnfltnqT6FH8uhMrs6oozRXXVMab7bJp4f8U=; b=Jkd1YJF/8hxgLlage/fpv
-        7+kUoJFzfPmkczDT7scoZ5wbwOpVbwPy8KCIVSXfKENmp6otcO3o8PECCjEfbZpW
-        Kljd5aUr9QDzERXmSfmv+z4toxMbosavskifBfaHYN7YfPt0xNDF1+rtC6n6+yuf
-        AqXyldP2M29Cey16ngoWrc=
-Received: from slark_xiao$163.com ( [112.97.55.38] ) by ajax-webmail-wmsvr90
- (Coremail) ; Thu, 21 Apr 2022 15:03:34 +0800 (CST)
-X-Originating-IP: [112.97.55.38]
-Date:   Thu, 21 Apr 2022 15:03:34 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Loic Poulain" <loic.poulain@linaro.org>
-Cc:     mani@kernel.org, quic_hemantk@quicinc.com,
-        gregkh@linuxfoundation.org, bbhatt@codeaurora.org,
-        christophe.jaillet@wanadoo.fr, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] bus: mhi: host: Add support for Cinterion
- MV32-WA/MV32-WB
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <CAMZdPi9WJsz5nyzQB39q=Jhy8_q2=N8VAucYMUYKUf_faL5csQ@mail.gmail.com>
-References: <20220420102811.3157-1-slark_xiao@163.com>
- <CAMZdPi9WJsz5nyzQB39q=Jhy8_q2=N8VAucYMUYKUf_faL5csQ@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE4D15704;
+        Thu, 21 Apr 2022 00:04:48 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id j8-20020a17090a060800b001cd4fb60dccso4336968pjj.2;
+        Thu, 21 Apr 2022 00:04:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ckZb8HQa6B+H6t9pofeOOWMFEAGtcGaN614SCDhVQYA=;
+        b=SHDfVa3FMmxgIMWcn+Q/V5BXKCMqc6gupBa491JtUf1YiJXt+jMBITI1+IndLPAiIv
+         qD3FcIJbcu4Z7orWyaJDi7S/qhIErBQTYGkWKwxUlUJ2vMf+DsGzkb0kk9s3xYo/3k0Q
+         q/9kDDn1jaPKUZneasma7uFV0PCTz3gm6cl0XD7cUOAbhJilfDoai2do+GjxN34nx897
+         W2ff5yPbIFfPf8l1ovxQlBqjo0jBNRi8Lu65nc+tYdDHkL6ab8PVF4pkwqLl8bIoBbkB
+         6l5CxHzI/LentyJLL/pPGx8po3avHC9IScIBKDV/A1u12xhU8rFhiCHPGCJf/meaz7yd
+         7d9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ckZb8HQa6B+H6t9pofeOOWMFEAGtcGaN614SCDhVQYA=;
+        b=kF99Lb+uWG+J7oEnYZsZypTaFKqDUvQxFnd0OAKW6DIzpMvzYLIK4srMVyh2Z58BbL
+         mCG76lBDu5RqQ13HRLTnSeL4xfkibx0MmYHXD5nahIhBmFIlp5+hZEXW8vI/PSzRKowt
+         s8ysI+Z8bhIqY/IqR23bNsvxyKUSNTieirl0dDjD0EU09CfZH8rFKQYmZfyGGHRoY8jO
+         VggFSlQd7ke1xvhZ7xTOvG8l/4bp6XewY2l/n6xUPs9RhaWMwYWrmnwIcElj4AsXfRDe
+         fuwjbUokzzWbkoF6dDKw0myd3fOpogZZpZO+2M0NeXpCBSEfl42lPxauPNYYpVUlAeFF
+         QGBA==
+X-Gm-Message-State: AOAM531XkUBWZQOjVRGTLsthYme3InjsrnPIQHJZ7B9VHaIDDXSUQCon
+        VBE5VrpghFpTAvq6A6LgWX8=
+X-Google-Smtp-Source: ABdhPJwvc2lunSrpC+kueBLFryH5B7Be+qQXCmSIgefygKENy10PWbdlNKjZ/L9Cw3ZyArJ2KKboJg==
+X-Received: by 2002:a17:902:8f81:b0:154:be2d:1948 with SMTP id z1-20020a1709028f8100b00154be2d1948mr24109757plo.110.1650524687783;
+        Thu, 21 Apr 2022 00:04:47 -0700 (PDT)
+Received: from localhost (c-107-3-154-88.hsd1.ca.comcast.net. [107.3.154.88])
+        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f72acd4dadsm22961885pfx.81.2022.04.21.00.04.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 00:04:47 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 00:04:44 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+Message-ID: <20220421070444.GB1423762@private.email.ne.jp>
+References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220415220109.282834-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220420012032.GA2224031@ls.amr.corp.intel.com>
+ <dd4a2b16-397e-8866-0fd5-b5c5dfd453ab@linux.intel.com>
 MIME-Version: 1.0
-Message-ID: <55f0b74e.25a7.1804aeeedb4.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: WsGowABnb7fGAWFiv9sRAA--.37675W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiGRvpZFyPb97uFAABsW
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dd4a2b16-397e-8866-0fd5-b5c5dfd453ab@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgpBdCAyMDIyLTA0LTIwIDIwOjAwOjIzLCAiTG9pYyBQb3VsYWluIiA8bG9pYy5wb3VsYWluQGxp
-bmFyby5vcmc+IHdyb3RlOgo+SGkgU2xhcmssCj4KPk9uIFdlZCwgMjAgQXByIDIwMjIgYXQgMTI6
-MjgsIFNsYXJrIFhpYW8gPHNsYXJrX3hpYW9AMTYzLmNvbT4gd3JvdGU6Cj4+Cj4+IE1WMzItV0Eg
-aXMgZGVzaWduZWQgYmFzZWQgb24gUXVhbGNvbW0gU0RYNjIsIGFuZAo+PiBNVjMyLVdCIGlzIGRl
-c2lnbmVkIGJhc2VkIG9uIFFVYWxjb21tIFNEWDY1LiBCb3RoCj4+IHByb2R1Y3RzJyBlbnVtZXJh
-dGlvbiB3b3VsZCBhbGlnbiB3aXRoIHByZXZpb3VzCj4+IHByb2R1Y3QgTVYzMS1XLgo+PiBBZGQg
-c29tZSBuZXcgaXRlbXMgZm9yIG12MzIgdG8gc2VwYXJhdGUgaXQgZnJvbQo+PiBtdjMxLXcsIGlu
-IGNhc2Ugd2UgbmVlZCB0byBkbyBhbnkgY2hhbmdlcyBpbgo+PiBmdXR1cmUuCj4KPk9uIHRoZSBj
-b250cmFyeSwgZG8gbm90IG92ZXJseSBjbG9uZSB0aGUgc3RydWN0dXJlcywgYW5kIHJlLXVzZSB0
-aGUKPm12MzEgb25lcyBpZiB0aGV5IGFwcGx5LiBZb3UgY2FuIHJlbmFtZSB0aGVtIHRvIG12M3gg
-aWYgeW91IHJlYWxseQo+d2FudCB0by4KPgo+UmVnYXJkcywKPkxvaWMKPgpIaSBMb2ljLAogIFRo
-YW5rcyBmb3IgeW91ciBzdWdnZXN0aW9uLgogICBBY3R1YWxseSwgZm9yIGRpZmZlcmVudCBjaGlw
-KGxpa2UgcHJldmlvdXMgU0RYMjQgYW5kIFNEWDU1KSwgdGhleSBtYXkgCmhhdmUgZGlmZmVyZW5j
-ZSBiZWhhdmlvci4gRm9yIGV4YW1wbGUsIHRoZSBpdGVtIG9mICdzaWRlYmFuZF93YWtlJwpvZiBT
-RFgyNCBpcyB0cnVlIGJ1dCB0aGUgcmVzdCBpcyBmYWxzZS4gSXQncyBoYXJkIHRvIHNheSBTRFg2
-NSB3b3VsZCAKYWxpZ24gd2l0aCBTRFg1NSB1bnRpbCBub3cuCiAgIE1heWJlIEkgY2FuIHJlLXVz
-ZSB0aGUgc2FtZSBpdGVtICcuY29uZmlnJyBmb3IgYWxsIE1WM1ggcHJvZHVjdHMgYW5kIHNlcGFy
-YXRlIAp0aGVtIGZyb20gZGV2aWNlIGluZm8obWhpX3BjaV9kZXZfaW5mbykuIAogICBEbyB5b3Ug
-YWdyZWUgdGhpcz8KCj4KPgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBTbGFyayBYaWFvIDxzbGFya194
-aWFvQDE2My5jb20+Cj4+IC0tLQo+PiAgZHJpdmVycy9idXMvbWhpL2hvc3QvcGNpX2dlbmVyaWMu
-YyB8IDQxICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+PiAgMSBmaWxlIGNoYW5nZWQs
-IDQxIGluc2VydGlvbnMoKykKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYnVzL21oaS9ob3N0
-L3BjaV9nZW5lcmljLmMgYi9kcml2ZXJzL2J1cy9taGkvaG9zdC9wY2lfZ2VuZXJpYy5jCj4+IGlu
-ZGV4IDU0MWNlZDI3ZDk0MS4uYTJkYTQwMzQwZGY3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2J1
-cy9taGkvaG9zdC9wY2lfZ2VuZXJpYy5jCj4+ICsrKyBiL2RyaXZlcnMvYnVzL21oaS9ob3N0L3Bj
-aV9nZW5lcmljLmMKPj4gQEAgLTQwNiw2ICs0MDYsNDEgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBt
-aGlfcGNpX2Rldl9pbmZvIG1oaV9tdjMxX2luZm8gPSB7Cj4+ICAgICAgICAgLm1ydV9kZWZhdWx0
-ID0gMzI3NjgsCj4+ICB9Owo+Pgo+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBtaGlfY2hhbm5lbF9j
-b25maWcgbWhpX212MzJfY2hhbm5lbHNbXSA9IHsKPj4gKyAgICAgICBNSElfQ0hBTk5FTF9DT05G
-SUdfVUwoMCwgIkxPT1BCQUNLIiwgNjQsIDApLAo+PiArICAgICAgIE1ISV9DSEFOTkVMX0NPTkZJ
-R19ETCgxLCAiTE9PUEJBQ0siLCA2NCwgMCksCj4+ICsgICAgICAgLyogTUJJTSBDb250cm9sIENo
-YW5uZWwgKi8KPj4gKyAgICAgICBNSElfQ0hBTk5FTF9DT05GSUdfVUwoMTIsICJNQklNIiwgNjQs
-IDApLAo+PiArICAgICAgIE1ISV9DSEFOTkVMX0NPTkZJR19ETCgxMywgIk1CSU0iLCA2NCwgMCks
-Cj4+ICsgICAgICAgLyogTUJJTSBEYXRhIENoYW5uZWwgKi8KPj4gKyAgICAgICBNSElfQ0hBTk5F
-TF9DT05GSUdfSFdfVUwoMTAwLCAiSVBfSFcwX01CSU0iLCA1MTIsIDIpLAo+PiArICAgICAgIE1I
-SV9DSEFOTkVMX0NPTkZJR19IV19ETCgxMDEsICJJUF9IVzBfTUJJTSIsIDUxMiwgMyksCj4+ICt9
-Owo+PiArCj4+ICtzdGF0aWMgc3RydWN0IG1oaV9ldmVudF9jb25maWcgbWhpX212MzJfZXZlbnRz
-W10gPSB7Cj4+ICsgICAgICAgTUhJX0VWRU5UX0NPTkZJR19DVFJMKDAsIDI1NiksCj4+ICsgICAg
-ICAgTUhJX0VWRU5UX0NPTkZJR19EQVRBKDEsIDI1NiksCj4+ICsgICAgICAgTUhJX0VWRU5UX0NP
-TkZJR19IV19EQVRBKDIsIDEwMjQsIDEwMCksCj4+ICsgICAgICAgTUhJX0VWRU5UX0NPTkZJR19I
-V19EQVRBKDMsIDEwMjQsIDEwMSksCj4+ICt9Owo+PiArCj4+ICtzdGF0aWMgY29uc3Qgc3RydWN0
-IG1oaV9jb250cm9sbGVyX2NvbmZpZyBtb2RlbV9tdjMyX2NvbmZpZyA9IHsKPj4gKyAgICAgICAu
-bWF4X2NoYW5uZWxzID0gMTI4LAo+PiArICAgICAgIC50aW1lb3V0X21zID0gMjAwMDAsCj4+ICsg
-ICAgICAgLm51bV9jaGFubmVscyA9IEFSUkFZX1NJWkUobWhpX212MzJfY2hhbm5lbHMpLAo+PiAr
-ICAgICAgIC5jaF9jZmcgPSBtaGlfbXYzMl9jaGFubmVscywKPj4gKyAgICAgICAubnVtX2V2ZW50
-cyA9IEFSUkFZX1NJWkUobWhpX212MzJfZXZlbnRzKSwKPj4gKyAgICAgICAuZXZlbnRfY2ZnID0g
-bWhpX212MzJfZXZlbnRzLAo+PiArfTsKPj4gKwo+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBtaGlf
-cGNpX2Rldl9pbmZvIG1oaV9tdjMyX2luZm8gPSB7Cj4+ICsgICAgICAgLm5hbWUgPSAiY2ludGVy
-aW9uLW12MzIiLAo+PiArICAgICAgIC5jb25maWcgPSAmbW9kZW1fbXYzMl9jb25maWcsCj4+ICsg
-ICAgICAgLmJhcl9udW0gPSBNSElfUENJX0RFRkFVTFRfQkFSX05VTSwKPj4gKyAgICAgICAuZG1h
-X2RhdGFfd2lkdGggPSAzMiwKPj4gKyAgICAgICAubXJ1X2RlZmF1bHQgPSAzMjc2OCwKPj4gK307
-Cj4+ICsKPj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbWhpX2NoYW5uZWxfY29uZmlnIG1oaV9zaWVy
-cmFfZW05MTl4X2NoYW5uZWxzW10gPSB7Cj4+ICAgICAgICAgTUhJX0NIQU5ORUxfQ09ORklHX1VM
-X1NCTCgyLCAiU0FIQVJBIiwgMzIsIDApLAo+PiAgICAgICAgIE1ISV9DSEFOTkVMX0NPTkZJR19E
-TF9TQkwoMywgIlNBSEFSQSIsIDI1NiwgMCksCj4+IEBAIC00NzUsNiArNTEwLDEyIEBAIHN0YXRp
-YyBjb25zdCBzdHJ1Y3QgcGNpX2RldmljZV9pZCBtaGlfcGNpX2lkX3RhYmxlW10gPSB7Cj4+ICAg
-ICAgICAgLyogTVYzMS1XIChDaW50ZXJpb24pICovCj4+ICAgICAgICAgeyBQQ0lfREVWSUNFKDB4
-MTI2OSwgMHgwMGIzKSwKPj4gICAgICAgICAgICAgICAgIC5kcml2ZXJfZGF0YSA9IChrZXJuZWxf
-dWxvbmdfdCkgJm1oaV9tdjMxX2luZm8gfSwKPj4gKyAgICAgICAvKiBNVjMyLVdBIChDaW50ZXJp
-b24pICovCj4+ICsgICAgICAgeyBQQ0lfREVWSUNFKDB4MTI2OSwgMHgwMGJhKSwKPj4gKyAgICAg
-ICAgICAgICAgIC5kcml2ZXJfZGF0YSA9IChrZXJuZWxfdWxvbmdfdCkgJm1oaV9tdjMyX2luZm8g
-fSwKPj4gKyAgICAgICAvKiBNVjMyLVdCIChDaW50ZXJpb24pICovCj4+ICsgICAgICAgeyBQQ0lf
-REVWSUNFKDB4MTI2OSwgMHgwMGJiKSwKPj4gKyAgICAgICAgICAgICAgIC5kcml2ZXJfZGF0YSA9
-IChrZXJuZWxfdWxvbmdfdCkgJm1oaV9tdjMyX2luZm8gfSwKPj4gICAgICAgICB7ICB9Cj4+ICB9
-Owo+PiAgTU9EVUxFX0RFVklDRV9UQUJMRShwY2ksIG1oaV9wY2lfaWRfdGFibGUpOwo+PiAtLQo+
-PiAyLjI1LjEKPj4K
+On Tue, Apr 19, 2022 at 06:26:43PM -0700,
+Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+
+> On 4/19/22 6:20 PM, Isaku Yamahata wrote:
+> > If timeout occurs, the state of adev->tdquote_buf is unknown.  It's not safe
+> > to continue to using adev->tdquote_buf.  VMM would continue to processing
+> > getquote request with this buffer.  What if TDX_CMD_GEN_QUOTE is issued again,
+> > and tdquote_buf is re-used?
+> 
+> This part is not clearly discussed in the specification. May be spec
+> should define some reasonable timeout and teardown details.
+> 
+> Regarding not using this buffer again, what happens if we de-allocate
+> it on timeout and the host still updates it?
+
+Until GET_QUOTE_IN_FLIGHT is cleared, the shared page is owned by VMM, TD
+attestation driver shouldn't reuse/free the pages.
+
+In the case of this driver, I think of two options
+- don't timeout. wait for interrupt to arrive and check the shared GPA state.
+- allow timeout. When the next request comes, check the shared GPA state.
+  If it's still GET_QUOTE_IN_FLIGHT, return EBUSY.
+
+It's possible for VMM to keep the shared GPA forever maliciously(DoS) or
+unintentionally due to bug.  TD can't do much about it.
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
