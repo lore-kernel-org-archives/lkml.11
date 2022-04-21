@@ -2,108 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1314BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24160C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 23:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442310AbiDUXU6 (ORCPT
+        id S1442400AbiDUXVP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 19:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59536 "EHLO
+        Thu, 21 Apr 2022 19:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442211AbiDUXU5 (ORCPT
+        with ESMTP id S1442211AbiDUXVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 19:20:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415163CFE1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 16:18:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650583086; x=1682119086;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3HDiJ8oX4H1fort48Tf+jIRSNYLDP5q421WmnpUv1+0=;
-  b=bT/m3clYtb57EOtssr7DX7whS3grn9hDreraqVRMy5rp6ZDZaj0h3QWk
-   jvaeTHl9IzwZlAg1VmbIbRCet1o43dy7cm4the8RdbzMP478EHIYPGPw0
-   1Sr9AzhoDRmefERAqbtmoFdKTyRHx89s8WlXo1B23zLq5D9BhoLWb3mXL
-   zmgAr/jEJP2riI6tFVYUK5F/WNktQRMNKFGZMPBpuRi46u4vAOaTMYif0
-   p6eFgkbX4j837NX0jPmk2R9nXqzTjcRcnXHqjlGIWa7GKaWcMZ1ekFLCr
-   7XMmPHrkxtrTfrS14jInStnRNhVgyua+zNMTxpZFrmwd8+ZZ4L2fvB59r
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263357995"
-X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
-   d="scan'208";a="263357995"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 16:18:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
-   d="scan'208";a="626726823"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Apr 2022 16:18:04 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhg3n-0008sY-S1;
-        Thu, 21 Apr 2022 23:18:03 +0000
-Date:   Fri, 22 Apr 2022 07:16:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: drivers/watchdog/pic32-wdt.c:159:34: warning: unused variable
- 'pic32_wdt_dt_ids'
-Message-ID: <202204220754.nuORtA1j-lkp@intel.com>
+        Thu, 21 Apr 2022 19:21:10 -0400
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEA03CFE1;
+        Thu, 21 Apr 2022 16:18:19 -0700 (PDT)
+Received: by mail-oo1-xc29.google.com with SMTP id f13-20020a4aa68d000000b0033a2c53d0baso1115118oom.0;
+        Thu, 21 Apr 2022 16:18:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=JFf9HGRfI7n3fI8XEiNo8PZc23LhVhvqXPq545IqGrk=;
+        b=RaC8c5l2W0v6pOhCLkSP16q9FHjg+l0G3iYKDely13x1JVKHmucrVVnTpZruCzrJjH
+         hYno2p3vlJZB/WhHursCUn2CkDySEOSbrbsiBbZ8L2pqDJmACqifeMDiQ38Y7smtTd+h
+         Df8Gg7ZLSSac3T8Ps7+MM1EGz5920Zacnp1rXewEenu9knTvUeUhauIBNTZiUKiRGyeO
+         VB5sxHQASILk3dTB9Ce0MRrNx9xZEXcMMuW8w9Hhn3n0BqG7BVj4mjjd1LrLagW80ZID
+         /rURGVYiALfd2ihD5k/gdBGVEJAp+xn46xwEo5Eil35PoCBfA1HNZ2EizSFjbmaNUM2z
+         MWPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=JFf9HGRfI7n3fI8XEiNo8PZc23LhVhvqXPq545IqGrk=;
+        b=h4md51jYpja4wY6BxC3SN/6q1N4f+Yilj7IFAatQcKYmK0qhKsXWSr98z1Lm2acUk7
+         rJ4ga8MZQWMExZpYI78UhnhrzVDWyUuM1jBnECzkGF0RUhUF8rrPDDupyzX7+xtGepCF
+         2xsmvdEMkL096j+T8NGm9YPKDlnvP1KkBe8HZyEcZteZ6H8fw/ykyc44CdHbmO8iXhyM
+         XAuFx+gItPNBr0/2EAFJVw1L/P2z34Gwo6ukwdWy7RVJVeRl1rFfMZlcTl8j/z+kTyiG
+         4RWic/kv4cLzNVv8HMdcPmVtOd9Z4XhZjNBIbixvqJNzbq9SsHyJbjxZUMFPAGFSUMMG
+         tm9A==
+X-Gm-Message-State: AOAM533jB1ZjyboMI15oMSPMIe/yhCV7s+uAROJHiBCrgqie0wKuiPvL
+        xE4x7ujQ6u1q8BqCj9CLdoM=
+X-Google-Smtp-Source: ABdhPJyc7CMa4UiuKdFaBzmxG/s0H7m7+CGfOZYs14tcZ9eyvfD1+Ot82CHaXWq6/Q14ARFgoH+trA==
+X-Received: by 2002:a05:6820:151b:b0:33a:6aa4:2d6e with SMTP id ay27-20020a056820151b00b0033a6aa42d6emr689786oob.54.1650583097794;
+        Thu, 21 Apr 2022 16:18:17 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id d3-20020a9d2903000000b005cda765f578sm139439otb.0.2022.04.21.16.18.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 16:18:16 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <0d9aff44-d41b-dabd-4d49-dd80631a4361@roeck-us.net>
+Date:   Thu, 21 Apr 2022 16:18:14 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, linux-usb@vger.kernel.org
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        heikki.krogerus@linux.intel.com
+References: <CA+G9fYvdfYBq+Q=-XUJcKHSYXdubdoqhExRpjrqCgf_N3pPpHQ@mail.gmail.com>
+ <15b38d01-702c-b39e-7053-54c3905a0794@roeck-us.net>
+ <c86e540f-6611-4ef9-9439-8285fee61831@infradead.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: drivers/usb/typec/tcpm/tcpm.c:4724:3: error: case label does not
+ reduce to an integer constant
+In-Reply-To: <c86e540f-6611-4ef9-9439-8285fee61831@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b253435746d9a4a701b5f09211b9c14d3370d0da
-commit: c434b9f80b0923e6460031b0fd964f8b0bf3c6a6 MIPS: Kconfig: add MIPS_GENERIC_KERNEL symbol
-date:   1 year, 7 months ago
-config: mips-randconfig-r005-20220422 (https://download.01.org/0day-ci/archive/20220422/202204220754.nuORtA1j-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c434b9f80b0923e6460031b0fd964f8b0bf3c6a6
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout c434b9f80b0923e6460031b0fd964f8b0bf3c6a6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/staging/media/hantro/ drivers/watchdog/
+On 4/21/22 15:27, Randy Dunlap wrote:
+> Hi--
+> 
+> On 4/21/22 13:36, Guenter Roeck wrote:
+>> On 4/21/22 12:03, Naresh Kamboju wrote:
+>>> Linux mainline and linux next arm64 builds failed with gcc-7.3.x.
+>>>
+>>> drivers/usb/typec/tcpm/tcpm.c: In function 'run_state_machine':
+>>> drivers/usb/typec/tcpm/tcpm.c:4724:3: error: case label does not
+>>> reduce to an integer constant
+>>>      case BDO_MODE_TESTDATA:
+>>>      ^~~~
+>>> make[4]: *** [scripts/Makefile.build:288: drivers/usb/typec/tcpm/tcpm.o] Error 1
+>>>                                         ^
+>>> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>>>
+>>> -- 
+>>
+>> That code is several years old, the define is a constant, and I don't see
+>> a recent change in the code. What am I missing ?
+> 
+> See a recent patch for the same problem in a different area:
+> 
+> commit 1ef8715975de
+> Author: Borislav Petkov <bp@suse.de>
+> Date:   Tue Apr 5 17:15:08 2022 +0200
+> 
+>      ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+> 
+> so those constants probably need to be cast to unsigned int.
+> (I guess)
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Turns out other versions of gcc are "affected" as well.
 
-All warnings (new ones prefixed by >>):
+$ cc -Wall -std=c11 -pedantic -pedantic-errors testc.c
+testc.c: In function ‘main’:
+testc.c:16:2: error: case label is not an integer constant expression [-Wpedantic]
+    16 |  case BDO_MODE_TESTDATA:
+       |  ^~~~
 
->> drivers/watchdog/pic32-wdt.c:159:34: warning: unused variable 'pic32_wdt_dt_ids' [-Wunused-const-variable]
-   static const struct of_device_id pic32_wdt_dt_ids[] = {
-                                    ^
-   1 warning generated.
+... but _only_ with "-std=c11 -pedantic -pedantic-errors" or with "-fsanitize=shift".
 
+It wants
+	#define BDO_MODE_TESTDATA	(8u << 28)
 
-vim +/pic32_wdt_dt_ids +159 drivers/watchdog/pic32-wdt.c
+Pedantic indeed ...
 
-8f91fc56bc439a Joshua Henderson 2016-02-26  158  
-8f91fc56bc439a Joshua Henderson 2016-02-26 @159  static const struct of_device_id pic32_wdt_dt_ids[] = {
-8f91fc56bc439a Joshua Henderson 2016-02-26  160  	{ .compatible = "microchip,pic32mzda-wdt", },
-8f91fc56bc439a Joshua Henderson 2016-02-26  161  	{ /* sentinel */ }
-8f91fc56bc439a Joshua Henderson 2016-02-26  162  };
-8f91fc56bc439a Joshua Henderson 2016-02-26  163  MODULE_DEVICE_TABLE(of, pic32_wdt_dt_ids);
-8f91fc56bc439a Joshua Henderson 2016-02-26  164  
-
-:::::: The code at line 159 was first introduced by commit
-:::::: 8f91fc56bc439a5baefae598040d263f48526596 watchdog: pic32-wdt: Add PIC32 watchdog driver
-
-:::::: TO: Joshua Henderson <joshua.henderson@microchip.com>
-:::::: CC: Ralf Baechle <ralf@linux-mips.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Guenter
