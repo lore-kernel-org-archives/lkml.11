@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F8EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiDUNAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53674 "EHLO
+        id S229596AbiDUNC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 09:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiDUNAk (ORCPT
+        with ESMTP id S229459AbiDUNCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:00:40 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4E031201;
-        Thu, 21 Apr 2022 05:57:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=2BsecxFaWO+6hY04Blnscj25pg5IT+XD6dNTKQ9lWJI=; b=k/LuANzaW0rc0DneIOMPjHLS/w
-        VPa4TP7Nyvqyhn27E+eSkn+c28FI+MC25A/Zoyd4F7j5bNgObcxyqWAStj+G0TzOxdj3evxBr0gBZ
-        d16R2BEo775oAsjykjzjwtYjMZLhcX18jLbU9RKWB7EWuaWpSBEXi2AE6PRwpf2Pvaok=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nhWNN-00GnoN-Pi; Thu, 21 Apr 2022 14:57:37 +0200
-Date:   Thu, 21 Apr 2022 14:57:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] net: phy: marvell: Add LED accessors for Marvell
- 88E1510
-Message-ID: <YmFUwXLDIW5ouDCd@lunn.ch>
-References: <20220420124053.853891-1-kai.heng.feng@canonical.com>
- <20220420124053.853891-5-kai.heng.feng@canonical.com>
- <YmAgq1pm37Glw2v+@lunn.ch>
- <CAAd53p6UAhDC2mGkz3_HgVs7kFgCwjfu2R+9FfROhToH2R6CjA@mail.gmail.com>
- <YmFFWd42Nol7Lrlm@lunn.ch>
- <CAAd53p6vUcUu=H=cDMh07zcUUDM8WTp+F_L+jiJSWKqd37+MDg@mail.gmail.com>
+        Thu, 21 Apr 2022 09:02:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A3326F9;
+        Thu, 21 Apr 2022 05:59:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5855F61852;
+        Thu, 21 Apr 2022 12:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48642C385A1;
+        Thu, 21 Apr 2022 12:59:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650545973;
+        bh=8803hr6O5mQBudZ27bUhnRG0/mmmQXp3VtHKDzpV0oA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Yu63/tQTCWNHg+l1Po21sOyavfk0zUQnCi1y5uIVRmlAoNiyrrSjnHw9pDSoeWJpd
+         dov3dRWoo9ZHOuhJx0tz+8ARGsv+tR5AjTK+A7QUC6gqcZNMfGMJUNbRGqrys08KmM
+         8Cc0Dk9ePNFl2Ji3AQn/xbP0jpJAJxrASxxmZPAzqaj6IVy6X3UTKhrHiPVPuPMOl4
+         st+5UEWjVNAzHFqyNY/I2zAhfDloK9ZLPzrzoxxLhGZwp3Sqo0OaGJgY6HMPVXTbjX
+         FKhen/SBTqBaFTmSxGt8jQBYiQWiUqbtIeWSmnw+dySQrpOJ0O23YO8jdcbjEKN2O9
+         iIrL/vFuY4H+w==
+Date:   Thu, 21 Apr 2022 18:29:23 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: qcom: qrb5165-rb5: Fix can-clock node name
+Message-ID: <20220421125923.GA262430@thinkpad>
+References: <20220421073502.1824089-1-vkoul@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAd53p6vUcUu=H=cDMh07zcUUDM8WTp+F_L+jiJSWKqd37+MDg@mail.gmail.com>
+In-Reply-To: <20220421073502.1824089-1-vkoul@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:24:00PM +0800, Kai-Heng Feng wrote:
-> On Thu, Apr 21, 2022 at 7:51 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > This is not feasible.
-> > > If BIOS can define a method and restore the LED by itself, it can put
-> > > the method inside its S3 method and I don't have to work on this at
-> > > the first place.
-> >
-> > So maybe just declare the BIOS as FUBAR and move on to the next issue
-> > assigned to you.
-> >
-> > Do we really want the maintenance burden of this code for one machines
-> > BIOS?
+On Thu, Apr 21, 2022 at 01:05:02PM +0530, Vinod Koul wrote:
+> Per DT spec node names should not have underscores (_) in them, so
+> change can_clock to can-clock.
 > 
-> Wasn't this the "set precedence" we discussed earlier for? Someone has
-> to be the first, and more users will leverage the new property we
-> added.
-
-I both agree and disagree. I'm trying to make this feature generic,
-unlike you who seem to be doing the minimal, only saving one of three
-LED configuration registers. But on the other hand, i'm not sure there
-will be more users. Do you have a list of machines where the BIOS is
-FUBAR? Is it one machine? A range of machines from one vendor, or
-multiple vendors with multiple machines. I would feel better about the
-maintenance burden if i knew that this was going to be used a lot.
- 
-> > Maybe the better solution is to push back on the vendor and its
-> > BIOS, tell them how they should of done this, if the BIOS wants to be
-> > in control of the LEDs it needs to offer the methods to control the
-> > LEDs. And then hopefully the next machine the vendor produces will
-> > have working BIOS.
+> Fixes: 5c44c564e449 ("arm64: dts: qcom: qrb5165-rb5: Add support for MCP2518FD")
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> ---
+>  arch/arm64/boot/dts/qcom/qrb5165-rb5.dts | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> The BIOS doesn't want to control the LED. It just provides a default
-> LED setting suitable for this platform, so the driver can use this
-> value over the hardcoded one in marvell phy driver.
+> diff --git a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
+> index 845eb7a6bf92..0e63f707b911 100644
+> --- a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
+> +++ b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
+> @@ -29,7 +29,7 @@ chosen {
+>  	};
+>  
+>  	/* Fixed crystal oscillator dedicated to MCP2518FD */
+> -	clk40M: can_clock {
+> +	clk40M: can-clock {
 
-Exactly, it wants to control the LED, and tell the OS not to touch it
-ever.
+Should the node name be just "clock"?
 
-> So this really has nothing to do with with any ACPI method.
-> I believe the new property can be useful for DT world too.
+Thanks,
+Mani
 
-DT generally never trusts the bootloader to do anything. So i doubt
-such a DT property would ever be used. Also, DT is about describing
-the hardware, not how to configure the hardware. So you could list
-there is a PHY LED, what colour it is, etc. But in general, you would
-not describe how it is configured, that something else is configuring
-it and it should be left alone.
-
-> > Your other option is to take part in the effort to add control of the
-> > LEDs via the standard Linux LED subsystem. The Marvel PHY driver is
-> > likely to be one of the first to gain support this for. So you can
-> > then totally take control of the LED from the BIOS and put it in the
-> > users hands. And such a solution will be applicable to many machines,
-> > not just one.
+>  		compatible = "fixed-clock";
+>  		#clock-cells = <0>;
+>  		clock-frequency = <40000000>;
+> -- 
+> 2.34.1
 > 
-> This series just wants to use the default value platform firmware provides.
-> Create a sysfs to let user meddle with LED value doesn't really help
-> the case here.
-
-I would disagree. You can add a systemd service to configure it at
-boot however you want. It opens up the possibility to implement
-ethtool --identify in a generic way, etc. It is a much more powerful
-and useful feature than saying 'don't touch', and also it justify the
-maintenance burden.
-
-     Andrew
