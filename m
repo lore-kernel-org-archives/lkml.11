@@ -2,91 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D45BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B791C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 12:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384428AbiDUM30 (ORCPT
+        id S1384479AbiDUM3p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 08:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
+        Thu, 21 Apr 2022 08:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384629AbiDUM3Q (ORCPT
+        with ESMTP id S1384458AbiDUM3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 08:29:16 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5523431DF8;
-        Thu, 21 Apr 2022 05:26:12 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b581b329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:581b:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 21 Apr 2022 08:29:43 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A94C30F7F;
+        Thu, 21 Apr 2022 05:26:52 -0700 (PDT)
+Received: from janitor.denx.de (unknown [62.91.23.180])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C2BB51EC013E;
-        Thu, 21 Apr 2022 14:26:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1650543966;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=xyKJnAeN7yKmid38WcQJNn0eWYl8gpGj0iKqWc+guSU=;
-        b=eWY+KoZMJAriDXLApTF7jtqT13LYR6DBbS+OI9+ktsNcZGrfoDK97t/4GvoI3jnBJSHUND
-        5QmrHwCIk9Yem4NI9RM8smqSmPMrprfoigMlmwcsXPzrvW7EvtpMF95mvVNpSuOPKp9nmp
-        fTAMVttTaHotKycHa4tGe+XfM9IYWqA=
-Date:   Thu, 21 Apr 2022 14:26:02 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv4 3/8] efi/x86: Implement support for unaccepted memory
-Message-ID: <YmFNWnZ91a4n5Il3@zn.tnic>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-4-kirill.shutemov@linux.intel.com>
- <Ylnwmvygp796+qcA@zn.tnic>
- <20220418155545.a567xnxa6elglapl@box.shutemov.name>
- <Yl2UHOQ4iZJ29k0q@zn.tnic>
- <20220418202431.whvql4w57c7l5vpw@box.shutemov.name>
- <Yl3RmPhdZieSr8W2@zn.tnic>
- <20220418235015.mnujtlmmlyin7y6m@box.shutemov.name>
- <Yl5nSSC4HpSWqfY7@zn.tnic>
+        (Authenticated sender: noc@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 307C983E70;
+        Thu, 21 Apr 2022 14:26:50 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1650544010;
+        bh=jTzOrrLX5p76V4PIgn+6DJMA3gnS1BUdXP25NkDtKDY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=C7yd4Gq8UNjnTG5LEok52Uq7fBN2utEOTkzVVg6xx4vLmLRvh28c44ylhMUUu11AF
+         rmXtdv+pglZw6/RxDnf3IlnNEO1rhc/V9+CaZUeIpfyoZIkkML2sy46eacGPBtmYf5
+         SBUXtxukX9joNXKcs8Kys11FGQ7xIz7aJbIB9v2pMft5D754kb39H23GKWIE/s3buE
+         tCJqe4qMWmwTrLhM893afkonLAAMCj8WXx5NQpAn0AtB8IqP2ddPidt/3fZG6gv1EO
+         vJ9Z2SagaVOuweaXGSpWF9APcPcT9VyK2gm9wm4fD+9TO0jOVNvRWAe01vNRmXyRMD
+         SjLhlGFxuBFbw==
+Received: by janitor.denx.de (Postfix, from userid 108)
+        id D7102A020E; Thu, 21 Apr 2022 14:26:49 +0200 (CEST)
+Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
+        by janitor.denx.de (Postfix) with ESMTPS id 4234EA0165;
+        Thu, 21 Apr 2022 14:26:40 +0200 (CEST)
+Received: by xpert.denx.de (Postfix, from userid 535)
+        id BAE283E098D; Thu, 21 Apr 2022 14:26:39 +0200 (CEST)
+From:   Philip Oberfichtner <pro@denx.de>
+To:     devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Winker Matthias <Matthias.Winker@de.bosch.com>,
+        Philip Oberfichtner <pro@denx.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 1/2] dt-bindings: arm: Add bosch acc board
+Date:   Thu, 21 Apr 2022 14:26:18 +0200
+Message-Id: <20220421122619.1913496-1-pro@denx.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yl5nSSC4HpSWqfY7@zn.tnic>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 09:39:53AM +0200, Borislav Petkov wrote:
-> I find it really weird that you feel so strongly about it. If I would
-> have been asked to do it, I would've done it without even considering
-> it. But ok, since you feel so strongly about it, I've asked what the
-> other maintainers think.
+Add device tree binding for the Bosch ACC board, based on i.MX6 Dual.
 
-Ok, Dave thinks separate files are better so let's leave it at that. We
-can always change things later.
+Signed-off-by: Philip Oberfichtner <pro@denx.de>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 08bdd30e511c..9deb568761c1 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -192,6 +192,7 @@ properties:
+         items:
+           - enum:
+               - auvidea,h100              # Auvidea H100
++              - bosch,imx6q-acc           # Bosch ACC i.MX6 Dual
+               - boundary,imx6q-nitrogen6_max
+               - boundary,imx6q-nitrogen6_som2
+               - boundary,imx6q-nitrogen6x
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
