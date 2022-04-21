@@ -2,70 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CFE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 14:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389049AbiDUOPh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51886 "EHLO
+        id S229910AbiDUOP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Apr 2022 10:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388301AbiDUOPW (ORCPT
+        with ESMTP id S233234AbiDUOPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:15:22 -0400
+        Thu, 21 Apr 2022 10:15:55 -0400
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C5B3B022;
-        Thu, 21 Apr 2022 07:12:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BBD3A5EA
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 07:13:05 -0700 (PDT)
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id 9CD7068C4E; Thu, 21 Apr 2022 16:12:29 +0200 (CEST)
-Date:   Thu, 21 Apr 2022 16:12:29 +0200
+        id EC0C068C7B; Thu, 21 Apr 2022 16:13:02 +0200 (CEST)
+Date:   Thu, 21 Apr 2022 16:13:00 +0200
 From:   Christoph Hellwig <hch@lst.de>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH 6/7] ARM: use the common dma_to_phys/phys_to_dma
- implementation where possible
-Message-ID: <20220421141229.GB20492@lst.de>
-References: <20220421074204.1284072-1-hch@lst.de> <20220421074204.1284072-7-hch@lst.de> <CAK8P3a3BD5zLiXf=Wr0kcJp-k3+vmhBkEP5DNRw_-H=OX9CoGA@mail.gmail.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     hch@lst.de, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
+        arnd@kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] More ARM DMA ops cleanup
+Message-ID: <20220421141300.GC20492@lst.de>
+References: <cover.1650539846.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a3BD5zLiXf=Wr0kcJp-k3+vmhBkEP5DNRw_-H=OX9CoGA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1650539846.git.robin.murphy@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 10:05:11AM +0200, Arnd Bergmann wrote:
-> > -unsigned long __pfn_to_bus(unsigned long pfn)
-> > +#else
-> > +static inline unsigned long fb_bus_sdram_offset(void)
-> >  {
-> > -       return __pfn_to_phys(pfn) + (fb_bus_sdram_offset() - PHYS_OFFSET);
-> > +       return BUS_OFFSET;
-> >  }
-> > -EXPORT_SYMBOL(__pfn_to_bus);
-> > +#endif /* CONFIG_FOOTBRIDGE_ADDIN */
+On Thu, Apr 21, 2022 at 12:36:56PM +0100, Robin Murphy wrote:
+> Hi all,
 > 
-> I have an older patch to remove CONFIG_FOOTBRIDGE_ADDIN
-> completely, as it does a couple of other nasty things and there are
-> apparently no users. Would that help here?
+> Thanks to Christoph's latest series, I'm reminded that, if we're going
+> to give the ARM DMA ops some cleanup this cycle, it's as good a time as
+> any to dust off these old patches and add them on top as well. I've
+> based these on the arm-dma-direct branch which I assume matches the
+> patches posted at [1].
 
-For this series it doesn't really make much of a difference.  The addin
-case actually is simpler than the host mode for DMA,  But overall
-CONFIG_FOOTBRIDGE_ADDIN seems to be a collection of special cases, so
-if it is unused and can be remove that would probably be a good thing.
+All these do look sensible to me.  But weren't you working on replacing
+the ARM iommu dma_ops with dma-іommu anyway?
