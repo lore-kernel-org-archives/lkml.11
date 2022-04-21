@@ -2,95 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B807BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9B5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 21 Apr 2022 20:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392403AbiDUUii (ORCPT
+        id S1392415AbiDUUjR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51412 "EHLO
+        Thu, 21 Apr 2022 16:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388062AbiDUUif (ORCPT
+        with ESMTP id S1392406AbiDUUjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 16:38:35 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913714D9F9;
-        Thu, 21 Apr 2022 13:35:44 -0700 (PDT)
-Received: from g550jk.arnhem.chello.nl (a246182.upc-a.chello.nl [62.163.246.182])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 1910FCC043;
-        Thu, 21 Apr 2022 20:35:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1650573312; bh=Wx/zCUfbsxDCv8xhISdDZZirNu+1fzyBwddjK0yGyOg=;
-        h=From:To:Cc:Subject:Date;
-        b=CQUxwhoVAz4cdMEfo9dta2JoY5jVEcOoXhXsXr+EnXMmkay599as3FhA4d/Zx5sZY
-         5ZO/7/wOn1oxMgMwVbc87vRWZn4mEfaN38jiPb3+zUlVhdbEor4HKprwLja/gKpYfd
-         Bbr2mwmKx9vVTk4tmYQ8oI3KyqMkA4naO4NVQb9s=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     dri-devel@lists.freedesktop.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Emma Anholt <emma@anholt.net>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/msm: Fix null pointer dereferences without iommu
-Date:   Thu, 21 Apr 2022 22:34:53 +0200
-Message-Id: <20220421203455.313523-1-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.36.0
+        Thu, 21 Apr 2022 16:39:11 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84624DF4C;
+        Thu, 21 Apr 2022 13:36:20 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id t15so6881987oie.1;
+        Thu, 21 Apr 2022 13:36:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=pR+ivXQjQ4mpc3bU1lbKrf1OTqhPO5O1eEWuchyFYYM=;
+        b=aUgy7ZQPy9VWQ3sdol3HV/TdeP/hqQr5zfOdNWWD6QeduBPQ0/ElwdKLnErBtzgTGb
+         WCkwtX3AUMiqG3IWexPlK3SDIJzDzLYBTmKfnxRtfnx4smznqkM6F7j2j8FT+l+dl3Kg
+         4/CfCcjq51ubOP/yQEX4ACp6GktE/PUK5na1g0xy+sKXWainyCu3ZdX0NvSbgJXZsG/l
+         9iHOqfYrb75TqJwtaHW7ioSsBv0n+ZxKJuHBNGeSDwh1eLKGkob/fGeRCf4CAHmvUc0W
+         slDG+J55kEkR6bUrAGBuFfpuKrl40ENcSoT555XLpq8RcN3/aKmA3u6bIV2Yxztp9dAk
+         6gOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=pR+ivXQjQ4mpc3bU1lbKrf1OTqhPO5O1eEWuchyFYYM=;
+        b=uBCwBu3iT40KqqsKhFGqzod4XltxUhrof2LvpCIfk5pYvxsmH6EF1SN1k8e+NSzazs
+         XRiCUM0YiKmkIBYClKS0xXLf9g+REpG2IPSTLrAADN3WXrzY6TG6n7bt8bms27qZzzUf
+         eUyeV0AVnJSTnxDIwehCqDQ3j6B9sSdQu/WsOZnOQDY1bM7Mjf8nWAbQE0VdAlQkWK4s
+         2+PssFXlbKxq164DxqdYdvyvfpjumN+RWQxSgI5dEhjoQtRxnc0h1+y2RqNu6H8f+8d5
+         8PnsCm+tkGTic0gsrqP6sPgXoKQT3cXprXvrCk047mRbuJeFWTHfmjkft2OskCdKN3kp
+         fa2A==
+X-Gm-Message-State: AOAM53234oHqxSBznD/LMGefkO/u2KNcbC5n6Ecpm9k/50HieDWMe0QW
+        FJ73SbwgYhvFYK2UUw7ONwWggPoLmmM=
+X-Google-Smtp-Source: ABdhPJzvQDBpW8i8W67TKQjDDBb4cpOmkXvirm1Nq4saLvrBEWABE0GZmwKCUokZxD/YPpaqiqgYJA==
+X-Received: by 2002:a05:6808:e8d:b0:322:4fbe:8c5f with SMTP id k13-20020a0568080e8d00b003224fbe8c5fmr5198699oil.284.1650573378654;
+        Thu, 21 Apr 2022 13:36:18 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a37-20020a9d2628000000b0060563c52952sm15698otb.8.2022.04.21.13.36.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 13:36:17 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <15b38d01-702c-b39e-7053-54c3905a0794@roeck-us.net>
+Date:   Thu, 21 Apr 2022 13:36:15 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, linux-usb@vger.kernel.org
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        heikki.krogerus@linux.intel.com
+References: <CA+G9fYvdfYBq+Q=-XUJcKHSYXdubdoqhExRpjrqCgf_N3pPpHQ@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: drivers/usb/typec/tcpm/tcpm.c:4724:3: error: case label does not
+ reduce to an integer constant
+In-Reply-To: <CA+G9fYvdfYBq+Q=-XUJcKHSYXdubdoqhExRpjrqCgf_N3pPpHQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check if 'aspace' is set before using it as it will stay null without
-IOMMU, such as on msm8974.
+On 4/21/22 12:03, Naresh Kamboju wrote:
+> Linux mainline and linux next arm64 builds failed with gcc-7.3.x.
+> 
+> drivers/usb/typec/tcpm/tcpm.c: In function 'run_state_machine':
+> drivers/usb/typec/tcpm/tcpm.c:4724:3: error: case label does not
+> reduce to an integer constant
+>     case BDO_MODE_TESTDATA:
+>     ^~~~
+> make[4]: *** [scripts/Makefile.build:288: drivers/usb/typec/tcpm/tcpm.o] Error 1
+>                                        ^
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> --
 
-Fixes: bc2112583a0b ("drm/msm/gpu: Track global faults per address-space")
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
----
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 5 ++++-
- drivers/gpu/drm/msm/msm_gpu.c           | 3 ++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+That code is several years old, the define is a constant, and I don't see
+a recent change in the code. What am I missing ?
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 9efc84929be0..1219f71629a5 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -272,7 +272,10 @@ int adreno_get_param(struct msm_gpu *gpu, struct msm_file_private *ctx,
- 		*value = 0;
- 		return 0;
- 	case MSM_PARAM_FAULTS:
--		*value = gpu->global_faults + ctx->aspace->faults;
-+		if (ctx->aspace)
-+			*value = gpu->global_faults + ctx->aspace->faults;
-+		else
-+			*value = gpu->global_faults;
- 		return 0;
- 	case MSM_PARAM_SUSPENDS:
- 		*value = gpu->suspend_count;
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index faf0c242874e..58eb3e1662cb 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -371,7 +371,8 @@ static void recover_worker(struct kthread_work *work)
- 
- 		/* Increment the fault counts */
- 		submit->queue->faults++;
--		submit->aspace->faults++;
-+		if (submit->aspace)
-+			submit->aspace->faults++;
- 
- 		task = get_pid_task(submit->pid, PIDTYPE_PID);
- 		if (task) {
--- 
-2.36.0
-
+Guenter
