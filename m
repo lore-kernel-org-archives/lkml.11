@@ -2,99 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3018C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230316AbiDVVzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
+        id S230339AbiDVV4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiDVVzj (ORCPT
+        with ESMTP id S230310AbiDVVz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:55:39 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE80C3FF3FD
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:15 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id s27so42857vsr.7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:15 -0700 (PDT)
+        Fri, 22 Apr 2022 17:55:57 -0400
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918522A3247
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:12 -0700 (PDT)
+Received: by mail-vs1-f53.google.com with SMTP id b128so8480344vsc.13
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zgxP3Y3a99Tnmri+jyb9sL4QOG+vYvVcmyAwcXdnRGY=;
-        b=fxt+XfICNoW4Ai+vNBE7lxyV3DSyUv32OUMieEmeLit/VJrX/ghs9XewgnWVp/3dsK
-         mU4wCC8/p93DzvqSGJF0O4CpcQD0uguHuGWV7k9wvf1kvDxSDpTPyXfbFv1LmHgbXatA
-         vjfxW81pX69la7kbWCM4eg3A9dVcCc3sn//lV/uhwZ8dSEVMXXIHQOjeLkBO2z3NQJBs
-         fXhZAXbXX7lnNU2wG3mzwkeU7Tv6ggSGFatKDlbuR45yXST/fzWKfO+SEopbxgIPoATZ
-         dqZpL5og2hm0y6bcrOaMbvCo85OEUoeEmv4EqMjuP8lEQC17YIWyEpqlw2IuBUnv36nI
-         cAzw==
+        bh=6Nnz4Zst0bPhyG4+bPpJ1xif7BM4/fGW7NbRucrhml4=;
+        b=luurb7sSi/ydYptLRDsPmPwgsj6ufhuQqTdkq2XihF24gSb2V7bQpiYml/6vCKS/nV
+         RNwz6hd7Kv0zPgYslUtDlapSgocvuQiiW5DxU24L5e1VOHPqVsiYVaevTmMy9HlS3nnY
+         Typdh3lq3/ajCM5q9+iqANcP4SdwcVj9PZge1oo/k5CxmS4whtxk+O4A0uWX/ed1vK/S
+         n14AT1JOExIKMY9XX7X/X1aOMAc5ewYRjXPDcwH1xf2p1kdrLWPyIv3LT/50eAI1Iby0
+         0q/7W/WJTnTDcGs3HzyiJ8fvNJWC7ekuTAynzua6W4tXY7u2i7sJMPJ9Nm9AkKfaKj/4
+         PrtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zgxP3Y3a99Tnmri+jyb9sL4QOG+vYvVcmyAwcXdnRGY=;
-        b=WMM8hDnTzC1orR4+/SKFKGvxs300o9qdQ5JNrOyTi/oh4IV3l1V/jGtyNtMhR5aZWz
-         Vif6e0Q/WlMGqahhG0/m3EreJ/Lm9q5RybMOZxb45K1/Quc/R35vm3nSV6JFdp57Hy6x
-         4qcCd//uKq3OVL4nBYozoaTA9VZyuTOTvGHOTrsHKb8RgbN0tBlgU62i9LRbCHV2G0uK
-         91J4aL1m41it3I288kwT5xt7ULTCnuKfCE13fv34uwvwMvNiILPlpSrX+Sn4q/iUr3GS
-         8DVywfTrUNVKH5DUgXv19tq5LsdYT8d0WH21K2wETO9yqdgmFblliTXFAKNB0K0Y1dtc
-         t01g==
-X-Gm-Message-State: AOAM532RCThmjIK2AWTjVtQo/pdpW6radzxIKesIv26ErqWN0jG3UaFD
-        pUymfA0JOyh08kllOiuioicUnJzmJ/H1smFvBUjFaA==
-X-Google-Smtp-Source: ABdhPJxVFZxS2z4mhjODNSUBGfoul3uUe+CTf4GBu7DjSwd2RQ4DhWtDa1dfiBlSye9HuxVs7NlA+tWpgXqNMnf7QIw=
-X-Received: by 2002:a67:fd0b:0:b0:31b:e36d:31b1 with SMTP id
- f11-20020a67fd0b000000b0031be36d31b1mr2255337vsr.44.1650659682441; Fri, 22
- Apr 2022 13:34:42 -0700 (PDT)
+        bh=6Nnz4Zst0bPhyG4+bPpJ1xif7BM4/fGW7NbRucrhml4=;
+        b=bS9LNfPQrTRFdalxP5tv9iT2CMy8TYjMtVErnL1yrTYjNh4u5/bKHbLGIdqn1X4Hd+
+         GBQNX2y8UgA4Np7Ev32sFlwhkz/JG1EtkXicEcUoOj+BINxw3fyWuTIXMwOL5RgGG63U
+         hoKQ3vQagiyX8mIXGGUywBed/btvY5d5zRvradEuJNGG4OIsgTaC0iLorWgak5e0qSx0
+         IPhBI1i1g3j5LmCjnTbTS/kj+I2XYXvp2gjeCNwZPi/jT5Awm6GkHzFTAvBWqLFIbZgH
+         IK9MwpAoRY0YXyujqDp1Yi2qw6hUc2uaDOlaplvFC0osFF6hjPQ9q8IgDSFtgEa53w1B
+         HsjA==
+X-Gm-Message-State: AOAM530Vsbu6/3wzSVii3jtgJEZHfMPYbVmHF+RZXnV38zgz2IwmAtNN
+        yrdp/V4QNzm2h/NtxbehCU5JiPF22KN7BNCJcLtYaA==
+X-Google-Smtp-Source: ABdhPJwF0+upByX+DdZ/72pi7fzsHrXNgmXb7HtLilh8tuy0NH6tPuc0QIJCs/OUzOAwlkvo93PFjdq+Q5ZyWCRAAF0=
+X-Received: by 2002:a67:2f44:0:b0:32a:27a3:7319 with SMTP id
+ v65-20020a672f44000000b0032a27a37319mr2012915vsv.49.1650659372631; Fri, 22
+ Apr 2022 13:29:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220422195516.10769-1-jvgediya@linux.ibm.com> <20220422195516.10769-5-jvgediya@linux.ibm.com>
-In-Reply-To: <20220422195516.10769-5-jvgediya@linux.ibm.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Fri, 22 Apr 2022 13:34:31 -0700
-Message-ID: <CAAPL-u83O5W8B-G9xqZFWGuJNNc5nNkQ6iTVtJ-Gn01o4uFoPA@mail.gmail.com>
-Subject: Re: [PATCH v3 4/7] device-dax/kmem: Set node state as N_DEMOTION_TARGETS
-To:     Jagdish Gediya <jvgediya@linux.ibm.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
-        dave.hansen@linux.intel.com, ying.huang@intel.com,
-        aneesh.kumar@linux.ibm.com, shy828301@gmail.com,
-        gthelen@google.com, dan.j.williams@intel.com
+References: <20220404211858.968452-1-pcc@google.com> <Ykv39KMpKXb2Mr6p@sirena.org.uk>
+ <YmKwrs3dJ09ybBJa@arm.com>
+In-Reply-To: <YmKwrs3dJ09ybBJa@arm.com>
+From:   Peter Collingbourne <pcc@google.com>
+Date:   Fri, 22 Apr 2022 13:29:21 -0700
+Message-ID: <CAMn1gO7Drzj-sXy5qyCAzm01aFZx8QXHQ8F5C5=BDaDNuap_Dw@mail.gmail.com>
+Subject: Re: [PATCH] arm64: document the boot requirements for MTE
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:55 PM Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
+On Fri, Apr 22, 2022 at 6:42 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
 >
-> Set dax-device node as N_DEMOTION_TARGETS so that it
-> can be used as demotion target.
+> On Tue, Apr 05, 2022 at 09:04:04AM +0100, Mark Brown wrote:
+> > On Mon, Apr 04, 2022 at 02:18:58PM -0700, Peter Collingbourne wrote:
+> >
+> > > +  For CPUs with the Memory Tagging Extension feature:
+> > > +
+> > > +  - If EL3 is present:
+> > > +
+> > > +    - SCR_EL3.ATA (bit 26) must be initialised to 0b1.
+> > > +
+> > > +  - If the kernel is entered at EL1 and EL2 is present:
+> > > +
+> > > +    - HCR_EL2.ATA (bit 56) must be initialised to 0b1.
+> >
+> > Very nitpicky but this is only required for FEAT_MTE2 and above, plain
+> > FEAT_MTE doesn't have these traps.  I don't know that this is a thing
+> > that anyone's actually implemented
 >
-> In future, support should be added to distinguish the
-> dax-devices which are not preferred as demotion target
-> e.g. HBM, for such devices, node shouldn't be set to
-> N_DEMOTION_TARGETS.
+> I think that's a valid point. CPUs may implement FEAT_MTE2 but downgrade
+> it to FEAT_MTE if the SoC does not provide allocation tag storage. So we
+> should make it clear here that only from FEAT_MTE2 we should set those
+> bits (ID_AA64PFR1_EL1.MTE >= 2), otherwise they should be 0 or
+> hyp/firmware risks the OS triggering random external aborts.
 >
-> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
-> ---
+> > and from v8.7 on it's not permitted but the above isn't strictly true
+> > if someone did for some reason have the most basic version.
+>
+> The wording is tricky: "This feature is mandatory from Armv8.7 when
+> FEAT_MTE2 is implemented". So one can still implement FEAT_MTE (or none
+> at all).
 
-Acked-by: Wei Xu <weixugc@google.com>
+Okay, I changed it in v2 to explicitly say FEAT_MTE2.
 
->  drivers/dax/kmem.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/dax/kmem.c b/drivers/dax/kmem.c
-> index a37622060fff..f42ab9d04bdf 100644
-> --- a/drivers/dax/kmem.c
-> +++ b/drivers/dax/kmem.c
-> @@ -147,6 +147,8 @@ static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
->
->         dev_set_drvdata(dev, data);
->
-> +       node_set_state(numa_node, N_DEMOTION_TARGETS);
-> +
->         return 0;
->
->  err_request_mem:
-> --
-> 2.35.1
->
+Peter
