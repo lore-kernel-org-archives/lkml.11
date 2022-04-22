@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF75C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbiDVWAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
+        id S231290AbiDVWBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbiDVWAs (ORCPT
+        with ESMTP id S231240AbiDVWAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:00:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 864A940E329
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650660224;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yAh6HF4oclUNAmoKp6qIJ40bQfDLz8H5HJE2/XLu63Y=;
-        b=dRlMkPFtzS9d20NzskF+9r1O6Lg3KrAlpjNgjmddFWhsdGgLR1i6EuloqbbQAGVmHMPyq4
-        PKqg9CkdVhv8B7+ndlWkbw4NvcqFyowtRwvXxmeipsuUykAHvbIm6e7SEpnAvTOHFUeEPW
-        f6mLBHYUvLkdGmFSD6BweQn8k0ay7uA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-588-DXAZYiwlPZ2gAYH_maiFDQ-1; Fri, 22 Apr 2022 16:01:01 -0400
-X-MC-Unique: DXAZYiwlPZ2gAYH_maiFDQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0B4463C0FEC9;
-        Fri, 22 Apr 2022 20:00:58 +0000 (UTC)
-Received: from dqiao.bos.com (unknown [10.22.19.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A85BDC2811D;
-        Fri, 22 Apr 2022 20:00:57 +0000 (UTC)
-From:   Donghai Qiao <dqiao@redhat.com>
-To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
-        peterz@infradead.org, heying24@huawei.com,
-        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
-        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
-Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
-        Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v2 06/11] smp: use smp_call_private() fron irq_work.c and core.c
-Date:   Fri, 22 Apr 2022 16:00:35 -0400
-Message-Id: <20220422200040.93813-7-dqiao@redhat.com>
-In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
-References: <20220422200040.93813-1-dqiao@redhat.com>
-Reply-To: dqiao@redhat.com
+        Fri, 22 Apr 2022 18:00:38 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582B040E31B
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:44 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id u15so9952957ple.4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PLxWgfNIqb0f6MOCKWhoyP5UgmjbIvJbEaB9oK2PBEI=;
+        b=KmWunHFwmhZ7+/Z0zkVhdm6bYlodk2R4jIYhIdJ6TpI7Ncz4EEZv2P5/ZKRin+K3CY
+         LEW2VPEsRB9iu9U1wVrDx7H2ZCsP0X+PwNoiQxWuLBXC9iefYrWR5t7bwmyHfk69wuWW
+         4xvMPSD5UpI88QZKV32T0JqeArgRbKqUeVQqJ971ag1+dUKy1Qr5odxP375OcM/gabpc
+         ObNCGU3a9bXSrWXKXimjbFYaaWDdU5LDkfqHpHjktW5joHj6DTM2j60L4V+h33qn5D0q
+         lEuny2FIILqyXyJ/9I2br9SYrobHi2UnXKujmJFPKRAYYh/ul/5irlOqb7vyELRB8O6u
+         eZ0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PLxWgfNIqb0f6MOCKWhoyP5UgmjbIvJbEaB9oK2PBEI=;
+        b=lfKgGMjWSwK5ztsYs09ktAi3wdu2yI7vBvafJfP5xU6LAJE3omDas/zoBszEjbEzMA
+         dZuuDB3qY+LYW3fLRtz9wMtLyPy81MQHmw22xiS25/SgnVjpFHf06RtZrfZkVJaG4jVU
+         mMMxqKgljlGqWWSmQmX2X+C0z62eiwLXwelJ3gIjPENUPfBZEhrSA+bLGlROdDPjr9Pu
+         JmnLINYG/Y6ryMkOvESqXVnVxxiwUU8IMTDzROLq5o7dsBDVkWzfrgcI9rfWwhNwkke1
+         7iu4B3N8ywrQoV4c4Yk6OSUG6C/UKpu7i7ilngeeWtpXIEW0BtDw1bpmfaSl41ZdQtrU
+         jTrw==
+X-Gm-Message-State: AOAM533nijcj4ULDs4IieFlbEy6Y6Y3Byz6IWIPNi8KLRsOIN80RPkOU
+        PX3LOS6hzTOd1SrotmXiLlH36yDRj4BNA8o6d4UA4QRPJ96sWA==
+X-Google-Smtp-Source: ABdhPJxiQkyNiLVcGmbpo7Dg+U6BVB6SXJai1P6lBBfFMBRonhtgSnpYJpjNKAc7LY5s1oAGhuEevZr/abqxUfffNCs=
+X-Received: by 2002:a05:6102:3106:b0:32a:18c8:1633 with SMTP id
+ e6-20020a056102310600b0032a18c81633mr2070333vsh.51.1650659373899; Fri, 22 Apr
+ 2022 13:29:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220422195516.10769-1-jvgediya@linux.ibm.com> <20220422195516.10769-3-jvgediya@linux.ibm.com>
+In-Reply-To: <20220422195516.10769-3-jvgediya@linux.ibm.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Fri, 22 Apr 2022 13:29:22 -0700
+Message-ID: <CAAPL-u-LEwVpgx-c_G-tVWsGR+g3vpc=v-jD2OF9_EL5Kpq1nA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/7] mm: demotion: Add new node state N_DEMOTION_TARGETS
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
+        dave.hansen@linux.intel.com, ying.huang@intel.com,
+        aneesh.kumar@linux.ibm.com, shy828301@gmail.com,
+        gthelen@google.com, dan.j.williams@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-irq_work.c and core.c should use the cross interface rather than
-using a unpublished internal function __smp_call_single_queue.
+On Fri, Apr 22, 2022 at 12:55 PM Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
+>
+> Some systems(e.g. PowerVM) have DRAM(fast memory) only NUMA node
+> which are N_MEMORY as well as slow memory(persistent memory) only
+> NUMA node which are also N_MEMORY. As the current demotion target
+> finding algorithm works based on N_MEMORY and best distance, it can
+> choose DRAM only NUMA node as demotion target instead of persistent
+> memory node on such systems. If DRAM only NUMA node is filled with
+> demoted pages then at some point new allocations can start falling
+> to persistent memory, so basically cold pages are in fast memory
+> (due to demotion) and new pages are in slow memory, this is why
+> persistent memory nodes should be utilized for demotion and dram node
+> should be avoided for demotion so that they can be used for new
+> allocations.
+>
+> Add new state N_DEMOTION_TARGETS, node_states[N_DEMOTION_TARGETS]
+> then can be used to hold the list of nodes which can be used
+> as demotion targets, later patches in the series builds demotion
+> targets based on nodes available in node_states[N_DEMOTION_TARGETS].
+>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> ---
+>  drivers/base/node.c      | 4 ++++
+>  include/linux/nodemask.h | 1 +
+>  2 files changed, 5 insertions(+)
+>
 
-Signed-off-by: Donghai Qiao <dqiao@redhat.com>
----
-v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
+Acked-by: Wei Xu <weixugc@google.com>
 
- kernel/irq_work.c   | 4 ++--
- kernel/sched/core.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/irq_work.c b/kernel/irq_work.c
-index f7df715ec28e..0d17c9d03d03 100644
---- a/kernel/irq_work.c
-+++ b/kernel/irq_work.c
-@@ -159,8 +159,8 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
- 			if (!irq_work_claim(work))
- 				goto out;
- 		}
--
--		__smp_call_single_queue(cpu, &work->node.llist);
-+		smp_call_private(cpu, (call_single_data_t *)&work->node.llist,
-+					SMP_CALL_TYPE_IRQ_WORK);
- 	} else {
- 		__irq_work_queue_local(work);
- 	}
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 51efaabac3e4..4fda3dfb887b 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3780,7 +3780,7 @@ static void __ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags
- 	p->sched_remote_wakeup = !!(wake_flags & WF_MIGRATED);
- 
- 	WRITE_ONCE(rq->ttwu_pending, 1);
--	__smp_call_single_queue(cpu, &p->wake_entry.llist);
-+	smp_call_private(cpu, (call_single_data_t *)&p->wake_entry.llist, SMP_CALL_TYPE_TTWU);
- }
- 
- void wake_up_if_idle(int cpu)
--- 
-2.27.0
-
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index ec8bb24a5a22..6eef22e6413e 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -1038,6 +1038,9 @@ static struct node_attr node_state_attr[] = {
+>         [N_CPU] = _NODE_ATTR(has_cpu, N_CPU),
+>         [N_GENERIC_INITIATOR] = _NODE_ATTR(has_generic_initiator,
+>                                            N_GENERIC_INITIATOR),
+> +       [N_DEMOTION_TARGETS] = _NODE_ATTR(demotion_targets,
+> +                                         N_DEMOTION_TARGETS),
+> +
+>  };
+>
+>  static struct attribute *node_state_attrs[] = {
+> @@ -1050,6 +1053,7 @@ static struct attribute *node_state_attrs[] = {
+>         &node_state_attr[N_MEMORY].attr.attr,
+>         &node_state_attr[N_CPU].attr.attr,
+>         &node_state_attr[N_GENERIC_INITIATOR].attr.attr,
+> +       &node_state_attr[N_DEMOTION_TARGETS].attr.attr,
+>         NULL
+>  };
+>
+> diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
+> index 567c3ddba2c4..17844300fd57 100644
+> --- a/include/linux/nodemask.h
+> +++ b/include/linux/nodemask.h
+> @@ -400,6 +400,7 @@ enum node_states {
+>         N_MEMORY,               /* The node has memory(regular, high, movable) */
+>         N_CPU,          /* The node has one or more cpus */
+>         N_GENERIC_INITIATOR,    /* The node has one or more Generic Initiators */
+> +       N_DEMOTION_TARGETS,     /* Nodes that should be considered as demotion targets */
+>         NR_NODE_STATES
+>  };
+>
+> --
+> 2.35.1
+>
