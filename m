@@ -2,81 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C05C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05882C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446503AbiDVKXW (ORCPT
+        id S1446510AbiDVKXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
+        Fri, 22 Apr 2022 06:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446488AbiDVKXT (ORCPT
+        with ESMTP id S235156AbiDVKXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:23:19 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D021FA62
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:20:25 -0700 (PDT)
-Received: from martin by viti.kaiser.cx with local (Exim 4.89)
-        (envelope-from <martin@viti.kaiser.cx>)
-        id 1nhqOg-0007ex-MY; Fri, 22 Apr 2022 12:20:18 +0200
-Date:   Fri, 22 Apr 2022 12:20:18 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/6] staging: r8188eu: use ARRAY_SIZE for mlme_sta_tbl
-Message-ID: <20220422102018.7xh3eqhnswd7tktp@viti.kaiser.cx>
-References: <20220417102221.466524-1-martin@kaiser.cx>
- <20220417102221.466524-7-martin@kaiser.cx>
- <20220422100800.GG2462@kadam>
+        Fri, 22 Apr 2022 06:23:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E4C387BB;
+        Fri, 22 Apr 2022 03:20:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26ED061E6E;
+        Fri, 22 Apr 2022 10:20:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78215C385A4;
+        Fri, 22 Apr 2022 10:20:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650622855;
+        bh=l8DMuJMxhFg3oWj3P06LfAZsH8ZofBIGfJ+Zsxq3M3c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tXz8dnNMqZa1305TV+OZTAXZYU1mQErY7qQwDOrLEGInkAMbEIzqrG3b+N/MezYx+
+         nltOcc4WCszV0jlGsgS1jSmOpfo+zKsVzo3QSZyQ+n4wkjVgoZgzp6Ak5D7/TmmJ2X
+         OqlL4P+FUNqoeKRzqD69pPyT0SP9R1wxn9ZML6uohJbjy12uHgUFabDfUL5BAu+U+I
+         3zZf2YNJh6naLmWslpXXKwp13wozl37QHGEhPsNnvVmppbSUoKH9TTGIzMJMBK5JKR
+         ToquwwGVQQmCB9ufrgASyzefmiULPiVKvutwkGXcCs2etHqxKwQ7ihzemQ8w0C2IDF
+         FgVInoYZe6cag==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nhqPA-0002Om-Fm; Fri, 22 Apr 2022 12:20:49 +0200
+Date:   Fri, 22 Apr 2022 12:20:48 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH RFC 1/5] phy: qcom-qmp: add support for pipe clock muxing
+Message-ID: <YmKBgGHtfDcO1Mkg@hovoldconsulting.com>
+References: <20220421102041.17345-1-johan+linaro@kernel.org>
+ <20220421102041.17345-2-johan+linaro@kernel.org>
+ <de4f9514-5132-f208-d43f-4c50afcda203@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220422100800.GG2462@kadam>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Sender: Martin Kaiser <martin@viti.kaiser.cx>
+In-Reply-To: <de4f9514-5132-f208-d43f-4c50afcda203@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thus wrote Dan Carpenter (dan.carpenter@oracle.com):
-
-> On Sun, Apr 17, 2022 at 12:22:21PM +0200, Martin Kaiser wrote:
-> > Use ARRAY_SIZE instead of hard-coding the number of entries in the
-> > mlme_sta_tbl array.
-
-> > Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+On Thu, Apr 21, 2022 at 02:08:27PM +0300, Dmitry Baryshkov wrote:
+> On 21/04/2022 13:20, Johan Hovold wrote:
+> > Some QMP PHYs need to remux to their pipe clock input to the pipe clock
+> > output generated by the PHY before powering on the PHY and restore the
+> > default source during power down.
+> > 
+> > Add support for an optional pipe clock mux which will be reparented to
+> > the generated pipe clock before powering on the PHY and restored to the
+> > default reference source on power off.
+> > 
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > > ---
-> >  drivers/staging/r8188eu/core/rtw_mlme_ext.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >   drivers/phy/qualcomm/phy-qcom-qmp.c | 71 ++++++++++++++++++++++++++---
+> >   1 file changed, 65 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > index 7d2d1ab061f7..bc6db9670291 100644
+> > --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > @@ -3292,6 +3292,8 @@ struct qmp_phy_combo_cfg {
+> >    * @rx2: iomapped memory space for second lane's rx (in dual lane PHYs)
+> >    * @pcs_misc: iomapped memory space for lane's pcs_misc
+> >    * @pipe_clk: pipe clock
+> > + * @pipemux_clk: pipe clock source mux
+> > + * @piperef_clk: pipe clock default reference source
+> >    * @index: lane index
+> >    * @qmp: QMP phy to which this lane belongs
+> >    * @lane_rst: lane's reset controller
+> > @@ -3311,6 +3313,8 @@ struct qmp_phy {
+> >   	void __iomem *rx2;
+> >   	void __iomem *pcs_misc;
+> >   	struct clk *pipe_clk;
+> > +	struct clk *pipemux_clk;
+> > +	struct clk *piperef_clk;
+> >   	unsigned int index;
+> >   	struct qcom_qmp *qmp;
+> >   	struct reset_control *lane_rst;
+> > @@ -3346,6 +3350,7 @@ struct qcom_qmp {
+> >   	void __iomem *dp_com;
+> >   
+> >   	struct clk_bulk_data *clks;
+> > +	struct clk *pipe_clksrc;
+> 
+> Please move this to qmp_phy too.
 
-> > diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-> > index abb910f33c1c..973adebdd69c 100644
-> > --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-> > +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-> > @@ -404,7 +404,7 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
-> >  		return;
+Ok.
+ 
+> > +	/* Get optional pipe clock mux and default reference source clock. */
+> > +	qphy->pipemux_clk = of_clk_get_by_name(np, "mux");
+> > +	if (IS_ERR(qphy->pipemux_clk)) {
+> > +		ret = PTR_ERR(qphy->pipemux_clk);
+> > +		if (ret == -EPROBE_DEFER)
+> > +			return ret;
+> > +
+> > +		qphy->pipemux_clk = NULL;
+> 
+> This makes the driver ignore every possible erorr except -EPROBE_DEFER. 
+> However the driver should behave in quite the oppposite way. Please use 
+> devm_clk_get_optional() instead. It would do that in better way.
 
-> >  	index = (le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE) >> 4;
-> > -	if (index > 13)
-> > +	if (index > ARRAY_SIZE(mlme_sta_tbl))
->                   ^
-> This is an off by one.  Should be >=.  The auto builders would have
-> caught this eventually.
+We'd need to add an optional version of devm_get_clk_from_child() for
+that due to the questionable "lane" child nodes this driver uses.
 
-Thanks for spotting this, Dan. You're right, the array has 14 elements :-(
+The above works for an RFC, but testing for -EINVAL and -ENOENT handles
+a few more theoretical errnos until an optional helper is in place.
 
-This has already made it into staging-next, I'll fix it in a new patch.
+> Not to mention that this code leaks a refcount on the clock.
 
-Best regards,
-Martin
+True, just like the driver has been doing with the pipe clock and lane
+reset since it was merged. I'll fix that up.
 
-> >  		return;
-> >  	fct = mlme_sta_tbl[index];
+> > +	} else {
+> > +		qphy->piperef_clk = of_clk_get_by_name(np, "ref");
+> > +		if (IS_ERR(qphy->piperef_clk)) {
+> > +			ret = PTR_ERR(qphy->piperef_clk);
+> > +			return dev_err_probe(dev, ret,
+> > +					     "failed to get lane%d piperef_clk\n",
+> > +					     id);
+> > +		}
+> > +	}
+> > +
+> 
+> As a second thought.
+> This needs to be more explicit. If the chipset requires the pipe clock 
+> remuxing, we must fail if the clocks were not provided. So depending on 
+> the qmp instance/property the driver should either use devm_clk_get() 
+> (instead of _optional) or skip this block completely.
 
-> regards,
-> dan carpenter
+No, the kernel is not a DT validator (and we have the YAML bindings for
+that now).
 
+> But this will not work with earlier DTS files.
+
+So this is not a problem (but if we really wanted to have the driver
+validate the DT it can be done by updating the compatible strings).
+
+Johan
