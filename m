@@ -2,118 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F9AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444455AbiDVGhT (ORCPT
+        id S1444457AbiDVGlF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
+        Fri, 22 Apr 2022 02:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444439AbiDVGhQ (ORCPT
+        with ESMTP id S1349475AbiDVGlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:37:16 -0400
-Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30FC50B01
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:34:23 -0700 (PDT)
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
-        id 1nhmrb-00017O-Gb
-        for linux-kernel@vger.kernel.org; Fri, 22 Apr 2022 08:33:55 +0200
-X-Injected-Via-Gmane: http://gmane.org/
-To:     linux-kernel@vger.kernel.org
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] fsi: Fix error handling in fsi_master_register() and its
- callers
-Date:   Fri, 22 Apr 2022 08:33:50 +0200
-Message-ID: <26efc808-acd7-cff3-82e7-66561314f8ca@wanadoo.fr>
-References: <f37bfdccfcf8a8d1bdcbf668b802df13253ed3fe.1650556911.git.christophe.jaillet@wanadoo.fr>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-In-Reply-To: <f37bfdccfcf8a8d1bdcbf668b802df13253ed3fe.1650556911.git.christophe.jaillet@wanadoo.fr>
-Cc:     kernel-janitors@vger.kernel.org
+        Fri, 22 Apr 2022 02:41:01 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F783FD9F;
+        Thu, 21 Apr 2022 23:38:09 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id DE156212B7;
+        Fri, 22 Apr 2022 06:38:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650609487; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=deZibHs+oOGPUFWQ4kmyf/kEhVDe3bP5mMUDxsnIrK8=;
+        b=0IJm0XX6apPRA9HamWwY+EI0ebrV5rAFMidYmx7C6iA08yr+tYxNn/w5/bvtdKJmTMxYmJ
+        1L7FKxZ9ND2T09nVDEm7Y8okiy7wJOPEUzVd18L55zs9ngE69dGMPwkomjkvdTr+vqIa1p
+        4Qea75cRtGayicWXnhu8GnRBr7/3NKY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650609487;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=deZibHs+oOGPUFWQ4kmyf/kEhVDe3bP5mMUDxsnIrK8=;
+        b=IN3XNUsOJRkFWHecant/4VwsvYuSF+hPA+0gHT2qlfBHBqLl/pyPsgFPc7j/z7I/+naSzI
+        RJVBRYwfWCOIX1CA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id A29AF2C142;
+        Fri, 22 Apr 2022 06:38:07 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 08:38:07 +0200
+Message-ID: <s5hv8v1tygg.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        Russ Weight <russell.h.weight@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Nick Terrell <terrelln@fb.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 0/5] Firmware loader support for ZSTD-compressed files
+In-Reply-To: <YmGKxb6XILkRqucZ@bombadil.infradead.org>
+References: <20220421152908.4718-1-tiwai@suse.de>
+        <YmGKxb6XILkRqucZ@bombadil.infradead.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220422063350.P1_rtOuLBOezgpeVJ__YDW48n9amFnZita5G_qf3-kk@z>
 
-Le 21/04/2022 à 18:02, Christophe JAILLET a écrit :
-> fsi_master_register() calls device_register().
-> When device_register() fails, put_device() still needs to be called.
+On Thu, 21 Apr 2022 18:48:05 +0200,
+Luis Chamberlain wrote:
 > 
-> Up to now, there is no put_device() in fsi_master_register().
-> Some callers of fsi_master_register() have it, some have not.
->   - fsi_master_acf_probe() call put_device() if fsi_master_register() fails
->   - fsi_master_gpio_probe() call put_device() if fsi_master_register() fails
->   - fsi_master_aspeed_probe() doesn't
->   - hub_master_probe() doesn't
+> On Thu, Apr 21, 2022 at 05:29:03PM +0200, Takashi Iwai wrote:
+> > Hi,
+> > 
+> > this is a revised patch set for RFC I posted some time ago (*).
+> > Since the ZSTD usage became much more popular now, it makes sense to
+> > have the consistent (de)compression support in the kernel, also for
+> > the firmware files.  This patch set adds the support for ZSTD-
+> > compressed firmware files as well as the extension of selftests, in
+> > addition to a couple of relevant fixes in selftests.
+> > 
+> > (*) https://lore.kernel.org/r/20210127154939.13288-1-tiwai@suse.de
 > 
-> In order to fix it and be consistent with the different callers, add the
-> missing put_device() in the error handling path of fsi_master_register()
-> and remove it from 2 callers that were handling it by themselves.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is speculative and compile tested only.
-> Review with care.
-> 
-> Another alternative would be to add the put_device() call in
-> fsi_master_aspeed_probe() and hub_master_probe() if it makes more sense.
-> 
-> Having one or more Fixes tag is a bit hard because of the relations and
-> log history of the 5 files involved in this bug fix.
-> ---
->   drivers/fsi/fsi-core.c          | 1 +
->   drivers/fsi/fsi-master-ast-cf.c | 1 -
->   drivers/fsi/fsi-master-gpio.c   | 1 -
->   3 files changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/fsi/fsi-core.c b/drivers/fsi/fsi-core.c
-> index 3a7b78e36701..640692e5400f 100644
-> --- a/drivers/fsi/fsi-core.c
-> +++ b/drivers/fsi/fsi-core.c
-> @@ -1319,6 +1319,7 @@ int fsi_master_register(struct fsi_master *master)
->   
->   	rc = device_register(&master->dev);
->   	if (rc) {
-> +		put_device(&master->dev);
->   		ida_simple_remove(&master_ida, master->idx);
->   		return rc;
->   	}
-> diff --git a/drivers/fsi/fsi-master-ast-cf.c b/drivers/fsi/fsi-master-ast-cf.c
-> index 24292acdbaf8..dde63d703ea1 100644
-> --- a/drivers/fsi/fsi-master-ast-cf.c
-> +++ b/drivers/fsi/fsi-master-ast-cf.c
-> @@ -1395,7 +1395,6 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
->   		return 0;
->   
->   	device_remove_file(master->dev, &dev_attr_external_mode);
-> -	put_device(&master->master.dev);
->   	return rc;
->   
->    stop_copro:
-> diff --git a/drivers/fsi/fsi-master-gpio.c b/drivers/fsi/fsi-master-gpio.c
-> index 7d5f29b4b595..1ae3c164d7fd 100644
-> --- a/drivers/fsi/fsi-master-gpio.c
-> +++ b/drivers/fsi/fsi-master-gpio.c
-> @@ -856,7 +856,6 @@ static int fsi_master_gpio_probe(struct platform_device *pdev)
->   	rc = fsi_master_register(&master->master);
->   	if (rc) {
->   		device_remove_file(&pdev->dev, &dev_attr_external_mode);
-> -		put_device(&master->master.dev);
->   		return rc;
->   	}
->   	return 0;
+> Russ had posted a set of patches which this likely needs to be
+> rebased on top of. Russ however has to address one kernel splat
+> found by 0day, so I'd expect a new set and then perhaps this can
+> be based on that?
 
-NACK
+Sure, it should be fine, as the code change there is quite minimal.
+Let me know if the base branch becomes ready.
 
-After additional reading of the code, it looks good to me as-is.
-Usage in fsi_master_aspeed_probe() and hub_master_probe() seem to have 
-no release function.
 
-CJ
+thanks,
 
+Takashi
+
+> 
+> [0] https://lkml.kernel.org/r/20220419231658.664388-1-russell.h.weight@intel.com    
+> 
+>   Luis
+> 
