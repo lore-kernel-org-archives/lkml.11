@@ -2,195 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbiDVV6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        id S231173AbiDVV6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiDVV5i (ORCPT
+        with ESMTP id S230525AbiDVV56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:57:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BD852ADE71
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:40:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650660027;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+        Fri, 22 Apr 2022 17:57:58 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7760403EAA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:40:43 -0700 (PDT)
+Received: from [192.168.1.109] (247.72-129-109.adsl-dyn.isp.belgacom.be [109.129.72.247])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id E12922CB5D4;
+        Fri, 22 Apr 2022 22:40:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1650660041;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=He1J3AqXPhXDypeeIvKQfoD2dqdRSISCRDtSvTG+2K0=;
-        b=V7+hKBNuzly+vT8PLT5ViakiH9wEG334vYkTBM+iPTiUcgfzoAk86j7DJ6TU6b9wWuL8/p
-        qvK3cjbW3gpBMowLYqvmSrfp/cAXO7DJW4arb8Lz472pyLXCak2CREc6WtuWXlnvz/PRPr
-        z9IXyesuYNebOjhFCWDZsHMWLSeCaU8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-22EJVP_aPzKxY3Kx3JUvwQ-1; Fri, 22 Apr 2022 16:01:00 -0400
-X-MC-Unique: 22EJVP_aPzKxY3Kx3JUvwQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 22BE11802A34;
-        Fri, 22 Apr 2022 20:00:54 +0000 (UTC)
-Received: from dqiao.bos.com (unknown [10.22.19.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B9617C27EB4;
-        Fri, 22 Apr 2022 20:00:53 +0000 (UTC)
-From:   Donghai Qiao <dqiao@redhat.com>
-To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
-        peterz@infradead.org, heying24@huawei.com,
-        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
-        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
-Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
-        Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v2 04/11] smp: replace smp_call_function_single() with smp_call()
-Date:   Fri, 22 Apr 2022 16:00:33 -0400
-Message-Id: <20220422200040.93813-5-dqiao@redhat.com>
-In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
-References: <20220422200040.93813-1-dqiao@redhat.com>
-Reply-To: dqiao@redhat.com
+        bh=bua5EtbDNu2Of0nRcFOmTXS3IjMFZ5y6IySB6RxScok=;
+        b=2kAEFqboh4xIWVhHxQd1oG9fmbhf/RU5Kpk7E6qT3nj7iiuI8644gjaQj+OdAJre8ZXXl9
+        v8FyD69kG7U5NCxrBCEd/nMVgHzZx/yreqCYIq8VKtIC3GJ9sotcmyGt7LoOhCBR38Kkfc
+        Swiyo5J3anobJyxuQ1OPLTIO3jAaG57iSdWXT0h0Y+moDFqdA3r5epKOniQdxW6jGxs2BQ
+        UHtDrnsVgjhR4txmQvxNnunoP0F2xDqCUO0DPQfy42uu05nQVxBIUrzNvpwRDU0qaUK70N
+        GmUQ3xryPyI8lfZK5oKtmaQSc0zEtileavwVKrSZEA0VIpNcZw5MI8H7YpcY4A==
+Message-ID: <9ceab104f5189664648c219fb9d1e0d70d6bda9f.camel@svanheule.net>
+Subject: Re: [PATCH v1 3/6] gpio: realtek-otto: Support per-cpu interrupts
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Bert Vermeulen <bert@biot.com>, linux-kernel@vger.kernel.org
+Date:   Fri, 22 Apr 2022 22:40:39 +0200
+In-Reply-To: <b8b62753ad5235e065b4cb0856a7a7c33438dfbb.camel@svanheule.net>
+References: <cover.1649533972.git.sander@svanheule.net>
+         <8d4e0848f233c2c1b98aa141741c61d95cd3843f.1649533972.git.sander@svanheule.net>
+         <CACRpkdbSdDAKiFAsHBosdVDpBhWW-Keoq+t8GJ5LsyWjOZwp_g@mail.gmail.com>
+         <87h76mahsl.wl-maz@kernel.org>
+         <b8b62753ad5235e065b4cb0856a7a7c33438dfbb.camel@svanheule.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminated the percpu global csd_data and temporarily hook up
-to smp_call().
+On Fri, 2022-04-22 at 09:04 +0200, Sander Vanheule wrote:
+> Hi Linus, Marc,
+> 
+> On Thu, 2022-04-21 at 10:48 +0100, Marc Zyngier wrote:
+> > On Thu, 21 Apr 2022 00:04:16 +0100,
+> > Linus Walleij <linus.walleij@linaro.org> wrote:
+> > > 
+> > > On Sat, Apr 9, 2022 at 9:56 PM Sander Vanheule <sander@svanheule.net> wrote:
+> > > 
+> > > > On SoCs with multiple cores, it is possible that the GPIO interrupt
+> > > > controller supports assigning specific pins to one or more cores.
+> > > > 
+> > > > IRQ balancing can be performed on a line-by-line basis if the parent
+> > > > interrupt is routed to all available cores, which is the default upon
+> > > > initialisation.
+> > > > 
+> > > > Signed-off-by: Sander Vanheule <sander@svanheule.net>
+> > > 
+> > > That sounds complicated.
+> > > 
+> > > Sounds like something the IRQ maintainer (Marc Z) should
+> > > have a quick look at.
+> > 
+> > This is pretty odd indeed. There seem to be a direct mapping between
+> > the GPIOs and the CPU it interrupts (or at least that's what the code
+> > seem to express). However, I don't see a direct relation between the
+> > CPUs and the chained interrupt. It isn't even clear if this interrupt
+> > itself is per-CPU.
+> > 
+> > So this begs a few questions:
+> > 
+> > - is the affinity actually affecting the target CPU? or is it
+> >   affecting the target mux?
+> > 
+> > - how is the affinity of the mux interrupt actually enforced?
+> 
+> There are three interrupt controllers at play here:
+>    1. MIPS CPU interrupt controller: drivers/irqchip/irq-mips-cpu.c
+>       One interrupt controller per VPE, so in this case there are two. Provides
+>       per-CPU interrupts.
+>    2. SoC interrupt controller: drivers/irqchip/irq-realtek-rtl.c
+>       Also one interrupt controller per VPE. I suppose these will also be per-
+>       CPU, although this isn't implemented in the driver yet, and I don't think
+>       I yet fully understand how should work in the kernel.
+>    3. GPIO interrupt controller: drivers/gpio/gpio-realtek-otto.c
+>       One interrupt controller for the entire GPIO bank, with optional
+>       configurable affinity (this patch) for the different VPEs.
+> 
+> For the RTL839x series of SoCs, this results in the following:
 
-There is no obvious reason or evidence that the differentiation
-of xcall of single recipient from that of multiple recipients
-can exploit noticeable performance gaining. If something can be
-optimized on this matter, it might be from the interrupt level
-which has been already addressed by arch_send_call_function_single_ipi()
-and arch_send_call_function_ipi_mask(). In fact, both have been
-taken in to account from smp_call_function_many_cond().
+Sorry for the messed up formattng, let me try that again.
 
-So, it is appropriate to make this change as part of the cross
-call interface.
+GPIO LINES        SOC IRQ              MIPS
+    +--------+    LINE +-----------+   HW IRQ +--------+
+--->| GPIO   |         | SOC IRQ   |   LINES  | IRQ    |
+--->| BANK   |-----o-->| VPE0 CTRL |=========>| VPE0   |
+ .  |        |     |   +-----------+          +--------+
+ .  +--------+     | 
+ .                 |
+                   |   +-----------+          +--------+
+                   \-->| SOC IRQ   |          | IRQ    |
+                       | VPE1 CTRL |=========>| VPE1   |
+                       +-----------+          +--------+
 
-Signed-off-by: Donghai Qiao <dqiao@redhat.com>
----
-v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
 
- kernel/smp.c | 74 ++++++++++++++++++----------------------------------
- 1 file changed, 25 insertions(+), 49 deletions(-)
+> For RTL930x, where GPIO IRQ affinity is configurable:
 
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 22e8f2bd770b..8998b97d5f72 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -399,8 +399,6 @@ static __always_inline void csd_unlock(struct __call_single_data *csd)
- 	smp_store_release(&csd->node.u_flags, 0);
- }
- 
--static DEFINE_PER_CPU_SHARED_ALIGNED(call_single_data_t, csd_data);
--
- void __smp_call_single_queue(int cpu, struct llist_node *node)
- {
- #ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
-@@ -634,6 +632,9 @@ void flush_smp_call_function_from_idle(void)
- }
- 
- /*
-+ * This is a temporarily hook up. This function will be eliminated
-+ * with the last patch in this series.
-+ *
-  * smp_call_function_single - Run a function on a specific CPU
-  * @func: The function to run. This must be fast and non-blocking.
-  * @info: An arbitrary pointer to pass to the function.
-@@ -642,59 +643,21 @@ void flush_smp_call_function_from_idle(void)
-  * Returns 0 on success, else a negative status code.
-  */
- int smp_call_function_single(int cpu, smp_call_func_t func, void *info,
--			     int wait)
-+			int wait)
- {
--	call_single_data_t *csd;
--	call_single_data_t csd_stack = {
--		.node = { .u_flags = CSD_FLAG_LOCK | CSD_TYPE_SYNC, },
--	};
--	int this_cpu;
--	int err;
--
--	/*
--	 * prevent preemption and reschedule on another processor,
--	 * as well as CPU removal
--	 */
--	this_cpu = get_cpu();
--
--	/*
--	 * Can deadlock when called with interrupts disabled.
--	 * We allow cpu's that are not yet online though, as no one else can
--	 * send smp call function interrupt to this cpu and as such deadlocks
--	 * can't happen.
--	 */
--	WARN_ON_ONCE(cpu_online(this_cpu) && irqs_disabled()
--		     && !oops_in_progress);
--
--	/*
--	 * When @wait we can deadlock when we interrupt between llist_add() and
--	 * arch_send_call_function_ipi*(); when !@wait we can deadlock due to
--	 * csd_lock() on because the interrupt context uses the same csd
--	 * storage.
--	 */
--	WARN_ON_ONCE(!in_task());
--
--	csd = &csd_stack;
--	if (!wait) {
--		csd = this_cpu_ptr(&csd_data);
--		csd_lock(csd);
--	}
--
--	csd->func = func;
--	csd->info = info;
--#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
--	csd->node.src = smp_processor_id();
--	csd->node.dst = cpu;
--#endif
-+	unsigned int flags = 0;
- 
--	err = generic_exec_single(cpu, csd);
-+	if ((unsigned int)cpu >= nr_cpu_ids || !cpu_online(cpu))
-+		return -ENXIO;
- 
- 	if (wait)
--		csd_lock_wait(csd);
-+		flags = SMP_CALL_TYPE_SYNC;
-+	else
-+		flags = SMP_CALL_TYPE_ASYNC;
- 
--	put_cpu();
-+	smp_call(cpu, func, info, flags);
- 
--	return err;
-+	return 0;
- }
- EXPORT_SYMBOL(smp_call_function_single);
- 
-@@ -1159,6 +1122,19 @@ void __smp_call_mask_cond(const struct cpumask *mask,
- 		smp_cond_func_t cond_func,
- 		unsigned int flags)
- {
-+	bool wait = false;
-+
-+	if (flags == SMP_CALL_TYPE_SYNC)
-+		wait = true;
-+
-+	preempt_disable();
-+
-+	/*
-+	 * This is temporarily hook. The function smp_call_function_many_cond()
-+	 * will be inlined here with the last patch in this series.
-+	 */
-+	smp_call_function_many_cond(mask, func, info, wait, cond_func);
-+	preempt_enable();
- }
- 
- /*
--- 
-2.27.0
+GPIO LINES        SOC IRQ              MIPS
+    +--------+    LINE +-----------+   HW IRQ +--------+
+--->| GPIO   |-------->| SOC IRQ   |   LINES  | IRQ    |
+--->| BANK   |         | VPE0 CTRL |=========>| VPE0   |
+ .  |        |-----\   +-----------+          +--------+
+ .  +--------+     | 
+ .                 |
+                   |   +-----------+          +--------+
+                   \-->| SOC IRQ   |          | IRQ    |
+                       | VPE1 CTRL |=========>| VPE1   |
+                       +-----------+          +--------+
+
+> The interrupt for the GPIO controller can be muxed to any of the MIPS HW
+> interrupts on any (or all) of the VPEs, and these muxes (SoC IRQ controllers)
+> can be configured independently per CPU. The SoC IRQ line index is fixed, and
+> consistent for both VPEs.
+> Only in the second diagram can individual GPIO interrupts be muxed to any of the
+> VPEs, but there is still only one IRQ line per VPE for all selected GPIO lines.
+> 
+> I hopes this helps to clarify the situation. We don't have any real
+> documentation, so this is basically derived from registers descriptions in SDK
+> headers and testing the interrupt behaviour.
+> 
+> Best,
+> Sander
 
