@@ -2,73 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232353AbiDVWN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
+        id S232367AbiDVWOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbiDVWMT (ORCPT
+        with ESMTP id S232317AbiDVWMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:12:19 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6482E710C
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:59:07 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id f38so16643206ybi.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:59:07 -0700 (PDT)
+        Fri, 22 Apr 2022 18:12:00 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A4F18C287
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:58:47 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id d3so5775207ilr.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:58:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xebxWNQuYNsiULkvsP8Xksi7ExUdkFx9hBwHBb7lxno=;
-        b=fkxfcmkFOeL+3mJt+dM8xgC1BKfKmamAcSRTx467jTB3uqfbflUzssUVzH02MVcGYq
-         A+OYzIgydCo/ZfHCesO5ybzjSIk+U9cDZ57szKpkov5OtuLSH3B2DvMfOQkmgMwFOUld
-         8HUKJu0gt/C4yqGw4RgPcAhjg1Z+oHc8kFbnSfSVbEv++nCZk3vnnmQz8rkSYGiRp8RG
-         I4LsW3JUK3CuvDRWEtNvkdNjhFNInwsd+u4xMcYTYXnEUmouZ7j126Azkyz6lGozfAd4
-         VubeH+5EHzENhqjtgidGRv5AhFNNzZ6ZpcnKrjieD2EA+mH8i+1m+UflPQpmrbxCTPvx
-         /QZA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BUpSqOzVYiFBHHL5wyZniliWxqmPr3GRK8w6NgSpN5Y=;
+        b=XcmVK7JwNu54yeoZvUVgRE4ycDDruCjbj+O5/cIqn5LV67XjhrDem/poh9j9WGzYTq
+         LnUDaJvHfOKnKPlTahgjH/qcg22qtd5Ff1o4h3AgL+7IUtNgRfd71+gL6T35uZxuSGE/
+         0cl58yjKwbyagr1pWsEYjmcGKECgKksbTZEzCqO1gUMr8ksXXPPnbQNTSIM3eRUCdtfN
+         /Qb8DAB56KwthFkmyNNza4ZsncLT3Xlal8f6W70u74xt5+hlKR3zpY9dT+FBJOi9/3Oc
+         QvMOpyk26Nc9Q+j17urh7MTZvzuJAbyRiftOILa9thZn7wEV4+ua/tcuTjW+BZYloL5v
+         mKgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xebxWNQuYNsiULkvsP8Xksi7ExUdkFx9hBwHBb7lxno=;
-        b=A1ciH7gJy6q85YbRdOQHFgGthmYVtsQPZqkqnGWGPs2P3natMsN0cHG/Z9aGMqxiUn
-         QiD6WaH2+FZ6Q3Aul72+PsFcKyONUgmKWBSGrn4cLcvqVSVTPvuydk/jNcakvqXAB7wr
-         jI4Thz10ZAbmAAMFJZSJfxooPe1Oo+66+XTEM5OPF92nCVc21f27fFdxklCUDLnrfaLY
-         aA43OIu4NQVOzKwTt1XPtcQxHOB1g4ih4qUSQSx/CUPOq5/NpKmRFf45Sh61SIWS/Rjb
-         Luz2tRcJO8ylCbbl+8h3bIeb3Oqv0E7BpMCskeN3FTkNgNY8Sj0TQxqumus5Q0rB5lvl
-         B2VQ==
-X-Gm-Message-State: AOAM530zyxAXpBVc3uJ5k3AO+J3lnZqM3GTJKcZ9RD2uUFe6n2NbuzCN
-        OJOYS0H4TjVwOZmHPnkWr6gYJAWOltdOqv2//0rd2Q==
-X-Google-Smtp-Source: ABdhPJz6RHpkF4rIoCwoW3SD2TC5w8sxV/THHy1ewo+Nh1dqN167FqRmTsmEvmNqeKeg57QSnhU1jtx9DmxLtB8AxGM=
-X-Received: by 2002:a5b:dc5:0:b0:624:f16d:7069 with SMTP id
- t5-20020a5b0dc5000000b00624f16d7069mr6429543ybr.295.1650661146776; Fri, 22
- Apr 2022 13:59:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BUpSqOzVYiFBHHL5wyZniliWxqmPr3GRK8w6NgSpN5Y=;
+        b=2b+ksWnklLhZgwBpN4k4GfPyXC8zhWjULHH9t0atDbY5civ2swMzb4LoCDsAZk//dM
+         cZoZvu7mLolIbjEXxdI16a9kC4KkExb/PfhWEa1p+4ImnPN9ZToq+u+Cl7bVKj1SYE5k
+         49hP0Je3eFkWEuE4p4ewCUEs8K0AN2ZjOoxybZ8uX/euJlfR4IzCJhISEmV0/qhta0PP
+         QnIbPJzO4DcV1R3JpS/5cdRGVgpq0ZhQ33mtG5Bb5lg2M8I2CTDP5mAy+kWUgPXbFsfh
+         eJX7+jHd+H/Ub6qfNM5jo4wi4Cf5jcJzE6Cocw0P48742ynamxoglT2TEgTJMSYJp2YU
+         lObA==
+X-Gm-Message-State: AOAM533Nx7pkXGKxtMJTvuVjO7Z8Dt9g/REJpOpT4dhpKuV9SQtaTsFR
+        VFjMEPf08/V4mguctr4/yUvIjXTaw4M0Tw==
+X-Google-Smtp-Source: ABdhPJzUh4luMNplztXSuP6L7uMw2SWA7GRGbpG/TNQKBppwZ6TtQARW2I6z2+myuIpakDIbUiI0Xw==
+X-Received: by 2002:a63:2c4c:0:b0:398:997d:b5b8 with SMTP id s73-20020a632c4c000000b00398997db5b8mr5303391pgs.86.1650655964090;
+        Fri, 22 Apr 2022 12:32:44 -0700 (PDT)
+Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:32:43 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH v3 3/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_evt_priv
+Date:   Sat, 23 Apr 2022 01:02:19 +0530
+Message-Id: <20220422193223.11948-4-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
+References: <20220422193223.11948-1-makvihas@gmail.com>
 MIME-Version: 1.0
-References: <20220422083216.304dd75c@canb.auug.org.au>
-In-Reply-To: <20220422083216.304dd75c@canb.auug.org.au>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 22 Apr 2022 22:58:55 +0200
-Message-ID: <CACRpkdav4Lj9mbrk6cracB9+7V+4JUNqsX4ntcbuYTxaHru51w@mail.gmail.com>
-Subject: Re: linux-next: Signed-off-by missing for commit in the pinctrl tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:32 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+Drop unnecessary wrapper _rtw_init_evt_priv and move its logic to
+rtw_init_evt_priv.
 
-> Commit
->
->   c04c391aa743 ("dt-bindings: pinctrl: add rockchip,rk3036-pinctrl compatible string")
->
-> is missing a Signed-off-by from its committer.
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_cmd.c | 27 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 18 deletions(-)
 
-Thanks Stephen, fixed it up in-place.
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index fc955fce2..512896b86 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -17,22 +17,6 @@
+ 
+ static void c2h_wk_callback(struct work_struct *work);
+ 
+-static int _rtw_init_evt_priv(struct evt_priv *pevtpriv)
+-{
+-	int res = _SUCCESS;
+-
+-	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
+-	atomic_set(&pevtpriv->event_seq, 0);
+-
+-	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
+-	pevtpriv->c2h_wk_alive = false;
+-	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN + 1);
+-	if (!pevtpriv->c2h_queue)
+-		res = _FAIL;
+-
+-	return res;
+-}
+-
+ void rtw_free_evt_priv(struct	evt_priv *pevtpriv)
+ {
+ 	cancel_work_sync(&pevtpriv->c2h_wk);
+@@ -133,9 +117,16 @@ u32	rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ 
+ u32 rtw_init_evt_priv(struct evt_priv *pevtpriv)
+ {
+-	int	res;
++	u32 res = _SUCCESS;
++
++	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
++	atomic_set(&pevtpriv->event_seq, 0);
+ 
+-	res = _rtw_init_evt_priv(pevtpriv);
++	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
++	pevtpriv->c2h_wk_alive = false;
++	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN + 1);
++	if (!pevtpriv->c2h_queue)
++		res = _FAIL;
+ 
+ 	return res;
+ }
+-- 
+2.30.2
 
-Yours,
-Linus Walleij
