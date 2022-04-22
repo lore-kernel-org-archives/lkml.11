@@ -2,97 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 407C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2734EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444897AbiDVHjG (ORCPT
+        id S1444906AbiDVHj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52530 "EHLO
+        Fri, 22 Apr 2022 03:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345405AbiDVHjB (ORCPT
+        with ESMTP id S238383AbiDVHjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:39:01 -0400
-X-Greylist: delayed 1715 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 00:36:09 PDT
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C0C50B02
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:36:08 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost.localdomain)
-        by localhost.localdomain with esmtps (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <kunyu@nfschina.com>)
-        id 1nhnNr-0006Hd-Mq; Fri, 22 Apr 2022 15:07:15 +0800
-Received: (from root@localhost)
-        by localhost.localdomain (8.15.2/8.15.2/Submit) id 23M76wCn024156;
-        Fri, 22 Apr 2022 15:06:58 +0800
-Date:   Fri, 22 Apr 2022 15:06:58 +0800
-From:   Li kunyu <kunyu@nfschina.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] sched: Optimize unused integer return values
-Message-ID: <20220422070658.GA24149@localhost.localdomain>
+        Fri, 22 Apr 2022 03:39:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9EC5133A;
+        Fri, 22 Apr 2022 00:37:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E136BB82ABF;
+        Fri, 22 Apr 2022 07:37:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D39C385A0;
+        Fri, 22 Apr 2022 07:36:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650613019;
+        bh=/UjuOtx9fL0nf2WxyJQGshyyvuSlNPOux43de6wbbNY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f/9iyE+zfp6xwVYLA485y+zz3vvb9m50NtEtqvvOHdtmk1Nk/oLzPt5Tu1nAaO7xD
+         zPD+jz0GmkAb+Lh1EpAapRE0hegNBpuNBiLIVk2dimikjwyGoovqOxUaQgPO0UsTON
+         fWf0GM8AEFXXoMW77Y8pvYmMwEJC67FjKMBXKK84=
+Date:   Fri, 22 Apr 2022 09:36:56 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hongyu Xie <xy521521@gmail.com>
+Cc:     johan@kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        stable@vger.kernel.org, "sheng . huang" <sheng.huang@ecastech.com>,
+        wangqi@kylinos.cn, xiongxin@kylinos.cn
+Subject: Re: [RESEND PATCH -next] USB: serial: pl2303: implement reset_resume
+ member
+Message-ID: <YmJbGDpon91iQol2@kroah.com>
+References: <20220419065408.2461091-1-xy521521@gmail.com>
+ <YmGKL05dnA+q/HAM@kroah.com>
+ <f3f6ea7d-2051-7a7f-61e0-8a5bba8ca8f2@gmail.com>
+ <YmI4I9MCLBheMyvr@kroah.com>
+ <99546b13-44f1-3dbf-aeb4-86c76ce74626@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <99546b13-44f1-3dbf-aeb4-86c76ce74626@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sched: Optimize unused integer return values
+On Fri, Apr 22, 2022 at 02:42:41PM +0800, Hongyu Xie wrote:
+> 
+> Hi greg
+> On 2022/4/22 13:07, Greg KH wrote:
+> > On Fri, Apr 22, 2022 at 10:35:59AM +0800, Hongyu Xie wrote:
+> > > 
+> > > Hi greg,
+> > > On 2022/4/22 00:45, Greg KH wrote:
+> > > > On Tue, Apr 19, 2022 at 02:54:08PM +0800, Hongyu Xie wrote:
+> > > > > From: Hongyu Xie <xiehongyu1@kylinos.cn>
+> > > > > 
+> > > > > pl2303.c doesn't have reset_resume for hibernation.
+> > > > > So needs_binding will be set to 1 duiring hibernation.
+> > > > > usb_forced_unbind_intf will be called, and the port minor
+> > > > > will be released (x in ttyUSBx).
+> > > > 
+> > > > Please use the full 72 columns that you are allowed in a changelog text.
+> > > > 
+> > > > 
+> > > > > It works fine if you have only one USB-to-serial device.
+> > > > > Assume you have 2 USB-to-serial device, nameing A and B.
+> > > > > A gets a smaller minor(ttyUSB0), B gets a bigger one.
+> > > > > And start to hibernate. When your PC is in hibernation,
+> > > > > unplug device A. Then wake up your PC by pressing the
+> > > > > power button. After waking up the whole system, device
+> > > > > B gets ttyUSB0. This will casuse a problem if you were
+> > > > > using those to ports(like opened two minicom process)
+> > > > > before hibernation.
+> > > > > So member reset_resume is needed in usb_serial_driver
+> > > > > pl2303_device.
+> > > > 
+> > > > If you want persistent device naming, use the symlinks that udev creates
+> > > > for your for all your serial devices.  Never rely on the number of a USB
+> > > > to serial device.
+> > > Let me put it this way. Assume you need to record messages output from two
+> > > machines using 2 USB-to-serial devices(naming A and B, and A is on
+> > > USB1-port3, B is on USB1-port4) opened by two minicom process.
+> > > The setting for A in minicom would be like:
+> > > 	"A -    Serial Device      : /dev/ttyUSB0"
+> > > The setting for B in minicom would be like:
+> > > 	"A -    Serial Device      : /dev/ttyUSB1"
+> > > Then start to hibernate on your computer. When your PC is in
+> > > hibernation, unplug A. After waking up your computer, "/dev/ttyUSB0"
+> > > would be released first, then allocated to B. The minicom process used
+> > > to record outputs from A is now recording B's outputs. The minicom
+> > > process used to record outputs from B is now recording nothing, because
+> > > "/dev/ttyUSB1" is not exist anymore. That's the problem I've been
+> > > talking about. And I don't think using symlinks will solve this problem.
+> > 
+> > Yes, symlinks will solve the issue, that is what they are there for.
+> > Look in /dev/serial/ for a persistent name for them that allows you to
+> > uniquely open the correct device if they can be described.  Using
+> > /dev/ttyUSBX is almost never the correct thing to do.
+> Thanks for letting me know this. This patch is useless.
 
-Signed-off-by: Li kunyu<kunyu@nfschina.com>
----
- kernel/sched/core.c  | 3 +--
- kernel/sched/sched.h | 4 ++--
- 2 files changed, 3 insertions(+), 4 deletions(-)
+It's not useless, I'm just saying that you should not be relying on
+ttyUSBX nodes to ever be persistent.
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 51efaabac3e4..a71d09d6bb75 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -5491,11 +5491,10 @@ static void sched_tick_stop(int cpu)
- }
- #endif /* CONFIG_HOTPLUG_CPU */
- 
--int __init sched_tick_offload_init(void)
-+void __init sched_tick_offload_init(void)
- {
- 	tick_work_cpu = alloc_percpu(struct tick_work);
- 	BUG_ON(!tick_work_cpu);
--	return 0;
- }
- 
- #else /* !CONFIG_NO_HZ_FULL */
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 8dccb34eb190..850e25f7460d 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -2326,7 +2326,7 @@ extern void post_init_entity_util_avg(struct task_struct *p);
- 
- #ifdef CONFIG_NO_HZ_FULL
- extern bool sched_can_stop_tick(struct rq *rq);
--extern int __init sched_tick_offload_init(void);
-+extern void __init sched_tick_offload_init(void);
- 
- /*
-  * Tick may be needed by tasks in the runqueue depending on their policy and
-@@ -2346,7 +2346,7 @@ static inline void sched_update_tick_dependency(struct rq *rq)
- 		tick_nohz_dep_set_cpu(cpu, TICK_DEP_BIT_SCHED);
- }
- #else
--static inline int sched_tick_offload_init(void) { return 0; }
-+static inline void sched_tick_offload_init(void) { }
- static inline void sched_update_tick_dependency(struct rq *rq) { }
- #endif
- 
--- 
-2.18.2
+> I still have one
+> more question though, since using /dev/ttyUSBX is almost never the correct
+> thing to do, what is /dev/ttyUSBx used for then?
 
+That is the name that the kernel gives them, as it has to pick
+something.  Same for all kernel device names, the persistence rules live
+in userspace, not in the kernel.
+
+Now if this is a valid feature or not for the driver that's a totally
+different question that I will let Johan review.  I was just pointing
+out a way for you to resolve your issue today without any kernel changes
+needed at all.
+
+thanks,
+
+greg k-h
