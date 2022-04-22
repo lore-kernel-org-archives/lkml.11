@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41978C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8662DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448576AbiDVOVG (ORCPT
+        id S1349639AbiDVOVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
+        Fri, 22 Apr 2022 10:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448566AbiDVOUy (ORCPT
+        with ESMTP id S1448624AbiDVOUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 10:20:54 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBAA5AEED;
-        Fri, 22 Apr 2022 07:17:39 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nhu6L-0002zq-Hd; Fri, 22 Apr 2022 16:17:37 +0200
-Message-ID: <e4c9bb60-210d-243a-e225-6b3546c0b42b@leemhuis.info>
-Date:   Fri, 22 Apr 2022 16:17:36 +0200
+Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CCE5B3F9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:17:31 -0700 (PDT)
+Received: from pop-os.home ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id hu64nHsTWXeonhu64nsPbR; Fri, 22 Apr 2022 16:17:25 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 22 Apr 2022 16:17:25 +0200
+X-ME-IP: 86.243.180.246
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tarun Kanti DebBarma <tarun.kanti@ti.com>,
+        Thara Gopinath <thara@ti.com>,
+        "Cousson, Benoit" <b-cousson@ti.com>,
+        Santosh Shilimkar <santosh.shilimkar@ti.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] ARM: OMAP1: Fix error handling path in omap1_dm_timer_init()
+Date:   Fri, 22 Apr 2022 16:17:18 +0200
+Message-Id: <89cad160be5b186d8f6fd79bdb6ba3fa5e4bb53b.1650637013.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        regressions@lists.linux.dev,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-References: <s5ha6cdtglj.wl-tiwai@suse.de>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: [REGRESSION] Missing IRQ via amd_gpio
-In-Reply-To: <s5ha6cdtglj.wl-tiwai@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650637059;93b2feed;
-X-HE-SMSGID: 1nhu6L-0002zq-Hd
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Takashi! Thx for CCing the regression list.
+platform_device_put() should be called instead of
+platform_device_unregister() in the error handling path because, at this
+point, no successful platform_device_add() has been called.
 
-On 22.04.22 15:03, Takashi Iwai wrote:
-> Hi,
-> 
-> we received a bug report for 5.17.3 kernel showing a new error:
-> 
->  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
-> 
-> Not only an error message but in practice this leads to a missing IRQ
-> assignment; the IRQ 27 is no longer assigned to amd_gpio driver.
-> 
-> As the error number (EPROBE_DEFER) indicates, this seems to be the
-> side-effect of the recent fix, the upstream commit 5467801f1fcb
-> ("gpio: Restrict usage of GPIO chip irq members before
-> initialization").  As far as I understand, the problem is in
-> acpi_gpiochip_request_interrupts() call that is called from
-> gpiochip_add_irqchip() itself.  Since it's called before the
-> initialized flag set, it always fails now.
-> 
-> Below is a temporary quick fix and it seems working.  But I'm not sure
-> whether I overlooked something obvious...
+While at it, change the goto label if kzalloc() fails. It is harmless to
+call 'kfree(NULL)', but it is also pointless.
 
-A patch that afaics will fix this hopefully should get merged really
-soon now:
+Fixes: 97933d6ced60 ("ARM: OMAP1: dmtimer: conversion to platform devices")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This is a speculative patch, not even compile tested because of lack of
+cross-compiler.
+So review with care.
+---
+ arch/arm/mach-omap1/timer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-https://lore.kernel.org/all/20220422131452.20757-1-mario.limonciello@amd.com/
+diff --git a/arch/arm/mach-omap1/timer.c b/arch/arm/mach-omap1/timer.c
+index 0411d5508d63..f91ba2353345 100644
+--- a/arch/arm/mach-omap1/timer.c
++++ b/arch/arm/mach-omap1/timer.c
+@@ -135,7 +135,7 @@ static int __init omap1_dm_timer_init(void)
+ 		pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
+ 		if (!pdata) {
+ 			ret = -ENOMEM;
+-			goto err_free_pdata;
++			goto err_free_pdev;
+ 		}
+ 
+ 		pdata->set_timer_src = omap1_dm_timer_set_src;
+@@ -165,7 +165,7 @@ static int __init omap1_dm_timer_init(void)
+ 	kfree(pdata);
+ 
+ err_free_pdev:
+-	platform_device_unregister(pdev);
++	platform_device_put(pdev);
+ 
+ 	return ret;
+ }
+-- 
+2.32.0
 
-See also v1:
-
-https://lore.kernel.org/all/20220414025705.598-1-mario.limonciello@amd.com/
-
-Ciao, Thorsten
