@@ -2,182 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8933FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:36:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F8FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiDVWjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
+        id S233597AbiDVWj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiDVWi2 (ORCPT
+        with ESMTP id S234437AbiDVWiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:38:28 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E132E7090;
-        Fri, 22 Apr 2022 14:46:12 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id y11so5852699ilp.4;
-        Fri, 22 Apr 2022 14:46:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nkDUZxbdA+hWXU65q6VAaFr0TzgsldQALWu4ZWoYD0M=;
-        b=bJee/rEr6BUaMfw59k5TozahkYw7co4nWcHIgP7F/BLY3AQxJmRDWGyNmCqMgHqNnd
-         Flea4d5Up76qniaRAJ4C2k/8sMCcT3ykbdFE9NS1awQ+KBF4SAfKVcz6OM7j9P52Ay9K
-         LRuKC2wwfBFW+3nlRGuKNTjUY7noZf0V4lL3zErNRVJ6tCkYZ1xSvDr4POoVqIbAfrv2
-         v4YeKLBVoeDDntDlhumrNv5qsXIS8IXCIElGtvrMcmWpLMMymhHA63TPkjazsM4RiYd3
-         zvaBuErlj2qcOgVugdIdb5az3E5zUktuiO3B3D7lXFqXw14jX2AbQaJQ3I7NBMnnb0xq
-         57zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nkDUZxbdA+hWXU65q6VAaFr0TzgsldQALWu4ZWoYD0M=;
-        b=YDPmwEnGEB6xZgIbUgHMmVBBk7BBR+YXdOlpF3B8LUn6zwrn2j0RVvf2YkMyxISGSS
-         kZrlwXBPb1z1lMbrraHsKg9RoPucS8qJIiE/Pe7pTuTh6cooNUeh3a4vLD2zJYa33z5J
-         KWT+QFkZJ/Y/b2yLp0ox0N71Vs04gBBlbeUYrR8MhnTXfBAFzCc/eN1NVbo59htmhFHX
-         Bgvz3LORsRm6atlVu0VMIMXL+DyqDS+QcX41BnsDymcf4jxDYljUsIMKu2vQ1QcVuPKl
-         j/HwBhz+MMCryin1HraSgRwvmgXe/krXsLY7hLjKbMKDEzJhxanjFbQJLTMMUKPDF/rC
-         qMrg==
-X-Gm-Message-State: AOAM5337vw9s6gfvkAG37ElAkWYHdQMP+ExE2ig5MllWVUBYCWgMwkSD
-        yzC9v2o9ryDHPEybDX/qOxC4uAL1z6HVyq25Uhg=
-X-Google-Smtp-Source: ABdhPJzNGJm4jcKbD/R3aBuDb2M63BaNg5fLvioWsh96gpit7/9Ok02JoYIVS32OS5cVounn+0kxBToAAOEfAI254hY=
-X-Received: by 2002:a92:cd8d:0:b0:2cd:81ce:79bd with SMTP id
- r13-20020a92cd8d000000b002cd81ce79bdmr221037ilb.252.1650663972085; Fri, 22
- Apr 2022 14:46:12 -0700 (PDT)
+        Fri, 22 Apr 2022 18:38:17 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E67C200389;
+        Fri, 22 Apr 2022 14:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650663022;
+        bh=BHUkq4qIz1dh922+/iqR/+zEXRIaC4ZyZF4Bphn8Po8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=EXay7kgGE8SkMAk7JaTrpqsmjmE+KTqTL3U60OahfcTP4a0uhZGt1TALutDYVF3im
+         M/dCpgzDLEepZkFvF89gCdMzhB7ac4NIR/nuWleWMud/8uWT2N1OdDKDdZ24UdzTND
+         Agi3x+W+yvHXOI3DRqZbvc1rgIezKKwRa4KtuWPs=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([87.78.190.74]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N8ofO-1nvSO519eg-015ujL; Fri, 22
+ Apr 2022 20:31:55 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5/7] ARM: dts: wpcm450: Add clock controller node
+Date:   Fri, 22 Apr 2022 20:30:10 +0200
+Message-Id: <20220422183012.444674-6-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-References: <20220421130056.2510372-1-cuigaosheng1@huawei.com>
- <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com> <60b4e208-efed-c2fb-d1e0-125e5409c861@huawei.com>
-In-Reply-To: <60b4e208-efed-c2fb-d1e0-125e5409c861@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 Apr 2022 14:46:01 -0700
-Message-ID: <CAEf4BzY3j8=uNvvwZXsFEANR84bXMWY2OH+eZi_sSsiLutYhVQ@mail.gmail.com>
-Subject: Re: [PATCH -next] libbpf: Add additional null-pointer checking in make_parent_dir
-To:     cuigaosheng <cuigaosheng1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        gongruiqi1@huawei.com, wangweiyang2@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Fag6c+9a1Pz3T5xG3Pe4SmIRM1zshVKs/bhtGtFRhEqmEKmvImL
+ mQiew5bwtAn5jmH7DaPyUusvR9/woaryKVpQFAXUKgw39r3F9k9/a1u2LQItUrXdsy7diry
+ CBT1J59AfeqO/3Z6yii0UgOL51/2BFCdmCC74iM+zjFRl7g/SRd0Lu5Q5I0YJ4tANpkLGDo
+ PYSdA+hdkEp96fsM9/7sw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IHgVYjueDIk=:s19Olf0VBPcmGPERNqaAVP
+ TIOWAFRCJ8h1zX3LmbH8ZStBHDP6P9A5eQhP0ofSiugsP6jIVRCLO8XSlS6TkrTZNKvhaLg+Y
+ l3o2Uw5FF+BiEH4ITCaIkibSAAw3yYvsmBeEVhI968R+qU+j9jemDR8uiXPckM6NFLlFG3MAA
+ //3Vkn/yzDI+S/DuzZwc4m/fSRP+2u+UhapM3X/x049NPxHSkiKu7Fh0mueR1t73aFB3MqSeU
+ GJMIl3QD9eYoPieeluQDBN3OK/0o5YTLLeJyOrFJLmOGPVANCkGgqyuiY8kxs0yUAo3CYH310
+ YISle7JZrIyFsKumD7yMJwq1DCcT9+BKojeTsB1kLGIfNIrhpEj9bJAEYZrMi4yFhfIr+MuuI
+ oGC7OW38CccejsUeblq3l6NtVKZZGEAk3UXxla3VXvcEOrzM816Y/3YHc18+YQFLVwfym/Rs6
+ HpfcVHsbxMIRnekokDxudI2DP2FZbSsMA7xtr7SkkFrZowFAwaTQ8p2TOBmk0zC/iq5KbO5Y2
+ B91g/xGxfwmhLJJlfHpUjcoIij9CJrmWE0jOPVVktEgdGEoXFbA1ac67XnVeR/SrX/4uFZrob
+ M199YNDpY5+S2cDOf0LRmhL6spD/JnMzvcfaEu2Sg3Fp8Fa+uul9rFFDhAeaNT/23jcmtjwMW
+ Zo1zEe9o8swvO7N3pQTF1PZ2R6K4gxjYouhqdV7DJLsyauGhM7Mq+wdRH8rTk610Aso3QbTiQ
+ HwSYs628upNHfP0XUwISxTcddajIdD53mgG8fgFZBKzt21QSfEDTI9swvdN2Oz4WWaElbqF6E
+ L9fbql54Lgwr8/NXZiYsyHbZDTRoY4Bv1c7TE7ZvHo1RSPL5/Pfp1Y25wggRhQ8r+J3i26fe9
+ Vv+YrLmcvWdfZrrSlui3Z1+SOYosJuorgnTGoBDmJLf2J6TVA8hXRNBVx7L0dWxh0yyGqKvhD
+ QDvvT0otLfKlDfcTjrwYS9Nm73804oL+q7n4v+JhNmqdDbG2O1rdGJj+qDuyTokLdmwVCoi9S
+ RSWbkjlIiwj7PvZR83cBPpgFFVTjIFdAVO36ZXoSfQbHbtQJeMDAM+IwJ/uSrTbWysAcEpG4d
+ J+80VCwdWTBYn4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 7:55 PM cuigaosheng <cuigaosheng1@huawei.com> wrote=
-:
->
-> This email adjusts the code format.
->
-> I don't understand why we don't check path for NULL, bpf_link__pin is an
-> external
-> interface, It will be called by external functions and provide input
-> parameters,
+This declares the clock controller and the necessary 48 Mhz reference
+clock in the WPCM450 device. Switching devices over to the clock
+controller is intentionally done in a separate patch to give time for
+the clock controller driver to land.
 
-that external interface expects non-NULL string as input argument,
-which is a default throughout libbpf's API. You will get SIGSEGV in
-lots of cases if you pass NULL where you are not supposed to, e.g.,
-bpf_object__open_file() and many others. It doesn't mean that libbpf
-should check any pointer argument for NULL.
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
+ arch/arm/boot/dts/nuvoton-wpcm450.dtsi | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-You can argue that strdup(NULL) shouldn't crash but it doesn't. It's
-because strdup() has a contract that it shouldn't be passed NULL. So
-is the case here.
+diff --git a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi b/arch/arm/boot/dts/nu=
+voton-wpcm450.dtsi
+index 1c63ab14c4383..62d70fda7b520 100644
+=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
++++ b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
+@@ -39,6 +39,14 @@ clk24m: clock-24mhz {
+ 		#clock-cells =3D <0>;
+ 	};
 
++	refclk: clock-48mhz {
++		/* 48 MHz reference oscillator */
++		compatible =3D "fixed-clock";
++		clock-output-names =3D "refclk";
++		clock-frequency =3D <48000000>;
++		#clock-cells =3D <0>;
++	};
++
+ 	soc {
+ 		compatible =3D "simple-bus";
+ 		#address-cells =3D <1>;
+@@ -51,6 +59,15 @@ gcr: syscon@b0000000 {
+ 			reg =3D <0xb0000000 0x200>;
+ 		};
 
-> for example in samples/bpf/hbm.c:
->
-> > 201         link =3D bpf_program__attach_cgroup(bpf_prog, cg1);
-> > 202         if (libbpf_get_error(link)) {
-> > 203                 fprintf(stderr, "ERROR: bpf_program__attach_cgroup
-> > failed\n");
-> > 204                 goto err;
-> > 205         }
-> > 206
-> > 207         sprintf(cg_pin_path, "/sys/fs/bpf/hbm%d", cg_id);
-> > 208         rc =3D bpf_link__pin(link, cg_pin_path);
-> > 209         if (rc < 0) {
-> > 210                 printf("ERROR: bpf_link__pin failed: %d\n", rc);
-> > 211                 goto err;
-> > 212         }
->
-> if cg_pin_path is NULL, strdup(NULL) will trigger a segmentation fault in
-> make_parent_dir, I think we should avoid this and add null-pointer checki=
-ng
-> for path, just like check_path:
-> >  7673 static int check_path(const char *path)
-> >  7674 {
-> >  7675         char *cp, errmsg[STRERR_BUFSIZE];
-> >  7676         struct statfs st_fs;
-> >  7677         char *dname, *dir;
-> >  7678         int err =3D 0;
-> >  7679
-> >  7680         if (path =3D=3D NULL)
-> >  7681                 return -EINVAL;
-> >  7682
-> >  7683         dname =3D strdup(path);
-> >  7684         if (dname =3D=3D NULL)
-> >  7685                 return -ENOMEM;
-> >  7686
-> >  7687         dir =3D dirname(dname);
-> >  7688         if (statfs(dir, &st_fs)) {
-> >  7689                 cp =3D libbpf_strerror_r(errno, errmsg,
-> > sizeof(errmsg));
-> >  7690                 pr_warn("failed to statfs %s: %s\n", dir, cp);
-> >  7691                 err =3D -errno;
-> >  7692         }
-> >  7693         free(dname);
-> >  7694
-> >  7695         if (!err && st_fs.f_type !=3D BPF_FS_MAGIC) {
-> >  7696                 pr_warn("specified path %s is not on BPF FS\n",
-> > path);
-> >  7697                 err =3D -EINVAL;
-> >  7698         }
-> >  7699
-> >  7700         return err;
-> >  7701 }
->
-> Thanks.
->
->
-> =E5=9C=A8 2022/4/22 0:55, Andrii Nakryiko =E5=86=99=E9=81=93:
-> > On Thu, Apr 21, 2022 at 6:01 AM Gaosheng Cui <cuigaosheng1@huawei.com> =
-wrote:
-> >> The make_parent_dir is called without null-pointer checking for path,
-> >> such as bpf_link__pin. To ensure there is no null-pointer dereference
-> >> in make_parent_dir, so make_parent_dir requires additional null-pointe=
-r
-> >> checking for path.
-> >>
-> >> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-> >> ---
-> >>   tools/lib/bpf/libbpf.c | 3 +++
-> >>   1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> >> index b53e51884f9e..5786e6184bf5 100644
-> >> --- a/tools/lib/bpf/libbpf.c
-> >> +++ b/tools/lib/bpf/libbpf.c
-> >> @@ -7634,6 +7634,9 @@ static int make_parent_dir(const char *path)
-> >>          char *dname, *dir;
-> >>          int err =3D 0;
-> >>
-> >> +       if (path =3D=3D NULL)
-> >> +               return -EINVAL;
-> >> +
-> > API contract is that path shouldn't be NULL. Just like we don't check
-> > link, obj, prog for NULL in every single API, I don't think we need to
-> > do it here, unless I'm missing something?
-> >
-> >>          dname =3D strdup(path);
-> >>          if (dname =3D=3D NULL)
-> >>                  return -ENOMEM;
-> >> --
-> >> 2.25.1
-> >>
-> > .
++		clk: clock-controller@b0000200 {
++			compatible =3D "nuvoton,wpcm450-clk";
++			reg =3D <0xb0000200 0x100>;
++			clocks =3D <&refclk>;
++			clock-names =3D "refclk";
++			#clock-cells =3D <1>;
++			#reset-cells =3D <1>;
++		};
++
+ 		serial0: serial@b8000000 {
+ 			compatible =3D "nuvoton,wpcm450-uart";
+ 			reg =3D <0xb8000000 0x20>;
+=2D-
+2.35.1
+
