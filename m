@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA108C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbiDVV6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
+        id S231282AbiDVV6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231381AbiDVV5b (ORCPT
+        with ESMTP id S231473AbiDVV5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:57:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5DF618747E
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:40:13 -0700 (PDT)
+        Fri, 22 Apr 2022 17:57:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BD852ADE71
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650660012;
+        s=mimecast20190719; t=1650660027;
         h=from:from:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OI8P5gFk7nutfDduhoeW49YsA5No3pHGtFv0CshQacE=;
-        b=KUSTZ40OXJEk4HL0awe1fr7JaU91uCDOsyF9jltmbqDVZ3xSD4MZgLCDdWdGG3pVziYp3o
-        DKSGMWx4mddDMMB0sU/K0D1y1UWeUWQF7EgfM3mNoL9TW3bqcH7ojYm2gl9vBcIbT5Y99A
-        pZSnHeTA4LUcO8rHBdom8+dfiuXlIjU=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=He1J3AqXPhXDypeeIvKQfoD2dqdRSISCRDtSvTG+2K0=;
+        b=V7+hKBNuzly+vT8PLT5ViakiH9wEG334vYkTBM+iPTiUcgfzoAk86j7DJ6TU6b9wWuL8/p
+        qvK3cjbW3gpBMowLYqvmSrfp/cAXO7DJW4arb8Lz472pyLXCak2CREc6WtuWXlnvz/PRPr
+        z9IXyesuYNebOjhFCWDZsHMWLSeCaU8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-wKx67LpPPg24JSt2Vnp-dQ-1; Fri, 22 Apr 2022 16:00:59 -0400
-X-MC-Unique: wKx67LpPPg24JSt2Vnp-dQ-1
+ us-mta-58-22EJVP_aPzKxY3Kx3JUvwQ-1; Fri, 22 Apr 2022 16:01:00 -0400
+X-MC-Unique: 22EJVP_aPzKxY3Kx3JUvwQ-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A7B1280159B;
-        Fri, 22 Apr 2022 20:00:44 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 22BE11802A34;
+        Fri, 22 Apr 2022 20:00:54 +0000 (UTC)
 Received: from dqiao.bos.com (unknown [10.22.19.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DF78CC28108;
-        Fri, 22 Apr 2022 20:00:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B9617C27EB4;
+        Fri, 22 Apr 2022 20:00:53 +0000 (UTC)
 From:   Donghai Qiao <dqiao@redhat.com>
 To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         peterz@infradead.org, heying24@huawei.com,
@@ -44,9 +45,11 @@ To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
 Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
         Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v2 00/11] smp: cross CPU call interface
-Date:   Fri, 22 Apr 2022 16:00:29 -0400
-Message-Id: <20220422200040.93813-1-dqiao@redhat.com>
+Subject: [PATCH v2 04/11] smp: replace smp_call_function_single() with smp_call()
+Date:   Fri, 22 Apr 2022 16:00:33 -0400
+Message-Id: <20220422200040.93813-5-dqiao@redhat.com>
+In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
+References: <20220422200040.93813-1-dqiao@redhat.com>
 Reply-To: dqiao@redhat.com
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -55,293 +58,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The motivation of submitting this patch set is intended to make the
-existing cross CPU call mechanism become a bit more formal interface
-and more friendly to the kernel developers.
+Eliminated the percpu global csd_data and temporarily hook up
+to smp_call().
 
-Basically the minimum set of functions below can satisfy any demand
-for cross CPU call from kernel consumers. For the sack of simplicity
-self-explanatory and less code redundancy no ambiguity, the functions
-in this interface are renamed, simplified, or eliminated. But they
-are still inheriting the same semantics and parameter lists from their
-previous version.
+There is no obvious reason or evidence that the differentiation
+of xcall of single recipient from that of multiple recipients
+can exploit noticeable performance gaining. If something can be
+optimized on this matter, it might be from the interrupt level
+which has been already addressed by arch_send_call_function_single_ipi()
+and arch_send_call_function_ipi_mask(). In fact, both have been
+taken in to account from smp_call_function_many_cond().
 
-int smp_call(int cpu, smp_call_func_t func, void *info, unsigned int flags)
+So, it is appropriate to make this change as part of the cross
+call interface.
 
-int smp_call_cond(int cpu, smp_call_func_t func, void *info,
-                   smp_cond_func_t condf, unsigned int flags)
+Signed-off-by: Donghai Qiao <dqiao@redhat.com>
+---
+v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
 
-void smp_call_mask(const struct cpumask *mask, smp_call_func_t func,
-                    void *info, unsigned int flags)
+ kernel/smp.c | 74 ++++++++++++++++++----------------------------------
+ 1 file changed, 25 insertions(+), 49 deletions(-)
 
-void smp_call_mask_cond(const struct cpumask *mask, smp_call_func_t func,
-                         void *info, smp_cond_func_t condf, unsigned int flags)
-
-int smp_call_private(int cpu, call_single_data_t *csd, unsigned int flags)
-
-int smp_call_any(const struct cpumask *mask, smp_call_func_t func,
-                  void *info, unsigned int flags)
-
-
-Here is the explanation about the patch set:
-
-Patch 1: The smp cross call related structures and definitions are
-consolidated from smp.c smp_types.h to smp.h. As a result, smp_types.h
-is deleted from the source tree.
-
-Patch 2: The set of smp_call* functions listed above are defined.
-But the details will be done with the subsequent patches in this set.
-
-Patch 3: Eliminated the macros SCF_WAIT and SCF_RUN_LOCAL and the
-code around them. The reason that we can do that is because the
-function smp_call_function_many_cond() was able to handle the local
-cpu call after the commit a32a4d8a815c ("smp: Run functions concurrently
-in smp_call_function_many_cond()") only if the local cpu showed up
-in cpumask. So it was incorrect to force a local cpu call for the
-on_each_cpu_cond_mask code path.
-
-This change and the changes in subsequent patches will eventually
-help eliminate the set of on_each_cpu* functions.
-
-Patch 4: Eliminated the percpu global csd_data. Let
-smp_call_function_single() temporarily hook up to smp_call().
-
-Patch 5: Replaced smp_call_function_single_async() with smp_call_private()
-and also extended smp_call_private() to support synchronous call
-with a preallocated csd structures.
-
-Patch 6: Previously, there were two special cross call clients
-irq_work.c and core.c that they were using __smp_call_single_queue
-which was a smp internal function. With some minor changes in this
-patch, they are able to use this interface.
-
-Patch 7: Actually kernel consumers can use smp_call() when they
-want to use smp_call_function_any(). The extra logics handled by
-smp_call_function_any() should be moved out of there and have the
-kernel consumers pick up the CPU. Because there are quite a few
-of the consumers need to run the cross call function on any one
-of the CPUs, so there is some advantage to add smp_call_any()
-to the interface.
-
-Patch 8: Eliminated smp_call_function, smp_call_function_many,
-smp_call_function_many_cond, on_each_cpu, on_each_cpu_mask,
-on_each_cpu_cond, on_each_cpu_cond_mask.
-
-Patch 9: Eliminated smp_call_function_single_async.
-
-Patch 10: Eliminated smp_call_function_single.
-
-Patch 11: modify up.c to adopt the same format of cross CPU call.
-
-Note: Each patch in this set depends on its precedent patch only.
-      The kernel can be built and boot if it is patched with any
-      number of patches starting from 1 to 11.
-
-Donghai Qiao (11):
-  smp: consolidate the structure definitions to smp.h
-  smp: define the cross call interface
-  smp: eliminate SCF_WAIT and SCF_RUN_LOCAL
-  smp: replace smp_call_function_single() with smp_call()
-  smp: replace smp_call_function_single_async() with  smp_call_private()
-  smp: use smp_call_private() fron irq_work.c and core.c
-  smp: change smp_call_function_any() to smp_call_any()
-  smp: replace smp_call_function_many_cond() with 
-    __smp_call_mask_cond()
-  smp: replace smp_call_function_single_async with smp_call_private
-  smp: replace smp_call_function_single() with smp_call()
-  smp: modify up.c to adopt the same format of cross CPU call.
-
-v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros.
-
- arch/alpha/kernel/process.c                   |   2 +-
- arch/alpha/kernel/rtc.c                       |   4 +-
- arch/alpha/kernel/smp.c                       |  10 +-
- arch/arc/kernel/perf_event.c                  |   2 +-
- arch/arc/mm/cache.c                           |   2 +-
- arch/arc/mm/tlb.c                             |  14 +-
- arch/arm/common/bL_switcher.c                 |   2 +-
- arch/arm/kernel/machine_kexec.c               |   2 +-
- arch/arm/kernel/perf_event_v7.c               |   6 +-
- arch/arm/kernel/smp_tlb.c                     |  22 +-
- arch/arm/kernel/smp_twd.c                     |   4 +-
- arch/arm/mach-bcm/bcm_kona_smc.c              |   2 +-
- arch/arm/mach-mvebu/pmsu.c                    |   4 +-
- arch/arm/mm/flush.c                           |   4 +-
- arch/arm/vfp/vfpmodule.c                      |   2 +-
- arch/arm64/kernel/armv8_deprecated.c          |   4 +-
- arch/arm64/kernel/perf_event.c                |   8 +-
- arch/arm64/kernel/topology.c                  |   2 +-
- arch/arm64/kvm/arm.c                          |   6 +-
- arch/csky/abiv2/cacheflush.c                  |   2 +-
- arch/csky/kernel/cpu-probe.c                  |   2 +-
- arch/csky/kernel/perf_event.c                 |   2 +-
- arch/csky/kernel/smp.c                        |   2 +-
- arch/csky/mm/cachev2.c                        |   2 +-
- arch/ia64/kernel/mca.c                        |   4 +-
- arch/ia64/kernel/palinfo.c                    |   3 +-
- arch/ia64/kernel/smp.c                        |  10 +-
- arch/ia64/kernel/smpboot.c                    |   2 +-
- arch/ia64/kernel/uncached.c                   |   4 +-
- arch/mips/cavium-octeon/octeon-irq.c          |   4 +-
- arch/mips/cavium-octeon/setup.c               |   4 +-
- arch/mips/kernel/crash.c                      |   2 +-
- arch/mips/kernel/machine_kexec.c              |   2 +-
- arch/mips/kernel/perf_event_mipsxx.c          |   7 +-
- arch/mips/kernel/process.c                    |   2 +-
- arch/mips/kernel/smp-bmips.c                  |   3 +-
- arch/mips/kernel/smp-cps.c                    |   8 +-
- arch/mips/kernel/smp.c                        |  10 +-
- arch/mips/kernel/sysrq.c                      |   2 +-
- arch/mips/mm/c-r4k.c                          |   4 +-
- arch/mips/sibyte/common/cfe.c                 |   2 +-
- arch/openrisc/kernel/smp.c                    |  12 +-
- arch/parisc/kernel/cache.c                    |   4 +-
- arch/parisc/mm/init.c                         |   2 +-
- arch/powerpc/kernel/dawr.c                    |   2 +-
- arch/powerpc/kernel/kvm.c                     |   2 +-
- arch/powerpc/kernel/security.c                |   6 +-
- arch/powerpc/kernel/smp.c                     |   4 +-
- arch/powerpc/kernel/sysfs.c                   |  28 +-
- arch/powerpc/kernel/tau_6xx.c                 |   4 +-
- arch/powerpc/kernel/watchdog.c                |   4 +-
- arch/powerpc/kexec/core_64.c                  |   2 +-
- arch/powerpc/kvm/book3s_64_mmu_hv.c           |   2 +-
- arch/powerpc/kvm/book3s_hv.c                  |   8 +-
- arch/powerpc/mm/book3s64/pgtable.c            |   2 +-
- arch/powerpc/mm/book3s64/radix_tlb.c          |  12 +-
- arch/powerpc/mm/nohash/tlb.c                  |  10 +-
- arch/powerpc/mm/slice.c                       |   4 +-
- arch/powerpc/perf/core-book3s.c               |   2 +-
- arch/powerpc/perf/imc-pmu.c                   |   2 +-
- arch/powerpc/platforms/85xx/smp.c             |   8 +-
- arch/powerpc/platforms/powernv/idle.c         |   2 +-
- arch/powerpc/platforms/pseries/lparcfg.c      |   2 +-
- arch/riscv/mm/cacheflush.c                    |   4 +-
- arch/s390/hypfs/hypfs_diag0c.c                |   2 +-
- arch/s390/kernel/alternative.c                |   2 +-
- arch/s390/kernel/perf_cpum_cf.c               |  10 +-
- arch/s390/kernel/perf_cpum_cf_common.c        |   4 +-
- arch/s390/kernel/perf_cpum_sf.c               |   4 +-
- arch/s390/kernel/processor.c                  |   2 +-
- arch/s390/kernel/smp.c                        |   2 +-
- arch/s390/kernel/topology.c                   |   2 +-
- arch/s390/mm/pgalloc.c                        |   2 +-
- arch/s390/pci/pci_irq.c                       |   4 +-
- arch/sh/kernel/smp.c                          |  14 +-
- arch/sh/mm/cache.c                            |   2 +-
- arch/sparc/include/asm/mman.h                 |   4 +-
- arch/sparc/kernel/nmi.c                       |  16 +-
- arch/sparc/kernel/perf_event.c                |   4 +-
- arch/sparc/kernel/smp_64.c                    |   8 +-
- arch/sparc/mm/init_64.c                       |   2 +-
- arch/x86/events/core.c                        |   6 +-
- arch/x86/events/intel/core.c                  |   4 +-
- arch/x86/kernel/alternative.c                 |   2 +-
- arch/x86/kernel/amd_nb.c                      |   2 +-
- arch/x86/kernel/apic/apic.c                   |   2 +-
- arch/x86/kernel/apic/vector.c                 |   2 +-
- arch/x86/kernel/cpu/aperfmperf.c              |   5 +-
- arch/x86/kernel/cpu/bugs.c                    |   2 +-
- arch/x86/kernel/cpu/mce/amd.c                 |   4 +-
- arch/x86/kernel/cpu/mce/core.c                |  12 +-
- arch/x86/kernel/cpu/mce/inject.c              |  14 +-
- arch/x86/kernel/cpu/mce/intel.c               |   2 +-
- arch/x86/kernel/cpu/microcode/core.c          |   4 +-
- arch/x86/kernel/cpu/mtrr/mtrr.c               |   2 +-
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c     |   4 +-
- arch/x86/kernel/cpu/resctrl/rdtgroup.c        |   8 +-
- arch/x86/kernel/cpu/sgx/main.c                |   5 +-
- arch/x86/kernel/cpu/umwait.c                  |   2 +-
- arch/x86/kernel/cpu/vmware.c                  |   2 +-
- arch/x86/kernel/cpuid.c                       |   2 +-
- arch/x86/kernel/kvm.c                         |   6 +-
- arch/x86/kernel/ldt.c                         |   2 +-
- arch/x86/kvm/vmx/vmx.c                        |   3 +-
- arch/x86/kvm/x86.c                            |  11 +-
- arch/x86/lib/cache-smp.c                      |   4 +-
- arch/x86/lib/msr-smp.c                        |  20 +-
- arch/x86/mm/pat/set_memory.c                  |   4 +-
- arch/x86/mm/tlb.c                             |  12 +-
- arch/x86/xen/mmu_pv.c                         |   4 +-
- arch/x86/xen/smp_pv.c                         |   2 +-
- arch/x86/xen/suspend.c                        |   4 +-
- arch/xtensa/kernel/smp.c                      |  29 +-
- block/blk-mq.c                                |   2 +-
- drivers/acpi/processor_idle.c                 |   4 +-
- drivers/char/agp/generic.c                    |   2 +-
- drivers/clocksource/ingenic-timer.c           |   2 +-
- drivers/clocksource/mips-gic-timer.c          |   2 +-
- drivers/cpufreq/acpi-cpufreq.c                |  10 +-
- drivers/cpufreq/powernow-k8.c                 |   9 +-
- drivers/cpufreq/powernv-cpufreq.c             |  14 +-
- drivers/cpufreq/sparc-us2e-cpufreq.c          |   4 +-
- drivers/cpufreq/sparc-us3-cpufreq.c           |   4 +-
- drivers/cpufreq/speedstep-ich.c               |   7 +-
- drivers/cpufreq/tegra194-cpufreq.c            |   8 +-
- drivers/cpuidle/coupled.c                     |   2 +-
- drivers/cpuidle/driver.c                      |   8 +-
- drivers/edac/amd64_edac.c                     |   4 +-
- drivers/firmware/arm_sdei.c                   |  10 +-
- drivers/gpu/drm/i915/vlv_sideband.c           |   2 +-
- drivers/hwmon/fam15h_power.c                  |   2 +-
- .../hwtracing/coresight/coresight-cpu-debug.c |   3 +-
- .../coresight/coresight-etm3x-core.c          |  11 +-
- .../coresight/coresight-etm4x-core.c          |  12 +-
- .../coresight/coresight-etm4x-sysfs.c         |   2 +-
- drivers/hwtracing/coresight/coresight-trbe.c  |   6 +-
- drivers/irqchip/irq-mvebu-pic.c               |   4 +-
- .../net/ethernet/cavium/liquidio/lio_core.c   |   2 +-
- drivers/net/ethernet/marvell/mvneta.c         |  34 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   8 +-
- drivers/perf/arm_spe_pmu.c                    |   2 +-
- .../intel/speed_select_if/isst_if_mbox_msr.c  |   4 +-
- drivers/platform/x86/intel_ips.c              |   4 +-
- drivers/powercap/intel_rapl_common.c          |   2 +-
- drivers/powercap/intel_rapl_msr.c             |   2 +-
- drivers/regulator/qcom_spmi-regulator.c       |   3 +-
- drivers/soc/fsl/qbman/qman.c                  |   4 +-
- drivers/soc/fsl/qbman/qman_test_stash.c       |   9 +-
- drivers/soc/xilinx/xlnx_event_manager.c       |   2 +-
- drivers/tty/sysrq.c                           |   2 +-
- drivers/watchdog/booke_wdt.c                  |   8 +-
- fs/buffer.c                                   |   2 +-
- include/linux/irq_work.h                      |   2 +-
- include/linux/smp.h                           | 227 +++++--
- include/linux/smp_types.h                     |  69 --
- kernel/cpu.c                                  |   4 +-
- kernel/debug/debug_core.c                     |   2 +-
- kernel/events/core.c                          |  10 +-
- kernel/irq_work.c                             |   4 +-
- kernel/profile.c                              |   4 +-
- kernel/rcu/rcutorture.c                       |   3 +-
- kernel/rcu/tasks.h                            |   4 +-
- kernel/rcu/tree.c                             |   6 +-
- kernel/rcu/tree_exp.h                         |   4 +-
- kernel/relay.c                                |   5 +-
- kernel/scftorture.c                           |  13 +-
- kernel/sched/core.c                           |   4 +-
- kernel/sched/fair.c                           |   2 +-
- kernel/sched/membarrier.c                     |  14 +-
- kernel/smp.c                                  | 633 ++++++++----------
- kernel/time/clockevents.c                     |   2 +-
- kernel/time/clocksource.c                     |   2 +-
- kernel/time/hrtimer.c                         |   6 +-
- kernel/time/tick-common.c                     |   2 +-
- kernel/trace/ftrace.c                         |   6 +-
- kernel/trace/ring_buffer.c                    |   2 +-
- kernel/trace/trace.c                          |  12 +-
- kernel/trace/trace_events.c                   |   2 +-
- kernel/up.c                                   |  56 +-
- mm/kasan/quarantine.c                         |   2 +-
- mm/mmu_gather.c                               |   2 +-
- mm/slab.c                                     |   2 +-
- net/bpf/test_run.c                            |   4 +-
- net/core/dev.c                                |   2 +-
- net/iucv/iucv.c                               |  17 +-
- virt/kvm/kvm_main.c                           |  12 +-
- 186 files changed, 945 insertions(+), 1002 deletions(-)
- delete mode 100644 include/linux/smp_types.h
-
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 22e8f2bd770b..8998b97d5f72 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -399,8 +399,6 @@ static __always_inline void csd_unlock(struct __call_single_data *csd)
+ 	smp_store_release(&csd->node.u_flags, 0);
+ }
+ 
+-static DEFINE_PER_CPU_SHARED_ALIGNED(call_single_data_t, csd_data);
+-
+ void __smp_call_single_queue(int cpu, struct llist_node *node)
+ {
+ #ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
+@@ -634,6 +632,9 @@ void flush_smp_call_function_from_idle(void)
+ }
+ 
+ /*
++ * This is a temporarily hook up. This function will be eliminated
++ * with the last patch in this series.
++ *
+  * smp_call_function_single - Run a function on a specific CPU
+  * @func: The function to run. This must be fast and non-blocking.
+  * @info: An arbitrary pointer to pass to the function.
+@@ -642,59 +643,21 @@ void flush_smp_call_function_from_idle(void)
+  * Returns 0 on success, else a negative status code.
+  */
+ int smp_call_function_single(int cpu, smp_call_func_t func, void *info,
+-			     int wait)
++			int wait)
+ {
+-	call_single_data_t *csd;
+-	call_single_data_t csd_stack = {
+-		.node = { .u_flags = CSD_FLAG_LOCK | CSD_TYPE_SYNC, },
+-	};
+-	int this_cpu;
+-	int err;
+-
+-	/*
+-	 * prevent preemption and reschedule on another processor,
+-	 * as well as CPU removal
+-	 */
+-	this_cpu = get_cpu();
+-
+-	/*
+-	 * Can deadlock when called with interrupts disabled.
+-	 * We allow cpu's that are not yet online though, as no one else can
+-	 * send smp call function interrupt to this cpu and as such deadlocks
+-	 * can't happen.
+-	 */
+-	WARN_ON_ONCE(cpu_online(this_cpu) && irqs_disabled()
+-		     && !oops_in_progress);
+-
+-	/*
+-	 * When @wait we can deadlock when we interrupt between llist_add() and
+-	 * arch_send_call_function_ipi*(); when !@wait we can deadlock due to
+-	 * csd_lock() on because the interrupt context uses the same csd
+-	 * storage.
+-	 */
+-	WARN_ON_ONCE(!in_task());
+-
+-	csd = &csd_stack;
+-	if (!wait) {
+-		csd = this_cpu_ptr(&csd_data);
+-		csd_lock(csd);
+-	}
+-
+-	csd->func = func;
+-	csd->info = info;
+-#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
+-	csd->node.src = smp_processor_id();
+-	csd->node.dst = cpu;
+-#endif
++	unsigned int flags = 0;
+ 
+-	err = generic_exec_single(cpu, csd);
++	if ((unsigned int)cpu >= nr_cpu_ids || !cpu_online(cpu))
++		return -ENXIO;
+ 
+ 	if (wait)
+-		csd_lock_wait(csd);
++		flags = SMP_CALL_TYPE_SYNC;
++	else
++		flags = SMP_CALL_TYPE_ASYNC;
+ 
+-	put_cpu();
++	smp_call(cpu, func, info, flags);
+ 
+-	return err;
++	return 0;
+ }
+ EXPORT_SYMBOL(smp_call_function_single);
+ 
+@@ -1159,6 +1122,19 @@ void __smp_call_mask_cond(const struct cpumask *mask,
+ 		smp_cond_func_t cond_func,
+ 		unsigned int flags)
+ {
++	bool wait = false;
++
++	if (flags == SMP_CALL_TYPE_SYNC)
++		wait = true;
++
++	preempt_disable();
++
++	/*
++	 * This is temporarily hook. The function smp_call_function_many_cond()
++	 * will be inlined here with the last patch in this series.
++	 */
++	smp_call_function_many_cond(mask, func, info, wait, cond_func);
++	preempt_enable();
+ }
+ 
+ /*
 -- 
 2.27.0
 
