@@ -2,106 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8115AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC645C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233546AbiDVJR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
+        id S233567AbiDVJRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 05:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445897AbiDVJOr (ORCPT
+        with ESMTP id S1445917AbiDVJPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:14:47 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0210F51E73;
-        Fri, 22 Apr 2022 02:11:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650618715; x=1682154715;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=8hSCRwlohxcmON6wRi2DT8Nu6dpWslfWDoOD78Huig8=;
-  b=u8KtcgAgFAZdwrcoyBQOOQP4Kir5eFGBi9422wIsO13L6S3kXQyYABl9
-   vQXWBz7IN9Q00DbIDCvDJwgc8hDqRAGxgpD3WKjb8dLiKsOjj1s1AeYsD
-   1d5TyRWVixvxL6nRRMqISMLcb+s7OPWi7KJnkw49we1ZLxAOmyPWfX8F1
-   Q=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Apr 2022 02:11:54 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:11:54 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 02:11:54 -0700
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 02:11:47 -0700
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
-        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
-        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
-        <quic_aravindh@quicinc.com>, <steev@kali.org>
-Subject: [PATCH v9 4/4] drm/msm/dp: Support the eDP modes given by panel
-Date:   Fri, 22 Apr 2022 14:41:06 +0530
-Message-ID: <1650618666-15342-5-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
+        Fri, 22 Apr 2022 05:15:50 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62AC51E73
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:12:56 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kl7wf0njlz4xXS;
+        Fri, 22 Apr 2022 19:12:49 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1650618771;
+        bh=TAQU4yACc/OpJ4CrlRCjZa4rq8YrRjfIqrgtYmrgmq8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Kluun7t1yUg109zhUX0NKdQDXUS57TjUMNfWa33hSC3kQoiszVF4V4VbMEt6kNQLS
+         VMSD8Lv9ktUSJAoTylgu1kmx2DeejrCGR5Ov1ws0dHU/ggozuXn6xPUTp1BLvcogCN
+         tSEj8ybnDEIRnhoQCSlCQ+utsfavEI6puFSK/x4C0xCJPfiYDwFLT4xvZ59M3SJpSv
+         GI2foayEyAw1DN+7qMxZjjQPpwQ5PmVI99eUbiubs9X65wSHK4NXtTieLOjEaw5pss
+         3lBgp0arVWxkjvR0IgWdhTMoPS6SUrCH4wmY/kfyFBJcoGKQcbwsHqXEysY4k9oBDH
+         Z2Je52wsOeogA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Ingo Molnar <mingo@redhat.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v1 06/22] powerpc/ftrace: Inline ftrace_modify_code()
+In-Reply-To: <1650261933.e8kr43zvw0.naveen@linux.ibm.com>
+References: <cover.1648131740.git.christophe.leroy@csgroup.eu>
+ <3b651381f4c53988ede62f4a1505e7e8ccab56b4.1648131740.git.christophe.leroy@csgroup.eu>
+ <1650261933.e8kr43zvw0.naveen@linux.ibm.com>
+Date:   Fri, 22 Apr 2022 19:12:44 +1000
+Message-ID: <87wnfh8os3.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The eDP controller does not have a reliable way keep panel
-powered on to read the sink capabilities. So, the controller
-driver cannot validate if a mode can be supported by the
-source. We will rely on the panel driver to populate only
-the supported modes for now.
+"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> writes:
+> Christophe Leroy wrote:
+>> Inlining ftrace_modify_code(), it increases a bit the
+>> size of ftrace code but brings 5% improvment on ftrace
+>> activation.
+>> 
+>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+>> ---
+>>  arch/powerpc/kernel/trace/ftrace.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
+>> index 41c45b9c7f39..98e82fa4980f 100644
+>> --- a/arch/powerpc/kernel/trace/ftrace.c
+>> +++ b/arch/powerpc/kernel/trace/ftrace.c
+>> @@ -53,7 +53,7 @@ ftrace_call_replace(unsigned long ip, unsigned long addr, int link)
+>>  	return op;
+>>  }
+>> 
+>> -static int
+>> +static inline int
+>>  ftrace_modify_code(unsigned long ip, ppc_inst_t old, ppc_inst_t new)
+>>  {
+>>  	ppc_inst_t replaced;
+>
+> I thought gcc was free to inline functions without the need for 
+> 'inline'.
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
----
-Changes in v9:
-  - none
+Yes it is.
 
-Changes in v8:
-  - add the drm/msm/dp tag in the commit title
+> On the flip side, don't we need __always_inline if we want to force 
+> inlining?
 
- drivers/gpu/drm/msm/dp/dp_display.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Yes. Since ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly").
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index f197694..49fac955 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -998,6 +998,14 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
- 		return -EINVAL;
- 	}
- 
-+	/*
-+	 * The eDP controller currently does not have a reliable way of
-+	 * enabling panel power to read sink capabilities. So, we rely
-+	 * on the panel driver to populate only supported modes for now.
-+	 */
-+	if (dp->is_edp)
-+		return MODE_OK;
-+
- 	if ((dp->max_pclk_khz <= 0) ||
- 			(dp->max_pclk_khz > DP_MAX_PIXEL_CLK_KHZ) ||
- 			(mode->clock > dp->max_pclk_khz))
--- 
-2.7.4
-
+cheers
