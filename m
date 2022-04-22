@@ -2,190 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09755C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3197C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbiDVUBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 16:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37050 "EHLO
+        id S229896AbiDVUDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 16:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiDVUBg (ORCPT
+        with ESMTP id S229437AbiDVUDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 16:01:36 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A655730FDC3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:47:10 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id c1so2367378pfo.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=y+doHSiz3zcutbur9voJocSmaAz48vDvOlIUUyf7FWM=;
-        b=a89x4nKawOtJHTWqZbbFoLA02HiA2GzJbSC41mQ0wwzZCECYB6TfQJyr2/Df//ex6j
-         XmT7P5B7iv2ke14uKxII/CpVdU/jGI3+z1MIfk01HgLY9e7jNF9Ef2GADrch0NvHa2Y3
-         e0KdE6OauULyRg0pbergxbJPNWhKph4DwTXjsVF841dpy6vNTRdBbFB4kG6CDGiBe/En
-         Qb0hJIxgcUjt+X3s6hrUD5N9ZqrYgaixHHLzZl+0DDb3SAg7tffEOtAZ3BhMwk+Jk8Q8
-         uA7WNM97/AFXWvlT4MeMpnEo8UMFQt1R3aNEVDwn5c6WaCgsPEVAFR101CSOBwwYA7K6
-         c4kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=y+doHSiz3zcutbur9voJocSmaAz48vDvOlIUUyf7FWM=;
-        b=xKGR+wbhJcystiwDLF8Rk3/XSDsdr8jiu1tXel9+Re4YpVmnMaYHN/qLPao4VQf4nh
-         ZugRyFVGQxwJIvjrkg2Mf+joD3iWAzJvMJBovF9LC2l6aADO97uE7fDYP69VxdpxiRx2
-         8SOFflEbLFK/YQ9A0H3jRymQr2ajaN/3lLClFxHhhqEmt2UI2649i987AFx6d7KZ4rDK
-         Y3i+3cBFdcnZTmNdBSB20/gWt6CCijNIwIy4bahfr5fle5i6BhUDROeRGswlbkD8BrXf
-         ohS/sgB1POa5TuUbJ6Yow9kkMktsRJ9zKbWGFluZcd5FenF/U+a3aI62yLlJPuabiasx
-         wDXw==
-X-Gm-Message-State: AOAM531GYmqRkKsOKWQIW70ZwTPfJTdLnKfF3qKT8UBc8Gpr733VdFhK
-        3LTE5COrNtD6n7B9I9a7PIQr+QFy1FBU4A==
-X-Google-Smtp-Source: ABdhPJxEUUev7ihPovjIZboLjGNyvTtHcPOY4eAutzFYv8bD3wyzHsFImEWTBe+Xfe0zGML0moa32Q==
-X-Received: by 2002:a62:a504:0:b0:50a:ceee:5f4 with SMTP id v4-20020a62a504000000b0050aceee05f4mr6608640pfm.13.1650655974887;
-        Fri, 22 Apr 2022 12:32:54 -0700 (PDT)
-Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:32:54 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH v3 6/7] staging: r8188eu: drop unnecessary wrapper _rtw_alloc_network
-Date:   Sat, 23 Apr 2022 01:02:22 +0530
-Message-Id: <20220422193223.11948-7-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
-References: <20220422193223.11948-1-makvihas@gmail.com>
+        Fri, 22 Apr 2022 16:03:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD891E2738
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:49:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3801AB83220
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABCBFC385A0;
+        Fri, 22 Apr 2022 19:05:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650654324;
+        bh=9SKM3jK2iPGEfXDhEyIE2AvKemy8k5i6L/EzzAVKkqg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iF6RgM+Rv127nfGzfXZX6M6Wy79viuvggsKu3CulKDd7aDaG87zUzHfvBQoVDv2NA
+         NgqdVZZv3WLjjDgHY2dyMY8qlH1RHGQyrIPJpqk37ieY8fH06CsIxljl+503o9TMDh
+         E3n7U78quN8Zpw5s7VEz0vI+vDHmFZSidgZW+mtRz08adRGzbTMSsJ4GgIw5pqm8EC
+         rfy7U7bUG2rkSo63A1ldtH8TwQQvs1PZI+T4LZYsAcewHcMzTlGeW8/lM8XYCJ03t+
+         ddzCCqKFEFoSkpbrgoChwRqzVYSP4gwBTwXG3nQDqYzJlWBb+KuKX9AB3FquBiVx7a
+         e7BDAVlNPXpKQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7747B400B1; Fri, 22 Apr 2022 16:05:22 -0300 (-03)
+Date:   Fri, 22 Apr 2022 16:05:22 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC 01/21] libperf evsel: Factor out perf_evsel__ioctl()
+Message-ID: <YmL8chGqV7ZDB/sZ@kernel.org>
+References: <20220422162402.147958-1-adrian.hunter@intel.com>
+ <20220422162402.147958-2-adrian.hunter@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422162402.147958-2-adrian.hunter@intel.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unnecessary wrapper _rtw_alloc_network and move its logic to
-rtw_alloc_network.
+Em Fri, Apr 22, 2022 at 07:23:42PM +0300, Adrian Hunter escreveu:
+> Factor out perf_evsel__ioctl() so it can be reused.
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_cmd.c     |  2 +-
- drivers/staging/r8188eu/core/rtw_mlme.c    | 59 +++++++++-------------
- drivers/staging/r8188eu/include/rtw_mlme.h |  2 +-
- 3 files changed, 27 insertions(+), 36 deletions(-)
+Cherry picking this one as I look at the patchset.
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 512896b86..ab462eb40 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -1457,7 +1457,7 @@ void rtw_createbss_cmd_callback(struct adapter *padapter, struct cmd_obj *pcmd)
- 		rtw_indicate_connect(padapter);
- 	} else {
+- Arnaldo
  
--		pwlan = _rtw_alloc_network(pmlmepriv);
-+		pwlan = rtw_alloc_network(pmlmepriv);
- 		spin_lock_bh(&pmlmepriv->scanned_queue.lock);
- 		if (!pwlan) {
- 			pwlan = rtw_get_oldest_wlan_network(&pmlmepriv->scanned_queue);
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index fb64954a0..080e07385 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -53,38 +53,6 @@ void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv)
- 	rtw_free_mlme_ie_data(&pmlmepriv->p2p_assoc_req_ie, &pmlmepriv->p2p_assoc_req_ie_len);
- }
- 
--struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv)/* _queue *free_queue) */
--{
--	struct	wlan_network	*pnetwork;
--	struct __queue *free_queue = &pmlmepriv->free_bss_pool;
--	struct list_head *plist = NULL;
--
--	spin_lock_bh(&free_queue->lock);
--
--	if (list_empty(&free_queue->queue)) {
--		pnetwork = NULL;
--		goto exit;
--	}
--	plist = (&free_queue->queue)->next;
--
--	pnetwork = container_of(plist, struct wlan_network, list);
--
--	list_del_init(&pnetwork->list);
--
--	pnetwork->network_type = 0;
--	pnetwork->fixed = false;
--	pnetwork->last_scanned = jiffies;
--	pnetwork->aid = 0;
--	pnetwork->join_res = 0;
--
--	pmlmepriv->num_of_scanned++;
--
--exit:
--	spin_unlock_bh(&free_queue->lock);
--
--	return pnetwork;
--}
--
- void _rtw_free_network(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork, u8 isfreeall)
- {
- 	u32 curr_time, delta_time;
-@@ -285,11 +253,34 @@ void rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
- 		vfree(pmlmepriv->free_bss_buf);
- }
- 
--static struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
-+struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
- {
- 	struct	wlan_network	*pnetwork;
-+	struct __queue *free_queue = &pmlmepriv->free_bss_pool;
-+	struct list_head *plist = NULL;
-+
-+	spin_lock_bh(&free_queue->lock);
- 
--	pnetwork = _rtw_alloc_network(pmlmepriv);
-+	if (list_empty(&free_queue->queue)) {
-+		pnetwork = NULL;
-+		goto exit;
-+	}
-+	plist = (&free_queue->queue)->next;
-+
-+	pnetwork = container_of(plist, struct wlan_network, list);
-+
-+	list_del_init(&pnetwork->list);
-+
-+	pnetwork->network_type = 0;
-+	pnetwork->fixed = false;
-+	pnetwork->last_scanned = jiffies;
-+	pnetwork->aid = 0;
-+	pnetwork->join_res = 0;
-+
-+	pmlmepriv->num_of_scanned++;
-+
-+exit:
-+	spin_unlock_bh(&free_queue->lock);
- 
- 	return pnetwork;
- }
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme.h b/drivers/staging/r8188eu/include/rtw_mlme.h
-index fc30793f4..e982f0615 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme.h
-@@ -560,7 +560,7 @@ void rtw_scan_timeout_handler(struct adapter *adapter);
- 
- void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv);
- 
-- struct wlan_network *_rtw_alloc_network(struct mlme_priv *pmlmepriv);
-+struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv);
- 
- void _rtw_free_network(struct mlme_priv *pmlmepriv,
- 		       struct wlan_network *pnetwork, u8 isfreeall);
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> ---
+>  tools/lib/perf/evsel.c | 19 ++++++++++++-------
+>  1 file changed, 12 insertions(+), 7 deletions(-)
+> 
+> diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
+> index 210ea7c06ce8..20ae9f5f8b30 100644
+> --- a/tools/lib/perf/evsel.c
+> +++ b/tools/lib/perf/evsel.c
+> @@ -328,6 +328,17 @@ int perf_evsel__read(struct perf_evsel *evsel, int cpu_map_idx, int thread,
+>  	return 0;
+>  }
+>  
+> +static int perf_evsel__ioctl(struct perf_evsel *evsel, int ioc, void *arg,
+> +			     int cpu_map_idx, int thread)
+> +{
+> +	int *fd = FD(evsel, cpu_map_idx, thread);
+> +
+> +	if (fd == NULL || *fd < 0)
+> +		return -1;
+> +
+> +	return ioctl(*fd, ioc, arg);
+> +}
+> +
+>  static int perf_evsel__run_ioctl(struct perf_evsel *evsel,
+>  				 int ioc,  void *arg,
+>  				 int cpu_map_idx)
+> @@ -335,13 +346,7 @@ static int perf_evsel__run_ioctl(struct perf_evsel *evsel,
+>  	int thread;
+>  
+>  	for (thread = 0; thread < xyarray__max_y(evsel->fd); thread++) {
+> -		int err;
+> -		int *fd = FD(evsel, cpu_map_idx, thread);
+> -
+> -		if (fd == NULL || *fd < 0)
+> -			return -1;
+> -
+> -		err = ioctl(*fd, ioc, arg);
+> +		int err = perf_evsel__ioctl(evsel, ioc, arg, cpu_map_idx, thread);
+>  
+>  		if (err)
+>  			return err;
+> -- 
+> 2.25.1
+
 -- 
-2.30.2
 
+- Arnaldo
