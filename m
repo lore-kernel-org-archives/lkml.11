@@ -2,105 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880A1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357212AbiDVQNu (ORCPT
+        id S1359261AbiDVQPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
+        Fri, 22 Apr 2022 12:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350961AbiDVQNr (ORCPT
+        with ESMTP id S1357434AbiDVQPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:13:47 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553155B3DF
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:10:53 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id y20so17303756eju.7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:10:53 -0700 (PDT)
+        Fri, 22 Apr 2022 12:15:04 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1735C85D;
+        Fri, 22 Apr 2022 09:12:10 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id bu29so15173604lfb.0;
+        Fri, 22 Apr 2022 09:12:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TO6k5Eg+5Nqe4CCIAN4ROGKgZysMxXNX64mWMEm2504=;
-        b=oY3R9eMENeA4yFgfxxAh0CIL63NfU/4cQZy0VBfnWqdkaQCrjP1OSsrzairEuqTc8h
-         dCnx5NBV16wwOh8IExGkxkRthS5yV1+uEB61rOzpqQGfyzUlUPRRrILpKog4hvbptgGe
-         HyH8ZzQX9V8+aRsclZdqqy2LK9aUqTNtjPWfA=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=tUo95tRg9oswGTOGs7YDeTbiPQNo1Vj+yujmZ07iNkE=;
+        b=FLa3FV0MSiyAgF2qyUNtURfbCSQxRppSlJuyLPRYJCUhCKwdEJcbnUznBjJaW5PmFQ
+         clVb3BnSlvpBRd7Un9kv49I0jweeB9Q+IEw2idcC1n8H5og+XR/wZJ0ke4iZ3czRD5tQ
+         cuMBls+ZtSi1BD4F4tL4AkioVEUE3qE/D0CIJLegjKlvgqlxGcltFPj3pqPEjdi+/tml
+         vMM3PrkJKFsB8PNhcyCvgoZHcyQdBlmxb4xDmB+90ryGui/OoiYFKVi+XzrwMr/ypgJd
+         z3dorO1J1uzxWOUJVO8+h15OWXkq5DN91Bt6+XYRmK/SD7vUICWns9iF64rBHwU2gXDk
+         OTxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TO6k5Eg+5Nqe4CCIAN4ROGKgZysMxXNX64mWMEm2504=;
-        b=XJ0g2bX/Ex1GL/jtzWRk1EFljS90WXpWV+LEjfo5RsN05ZzkA4MACZ4YXs9lb43+2G
-         nifV1rtwdYIPcBO9kLovP0Qdx8b9J2BvRCrKVEWmHUnnPN6QPo6ptCCY3QSNjtXK81gv
-         ki0PY3NJuPNLFR8njBVsTXd3g9vZqFtdqISe1DhyDKv1YscMADhhAMH9ULiUGQ1q1FsC
-         shStDWZjNF5Dg2diUWnAzceG4scJHWP8fRMxprXQZhU5gUtMbV91yIRZTA3gKCxW8SMf
-         7tGTRI0k/0nG/q18kHAhEek7w2al1yLxRGB7NRBt34MZ5b++XJHR0VPJ5xXq4v+CmriP
-         /fiA==
-X-Gm-Message-State: AOAM532faR8XUsyZtqlPpNPnbYft7ZoLivXZ2hHe7V+SMLbXyp82cJIU
-        rZHgouY2kwSAel2mDwqhpSwoIG5beJHvyx9QtfA=
-X-Google-Smtp-Source: ABdhPJzlwvF7aNI5cOOlf58VIf+zLAbFKjSypiM1uqQ8P/LjsvCeXZmU/iDmwkqyRejtgP2czHgrDQ==
-X-Received: by 2002:a17:907:c11:b0:6f0:1b1a:65bd with SMTP id ga17-20020a1709070c1100b006f01b1a65bdmr4791609ejc.268.1650643851908;
-        Fri, 22 Apr 2022 09:10:51 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id dm11-20020a170907948b00b006cf488e72e3sm874236ejc.25.2022.04.22.09.10.51
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 09:10:51 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id k22so11758120wrd.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:10:51 -0700 (PDT)
-X-Received: by 2002:adf:a29c:0:b0:20a:a246:a826 with SMTP id
- s28-20020adfa29c000000b0020aa246a826mr4418755wra.422.1650643850709; Fri, 22
- Apr 2022 09:10:50 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=tUo95tRg9oswGTOGs7YDeTbiPQNo1Vj+yujmZ07iNkE=;
+        b=tygrQht4ELLDHJpMOrtrGKUPXLNvUXFid2hEee1NTk8rDXdKeakaL02tiujtbc8RHO
+         JJX5EkYregSlsFiVC+Szy6U6AYbu9YSX8x05cPf+mX5IzVeYY8ty4/pjQboQ3fAy4kkn
+         +d9BeajuyU2iHEPkAyuR7lM0wD1OaItMix7KqHsECE0xiVsLv/oW/kDQqHcf5faO/A0d
+         9OzhKESA9WDPJY33Ca07Ugp/QjvvQiTqfc3qguozau0JtmFPr/7Xjp/Ob/2ZRxV96Mfe
+         l6AaNABp/sJvrg8YnbMhzlobSz/+nEzvOh4e0/HB4Xb14RArs8W52DxM1ifmNJqe6sbD
+         XeAg==
+X-Gm-Message-State: AOAM533Vt4Bdol/14jIT3aOrV8ZjNg2SK+wpbefLKsWpBecsCaeCT6+f
+        zanEtTbRHmVfKTqUt06IGm1sditgADM=
+X-Google-Smtp-Source: ABdhPJyqLOH8nj96lV9crARCF1zTsrgpxWcFrXkyn1Y7RcoQRDIU1n10tbVDioOk+9ho+Nz5J1f6Ag==
+X-Received: by 2002:a05:6512:34da:b0:46b:b7fd:1eca with SMTP id w26-20020a05651234da00b0046bb7fd1ecamr3619901lfr.481.1650643929213;
+        Fri, 22 Apr 2022 09:12:09 -0700 (PDT)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id s8-20020a2e9c08000000b0024af06d6674sm254891lji.61.2022.04.22.09.12.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 09:12:08 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 18:12:05 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        paul@crapouillou.net
+Cc:     robh+dt@kernel.org, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] mips: dts: ingenic: x1000: Add PWM device tree
+ node
+Message-ID: <YmLT1VA8ZL57CQkO@orome>
+References: <20220224234133.15708-1-aidanmacdonald.0x0@gmail.com>
+ <20220224234133.15708-2-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
- <1650618666-15342-3-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=WWa8n0MJB8ks7bgrSj1Qop1Z5hvfEAOWtFcmsz38eR_w@mail.gmail.com> <83129bad-44a9-bec7-f931-8067ef1b9d4d@quicinc.com>
-In-Reply-To: <83129bad-44a9-bec7-f931-8067ef1b9d4d@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 22 Apr 2022 09:10:37 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Vu_0vxb_D+8n3qhNZ66nRXBp5vxshChmOM-ToPJxk=aA@mail.gmail.com>
-Message-ID: <CAD=FV=Vu_0vxb_D+8n3qhNZ66nRXBp5vxshChmOM-ToPJxk=aA@mail.gmail.com>
-Subject: Re: [PATCH v9 2/4] drm/msm/dp: Support only IRQ_HPD and REPLUG
- interrupts for eDP
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>
-Cc:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sean Paul <sean@poorly.run>, Sean Paul <seanpaul@chromium.org>,
-        Steev Klimaszewski <steev@kali.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="oqekWBq8aThw7qyZ"
+Content-Disposition: inline
+In-Reply-To: <20220224234133.15708-2-aidanmacdonald.0x0@gmail.com>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Fri, Apr 22, 2022 at 9:05 AM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
->
-> Hi Doug
->
-> For the lockdep error, the splat looks similar to what kuogee fixed
-> recently.
->
-> Can you please check if below patch is present in your tree?
->
-> https://patchwork.freedesktop.org/patch/481396/
+--oqekWBq8aThw7qyZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Indeed I did have that in my tree already, but the lockdep splat is
-still there. I think the problem is that we're now calling
-dp_hpd_plug_handle() directly in dp_bridge_enable()
+On Thu, Feb 24, 2022 at 11:41:34PM +0000, Aidan MacDonald wrote:
+> Copied from the jz4740 devicetree and trimmed to 5 timers, which
+> is what the hardware supports.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>  arch/mips/boot/dts/ingenic/x1000.dtsi | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 
--Doug
+However I don't see this upstream yet, neither in Linus' tree nor in
+linux-next. Paul, do you still have this on your radar?
+
+Thierry
+
+>=20
+> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi b/arch/mips/boot/dts/i=
+ngenic/x1000.dtsi
+> index 8bd27edef216..0dcf37527c8e 100644
+> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> @@ -127,6 +127,19 @@ wdt: watchdog@0 {
+>  			clocks =3D <&tcu TCU_CLK_WDT>;
+>  			clock-names =3D "wdt";
+>  		};
+> +
+> +		pwm: pwm@40 {
+> +			compatible =3D "ingenic,x1000-pwm";
+> +			reg =3D <0x40 0x80>;
+> +
+> +			#pwm-cells =3D <3>;
+> +
+> +			clocks =3D <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>,
+> +				 <&tcu TCU_CLK_TIMER2>, <&tcu TCU_CLK_TIMER3>,
+> +				 <&tcu TCU_CLK_TIMER4>;
+> +			clock-names =3D "timer0", "timer1", "timer2",
+> +				      "timer3", "timer4";
+> +		};
+>  	};
+> =20
+>  	rtc: rtc@10003000 {
+> --=20
+> 2.34.1
+>=20
+
+--oqekWBq8aThw7qyZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJi09MACgkQ3SOs138+
+s6FFpRAAuH7U4JXdUlpL70pOW1ieMwEBCfi6FD7Ek1vDFOOMpYKWTmbckzoBi3JW
+nAbs6B3aKDgnopG7nui6lyS7XYosRXjgnvn05FIFdKApcAkE929MplQAG7x8JOuC
+pCHfLXuTkh3pngiZtyvVpqJ4ymT1e2Z1IV7is215b8SmUhotOtAPFS1gpbRXQLWR
+bTqfdaoxYHpmTHU5lcoZAzU3cqzAP28Ae/xhMoiSK+6ZaPpDGimC7MszBkGgJQZi
+VQ2PvhbIthFk7tAaBekRj9pQiD6pdk2IA+bctSpOcUoVp9NRvudgmm5rBEEKPuOf
+Sr7VNVd9/HNWGAiMtEGb3SbbUbBxzVXNxEWRz+NtO9Y6R4h8IpWmMIH/SMoR7fYy
++Ea3HdylX2TENnuH+wonQAdNqJ0t5w2hlkjltJLDJUOqgF3KkugdMylzhWMpv3Dj
+anltpfr9KWN48c2N8VsBuUSfVlU0SZB6cV7dHq+8JTpucva/YtD+0gdwofl4cERF
+czY9p20Bzw1vlfCIDaeH1qLv/e5e5jGlJVmF8GFAA6CyyhNWit/5uWO57GATvSqE
+inSRdtOdmJkfnB91+bu2mpeirRIe5lM+8FfIW22OT4W0OXHSXC3ViLbLAa6w1zjm
+oIJroWw1T0nFvfsz9+PRPGVIqfD1KllKDrj8awyEtowT5wDC2Wg=
+=9GL8
+-----END PGP SIGNATURE-----
+
+--oqekWBq8aThw7qyZ--
