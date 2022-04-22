@@ -2,120 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73BE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbiDVWfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:35:10 -0400
+        id S233295AbiDVWfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:35:32 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233266AbiDVWeb (ORCPT
+        with ESMTP id S233214AbiDVWfI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:34:31 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD7524A107
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:27:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650662834; x=1682198834;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=yvEmm3q5zs9POqKdsIu+eEbpwdiEBwUZG5UoQU3is80=;
-  b=Z7y3+V8yjuF/NYZZIVQnLz9w9ULXN7QcakQOWEdwcYZI9ueqjMW8FOcC
-   d5ud8A8Wy9w/keJO5oSuXkKYZFkyFQHi7/NrUucDh9Wxo6TJ2JYmoltcT
-   XkfK/EuKBg1vZ6eJMnsIwvkexlDRJyn/j1/h9CUCkCgAw4Ifi/VrfhFWF
-   erjEH9DFhTR0xpjAKLgcI+x04oFvgeVWBR4CdxF+FuBdy27rT0Tp8A7sJ
-   bRYwXl3CYYetzwV34Z74eYkllTgDzEYmJSJBesZ+6XXzZ8gxfIjUlupxE
-   QuV/Sq6BpNNOgHzMStetJMQ1JKiTfEzUYHuoE7p7uuzb17+g+PVp04yNV
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246685903"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="246685903"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:39:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="511729153"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 22 Apr 2022 13:39:12 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni03c-000AZO-08;
-        Fri, 22 Apr 2022 20:39:12 +0000
-Date:   Sat, 23 Apr 2022 04:38:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matteo Croce <mcroce@microsoft.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive 4/54] mm/kasan/shadow.c:42:7: warning: no previous
- prototype for function 'memset'
-Message-ID: <202204230424.eOU8iNAQ-lkp@intel.com>
+        Fri, 22 Apr 2022 18:35:08 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8A62CB479
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:27:31 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id x9so9635194ybe.11
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:27:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v4i3AmNv4FLK6btws/jh0kCSYBAa4f3ciHtxOpc3dZs=;
+        b=JRDatOGFzKK/uf+U50BmSx+6g4Pa7D170MDb5ReJoxJCi2YJ+O1LWcsk3ZR+cCBvOv
+         GbI3hNcEt8op7qRcvRwQ1rF5AX0KZrXSyqZ64VdMU5KrD7qR1RorXlZ7BdfS/vwlCh/u
+         mu0Nbnoz3MxCqG5idEmXqe7YNX3p+7DVU7y0VRUEwRAjMCgtMxMuM8yFYoIs7OpITDVV
+         NFr9xZzrgfbvZDJjyHfftICMW18Gae8pnfjA0n5Tq4hFDIEo2naboitBPARNTgAuA9wV
+         NLIyepcfEUNoedq5wC333803/JJ4N5AOBz2KgH3OzXG8wBAGvmI5B9QYV9q2Is2Q60Rq
+         2Edw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v4i3AmNv4FLK6btws/jh0kCSYBAa4f3ciHtxOpc3dZs=;
+        b=HqORQPoMae0K6tRgUz2GHEPxsfIZrBneyGLuMwXGY87ZNpF7IkXx7eHbVDoMDoDiHL
+         7Bw22CHpCfEctJDtXsij0iV+/ZUpTw9fo4Ee3QcS85OKcZ3Utyxcb3skFz4QHJk8iQkJ
+         HTk8JIEgfsUa7XJ/9nSJCIFLRrXzNprMJPMraPyPlzcpCQ3AwJBkkOnH3C8LZmeomzgF
+         5RuHFY8oiLjLYGtFDjnqoKkKXk2B7P6c8GzDhO5NUANHfLVGpndKhQMXKORvHhVExTPw
+         Caofpley/E7XtpjJWpkeJni8u5uMUYnJqXiNXEsEkQA8ZrQvarfMFEZ4WyNmwtchwy3W
+         pMqg==
+X-Gm-Message-State: AOAM531MEnHFtGKd7xYxXTDraFtLu8C3X8nDcsDhz+ymyMn94XCRQ4QK
+        1WJPasnSvDSoZq6sRjwXZd/g6uWXJQfmsytLStjCnA==
+X-Google-Smtp-Source: ABdhPJy5uOpR6QqOApr8JTXnRyyqvChXNpcmelnBXNb6YY6fm53l19ExMBperiDNdyr16+uDrBTu9QvaUkCjxxjaNPc=
+X-Received: by 2002:a5b:8c8:0:b0:641:e8de:a6f4 with SMTP id
+ w8-20020a5b08c8000000b00641e8dea6f4mr6385815ybq.533.1650662851086; Fri, 22
+ Apr 2022 14:27:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 22 Apr 2022 23:27:20 +0200
+Message-ID: <CACRpkdYuojrAdz1G_ePeuaEX1Q4hQah=nQuOuW=v0Ty_FOk0Ag@mail.gmail.com>
+Subject: Re: [PATCH v13 0/7] Add pin control support for lpass sc7280
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     agross@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+        robh+dt@kernel.org, quic_plai@quicinc.com, bgoswami@quicinc.com,
+        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        quic_rohkumar@quicinc.com, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   68fe13e37af4c8331cdd40841353c9725cb65925
-commit: 20157c7f08403f9a7cbaef427717ce571387416c [4/54] riscv: optimized memset
-config: riscv-randconfig-c006-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230424.eOU8iNAQ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/esmil/linux/commit/20157c7f08403f9a7cbaef427717ce571387416c
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 20157c7f08403f9a7cbaef427717ce571387416c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
+On Mon, Apr 18, 2022 at 2:37 PM Srinivasa Rao Mandadapu
+<quic_srivasam@quicinc.com> wrote:
+>
+> This patch series is to split lpass variant common pin control
+> functions and SoC specific functions and to add lpass sc7280 pincontrol support.
+> It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
+>
+> Changes Since V12:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Bjorn says he's happy so I applied this v13 version for v5.19.
+Any remaining nits can certainly be fixed in-tree.
 
-All warnings (new ones prefixed by >>):
+Thanks for you tireless work on making this work the right way!
 
->> mm/kasan/shadow.c:42:7: warning: no previous prototype for function 'memset' [-Wmissing-prototypes]
-   void *memset(void *addr, int c, size_t len)
-         ^
-   mm/kasan/shadow.c:42:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void *memset(void *addr, int c, size_t len)
-   ^
-   static 
-   mm/kasan/shadow.c:63:7: warning: no previous prototype for function 'memcpy' [-Wmissing-prototypes]
-   void *memcpy(void *dest, const void *src, size_t len)
-         ^
-   mm/kasan/shadow.c:63:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void *memcpy(void *dest, const void *src, size_t len)
-   ^
-   static 
-   2 warnings generated.
-
-
-vim +/memset +42 mm/kasan/shadow.c
-
-bb359dbcb70085 Andrey Konovalov 2020-12-22  40  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  41  #undef memset
-bb359dbcb70085 Andrey Konovalov 2020-12-22 @42  void *memset(void *addr, int c, size_t len)
-bb359dbcb70085 Andrey Konovalov 2020-12-22  43  {
-f00748bfa0246c Andrey Konovalov 2021-02-24  44  	if (!kasan_check_range((unsigned long)addr, len, true, _RET_IP_))
-bb359dbcb70085 Andrey Konovalov 2020-12-22  45  		return NULL;
-bb359dbcb70085 Andrey Konovalov 2020-12-22  46  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  47  	return __memset(addr, c, len);
-bb359dbcb70085 Andrey Konovalov 2020-12-22  48  }
-bb359dbcb70085 Andrey Konovalov 2020-12-22  49  
-
-:::::: The code at line 42 was first introduced by commit
-:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
-
-:::::: TO: Andrey Konovalov <andreyknvl@google.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Yours,
+Linus Walleij
