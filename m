@@ -2,187 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED94C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B276C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442695AbiDVGHl (ORCPT
+        id S1391040AbiDVGJp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
+        Fri, 22 Apr 2022 02:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444223AbiDVGH3 (ORCPT
+        with ESMTP id S229539AbiDVGJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:07:29 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BE5B5005C
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:04:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4B1D1576;
-        Thu, 21 Apr 2022 23:04:36 -0700 (PDT)
-Received: from [10.163.40.48] (unknown [10.163.40.48])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 595F83F5A1;
-        Thu, 21 Apr 2022 23:04:27 -0700 (PDT)
-Message-ID: <7fc56f41-a3c2-76be-7a20-dda392f3c4fc@arm.com>
-Date:   Fri, 22 Apr 2022 11:35:13 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next v5 3/5] mm: page_table_check: add hooks to public
- helpers
-Content-Language: en-US
-To:     Tong Tiangen <tongtiangen@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
+        Fri, 22 Apr 2022 02:09:43 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCD13C49C;
+        Thu, 21 Apr 2022 23:06:48 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id x24so4863831qtq.11;
+        Thu, 21 Apr 2022 23:06:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nlwTOZ4YA/xOCHbD8FxUxJ0ALmhsKy74mVaGByAE/8I=;
+        b=ioNzbL2gm0qTBiumcIbqb1lW02l7rCuVIZkqQHRgPSCHyQ/iSFaBnqgC6hI6k9OMaO
+         ySyyLvesbK5A1AMxTg1+fGrgu41/+Q9bl340D8UifBxdRbgQkdDdwA7p3KSi+yZ8U4YT
+         nItp/MoET7VAA/G5Gtrd1jxeCOqLEweeplauXFCUKCT7voyCZtIpeli9W38SnbD8T0P8
+         Y1EQRAgrpSdsXUodnvkmaFiUzfeDmil8vEemhX0uowrKcUBQqa2FfIeuK7b0X10HHOvR
+         PAbKrmBTK4rdhbTXM+rd0HpMige7E/RAMaA69UwRSxwnOW/0uTMdflGU/ftaz0rGuc/n
+         d4Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nlwTOZ4YA/xOCHbD8FxUxJ0ALmhsKy74mVaGByAE/8I=;
+        b=y9956ZBlcAUac7OQ/UwNcqEYOr11/lG1XVvIbB1HrCwDeRVlZOg1tU9uw+WaL1IEOC
+         Tlp5r4Ir/Gr+Bs8u59GksES7H7DuxQQhbPBNQe+hYj1QmIBCxG5Z2qc+h9qd9Hp6JTOm
+         k3DBXy/X6i54RRGCNqkPpYq43Ho5bPlTGK4LhiGMh5w3Ef7Q/Tq2DD8E3NoQz/SAPd4i
+         jk4lkCFqRdmntXR5BNBLUNfRfEB4J58axrItrfc3A+CTiKXxN73P3UVlFZywvbVYbThW
+         m28ejMY94jj5fyz2HxwPLP8W0hsPwM7m62ifqUE7lZkaAxreii9pfznFyegwN8i7SHmk
+         +uqw==
+X-Gm-Message-State: AOAM530j0iR3rD32BLEmNQK5vXGnOQMXOaK723XZzUA0R38yGtiG5M5F
+        GHLBYl8aSTXD2MvVIyufalkElsFJM/+p
+X-Google-Smtp-Source: ABdhPJxBx0pVVOt3R/hgC5qhlwNRAyGX6fTiF6NzSOaDtaiiJfoWmXioOxpYYXOgp3DOPsKkZrO9wA==
+X-Received: by 2002:ac8:5a81:0:b0:2f1:f20d:173a with SMTP id c1-20020ac85a81000000b002f1f20d173amr2073685qtc.686.1650607607411;
+        Thu, 21 Apr 2022 23:06:47 -0700 (PDT)
+Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id bk18-20020a05620a1a1200b00680c72b7bf4sm564935qkb.93.2022.04.21.23.06.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 23:06:46 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 02:06:44 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>
 Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220421082042.1167967-1-tongtiangen@huawei.com>
- <20220421082042.1167967-4-tongtiangen@huawei.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220421082042.1167967-4-tongtiangen@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        linux-fsdevel@vger.kernel.org, hannes@cmpxchg.org,
+        akpm@linux-foundation.org, linux-clk@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-input@vger.kernel.org,
+        roman.gushchin@linux.dev, rostedt@goodmis.org
+Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
+ heap-allocated strings
+Message-ID: <YmJF9J5cCsELY++y@moria.home.lan>
+References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
+ <20220421234837.3629927-7-kent.overstreet@gmail.com>
+ <20220422042017.GA9946@lst.de>
+ <YmI5yA1LrYrTg8pB@moria.home.lan>
+ <20220422052208.GA10745@lst.de>
+ <YmI/v35IvxhOZpXJ@moria.home.lan>
+ <20220422055214.GA11281@lst.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422055214.GA11281@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/21/22 13:50, Tong Tiangen wrote:
-> Move ptep_clear() to the include/linux/pgtable.h and add page table check
-> relate hooks to some helpers, it's prepare for support page table check
-> feature on new architecture.
-
-Could instrumenting generic page table helpers (fallback instances when its
-corresponding __HAVE_ARCH_XXX is not defined on the platform), might add all
-the page table check hooks into paths on platforms which have not subscribed
-ARCH_SUPPORTS_PAGE_TABLE_CHECK in the first place ? Although these looks have
-!CONFIG_PAGE_TABLE_CHECK fallback stubs in the header, hence a build problem
-gets avoided.
-
+On Fri, Apr 22, 2022 at 07:52:14AM +0200, Christoph Hellwig wrote:
+> On Fri, Apr 22, 2022 at 01:40:15AM -0400, Kent Overstreet wrote:
+> > Wasn't just bcachefs, it affected bcache too, as Coly also reported.
 > 
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> ---
->  arch/x86/include/asm/pgtable.h | 10 ----------
->  include/linux/pgtable.h        | 26 ++++++++++++++++++--------
->  2 files changed, 18 insertions(+), 18 deletions(-)
+> Well, I've not seen a good bug report for that, but I'd gladly look at it.
+
+Thanks. It's been awhile but I'll see if I can dig up the original bug report
+tomorrow.
+
+> > And I wrote
+> > that code originally (and the whole fucking modern bvec iter infrastracture,
+> > mind you) so please don't lecture me on making assumptions on block layer
+> > helpers.
 > 
-> diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-> index 564abe42b0f7..51cd39858f81 100644
-> --- a/arch/x86/include/asm/pgtable.h
-> +++ b/arch/x86/include/asm/pgtable.h
-> @@ -1073,16 +1073,6 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
->  	return pte;
->  }
->  
-> -#define __HAVE_ARCH_PTEP_CLEAR
+> Well, most of what we have is really from Ming.  Because your original
+> idea was awesome, but the code didn't really fit.  Then again I'm not
+> sure why this even matters.
 
-AFICS X86 is the only platform subscribing __HAVE_ARCH_PTEP_CLEAR. Hence if
-this is getting dropped for generic ptep_clear(), then no need to add back
-#ifnded __HAVE_ARCH_PTEP_CLEAR construct. Generic ptep_clear() is the only
-definition for all platforms ?
+Didn't fit how? And Ming extended it to multipage bvecs based on my proposal.
 
-Also if this patch is trying to drop off __HAVE_ARCH_PTEP_CLEAR along with
-other page table check related changes, it needs to be done via a separate
-patch instead.
+> I'm also relly not sure why you are getting so personal.  
 
-> -static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
-> -			      pte_t *ptep)
-> -{
-> -	if (IS_ENABLED(CONFIG_PAGE_TABLE_CHECK))
-> -		ptep_get_and_clear(mm, addr, ptep);
-> -	else
-> -		pte_clear(mm, addr, ptep);
-> -}
-> -
->  #define __HAVE_ARCH_PTEP_SET_WRPROTECT
->  static inline void ptep_set_wrprotect(struct mm_struct *mm,
->  				      unsigned long addr, pte_t *ptep)
-> diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
-> index 49ab8ee2d6d7..10d2d91edf20 100644
-> --- a/include/linux/pgtable.h
-> +++ b/include/linux/pgtable.h
-> @@ -12,6 +12,7 @@
->  #include <linux/bug.h>
->  #include <linux/errno.h>
->  #include <asm-generic/pgtable_uffd.h>
-> +#include <linux/page_table_check.h>
->  
->  #if 5 - defined(__PAGETABLE_P4D_FOLDED) - defined(__PAGETABLE_PUD_FOLDED) - \
->  	defined(__PAGETABLE_PMD_FOLDED) != CONFIG_PGTABLE_LEVELS
-> @@ -272,14 +273,6 @@ static inline bool arch_has_hw_pte_young(void)
->  }
->  #endif
->  
-> -#ifndef __HAVE_ARCH_PTEP_CLEAR
-> -static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
-> -			      pte_t *ptep)
-> -{
-> -	pte_clear(mm, addr, ptep);
-> -}
-> -#endif
-> -
->  #ifndef __HAVE_ARCH_PTEP_GET_AND_CLEAR
->  static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
->  				       unsigned long address,
-> @@ -287,10 +280,22 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
->  {
->  	pte_t pte = *ptep;
->  	pte_clear(mm, address, ptep);
-> +	page_table_check_pte_clear(mm, address, pte);
->  	return pte;
->  }
->  #endif
->  
-> +#ifndef __HAVE_ARCH_PTEP_CLEAR
-> +static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
-> +			      pte_t *ptep)
-> +{
-> +	if (IS_ENABLED(CONFIG_PAGE_TABLE_CHECK))
-> +		ptep_get_and_clear(mm, addr, ptep);
-> +	else
-> +		pte_clear(mm, addr, ptep);
+Put yourself my shoes, I've honestly found you to be hardheaded and exceedingly
+difficult to work with for a very long time.
 
-Could not this be reworked to avoid IS_ENABLED() ? This is confusing. If the page
-table hooks can be added to all potential page table paths via generic helpers,
-irrespective of CONFIG_PAGE_TABLE_CHECK option, there is no rationale for doing
-a IS_ENABLED() check here.
+But I'll bite my tongue for now, because if you'll start listening to bug
+reports that will go a long way towards easing things, and we've got LSF coming
+up so maybe we can hash things out over beers.
 
-> +}
-> +#endif
-> +
->  #ifndef __HAVE_ARCH_PTEP_GET
->  static inline pte_t ptep_get(pte_t *ptep)
->  {
-> @@ -360,7 +365,10 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
->  					    pmd_t *pmdp)
->  {
->  	pmd_t pmd = *pmdp;
-> +
->  	pmd_clear(pmdp);
-> +	page_table_check_pmd_clear(mm, address, pmd);
-> +
->  	return pmd;
->  }
->  #endif /* __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR */
-> @@ -372,6 +380,8 @@ static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
->  	pud_t pud = *pudp;
->  
->  	pud_clear(pudp);
-> +	page_table_check_pud_clear(mm, address, pud);
-> +
->  	return pud;
->  }
->  #endif /* __HAVE_ARCH_PUDP_HUGE_GET_AND_CLEAR */
+> > Now yes, I _could_ do a wholesale conversion of seq_buf to printbuf and delete
+> > that code, but doing that job right, to be confident that I'm not introducing
+> > bugs, is going to take more time than I really want to invest right now. I
+> > really don't like to play fast and loose with that stuff.
+> 
+> Even of that I'd rather see a very good reason first.  seq_bufs have been
+> in the kernel for a while and seem to work fine.  If you think there are
+> shortcomings please try to improve it, not replace or duplicate it.
+> Sometimes there might be a good reason to replace exiting code, but it
+> rather have to be a very good reason.
+
+When the new version is semantically different from the old version it makes it
+a lot easier to deal with the merge conflicts later when forward/backporting
+stuff by giving the new version a new name.
+
+Anyways, I'll have a chat with Steven Rostedt about it since I believe he wrote
+the original code.
