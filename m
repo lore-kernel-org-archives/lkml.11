@@ -2,128 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF751C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbiDVWOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
+        id S231770AbiDVWOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232317AbiDVWMA (ORCPT
+        with ESMTP id S233007AbiDVWNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:12:00 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A4F18C287
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:58:47 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id d3so5775207ilr.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:58:47 -0700 (PDT)
+        Fri, 22 Apr 2022 18:13:11 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9BD22D9E7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:01:03 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id j8so13402503pll.11
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:01:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BUpSqOzVYiFBHHL5wyZniliWxqmPr3GRK8w6NgSpN5Y=;
-        b=XcmVK7JwNu54yeoZvUVgRE4ycDDruCjbj+O5/cIqn5LV67XjhrDem/poh9j9WGzYTq
-         LnUDaJvHfOKnKPlTahgjH/qcg22qtd5Ff1o4h3AgL+7IUtNgRfd71+gL6T35uZxuSGE/
-         0cl58yjKwbyagr1pWsEYjmcGKECgKksbTZEzCqO1gUMr8ksXXPPnbQNTSIM3eRUCdtfN
-         /Qb8DAB56KwthFkmyNNza4ZsncLT3Xlal8f6W70u74xt5+hlKR3zpY9dT+FBJOi9/3Oc
-         QvMOpyk26Nc9Q+j17urh7MTZvzuJAbyRiftOILa9thZn7wEV4+ua/tcuTjW+BZYloL5v
-         mKgw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vRnN2bu3w2ZJ13Banq4mYlhcFKZGZG+RSSq3HA+wfno=;
+        b=oNf2L0dIpA81G6+3xhM+TgZkV9TlJsj1XqB65gROI1z4zCjk55iA3qVnThyXl4ONmH
+         ucoBK3qy/EMOz8pt/vLlIbUu9xBE2OaujA9RpsOugKSyYNkt7hLSR34Qq3iOJD/J5umB
+         Z6i7y/kE5qrhHQ2VOlMcaPMpexpnqt3tNFQqtQzI3n5XrrHY5LgZQ6hOvC/VRvOe6xQ4
+         exNlAArkbkdPegSOpZ1tXfG9h6sfcsKlwE5MUc7BKyKDfRcNvaL1ULHoQZQ2gYDvx0RK
+         ZnJs60PHR6eSMc7CACUAOOTlOe48623D4cALr73xdGnR++duHMULrElUHckTxJpWxHwT
+         RMdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BUpSqOzVYiFBHHL5wyZniliWxqmPr3GRK8w6NgSpN5Y=;
-        b=2b+ksWnklLhZgwBpN4k4GfPyXC8zhWjULHH9t0atDbY5civ2swMzb4LoCDsAZk//dM
-         cZoZvu7mLolIbjEXxdI16a9kC4KkExb/PfhWEa1p+4ImnPN9ZToq+u+Cl7bVKj1SYE5k
-         49hP0Je3eFkWEuE4p4ewCUEs8K0AN2ZjOoxybZ8uX/euJlfR4IzCJhISEmV0/qhta0PP
-         QnIbPJzO4DcV1R3JpS/5cdRGVgpq0ZhQ33mtG5Bb5lg2M8I2CTDP5mAy+kWUgPXbFsfh
-         eJX7+jHd+H/Ub6qfNM5jo4wi4Cf5jcJzE6Cocw0P48742ynamxoglT2TEgTJMSYJp2YU
-         lObA==
-X-Gm-Message-State: AOAM533Nx7pkXGKxtMJTvuVjO7Z8Dt9g/REJpOpT4dhpKuV9SQtaTsFR
-        VFjMEPf08/V4mguctr4/yUvIjXTaw4M0Tw==
-X-Google-Smtp-Source: ABdhPJzUh4luMNplztXSuP6L7uMw2SWA7GRGbpG/TNQKBppwZ6TtQARW2I6z2+myuIpakDIbUiI0Xw==
-X-Received: by 2002:a63:2c4c:0:b0:398:997d:b5b8 with SMTP id s73-20020a632c4c000000b00398997db5b8mr5303391pgs.86.1650655964090;
-        Fri, 22 Apr 2022 12:32:44 -0700 (PDT)
-Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:32:43 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH v3 3/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_evt_priv
-Date:   Sat, 23 Apr 2022 01:02:19 +0530
-Message-Id: <20220422193223.11948-4-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
-References: <20220422193223.11948-1-makvihas@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vRnN2bu3w2ZJ13Banq4mYlhcFKZGZG+RSSq3HA+wfno=;
+        b=gTG4mPAzgsQHRDiG6ieIB3zMDKFdW/llalMsuf3L8HKo5wX2qOR6gRKd1WWfZAL9Wc
+         QtBP8jezysR4Ozp0ipp8zOfXi61Mi2kvApQ9truY7uGjUy4NhtzBVEh1rC91q7o7xWyu
+         ycr1ZKwtUjUNSo71+QlewMQuMmn7zsJfOrwebUnvdmUGYVD/0euG6i6XNAoYjCvxBdQh
+         R5TPY73wg5AkXgAekjazwJwWrlt+5LV5wXOoUKfBR3RnExf6e2V/0CHlneyTTtL8dcDZ
+         ICvgKKbdr0tHRrU+YB3tFt4GUlapoTVyjBOaOFwRfwAMjnnucmpeyr8uoUFF/jZ6/Fuk
+         v57w==
+X-Gm-Message-State: AOAM531Kmi2RCOE5WV6V3FURho9TwdKQdqIydt+FFp0q9Og57U9sTadV
+        aGZcW8AcOXNzT+mLYk5+Uh4=
+X-Google-Smtp-Source: ABdhPJwJ+KOf9aFH1LqV3PlSBwvYymg8uxjX9IrW60mKBBChOxYJWyL/1fA+oHKwRNASlZtUTPmuFQ==
+X-Received: by 2002:a17:902:9b94:b0:156:2c08:14a5 with SMTP id y20-20020a1709029b9400b001562c0814a5mr6213251plp.60.1650661262927;
+        Fri, 22 Apr 2022 14:01:02 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d5-20020a17090acd0500b001d5c571f487sm7233796pju.25.2022.04.22.14.01.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 14:01:02 -0700 (PDT)
+Message-ID: <5af5d392-ffca-6612-c5a2-7042b6e01546@gmail.com>
+Date:   Fri, 22 Apr 2022 14:00:59 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] MAINTAINERS: Broadcom internal lists aren't maintainers
+Content-Language: en-US
+To:     William Zhang <william.zhang@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Joe Perches <joe@perches.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        LKML <linux-kernel@vger.kernel.org>
+References: <04eb301f5b3adbefdd78e76657eff0acb3e3d87f.camel@perches.com>
+ <db4b9db9-fa02-4b92-3b9a-bd866fa0e73e@gmail.com>
+ <b95d9b1058eed13489adba0bccdeb600950eb153.camel@perches.com>
+ <dd97ffe3-3983-fc45-469b-703900077f2f@broadcom.com>
+ <feff60ee8a6d10da7d10b421d18407a5d040680e.camel@perches.com>
+ <b8a5bb60-15d4-0b3b-9d96-758e5136fb46@gmail.com>
+ <aa27b58d-af62-1add-1b27-1fb30ce6b8c5@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <aa27b58d-af62-1add-1b27-1fb30ce6b8c5@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unnecessary wrapper _rtw_init_evt_priv and move its logic to
-rtw_init_evt_priv.
+On 4/22/22 10:42, William Zhang wrote:
+> 
+> 
+> On 4/22/22 10:24, Florian Fainelli wrote:
+>> On 4/20/22 14:31, Joe Perches wrote:
+>>> On Wed, 2022-04-20 at 11:50 -0700, William Zhang wrote:
+>>>>
+>>>> On 4/19/22 16:11, Joe Perches wrote:
+>>>>> On Tue, 2022-04-19 at 12:00 -0700, Florian Fainelli wrote:
+>>>>>> On 4/12/2022 11:34 AM, Joe Perches wrote:
+>>>>>>> Convert the broadcom internal list M: and L: entries to R: as
+>>>>>>> exploder email addresses are neither maintainers nor mailing lists.
+>>>>>>>
+>>>>>>> Reorder the entries as necessary.
+>>>>> []
+>>>>>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>>>> []
+>>>>>>> @@ -3746,7 +3746,7 @@ F:    include/linux/platform_data/b53.h
+>>>>>>>     BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE
+>>>>>>>     M:    Nicolas Saenz Julienne <nsaenz@kernel.org>
+>>>>>>> -L:    bcm-kernel-feedback-list@broadcom.com
+>>>>>>> +R:    Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>
+>>>>>
+>>>>>> There is not a "Broadcom Kernel Team", the description of R: 
+>>>>>> appears to
+>>>>>> require some kind of full name, hence the choice of L: instead of R:.
+>>>>>
+>>>>> If you don't like "Broadcom Kernel Team", perhaps
+>>>>> "Broadcom Kernel Reviewers" might work for you.
+>>>>>
+>>>>> I think it doesn't matter much.
+>>>>>
+>>>> I can see that we shouldn't use M as maintainer for this Broadcom
+>>>> mailing list email. But I honestly don't understand why we have to use
+>>>> R. Just for the sake of full name?  Not everyone in this distribution
+>>>> list is reviewer.  IMHO I would prefer to change all entries to L
+>>>> without a full name.
+>>>
+>>> I think "R:" is a better choice than "L:"
+>>>
+>>> "L:" Mailing list entries have archives that are publicly searchable.
+>>>
+>>> Are the broadcom bcm-kernel-feedback-list entries publicly archived?
+>>
+>> They are not indeed.
+>>
+>>>
+>>> If not, these are one-way entries, so someone sends and hopes only.
+>>> Replies that are sent from these entries are not visible to the public.
+>>
+>> OK, fair enough, I will change to:
+>>
+>> R: Broadcom internal kernel review list 
+>> <bcm-kernel-feedback-list@broadcom.com>
+>>
+>> If that works for everyone?
+> Sounds good to me.
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_cmd.c | 27 +++++++++-----------------
- 1 file changed, 9 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index fc955fce2..512896b86 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -17,22 +17,6 @@
- 
- static void c2h_wk_callback(struct work_struct *work);
- 
--static int _rtw_init_evt_priv(struct evt_priv *pevtpriv)
--{
--	int res = _SUCCESS;
--
--	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
--	atomic_set(&pevtpriv->event_seq, 0);
--
--	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
--	pevtpriv->c2h_wk_alive = false;
--	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN + 1);
--	if (!pevtpriv->c2h_queue)
--		res = _FAIL;
--
--	return res;
--}
--
- void rtw_free_evt_priv(struct	evt_priv *pevtpriv)
- {
- 	cancel_work_sync(&pevtpriv->c2h_wk);
-@@ -133,9 +117,16 @@ u32	rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
- 
- u32 rtw_init_evt_priv(struct evt_priv *pevtpriv)
- {
--	int	res;
-+	u32 res = _SUCCESS;
-+
-+	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
-+	atomic_set(&pevtpriv->event_seq, 0);
- 
--	res = _rtw_init_evt_priv(pevtpriv);
-+	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
-+	pevtpriv->c2h_wk_alive = false;
-+	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN + 1);
-+	if (!pevtpriv->c2h_queue)
-+		res = _FAIL;
- 
- 	return res;
- }
+OK, now applied with the suggested change, thanks everyone.
 -- 
-2.30.2
-
+Florian
