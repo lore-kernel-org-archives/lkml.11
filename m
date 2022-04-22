@@ -2,126 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D014CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41978C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448547AbiDVOTy (ORCPT
+        id S1448576AbiDVOVG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
+        Fri, 22 Apr 2022 10:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448526AbiDVOTu (ORCPT
+        with ESMTP id S1448566AbiDVOUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:19:50 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AED75AEDB;
-        Fri, 22 Apr 2022 07:16:56 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MEGep0020829;
-        Fri, 22 Apr 2022 09:16:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650637000;
-        bh=Btht3bJsm2pNgZ1+h8mMkgg47aM7ac0qLihAqIO4ZCY=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=uyxtvlYqS6hJG0InCHJqL6ouH+zvY7ZmLo6L8inFqms7sonKrL+RRH4uicW6/cZUx
-         2cHIDeGTbv26IYYiEwylXnNkMpaH6/aFQvyKMEjYB5H6sYQm+O7HRURo9GYGIv9gjj
-         BNPnykeWst1R3g0DP4wtVwwm+H5Z2sPR8OqdQIAk=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MEGeeg034900
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 09:16:40 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 09:16:40 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 09:16:40 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MEGcui026816;
-        Fri, 22 Apr 2022 09:16:39 -0500
-Date:   Fri, 22 Apr 2022 19:46:38 +0530
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-CC:     <nm@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>
-Subject: Re: [PATCH v3 0/2] DSS: Add support for DisplayPort
-Message-ID: <20220422141637.4hz5nrlpjapmqezw@uda0490373>
-References: <20220406165852.13026-1-r-ravikumar@ti.com>
- <ed64bf63-95c6-94ae-4c4f-a206250f44a9@ti.com>
+        Fri, 22 Apr 2022 10:20:54 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBAA5AEED;
+        Fri, 22 Apr 2022 07:17:39 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nhu6L-0002zq-Hd; Fri, 22 Apr 2022 16:17:37 +0200
+Message-ID: <e4c9bb60-210d-243a-e225-6b3546c0b42b@leemhuis.info>
+Date:   Fri, 22 Apr 2022 16:17:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ed64bf63-95c6-94ae-4c4f-a206250f44a9@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        regressions@lists.linux.dev,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+References: <s5ha6cdtglj.wl-tiwai@suse.de>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [REGRESSION] Missing IRQ via amd_gpio
+In-Reply-To: <s5ha6cdtglj.wl-tiwai@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650637059;93b2feed;
+X-HE-SMSGID: 1nhu6L-0002zq-Hd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12:51-20220415, Vignesh Raghavendra wrote:
-> 
-> 
-> On 06/04/22 10:28 pm, Rahul T R wrote:
-> > The following series of patches enables DisplayPort on
-> > j721e-evm
-> > 
-> > Tomi Valkeinen (2):
-> >   arm64: dts: ti: k3-j721e-main: add DP & DP PHY
-> >   arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
-> > 
-> > v2:
-> >    - use phandle with a parameter to refer clocks insted of
-> >      sub nodes in serdes_wiz node
-> >    - move phy link node to board DTS file
-> > 
-> > v3:
-> >    - Fix the regulator node name as per the DT spec
-> >    - Use Macro for GPIO type
-> > 
-> > boot logs:
-> >    https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
-> > 
-> > kernel patch verify report:
-> >    https://gist.githubusercontent.com/ravi-rahul/a982fef3fae03ec0dbdd5cb475a4cb25/raw/c8230370746e9878daf9527c3aa9d82eed7aa33c/report-kernel-patch-verify.txt
-> 
-> Hmm, With dtbs_check I see (on v5.18-rc1 tag)
-> 
-> +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@0' is a required property
-> +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@4' is a required property
-> +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phys' is a required property
-> +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phy-names' is a required property
-> 
-> This goes away with 2/2 although adds:
-> +<stdout>: Warning (graph_child_address): /bus@100000/dss@4a00000/ports: graph node has single child node 'port@0', #address-cells/#size-cells are not necessary
-> 
-> 
-> Do we need to have empty ports node in j721e-main.dtsi for dp-bridge?   And something similar wrt phys as well?
-> 
-> Regards
-> Vignesh
+Hi Takashi! Thx for CCing the regression list.
 
-Hi Vignesh,
-
-Thanks for the review!
-Not sure why kernel patch verify did not catch this
-
-I can fix the warnings for ports by adding empty ports in 1/2
-For "phys" I can move the phy node from 2/2 to 1/2
-But the commit will spill over both dtsi and dts files
-is that okay, can you please give your inputs here
-
-Regards
-Rahul T R
- 
+On 22.04.22 15:03, Takashi Iwai wrote:
+> Hi,
 > 
-> > 
-> >  .../dts/ti/k3-j721e-common-proc-board.dts     | 78 ++++++++++++++++++-
-> >  arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 65 ++++++++++++++++
-> >  2 files changed, 139 insertions(+), 4 deletions(-)
-> > 
+> we received a bug report for 5.17.3 kernel showing a new error:
+> 
+>  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
+> 
+> Not only an error message but in practice this leads to a missing IRQ
+> assignment; the IRQ 27 is no longer assigned to amd_gpio driver.
+> 
+> As the error number (EPROBE_DEFER) indicates, this seems to be the
+> side-effect of the recent fix, the upstream commit 5467801f1fcb
+> ("gpio: Restrict usage of GPIO chip irq members before
+> initialization").  As far as I understand, the problem is in
+> acpi_gpiochip_request_interrupts() call that is called from
+> gpiochip_add_irqchip() itself.  Since it's called before the
+> initialized flag set, it always fails now.
+> 
+> Below is a temporary quick fix and it seems working.  But I'm not sure
+> whether I overlooked something obvious...
+
+A patch that afaics will fix this hopefully should get merged really
+soon now:
+
+https://lore.kernel.org/all/20220422131452.20757-1-mario.limonciello@amd.com/
+
+See also v1:
+
+https://lore.kernel.org/all/20220414025705.598-1-mario.limonciello@amd.com/
+
+Ciao, Thorsten
