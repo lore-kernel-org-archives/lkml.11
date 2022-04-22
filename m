@@ -2,95 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 033A0C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448774AbiDVOnl (ORCPT
+        id S1448792AbiDVOpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
+        Fri, 22 Apr 2022 10:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233505AbiDVOnj (ORCPT
+        with ESMTP id S1448784AbiDVOo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:43:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD135BE58
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:40:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5147604EF
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:40:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66EDC385A4;
-        Fri, 22 Apr 2022 14:40:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650638445;
-        bh=MYOgwWbfG5bkafDdMryKHBx4bZzP6zWaU7pqVa4fSeU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2cqtaxk446CcosqemMNM2QZCQrAWhOe4SetSJj8PSVEekW2A6l/qwYlHo0Og+hrcR
-         GjzpEwIs6WT4jzG2l/owuBWRsgqvxIvwC0e/TFmdhDocTI8pyMeDt5Vz3NetqOcxdl
-         FGgyCm/rddtlLUpAlPoBhRcHU1NZAgk693ADHsbk=
-Date:   Fri, 22 Apr 2022 16:40:42 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Adrien Thierry <athierry@redhat.com>
-Cc:     Maxime Ripard <mripard@kernel.org>, Takashi Iwai <tiwai@suse.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] staging: bcm2835-audio: delete TODO
-Message-ID: <YmK+aiaaVLtadGVT@kroah.com>
-References: <20220420174401.305964-1-athierry@redhat.com>
+        Fri, 22 Apr 2022 10:44:59 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145585BE59
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:42:04 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id u15so16751219ejf.11
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YPSNiy/WSLKetqRwGH3dF+rpEOiPZlSHrWRqFedtnF4=;
+        b=0tMdoCP+ffWO8q+DJhG8ohmRQyh6tnncLT6Cx/QL2gX3NNf11NX+1xXnpNqWcX9C/c
+         SXvYE9BZjUl2uC/vA500HXE9W2f1dBELQg9JK7sBOYRFdTpUPtV6esJpsWmIANrRlNI7
+         xt5iORgxgkN7mv0ECZQh5BeJtaBc4uhhiQz+ssGkZt0lQBgun1jmVjYBWQ5z833zWxLq
+         L4ZHcA+jPDCeCiWadUjPrWczRjk64kud7El/qGkL8gi/T6JKE7r5Toyh+PRigo95R8Pg
+         ccD87UoISQEEvYGDxU79Ev95zWrhp7qCkMf/s1WqKNmzp7TIrbmSOxtHNT5a+C9ecx6Q
+         2PaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YPSNiy/WSLKetqRwGH3dF+rpEOiPZlSHrWRqFedtnF4=;
+        b=PQ6LnJUGHnwTPvHFooN878iJZhL2fxa33ciT4EAd3tw5lfIsbGyYA/ylkhgulJQU+n
+         NxjKCoKfsymxhBKCL0hf/obPXMLm9mOYWAZTSFT0auYWUpPG9eHYkTPGPcmlxPQSHWf5
+         PVqaPtWaES9fOrzZGhJ6d6srij9aUXNG6Y2AAiLC2vfFGRVMHaoWiXD4XSbaBEp6IrtK
+         Dz+HKjrd8QM1XlRmJLdWzq6D2F5PMU+1S6sNnXA5jjls4qY7F6d4Q8A8ZQpUj7dEVvy/
+         3hsq/8LCxrsfjq6eRIZlqwq6auN7dtgl4Xo+a+0RnjlQnjr8b3B60AOfk/83oiLXy3/s
+         6rDg==
+X-Gm-Message-State: AOAM531p04i5yImlY3LZR0sZaZ3qOGdDED9VoAfRh+j/zHmQnQSa4xjb
+        t6frIQWmtI9V7PjNeyaOP4f/Cg==
+X-Google-Smtp-Source: ABdhPJysMwN6dg4jeawpJnY1cyANQrKMCfiG/FlpuhM3iJwkjTZkcHyc9G9XIGVn5vqtoFhXrjcolQ==
+X-Received: by 2002:a17:907:2daa:b0:6da:924e:955 with SMTP id gt42-20020a1709072daa00b006da924e0955mr4491227ejc.1.1650638522573;
+        Fri, 22 Apr 2022 07:42:02 -0700 (PDT)
+Received: from otso.. (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id u6-20020a17090626c600b006e74ef7f092sm818202ejc.176.2022.04.22.07.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 07:42:02 -0700 (PDT)
+From:   Luca Weiss <luca.weiss@fairphone.com>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        devicetree@vger.kernel.org,
+        Georgi Djakov <georgi.djakov@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Odelu Kukatla <okukatla@codeaurora.org>
+Subject: [PATCH 0/4] Add interconnect support for SM6350
+Date:   Fri, 22 Apr 2022 16:40:16 +0200
+Message-Id: <20220422144021.232993-1-luca.weiss@fairphone.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420174401.305964-1-athierry@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 01:44:00PM -0400, Adrien Thierry wrote:
-> Delete TODO since all tasks were completed:
-> 
-> 1 - fixed here:
-> https://lore.kernel.org/all/20220408150359.26661-1-athierry@redhat.com/
-> 
-> 2 - there are no remaining checkpatch.pl errors or warnings
-> 
-> Signed-off-by: Adrien Thierry <athierry@redhat.com>
-> ---
->  drivers/staging/vc04_services/bcm2835-audio/TODO | 10 ----------
->  1 file changed, 10 deletions(-)
->  delete mode 100644 drivers/staging/vc04_services/bcm2835-audio/TODO
-> 
-> diff --git a/drivers/staging/vc04_services/bcm2835-audio/TODO b/drivers/staging/vc04_services/bcm2835-audio/TODO
-> deleted file mode 100644
-> index b85451255db0..000000000000
-> --- a/drivers/staging/vc04_services/bcm2835-audio/TODO
-> +++ /dev/null
-> @@ -1,10 +0,0 @@
-> -*****************************************************************************
-> -*                                                                           *
-> -*                           TODO: BCM2835-AUDIO                             *
-> -*                                                                           *
-> -*****************************************************************************
-> -
-> -1) Revisit multi-cards options and PCM route mixer control (as per comment
-> -https://lore.kernel.org/lkml/s5hd0to5598.wl-tiwai@suse.de)
-> -
-> -2) Fix the remaining checkpatch.pl errors and warnings.
-> -- 
-> 2.35.1
-> 
-> 
+This series adds interconnect support for the various NoCs found on
+sm6350.
 
-Great, so now it can be merged to the real part of the kernel?  If not,
-what's left for that to happen?
+A more special modification is allowing child NoC devices, like done for
+rpm-based qcm2290 which was already merged, but now for rpmh-based
+interconnect.
 
-thanks,
+See also downstream dts:
+https://android.googlesource.com/kernel/msm-extra/devicetree/+/refs/tags/android-11.0.0_r0.81/qcom/lagoon-bus.dtsi
 
-greg k-h
+Luca Weiss (4):
+  interconnect: qcom: icc-rpmh: Support child NoC device probe
+  dt-bindings: interconnect: Add Qualcomm SM6350 NoC support
+  interconnect: qcom: Add SM6350 driver support
+  arm64: dts: qcom: sm6350: Add interconnect support
+
+ .../bindings/interconnect/qcom,rpmh.yaml      |  44 ++
+ arch/arm64/boot/dts/qcom/sm6350.dtsi          | 109 ++++
+ drivers/interconnect/qcom/Kconfig             |   9 +
+ drivers/interconnect/qcom/Makefile            |   2 +
+ drivers/interconnect/qcom/icc-rpmh.c          |   4 +
+ drivers/interconnect/qcom/sm6350.c            | 493 ++++++++++++++++++
+ drivers/interconnect/qcom/sm6350.h            | 139 +++++
+ .../dt-bindings/interconnect/qcom,sm6350.h    | 148 ++++++
+ 8 files changed, 948 insertions(+)
+ create mode 100644 drivers/interconnect/qcom/sm6350.c
+ create mode 100644 drivers/interconnect/qcom/sm6350.h
+ create mode 100644 include/dt-bindings/interconnect/qcom,sm6350.h
+
+-- 
+2.36.0
+
