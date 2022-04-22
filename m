@@ -2,204 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 158F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 013DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiDVVjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
+        id S230150AbiDVVjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiDVVjh (ORCPT
+        with ESMTP id S230098AbiDVVjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:39:37 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28042D358B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:01 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id r11so5789216ila.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:01 -0700 (PDT)
+        Fri, 22 Apr 2022 17:39:41 -0400
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24ED84179C0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:10 -0700 (PDT)
+Received: by mail-ua1-x930.google.com with SMTP id az19so3131812uab.13
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WZMlpwmjON05raKFGDQgTKXed4pbMzjEU/f7GpRcKxk=;
-        b=mMjUvoeU7khCqxILg6UhdkcGTrULEYt3h6NEoR3C9tZq15DQ+u2wQJbEae0E2/OnSq
-         nXZ4Y9Sh1wtbGvU4BOWFS/FHjZiyDMDcZWFHB72m+HQPTSBmxB+kWeYyx+DQ8EvP6Udq
-         REbku2UZ9VRL294uVCkmhHlD9BNzPE3x7rTRuyx78NBtj3RWIqrvyH5S+3LHhz64Iam0
-         iqk1M9yqg+cYzFsZIOQ6o3AWIwXJPXxRulGmYgzWR+EHW4C1MYPF3x1JAWjDrZx7sbKm
-         R5UhQc6J6Xf0It0KsW3U7vwGl5KHmRUUSmGR6Pb29Vu5j54tgLX4MTvVvWtTxAOr4ztk
-         a7FQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0JRCh/BqOi4YkLGUiJfecYURU86aNbte4r9osUN03Ek=;
+        b=CBGTb4d3eS7HJsTVlLbQoizdcgj00FRfmsbMjOINCCIgO/lh/nw8HFb5PtXjHizyAi
+         BYZ+XVlLA6yn5KwojjjMps9Uw9kqcWQDjdEkeaNPwRettOULYGjgSkpIY7XNeOVgjp4A
+         FIE3gEgnj+PkohreuAOunK9gW7Al2WCCKjSjTUSlVHG/1U5fxBJSxNvMJGAczW6PjXoh
+         y4AV9yCqVYPPG6eAHwjn1K7OVRJaWNnRZmQ5k+B+yQJzKfxtyAomy7dOiJ4j6TfHe3jQ
+         knLd0SPuH892Kmh/jfFnbYPiifqBIPHRECqY5lA5x4ux6cXe213gkYziWEoSlo2BOORF
+         LlXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WZMlpwmjON05raKFGDQgTKXed4pbMzjEU/f7GpRcKxk=;
-        b=TIUpWKwsRWgD3PpOrkeITc6gCw+HYc6YTiL58mVUZ5CFnHDUYx9Wv5NcWScQWW7EYU
-         mx0ajHcpx7CAF6n4IrYUbpUmMGkgiBgbMIDd53TOLprLIJ73upB4BNv5oO17NMuGOpSR
-         MJ5gaWeGUc+wN3K97U77t4z1Fo9+RYe9MA1pYTQPmi42jx/xkJHoQVuUChPI3HPTwTLK
-         0FREGwytMqtuCZMl2mj+Hv+OBwX5eSvKsS6s6shmxyD8GZi7gofS18Zu+o6dEdEkYCIr
-         ZCTxDUBdheWerSJMZn5mj7CkvuMJ/jKDfPXt9Q0yGIwdY0YUNOywd/O7t4fSPG4Z4wcc
-         TSug==
-X-Gm-Message-State: AOAM5330uJ/DFyA5mNeUISQ9SASRItRJyXVwkR7pVpFMj7WpXLG6eEa2
-        VpnjdSEZLDDrUGt9+RNrAtAO9HwmE5dpow==
-X-Google-Smtp-Source: ABdhPJwf1R9PUV4mgIvU1nqQLy0/9uBmokjqz+5KcU+gSfYHapHv5UiGBPk1nizg2H8mRtBEfoDOlA==
-X-Received: by 2002:a63:591c:0:b0:3aa:506c:b50b with SMTP id n28-20020a63591c000000b003aa506cb50bmr5219423pgb.77.1650655967838;
-        Fri, 22 Apr 2022 12:32:47 -0700 (PDT)
-Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:32:47 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH v3 4/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_mlme_priv
-Date:   Sat, 23 Apr 2022 01:02:20 +0530
-Message-Id: <20220422193223.11948-5-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
-References: <20220422193223.11948-1-makvihas@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0JRCh/BqOi4YkLGUiJfecYURU86aNbte4r9osUN03Ek=;
+        b=aVCmuO2UzaxgBChV7oscAMSpcHUyugRoV9W/yPcLK/yt8SqX21UUbJZjf4C/Rtdl5Z
+         OpinoCPfb06/3zACHjGRuP3Zo6fVwwMHSA5ONrtFanBURYm1bwKI0cA6w1w0GBlSGK8C
+         1/hWBd52g3eWPJGGevWywO/xDiFMaC4cL5kelaeRBHfZevh4WYVwo5W4P1wVIgdhg6ms
+         h9Waj0zYf9obax3YH8V9FKTYOSraFNdaplV8pWKNVlZ8KjylL20+t7ibIumsHnSyjQMT
+         aJkHiKzNJMY0ovgkOB880vpYePrFH+pOdQKuqc1VJ7rI/Dj1ytuzn0gcWalRYUdz5NPz
+         ustQ==
+X-Gm-Message-State: AOAM533nG5gXZlI1dJ1sy3tFfQYRRT1Fc1QLGni3szYLMraSyZ0TTb9K
+        ohAEGHGGsO+fWhImntxfDU6g40/LdvQunx8P02UsD/txihY=
+X-Google-Smtp-Source: ABdhPJw9gNNFIjL44oXwYR0XZt26gSCXKZ91nXCIwqis42lHTyFg4ODQiziVUiiGspHnYemb6VnQASFqhnYF8zKxMxw=
+X-Received: by 2002:a0d:f0c3:0:b0:2f4:d291:9dde with SMTP id
+ z186-20020a0df0c3000000b002f4d2919ddemr6790754ywe.437.1650659758236; Fri, 22
+ Apr 2022 13:35:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220422170920.401914-1-sebastian.reichel@collabora.com> <20220422170920.401914-15-sebastian.reichel@collabora.com>
+In-Reply-To: <20220422170920.401914-15-sebastian.reichel@collabora.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 22 Apr 2022 22:35:47 +0200
+Message-ID: <CACRpkda-yLgH7mC6GkMgh5e3+c+4cBrRc9Ryist+zYJh2z9_Sw@mail.gmail.com>
+Subject: Re: [PATCHv1 14/19] gpio: rockchip: add support for rk3588
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
+        Jianqun Xu <jay.xu@rock-chips.com>, kernel@collabora.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unnecessary wrapper _rtw_init_mlme_priv and move its logic to
-rtw_init_mlme_priv.
+On Fri, Apr 22, 2022 at 7:09 PM Sebastian Reichel
+<sebastian.reichel@collabora.com> wrote:
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_mlme.c | 103 +++++++++++-------------
- 1 file changed, 47 insertions(+), 56 deletions(-)
+> From: Jianqun Xu <jay.xu@rock-chips.com>
+>
+> Add V2.1 rockchip gpio controller type, which is part of the
+> RK3588 SoC.
+>
+> Signed-off-by: Jianqun Xu <jay.xu@rock-chips.com>
+> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index 081c02417..50a65a4e2 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -30,60 +30,6 @@ u8 rtw_to_roaming(struct adapter *adapter)
- 	return adapter->mlmepriv.to_roaming;
- }
- 
--static int _rtw_init_mlme_priv(struct adapter *padapter)
--{
--	int	i;
--	u8	*pbuf;
--	struct wlan_network	*pnetwork;
--	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
--	int	res = _SUCCESS;
--
--	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by vzalloc(). */
--
--	pmlmepriv->nic_hdl = (u8 *)padapter;
--
--	pmlmepriv->pscanned = NULL;
--	pmlmepriv->fw_state = 0;
--	pmlmepriv->cur_network.network.InfrastructureMode = Ndis802_11AutoUnknown;
--	pmlmepriv->scan_mode = SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
--
--	spin_lock_init(&pmlmepriv->lock);
--	rtw_init_queue(&pmlmepriv->free_bss_pool);
--	rtw_init_queue(&pmlmepriv->scanned_queue);
--
--	set_scanned_network_val(pmlmepriv, 0);
--
--	memset(&pmlmepriv->assoc_ssid, 0, sizeof(struct ndis_802_11_ssid));
--
--	pbuf = vzalloc(MAX_BSS_CNT * (sizeof(struct wlan_network)));
--
--	if (!pbuf) {
--		res = _FAIL;
--		goto exit;
--	}
--	pmlmepriv->free_bss_buf = pbuf;
--
--	pnetwork = (struct wlan_network *)pbuf;
--
--	for (i = 0; i < MAX_BSS_CNT; i++) {
--		INIT_LIST_HEAD(&pnetwork->list);
--
--		list_add_tail(&pnetwork->list, &pmlmepriv->free_bss_pool.queue);
--
--		pnetwork++;
--	}
--
--	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
--
--	rtw_clear_scan_deny(padapter);
--
--	rtw_init_mlme_timer(padapter);
--
--exit:
--
--	return res;
--}
--
- static void rtw_free_mlme_ie_data(u8 **ppie, u32 *plen)
- {
- 	kfree(*ppie);
-@@ -289,9 +235,54 @@ u8 *rtw_get_beacon_interval_from_ie(u8 *ie)
- 
- int rtw_init_mlme_priv(struct adapter *padapter)/* struct	mlme_priv *pmlmepriv) */
- {
--	int	res;
-+	int	i;
-+	u8	*pbuf;
-+	struct wlan_network	*pnetwork;
-+	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-+	int	res = _SUCCESS;
-+
-+	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by vzalloc(). */
-+
-+	pmlmepriv->nic_hdl = (u8 *)padapter;
-+
-+	pmlmepriv->pscanned = NULL;
-+	pmlmepriv->fw_state = 0;
-+	pmlmepriv->cur_network.network.InfrastructureMode = Ndis802_11AutoUnknown;
-+	pmlmepriv->scan_mode = SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
-+
-+	spin_lock_init(&pmlmepriv->lock);
-+	rtw_init_queue(&pmlmepriv->free_bss_pool);
-+	rtw_init_queue(&pmlmepriv->scanned_queue);
-+
-+	set_scanned_network_val(pmlmepriv, 0);
-+
-+	memset(&pmlmepriv->assoc_ssid, 0, sizeof(struct ndis_802_11_ssid));
- 
--	res = _rtw_init_mlme_priv(padapter);/*  (pmlmepriv); */
-+	pbuf = vzalloc(MAX_BSS_CNT * (sizeof(struct wlan_network)));
-+
-+	if (!pbuf) {
-+		res = _FAIL;
-+		goto exit;
-+	}
-+	pmlmepriv->free_bss_buf = pbuf;
-+
-+	pnetwork = (struct wlan_network *)pbuf;
-+
-+	for (i = 0; i < MAX_BSS_CNT; i++) {
-+		INIT_LIST_HEAD(&pnetwork->list);
-+
-+		list_add_tail(&pnetwork->list, &pmlmepriv->free_bss_pool.queue);
-+
-+		pnetwork++;
-+	}
-+
-+	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
-+
-+	rtw_clear_scan_deny(padapter);
-+
-+	rtw_init_mlme_timer(padapter);
-+
-+exit:
- 
- 	return res;
- }
--- 
-2.30.2
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+This looks like something that can just be merged to Bartosz
+tree as there are no dependencies on the other patches.
+
+Yours,
+Linus Walleij
