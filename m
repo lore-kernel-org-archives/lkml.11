@@ -2,218 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2506DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E3BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443507AbiDVCre (ORCPT
+        id S1443498AbiDVCsP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 22:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
+        Thu, 21 Apr 2022 22:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443491AbiDVCr3 (ORCPT
+        with ESMTP id S235671AbiDVCsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 22:47:29 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96E94B42E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650595477; x=1682131477;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1Cd0aCSYmZ/7a1tzPoIOYh4AODbL2Q6vCSRbq9qw3Jc=;
-  b=MO8bFkeM76UCBis7PDZ4hg6HRCkP0v6BgosgOU3VD0jvzn01t6xEVPYc
-   +NaqyaiFOGfDG5/+FEW9YJERqPZs3vmlH2mP40o4fi3KCV1ha0RZGtA4Z
-   aAxRtahn+MBcxoipQFHOERgteIYFkblEjC4W4EZEttXPL4Oc+oHAUHZsS
-   CxwGWTLnrRKGwUEcNIXQi2HF8P1/K9C3MkPO3w0dAMCyzIAJKHpPHJ5K0
-   b+qnUXZ+Fmu0sw8jHje2vTWhZhX+JElxaq4oK6Eb5OyTv8eHyTdp1+3lT
-   0Siv7fRQ+ut4EkE98MNmzqae4HxebVVk9rVtor28ZqRok6G5JNc9J8fEx
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264020582"
-X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
-   d="scan'208";a="264020582"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 19:44:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
-   d="scan'208";a="593952356"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 19:44:36 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhjHf-00098d-H5;
-        Fri, 22 Apr 2022 02:44:35 +0000
-Date:   Fri, 22 Apr 2022 10:43:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- fc6a9cd957e9dfd2e9647ff79895118334ee9e7f
-Message-ID: <6262166d.Hqq4H9fumZcGSQ83%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 21 Apr 2022 22:48:14 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674642ED41;
+        Thu, 21 Apr 2022 19:45:21 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KkzDM5wpvzCrdw;
+        Fri, 22 Apr 2022 10:40:51 +0800 (CST)
+Received: from [10.67.110.176] (10.67.110.176) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 22 Apr 2022 10:45:18 +0800
+Subject: Re: [PATCH -next] libbpf: Add additional null-pointer checking in
+ make_parent_dir
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        <gongruiqi1@huawei.com>, <wangweiyang2@huawei.com>
+References: <20220421130056.2510372-1-cuigaosheng1@huawei.com>
+ <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com>
+From:   cuigaosheng <cuigaosheng1@huawei.com>
+Message-ID: <45fdf83c-7492-1c31-af8d-7b2c9bdaf5a7@huawei.com>
+Date:   Fri, 22 Apr 2022 10:45:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.176]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-branch HEAD: fc6a9cd957e9dfd2e9647ff79895118334ee9e7f  Merge objtool/urgent into tip/master
+I don't understand why we don't check path for NULL, bpf_link__pin is an external
+interface, It will be called by external functions and provide input parameters,
+for example in samples/bpf/hbm.c:
+> 201 link = bpf_program__attach_cgroup(bpf_prog, cg1); 202 if 
+> (libbpf_get_error(link)) { 203 fprintf(stderr, "ERROR: 
+> bpf_program__attach_cgroup failed\n"); 204 goto err; 205 } 206 207 
+> sprintf(cg_pin_path, "/sys/fs/bpf/hbm%d", cg_id); 208 rc = 
+> bpf_link__pin(link, cg_pin_path); 209 if (rc < 0) { 210 printf("ERROR: 
+> bpf_link__pin failed: %d\n", rc); 211 goto err; 212 }
+if cg_pin_path is NULL, strdup(NULL) will trigger a segmentation fault in
+make_parent_dir, I think we should avoid this and add null-pointer checking
+for path, just like check_path:
+> 7673 static int check_path(const char *path) 7674 { 7675 char *cp, 
+> errmsg[STRERR_BUFSIZE]; 7676 struct statfs st_fs; 7677 char *dname, 
+> *dir; 7678 int err = 0; 7679 7680 if (path == NULL) 7681 return 
+> -EINVAL; 7682 7683 dname = strdup(path); 7684 if (dname == NULL) 7685 
+> return -ENOMEM; 7686 7687 dir = dirname(dname); 7688 if (statfs(dir, 
+> &st_fs)) { 7689 cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg)); 
+> 7690 pr_warn("failed to statfs %s: %s\n", dir, cp); 7691 err = -errno; 
+> 7692 } 7693 free(dname); 7694 7695 if (!err && st_fs.f_type != 
+> BPF_FS_MAGIC) { 7696 pr_warn("specified path %s is not on BPF FS\n", 
+> path); 7697 err = -EINVAL; 7698 } 7699 7700 return err; 7701 }
 
-elapsed time: 2409m
+Thanks.
 
-configs tested: 138
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-powerpc                     asp8347_defconfig
-sh                           se7712_defconfig
-nios2                         3c120_defconfig
-mips                        vocore2_defconfig
-powerpc                        cell_defconfig
-powerpc                     mpc83xx_defconfig
-arm                         nhk8815_defconfig
-m68k                       m5208evb_defconfig
-sh                        apsh4ad0a_defconfig
-mips                         cobalt_defconfig
-arm                            qcom_defconfig
-powerpc                     ep8248e_defconfig
-sh                   sh7724_generic_defconfig
-powerpc                       ppc64_defconfig
-sh                          rsk7269_defconfig
-mips                     loongson1b_defconfig
-arm                        mini2440_defconfig
-sparc                       sparc32_defconfig
-arm                        keystone_defconfig
-powerpc                  storcenter_defconfig
-powerpc                  iss476-smp_defconfig
-m68k                                defconfig
-s390                          debug_defconfig
-arm                            xcep_defconfig
-powerpc                    amigaone_defconfig
-arm                        mvebu_v7_defconfig
-i386                                defconfig
-mips                        bcm47xx_defconfig
-sh                          polaris_defconfig
-arm                        spear6xx_defconfig
-mips                            ar7_defconfig
-powerpc                     pq2fads_defconfig
-arm                           stm32_defconfig
-xtensa                    smp_lx200_defconfig
-mips                           xway_defconfig
-xtensa                          iss_defconfig
-microblaze                          defconfig
-xtensa                  cadence_csp_defconfig
-powerpc                      arches_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220420
-arm                  randconfig-c002-20220421
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220421
-s390                 randconfig-r044-20220421
-riscv                randconfig-r042-20220421
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-riscv                randconfig-c006-20220421
-mips                 randconfig-c004-20220421
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-arm                  randconfig-c002-20220421
-powerpc              randconfig-c003-20220421
-mips                        bcm63xx_defconfig
-arm                         orion5x_defconfig
-powerpc                      ppc64e_defconfig
-mips                           rs90_defconfig
-arm                       versatile_defconfig
-mips                        workpad_defconfig
-mips                         tb0287_defconfig
-riscv                    nommu_virt_defconfig
-arm                         socfpga_defconfig
-arm                       spear13xx_defconfig
-mips                         tb0219_defconfig
-powerpc                        fsp2_defconfig
-powerpc                     tqm8560_defconfig
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220420
-riscv                randconfig-r042-20220420
-hexagon              randconfig-r045-20220420
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+在 2022/4/22 0:55, Andrii Nakryiko 写道:
+> On Thu, Apr 21, 2022 at 6:01 AM Gaosheng Cui <cuigaosheng1@huawei.com> wrote:
+>> The make_parent_dir is called without null-pointer checking for path,
+>> such as bpf_link__pin. To ensure there is no null-pointer dereference
+>> in make_parent_dir, so make_parent_dir requires additional null-pointer
+>> checking for path.
+>>
+>> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+>> ---
+>>   tools/lib/bpf/libbpf.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index b53e51884f9e..5786e6184bf5 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -7634,6 +7634,9 @@ static int make_parent_dir(const char *path)
+>>          char *dname, *dir;
+>>          int err = 0;
+>>
+>> +       if (path == NULL)
+>> +               return -EINVAL;
+>> +
+> API contract is that path shouldn't be NULL. Just like we don't check
+> link, obj, prog for NULL in every single API, I don't think we need to
+> do it here, unless I'm missing something?
+>
+>>          dname = strdup(path);
+>>          if (dname == NULL)
+>>                  return -ENOMEM;
+>> --
+>> 2.25.1
+>>
+> .
