@@ -2,116 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1995FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B945CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiDVVia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37034 "EHLO
+        id S230082AbiDVVie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbiDVViQ (ORCPT
+        with ESMTP id S230161AbiDVViR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:38:16 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0435A143;
-        Fri, 22 Apr 2022 13:42:38 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id t11so18498636eju.13;
-        Fri, 22 Apr 2022 13:42:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fZ2/OuEbTtlP/zbEoj+78SvWtB9uWMF+zESvUfUCBO4=;
-        b=B7Hd84UyG0YttbYUhgQvL4d1pq3mxusUKlQRLFIQZs3auNE3kOIsG7+9OSj4DdysBG
-         mqLQlVWTTHgeNKQi5dyXhHS0YYG7368eNfxkjYfKi+Qg36lYyXF+J/csTJvBGRfE2Umo
-         V8fpyB9AaDpuEysiJ6ZtkspZ57PUfLgdtksqR1HIqwqt+EsGJOxQgnjt/xFVvbKxjHvh
-         TXAYORwq9QCqRe3qJFlMsszhArFqyGW9e2AD9h/XFzEg16uXNgZqB1UQEyyWBZEjTD/n
-         GwHLepHX0VOVcJaXF8zEazZVX0aDDC9paxe2rpLen6sUdcIKvwpKKzn4FTI+zLUC3HKm
-         MGEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fZ2/OuEbTtlP/zbEoj+78SvWtB9uWMF+zESvUfUCBO4=;
-        b=zu06kGFbOaV8g0vzcI+yICSNcAsCHObXIdr8NXqHEJvy2kUpTMEWFtrSJMZYR+DT0w
-         JPCX9MZCqIcy2in3m59Yd1lL4hmgkQm4BdpTdzdyUIDH/bEu40PIBTF8No/LuBBLNwZb
-         GvB6yaI5V4zbDg9F2fSXTePyPHra+JyhXEL2/4TFpvxKZWbrDGlPeTBLSH8pZk1A5hdV
-         AeQRdyTWc+XqssxncNtvUJHEmtyY7J6lY4JkvXqFrRbHym+SdIse/OQQj7umKJPAEuxB
-         NO+7nRwsAhv8+YbI7zj/pkHiIWLSOi+qOOrM/5vjr190l/iPru9+1Aorr2kLAcV+yaIu
-         jn3w==
-X-Gm-Message-State: AOAM533yoBkuT3sq2yqHXk4XtyjwZYjOJhkimWehhhg1ogdo3j6SCoLq
-        qLEwdkLSspOsXaJpR0YYFrHGWi85l7w=
-X-Google-Smtp-Source: ABdhPJx/sfbtZ0jZujbDr2K9gG27fiJ4Fj+BmJWojKiTW9YVnhEQi2DSVh9qIj34dyoZy+4/g81Cgg==
-X-Received: by 2002:a17:907:7246:b0:6ef:828d:4b49 with SMTP id ds6-20020a170907724600b006ef828d4b49mr6055932ejc.172.1650660156563;
-        Fri, 22 Apr 2022 13:42:36 -0700 (PDT)
-Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id fq6-20020a1709069d8600b006e891c0b7e0sm1072601ejc.129.2022.04.22.13.42.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 13:42:35 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Date:   Fri, 22 Apr 2022 22:42:34 +0200
-Message-ID: <2185371.iZASKD2KPV@leap>
-In-Reply-To: <YmLvLvnZm0DJs0r4@iweiny-desk3>
-References: <20220421180200.16901-1-fmdefrancesco@gmail.com> <20220421180200.16901-2-fmdefrancesco@gmail.com> <YmLvLvnZm0DJs0r4@iweiny-desk3>
+        Fri, 22 Apr 2022 17:38:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A59DA1DFC6C
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650660201;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=q9/6VEJ+gCRw8wx8uLgcrhAfbPHFfqmDtXctaHj+IMQ=;
+        b=PdN9byy8ofqZQikU58R/dH3EHiLny4Vy8YzsyhMMm0lZCPqQihy/i6loyoatalonGfinJz
+        FWYEnPM5DfIJz02Qy7OeAMmtqYiSuaaWdWt7JcPNHZvWU4xZgBqiNsysQ7ICWexRcgygC5
+        X/KoAxNjQioBtyIZrY9z+k+LJ5Mja2w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-152-mJvUr5RhOTyfEJiCHkuI7A-1; Fri, 22 Apr 2022 16:01:01 -0400
+X-MC-Unique: mJvUr5RhOTyfEJiCHkuI7A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1994180418F;
+        Fri, 22 Apr 2022 20:00:56 +0000 (UTC)
+Received: from dqiao.bos.com (unknown [10.22.19.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B6279C27DB9;
+        Fri, 22 Apr 2022 20:00:55 +0000 (UTC)
+From:   Donghai Qiao <dqiao@redhat.com>
+To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
+        peterz@infradead.org, heying24@huawei.com,
+        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
+        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
+Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
+        Donghai Qiao <dqiao@redhat.com>
+Subject: [PATCH v2 05/11] smp: replace smp_call_function_single_async() with  smp_call_private()
+Date:   Fri, 22 Apr 2022 16:00:34 -0400
+Message-Id: <20220422200040.93813-6-dqiao@redhat.com>
+In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
+References: <20220422200040.93813-1-dqiao@redhat.com>
+Reply-To: dqiao@redhat.com
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(I don't know why it looks like my previous reply has not been sent and it=
-=20
-also disappeared from drafts. I apologize if for whatever reason you=20
-receive this message twice)
+Replaced smp_call_function_single_async() with smp_call_private()
+and also extended smp_call_private() to support one CPU synchronous
+call with preallocated csd structures.
 
-On venerd=C3=AC 22 aprile 2022 20:08:46 CEST Ira Weiny wrote:
-> On Thu, Apr 21, 2022 at 08:01:57PM +0200, Fabio M. De Francesco wrote:
->
-> [snip]
->
-> > diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-> > index 39bb9b47fa9c..c3d562b5f0c1 100644
-> > --- a/include/linux/highmem.h
-> > +++ b/include/linux/highmem.h
-> > @@ -37,7 +37,7 @@ static inline void *kmap(struct page *page);
-> > =20
-> >  /**
-> >   * kunmap - Unmap the virtual address mapped by kmap()
-> > - * @addr:	Virtual address to be unmapped
-> > + * @page:	Virtual address to be unmapped
->                 ^^^^^^^^^^^^^^^
-> 		Page
->=20
-> Not only was the name wrong but the description of an address is wrong.
+Ideally, the new interface smp_call() should be able to do what
+smp_call_function_single_async() does. Because the csd is provided
+and maintained by the callers, it exposes the risk of corrupting
+the call_single_queue[cpu] linked list if the clents menipulate
+their csd inappropriately. On the other hand, there should have no
+noticeable performance advantage to provide preallocated csd for
+cross call kernel consumers. Thus, in the long run, the consumers
+should change to not use this type of preallocated csd.
 
-Yes, correct. I'll rewrite this line the following way and send a v2 of=20
-this series while addressing also what it is required by your review of 3/4=
-  =20
-(unless you have better suited suggestions):
+Signed-off-by: Donghai Qiao <dqiao@redhat.com>
+---
+v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
 
-=2D * @addr:	 	Virtual address to be unmapped=20
-+ * @page:	 	Pointer to the page which was mapped by kmap()
+ include/linux/smp.h |   3 +-
+ kernel/smp.c        | 163 +++++++++++++++++++++-----------------------
+ 2 files changed, 81 insertions(+), 85 deletions(-)
 
-> Other than that LGTM:
->=20
-> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-
-Thanks!
-
-=46abio
-
-
+diff --git a/include/linux/smp.h b/include/linux/smp.h
+index bee1e6b5b2fd..0301faf270bf 100644
+--- a/include/linux/smp.h
++++ b/include/linux/smp.h
+@@ -206,7 +206,8 @@ int smp_call_function_single(int cpuid, smp_call_func_t func, void *info,
+ void on_each_cpu_cond_mask(smp_cond_func_t cond_func, smp_call_func_t func,
+ 			   void *info, bool wait, const struct cpumask *mask);
+ 
+-int smp_call_function_single_async(int cpu, struct __call_single_data *csd);
++#define	smp_call_function_single_async(cpu, csd) \
++	smp_call_private(cpu, csd, SMP_CALL_TYPE_ASYNC)
+ 
+ /*
+  * Cpus stopping functions in panic. All have default weak definitions.
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 8998b97d5f72..51715633b4f7 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -429,41 +429,6 @@ void __smp_call_single_queue(int cpu, struct llist_node *node)
+ 		send_call_function_single_ipi(cpu);
+ }
+ 
+-/*
+- * Insert a previously allocated call_single_data_t element
+- * for execution on the given CPU. data must already have
+- * ->func, ->info, and ->flags set.
+- */
+-static int generic_exec_single(int cpu, struct __call_single_data *csd)
+-{
+-	if (cpu == smp_processor_id()) {
+-		smp_call_func_t func = csd->func;
+-		void *info = csd->info;
+-		unsigned long flags;
+-
+-		/*
+-		 * We can unlock early even for the synchronous on-stack case,
+-		 * since we're doing this from the same CPU..
+-		 */
+-		csd_lock_record(csd);
+-		csd_unlock(csd);
+-		local_irq_save(flags);
+-		func(info);
+-		csd_lock_record(NULL);
+-		local_irq_restore(flags);
+-		return 0;
+-	}
+-
+-	if ((unsigned)cpu >= nr_cpu_ids || !cpu_online(cpu)) {
+-		csd_unlock(csd);
+-		return -ENXIO;
+-	}
+-
+-	__smp_call_single_queue(cpu, &csd->node.llist);
+-
+-	return 0;
+-}
+-
+ /**
+  * generic_smp_call_function_single_interrupt - Execute SMP IPI callbacks
+  *
+@@ -661,52 +626,6 @@ int smp_call_function_single(int cpu, smp_call_func_t func, void *info,
+ }
+ EXPORT_SYMBOL(smp_call_function_single);
+ 
+-/**
+- * smp_call_function_single_async() - Run an asynchronous function on a
+- * 			         specific CPU.
+- * @cpu: The CPU to run on.
+- * @csd: Pre-allocated and setup data structure
+- *
+- * Like smp_call_function_single(), but the call is asynchonous and
+- * can thus be done from contexts with disabled interrupts.
+- *
+- * The caller passes his own pre-allocated data structure
+- * (ie: embedded in an object) and is responsible for synchronizing it
+- * such that the IPIs performed on the @csd are strictly serialized.
+- *
+- * If the function is called with one csd which has not yet been
+- * processed by previous call to smp_call_function_single_async(), the
+- * function will return immediately with -EBUSY showing that the csd
+- * object is still in progress.
+- *
+- * NOTE: Be careful, there is unfortunately no current debugging facility to
+- * validate the correctness of this serialization.
+- *
+- * Return: %0 on success or negative errno value on error
+- */
+-int smp_call_function_single_async(int cpu, struct __call_single_data *csd)
+-{
+-	int err = 0;
+-
+-	preempt_disable();
+-
+-	if (csd->node.u_flags & CSD_FLAG_LOCK) {
+-		err = -EBUSY;
+-		goto out;
+-	}
+-
+-	csd->node.u_flags = CSD_FLAG_LOCK;
+-	smp_wmb();
+-
+-	err = generic_exec_single(cpu, csd);
+-
+-out:
+-	preempt_enable();
+-
+-	return err;
+-}
+-EXPORT_SYMBOL_GPL(smp_call_function_single_async);
+-
+ /*
+  * smp_call_function_any - Run a function on any of the given cpus
+  * @mask: The mask of cpus it can run on.
+@@ -1251,16 +1170,92 @@ EXPORT_SYMBOL(smp_call_mask_cond);
+  * Because the call is asynchonous with a preallocated csd structure, thus
+  * it can be called from contexts with disabled interrupts.
+  *
+- * Parameters
++ * Ideally this functionality should be part of smp_call_mask_cond().
++ * Because the csd is provided and maintained by the callers, merging this
++ * functionality into smp_call_mask_cond() will result in some extra
++ * complications in it. Before there is better way to facilitate all
++ * kinds of call, let's still handle this case with a separate function.
++ *
++ * The bit CSD_FLAG_LOCK will be set to csd->node.u_flags only if the
++ * call is made as type CSD_TYPE_SYNC or CSD_TYPE_ASYNC.
+  *
++ * Parameters:
+  * cpu:   Must be a positive value less than nr_cpu_id.
+  * csd:   The private csd provided by the caller.
+- *
+  * Others: see smp_call().
++ *
++ * Return: %0 on success or negative errno value on error.
++ *
++ * The following comments are from smp_call_function_single_async():
++ *
++ *    The call is asynchronous and can thus be done from contexts with
++ *    disabled interrupts. If the function is called with one csd which
++ *    has not yet been processed by previous call, the function will
++ *    return immediately with -EBUSY showing that the csd object is
++ *    still in progress.
++ *
++ *    NOTE: Be careful, there is unfortunately no current debugging
++ *    facility to validate the correctness of this serialization.
+  */
+ int smp_call_private(int cpu, call_single_data_t *csd, unsigned int flags)
+ {
+-	return 0;
++	int err = 0;
++
++	if ((unsigned int)cpu >= nr_cpu_ids || !cpu_online(cpu)) {
++		pr_warn("cpu ID must be a positive number < nr_cpu_ids and must be currently online\n");
++		return -EINVAL;
++	}
++
++	if (csd == NULL) {
++		pr_warn("csd must not be NULL\n");
++		return -EINVAL;
++	}
++
++	preempt_disable();
++	if (csd->node.u_flags & CSD_FLAG_LOCK) {
++		err = -EBUSY;
++		goto out;
++	}
++
++	/*
++	 * CSD_FLAG_LOCK is set for CSD_TYPE_SYNC or CSD_TYPE_ASYNC only.
++	 */
++	if ((flags & ~(CSD_TYPE_SYNC | CSD_TYPE_ASYNC)) == 0)
++		csd->node.u_flags = CSD_FLAG_LOCK | flags;
++	else
++		csd->node.u_flags = flags;
++
++	if (cpu == smp_processor_id()) {
++		smp_call_func_t func = csd->func;
++		void *info = csd->info;
++		unsigned long flags;
++
++		/*
++		 * We can unlock early even for the synchronous on-stack case,
++		 * since we're doing this from the same CPU..
++		 */
++		csd_lock_record(csd);
++		csd_unlock(csd);
++		local_irq_save(flags);
++		func(info);
++		csd_lock_record(NULL);
++		local_irq_restore(flags);
++		goto out;
++	}
++
++	/*
++	 * Ensure the flags are visible before the csd
++	 * goes to the queue.
++	 */
++	smp_wmb();
++
++	__smp_call_single_queue(cpu, &csd->node.llist);
++
++	if (flags & CSD_TYPE_SYNC)
++		csd_lock_wait(csd);
++out:
++	preempt_enable();
++	return err;
+ }
+ EXPORT_SYMBOL(smp_call_private);
+ 
+-- 
+2.27.0
 
