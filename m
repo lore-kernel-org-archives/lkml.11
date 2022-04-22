@@ -2,195 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18753C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444944AbiDVHna (ORCPT
+        id S1444967AbiDVHnd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        Fri, 22 Apr 2022 03:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444957AbiDVHme (ORCPT
+        with ESMTP id S1444962AbiDVHmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:42:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA42517CE;
-        Fri, 22 Apr 2022 00:39:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67F7961F1C;
-        Fri, 22 Apr 2022 07:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18169C385A0;
-        Fri, 22 Apr 2022 07:39:38 +0000 (UTC)
-Message-ID: <d463050e-e9ae-48b1-9271-abb082389e79@xs4all.nl>
-Date:   Fri, 22 Apr 2022 09:39:37 +0200
+        Fri, 22 Apr 2022 03:42:36 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E417517CB;
+        Fri, 22 Apr 2022 00:39:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650613184; x=1682149184;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nEPLMdPCwdmEFgscrfAJ4fkH252LE7MCcUu/Flr5Wyo=;
+  b=KRL6b1c08o3WhP49iFpvxZvh/oo27ktqvdonf1eDV7zNspTgrycVHkYi
+   jeW3/ddCNkBNaglWiceu0c8WcNHPJ77iOCul4gAzOFJ30Gbd2IEYLGyVF
+   svfkDSyUm37olkbPG7N3svStxqbjrkbTGJ7mTHSXtKjE5afP/gWpXlDVv
+   hvV9YvUmEWzJSLwHstq5z+hnhUwl1kcBx+E+byaHPbyqhPYKiAVTnEyPS
+   JgDUkUBapDcbh7Jtl+48bu+l/eFQslDfMTrVbzfHqUJH3ISWKyvGeWVPT
+   /l8e+DHyg7uguixFjsfKcomWBNofITErHRNtZsTRDMtHd1e4sVqTjJUNB
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245180248"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="245180248"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:39:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="648516353"
+Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 00:39:39 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH net-next 4/4] stmmac: intel: introduce platform data phyless setting for Ericsson system
+Date:   Fri, 22 Apr 2022 15:35:05 +0800
+Message-Id: <20220422073505.810084-5-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220422073505.810084-1-boon.leong.ong@intel.com>
+References: <20220422073505.810084-1-boon.leong.ong@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 16/24] media: rkvdec: h264: Validate and use pic width
- and height in mbs
-Content-Language: en-US
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Jonas Karlman <jonas@kwiboo.se>, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev
-References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
- <20220405204426.259074-17-nicolas.dufresne@collabora.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220405204426.259074-17-nicolas.dufresne@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/2022 22:44, Nicolas Dufresne wrote:
-> From: Jonas Karlman <jonas@kwiboo.se>
-> 
-> The width and height in macroblocks is currently configured based on OUTPUT
-> buffer resolution, this works for frame pictures but can cause issues for
-> field pictures.
-> 
-> When frame_mbs_only_flag is 0 the height in mbs should be height of
-> the field instead of height of frame.
-> 
-> Validate pic_width_in_mbs_minus1 and pic_height_in_map_units_minus1
-> against OUTPUT buffer resolution and use these values to configure HW.
-> The validation is happening in both try_ctrt() and start() since it is
-> otherwise possible to trick the driver during initialization by changing
-> the OUTPUT format after having set a valid control.
-> 
-> Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> ---
->  drivers/staging/media/rkvdec/rkvdec-h264.c | 78 ++++++++++++++++------
->  1 file changed, 59 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-> index 0dcbcb1bac80..f081b476340f 100644
-> --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-> +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-> @@ -672,8 +672,16 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
->  		  LOG2_MAX_PIC_ORDER_CNT_LSB_MINUS4);
->  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO),
->  		  DELTA_PIC_ORDER_ALWAYS_ZERO_FLAG);
-> -	WRITE_PPS(DIV_ROUND_UP(ctx->coded_fmt.fmt.pix_mp.width, 16), PIC_WIDTH_IN_MBS);
-> -	WRITE_PPS(DIV_ROUND_UP(ctx->coded_fmt.fmt.pix_mp.height, 16), PIC_HEIGHT_IN_MBS);
-> +
-> +	/* Use the SPS values since they are already in macroblocks
+Certain platform wants specific GbE controller instance to be in PHY-less
+mode, i.e. to be used for 1000BASE-X connection for network switch.
 
-Move /* to a line by itself.
+Tested-by: Emilio Riva <emilio.riva@ericsson.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 64 +++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
-> +	 * dimensions, height can be field height (halved) if
-> +	 * V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY is not set and also it allows
-> +	 * decoding smaller images into larger allocation which can be used
-> +	 * to implementing SVC spatial layer support.
-> +	 */
-> +	WRITE_PPS(sps->pic_width_in_mbs_minus1 + 1, PIC_WIDTH_IN_MBS);
-> +	WRITE_PPS(sps->pic_height_in_map_units_minus1 + 1, PIC_HEIGHT_IN_MBS);
-> +
->  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY),
->  		  FRAME_MBS_ONLY_FLAG);
->  	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD),
-> @@ -1035,13 +1043,59 @@ static int rkvdec_h264_adjust_fmt(struct rkvdec_ctx *ctx,
->  	return 0;
->  }
->  
-> +static int rkvdec_h264_validate_sps(struct rkvdec_ctx *ctx,
-> +				    const struct v4l2_ctrl_h264_sps *sps)
-> +{
-> +	unsigned int width, height;
-
-Add empty line here.
-
-> +	/*
-> +	 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
-> +	 * but it's currently broken in the driver.
-> +	 * Reject them for now, until it's fixed.
-> +	 */
-> +	if (sps->chroma_format_idc > 1)
-> +		/* Only 4:0:0 and 4:2:0 are supported */
-> +		return -EINVAL;
-> +	if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
-> +		/* Luma and chroma bit depth mismatch */
-> +		return -EINVAL;
-> +	if (sps->bit_depth_luma_minus8 != 0)
-> +		/* Only 8-bit is supported */
-> +		return -EINVAL;
-> +
-> +	width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
-> +	height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
-> +
-> +	/* when frame_mbs_only_flag is not set, this is field height,
-
-Place /* on a line by itself. And 'when' should be 'When'.
-
-Regards,
-
-	Hans
-
-> +	 * which is half the final height (see (7-18) in the
-> +	 * specification)
-> +	 */
-> +	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY))
-> +		height *= 2;
-> +
-> +	if (width > ctx->coded_fmt.fmt.pix_mp.width ||
-> +	    height > ctx->coded_fmt.fmt.pix_mp.height)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
->  static int rkvdec_h264_start(struct rkvdec_ctx *ctx)
->  {
->  	struct rkvdec_dev *rkvdec = ctx->dev;
->  	struct rkvdec_h264_priv_tbl *priv_tbl;
->  	struct rkvdec_h264_ctx *h264_ctx;
-> +	struct v4l2_ctrl *ctrl;
->  	int ret;
->  
-> +	ctrl = v4l2_ctrl_find(&ctx->ctrl_hdl,
-> +			      V4L2_CID_STATELESS_H264_SPS);
-> +	if (!ctrl)
-> +		return -EINVAL;
-> +
-> +	ret = rkvdec_h264_validate_sps(ctx, ctrl->p_new.p_h264_sps);
-> +	if (ret)
-> +		return ret;
-> +
->  	h264_ctx = kzalloc(sizeof(*h264_ctx), GFP_KERNEL);
->  	if (!h264_ctx)
->  		return -ENOMEM;
-> @@ -1139,23 +1193,9 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
->  
->  static int rkvdec_h264_try_ctrl(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
->  {
-> -	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
-> -		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
-> -		/*
-> -		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
-> -		 * but it's currently broken in the driver.
-> -		 * Reject them for now, until it's fixed.
-> -		 */
-> -		if (sps->chroma_format_idc > 1)
-> -			/* Only 4:0:0 and 4:2:0 are supported */
-> -			return -EINVAL;
-> -		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
-> -			/* Luma and chroma bit depth mismatch */
-> -			return -EINVAL;
-> -		if (sps->bit_depth_luma_minus8 != 0)
-> -			/* Only 8-bit is supported */
-> -			return -EINVAL;
-> -	}
-> +	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS)
-> +		return rkvdec_h264_validate_sps(ctx, ctrl->p_new.p_h264_sps);
-> +
->  	return 0;
->  }
->  
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 265d39acdd0..9c9577fc15d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -24,6 +24,8 @@ struct intel_priv_data {
+ struct stmmac_pci_func_data {
+ 	unsigned int func;
+ 	int phy_addr;
++	phy_interface_t phy_interface;
++	unsigned int phyless;
+ };
+ 
+ struct stmmac_pci_dmi_data {
+@@ -439,10 +441,65 @@ static void common_default_data(struct plat_stmmacenet_data *plat)
+ 	plat->rx_queues_cfg[0].pkt_route = 0x0;
+ }
+ 
++static const struct stmmac_pci_func_data ericsson_phyless_func_data[] = {
++	{
++		.func = 2,
++		.phy_interface = PHY_INTERFACE_MODE_1000BASEX,
++		.phyless = true,
++	},
++};
++
++static const struct stmmac_pci_dmi_data ericsson_phyless_dmi_data = {
++	.func = ericsson_phyless_func_data,
++	.nfuncs = ARRAY_SIZE(ericsson_phyless_func_data),
++};
++
++static const struct dmi_system_id intel_mgbe_pci_dmi[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Ericsson"),
++			DMI_MATCH(DMI_BOARD_NAME, "SMARC-SXEL"),
++		},
++		.driver_data = (void *)&ericsson_phyless_dmi_data,
++	},
++	{}
++};
++
++static bool stmmac_pci_find_phyless(struct pci_dev *pdev,
++				    const struct dmi_system_id *dmi_list,
++				    phy_interface_t *phy_interface,
++				    unsigned int *phyless)
++{
++	const struct stmmac_pci_func_data *func_data;
++	const struct stmmac_pci_dmi_data *dmi_data;
++	const struct dmi_system_id *dmi_id;
++	int func = PCI_FUNC(pdev->devfn);
++	size_t n;
++
++	dmi_id = dmi_first_match(dmi_list);
++	if (!dmi_id)
++		return false;
++
++	dmi_data = dmi_id->driver_data;
++	func_data = dmi_data->func;
++
++	for (n = 0; n < dmi_data->nfuncs; n++, func_data++)
++		if (func_data->func == func) {
++			*phy_interface = func_data->phy_interface;
++			*phyless = func_data->phyless;
++			return true;
++		}
++
++	return false;
++}
++
+ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 				  struct plat_stmmacenet_data *plat)
+ {
++	phy_interface_t phy_interface;
++	unsigned int phyless;
+ 	char clk_name[20];
++	bool found;
+ 	int ret;
+ 	int i;
+ 
+@@ -559,6 +616,13 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	/* Use the last Rx queue */
+ 	plat->vlan_fail_q = plat->rx_queues_to_use - 1;
+ 
++	found = stmmac_pci_find_phyless(pdev, intel_mgbe_pci_dmi,
++					&phy_interface, &phyless);
++	if (found) {
++		plat->mdio_bus_data->phyless = phyless;
++		plat->phy_interface = phy_interface;
++	}
++
+ 	/* Intel mgbe SGMII interface uses pcs-xcps */
+ 	if (plat->phy_interface == PHY_INTERFACE_MODE_SGMII ||
+ 	    plat->phy_interface == PHY_INTERFACE_MODE_1000BASEX) {
+-- 
+2.25.1
 
