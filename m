@@ -2,137 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D38C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbiDVUbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 16:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
+        id S229485AbiDVUlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 16:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiDVUa5 (ORCPT
+        with ESMTP id S229437AbiDVUlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 16:30:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5017F1DB6AF;
-        Fri, 22 Apr 2022 12:30:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE87761772;
-        Fri, 22 Apr 2022 19:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21775C385A4;
-        Fri, 22 Apr 2022 19:29:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650655746;
-        bh=Q2oAR+pSfdpnOBCupA59IimF354aWuPdLpUkV0r+X1A=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZvjM2zXZNGfKDW8ftXFFNoXIwEvm5WhFhLPcuq0WeOn/Wc5VbY7BejIgkSjw0cXFB
-         L18uYBL10WbBPVTaC4xEkDzTFqHVtlo+EDNUEaZGheXDoWYQqtosgvej0l0HaZW0Xf
-         74yCeEqFG9ntlORINJHnA0nrWgH3J18Yz9DdPQR4cjEtJEJydNOo7ukDGZudtE5Cwz
-         rz4y8O7cDWaB1la6qX5Pu1e3QcfLEZL9VyHcvSj1n1CNXxTo6Oyw7F7RvJ6jDH1Axz
-         sbefZf/fdN1/HKcjs3CpdYvJL8EK8sLNVaFv4G02+L1+RAzwQmJ/cUUGTDPQq0Se58
-         iLEFj1sk11ung==
-Received: by mail-pg1-f179.google.com with SMTP id k29so8076090pgm.12;
-        Fri, 22 Apr 2022 12:29:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531D2bR0asDdkufMUBs3DAdRYL0+9BqkwCyofJNPOmcym6+FdHiq
-        JU0pmQAVwt8qM+pbzGd26o+E4u+quMS5bh507Q==
-X-Google-Smtp-Source: ABdhPJx2H3o/WsbUI+/ohovExKxoIZvN4GlgB9qk/tHaMKzI7NBb/FMjxKMgczTCxdm77K8O6FLeLWIUwvQFjbz5U0M=
-X-Received: by 2002:aa7:8893:0:b0:4fb:10e1:8976 with SMTP id
- z19-20020aa78893000000b004fb10e18976mr6457659pfe.36.1650655745568; Fri, 22
- Apr 2022 12:29:05 -0700 (PDT)
+        Fri, 22 Apr 2022 16:41:53 -0400
+Received: from mail-io1-xd48.google.com (mail-io1-xd48.google.com [IPv6:2607:f8b0:4864:20::d48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F55F1F8EF5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:40:05 -0700 (PDT)
+Received: by mail-io1-xd48.google.com with SMTP id u18-20020a5d8712000000b0064c7a7c497aso5974842iom.18
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:40:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=bMZssZ4/5rMn7JFTaYyRiobnst/WdHrTg0VN7pqEdmQ=;
+        b=O861KVCFr4TrMODOAUcWXCQn2HF6Mk2Fth0t9iUDihlog5kRB3u74rl0BJzbdWCkf1
+         Py/FfKREARx92amy0Esx8T0XpYwiKKfPkNK5olcZWzfoPDHFvWqAVmv6S5imIhDqWp7n
+         n2Q3pcyQupBSdhUwIZc24T7oBV3kjVUVyXJkEiJW94eMsNZ4Ll50DjTUua/QOWOGIHUD
+         hXMjIqNg2RnpAgWOkO0wmTGYk/7ddw9oBYjxf8h2ebf48f/6qBQ4T+aDmoS2Ct+PSUvY
+         QMiZ+RTHYLKvueE95Nu23HEckmtzg8YBr5UXN+13uRLzsyWZ7dMwjbzetUToIAnCiD73
+         +/zQ==
+X-Gm-Message-State: AOAM530OdyHGMeYKLGpz2mKP55D4CBr2wmcStfHYR6VIfFJ/6kQCJjeI
+        Zom1xRZlzZaJ/XzmcypXqhK2hlIXHjAyrei5L7Lzdy509SLj
+X-Google-Smtp-Source: ABdhPJzJJl9SIcuNGwTO5H7TFvkYM+As7pFatvBd5/JUgAa7lJHQohxhtSzDJQrAEenqLF5eS/og3Ya09FLcQ411672yYb2SSXei
 MIME-Version: 1.0
-References: <20220422192236.2594577-1-robh@kernel.org>
-In-Reply-To: <20220422192236.2594577-1-robh@kernel.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 22 Apr 2022 14:28:53 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
-Message-ID: <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: i3c: Convert snps,dw-i3c-master to DT schema
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-Received: by 2002:a05:6638:40a3:b0:32a:b968:af2f with SMTP id
+ m35-20020a05663840a300b0032ab968af2fmr1673108jam.221.1650656051380; Fri, 22
+ Apr 2022 12:34:11 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 12:34:11 -0700
+In-Reply-To: <YmL0L7nhdJTMI9QU@casper.infradead.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000096c5ef05dd434f4c@google.com>
+Subject: Re: [syzbot] kernel BUG in __filemap_get_folio
+From:   syzbot <syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, dhowells@redhat.com, hughd@google.com,
+        kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        vbabka@suse.cz, william.kucharski@oracle.com, willy@infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 2:22 PM Rob Herring <robh@kernel.org> wrote:
->
-> Convert the Synopsys Designware I3C master to DT schema format.
->
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/i3c/snps,dw-i3c-master.txt       | 41 ---------------
->  .../bindings/i3c/snps,dw-i3c-master.yaml      | 52 +++++++++++++++++++
->  2 files changed, 52 insertions(+), 41 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
->  create mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
->
-> diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-> deleted file mode 100644
-> index 07f35f36085d..000000000000
-> --- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-> +++ /dev/null
-> @@ -1,41 +0,0 @@
-> -Bindings for Synopsys DesignWare I3C master block
-> -=================================================
-> -
-> -Required properties:
-> ---------------------
-> -- compatible: shall be "snps,dw-i3c-master-1.00a"
-> -- clocks: shall reference the core_clk
-> -- interrupts: the interrupt line connected to this I3C master
-> -- reg: Offset and length of I3C master registers
-> -
-> -Mandatory properties defined by the generic binding (see
-> -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
-> -
-> -- #address-cells: shall be set to 3
-> -- #size-cells: shall be set to 0
-> -
-> -Optional properties defined by the generic binding (see
-> -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
-> -
-> -- i2c-scl-hz
-> -- i3c-scl-hz
-> -
-> -I3C device connected on the bus follow the generic description (see
-> -Documentation/devicetree/bindings/i3c/i3c.yaml for more details).
-> -
-> -Example:
-> -
-> -       i3c-master@2000 {
-> -               compatible = "snps,dw-i3c-master-1.00a";
-> -               #address-cells = <3>;
-> -               #size-cells = <0>;
-> -               reg = <0x02000 0x1000>;
-> -               interrupts = <0>;
-> -               clocks = <&i3cclk>;
-> -
-> -               eeprom@57{
-> -                       compatible = "atmel,24c01";
-> -                       reg = <0x57 0x0 0x10>;
-> -                       pagesize = <0x8>;
-> -               };
-> -       };
-> diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-> new file mode 100644
-> index 000000000000..5b8b43e6f1e4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/i3c/snps,dw-i3c-master.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Synopsys DesignWare I3C master block
-> +
-> +maintainers:
-> +  - Vitor Soares <vitor.soares@synopsys.com>
+Hello,
 
-And it bounces. Someone else want it?
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Rob
+Reported-and-tested-by: syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com
+
+Tested on:
+
+commit:         91070385 XArray: Disallow sibling entries of nodes
+git tree:       git://git.infradead.org/users/willy/xarray.git main
+kernel config:  https://syzkaller.appspot.com/x/.config?x=78d87160570beee3
+dashboard link: https://syzkaller.appspot.com/bug?extid=cf4cf13056f85dec2c40
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
+Note: testing is done by a robot and is best-effort only.
