@@ -2,202 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A56DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C289CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233443AbiDVGEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S233441AbiDVGE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 02:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233355AbiDVGEK (ORCPT
+        with ESMTP id S233313AbiDVGES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:04:10 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33C74F9FC;
-        Thu, 21 Apr 2022 23:01:17 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23M61Ar7059322;
-        Fri, 22 Apr 2022 01:01:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650607270;
-        bh=7LiiS3uaYXi0Ozob531oWVwMnODCebHW1HUAZlAglKY=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=b1Z3L9QTZ9VV8VHEX0cb233ch957Nu45AvUQlP2dREfjRBydQlrwz5mqfwPmlZw3A
-         r1OXr3tiMYSR0qRZqorVF3dvAx4uY+NG9p8HCNtcNubqYWNDXCkC4nct1k4zQuAs2b
-         B5bWtw2tiLFLor2k1LmitHedMm6J4hQgto4JI+eI=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23M61A2m072439
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 01:01:10 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 01:01:10 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 01:01:10 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23M619Jf109591;
-        Fri, 22 Apr 2022 01:01:10 -0500
-From:   Jai Luthra <j-luthra@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>,
-        Jayesh Choudhary <j-choudhary@ti.com>,
-        Jai Luthra <j-luthra@ti.com>
-Subject: [PATCH v2 2/2] arm64: dts: ti: am625-sk: Add audio output support
-Date:   Fri, 22 Apr 2022 11:30:52 +0530
-Message-ID: <20220422060052.8548-3-j-luthra@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220422060052.8548-1-j-luthra@ti.com>
-References: <20220422060052.8548-1-j-luthra@ti.com>
+        Fri, 22 Apr 2022 02:04:18 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173D24FC59
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:24 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id c12so8617441plr.6
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Bp+6Mtl+9X8bx0bqhBqFKs5a4ePa+PXv90jlJdkj1lk=;
+        b=UtxoZ1JdqW3fcX9auDfKm8675JgAGikYBukOpzndjrb/5obHXJuS5bajo3sXY8v1h1
+         jdIy74NZnl4V+AALme7MfYZzkEitt4clzC8B/aHb21JiWCLOlJr1MzyFujlbhcolMOB0
+         /f+Y40z4gYEgNUq1xabve/eP3xOjbArMQKNZBgAqpe1U7exem/8jWVnWdr/PhuzIQya8
+         sdSKOx8UN1uFZ+SSbw7OxmJng07BsR9qWbPp43X0d9pm+Zy1O9P2pwpermzw8oT88QjE
+         5CX6sbVq/kvJ8U3nftnAXr207zwiWHZhZE4P88DijAZJ+8WpRGH4Y+OOdbEMYUp7KGKX
+         tlXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Bp+6Mtl+9X8bx0bqhBqFKs5a4ePa+PXv90jlJdkj1lk=;
+        b=FIr4K9ZVOf7W2OS3K7VZR0HPfy6R0PkXhTuG3etM0JReEfdAY/7rJyO44Z9pzohzV2
+         WdwXTaSTCLwcTNvxTbL/QXCQQeWkQ2E36ZLIbvPDKgJrEns5zvWbmdzublJgSq6ukeze
+         f1UV21yiQnJhWz2CLMn85ykxe8Svu2KhmBrvvo+MnoNw8vcxpmCYOTP0+70TqNQVKGio
+         5PrOsMy2AvZf+3jALZmZYYff88z+wloOl0Omnyvp7L97fGxnY7gH7++ZSc3i+UwhFbT9
+         HFR1nzrCszP/eUgBHaNsQ7FE1FDR7QbcMggdzUe+e8bZdvTeMt2cWTJiEbeTVBFe4Nqa
+         61Jw==
+X-Gm-Message-State: AOAM530HZNUjUvENzbH+HbGwiY7Cq33q1JYJwd3sYXgndRnavW4cfc3A
+        y4ikaddPq241UpJ/Oro4eTc=
+X-Google-Smtp-Source: ABdhPJyE7r4GoOePw5giA255Y5FX9aOWvsph11ITy41jRBpWLTDZLqaV65pwzE9oS2A13aEn9VlUjw==
+X-Received: by 2002:a17:90a:4e08:b0:1cb:a3ac:938b with SMTP id n8-20020a17090a4e0800b001cba3ac938bmr14264027pjh.112.1650607283621;
+        Thu, 21 Apr 2022 23:01:23 -0700 (PDT)
+Received: from bobo.ozlabs.ibm.com (193-116-116-20.tpgi.com.au. [193.116.116.20])
+        by smtp.gmail.com with ESMTPSA id y16-20020a637d10000000b00381268f2c6fsm998607pgc.4.2022.04.21.23.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 23:01:23 -0700 (PDT)
+From:   Nicholas Piggin <npiggin@gmail.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Nicholas Piggin <npiggin@gmail.com>, x86@kernel.org,
+        Song Liu <songliubraving@fb.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        "Torvalds, Linus" <torvalds@linux-foundation.org>,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH 1/2] mm/vmalloc: huge vmalloc backing pages should be split rather than compound
+Date:   Fri, 22 Apr 2022 16:01:05 +1000
+Message-Id: <20220422060107.781512-2-npiggin@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422060107.781512-1-npiggin@gmail.com>
+References: <20220422060107.781512-1-npiggin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add nodes for audio codec and sound card, enable the audio serializer
-(McASP1) under use and update pinmux. Disable all other McASP nodes.
+Huge vmalloc higher-order backing pages were allocated with __GFP_COMP
+in order to allow the sub-pages to be refcounted by callers such as
+"remap_vmalloc_page [sic]" (remap_vmalloc_range).
 
-Audio input is currently not working properly, so the RX port on McASP1
-is disabled for now, until the issue is debugged.
+However a similar problem exists for other struct page fields callers
+use, for example fb_deferred_io_fault() takes a vmalloc'ed page and
+not only refcounts it but uses ->lru, ->mapping, ->index. This is not
+compatible with compound sub-pages.
 
-The serializer is shared between HDMI and codec. By default codec is
-used for output, but it can be toggled to HDMI using a FET switch
-connected to the MCASP1_FET_SEL (J24) header on the board.
+The correct approach is to use split high-order pages for the huge
+vmalloc backing. These allow callers to treat them in exactly the same
+way as individually-allocated order-0 pages.
 
-Signed-off-by: Jai Luthra <j-luthra@ti.com>
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
 ---
- arch/arm64/boot/dts/ti/k3-am625-sk.dts | 89 ++++++++++++++++++++++++++
- 1 file changed, 89 insertions(+)
+ mm/vmalloc.c | 36 +++++++++++++++++++++---------------
+ 1 file changed, 21 insertions(+), 15 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-index a0ea2cc66b31..414f27d4a9dd 100644
---- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-@@ -119,6 +119,46 @@
- 			 <3300000 0x1>;
- 	};
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index 07da85ae825b..cadfbb5155ea 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2653,15 +2653,18 @@ static void __vunmap(const void *addr, int deallocate_pages)
+ 	vm_remove_mappings(area, deallocate_pages);
  
-+	vcc_1v8: fixedregulator-vcc-1v8 {
-+		/* output of TPS6282518DMQ */
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_1v8";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		vin-supply = <&vcc_3v3_sys>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	tlv320_mclk: tlv320-mclk {
-+		#clock-cells = <0>;
-+		compatible = "fixed-clock";
-+		clock-frequency = <12288000>;
-+	};
-+
-+	sound {
-+		compatible = "simple-audio-card";
-+		simple-audio-card,name = "AM62x-SKEVM";
-+		simple-audio-card,widgets =
-+			"Headphone", "Headphone Jack";
-+		simple-audio-card,routing =
-+			"Headphone Jack",	"HPLOUT",
-+			"Headphone Jack",	"HPROUT";
-+		simple-audio-card,format = "dsp_b";
-+		simple-audio-card,bitclock-master = <&sound_master>;
-+		simple-audio-card,frame-master = <&sound_master>;
-+		simple-audio-card,bitclock-inversion;
-+
-+		simple-audio-card,cpu {
-+			sound-dai = <&mcasp1>;
-+		};
-+
-+		sound_master: simple-audio-card,codec {
-+			sound-dai = <&tlv320aic3106>;
-+			clocks = <&tlv320_mclk>;
-+		};
-+	};
-+
- 	leds {
- 		compatible = "gpio-leds";
- 		pinctrl-names = "default";
-@@ -264,6 +304,15 @@
- 			AM62X_IOPAD(0x01d4, PIN_INPUT, 7) /* (B15) UART0_RTSn.GPIO1_23 */
- 		>;
- 	};
-+
-+	main_mcasp1_pins_default: main-mcasp1-pins-default {
-+		pinctrl-single,pins = <
-+			AM62X_IOPAD(0x0090, PIN_INPUT, 2) /* (M24) GPMC0_BE0N_CLE.MCASP1_ACLKX */
-+			AM62X_IOPAD(0x0098, PIN_INPUT, 2) /* (U23) GPMC0_WAIT0.MCASP1_AFSX */
-+			AM62X_IOPAD(0x008c, PIN_OUTPUT, 2) /* (L25) GPMC0_WEN.MCASP1_AXR0 */
-+			AM62X_IOPAD(0x0084, PIN_INPUT, 2) /* (L23) GPMC0_ADVN_ALE.MCASP1_AXR2 */
-+		>;
-+	};
- };
+ 	if (deallocate_pages) {
+-		unsigned int page_order = vm_area_page_order(area);
+-		int i, step = 1U << page_order;
++		int i;
  
- &wkup_uart0 {
-@@ -350,6 +399,18 @@
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&main_gpio1_ioexp_intr_pins_default>;
- 	};
-+
-+	tlv320aic3106: tlv320aic3106@1b {
-+		#sound-dai-cells = <0>;
-+		compatible = "ti,tlv320aic3106";
-+		reg = <0x1b>;
-+
-+		/* Regulators */
-+		AVDD-supply = <&vcc_3v3_sys>;
-+		IOVDD-supply = <&vcc_3v3_sys>;
-+		DRVDD-supply = <&vcc_3v3_sys>;
-+		DVDD-supply = <&vcc_1v8>;
-+	};
- };
+-		for (i = 0; i < area->nr_pages; i += step) {
++		for (i = 0; i < area->nr_pages; i++) {
+ 			struct page *page = area->pages[i];
  
- &main_i2c2 {
-@@ -410,6 +471,34 @@
- 	};
- };
+ 			BUG_ON(!page);
+-			mod_memcg_page_state(page, MEMCG_VMALLOC, -step);
+-			__free_pages(page, page_order);
++			mod_memcg_page_state(page, MEMCG_VMALLOC, -1);
++			/*
++			 * High-order allocs for huge vmallocs are split, so
++			 * can be freed as an array of order-0 allocations
++			 */
++			__free_pages(page, 0);
+ 			cond_resched();
+ 		}
+ 		atomic_long_sub(area->nr_pages, &nr_vmalloc_pages);
+@@ -2914,12 +2917,7 @@ vm_area_alloc_pages(gfp_t gfp, int nid,
+ 			if (nr != nr_pages_request)
+ 				break;
+ 		}
+-	} else
+-		/*
+-		 * Compound pages required for remap_vmalloc_page if
+-		 * high-order pages.
+-		 */
+-		gfp |= __GFP_COMP;
++	}
  
-+&mcasp0 {
-+	status = "disabled";
-+};
-+
-+&mcasp1 {
-+	status = "okay";
-+	#sound-dai-cells = <0>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&main_mcasp1_pins_default>;
-+
-+	op-mode = <0>;          /* MCASP_IIS_MODE */
-+	tdm-slots = <2>;
-+
-+	serial-dir = <  /* 0: INACTIVE, 1: TX, 2: RX */
-+	       1 0 0 0
-+	       0 0 0 0
-+	       0 0 0 0
-+	       0 0 0 0
-+	>;
-+	tx-num-evt = <32>;
-+	rx-num-evt = <32>;
-+};
-+
-+&mcasp2 {
-+	status = "disabled";
-+};
-+
- &mailbox0_cluster0 {
- 	mbox_m4_0: mbox-m4-0 {
- 		ti,mbox-rx = <0 0 0>;
+ 	/* High-order pages or fallback path if "bulk" fails. */
+ 
+@@ -2933,6 +2931,15 @@ vm_area_alloc_pages(gfp_t gfp, int nid,
+ 			page = alloc_pages_node(nid, gfp, order);
+ 		if (unlikely(!page))
+ 			break;
++		/*
++		 * Higher order allocations must be able to be treated as
++		 * indepdenent small pages by callers (as they can with
++		 * small-page vmallocs). Some drivers do their own refcounting
++		 * on vmalloc_to_page() pages, some use page->mapping,
++		 * page->lru, etc.
++		 */
++		if (order)
++			split_page(page, order);
+ 
+ 		/*
+ 		 * Careful, we allocate and map page-order pages, but
+@@ -2992,11 +2999,10 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
+ 
+ 	atomic_long_add(area->nr_pages, &nr_vmalloc_pages);
+ 	if (gfp_mask & __GFP_ACCOUNT) {
+-		int i, step = 1U << page_order;
++		int i;
+ 
+-		for (i = 0; i < area->nr_pages; i += step)
+-			mod_memcg_page_state(area->pages[i], MEMCG_VMALLOC,
+-					     step);
++		for (i = 0; i < area->nr_pages; i++)
++			mod_memcg_page_state(area->pages[i], MEMCG_VMALLOC, 1);
+ 	}
+ 
+ 	/*
 -- 
-2.17.1
+2.35.1
 
