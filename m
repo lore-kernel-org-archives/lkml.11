@@ -2,79 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A774AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C51C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbiDVVin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
+        id S230051AbiDVViy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiDVVi3 (ORCPT
+        with ESMTP id S230062AbiDVVit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:38:29 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35ACC40F7A5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:44:04 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id f5so11006071ljp.8
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:44:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LUIRwjAdRkEnvc7qu/4QggxdGOExn65onlukWBeFsUI=;
-        b=drjmZFpO/eg/aqGWeRXDxMCuiAMKW8i3ror9N/4lB8yyadnzfP6lQwSgAMyFconsgF
-         gtxeRu1lzm5b8ZvABGsb/Gg6xXWFCEfiAv57raWOKsjF3F86wC9KYCYdqkg5OlLl266C
-         AY7IdQrNB2qHZU4X9tcv18FCJYEOYNS5JELfk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LUIRwjAdRkEnvc7qu/4QggxdGOExn65onlukWBeFsUI=;
-        b=2+0261NTs5fwjb/T4QX+V3DQixU5gj5GzaBC/czQWBhxdvJqH4m848y74fLOmCJSc/
-         /zVp+1fqNeSnxQ4sdmyysCFRNC0HtSYnGatHNo1LG09fvi21stCbDHhw6sECsUBIYgb6
-         tQbKbAMolPU3lQDaftXHMuZ00gDcf6Yd8nW7yZPhKJOcdtc5FUrO/jK3De43xxQGEciL
-         zgzkBptJoMTDo5H0nSnKOi+/z8A1xFKqGZHVLoGJhJLKjwfWUjTSxhUwR9SMnClZ5G2E
-         +06p37qVmYDtZ5WeE2tf8OTYKNKx8Ilxq4Qa6UE70n69BUylO4wQIhOtXXUPXfdvIJsd
-         2vvw==
-X-Gm-Message-State: AOAM532roMZ5QnXGEQE1DdNkRa+ryk/GpJMqObizWUXn0blEV7uE5J6H
-        fdOD4CdUficGEj0H8ppdnCmQrFy7L+AclhekP+A=
-X-Google-Smtp-Source: ABdhPJz4o4mx27GLr6qo+F1LDk5XCjO/ft+J+dcjSkD578SX4kffLe7g7O7w0PiCTs17067Sib3Taw==
-X-Received: by 2002:a2e:a162:0:b0:24e:fbab:ca0c with SMTP id u2-20020a2ea162000000b0024efbabca0cmr1490733ljl.236.1650659720557;
-        Fri, 22 Apr 2022 13:35:20 -0700 (PDT)
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
-        by smtp.gmail.com with ESMTPSA id f5-20020a05651201c500b0046be0fefa16sm344497lfp.174.2022.04.22.13.35.19
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 13:35:19 -0700 (PDT)
-Received: by mail-lj1-f175.google.com with SMTP id v1so7606879ljv.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:35:19 -0700 (PDT)
-X-Received: by 2002:a2e:9041:0:b0:24a:ce83:dcb4 with SMTP id
- n1-20020a2e9041000000b0024ace83dcb4mr3953312ljg.291.1650659719109; Fri, 22
- Apr 2022 13:35:19 -0700 (PDT)
+        Fri, 22 Apr 2022 17:38:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCFE29DF15;
+        Fri, 22 Apr 2022 13:44:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8204B8325D;
+        Fri, 22 Apr 2022 20:44:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD2DC385A0;
+        Fri, 22 Apr 2022 20:44:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650660247;
+        bh=HnbkQVOtfa7+/56LQ5INga98V0wHs2i7oJ/vI85Yrbo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ncbmxN3DmsIJneYRy5/ENYjoC5IpODUGNtoqIcYvp/kNhyNvjtlhNgLsf6F+yjb1g
+         jVstrDggPk3uYKOKKFux0FNjQg3bs96RfiXaseCMLwErKmAc8oBTYrAdPRplYUgsCr
+         QYNI4YeEOzSnE32G+XYQ8zz4EfY8tkrhGUEPj68EpOas+hjCUvS65aUIip7ajutCsd
+         +gdiDnVGG5UwdRzvLF6aiIWhUeiNmoIpEkflQamA1hjzkDrTzh8s4lIvT10OyyMXKF
+         AaV6d/p07sO4C8+ML8hhojkVpFX7fBRXEmpsgecLOiAB2R/yWEnqoAlV1bTEkyIF0K
+         ZJXv69B6gizkw==
+Date:   Fri, 22 Apr 2022 13:44:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/1] add support for enum module parameters
+Message-ID: <20220422134405.7a519a0f@kernel.org>
+In-Reply-To: <87sfq8qqus.fsf@tynnyri.adurom.net>
+References: <20220414123033.654198-1-jani.nikula@intel.com>
+        <YlgfXxjefuxiXjtC@kroah.com>
+        <87a6cneoco.fsf@intel.com>
+        <87sfq8qqus.fsf@tynnyri.adurom.net>
 MIME-Version: 1.0
-References: <YmMF32RlCn2asAhc@casper.infradead.org>
-In-Reply-To: <YmMF32RlCn2asAhc@casper.infradead.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 22 Apr 2022 13:35:03 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjn-V-b=w=4GS_nJQ1nsVcJm0FPTv2Ene_xP_AWPBBFsg@mail.gmail.com>
-Message-ID: <CAHk-=wjn-V-b=w=4GS_nJQ1nsVcJm0FPTv2Ene_xP_AWPBBFsg@mail.gmail.com>
-Subject: Re: [GIT PULL] Rare page cache data corruption fix
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:45 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> Syzbot found a nasty race between large page splitting and page lookup.
-> Details in the commit log, but fortunately it has a reliable reproducer.
+On Wed, 20 Apr 2022 08:13:47 +0300 Kalle Valo wrote:
+> Wireless drivers would also desperately need to pass device specific
+> parameters at (or before) probe time. And not only debug parameters but
+> also configuration parameters, for example firmware memory allocations
+> schemes (optimise for features vs number of clients etc) and whatnot.
+> 
+> Any ideas how to implement that? Is there any prior work for anything
+> like this? This is pretty hard limiting usability of upstream wireless
+> drivers and I really want to find a proper solution.
 
-The commit message does mention it ("I have not added a new test for
-this bug."), but I'll echo it anyway, since you say it can be reliably
-reproduced - getting that repro into the testsuite would be lovely.
-
-               Linus
+In netdev we have devlink which is used for all sort of device
+configuration. devlink-resource sounds like what you need,
+but it'd have to be extended to support configuration which requires
+reload/re-probe. Currently only devlink-params support that but params
+were a mistake so don't use that.
