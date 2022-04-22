@@ -2,58 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE247C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232891AbiDVWeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
+        id S233279AbiDVWes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233543AbiDVWco (ORCPT
+        with ESMTP id S233533AbiDVWco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 18:32:44 -0400
 Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0201F1EADF8;
-        Fri, 22 Apr 2022 14:26:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07001EADF7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:25:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650662760; x=1682198760;
+  t=1650662759; x=1682198759;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=3GRkzkRbPkOfe9vQY5hmWO91T7iWle1ZZJGqwNmrBJw=;
-  b=rBCP99fijRzxs6siqoIQTnMjky/q+MOegYiL3ZZBlLJSp0kHUVDLaoUG
-   wqj/6A1Kgl9k/WMTXTHxIlcabMdj3OSwGBxpy1CYSr8e9fll2KWVgosxg
-   neqFlppQXmYqlxD2W3XiSmS954Cb4TqenHcDc+n/+ZTe5Jp8zW/8YjRTg
-   Y=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Apr 2022 12:07:46 -0700
+  bh=OLCb9ecnnTgMuvoPi+mVk0P5yobPJV4DqakG/hx24Tk=;
+  b=RU5UyBFBibO0pUYtu5Irkm/s/mmxmHRfX+Fs2rsno3euEwusHaX9KWmC
+   EnNQCEg9zyjtSUP9Q2pcZffNXM90WtqNdChU5lr/WKoy0UEUwndgte7PV
+   LPLjn20FQy0gIrz7adwXxwlxHVMUpojxYbcESLvkb76Euz2/ZoqDrMwka
+   A=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Apr 2022 12:03:52 -0700
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 12:07:46 -0700
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 12:03:52 -0700
 Received: from [10.110.72.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
  (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 22 Apr
- 2022 12:07:45 -0700
-Message-ID: <0d290fab-28ca-77f3-a6d2-415d990f0f91@quicinc.com>
-Date:   Fri, 22 Apr 2022 12:07:45 -0700
+ 2022 12:03:51 -0700
+Message-ID: <0e1e6441-7afa-888d-53fb-a93f4b6ee0a4@quicinc.com>
+Date:   Fri, 22 Apr 2022 12:03:50 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH 0/7] kbuild: more misc cleanups
+Subject: Re: [PATCH] arm64: paravirt: Disable IRQs during
+ stolen_time_cpu_down_prepare
 Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Alexander Lobakin" <alobakin@pm.me>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sami Tolvanen <samitolvanen@google.com>
-References: <20220406153023.500847-1-masahiroy@kernel.org>
- <CAK7LNARzPPRnnAayau3bwB_uj17_uirY+F9rAV048oMp-c-WMw@mail.gmail.com>
+To:     Will Deacon <will@kernel.org>, Juergen Gross <jgross@suse.com>
+CC:     "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Prakruthi Deepak Heragu" <quic_pheragu@quicinc.com>,
+        <virtualization@lists.linux-foundation.org>, <x86@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Murali Nalajala <quic_mnalajal@quicinc.com>
+References: <20220420204417.155194-1-quic_eberman@quicinc.com>
+ <0737998d-3006-5866-5ea1-dcfef0cfeb32@suse.com>
+ <20220421091011.GB8303@willie-the-truck>
 From:   Elliot Berman <quic_eberman@quicinc.com>
-In-Reply-To: <CAK7LNARzPPRnnAayau3bwB_uj17_uirY+F9rAV048oMp-c-WMw@mail.gmail.com>
+In-Reply-To: <20220421091011.GB8303@willie-the-truck>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.80.80.8]
@@ -63,50 +65,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masahiro,
 
-On 4/15/2022 12:20 AM, Masahiro Yamada wrote:
-> On Thu, Apr 7, 2022 at 12:32 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->>
->>
->> I sent the first batch of cleanups:
->> https://lore.kernel.org/linux-kbuild/20220405113359.2880241-1-masahiroy@kernel.org/T/#t
->>
->> I took 01-06, 09-10.
->> I dropped 07, 08.
->>
->> This is the second batch.
->>
-> 
-> Applied to linux-kbuild.
-> 
-> 
 
-I didn't see the last patch (kbuild: read *.mod to get objects passed to 
-$(LD) or $(AR)) applied. Was the last patch intentionally skipped?
+On 4/21/2022 2:10 AM, Will Deacon wrote:
+> On Thu, Apr 21, 2022 at 09:44:28AM +0200, Juergen Gross wrote:
+>> On 20.04.22 22:44, Elliot Berman wrote:
+>>> From: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
+>>>
+>>> During hotplug, the stolen time data structure is unmapped and memset.
+>>> There is a possibility of the timer IRQ being triggered before memset
+>>> and stolen time is getting updated as part of this timer IRQ handler. This
+>>> causes the below crash in timer handler -
+>>>
+>>>     [ 3457.473139][    C5] Unable to handle kernel paging request at virtual address ffffffc03df05148
+>>>     ...
+>>>     [ 3458.154398][    C5] Call trace:
+>>>     [ 3458.157648][    C5]  para_steal_clock+0x30/0x50
+>>>     [ 3458.162319][    C5]  irqtime_account_process_tick+0x30/0x194
+>>>     [ 3458.168148][    C5]  account_process_tick+0x3c/0x280
+>>>     [ 3458.173274][    C5]  update_process_times+0x5c/0xf4
+>>>     [ 3458.178311][    C5]  tick_sched_timer+0x180/0x384
+>>>     [ 3458.183164][    C5]  __run_hrtimer+0x160/0x57c
+>>>     [ 3458.187744][    C5]  hrtimer_interrupt+0x258/0x684
+>>>     [ 3458.192698][    C5]  arch_timer_handler_virt+0x5c/0xa0
+>>>     [ 3458.198002][    C5]  handle_percpu_devid_irq+0xdc/0x414
+>>>     [ 3458.203385][    C5]  handle_domain_irq+0xa8/0x168
+>>>     [ 3458.208241][    C5]  gic_handle_irq.34493+0x54/0x244
+>>>     [ 3458.213359][    C5]  call_on_irq_stack+0x40/0x70
+>>>     [ 3458.218125][    C5]  do_interrupt_handler+0x60/0x9c
+>>>     [ 3458.223156][    C5]  el1_interrupt+0x34/0x64
+>>>     [ 3458.227560][    C5]  el1h_64_irq_handler+0x1c/0x2c
+>>>     [ 3458.232503][    C5]  el1h_64_irq+0x7c/0x80
+>>>     [ 3458.236736][    C5]  free_vmap_area_noflush+0x108/0x39c
+>>>     [ 3458.242126][    C5]  remove_vm_area+0xbc/0x118
+>>>     [ 3458.246714][    C5]  vm_remove_mappings+0x48/0x2a4
+>>>     [ 3458.251656][    C5]  __vunmap+0x154/0x278
+>>>     [ 3458.255796][    C5]  stolen_time_cpu_down_prepare+0xc0/0xd8
+>>>     [ 3458.261542][    C5]  cpuhp_invoke_callback+0x248/0xc34
+>>>     [ 3458.266842][    C5]  cpuhp_thread_fun+0x1c4/0x248
+>>>     [ 3458.271696][    C5]  smpboot_thread_fn+0x1b0/0x400
+>>>     [ 3458.276638][    C5]  kthread+0x17c/0x1e0
+>>>     [ 3458.280691][    C5]  ret_from_fork+0x10/0x20
+>>>
+>>> As a fix, disable the IRQs during hotplug until we unmap and memset the
+>>> stolen time structure.
+>>
+>> This will work for the call chain of your observed crash, but are
+>> you sure that para_steal_clock() can't be called from another cpu
+>> concurrently?
+> 
+> Agreed, this needs checking as update_rq_clock() is called from all over the
+> place.
+> 
+>> In case you verified this can't happen, you can add my:
+>>
+>> Reviewed-by: Juergen Gross <jgross@suse.com>
+>>
+>> Otherwise you either need to use RCU for doing the memunmap(), or a
+>> lock to protect stolen_time_region.
+> 
+> Yes, I think RCU would make a lot of sense here, deferring the memunmap
+> until there are no longer any readers. The reader is currently doing:
+> 
+> 	if (!reg->kaddr)
+> 		return 0;
+> 
+> 	return le64_to_cpu(READ_ONCE(reg->kaddr->stolen_time));
+> 
+> so we'd also want an rcu_dereference() on reg->kaddr to avoid reading it
+> twice.
+> 
+> Will
 
->>
->>
->> Masahiro Yamada (7):
->>    kbuild: reuse suffix-search to refactor multi_depend
->>    kbuild: make multi_depend work with targets in subdirectory
->>    kbuild: reuse real-search to simplify cmd_mod
->>    kbuild: split the second line of *.mod into *.usyms
->>    kbuild: get rid of duplication in *.mod files
->>    kbuild: make *.mod not depend on *.o
->>    kbuild: read *.mod to get objects passed to $(LD) or $(AR)
->>
->>   .gitignore                  |  1 +
->>   Makefile                    |  5 +++--
->>   scripts/Makefile.build      | 31 ++++++++++++++-----------------
->>   scripts/Makefile.lib        |  6 +++---
->>   scripts/adjust_autoksyms.sh |  2 +-
->>   scripts/gen_autoksyms.sh    | 18 +++++++++++-------
->>   scripts/mod/sumversion.c    | 11 ++---------
->>   7 files changed, 35 insertions(+), 39 deletions(-)
->>
->> --
->> 2.32.0
->>
-> 
-> 
+
+We have seen this particular stack many times in our testing, but not 
+any other way. Will's comments are agreeable, I'll send out an updated 
+patch.
+
+Thanks,
+Elliot
