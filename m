@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79553C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C18C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444403AbiDVGdg (ORCPT
+        id S1444411AbiDVGdt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
+        Fri, 22 Apr 2022 02:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444225AbiDVGdd (ORCPT
+        with ESMTP id S1444416AbiDVGdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:33:33 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CF550B1F;
-        Thu, 21 Apr 2022 23:30:39 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kl4KK4L7fzhXjJ;
-        Fri, 22 Apr 2022 14:30:29 +0800 (CST)
+        Fri, 22 Apr 2022 02:33:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CF350B1F;
+        Thu, 21 Apr 2022 23:30:51 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kl4KV5FGMzhY39;
+        Fri, 22 Apr 2022 14:30:38 +0800 (CST)
 Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 22 Apr
- 2022 14:30:37 +0800
+ 2022 14:30:49 +0800
 From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <broonie@kernel.org>, <linux-spi@vger.kernel.org>,
+To:     <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH] spi: img-spfi: Fix pm_runtime_get_sync() error checking
-Date:   Fri, 22 Apr 2022 06:26:41 +0000
-Message-ID: <20220422062641.10486-1-zhengyongjun3@huawei.com>
+CC:     <gregkh@linuxfoundation.org>
+Subject: [PATCH] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
+Date:   Fri, 22 Apr 2022 06:26:52 +0000
+Message-ID: <20220422062652.10575-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  kwepemi500013.china.huawei.com (7.221.188.120)
 X-CFilter-Loop: Reflected
 Precedence: bulk
@@ -44,24 +45,24 @@ If the device is already in a runtime PM enabled state
 pm_runtime_get_sync() will return 1, so a test for negative
 value should be used to check for errors.
 
-Fixes: deba25800a12b ("spi: Add driver for IMG SPFI controller")
+Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- drivers/spi/spi-img-spfi.c | 2 +-
+ drivers/usb/dwc3/dwc3-pci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-img-spfi.c b/drivers/spi/spi-img-spfi.c
-index 5f05d519fbbd..71376b6df89d 100644
---- a/drivers/spi/spi-img-spfi.c
-+++ b/drivers/spi/spi-img-spfi.c
-@@ -731,7 +731,7 @@ static int img_spfi_resume(struct device *dev)
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 33f657d83246..491b5b05d196 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -286,7 +286,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
  	int ret;
  
- 	ret = pm_runtime_get_sync(dev);
+ 	ret = pm_runtime_get_sync(&dwc3->dev);
 -	if (ret) {
 +	if (ret < 0) {
- 		pm_runtime_put_noidle(dev);
- 		return ret;
+ 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
+ 		return;
  	}
 -- 
 2.17.1
