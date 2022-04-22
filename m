@@ -2,114 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbiDVSXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
+        id S230377AbiDVSXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232798AbiDVSW5 (ORCPT
+        with ESMTP id S229965AbiDVSXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:22:57 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A415265B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:20:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650651603; x=1682187603;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nnhIBaZDqfASV2RAR/AwbQzJ844LZinCwnqJ8LSfvzY=;
-  b=YaQH5GpymS2fyRyJW6CIO460PzzXK262RgA2iypXYxNLEu9aFxmN1vjR
-   xmx+RCRaBKTbykR4dBaA0yvcUkz1yk934Hswwlvw7t4Wqc8n9OArdapKG
-   Spu+oUcwBrxsdOEr0OxPvQkP4mhF57BUtO9q2u4ucYLkKm0nkxc/0rniL
-   emeO3VDeC9eSpYJu19u6PV+c60/CxuEp0g1hRcuiR6lWLLOidGMwdv5Y/
-   p3OR8vhFi1nVpbHqi+scKSgZShWnEORt2BknC2KnYsB7pVVrktoCcJtHl
-   OPzHt43ylXyIIbWRrHpSGRMyLu2M90+p2PVwahXMjFHYoHYSHKBSH0jj2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264913294"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264913294"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 11:16:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="867997432"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 22 Apr 2022 11:16:57 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhxpx-000ARr-AL;
-        Fri, 22 Apr 2022 18:16:57 +0000
-Date:   Sat, 23 Apr 2022 02:16:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matteo Croce <mcroce@microsoft.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive 2/54] mm/kasan/shadow.c:63:7: warning: no previous
- prototype for function 'memcpy'
-Message-ID: <202204230235.huNNhtoX-lkp@intel.com>
+        Fri, 22 Apr 2022 14:23:10 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDBF75E5D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:20:13 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id q1so11403028plx.13
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:20:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=StDrkjCbJY1YTZwQ+hjKVKx8zZzPWM3Hr4pkTObtJoA=;
+        b=QaTQnVxLpbjUu7Q4HVIWf89mR3iZ+/dCruQzOIvEPN3rMBvYHzobChUmbS8zKJUj+V
+         G6JlwQ+r9HJY4R/pp+OioxKANEfhvhDdtC/O/ZcdP+/cMrzW0LtAvkqawQfpd1HAjnY7
+         EerhnOKARycbOHzX8ntKBKgZcOQCqu8rNCcwQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=StDrkjCbJY1YTZwQ+hjKVKx8zZzPWM3Hr4pkTObtJoA=;
+        b=JpyGJlv2zV4hNtkhp3muFkL3YRYyPQBTlAP140Ymstrl02qjxVah+6H+/Z9MYoCEMY
+         sIHErCeqWHy07SyoOXnjTAAGPF1CkkefySzJI6+RGSYCOC0CkWPRIaVAMDMDAehoHJqc
+         QNlfupqrspl8mbpQq9I5HcLbX1BgWqW8tSiNEdUkLO5rE6Rt0x5QFD402XoiZxx06YDC
+         6aCjBSjesO6MdCmQEqZ0r2YSb3td3AaziJId327GDczY/UfFzRbsRI8tBfaHeJwFujTf
+         4ov12uptZyTunZifF8LLIUdt99UJNBV/OEp4kN1nch/w8eInnOSnNBzL9T1zDAbFxZ75
+         vTIA==
+X-Gm-Message-State: AOAM531iMQ++ze4qsgR0aQ+4dTlRt1R/HFWxK2hOGAc20wAEl3q3DPL6
+        7WWUBrRD9M4Rc/uqOGOf+xXZow==
+X-Google-Smtp-Source: ABdhPJxEkTRKxnGvrx+fdTPpn7AfmC0GBEfArx58zWt1H5Xi35nlxQORQWOYw4gLVSkZTksJksRarQ==
+X-Received: by 2002:a17:90a:b014:b0:1cb:ba36:8fe1 with SMTP id x20-20020a17090ab01400b001cbba368fe1mr18101221pjq.67.1650651586827;
+        Fri, 22 Apr 2022 11:19:46 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:e283:652b:fb2e:829f])
+        by smtp.gmail.com with UTF8SMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm3445028pfl.135.2022.04.22.11.19.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 11:19:46 -0700 (PDT)
+From:   Brian Norris <briannorris@chromium.org>
+To:     Heiko Stuebner <heiko@sntech.de>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Brian Norris <briannorris@chromium.org>
+Subject: [PATCH] soc: rockchip: Fix compile-testing SoC drivers
+Date:   Fri, 22 Apr 2022 11:19:19 -0700
+Message-Id: <20220422111914.1.Id5f16dec920f620120c0a143a97a12e16d401760@changeid>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   68fe13e37af4c8331cdd40841353c9725cb65925
-commit: 359a031f0505e46e0274570b6e015984f45da29b [2/54] riscv: optimized memcpy
-config: riscv-randconfig-c006-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230235.huNNhtoX-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/esmil/linux/commit/359a031f0505e46e0274570b6e015984f45da29b
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 359a031f0505e46e0274570b6e015984f45da29b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
+Similar to commit 7f94b69ece51 ("ARM: ixp4xx: fix compile-testing soc
+drivers").
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+drivers/soc/rockchip/Kconfig makes plenty of provision for configuring
+drivers either for ARCH_ROCKCHIP or for COMPILE_TEST. But
+drivers/soc/Makefile pulls the rug out from under us, by refusing to
+build anything if we specified COMPILE_TEST but not ARCH_ROCKCHIP.
 
-All warnings (new ones prefixed by >>):
+Currently, I'm not aware of anything that breaks without this patch, but
+it certainly makes for confusing builds (CONFIG_ROCKCHIP_PM_DOMAINS=y,
+but we didn't actually compile the driver?) and leaves room for future
+error (I have pending patches that break confusingly with COMPILE_TEST=y
+even though their Kconfig dependencies seem correct [1]).
 
->> mm/kasan/shadow.c:63:7: warning: no previous prototype for function 'memcpy' [-Wmissing-prototypes]
-   void *memcpy(void *dest, const void *src, size_t len)
-         ^
-   mm/kasan/shadow.c:63:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void *memcpy(void *dest, const void *src, size_t len)
-   ^
-   static 
-   1 warning generated.
+Defer to drivers/soc/rockchip/{Makefile,Kconfig} to do the right thing.
 
+[1] e.g.,
+https://lore.kernel.org/linux-rockchip/20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid/
+[RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
 
-vim +/memcpy +63 mm/kasan/shadow.c
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+---
 
-bb359dbcb70085 Andrey Konovalov 2020-12-22  61  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  62  #undef memcpy
-bb359dbcb70085 Andrey Konovalov 2020-12-22 @63  void *memcpy(void *dest, const void *src, size_t len)
-bb359dbcb70085 Andrey Konovalov 2020-12-22  64  {
-f00748bfa0246c Andrey Konovalov 2021-02-24  65  	if (!kasan_check_range((unsigned long)src, len, false, _RET_IP_) ||
-f00748bfa0246c Andrey Konovalov 2021-02-24  66  	    !kasan_check_range((unsigned long)dest, len, true, _RET_IP_))
-bb359dbcb70085 Andrey Konovalov 2020-12-22  67  		return NULL;
-bb359dbcb70085 Andrey Konovalov 2020-12-22  68  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  69  	return __memcpy(dest, src, len);
-bb359dbcb70085 Andrey Konovalov 2020-12-22  70  }
-bb359dbcb70085 Andrey Konovalov 2020-12-22  71  
+ drivers/soc/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-:::::: The code at line 63 was first introduced by commit
-:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
-
-:::::: TO: Andrey Konovalov <andreyknvl@google.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
+diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
+index fd7717d597fc..4c91705a8bb3 100644
+--- a/drivers/soc/Makefile
++++ b/drivers/soc/Makefile
+@@ -23,7 +23,7 @@ obj-y				+= pxa/
+ obj-y				+= amlogic/
+ obj-y				+= qcom/
+ obj-y				+= renesas/
+-obj-$(CONFIG_ARCH_ROCKCHIP)	+= rockchip/
++obj-y				+= rockchip/
+ obj-$(CONFIG_SOC_SAMSUNG)	+= samsung/
+ obj-$(CONFIG_SOC_SIFIVE)	+= sifive/
+ obj-y				+= sunxi/
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.0.rc2.479.g8af0fa9b8e-goog
+
