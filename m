@@ -2,212 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47114C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE227C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447451AbiDVMNq (ORCPT
+        id S1447291AbiDVMOe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        Fri, 22 Apr 2022 08:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447460AbiDVMNg (ORCPT
+        with ESMTP id S1445865AbiDVMO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:13:36 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4152956C09;
-        Fri, 22 Apr 2022 05:10:36 -0700 (PDT)
-X-UUID: f9f6c9a48ceb4887a88d5199637521dd-20220422
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:b8d344b9-3e8e-41d0-affe-030eca101461,OB:20,L
-        OB:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:120
-X-CID-INFO: VERSION:1.1.4,REQID:b8d344b9-3e8e-41d0-affe-030eca101461,OB:20,LOB
-        :0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:120
-X-CID-META: VersionHash:faefae9,CLOUDID:80479ff0-da02-41b4-b6df-58f4ccd36682,C
-        OID:3b21fae82f57,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: f9f6c9a48ceb4887a88d5199637521dd-20220422
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 168344172; Fri, 22 Apr 2022 20:10:30 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 22 Apr 2022 20:10:29 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 Apr
- 2022 20:10:21 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 20:10:21 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, <nfraprado@collabora.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH 2/2] dt-bindings: watchdog: mediatek: Convert binding to YAML
-Date:   Fri, 22 Apr 2022 20:10:17 +0800
-Message-ID: <20220422121017.23920-3-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220422121017.23920-1-allen-kh.cheng@mediatek.com>
-References: <20220422121017.23920-1-allen-kh.cheng@mediatek.com>
+        Fri, 22 Apr 2022 08:14:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C621117E;
+        Fri, 22 Apr 2022 05:11:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 788DD61FC0;
+        Fri, 22 Apr 2022 12:11:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61A49C385A4;
+        Fri, 22 Apr 2022 12:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650629494;
+        bh=H3Qej2YHR+TlaLMizz7+0fGPZ3Mtnj1GowHYNjqgcNQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YA0QT/RZtRQe3Fz37wzFITM8RhMzmyY0o4QKfeFMYl/dMhe2o5ULX1sqm2E3DWM34
+         vkp633FqTdwW+cyxW8qJ5gld7X0nyy2LTpJP3AErBnC33NJnNKf16z7ReeEDEabr2+
+         Ecx5Ph4AWW4epwvoZTQUIZA+dmXGgbVP6sDJUZzI=
+Date:   Fri, 22 Apr 2022 14:11:31 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lungash <denizlungash@gmail.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: qlge: Fix line wrapping
+Message-ID: <YmKbc9Ib9vXgDnBg@kroah.com>
+References: <YmJseHLyoAJWOGpc@kali-h6>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmJseHLyoAJWOGpc@kali-h6>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Mediatek watchdog devicetree binding to YAML.
+On Fri, Apr 22, 2022 at 11:51:04AM +0300, Lungash wrote:
+> This patch fixes line wrapping following kernel coding style.
+> 
+> Task on TODO list
+> 
+> * fix weird line wrapping (all over, ex. the ql_set_routing_reg() calls in
+>   qlge_set_multicast_list()).
+> 
+> Signed-off-by: Lungash <denzlungash@gmail.com>
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- .../devicetree/bindings/watchdog/mtk-wdt.txt  | 42 ----------
- .../devicetree/bindings/watchdog/mtk-wdt.yaml | 76 +++++++++++++++++++
- 2 files changed, 76 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
- create mode 100644 Documentation/devicetree/bindings/watchdog/mtk-wdt.yaml
+We need a "full" name here, whatever you sign legal documents with.
 
-diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-deleted file mode 100644
-index 762c62e428ef..000000000000
---- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--Mediatek SoCs Watchdog timer
--
--The watchdog supports a pre-timeout interrupt that fires timeout-sec/2
--before the expiry.
--
--Required properties:
--
--- compatible should contain:
--	"mediatek,mt2701-wdt", "mediatek,mt6589-wdt": for MT2701
--	"mediatek,mt2712-wdt": for MT2712
--	"mediatek,mt6582-wdt", "mediatek,mt6589-wdt": for MT6582
--	"mediatek,mt6589-wdt": for MT6589
--	"mediatek,mt6797-wdt", "mediatek,mt6589-wdt": for MT6797
--	"mediatek,mt7622-wdt", "mediatek,mt6589-wdt": for MT7622
--	"mediatek,mt7623-wdt", "mediatek,mt6589-wdt": for MT7623
--	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
--	"mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
--	"mediatek,mt8183-wdt": for MT8183
--	"mediatek,mt8186-wdt", "mediatek,mt6589-wdt": for MT8186
--	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
--	"mediatek,mt8192-wdt": for MT8192
--	"mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
--
--- reg : Specifies base physical address and size of the registers.
--
--Optional properties:
--- mediatek,disable-extrst: disable send output reset signal
--- interrupts: Watchdog pre-timeout (bark) interrupt.
--- timeout-sec: contains the watchdog timeout in seconds.
--- #reset-cells: Should be 1.
--
--Example:
--
--watchdog: watchdog@10007000 {
--	compatible = "mediatek,mt8183-wdt",
--		     "mediatek,mt6589-wdt";
--	mediatek,disable-extrst;
--	reg = <0 0x10007000 0 0x100>;
--	interrupts = <GIC_SPI 139 IRQ_TYPE_NONE>;
--	timeout-sec = <10>;
--	#reset-cells = <1>;
--};
-diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.yaml b/Documentation/devicetree/bindings/watchdog/mtk-wdt.yaml
-new file mode 100644
-index 000000000000..5788617027c8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/mtk-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek SoCs Watchdog timer
-+
-+maintainers:
-+  - Runyang Chen <runyang.chen@mediatek.com>
-+  - Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-+
-+description: |+
-+  The watchdog supports a pre-timeout interrupt that fires timeout-sec/2
-+  before the expiry.
-+
-+allOf:
-+  - $ref: "watchdog.yaml#"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: mediatek,mt2712-wdt
-+      - const: mediatek,mt6589-wdt
-+      - const: mediatek,mt8183-wdt
-+      - const: mediatek,mt8192-wdt
-+
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-wdt
-+              - mediatek,mt6582-wdt
-+              - mediatek,mt6797-wdt
-+              - mediatek,mt7622-wdt
-+              - mediatek,mt7623-wdt
-+              - mediatek,mt7629-wdt
-+              - mediatek,mt7986-wdt
-+              - mediatek,mt8173-wdt
-+              - mediatek,mt8183-wdt
-+              - mediatek,mt8186-wdt
-+              - mediatek,mt8192-wdt
-+              - mediatek,mt8195-wdt
-+              - mediatek,mt8516-wdt
-+          - const: mediatek,mt6589-wdt
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  '#reset-cells':
-+    const: 1
-+
-+  timeout-sec: true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    watchdog@10007000 {
-+        compatible = "mediatek,mt8183-wdt",
-+                     "mediatek,mt6589-wdt";
-+        mediatek,disable-extrst;
-+        reg = <0x10007000 0x100>;
-+        interrupts = <GIC_SPI 139 IRQ_TYPE_NONE>;
-+        timeout-sec = <10>;
-+        #reset-cells = <1>;
-+    };
-+
-+...
--- 
-2.18.0
+> ---
+>  drivers/staging/qlge/qlge_main.c | 235 ++++++++++++++-----------------
+>  1 file changed, 107 insertions(+), 128 deletions(-)
+> 
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index 113a3efd12e9..309db00e0b22 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -499,77 +499,57 @@ static int qlge_set_routing_reg(struct qlge_adapter *qdev, u32 index, u32 mask,
+>  
+>  	switch (mask) {
+>  	case RT_IDX_CAM_HIT:
+> -		{
+> -			value = RT_IDX_DST_CAM_Q |	/* dest */
+> -			    RT_IDX_TYPE_NICQ |	/* type */
+> -			    (RT_IDX_CAM_HIT_SLOT << RT_IDX_IDX_SHIFT);/* index */
+> -			break;
+> -		}
+> +		value = RT_IDX_DST_CAM_Q |	/* dest */
+> +			RT_IDX_TYPE_NICQ |	/* type */
+> +			(RT_IDX_CAM_HIT_SLOT << RT_IDX_IDX_SHIFT);/* index */
+> +		break;
 
+The original was fine, but yes, the {} can be removed, but that does not
+have to do with the TODO item here.  Please only do one type of fixup at
+a time.
+
+>  
+> -static int qlge_validate_flash(struct qlge_adapter *qdev, u32 size, const char *str)
+> +static int qlge_validate_flash(struct qlge_adapter *qdev, u32 size,
+> +			       const char *str)
+
+You just made this look worse, why?
+
+> -static int qlge_read_flash_word(struct qlge_adapter *qdev, int offset, __le32 *data)
+> +static int qlge_read_flash_word(struct qlge_adapter *qdev, int offset,
+> +				__le32 *data)
+
+Same here, why change the original?
+
+> @@ -2952,8 +2936,8 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+>  		(rx_ring->cq_id * RX_RING_SHADOW_SPACE);
+>  	u64 shadow_reg_dma = qdev->rx_ring_shadow_reg_dma +
+>  		(rx_ring->cq_id * RX_RING_SHADOW_SPACE);
+> -	void __iomem *doorbell_area =
+> -		qdev->doorbell_area + (DB_PAGE_SIZE * (128 + rx_ring->cq_id));
+> +	void __iomem *doorbell_area = qdev->doorbell_area +
+> +		(DB_PAGE_SIZE * (128 + rx_ring->cq_id));
+
+This does not look better, why not put it all on one line?
+
+
+thanks,
+
+greg k-h
