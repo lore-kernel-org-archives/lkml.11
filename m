@@ -2,95 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A29C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiDVWEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        id S231391AbiDVWEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231178AbiDVWEC (ORCPT
+        with ESMTP id S231314AbiDVWEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:04:02 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091E341A96D;
-        Fri, 22 Apr 2022 13:47:03 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g20so11811891edw.6;
-        Fri, 22 Apr 2022 13:47:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RqJyh8C27vk9uziAAsZ9Sko9+svvUdiSo3Q1oIPdtew=;
-        b=L6gGTQ/6DfQIlosX6rFW28zXn4rmTt2yEc4fSS7LlDRCx3GrzyWACj2e3H/hSS4EVa
-         Zzf6rxAQVnSZ/0HYb5wpTSch47y4/x1p0qvv4LVbGn3yYb8Uvnj0gS+QmEqeYBFLlSLF
-         Jf6w0khn0nRUft/3CCa6tJ5X4TJO+iqtGz3YwiKu21TfYwZ608QOGpAnXRJp9BrzHgLd
-         0d3h6JN3unzrTHDSqngln9ajQWduYt5+CpgudMb0/x2SoNx+PabIrYbX2ijhT0YVrHfm
-         2m1HOtnbbQCkLNCPnDV296p+lPUM1q99Kb4IfHzWP4Sm/hIXPnEWBwMJAZNL6g2IJyJI
-         iVSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RqJyh8C27vk9uziAAsZ9Sko9+svvUdiSo3Q1oIPdtew=;
-        b=hxSG9UZMyCNtAhq3d8gc9aooEbvJc+U7Uqu5WhIw3IyvXal8L66gA+JLzgd0yk+OYF
-         UeVxDPD7uaG61aKyC6+5QKCLCsyx1MrUQJSVuP+45C6BfWPBhqkGmDc/E58Or84PP5LE
-         sQalUo09uxk5CfWBmroXsRihoawNnIvttoRcjHhl69gLxIiGLy1vr1ToqOuTZ4Q785ow
-         UfKrixlEkTxIYakDwEPO/7SgMLmKGtsMxr16M0lSfP6VX2zSuncirh3pzb/fEfD1wO/3
-         hgvBw9eh+G2ROFNJceGx4FRZza9a/ir6O6YJScioKKFU8v4fxzCLRZwbkH3MpoglxnsK
-         j/QQ==
-X-Gm-Message-State: AOAM533I3RiOKfYxNJAzCrAW79GjHvT0IYcoSq5P1cxs0gsePcuTriLt
-        H/6bpXP64GDveymIMCNMMEhet3MhG845EJ/HbLFQhvMcCrY=
-X-Google-Smtp-Source: ABdhPJzONtYAysnLGqYOw6ud3FIKqGeCWT3xH7YoCMRjE9o+FmNs9pOgTW2YtKCoHB+4692wuPWCMYQhFhyZoAhR4V4=
-X-Received: by 2002:a05:6402:e:b0:423:d5ff:8fce with SMTP id
- d14-20020a056402000e00b00423d5ff8fcemr6251542edu.407.1650652652753; Fri, 22
- Apr 2022 11:37:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220419160058.9998-1-markuss.broks@gmail.com>
- <20220419160058.9998-2-markuss.broks@gmail.com> <Yl7pqgjza/ZfajyM@sirena.org.uk>
- <0599e7ac-bd06-8d56-b510-0f27f4cc6790@gmail.com> <Yl8Jm9XqR3YTrW9Y@sirena.org.uk>
-In-Reply-To: <Yl8Jm9XqR3YTrW9Y@sirena.org.uk>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Date:   Fri, 22 Apr 2022 21:37:20 +0300
-Message-ID: <CANhJrGPXJYf4Bf3oBLGB2v3AwyvJbompjX34qOaKXsEhFda0zw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: regulator: Add bindings for Silicon
- Mitus SM5703 regulators
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Markuss Broks <markuss.broks@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 22 Apr 2022 18:04:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE6341A281;
+        Fri, 22 Apr 2022 13:46:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C44EB83260;
+        Fri, 22 Apr 2022 20:46:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 15B76C385A4;
+        Fri, 22 Apr 2022 20:46:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650660404;
+        bh=lAIpsA8GwlDp91+/3Nl/q7BJTfG0dlG2sKdtR4AeAqg=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=AJqNmlYygWXwZEVMiilBNTxQdo5aWr2Wb5lbq9M9XHy2U0FchXcPLnXKHjQJYjZ3f
+         zRjRZPuNJ3YQL0Ox0F4k0+tkczKbQZz1b536eSHyCzLHo4o2DW+U0ocJS6r50T3ZRT
+         hQPsgs1CdtCf3AtezxjiDjeqjk/KCwpv96xTl6yIxOhPt+ZYv9al449HZ3IltTvWxb
+         u7Cjw5877G3zwP3l++5S5PpVzeEaZdh0zqJmvV1lUpxaMu9jIbLrM9skdS8dbPKHtl
+         3hCPw9zueWGx2srn9QO0wO1I7PbHOnXawWEgdcEnb545/4luo+HGi0PkA/uPrOAQfF
+         +Y9ExMsqJoLYg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 02723E8DBDA;
+        Fri, 22 Apr 2022 20:46:44 +0000 (UTC)
+Subject: Re: [GIT PULL] smb3 client fixes
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAH2r5mtNyRzY2zxrS9Qgoj-NxAEyOEHjrWc1a6bingt61=xWHA@mail.gmail.com>
+References: <CAH2r5mtNyRzY2zxrS9Qgoj-NxAEyOEHjrWc1a6bingt61=xWHA@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAH2r5mtNyRzY2zxrS9Qgoj-NxAEyOEHjrWc1a6bingt61=xWHA@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.samba.org/sfrench/cifs-2.6.git tags/5.18-rc3-smb3-fixes
+X-PR-Tracked-Commit-Id: f5d0f921ea362636e4a2efb7c38d1ead373a8700
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 88c5060d56d8f756653bbee89fa45a752e241c9c
+Message-Id: <165066040400.3510.2984080535215544463.pr-tracker-bot@kernel.org>
+Date:   Fri, 22 Apr 2022 20:46:44 +0000
+To:     Steve French <smfrench@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 9:05 PM Mark Brown <broonie@kernel.org> wrote:
->
-> On Tue, Apr 19, 2022 at 08:45:07PM +0300, Markuss Broks wrote:
->
-> > I took an example from the rohm,bd71847-pmic.yaml MFD binding, they have
-> > regulators at a separate regulators { } node, with a separate dt-binding for
-> > it. I'm not sure what should I do, I'd be more than happy to follow a better
-> > example if you can show me it.
->
-> Basically either just remove the compatible and have the MFD directly
-> instantiate the device like sky81452 or put a separate node for each
-> regualtor like wm831x does (but without any DT support).
+The pull request you sent on Fri, 22 Apr 2022 12:00:06 -0500:
 
-Just a note that the BD71847 does not have own "compatible" for the
-regulators. There's only "compatible" in the MFD node - and MFD just
-kicks the regulator driver. Regulators get the handle to the node from
-the parent device. I think it should serve as a valid example of what
-Mark described as
+> git://git.samba.org/sfrench/cifs-2.6.git tags/5.18-rc3-smb3-fixes
 
-> Basically either just remove the compatible and have the MFD directly
-> instantiate the device
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/88c5060d56d8f756653bbee89fa45a752e241c9c
 
+Thank you!
 
-Best Regards
--- Matti Vaittinen
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
