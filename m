@@ -2,103 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C71C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A74BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbiDVWTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        id S232631AbiDVWTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233839AbiDVWSt (ORCPT
+        with ESMTP id S231816AbiDVWRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:18:49 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130B6694B7;
-        Fri, 22 Apr 2022 14:10:49 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-e5ca5c580fso9912442fac.3;
-        Fri, 22 Apr 2022 14:10:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Tkutjbl6M6F7ROD9a26bDdNrkbSWhhcwmMr6zx2IOcE=;
-        b=ZirOYALXVp6GpUyspYwVQMB5/ICgiyzdUUCALQdL5D0dC4yyfuofhyDQOOf5gCb3L/
-         hNkS3ERBwQIvcphCUsvMlB3EKZej8bPNbgaDjz9XGJDgJ3qoPm8hx0v4/QdMVrEEH7yU
-         iOpNLhHuOCEbNJlWDJuFdV9xtb07K9qM4sJeeRQbH36bIa2xkCktRzWjLpJTTO2OLLVj
-         GMZIjIftJ2VnInLi7VVe1dNc/uPVd0qyIk6WDzUY18sR6EHihbMkUPitBOTcoiCjfK+b
-         kLlBvY2nZRBaQ9HhuxH0HMa7RANK3O7qSz/2lFP06xTGeDqJc5tN0uH5yJ08+zzVGHza
-         vC5Q==
-X-Gm-Message-State: AOAM530w44R8gm1wa/QEw6zZLxTgVfXf/LXDBWVIvBoKlZa0t/MVTuYC
-        DEyeYTpoeSdVLsL+EDAjJQ==
-X-Google-Smtp-Source: ABdhPJxgDVs7xvcysn1Di8tXdOlKYuPI1U7BFRO4ay+lXkeVtgeYsglZ1My+1O/4c4tx67VSav4XdA==
-X-Received: by 2002:a05:6870:9689:b0:e6:bcf:4b6 with SMTP id o9-20020a056870968900b000e60bcf04b6mr6980687oaq.64.1650661848365;
-        Fri, 22 Apr 2022 14:10:48 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id u20-20020a4a9e94000000b003291f6ac4b2sm1238286ook.28.2022.04.22.14.10.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 14:10:47 -0700 (PDT)
-Received: (nullmailer pid 2784281 invoked by uid 1000);
-        Fri, 22 Apr 2022 21:10:47 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Tinghan Shen <tinghan.shen@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20220422071534.15653-1-tinghan.shen@mediatek.com>
-References: <20220422071534.15653-1-tinghan.shen@mediatek.com>
-Subject: Re: [PATCH v1] dt-bindings: dsp: mediatek: add mt8186 dsp document
-Date:   Fri, 22 Apr 2022 16:10:47 -0500
-Message-Id: <1650661847.232289.2784280.nullmailer@robh.at.kernel.org>
+        Fri, 22 Apr 2022 18:17:01 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394DA325835;
+        Fri, 22 Apr 2022 14:08:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650661719; x=1682197719;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mnJlzMRuA2xcyrsUtKJwoToHi8lzCbaFKElkF30JqEg=;
+  b=H/Z0pzoPofmOjKpkUa8959IiuKO2bZjLxIzXQk9iyviy9e5N8EszG9QV
+   PQNBezj7tGLczxCn0spoW4s/QmdqhafSqJLi/0EjHydksgM1tD3e44UDK
+   vQPj3ZI9ZtZ/GW0zrY4ySw9Fk0eUdB6QmpuX+If4vU/Jc4vX/VAEREbfo
+   PIahefXkLVChPJReIitEzLz/EH5yRSYkIDBKj+cNuQyDfg4EjoglDTswK
+   /Vo6ns7Ow2h31eNLQAFLH9DrMpBkJlmYkTYWe15k6sUYfU8S+DvVVNpVc
+   PE5eCsVmKYcxwGTVQqguIu0S6oyGWKNDKcRLMBfeXGlFtarg3+k5wFy6G
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="351236493"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="351236493"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 14:08:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="703707316"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga001.fm.intel.com with ESMTP; 22 Apr 2022 14:08:38 -0700
+Received: from [10.212.135.29] (kliang2-MOBL.ccr.corp.intel.com [10.212.135.29])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id C9B2C580A85;
+        Fri, 22 Apr 2022 14:08:35 -0700 (PDT)
+Message-ID: <c17dedde-6ba8-db9b-4827-32477f039764@linux.intel.com>
+Date:   Fri, 22 Apr 2022 17:08:34 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v5 2/5] perf: Add SNOOP_PEER flag to perf mem data struct
+Content-Language: en-US
+To:     Ali Saidi <alisaidi@amazon.com>
+Cc:     Nick.Forrington@arm.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        benh@kernel.crashing.org, german.gomez@arm.com,
+        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
+        kjain@linux.ibm.com, leo.yan@linaro.org, lihuafei1@huawei.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org,
+        Andi Kleen <ak@linux.intel.com>
+References: <a96681b5-5532-470e-17d1-afe4c8d195ad@linux.intel.com>
+ <20220422184934.29270-1-alisaidi@amazon.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220422184934.29270-1-alisaidi@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 15:15:34 +0800, Tinghan Shen wrote:
-> This patch adds mt8186 dsp document. The dsp is used for Sound Open
-> Firmware driver node. It includes registers, clocks, memory regions,
-> and mailbox for dsp.
+
+
+On 4/22/2022 2:49 PM, Ali Saidi wrote:
+> On Wed, 20 Apr 2022 18:43:28, Kan Liang wrote:
+>> On 4/8/2022 3:53 PM, Ali Saidi wrote:
+>>> Add a flag to the perf mem data struct to signal that a request caused a
+>>> cache-to-cache transfer of a line from a peer of the requestor and
+>>> wasn't sourced from a lower cache level.
+>>
+>> It sounds similar to the Forward state. Why can't the
+>> PERF_MEM_SNOOPX_FWD be reused?
 > 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
-> 
-> This patch depends on MT8186 clock bindings.
-> https://lore.kernel.org/all/20220409132251.31725-2-chun-jie.chen@mediatek.com/
-> 
-> ---
->  .../bindings/dsp/mediatek,mt8186-dsp.yaml     | 93 +++++++++++++++++++
->  1 file changed, 93 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> Is there a definition of SNOOPX_FWD i can refer to? Happy to use this instead if
+> the semantics align between architectures.
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
++ Andi
 
-yamllint warnings/errors:
+As my understanding, the SNOOPX_FWD means the Forward state, which is a 
+non-modified (clean) cache-to-cache copy.
+https://en.wikipedia.org/wiki/MESIF_protocol
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.example.dts:22:18: fatal error: dt-bindings/clock/mt8186-clk.h: No such file or directory
-   22 |         #include <dt-bindings/clock/mt8186-clk.h>
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1401: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Thanks,
+Kan
