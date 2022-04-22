@@ -2,131 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A20A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC92C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447788AbiDVNQg (ORCPT
+        id S1447797AbiDVNQh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
+        Fri, 22 Apr 2022 09:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447789AbiDVNQd (ORCPT
+        with ESMTP id S1447787AbiDVNQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:16:33 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68348580DA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:13:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650633220; x=1682169220;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tC39CcHCCAkxRGoLupvWWCwop7YOMFc9XUJ+TwGQPfg=;
-  b=DRS8dm3s5lCUGTfjsvIVHN0LLnFrFrDnWhnO5RJFDhl9ZFa0i6elxZGv
-   Dsw1XyykM49RhKv30EZ9G+N2cq90Y9EFU3xZBjvCnftN6vK+T+49sVQCD
-   i3p773RGIlRKQdOgVU0cojh/BtCIFCij/rKLSg+67+uE/Ds9oOU9FoIJ0
-   6iEraarXqoTgNnPUlMHxMh8NXHqf2GBbR1JMWHRUgkrCROoaEER7wXnrR
-   LZ4+eYMMZ/VrVsN5zBaBYlrJLhZCPosm/iif4SxNHhhqLug0aBybbQpri
-   tMS/EjDyZuIGPB+aG3NHV6IeKOF+rxjE4GGApRSyV/eXaZlkqynSlguup
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="351109961"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="351109961"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:13:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="556374272"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.236]) ([10.254.215.236])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:13:37 -0700
-Message-ID: <8440e43b-aa1f-2648-6b64-afc34aa97bc2@linux.intel.com>
-Date:   Fri, 22 Apr 2022 21:13:35 +0800
+        Fri, 22 Apr 2022 09:16:36 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEACC580DD;
+        Fri, 22 Apr 2022 06:13:40 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id D72BCC021; Fri, 22 Apr 2022 15:13:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1650633218; bh=arZcP3kJHlJ8SEpr6WdbTpaE0DnsvTOiOitkCJZmFdY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nOdC2T5Dhqaut2J004hiQt31EBBwPVxp4oWg4Uo09BZPaGDl5pAvDUOHBeTPD4PaD
+         ZiCWYJaQ6I3B6Jv0ZwE6JPtgwdtMZ0S265i0vpasipmMAF2trBzKDSQYmxfwhDGV5d
+         /0ZKJvj7jKnjJMTGPAsGdcvS/7GsX0yZ2DuO3EfVDJNTnXqawzTzOOtcLvhYHSgJFC
+         so7Z2+Y8TooRFvk/rHEFBlBweOH/Bvszu1Zs5CGl3vfNcfzstMDz82WFWOUSeddUbi
+         uueLLONEzLBvrbEXS2Gatke6dbOwF4Y7t879vjSFa2j7mISxG8PU0eW3R7iMoLSaUd
+         SlFVGxz/hzOBw==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id CC236C009;
+        Fri, 22 Apr 2022 15:13:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1650633218; bh=arZcP3kJHlJ8SEpr6WdbTpaE0DnsvTOiOitkCJZmFdY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nOdC2T5Dhqaut2J004hiQt31EBBwPVxp4oWg4Uo09BZPaGDl5pAvDUOHBeTPD4PaD
+         ZiCWYJaQ6I3B6Jv0ZwE6JPtgwdtMZ0S265i0vpasipmMAF2trBzKDSQYmxfwhDGV5d
+         /0ZKJvj7jKnjJMTGPAsGdcvS/7GsX0yZ2DuO3EfVDJNTnXqawzTzOOtcLvhYHSgJFC
+         so7Z2+Y8TooRFvk/rHEFBlBweOH/Bvszu1Zs5CGl3vfNcfzstMDz82WFWOUSeddUbi
+         uueLLONEzLBvrbEXS2Gatke6dbOwF4Y7t879vjSFa2j7mISxG8PU0eW3R7iMoLSaUd
+         SlFVGxz/hzOBw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 9bea8e61;
+        Fri, 22 Apr 2022 13:13:30 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 22:13:15 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark
+ (was: 9p fscache Duplicate cookie detected))
+Message-ID: <YmKp68xvZEjBFell@codewreck.org>
+References: <YlySEa6QGmIHlrdG@codewreck.org>
+ <YlyFEuTY7tASl8aY@codewreck.org>
+ <1050016.1650537372@warthog.procyon.org.uk>
+ <1817268.LulUJvKFVv@silver>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     baolu.lu@linux.intel.com,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/4] iommu/vt-d: Set PGSNP bit in pasid table entry for
- SVA binding
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>
-References: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
- <20220421113558.3504874-3-baolu.lu@linux.intel.com>
- <BN9PR11MB5276EDDABE40B6A6A67A0F4E8CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276EDDABE40B6A6A67A0F4E8CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1817268.LulUJvKFVv@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/22 11:05, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Thursday, April 21, 2022 7:36 PM
->>
->> This field make the requests snoop processor caches irrespective of
->> other attributes in the request or other fields in paging structure
->> entries used to translate the request.
-> 
-> I think you want to first point out the fact that SVA wants snoop
-> cache instead of just talking about the effect of PGSNP.
-> 
-> But thinking more I wonder why PGSNP is ever required. This is
-> similar to DMA API case. x86 is already cache coherent for normal
-> DMA (if not setting PCI no-snoop) and if the driver knows no-snoop
-> is incompatible to SVA API then it should avoid triggering no-snoop
-> traffic for SVA usage. In this case it is pointless for IOMMU driver
-> to enable force-snooping. Even in the future certain platform allows
-> no-snoop usage w/ SVA (I'm not sure how it works) this again should
-> be reflected by additional SVA APIs for driver to explicitly manage.
-> 
-> force-snoop should be enabled only in device assignment case IMHO,
-> orthogonal to whether vSVA is actually used.
-> 
-> Did I misunderstand the motivation here?
+Christian Schoenebeck wrote on Thu, Apr 21, 2022 at 01:36:14PM +0200:
+> I hope this does not sound harsh, wouldn't it make sense to revert 
+> eb497943fa215897f2f60fd28aa6fe52da27ca6c for now until those issues are sorted 
+> out? My concern is that it might take a long time to address them, and these 
+> are not minor issues.
 
-No, you didn't.
+I'm not sure that's possible at all, the related old fscache code has
+been ripped out since and just reverting won't work.
 
-Let's talk with the arch guys for more details before move this patch
-ahead. Thanks for pointing this out.
+I'm also curious why that behavior changed though, I don't think the
+old code had any special handling of partially written pages either...
+Understanding that might give a key to a small quick fix.
 
-Best regards,
-baolu
 
-> 
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/svm.c | 9 ++++++---
->>   1 file changed, 6 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index 23a38763c1d1..c720d1be992d 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -391,9 +391,12 @@ static struct iommu_sva
->> *intel_svm_bind_mm(struct intel_iommu *iommu,
->>   	}
->>
->>   	/* Setup the pasid table: */
->> -	sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
->> -			PASID_FLAG_SUPERVISOR_MODE : 0;
->> -	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ?
->> PASID_FLAG_FL5LP : 0;
->> +	sflags = PASID_FLAG_PAGE_SNOOP;
->> +	if (flags & SVM_FLAG_SUPERVISOR_MODE)
->> +		sflags |= PASID_FLAG_SUPERVISOR_MODE;
->> +	if (cpu_feature_enabled(X86_FEATURE_LA57))
->> +		sflags |= PASID_FLAG_FL5LP;
->> +
->>   	spin_lock_irqsave(&iommu->lock, iflags);
->>   	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm-
->>> pasid,
->>   					    FLPT_DEFAULT_DID, sflags);
->> --
->> 2.25.1
-> 
+It is quite a bad bug though and really wish I could give it the
+attention it deserves, early next month has a few holidays here
+hopefully I'll be able to look at it closer then :/
+
+-- 
+Dominique
