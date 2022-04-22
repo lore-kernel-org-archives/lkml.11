@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E868C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3854AC4321E
 	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447437AbiDVMMa (ORCPT
+        id S1447469AbiDVMMf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
+        Fri, 22 Apr 2022 08:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447358AbiDVMMM (ORCPT
+        with ESMTP id S1447352AbiDVMMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:12:12 -0400
+        Fri, 22 Apr 2022 08:12:19 -0400
 Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCB95674E;
-        Fri, 22 Apr 2022 05:09:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D0556748;
+        Fri, 22 Apr 2022 05:09:17 -0700 (PDT)
 Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id B2EB0240015;
-        Fri, 22 Apr 2022 12:09:06 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPA id 917A324000D;
+        Fri, 22 Apr 2022 12:09:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650629348;
+        t=1650629356;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+JCl/WOp3nIX69HO4grk06/2o7m8C+sekXdS2QhS91s=;
-        b=bfVfx53VzN8+R2bv6WVm1Q2Ady2/V/QkJ6sMWnCvQcaDoX13LCHE9PnCDwA3/nm22jpqkM
-        v9M3KXxPxP0Lj48UCtf6iHn5QfjAN6qoPPFJrDdou6beWcITHPg5FJbXHEoebIjbiPs3Ke
-        yJlI5SU6GldG3rIhmH7F0iWIbxvZ39z3ooFiDEBF7zB7hls22zUfoWoL/6lHVUzpr701uD
-        yLijxkEoua28Nf9EopJFT9//VUCIUpel2QKJlWymz1e/Narm0ENPFXyYQZPWvXiBxlYYJO
-        Q3AwHn4y0mY1m+IeoM1lv0pwmyPyiE7WDR7Gp1h73wHvTcEsxcgf6ypgY4/C5Q==
+        bh=XbK44txh6IJgMhR0iqajJG2j4qqD92+Fo56+QPX8QcE=;
+        b=KECf+/7Wd1/QIsrDcWeboFzTAPhA3ftm+NTasE4Z5fSj6+sINRsYvSrGWR6RixDs8/XM70
+        3IaF5z9Oufi02jpY30BefsYFEfIBgCuUoL2gp80ome4RqOAM71HSc6YC4m+uT5t8gtHReH
+        2hEPq4n/zzQSUQXvKglbpa0RDf4N/DN9o0ND4h1eCw0Bm4hKTcqyNtJTchjG0WP3mJOPAK
+        c8A2dpMQzklTBaGb2ULx/WqaN8BEHHBrDe6aJLpBXuF64LoyUsdAgD/EMiOI+QCjbgdAPT
+        OlmD0eRyytrjYmf4cy9KGUWe9TsVuDCxMAS3KaFAsuf6fPJ+imNJGBkksEc7+w==
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
@@ -48,9 +48,9 @@ Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
         Clement Leger <clement.leger@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>
-Subject: [PATCH v3 4/8] soc: renesas: rzn1: Select PM and PM_GENERIC_DOMAINS configs
-Date:   Fri, 22 Apr 2022 14:08:46 +0200
-Message-Id: <20220422120850.769480-5-herve.codina@bootlin.com>
+Subject: [PATCH v3 7/8] ARM: dts: r9a06g032: Add USB PHY DT support
+Date:   Fri, 22 Apr 2022 14:08:49 +0200
+Message-Id: <20220422120850.769480-8-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220422120850.769480-1-herve.codina@bootlin.com>
 References: <20220422120850.769480-1-herve.codina@bootlin.com>
@@ -60,31 +60,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PM and PM_GENERIC_DOMAINS configs are required for RZ/N1 SOCs.
-Without these configs, the clocks used by the PCI bridge are not
-enabled and so accessing the devices leads to a kernel crash:
-  [    0.832958] Unhandled fault: external abort on non-linefetch (0x1008) at 0x90b5f848
-
-Select PM and PM_GENERIC_DOMAINS for ARCH_RZN1
+Define the r9a06g032 generic part of the USB PHY device node.
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 ---
- drivers/soc/renesas/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/r9a06g032.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/soc/renesas/Kconfig b/drivers/soc/renesas/Kconfig
-index fdc99a05a7e0..15fff5632167 100644
---- a/drivers/soc/renesas/Kconfig
-+++ b/drivers/soc/renesas/Kconfig
-@@ -47,6 +47,8 @@ config ARCH_RZG2L
+diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
+index 33581f0c55c4..58af07eb75c9 100644
+--- a/arch/arm/boot/dts/r9a06g032.dtsi
++++ b/arch/arm/boot/dts/r9a06g032.dtsi
+@@ -59,6 +59,12 @@ ext_rtc_clk: extrtcclk {
+ 		clock-frequency = <0>;
+ 	};
  
- config ARCH_RZN1
- 	bool
-+	select PM
-+	select PM_GENERIC_DOMAINS
- 	select ARM_AMBA
- 
- if ARM && ARCH_RENESAS
++	usbphy: usbphy {
++		#phy-cells = <0>;
++		compatible = "usb-nop-xceiv";
++		status = "disabled";
++	};
++
+ 	soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <1>;
 -- 
 2.35.1
 
