@@ -2,78 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C11C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F033FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446115AbiDVJdM (ORCPT
+        id S1446098AbiDVJdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        Fri, 22 Apr 2022 05:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446104AbiDVJdH (ORCPT
+        with ESMTP id S1446097AbiDVJdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:33:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D710B4EF6C;
-        Fri, 22 Apr 2022 02:30:14 -0700 (PDT)
+        Fri, 22 Apr 2022 05:33:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6304A4EF6C;
+        Fri, 22 Apr 2022 02:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3EE7BCE282F;
-        Fri, 22 Apr 2022 09:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 792D3C385AE;
-        Fri, 22 Apr 2022 09:30:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F24AD61D91;
+        Fri, 22 Apr 2022 09:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E50EC385B4;
+        Fri, 22 Apr 2022 09:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650619811;
-        bh=4BJZmEVhYZrUvVU6UDMs/63mofJAqQXx7Fh//ZtPELE=;
+        s=k20201202; t=1650619812;
+        bh=iqKSRvVkoi982rk3Gb1felFKUcOqQmDF0b/98Xf+V9c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oXcUm3/OfvUQrRqFPjGM0708vHge2XT6eA9yNra/Z7rzAVXzJMqznGzwyGKUaa3dE
-         4HJ59SaClIzZs1Y7BSyRnpPhRmvjpaLO6XsUvvhm5cvtg2rihNhc0txbyFMKJB7f8q
-         yhn18KnB9MmT3eWZxf4gdyMVwbO/t9kLAQwM24rtFp9qETAbwL3+2PTAML8ZHFYu2C
-         xVl3jjrKTJjKe9u/XKGNao9v4vliuvgxKrnrK6KrOZbxljUv9Z8HnJkJ07gBWjS1jg
-         2TECGWebuJH+N7WByXUuMnDt2gxguJosqQzrCzbAj/JYqXSzNWHov40yo+5a5VSy1V
-         8wegkRaY0Ckfw==
+        b=JsnzA0wfk3sZdMbJRxTyVtaBLRoTPSeHB6oKhEUKYPFimKaVs8C00g5/7PB3DX3Qu
+         bk+JOKloWMaLTtAEYuWcToDXVFd23UUzDfQ/qacmA9PEgaz9JZGAMtIGSOuAO9MrGd
+         RytxFOT5Q/xTuHpZtIACSGYAHMY9b+ypJsMEHV6+q5TLHhqFLqgg06PMCKvb3MuiNo
+         0LTJZ/b2SLK9dz1gFjGeG/pHxMS+qXdMdax1K+5ppU3NfVRDqZIVPjmIN50OdX4e3S
+         kej2EjjiV0O/43ygq7Xrub/8rIJ/q1WYAlxFcHQDPTANFxdDFq3xTnqoI2I821kImD
+         85i6x0R4dnjhg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 65203E85D90;
-        Fri, 22 Apr 2022 09:30:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 49BF2E8DBDA;
+        Fri, 22 Apr 2022 09:30:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] myri10ge: remove redundant assignment to variable status
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165061981141.24106.14578807719178720929.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Apr 2022 09:30:11 +0000
-References: <20220418143759.85626-1-colin.i.king@gmail.com>
-In-Reply-To: <20220418143759.85626-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
+Subject: Re: [PATCH] Bluetooth: btrtl: Add support for RTL8852C
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165061981229.24106.8736132394177084138.git-patchwork-notify@kernel.org>
+Date:   Fri, 22 Apr 2022 09:30:12 +0000
+References: <20220411091957.838-1-max.chou@realtek.com>
+In-Reply-To: <20220411091957.838-1-max.chou@realtek.com>
+To:     Max Chou <max.chou@realtek.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alex_lu@realsil.com.cn, hildawu@realtek.com, karenhsu@realtek.com,
+        kidman@realtek.com, hsinyu_chang@realtek.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Marcel Holtmann <marcel@holtmann.org>:
 
-On Mon, 18 Apr 2022 15:37:59 +0100 you wrote:
-> Variable status is being assigned a value that is never read, it is
-> being re-assigned again later on. The assignment is redundant and can
-> be removed.
+On Mon, 11 Apr 2022 17:19:57 +0800 you wrote:
+> From: Max Chou <max.chou@realtek.com>
 > 
-> Cleans up clang scan build warning:
-> drivers/net/ethernet/myricom/myri10ge/myri10ge.c:582:7: warning: Although
-> the value stored to 'status' is used in the enclosing expression, the
-> value is never actually read from 'status' [deadcode.DeadStores]
+> Add the support for RTL8852C BT controller on USB interface.
+> The necessary firmware file will be submitted to linux-firmware.
+> 
+> Signed-off-by: Max Chou <max.chou@realtek.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - myri10ge: remove redundant assignment to variable status
-    https://git.kernel.org/netdev/net-next/c/1c604f91b773
+  - Bluetooth: btrtl: Add support for RTL8852C
+    https://git.kernel.org/bluetooth/bluetooth-next/c/9ee4dddbad1e
 
 You are awesome, thank you!
 -- 
