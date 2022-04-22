@@ -2,139 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF57C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E7CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444818AbiDVHaA (ORCPT
+        id S1444853AbiDVHdF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
+        Fri, 22 Apr 2022 03:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444814AbiDVH35 (ORCPT
+        with ESMTP id S1444862AbiDVHcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:29:57 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EC750456
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:26:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650612419; x=1682148419;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wLNhONK5TAmECoDZG9Iy5HImqEg6MTqsIAu6jAkvhck=;
-  b=hNaylbzSh/DjxBRg64ZyPbvpTnH8bYSJTKZh1RCVNjoXiysji8R0JK9I
-   bYtkeagsByzeaKVFG2Cnl4kSe1Nlt9/aP/5DEkqrlCQ63EFDuqMOsd5fZ
-   PwporKcfQXpokw4um57MR+Ld3k9srjnKxNekFiqYs9ACgL4y4/U7i9tlK
-   iZ3ZbrF+7CpKEQ1B9QLrcMa/vwb2Gu8d8tG1rvbD0I7mxBARMQVKmSPBk
-   a7/F+6EXAfcUqURiwRF0TAiwiFrfmEd7Gm1pRXg2au73Z1WDrjZi9mlzL
-   a2YEWPWM41M+w34o7AE94/D/EstB/vloZ4tMkcjLAduIUeNAYNH6/SapI
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245177389"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="245177389"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:26:59 -0700
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="577725109"
-Received: from jiejingx-mobl1.ccr.corp.intel.com ([10.254.215.31])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:26:56 -0700
-Message-ID: <327e5029c5724132191e5b4b7d6e00a4ffa26117.camel@intel.com>
-Subject: Re: [PATCH] mm: swap: determine swap device by using page nid
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Aaron Lu <aaron.lu@intel.com>
-Cc:     Yang Shi <shy828301@gmail.com>, Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Fri, 22 Apr 2022 15:26:51 +0800
-In-Reply-To: <YmJOd5BlyNvB9fX4@ziqianlu-desk1>
-References: <20220407020953.475626-1-shy828301@gmail.com>
-         <Yk6cutNf5sOuYbDl@ziqianlu-nuc9qn>
-         <CAHbLzkq+eKcKCsxXDTiOcBxk8FjMdWBqOxwi4N_NG7PZWbAAkA@mail.gmail.com>
-         <Yl/FS9enAD4V8jG3@ziqianlu-nuc9qn>
-         <f27ec36beb3cf1dbbfc3b8835e586d5d6fe7f561.camel@intel.com>
-         <YmETEHnK/FiNbLO7@ziqianlu-desk1>
-         <6f7210be7353d1c01dc9f872b2692b83f87f5452.camel@intel.com>
-         <YmJKBaq1yj6/iBJ3@ziqianlu-desk1>
-         <4f1bc4dc65117a185833555ff8df30a944453499.camel@intel.com>
-         <YmJOd5BlyNvB9fX4@ziqianlu-desk1>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Fri, 22 Apr 2022 03:32:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD0350456;
+        Fri, 22 Apr 2022 00:29:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2301E61F2F;
+        Fri, 22 Apr 2022 07:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C218C385A4;
+        Fri, 22 Apr 2022 07:29:38 +0000 (UTC)
+Message-ID: <101c5840-37c7-1625-9856-2f6b5870b943@xs4all.nl>
+Date:   Fri, 22 Apr 2022 09:29:36 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 10/24] media: h264: Sort p/b reflist using frame_num
+Content-Language: en-US
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-media@vger.kernel.org
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+ <20220405204426.259074-11-nicolas.dufresne@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220405204426.259074-11-nicolas.dufresne@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-22 at 14:43 +0800, Aaron Lu wrote:
-> On Fri, Apr 22, 2022 at 02:27:45PM +0800, ying.huang@intel.com wrote:
-> > On Fri, 2022-04-22 at 14:24 +0800, Aaron Lu wrote:
-> > > On Thu, Apr 21, 2022 at 04:34:09PM +0800, ying.huang@intel.com wrote:
-> > > > On Thu, 2022-04-21 at 16:17 +0800, Aaron Lu wrote:
-> > > > > On Thu, Apr 21, 2022 at 03:49:21PM +0800, ying.huang@intel.com wrote:
-> > > 
-> > > ... ...
-> > > 
-> > > > > > For swap-in latency, we can use pmbench, which can output latency
-> > > > > > information.
-> > > > > > 
-> > > > > 
-> > > > > OK, I'll give pmbench a run, thanks for the suggestion.
-> > > > 
-> > > > Better to construct a senario with more swapin than swapout.  For
-> > > > example, start a memory eater, then kill it later.
-> > > 
-> > > What about vm-scalability/case-swapin?
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/wfg/vm-scalability.git/tree/case-swapin
-> > > 
-> > > I think you are pretty familiar with it but still:
-> > > 1) it starts $nr_task processes and each mmaps $size/$nr_task area and
-> > >    then consumes the memory, after this, it waits for a signal;
-> > > 2) start another process to consume $size memory to push the memory in
-> > >    step 1) to swap device;
-> > > 3) kick processes in step 1) to start accessing their memory, thus
-> > >    trigger swapins. The metric of this testcase is the swapin throughput.
-> > > 
-> > > I plan to restrict the cgroup's limit to $size.
-> > > 
-> > > Considering there is only one NVMe drive attached to node 0, I will run
-> > > the test as described before:
-> > > 1) bind processes to run on node 0, allocate on node 1 to test the
-> > >    performance when reclaimer's node id is the same as swap device's.
-> > > 2) bind processes to run on node 1, allocate on node 0 to test the
-> > >    performance when page's node id is the same as swap device's.
-> > > 
-> > > Ying and Yang,
-> > > 
-> > > Let me know what you think about the case used and the way the test is
-> > > conducted.
-> > 
-> > The test case looks good to me.  And, do you have a way to measure swap
-> > in latency?  Better to compare between enabling and disabling per-node
+On 05/04/2022 22:44, Nicolas Dufresne wrote:
+> In the reference list builder, frame_num refers to FrameNumWrap
+> in the spec, which is the same as the pic_num for frame decoding.
+> The same applies for long_term_pic_num and long_term_frame_idx.
 > 
-> By swap in latency, do you mean the time it takes for a fault that is
-> served by swap in?
+> Sort all type of references by frame_num so the sort can be reused
+> for fields reflist were the sorting is done using frame_num instead.
+> In short, pic_num is never actually used for building reference
+> lists.
 > 
-> Since the test is swap in only, I think throughput can tell us the
-> average swap in latency?
+> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+> ---
+>  drivers/media/v4l2-core/v4l2-h264.c | 23 +++++++++++++----------
+>  include/media/v4l2-h264.h           |  2 --
+>  2 files changed, 13 insertions(+), 12 deletions(-)
 > 
+> diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-core/v4l2-h264.c
+> index bcf9b7774560..7e1eba03099a 100644
+> --- a/drivers/media/v4l2-core/v4l2-h264.c
+> +++ b/drivers/media/v4l2-core/v4l2-h264.c
+> @@ -50,7 +50,6 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_reflist_builder *b,
+>  		if (!(dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
+>  			continue;
+>  
+> -		b->refs[i].pic_num = dpb[i].pic_num;
+>  		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
+>  			b->refs[i].longterm = true;
+>  
+> @@ -139,15 +138,19 @@ static int v4l2_h264_p_ref_list_cmp(const void *ptra, const void *ptrb,
+>  	}
+>  
+>  	/*
+> -	 * Short term pics in descending pic num order, long term ones in
+> -	 * ascending order.
+> +	 * For frames, short term pics are in descending pic num order and long
+> +	 * term ones in ascending order. For fields, the same direction is used
+> +	 * but with frame_num (wrapped). For frames, the value of pic_num and
+> +	 * frame_num are the same (see formula (8-28) and (8-29)). For this
+> +	 * reason we can use frame_num only and share this funciton between
 
-Yes.  Given the same parallel level, the average swap in latency can be
-reflect via throughput.
+funciton -> function
 
-> > swap device support too to make sure per-node support has performance
-> > impact on this system.
-> 
-> I think we can tell by conducting two more tests:
-> 1) bind processes to run on node 0, allocate on node 0;
-> 2) bind processes to run on node 1, allocate on node 1.
-> If case 1) is faster, we can say per-node support has performance impact
-> on this system.
+Regards,
 
-At least we can measure whether cross-node latency matters with this
-test.
+	Hans
 
-Best Regards,
-Huang, Ying
-
+> +	 * frames and fields reflist.
+>  	 */
+>  	if (!builder->refs[idxa].longterm)
+>  		return builder->refs[idxb].frame_num <
+>  		       builder->refs[idxa].frame_num ?
+>  		       -1 : 1;
+>  
+> -	return builder->refs[idxa].pic_num < builder->refs[idxb].pic_num ?
+> +	return builder->refs[idxa].frame_num < builder->refs[idxb].frame_num ?
+>  	       -1 : 1;
+>  }
+>  
+> @@ -173,10 +176,10 @@ static int v4l2_h264_b0_ref_list_cmp(const void *ptra, const void *ptrb,
+>  			return 1;
+>  	}
+>  
+> -	/* Long term pics in ascending pic num order. */
+> +	/* Long term pics in ascending frame num order. */
+>  	if (builder->refs[idxa].longterm)
+> -		return builder->refs[idxa].pic_num <
+> -		       builder->refs[idxb].pic_num ?
+> +		return builder->refs[idxa].frame_num <
+> +		       builder->refs[idxb].frame_num ?
+>  		       -1 : 1;
+>  
+>  	poca = v4l2_h264_get_poc(builder, ptra);
+> @@ -218,10 +221,10 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
+>  			return 1;
+>  	}
+>  
+> -	/* Long term pics in ascending pic num order. */
+> +	/* Long term pics in ascending frame num order. */
+>  	if (builder->refs[idxa].longterm)
+> -		return builder->refs[idxa].pic_num <
+> -		       builder->refs[idxb].pic_num ?
+> +		return builder->refs[idxa].frame_num <
+> +		       builder->refs[idxb].frame_num ?
+>  		       -1 : 1;
+>  
+>  	poca = v4l2_h264_get_poc(builder, ptra);
+> diff --git a/include/media/v4l2-h264.h b/include/media/v4l2-h264.h
+> index 4cef717b3f18..0d9eaa956123 100644
+> --- a/include/media/v4l2-h264.h
+> +++ b/include/media/v4l2-h264.h
+> @@ -18,7 +18,6 @@
+>   * @refs.top_field_order_cnt: top field order count
+>   * @refs.bottom_field_order_cnt: bottom field order count
+>   * @refs.frame_num: reference frame number
+> - * @refs.pic_num: reference picture number
+>   * @refs.longterm: set to true for a long term reference
+>   * @refs: array of references
+>   * @cur_pic_order_count: picture order count of the frame being decoded
+> @@ -36,7 +35,6 @@ struct v4l2_h264_reflist_builder {
+>  		s32 top_field_order_cnt;
+>  		s32 bottom_field_order_cnt;
+>  		int frame_num;
+> -		u32 pic_num;
+>  		u16 longterm : 1;
+>  	} refs[V4L2_H264_NUM_DPB_ENTRIES];
+>  
 
