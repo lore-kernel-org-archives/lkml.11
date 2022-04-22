@@ -2,149 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C61BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8989C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbiDVWFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
+        id S231423AbiDVWFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231416AbiDVWFB (ORCPT
+        with ESMTP id S231445AbiDVWFG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:05:01 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F049B12C8D3;
-        Fri, 22 Apr 2022 13:47:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650660457; x=1682196457;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3ykNKyTeK2OUg9JXBqIirdWxYu+LgsMf1w5bMSCs968=;
-  b=eT4ZZrpmzTYQt6/lP8bXOpH30uGpVLY3xNmmY5z4K7OG+Gtw7w2zXfGv
-   gdlBpOYsi+lpSOHuLdBibvUjVQ4Xjl97+BPAtcwbvjZJtuMh8of61e1sS
-   zBkjZdLNVBdCiai5tAWzsyKAUqGMkscocaRGDql+g/LZWP6GuYN/cbLx0
-   WgEjPZEXMw+pdOTm8Aw5VY8hEMlfknvBu/DLTu9aMul0Y0n0Jzw6fU1nG
-   4YBgdy0DhRyOIG8fX8N7bGhMWsojXbwtbqbhuPCapqcAfSbBnEjyOT7UM
-   GWuQe3nvUkOapscBu6GivPRAlvsGSyRb/HKbtPXxcH2YOLFMwqGJ3ny/3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263600761"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="263600761"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 11:38:09 -0700
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="703659339"
-Received: from hltravis-mobl1.amr.corp.intel.com (HELO localhost) ([10.213.166.215])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 11:38:09 -0700
-Date:   Fri, 22 Apr 2022 11:38:09 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 3/4] Documentation/vm: Remove "Using kmap-atomic" from
- highmem.rst.
-Message-ID: <YmL2EQhfQLMoU1WV@iweiny-desk3>
-References: <20220421180200.16901-1-fmdefrancesco@gmail.com>
- <20220421180200.16901-4-fmdefrancesco@gmail.com>
+        Fri, 22 Apr 2022 18:05:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB91E41D1F0;
+        Fri, 22 Apr 2022 13:47:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20A4061E06;
+        Fri, 22 Apr 2022 20:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26FDAC385AA;
+        Fri, 22 Apr 2022 20:36:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650659808;
+        bh=a+XR4UoEGJUvtEOaoDDXPDz++it2F/wJ7l1aRxdt+0A=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=U1C6BKzOQuYL/nfuZoLkjlUF20h2YUwLxJY1jSCzxIVnBUp4EdJZVs73O1Pn6Utof
+         mjCRxX9TNkmFvZRFKUp56ZToSf4XCNw3aT2W7Bb3Wj1WnU12GEiA8K4+pF9M/zJgab
+         Izb9tqF2ccr987MY+dxr3hXiq9qVIVBJ5f2n2B6Jbyvz1tasMZIf9LgX+MYnKR/xjG
+         E7WDSqaSUS+UtgaJCSFEciax2GbqTfgDORciTT4qkV5m2axVo/H+60yclotNZx8AJ0
+         da1zxk6XQKfI87Sn8gDX/QDKt5eLqEfHH35itwJbVBrcOOqKMbhg2APRBh3695gRXT
+         MN2pwmL/0NspQ==
+Date:   Fri, 22 Apr 2022 13:36:47 -0700 (PDT)
+From:   Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+cc:     Juergen Gross <jgross@suse.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Xen Devel <xen-devel@lists.xenproject.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: Signed-off-by missing for commit in the xen-tip
+ tree
+In-Reply-To: <20220422111438.3946dbae@canb.auug.org.au>
+Message-ID: <alpine.DEB.2.22.394.2204221336170.915916@ubuntu-linux-20-04-desktop>
+References: <20220422111438.3946dbae@canb.auug.org.au>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421180200.16901-4-fmdefrancesco@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:01:59PM +0200, Fabio M. De Francesco wrote:
-> The use of kmap_atomic() is deprecated in favor of kmap_local_page().
+Juergen, Boris,
 
-I'm not sure deprecated is the right word.  And I think the fact that this
-documentation is stale is a better reason for the patch as is.
+I forced-pushed the linux-next and for-linus-5.18 branches to solve the
+issue
 
-This series should end up indicating the desire to stop growing kmap() and
-kmap_atomic() call sites and that their deprecation is on the horizon.  I've
-not read the text in patch 4/4 yet.
 
-> For
-> this reason the "Using kmap_atomic" section in highmem.rst is obsolete and
-> unnecessary.
-
-A lot of the text is obsolete (and redundant) but the example code might be
-useful.
-
-Why not move the example and relevant bits into the kdoc for kmap_atomic()
-which is then automatically picked up via patch 2/4.
-
-Ira
-
+On Fri, 22 Apr 2022, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Therefore, just remove it.
+> Commit
 > 
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Ira Weiny <ira.weiny@intel.com>
-> Cc: Matthew Wilcox <willy@infradead.org>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
->  Documentation/vm/highmem.rst | 35 -----------------------------------
->  1 file changed, 35 deletions(-)
+>   b12d41716e32 ("arm/xen: Fix some refcount leaks")
 > 
-> diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
-> index ccff08a8211d..e05bf5524174 100644
-> --- a/Documentation/vm/highmem.rst
-> +++ b/Documentation/vm/highmem.rst
-> @@ -72,41 +72,6 @@ The kernel contains several ways of creating temporary mappings:
->    It may be assumed that k[un]map_atomic() won't fail.
->  
->  
-> -Using kmap_atomic
-> -=================
-> -
-> -When and where to use kmap_atomic() is straightforward.  It is used when code
-> -wants to access the contents of a page that might be allocated from high memory
-> -(see __GFP_HIGHMEM), for example a page in the pagecache.  The API has two
-> -functions, and they can be used in a manner similar to the following::
-> -
-> -	/* Find the page of interest. */
-> -	struct page *page = find_get_page(mapping, offset);
-> -
-> -	/* Gain access to the contents of that page. */
-> -	void *vaddr = kmap_atomic(page);
-> -
-> -	/* Do something to the contents of that page. */
-> -	memset(vaddr, 0, PAGE_SIZE);
-> -
-> -	/* Unmap that page. */
-> -	kunmap_atomic(vaddr);
-> -
-> -Note that the kunmap_atomic() call takes the result of the kmap_atomic() call
-> -not the argument.
-> -
-> -If you need to map two pages because you want to copy from one page to
-> -another you need to keep the kmap_atomic calls strictly nested, like::
-> -
-> -	vaddr1 = kmap_atomic(page1);
-> -	vaddr2 = kmap_atomic(page2);
-> -
-> -	memcpy(vaddr1, vaddr2, PAGE_SIZE);
-> -
-> -	kunmap_atomic(vaddr2);
-> -	kunmap_atomic(vaddr1);
-> -
-> -
->  Cost of Temporary Mappings
->  ==========================
->  
+> is missing a Signed-off-by from its committer.
+> 
 > -- 
-> 2.34.1
+> Cheers,
+> Stephen Rothwell
 > 
