@@ -2,214 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE82C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B73C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446002AbiDVJaI (ORCPT
+        id S1446012AbiDVJap (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        Fri, 22 Apr 2022 05:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233653AbiDVJaB (ORCPT
+        with ESMTP id S1445997AbiDVJaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:30:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663AD506D3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:27:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EC4B7CE2815
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9FA6C385A0;
-        Fri, 22 Apr 2022 09:27:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650619624;
-        bh=4kQlBTX2c22m5x9vXEEkFYxo4lYjFfIQOfY/dINojMQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=c/mEEU9pbSLGDRSGXHU7AsLLnTf53dOKb5N18fM6ocV8ESVDfjW0rxsaHFOqZmf29
-         8rliCeg1IYgWKCMjLcHAI8dpKSfwCX3pSZkLmQvVFBcwwdLbJK0UOopVwLbKTkyad+
-         zO0TJkVAJQSq0gC4FeVIfwd0HlxFHpdroIvSyG0oDIk3Bj3NVl/3Js2O9FmSODVNUl
-         IjkY/JH0YTTPWR2K+u1VpuwJ0lYIaJXmHmwz5z/jPsJfih9fJ52/Go94A1cAv4NdXb
-         HXeGXj4Rm8EHpOHnjudE1E7sYEUmEkZJb+yyQWVoLWsXZ35jnSjrogxSYTz5RunShP
-         IQQWn9dxS20gA==
-Received: by pali.im (Postfix)
-        id E92AAA09; Fri, 22 Apr 2022 11:27:00 +0200 (CEST)
-Date:   Fri, 22 Apr 2022 11:27:00 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Cc:     "jason@lakedaemon.net" <jason@lakedaemon.net>,
-        Joshua Scott <Joshua.Scott@alliedtelesis.co.nz>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ARM: mvebu: Enable MBUS error propagation
-Message-ID: <20220422092700.3j7boazeubccdhcr@pali>
-References: <20191124093529.32399-1-chris.packham@alliedtelesis.co.nz>
- <8736cqb63d.fsf@FE-laptop>
- <0285a09b2b1b7ae2ccc268a37e4357c95d270ac9.camel@alliedtelesis.co.nz>
- <20210603125525.nkswvixbabkgq5or@pali>
- <e75b74fa-b393-fede-1a19-fd43dbb7aba4@alliedtelesis.co.nz>
+        Fri, 22 Apr 2022 05:30:35 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC4F36315
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650619663; x=1682155663;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XP/Bq2pc0VZygbMNaDlk5rjG7Tyup7dHcAYPoZ9I3CM=;
+  b=lC4fGPelOhUwQDoSV4vQTwlr1fi6rWxUii1HIcWqD6rFmHcVLZzGSnSm
+   e06zRItbUbqdKovy0MqOUYDaiUaZBV4Cy0h5SPYihuQlh44erAwuFNVZ2
+   wHcLH38xCJEobbn3qHLPl9H4Z5zEwBVPmBb1sxxFt+T6WcVfNCYvCcI5x
+   sAuIqpkIBJilqlaCb7TSSQpCWUOUf3dSL5n/hiwDRL5GTj3Ec2dxnZJpd
+   cKc9Ic995XPrQPvDvVulK/wSlgZ28k4Xf2OpsVXEXasvXYJJPDziCAkGd
+   vc8f8eBLmM7FaVja6LJu/2j/Tr74h39sAXOLci/wz6LNnuYvY8RYoqdu8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264798519"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="264798519"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:27:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="534069027"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 22 Apr 2022 02:27:40 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhpZj-0009yQ-G1;
+        Fri, 22 Apr 2022 09:27:39 +0000
+Date:   Fri, 22 Apr 2022 17:27:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Qing Wang <wangqing@vivo.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Wang Qing <wangqing@vivo.com>
+Subject: Re: [PATCH 1/2] arch_topology: support for describing cache topology
+ from DT
+Message-ID: <202204221720.cO70SkrD-lkp@intel.com>
+References: <1650552960-60165-2-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e75b74fa-b393-fede-1a19-fd43dbb7aba4@alliedtelesis.co.nz>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <1650552960-60165-2-git-send-email-wangqing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 03 June 2021 21:03:55 Chris Packham wrote:
-> On 4/06/21 12:55 am, Pali Rohár wrote:
-> > On Wednesday 08 January 2020 19:42:12 Chris Packham wrote:
-> >> Hi Gregory,
-> >>
-> >> On Wed, 2020-01-08 at 11:22 +0100, Gregory CLEMENT wrote:
-> >>> Hello Chris,
-> >>>
-> >>>> U-boot disables MBUS error propagation for Armada-385. The effect of
-> >>>> this on the kernel is that any access to a mapped but inaccessible
-> >>>> address causes the system to hang.
-> >>>>
-> >>>> By enabling MBUS error propagation the kernel can raise a Bus Error and
-> >>>> panic to restart the system.
-> >>> Unless I miss it, it seems that nobody comment this patch: sorry for the
-> >>> delay.
-> >>>
-> >> Thanks for the response.
-> >>
-> >>>> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> >>>> ---
-> >>>>
-> >>>> Notes:
-> >>>>      We've encountered an issue where rogue accesses to PCI-e space cause an
-> >>>>      Armada-385 system to lockup. We've found that enabling MBUS error
-> >>>>      propagation lets us get a bus error which at least gives us a panic to
-> >>>>      help identify what was accessed.
-> >>>>      
-> >>>>      U-boot clears the IO Err Prop Enable Bit[1] but so far no-one seems to
-> >>>>      know why.
-> >>>>      
-> >>>>      I wasn't sure where to put this code. There is similar code for kirwood
-> >>>>      in the equivalent dt_init function. On Armada-XP the register is part of
-> >>>>      the Core Coherency Fabric block (for A385 it's documented as part of the
-> >>>>      CCF block).
-> >>> What about adding a new set of register to the mvebu mbus driver?
-> >>>
-> >> After more testing we found that some previously "good" boards started
-> >> throwing up panics with this change. I think that this might require
-> >> handling some of the PCI-e interrupts (for correctable errors) via the
-> >> EDAC subsystem.
-> >>
-> >> We're still working with Marvell to track down exactly why this is
-> >> happening on our system.
-> > Hello Chris! Have you somehow solved this issue? Or do you have some
-> > contacts in Marvell for A385 PCIe subsystem?
-> 
-> The problem seemed to be a specific CPU Erratum for the A385 which I 
-> brought into upstream u-boot[1].
+Hi Qing,
 
-Hello Chris, could you point me to this CPU Erratum? What is its number
-or some other identifier? Because I'm unable to find any such erratum in
-the list for A385 erratums.
+Thank you for the patch! Yet something to improve:
 
-> But even then we had to update our base 
-> u-boot version from 2016.11 to 2019.10 so there may have been more going 
-> on than just that one change.
-> 
-> [1] - 
-> https://source.denx.de/u-boot/u-boot/-/commit/ad91fdfff0bd6ea471afe838e0f6d58ed898694e
-> 
-> >>> In this case it will be called even earlier allowing to see bus error
-> >>> earlier.
-> >>>
-> >>> In any case, you should separate the device tree change from the code
-> >>> change and at least provide 2 patches.
-> >> Agreed. If/when something solid eventuates we'll do it as a proper
-> >> series.
-> >>
-> >>> Gregory
-> >>>
-> >>>>      
-> >>>>      --
-> >>>>      [1] - https://scanmail.trustwave.com/?c=20988&d=yNG44EMQR-PfAPR99zig1LzptmqzHo11i7uAj4AGuQ&u=https%3a%2f%2fgitlab%2edenx%2ede%2fu-boot%2fu-boot%2fblob%2fmaster%2farch%2farm%2fmach-mvebu%2fcpu%2ec%23L489
-> ^^^ sorry, as a result of a reasonably high profile cyber attack on a 
-> local institution URLs in our incoming mail are intercepted.
-> >>>>
-> >>>>   arch/arm/boot/dts/armada-38x.dtsi |  5 +++++
-> >>>>   arch/arm/mach-mvebu/board-v7.c    | 27 +++++++++++++++++++++++++++
-> >>>>   2 files changed, 32 insertions(+)
-> >>>>
-> >>>> diff --git a/arch/arm/boot/dts/armada-38x.dtsi b/arch/arm/boot/dts/armada-38x.dtsi
-> >>>> index 3f4bb44d85f0..3214c67433eb 100644
-> >>>> --- a/arch/arm/boot/dts/armada-38x.dtsi
-> >>>> +++ b/arch/arm/boot/dts/armada-38x.dtsi
-> >>>> @@ -386,6 +386,11 @@
-> >>>>   				      <0x20250 0x8>;
-> >>>>   			};
-> >>>>   
-> >>>> +			ioerrc: io-err-control@20200 {
-> >>>> +				compatible = "marvell,io-err-control";
-> >>>> +				reg = <0x20200 0x4>;
-> >>>> +			};
-> >>>> +
-> >>>>   			mpic: interrupt-controller@20a00 {
-> >>>>   				compatible = "marvell,mpic";
-> >>>>   				reg = <0x20a00 0x2d0>, <0x21070 0x58>;
-> >>>> diff --git a/arch/arm/mach-mvebu/board-v7.c b/arch/arm/mach-mvebu/board-v7.c
-> >>>> index d2df5ef9382b..fb7718386ef9 100644
-> >>>> --- a/arch/arm/mach-mvebu/board-v7.c
-> >>>> +++ b/arch/arm/mach-mvebu/board-v7.c
-> >>>> @@ -138,10 +138,36 @@ static void __init i2c_quirk(void)
-> >>>>   	}
-> >>>>   }
-> >>>>   
-> >>>> +#define MBUS_ERR_PROP_EN BIT(8)
-> >>>> +
-> >>>> +/*
-> >>>> + * U-boot disables MBUS error propagation. Re-enable it so we
-> >>>> + * can handle them as Bus Errors.
-> >>>> + */
-> >>>> +static void __init enable_mbus_error_propagation(void)
-> >>>> +{
-> >>>> +	struct device_node *np =
-> >>>> +		of_find_compatible_node(NULL, NULL, "marvell,io-err-control");
-> >>>> +
-> >>>> +	if (np) {
-> >>>> +		void __iomem *reg;
-> >>>> +
-> >>>> +		reg = of_iomap(np, 0);
-> >>>> +		if (reg) {
-> >>>> +			u32 val;
-> >>>> +
-> >>>> +			val = readl_relaxed(reg);
-> >>>> +			writel_relaxed(val | MBUS_ERR_PROP_EN, reg);
-> >>>> +		}
-> >>>> +		of_node_put(np);
-> >>>> +	}
-> >>>> +}
-> >>>> +
-> >>>>   static void __init mvebu_dt_init(void)
-> >>>>   {
-> >>>>   	if (of_machine_is_compatible("marvell,armadaxp"))
-> >>>>   		i2c_quirk();
-> >>>> +	enable_mbus_error_propagation();
-> >>>>   }
-> >>>>   
-> >>>>   static void __init armada_370_xp_dt_fixup(void)
-> >>>> @@ -191,6 +217,7 @@ DT_MACHINE_START(ARMADA_38X_DT, "Marvell Armada 380/385 (Device Tree)")
-> >>>>   	.l2c_aux_val	= 0,
-> >>>>   	.l2c_aux_mask	= ~0,
-> >>>>   	.init_irq       = mvebu_init_irq,
-> >>>> +	.init_machine	= mvebu_dt_init,
-> >>>>   	.restart	= mvebu_restart,
-> >>>>   	.dt_compat	= armada_38x_dt_compat,
-> >>>>   MACHINE_END
-> >>>> -- 
-> >>>> 2.24.0
-> >>>>
-> >>>
+[auto build test ERROR on arm64/for-next/core]
+[also build test ERROR on driver-core/driver-core-testing linus/master arm-perf/for-next/perf v5.18-rc3 next-20220421]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Qing-Wang/Add-complex-scheduler-level-for-arm64/20220421-225748
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+config: riscv-randconfig-c006-20220421 (https://download.01.org/0day-ci/archive/20220422/202204221720.cO70SkrD-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/854ee80a8c32ea98203c96ba25cae2e87eeb43b1
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Qing-Wang/Add-complex-scheduler-level-for-arm64/20220421-225748
+        git checkout 854ee80a8c32ea98203c96ba25cae2e87eeb43b1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/ drivers/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/base/arch_topology.c:617:1: error: unknown type name 'staic'; did you mean 'static'?
+   staic struct device_node *cache_topology[NR_CPUS][MAX_CACHE_LEVEL];
+   ^~~~~
+   static
+   1 error generated.
+
+
+vim +617 drivers/base/arch_topology.c
+
+   612	
+   613	/*
+   614	 * cpu cache topology table
+   615	 */
+   616	#define MAX_CACHE_LEVEL 7
+ > 617	staic struct device_node *cache_topology[NR_CPUS][MAX_CACHE_LEVEL];
+   618	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
