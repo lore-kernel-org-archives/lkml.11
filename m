@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0AEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351403AbiDVGEf (ORCPT
+        id S1351464AbiDVGEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43780 "EHLO
+        Fri, 22 Apr 2022 02:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238426AbiDVGE3 (ORCPT
+        with ESMTP id S233399AbiDVGEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:04:29 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2294F9F3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:35 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id z16so7042556pfh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sslab.ics.keio.ac.jp; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2n9bgZjee/cHocKFdQ/ER3Mjblog3S/SvSNshrOwXL8=;
-        b=Q4rveyWTprPFmV5y3aqOmjdwFc70/+XQUE+lN+A6ZQSFib83/24eDeDm1JmH7ug2sz
-         VEP6UOw+qBu9DbXQpFvZ9l9GjrV4elnCDhBT4YBA0DG83u/xHd4toJpAWxlvGimU9GMn
-         M8mRzuk7YdVVQM0oPjszFaoGR6Dmw9XyyxeNQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2n9bgZjee/cHocKFdQ/ER3Mjblog3S/SvSNshrOwXL8=;
-        b=vtCqGPJrX9W82QergvpjFgGvF6MpMSLXOvv96G3TggMP5TqtCjU9d2tFj9A+Y3bE+D
-         m3BVAwX0q2Lln6ZF7yt9h+y1sZBz6cI76XnkR5Q98OyE4K6DhFSwRcF+T3gb0klxXh49
-         gJepBn+iV4XyeXMbeWspnBPxyrPijJZGz7M+mn5LE39WkQDN6wNNla4xGjIHH7Z2j9U/
-         ML9FOwZvF8OmUPDnybJFtq5Vam/V2DBUSlLLstsvV1LIrojgXYMnuu0z7snCMMdLgwu8
-         IulCticx55Ko9n3AlNso+AbZ9HlCSTB4oahHvkJPEqM11Se3LX/JquhJEimEwww75z1/
-         mDkA==
-X-Gm-Message-State: AOAM531ngnqX7tQyWIqxoa7TwxWIQhs3FV6vZ+1UNY5Cw6ut9ICEEdjh
-        HGBbZnY27gxVHvloAYYKW8QQrIrS/Mbw5A==
-X-Google-Smtp-Source: ABdhPJz1+Q5wZTCWBaxgzl66qEogbRIwuuWuXVJsIr6DWmG73SkFu/fbplrM8MupI+k5jZzPVCkk4A==
-X-Received: by 2002:a05:6a00:4007:b0:50a:686b:5e03 with SMTP id by7-20020a056a00400700b0050a686b5e03mr3170039pfb.7.1650607295130;
-        Thu, 21 Apr 2022 23:01:35 -0700 (PDT)
-Received: from saltlake.i.sslab.ics.keio.ac.jp (sslab-relay.ics.keio.ac.jp. [131.113.126.173])
-        by smtp.gmail.com with ESMTPSA id jp20-20020a17090ae45400b001cd4989fecasm4643556pjb.22.2022.04.21.23.01.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 23:01:34 -0700 (PDT)
-From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Cc:     mhiramat@kernel.org, keitasuzuki.park@sslab.ics.keio.ac.jp,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] tracing: Fix potential double free in create_var_ref()
-Date:   Fri, 22 Apr 2022 06:00:25 +0000
-Message-Id: <20220422060025.1436075-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Apr 2022 02:04:45 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77F94FC5C
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650607311; x=1682143311;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/7/X2Xu5wAZbEmSaHggI7TB/m5IhDaEQ1Acsr5zEP+Y=;
+  b=YOwhJZ5YRZLo+MdBdl9Rhw0cz/C13RNalDoziS+YfZeW1zYGcX0MwHS1
+   qgNfOC/oz8TCebAe1cr3wOOmZn7x9EeG2XNEI39URRYIM2OqhoRoBqwrD
+   zt0EjoVRT32Jnr4RD+jilG9mreIKS0sjgdg58DWQnyKaZf0gzZkgR+p1C
+   /St3KPLnxNz4EBnxkCWHZQqwbHXBXfJLujJUFDpMmZI1JLMvhw+OIDSuP
+   o0WgJevEpGdZ7hjCVXxumeSnOzhzjAQnpAzTpuCRjFWGBu91O9xh8fdAl
+   D1CPg9ROK7dbT6gV/njL6eLHxIKKWGPrNWLnIipHP5JAEcT88r+BNh9Xl
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="351024958"
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="351024958"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 23:01:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="533982782"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 21 Apr 2022 23:01:49 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhmMX-0009IM-51;
+        Fri, 22 Apr 2022 06:01:49 +0000
+Date:   Fri, 22 Apr 2022 14:01:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [rt-devel:linux-5.18.y-rt-rebase 17/78] printk.c:undefined reference
+ to `console_emit_next_record'
+Message-ID: <202204221359.DTcaIZnW-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In create_var_ref(), init_var_ref() is called to initialize the fields
-of variable ref_field, which is allocated in the previous function call
-to create_hist_field(). Function init_var_ref() allocates the
-corresponding fields such as ref_field->system, but frees these fields
-when the function encounters an error. The caller later calls
-destroy_hist_field() to conduct error handling, which frees the fields
-and the variable itself. This results in double free of the fields which
-are already freed in the previous function.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git linux-5.18.y-rt-rebase
+head:   03e7725ddbfb0ffd7f3d7b257bfa504c6f795f6b
+commit: 72b5c1227b73b2cde1452cfc58717cff442ed473 [17/78] serial: 8250: implement write_atomic
+config: openrisc-randconfig-r022-20220421 (https://download.01.org/0day-ci/archive/20220422/202204221359.DTcaIZnW-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/commit/?id=72b5c1227b73b2cde1452cfc58717cff442ed473
+        git remote add rt-devel https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git
+        git fetch --no-tags rt-devel linux-5.18.y-rt-rebase
+        git checkout 72b5c1227b73b2cde1452cfc58717cff442ed473
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
 
-Fix this by storing NULL to the corresponding fields when they are freed
-in init_var_ref().
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
----
- kernel/trace/trace_events_hist.c | 3 +++
- 1 file changed, 3 insertions(+)
+All errors (new ones prefixed by >>):
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index 44db5ba9cabb..a0e41906d9ce 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -2093,8 +2093,11 @@ static int init_var_ref(struct hist_field *ref_field,
- 	return err;
-  free:
- 	kfree(ref_field->system);
-+	ref_field->system = NULL;
- 	kfree(ref_field->event_name);
-+	ref_field->event_name = NULL;
- 	kfree(ref_field->name);
-+	ref_field->name = NULL;
- 
- 	goto out;
- }
+   or1k-linux-ld: kernel/printk/printk.o: in function `console_flush_on_panic':
+>> printk.c:(.text+0x1020): undefined reference to `console_emit_next_record'
+   printk.c:(.text+0x1020): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `console_emit_next_record'
+   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
