@@ -2,85 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 534EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CEF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446113AbiDVJjo (ORCPT
+        id S1446109AbiDVJnF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        Fri, 22 Apr 2022 05:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446109AbiDVJjh (ORCPT
+        with ESMTP id S1446173AbiDVJmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:39:37 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B825372D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:36:45 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Fri, 22 Apr 2022 05:42:52 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63BF2DF1;
+        Fri, 22 Apr 2022 02:39:59 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1E7251F37B;
+        Fri, 22 Apr 2022 09:39:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650620398; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=T5U0TdGZsC4N5aGCqd4f8OyKOGtZqb/61/GfLpU2w0E=;
+        b=pGqT86rX8p1N8RNPp7eaipCbSCdhjd/r7gVJrdTlzXa9Opuc7C3hl64qjmGzQ9IYjU4uPC
+        72DlJPFPFCRY3ptDM5cF3ItDYSWq/gO59pEBIn6pez2eYX+edxBBUBxUJjJv7HrAxRxECF
+        r+z3l2cB0C6NEV7oly40Nrd5J4/S460=
+Received: from suse.cz (unknown [10.163.26.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kl8SC4PFHz4xXS;
-        Fri, 22 Apr 2022 19:36:43 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1650620204;
-        bh=v8NPrOoUSmPygCfnqB/rFEsanu07lIk8aZKOXiSsbt4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=DlL98QmmptAtyh/xohLggJENxp9wwXou1VWdZAcucdyXzO1702WBukr6pGy0rQSGO
-         mT66LivgC+ke1qqnkrgu4MLvD6ci5QkR7u0DCDqkv0BxztDdwh5mKf4qXMXJ8LRrrZ
-         fjAOAhjDmLP4k4Os6y+9F4+PijETVEEPXCPD8odTa0vD6rV7D9Ab3aQDX4D+5KRK+D
-         WDvb4mcVQO+B21vv0cMiu9YzYhyj2jyaaEwHGxkD19uQEpoVdMiIxrh7Q2t9hkOR75
-         YbzRFluEjjaZUS3+vNHolMNWKZ+DW3n63ducNzg2fYuoplBI8rYvb34DLAHeMApBYz
-         +XNo4dlWY6Dag==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Frederic Barrat <fbarrat@linux.ibm.com>,
-        Hangyu Hua <hbh25y@gmail.com>, ajd@linux.ibm.com,
-        arnd@arndb.de, gregkh@linuxfoundation.org, alastair@d-silva.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] misc: ocxl: fix possible double free in
- ocxl_file_register_afu
-In-Reply-To: <f76454e3-843d-93b4-e30c-bf374d41802b@linux.ibm.com>
-References: <20220418085758.38145-1-hbh25y@gmail.com>
- <87czhbfjsj.fsf@mpe.ellerman.id.au>
- <f76454e3-843d-93b4-e30c-bf374d41802b@linux.ibm.com>
-Date:   Fri, 22 Apr 2022 19:36:43 +1000
-Message-ID: <87tual8no4.fsf@mpe.ellerman.id.au>
+        by relay2.suse.de (Postfix) with ESMTPS id 5B8032C142;
+        Fri, 22 Apr 2022 09:39:57 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 11:39:51 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marco Elver <elver@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Corey Minyard <cminyard@mvista.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: Re: [PATCH printk v4 00/15] implement threaded console printing
+Message-ID: <YmJ1fnc4trEOooZD@alley>
+References: <20220421212250.565456-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421212250.565456-1-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Frederic Barrat <fbarrat@linux.ibm.com> writes:
-> On 21/04/2022 00:54, Michael Ellerman wrote:
->> Hangyu Hua <hbh25y@gmail.com> writes:
->>> info_release() will be called in device_unregister() when info->dev's
->>> reference count is 0. So there is no need to call ocxl_afu_put() and
->>> kfree() again.
->> 
->> Double frees are often exploitable. But it looks to me like this error
->> path is not easily reachable by an attacker.
->> 
->> ocxl_file_register_afu() is only called from ocxl_probe(), and we only
->> go to err_unregister if the sysfs or cdev initialisation fails, which
->> should only happen if we hit ENOMEM, or we have a duplicate device which
->> would be a device-tree/hardware error. But maybe Fred can check more
->> closely, I don't know the driver that well.
->
-> The linux devices built here are based on what is parsed on the physical 
-> devices. Those could be FPGAs but updating the FPGA image requires root 
-> privilege. In any case, duplicate AFU names are possible, that's why the 
-> driver adds an index (the afu->config.idx part of the name) to the linux 
-> device name. So we would need to mess that up in the driver as well to 
-> have a duplicate device name.
-> So I would agree the double free is hard to hit.
+On Thu 2022-04-21 23:28:35, John Ogness wrote:
+> This is v4 of a series to implement a kthread for each registered
+> console. v3 is here [0]. The kthreads locklessly retrieve the
+> records from the printk ringbuffer and also do not cause any lock
+> contention between each other. This allows consoles to run at full
+> speed. For example, a netconsole is able to dump records much
+> faster than a serial or vt console. Also, during normal operation,
+> printk() callers are completely decoupled from console printing.
+> 
+> There are situations where kthread printing is not sufficient. For
+> example, during panic situations, where the kthreads may not get a
+> chance to schedule. In such cases, the current method of attempting
+> to print directly within the printk() caller context is used. New
+> functions printk_prefer_direct_enter() and
+> printk_prefer_direct_exit() are made available to mark areas of the
+> kernel where direct printing is preferred. (These should only be
+> areas that do not occur during normal operation.)
+> 
+> This series also introduces pr_flush(): a might_sleep() function
+> that will block until all active printing threads have caught up
+> to the latest record at the time of the pr_flush() call. This
+> function is useful, for example, to wait until pending records
+> are flushed to consoles before suspending.
+> 
+> Note that this series does *not* increase the reliability of console
+> printing. Rather it focuses on the non-interference aspect of
+> printk() by decoupling printk() callers from printing (during normal
+> operation). Nonetheless, the reliability aspect should not worsen
+> due to this series.
 
-Thanks for confirming.
+This version looks good enough for linux-next. I do not see any
+functional problem and it should work as designed. It is time to
+see how it works in various "real life" work loads.
 
-> mpe: I think this patch can be taken as is. The "beautification" I 
-> talked about is just that and I don't intend to work on it except if 
-> something else shows up.
+I am going to push it later today unless anyone (John) complains ;-)
 
-OK, will pick this up.
-
-cheers
+Best Regards,
+Petr
