@@ -2,104 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22BDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2088C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351173AbiDVJSd (ORCPT
+        id S1445869AbiDVJSj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        Fri, 22 Apr 2022 05:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445882AbiDVJNL (ORCPT
+        with ESMTP id S1445877AbiDVJNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:13:11 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A24BB847
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:19 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id s17so9510190plg.9
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:19 -0700 (PDT)
+        Fri, 22 Apr 2022 05:13:01 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F144E8D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:06 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d15so9507298pll.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G8S0f1fxh4tyjKf+IoZyuPgywpYwOEgpWk257TfqhQI=;
-        b=d4wk5OPV0Zah6tt7VlyuF11yJsiCW6MgsfsalPD7a7HYycnmRNy+tjvAvkYU7EyWo/
-         bDu5pyb6bQA6X3p99ngSNjMDWTgXp/lpLH7EWvt9tdmfoUjn4cfdEtHvrpBUkgIcWAZ8
-         HXcUY3BC0ze5Xagu/AioHT5xTu3HQPMrjGb7k6GYzUiEuQcvJlQNvJUJ1RBrVX3Rmr2V
-         8u7yzfDpOyJxwWplB2iFYmqElYyvNxqZao1xapDmF3Ry8sqKiSZ59RdIqfRqIhIP63LH
-         JX1bADYycSryyEhwT3GWRP+WWA+Cx/lhWRV2QN8eCHqBHbx9vuM7gzlObJnWpV3wA+k7
-         Kxsw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RcYU2l3Mf+ndc1CA+8jypEWEXqIahxo9T2ZjrElfFtU=;
+        b=TmQ06wH3tn6ayOI1gsUpAHFoMiXuaJjt3R3T8E3OM1PSntFIvXGcA5AUT1gkoPGXnJ
+         5WugjIFMFRj6O3uywDDvTALgCz5r9Koj1cd2XzI+jgBD6kKaga1gjztCn7Ye7+6sgQaE
+         KJkhdVs+xvn+8S4GgDTADUE+YzZ/2JIx/RQWJvZlYEOMtqC9idRPPP9Skr5iADurwQga
+         u3AvvdVQT1GKvTZiWM3DT1w6e+y5VzGAVHWFq9XjLsVX6S3GaQiOjA/7WTpekN4K6iiT
+         nQAF35GP5dJ03eieMYDeJwVJrABu7Qp3GQEQJ0AK7PViEyyX8rVzBumpLEffsZNFTHZz
+         sSPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G8S0f1fxh4tyjKf+IoZyuPgywpYwOEgpWk257TfqhQI=;
-        b=AZz5hDzgD7367EaPQFtdVT/Z8E9tgmFoIyRMuxS7Byk3sOG9+E9gXorGWo3PTi/eOR
-         xIDe1HL1TEoPXxZ5zvw45G6CrIourHspj6jf5GjHLtZdBBttlHxhFm6HZhR8kNMmgctr
-         DggwwYxCuX0eu03XajOvGauZPYOEc2KTdgOf1YqWoTunfwDRreZcDTKv99xFsmCIBXdF
-         bgLdTclPcc+X/LQvfhFbSJJpWqjUKxz4GardZQOgQhxZotARaoPD5F9Uzkdt5MUTfquF
-         yklkulGRMcbgR/KHvTUAfcU6wvaZ1XtyO4xwUHaMVTu7HNbDMq4z8HWy0OrXTvws9Bqz
-         1aZA==
-X-Gm-Message-State: AOAM531lBFqMbtYpKp1jIYKx9wdYiVubqO5rpuNtsUE89898naQ35WCR
-        oKeY2GLIAdPG/rsUbYzWppeQjA==
-X-Google-Smtp-Source: ABdhPJz+j6iCMBbmMv2F+PtTyVy2Vkfyw2jgwAOMpNg1dazx/7ebgmLR9gHVessAIIG2LBvr3jIYLw==
-X-Received: by 2002:a17:903:290:b0:15c:1c87:e66c with SMTP id j16-20020a170903029000b0015c1c87e66cmr1803213plr.61.1650618619137;
-        Fri, 22 Apr 2022 02:10:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RcYU2l3Mf+ndc1CA+8jypEWEXqIahxo9T2ZjrElfFtU=;
+        b=AjvWywCUaHuqkx7np46qbHVvgezjgSJsMBTMGuhdufEPFt/cQcd+RfnIsiuBS/VZ4W
+         aBc1i4155U9OB43qr6D0WmP2QtzxI9eNezUEMSkDM7HFLMlh+M6O/7mSMflOIZW/Y3un
+         fIixIbp7+p9ZNkgjn4ob7hWc4ylzYaucACD+SokXFkqoXtAKRtRQF8JNJvPUoa4axqm7
+         TlS5o2uam2/lZmrSZhP0/yejcLUcj/27WlvxZazOwDSYW6xeS9AMCu0wy9bRa19zAanl
+         2CsR+0qNABov3xTqmYMw7mO/eh//C9/xYXMRQtFyvLBh3XiiUEE1UjbncyHdnCvuzV17
+         j66g==
+X-Gm-Message-State: AOAM5317XquOXG4Qw8MNwTuyNj3Uh4NF3xPBizsZJM4OeW3wgJGgjEk5
+        eZNt7jdM1d7DxSKY46U83iAXyw==
+X-Google-Smtp-Source: ABdhPJz4fT1I7iNw5RlursGDiN34rX83aj7VnUw2XQvC4YA3uNTDqbWSv54HHCBmtNGXuGOLUVjm+Q==
+X-Received: by 2002:a17:903:11d1:b0:151:9fb2:9858 with SMTP id q17-20020a17090311d100b001519fb29858mr3579539plh.136.1650618606034;
+        Fri, 22 Apr 2022 02:10:06 -0700 (PDT)
 Received: from C02G87K0MD6R.bytedance.net ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id oe7-20020a17090b394700b001d8995368a9sm559239pjb.35.2022.04.22.02.10.14
+        by smtp.gmail.com with ESMTPSA id oe7-20020a17090b394700b001d8995368a9sm559239pjb.35.2022.04.22.02.10.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 02:10:18 -0700 (PDT)
+        Fri, 22 Apr 2022 02:10:05 -0700 (PDT)
 From:   Hao Jia <jiahao.os@bytedance.com>
 To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
         vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
         rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
         bristot@redhat.com
 Cc:     linux-kernel@vger.kernel.org, Hao Jia <jiahao.os@bytedance.com>
-Subject: [PATCH v2 2/2] sched/dl: Remove some comments and adjust code in push_dl_task
-Date:   Fri, 22 Apr 2022 17:09:44 +0800
-Message-Id: <20220422090944.52618-3-jiahao.os@bytedance.com>
+Subject: [PATCH v2 0/2] Avoid obvious double update_rq_clock warning
+Date:   Fri, 22 Apr 2022 17:09:42 +0800
+Message-Id: <20220422090944.52618-1-jiahao.os@bytedance.com>
 X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220422090944.52618-1-jiahao.os@bytedance.com>
-References: <20220422090944.52618-1-jiahao.os@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The change to call update_rq_clock() before activate_task()
-commit 840d719604b0 ("sched/deadline: Update rq_clock of later_rq
-when pushing a task") is no longer needed since commit f4904815f97a
-("sched/deadline: Fix double accounting of rq/running bw in push & pull")
-removed the add_running_bw() before the activate_task().
+These two patches are about the kernel scheduler:
 
-So we remove some comments that are no longer needed and update
-rq clock in activate_task().
+patch 1: fixed the issue that kernel may trigger WARN_DOUBLE_CLOCK warning.
+patch 2: removed some no longer needed comments in the deadline scheduler
+and cleaned up the code.
 
-Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
----
- kernel/sched/deadline.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+v2:
+   - Added double_rq_clock_clear_update inline helper to clear RQCF_UPDATED
+     of rq->clock_update_flags.
+   - split into two separate patches.
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index fb4255ae0b2c..8eb694ed7ac1 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -2319,13 +2319,7 @@ static int push_dl_task(struct rq *rq)
- 
- 	deactivate_task(rq, next_task, 0);
- 	set_task_cpu(next_task, later_rq->cpu);
--
--	/*
--	 * Update the later_rq clock here, because the clock is used
--	 * by the cpufreq_update_util() inside __add_running_bw().
--	 */
--	update_rq_clock(later_rq);
--	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
-+	activate_task(later_rq, next_task, 0);
- 	ret = 1;
- 
- 	resched_curr(later_rq);
+[1] https://lore.kernel.org/lkml/20220418090929.54005-1-jiahao.os@bytedance.com/
+
+Hao Jia (2):
+  sched/core: Avoid obvious double update_rq_clock warning
+  sched/dl: Remove some comments and adjust code in push_dl_task
+
+ kernel/sched/core.c     |  6 +++---
+ kernel/sched/deadline.c |  8 +-------
+ kernel/sched/rt.c       |  5 +++--
+ kernel/sched/sched.h    | 31 +++++++++++++++++++++++++++----
+ 4 files changed, 34 insertions(+), 16 deletions(-)
+
 -- 
 2.32.0
 
