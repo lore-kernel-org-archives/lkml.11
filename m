@@ -2,110 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 672F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D926C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443264AbiDVCNe (ORCPT
+        id S1443281AbiDVCOE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 22:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        Thu, 21 Apr 2022 22:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiDVCNb (ORCPT
+        with ESMTP id S1443267AbiDVCOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 22:13:31 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716C3E9B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:10:39 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 22 Apr
- 2022 10:10:39 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 22 Apr
- 2022 10:10:37 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] staging: rtl8192u: Fix signedness bug in ieee80211_check_auth_response()
-Date:   Fri, 22 Apr 2022 10:10:35 +0800
-Message-ID: <1650593435-9017-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 21 Apr 2022 22:14:01 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7AD3881;
+        Thu, 21 Apr 2022 19:11:07 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id g21so7249272iom.13;
+        Thu, 21 Apr 2022 19:11:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=THB/rCWOGRRIRIhECHZDglj7Vx+NGfgUwYSBViBKwtg=;
+        b=R6gjrq2icFejVNYcXyZKoqk7o7RMq25KWkGjFrJq0n6BTM4CiJY3gI4kLHwlYAOgpN
+         zUuARqL8YHsBS5R5oIc1lcT2G8F5IbyMMxj+z9iiwLXG6azdXEyb8PhrCtgXrTcWVcB6
+         exmEstTVrD1M3G600lKq4nt86MrSO+eo5UMi7xN37AezJoqLG9mxwF+Thbcr3xfgV0h+
+         KdGn7vq3LKLgsuY4Pji6OmOyjs1big7nju4AoYGSb4/lYArlzGEYAf12wSe24nmzO6P7
+         fS1SnxUusDfpPdXMBU9rnadro8eOB8NLd+dzYCKB3/SjW9+d8fJUHunIVjfuQgygQxAA
+         AIQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=THB/rCWOGRRIRIhECHZDglj7Vx+NGfgUwYSBViBKwtg=;
+        b=U+JjPIsXiK857R55RX+WCUgjls5oiXv3VQ1CwF2ZO0tubCNQWoMiPR+Ht4kTOcrJsa
+         lTyGz0E3JtYs/VBRgmKiUEhYfhqt0KtZX+rq2n3/Wg/5gGM1SFB4Zsg24Skr5QaHDzR0
+         0oJktE8Z8islNIi+Wo8QAiHL0XRWiG1IeNOB4kUZB2wAcvh38qQ3QQLvE+/SelD64qTz
+         3M7By1MVnbLAe1OWRx5erWeYPNksEu7tGkdxslMJhKjyt9PTb7tUJ7cf8N3tjkbTNnmJ
+         ku8joUVR4FaZ/ZmIhOrLXnsgVE7ZliW93106efTzkedbL6gxy2Dl/aXdmm8is2gZKkT6
+         vbVg==
+X-Gm-Message-State: AOAM5311gD8rBH66BUQ3kO7FXXEC8c/AVpsmAACRhTjDU7jluOYuKnYu
+        7QDI+b3zB9U8QMhbWhRm4mho78/cpdKybwAq9SsQGwdmCuV9A1L6
+X-Google-Smtp-Source: ABdhPJxep6RnbtTNtFPOqoRJAv+wWszzQRdMVGiABj0/cPlaniM4Blm9tZQMnu54F1vQAOLMau/jKbEU4cZfT05x3r8=
+X-Received: by 2002:a05:6602:2f12:b0:654:b304:b016 with SMTP id
+ q18-20020a0566022f1200b00654b304b016mr1079035iow.60.1650593466714; Thu, 21
+ Apr 2022 19:11:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-123.meizu.com (172.16.1.123) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+References: <20220412122524.26966-1-surong.pang@gmail.com> <610871b2-1707-dfba-868f-4ddecc4d554d@linux.intel.com>
+In-Reply-To: <610871b2-1707-dfba-868f-4ddecc4d554d@linux.intel.com>
+From:   surong pang <surong.pang@gmail.com>
+Date:   Fri, 22 Apr 2022 10:10:55 +0800
+Message-ID: <CAEDbmAT=fZ-kpn13sW4KjB9RuFb_6T4j_eripR54NZ3UciZfqA@mail.gmail.com>
+Subject: Re: [PATCH V1 1/1] usb/host: Let usb phy shutdown later
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc:     mathias.nyman@intel.com, Greg KH <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Orson.Zhai@unisoc.com, yunguo.wu@unisoc.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ieee80211_check_auth_response() function has a signedness bug because
-it's a declared as a u16 but it return -ENOMEM.  When you look at it more
-closely it returns a mix of error codes including 0xcafe, -ENOMEM, and
-a->status which is WLAN_STATUS_NOT_SUPPORTED_AUTH_ALG.  This is a mess.
+shared_hcd might be freed already here, but hcd should not be freed
+here, because "usb_put_hcd(hcd)" is called later.
 
-Clean it up to just return standard kernel error codes.  We can print
-out the a->status before returning a regular error code.  The printks
-in the caller need to be adjusted as well.
-
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 4e8fbd2410a1..dfe57748a70e 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -1461,13 +1461,13 @@ void ieee80211_softmac_check_all_nets(struct ieee80211_device *ieee)
- 	spin_unlock_irqrestore(&ieee->lock, flags);
- }
- 
--static inline u16 auth_parse(struct sk_buff *skb, u8 **challenge, int *chlen)
-+static inline int auth_parse(struct sk_buff *skb, u8 **challenge, int *chlen)
- {
- 	struct ieee80211_authentication *a;
- 	u8 *t;
- 	if (skb->len < (sizeof(struct ieee80211_authentication) - sizeof(struct ieee80211_info_element))) {
- 		IEEE80211_DEBUG_MGMT("invalid len in auth resp: %d\n", skb->len);
--		return 0xcafe;
-+		return -EINVAL;
- 	}
- 	*challenge = NULL;
- 	a = (struct ieee80211_authentication *)skb->data;
-@@ -1482,7 +1482,12 @@ static inline u16 auth_parse(struct sk_buff *skb, u8 **challenge, int *chlen)
- 		}
- 	}
- 
--	return le16_to_cpu(a->status);
-+	if (a->status) {
-+		IEEE80211_DEBUG_MGMT("auth_parse() failed\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
- }
- 
- static int auth_rq_parse(struct sk_buff *skb, u8 *dest)
-@@ -1829,7 +1834,7 @@ static void ieee80211_check_auth_response(struct ieee80211_device *ieee,
- {
- 	/* default support N mode, disable halfNmode */
- 	bool bSupportNmode = true, bHalfSupportNmode = false;
--	u16 errcode;
-+	int errcode;
- 	u8 *challenge;
- 	int chlen = 0;
- 	u32 iotAction;
-@@ -1878,7 +1883,7 @@ static void ieee80211_check_auth_response(struct ieee80211_device *ieee,
- 		}
- 	} else {
- 		ieee->softmac_stats.rx_auth_rs_err++;
--		IEEE80211_DEBUG_MGMT("Auth response status code 0x%x", errcode);
-+		IEEE80211_DEBUG_MGMT("Auth response status code %d\n", errcode);
- 		ieee80211_associate_abort(ieee);
- 	}
- }
--- 
-2.7.4
-
+Mathias Nyman <mathias.nyman@linux.intel.com> =E4=BA=8E2022=E5=B9=B44=E6=9C=
+=8819=E6=97=A5=E5=91=A8=E4=BA=8C 22:43=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On 12.4.2022 15.25, Surong Pang wrote:
+> > From: Surong Pang <surong.pang@unisoc.com>
+> >
+> > Let usb phy shutdown later in xhci_plat_remove function.
+> > Some phy driver doesn't divide 3.0/2.0 very clear.
+> > If calls usb_phy_shutdown earlier than usb_remove_hcd(hcd),
+> > It will case 10s cmd timeout issue.
+> >
+> > Call usb phy shutdown later has better compatibility.
+> >
+> > Signed-off-by: Surong Pang <surong.pang@unisoc.com>
+> > ---
+> >  drivers/usb/host/xhci-plat.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.=
+c
+> > index 649ffd861b44..dc73a81cbe9b 100644
+> > --- a/drivers/usb/host/xhci-plat.c
+> > +++ b/drivers/usb/host/xhci-plat.c
+> > @@ -390,7 +390,6 @@ static int xhci_plat_remove(struct platform_device =
+*dev)
+> >
+> >       usb_remove_hcd(shared_hcd);
+> >       xhci->shared_hcd =3D NULL;
+> > -     usb_phy_shutdown(hcd->usb_phy);
+> >
+> >       usb_remove_hcd(hcd);
+> >       usb_put_hcd(shared_hcd);
+> > @@ -398,6 +397,7 @@ static int xhci_plat_remove(struct platform_device =
+*dev)
+> >       clk_disable_unprepare(clk);
+> >       clk_disable_unprepare(reg_clk);
+> >       usb_put_hcd(hcd);
+> > +     usb_phy_shutdown(hcd->usb_phy);
+>
+> hcd might be freed already here.
+> maybe call usb_phy_shutdown(hcd->usb_phy) before usb_put_hcd(hcd)
+>
+> -Mathias
+>
+>
