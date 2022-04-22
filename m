@@ -2,114 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3770FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:29:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446025AbiDVJbE (ORCPT
+        id S1446021AbiDVJbu convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47772 "EHLO
+        Fri, 22 Apr 2022 05:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446006AbiDVJbC (ORCPT
+        with ESMTP id S230167AbiDVJbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:31:02 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1753150E12
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:28:10 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-e604f712ecso8028483fac.9
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:28:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZWymUxmdfVUMI3yqwCTohfwWtEzgJE9q82Iv6yHI3Dk=;
-        b=Z3KEFqZXjDhSzFP2dp4vJLbJ5J2B3/2UH0LjLlnohDzSOlbVypNZRuHoEuyBuo7Ric
-         NkMQ08JtuwJTSuz9ZnXXmNJouR1ktStfKbPYJ8uZbUGq/+yqUmOGZTE67nooEYVP/1CX
-         HamdqjWG1rMzZ5nADL1zd+D2Bx1JIVrg4v2dIitChi7vmMCmOOdkIj6pWeq9BYd8EPsO
-         KiX3tohQB/H4Y+Jg5qNMLHvcDfWKKiF3AtFCu7ljJth1zVr7XTCtNDpWEOBhbYVZKAX+
-         54GwH30dosTpccZ196Xeay9xEHhcY0sExVbcqC1d8Ftx8LUbk6ADNKQpVUYEplsTbdxd
-         O0SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZWymUxmdfVUMI3yqwCTohfwWtEzgJE9q82Iv6yHI3Dk=;
-        b=X+SXmKjCJESHPbmno5DxmMkYqCVtsh0b4TNV34LUIRh7wyouhzD5cRbCEovsEf3XLE
-         hIDErG0jVvUB69BXVjBvdvl6JWQRmr15jX+JWgf4DI6u60MecZJ3cOqR+agPKZUVoEsY
-         pZPPzB8a8PnGOfYj2KFP/nr0sOXch6lV/fJsq/vMrKEW8o0w7v/65mEPyytnOmSazisY
-         DZuUCsRnxAznCEgUT5A9dx+Lc1oEt+CzfjI+1shxxTipumSyxRJMYDVf+EDTAgvgMm8/
-         GDCbLAW2tKJSq5eYw9UFd9SdklM1c6QbxcHKxaVVpVw2nu9D2HcJs6fshFWxeoxLuhG5
-         VhQw==
-X-Gm-Message-State: AOAM533B8dLnKPPo2yyL8SB73VidrE0LszPqsoeQr4kHVaVQDd+yS5bg
-        RMKZJncja209gKvpdJmmU64qqd+3EQwZFdqzvJ0+5xZqWkdVEzPd
-X-Google-Smtp-Source: ABdhPJwQwv95Tim4BghgBPfhGc4r5xx/cqfC4D+i/BuvPAg6M6EG8WslgQVigxw6+anCXXJUop6RCgfHjaT/KciEHjo=
-X-Received: by 2002:a05:6870:468b:b0:e6:7f11:523f with SMTP id
- a11-20020a056870468b00b000e67f11523fmr1478203oap.163.1650619689161; Fri, 22
- Apr 2022 02:28:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220414025925.2423818-1-qiang1.zhang@intel.com> <20220421150746.627e0f62363485d65c857010@linux-foundation.org>
-In-Reply-To: <20220421150746.627e0f62363485d65c857010@linux-foundation.org>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 22 Apr 2022 11:27:58 +0200
-Message-ID: <CACT4Y+b6+MpuWGPhKZx19tLtP0WHsgiuV7XPKqj+yMBs2Tnd0w@mail.gmail.com>
-Subject: Re: [PATCH] kasan: Prevent cpu_quarantine corruption when CPU offline
- and cache shrink occur at same time
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Zqiang <qiang1.zhang@intel.com>, ryabinin.a.a@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 22 Apr 2022 05:31:47 -0400
+X-Greylist: delayed 518 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 02:28:54 PDT
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7292A506D3;
+        Fri, 22 Apr 2022 02:28:54 -0700 (PDT)
+Received: from smtpclient.apple (p4fefc32f.dip0.t-ipconnect.de [79.239.195.47])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 25550CECD5;
+        Fri, 22 Apr 2022 11:20:15 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [RFC PATCH] Bluetooth: core: Allow bind HCI socket user channel
+ when HCI is UP.
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220412120945.28862-1-vasyl.vavrychuk@opensynergy.com>
+Date:   Fri, 22 Apr 2022 11:20:14 +0200
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <9EA1D51C-D316-49CF-A7F8-765C58C18880@holtmann.org>
+References: <20220412120945.28862-1-vasyl.vavrychuk@opensynergy.com>
+To:     Vasyl Vavrychuk <vvavrychuk@gmail.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 at 00:07, Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 14 Apr 2022 10:59:25 +0800 Zqiang <qiang1.zhang@intel.com> wrote:
->
-> > The kasan_quarantine_remove_cache() is called in kmem_cache_shrink()/
-> > destroy(), the kasan_quarantine_remove_cache() call is protected by
-> > cpuslock in kmem_cache_destroy(), can ensure serialization with
-> > kasan_cpu_offline(). however the kasan_quarantine_remove_cache() call
-> > is not protected by cpuslock in kmem_cache_shrink(), when CPU going
-> > offline and cache shrink occur at same time, the cpu_quarantine may be
-> > corrupted by interrupt(per_cpu_remove_cache operation). so add
-> > cpu_quarantine offline flags check in per_cpu_remove_cache().
-> >
-> > ...
-> >
->
-> Could we please have some reviewer input here?
+Hi Vasyl,
 
-This is very tricky, I think can follow this:
+> This is needed for user-space to ensure that HCI init scheduled from
+> hci_register_dev is completed.
+> 
+> Function hci_register_dev queues power_on workqueue which will run
+> hci_power_on > hci_dev_do_open. Function hci_dev_do_open sets HCI_INIT
+> for some time.
+> 
+> It is not allowed to bind to HCI socket user channel when HCI_INIT is
+> set. As result, bind might fail when user-space program is run early
+> enough during boot.
+> 
+> Now, user-space program can first issue HCIDEVUP ioctl to ensure HCI
+> init scheduled at hci_register_dev was completed.
+> 
+> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+> ---
+> net/bluetooth/hci_sock.c | 4 +---
+> 1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index 33b3c0ffc339..c98de809f856 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -1194,9 +1194,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
+> 
+> 		if (test_bit(HCI_INIT, &hdev->flags) ||
+> 		    hci_dev_test_flag(hdev, HCI_SETUP) ||
+> -		    hci_dev_test_flag(hdev, HCI_CONFIG) ||
+> -		    (!hci_dev_test_flag(hdev, HCI_AUTO_OFF) &&
+> -		     test_bit(HCI_UP, &hdev->flags))) {
+> +		    hci_dev_test_flag(hdev, HCI_CONFIG)) {
+> 			err = -EBUSY;
+> 			hci_dev_put(hdev);
+> 			goto done;
 
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+I am not following the reasoning here. It is true that the device has to run init before you can do something with it. From mgmt interface your device will only be announced when it is really ready.
 
-If q->offline is set, then kasan_cpu_offline() will or has already
-removed everything from cpu_quarantine and freed, so we can return
-early in per_cpu_remove_cache().
-If kasan_cpu_offline() hasn't yet removed everything from
-cpu_quarantine already, it's actually problematic for the
-kmem_cache_destroy() case. But since both kmem_cache_destroy() and
-kasan_cpu_offline() are serialized by cpus lock, this case must not
-happen.
+Regards
 
+Marcel
 
-
-
-> > --- a/mm/kasan/quarantine.c
-> > +++ b/mm/kasan/quarantine.c
-> > @@ -330,6 +330,8 @@ static void per_cpu_remove_cache(void *arg)
-> >       struct cpu_shrink_qlist *sq;
-> >  #endif
-> >       q = this_cpu_ptr(&cpu_quarantine);
-> > +     if (READ_ONCE(q->offline))
-> > +             return;
-> >  #ifndef CONFIG_PREEMPT_RT
-> >       qlist_move_cache(q, &to_free, cache);
-> >       qlist_free_all(&to_free, cache);
->
-> It might be helpful to have a little comment which explains why we're
-> doing this?
