@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C3C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230365AbiDVV5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S230447AbiDVV5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbiDVV4e (ORCPT
+        with ESMTP id S230353AbiDVV4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:56:34 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03FE401D14;
-        Fri, 22 Apr 2022 13:39:03 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e5c42b6e31so9790164fac.12;
-        Fri, 22 Apr 2022 13:39:03 -0700 (PDT)
+        Fri, 22 Apr 2022 17:56:39 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2215402AC5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:39:19 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id i186so8519698vsc.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:39:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=636ibPgFBEDCNtk4r1DwpQyk0v+PRhTEdZcUsDYNVIg=;
+        b=sRjkhgqjYM8j6vS5P/KtvB1pENWCXp5ERJZm0ptJnuSLh35evlHXLcp2tHFtyPbkvu
+         n42ZGBRzHqTVCF5h7nOsRSQivHEYu24Z8bpDJKu+5Bf4qHpwObEh04fsXTy0PqZbTfgb
+         D0zytecyNVQct/JUcnFrDFSutilFOVSJi5M8dUnBg+BjTld6UmgYRArYp5eetd5S2F0/
+         ejSrW5DBpXXB1Mh9tTVHom21F71XPL0YzXUjYQr7S6fzNVwyrDsv8ekiQ0LSSkKgy9k8
+         Hg7SW5Gtoai9vlWGQq8mkD2bm7ey6gs9+pCLLA9Kt8/Wqo6Q684Oni8eBvVXwDz63grl
+         DWHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wPXMqD3X8aZc1gXMrMxqebs6D6zYaQ0urWjSJ8Up88c=;
-        b=qYi2dglOI9JU6DKtqKwm8rnW/RPJU58JUdlbXsUG2eFmK05OdVLtXpwia9p1UqOruP
-         GBcRVh7s/5yxYWvJAWTnA2/PP/Xcrj7Wmied6U9xtVDV/eCB14HrISEW+0+PHbuEfaPb
-         vHcM/U8nEag6MxT8dU0U/JFNLJ8ElSF9m6OQk+O1rwrBXzqCmh7wmNKGRNJ8Nr5prZlK
-         QX6N1sv1ySn3TOU/KmKx4M48yZIU5pcncAVz21c3+k9NaD/j9Uak1OvTqmqceSaedH71
-         OfQryHzogpMyhXHayX90IXr6bDVJ0jk3sGm1b3S/52btXXuFaq+HQis8u8wgXUdAukxP
-         kqQw==
-X-Gm-Message-State: AOAM5334Q4kgmeUzKnEGNuQ/n03Fxd7IMWqhXwPgRZNszm/40tAHZWie
-        Fx1qpwhC8EWkKEsGw1qnHhzSaujn7Q==
-X-Google-Smtp-Source: ABdhPJyNlHUyl9wvKM6UUmFm66SCvceXo/fIVBC+AhuhJuRSCFLQ8tRNV5S1nH0SHinOhCxabmzQ/g==
-X-Received: by 2002:a05:6870:4149:b0:e6:8519:94f5 with SMTP id r9-20020a056870414900b000e6851994f5mr2684281oad.48.1650655235173;
-        Fri, 22 Apr 2022 12:20:35 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id h21-20020a056808015500b00323c43663e2sm1047276oie.32.2022.04.22.12.20.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:20:34 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-rtc@vger.kernel.org
-Subject: [PATCH] dt-bindings: Drop empty and unreferenced binding .txt files
-Date:   Fri, 22 Apr 2022 14:19:57 -0500
-Message-Id: <20220422191958.2589318-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=636ibPgFBEDCNtk4r1DwpQyk0v+PRhTEdZcUsDYNVIg=;
+        b=JRmQhwf/dofwLqtpz+znsptkPBDOdymJfnNpRveS9QCudv2ahqEaSLeZ+fNQB8m6zP
+         xCSFchSnu9bzfFsjFB2YKwqKpO4Xbl+UcYTbb6J/7K9/Bu/x87X/Ls5cZ3WS4PFUgxC7
+         lXU1NZv5iVsW1iaZVf5yMMahvRLkP5jtsQiHChqEfw8t95KNK7j9vEM05ODPjYekTU85
+         L22OHy+xYwe0haig94WvQ31K9FFQH6M3eV7W4kJLQED3fncGIh9IaKtluR+f8nPQtbsF
+         HMhY4NiGWRVjeNtQh//uwyvoIPzwiGkfwSyPO6eWZXJfMlDqixfMxIEhwPIugSH98lzT
+         gTpw==
+X-Gm-Message-State: AOAM533ViekwLni2Uf/0bBa1iPYpy/1pZN8ueE2O4Anf8Nbk/18uY0hD
+        +lbDX2xwHsMLRlcqaI9KLu/G42Qd3FFLFP91SGpegQ==
+X-Google-Smtp-Source: ABdhPJwbPGbnoKceZbheoWAfNjsWNKYJ91xGxsuWJOybpvBayAMeD9nFHp9ALQapbpy/NtsnN8F2ogXlrYWPuRlqWkA=
+X-Received: by 2002:a05:6102:3106:b0:32a:18c8:1633 with SMTP id
+ e6-20020a056102310600b0032a18c81633mr2082151vsh.51.1650659958845; Fri, 22 Apr
+ 2022 13:39:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220422195516.10769-1-jvgediya@linux.ibm.com> <20220422195516.10769-6-jvgediya@linux.ibm.com>
+In-Reply-To: <20220422195516.10769-6-jvgediya@linux.ibm.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Fri, 22 Apr 2022 13:39:07 -0700
+Message-ID: <CAAPL-u9yxX=DyYHeS-DS=S47JfW9CQmKmdRLYFOv49C-XSwgCw@mail.gmail.com>
+Subject: Re: [PATCH v3 5/7] mm: demotion: Build demotion list based on N_DEMOTION_TARGETS
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
+        dave.hansen@linux.intel.com, ying.huang@intel.com,
+        aneesh.kumar@linux.ibm.com, shy828301@gmail.com,
+        gthelen@google.com, dan.j.williams@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop a couple of old, empty .txt binding files which are no longer
-referenced.
+On Fri, Apr 22, 2022 at 12:55 PM Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
+>
+> Only nodes which has state N_DEMOTION_TARGETS should be
+> used as demotion targets, make nodes which are not in demotion
+> targets as source nodes while building demotion target list
+> so that demotion targets are only chosen from N_DEMOTION_TARGETS.
+>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> ---
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/eeprom/at24.txt | 1 -
- Documentation/devicetree/bindings/mtd/common.txt  | 1 -
- Documentation/devicetree/bindings/rtc/rtc.txt     | 1 -
- 3 files changed, 3 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/eeprom/at24.txt
- delete mode 100644 Documentation/devicetree/bindings/mtd/common.txt
- delete mode 100644 Documentation/devicetree/bindings/rtc/rtc.txt
+Acked-by: Wei Xu <weixugc@google.com>
 
-diff --git a/Documentation/devicetree/bindings/eeprom/at24.txt b/Documentation/devicetree/bindings/eeprom/at24.txt
-deleted file mode 100644
-index c94acbb8cb0c..000000000000
---- a/Documentation/devicetree/bindings/eeprom/at24.txt
-+++ /dev/null
-@@ -1 +0,0 @@
--This file has been moved to at24.yaml.
-diff --git a/Documentation/devicetree/bindings/mtd/common.txt b/Documentation/devicetree/bindings/mtd/common.txt
-deleted file mode 100644
-index ae16f9ea8606..000000000000
---- a/Documentation/devicetree/bindings/mtd/common.txt
-+++ /dev/null
-@@ -1 +0,0 @@
--This file has been moved to mtd.yaml.
-diff --git a/Documentation/devicetree/bindings/rtc/rtc.txt b/Documentation/devicetree/bindings/rtc/rtc.txt
-deleted file mode 100644
-index b8d36fce5e2d..000000000000
---- a/Documentation/devicetree/bindings/rtc/rtc.txt
-+++ /dev/null
-@@ -1 +0,0 @@
--This file has been moved to rtc.yaml.
--- 
-2.32.0
-
+>  mm/migrate.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 8bbe1e478122..5b92a09fbe4a 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -2366,10 +2366,10 @@ static void __set_migration_target_nodes(void)
+>         disable_all_migrate_targets();
+>
+>         /*
+> -        * Allocations go close to CPUs, first.  Assume that
+> -        * the migration path starts at the nodes with CPUs.
+> +        * Some systems can have DRAM(fast memory) only NUMA nodes, demotion targets
+> +        * need to be found for them as well.
+>          */
+> -       next_pass = node_states[N_CPU];
+> +       nodes_andnot(next_pass, node_states[N_ONLINE], node_states[N_DEMOTION_TARGETS]);
+>  again:
+>         this_pass = next_pass;
+>         next_pass = NODE_MASK_NONE;
+> --
+> 2.35.1
+>
