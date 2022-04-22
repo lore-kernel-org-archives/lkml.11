@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86320C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F50DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233175AbiDVWde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S233188AbiDVWds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233681AbiDVWcs (ORCPT
+        with ESMTP id S233695AbiDVWct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:32:48 -0400
+        Fri, 22 Apr 2022 18:32:49 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF59C2BEE86
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:26:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC2E2BEE9A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:26:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650662771; x=1682198771;
+  t=1650662773; x=1682198773;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QfNomZr+Hbt7a22Y7Ges48xOi81Xmv+RlfRmG33O10M=;
-  b=FmnsBBFqvRVC6hl51VgC+SMfrdtx6NEtvWfRXuFYFFZBlXJqs27pBEqS
-   I80566DgXz7NMbbApOttA1Ax4og5nGWHFEmiQclYhR0AoZFDxSc0T7h5c
-   Qz1WV8GZRFYTJgEqpSR9Y05hHoksm+37G5XhB3DbzaI3QgBsApkz/c6lZ
-   f9rR82gB1XzVc1J/cwL+u1hbFsWeo5VFCM7p6iVl9SO0wM10CMAsoVM1N
-   IH9PTAknVglnzb24GYCXEQYIRaOsEkUEYITeEF9wF4uSVpBqDJyRMKf+y
-   I4QljEFstpy3/ddEX/sbaVMpG44a9+tHDv86wm2y3zUzdgK1X48ePtp6d
+  bh=g/8RIq5dusFdd2HAimjDiE+zY4XmdT2FX0gwNr9C7Gw=;
+  b=a1/F3oOunI5YxI+a9qOGq47vP91UYhWjcZwY5JcGlypWFQGfK4sttfoq
+   ctmhomAlp2mLUQPsmhLcAH+m9asyt9G2Wz08IAgT9vYUJxnfuxNkkt4Ux
+   urlsD7lti5io3w3mNe7JCmNkNy0zSAi7KVzuYLY2lckB3hA1wkZltUzUZ
+   v1ncFhEfpznWhaxUNsIdGjww2s0KABx7unmigtY/bO3F5EZn65g6gWaio
+   svNa1Og0HqPX0kDPd7jAwg6GUGuLSSWNO327yQ7fz64Ho7c3+H8TelPB7
+   rU+jiTjRPtm46X9zdmA1ISnTpfiFK8o3I6kU+WFR+CwtL7vNYUbeiPqDl
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245341890"
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245350852"
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="245341890"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 12:48:10 -0700
+   d="scan'208";a="245350852"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:29:13 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="648759700"
+   d="scan'208";a="659194904"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 12:48:09 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 22 Apr 2022 13:29:12 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhzGB-000AX4-Ru;
-        Fri, 22 Apr 2022 19:48:07 +0000
-Date:   Sat, 23 Apr 2022 03:47:13 +0800
+        id 1nhztv-000AZ0-OK;
+        Fri, 22 Apr 2022 20:29:11 +0000
+Date:   Sat, 23 Apr 2022 04:28:30 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Matteo Croce <mcroce@microsoft.com>
+To:     Peter Collingbourne <pcc@google.com>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive 4/54] mm/kasan/shadow.c:42:7: warning: no previous
- prototype for 'memset'
-Message-ID: <202204230354.4aerM2gz-lkp@intel.com>
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: arch/arm64/kernel/mte.c:197:13: warning: no previous prototype for
+ 'kasan_hw_tags_enable'
+Message-ID: <202204230413.sU3MkE2d-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,53 +57,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   68fe13e37af4c8331cdd40841353c9725cb65925
-commit: 20157c7f08403f9a7cbaef427717ce571387416c [4/54] riscv: optimized memset
-config: riscv-randconfig-c003-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230354.4aerM2gz-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
+Hi Peter,
+
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d569e86915b7f2f9795588591c8d5ea0b66481cb
+commit: e5af50a5df571c1d0268b02f924de49b742c990f arm64: kasan: mte: move GCR_EL1 switch to task switch when KASAN disabled
+date:   7 months ago
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220423/202204230413.sU3MkE2d-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/20157c7f08403f9a7cbaef427717ce571387416c
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 20157c7f08403f9a7cbaef427717ce571387416c
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e5af50a5df571c1d0268b02f924de49b742c990f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e5af50a5df571c1d0268b02f924de49b742c990f
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/ arch/arm64/kvm/ drivers/edac/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> mm/kasan/shadow.c:42:7: warning: no previous prototype for 'memset' [-Wmissing-prototypes]
-      42 | void *memset(void *addr, int c, size_t len)
-         |       ^~~~~~
-   mm/kasan/shadow.c:63:7: warning: no previous prototype for 'memcpy' [-Wmissing-prototypes]
-      63 | void *memcpy(void *dest, const void *src, size_t len)
-         |       ^~~~~~
+>> arch/arm64/kernel/mte.c:197:13: warning: no previous prototype for 'kasan_hw_tags_enable' [-Wmissing-prototypes]
+     197 | void __init kasan_hw_tags_enable(struct alt_instr *alt, __le32 *origptr,
+         |             ^~~~~~~~~~~~~~~~~~~~
 
 
-vim +/memset +42 mm/kasan/shadow.c
+vim +/kasan_hw_tags_enable +197 arch/arm64/kernel/mte.c
 
-bb359dbcb70085 Andrey Konovalov 2020-12-22  40  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  41  #undef memset
-bb359dbcb70085 Andrey Konovalov 2020-12-22 @42  void *memset(void *addr, int c, size_t len)
-bb359dbcb70085 Andrey Konovalov 2020-12-22  43  {
-f00748bfa0246c Andrey Konovalov 2021-02-24  44  	if (!kasan_check_range((unsigned long)addr, len, true, _RET_IP_))
-bb359dbcb70085 Andrey Konovalov 2020-12-22  45  		return NULL;
-bb359dbcb70085 Andrey Konovalov 2020-12-22  46  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  47  	return __memset(addr, c, len);
-bb359dbcb70085 Andrey Konovalov 2020-12-22  48  }
-bb359dbcb70085 Andrey Konovalov 2020-12-22  49  
-
-:::::: The code at line 42 was first introduced by commit
-:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
-
-:::::: TO: Andrey Konovalov <andreyknvl@google.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+   196	
+ > 197	void __init kasan_hw_tags_enable(struct alt_instr *alt, __le32 *origptr,
+   198					 __le32 *updptr, int nr_inst)
+   199	{
+   200		BUG_ON(nr_inst != 1); /* Branch -> NOP */
+   201	
+   202		if (kasan_hw_tags_enabled())
+   203			*updptr = cpu_to_le32(aarch64_insn_gen_nop());
+   204	}
+   205	
 
 -- 
 0-DAY CI Kernel Test Service
