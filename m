@@ -2,112 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78362C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbiDVR17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 13:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
+        id S231607AbiDVR2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 13:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230336AbiDVR1x (ORCPT
+        with ESMTP id S231392AbiDVR2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:27:53 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5941D3736;
-        Fri, 22 Apr 2022 10:24:51 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id e2so5741079wrh.7;
-        Fri, 22 Apr 2022 10:24:51 -0700 (PDT)
+        Fri, 22 Apr 2022 13:28:25 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EFBD3728
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:25:25 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ks6so17735942ejb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:25:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xC6xYScRzKyY7Ku7pzr1NBkMX7NLxc7XsF8pApyXIHo=;
-        b=Q/218R6ozACViKCGt+eAOz9Nu+opl7iFUgLKn4+wewBSXlOtlcoIN3LwFbOmga/pt1
-         AluPoFH5YPAm9a/mkHBL/dtTYz4Yc5372KomAUsiTaKf9o8dtoE6/nEPKBrhl31QomuP
-         OHYO9Wq2i+DotLTvdgXsPLC+mcI7Zesjd9SGTqzJbK2570Td7a7r+QQf5efolrdM5/4D
-         tuS0dapolc2LPxUAEgCWKhB/ePXF6R0EW7tw3Mwkl2GH+CZsldOQLU3fGDKyl7tn9tWk
-         fVDevpCAg7G0N8glWr3gVD00PComT+I5oVdSR7YiPPdwsF2uWwm9vGMrTlAyaWN5TT0k
-         3NEA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xyTu4b7ZMRhX6whN7X8zUFA8mpZ14UJCNVpEn8M9ARg=;
+        b=NIa/76KBpbPcghoDEkTYGEHbQsh/DvJWClpr17LX22LfUCDZlA8v44kBeEFyZHxhX9
+         dGj9bcrXhnLJcjpa+sp0fCzGeiIsd1LcqXrgUryZ4GH9Ti06OoWYQRoFgPVXYpfL3ooe
+         s66wJHVJ52frfDlYQLnrn63t4ijca1CnnUSagHs4Knl1WTBwye44ShV5svAu8Su/v5I+
+         ODg58bbXoXdN12+yLukNzr33J+hvPWkrjqj1G9EpS0U0VRl6WdxsnagiIZzXQkZ2egSm
+         RfJaPMmssnoS3R0VoGZqg3SJ/YWBy6ttx9uicI2bDwGRr7zZWCwWIcMJk3H78ck72pMZ
+         qXaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xC6xYScRzKyY7Ku7pzr1NBkMX7NLxc7XsF8pApyXIHo=;
-        b=mbmuhB43VzrR1j2QIzeh5iqG1wMr9QrEw6c2ydxVQXjeSmQxWwOgihPQXfjk24qXVw
-         6NKX1NbFMtzXr5wyATsfcAqzgz0im5qcz8yRCgnpupywY6/jYr/dnEzx7U8IO9D83rpY
-         bSOQ0ozxNnZX1J3jUGH0yurvP8olAjA1mCJRO3jOm6s4KkVcCa7egv6EgfqHtzfJuJey
-         anTHjZzIkpTTU62KQgsBWfa7Sl82L506UKgotJJ/6u+vcwzPEPe/FJKdf5tqTZrRvzJj
-         zlzWi3v0MBeNuGOQy6hw7fciZyaugbQhJMLKsnZ7OYTfoNjrWfnGmuy44KGb9PalAwsl
-         RpfQ==
-X-Gm-Message-State: AOAM5301GrEUybiOU80k3VFc1Q7QvsHxpone5fyD0UoclBYFksDfOEPq
-        xpDuXyFB7drnZhWTaQl7rjg=
-X-Google-Smtp-Source: ABdhPJxk/X2jJZ6pOgPFkXfKeLM7Dg+F1l4m6NjKP1MkbsgCOJcSawdzNQyN8OCtg0xRhwFrMYSAuQ==
-X-Received: by 2002:adf:bd91:0:b0:209:19ac:7159 with SMTP id l17-20020adfbd91000000b0020919ac7159mr4440144wrh.3.1650648209602;
-        Fri, 22 Apr 2022 10:23:29 -0700 (PDT)
-Received: from orome ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id m1-20020a1ca301000000b003929c4bf250sm5048975wme.13.2022.04.22.10.23.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 10:23:28 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 19:23:26 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Hammer Hsieh <hammerh0314@gmail.com>
-Cc:     u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        robh+dt@kernel.org, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wells.lu@sunplus.com, hammer.hsieh@sunplus.com
-Subject: Re: [PATCH v4 0/2] Add PWM driver for Suplus SP7021 SoC
-Message-ID: <YmLkjriZCm+juYEP@orome>
-References: <1647945781-10191-1-git-send-email-hammerh0314@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xyTu4b7ZMRhX6whN7X8zUFA8mpZ14UJCNVpEn8M9ARg=;
+        b=Pwx/xoVMmt55gaxc07EbJbViqhR4W9KRD+Fc8zDwAUUcMbdb56KOOnaEaPmUtu7S7t
+         /UkZkqJcHp3DtnX1LpURlUOM4zNMUk4HShMR+WIIPDo1ivAuKPCJYI6bCGyPBUcfGbAc
+         kvTJ8ZuKFvOUE/E/tHYETyhVNqdwsj/9qaywVutJ6Kad88l53ArvDDeJYMyDWY6QPDK2
+         WyAiRs19LPm7HBUdZWAocbs8IoQjvobVh22Ms3q1RqueopO3GiPEtNT9rI77ix9z/N/1
+         qAoVHJVEjGhABTmmVI9NUo0LFBvVM7PG4e7YcN4SQ5jgjj9LPg1jlCPNoX+z1eE4Zaok
+         dS4Q==
+X-Gm-Message-State: AOAM533ML6Lb6kbPgD+WQdqRF06ycaNwp193+qhO2Bybf+stcr5gVEft
+        2JAuyWcfdIZJoCwhSKUctOXLvw==
+X-Google-Smtp-Source: ABdhPJzS3sVONP52JJ41oUXMaywZWInX/T1GsMDEpa4Oo7VNHKVjxy8VUX1OKglrnM+JWmBSNQhpLg==
+X-Received: by 2002:a17:907:62a6:b0:6ef:8118:d3e2 with SMTP id nd38-20020a17090762a600b006ef8118d3e2mr5004725ejc.605.1650648230694;
+        Fri, 22 Apr 2022 10:23:50 -0700 (PDT)
+Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id fq6-20020a1709069d8600b006e891c0b7e0sm933630ejc.129.2022.04.22.10.23.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 10:23:50 -0700 (PDT)
+Message-ID: <af95f353-c91d-844e-3bc1-e052f7d16e54@linaro.org>
+Date:   Fri, 22 Apr 2022 19:23:48 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="PDxV6ewWHonbNhBw"
-Content-Disposition: inline
-In-Reply-To: <1647945781-10191-1-git-send-email-hammerh0314@gmail.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V4 00/14] cpufreq: mediatek: Cleanup and support MT8183
+ and MT8186
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        matthias.bgg@gmail.com
+Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
+        hsinyi@google.com, khilman@baylibre.com,
+        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 22/04/2022 09:52, Rex-BC Chen wrote:
+> 
+> Reference series:
+> [1]: V1 of this series is present by Jia-Wei Chang.
+>      message-id:20220307122151.11666-1-jia-wei.chang@mediatek.com
+> 
+> [2]: The MediaTek CCI devfreq driver is introduced in another series.
+>      message-id:20220408052150.22536-1-johnson.wang@mediatek.com
+> 
+> [3]: The MediaTek SVS driver is introduced in another series.
+>      message-id:20220221063939.14969-1-roger.lu@mediatek.com
 
---PDxV6ewWHonbNhBw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+These are not proper links. Please use lore references.
 
-On Tue, Mar 22, 2022 at 06:42:59PM +0800, Hammer Hsieh wrote:
-> This is a patch series for PWM driver for Suplus SP7021 SoC.
->=20
-> Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
-> many peripherals (ex: UART. I2C, SPI, SDIO, eMMC, USB, SD card and
-> etc.) into a single chip. It is designed for industrial control.
 
-I just noticed as I was trying to do test builds that ARCH_SUNPLUS
-doesn't exist yet. Are there any plans to add those in the near future?
-
-I can always use COMPILE_TEST to do test build, but I like to also do
-proper builds because they sometimes flag things that COMPILE_TEST
-misses (like this one).
-
-Thierry
-
---PDxV6ewWHonbNhBw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJi5I4ACgkQ3SOs138+
-s6GIyBAAufn0SqDugjZ/SHA57bfeqkXYHC9QHBnh6YoNb4KViSPCGPaDTz0UeOEQ
-kTs9D5IKBhCsU1eD9lsiFgp2xkKFZ0jA8f3KG3m11rVrd2fuQA9tNU9h0zJm4mYl
-fU35TZYrVKWZwviSj2hgcyDHIS7uCsQczRIzzcAeSpisMICYJvjCM1jdEu6mKLwA
-sJxXQQL10ck7zxskTiyA7qDKlyVsPyJUzm998+D+v2hDqWh4BgvUBQhjYckNTwy2
-F76EVk/L5GmQNV5Ta9vI0xJo76BMUUrDISdsCG79FM0A0AXHs63nHGL9b4vaLScb
-OTh8QwnxtDkWKbRpECU/u56zM3eRRG+CVdogjnIKGSvJeEIW9ewHr6Dk5U+aLeld
-Y/NhVwV0mClXmMHmjlcTH96jslxbZJlg4V9flyP56Va7gv1+0FbdxYKiYrFB0A4z
-dT6XSG0hLaGKOvWT2Fw3ZOtwHn40ViHeO0+tMFxSToPeAtdkmX4bRqLO/2Ief4kO
-DRqdZz+sV8i0D4vAi69c9N5fKpzBPlXBoblFwFgWb/spI+dLXNV1CQ/xdxeHhZew
-AGQQZeZPZgPH1HL0jEJI0tjJEJ7XCH7m4bSu5nfeUMzpBDl4Z7ZncAGF6dwG4ozf
-c86uiEQ3MUvI46sItRsd79FBF3E9LJUYHWbLC5iExuZwNKEnVo8=
-=/3J5
------END PGP SIGNATURE-----
-
---PDxV6ewWHonbNhBw--
+Best regards,
+Krzysztof
