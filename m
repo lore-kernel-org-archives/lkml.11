@@ -2,295 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C07C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449430AbiDVP3J (ORCPT
+        id S1449439AbiDVP3p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40682 "EHLO
+        Fri, 22 Apr 2022 11:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379791AbiDVP3F (ORCPT
+        with ESMTP id S1449433AbiDVP3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:29:05 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00F037A1C
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:26:10 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ef5380669cso88917787b3.9
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=cendmS9M+hafp0sRCCph1x27cQg8ck+RUugsVgjF93A=;
-        b=HPCC0BoCw6ykEbCKdUPsUuhud+Jm8fA9JvYHPoufofQHEikiMGHEce8K5EdVxKgzZM
-         22I4Bt6pTXn6zLaqg9gaYYClTALy34p/wVztFYCelOCw30uw4NtEag8FqiiUpAElH6l1
-         1ujvUe3ZWLTokxjOloGgNWM5PxXCmn2CEwWbopFOGw90+xIHwPtzL52v5a821eWiCDM5
-         zZJYWc6wRTjMEtgoTyLhBsfWA4cLzgxecrH04Ykp93dtLXPoXkxsk56oN0YD7A6U8KPv
-         gQGAs8m5+9CmS0//DfKmYoZMAiyYHDkQViB/oKY8Z0q115JRkVfGSueOCuYvhDTuamyY
-         bKVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=cendmS9M+hafp0sRCCph1x27cQg8ck+RUugsVgjF93A=;
-        b=1Q3n1ozcFcP7M/GNLIDefUjtPVEa3rsbttd3C6I6HEHzamiLZy4g05+WM6cI+/v2nY
-         ku6rkP3HsgCh9IQ7KT7A4dUh2c9V2RGaflUINr7/hLcK733pqfFSzWZXlkZ4NwTtAWG1
-         4Y2DxM5O6gSIed7yaNZTY9o4P4QGUZ6BBSCklyxnUBytdFEhpVb9n8qnTcqIHSRTlfwS
-         XgX3omH04zVTe1fl99NPe9N0c8rAkZi1Uqjnqpl5Tlb659m8WY4NJFLSl61sy9bhmQPy
-         IOJz51QPOOLbEWk7f3u9wNOtbu+xy/eEGvPcLlhkfEKZVDEt/sRndraB2E5Bq4p2M+cw
-         vzbw==
-X-Gm-Message-State: AOAM531s+/CYZ2EEbLq2rKA0zKgf6XcZBFEXj14bLlNuZF/BJE1oqtcN
-        FjmFtD1gPeNKLaA8USh3SgVqJvip2IL5V02xotApNQ==
-X-Google-Smtp-Source: ABdhPJxKDFi4fdtFBUxSSp/n3JUrQcugRePBV3YZJvmejB6Lum1ef3U68ixfHRnQTgqBd5TBZs1hBXbnJLh+d8p3vb0=
-X-Received: by 2002:a81:9210:0:b0:2f4:d8f7:98e9 with SMTP id
- j16-20020a819210000000b002f4d8f798e9mr5376228ywg.265.1650641169866; Fri, 22
- Apr 2022 08:26:09 -0700 (PDT)
+        Fri, 22 Apr 2022 11:29:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69E15C85A;
+        Fri, 22 Apr 2022 08:26:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6199161F35;
+        Fri, 22 Apr 2022 15:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D4CC385AB;
+        Fri, 22 Apr 2022 15:26:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650641207;
+        bh=wpcimkpmyXuZWzMsgzk6WTpHEDwsi0hL31+pEsg3qqc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=C3zpGu8MjDMmcc54IAy+8QiCCGeFFQ2Xc7XDe8tj7NphlijuDwXdizBP0uTEgJfwK
+         UHL3tLPnbyyaNTiMoKuOB+33EQ0P5IRNFVqztxGzHQ65Q3zi0GsiUswi0sNDmNLWaM
+         wfwZy0iYxlgUXK0xjg/EwCoyFeEbItlhBqRLDgtdbb+yEnSAp6nXwBz0hVvVYzdgMb
+         gi1l1+2SZCPpZNKlyO+Ybzy5M9yb0tw4iSrfabg4e8ewsGZQwrpQ25kHgJXw77S6ko
+         8KfeEhKz1tCIpheg0l1AciYyE/MAsn3mXAZDQoSrYCUiuBVwDZSZVSXP+7L9dPxhpT
+         w5/XJH4b1Syxg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 5E9C35C0460; Fri, 22 Apr 2022 08:26:47 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 08:26:47 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     frederic@kernel.org, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, urezki@gmail.com
+Subject: Re: [PATCH v2] rcu: Dump all rcuc kthreads status for CPUs that not
+ report quiescent state
+Message-ID: <20220422152647.GY4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220419053426.2820350-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 22 Apr 2022 20:55:58 +0530
-Message-ID: <CA+G9fYu8GoJ1-Tf=-LHFGTvuHdjABLWSGH=pfxTojwEXSjxTbw@mail.gmail.com>
-Subject: OF: ERROR: Bad of_node_put() on /ocp/interconnect@4a000000/segment@0/target-module@8000/cm_core@0/clock@c00/clock@0
-To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        dev.kurt@vandijck-laurijssen.be,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419053426.2820350-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linux next-20220412 booting on arm beagle board x15 device found the
-following warnings.
-This is still happening on today's linux next-20220422.
+On Tue, Apr 19, 2022 at 01:34:26PM +0800, Zqiang wrote:
+> If the rcutree.use_softirq is configured, when RCU Stall event
+> happened, dump status of all rcuc kthreads who due to starvation
+> prevented grace period ends on CPUs that not report quiescent
+> state.
 
-[    0.000000] Linux version 5.18.0-rc2-next-20220412
-(tuxmake@tuxmake) (arm-linux-gnueabihf-gcc (Debian 10.2.1-6) 10.2.1
-20210110, GNU ld (GNU Binutils for Debian) 2.35.2) #1 SMP @1649744781
-[    0.000000] CPU: ARMv7 Processor [412fc0f2] revision 2 (ARMv7), cr=10c5387d
-[    0.000000] CPU: div instructions available: patching division code
-[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, PIPT instruction cache
-[    0.000000] OF: fdt: Machine model: TI AM5728 BeagleBoard-X15
-[    0.000000] Memory policy: Data cache writealloc
-[    0.000000] efi: UEFI not found.
-[    0.000000] Reserved memory: created CMA memory pool at 0x95800000,
-size 56 MiB
-[    0.000000] OF: reserved mem: initialized node
-ipu2-memory@95800000, compatible id shared-dma-pool
-[    0.000000] Reserved memory: created CMA memory pool at 0x99000000,
-size 64 MiB
-[    0.000000] OF: reserved mem: initialized node
-dsp1-memory@99000000, compatible id shared-dma-pool
-[    0.000000] Reserved memory: created CMA memory pool at 0x9d000000,
-size 32 MiB
-[    0.000000] OF: reserved mem: initialized node
-ipu1-memory@9d000000, compatible id shared-dma-pool
-[    0.000000] Reserved memory: created CMA memory pool at 0x9f000000,
-size 8 MiB
-[    0.000000] OF: reserved mem: initialized node
-dsp2-memory@9f000000, compatible id shared-dma-pool
-[    0.000000] cma: Reserved 64 MiB at 0xfb800000
-[    0.000000] OMAP4: Map 0xafe00000 to (ptrval) for dram barrier
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000afdfffff]
-[    0.000000]   Normal   empty
-[    0.000000]   HighMem  [mem 0x00000000afe00000-0x00000000ffffefff]
-[    0.000000] Movable zone start for each node
-[    0.000000] Early memory node ranges
-[    0.000000]   node   0: [mem 0x0000000080000000-0x00000000afdfffff]
-[    0.000000]   node   0: [mem 0x00000000b0000000-0x00000000ffffefff]
-[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x00000000ffffefff]
-[    0.000000] On node 0, zone HighMem: 512 pages in unavailable ranges
-[    0.000000] DRA752 ES2.0
-[    0.000000] percpu: Embedded 16 pages/cpu s35028 r8192 d22316 u65536
-[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 522051
-[    0.000000] Kernel command line: console=ttyS2,115200n8
-root=PARTUUID=008ff1a4-d1d9-294a-89cd-d80f952045d9 rw rootfstype=ext4
-rootwait
-[    0.000000] Dentry cache hash table entries: 131072 (order: 7,
-524288 bytes, linear)
-[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144
-bytes, linear)
-[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
-[    0.000000] Memory: 1812440K/2095100K available (16384K kernel
-code, 2662K rwdata, 8720K rodata, 2048K init, 649K bss, 53284K
-reserved, 229376K cma-reserved, 1245180K highmem)
-[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
-[    0.000000] ftrace: allocating 59389 entries in 175 pages
-[    0.000000] ftrace: allocated 174 pages with 5 groups
-[    0.000000] trace event string verifier disabled
-[    0.000000] rcu: Hierarchical RCU implementation.
-[    0.000000] rcu: RCU event tracing is enabled.
-[    0.000000] rcu: RCU restricting CPUs from NR_CPUS=16 to nr_cpu_ids=2.
-[    0.000000] Rude variant of Tasks RCU enabled.
-[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay
-is 10 jiffies.
-[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
-[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
-[    0.000000] GIC: Using split EOI/Deactivate mode
-[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
-[    0.000000] kfence: initialized - using 2097152 bytes for 255
-objects at 0x(ptrval)-0x(ptrval)
-[    0.000000] random: get_random_bytes called from
-start_kernel+0x54c/0x6fc with crng_init=0
-[    0.000000] ------------[ cut here ]------------
-[    0.000000] WARNING: CPU: 0 PID: 0 at lib/refcount.c:25 kobject_get+0x9c/0xa0
-[    0.000000] refcount_t: addition on 0; use-after-free.
-[    0.000000] Modules linked in:
-[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
-5.18.0-rc2-next-20220412 #1
-[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
-[    0.000000]  unwind_backtrace from show_stack+0x18/0x1c
-[    0.000000]  show_stack from dump_stack_lvl+0x58/0x70
-[    0.000000]  dump_stack_lvl from __warn+0xd0/0x144
-[    0.000000]  __warn from warn_slowpath_fmt+0x98/0xbc
-[    0.000000]  warn_slowpath_fmt from kobject_get+0x9c/0xa0
-[    0.000000]  kobject_get from of_node_get+0x1c/0x24
-[    0.000000]  of_node_get from of_fwnode_get+0x3c/0x48
-[    0.000000]  of_fwnode_get from fwnode_get_nth_parent+0x34/0x104
-[    0.000000]  fwnode_get_nth_parent from fwnode_full_name_string+0x34/0xa0
-[    0.000000]  fwnode_full_name_string from device_node_string+0x5fc/0x6c8
-[    0.000000]  device_node_string from pointer+0x3c8/0x670
-[    0.000000]  pointer from vsnprintf+0x22c/0x3cc
-[    0.000000]  vsnprintf from vprintk_store+0x114/0x43c
-[    0.000000]  vprintk_store from vprintk_emit+0x78/0x2bc
-[    0.000000]  vprintk_emit from vprintk_default+0x28/0x30
-[    0.000000]  vprintk_default from _printk+0x30/0x54
-[    0.000000]  _printk from of_node_release+0x124/0x12c
-[    0.000000]  of_node_release from kobject_put+0xc4/0x294
-[    0.000000]  kobject_put from ti_dt_clocks_register+0x284/0x32c
-[    0.000000]  ti_dt_clocks_register from dra7xx_dt_clk_init+0x18/0x11c
-[    0.000000]  dra7xx_dt_clk_init from omap5_realtime_timer_init+0x10/0x21c
-[    0.000000]  omap5_realtime_timer_init from start_kernel+0x560/0x6fc
-[    0.000000]  start_kernel from 0x0
-[    0.000000] ---[ end trace 0000000000000000 ]---
-login-action: exception
-#
-[    0.000000] ------------[ cut #
-[login-action] Waiting for messages, (timeout 00:14:33)
-here ]------------
-[    0.000000] WARNING: CPU: 0 PID: 0 at lib/refcount.c:28
-fwnode_get_nth_parent+0x50/0x104
-[    0.000000] refcount_t: underflow; use-after-free.
-[    0.000000] Modules linked in:
-[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
-  5.18.0-rc2-next-20220412 #1
-[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
-[    0.000000]  unwind_backtrace from show_stack+0x18/0x1c
-[    0.000000]  show_stack from dump_stack_lvl+0x58/0x70
-[    0.000000]  dump_stack_lvl from __warn+0xd0/0x144
-[    0.000000]  __warn from warn_slowpath_fmt+0x98/0xbc
-[    0.000000]  warn_slowpath_fmt from fwnode_get_nth_parent+0x50/0x104
-[    0.000000]  fwnode_get_nth_parent from fwnode_full_name_string+0x34/0xa0
-[    0.000000]  fwnode_full_name_string from device_node_string+0x5fc/0x6c8
-[    0.000000]  device_node_string from pointer+0x3c8/0x670
-[    0.000000]  pointer from vsnprintf+0x22c/0x3cc
-[    0.000000]  vsnprintf from vprintk_store+0x114/0x43c
-[    0.000000]  vprintk_store from vprintk_emit+0x78/0x2bc
-[    0.000000]  vprintk_emit from vprintk_default+0x28/0x30
-[    0.000000]  vprintk_default from _printk+0x30/0x54
-[    0.000000]  _printk from of_node_release+0x124/0x12c
-[    0.000000]  of_node_release from kobject_put+0xc4/0x294
-[    0.000000]  kobject_put from ti_dt_clocks_register+0x284/0x32c
-[    0.000000]  ti_dt_clocks_register from dra7xx_dt_clk_init+0x18/0x11c
-[    0.000000]  dra7xx_dt_clk_init from omap5_realtime_timer_init+0x10/0x21c
-[    0.000000]  omap5_realtime_timer_init from start_kernel+0x560/0x6fc
-[    0.000000]  start_kernel from 0x0
-[    0.000000] ---[ end trace 0000000000000000 ]---
-login-action: exception
-#
-[    0.000000] ------------[ cut here ]--------#
-[login-action] Waiting for messages, (timeout 00:14:33)
-----
-[    0.000000] WARNING: CPU: 0 PID: 0 at lib/refcount.c:22 kobject_get+0x88/0xa0
-[    0.000000] refcount_t: saturated; leaking memory.
-[    0.000000] Modules linked in:
-[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
-  5.18.0-rc2-next-20220412 #1
-[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
-[    0.000000]  unwind_backtrace from show_stack+0x18/0x1c
-[    0.000000]  show_stack from dump_stack_lvl+0x58/0x70
-[    0.000000]  dump_stack_lvl from __warn+0xd0/0x144
-[    0.000000]  __warn from warn_slowpath_fmt+0x98/0xbc
-[    0.000000]  warn_slowpath_fmt from kobject_get+0x88/0xa0
-[    0.000000]  kobject_get from of_node_get+0x1c/0x24
-[    0.000000]  of_node_get from of_fwnode_get+0x3c/0x48
-[    0.000000]  of_fwnode_get from fwnode_get_nth_parent+0x34/0x104
-[    0.000000]  fwnode_get_nth_parent from fwnode_full_name_string+0x34/0xa0
-[    0.000000]  fwnode_full_name_string from device_node_string+0x5fc/0x6c8
-[    0.000000]  device_node_string from pointer+0x3c8/0x670
-[    0.000000]  pointer from vsnprintf+0x22c/0x3cc
-[    0.000000]  vsnprintf from vprintk_store+0x114/0x43c
-[    0.000000]  vprintk_store from vprintk_emit+0x78/0x2bc
-[    0.000000]  vprintk_emit from vprintk_default+0x28/0x30
-[    0.000000]  vprintk_default from _printk+0x30/0x54
-[    0.000000]  _printk from of_node_release+0x124/0x12c
-[    0.000000]  of_node_release from kobject_put+0xc4/0x294
-[    0.000000]  kobject_put from ti_dt_clocks_register+0x284/0x32c
-[    0.000000]  ti_dt_clocks_register from dra7xx_dt_clk_init+0x18/0x11c
-[    0.000000]  dra7xx_dt_clk_init from omap5_realtime_timer_init+0x10/0x21c
-[    0.000000]  omap5_realtime_timer_init from start_kernel+0x560/0x6fc
-[    0.000000]  start_kernel from 0x0
-[    0.000000] ---[ end trace 0000000000000000 ]---
-login-action: exception
-#
-[    0.000000] OF: ERROR: Bad of_node_put() on
-/ocp/interconnect@4a000000/segment@0/targe#
-[login-action] Waiting for messages, (timeout 00:14:33)
-t-module@8000/cm_core@0/clock@c00/clock@0
-[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
-  5.18.0-rc2-next-20220412 #1
-[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
-[    0.000000]  unwind_backtrace from show_stack+0x18/0x1c
-[    0.000000]  show_stack from dump_stack_lvl+0x58/0x70
-[    0.000000]  dump_stack_lvl from kobject_put+0xc4/0x294
-[    0.000000]  kobject_put from ti_dt_clocks_register+0x284/0x32c
-[    0.000000]  ti_dt_clocks_register from dra7xx_dt_clk_init+0x18/0x11c
-[    0.000000]  dra7xx_dt_clk_init from omap5_realtime_timer_init+0x10/0x21c
-[    0.000000]  omap5_realtime_timer_init from start_kernel+0x560/0x6fc
-[    0.000000]  start_kernel from 0x0
-[    0.000000] OF: ERROR: Bad of_node_put() on
-/ocp/interconnect@4a000000/segment@0/target-module@8000/cm_core@0/clock@1100/clock@20
-[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
-  5.18.0-rc2-next-20220412 #1
-[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
-[    0.000000]  unwind_backtrace from show_stack+0x18/0x1c
-[    0.000000]  show_stack from dump_stack_lvl+0x58/0x70
-[    0.000000]  dump_stack_lvl from kobject_put+0xc4/0x294
-[    0.000000]  kobject_put from ti_dt_clocks_register+0x284/0x32c
-[    0.000000]  ti_dt_clocks_register from dra7xx_dt_clk_init+0x18/0x11c
-[    0.000000]  dra7xx_dt_clk_init from omap5_realtime_timer_init+0x10/0x21c
-[    0.000000]  omap5_realtime_timer_init from start_kernel+0x560/0x6fc
-[    0.000000]  start_kernel from 0x0
-[    0.000000] OF: ERROR: Bad of_node_put() on
-/ocp/interconnect@4ae00000/segment@0/target-module@6000/prm@0/clock@1800/clock@20
-[    0.000000] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
-  5.18.0-rc2-next-20220412 #1
-[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
+Please accept my apologies for the delay, and please let me try
+again.  ;-)
 
+Your earlier patch added at most one line and one stack backtrace to
+the RCU CPU stall warning text, which is OK.  Sort of, anyway.  I was
+relying on the fact that the people who have (rightly) complained about
+RCU CPU stall-warning verbosity never run with !use_softirq.  But it is
+only a matter of time.  Yes, we could argue that they should use faster
+console serial lines, faster management-console hardware, faster networks,
+faster mass storage, and so on, but I would expect them to in turn ask
+us if we were volunteering to pay for all that.
 
-link:
-https://lkft.validation.linaro.org/scheduler/job/4882391#L2104
+In contrast, this patch can add one line per stalled CPU on top of the
+existing output.  Which is better than your earlier patch, which could
+add a line plus a stack trace per stalled CPU.  But that can still be
+a lot of added output, and that added output can cause problems.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+So, could you please merge this rcuc-stalled information into the
+existing per-CPU line printed by print_cpu_stall_info()?  Right now,
+each such line looks something like this:
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-  git_sha: d0c745e7b2d6ce8bcc768b32361ab8ef520821ee
-  git_describe: next-20220412
-  kernel_version: 5.18.0-rc2
-  kernel-config: https://builds.tuxbuild.com/27gbKLQxkCjWcdfqbhpWsh5Ocq0/config
-  build-url: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/pipelines/514668403
-  artifact-location: https://builds.tuxbuild.com/27gbKLQxkCjWcdfqbhpWsh5Ocq0
-  toolchain: gcc-10
+rcu: 0-....: (4 ticks this GP) idle=1e6/1/0x4000000000000002 softirq=12470/12470 fqs=2
 
+One approach would be to add the number of jiffies that the rcuc
+task was stalled to this line, maybe something like this:
 
---
-Linaro LKFT
-https://lkft.linaro.org
+rcu: 0-....: (4 ticks this GP) idle=1e6/1/0x4000000000000002 softirq=12470/12470 fqs=2 rcuc=15384
+
+Of course, this "rcuc=" string should only ut only if the stall lasted
+for longer than (say) one eighth of the stall timeout.
+
+Any "(false positive?)" needs to remain at the end of the line:
+
+rcu: 0-....: (4 ticks this GP) idle=1e6/1/0x4000000000000002 softirq=12470/12470 fqs=2 rcuc=15384 (false positive?)
+
+Thoughts?
+
+							Thanx, Paul
+
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> ---
+>  v1->v2:
+>  rework rcuc_kthread_dump function
+> 
+>  kernel/rcu/tree_stall.h | 32 ++++++++++++++++++++++++++------
+>  1 file changed, 26 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+> index d7956c03edbd..fcf0b2e1a71c 100644
+> --- a/kernel/rcu/tree_stall.h
+> +++ b/kernel/rcu/tree_stall.h
+> @@ -465,11 +465,13 @@ static void print_cpu_stall_info(int cpu)
+>  	       falsepositive ? " (false positive?)" : "");
+>  }
+>  
+> -static void rcuc_kthread_dump(struct rcu_data *rdp)
+> +static void __rcuc_kthread_dump(int cpu)
+>  {
+> -	int cpu;
+> -	unsigned long j;
+> +	struct rcu_data *rdp;
+>  	struct task_struct *rcuc;
+> +	unsigned long j;
+> +
+> +	rdp = per_cpu_ptr(&rcu_data, cpu);
+>  
+>  	rcuc = rdp->rcu_cpu_kthread_task;
+>  	if (!rcuc)
+> @@ -488,6 +490,21 @@ static void rcuc_kthread_dump(struct rcu_data *rdp)
+>  		dump_cpu_task(cpu);
+>  }
+>  
+> +static void rcuc_kthread_dump(void)
+> +{
+> +	int cpu;
+> +	struct rcu_node *rnp;
+> +	unsigned long flags;
+> +
+> +	rcu_for_each_leaf_node(rnp) {
+> +		raw_spin_lock_irqsave_rcu_node(rnp, flags);
+> +		for_each_leaf_node_possible_cpu(rnp, cpu)
+> +			if (rnp->qsmask & leaf_node_cpu_bit(rnp, cpu))
+> +				__rcuc_kthread_dump(cpu);
+> +		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+> +	}
+> +}
+> +
+>  /* Complain about starvation of grace-period kthread.  */
+>  static void rcu_check_gp_kthread_starvation(void)
+>  {
+> @@ -597,6 +614,9 @@ static void print_other_cpu_stall(unsigned long gp_seq, unsigned long gps)
+>  	if (ndetected) {
+>  		rcu_dump_cpu_stacks();
+>  
+> +		if (!use_softirq)
+> +			rcuc_kthread_dump();
+> +
+>  		/* Complain about tasks blocking the grace period. */
+>  		rcu_for_each_leaf_node(rnp)
+>  			rcu_print_detail_task_stall_rnp(rnp);
+> @@ -659,11 +679,11 @@ static void print_cpu_stall(unsigned long gps)
+>  	rcu_check_gp_kthread_expired_fqs_timer();
+>  	rcu_check_gp_kthread_starvation();
+>  
+> -	if (!use_softirq)
+> -		rcuc_kthread_dump(rdp);
+> -
+>  	rcu_dump_cpu_stacks();
+>  
+> +	if (!use_softirq)
+> +		rcuc_kthread_dump();
+> +
+>  	raw_spin_lock_irqsave_rcu_node(rnp, flags);
+>  	/* Rewrite if needed in case of slow consoles. */
+>  	if (ULONG_CMP_GE(jiffies, READ_ONCE(rcu_state.jiffies_stall)))
+> -- 
+> 2.25.1
+> 
