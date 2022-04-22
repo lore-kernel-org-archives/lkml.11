@@ -2,96 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C72C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:53:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449585AbiDVP4S (ORCPT
+        id S1449598AbiDVP40 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
+        Fri, 22 Apr 2022 11:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355262AbiDVP4P (ORCPT
+        with ESMTP id S1449587AbiDVP4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:56:15 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B411CFEC;
-        Fri, 22 Apr 2022 08:53:22 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id k22so11686289wrd.2;
-        Fri, 22 Apr 2022 08:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r7VFn3nngH4hNjFd5Mmo4mWEZGaDYjUWd1EsyxAItoo=;
-        b=DTP9DHNq5jUm2XHGh/m/MlF5ZHRM+6H84xoxglPZV5KB0b8Dxe02cU/kU8iMZVhGEA
-         XMl8T6DYI+31yC7qfkqTb2p8nihDO0fQQMWRDzwy86DOwMwHT8tbT9g0HU6cnla9n5ec
-         lYhSg0YT2G96BPHcq+hHnlsWtcFQIeNeNczMBVOluy0HSXBc+PydxuyN3nPcXmLSKuqC
-         puKlMJEIXxR+4KLNlT8z36Z7qIqzHlaISjgpskp+5iafoz74oqj14Vz4HVBFK1AhSs5z
-         qhrVhm6B5iWwh7gwktS2j1U7Y/7l8Yvl5l5Vv5mvvjWlvXqq3qMLaWN1wyhzanAmWWuO
-         4CFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=r7VFn3nngH4hNjFd5Mmo4mWEZGaDYjUWd1EsyxAItoo=;
-        b=s0VF2+J48Rl7FwG+K9XT8fPY+P2S/yuE86cd2i7mS63KqNx4MQjAFcN1Qw+U8rm5tN
-         chsTnfIREVn+8rn4Yll2/ZmeAKC0EpSgbO8tmZztASahq4wAbmsrmePLivm+GjWTxs8R
-         kKd8P9D1parVq8y3+Tr6ulMxcxX0TqvTblGVLFOEk0vd20zfPy/apBSZy9PV6ZjU44/A
-         fht+p2IXUAhiNNWMxB+JcgDc8+JP7lzo6Z3iO3tX0J+0bxJNQFrEDrwuLTOlM3gBnf0P
-         sGdlYINSchq/XysduoIlDk5JhNg7KfOfFI+n69hh2l2ak2sSf7+26T4L22+T2tjburWS
-         bsww==
-X-Gm-Message-State: AOAM532UVIHX4kp4dsRrMHlws3XxTcnZNXHqcv1N+oBTIyji+m/92Rbf
-        98MF87/Ag9hmrFpGz6Y0bBI=
-X-Google-Smtp-Source: ABdhPJxoFu1IAbWDj7jx4O7GbR2IpYAyiPT7hQ5/DScUoGyOeD3rzzw5Cta6ExLlJ3lVrTakmnoufw==
-X-Received: by 2002:a5d:4e07:0:b0:207:9a41:842f with SMTP id p7-20020a5d4e07000000b002079a41842fmr4269077wrt.232.1650642800770;
-        Fri, 22 Apr 2022 08:53:20 -0700 (PDT)
-Received: from localhost (92.40.203.64.threembb.co.uk. [92.40.203.64])
-        by smtp.gmail.com with ESMTPSA id p3-20020adfaa03000000b00207a1db96cfsm2185493wrd.71.2022.04.22.08.53.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 08:53:20 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 16:54:10 +0100
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, mturquette@baylibre.com,
-        paul@crapouillou.net, paulburton@kernel.org,
-        tsbogend@alpha.franken.de
-Subject: Re: [RESEND PATCH 2/3] clk: ingenic: Mark critical clocks in Ingenic
- SoCs
-Message-ID: <YmLPotnIBStYpapa@localhost>
-References: <20220411101441.17020-1-aidanmacdonald.0x0@gmail.com>
- <20220411101441.17020-3-aidanmacdonald.0x0@gmail.com>
- <20220422023359.87E8FC385A8@smtp.kernel.org>
+        Fri, 22 Apr 2022 11:56:21 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4D11DA76;
+        Fri, 22 Apr 2022 08:53:27 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650642805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=egLwwNxV76btrQ9q6om6wjZt3PbLjlniEsPtA9utVZE=;
+        b=0B/g2yGcr/YICXgS6yxrwyv3L9VyBOoE8ZDe1IZ6DiB/hNt5NOAtPBfDcbaVGnuC9NBNZr
+        WzfW8KArxGYgHvrcWCVUrCfsCUZGiDLCKSsTnh0rQMZBoir0Bdf56o8yJmEZZXhQn3fvOi
+        1pij3IAAlT1DL0fv/o751EUPVw2qSAezWfAOD+BpCvTQD5HqXOm5BIChszEt3x5eGIGu/b
+        Cq1vZ4TjAROsrj/gm8Trlv8CuRVFPsRcRfce+81J0wg5OJUCBzNuzX69kH0UfKEhmjEwEo
+        3rHc0uew53iewGSZoklZ1XUowp1GyVzmdH+YBE0l1LfmOesn9cVZML2A5eXjUQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650642805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=egLwwNxV76btrQ9q6om6wjZt3PbLjlniEsPtA9utVZE=;
+        b=h+b8XloVx+fEEddSy+0yPJCFyuqiaW+GGnk2EUrdGujBSkcAApL+SE7A/hzyZEQRVQVwfy
+        nZLkXLdKq0h2SMDg==
+To:     Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>, paulmck@kernel.org,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>
+Cc:     linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        rcu <rcu@vger.kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re:
+In-Reply-To: <1649818529.j46672mh2p.astroid@bobo.none>
+References: <CANiq72k+5Rdj7i3Df2dcE6_OPYPXK3z5EWLKnY56sSMz4G3OvA@mail.gmail.com>
+ <CAABZP2z64aYWfVSdXHaQopWc+BAbJJUGqtrju2iWER3DDTDFWg@mail.gmail.com>
+ <20220406170012.GO4285@paulmck-ThinkPad-P17-Gen-1>
+ <87pmls6nt7.fsf@mpe.ellerman.id.au> <87k0bz7i1s.fsf@mpe.ellerman.id.au>
+ <1649818529.j46672mh2p.astroid@bobo.none>
+Date:   Fri, 22 Apr 2022 17:53:24 +0200
+Message-ID: <87fsm55d3f.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422023359.87E8FC385A8@smtp.kernel.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 07:33:57PM -0700, Stephen Boyd wrote:
-> Quoting Aidan MacDonald (2022-04-11 03:14:40)
-> > Consider the CPU, L2 cache, and memory as critical to ensure they
-> > are not disabled.
-> > 
-> > Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> > Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-> > ---
-> 
-> General comment, please add a comment around CLK_IS_CRITICAL usage if it
-> isn't very clear why such a clk shouldn't be turned off. Second, is
-> there any point in describing these clks in the kernel and using memory
-> to do that if they're just going to always be on? Wouldn't a dummy clk
-> returned from clk_get() work just as well if anything is grabbing a
-> reference with clk_get()?
+On Wed, Apr 13 2022 at 15:11, Nicholas Piggin wrote:
+> So we traced the problem down to possibly a misunderstanding between 
+> decrementer clock event device and core code.
+>
+> The decrementer is only oneshot*ish*. It actually needs to either be 
+> reprogrammed or shut down otherwise it just continues to cause 
+> interrupts.
 
-I'd guess they're there to keep track of which PLLs are in use, at least
-for SoCs that have more than one PLL. Using a dummy clock sounds like a
-bad idea since it won't represent that, and besides the clock configuration
-is something that can change at runtime so hardcoding it would be foolish.
+I always thought that PPC had sane timers. That's really disillusioning.
 
-I'll send a v2 with explanatory comments around CLK_IS_CRITICAL.
+> Before commit 35de589cb879, it was sort of two-shot. The initial 
+> interrupt at the programmed time would set its internal next_tb variable 
+> to ~0 and call the ->event_handler(). If that did not set_next_event or 
+> stop the timer, the interrupt will fire again immediately, notice 
+> next_tb is ~0, and only then stop the decrementer interrupt.
+>
+> So that was already kind of ugly, this patch just turned it into a hang.
+>
+> The problem happens when the tick is stopped with an event still 
+> pending, then tick_nohz_handler() is called, but it bails out because 
+> tick_stopped == 1 so the device never gets programmed again, and so it 
+> keeps firing.
+>
+> How to fix it? Before commit a7cba02deced, powerpc's decrementer was 
+> really oneshot, but we would like to avoid doing that because it requires 
+> additional programming of the hardware on each timer interrupt. We have 
+> the ONESHOT_STOPPED state which seems to be just about what we want.
+>
+> Did the ONESHOT_STOPPED patch just miss this case, or is there a reason 
+> we don't stop it here? This patch seems to fix the hang (not heavily
+> tested though).
 
-Regards,
-Aidan
+This was definitely overlooked, but it's arguable it is is not required
+for real oneshot clockevent devices. This should only handle the case
+where the interrupt was already pending.
+
+The ONESHOT_STOPPED state was introduced to handle the case where the
+last timer gets canceled, so the already programmed event does not fire.
+
+It was not necessarily meant to "fix" clockevent devices which are
+pretending to be ONESHOT, but keep firing over and over.
+
+That, said. I'm fine with the change along with a big fat comment why
+this is required.
+
+Thanks,
+
+        tglx
