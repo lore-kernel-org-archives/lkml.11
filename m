@@ -2,113 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D11EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A57C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbiDVUpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 16:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        id S229627AbiDVUtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 16:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiDVUpO (ORCPT
+        with ESMTP id S229586AbiDVUtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 16:45:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5DF202B4C;
-        Fri, 22 Apr 2022 12:42:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 849AC61CE4;
-        Fri, 22 Apr 2022 19:39:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B01C385A4;
-        Fri, 22 Apr 2022 19:39:18 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 15:39:16 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        hannes@cmpxchg.org, akpm@linux-foundation.org,
-        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-input@vger.kernel.org, roman.gushchin@linux.dev
-Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
- heap-allocated strings
-Message-ID: <20220422153916.7ebf20c3@gandalf.local.home>
-In-Reply-To: <20220422193015.2rs2wvqwdlczreh3@moria.home.lan>
-References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
-        <20220421234837.3629927-7-kent.overstreet@gmail.com>
-        <20220422042017.GA9946@lst.de>
-        <YmI5yA1LrYrTg8pB@moria.home.lan>
-        <20220422052208.GA10745@lst.de>
-        <YmI/v35IvxhOZpXJ@moria.home.lan>
-        <20220422113736.460058cc@gandalf.local.home>
-        <20220422193015.2rs2wvqwdlczreh3@moria.home.lan>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 22 Apr 2022 16:49:39 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CC9209F14;
+        Fri, 22 Apr 2022 12:46:47 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id r13so18310431ejd.5;
+        Fri, 22 Apr 2022 12:46:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=ZCXJRqepiMM/X9hpIQkod6J8jYQslsEZGb/W6+1iH/k=;
+        b=RH5YZrNy8Q1mztwF9P/pwiNXS6D591Ntr4cchSnhtXGAu64sjpjVUAMBw5lVeefIYw
+         HRXQ1kk4F38u8J59nALbQbIjDbQUlQJlxbpsTUm4/ExfB7pOas09F3qFiZyWhsK5//sl
+         D/kD1o0ZM7easuXgenJA6h1b+ERBHND7HPRat0YMVP9tudxi1IZrt4QlcoQdEM/dusLO
+         dps+IghE4w0K7533CPxfl6vvkxzD/3OWl1o8TcyoW3AaZyeVfUGuQKdiUM2FxLsmaOjT
+         jX0wkFGn/oLo62qOFod7ITzBPsy0159gqdCHObrfV0as4s4HplE5UR30AqaetWqo+tuX
+         CMag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=ZCXJRqepiMM/X9hpIQkod6J8jYQslsEZGb/W6+1iH/k=;
+        b=gKYqiqfw3iVCQ95TovxjB5RWa+xm9pq5g5t+MSkE/+lrCxC3KJjM8jUD2yVdh+wvt0
+         c7485WgsKqRyFiQs2QLlP9ZJQVTm1FZOz28TfWKSgQ7zBpahd8fH6o223yfTzc0p3MtW
+         sh1uqSeeX2g36SxE27lRZiCZfp2GyrvS/ZVIYOwN6RP02wmfHHUJdz+5Avnr1Q57AxfH
+         qMO/7+4xdAwjlFXXAWj/HYB0lMr1uni+V3ribQrkIFwtlq2ixpHPLxVO0aMlL7BuAT1h
+         MRVwy4qYEoTwKFyhIng/wgZtgC7bUwkWO041V2g6m7EwsL4lscGyS7gvjSyeMuEg5waW
+         Iv/Q==
+X-Gm-Message-State: AOAM530Kanvj6oksPIRpKBAb7zZpbj+XH58gsdwXI2MFDOgUp5hznB7t
+        8KTLC9OsVznW12aOpV17/5s=
+X-Google-Smtp-Source: ABdhPJxUtMgv25FIn09RV/7NRmkZDcevxB8TMyX5SE3JHCN430+3rMGO2oaLb4bp0K7i4ZueYS3aUQ==
+X-Received: by 2002:a17:906:7f02:b0:6cf:86d8:c31c with SMTP id d2-20020a1709067f0200b006cf86d8c31cmr5794948ejr.518.1650656506654;
+        Fri, 22 Apr 2022 12:41:46 -0700 (PDT)
+Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
+        by smtp.googlemail.com with ESMTPSA id r17-20020a1709067fd100b006e88d3eefe6sm1037735ejs.205.2022.04.22.12.41.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:41:46 -0700 (PDT)
+Message-ID: <c5f33892dbce61b267cc74dca50e0fae5d1270e9.camel@gmail.com>
+Subject: Re: [PATCH v2 RESENT] mmc-utils: Add General command CMD56 read
+ support
+From:   Bean Huo <huobean@gmail.com>
+To:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
+        jakob.rossler@nokia.com, Avri.Altman@wdc.com
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bean Huo <beanhuo@micron.com>
+Date:   Fri, 22 Apr 2022 21:41:45 +0200
+In-Reply-To: <20220417111622.621650-1-huobean@gmail.com>
+References: <20220417111622.621650-1-huobean@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 15:30:15 -0400
-Kent Overstreet <kent.overstreet@gmail.com> wrote:
+On Sun, 2022-04-17 at 13:16 +0200, Bean Huo wrote:
+> From: Bean Huo <beanhuo@micron.com>
+>=20
+> We can use GEN_CMD (CMD56) to read a=C2=A0 data block with vendor-specifi=
+c
+> format and meaning, which is very helpful and useful for customers to
+> analyze device health. This patch is to add support for this command.
+>=20
+> At the same time, in order to make CMD56 universal, let more users of
+> mmc-utils can benefit from this. We will allow the user to enter
+> [arg]
+> for special commands. Because some eMMC vendors provide an additional
+> set of commands beyond the GEN_CMD (CMD56) definition in the JEDEC
+> specification. These additional commands are implemented using
+> generic
+> CMD56 commands, and they return a wealth of useful information about
+> the
+> state of the NAND device. For these special purposes, the [31:1]stuff
+> bits in the CMD56 argument are used. You can refer to=C2=A0 Micron eMMC
+> "TN-FC-32: e=C2=B7MMC Device Health Report" as an example.
+>=20
+> I didn't add data parsing, just print the raw data as it is vendor-
+> specific.
+>=20
+> Signed-off-by: Bean Huo <beanhuo@micron.com>
+> Acked-by: Avri Altman <Avri.Altman@wdc.com>
+> Tested-by: Rossler Jakob (Nokia - DE/Ulm) <jakob.rossler@nokia.com>
+> ---
 
-> > This is how open source programming is suppose to work ;-)  
-> 
-> Is it though? :)
-> 
-> One of the things I've been meaning to talk more about, that
-> came out of a recent Rust discussion, is that we in the kernel community could
-> really do a better job with how we interact with the outside world, particularly
-> with regards to the sharing of code.
-> 
-> The point was made to me when another long standing kernel dev was complaining
-> about Facebook being a large, insular, difficult to work with organization, that
-> likes to pretend it is the center of the universe and not bend to the outside
-> world, while doing the exact same thing with respect to new concerns brought by
-> the Rust community. The irony was illuminating :)
+Hi Ullf,
 
-I do not consider Facebook an open source company. One reason I turned them
-down.
+Would you be willing to merge this patch into your mmc-utils git repo?
 
-> 
-> The reason I bring that up is that in this case, printbuf is the more evolved,
-> more widely used implementation, and you're asking me to discard it so the
-> kernel can stick with its more primitive, less widely used implementation.
-> 
-> $ git grep -w seq_buf|wc -l
-> 86
-> 
-> $ git grep -w printbuf|wc -l
-> 366
-
-$ git grep printbuf
-drivers/media/i2c/ccs/ccs-reg-access.c:                 char printbuf[(MAX_WRITE_LEN << 1) +
-drivers/media/i2c/ccs/ccs-reg-access.c:                 bin2hex(printbuf, regdata, msg.len);
-drivers/media/i2c/ccs/ccs-reg-access.c:                         regs->addr + j, printbuf);
-
-I don't see it.
-
-And by your notion:
-
-$ git grep trace_seq | wc -l
-1680
-
-Thus we all should be using trace_seq!
-
-> 
-> So, going to have to push back on that one :)
-> 
-> Printbufs aren't new code; everything in them is there because I've found it
-> valuable, which is why I decided to try promoting them to the kernel proper (and
-> more importantly, the idea of a standard way to pretty-print anything).
-> 
-> I'm happy to discuss the merits of the code more, and try to convince you why
-> you'll like them :)
-
-I'd like to know more to why seq_buf is not good for you. And just telling
-me that you never seriously tried to make it work because you were afraid
-of causing tracing regressions without ever asking the tracing maintainer
-is not going to cut it.
-
--- Steve
+Kind regards,
+Bean
