@@ -2,104 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88ACDC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C247FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447309AbiDVMLA (ORCPT
+        id S1447313AbiDVML5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34170 "EHLO
+        Fri, 22 Apr 2022 08:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384839AbiDVMK6 (ORCPT
+        with ESMTP id S1447303AbiDVMLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:10:58 -0400
-X-Greylist: delayed 467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 05:08:03 PDT
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A0C56435;
-        Fri, 22 Apr 2022 05:08:03 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 36B415FD02;
-        Fri, 22 Apr 2022 15:00:13 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1650628813;
-        bh=WGcfw8+jkSEDAp7PzGBXGL+KYgoLrJlmcpYGAiTjh9c=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=mWKkDqU9zd+6jMn6LF34ds5F5QWus3BbqYxRfe++y7ule4ejyYTRNq1Zsq3rIguMn
-         uum8aHOz75sbkv2eU1+w7t8IIFScyB3urtkSkeaxpKhYSvG5jumJHtGhdgJOujBF0z
-         zvufrnkAmB1A9qxtFzjL7QyQtdeJ2h7mY/JU2+QIWrDD+W6c+xyL+XGoaCdSh57nRw
-         Sw6EcfbCtAUD7cm0uu8o0wy/W0ep607QASvT3HtndHd5Rw8WEB6jPIemFOua/Dy76t
-         iA6mGyepFswjQhpJBlF1Wa/xwufbfzEAEuehOu8bwAKYInvr3nnMBKHGiiqtwPVwad
-         x7eadFKcsfqqg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 22 Apr 2022 15:00:12 +0300 (MSK)
-From:   Alexey Romanov <avromanov@sberdevices.ru>
-To:     <minchan@kernel.org>, <ngupta@vflare.org>,
-        <senozhatsky@chromium.org>, <linux-block@vger.kernel.org>
-CC:     <axboe@chromium.org>, <kernel@sberdevices.ru>,
-        <linux-kernel@vger.kernel.org>, <mnitenko@gmail.com>,
-        Alexey Romanov <avromanov@sberdevices.ru>,
-        Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Subject: [PATCH v1] zram: don't retry compress incompressible page
-Date:   Fri, 22 Apr 2022 14:59:59 +0300
-Message-ID: <20220422115959.3313-1-avromanov@sberdevices.ru>
-X-Mailer: git-send-email 2.33.0
+        Fri, 22 Apr 2022 08:11:55 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F94F56439;
+        Fri, 22 Apr 2022 05:09:01 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id EEDEE24000B;
+        Fri, 22 Apr 2022 12:08:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650629336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pmL6z+0b94SN7KtUORnpGXczTLqkiQjmgEiGXpj9g8g=;
+        b=knEreIWuP1Cz+14fMaLukrcRIyaxiCWzce/e+wImyHspCtNkYkiHxNRU27kQPxMSIGbeqx
+        MXSb6Zfu38otkoMW1qYCDDk+vCK84RcyDHbs5NNpxt4Ly1/yUrmtyo+6qsn4hDYHs62j5y
+        IpV8/b/QGfXyp9bCXA1JUvdcFImIiezMZpK8MthKEvKm93aWalg9IGBNJkQxpQ5yaf8cT8
+        HARCz3Fqy7PrI/wUIxqdtlfiqGxjkVAJC9/y/cQFdBu4/91Mu86qPx8kiaFQYN4Z357gUB
+        ZjxKI+4RZt4RpFDfsE5cJuD5MPjw4sOgqZz/VcBRKs5R3NztM55t8M14/AzUFQ==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>
+Subject: [PATCH v3 0/8] RZN1 USB Host support
+Date:   Fri, 22 Apr 2022 14:08:42 +0200
+Message-Id: <20220422120850.769480-1-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/04/22 06:12:00 #19330442
-X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It doesn't make sense for us to retry to compress an uncompressible
-page (comp_len == PAGE_SIZE) in zsmalloc slowpath, because we will
-be storing it uncompressed anyway. We can avoid wasting time on
-another compression attempt. It is enough to take lock
-(zcomp_stream_get) and execute the code below.
+Hi,
 
-Signed-off-by: Alexey Romanov <avromanov@sberdevices.ru>
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
----
- drivers/block/zram/zram_drv.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+This series add support for the USB Host controllers available on
+RZN1 (r9a06g032) SOC.
 
-diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
-index cb253d80d72b..bb9dd8b64176 100644
---- a/drivers/block/zram/zram_drv.c
-+++ b/drivers/block/zram/zram_drv.c
-@@ -1413,9 +1413,20 @@ static int __zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
- 		handle = zs_malloc(zram->mem_pool, comp_len,
- 				GFP_NOIO | __GFP_HIGHMEM |
- 				__GFP_MOVABLE);
--		if (handle)
-+		if (!handle)
-+			return -ENOMEM;
-+
-+		if (comp_len != PAGE_SIZE)
- 			goto compress_again;
--		return -ENOMEM;
-+
-+		/*
-+		 * If the page is not compressible, you need to acquire the lock and
-+		 * execute the code below. The zcomp_stream_get() call is needed to
-+		 * disable the cpu hotplug and grab the zstrm buffer back.
-+		 * It is necessary that the dereferencing of the zstrm variable below
-+		 * occurs correctly.
-+		 */
-+		zstrm = zcomp_stream_get(zram->comp);
- 	}
- 
- 	alloced_pages = zs_get_total_pages(zram->mem_pool);
+These USB Host controllers are PCI OHCI/EHCI controllers located
+behind a bridge.
+
+Regards,
+Herve
+
+Changes v2:
+- Convert bindings to json-schema
+- Update clocks description
+- Remove unneeded '.compatible = "renesas,pci-r9a06g032"'
+
+Changes v3:
+- Remove the unneeded patch that calls clk_bulk_prepare_enable()
+- Rework the device tree binding (conversion from .txt and RZ/N1 support)
+- Use the RZ/N1 SOCs family only in the driver match compatible string.
+- Enable PM and PM_GENERIC_DOMAIN for RZ/N1 and add the missing
+  '#power-domain-cells' in sysctrl node.
+
+Herve Codina (8):
+  dt-bindings: PCI: pci-rcar-gen2: Convert bindings to json-schema
+  dt-bindings: PCI: renesas,pci-rcar-gen2: Add device tree support for
+    r9a06g032
+  PCI: rcar-gen2: Add RZ/N1 SOCs support
+  soc: renesas: rzn1: Select PM and PM_GENERIC_DOMAINS configs
+  ARM: dts: r9a06g032: Add missing '#power-domain-cells'
+  ARM: dts: r9a06g032: Add internal PCI bridge node
+  ARM: dts: r9a06g032: Add USB PHY DT support
+  ARM: dts: r9a06g032: Link the PCI USB devices to the USB PHY
+
+ .../devicetree/bindings/pci/pci-rcar-gen2.txt |  84 --------
+ .../bindings/pci/renesas,pci-rcar-gen2.yaml   | 187 ++++++++++++++++++
+ arch/arm/boot/dts/r9a06g032.dtsi              |  48 +++++
+ drivers/pci/controller/pci-rcar-gen2.c        |   1 +
+ drivers/soc/renesas/Kconfig                   |   2 +
+ 5 files changed, 238 insertions(+), 84 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
+ create mode 100644 Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+
 -- 
-2.30.1
+2.35.1
 
