@@ -2,178 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbiDVWBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        id S231336AbiDVWBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbiDVWAu (ORCPT
+        with ESMTP id S231277AbiDVWAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:00:50 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D01F40F78B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:59 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id f5so5762620ilj.13
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:59 -0700 (PDT)
+        Fri, 22 Apr 2022 18:00:48 -0400
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F142C5223;
+        Fri, 22 Apr 2022 13:43:55 -0700 (PDT)
+Received: by mail-vs1-xe2d.google.com with SMTP id j16so8567745vsv.2;
+        Fri, 22 Apr 2022 13:43:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MEpHLec1VfOXZ957xfGm8Ejr+pJnneWUL+vw0yvfhv4=;
-        b=Y21IM1rnk46dBDp5zwaK/T1TXHMTuGORzT5eW8AYSStysCesIgFjYOHUFUS15e5bWT
-         OLlD0gyAbpiz3KkteHv1Nqwc8wpCCdvufOl4o/J+QKzULC0QgvH1e5eQBYT1LUnNJah7
-         thkLfoYy48I+ubx7Bx8rYchaUA1fXXvWxObBe+lyquCKt9butEJZM7mj9YSLjaPBBK3U
-         xWCvbV4wpd1gNa1Mo6SVgRePSZjUVQ4r3jhUqxKO/hO9oSq7Qv/UOc3/MbLx8+qiQhww
-         2iWMgYvLS1emJhluirYzm6HwZKBJU9uKVhxf0+uCrs7OCVKMI+g6Jfjk/kgQggOrILNp
-         bTJA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3NGyHwNzcPpl7RBhf4au6sQueS2Jmki+EL6hXZnP8PQ=;
+        b=QDq+OMzhXiDZE3ekAGb1VjqbjweR6q15vhiF8oMbAkui5VdjtN0MnvTvkPzXwTNfid
+         wp+k4NSNy3zdWHIgDyAm2OCTr7k1D7/aotkTNki3fw8w796Pmo7fMMf+Wi0VkdbsY6gT
+         TtP5jIFZLS146fJvbNfZJR2IEUqMEAmO8rF2Y0WhgolbJS9+5Wm9tXxgIUyP2wgfGzdk
+         56LkNxicQnznIOk+Z63Zc2ynlTh8ZtDGTR4CtFvXBaDLHP/ZSsNrqyzyI9mF3W2uoO0b
+         7l8q01HtgPOTX21HWNDPxfWs9iqsrMXPDmO4JFG9H/KchRQNvq50cgw8FfRVJIYwRo21
+         n+xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MEpHLec1VfOXZ957xfGm8Ejr+pJnneWUL+vw0yvfhv4=;
-        b=It2mX8SVW11lDIBHlTqPx4hKDNmjqnbFVjVIOCygFLbyTnjpuLAsEuCKo6qb7inTQR
-         ndHrjf0fm6CovSzHCEHsjpDQTYXrhLUY8Yewjkjn5+mYDN3f379/xFSDkO/aGd6tpIRt
-         oJdyd8qRFShgskRf9qNfIf1D4v7n4Kds4dUsNfB9HpxD88SHVmHWBrjOs7YLlzn73N2L
-         p+Lfr4KSkhUjjS642oS83T0lbhbknrVmRvAojz9YAmAGjsumwoZSZ4HSRKl2Me+C1bxZ
-         D9DAD0b5m5kSQbiW2oLaNS/eU4JuOP0rjnZAZtDjw2Atl+tg4JP/9xvyGelusOo+S8xD
-         yxOQ==
-X-Gm-Message-State: AOAM533RMaMdEfekbVBmL5T1pwn2nDlIieu3Qxe0jHh4F8oe2K8YB5gP
-        WYs4/R0ZqrQ2N3Y5aOpTcF3TVRK5NejD8w==
-X-Google-Smtp-Source: ABdhPJyq6Pev+frdReFdEQoGFh0hjvvnByHxD+Yshmj8pigE+7KWpHfHfR2682kvF4p8GYrGMZxPzw==
-X-Received: by 2002:a63:6ac5:0:b0:3aa:f01e:3280 with SMTP id f188-20020a636ac5000000b003aaf01e3280mr416174pgc.207.1650655960827;
-        Fri, 22 Apr 2022 12:32:40 -0700 (PDT)
-Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3NGyHwNzcPpl7RBhf4au6sQueS2Jmki+EL6hXZnP8PQ=;
+        b=q6rimmhhMR7wZ1gXO0xj2Vq+fOpWF6DFWJS1vLaZlR9PrrW8XBFW7P1UyuHUvSCW6p
+         9qXeXLn014AvOvqdhSuG5Glxfcz4AiyNkf4kjq3HU+Lm9GeBvBqzpefz53E4CO4F/eU0
+         D3s6Q1cPqgUh/t8+8brcryP8LveBOfipIvkAFcfFAU0jElK/Go4BiyywrYYpcWRAVn/t
+         jzZFK7ajoKA9utV2Zsbr36oZ2uSvJFveV75E8vKpDLi/DuSZchvOYy8qWyMva3L+oxuu
+         I8DfApynYbT6EUOcJ2l/gJXQb6MFNKHA7R1LjwiBlQvglhJHZl3CQal1LJXyN3HLemvs
+         yfCg==
+X-Gm-Message-State: AOAM5300NSFvHrPkbri8ujkcvDF3CZU5oJ3kytoH8C9hxtliUFVTal/Y
+        zpMqBgTJyRkSeTvVKY5S12MkyJqb/45J
+X-Google-Smtp-Source: ABdhPJxzISRgHHODXKrrwyPqtpJH5WzT+DrLyG8K/Zt/m0UNqJazuD3i0Bd7jVRhJazqucNnus+6QQ==
+X-Received: by 2002:a0c:d7cb:0:b0:444:2b27:80d3 with SMTP id g11-20020a0cd7cb000000b004442b2780d3mr5088064qvj.57.1650659460120;
+        Fri, 22 Apr 2022 13:31:00 -0700 (PDT)
+Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id n22-20020ac85b56000000b002f1d7a2867dsm1790112qtw.67.2022.04.22.13.30.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:32:40 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH v3 2/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_cmd_priv
-Date:   Sat, 23 Apr 2022 01:02:18 +0530
-Message-Id: <20220422193223.11948-3-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
-References: <20220422193223.11948-1-makvihas@gmail.com>
+        Fri, 22 Apr 2022 13:30:59 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 16:30:57 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        hannes@cmpxchg.org, akpm@linux-foundation.org,
+        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-input@vger.kernel.org, roman.gushchin@linux.dev
+Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
+ heap-allocated strings
+Message-ID: <20220422203057.iscsmurtrmwkpwnq@moria.home.lan>
+References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
+ <20220421234837.3629927-7-kent.overstreet@gmail.com>
+ <20220422042017.GA9946@lst.de>
+ <YmI5yA1LrYrTg8pB@moria.home.lan>
+ <20220422052208.GA10745@lst.de>
+ <YmI/v35IvxhOZpXJ@moria.home.lan>
+ <20220422113736.460058cc@gandalf.local.home>
+ <20220422193015.2rs2wvqwdlczreh3@moria.home.lan>
+ <20220422153916.7ebf20c3@gandalf.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422153916.7ebf20c3@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unnecessary wrapper _rtw_init_cmd_priv and move its logic to
-rtw_init_cmd_priv.
+On Fri, Apr 22, 2022 at 03:39:16PM -0400, Steven Rostedt wrote:
+> I do not consider Facebook an open source company. One reason I turned them
+> down.
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_cmd.c | 77 ++++++++++++--------------
- 1 file changed, 34 insertions(+), 43 deletions(-)
+Surely you can see how NIH syndrome isn't something that just happens at
+closed-source companies? How a default cultural assumption of "we do things the
+way we've always done" leads to things getting insular?
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 32589e76e..fc955fce2 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -15,47 +15,6 @@
-  * No irqsave is necessary.
-  */
- 
--static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
--{
--	int res = _SUCCESS;
--
--	init_completion(&pcmdpriv->enqueue_cmd);
--	/* sema_init(&(pcmdpriv->cmd_done_sema), 0); */
--	init_completion(&pcmdpriv->start_cmd_thread);
--	init_completion(&pcmdpriv->stop_cmd_thread);
--
--	rtw_init_queue(&pcmdpriv->cmd_queue);
--
--	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
--
--	pcmdpriv->cmd_seq = 1;
--
--	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
--					      GFP_KERNEL);
--
--	if (!pcmdpriv->cmd_allocated_buf) {
--		res = _FAIL;
--		goto exit;
--	}
--
--	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf  +  CMDBUFF_ALIGN_SZ - ((size_t)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ - 1));
--
--	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
--
--	if (!pcmdpriv->rsp_allocated_buf) {
--		res = _FAIL;
--		goto exit;
--	}
--
--	pcmdpriv->rsp_buf = pcmdpriv->rsp_allocated_buf  +  4 - ((size_t)(pcmdpriv->rsp_allocated_buf) & 3);
--
--	pcmdpriv->cmd_done_cnt = 0;
--	pcmdpriv->rsp_cnt = 0;
--exit:
--
--	return res;
--}
--
- static void c2h_wk_callback(struct work_struct *work);
- 
- static int _rtw_init_evt_priv(struct evt_priv *pevtpriv)
-@@ -133,9 +92,41 @@ static struct cmd_obj *_rtw_dequeue_cmd(struct __queue *queue)
- 
- u32	rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
- {
--	u32	res;
-+	u32 res = _SUCCESS;
-+
-+	init_completion(&pcmdpriv->enqueue_cmd);
-+	/* sema_init(&(pcmdpriv->cmd_done_sema), 0); */
-+	init_completion(&pcmdpriv->start_cmd_thread);
-+	init_completion(&pcmdpriv->stop_cmd_thread);
-+
-+	rtw_init_queue(&pcmdpriv->cmd_queue);
-+
-+	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
-+
-+	pcmdpriv->cmd_seq = 1;
-+
-+	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
-+					      GFP_KERNEL);
-+
-+	if (!pcmdpriv->cmd_allocated_buf) {
-+		res = _FAIL;
-+		goto exit;
-+	}
-+
-+	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf  +  CMDBUFF_ALIGN_SZ - ((size_t)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ - 1));
-+
-+	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
-+
-+	if (!pcmdpriv->rsp_allocated_buf) {
-+		res = _FAIL;
-+		goto exit;
-+	}
- 
--	res = _rtw_init_cmd_priv(pcmdpriv);
-+	pcmdpriv->rsp_buf = pcmdpriv->rsp_allocated_buf  +  4 - ((size_t)(pcmdpriv->rsp_allocated_buf) & 3);
-+
-+	pcmdpriv->cmd_done_cnt = 0;
-+	pcmdpriv->rsp_cnt = 0;
-+exit:
- 
- 	return res;
- }
--- 
-2.30.2
+> > The reason I bring that up is that in this case, printbuf is the more evolved,
+> > more widely used implementation, and you're asking me to discard it so the
+> > kernel can stick with its more primitive, less widely used implementation.
+> > 
+> > $ git grep -w seq_buf|wc -l
+> > 86
+> > 
+> > $ git grep -w printbuf|wc -l
+> > 366
+> 
+> $ git grep printbuf
+> drivers/media/i2c/ccs/ccs-reg-access.c:                 char printbuf[(MAX_WRITE_LEN << 1) +
+> drivers/media/i2c/ccs/ccs-reg-access.c:                 bin2hex(printbuf, regdata, msg.len);
+> drivers/media/i2c/ccs/ccs-reg-access.c:                         regs->addr + j, printbuf);
+> 
+> I don't see it.
 
+Here: https://evilpiepirate.org/git/bcachefs.git/
+
+It may not be merged yet, but it is actively developed open source code with
+active users that's intended to be merged!
+
+> I'd like to know more to why seq_buf is not good for you. And just telling
+> me that you never seriously tried to make it work because you were afraid
+> of causing tracing regressions without ever asking the tracing maintainer
+> is not going to cut it.
+
+I didn't know about seq_buf until a day or two ago, that's literally all it was.
+
+And Steve, apologies if I've come across as being a dick about this, that wasn't
+my intent.  I've got nothing against you or your code - I'd love it if we could
+just have a discussion about them on their merits, and if it feels like I'm
+making an issue about this unnecessarily that's because I think there's
+something about kernel process and culture worth improving that I want to raise,
+so I'm sticking my neck out a bit here.
+
+So here's the story of how I got from where seq_buf is now to where printbuf is
+now:
+
+ - Printbuf started out as almost an exact duplicate of seq_buf (like I said,
+   not intentionally), with an external buffer typically allocated on the stack.
+
+ - As error/log messages got to be bigger and more structured, stack usage
+   eventually became an issue, so eventually I added the heap allocations. 
+
+ - This made them a lot more convenient to use, and made possible entirely new
+   ways of using them - so I started using them more, and converting everything
+   that outputted to strings to them.
+
+ - This lead to the realization that when pretty-printers are easy and
+   convenient to write, that leads to writing pretty-printers for _more_ stuff,
+   which makes it easy to stay in the habit of adding anything relevant to
+   sysfs/debugfs - and log/error messages got a _whole_ lot better when I
+   realized instead of writing format strings for every basic C type I can just
+   use the .to_text() methods of the high level objects I'm working with.
+
+Basically, my debugging life has gotten _drastically_ easier because of this
+change in process and approach - deadlocks that I used to have to attach a
+debugger for are now trivial because all the relevant state is in debugfs and
+greppable, and filesystem inconsistencies that used to suck to debug I now just
+take what's in the error message and grep through the journal for.
+
+I can't understate how invaluable all this stuff has been, and I'm excited to
+take the lessons I've learned and apply them to the wider kernel and make other
+people's lives easier too.
+
+The shrinkers-OOM-reporting patch was an obvious starting point because
+ - shrinkers have internal state that's definitely worth reporting on
+ - we shouldn't just be logging this on OOM, we should also make this available
+   in sysfs or debugfs.
+
+Feature wise, printbufs have:
+ - heap allocation
+ - extra state for formatting: indent level, tabstops, and a way of specifying
+   units.
+
+That's basically it. Heap allocation adds very little code and eliminates a
+_lot_ of headaches in playing the "how much do I need to/can I put on the stack"
+game, and you'll want the formatting options as soon as you start formatting
+multi line output and writing pretty printers that call other pretty printers.
