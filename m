@@ -2,216 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3023FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449749AbiDVQg6 (ORCPT
+        id S1449748AbiDVQil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        Fri, 22 Apr 2022 12:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448919AbiDVQgz (ORCPT
+        with ESMTP id S1449943AbiDVQi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:36:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C515F25A;
-        Fri, 22 Apr 2022 09:34:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B20BB831B1;
-        Fri, 22 Apr 2022 16:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C0C6C385A0;
-        Fri, 22 Apr 2022 16:33:56 +0000 (UTC)
-Message-ID: <ca8b1403-ca58-a4b4-d2e2-1c682b5f0adb@xs4all.nl>
-Date:   Fri, 22 Apr 2022 18:33:54 +0200
+        Fri, 22 Apr 2022 12:38:29 -0400
+Received: from pi3.com.pl (pi3.com.pl [185.238.74.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBFD5EBC8
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:35:34 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by pi3.com.pl (Postfix) with ESMTP id 671254C15C8;
+        Fri, 22 Apr 2022 18:35:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pi3.com.pl; s=default;
+        t=1650645330; bh=FO0yyrh9CoC+u1Lc94sRriq5qS8DXWjE4mxYlctLJzA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kn9vC4ilOOjCoQXzWsaFyJswqtrdUZZ03/p7QDrYWh85CpUIcfS2WOeSkXML66BLv
+         1d/Y+drQstpm6VUSy17TyVMaTj6+giizeRvWsjf0s4RnyKrcLMjyiPfWjwso9LLtZE
+         RBWYwIzoBHuM8aJTrAHTKDQA0AxnyRXqr+vDKkJrbrAAtT71cjWvu2UYCkgEsAXgpk
+         Lj0NBR/GZ9OWcqBSNUBk1yG7dId4Uj3P/qcbqq+kZcgtgARPvoJixX8rzAM5OXfxE2
+         ha2MIVNb1C1tlzO7MToyrejzIPdEQ2VedzmVLICWm54mi2yIhVj20TnOi2PSKSYrW9
+         AG4Wn7Kj1btyw==
+X-Virus-Scanned: Debian amavisd-new at pi3.com.pl
+Received: from pi3.com.pl ([127.0.0.1])
+        by localhost (pi3.com.pl [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 6ZMQBYqF8TaA; Fri, 22 Apr 2022 18:35:27 +0200 (CEST)
+Received: by pi3.com.pl (Postfix, from userid 1000)
+        id 23CA24C11A3; Fri, 22 Apr 2022 18:35:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pi3.com.pl; s=default;
+        t=1650645327; bh=FO0yyrh9CoC+u1Lc94sRriq5qS8DXWjE4mxYlctLJzA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tcuQLEOdCirJsBOUFgKeuxl0qGZcyni3BSn/j5Bu3+zKXE+J7qdBt6GxVLi5Mzcah
+         M1DJWUBfutFQtLkEKhUJHznY8AnTG5JJ+PNNPuU8/qcn0yvkame8BvyK/7gRJDQAyZ
+         GW59KTJrGe8YEsxc3lmj8wOSD3ocZSKAFC3CPiMuyN0LigG7nmRu5mP77Gfl7TTiOq
+         lvwM1y6r1vqd4w6kFbhcyDG3seHUDxralAvhWnhXCqXw0+dWokBX/TzA2Q4TYVFsrx
+         ViIarHtge01lZ46MGS/cbkR3IdmTpYh2eweqjgBYMIAjxDaVRMAwM9kYJuW1flkZS2
+         lXyr5bvckL8QQ==
+Date:   Fri, 22 Apr 2022 18:35:27 +0200
+From:   Adam Zabrocki <pi3@pi3.com.pl>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Solar Designer <solar@openwall.com>
+Subject: Re: [PATCH] x86/kprobes: Fix KRETPROBES when
+ CONFIG_KRETPROBE_ON_RETHOOK is set
+Message-ID: <20220422163527.GA7810@pi3.com.pl>
+References: <20220415180723.GA13921@pi3.com.pl>
+ <20220415181006.GA14021@pi3.com.pl>
+ <20220422220523.bbad0538ef69b81cc7befe2a@kernel.org>
+ <20220422094350.2397cd2d@gandalf.local.home>
+ <20220422235401.a3ece3ed2b008dc790cdb6e2@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 09/24] media: v4l2: Trace calculated p/b0/b1 initial
- reflist
-Content-Language: en-US
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org
-References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
- <20220405204426.259074-10-nicolas.dufresne@collabora.com>
- <d7451087-45f1-9691-2289-999eb16ca8a0@xs4all.nl>
- <04819e457ee0135e5d0b337dccfaba69b2d46610.camel@collabora.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <04819e457ee0135e5d0b337dccfaba69b2d46610.camel@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220422235401.a3ece3ed2b008dc790cdb6e2@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 16:58, Nicolas Dufresne wrote:
-> Le vendredi 22 avril 2022 à 09:26 +0200, Hans Verkuil a écrit :
->> On 05/04/2022 22:44, Nicolas Dufresne wrote:
->>> Add debug print statements to print the content of P & B reference
->>> lists, to verify that the ordering of the generated reference lists is
->>> correct. This is especially important for the field decoding mode,
->>> where sorting is more complex.
->>>
->>> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
->>> Tested-by: Sebastian Fricke <sebastian.fricke@collabora.com>
->>> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
->>> ---
->>>  drivers/media/v4l2-core/v4l2-h264.c | 86 +++++++++++++++++++++++++++++
->>>  1 file changed, 86 insertions(+)
->>>
->>> diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-core/v4l2-h264.c
->>> index 38d8dbda0045..bcf9b7774560 100644
->>> --- a/drivers/media/v4l2-core/v4l2-h264.c
->>> +++ b/drivers/media/v4l2-core/v4l2-h264.c
->>> @@ -241,6 +241,87 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
->>>  	return poca < pocb ? -1 : 1;
->>>  }
->>>  
->>> +static char ref_type_to_char (u8 ref_type)
->>
->> Spurious space before (.
->>
->> Odd that checkpatch didn't catch that.
->>
->>> +{
->>> +	switch (ref_type) {
->>> +	case V4L2_H264_FRAME_REF:
->>> +		return 'f';
->>> +	case V4L2_H264_TOP_FIELD_REF:
->>> +		return 't';
->>> +	case V4L2_H264_BOTTOM_FIELD_REF:
->>> +		return 'b';
->>> +	}
->>> +
->>> +	return '?';
->>> +}
->>> +
->>> +static const char *format_ref_list_p(const struct v4l2_h264_reflist_builder *builder,
->>> +				     struct v4l2_h264_reference *reflist,
->>> +				     char *out_str, const int len)
->>> +{
->>> +	int n = 0, i;
->>> +
->>> +	n += snprintf(out_str + n, len - n, "|");
->>> +
->>> +	for (i = 0; i < builder->num_valid; i++) {
->>> +		/* this is pic_num for frame and frame_num (wrapped) for field,
->>> +		 * but for frame pic_num is equal to frame_num (wrapped).
->>> +		 */
->>> +		int frame_num = builder->refs[reflist[i].index].frame_num;
->>> +		bool longterm = builder->refs[reflist[i].index].longterm;
->>> +
->>> +		n += scnprintf(out_str + n, len - n, "%i%c%c|",
->>> +			       frame_num, longterm ? 'l' : 's',
->>> +			       ref_type_to_char (reflist[i].fields));
->>> +	}
->>> +
->>> +	return out_str;
->>> +}
->>> +
->>> +static void print_ref_list_p(const struct v4l2_h264_reflist_builder *builder,
->>> +			     struct v4l2_h264_reference *reflist)
->>> +{
->>> +	char buf[1024];
->>> +
->>> +	pr_debug("ref_pic_list_p (cur_poc %u%c) %s\n",
->>> +		 builder->cur_pic_order_count,
->>> +		 ref_type_to_char(builder->cur_pic_fields),
->>> +		 format_ref_list_p(builder, reflist, buf, sizeof(buf)));
->>> +}
->>> +
->>> +static const char *format_ref_list_b(const struct v4l2_h264_reflist_builder *builder,
->>> +				     struct v4l2_h264_reference *reflist,
->>> +				     char *out_str, const int len)
->>> +{
->>> +	int n = 0, i;
->>> +
->>> +	n += snprintf(out_str + n, len - n, "|");
->>> +
->>> +	for (i = 0; i < builder->num_valid; i++) {
->>> +		int frame_num = builder->refs[reflist[i].index].frame_num;
->>> +		u32 poc = v4l2_h264_get_poc(builder, reflist + i);
->>> +		bool longterm = builder->refs[reflist[i].index].longterm;
->>> +
->>> +		n += scnprintf(out_str + n, len - n, "%i%c%c|",
->>> +			       longterm ? frame_num : poc,
->>> +			       longterm ? 'l' : 's',
->>> +			       ref_type_to_char(reflist[i].fields));
->>> +	}
->>> +
->>> +	return out_str;
->>> +}
->>> +
->>> +static void print_ref_list_b(const struct v4l2_h264_reflist_builder *builder,
->>> +			     struct v4l2_h264_reference *reflist, u8 list_num)
->>> +{
->>> +	char buf[1024];
->>
->> I really don't like placing 1024 bytes on the stack. Can you find another way
->> of doing this? Perhaps using pr_cont or writing each format_ref_list item
->> on a separate line.
-> 
-> Thanks, I was strongly discourage of using pr_cont (which was my first
-> approach). Rationales are well covered on LKLM and in the pr_cont documentation,
-> so I won't say more then its not visually thread safe.
-> 
-> I would like to decline the second proposition, as having the lists spread out
-> on up to 32 lines will make the trace very hard to use. What I may suggest, as I
-> would really prefer keeping this trace useful, is to use an allocation instead.
-> The performance does not matter, and I explicitly call this function inside the
-> pr_debug call so it can be compiled out.
+Sure, I will do it.
 
-Allocation is probably best here.
+Thanks for help,
+Adam
 
-Regards,
+On Fri, Apr 22, 2022 at 11:54:01PM +0900, Masami Hiramatsu wrote:
+> On Fri, 22 Apr 2022 09:43:50 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+> > On Fri, 22 Apr 2022 22:05:23 +0900
+> > Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> > 
+> > > Hi Steve,
+> > > 
+> > > Can you pick this fix to urgent branch? Or Should I ask bpf people?
+> > 
+> > It looks to fix a bug from a commit pulled in from the BPF folks. I would
+> > have them take it.
+> 
+> OK, thanks!
+> 
+> Adam, can you resend your patch with my Ack and modify the PATCH tag as
+> "[PATCH bpf]", to "Alexei Starovoitov <ast@kernel.org>", "Andrii Nakryiko <andrii@kernel.org>",
+>  and Cc: "bpf@vger.kernel.org" ? 
+> 
+> Thank you,
+> 
+> > 
+> > Thanks,
+> > 
+> > -- Steve
+> > > 
+> > > > Fixes: 73f9b911faa7 ("kprobes: Use rethook for kretprobe if possible")
+> 
+> 
+> -- 
+> Masami Hiramatsu <mhiramat@kernel.org>
 
-	Hans
-
-> 
-> My last resort otherwise would be to use 32 %s formaters, and pass each of the
-> possible 32 entry (or empty string "") manually.
-> 
-> let me know what you believe is acceptable for you,
-> Nicolas
-> 
->>
->> Regards,
->>
->> 	Hans
->>
->>> +
->>> +	pr_debug("ref_pic_list_b%u (cur_poc %u%c) %s",
->>> +		 list_num, builder->cur_pic_order_count,
->>> +		 ref_type_to_char (builder->cur_pic_fields),
->>> +		 format_ref_list_b(builder, reflist, buf, sizeof(buf)));
->>> +}
->>> +
->>>  /**
->>>   * v4l2_h264_build_p_ref_list() - Build the P reference list
->>>   *
->>> @@ -261,6 +342,8 @@ v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *builder,
->>>  	       sizeof(builder->unordered_reflist[0]) * builder->num_valid);
->>>  	sort_r(reflist, builder->num_valid, sizeof(*reflist),
->>>  	       v4l2_h264_p_ref_list_cmp, NULL, builder);
->>> +
->>> +	print_ref_list_p(builder, reflist);
->>>  }
->>>  EXPORT_SYMBOL_GPL(v4l2_h264_build_p_ref_list);
->>>  
->>> @@ -296,6 +379,9 @@ v4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *builder,
->>>  	if (builder->num_valid > 1 &&
->>>  	    !memcmp(b1_reflist, b0_reflist, builder->num_valid))
->>>  		swap(b1_reflist[0], b1_reflist[1]);
->>> +
->>> +	print_ref_list_b(builder, b0_reflist, 0);
->>> +	print_ref_list_b(builder, b1_reflist, 1);
->>>  }
->>>  EXPORT_SYMBOL_GPL(v4l2_h264_build_b_ref_lists);
->>>  
->>
-> 
+-- 
+pi3 (pi3ki31ny) - pi3 (at) itsec pl
+http://pi3.com.pl
 
