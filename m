@@ -2,200 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC32AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241078AbiDVGEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S1351403AbiDVGEf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 02:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233399AbiDVGEU (ORCPT
+        with ESMTP id S238426AbiDVGE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:04:20 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD9F4F9F1
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:28 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id bo5so7043775pfb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:28 -0700 (PDT)
+        Fri, 22 Apr 2022 02:04:29 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2294F9F3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:35 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id z16so7042556pfh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:01:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iCtPEUmganS3WW6hgnqPl75q8FroRAr1REDTeJ7X0R0=;
-        b=I478Ghar3KWh63quvKkgtK9ltlcIKE6xMB4aGC1ywBJ0fiu1rd4oq8FEIaZBiWG2Vy
-         XdbNKsmyGSP2SzgBZMBPoMsVEnZqXfDub+b+tWxI5A3JPJ1L8SI5CvfK/RZ7oiWTdrTs
-         FdMzKDGt5hJLtxYG4I0kYObvHpro/xHMdZ4fyK3XldXONdspWEsbo2tUWCQ57yPGDRlv
-         7gxnJJPW/H1V57G81YCRPeId/zxr4D7+CuH31t3RjSlJkRSqfQ8r39R4IMHRqDvvwP8D
-         SWkGvKF3f1V902b3YuPg0HZJWLCsAMMmt9RzHu2kAgZqExJk0t8zhWPL0x2+MCIVs/Y0
-         WnjQ==
+        d=sslab.ics.keio.ac.jp; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2n9bgZjee/cHocKFdQ/ER3Mjblog3S/SvSNshrOwXL8=;
+        b=Q4rveyWTprPFmV5y3aqOmjdwFc70/+XQUE+lN+A6ZQSFib83/24eDeDm1JmH7ug2sz
+         VEP6UOw+qBu9DbXQpFvZ9l9GjrV4elnCDhBT4YBA0DG83u/xHd4toJpAWxlvGimU9GMn
+         M8mRzuk7YdVVQM0oPjszFaoGR6Dmw9XyyxeNQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iCtPEUmganS3WW6hgnqPl75q8FroRAr1REDTeJ7X0R0=;
-        b=jpjZsqu+qLgyUMtkiZYahFws8dyikprMet9zop4z8YiOQEm9iAnCmDPQPHwtLA88Bb
-         9L/v9lB0fy9MI0epsmFI146qSps1buWcCDyuvtyK8rZNlEmVqmCHFALG+2rjic7CNlqR
-         WHBGAMtQnAuJ0f0ry1VMIPEdKGkMe6BJWB589SyWnPEZBvr7VnPiFsEjThI0zdI0j/L4
-         ECWHWp3gwaIE4CZPod6lonskVEd3VMb72F5T7XfsK3QSCaiC2vwHwduAj3yalr1e0HEv
-         by3I+nxI3ltYbQIyslL37VDf599YMdjGaM2/4C8ITAgTZUFKRUVuJ8lm2kiqXl01XnKa
-         9OWQ==
-X-Gm-Message-State: AOAM532bLkaW1q+fa33b1ptwL+yuEYOWnY7fR2YlJv4CxO34N+xNAgqA
-        c3owAkMUBxe+SrZU2lF0z8Q=
-X-Google-Smtp-Source: ABdhPJychbw03HI4297NZJB2yHoXqNJYk8ferxJW1V428PntpJtqiVa6H3q8JY2D4MExZdVRlMhXOw==
-X-Received: by 2002:a05:6a00:2405:b0:4e1:5008:adcc with SMTP id z5-20020a056a00240500b004e15008adccmr3352801pfh.35.1650607287854;
-        Thu, 21 Apr 2022 23:01:27 -0700 (PDT)
-Received: from bobo.ozlabs.ibm.com (193-116-116-20.tpgi.com.au. [193.116.116.20])
-        by smtp.gmail.com with ESMTPSA id y16-20020a637d10000000b00381268f2c6fsm998607pgc.4.2022.04.21.23.01.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2n9bgZjee/cHocKFdQ/ER3Mjblog3S/SvSNshrOwXL8=;
+        b=vtCqGPJrX9W82QergvpjFgGvF6MpMSLXOvv96G3TggMP5TqtCjU9d2tFj9A+Y3bE+D
+         m3BVAwX0q2Lln6ZF7yt9h+y1sZBz6cI76XnkR5Q98OyE4K6DhFSwRcF+T3gb0klxXh49
+         gJepBn+iV4XyeXMbeWspnBPxyrPijJZGz7M+mn5LE39WkQDN6wNNla4xGjIHH7Z2j9U/
+         ML9FOwZvF8OmUPDnybJFtq5Vam/V2DBUSlLLstsvV1LIrojgXYMnuu0z7snCMMdLgwu8
+         IulCticx55Ko9n3AlNso+AbZ9HlCSTB4oahHvkJPEqM11Se3LX/JquhJEimEwww75z1/
+         mDkA==
+X-Gm-Message-State: AOAM531ngnqX7tQyWIqxoa7TwxWIQhs3FV6vZ+1UNY5Cw6ut9ICEEdjh
+        HGBbZnY27gxVHvloAYYKW8QQrIrS/Mbw5A==
+X-Google-Smtp-Source: ABdhPJz1+Q5wZTCWBaxgzl66qEogbRIwuuWuXVJsIr6DWmG73SkFu/fbplrM8MupI+k5jZzPVCkk4A==
+X-Received: by 2002:a05:6a00:4007:b0:50a:686b:5e03 with SMTP id by7-20020a056a00400700b0050a686b5e03mr3170039pfb.7.1650607295130;
+        Thu, 21 Apr 2022 23:01:35 -0700 (PDT)
+Received: from saltlake.i.sslab.ics.keio.ac.jp (sslab-relay.ics.keio.ac.jp. [131.113.126.173])
+        by smtp.gmail.com with ESMTPSA id jp20-20020a17090ae45400b001cd4989fecasm4643556pjb.22.2022.04.21.23.01.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 23:01:27 -0700 (PDT)
-From:   Nicholas Piggin <npiggin@gmail.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Nicholas Piggin <npiggin@gmail.com>, x86@kernel.org,
-        Song Liu <songliubraving@fb.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "Torvalds, Linus" <torvalds@linux-foundation.org>,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [PATCH 2/2] Revert "vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP"
-Date:   Fri, 22 Apr 2022 16:01:06 +1000
-Message-Id: <20220422060107.781512-3-npiggin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422060107.781512-1-npiggin@gmail.com>
-References: <20220422060107.781512-1-npiggin@gmail.com>
+        Thu, 21 Apr 2022 23:01:34 -0700 (PDT)
+From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Cc:     mhiramat@kernel.org, keitasuzuki.park@sslab.ics.keio.ac.jp,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] tracing: Fix potential double free in create_var_ref()
+Date:   Fri, 22 Apr 2022 06:00:25 +0000
+Message-Id: <20220422060025.1436075-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 559089e0a93d44280ec3ab478830af319c56dbe3
+In create_var_ref(), init_var_ref() is called to initialize the fields
+of variable ref_field, which is allocated in the previous function call
+to create_hist_field(). Function init_var_ref() allocates the
+corresponding fields such as ref_field->system, but frees these fields
+when the function encounters an error. The caller later calls
+destroy_hist_field() to conduct error handling, which frees the fields
+and the variable itself. This results in double free of the fields which
+are already freed in the previous function.
 
-The previous commit fixes huge vmalloc for drivers that use the
-vmalloc_to_page() struct pages.
+Fix this by storing NULL to the corresponding fields when they are freed
+in init_var_ref().
 
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
 ---
- arch/Kconfig                 |  6 ++++--
- arch/powerpc/kernel/module.c |  2 +-
- arch/s390/kvm/pv.c           |  7 ++++++-
- include/linux/vmalloc.h      |  4 ++--
- mm/vmalloc.c                 | 17 +++++++----------
- 5 files changed, 20 insertions(+), 16 deletions(-)
+ kernel/trace/trace_events_hist.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 31c4fdc4a4ba..29b0167c088b 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -854,8 +854,10 @@ config HAVE_ARCH_HUGE_VMAP
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index 44db5ba9cabb..a0e41906d9ce 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -2093,8 +2093,11 @@ static int init_var_ref(struct hist_field *ref_field,
+ 	return err;
+  free:
+ 	kfree(ref_field->system);
++	ref_field->system = NULL;
+ 	kfree(ref_field->event_name);
++	ref_field->event_name = NULL;
+ 	kfree(ref_field->name);
++	ref_field->name = NULL;
  
- #
- #  Archs that select this would be capable of PMD-sized vmaps (i.e.,
--#  arch_vmap_pmd_supported() returns true). The VM_ALLOW_HUGE_VMAP flag
--#  must be used to enable allocations to use hugepages.
-+#  arch_vmap_pmd_supported() returns true), and they must make no assumptions
-+#  that vmalloc memory is mapped with PAGE_SIZE ptes. The VM_NO_HUGE_VMAP flag
-+#  can be used to prohibit arch-specific allocations from using hugepages to
-+#  help with this (e.g., modules may require it).
- #
- config HAVE_ARCH_HUGE_VMALLOC
- 	depends on HAVE_ARCH_HUGE_VMAP
-diff --git a/arch/powerpc/kernel/module.c b/arch/powerpc/kernel/module.c
-index 97a76a8619fb..40a583e9d3c7 100644
---- a/arch/powerpc/kernel/module.c
-+++ b/arch/powerpc/kernel/module.c
-@@ -101,7 +101,7 @@ __module_alloc(unsigned long size, unsigned long start, unsigned long end, bool
- 	 * too.
- 	 */
- 	return __vmalloc_node_range(size, 1, start, end, gfp, prot,
--				    VM_FLUSH_RESET_PERMS,
-+				    VM_FLUSH_RESET_PERMS | VM_NO_HUGE_VMAP,
- 				    NUMA_NO_NODE, __builtin_return_address(0));
+ 	goto out;
  }
- 
-diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-index cc7c9599f43e..7f7c0d6af2ce 100644
---- a/arch/s390/kvm/pv.c
-+++ b/arch/s390/kvm/pv.c
-@@ -137,7 +137,12 @@ static int kvm_s390_pv_alloc_vm(struct kvm *kvm)
- 	/* Allocate variable storage */
- 	vlen = ALIGN(virt * ((npages * PAGE_SIZE) / HPAGE_SIZE), PAGE_SIZE);
- 	vlen += uv_info.guest_virt_base_stor_len;
--	kvm->arch.pv.stor_var = vzalloc(vlen);
-+	/*
-+	 * The Create Secure Configuration Ultravisor Call does not support
-+	 * using large pages for the virtual memory area.
-+	 * This is a hardware limitation.
-+	 */
-+	kvm->arch.pv.stor_var = vmalloc_no_huge(vlen);
- 	if (!kvm->arch.pv.stor_var)
- 		goto out_err;
- 	return 0;
-diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-index b159c2789961..3b1df7da402d 100644
---- a/include/linux/vmalloc.h
-+++ b/include/linux/vmalloc.h
-@@ -26,7 +26,7 @@ struct notifier_block;		/* in notifier.h */
- #define VM_KASAN		0x00000080      /* has allocated kasan shadow memory */
- #define VM_FLUSH_RESET_PERMS	0x00000100	/* reset direct map and flush TLB on unmap, can't be freed in atomic context */
- #define VM_MAP_PUT_PAGES	0x00000200	/* put pages and free array in vfree */
--#define VM_ALLOW_HUGE_VMAP	0x00000400      /* Allow for huge pages on archs with HAVE_ARCH_HUGE_VMALLOC */
-+#define VM_NO_HUGE_VMAP		0x00000400	/* force PAGE_SIZE pte mapping */
- 
- #if (defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)) && \
- 	!defined(CONFIG_KASAN_VMALLOC)
-@@ -153,7 +153,7 @@ extern void *__vmalloc_node_range(unsigned long size, unsigned long align,
- 			const void *caller) __alloc_size(1);
- void *__vmalloc_node(unsigned long size, unsigned long align, gfp_t gfp_mask,
- 		int node, const void *caller) __alloc_size(1);
--void *vmalloc_huge(unsigned long size, gfp_t gfp_mask) __alloc_size(1);
-+void *vmalloc_no_huge(unsigned long size) __alloc_size(1);
- 
- extern void *__vmalloc_array(size_t n, size_t size, gfp_t flags) __alloc_size(1, 2);
- extern void *vmalloc_array(size_t n, size_t size) __alloc_size(1, 2);
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index cadfbb5155ea..09470361dc03 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -3101,7 +3101,7 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
- 		return NULL;
- 	}
- 
--	if (vmap_allow_huge && (vm_flags & VM_ALLOW_HUGE_VMAP)) {
-+	if (vmap_allow_huge && !(vm_flags & VM_NO_HUGE_VMAP)) {
- 		unsigned long size_per_node;
- 
- 		/*
-@@ -3268,24 +3268,21 @@ void *vmalloc(unsigned long size)
- EXPORT_SYMBOL(vmalloc);
- 
- /**
-- * vmalloc_huge - allocate virtually contiguous memory, allow huge pages
-- * @size:      allocation size
-- * @gfp_mask:  flags for the page level allocator
-+ * vmalloc_no_huge - allocate virtually contiguous memory using small pages
-+ * @size:    allocation size
-  *
-- * Allocate enough pages to cover @size from the page level
-+ * Allocate enough non-huge pages to cover @size from the page level
-  * allocator and map them into contiguous kernel virtual space.
-- * If @size is greater than or equal to PMD_SIZE, allow using
-- * huge pages for the memory
-  *
-  * Return: pointer to the allocated memory or %NULL on error
-  */
--void *vmalloc_huge(unsigned long size, gfp_t gfp_mask)
-+void *vmalloc_no_huge(unsigned long size)
- {
- 	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
--				    gfp_mask, PAGE_KERNEL, VM_ALLOW_HUGE_VMAP,
-+				    GFP_KERNEL, PAGE_KERNEL, VM_NO_HUGE_VMAP,
- 				    NUMA_NO_NODE, __builtin_return_address(0));
- }
--EXPORT_SYMBOL_GPL(vmalloc_huge);
-+EXPORT_SYMBOL(vmalloc_no_huge);
- 
- /**
-  * vzalloc - allocate virtually contiguous memory with zero fill
 -- 
-2.35.1
+2.25.1
 
