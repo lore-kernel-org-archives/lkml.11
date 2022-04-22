@@ -2,162 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3176C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbiDVXJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49494 "EHLO
+        id S231252AbiDVXMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234285AbiDVXI4 (ORCPT
+        with ESMTP id S234197AbiDVXK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:08:56 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D65BDEB8B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650667343; x=1682203343;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zu+1/MDJ67d3IOeBAAnls5zDrulU66rJk6n5OaR6ZlM=;
-  b=J/spNgwXVB/V9NmlIVQhbQ3adEyhWXZA/AWVJf9by7oE14EgqEOYH+3r
-   12RIB3GcWdffc/4gOu/PIG1+RMLZQMBPbJgrVq862cSSHT8acpSM6FAcn
-   ruWE6YIysFicF8zrIJDWqg0zDSyCUTIRpzejlDUpWbvWQ93e9XrmKm/43
-   KKoR7epMKxAje4YublKkFMM/xDil2ugjktEhZ3PRsGuQ9hVq8svRHDTCA
-   NRUQ6XYecSUX/J+qtBCqF3jQOAMAKqbtiBNWL2mk9Invxe7JT92Tnoh0J
-   m4a4OspegmCihW1jAtwexn9BrI6L+oO0ACBt4HJrFGqz+qDLIQL5ux0sr
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245376895"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="245376895"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 15:42:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="594343118"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 22 Apr 2022 15:42:21 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni1yl-000AdC-D0;
-        Fri, 22 Apr 2022 22:42:19 +0000
-Date:   Sat, 23 Apr 2022 06:41:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 28/44]
- fs/netfs/crypto.c:76:10: warning: comparison of distinct pointer types
- ('typeof (len) *' (aka 'unsigned int *') and 'typeof (((1UL) << (12)) -
- offset) *' (aka 'unsigned long *'))
-Message-ID: <202204230602.rfRK0GR6-lkp@intel.com>
+        Fri, 22 Apr 2022 19:10:27 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA9B2CA0FC;
+        Fri, 22 Apr 2022 15:50:09 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 0C79E1F46BDC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650667808;
+        bh=L6RAxxyxxLpHhLGcPBmYtZ/tE9DimItHz6GaN0DngLg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fcXzbLCDoHgYhKXjc2pQmObm+ibrAt4vIRZBwfC71DKGxl0MsT0TTUeS7ytCjCT73
+         v57tjh2mrfrASYalN8TBzU1mBrm1gT5xVNy/veTRLGDEnftCtHbT3kPaU0Bj8LYEIX
+         NTXMDtLjyeAZach/OXp/JQNGwrrKJ4MyBJHhCkCxiad/EvOWCponlEN1tUrekQjtFT
+         gtZmHOWJa122J4CIpsHt98Y5dxH073wKEDQoNDx6x5lSYfW1Qq4jR7Nyda9b9FSyQy
+         +gV10uRIrRx+06blynB23rpRTm/2dsjHEyxymMXxxBk2UQ22ToPXI0t73M13uZklGf
+         hoZfBJSHUvNcw==
+Message-ID: <ad030c70-19eb-ce15-5a78-4c04450b7ad3@collabora.com>
+Date:   Sat, 23 Apr 2022 01:50:03 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v1] media: videobuf2: Allow applications customize data
+ offsets of capture buffers
+Content-Language: en-US
+To:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Boris Brezillon <bbrezillon@collabora.com>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Laura Nao <laura.nao@collabora.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dmitry Osipenko <digetx@gmail.com>
+References: <20220322132329.6527-1-dmitry.osipenko@collabora.com>
+ <a7c858461b99de2d4afad22d888acc3a74850240.camel@ndufresne.ca>
+ <9ec970d6-ea09-802c-419b-b2ef26800990@collabora.com>
+ <5be83f0b343c04d877a2c2d805fb5f71ca9973b1.camel@ndufresne.ca>
+ <fe24d151-6097-aa8e-7691-5e4d81fa42c6@collabora.com>
+ <f80128c50d3dacff0af70bd88521abae42476f85.camel@ndufresne.ca>
+ <CAPY8ntBQBrWytYRbv50F-4TZJdCaSQs86r3vY6kJdp+oc6SxEQ@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAPY8ntBQBrWytYRbv50F-4TZJdCaSQs86r3vY6kJdp+oc6SxEQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   931e50676c6598d0eda1954ead465519ff91874d
-commit: 777536e6af57becf14b8f4f34007ed3e3a95c911 [28/44] netfs: Perform content encryption
-config: riscv-randconfig-r042-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230602.rfRK0GR6-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/777536e6af57becf14b8f4f34007ed3e3a95c911
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout 777536e6af57becf14b8f4f34007ed3e3a95c911
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash fs/netfs/
+On 3/25/22 16:11, Dave Stevenson wrote:
+> Hi Nicolas & Dmitry
+> 
+> On Fri, 25 Mar 2022 at 12:32, Nicolas Dufresne <nicolas@ndufresne.ca> wrote:
+>>
+>> Le jeudi 24 mars 2022 à 21:20 +0300, Dmitry Osipenko a écrit :
+>>> The root of the problem is that DRM UAPI is more flexible and allows to
+>>> customize offsets for both S/MPLANEs, while V4L doesn't allow to do it
+>>> at all. I'm exploring all the potential options, so far neither of the
+>>> proposed variants is ideal.
+>>
+>> In GStreamer kmssink, the way DRM is used, is that if you have 2 planes in your
+>> pixel format, but only received 1 DMABuf, we will pass this DMABuf twice (well
+>> GEM handles, but twice), with appropriate offset.
+>>
+>> With this in mind, the idea for V4L2 could be to always resort to MPLANE for
+>> this purpose. The tricky part for userland is that it needs to know the dual
+>> pixel format and map that accordingly. That is a bit difficult and this is
+>> something Helen was trying to address with the v4l2_buffer_ext (that and
+>> allowing space to store DRM Modifiers in the future).
+>>
+>> The second challenge is the overhead. In DRM, as we "prime" the DMABuf into
+>> handles, this gives a kernel object to store any relevant information about the
+>> buffer. So having it duplicate can be done at no cost. In V4L2, the driver would
+>> need to handle that more often. Specially that despite the recommendation
+>> (except for primary buffer decoder, were this is mandatory), we don't force a
+>> strict DMABuf / Buffer IDX  mapping.
+> 
+> To throw another use case of data offsets into the mix, I'm keeping a
+> watching eye on implementing stereoscopic capture into libcamera where
+> we want to present the same buffer to the ISP twice (once for each
+> eye) with either a vertical or horizontal offset between the two
+> passes.
+> Adding a data_offset of either a half line or half the frame is the
+> easiest way around that one, although it could potentially be
+> accommodated through the selection API setting a compose region
+> instead.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Dave,
 
-All warnings (new ones prefixed by >>):
+Thank you for the suggestion about the stereoscopic capture! If you'll
+manage to test this patch and it will work for you, then please feel
+free to give yours tested-by.
 
->> fs/netfs/crypto.c:76:10: warning: comparison of distinct pointer types ('typeof (len) *' (aka 'unsigned int *') and 'typeof (((1UL) << (12)) - offset) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
-                           seg = min(len, PAGE_SIZE - offset);
-                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   1 warning generated.
+I'll need to do couple extra checks to ensure that we really need this
+new feature for the Chromebooks, this will take time. But if you'll be
+able to confirm that this variant of the patch works for yours case with
+the stereo cams, then we may try to proceed using the current variant
+right away.
 
-
-vim +76 fs/netfs/crypto.c
-
-    45	
-    46	/*
-    47	 * Populate a scatterlist from folios in an xarray.
-    48	 */
-    49	static int netfs_xarray_to_sglist(struct xarray *xa, loff_t pos, size_t len,
-    50					  struct scatterlist *sg, unsigned int n_sg)
-    51	{
-    52		struct scatterlist *p = sg;
-    53		struct folio *folio = NULL;
-    54		size_t seg, offset, skip = 0;
-    55		loff_t start = pos;
-    56		pgoff_t index = start >> PAGE_SHIFT;
-    57		int j;
-    58	
-    59		XA_STATE(xas, xa, index);
-    60	
-    61		sg_init_table(sg, n_sg);
-    62	
-    63		rcu_read_lock();
-    64	
-    65		xas_for_each(&xas, folio, ULONG_MAX) {
-    66			if (xas_retry(&xas, folio))
-    67				continue;
-    68			if (WARN_ON(xa_is_value(folio)) || WARN_ON(folio_test_hugetlb(folio)))
-    69				break;
-    70			for (j = (folio_index(folio) < index) ? index - folio_index(folio) : 0;
-    71			     j < folio_nr_pages(folio); j++
-    72			     ) {
-    73				struct page *subpage = folio_file_page(folio, j);
-    74	
-    75				offset = (pos + skip) & ~PAGE_MASK;
-  > 76				seg = min(len, PAGE_SIZE - offset);
-    77	
-    78				sg_set_page(p++, subpage, seg, offset);
-    79	
-    80				len -= seg;
-    81				skip += seg;
-    82				if (len == 0)
-    83					break;
-    84			}
-    85			if (len == 0)
-    86				break;
-    87		}
-    88	
-    89		rcu_read_unlock();
-    90		if (len > 0) {
-    91			kdebug("*** Insufficient source (%zx)", len);
-    92			//WARN_ON(len > 0);
-    93			return -EIO;
-    94		}
-    95	
-    96		sg_mark_end(p - 1);
-    97		return p - sg;
-    98	}
-    99	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
