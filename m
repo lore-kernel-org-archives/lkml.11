@@ -2,108 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B49DC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2800BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbiDVWjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
+        id S233496AbiDVWjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233734AbiDVWhl (ORCPT
+        with ESMTP id S233933AbiDVWhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:37:41 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40C62435A4;
-        Fri, 22 Apr 2022 14:48:40 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MJ2KjN024036;
-        Fri, 22 Apr 2022 14:02:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650654140;
-        bh=NCM8mzjQH8QiT4AT02wOLT4awLcH+bAUoX5oBTbp0nU=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=u46vFj9mgkxJ4kojRRWfpdLSGkE5WzS0UpENurVyP13TL1Prbq1ehfXLKC2JsrgZI
-         CN8yGCDZMsDo9Q5MDoiT+CccPcK/wfsOeq5y/C9H3J7PIGxWROzdRA+vF8ZU9RgfxS
-         ehcheVKVEuuRwfQ5Ifz1in/sGX8rYTtR/BNAUUdQ=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MJ2Kit005174
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 14:02:20 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 14:02:20 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 14:02:20 -0500
-Received: from [10.249.34.110] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MJ2Jlc051088;
-        Fri, 22 Apr 2022 14:02:19 -0500
-Message-ID: <ad47db06-7f5c-399f-0ad0-81f720e6f035@ti.com>
-Date:   Fri, 22 Apr 2022 14:02:19 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/6] dt-bindings: ti,sci: Add ti,ctx-memory-region
- property
-Content-Language: en-US
-To:     Dave Gerlach <d-gerlach@ti.com>, Rob Herring <robh+dt@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Tero Kristo <kristo@kernel.org>, Nishanth Menon <nm@ti.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-References: <20220421203659.27853-1-d-gerlach@ti.com>
- <20220421203659.27853-2-d-gerlach@ti.com>
-From:   Andrew Davis <afd@ti.com>
-In-Reply-To: <20220421203659.27853-2-d-gerlach@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Fri, 22 Apr 2022 18:37:52 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4EC285439
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:29:58 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id l16-20020a25cc10000000b006456cb3d1deso6870821ybf.14
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=3u4/NkkFqdFi5mqy1tDjNb7vVlfXM8Eh6uSpLtQT30E=;
+        b=ZGYpRbKPRC+XBA+J9Pgv5tGqSeG77393GIEZtav9y5jdJsYVHZu6DE9FQuFF3DOF0J
+         FuNiC+t/6dWddinYIxjJazPTVsQGm4aYgH1xVag1JT6yX/rutxG2D6vqOIO+3jvrxoR8
+         LlhdASQ+SYkAZPZBLnxf4QMwcqJESUmBcKLtRd4PizkS49zRHMGslMRd8FZVM8HCDQAt
+         pWB3BEBVFbk8ZupnaeI9yKetCZBkqXpEgICQya4F2EDK8WndIiiM1gyXfMdKP/S13U/+
+         dxciIAdWsYURvLxXEf7S3BZ8X/iFqLMyaOoYK1FYEq3MotK1Ig03rgQM9CL5HwBdNlNN
+         PzAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=3u4/NkkFqdFi5mqy1tDjNb7vVlfXM8Eh6uSpLtQT30E=;
+        b=4vjIwfqpkSlVgqsWhirF7tXuxlXypRekHyPWPcLuQ+TSSC0Nq0CcPXltLtdCywonSs
+         wW9Ht7HIsd9rlpal5oGI6D5ZVxG3BVn4CWD3qm0n21WmD+L+b0/WuVcOrCYhha8scjqM
+         +m0YULYP864kJihvDd7U7Q6xdUPvhp4Ux47cz/ArTq2H4NMgL7fcvfmgu6Uc4yIDfilJ
+         hP1Jb9GcXV2lJfPEM5TUJ/U0KrI1q+OTPzS6U3RYwGwblz/G+Rnm/XHEl9Lg/dQwhtJQ
+         dCfGTGyT5qgjQGRhEYVlpiPs2dKTCbA1R+dQkxlQCKEDD/9LavAmeGQ6kulTsm6Qs+s5
+         VF2A==
+X-Gm-Message-State: AOAM532wPtI1GFEXFwPHklWk19qbtMrgN1qgatmJQCery0h5Wv+dYkGr
+        gJ9i9M5BFVoJoogaBQIU6+Se0VCa0KE0ex4hB941
+X-Google-Smtp-Source: ABdhPJwut5kVL9//x/VuhvU7tnMAPFLYjWnVV3LoUrrKiz5XT6olvUf5+q/YJhl4rhX6qANLKIq5vC52x37lwR9oMUtA
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:7ba6:20ac:a8f7:1dbd])
+ (user=axelrasmussen job=sendgmr) by 2002:a25:40c4:0:b0:645:88a3:eb8b with
+ SMTP id n187-20020a2540c4000000b0064588a3eb8bmr5324286yba.193.1650662997965;
+ Fri, 22 Apr 2022 14:29:57 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 14:29:42 -0700
+In-Reply-To: <20220422212945.2227722-1-axelrasmussen@google.com>
+Message-Id: <20220422212945.2227722-4-axelrasmussen@google.com>
+Mime-Version: 1.0
+References: <20220422212945.2227722-1-axelrasmussen@google.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH v2 3/6] userfaultfd: selftests: modify selftest to use /dev/userfaultfd
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220422190219.QQQe93CSCD6PueKn-4wgRPU0CXYFDQuE6JUpDRZd97o@z>
 
-On 4/21/22 3:36 PM, Dave Gerlach wrote:
-> Add documentation for the ti,ctx-memory-region property which is a
-> phandle to a reserved-memory carveout to be used by the ti_sci driver
-> storage of low power mode memory context. This is optional for normal
-> system operation but required to enabled suspend-to-mem usage of Deep
-> Sleep state.
-> 
-> Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
-> ---
->   .../devicetree/bindings/arm/keystone/ti,sci.yaml         | 9 +++++++++
->   1 file changed, 9 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/keystone/ti,sci.yaml b/Documentation/devicetree/bindings/arm/keystone/ti,sci.yaml
-> index 34f5f877d444..ec88aa88a2a0 100644
-> --- a/Documentation/devicetree/bindings/arm/keystone/ti,sci.yaml
-> +++ b/Documentation/devicetree/bindings/arm/keystone/ti,sci.yaml
-> @@ -61,6 +61,15 @@ properties:
->     mboxes:
->       minItems: 2
->   
-> +  ti,ctx-memory-region:
-> +    description:
-> +      Phandle to the reserved memory node to be associated with the
-> +      ti-sci device, to be used for saving low power context. The
-> +      reserved memory node should be a carveout node, and should
-> +      be defined as per the bindings in
-> +      Documentation/devicetree/bindings/reserved-memory/reserved-memory.yaml
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +
+We clearly want to ensure both userfaultfd(2) and /dev/userfaultfd keep
+working into the future, so just run the test twice, using each
+interface.
 
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+---
+ tools/testing/selftests/vm/userfaultfd.c | 31 ++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-Why does this have to be yet another reserved carveout region,
-should be dynamically allocated.
+diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+index 92a4516f8f0d..12ae742a9981 100644
+--- a/tools/testing/selftests/vm/userfaultfd.c
++++ b/tools/testing/selftests/vm/userfaultfd.c
+@@ -77,6 +77,9 @@ static int bounces;
+ #define TEST_SHMEM	3
+ static int test_type;
+ 
++/* test using /dev/userfaultfd, instead of userfaultfd(2) */
++static bool test_dev_userfaultfd;
++
+ /* exercise the test_uffdio_*_eexist every ALARM_INTERVAL_SECS */
+ #define ALARM_INTERVAL_SECS 10
+ static volatile bool test_uffdio_copy_eexist = true;
+@@ -383,13 +386,31 @@ static void assert_expected_ioctls_present(uint64_t mode, uint64_t ioctls)
+ 	}
+ }
+ 
++static void __userfaultfd_open_dev(void)
++{
++	int fd;
++
++	uffd = -1;
++	fd = open("/dev/userfaultfd", O_RDWR | O_CLOEXEC);
++	if (fd < 0)
++		return;
++
++	uffd = ioctl(fd, USERFAULTFD_IOC_NEW,
++		     O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
++	close(fd);
++}
++
+ static void userfaultfd_open(uint64_t *features)
+ {
+ 	struct uffdio_api uffdio_api;
+ 
+-	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
++	if (test_dev_userfaultfd)
++		__userfaultfd_open_dev();
++	else
++		uffd = syscall(__NR_userfaultfd,
++			       O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
+ 	if (uffd < 0)
+-		err("userfaultfd syscall not available in this kernel");
++		err("creating userfaultfd failed");
+ 	uffd_flags = fcntl(uffd, F_GETFD, NULL);
+ 
+ 	uffdio_api.api = UFFD_API;
+@@ -1698,6 +1719,12 @@ int main(int argc, char **argv)
+ 	}
+ 	printf("nr_pages: %lu, nr_pages_per_cpu: %lu\n",
+ 	       nr_pages, nr_pages_per_cpu);
++
++	test_dev_userfaultfd = false;
++	if (userfaultfd_stress())
++		return 1;
++
++	test_dev_userfaultfd = true;
+ 	return userfaultfd_stress();
+ }
+ 
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
-Andrew
-
-
->     ti,system-reboot-controller:
->       description: Determines If system reboot can be triggered by SoC reboot
->       type: boolean
