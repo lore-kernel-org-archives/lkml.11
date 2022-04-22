@@ -2,206 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C78E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA108C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231224AbiDVV6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        id S231269AbiDVV6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbiDVV50 (ORCPT
+        with ESMTP id S231381AbiDVV5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:57:26 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832EF2A7DAF;
-        Fri, 22 Apr 2022 13:40:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650660002; x=1682196002;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=hRt183UB3iYw0I3yhw7j6Oq6pPUcFneykwhACj8STqA=;
-  b=RY65R19+c/jMZNGzpe30e+rN3dAzBTBeYfZes2GsCfZS5+Vqvx6r7DjX
-   gD+yO3pysFzvzOq8pJt9sYwn0IYcFMcGdtJNRieNYNh9e8h6kIrZ51+cW
-   M/dIPFqft6ngKHe0XLhUzy9e4KkePabCX6Wpao926MYd+zZCycpBYTc6M
-   OT3gZFH6jvZnYAxAnFkC5zsohQ5e1XybYhWSasKkTubVegFk49kDrb0FM
-   5RXN+1bVTH7clnNeSUOn76XXhwsBFoJoQBmyYHx4a64v1qpD6PNc/augZ
-   9qGXoKqjEcc8bSaWrkI7EobfjloYr1ibhgKTqPnHUSlb2DrXx/9CaZGxQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="325229849"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="325229849"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:22:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="648775083"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 13:22:37 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 22 Apr 2022 13:22:36 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 22 Apr 2022 13:22:36 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 22 Apr 2022 13:22:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IUGBFinUOkdQcdOCWsLBl95T7Lv03EMJbPxqpfph/fdiGeIA10R2DbBxVsmQtb+kW+wcfE7vGCIE2cE06deBYqABCYxAgGqDUNDw/Id5HVeY0v6KyNJeL63lVdPCgfrc3+i50v6Pi59Ytj+XjunewKZxCaYjmgGvgN8k7M9YOmLnUoyU6KlE/iZDjHAnRilPnuGqPY9wj8QoSGkT/oF5J5sfX4ZQqPcwXIKfmsWL5jTo2ji3x374JHMaDjxbNmU3V0GDREmFO/0pYA63i3e9TLB1nECTTJb87zJ8qf7VljIilSlpi3SaThwqxW8+BtHtLtrZgkkLKb8+AsCosKW0wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hRt183UB3iYw0I3yhw7j6Oq6pPUcFneykwhACj8STqA=;
- b=LCR1n5OzJsXAzjrJJzyp3oYVrv3aCx5XFquvL72x/h3bzdmQdmb7eNCAVockTadfmNdC4undRnQ/yL8EtXLHhpDFjGLUdpensjfgEvjXGxX2ssAS6Q+hOp03v+kLPnhN/0hxLMVtJOkADOqWwOVAklan/oClp9TbbYpXeSzWyD4kd0oa5oVLkJGo8FMFjibWOrgWC8nJXuX2znVbCsbJ02aOAQCNOI6rnJR5x7nYB5jmaSJ+GQtK5s71255oy12JcPL+HHWiW3XJ9iSvDB2O4cDZiKzrF7MGiunziGTjuW1Oin81vu25g6tUPq7iyumaKHxD5i+ocWq+ABb9U6PfGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MWHPR11MB1392.namprd11.prod.outlook.com (2603:10b6:300:24::14)
- by BYAPR11MB3464.namprd11.prod.outlook.com (2603:10b6:a03:7d::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Fri, 22 Apr
- 2022 20:22:33 +0000
-Received: from MWHPR11MB1392.namprd11.prod.outlook.com
- ([fe80::34f6:8e1d:ac6b:6e03]) by MWHPR11MB1392.namprd11.prod.outlook.com
- ([fe80::34f6:8e1d:ac6b:6e03%12]) with mapi id 15.20.5186.015; Fri, 22 Apr
- 2022 20:22:32 +0000
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "Torvalds, Linus" <torvalds@linux-foundation.org>,
-        "npiggin@gmail.com" <npiggin@gmail.com>
-CC:     "songliubraving@fb.com" <songliubraving@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Kernel-team@fb.com" <Kernel-team@fb.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "song@kernel.org" <song@kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
-Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-Thread-Topic: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-Thread-Index: AQHYUOjaBVzlZEmkq0yuNBGgG1oCjazxVckAgACoe4CAAPegAIAACf+AgAAgOgCAAlYLAIAA9TuAgAAUCQCAAD2rgIAA23qAgAAKuICAAhm2gIAAJ/4AgAA00QCAAHKLAIAAB8GAgACFUwCAACY8gIAACuGAgAAXVICAANQIAIAANawA
-Date:   Fri, 22 Apr 2022 20:22:32 +0000
-Message-ID: <63e73592b145e579b3eca984b5badc9300619077.camel@intel.com>
-References: <20220415164413.2727220-1-song@kernel.org>
-         <YlnCBqNWxSm3M3xB@bombadil.infradead.org> <YlpPW9SdCbZnLVog@infradead.org>
-         <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
-         <CAHk-=wiMCndbBvGSmRVvsuHFWC6BArv-OEG2Lcasih=B=7bFNQ@mail.gmail.com>
-         <B995F7EB-2019-4290-9C09-AE19C5BA3A70@fb.com> <Yl04LO/PfB3GocvU@kernel.org>
-         <Yl4F4w5NY3v0icfx@bombadil.infradead.org>
-         <88eafc9220d134d72db9eb381114432e71903022.camel@intel.com>
-         <B20F8051-301C-4DE4-A646-8A714AF8450C@fb.com> <Yl8CicJGHpTrOK8m@kernel.org>
-         <CAHk-=wh6um5AFR6TObsYY0v+jUSZxReiZM_5Kh4gAMU8Z8-jVw@mail.gmail.com>
-         <1650511496.iys9nxdueb.astroid@bobo.none>
-         <CAHk-=wiQ5=S3m2+xRbm-1H8fuQwWfQxnO7tHhKg8FjegxzdVaQ@mail.gmail.com>
-         <1650530694.evuxjgtju7.astroid@bobo.none>
-         <25437eade8b2ecf52ff9666a7de9e36928b7d28f.camel@intel.com>
-         <CAHk-=wiQcg=7++Odg08=eZZgdX4NKcPqiqGKXHNXqesTtfkmmA@mail.gmail.com>
-         <1650584815.0dtcbd4qky.astroid@bobo.none>
-         <310d562b80ad328e19a4959356600e4efe49cf4c.camel@intel.com>
-         <1650596505.bxrmjmgjur.astroid@bobo.none>
-         <1650601109.vb3owbt14k.astroid@bobo.none>
-         <b88a1097c994a72e9d8abfdcc43a4a0f9003d65a.camel@intel.com>
-In-Reply-To: <b88a1097c994a72e9d8abfdcc43a4a0f9003d65a.camel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d0ed183a-0d20-4f87-26d6-08da249dd4dc
-x-ms-traffictypediagnostic: BYAPR11MB3464:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BYAPR11MB34644A8F84C7B0121C845675C9F79@BYAPR11MB3464.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: j/wY+/uk9iZRCb8qNQbX9WNnn8vZRhujpLwRNnbiPw5vBJwSe8jOfx0Pai65cwKZoMGAtM87PXvn1yYkMOVUgqAXiyDhSDlokKyyasls3kpCBpN0lXpRu8szDSsaIeMLXFxsBITiOYBW+PZcSCnYXdBTPsPyDoNkKTWgZsxXnaJpnewbk5QU2zSeG7rAK9hoJ+RPolbVEP4vbK92KyOVSYa+wbYT2U/Fq/ABZnNF7oIDcNaL6yvzEG4GRLMy/iG1HUrnZfJUAdadYQdPgO2BwP/wSw5kX8+/WPKlfPWbehi8Ibpt9MSI/uRGn9yZ1tX43u995A0W2VuIMndik/SE0JygR9LBkFA91tEu10ujhhH5GCCM8nXSJAVi73THw8Nt7JAgeIxoA0GFHrj2d595Lmhaade7K4aS7+ibkVnl1QH4T9FfOyZpfzJ0yiywy0PB3NuRZd4Y5ZdUjCm9blnsjZp6VwzgbS01QdLqc2EiYqX3RVKU0C4SubEyuiSTYtGSfjSs8ROp0lJHuBv+pC+yX9QHOLtZnyQQ2vtcUhUod6U2z3MaSAAQ2ee/rPdJCtbstCBDYr5pW+Z4K/wvf+jO0fix+8ty8mPw51lRoDPZele46TaL37Y7EpC+HqmBWMECp5ML4jR4cmsNdFminNOow6wDjr0HgjdUVXJ6xmGv/zhDX2RqoPGrx2D+AmE3GqVcvoldSq4+hi5ICYpr0pXRpLFJStH9FwxD1ZSYF2HB/AQznByBRm0KBJAz3mHkLJP5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(8936002)(82960400001)(36756003)(6506007)(122000001)(7416002)(64756008)(86362001)(6486002)(5660300002)(71200400001)(4744005)(83380400001)(316002)(508600001)(54906003)(38070700005)(8676002)(91956017)(66946007)(110136005)(66556008)(66476007)(26005)(6512007)(76116006)(2616005)(66446008)(38100700002)(186003)(4326008)(99106002)(14583001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NC9Tazg1T05qako3N3RQNHE1WUhMclRnRHdCdUo0UW9zUFBQeVlwWVI4emds?=
- =?utf-8?B?b3pKeUZQU2M2aDNyYXZrUjFuMWVsUytObXJqZUhvMUJTeitzQU5uaEI2NzhU?=
- =?utf-8?B?OVIxSXA3bE1ZaDU1K2tjK1d1ek93dzBDdm4wU2J0ODh4Qlh4QllnSzUzYXdD?=
- =?utf-8?B?b2hpWE9XK3VZQUFaTmFhZUszWVdmdGxDTFVwZTEyWVhVRXl2TjhWM2hyOERB?=
- =?utf-8?B?NzMyOFM4NkdNUDVtM1FjWG8zWjhRek8xZW5Sd21ac01pbXZ5MjF6Mi8zaTl3?=
- =?utf-8?B?d2ZSYXZiME1iVmhvRWVLc2RFNlRQWXB4bFFQdTJhUmc5SDZjeFlzZk9hbU1i?=
- =?utf-8?B?RkpOUEEvSE9RR0F4WVUzSmFwSlNIU203L1ljbXlHcEhKZWNJSHVrVXI5L2c2?=
- =?utf-8?B?R1JsSGNiK3JBOEJUR1VVR1lBeFhzdHBZT0x0UzZIUFRMdHE0QTBuMis5Zyt2?=
- =?utf-8?B?QnpRL0dseERzUmVMaGpwaGcwcE1rRXlJbXNiTVhkQXZKaGlpYVNMWlRzeGpv?=
- =?utf-8?B?TW5JZzdGYlZUSjNTQ0tEekZzazJtWU9vWFVwcGJ1c3JJanZlVzNvZ01xRUdi?=
- =?utf-8?B?Y0JrbmNLdjdwVHg0ZDhXT2FvTW4xa0J3YU5vUFNwZXBZaW1ERURQM1JYUk9I?=
- =?utf-8?B?Q0luN0g5Zmk0RzdxcTZRUllQWDFaMmJXZEU0WEpyODhQVUYrU0dQK3pVeFF6?=
- =?utf-8?B?LzRXc2lxS2Z1NDJXTDRGVXdLUVdlVDE1dWZMSjVmUzBVcys0MWcxd0YrZ1pT?=
- =?utf-8?B?STl3MCtmV1c3OTl2NEpRUC9ubDE0Q3JXVUZwVElvanhsTUJBUUFaS3VnNHZH?=
- =?utf-8?B?bnpBR1JpcXJEeFdvbFRQTFNCYW1vSHo1anZKbUxnV3IxdjFhVzlTc3RiTk5L?=
- =?utf-8?B?SGxoZXdwc2t0aHM2bjdNTXZjNEVYdy9qZ3VZWDNIZjZMd0dkeVNWRmVSMUFZ?=
- =?utf-8?B?a1FGQjl6ZmFEZWdiNzY4dTJDcW1mdTZmWjd0QzJNbkdhQ1U3Nk5xRHFJUUVF?=
- =?utf-8?B?UWdNUlVJM0xLMnVBNXB3TnBOZ2VHOC9qNndWbnprblM5bkpOYXQ2clBITXRG?=
- =?utf-8?B?QTBQUUpqcW5VODNpMi94T2ZMOWhwTTRpMDl0TDBUN2NackczR3NLU2V2b1dL?=
- =?utf-8?B?Z01ybFBhVDlnemNxVWprMUJEZVQ1TU9OOW4zNjhGdzJpTUpXU1JEWHZxWjN6?=
- =?utf-8?B?YzdFczU0NnBZdTVUNVJNbFpFZUh5Zk5WTG84cExUcmVHTWhWME9QU3FtQ28w?=
- =?utf-8?B?eUo4b2hnaXRZdzUwMUprK093aFNpQlpyVE15VmhWSXl0ZlYreGVVU09zTDlm?=
- =?utf-8?B?VUpMR3J3Vzl3VmlHNDkvcXl3dzEzQTlzaGR0SG80M0NMSE53ZXFMRWI0eG9V?=
- =?utf-8?B?c3dSRkE2TzJCTFlGWTg0UFZ4ejJQZ1ZCejFTdkxCZGpmTkpEVG1uQUpJV2Np?=
- =?utf-8?B?cEx2UzhDYVJqVEhoTlNEZm9MVUdJZHN3RlpvQ3JtVFJhZzl4YWFZRlJ1OFZy?=
- =?utf-8?B?MDd0Z0t6YWV5ajh1MVNkVytjekd4cHJTbWc1ZW1nOWJqK1pTVXZJcGVkUUZG?=
- =?utf-8?B?ZDhmZ0R2V3N2MFY0bklQaWlrSDBwRWVBNkIydXZKYjFOcXFEOEdIb1A5UGhB?=
- =?utf-8?B?YVdLZGFVZnkvdS81U2FvaU1MN2M4REd5WFdmM1FTS3RQeFNRaFZFQmdFYjNR?=
- =?utf-8?B?cmFiTkhxOGx0Q25KdTRoQ1Y5SGprWEZ2Ni9aaVFESXhJd0svc2J1R0tvd0Ux?=
- =?utf-8?B?cy9ycHVwNndRWHczRGRtYnBmeStjVkdKRUN2dGRWRWJDOE1TSXZrWVlVK1Bj?=
- =?utf-8?B?ZWZxQkpyclNCblU3RVlibVI2bW5tYTRFeHRHTXVUVkJnNGQrN3VUNjFzK2VG?=
- =?utf-8?B?WktTeEpaOGUvYkJ4TzA0Rmd1OFRvK1R1NXYrYXBqTVNkVjlKQXdxQ3draXVw?=
- =?utf-8?B?cUVWT0hwRUpPUFlqTmZ3Qk9GOFhUUElvNzJINFlNMCtRTjRFNFlnVmtnNUJn?=
- =?utf-8?B?YlQySnc4Y1psN28vTk4yVVBSQUd3blhLcXZzakdMWVZiazZPSTZCeHJBK0w2?=
- =?utf-8?B?NTFFTnpxT0MzRkozOE5TaHplM0hxR2FkOVNrdFVCYVBiM2ZNbGZMMFc4TE1v?=
- =?utf-8?B?eStFc2dBQ0RvSC9FVGRLV3VyanJQb3YvUHlDTjA0YWdVRk9WeTNBUmhKZUJh?=
- =?utf-8?B?czl4T21MNldlcERXUUQ5WHBzVnA1eHE1VnIwU2FpellVOXgzTXYwT1kvbHR3?=
- =?utf-8?B?SldvdkhLQm5tQm8vM3VpQ0JFNlVRYVdsN1dCbVYyb1haN21URG1CZlhZZDF0?=
- =?utf-8?B?aldrd0s4ckFtWndZUmI5SzQrZk1nYyt1TFRhb0N5K2ttS0p1SW5hN1hEa1Ju?=
- =?utf-8?Q?nE3PaFbouKQUI2D5RLdO2G1eanp4vcrPRS4m1?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <874C1D2983D0944E9C9E0D3D9595CF0C@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Fri, 22 Apr 2022 17:57:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5DF618747E
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:40:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650660012;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=OI8P5gFk7nutfDduhoeW49YsA5No3pHGtFv0CshQacE=;
+        b=KUSTZ40OXJEk4HL0awe1fr7JaU91uCDOsyF9jltmbqDVZ3xSD4MZgLCDdWdGG3pVziYp3o
+        DKSGMWx4mddDMMB0sU/K0D1y1UWeUWQF7EgfM3mNoL9TW3bqcH7ojYm2gl9vBcIbT5Y99A
+        pZSnHeTA4LUcO8rHBdom8+dfiuXlIjU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557-wKx67LpPPg24JSt2Vnp-dQ-1; Fri, 22 Apr 2022 16:00:59 -0400
+X-MC-Unique: wKx67LpPPg24JSt2Vnp-dQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A7B1280159B;
+        Fri, 22 Apr 2022 20:00:44 +0000 (UTC)
+Received: from dqiao.bos.com (unknown [10.22.19.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DF78CC28108;
+        Fri, 22 Apr 2022 20:00:43 +0000 (UTC)
+From:   Donghai Qiao <dqiao@redhat.com>
+To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
+        peterz@infradead.org, heying24@huawei.com,
+        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
+        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
+Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
+        Donghai Qiao <dqiao@redhat.com>
+Subject: [PATCH v2 00/11] smp: cross CPU call interface
+Date:   Fri, 22 Apr 2022 16:00:29 -0400
+Message-Id: <20220422200040.93813-1-dqiao@redhat.com>
+Reply-To: dqiao@redhat.com
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1392.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0ed183a-0d20-4f87-26d6-08da249dd4dc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Apr 2022 20:22:32.5459
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eGALpqAzCOw49vsKoT+D3b9GlOQbgP7T8fVbYbsRJGsHLVPND0K0zPVfLk6BR3XcFTfH82uX2Lb/RoF0dN0ZcH79YZB/Jssx6Rxk/RNWRo4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3464
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gRnJpLCAyMDIyLTA0LTIyIGF0IDEwOjEwIC0wNzAwLCBFZGdlY29tYmUsIFJpY2hhcmQgUCB3
-cm90ZToNCj4gVGhlIHJpc2sgdGhpcyBlbnRhaWxzIGlzIHJhY2luZyBhZ2FpbnN0IGFsbCB0aGUg
-c29mdHdhcmUgcGFnZSB0YWJsZQ0KPiB3YWxrcyBhbmQgd2Fsa2luZyBhIGZyZWVkIHRhYmxlLiBB
-dCBsZWFzdCBvbiB4ODYgdGhlIHdhbGtzIG9mIHRoZQ0KPiBrZXJuZWwgdGFibGVzIGFyZSBkb25l
-IHdpdGggbm8gbG9ja3MsIHdoaWNoIHdvcmtzIGJlY2F1c2UgdGhlIFBURQ0KPiB1cGRhdGVzIGFy
-ZSBhdG9taWMgYW5kIHByZXR0eSBtdWNoIG5ldmVyIGZyZWVkLiBTb21lIG9mIHRoZSBrZXJuZWwN
-Cj4gcGFnZQ0KPiB0YWJsZSB3YWxrcyBpbiB0aGUgZmF1bHQgaGFuZGxlciBhcmUgYWN0dWFsbHkg
-dHJpZ2dlcmFibGUgZnJvbQ0KPiB1c2Vyc3BhY2UuDQoNCkFyZ2gsIHBsZWFzZSBpZ25vcmUgdGhp
-cy4gSSBndWVzcyBpbnRlcnJ1cHRzIGdldHRpbmcgZGlzYWJsZWQgaW4gdGhlDQpmYXVsdCBoYW5k
-bGVyIGZvcmNlcyB0aGUgZnJlZWluZyBvZiB0aGUgcGFnZSB0YWJsZSB0byBzeW5jaHJvbml6ZSB3
-aXRoDQp0aGUgZmF1bHQgaGFuZGxlciB3YWxrcyB2aWEgdGhlIFRMQiBmbHVzaCBJUElzIHRoYXQg
-cHJlY2VkZSB0aGUgZnJlZS4NClNvcnJ5IGZvciB0aGUgbm9pc2UuDQo=
+The motivation of submitting this patch set is intended to make the
+existing cross CPU call mechanism become a bit more formal interface
+and more friendly to the kernel developers.
+
+Basically the minimum set of functions below can satisfy any demand
+for cross CPU call from kernel consumers. For the sack of simplicity
+self-explanatory and less code redundancy no ambiguity, the functions
+in this interface are renamed, simplified, or eliminated. But they
+are still inheriting the same semantics and parameter lists from their
+previous version.
+
+int smp_call(int cpu, smp_call_func_t func, void *info, unsigned int flags)
+
+int smp_call_cond(int cpu, smp_call_func_t func, void *info,
+                   smp_cond_func_t condf, unsigned int flags)
+
+void smp_call_mask(const struct cpumask *mask, smp_call_func_t func,
+                    void *info, unsigned int flags)
+
+void smp_call_mask_cond(const struct cpumask *mask, smp_call_func_t func,
+                         void *info, smp_cond_func_t condf, unsigned int flags)
+
+int smp_call_private(int cpu, call_single_data_t *csd, unsigned int flags)
+
+int smp_call_any(const struct cpumask *mask, smp_call_func_t func,
+                  void *info, unsigned int flags)
+
+
+Here is the explanation about the patch set:
+
+Patch 1: The smp cross call related structures and definitions are
+consolidated from smp.c smp_types.h to smp.h. As a result, smp_types.h
+is deleted from the source tree.
+
+Patch 2: The set of smp_call* functions listed above are defined.
+But the details will be done with the subsequent patches in this set.
+
+Patch 3: Eliminated the macros SCF_WAIT and SCF_RUN_LOCAL and the
+code around them. The reason that we can do that is because the
+function smp_call_function_many_cond() was able to handle the local
+cpu call after the commit a32a4d8a815c ("smp: Run functions concurrently
+in smp_call_function_many_cond()") only if the local cpu showed up
+in cpumask. So it was incorrect to force a local cpu call for the
+on_each_cpu_cond_mask code path.
+
+This change and the changes in subsequent patches will eventually
+help eliminate the set of on_each_cpu* functions.
+
+Patch 4: Eliminated the percpu global csd_data. Let
+smp_call_function_single() temporarily hook up to smp_call().
+
+Patch 5: Replaced smp_call_function_single_async() with smp_call_private()
+and also extended smp_call_private() to support synchronous call
+with a preallocated csd structures.
+
+Patch 6: Previously, there were two special cross call clients
+irq_work.c and core.c that they were using __smp_call_single_queue
+which was a smp internal function. With some minor changes in this
+patch, they are able to use this interface.
+
+Patch 7: Actually kernel consumers can use smp_call() when they
+want to use smp_call_function_any(). The extra logics handled by
+smp_call_function_any() should be moved out of there and have the
+kernel consumers pick up the CPU. Because there are quite a few
+of the consumers need to run the cross call function on any one
+of the CPUs, so there is some advantage to add smp_call_any()
+to the interface.
+
+Patch 8: Eliminated smp_call_function, smp_call_function_many,
+smp_call_function_many_cond, on_each_cpu, on_each_cpu_mask,
+on_each_cpu_cond, on_each_cpu_cond_mask.
+
+Patch 9: Eliminated smp_call_function_single_async.
+
+Patch 10: Eliminated smp_call_function_single.
+
+Patch 11: modify up.c to adopt the same format of cross CPU call.
+
+Note: Each patch in this set depends on its precedent patch only.
+      The kernel can be built and boot if it is patched with any
+      number of patches starting from 1 to 11.
+
+Donghai Qiao (11):
+  smp: consolidate the structure definitions to smp.h
+  smp: define the cross call interface
+  smp: eliminate SCF_WAIT and SCF_RUN_LOCAL
+  smp: replace smp_call_function_single() with smp_call()
+  smp: replace smp_call_function_single_async() with  smp_call_private()
+  smp: use smp_call_private() fron irq_work.c and core.c
+  smp: change smp_call_function_any() to smp_call_any()
+  smp: replace smp_call_function_many_cond() with 
+    __smp_call_mask_cond()
+  smp: replace smp_call_function_single_async with smp_call_private
+  smp: replace smp_call_function_single() with smp_call()
+  smp: modify up.c to adopt the same format of cross CPU call.
+
+v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros.
+
+ arch/alpha/kernel/process.c                   |   2 +-
+ arch/alpha/kernel/rtc.c                       |   4 +-
+ arch/alpha/kernel/smp.c                       |  10 +-
+ arch/arc/kernel/perf_event.c                  |   2 +-
+ arch/arc/mm/cache.c                           |   2 +-
+ arch/arc/mm/tlb.c                             |  14 +-
+ arch/arm/common/bL_switcher.c                 |   2 +-
+ arch/arm/kernel/machine_kexec.c               |   2 +-
+ arch/arm/kernel/perf_event_v7.c               |   6 +-
+ arch/arm/kernel/smp_tlb.c                     |  22 +-
+ arch/arm/kernel/smp_twd.c                     |   4 +-
+ arch/arm/mach-bcm/bcm_kona_smc.c              |   2 +-
+ arch/arm/mach-mvebu/pmsu.c                    |   4 +-
+ arch/arm/mm/flush.c                           |   4 +-
+ arch/arm/vfp/vfpmodule.c                      |   2 +-
+ arch/arm64/kernel/armv8_deprecated.c          |   4 +-
+ arch/arm64/kernel/perf_event.c                |   8 +-
+ arch/arm64/kernel/topology.c                  |   2 +-
+ arch/arm64/kvm/arm.c                          |   6 +-
+ arch/csky/abiv2/cacheflush.c                  |   2 +-
+ arch/csky/kernel/cpu-probe.c                  |   2 +-
+ arch/csky/kernel/perf_event.c                 |   2 +-
+ arch/csky/kernel/smp.c                        |   2 +-
+ arch/csky/mm/cachev2.c                        |   2 +-
+ arch/ia64/kernel/mca.c                        |   4 +-
+ arch/ia64/kernel/palinfo.c                    |   3 +-
+ arch/ia64/kernel/smp.c                        |  10 +-
+ arch/ia64/kernel/smpboot.c                    |   2 +-
+ arch/ia64/kernel/uncached.c                   |   4 +-
+ arch/mips/cavium-octeon/octeon-irq.c          |   4 +-
+ arch/mips/cavium-octeon/setup.c               |   4 +-
+ arch/mips/kernel/crash.c                      |   2 +-
+ arch/mips/kernel/machine_kexec.c              |   2 +-
+ arch/mips/kernel/perf_event_mipsxx.c          |   7 +-
+ arch/mips/kernel/process.c                    |   2 +-
+ arch/mips/kernel/smp-bmips.c                  |   3 +-
+ arch/mips/kernel/smp-cps.c                    |   8 +-
+ arch/mips/kernel/smp.c                        |  10 +-
+ arch/mips/kernel/sysrq.c                      |   2 +-
+ arch/mips/mm/c-r4k.c                          |   4 +-
+ arch/mips/sibyte/common/cfe.c                 |   2 +-
+ arch/openrisc/kernel/smp.c                    |  12 +-
+ arch/parisc/kernel/cache.c                    |   4 +-
+ arch/parisc/mm/init.c                         |   2 +-
+ arch/powerpc/kernel/dawr.c                    |   2 +-
+ arch/powerpc/kernel/kvm.c                     |   2 +-
+ arch/powerpc/kernel/security.c                |   6 +-
+ arch/powerpc/kernel/smp.c                     |   4 +-
+ arch/powerpc/kernel/sysfs.c                   |  28 +-
+ arch/powerpc/kernel/tau_6xx.c                 |   4 +-
+ arch/powerpc/kernel/watchdog.c                |   4 +-
+ arch/powerpc/kexec/core_64.c                  |   2 +-
+ arch/powerpc/kvm/book3s_64_mmu_hv.c           |   2 +-
+ arch/powerpc/kvm/book3s_hv.c                  |   8 +-
+ arch/powerpc/mm/book3s64/pgtable.c            |   2 +-
+ arch/powerpc/mm/book3s64/radix_tlb.c          |  12 +-
+ arch/powerpc/mm/nohash/tlb.c                  |  10 +-
+ arch/powerpc/mm/slice.c                       |   4 +-
+ arch/powerpc/perf/core-book3s.c               |   2 +-
+ arch/powerpc/perf/imc-pmu.c                   |   2 +-
+ arch/powerpc/platforms/85xx/smp.c             |   8 +-
+ arch/powerpc/platforms/powernv/idle.c         |   2 +-
+ arch/powerpc/platforms/pseries/lparcfg.c      |   2 +-
+ arch/riscv/mm/cacheflush.c                    |   4 +-
+ arch/s390/hypfs/hypfs_diag0c.c                |   2 +-
+ arch/s390/kernel/alternative.c                |   2 +-
+ arch/s390/kernel/perf_cpum_cf.c               |  10 +-
+ arch/s390/kernel/perf_cpum_cf_common.c        |   4 +-
+ arch/s390/kernel/perf_cpum_sf.c               |   4 +-
+ arch/s390/kernel/processor.c                  |   2 +-
+ arch/s390/kernel/smp.c                        |   2 +-
+ arch/s390/kernel/topology.c                   |   2 +-
+ arch/s390/mm/pgalloc.c                        |   2 +-
+ arch/s390/pci/pci_irq.c                       |   4 +-
+ arch/sh/kernel/smp.c                          |  14 +-
+ arch/sh/mm/cache.c                            |   2 +-
+ arch/sparc/include/asm/mman.h                 |   4 +-
+ arch/sparc/kernel/nmi.c                       |  16 +-
+ arch/sparc/kernel/perf_event.c                |   4 +-
+ arch/sparc/kernel/smp_64.c                    |   8 +-
+ arch/sparc/mm/init_64.c                       |   2 +-
+ arch/x86/events/core.c                        |   6 +-
+ arch/x86/events/intel/core.c                  |   4 +-
+ arch/x86/kernel/alternative.c                 |   2 +-
+ arch/x86/kernel/amd_nb.c                      |   2 +-
+ arch/x86/kernel/apic/apic.c                   |   2 +-
+ arch/x86/kernel/apic/vector.c                 |   2 +-
+ arch/x86/kernel/cpu/aperfmperf.c              |   5 +-
+ arch/x86/kernel/cpu/bugs.c                    |   2 +-
+ arch/x86/kernel/cpu/mce/amd.c                 |   4 +-
+ arch/x86/kernel/cpu/mce/core.c                |  12 +-
+ arch/x86/kernel/cpu/mce/inject.c              |  14 +-
+ arch/x86/kernel/cpu/mce/intel.c               |   2 +-
+ arch/x86/kernel/cpu/microcode/core.c          |   4 +-
+ arch/x86/kernel/cpu/mtrr/mtrr.c               |   2 +-
+ arch/x86/kernel/cpu/resctrl/ctrlmondata.c     |   4 +-
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c        |   8 +-
+ arch/x86/kernel/cpu/sgx/main.c                |   5 +-
+ arch/x86/kernel/cpu/umwait.c                  |   2 +-
+ arch/x86/kernel/cpu/vmware.c                  |   2 +-
+ arch/x86/kernel/cpuid.c                       |   2 +-
+ arch/x86/kernel/kvm.c                         |   6 +-
+ arch/x86/kernel/ldt.c                         |   2 +-
+ arch/x86/kvm/vmx/vmx.c                        |   3 +-
+ arch/x86/kvm/x86.c                            |  11 +-
+ arch/x86/lib/cache-smp.c                      |   4 +-
+ arch/x86/lib/msr-smp.c                        |  20 +-
+ arch/x86/mm/pat/set_memory.c                  |   4 +-
+ arch/x86/mm/tlb.c                             |  12 +-
+ arch/x86/xen/mmu_pv.c                         |   4 +-
+ arch/x86/xen/smp_pv.c                         |   2 +-
+ arch/x86/xen/suspend.c                        |   4 +-
+ arch/xtensa/kernel/smp.c                      |  29 +-
+ block/blk-mq.c                                |   2 +-
+ drivers/acpi/processor_idle.c                 |   4 +-
+ drivers/char/agp/generic.c                    |   2 +-
+ drivers/clocksource/ingenic-timer.c           |   2 +-
+ drivers/clocksource/mips-gic-timer.c          |   2 +-
+ drivers/cpufreq/acpi-cpufreq.c                |  10 +-
+ drivers/cpufreq/powernow-k8.c                 |   9 +-
+ drivers/cpufreq/powernv-cpufreq.c             |  14 +-
+ drivers/cpufreq/sparc-us2e-cpufreq.c          |   4 +-
+ drivers/cpufreq/sparc-us3-cpufreq.c           |   4 +-
+ drivers/cpufreq/speedstep-ich.c               |   7 +-
+ drivers/cpufreq/tegra194-cpufreq.c            |   8 +-
+ drivers/cpuidle/coupled.c                     |   2 +-
+ drivers/cpuidle/driver.c                      |   8 +-
+ drivers/edac/amd64_edac.c                     |   4 +-
+ drivers/firmware/arm_sdei.c                   |  10 +-
+ drivers/gpu/drm/i915/vlv_sideband.c           |   2 +-
+ drivers/hwmon/fam15h_power.c                  |   2 +-
+ .../hwtracing/coresight/coresight-cpu-debug.c |   3 +-
+ .../coresight/coresight-etm3x-core.c          |  11 +-
+ .../coresight/coresight-etm4x-core.c          |  12 +-
+ .../coresight/coresight-etm4x-sysfs.c         |   2 +-
+ drivers/hwtracing/coresight/coresight-trbe.c  |   6 +-
+ drivers/irqchip/irq-mvebu-pic.c               |   4 +-
+ .../net/ethernet/cavium/liquidio/lio_core.c   |   2 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  34 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   8 +-
+ drivers/perf/arm_spe_pmu.c                    |   2 +-
+ .../intel/speed_select_if/isst_if_mbox_msr.c  |   4 +-
+ drivers/platform/x86/intel_ips.c              |   4 +-
+ drivers/powercap/intel_rapl_common.c          |   2 +-
+ drivers/powercap/intel_rapl_msr.c             |   2 +-
+ drivers/regulator/qcom_spmi-regulator.c       |   3 +-
+ drivers/soc/fsl/qbman/qman.c                  |   4 +-
+ drivers/soc/fsl/qbman/qman_test_stash.c       |   9 +-
+ drivers/soc/xilinx/xlnx_event_manager.c       |   2 +-
+ drivers/tty/sysrq.c                           |   2 +-
+ drivers/watchdog/booke_wdt.c                  |   8 +-
+ fs/buffer.c                                   |   2 +-
+ include/linux/irq_work.h                      |   2 +-
+ include/linux/smp.h                           | 227 +++++--
+ include/linux/smp_types.h                     |  69 --
+ kernel/cpu.c                                  |   4 +-
+ kernel/debug/debug_core.c                     |   2 +-
+ kernel/events/core.c                          |  10 +-
+ kernel/irq_work.c                             |   4 +-
+ kernel/profile.c                              |   4 +-
+ kernel/rcu/rcutorture.c                       |   3 +-
+ kernel/rcu/tasks.h                            |   4 +-
+ kernel/rcu/tree.c                             |   6 +-
+ kernel/rcu/tree_exp.h                         |   4 +-
+ kernel/relay.c                                |   5 +-
+ kernel/scftorture.c                           |  13 +-
+ kernel/sched/core.c                           |   4 +-
+ kernel/sched/fair.c                           |   2 +-
+ kernel/sched/membarrier.c                     |  14 +-
+ kernel/smp.c                                  | 633 ++++++++----------
+ kernel/time/clockevents.c                     |   2 +-
+ kernel/time/clocksource.c                     |   2 +-
+ kernel/time/hrtimer.c                         |   6 +-
+ kernel/time/tick-common.c                     |   2 +-
+ kernel/trace/ftrace.c                         |   6 +-
+ kernel/trace/ring_buffer.c                    |   2 +-
+ kernel/trace/trace.c                          |  12 +-
+ kernel/trace/trace_events.c                   |   2 +-
+ kernel/up.c                                   |  56 +-
+ mm/kasan/quarantine.c                         |   2 +-
+ mm/mmu_gather.c                               |   2 +-
+ mm/slab.c                                     |   2 +-
+ net/bpf/test_run.c                            |   4 +-
+ net/core/dev.c                                |   2 +-
+ net/iucv/iucv.c                               |  17 +-
+ virt/kvm/kvm_main.c                           |  12 +-
+ 186 files changed, 945 insertions(+), 1002 deletions(-)
+ delete mode 100644 include/linux/smp_types.h
+
+-- 
+2.27.0
+
