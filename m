@@ -2,86 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B31C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91050C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445915AbiDVJZ1 (ORCPT
+        id S1445931AbiDVJ0u convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
+        Fri, 22 Apr 2022 05:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377251AbiDVJZZ (ORCPT
+        with ESMTP id S1377251AbiDVJ0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:25:25 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06EA533E23
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:22:31 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A57881477;
-        Fri, 22 Apr 2022 02:22:31 -0700 (PDT)
-Received: from bogus (unknown [10.57.11.83])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF2BA3F766;
-        Fri, 22 Apr 2022 02:22:29 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:22:25 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] arch_topology: support for describing cache topology
- from DT
-Message-ID: <20220422092225.ezmaqxloujdw5bqg@bogus>
-References: <1650552960-60165-1-git-send-email-wangqing@vivo.com>
- <1650552960-60165-2-git-send-email-wangqing@vivo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650552960-60165-2-git-send-email-wangqing@vivo.com>
+        Fri, 22 Apr 2022 05:26:46 -0400
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7B4F27CE0;
+        Fri, 22 Apr 2022 02:23:53 -0700 (PDT)
+Received: from smtpclient.apple (p4fefc32f.dip0.t-ipconnect.de [79.239.195.47])
+        by mail.holtmann.org (Postfix) with ESMTPSA id C11D8CECD2;
+        Fri, 22 Apr 2022 11:16:04 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v2] Bluetooth: btusb: add support for Qualcomm WCN785x
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <1650017516-28912-1-git-send-email-quic_zijuhu@quicinc.com>
+Date:   Fri, 22 Apr 2022 11:16:04 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <7EF2E4E4-2DC5-450C-8840-314B9D210521@holtmann.org>
+References: <1650017516-28912-1-git-send-email-quic_zijuhu@quicinc.com>
+To:     Zijun Hu <quic_zijuhu@quicinc.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 07:55:57AM -0700, Qing Wang wrote:
-> From: Wang Qing <wangqing@vivo.com>
+Hi Zijun,
+
+> Qualcomm WCN785x has PID/VID 0cf3/e700 as shown by
+> /sys/kernel/debug/usb/devices:
 > 
-> When ACPI is not enabled, we can get cache topolopy from DT like:
-> *		cpu0: cpu@000 {
-> *			next-level-cache = <&L2_1>;
-> *			L2_1: l2-cache {
-> * 				compatible = "cache";
-> *				next-level-cache = <&L3_1>;
-> * 			};
-> *			L3_1: l3-cache {
-> * 				compatible = "cache";
-> * 			};
-> *		};
-> *
-> *		cpu1: cpu@001 {
-> *			next-level-cache = <&L2_1>;
-> *		};
-> *		...
-> *		};
-> cache_topology hold the pointer describing "next-level-cache",
-> it can describe the cache topology of every level.
+> T:  Bus=02 Lev=02 Prnt=02 Port=01 Cnt=02 Dev#=  8 Spd=12   MxCh= 0
+> D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=0cf3 ProdID=e700 Rev= 0.01
+> C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
+> I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+> E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+> I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+> I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+> I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+> I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+> I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+> I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+> I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+> 
+> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> ---
+> drivers/bluetooth/btusb.c | 10 ++++++++--
+> 1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> index 06a854a2507e..67a6a84a6f61 100644
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@ -317,6 +317,11 @@ static const struct usb_device_id blacklist_table[] = {
+> 						     BTUSB_WIDEBAND_SPEECH |
+> 						     BTUSB_VALID_LE_STATES },
+> 
+> +	/* QCA WCN785x chipset */
+> +	{ USB_DEVICE(0x0cf3, 0xe700), .driver_info = BTUSB_QCA_WCN6855 |
+> +						     BTUSB_WIDEBAND_SPEECH |
+> +						     BTUSB_VALID_LE_STATES },
+> +
+> 	/* Broadcom BCM2035 */
+> 	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
+> 	{ USB_DEVICE(0x0a5c, 0x200a), .driver_info = BTUSB_WRONG_SCO_MTU },
+> @@ -3037,6 +3042,7 @@ static const struct qca_device_info qca_devices_table[] = {
+> 	{ 0x00130100, 40, 4, 16 }, /* WCN6855 1.0 */
+> 	{ 0x00130200, 40, 4, 16 }, /* WCN6855 2.0 */
+> 	{ 0x00130201, 40, 4, 16 }, /* WCN6855 2.1 */
+> +	{ 0x00190200, 40, 4, 16 }, /* WCN785x 2.0 */
+> };
+> 
+> static int btusb_qca_send_vendor_req(struct usb_device *udev, u8 request,
+> @@ -3327,11 +3333,11 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+> 		if (err < 0)
+> 			return err;
+> 
+> -		/* WCN6855 2.1 will reset to apply firmware downloaded here, so
+> +		/* WCN6855 2.1 and later will reset to apply firmware downloaded here, so
+> 		 * wait ~100ms for reset Done then go ahead, otherwise, it maybe
+> 		 * cause potential enable failure.
+> 		 */
+> -		if (info->rom_version == 0x00130201)
+> +		if ((info->rom_version == 0x00130201) || (info->rom_version == 0x00190200))
+> 			msleep(QCA_BT_RESET_WAIT_MS);
 
-As I mentioned before, I would like to avoid any duplication and see
-what can be reused from drivers/base/cacheinfo.c
+I think it is better to start using a switch statement here.
 
-We can discuss and see how to proceed on that once we settle/agree on
-2/2. I don't want to waste your or my time if we don't end up using this.
-So let us look at this once we agree to push the sched related changes
-as we have used generic ones so far and you want to introduce arm64 specific
-levels. That requires some discussions and thoughts before we can finalise.
+Regards
 
-Also I have mentioned you to keep Dietmar and Vincent in cc for all sched
-related changes which you failed to do again. I expect you fix that next
-time if you want them to help you in discussions and make any progress on
-this. Otherwise it may get ignored as you don't have all the right
-people in cc.
+Marcel
 
---
-Regards,
-Sudeep
