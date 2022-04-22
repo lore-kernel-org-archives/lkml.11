@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF46DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4549BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445278AbiDVQ2q (ORCPT
+        id S1446356AbiDVQ2v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
+        Fri, 22 Apr 2022 12:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389635AbiDVQ1r (ORCPT
+        with ESMTP id S1390699AbiDVQ1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:27:47 -0400
+        Fri, 22 Apr 2022 12:27:49 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2E4C5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:24:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A053F5C
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:24:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650644692; x=1682180692;
+  t=1650644696; x=1682180696;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=L3ZSVX63/s5yaZQxGEWHbqwz2MM9wxr6WnJ4e9be/eY=;
-  b=LMKjjSOxZn40p8IC+WmW8t7/1UruEK7K1J7cONdyFMmFtSl1ey3oSrML
-   0bBTzH4QLn45v+IGLA7nc/LwULt3IQ9/CUVIr7aG7ifmPuzYorUZS43WT
-   Wx3Bj/K3R7EJpgOcfsATVoe/TrknFmqe2QhVdnF7SVFYgtu7lUtm6gSVe
-   vrE1nxilnISuQBF2tJJF2OqqApZnN4p2tvP6lBMF6njhyaQtKdhQt4RXv
-   SlWGYSmyjY0++upASuPHSMRTv7W1g16pYUVO64HqImdzWrSvqgQKBMgrl
-   Rwt3beU2RHXTPvmxhvysF8NHZHENw/IjkWz6TayH3J2Mms3i6mZUJ6Yx1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264885968"
+  bh=uLF6qXh+XOVZJNuYD6lAJ6RB4iqOqKmveOdC3HuSOiQ=;
+  b=NFMIkR1P8GCbmaQcIhc78tBMLgqxGdHOWXeURDLicnbhUQkSmDMiABtY
+   rbJ8XgF2kPhzncB0sZMv+ncEqOmLHpbxrA6WCYFou/KHBgZ2oV4iurQBF
+   YKL0KP/j76pK7eNGmwwkWC3loLJp20GqokgSQox4q+P/D0mvrCYD2ik5D
+   zNe/KOebxcyjdO936JYL4ZEJbCUVo3p0LmefaEB1U9ko+lUslmrlE+RE0
+   ZfFCp60A9+5MsjJPB05NqbpzlQfsRIPdPTiQghUGp7w1ofhIUIG+4bYm3
+   uz7dqcqQ9QWuRDydc4+ITfsJBeJXQ46+siKSdbO7VKMGE0QhjsdZE1j1B
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264886024"
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264885968"
+   d="scan'208";a="264886024"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:24:39 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:24:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="577978880"
+   d="scan'208";a="577979087"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga008.jf.intel.com with ESMTP; 22 Apr 2022 09:24:37 -0700
+  by orsmga008.jf.intel.com with ESMTP; 22 Apr 2022 09:24:48 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 12/21] perf evlist: Factor out evlist__dummy_event()
-Date:   Fri, 22 Apr 2022 19:23:53 +0300
-Message-Id: <20220422162402.147958-13-adrian.hunter@intel.com>
+Subject: [PATCH RFC 16/21] perf intel-pt: Track sideband system-wide when needed
+Date:   Fri, 22 Apr 2022 19:23:57 +0300
+Message-Id: <20220422162402.147958-17-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220422162402.147958-1-adrian.hunter@intel.com>
 References: <20220422162402.147958-1-adrian.hunter@intel.com>
@@ -58,40 +58,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Factor out evlist__dummy_event() so it can be reused.
+User space tasks can migrate between CPUs, so when tracing selected CPUs,
+sideband for all CPUs is still needed. This is in preparation for allowing
+system-wide events on all CPUs while the user requested events are on only
+user requested CPUs.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/util/evlist.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ tools/perf/arch/x86/util/intel-pt.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 25eae096bdac..78c47cbafbc2 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -242,14 +242,20 @@ int __evlist__add_default(struct evlist *evlist, bool precise)
- 	return 0;
- }
+diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
+index e45d64dec57c..62be78bc90b6 100644
+--- a/tools/perf/arch/x86/util/intel-pt.c
++++ b/tools/perf/arch/x86/util/intel-pt.c
+@@ -864,20 +864,22 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
  
--int evlist__add_dummy(struct evlist *evlist)
-+static struct evsel *evlist__dummy_event(struct evlist *evlist)
- {
- 	struct perf_event_attr attr = {
- 		.type	= PERF_TYPE_SOFTWARE,
- 		.config = PERF_COUNT_SW_DUMMY,
- 		.size	= sizeof(attr), /* to capture ABI version */
- 	};
--	struct evsel *evsel = evsel__new_idx(&attr, evlist->core.nr_entries);
-+
-+	return evsel__new_idx(&attr, evlist->core.nr_entries);
-+}
-+
-+int evlist__add_dummy(struct evlist *evlist)
-+{
-+	struct evsel *evsel = evlist__dummy_event(evlist);
+ 	/* Add dummy event to keep tracking */
+ 	if (opts->full_auxtrace) {
++		bool need_system_wide_tracking;
+ 		struct evsel *tracking_evsel;
  
- 	if (evsel == NULL)
- 		return -ENOMEM;
+-		err = parse_events(evlist, "dummy:u", NULL);
+-		if (err)
+-			return err;
++		/*
++		 * User space tasks can migrate between CPUs, so when tracing
++		 * selected CPUs, sideband for all CPUs is still needed.
++		 */
++		need_system_wide_tracking = evlist->core.has_user_cpus &&
++					    !intel_pt_evsel->core.attr.exclude_user;
+ 
+-		tracking_evsel = evlist__last(evlist);
++		tracking_evsel = evlist__add_aux_dummy(evlist, need_system_wide_tracking);
++		if (!tracking_evsel)
++			return -ENOMEM;
+ 
+ 		evlist__set_tracking_event(evlist, tracking_evsel);
+ 
+-		tracking_evsel->core.attr.freq = 0;
+-		tracking_evsel->core.attr.sample_period = 1;
+-
+-		tracking_evsel->no_aux_samples = true;
+ 		if (need_immediate)
+ 			tracking_evsel->immediate = true;
+ 
 -- 
 2.25.1
 
