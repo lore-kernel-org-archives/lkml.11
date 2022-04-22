@@ -2,127 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4734AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233439AbiDVWfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
+        id S233106AbiDVWgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233202AbiDVWf2 (ORCPT
+        with ESMTP id S233258AbiDVWgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:35:28 -0400
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE49B2CCB95;
-        Fri, 22 Apr 2022 14:28:00 -0700 (PDT)
-Received: by mail-ot1-f51.google.com with SMTP id e15-20020a9d63cf000000b006054e65aaecso6382645otl.0;
-        Fri, 22 Apr 2022 14:28:00 -0700 (PDT)
+        Fri, 22 Apr 2022 18:36:09 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F3022C3C5;
+        Fri, 22 Apr 2022 14:51:49 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id fu34so6463120qtb.8;
+        Fri, 22 Apr 2022 14:51:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RZMfk42e8wN88X1x4Oc4ckY2xJ8vXIPWfHgWdfKTn9M=;
+        b=OSzfMYbMeDyu2ee3SkdVdwdxHDs6Jzcx2Ft5LhsurqKR50qJ8HRKBjD3f87T0XNmxR
+         qPnidw8ZJGlkLY4hMiMsUUqST228rD37ocmfljP7rOdrbzZs3xADUHms29i9T65N5q9E
+         clMgoBeG13AcWf9ZZfieqatqAf8Yj3w3rxiAT2PbzEXyVNfRiReGT+XgQbJekBqIWe5q
+         P/XFEhR+21IEscdN+hf34slbakBnAe7UATNkKqG4TVmxXH+UjyXh7SddnQ7HDYvfH9Nt
+         OEqb8324QrpnTlQriByF9ZcZf/Go3TvUITwT8PsNgo2rtCmUHHWiuk1BEArJwiB3TjTB
+         bExQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=jaxMqNYGtR9/GKTe6XSZEtOnCayZXLADx5gspn1sMaU=;
-        b=F133HIy+xcswRSWGJVv71yrJ4Ga0GCxl6j4ha/9jpfxXfYx6RINEws9fkwoGq24qe/
-         MvpkqzAK1vg9GlGg6galfdz1X974TXTQHGbftX6kZ6sR9+X6g2n0DWGBvabPMmTWnwVl
-         IuPyugS5EiLBwgWIi/5avrjNsxLxhd5M2gASi1reu0DVMrkYYrhSLvLVHGPlL8Zmwlxw
-         JGk950IiSEMSQA3wcPNvLirJBaeWfKDT4D6FSUi3wxH6gGw1ODJMiX8OnrukGqFfYc8y
-         jOA98z59vIqMrNemM2OWKuzG90KkDTcpbxWYsNLTH4siD0R0BnDGor74wpxLm1W+P+Xl
-         iP8A==
-X-Gm-Message-State: AOAM531eGOmorAQMwx6fINeLe38YQkGNGo5CwKQa/X0fpCHpdYdz6heB
-        hrKQAhpsiQFNlWZbL/zujg==
-X-Google-Smtp-Source: ABdhPJyVlTpz8f4H1tIkdFIcTZaYs0+eqvGbNHOIUHnieRI58LSaZYbm5RhBLf4fkz2E5vAMRo2VXQ==
-X-Received: by 2002:a9d:5381:0:b0:605:777f:b65b with SMTP id w1-20020a9d5381000000b00605777fb65bmr2562755otg.189.1650662880236;
-        Fri, 22 Apr 2022 14:28:00 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v20-20020a056830141400b00604d7cb9bb1sm1196168otp.43.2022.04.22.14.27.59
+        bh=RZMfk42e8wN88X1x4Oc4ckY2xJ8vXIPWfHgWdfKTn9M=;
+        b=5Qycu7xY6XTw1/MlnTnSvQQ+h8U81dPsVKgvdUmzkEHLOZx6HFCQMB3oEh7upWR+tU
+         SHIijXfzsIG1JMXPj+TKUCodQbAwb13uNkKJqueK5ZjXizHvZPobsLhARckIXmE9pSzZ
+         B1p8CV8D5XJ1nfQHb3nYGhw93qqdmcJmTEqnh5mk+zlb/l/iYwNGuZdWKKCcfYdaBgE0
+         utxGDwOo9nY0F7nZ8odrhE++tKuCXatN/cc7A8QLhcy/ME2hq5Uiwm5caDhCkrfEvlSg
+         G7JX19otKVyoDed7mvpa/YvBXnupS78fMvH3HOw/bEABgxFXpdgUcEqZG4p8XU2FBhLX
+         wJZA==
+X-Gm-Message-State: AOAM530d/h1v3j9q0NZdJah39aNaQ/q9DL9NPoF8JA0YHhEMr7p1/Sll
+        meTv1Rb43x6c8qReQaLxOw==
+X-Google-Smtp-Source: ABdhPJxyyCkFj9u8Z2ocvKIb99chaQNgfvpROYCjFGnjIdmRADHMMNVhTGFRGUajfZ+aBtu4TsJEvA==
+X-Received: by 2002:a05:622a:1a86:b0:2f3:4be4:42dd with SMTP id s6-20020a05622a1a8600b002f34be442ddmr4854803qtc.55.1650664308682;
+        Fri, 22 Apr 2022 14:51:48 -0700 (PDT)
+Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05622a121400b002eefd7bf5basm2080434qtx.63.2022.04.22.14.51.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 14:27:59 -0700 (PDT)
-Received: (nullmailer pid 2836931 invoked by uid 1000);
-        Fri, 22 Apr 2022 21:27:58 -0000
-Date:   Fri, 22 Apr 2022 16:27:58 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 2/8] dt-bindings: nvmem: sfp: Add clock properties
-Message-ID: <YmMd3liryJlZRMuA@robh.at.kernel.org>
-References: <20220421175657.1259024-1-sean.anderson@seco.com>
- <20220421175657.1259024-3-sean.anderson@seco.com>
- <4a45db184fbadc278624571dfbeb5004@walle.cc>
+        Fri, 22 Apr 2022 14:51:48 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 17:51:46 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        hannes@cmpxchg.org, akpm@linux-foundation.org,
+        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-input@vger.kernel.org, roman.gushchin@linux.dev
+Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
+ heap-allocated strings
+Message-ID: <20220422215146.i663tn6zzn6blzo3@moria.home.lan>
+References: <20220421234837.3629927-7-kent.overstreet@gmail.com>
+ <20220422042017.GA9946@lst.de>
+ <YmI5yA1LrYrTg8pB@moria.home.lan>
+ <20220422052208.GA10745@lst.de>
+ <YmI/v35IvxhOZpXJ@moria.home.lan>
+ <20220422113736.460058cc@gandalf.local.home>
+ <20220422193015.2rs2wvqwdlczreh3@moria.home.lan>
+ <20220422153916.7ebf20c3@gandalf.local.home>
+ <20220422203057.iscsmurtrmwkpwnq@moria.home.lan>
+ <20220422164744.6500ca06@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4a45db184fbadc278624571dfbeb5004@walle.cc>
+In-Reply-To: <20220422164744.6500ca06@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 08:12:34PM +0200, Michael Walle wrote:
-> Am 2022-04-21 19:56, schrieb Sean Anderson:
-> > To program fuses, it is necessary to set the fuse programming time. This
-> > is determined based on the value of the platform clock. Add a clock
-> > property.
-> 
-> For some context: Sean was adding the SFP support in u-boot and
-> I referred him to this binding. I didn't need the clock to just
-> read the data. But Sean is right, we need the clock for the
-> programming. I was unaware of that. The binding is still yet to
-> be released with v5.18, thus I think it is still possible to make
-> the clock mandatory.
+On Fri, Apr 22, 2022 at 04:47:44PM -0400, Steven Rostedt wrote:
+> Which is something you could do on top of seq_buf. Point being, you do not
+> need to re-implement printbuf, and I have not looked at the code, but
+> instead, implement printbuf on top of seq_buf, and extend seq_buf where
+> needed. Like trace_seq does, and the patches I have for seq_file would do.
+> It would leave the string processing and buffer space management to
+> seq_buf, as there's ways to see "oh, we need more space, let's allocate
+> more" and then increase the heap.
 
-Please add this detail to the commit message. Otherwise, it looks like 
-an ABI break to make a new property required.
+That sounds like it could work. 
 
-> 
-> > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> 
-> Fixes: 6f9817cdcc82 ("dt-bindings: nvmem: add fsl,layerscape-sfp binding")
-> 
-> -michael
-> 
-> > ---
-> > 
-> >  .../bindings/nvmem/fsl,layerscape-sfp.yaml         | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> > b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> > index b7798e903191..54086f50157d 100644
-> > --- a/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> > +++ b/Documentation/devicetree/bindings/nvmem/fsl,layerscape-sfp.yaml
-> > @@ -24,15 +24,29 @@ properties:
-> >    reg:
-> >      maxItems: 1
-> > 
-> > +  clocks:
-> > +    maxItems: 1
-> > +    description:
-> > +      The SFP clock. Typically, this is the platform clock divided by
-> > 4.
-> > +
-> > +  clock-names:
-> > +    const: sfp
-> > +
-> >  required:
-> >    - compatible
-> >    - reg
-> > +  - clock-names
-> > +  - clocks
-> > 
-> >  unevaluatedProperties: false
-> > 
-> >  examples:
-> >    - |
-> > +    #include <dt-bindings/clock/fsl,qoriq-clockgen.h>
-> >      efuse@1e80000 {
-> >          compatible = "fsl,ls1028a-sfp";
-> >          reg = <0x1e80000 0x8000>;
-> > +        clocks = <&clockgen QORIQ_CLK_PLATFORM_PLL
-> > +                            QORIQ_CLK_PLL_DIV(4)>;
-> > +        clock-names = "sfp";
-> >      };
+> I would be more willing to accept a printbuf, if it was built on top of
+> seq_buf. That is, you don't need to change all your user cases, you just
+> need to make printbuf an extension of seq_buf by using it underneath, like
+> trace_seq does. Then it would not be re-inventing the wheel, but just
+> building on top of it.
+
+Hmm... At first glance, redoing printbuf on top of seq_buf looks like it would
+save a pretty trivial amount of code - and my engineering taste these days leans
+more toward less layering if it's only slightly more code; I think I might like
+printbuf and seq_buf to stay separate things (and both of them are pretty
+small).
+
+But it's definitely not an unreasonable idea - I can try it out and see how it
+turns out. Would you have any objections to making some changes to seq_buf?
+
+ - You've got size and len as size_t, I've got them as unsigned. Given that we
+   need to be checking for overflow anyways for correctens, I like having them
+   as u32s.
+ - seq_buf->readpos - it looks like this is only used by seq_buf_to_user(), does
+   it need to be in seq_buf?
+ - in printbufs, I make sure the buffer is always nul-terminated - seems
+   simplest, given that we need to make sure there's always room for the
+   terminating nul anyways.
+
+A downside of having printbuf on top of seq_buf is that now we've got two apis
+that functions can output to - vs. if we modified printbuf by adding a flag for
+"this is an external buffer, don't reallocate it". That approach would be less
+code overall, for sure.
+
+Could I get you to look over printbuf and share your thoughts on the different
+approaches?
