@@ -2,93 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC94C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444684AbiDVHMc (ORCPT
+        id S1444681AbiDVHNj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35918 "EHLO
+        Fri, 22 Apr 2022 03:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444645AbiDVHM1 (ORCPT
+        with ESMTP id S1444645AbiDVHNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:12:27 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B92E50E2D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:09:35 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id e17so5410276qvj.11
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:09:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4PRaKTBX4zvfcCO3PcJSGqznsgOYRUdUYPYGgxvNGJk=;
-        b=FmgD3YMH5ZAMxK3tKRqndWwIOcSRlgtPcYd/RgB7m0Z5OTwJturd4h6xZlFkUE6jPv
-         mJDZjZZtObdX1gM1PGgZWYpO2csnDbG8c30Lp1U0BAZjWLwPBXUv33hAOFFM1lUyvo69
-         3oeZ0wYMpTwD882qFKzoSgdlj2FXo7MH93YR1uNywTX5RdoFMS3FUPO3GKPNsTwuFnlM
-         dbByzkaYdkh1ylxsDPfcSxDpW1pJaWDFt1bgYRzMoZrEHkHGv6fBDNBdXGk5HTxi4mKz
-         n4P6HsPeb50PiMjbQrY5+GhqRUlgkMF7z7/AGMYnGIhq+J6NLGPguV/nkwea06QXxxDF
-         cwoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4PRaKTBX4zvfcCO3PcJSGqznsgOYRUdUYPYGgxvNGJk=;
-        b=UpmdCMXjxuK4FQT9rWrxJKgzAAmctlddDAlBKD3WsJ/lnuJ2ZwhJS6sswMwU5YWkbk
-         W78HpMGiE/A6LJCPztk5b9RDTea5Tgx9E1ykZ16jz6aVLQCLJwYUrLTSv9CZITrO53cO
-         +M94PwTaT+/eSHFqnZ0Q2IsbKeV8mHZhIJe55FZ0Hhg2u1mFVo2wIKnQZgRaJ1w2bSHn
-         9FIj8zbqIi78AUm1CGCmnvjCJGIU5NPK/yBdCo1UpEZ0n2egUiBR2kjRpC7gVqgo//06
-         TFhcl9ZDZPJzw0J55YnN/pkjd2oWRVWhcHk+BOoEDj1S0UsmeWcPtcP42ld9Kq1DGbTJ
-         JjBg==
-X-Gm-Message-State: AOAM532ww/EwolGBTFMye7PCrrnPB717C9xPJnX4vjJNb3oGKrYE5I+F
-        rD1s2PLw88Sjz91bhj/gmEg=
-X-Google-Smtp-Source: ABdhPJwty+79omghdZU2CmjLKE0ZISzktFgDQQWpWvf4Y5KNPRnfdIqNfqjFi5e9qoTNzRPu3AaY9Q==
-X-Received: by 2002:a05:6214:21a5:b0:446:6477:30b9 with SMTP id t5-20020a05621421a500b00446647730b9mr2220318qvc.103.1650611374245;
-        Fri, 22 Apr 2022 00:09:34 -0700 (PDT)
-Received: from localhost.localdomain ([192.159.178.174])
-        by smtp.gmail.com with ESMTPSA id y7-20020a05620a0e0700b00699a30d6d10sm532950qkm.111.2022.04.22.00.09.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 00:09:33 -0700 (PDT)
-From:   ashamedbit <muralianiruddhan@gmail.com>
-To:     Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Cc:     ashamedbit <muralianiruddhan@gmail.com>
-Subject: [PATCH] Subject: x86/vdso/vdso2c: Memory Leak fix, Fix leak of variable name in vdso2c.c
-Date:   Fri, 22 Apr 2022 03:09:22 -0400
-Message-Id: <20220422070922.14765-1-muralianiruddhan@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Apr 2022 03:13:34 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FF250E34
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:10:39 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nhnR0-0005L2-KB; Fri, 22 Apr 2022 09:10:30 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nhnQv-0001fI-LA; Fri, 22 Apr 2022 09:10:25 +0200
+Date:   Fri, 22 Apr 2022 09:10:25 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Yann Gautier <yann.gautier@foss.st.com>
+Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [Linux-stm32] [PATCH v1 2/2] ARM: dts: stm32: add support for
+ Protonic PRTT1x boards
+Message-ID: <20220422071025.GC5244@pengutronix.de>
+References: <20220421091949.2789488-1-o.rempel@pengutronix.de>
+ <20220421091949.2789488-2-o.rempel@pengutronix.de>
+ <37ba2977-848a-19a6-8505-279f2b19c962@foss.st.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <37ba2977-848a-19a6-8505-279f2b19c962@foss.st.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 09:09:30 up 22 days, 19:39, 71 users,  load average: 0.04, 0.21,
+ 0.20
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The file vdso2c.c contains a memory leak of variable 'name'.
-This leak was detected by ASAN(AddressSanitizer) on local  builds.
-A tool called AddressWatcher automatically attempts to fix memory
-leaks suggested by ASAN. The fix has been inserted to stop the
-memory leak in the file vdso2c.c.
-
-Signed-off-by: ashamedbit <muralianiruddhan@gmail.com>
----
- arch/x86/entry/vdso/vdso2c.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/x86/entry/vdso/vdso2c.c b/arch/x86/entry/vdso/vdso2c.c
-index edfe9780f6d1..b3decd59c98e 100644
---- a/arch/x86/entry/vdso/vdso2c.c
-+++ b/arch/x86/entry/vdso/vdso2c.c
-@@ -246,6 +246,7 @@ int main(int argc, char **argv)
+On Thu, Apr 21, 2022 at 03:11:41PM +0200, Yann Gautier wrote:
+> > +&sdmmc2 {
+> > +	pinctrl-names = "default", "opendrain", "sleep";
+> > +	pinctrl-0 = <&sdmmc2_b4_pins_a &sdmmc2_d47_pins_a>;
+> > +	pinctrl-1 = <&sdmmc2_b4_od_pins_a &sdmmc2_d47_pins_a>;
+> > +	pinctrl-2 = <&sdmmc2_b4_sleep_pins_a &sdmmc2_d47_sleep_pins_a>;
+> 
+> Hi Oleksij,
+> 
+> > +	disable-wp;
+> This is not used for eMMC (or SDIO), it can be removed.
+> 
+> > +	disable-cd;
+> This property does not exist.
+> 
+> > +	none-removable;
+> The right name is non-removable.
  
- 	go(raw_addr, raw_len, stripped_addr, stripped_len, outfile, name);
- 
-+	free(name);
- 	munmap(raw_addr, raw_len);
- 	munmap(stripped_addr, stripped_len);
- 	fclose(outfile);
+OK, thank you for review. I'll send v2
+
+Regards,
+Oleksij
 -- 
-2.25.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
