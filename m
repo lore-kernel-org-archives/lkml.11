@@ -2,185 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33ECFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231230AbiDVXhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
+        id S230354AbiDVXi4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbiDVXg4 (ORCPT
+        with ESMTP id S230253AbiDVXij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:36:56 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4D7D3ACD
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 16:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650669745; x=1682205745;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4otL8TRrBO+M5G+dHbVsu0cGBD0FUjenUHO3LNY0VpM=;
-  b=VG1N4Hc8tVSdvNYv5h3yVrb+VwEwk6P7YHfyoYXI7Lu8pLqcDixo/QNy
-   mbzbPgZZtK9aRf4TUQlNmG+g3YMMCbQ4+AxuKwp9qhLcYXFD99GUV96bx
-   T7Rl0MVntCernLi59ae/g/ioWz9hsK6Yo/szLPvYN4DPp0urru2Y6idbm
-   sLPxm0YD/cXAm4TVMzHk8fmpjGg8PGhncwE7zVwQapF5q4K3+0G0oGsyS
-   y1reBnlbXqzmR5h4sczEZijEM10TrPyHvhqmFGPJsxLIkLhyx2nbXuYHI
-   0vUt8MZzF7nl3UZXspfX/McQ9Yoe5zIyoBef30KZogZuz4Ye1/KHDobcD
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264301799"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264301799"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 16:22:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="728733995"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 22 Apr 2022 16:22:23 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni2bW-000Aeg-Vo;
-        Fri, 22 Apr 2022 23:22:22 +0000
-Date:   Sat, 23 Apr 2022 07:22:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [intel-tdx:guest-hardening 3/13] drivers/virtio/virtio_mmio.c:565:6:
- error: implicit declaration of function 'cc_platform_has'
-Message-ID: <202204230726.SODHP9ez-lkp@intel.com>
+        Fri, 22 Apr 2022 19:38:39 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71902E6459;
+        Fri, 22 Apr 2022 16:25:51 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id kd22so2312191qvb.4;
+        Fri, 22 Apr 2022 16:25:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rcdaBhhud9SyNHNY0AAhVKpiP7gID+EH0S68KRDmsGo=;
+        b=cl1daFNRCD3e5ffgQ725R7amEwpyE1xVdZ5NGUozsQbs4DgYzyYZwr9MPIuNqNkZ+t
+         kFS9d5mX2ptu1vW0KM/xExO22N1uvYB6ISW5Gf2O4FPY4qOYhIjr87geUoaxd0nUifM/
+         +8/XYg6gGAlhph7wlWJSXFZX+vE0dTTXAz63XW0UYkRpwPRABlWD43ZafITFmKHyLrva
+         k0SBpjCDVuZG5HlTU6E9NgbNG6KVOSys0P1PX8oVhPi5L5dbWztVKRB47JM0/4+gJsmG
+         ZrkJLacRQTPvHvLxW6HXLeQVqn7FuSUofP0ZCFDV7yXGf6oWiCmuKc4N1yMKKOdxKxcv
+         4voQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rcdaBhhud9SyNHNY0AAhVKpiP7gID+EH0S68KRDmsGo=;
+        b=1x3KVJwOHUG5ZjyLNvfYOSnp27Toko553FBS3zEOsxGVB0DK5HrHSHp4klVdjfbSea
+         GO4MHvS54xRoX7yu1D3D7h5wi1Crb1XYQXb08rRzC5TZ+DF4L0NYUZqk5PQ232fUtO94
+         99FupADYQ14NC4wrRt6odffbArd81GPVdrkunSRSjUBF+BU14W0jOf0OQrHyQz2l2pSl
+         qE+Igbce2qNXpgL0itfJEyYZpL0hXs+od5KRhNkVTbnpDYhiFJuPj2ix/qfYnmeG9GzA
+         bLq06K9tRIeRW57HgK2t2s3r3amd2YwSd8v9lH3nwu/e1DDKOuMovzsxuJMn0s4JHK7X
+         9/Lw==
+X-Gm-Message-State: AOAM5335thhUSXFNjgZLofYUDj8t5oiLyPe9oQ6MNYXvlZXmQG/iKq++
+        SANAYB+ptJaQCPSkFPAF3Jc=
+X-Google-Smtp-Source: ABdhPJyEDybsNUkFpLBFTngPCki9AUC4GVSw/pvF00/UmfGceNLNQSnWZzheejDGBi+Vp98KSZtzPw==
+X-Received: by 2002:a05:6214:518d:b0:454:6ea7:a179 with SMTP id kl13-20020a056214518d00b004546ea7a179mr2838176qvb.121.1650669950640;
+        Fri, 22 Apr 2022 16:25:50 -0700 (PDT)
+Received: from ?IPV6:2600:1700:2442:6db0:98a4:ff1d:3bb2:5350? ([2600:1700:2442:6db0:98a4:ff1d:3bb2:5350])
+        by smtp.gmail.com with ESMTPSA id m9-20020a05622a118900b002f1fc51135dsm2104515qtk.57.2022.04.22.16.25.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 16:25:50 -0700 (PDT)
+Message-ID: <ee73ec15-db6c-e0bb-ddb1-012499d08b11@gmail.com>
+Date:   Fri, 22 Apr 2022 18:25:49 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH 1/2] Documentation: dev-tools: KTAP spec change
+ version to 2-rc
+Content-Language: en-US
+To:     David Gow <davidgow@google.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Bird, Tim" <Tim.Bird@sony.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Rae Moar <rmr167@gmail.com>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
+        Daniel Latypov <dlatypov@google.com>, kernelci@groups.io,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220316202622.324866-1-frowand.list@gmail.com>
+ <20220316202622.324866-2-frowand.list@gmail.com>
+ <CABVgOSm_rQcBhbC5C7Z7_+zEheCjkjHCmzKHyx7b5bYLESvA0A@mail.gmail.com>
+From:   Frank Rowand <frowand.list@gmail.com>
+In-Reply-To: <CABVgOSm_rQcBhbC5C7Z7_+zEheCjkjHCmzKHyx7b5bYLESvA0A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git guest-hardening
-head:   121e66762efef210f0bbd57d767c22301ff0878e
-commit: 3377879e3b9e6535e58030a0d0c9068812664416 [3/13] virtio-mmio: Disable in TDX guest
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220423/202204230726.SODHP9ez-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel/tdx/commit/3377879e3b9e6535e58030a0d0c9068812664416
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-hardening
-        git checkout 3377879e3b9e6535e58030a0d0c9068812664416
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+On 3/17/22 03:43, David Gow wrote:
+> On Thu, Mar 17, 2022 at 4:26 AM <frowand.list@gmail.com> wrote:
+>>
+>> From: Frank Rowand <frank.rowand@sony.com>
+>>
+>> Prepare KTAP Specification for the process of creating Version 2.
+>> The version will remain 2-rc until the final commit to complete
+>> Version 2.
+>>
+>> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+>> ---
+> 
+> This seems okay to me, though I'd generally rather this stay in a
+> branch rather than hitting torvalds/master while there aren't any
+> substantive changes to the actual spec. (Basically, let's not rush
+> naming this "2-rc" for 5.18 if there aren't any other changes: a 2-rc
+> which is practically the same as 1 is probably going to be more
+> confusing than helpful if it sticks around for a whole kernel release.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Sounds good.  In my reply (a few minutes ago) to your other email, I offer
+to host a branch.  The branch approach sounds good to me.
 
-All errors (new ones prefixed by >>):
+> 
+> (Also, when would we want to update the various mentions of "KTAP
+> version 1" in the document to "KTAP version 2" or "KTAP version 2-rc"?
+> Now, when 2 is released, at the first breaking change to that example,
+> etc?)
 
->> drivers/virtio/virtio_mmio.c:565:6: error: implicit declaration of function 'cc_platform_has' [-Werror,-Wimplicit-function-declaration]
-           if (cc_platform_has(CC_ATTR_GUEST_DEVICE_FILTER))
-               ^
->> drivers/virtio/virtio_mmio.c:565:22: error: use of undeclared identifier 'CC_ATTR_GUEST_DEVICE_FILTER'
-           if (cc_platform_has(CC_ATTR_GUEST_DEVICE_FILTER))
-                               ^
-   drivers/virtio/virtio_mmio.c:611:33: warning: shift count >= width of type [-Wshift-count-overflow]
-                   rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-                                                 ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   drivers/virtio/virtio_mmio.c:620:46: warning: shift count >= width of type [-Wshift-count-overflow]
-                   rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-                                                              ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:76:54: note: expanded from macro 'DMA_BIT_MASK'
-   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-                                                        ^ ~~~
-   2 warnings and 2 errors generated.
+There are only a few references to version 1.  I can create a patch to change
+them to version 2 (other than the version of the document itself).
 
+If we are working on a branch, it should not make a big difference when the
+internal uses of "version 1" are changed to "version 2".  If I do it right
+away then it won't get overlooked.
 
-vim +/cc_platform_has +565 drivers/virtio/virtio_mmio.c
+-Frank
 
-   558	
-   559	static int virtio_mmio_probe(struct platform_device *pdev)
-   560	{
-   561		struct virtio_mmio_device *vm_dev;
-   562		unsigned long magic;
-   563		int rc;
-   564	
- > 565		if (cc_platform_has(CC_ATTR_GUEST_DEVICE_FILTER))
-   566			return -ENODEV;
-   567	
-   568		vm_dev = devm_kzalloc(&pdev->dev, sizeof(*vm_dev), GFP_KERNEL);
-   569		if (!vm_dev)
-   570			return -ENOMEM;
-   571	
-   572		vm_dev->vdev.dev.parent = &pdev->dev;
-   573		vm_dev->vdev.dev.release = virtio_mmio_release_dev;
-   574		vm_dev->vdev.config = &virtio_mmio_config_ops;
-   575		vm_dev->pdev = pdev;
-   576		INIT_LIST_HEAD(&vm_dev->virtqueues);
-   577		spin_lock_init(&vm_dev->lock);
-   578	
-   579		vm_dev->base = devm_platform_ioremap_resource(pdev, 0);
-   580		if (IS_ERR(vm_dev->base))
-   581			return PTR_ERR(vm_dev->base);
-   582	
-   583		/* Check magic value */
-   584		magic = readl(vm_dev->base + VIRTIO_MMIO_MAGIC_VALUE);
-   585		if (magic != ('v' | 'i' << 8 | 'r' << 16 | 't' << 24)) {
-   586			dev_warn(&pdev->dev, "Wrong magic value 0x%08lx!\n", magic);
-   587			return -ENODEV;
-   588		}
-   589	
-   590		/* Check device version */
-   591		vm_dev->version = readl(vm_dev->base + VIRTIO_MMIO_VERSION);
-   592		if (vm_dev->version < 1 || vm_dev->version > 2) {
-   593			dev_err(&pdev->dev, "Version %ld not supported!\n",
-   594					vm_dev->version);
-   595			return -ENXIO;
-   596		}
-   597	
-   598		vm_dev->vdev.id.device = readl(vm_dev->base + VIRTIO_MMIO_DEVICE_ID);
-   599		if (vm_dev->vdev.id.device == 0) {
-   600			/*
-   601			 * virtio-mmio device with an ID 0 is a (dummy) placeholder
-   602			 * with no function. End probing now with no error reported.
-   603			 */
-   604			return -ENODEV;
-   605		}
-   606		vm_dev->vdev.id.vendor = readl(vm_dev->base + VIRTIO_MMIO_VENDOR_ID);
-   607	
-   608		if (vm_dev->version == 1) {
-   609			writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
-   610	
-   611			rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
-   612			/*
-   613			 * In the legacy case, ensure our coherently-allocated virtio
-   614			 * ring will be at an address expressable as a 32-bit PFN.
-   615			 */
-   616			if (!rc)
-   617				dma_set_coherent_mask(&pdev->dev,
-   618						      DMA_BIT_MASK(32 + PAGE_SHIFT));
-   619		} else {
-   620			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-   621		}
-   622		if (rc)
-   623			rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-   624		if (rc)
-   625			dev_warn(&pdev->dev, "Failed to enable 64-bit or 32-bit DMA.  Trying to continue, but this might not work.\n");
-   626	
-   627		platform_set_drvdata(pdev, vm_dev);
-   628	
-   629		rc = register_virtio_device(&vm_dev->vdev);
-   630		if (rc)
-   631			put_device(&vm_dev->vdev.dev);
-   632	
-   633		return rc;
-   634	}
-   635	
+> 
+> Cheers,
+> -- David
+> 
+>>  Documentation/dev-tools/ktap.rst | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
+>> index 5ee735c6687f..37b5dc61bfb8 100644
+>> --- a/Documentation/dev-tools/ktap.rst
+>> +++ b/Documentation/dev-tools/ktap.rst
+>> @@ -1,7 +1,7 @@
+>>  .. SPDX-License-Identifier: GPL-2.0
+>>
+>>  ===================================================
+>> -The Kernel Test Anything Protocol (KTAP), version 1
+>> +The Kernel Test Anything Protocol (KTAP), version 2-rc
+>>  ===================================================
+> 
+> Nit: Sphinx complains that we now need more '=' signs:
+> 
+> Documentation/dev-tools/ktap.rst:3: WARNING: Title overline too short.
+> ===================================================
+> 
+> 
+> The Kernel Test Anything Protocol (KTAP), version 2-rc
+> ===================================================
+> 
+>>
+>>  TAP, or the Test Anything Protocol is a format for specifying test results used
+>> --
+>> Frank Rowand <frank.rowand@sony.com>
+>>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
