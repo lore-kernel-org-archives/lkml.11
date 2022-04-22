@@ -2,136 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B07C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234250AbiDVPne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
+        id S240949AbiDVPoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 11:44:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234254AbiDVPnY (ORCPT
+        with ESMTP id S234241AbiDVPoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:43:24 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6E9583A3;
-        Fri, 22 Apr 2022 08:40:30 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso8201982wme.5;
-        Fri, 22 Apr 2022 08:40:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ES0l6S93mE+Wb+3kqpTJgwQ5QqgD39UykyyH0mPFa1A=;
-        b=eAJDeSA5ES65uo2n7FwOPrhjMXpb1/30wYGIYDKU1AzFS1Oqvazunp1Lgruo6FULJd
-         N1IB7K2+Ifwa9kYQkwb3cmGFVMpYNerQIo6Xf5XWsYkCezu38OlPmhnwNMBTL/W5oCn2
-         L75ox71Pu3LZ/UYtIbm1TWt+gVsRU+MzQneRGct7i/4SWy81zHrPejYrVdeI/YMaPpPx
-         HmXn74qleRfqwuZZ2MVnbuefcR2uqjqw5yZFHI09alDi/A25qW1nE0me6ZBWB4tJciqf
-         3h4tTceozSY5WFT6wJ/px99wf0HGPFeQ2Mvngrekpv9MRQunqTkTNZxTeL/FkV9IMbNe
-         XHyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ES0l6S93mE+Wb+3kqpTJgwQ5QqgD39UykyyH0mPFa1A=;
-        b=i16dVesuOrpmaFQGvUc54Z+kr6riITFAKIMhsXtUq38VPU/jiAnuC0p67lmfmH+hTT
-         nZ/OSly2xI/+AQLDyd7eO0kCd5BOPgTZv6wclepII+e++qfufcSG9kQXxuPALirEKSh+
-         hcLc0i5rtYMIZcLJ0eW/oyJthe+LsTT6mC72cbPF1+kAEhnLqQ7duSGNhw0ALNxHXbqj
-         V4IjG+wxwSy2Ccpic2K/ZmA/r1wcOJD+spsPuMINFIjJvN8OVYCseT25venDPjtcIi2w
-         45MqVLegkUVZOzGBlyGf3GWIcOIOL5NkgfotNoUVRe+fih+xMi4qFB7s2WSV1nDJx3Q2
-         a8OQ==
-X-Gm-Message-State: AOAM532mA27PQIWb6T2ZmUB/6SJSICViHi3x98X/ztaPLlCZX82t0VDe
-        LJeaACx1ozfa4i7c7cixY0g=
-X-Google-Smtp-Source: ABdhPJyTYQRjuZT+Ec8SM434CWQGeFUn2UkQ3zQWg/RiYa7Z+9pAMLI2nF/jZpTCnEOzRThwH++fmg==
-X-Received: by 2002:a05:600c:1e1e:b0:38e:baaa:aae0 with SMTP id ay30-20020a05600c1e1e00b0038ebaaaaae0mr4563460wmb.157.1650642029069;
-        Fri, 22 Apr 2022 08:40:29 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id y11-20020a056000168b00b0020a919422ccsm2434199wrd.109.2022.04.22.08.40.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 08:40:28 -0700 (PDT)
-Message-ID: <9a766c52-f085-0ce4-5072-5a602e533740@gmail.com>
-Date:   Fri, 22 Apr 2022 17:40:27 +0200
+        Fri, 22 Apr 2022 11:44:16 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2068.outbound.protection.outlook.com [40.107.96.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFD95838E
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:41:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q+hwy8fKi5f8xEfeL2SK9691xhMN9hDJ2+jKXQ9EVxU8Vyt4bEZ1rNYaUCGhHvzMYFdi73ba0jwBnMIBS0+yKM0O3iJfruU89m0sC3pkxnBWb3aQ3P0XFv0KDd3UD4cGt+kCkIisHn+bFwiH5QeNC9Xs0Mxw68iYCYvCRxvSlekW9QbZlSHU0Yyoam9lCvZxNCiI7ceTn0KQ5hGtSuWsrWSyk7ZNcrtMHqD5IXBM1TfACtyRCaeaMqAqaIek7DZAGLiHk9oayyXrGmZOixlatSDTb4IDpbaR/D+r/0Fvq1YbrWItjR4BCfceqZCV03IDW66mtwYvfVeiQ07aoOpqEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TLaw3vOW06UTks1A0QrJD//0lusk4+8zc41vhyVRq4Y=;
+ b=guFYGlnuJ9siJIgjq3ogH3/ICft6j87CED66JCHu4sZ531qL9/CiDGSynefuyIOswFG4aBdxAu3qSBQSFzs3R74X27WNwg34w6p+ACR0ICi3Jks488z2qME+ffeFetbnwy03J++ZskEmxduImfeBW6x5hTcqBW+c2tpN5Nzr/GN7+Lu7qfftB8rJuOthx/CVrudGj4/uJ4DsCsMQVFsrdd6XHaSiDA2F9ZP7WdDuTjUy7UvxyjDgo7Gji8DndRZRrJ/Tkjtt7w4++zFlhfeHf6dqiRK298N0YnAyxF15E0YZDPqlFPltnH2Oqe4vB3evSzW3eMiCgl9zOVCdAjP3oQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TLaw3vOW06UTks1A0QrJD//0lusk4+8zc41vhyVRq4Y=;
+ b=N02Z+Rv1TVtjcJzLcjSVKWH5AI7Rj5bjBBdIWjWeoG8UkOpjfT4LGTzOlJ3mhf7N8ztN/55tRGiQv+xVWvbiTodRHhypdc3+Z6WpTqVHlaZf8NVeM00X06lOyTBoC1SE6DAuRftEGvZHLy0vJZ7L/DAZsIMQ/E4OFKwgbeltTXA=
+Received: from DS7PR03CA0201.namprd03.prod.outlook.com (2603:10b6:5:3b6::26)
+ by MWHPR12MB1421.namprd12.prod.outlook.com (2603:10b6:300:12::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Fri, 22 Apr
+ 2022 15:41:18 +0000
+Received: from DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b6:cafe::6c) by DS7PR03CA0201.outlook.office365.com
+ (2603:10b6:5:3b6::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
+ Transport; Fri, 22 Apr 2022 15:41:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT038.mail.protection.outlook.com (10.13.173.137) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Fri, 22 Apr 2022 15:41:18 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 22 Apr
+ 2022 10:41:17 -0500
+Date:   Fri, 22 Apr 2022 10:40:56 -0500
+From:   Michael Roth <michael.roth@amd.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Nick Desaulniers" <ndesaulniers@google.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Venu Busireddy <venu.busireddy@oracle.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Brijesh Singh <brijesh.singh@amd.com>
+Subject: Re: [PATCH v3 2/2] x86/sev: Get the AP jump table address from
+ secrets page
+Message-ID: <20220422154056.lhzmii34he6blvwv@amd.com>
+References: <20220422135624.114172-1-michael.roth@amd.com>
+ <20220422135624.114172-3-michael.roth@amd.com>
+ <c3baaf5d-db99-f432-125f-9884b57b40ef@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 0/3] Fixes for Mediatek dt-bindings
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "N?colas F. R. A. Prado" <nfraprado@collabora.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org, linux-usb@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220225225854.81038-1-nfraprado@collabora.com>
- <20220404152256.mkksr4oqjt65ytlf@notapiano> <YmLGyIOStJJAGSJG@builder.lan>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <YmLGyIOStJJAGSJG@builder.lan>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <c3baaf5d-db99-f432-125f-9884b57b40ef@amd.com>
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f8dacfca-4a51-4fb8-1428-08da24768ae2
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1421:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR12MB14219C39C15B8FC9397BE03E95F79@MWHPR12MB1421.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KlwFZFDnq4em0iRWFH0q879H3fk4gwTAtlppxqS75bIAaK047vFYK5OCSR69nOur5FEwzGieRCXZg/BQegEEiHTQtjdmybbiPBc3XNK8wNE5Hz6K/3AqiT/f9bUejfn+vi2Dfr+GT83eiCjGwcVsM8ez0h/DNxCHRc5kH8AbmYmppYCl7a4XJujT6Nm2UJK8go6vnaUfNvk1oE3Imx+tv56qCS6KpOY7IAl0HFiQF6CF3JT1aW8IgK6G/uGt58Zz/6qtmZQJ3m0PH953Xsf/aJkMI4e2nKwL8ITLSLGrxyErhxqPUgyvU5DJme5rUNn/B3wXXfPXMNI9nF36NPddD+JTSGP5EWgqCUtu2JuXZjQk6Xi6/13d9F2WkoMukCZ4PY3vBBggoesbeai3/JbE1j4RDCbiHWFXtqi095sob9JGwnmcHLFoCsPAIjIahqFgZ9swigvwg700n9rAgchiTUjeqUKyf5p66SxNLXRE6NfViE4UPeYUlQ5i8IakyYf6IFIkqiNrpDe78TTvFFzN6yTiG108Rlkjtfv9wMjjZ0W8OYivaEpfdItzKKyCMec6BMNqJBhOOJl5J1opScwRnAdLAWjIs4C5psBhbA1lEESQN0aS0cxmmgXiwljoWZirhhdem6AE2unqUWI/QOso1YD5Y4XJDD2MnKZbmPpn2q7r9c74/q5lpZpOVhCA8UiLPkr9sueCvabuaMtVldHGQ53uEFjVijUr6+Je+4hyqtY=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(4326008)(6862004)(8676002)(81166007)(70586007)(26005)(70206006)(44832011)(8936002)(336012)(7416002)(5660300002)(36860700001)(356005)(83380400001)(2616005)(16526019)(53546011)(316002)(6636002)(47076005)(1076003)(186003)(426003)(36756003)(37006003)(54906003)(508600001)(2906002)(40460700003)(86362001)(82310400005)(6666004)(15583001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 15:41:18.0222
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8dacfca-4a51-4fb8-1428-08da24768ae2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1421
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 22/04/2022 17:16, Bjorn Andersson wrote:
-> On Mon 04 Apr 10:22 CDT 2022, N?colas F. R. A. Prado wrote:
+On Fri, Apr 22, 2022 at 10:15:08AM -0500, Tom Lendacky wrote:
+> On 4/22/22 08:56, Michael Roth wrote:
+> > From: Brijesh Singh <brijesh.singh@amd.com>
+> > 
+> > The GHCB specification section 2.7 states that when SEV-SNP is enabled,
+> > a hypervisor must provide the AP jump table physical address through
 > 
->> Hi Matthias,
->>
->> Maybe you could pick this series through your tree? It addresses some dtc
->> warnings that are introduced with the new nodes in mt8192.dtsi that you just
->> picked up on your v5.18-next/dts64 branch.
->>
-> 
-> I don't see a reply from Matthias, so I've picked up this (the
-> remoteproc) fix in our tree.
-> 
+> I missed this on the first version. It's not the hypervisor, but the guest
+> BIOS that directly provides the AP jump table physical address, in our case
+> OVMF sets the address in the SNP secrets page. This allows communication
+> between UEFI/BIOS and OS without hypervisor involvement.
 
-That's totally fine. I'm reluctant to take random dt-binding patches as it can 
-provoke merge conflicts when there are other patches on the same binding taken 
-by the driver maintainer. Normally I leave it to the driver maintainer to take 
-such kind of patches.
+How about this wording for the commit message?
 
-Regards,
-Matthias
+  The GHCB specification section 2.7 states that when SEV-SNP is enabled,
+  a guest should not rely on the hypervisor to provide the address of the
+  AP jump table. Instead, if a guest BIOS wants provide an AP jump table,
+  it should record the address in the SNP secrets page so the guest
+  operating system can obtain it directly from there.
 
-> Thanks,
-> Bjorn
+  Fix this on the guest kernel side by having SNP guests use the AP jump
+  table address published in the secrets page rather than issuing a GHCB
+  request to get it.
+
 > 
->> Thanks,
->> Nícolas
->>
->> On Fri, Feb 25, 2022 at 05:58:51PM -0500, Nícolas F. R. A. Prado wrote:
->>>
->>> This series has some fixes for Mediatek dt-bindings. It solves some
->>> warnings printed by dtbs_check, both for already merged Devicetrees, as
->>> well as some that would be introduced by the changes to mt8192.dtsi in
->>> [1].
->>>
->>> [1] https://lore.kernel.org/all/20220218091633.9368-1-allen-kh.cheng@mediatek.com/
->>>
->>>
->>> Nícolas F. R. A. Prado (3):
->>>    dt-bindings: remoteproc: mediatek: Add interrupts property to mtk,scp
->>>    dt-bindings: usb: mtk-xhci: Allow wakeup interrupt-names to be
->>>      optional
->>>    media: dt-bindings: mtk-vcodec-encoder: Add power-domains property
->>>
->>>   .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml     | 3 +++
->>>   Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml      | 3 +++
->>>   Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml   | 1 +
->>>   3 files changed, 7 insertions(+)
->>>
->>> -- 
->>> 2.35.1
+> > the SNP secrets pages.
+> > 
+> > Fixes: 0afb6b660a6b ("x86/sev: Use SEV-SNP AP creation to start secondary CPUs")
+> > Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> > [ mroth: improve error handling when ioremap()/memremap() return NULL ]
+> > [ mroth: don't mix function calls with declarations ]
+> > [ mroth: add missing __init ]
+> > Signed-off-by: Michael Roth <michael.roth@amd.com>
+> 
+> With the commit message change:
+> 
+> Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
