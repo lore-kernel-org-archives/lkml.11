@@ -2,106 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D686C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232420AbiDVWYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S232656AbiDVWYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233220AbiDVWWt (ORCPT
+        with ESMTP id S234118AbiDVWXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:22:49 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A1B28936C
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:14:27 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2f16645872fso98156837b3.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:14:27 -0700 (PDT)
+        Fri, 22 Apr 2022 18:23:41 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B045333FD93;
+        Fri, 22 Apr 2022 14:15:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uSeyVHSkF+E4oa0XSY6kFg4lNiCUpurOq85kO8Thfs0=;
-        b=INjYxvAOSldxB3GnA5v+XowteYLzvKJl7xcoA5X45DW7NszU+ue5Iwuh82ikmKF7iZ
-         aZqKiahCfnFgJCTxeIo7Ur+C9fmU/6R0kHKGNfogw8R4psa2PB73Gmi6jrfAleEWU3Fu
-         TpniWkwmWdEIb2A4WwVWBbp6qzUTDyR9/3WeGO4B6Qr/bxVAl+v84Yj2BBPiR+nuXLvu
-         1kszPQojltbMILFgPDnEn/IRbmR1E1ShQsQrYlYs4HhI7OFsDMc/aEAmfglIenEd5oRG
-         gw0k5fbk5IKqtvD8vMwA/19gmGagwNF//wqWfUqOFaGb0Zb3dEd2eipQq6lXOmQWX/GY
-         RHeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uSeyVHSkF+E4oa0XSY6kFg4lNiCUpurOq85kO8Thfs0=;
-        b=hCOmi2rM6k8vUd43bW7/GXc0ELxnpmmT7gcnnbEsvpvrcgXpXv2i8cZ3qqWyeZhqM5
-         CkQ+r9FIriS7OXbyH5i3Qmy05n4LFOWI4Rty6t72s4Mp8gfNd/Gssc9zh3GfGJAV/Crg
-         vxE6qGLfliB3RDCTQYroy5LCGmg5df/gbohpJFZG6bXD+hDNPfnO6bIBgdGTIUdluast
-         4Wv4oFY8BGvgv2MTp+HKnb8X1RmyVV7AQi+79UPn0idQ4wpnvKxgmPUV4SxPPCFW9mIe
-         2Tm8W1rKg45H9YwOi0RAhecafwU/qa/B5/tI2ReOOdniFLDPbW79OXo8Uhuz4wikpdnu
-         4UoA==
-X-Gm-Message-State: AOAM533OvaCHfVd0Dd0g3M1wZ9UkddCSUPw1BX78IFlhU3x0itSD2auc
-        ai5AtbNT3+wLebNmdj13JQttpdzD+nbwxNdG6ZQX/Q==
-X-Google-Smtp-Source: ABdhPJwq2aWVketHqepmniz2ODIzva2uUpTd0stgwqCpyhaz3cmfj0U/26pdY8xQiv+Js98HKRpSr6v3Iu4l/7S4vD8=
-X-Received: by 2002:a81:2108:0:b0:2f5:6938:b2b8 with SMTP id
- h8-20020a812108000000b002f56938b2b8mr5144986ywh.151.1650662066988; Fri, 22
- Apr 2022 14:14:26 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650662149; x=1682198149;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EdQ4+pbii1s0GkIfqo8a1S7OEIRav3qnPqvnYhkYj3g=;
+  b=MbEz6Z2TomSdbBzrhEzX6Gt5rDCO4ayQKBJnPchYbLkN1vqUWmA79c3h
+   BPkCkMztJjsNj1VVN7KLOeHASSjd8W1mqTYmWiQIpdBeQ1X3fN3YGFJcO
+   8sHdNJUZOzwkd8sVnwoBOxGxiXa6v8ej+2SF+NhWHwQsPijaH3ufUUUcD
+   Q=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 22 Apr 2022 12:14:36 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 12:14:36 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 12:14:34 -0700
+Received: from hu-amelende-lv.qualcomm.com (10.49.16.6) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 12:14:33 -0700
+From:   Anjelique Melendez <quic_amelende@quicinc.com>
+To:     <dmitry.torokhov@gmail.com>, <corbet@lwn.net>, <sre@kernel.org>,
+        <robh+dt@kernel.org>
+CC:     <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <bjorn.andersson@linaro.org>,
+        <swboyd@chromium.org>, <linux-doc@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Anjelique Melendez <quic_amelende@quicinc.com>
+Subject: [PATCH v6 3/5] input: misc: pm8941-pwrkey: add support for PON GEN3 base addresses
+Date:   Fri, 22 Apr 2022 12:12:41 -0700
+Message-ID: <20220422191239.6271-4-quic_amelende@quicinc.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422191239.6271-1-quic_amelende@quicinc.com>
+References: <20220422191239.6271-1-quic_amelende@quicinc.com>
 MIME-Version: 1.0
-References: <cover.1649533972.git.sander@svanheule.net> <7105ae382d7b328102f66b39ffd7c94998e85265.1649533972.git.sander@svanheule.net>
- <CACRpkdYmKbHOZChSHjB-ykQCyCziwYTO_+Ai2vheo0y-vD_akA@mail.gmail.com> <0a48cd99805736d6a01573effa28f771fdbe9485.camel@svanheule.net>
-In-Reply-To: <0a48cd99805736d6a01573effa28f771fdbe9485.camel@svanheule.net>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 22 Apr 2022 23:14:15 +0200
-Message-ID: <CACRpkda=SNKAeBpfdA2seRgZwmb0-SMxq-_c0je6gdR-8m+p_A@mail.gmail.com>
-Subject: Re: [PATCH v1 2/6] gpio: realtek-otto: Support reversed port layouts
-To:     Sander Vanheule <sander@svanheule.net>
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Bert Vermeulen <bert@biot.com>, linux-kernel@vger.kernel.org,
-        andy.shevchenko@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 9:55 AM Sander Vanheule <sander@svanheule.net> wrote:
+Currently, PON address is read from the "reg" property. For PON GEN3,
+which starts with PMK8350, the "reg" property will have both the PON
+HLOS and PON PBS addesses defined. Add support so that all PON
+generations can be configured.
 
-> The kernel for RTL930x SoC is built with CONFIG_CPU_BIG_ENDIAN=y, just like the
-> older SoCs that were previously supported. The SoC's IRQ controller is also the
-> same across RTL930x/RTL839x/RTL838x, even though 32-bit registers are used
-> there.
->
-> On RTL838x/RTL839x the GPIO IRQ control registers have byte layout:
->         [H1] [L1] [H2] [L2]
->         [H3] [L3] [H4] [L4]
->
-> On RTL930x, the GPIO IRQ control registers are:
->         [H2] [L2] [H1] [L1]
->         [H4] [L4] [H3] [L3]
-> which is the reverse of:
->         [L1] [H1] [L2] [H2]
->         [L3] [H3] [L4] [H4]
->
->
-> Same for the GPIO registers:
->         On RTL83xx: [P1] [P2] [P3] [P4] (four 8b ports)
->         On RTL930x: [P4] [P3] [P2] [P1] (one BE32 port)
->
-> It looks like the RTL930x could use a little-endian interpretation of the 32b
-> registers, followed by a little-endian interpretation of the contained port
-> values. That would mean two reorderings for every 16b read or write operation,
-> and manual manipulation of the register values. Although I have to say that the
-> current offset calculation is not too pretty either.
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+---
+ drivers/input/misc/pm8941-pwrkey.c | 31 +++++++++++++++++++++++-------
+ 1 file changed, 24 insertions(+), 7 deletions(-)
 
-I'm happy.
+diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
+index e0240db12d4f..43106e4cfd23 100644
+--- a/drivers/input/misc/pm8941-pwrkey.c
++++ b/drivers/input/misc/pm8941-pwrkey.c
+@@ -12,6 +12,7 @@
+ #include <linux/log2.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_address.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
+@@ -44,6 +45,7 @@ struct pm8941_data {
+ 	unsigned int	status_bit;
+ 	bool		supports_ps_hold_poff_config;
+ 	bool		supports_debounce_config;
++	bool		has_pon_pbs;
+ 	const char	*name;
+ 	const char	*phys;
+ };
+@@ -52,6 +54,7 @@ struct pm8941_pwrkey {
+ 	struct device *dev;
+ 	int irq;
+ 	u32 baseaddr;
++	u32 pon_pbs_baseaddr;
+ 	struct regmap *regmap;
+ 	struct input_dev *input;
+ 
+@@ -167,6 +170,8 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+ 	struct pm8941_pwrkey *pwrkey;
+ 	bool pull_up;
+ 	struct device *parent;
++	struct device_node *regmap_node;
++	const __be32 *addr;
+ 	u32 req_delay;
+ 	int error;
+ 
+@@ -188,8 +193,10 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+ 	pwrkey->data = of_device_get_match_data(&pdev->dev);
+ 
+ 	parent = pdev->dev.parent;
++	regmap_node = pdev->dev.of_node;
+ 	pwrkey->regmap = dev_get_regmap(parent, NULL);
+ 	if (!pwrkey->regmap) {
++		regmap_node = parent->of_node;
+ 		/*
+ 		 * We failed to get regmap for parent. Let's see if we are
+ 		 * a child of pon node and read regmap and reg from its
+@@ -200,15 +207,21 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+ 			dev_err(&pdev->dev, "failed to locate regmap\n");
+ 			return -ENODEV;
+ 		}
++	}
+ 
+-		error = of_property_read_u32(parent->of_node,
+-					     "reg", &pwrkey->baseaddr);
+-	} else {
+-		error = of_property_read_u32(pdev->dev.of_node, "reg",
+-					     &pwrkey->baseaddr);
++	addr = of_get_address(regmap_node, 0, NULL, NULL);
++	if (!addr) {
++		dev_err(&pdev->dev, "reg property missing\n");
++		return -EINVAL;
++	}
++	pwrkey->baseaddr = be32_to_cpup(addr);
++
++	if (pwrkey->data->has_pon_pbs) {
++		/* PON_PBS base address is optional */
++		addr = of_get_address(regmap_node, 1, NULL, NULL);
++		if (addr)
++			pwrkey->pon_pbs_baseaddr = be32_to_cpup(addr);
+ 	}
+-	if (error)
+-		return error;
+ 
+ 	pwrkey->irq = platform_get_irq(pdev, 0);
+ 	if (pwrkey->irq < 0)
+@@ -316,6 +329,7 @@ static const struct pm8941_data pwrkey_data = {
+ 	.phys = "pm8941_pwrkey/input0",
+ 	.supports_ps_hold_poff_config = true,
+ 	.supports_debounce_config = true,
++	.has_pon_pbs = false,
+ };
+ 
+ static const struct pm8941_data resin_data = {
+@@ -325,6 +339,7 @@ static const struct pm8941_data resin_data = {
+ 	.phys = "pm8941_resin/input0",
+ 	.supports_ps_hold_poff_config = true,
+ 	.supports_debounce_config = true,
++	.has_pon_pbs = false,
+ };
+ 
+ static const struct pm8941_data pon_gen3_pwrkey_data = {
+@@ -333,6 +348,7 @@ static const struct pm8941_data pon_gen3_pwrkey_data = {
+ 	.phys = "pmic_pwrkey/input0",
+ 	.supports_ps_hold_poff_config = false,
+ 	.supports_debounce_config = false,
++	.has_pon_pbs = true,
+ };
+ 
+ static const struct pm8941_data pon_gen3_resin_data = {
+@@ -341,6 +357,7 @@ static const struct pm8941_data pon_gen3_resin_data = {
+ 	.phys = "pmic_resin/input0",
+ 	.supports_ps_hold_poff_config = false,
+ 	.supports_debounce_config = false,
++	.has_pon_pbs = true,
+ };
+ 
+ static const struct of_device_id pm8941_pwr_key_id_table[] = {
+-- 
+2.35.1
 
-It's not very invasive and the bulk of the problem is addressed by
-simply using the GPIO MMIO library, so:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-If someone knows a more elegant way, they can send a patch,
-this works so we should merge it.
-
-Yours,
-Linus Walleij
