@@ -2,97 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E636C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233911AbiDVM6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
+        id S233849AbiDVM6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 08:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447670AbiDVM4w (ORCPT
+        with ESMTP id S233785AbiDVM6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:56:52 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 391E1527F5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:53:59 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-628-AnjXehsdPmmzQ8-DhAtM3A-1; Fri, 22 Apr 2022 08:53:54 -0400
-X-MC-Unique: AnjXehsdPmmzQ8-DhAtM3A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 14DCF38337EE;
-        Fri, 22 Apr 2022 12:53:54 +0000 (UTC)
-Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B64BC28107;
-        Fri, 22 Apr 2022 12:53:51 +0000 (UTC)
-From:   Alexey Gladkov <legion@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Linux Containers <containers@lists.linux.dev>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v1 2/4] ipc: Use proper ipc namespace
-Date:   Fri, 22 Apr 2022 14:53:38 +0200
-Message-Id: <32a29b3eb5f560e30ef24cfb86e480684b49ac62.1650631347.git.legion@kernel.org>
-In-Reply-To: <cover.1650631347.git.legion@kernel.org>
-References: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com> <cover.1650631347.git.legion@kernel.org>
+        Fri, 22 Apr 2022 08:58:36 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A011EB3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:55:44 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id k29-20020a056830243d00b006040caa0988so5408166ots.6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:55:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zm9GfdANLktexLnSc2t2HLTF4hneluEodUT1P1kDEsM=;
+        b=hqpExlYNzkwIX37Hy7SHOLnExYYUGG8vNf/6n9iAKjl5YQzWvYMgOOIuE2PmHkVlId
+         8p2hIYnz2HLmhSYdOwsAzjY/APN2BXnUw/+SINDligXdzFGG3E1vx0GomViz5E701Hu5
+         +YXaVWJpR0D9lTq8jjEGNXIAYwlJNJ0x0VaJxyrxdsa7mWwQTsd1yMHq/havwPdPp8lH
+         gE6GLCQsPBCZFgC0GGJHYFfoFUfQ8JMLuORrLRTgNl2GvXnwkUPpoTK9WNCU9xaO6yCF
+         AN4YMsRpo4Ng/fPi9zygy3b0diFDQQtg3fmBU5p3mJJNKSkssyLATjOAy6FeI8xFj4wc
+         ctLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zm9GfdANLktexLnSc2t2HLTF4hneluEodUT1P1kDEsM=;
+        b=suJNGb3ceiPBsyUviCwriUd36J9i7u50YypbXhJsZYqIT3hfovF6W0n+sFCw+0urbB
+         vhQv1p+Ax46ZtFJqJwYshGefJa5zw7yCKNPru9p+hecaQSn+DU66SsP62f5a0t/kTFjn
+         Z7LccLraU/7aUCmGnMBXKqYXy6fDrYSu1bUpAkg0MFurBPxmwXkMAc5kiEtv0q6CvyMM
+         mZQO1uNW3c7UnMjQ0fA5wwSdv1Qyx+EiktNTWQJOatsVSAbD9ilwOD1L7XlTCHrxcw+Q
+         kDjzc8uI9v/s9xbnwz6fnQ2oXmTD6zUhr1LwEwHORKqR4uWYf+RayORAth9n+7rKeRmx
+         w9JQ==
+X-Gm-Message-State: AOAM532rB6eRcbPWc1MiYe1+R/7t8oZFDtsnxPewprRhPWVR62b5754u
+        IyZ18Q7VN7Vc5pqckRkgHv+QHPsQcs3EwQ==
+X-Google-Smtp-Source: ABdhPJyNyko5expXH8i0LaM0d82/FWE6LtI1dFtVxCQad4UDosaAE16fqf3aYknTT7loeHX6IM4g8Q==
+X-Received: by 2002:a9d:7608:0:b0:5e9:5b29:bef8 with SMTP id k8-20020a9d7608000000b005e95b29bef8mr1628062otl.368.1650632143462;
+        Fri, 22 Apr 2022 05:55:43 -0700 (PDT)
+Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
+        by smtp.gmail.com with ESMTPSA id b5-20020a9d7545000000b006054e5f6703sm691686otl.31.2022.04.22.05.55.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 05:55:42 -0700 (PDT)
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Rebecca Mckeever <remckee0@gmail.com>
+Subject: [PATCH v2 0/4] memblock tests: update style of comments
+Date:   Fri, 22 Apr 2022 07:55:34 -0500
+Message-Id: <cover.1650631746.git.remckee0@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As Eric Biederman pointed out, changing the namespace broke checkpoint
-restore. I have reverted my previous changes.
+These patches update the style of comments for memblock_add_*(),
+memblock_reserve_*(), memblock_remove_*(), and memblock_free_*() 
+functions to match the style of comments in tests/alloc_*.c and 
+remove extra spaces in those comments to conform to Linux kernel
+coding style.
 
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- ipc/ipc_sysctl.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Rebecca Mckeever (4):
+  memblock tests: update style of comments for memblock_add_*()
+    functions
+  memblock tests: update style of comments for memblock_reserve_*()
+    functions
+  memblock tests: update style of comments for memblock_remove_*()
+    functions
+  memblock tests: update style of comments for memblock_free_*()
+    functions
 
-diff --git a/ipc/ipc_sysctl.c b/ipc/ipc_sysctl.c
-index eb7ba8e0a355..ff99d0305a5b 100644
---- a/ipc/ipc_sysctl.c
-+++ b/ipc/ipc_sysctl.c
-@@ -72,7 +72,7 @@ static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
- static int proc_ipc_dointvec_minmax_checkpoint_restore(struct ctl_table *table,
- 		int write, void *buffer, size_t *lenp, loff_t *ppos)
- {
--	struct ipc_namespace *ns = table->extra1;
-+	struct ipc_namespace *ns = current->nsproxy->ipc_ns;
- 	struct ctl_table ipc_table;
- 
- 	if (write && !checkpoint_restore_ns_capable(ns->user_ns))
-@@ -244,15 +244,12 @@ bool setup_ipc_sysctls(struct ipc_namespace *ns)
- #ifdef CONFIG_CHECKPOINT_RESTORE
- 			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SEM_IDS].next_id) {
- 				tbl[i].data = &ns->ids[IPC_SEM_IDS].next_id;
--				tbl[i].extra1 = ns;
- 
- 			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_MSG_IDS].next_id) {
- 				tbl[i].data = &ns->ids[IPC_MSG_IDS].next_id;
--				tbl[i].extra1 = ns;
- 
- 			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SHM_IDS].next_id) {
- 				tbl[i].data = &ns->ids[IPC_SHM_IDS].next_id;
--				tbl[i].extra1 = ns;
- #endif
- 			} else {
- 				tbl[i].data = NULL;
+ tools/testing/memblock/tests/basic_api.c | 350 +++++++++++++++++------
+ 1 file changed, 256 insertions(+), 94 deletions(-)
+
 -- 
-2.33.2
+2.32.0
 
