@@ -2,200 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD0DC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A66C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbiDVTcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 15:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S230090AbiDVTfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 15:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230475AbiDVTcS (ORCPT
+        with ESMTP id S229446AbiDVTew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 15:32:18 -0400
-Received: from out28-220.mail.aliyun.com (out28-220.mail.aliyun.com [115.124.28.220])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697D714AF79;
-        Fri, 22 Apr 2022 12:10:27 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07483067|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0236375-0.00029974-0.976063;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.NVyzeph_1650654599;
-Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NVyzeph_1650654599)
-          by smtp.aliyun-inc.com(33.37.68.185);
-          Sat, 23 Apr 2022 03:10:00 +0800
-From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
-        <zhouyanjie@wanyeetech.com>
-To:     broonie@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, paul@crapouillou.net,
-        contact@artur-rojek.eu, dongsheng.qiu@ingenic.com,
-        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
-        sernia.zhou@foxmail.com, zhenwenjin@gmail.com, reimu@sudomaker.com
-Subject: [PATCH v2 3/3] SPI: Ingenic: Add support for new Ingenic SoCs.
-Date:   Sat, 23 Apr 2022 03:09:43 +0800
-Message-Id: <1650654583-89933-4-git-send-email-zhouyanjie@wanyeetech.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650654583-89933-1-git-send-email-zhouyanjie@wanyeetech.com>
-References: <1650654583-89933-1-git-send-email-zhouyanjie@wanyeetech.com>
+        Fri, 22 Apr 2022 15:34:52 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8196E26EDE6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:12:51 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e604f712ecso9573930fac.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:12:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=7NoOp29Q/dMR2v1xp8JyZRZZvoakgizrx1i7zKIJPJA=;
+        b=MvsU0Shq7Wl/izk/EJ6oMnzUpVSyo/bCeBwYPxWdAYO2/9ZUg6IRR1k16Uk4CzEWrL
+         Dx22WIhqhvchO4CtnhICqZcmbvTOQyBGtmNp/E7QHGclmkG9RfeVhmMZFOIqgY28zJbi
+         omzKxdl3vnnS3GlvrP2r4FCgkolfIn6+JQh7f9prIIUo0xYfo8rSs4DkN9dRK4ze3iSM
+         TyeuzwzOBNKEwqy8ugHn0TA1LD1NFbgFndeGaifUZ05vTM/qfZEfNAaZtNs9r18TuSqA
+         tW6u+2Uv84Ucz9Na8WgAb6cr1guTKv08Q0Vn0LTpV0wN7cXO46id9IUmfkkahe/mnrTG
+         gRJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=7NoOp29Q/dMR2v1xp8JyZRZZvoakgizrx1i7zKIJPJA=;
+        b=PwngxHWo9K5wLxN4/A07CXUt0JS6GIDL3kC8C1YSLe3ysCOcBK4mC3afgKE9oel+FS
+         m0UhzA97edWe+ClZ8dgN8rlgp4BUkNBUoKMXEINpg8BFAZr7nauAZrO4Abb9tzY9WVA1
+         KwwfM6XZVqVIbRpP4kqSrW6Ll3HH0ZmQk3tBiF3Vd62OCPWnD01P7WajrU30yUBQGQBg
+         H8WtyM0mV6poq7TzwflUtEgXvekCpGZZNAmGpW5wSSTkXj2+KJKSio4O4Wgl0y+JglHV
+         sOr2MDu7BI+WacpPg3TGjUYwyHuavhihPyy9Qn1ccD0+4EGRdokihwIZGEcwK/eqP1CV
+         c+qg==
+X-Gm-Message-State: AOAM532p2jL82eWHzP5VZiB8TVi3x7wBzhlmTtUCXYJkObxVPGx5Ll4i
+        wZhFD30kSoE8vT8gwo5hR31mmPqMPiM=
+X-Google-Smtp-Source: ABdhPJwjv/+yziYSWHN+C3vFIgOEab+gBtdfs3eHbbzKdOzoUHNJ/g1C7Vgz2La9Z6n6TR8SnVwYrg==
+X-Received: by 2002:a05:6808:138e:b0:322:2dcd:dc7d with SMTP id c14-20020a056808138e00b003222dcddc7dmr3025270oiw.159.1650652673572;
+        Fri, 22 Apr 2022 11:37:53 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id b188-20020aca34c5000000b002da579c994dsm1013602oia.31.2022.04.22.11.37.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 11:37:53 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 22 Apr 2022 11:37:51 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>, Arnd Bergmann <arnd@arndb.de>,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] soc: rockchip: Fix compile-testing SoC drivers
+Message-ID: <20220422183751.GA2653014@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1.Since it would be dangerous to specify a newer SoC's compatible
-  string as the fallback of an older SoC's compatible string, we
-  add support for the "ingenic,jz4775-spi" compatible string in
-  the driver.
+On Fri, Apr 22, 2022 at 11:19:19AM -0700, Brian Norris wrote:
+> Similar to commit 7f94b69ece51 ("ARM: ixp4xx: fix compile-testing soc
+> drivers").
+> 
+> drivers/soc/rockchip/Kconfig makes plenty of provision for configuring
+> drivers either for ARCH_ROCKCHIP or for COMPILE_TEST. But
+> drivers/soc/Makefile pulls the rug out from under us, by refusing to
+> build anything if we specified COMPILE_TEST but not ARCH_ROCKCHIP.
+> 
+> Currently, I'm not aware of anything that breaks without this patch, but
+> it certainly makes for confusing builds (CONFIG_ROCKCHIP_PM_DOMAINS=y,
+> but we didn't actually compile the driver?) and leaves room for future
+> error (I have pending patches that break confusingly with COMPILE_TEST=y
+> even though their Kconfig dependencies seem correct [1]).
+> 
+> Defer to drivers/soc/rockchip/{Makefile,Kconfig} to do the right thing.
+> 
+> [1] e.g.,
+> https://lore.kernel.org/linux-rockchip/20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid/
+> [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
 
-  This will permit to support the JZ4775 by having:
-  compatible = "ingenic,jz4775-spi";
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-  Instead of doing:
-  compatible = "ingenic,jz4775-spi", "ingenic,jz4780-spi";
-
-2.Add support for probing the spi-ingenic driver on the X1000 SoC
-  from Ingenic. From the X1000 SoC onwards, the maximum frequency
-  allowed by the SSI module of Ingenic SoCs has been changed from
-  54MHz to 50MHz. So "max_speed_hz" is introduced in "jz_soc_info"
-  to set different maximum frequency values.
-
-3.Add support for probing the spi-ingenic driver on the X2000 SoC
-  from Ingenic. The X2000 SoC has only one native chip select line,
-  so "max_native_cs" is introduced in "jz_soc_info" to set different
-  maximum number of native chip select lines.
-
-4.Because of the introduction of support for the X-series SoCs, the
-  current driver is not only applicable to the JZ-series SoCs, so
-  the description texts has been modified to avoid misunderstanding.
-
-Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
----
-
-Notes:
-    v1->v2:
-    No change.
-
- drivers/spi/Kconfig       |  4 ++--
- drivers/spi/spi-ingenic.c | 42 +++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 39 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index d2815eb..cca92a8 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -419,10 +419,10 @@ config SPI_IMX
- 	  This enables support for the Freescale i.MX SPI controllers.
- 
- config SPI_INGENIC
--	tristate "Ingenic JZ47xx SoCs SPI controller"
-+	tristate "Ingenic SoCs SPI controller"
- 	depends on MACH_INGENIC || COMPILE_TEST
- 	help
--	  This enables support for the Ingenic JZ47xx SoCs SPI controller.
-+	  This enables support for the Ingenic SoCs SPI controller.
- 
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called spi-ingenic.
-diff --git a/drivers/spi/spi-ingenic.c b/drivers/spi/spi-ingenic.c
-index bb512ca..4854956 100644
---- a/drivers/spi/spi-ingenic.c
-+++ b/drivers/spi/spi-ingenic.c
-@@ -1,8 +1,9 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * SPI bus driver for the Ingenic JZ47xx SoCs
-+ * SPI bus driver for the Ingenic SoCs
-  * Copyright (c) 2017-2021 Artur Rojek <contact@artur-rojek.eu>
-  * Copyright (c) 2017-2021 Paul Cercueil <paul@crapouillou.net>
-+ * Copyright (c) 2022 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
-  */
- 
- #include <linux/clk.h>
-@@ -52,6 +53,9 @@ struct jz_soc_info {
- 	u32 bits_per_word_mask;
- 	struct reg_field flen_field;
- 	bool has_trendian;
-+
-+	unsigned int max_speed_hz;
-+	unsigned int max_native_cs;
- };
- 
- struct ingenic_spi {
-@@ -418,7 +422,7 @@ static int spi_ingenic_probe(struct platform_device *pdev)
- 
- 	if (device_property_read_u32(dev, "num-cs", &num_cs)) {
- 		dev_warn(dev, "Number of chip select lines not specified.\n");
--		num_cs = 2;
-+		num_cs = pdata->max_native_cs;
- 	}
- 
- 	platform_set_drvdata(pdev, ctlr);
-@@ -433,9 +437,9 @@ static int spi_ingenic_probe(struct platform_device *pdev)
- 	ctlr->max_dma_len = SPI_INGENIC_FIFO_SIZE;
- 	ctlr->bits_per_word_mask = pdata->bits_per_word_mask;
- 	ctlr->min_speed_hz = 7200;
--	ctlr->max_speed_hz = 54000000;
-+	ctlr->max_speed_hz = pdata->max_speed_hz;
- 	ctlr->use_gpio_descriptors = true;
--	ctlr->max_native_cs = 2;
-+	ctlr->max_native_cs = pdata->max_native_cs;
- 	ctlr->num_chipselect = num_cs;
- 	ctlr->dev.of_node = pdev->dev.of_node;
- 
-@@ -459,17 +463,44 @@ static const struct jz_soc_info jz4750_soc_info = {
- 	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 17),
- 	.flen_field = REG_FIELD(REG_SSICR1, 4, 7),
- 	.has_trendian = false,
-+
-+	.max_speed_hz = 54000000,
-+	.max_native_cs = 2,
- };
- 
- static const struct jz_soc_info jz4780_soc_info = {
- 	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 32),
- 	.flen_field = REG_FIELD(REG_SSICR1, 3, 7),
- 	.has_trendian = true,
-+
-+	.max_speed_hz = 54000000,
-+	.max_native_cs = 2,
-+};
-+
-+static const struct jz_soc_info x1000_soc_info = {
-+	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 32),
-+	.flen_field = REG_FIELD(REG_SSICR1, 3, 7),
-+	.has_trendian = true,
-+
-+	.max_speed_hz = 50000000,
-+	.max_native_cs = 2,
-+};
-+
-+static const struct jz_soc_info x2000_soc_info = {
-+	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 32),
-+	.flen_field = REG_FIELD(REG_SSICR1, 3, 7),
-+	.has_trendian = true,
-+
-+	.max_speed_hz = 50000000,
-+	.max_native_cs = 1,
- };
- 
- static const struct of_device_id spi_ingenic_of_match[] = {
- 	{ .compatible = "ingenic,jz4750-spi", .data = &jz4750_soc_info },
-+	{ .compatible = "ingenic,jz4775-spi", .data = &jz4780_soc_info },
- 	{ .compatible = "ingenic,jz4780-spi", .data = &jz4780_soc_info },
-+	{ .compatible = "ingenic,x1000-spi", .data = &x1000_soc_info },
-+	{ .compatible = "ingenic,x2000-spi", .data = &x2000_soc_info },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, spi_ingenic_of_match);
-@@ -483,7 +514,8 @@ static struct platform_driver spi_ingenic_driver = {
- };
- 
- module_platform_driver(spi_ingenic_driver);
--MODULE_DESCRIPTION("SPI bus driver for the Ingenic JZ47xx SoCs");
-+MODULE_DESCRIPTION("SPI bus driver for the Ingenic SoCs");
- MODULE_AUTHOR("Artur Rojek <contact@artur-rojek.eu>");
- MODULE_AUTHOR("Paul Cercueil <paul@crapouillou.net>");
-+MODULE_AUTHOR("周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>");
- MODULE_LICENSE("GPL");
--- 
-2.7.4
-
+> ---
+> 
+>  drivers/soc/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
+> index fd7717d597fc..4c91705a8bb3 100644
+> --- a/drivers/soc/Makefile
+> +++ b/drivers/soc/Makefile
+> @@ -23,7 +23,7 @@ obj-y				+= pxa/
+>  obj-y				+= amlogic/
+>  obj-y				+= qcom/
+>  obj-y				+= renesas/
+> -obj-$(CONFIG_ARCH_ROCKCHIP)	+= rockchip/
+> +obj-y				+= rockchip/
+>  obj-$(CONFIG_SOC_SAMSUNG)	+= samsung/
+>  obj-$(CONFIG_SOC_SIFIVE)	+= sifive/
+>  obj-y				+= sunxi/
+> -- 
+> 2.36.0.rc2.479.g8af0fa9b8e-goog
+> 
