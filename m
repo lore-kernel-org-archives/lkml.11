@@ -2,105 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 183EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235022AbiDWKcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 06:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55320 "EHLO
+        id S235045AbiDWKc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 06:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235010AbiDWKcM (ORCPT
+        with ESMTP id S234999AbiDWKcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 06:32:12 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B941C048C
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:29:15 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id a21so1011656edb.1
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:29:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=T1doDOEgacffxYLHRh8rB/qzYEgOkZW9WRd7tL8Bnmg=;
-        b=Uq2QkeMj4YDx/HQMSBiMYbQ6hB5oDmdQNO5vrv6RZsV0W4hbLOlfcQfE9Fx+SorbgG
-         MeBfPLDNjGQBN9jXgG5BBgWMk4ku+EZIK5tA7n91BL7LiJUig2PZR20nB4vhxhCfJcMG
-         t6d2xzbi1EuNuz47K+u9ehbXvvjZ8kcpDisSvAJK4yj0jNqNnr/FlmotFTQIdwngVGZi
-         87mIRQutpRMvI7Y76Ke2obhz8pH7azA2gURjmJ0JSv954JHBmzuGdv1BKUsPx5/slIgm
-         vwbdwjM6Bl9W5ADyXkYlNsUd38w3K77+S6uxSZ6nNh9W2/Sj+Q0SNxkXfiIZlZvSWi/e
-         IXsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=T1doDOEgacffxYLHRh8rB/qzYEgOkZW9WRd7tL8Bnmg=;
-        b=e6k3weNE79UivKbd3GAV0XHjlSCIJSkh4TiJQH+EuzOduhQedOOfQ6g2gOukw0txSx
-         Jm8I93MEN5NufN13e37U73dsLfBAzHO3GGRg+Npgt8ZFo4O9wktW9lp63bVJU4/1Gpcr
-         yaa55oB1e18rz/e7Tow4Fr7jD82dSG1h1f0A4Qfe7/tA3oVWNmhhkaOa4W/UIWxrLcOP
-         8bQujbct/jWPkzoLSSmnz/VgBhB5SgaWIll5+EUH+kltEpOpp9qNVrlUHqnKG0ombD5f
-         e6kKcgX2YOq9C+a2WI4xveAPFPTrNVAYObqq4m7lnSqtDyfD4iBIY4R2Y7l9S9oDRqxi
-         QN/g==
-X-Gm-Message-State: AOAM530uLxTOgxoghISQu/VSpqIswcCBkb7KYuDejliEAcXdH/cq7+pB
-        Tz4s/cBlwmyysErRDdHNY+ToaA==
-X-Google-Smtp-Source: ABdhPJzzZENHEHVJTTVj4i/LY2EyfuP6i5J51hweFIRBo2TrNePYugK61Ib5JXoKcujbhrjpbonMsg==
-X-Received: by 2002:a05:6402:1941:b0:413:2555:53e3 with SMTP id f1-20020a056402194100b00413255553e3mr9457841edz.164.1650709754411;
-        Sat, 23 Apr 2022 03:29:14 -0700 (PDT)
-Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id oz20-20020a170906cd1400b006e872188edbsm1557661ejb.104.2022.04.23.03.29.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 03:29:14 -0700 (PDT)
-Message-ID: <16311e64-6a7f-e20e-de12-5a9eab10af83@linaro.org>
-Date:   Sat, 23 Apr 2022 12:29:12 +0200
+        Sat, 23 Apr 2022 06:32:17 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09AC1BFC85
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:29:19 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MI1ekR064962;
+        Fri, 22 Apr 2022 13:01:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650650500;
+        bh=iioj9dZNPxWBOuNiHxgIG3fFC7hgfus1/G3r1hCrOwg=;
+        h=From:To:CC:Subject:Date;
+        b=RU7ZgSLto1armfOWggIUaf1nEf27eGSu83XDccsMEo2eEzzi18NnnjAd5D7l9S32P
+         tzX5viXE0pucYcFQjy94DBGvVh6qiMqVxuEDcWO4Gglm0/pR9YYZbBWnOC7HbdJBwd
+         6NJ4z8MkXeZjlk6xBWDuVaUyr5np0H5qHWOJSjpI=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MI1eUw013714
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 22 Apr 2022 13:01:40 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
+ Apr 2022 13:01:40 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 22 Apr 2022 13:01:40 -0500
+Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MI1dsn125884;
+        Fri, 22 Apr 2022 13:01:39 -0500
+From:   Andrew Davis <afd@ti.com>
+To:     Jens Wiklander <jens.wiklander@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        <op-tee@lists.trustedfirmware.org>, <linux-kernel@vger.kernel.org>
+CC:     Andrew Davis <afd@ti.com>
+Subject: [PATCH 1/2] tee: remove tee_shm_va2pa() and tee_shm_pa2va()
+Date:   Fri, 22 Apr 2022 13:01:38 -0500
+Message-ID: <20220422180139.13447-1-afd@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V3 14/17] dt-binding: mt8195: Add infra_ao reset bit
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
-        sboyd@kernel.org, matthias.bgg@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     p.zabel@pengutronix.de, angelogioacchino.delregno@collabora.com,
-        chun-jie.chen@mediatek.com, wenst@chromium.org,
-        runyang.chen@mediatek.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
- <20220422060152.13534-15-rex-bc.chen@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220422060152.13534-15-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 08:01, Rex-BC Chen wrote:
-> To support reset of infra_ao, add the bit definition for thermal/SVS.
-> 
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  include/dt-bindings/reset/mt8195-resets.h | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/include/dt-bindings/reset/mt8195-resets.h b/include/dt-bindings/reset/mt8195-resets.h
-> index a26bccc8b957..2479680616fb 100644
-> --- a/include/dt-bindings/reset/mt8195-resets.h
-> +++ b/include/dt-bindings/reset/mt8195-resets.h
-> @@ -26,4 +26,11 @@
->  
->  #define MT8195_TOPRGU_SW_RST_NUM               16
->  
-> +/* INFRA RST0 */
-> +#define MT8195_INFRA_RST0_THERMAL_AP_RST       0
-> +/* INFRA RST3 */
-> +#define MT8195_INFRA_RST3_PTP_RST              5
-> +/* INFRA RST4 */
-> +#define MT8195_INFRA_RST4_THERMAL_MCU_RST      10
+We should not need to index into SHMs based on absolute VA/PA.
+These functions are not used and this kind of usage should not be
+encouraged anyway. Remove these functions.
 
-Same comments as for other reset.
+Signed-off-by: Andrew Davis <afd@ti.com>
+---
+ drivers/tee/tee_shm.c   | 50 -----------------------------------------
+ include/linux/tee_drv.h | 18 ---------------
+ 2 files changed, 68 deletions(-)
 
+diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+index f31e29e8f1cac..b0c6d553d3a70 100644
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -414,56 +414,6 @@ void tee_shm_free(struct tee_shm *shm)
+ }
+ EXPORT_SYMBOL_GPL(tee_shm_free);
+ 
+-/**
+- * tee_shm_va2pa() - Get physical address of a virtual address
+- * @shm:	Shared memory handle
+- * @va:		Virtual address to tranlsate
+- * @pa:		Returned physical address
+- * @returns 0 on success and < 0 on failure
+- */
+-int tee_shm_va2pa(struct tee_shm *shm, void *va, phys_addr_t *pa)
+-{
+-	if (!shm->kaddr)
+-		return -EINVAL;
+-	/* Check that we're in the range of the shm */
+-	if ((char *)va < (char *)shm->kaddr)
+-		return -EINVAL;
+-	if ((char *)va >= ((char *)shm->kaddr + shm->size))
+-		return -EINVAL;
+-
+-	return tee_shm_get_pa(
+-			shm, (unsigned long)va - (unsigned long)shm->kaddr, pa);
+-}
+-EXPORT_SYMBOL_GPL(tee_shm_va2pa);
+-
+-/**
+- * tee_shm_pa2va() - Get virtual address of a physical address
+- * @shm:	Shared memory handle
+- * @pa:		Physical address to tranlsate
+- * @va:		Returned virtual address
+- * @returns 0 on success and < 0 on failure
+- */
+-int tee_shm_pa2va(struct tee_shm *shm, phys_addr_t pa, void **va)
+-{
+-	if (!shm->kaddr)
+-		return -EINVAL;
+-	/* Check that we're in the range of the shm */
+-	if (pa < shm->paddr)
+-		return -EINVAL;
+-	if (pa >= (shm->paddr + shm->size))
+-		return -EINVAL;
+-
+-	if (va) {
+-		void *v = tee_shm_get_va(shm, pa - shm->paddr);
+-
+-		if (IS_ERR(v))
+-			return PTR_ERR(v);
+-		*va = v;
+-	}
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(tee_shm_pa2va);
+-
+ /**
+  * tee_shm_get_va() - Get virtual address of a shared memory plus an offset
+  * @shm:	Shared memory handle
+diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
+index 911cad324acc7..17eb1c5205d34 100644
+--- a/include/linux/tee_drv.h
++++ b/include/linux/tee_drv.h
+@@ -298,24 +298,6 @@ void tee_shm_free(struct tee_shm *shm);
+  */
+ void tee_shm_put(struct tee_shm *shm);
+ 
+-/**
+- * tee_shm_va2pa() - Get physical address of a virtual address
+- * @shm:	Shared memory handle
+- * @va:		Virtual address to tranlsate
+- * @pa:		Returned physical address
+- * @returns 0 on success and < 0 on failure
+- */
+-int tee_shm_va2pa(struct tee_shm *shm, void *va, phys_addr_t *pa);
+-
+-/**
+- * tee_shm_pa2va() - Get virtual address of a physical address
+- * @shm:	Shared memory handle
+- * @pa:		Physical address to tranlsate
+- * @va:		Returned virtual address
+- * @returns 0 on success and < 0 on failure
+- */
+-int tee_shm_pa2va(struct tee_shm *shm, phys_addr_t pa, void **va);
+-
+ /**
+  * tee_shm_get_va() - Get virtual address of a shared memory plus an offset
+  * @shm:	Shared memory handle
+-- 
+2.17.1
 
-Best regards,
-Krzysztof
