@@ -2,131 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 793C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE50AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445383AbiDVICU (ORCPT
+        id S1445396AbiDVICa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        Fri, 22 Apr 2022 04:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349087AbiDVICK (ORCPT
+        with ESMTP id S1445384AbiDVICR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:02:10 -0400
-Received: from m1541.mail.126.com (m1541.mail.126.com [220.181.15.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84C62522DB;
-        Fri, 22 Apr 2022 00:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=KOOwj
-        Ngxtpj+BOV9RiocwkEJ5gaHVgyNXKB2q9i864s=; b=I2bcLGGMBZdE8yJCQe73E
-        ublKXrfowHicATx4CEeGLTb6eCcoRMxL5WoQOTv2+7QZxwlqAzF4e/JPdbJi3Hv0
-        A8AVgXuuhLURpEiqwFDsWBb4y1DE5YvfB6w7f1mKr1sC1ZbZ4TWP3y/hEY3dxCYf
-        tslRTLpgh+V2PhvjmdSg5c=
-Received: from zhaojunkui2008$126.com ( [58.213.83.157] ) by
- ajax-webmail-wmsvr41 (Coremail) ; Fri, 22 Apr 2022 15:58:26 +0800 (CST)
-X-Originating-IP: [58.213.83.157]
-Date:   Fri, 22 Apr 2022 15:58:26 +0800 (CST)
-From:   z <zhaojunkui2008@126.com>
-To:     "Kalle Valo" <kvalo@kernel.org>
-Cc:     "Jakub Kicinski" <kubakici@wp.pl>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Fri, 22 Apr 2022 04:02:17 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FBF527C6;
+        Fri, 22 Apr 2022 00:59:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650614364; x=1682150364;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VNrOIsgR/2M+tjpgcaLOR6tT5XMMHe+vpYMTNT8yqJE=;
+  b=FQnx7c+5lFmkzTIpWm/qcVESF6Nk/PeTaPlLahcNnkDin+IEW2njl9gX
+   khJ85nsE4dX7LjZysRHd2pzWa4rrcbGHMpxJnuGV3ezsIrUHnTpvKG0dj
+   IHvS/3nZdmIgM2ydWeS3VLyGnWC7LxJNmj7b5gxo8B6s9vp7LVUVlF7m2
+   005SQlbnpEwKov3f6XSNyiTakVI6sj9EvWTa/zlsZmgHZ0L7zRB+yNii6
+   m6lG161OTEJ3XHNvwqIX5FkezT17RTkyvQcBa+DdeDae6/bTyxSWD309E
+   yX+9Ge9PCVA8N5dHsfIKn77z7KYg3tixmj0H24OVv2RqOzAdf11FE3MgT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264385685"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="264385685"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:59:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="648522037"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 00:59:19 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhoCF-0009uY-1P;
+        Fri, 22 Apr 2022 07:59:19 +0000
+Date:   Fri, 22 Apr 2022 15:58:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     kbuild-all@lists.01.org, Wei-Shun Chang <weishunc@google.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bernard@vivo.com
-Subject: Re:Re: [PATCH] mediatek/mt7601u: add debugfs exit function
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <87k0bhmuh6.fsf@kernel.org>
-References: <20220422070325.465918-1-zhaojunkui2008@126.com>
- <87k0bhmuh6.fsf@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, randy.wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+Subject: Re: [PATCH v6 2/2] phy: mediatek: Add PCIe PHY driver
+Message-ID: <202204221513.SZZHW8dq-lkp@intel.com>
+References: <20220422041125.12732-3-jianjun.wang@mediatek.com>
 MIME-Version: 1.0
-Message-ID: <6fd91edd.4c2b.1805047850c.Coremail.zhaojunkui2008@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: KcqowADn9t4jYGJiD_oRAA--.42888W
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiuQPqqlpD8lH33AAAsr
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422041125.12732-3-jianjun.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SEkgS2FsbGUgVmFsbzoKCkF0IDIwMjItMDQtMjIgMTU6NDU6NTcsICJLYWxsZSBWYWxvIiA8a3Zh
-bG9Aa2VybmVsLm9yZz4gd3JvdGU6Cj5CZXJuYXJkIFpoYW8gPHpoYW9qdW5rdWkyMDA4QDEyNi5j
-b20+IHdyaXRlczoKPgo+PiBXaGVuIG10NzYwMXUgbG9hZGVkLCB0aGVyZSBhcmUgdHdvIGNhc2Vz
-Ogo+PiBGaXJzdCB3aGVuIG10NzYwMXUgaXMgbG9hZGVkLCBpbiBmdW5jdGlvbiBtdDc2MDF1X3By
-b2JlLCBpZgo+PiBmdW5jdGlvbiBtdDc2MDF1X3Byb2JlIHJ1biBpbnRvIGVycm9yIGxhYmxlIGVy
-cl9odywKPj4gbXQ3NjAxdV9jbGVhbnVwIGRpZG5gdCBjbGVhbnVwIHRoZSBkZWJ1Z2ZzIG5vZGUu
-Cj4+IFNlY29uZCB3aGVuIHRoZSBtb2R1bGUgZGlzY29ubmVjdCwgaW4gZnVuY3Rpb24gbXQ3NjAx
-dV9kaXNjb25uZWN0LAo+PiBtdDc2MDF1X2NsZWFudXAgZGlkbmB0IGNsZWFudXAgdGhlIGRlYnVn
-ZnMgbm9kZS4KPj4gVGhpcyBwYXRjaCBhZGQgZGVidWdmcyBleGl0IGZ1bmN0aW9uIGFuZCB0cnkg
-dG8gY2xlYW51cCBkZWJ1Z2ZzCj4+IG5vZGUgd2hlbiBtdDc2MDF1IGxvYWRlZCBmYWlsIG9yIHVu
-bG9hZGVkLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBCZXJuYXJkIFpoYW8gPHpoYW9qdW5rdWkyMDA4
-QDEyNi5jb20+Cj4+IC0tLQo+PiAgLi4uL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2Rl
-YnVnZnMuYyAgIHwgMjUgKysrKysrKysrKystLS0tLS0tLQo+PiAgZHJpdmVycy9uZXQvd2lyZWxl
-c3MvbWVkaWF0ZWsvbXQ3NjAxdS9pbml0LmMgIHwgIDUgKysrKwo+PiAgLi4uL25ldC93aXJlbGVz
-cy9tZWRpYXRlay9tdDc2MDF1L210NzYwMXUuaCAgIHwgIDQgKysrCj4+ICAzIGZpbGVzIGNoYW5n
-ZWQsIDI0IGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3NjAxdS9kZWJ1Z2ZzLmMgYi9kcml2ZXJz
-L25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2RlYnVnZnMuYwo+PiBpbmRleCAyMDY2OWVh
-Y2I2NmUuLjFhZTNkNzVkM2M5YiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
-bWVkaWF0ZWsvbXQ3NjAxdS9kZWJ1Z2ZzLmMKPj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
-bWVkaWF0ZWsvbXQ3NjAxdS9kZWJ1Z2ZzLmMKPj4gQEAgLTEyNCwxNyArMTI0LDIyIEBAIERFRklO
-RV9TSE9XX0FUVFJJQlVURShtdDc2MDF1X2VlcHJvbV9wYXJhbSk7Cj4+ICAKPj4gIHZvaWQgbXQ3
-NjAxdV9pbml0X2RlYnVnZnMoc3RydWN0IG10NzYwMXVfZGV2ICpkZXYpCj4+ICB7Cj4+IC0Jc3Ry
-dWN0IGRlbnRyeSAqZGlyOwo+PiAtCj4+IC0JZGlyID0gZGVidWdmc19jcmVhdGVfZGlyKCJtdDc2
-MDF1IiwgZGV2LT5ody0+d2lwaHktPmRlYnVnZnNkaXIpOwo+PiAtCWlmICghZGlyKQo+PiArCWRl
-di0+cm9vdF9kaXIgPSBkZWJ1Z2ZzX2NyZWF0ZV9kaXIoIm10NzYwMXUiLCBkZXYtPmh3LT53aXBo
-eS0+ZGVidWdmc2Rpcik7Cj4+ICsJaWYgKCFkZXYtPnJvb3RfZGlyKQo+PiAgCQlyZXR1cm47Cj4+
-ICAKPj4gLQlkZWJ1Z2ZzX2NyZWF0ZV91OCgidGVtcGVyYXR1cmUiLCAwNDAwLCBkaXIsICZkZXYt
-PnJhd190ZW1wKTsKPj4gLQlkZWJ1Z2ZzX2NyZWF0ZV91MzIoInRlbXBfbW9kZSIsIDA0MDAsIGRp
-ciwgJmRldi0+dGVtcF9tb2RlKTsKPj4gKwlkZWJ1Z2ZzX2NyZWF0ZV91OCgidGVtcGVyYXR1cmUi
-LCAwNDAwLCBkZXYtPnJvb3RfZGlyLCAmZGV2LT5yYXdfdGVtcCk7Cj4+ICsJZGVidWdmc19jcmVh
-dGVfdTMyKCJ0ZW1wX21vZGUiLCAwNDAwLCBkZXYtPnJvb3RfZGlyLCAmZGV2LT50ZW1wX21vZGUp
-Owo+PiArCj4+ICsJZGVidWdmc19jcmVhdGVfdTMyKCJyZWdpZHgiLCAwNjAwLCBkZXYtPnJvb3Rf
-ZGlyLCAmZGV2LT5kZWJ1Z2ZzX3JlZyk7Cj4+ICsJZGVidWdmc19jcmVhdGVfZmlsZSgicmVndmFs
-IiwgMDYwMCwgZGV2LT5yb290X2RpciwgZGV2LCAmZm9wc19yZWd2YWwpOwo+PiArCWRlYnVnZnNf
-Y3JlYXRlX2ZpbGUoImFtcGR1X3N0YXQiLCAwNDAwLCBkZXYtPnJvb3RfZGlyLCBkZXYsICZtdDc2
-MDF1X2FtcGR1X3N0YXRfZm9wcyk7Cj4+ICsJZGVidWdmc19jcmVhdGVfZmlsZSgiZWVwcm9tX3Bh
-cmFtIiwgMDQwMCwgZGV2LT5yb290X2RpciwgZGV2LCAmbXQ3NjAxdV9lZXByb21fcGFyYW1fZm9w
-cyk7Cj4+ICt9Cj4+ICAKPj4gLQlkZWJ1Z2ZzX2NyZWF0ZV91MzIoInJlZ2lkeCIsIDA2MDAsIGRp
-ciwgJmRldi0+ZGVidWdmc19yZWcpOwo+PiAtCWRlYnVnZnNfY3JlYXRlX2ZpbGUoInJlZ3ZhbCIs
-IDA2MDAsIGRpciwgZGV2LCAmZm9wc19yZWd2YWwpOwo+PiAtCWRlYnVnZnNfY3JlYXRlX2ZpbGUo
-ImFtcGR1X3N0YXQiLCAwNDAwLCBkaXIsIGRldiwgJm10NzYwMXVfYW1wZHVfc3RhdF9mb3BzKTsK
-Pj4gLQlkZWJ1Z2ZzX2NyZWF0ZV9maWxlKCJlZXByb21fcGFyYW0iLCAwNDAwLCBkaXIsIGRldiwg
-Jm10NzYwMXVfZWVwcm9tX3BhcmFtX2ZvcHMpOwo+PiArdm9pZCBtdDc2MDF1X2V4aXRfZGVidWdm
-cyhzdHJ1Y3QgbXQ3NjAxdV9kZXYgKmRldikKPj4gK3sKPj4gKwlpZiAoIWRldi0+cm9vdF9kaXIp
-Cj4+ICsJCXJldHVybjsKPj4gKwlkZWJ1Z2ZzX3JlbW92ZShkZXYtPnJvb3RfZGlyKTsKPgo+ZGVi
-dWdmc19yZW1vdmUoKSBoYXMgSVNfRVJSX09SX05VTEwoKSBjaGVjaywgc28gbm8gbmVlZCB0byBj
-aGVjayBmb3IKPm51bGwgaGVyZS4KR290IGl0LCB0aGFua3MhCgo+PiAgfQo+PiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3NjAxdS9pbml0LmMgYi9kcml2ZXJz
-L25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2luaXQuYwo+PiBpbmRleCA1ZDllOTUyYjI5
-NjYuLjFlOTA1ZWYyZWQxOSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVk
-aWF0ZWsvbXQ3NjAxdS9pbml0LmMKPj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0
-ZWsvbXQ3NjAxdS9pbml0LmMKPj4gQEAgLTQyNyw2ICs0MjcsOSBAQCB2b2lkIG10NzYwMXVfY2xl
-YW51cChzdHJ1Y3QgbXQ3NjAxdV9kZXYgKmRldikKPj4gIAltdDc2MDF1X3N0b3BfaGFyZHdhcmUo
-ZGV2KTsKPj4gIAltdDc2MDF1X2RtYV9jbGVhbnVwKGRldik7Cj4+ICAJbXQ3NjAxdV9tY3VfY21k
-X2RlaW5pdChkZXYpOwo+PiArI2lmZGVmIENPTkZJR19ERUJVR19GUwo+PiArCW10NzYwMXVfZXhp
-dF9kZWJ1Z2ZzKGRldik7Cj4+ICsjZW5kaWYKPj4gIH0KPj4gIAo+PiAgc3RydWN0IG10NzYwMXVf
-ZGV2ICptdDc2MDF1X2FsbG9jX2RldmljZShzdHJ1Y3QgZGV2aWNlICpwZGV2KQo+PiBAQCAtNjI1
-LDcgKzYyOCw5IEBAIGludCBtdDc2MDF1X3JlZ2lzdGVyX2RldmljZShzdHJ1Y3QgbXQ3NjAxdV9k
-ZXYgKmRldikKPj4gIAlpZiAocmV0KQo+PiAgCQlyZXR1cm4gcmV0Owo+PiAgCj4+ICsjaWZkZWYg
-Q09ORklHX0RFQlVHX0ZTCj4+ICAJbXQ3NjAxdV9pbml0X2RlYnVnZnMoZGV2KTsKPj4gKyNlbmRp
-Zgo+Cj5BcmUgdGhlc2UgdHdvIGlmZGVmcyByZWFsbHkgbmVlZGVkPyBkZWJ1Z2ZzIGZ1bmN0aW9u
-cyBhcmUgZW1wdHkKPmZ1bmN0aW9ucyB3aGVuIENPTkZJR19ERUJVR19GUyBpcyBkaXNhYmxlZC4K
-SWZkZWYgZG9lc24ndCBzZWVtIHRvIG1ha2UgbXVjaCBzZW5zZSwgdGhhbmtzIGZvciB5b3VyIGFk
-dmljZSEKCj4+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21lZGlhdGVrL210NzYwMXUvbXQ3
-NjAxdS5oCj4+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21lZGlhdGVrL210NzYwMXUvbXQ3
-NjAxdS5oCj4+IEBAIC0yNDIsNiArMjQyLDkgQEAgc3RydWN0IG10NzYwMXVfZGV2IHsKPj4gIAl1
-MzIgcmZfcGFfbW9kZVsyXTsKPj4gIAo+PiAgCXN0cnVjdCBtYWNfc3RhdHMgc3RhdHM7Cj4+ICsj
-aWZkZWYgQ09ORklHX0RFQlVHX0ZTCj4+ICsJc3RydWN0IGRlbnRyeSAqcm9vdF9kaXI7Cj4+ICsj
-ZW5kaWYKPgo+SSB3b3VsZCByZW1vdmUgdGhpcyBpZmRlZiwgaXQncyBqdXN0IHNhdmluZyBvbmUg
-cG9pbnRlciBzaXplLiBMZXNzCj5pZmRlZnMgd2UgaGF2ZSB0aGUgYmV0dGVyLgpJIHdvdWxkIG1v
-ZGlmeSB0aGUgY29kZSBhbmQgcmVzdWJtaXQgYSBwYXRjaCwgdGhhbmsgeW91IHZlcnkgbXVjaCEK
-CkJSLy9CZXJuYXJkCj4tLSAKPmh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcHJvamVjdC9s
-aW51eC13aXJlbGVzcy9saXN0Lwo+Cj5odHRwczovL3dpcmVsZXNzLndpa2kua2VybmVsLm9yZy9l
-bi9kZXZlbG9wZXJzL2RvY3VtZW50YXRpb24vc3VibWl0dGluZ3BhdGNoZXMK
+Hi Jianjun,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on linus/master v5.18-rc3 next-20220421]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jianjun-Wang/phy-mediatek-Add-PCIe-PHY-driver/20220422-121407
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220422/202204221513.SZZHW8dq-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/c2ea770ff29995df64bc82ad12ece5b671415a62
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jianjun-Wang/phy-mediatek-Add-PCIe-PHY-driver/20220422-121407
+        git checkout c2ea770ff29995df64bc82ad12ece5b671415a62
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/phy/mediatek/phy-mtk-pcie.c: In function 'mtk_pcie_efuse_set_lane':
+>> drivers/phy/mediatek/phy-mtk-pcie.c:92:29: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+      92 |                             FIELD_PREP(EFUSE_LN_TX_PMOS_SEL, data->tx_pmos));
+         |                             ^~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/FIELD_PREP +92 drivers/phy/mediatek/phy-mtk-pcie.c
+
+    78	
+    79	static void mtk_pcie_efuse_set_lane(struct mtk_pcie_phy *pcie_phy,
+    80					    unsigned int lane)
+    81	{
+    82		struct mtk_pcie_lane_efuse *data = &pcie_phy->efuse[lane];
+    83		void __iomem *addr;
+    84	
+    85		if (!data->lane_efuse_supported)
+    86			return;
+    87	
+    88		addr = pcie_phy->sif_base + PEXTP_ANA_LN0_TRX_REG +
+    89		       lane * PEXTP_ANA_LANE_OFFSET;
+    90	
+    91		mtk_phy_update_bits(addr + PEXTP_ANA_TX_REG, EFUSE_LN_TX_PMOS_SEL,
+  > 92				    FIELD_PREP(EFUSE_LN_TX_PMOS_SEL, data->tx_pmos));
+    93	
+    94		mtk_phy_update_bits(addr + PEXTP_ANA_TX_REG, EFUSE_LN_TX_NMOS_SEL,
+    95				    FIELD_PREP(EFUSE_LN_TX_NMOS_SEL, data->tx_nmos));
+    96	
+    97		mtk_phy_update_bits(addr + PEXTP_ANA_RX_REG, EFUSE_LN_RX_SEL,
+    98				    FIELD_PREP(EFUSE_LN_RX_SEL, data->rx_data));
+    99	}
+   100	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
