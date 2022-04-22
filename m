@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ADBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D145C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446935AbiDVQ2y (ORCPT
+        id S1447012AbiDVQ26 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56676 "EHLO
+        Fri, 22 Apr 2022 12:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390577AbiDVQ1t (ORCPT
+        with ESMTP id S1390632AbiDVQ1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 12:27:49 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779D5C52
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:24:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E285F3D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:24:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650644694; x=1682180694;
+  t=1650644695; x=1682180695;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=p3ulNQ2ht9HlNWyV+bHdO7gatp7F4Zan+NkJzDLuSUM=;
-  b=CnlG4Zmky8MXAPpwaMvi2C8M7nJkhmv8pZVisKJWes77JeZPIDEGY3pE
-   FY0qoaVS1crBfT5zijoOdeTmTTvM/2ceHBtP3IUhkLAbxhlnhiuYDNmnm
-   ynPcuDQn1DjjkdCo8Ll0VnMjA9zaMhRACU8owuw9CsY81+kHbEuAGfCsz
-   JU23xxOWHPvt5NYSnPwBn6cTLMfN3W+YHUigQn5NWNdCdYV9msQib65wp
-   chHPVs59Mr117AD6EigR+Y+AWFtV6wTP3g1QEFXTn61pNDiIKHYu07xf7
-   E9gnCGCOh/5Dau3j1Xh6CU1t/o/SIXrYmoXOnybPnhT8rX/Vahsfr/8tr
+  bh=yRpvc/5+lKYY2ErIrQ4yRGXINSu1VtbNTt3ZM+FzuEQ=;
+  b=CH7wft1TsXLGXU0lCNh8lNC6SassYSn7Z/EDAPDfwSFTQSwbPTOV41wC
+   4Ftb2OfGSQFfj9z2Kc4nUh0qoijLID3Irj9fQb1iAVlu5wOuRQfGjs1+T
+   e/ilAMbaOR6d67NKpa8BaHsTCeLeJEwzIn/hJWos7myjx/amKBab1NOCU
+   18m15M0hFre2gNGEUjYo2LPgjbIG6i+Ac9CJefUSI1lJv1d9ZttujmXHt
+   aefoaJ5OuEuQCNNFsK4WQ+we+zxIh7aiTTCq1jhrkEpZ4s73/mScZ6rdw
+   UTTfxfRnSpUdEk9WNoiGPi8pmUx+zhkKub9UtX+APTk0X/PDn4gvlO7TV
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264885978"
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264886003"
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264885978"
+   d="scan'208";a="264886003"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:24:43 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:24:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="577978926"
+   d="scan'208";a="577979045"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga008.jf.intel.com with ESMTP; 22 Apr 2022 09:24:40 -0700
+  by orsmga008.jf.intel.com with ESMTP; 22 Apr 2022 09:24:45 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 13/21] perf evlist: Add evlist__add_system_wide_dummy()
-Date:   Fri, 22 Apr 2022 19:23:54 +0300
-Message-Id: <20220422162402.147958-14-adrian.hunter@intel.com>
+Subject: [PATCH RFC 15/21] perf intel-pt: Use evlist__add_system_wide_dummy() for switch tracking
+Date:   Fri, 22 Apr 2022 19:23:56 +0300
+Message-Id: <20220422162402.147958-16-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220422162402.147958-1-adrian.hunter@intel.com>
 References: <20220422162402.147958-1-adrian.hunter@intel.com>
@@ -58,85 +58,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add evlist__add_system_wide_dummy() to enable creating a system-wide dummy
-event that sets up the system-wide maps before map propagation.
-
-For convenience, add evlist__add_aux_dummy() so that the logic can be used
-whether or not the event needs to be system-wide.
+Use evlist__add_system_wide_dummy() for switch tracking in preparation for
+allowing system-wide events on all CPUs while the user requested events are
+on only user requested CPUs.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/util/evlist.c | 40 ++++++++++++++++++++++++++++++++++++++++
- tools/perf/util/evlist.h |  5 +++++
- 2 files changed, 45 insertions(+)
+ tools/perf/arch/x86/util/intel-pt.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 78c47cbafbc2..58ea562ddbd2 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -264,6 +264,46 @@ int evlist__add_dummy(struct evlist *evlist)
- 	return 0;
- }
+diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
+index 2eaac4638aab..e45d64dec57c 100644
+--- a/tools/perf/arch/x86/util/intel-pt.c
++++ b/tools/perf/arch/x86/util/intel-pt.c
+@@ -811,18 +811,11 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
+ 			if (!cpu_wide && perf_can_record_cpu_wide()) {
+ 				struct evsel *switch_evsel;
  
-+static void evlist__add_system_wide(struct evlist *evlist, struct evsel *evsel)
-+{
-+	evsel->core.system_wide = true;
-+
-+	/* All CPUs */
-+	perf_cpu_map__put(evsel->core.own_cpus);
-+	evsel->core.own_cpus = perf_cpu_map__new(NULL);
-+	perf_cpu_map__put(evsel->core.cpus);
-+	evsel->core.cpus = perf_cpu_map__get(evsel->core.own_cpus);
-+
-+	/* No threads */
-+	perf_thread_map__put(evsel->core.threads);
-+	evsel->core.threads = perf_thread_map__new_dummy();
-+
-+	evlist__add(evlist, evsel);
-+}
-+
-+struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide)
-+{
-+	struct evsel *evsel = evlist__dummy_event(evlist);
-+
-+	if (!evsel)
-+		return NULL;
-+
-+	evsel->core.attr.exclude_kernel = 1;
-+	evsel->core.attr.exclude_guest = 1;
-+	evsel->core.attr.exclude_hv = 1;
-+	evsel->core.attr.freq = 0;
-+	evsel->core.attr.sample_period = 1;
-+	evsel->no_aux_samples = true;
-+	evsel->name = strdup("dummy:u");
-+
-+	if (system_wide)
-+		evlist__add_system_wide(evlist, evsel);
-+	else
-+		evlist__add(evlist, evsel);
-+
-+	return evsel;
-+}
-+
- static int evlist__add_attrs(struct evlist *evlist, struct perf_event_attr *attrs, size_t nr_attrs)
- {
- 	struct evsel *evsel, *n;
-diff --git a/tools/perf/util/evlist.h b/tools/perf/util/evlist.h
-index 4062f5aebfc1..dd1af114e033 100644
---- a/tools/perf/util/evlist.h
-+++ b/tools/perf/util/evlist.h
-@@ -114,6 +114,11 @@ int arch_evlist__add_default_attrs(struct evlist *evlist);
- struct evsel *arch_evlist__leader(struct list_head *list);
+-				err = parse_events(evlist, "dummy:u", NULL);
+-				if (err)
+-					return err;
++				switch_evsel = evlist__add_system_wide_dummy(evlist);
++				if (!switch_evsel)
++					return -ENOMEM;
  
- int evlist__add_dummy(struct evlist *evlist);
-+struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide);
-+static inline struct evsel *evlist__add_system_wide_dummy(struct evlist *evlist)
-+{
-+	return evlist__add_aux_dummy(evlist, true);
-+}
+-				switch_evsel = evlist__last(evlist);
+-
+-				switch_evsel->core.attr.freq = 0;
+-				switch_evsel->core.attr.sample_period = 1;
+ 				switch_evsel->core.attr.context_switch = 1;
+-
+-				switch_evsel->core.system_wide = true;
+-				switch_evsel->no_aux_samples = true;
+ 				switch_evsel->immediate = true;
  
- int evlist__add_sb_event(struct evlist *evlist, struct perf_event_attr *attr,
- 			 evsel__sb_cb_t cb, void *data);
+ 				evsel__set_sample_bit(switch_evsel, TID);
 -- 
 2.25.1
 
