@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAD4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AACEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445267AbiDVH66 (ORCPT
+        id S1445314AbiDVH7C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
+        Fri, 22 Apr 2022 03:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445191AbiDVH62 (ORCPT
+        with ESMTP id S1445187AbiDVH61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:58:28 -0400
+        Fri, 22 Apr 2022 03:58:27 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A9237BF8;
-        Fri, 22 Apr 2022 00:55:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2A53632C;
+        Fri, 22 Apr 2022 00:55:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650614135; x=1682150135;
+  t=1650614133; x=1682150133;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EA6a6CyPC45YVCqPmIq4IBT07StS5s8kYmLcjF4Qrcc=;
-  b=G108q40Odd1QoRh5G3IQDOTcmGFGCmUuq9NPSpr+RupOtrJyo5Y+pX62
-   /0hM7aLmsZH614ERm6n0RevTTvWSNIrh+mK68M0aytu69mBrauNb53xdH
-   nt3c/xTaEyOtZFydXbfJ52YfXGkUec9koyyTiTTlrA3hwOQOsXROobvqv
-   jswGPUsU0Jzp2O/Og91SENt9l80b9kkFcc3VDdZ6TM2p46DCPz+iyLuKH
-   meTc3XPYbfVoIZRrcrRGkMbFxn5zIJq8XMhmevZtswYryxAgIrLUudDYI
-   5iDalraft+OBjC5S4oN5FIoSJdsA8vi/1qLv5BUsIm9xDz/bK2IfMYLvj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264384832"
+  bh=HcWpXQhkSrbeqrBphD/EW9+dxm2Gkbsv7qKnGm9kPD8=;
+  b=PSXYB/LOxfSRsL3TlIUordLSLtmE727UFtgRyvKSs2EQS90mY3+Xhj2n
+   u6R4UJmg15qjbFy/FFR3vkQBF0l5NAFHhAnIcw1XmDxc2Jbd8esHMQsG6
+   DtgKdAz07zMAQFfL5gMF4U0kAmfHU1tflUBbb85T4sH8mAJdMwr8x4M+R
+   Kr9FV2zHHZJ1/JigDLy8a8qV93wkZgnuASumzuuBuN3tnfxz6zUsWwmJD
+   AkcZPsh6vBWenlX6M8gp1Ioygu5OdfHEmoF8zoG9ltKLhruaOOatYmPxd
+   tjGKUG5nrkqyNfYPa5wNX6CWPmwPhM19r3W0OiDkpQYWueH7AanXfOuoG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264384828"
 X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="264384832"
+   d="scan'208";a="264384828"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:55:30 -0700
 X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="577741355"
+   d="scan'208";a="577741339"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:55:30 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
@@ -44,9 +44,9 @@ To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Yang Weijiang <weijiang.yang@intel.com>,
         Like Xu <like.xu@linux.intel.com>
-Subject: [PATCH v10 11/16] KVM: x86/vmx: Check Arch LBR config when return perf capabilities
-Date:   Fri, 22 Apr 2022 03:55:04 -0400
-Message-Id: <20220422075509.353942-12-weijiang.yang@intel.com>
+Subject: [PATCH v10 08/16] KVM: x86/pmu: Refactor code to support guest Arch LBR
+Date:   Fri, 22 Apr 2022 03:55:01 -0400
+Message-Id: <20220422075509.353942-9-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220422075509.353942-1-weijiang.yang@intel.com>
 References: <20220422075509.353942-1-weijiang.yang@intel.com>
@@ -56,100 +56,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two new bit fields(VM_EXIT_CLEAR_IA32_LBR_CTL, VM_ENTRY_LOAD_IA32_LBR_CTL)
-are added to support guest Arch LBR. These two bits should be set in order
-to make Arch LBR workable in both guest and host.
+Take account of Arch LBR when do sanity checks before program
+vPMU for guest. Pass through Arch LBR recording MSRs to guest
+to gain better performance. Note, Arch LBR and Legacy LBR support
+are mutually exclusive, i.e., they're not both available on one
+platform.
 
 Co-developed-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/include/asm/vmx.h      |  2 ++
- arch/x86/kvm/vmx/capabilities.h |  8 ++++++++
- arch/x86/kvm/vmx/vmx.c          | 10 ++++++++--
- 3 files changed, 18 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/pmu_intel.c | 37 +++++++++++++++++++++++++++++-------
+ arch/x86/kvm/vmx/vmx.c       |  3 +++
+ 2 files changed, 33 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
-index ea3be961cc8e..d9b1dffc4638 100644
---- a/arch/x86/include/asm/vmx.h
-+++ b/arch/x86/include/asm/vmx.h
-@@ -95,6 +95,7 @@
- #define VM_EXIT_CLEAR_BNDCFGS                   0x00800000
- #define VM_EXIT_PT_CONCEAL_PIP			0x01000000
- #define VM_EXIT_CLEAR_IA32_RTIT_CTL		0x02000000
-+#define VM_EXIT_CLEAR_IA32_LBR_CTL		0x04000000
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 7dc8a5783df7..cb28888e9f4f 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -170,12 +170,16 @@ static inline struct kvm_pmc *get_fw_gp_pmc(struct kvm_pmu *pmu, u32 msr)
  
- #define VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR	0x00036dff
- 
-@@ -108,6 +109,7 @@
- #define VM_ENTRY_LOAD_BNDCFGS                   0x00010000
- #define VM_ENTRY_PT_CONCEAL_PIP			0x00020000
- #define VM_ENTRY_LOAD_IA32_RTIT_CTL		0x00040000
-+#define VM_ENTRY_LOAD_IA32_LBR_CTL		0x00200000
- 
- #define VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR	0x000011ff
- 
-diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
-index 3f430e218375..68fbb76ba439 100644
---- a/arch/x86/kvm/vmx/capabilities.h
-+++ b/arch/x86/kvm/vmx/capabilities.h
-@@ -385,6 +385,12 @@ static inline bool vmx_pt_mode_is_host_guest(void)
- 	return pt_mode == PT_MODE_HOST_GUEST;
+ bool intel_pmu_lbr_is_compatible(struct kvm_vcpu *vcpu)
+ {
++	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
++		return guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
++
+ 	/*
+ 	 * As a first step, a guest could only enable LBR feature if its
+ 	 * cpu model is the same as the host because the LBR registers
+ 	 * would be pass-through to the guest and they're model specific.
+ 	 */
+-	return boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
++	return !boot_cpu_has(X86_FEATURE_ARCH_LBR) &&
++		boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
  }
  
-+static inline bool cpu_has_vmx_arch_lbr(void)
-+{
-+	return (vmcs_config.vmexit_ctrl & VM_EXIT_CLEAR_IA32_LBR_CTL) &&
-+		(vmcs_config.vmentry_ctrl & VM_ENTRY_LOAD_IA32_LBR_CTL);
-+}
+ bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
+@@ -193,12 +197,19 @@ static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
+ 	if (!intel_pmu_lbr_is_enabled(vcpu))
+ 		return ret;
+ 
+-	ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS) ||
+-		(index >= records->from && index < records->from + records->nr) ||
+-		(index >= records->to && index < records->to + records->nr);
++	if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
++		ret = (index == MSR_LBR_SELECT) || (index == MSR_LBR_TOS);
 +
- static inline u64 vmx_get_perf_capabilities(void)
++	if (!ret) {
++		ret = (index >= records->from &&
++		       index < records->from + records->nr) ||
++		      (index >= records->to &&
++		       index < records->to + records->nr);
++	}
+ 
+ 	if (!ret && records->info)
+-		ret = (index >= records->info && index < records->info + records->nr);
++		ret = (index >= records->info &&
++		       index < records->info + records->nr);
+ 
+ 	return ret;
+ }
+@@ -747,6 +758,9 @@ static void vmx_update_intercept_for_lbr_msrs(struct kvm_vcpu *vcpu, bool set)
+ 			vmx_set_intercept_for_msr(vcpu, lbr->info + i, MSR_TYPE_RW, set);
+ 	}
+ 
++	if (guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
++		return;
++
+ 	vmx_set_intercept_for_msr(vcpu, MSR_LBR_SELECT, MSR_TYPE_RW, set);
+ 	vmx_set_intercept_for_msr(vcpu, MSR_LBR_TOS, MSR_TYPE_RW, set);
+ }
+@@ -787,10 +801,13 @@ void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu)
  {
- 	u64 perf_cap = 0;
-@@ -396,6 +402,8 @@ static inline u64 vmx_get_perf_capabilities(void)
- 		rdmsrl(MSR_IA32_PERF_CAPABILITIES, perf_cap);
+ 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+ 	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
++	bool lbr_enable = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) ?
++		(vmcs_read64(GUEST_IA32_LBR_CTL) & ARCH_LBR_CTL_LBREN) :
++		(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR);
  
- 	perf_cap &= PMU_CAP_LBR_FMT;
-+	if (boot_cpu_has(X86_FEATURE_ARCH_LBR) && !cpu_has_vmx_arch_lbr())
-+		perf_cap &= ~PMU_CAP_LBR_FMT;
+ 	if (!lbr_desc->event) {
+ 		vmx_disable_lbr_msrs_passthrough(vcpu);
+-		if (vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR)
++		if (lbr_enable)
+ 			goto warn;
+ 		if (test_bit(INTEL_PMC_IDX_FIXED_VLBR, pmu->pmc_in_use))
+ 			goto warn;
+@@ -807,13 +824,19 @@ void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu)
+ 	return;
  
- 	/*
- 	 * Since counters are virtualized, KVM would support full
+ warn:
++	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
++		wrmsrl(MSR_ARCH_LBR_DEPTH, lbr_desc->records.nr);
+ 	pr_warn_ratelimited("kvm: vcpu-%d: fail to passthrough LBR.\n",
+ 		vcpu->vcpu_id);
+ }
+ 
+ static void intel_pmu_cleanup(struct kvm_vcpu *vcpu)
+ {
+-	if (!(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR))
++	bool lbr_enable = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR) ?
++		(vmcs_read64(GUEST_IA32_LBR_CTL) & ARCH_LBR_CTL_LBREN) :
++		(vmcs_read64(GUEST_IA32_DEBUGCTL) & DEBUGCTLMSR_LBR);
++
++	if (!lbr_enable)
+ 		intel_pmu_release_guest_lbr_event(vcpu);
+ }
+ 
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 60d92a459f4c..8962a8bab5eb 100644
+index 73961fcfb62d..a1816c6597f5 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2532,7 +2532,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 	      VM_EXIT_LOAD_IA32_EFER |
- 	      VM_EXIT_CLEAR_BNDCFGS |
- 	      VM_EXIT_PT_CONCEAL_PIP |
--	      VM_EXIT_CLEAR_IA32_RTIT_CTL;
-+	      VM_EXIT_CLEAR_IA32_RTIT_CTL |
-+	      VM_EXIT_CLEAR_IA32_LBR_CTL;
- 	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_EXIT_CTLS,
- 				&_vmexit_control) < 0)
- 		return -EIO;
-@@ -2556,7 +2557,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 	      VM_ENTRY_LOAD_IA32_EFER |
- 	      VM_ENTRY_LOAD_BNDCFGS |
- 	      VM_ENTRY_PT_CONCEAL_PIP |
--	      VM_ENTRY_LOAD_IA32_RTIT_CTL;
-+	      VM_ENTRY_LOAD_IA32_RTIT_CTL |
-+	      VM_ENTRY_LOAD_IA32_LBR_CTL;
- 	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_ENTRY_CTLS,
- 				&_vmentry_control) < 0)
- 		return -EIO;
-@@ -5925,6 +5927,10 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
- 	    vmentry_ctl & VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
- 		pr_err("PerfGlobCtl = 0x%016llx\n",
- 		       vmcs_read64(GUEST_IA32_PERF_GLOBAL_CTRL));
-+	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
-+	    vmentry_ctl & VM_ENTRY_LOAD_IA32_LBR_CTL)
-+		pr_err("ArchLBRCtl = 0x%016llx\n",
-+		       vmcs_read64(GUEST_IA32_LBR_CTL));
- 	if (vmentry_ctl & VM_ENTRY_LOAD_BNDCFGS)
- 		pr_err("BndCfgS = 0x%016llx\n", vmcs_read64(GUEST_BNDCFGS));
- 	pr_err("Interruptibility = %08x  ActivityState = %08x\n",
+@@ -573,6 +573,9 @@ static bool is_valid_passthrough_msr(u32 msr)
+ 	case MSR_LBR_NHM_TO ... MSR_LBR_NHM_TO + 31:
+ 	case MSR_LBR_CORE_FROM ... MSR_LBR_CORE_FROM + 8:
+ 	case MSR_LBR_CORE_TO ... MSR_LBR_CORE_TO + 8:
++	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
++	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
++	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
+ 		/* LBR MSRs. These are handled in vmx_update_intercept_for_lbr_msrs() */
+ 		return true;
+ 	}
 -- 
 2.27.0
 
