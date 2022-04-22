@@ -2,103 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A58C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444182AbiDVGGH (ORCPT
+        id S1444189AbiDVGGJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        Fri, 22 Apr 2022 02:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444053AbiDVGFD (ORCPT
+        with ESMTP id S1444113AbiDVGFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:05:03 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826174FC48;
-        Thu, 21 Apr 2022 23:02:10 -0700 (PDT)
-X-UUID: 1fdbf622264c4ae4aab74ee331f3f3e8-20220422
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:91921335-1753-4677-a841-a7eb85a4373d,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:f222bdef-06b0-4305-bfbf-554bfc9d151a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 1fdbf622264c4ae4aab74ee331f3f3e8-20220422
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2141965761; Fri, 22 Apr 2022 14:02:03 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 22 Apr 2022 14:02:01 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 14:02:01 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <p.zabel@pengutronix.de>,
-        <angelogioacchino.delregno@collabora.com>,
-        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
-        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V3 15/17] clk: mediatek: reset: Add infra_ao reset support for MT8192
-Date:   Fri, 22 Apr 2022 14:01:50 +0800
-Message-ID: <20220422060152.13534-16-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
-References: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
+        Fri, 22 Apr 2022 02:05:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520C24F9FA;
+        Thu, 21 Apr 2022 23:02:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2DCE61DC8;
+        Fri, 22 Apr 2022 06:02:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B682EC385A4;
+        Fri, 22 Apr 2022 06:02:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650607331;
+        bh=4841fxDo2IBFBAW/st3C9bLw2mUJ8qtFufsuF9mZbWQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RQwBI/WC4vM1T5dWLU1/Q20cPmmCuTVI3H7URdIOvuNuybvwmyA4T/99z3W0rO8wi
+         XaQ4/ywPvslBHuQcn8QDVOOCxuplNxf6G/1xbuBCwpa/4bjxCbkdtdsusXHSCmgz8h
+         lcXhpt46CJviGbDzAeK4jwjhscWjp6Wkkf6hSxjj69dRTr+pJG6StSqVtav6Dk+gmW
+         gNWzYNrLCGQVgts9lSkzT6kzQIjn9RxnlELwlt0p0KuIXnQgeXjXfr5nJQtKLVizu0
+         jM0k9T/dVMw5bXy9IdfzR/SJX2X5VMGncFtL2VMKfjqnoE0+D5u98nBks232h1vzn6
+         cT68y/ovBAJ/g==
+Date:   Fri, 22 Apr 2022 11:32:07 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Dave Jiang <dave.jiang@intel.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, dmaengine@vger.kernel.org
+Subject: Re: [PATCH] dmaengine: idxd: Fix the error handling path in
+ idxd_cdev_register()
+Message-ID: <YmJE3/zDdp/1YiaD@matsya>
+References: <1b5033dcc87b5f2a953c413f0306e883e6114542.1650521591.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1b5033dcc87b5f2a953c413f0306e883e6114542.1650521591.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The infra_ao reset is needed for MT8192. Therefore, we add this patch
-to support it.
+On 21-04-22, 08:13, Christophe JAILLET wrote:
+> If a call to alloc_chrdev_region() fails, the already allocated resources
+> are leaking.
+> 
+> Add the needed error handling path to fix the leak.
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-mt8192.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Applied, thanks
 
-diff --git a/drivers/clk/mediatek/clk-mt8192.c b/drivers/clk/mediatek/clk-mt8192.c
-index ab27cd66b866..92dc6a4affe3 100644
---- a/drivers/clk/mediatek/clk-mt8192.c
-+++ b/drivers/clk/mediatek/clk-mt8192.c
-@@ -1114,6 +1114,13 @@ static const struct mtk_gate top_clks[] = {
- 	GATE_TOP(CLK_TOP_SSUSB_PHY_REF, "ssusb_phy_ref", "clk26m", 25),
- };
- 
-+static const struct mtk_clk_rst_desc clk_rst_desc = {
-+	.version = MTK_RST_SET_CLR,
-+	.rst_set_nr = 4,
-+	.reg_ofs = 0x0,
-+	.reset_n_cells = 2,
-+};
-+
- #define MT8192_PLL_FMAX		(3800UL * MHZ)
- #define MT8192_PLL_FMIN		(1500UL * MHZ)
- #define MT8192_INTEGER_BITS	8
-@@ -1239,6 +1246,10 @@ static int clk_mt8192_infra_probe(struct platform_device *pdev)
- 	if (r)
- 		goto free_clk_data;
- 
-+	r = mtk_register_reset_controller_with_dev(&pdev->dev, &clk_rst_desc);
-+	if (r)
-+		goto free_clk_data;
-+
- 	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
- 	if (r)
- 		goto free_clk_data;
 -- 
-2.18.0
-
+~Vinod
