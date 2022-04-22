@@ -2,89 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC53FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbiDVSzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
+        id S230357AbiDVS7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiDVSzM (ORCPT
+        with ESMTP id S231436AbiDVS6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:55:12 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994A9202B50
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:47:51 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nhyGQ-0006dR-Ga; Fri, 22 Apr 2022 20:44:18 +0200
-Message-ID: <56ac17fd-5f13-840c-09d8-03363af94520@leemhuis.info>
-Date:   Fri, 22 Apr 2022 20:44:17 +0200
+        Fri, 22 Apr 2022 14:58:31 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4016917C52A;
+        Fri, 22 Apr 2022 11:54:53 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id j9so6460726qkg.1;
+        Fri, 22 Apr 2022 11:54:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tQ40q30UltGPLcxI7Io5PMB3YYsh2rTffdRN3EHyu6c=;
+        b=RdHamgujXU7B88WXCri1aYVijHI83k3VkPNNzKtG/MLExSd3tIZhvESxewq0tXjykm
+         ZbLf3MYd+E+jl55CDkujFwCtgTIQGeesQfrYn/H+8XX3KHlq6UOqVWd5HD568lvBJS6t
+         92kcI88/9o48d6YdJHOnjZ/6OtWJqI/i2kqcLu9frpMNsVT+urshO4xfvMbWCcvhOGT+
+         ZGB+ld9FNj2oviMGVglawZScNhMQGkyXBEL2Bv9lIuhrEf31/qdwSWjNbmpQW1L9ZCLF
+         WO18jlmA5OWphmosTS1G/HzZqOBTYQSv3GAcU9nwVqg+Zg0DGaHDdCxGIvrcaxb3d8Ex
+         vYfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tQ40q30UltGPLcxI7Io5PMB3YYsh2rTffdRN3EHyu6c=;
+        b=xidNL2lWsM7sbfR2kAj2SrMSlyzuE/cikUvc+IflaZQWY2ZxCBxgE0QvLp9F+i+UIl
+         cJUZ2Vzafe/LCC+9byJP06YpF3EnZo3WHyDUfCZLPYLcUiq1DnBFkiazGFFpkJXDBL+S
+         tjgKYVWbmrzRRK0uzZvTOJspadUkdAYRjEJN3RD72MA3abaAFE0ypyEtkoxLxKkYrJul
+         Edfx1Nf2uJdc4z+WbczlrHnPPZ9BZZxlhW2DbTEbPHoDtO8v7mwQMxNndRrQoRgzjgGf
+         2oqXHizP7Aq6ysU9uVawhbxxGUtmHminW3WyUdXHDku9r4130NDYyKsD3IHiWXMFRRV9
+         ZGbw==
+X-Gm-Message-State: AOAM530//+W59TfyP7GpyKQN7pW71dGsBQTo/4W3b80V60S39lD5aF99
+        WpTQXteEM3tJCZoglgu/2M7M2/5SCnxYIO6hVpo=
+X-Google-Smtp-Source: ABdhPJyrbF6gvV7/wmLrqZkZPzMLNWIkWAv1BEqTuRLLFd+eovymNNvGQWzPxUcW2ESAhhinTTllnLRYQlRa6HY7eho=
+X-Received: by 2002:a37:89c7:0:b0:69a:121b:9256 with SMTP id
+ l190-20020a3789c7000000b0069a121b9256mr3714602qkd.218.1650653396872; Fri, 22
+ Apr 2022 11:49:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: PANIC: "Oops: 0000 [#1] PREEMPT SMP PTI" starting from 5.17 on
- dual socket Intel Xeon Gold servers
-Content-Language: en-US
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Jirka Hladky <jhladky@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+References: <20220422161156.1075227-1-icenowy@outlook.com> <BYAPR20MB24720C488FD2BB42038D9825BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+In-Reply-To: <BYAPR20MB24720C488FD2BB42038D9825BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+From:   Vasily Khoruzhick <anarsoul@gmail.com>
+Date:   Fri, 22 Apr 2022 11:49:30 -0700
+Message-ID: <CA+E=qVfhEhe325M+s784BYw4Ctvv=eGWxGAJBMwPptHXs_vKFA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] thermal: sun8i: add R329 THS
+To:     icenowy@outlook.com
+Cc:     Yangtao Li <tiny.windzz@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-linux <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev,
         linux-kernel <linux-kernel@vger.kernel.org>,
-        regressions@lists.linux.dev,
-        Justin Forbes <jforbes@fedoraproject.org>,
-        Tejun Heo <tj@kernel.org>
-References: <CAE4VaGBZk2NL6Tn2fGxmGMR-n8KFNqgPOktY_sQ1vjViLDNhhg@mail.gmail.com>
- <CAE4VaGB4=aCd8iDb4EduR+-5QTSgVWd5sxrnBA4e3g9dPrnuBg@mail.gmail.com>
- <YkTxox8ZQIDtojfU@google.com>
- <CAFxkdAq6r2WnwML-pPfdZiajaYZCEcUU3GrXW=+wsA7CxGnJdQ@mail.gmail.com>
- <CAE4VaGBchOMWeHQ8GKiGFv_aCaNGLEvSdLWXZTpE+qC=0bgM3A@mail.gmail.com>
- <YkY6W1NS+1RTw0VB@google.com>
- <CAE4VaGDAMZqjwumyvbityzEiK30=5a5vuDMjaS+UHM39R-oPRw@mail.gmail.com>
- <YkstxbC3OfzYnSRw@google.com>
- <CAE4VaGAQZcQzN8D+iwcBnP5vY=Ctmbh+oTikvONHir6JjTgpsw@mail.gmail.com>
- <YmGKrd1BR9HSEy6q@slm.duckdns.org> <YmLznjFdpblHzZiM@google.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <YmLznjFdpblHzZiM@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650653271;d77986d0;
-X-HE-SMSGID: 1nhyGQ-0006dR-Ga
+        Icenowy Zheng <icenowy@aosc.io>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22.04.22 20:27, Minchan Kim wrote:
-> On Thu, Apr 21, 2022 at 06:47:41AM -1000, Tejun Heo wrote:
-> [...]
+On Fri, Apr 22, 2022 at 9:12 AM <icenowy@outlook.com> wrote:
+>
+> From: Icenowy Zheng <icenowy@aosc.io>
+>
+> The thermal sensor controller on R329 is similar to the one on H6, but
+> with only one sensor. Calibration method is still unknown because no
+> calibration is implemented in BSP kernel, neither is it documented in
+> the user manual.
+>
+> Add its support to sun8i-thermal driver. Calibrating it is now
+> prevented.
+>
+> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> ---
+>  drivers/thermal/sun8i_thermal.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/thermal/sun8i_thermal.c b/drivers/thermal/sun8i_thermal.c
+> index d9cd23cbb671..3a2f381005b4 100644
+> --- a/drivers/thermal/sun8i_thermal.c
+> +++ b/drivers/thermal/sun8i_thermal.c
+> @@ -312,7 +312,8 @@ static int sun8i_ths_calibrate(struct ths_device *tmdev)
+>                 goto out;
+>         }
+>
+> -       tmdev->chip->calibrate(tmdev, caldata, callen);
+> +       if (tmdev->chip->calibrate)
+> +               tmdev->chip->calibrate(tmdev, caldata, callen);
 
-Many thx for looking into this.
+I think it's a bit late to check it here since you already read nvmem
+cell if you got here. I'd suggest moving the check to
+sun8i_ths_resource_init(), i.e. call sun8i_ths_calibrate()
+conditionally depending on whether calibrate callback is present.
 
-> Jirka, Could you test the patch? Once it's confirmed, I need to resend
-> it with Ccing stable.
-
-When you do so, could you please include a proper "Link:" tag pointing
-to all reports of the regression, as explained in the Linux kernels
-documentation (see 'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'). E.g. in this case:
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215696
-Link:
-https://lore.kernel.org/lkml/CAE4VaGDZr_4wzRn2___eDYRtmdPaGGJdzu_LCSkJYuY9BEO3cw@mail.gmail.com/
-
-This concept is not new (Linus and quite a few other developers use them
-like this for a long time), I just recently improved those documents to
-clarify things, as my regression tracking efforts rely on this (and
-there might be other people and software out there that does) -- that's
-why it's making my work a lot harder if such tags are missing. :-/
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
-> [...]
+>         kfree(caldata);
+>  out:
+> @@ -628,6 +629,17 @@ static const struct ths_thermal_chip sun50i_h6_ths = {
+>         .calc_temp = sun8i_ths_calc_temp,
+>  };
+>
+> +static const struct ths_thermal_chip sun50i_r329_ths = {
+> +       .sensor_num = 1,
+> +       .has_bus_clk_reset = true,
+> +       .offset = 188744,
+> +       .scale = 672,
+> +       .temp_data_base = SUN50I_H6_THS_TEMP_DATA,
+> +       .init = sun50i_h6_thermal_init,
+> +       .irq_ack = sun50i_h6_irq_ack,
+> +       .calc_temp = sun8i_ths_calc_temp,
+> +};
+> +
+>  static const struct of_device_id of_ths_match[] = {
+>         { .compatible = "allwinner,sun8i-a83t-ths", .data = &sun8i_a83t_ths },
+>         { .compatible = "allwinner,sun8i-h3-ths", .data = &sun8i_h3_ths },
+> @@ -636,6 +648,7 @@ static const struct of_device_id of_ths_match[] = {
+>         { .compatible = "allwinner,sun50i-a100-ths", .data = &sun50i_a100_ths },
+>         { .compatible = "allwinner,sun50i-h5-ths", .data = &sun50i_h5_ths },
+>         { .compatible = "allwinner,sun50i-h6-ths", .data = &sun50i_h6_ths },
+> +       { .compatible = "allwinner,sun50i-r329-ths", .data = &sun50i_r329_ths },
+>         { /* sentinel */ },
+>  };
+>  MODULE_DEVICE_TABLE(of, of_ths_match);
+> --
+> 2.35.1
+>
