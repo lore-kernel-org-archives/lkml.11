@@ -2,81 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FE5C43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C242BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449798AbiDVQqs (ORCPT
+        id S1449814AbiDVQqz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        Fri, 22 Apr 2022 12:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449791AbiDVQq2 (ORCPT
+        with ESMTP id S1449797AbiDVQqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:46:28 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A775B5F266
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:43:32 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id k23so17511844ejd.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:43:32 -0700 (PDT)
+        Fri, 22 Apr 2022 12:46:45 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B435F8C0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:43:51 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id n18so12054324plg.5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=RiEO4zZamQGG5SMMgDVcQPYTfMS+OHWwLyxPSkJbTUg=;
-        b=eRzeKgLnPmzo//vWRiR9PbqQdWIzIrsMA9yo5FP5RwZV3ZvSqz9ySo08Kk6KQrb+Dz
-         LxTGHQy8ajCw7toJJ8APhixFbekcV88bU0PzWlfhYb6WcyES2E/5dCWLuvEBYaEDuVhn
-         Z6j9P2LAEV1khpHdkiYtvon52q9RK82F1dOzA=
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lrKucvMjSEAYeo7mkhMZ89mS7UtYq+5fiKLotEll0Iw=;
+        b=KJqOFGiRM0NoHulPxQlBIdD5xIZKHn7rLOHYGLO9xNeOZISRGETPx4SM4vR6ydbqQA
+         NI4y5TDJw/7+d23ChXN4YvavOzE+5oJzv4i9PzLVqP7sNX2bmqclW5x6lh8rqlu2KJL5
+         8FNEYQrqe5lOTmuphrkrX6qyhv2KzOWkRgTLY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=RiEO4zZamQGG5SMMgDVcQPYTfMS+OHWwLyxPSkJbTUg=;
-        b=gwCBbBQUDvDXqmPLz7KKMh7ieWZ7BW4gLFpSW/l52eFsiTC3LjYXkES71EsUSfiywJ
-         qk9INPI3MBi8CxW1w1eaKUGQcNI/hxdZ2s1UD0o4632wy6ZO60CWyV+Wl3wPXnwq3c/6
-         Ul7XtuDrvHz9MR2T3H5nY/RhNJyEzCyU/x1D4QrSOatE01o7Vb7hQVJHz52D4b66J2cd
-         T5O0uSu+Uq4gMxG+P/RsJQHIRmF5qwKsseR7PWsZZdRUD84ojn4446eU4tDOWTV9vein
-         nTfqtd6SActlhBn+GpRgywnx3HtIzY2XBxry16K5Rv7TMTJc9B5ZkaLCabh3rf3F0qtG
-         OPPw==
-X-Gm-Message-State: AOAM533Lr2+BjPYcaMiA1WayF91DmTLeeE79lkpcTZl/dw+NPEPFCOsj
-        sNcM3oJYIEfIdyO+qO7GPBNvUg==
-X-Google-Smtp-Source: ABdhPJxqTZotCRjXIS4vrC1dXDIZmDp8YaKiZEC6pmSPJlCwJUPWdQpSpFlx+ZHm9ZqQ4gM5cyjCog==
-X-Received: by 2002:a17:907:6e90:b0:6ef:ef41:ac10 with SMTP id sh16-20020a1709076e9000b006efef41ac10mr5184554ejc.187.1650645811291;
-        Fri, 22 Apr 2022 09:43:31 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-56-163.cust.vodafonedsl.it. [188.217.56.163])
-        by smtp.gmail.com with ESMTPSA id m3-20020a17090679c300b006cf9ce53354sm900935ejo.190.2022.04.22.09.43.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 09:43:31 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 18:43:28 +0200
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Subject: dt-bindings: usb: usb251xb: add documentation for boost-up property
-Message-ID: <20220422164328.GA2263442@tom-ThinkPad-T14s-Gen-2i>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lrKucvMjSEAYeo7mkhMZ89mS7UtYq+5fiKLotEll0Iw=;
+        b=Go6yCt3aEfH/U4JEkiLpZkMRWzUr0G9IoTsdI7iv31Kzv8H4mpGQ+VxPluIDOkQMay
+         XjGLysHqI7smQkX79iA74bWqwqBu/cvCtfkWniUb3UswJbCz2diJtL9JicwpqdrQqAf+
+         czDuwk9X+MsIHAtcMwt1onYf/ydRcVgMIBmDIz4ObXmRko7IzziX+vTfw0lYZjtP3j2C
+         dKF5U2AG5vuSOLV65Lz+xjxXxiwf6LLwYijHlT7xW+h8oLJVTyaEABRFH2KyvM23CaUG
+         sMFlQESd1RaTUW0M1GwP9VAT2HBTy+aMmrh2ZkZ8l4Eyh518RRlDET011P2Fyp8EHSGQ
+         3yyg==
+X-Gm-Message-State: AOAM531vlkSfpb0QFXg9al71qLtXusjRhxYt8xLIug7y7MFcEpbkVfd5
+        nBWpFI1CSZ+fGGGK3Nog/wDK1A==
+X-Google-Smtp-Source: ABdhPJzooajiMzsvQqp7dhjoexwLfBnInq7z+C+wddLwUGAnQiW+4w6W3wlFS/U/eCy66izJHmZqHQ==
+X-Received: by 2002:a17:903:2342:b0:15b:f6ff:79f5 with SMTP id c2-20020a170903234200b0015bf6ff79f5mr4055976plh.128.1650645830359;
+        Fri, 22 Apr 2022 09:43:50 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:404c:8721:29:87a4])
+        by smtp.gmail.com with UTF8SMTPSA id j10-20020a17090a94ca00b001d792761e2esm3819628pjw.47.2022.04.22.09.43.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 09:43:49 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 09:43:47 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v10 02/12] arm64: dts: qcom: sc7280: Enable digital
+ codecs and soundwire for CRD 1.0/2.0 and IDP boards
+Message-ID: <YmLbQ6e12+t3ZRWQ@google.com>
+References: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
+ <1650636521-18442-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <1650636521-18442-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
-Sorry for the really really late reply but I forgot it.
-Is about https://lore.kernel.org/all/20220306184720.5350-1-tomm.merciai@gmail.com/T/
-I check that others property don't have the vendor prefix on the property name.
-Maybe I'm missing somenthing?
+On Fri, Apr 22, 2022 at 07:38:31PM +0530, Srinivasa Rao Mandadapu wrote:
+> Enable rx, tx and va macro codecs and soundwire nodes on revision 3,
+> 4 (aka CRD 1.0 and 2.0) and IDP boards.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 
-Regards,
-Tommaso
-
--- 
-Tommaso Merciai
-Embedded Linux Engineer
-tommaso.merciai@amarulasolutions.com
-__________________________________
-
-Amarula Solutions SRL
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-T. +39 042 243 5310
-info@amarulasolutions.com
-www.amarulasolutions.com
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
