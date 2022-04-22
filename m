@@ -2,135 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 582FFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C458C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448404AbiDVOMZ (ORCPT
+        id S1448465AbiDVONG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        Fri, 22 Apr 2022 10:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448392AbiDVOMV (ORCPT
+        with ESMTP id S1448391AbiDVOMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:12:21 -0400
-Received: from relay-us1.mymailcheap.com (relay-us1.mymailcheap.com [51.81.35.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEF35A58B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:09:25 -0700 (PDT)
-Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.248.207])
-        by relay-us1.mymailcheap.com (Postfix) with ESMTPS id 5C2C02112F;
-        Fri, 22 Apr 2022 14:09:24 +0000 (UTC)
-Received: from relay3.mymailcheap.com (relay3.mymailcheap.com [217.182.66.161])
-        by relay5.mymailcheap.com (Postfix) with ESMTPS id 6873F267CE;
-        Fri, 22 Apr 2022 14:09:21 +0000 (UTC)
-Received: from filter2.mymailcheap.com (filter2.mymailcheap.com [91.134.140.82])
-        by relay3.mymailcheap.com (Postfix) with ESMTPS id 21E793F15F;
-        Fri, 22 Apr 2022 16:09:19 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by filter2.mymailcheap.com (Postfix) with ESMTP id 0D7382A515;
-        Fri, 22 Apr 2022 14:09:19 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at filter2.mymailcheap.com
-Received: from filter2.mymailcheap.com ([127.0.0.1])
-        by localhost (filter2.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Yr8TcHWihmKf; Fri, 22 Apr 2022 14:09:17 +0000 (UTC)
-Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by filter2.mymailcheap.com (Postfix) with ESMTPS;
-        Fri, 22 Apr 2022 14:09:17 +0000 (UTC)
-Received: from petra.. (unknown [113.67.11.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail20.mymailcheap.com (Postfix) with ESMTPSA id B494640645;
-        Fri, 22 Apr 2022 14:09:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
-        t=1650636557; bh=Y29WsT3fkq/qFvF6IalSVLgRdoaWb5L858TyF5FxPxo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Mz0eweHGXXE1Lf5SR7SWXolgpjAD0pBar7hynnu9fIafVNqAq5Iy3fsOYYBqY6+Sz
-         mvgYQSeqmtL1HOTHfbl52bBmanshmTLxRKAtEn1DDHln20GwSc894UHt0GyZtNaYwd
-         OW8wHKTAdq00uqWJ6gvLu2YwnN06Dgg78ca/tZgQ=
-From:   Icenowy Zheng <icenowy@aosc.io>
-To:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Icenowy Zheng <icenowy@aosc.io>
-Subject: [PATCH 00/12] Initial support for Allwinner R329
-Date:   Fri, 22 Apr 2022 22:08:50 +0800
-Message-Id: <20220422140902.1058101-1-icenowy@aosc.io>
-X-Mailer: git-send-email 2.35.1
+        Fri, 22 Apr 2022 10:12:22 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616615A591;
+        Fri, 22 Apr 2022 07:09:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650636568; x=1682172568;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=it8rMMqv1VvjMlYzjFsSf2pHnG/QtY071eNBlUF4wzs=;
+  b=zl6ZQMO4ielK9q6nDKdxAPQs/J+zHInuyAZtSSQ3zk5GoaBW14JHWKwX
+   dFDVvoI5AuvRALeyA9QDyTYGsw7fp/cDPbPoqlNiZmmWHzC/rPmvNwHDI
+   x7u8qhSF+gD12bRo8F0+KTovSbG5AfsTY7Ygvbjw0ycuAhF5TTJhUuPTg
+   s=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Apr 2022 07:09:28 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:09:27 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:27 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:23 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v10 06/12] arm64: dts: qcom: sc7280: Add max98360a codec for CRD 1.0/2.0 and IDP boards
+Date:   Fri, 22 Apr 2022 19:38:35 +0530
+Message-ID: <1650636521-18442-7-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allwinner R329 is a SoC targeting smart audio devices, with integrated
-128M or 256M DRAM.
+Add max98360a codec node for audio use case on revision 3, 4
+(aka CRD 1.0 and 2.0) and IDP boards.
+Add amp_en node for max98360a codec pin control.
 
-This patchset adds initial support for it, including pinctrl, rtc
-(for rtc ccu), clocks and mmc. These makes a system booting.
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+---
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-The demo board for this support is Sipeed MaixSense (based on Sipeed
-MIIA SoM).
-
-Icenowy Zheng (12):
-  dt-bindings: pinctrl: document Allwinner R329 PIO and R-PIO
-  pinctrl: sunxi: add support for R329 CPUX pin controller
-  pinctrl: sunxi: add support for R329 R-PIO pin controller
-  rtc: sun6i: add support for R329 RTC
-  dt-bindings: clock: sunxi-ng: add bindings for R329 CCUs
-  clk: sunxi=ng: add support for R329 CCUs
-  dt-bindings: mmc: sunxi-mmc: add R329 MMC compatible string
-  mmc: sunxi: add support for R329 MMC controllers
-  dt-bindings: arm: sunxi: add compatible strings for Sipeed MaixSense
-  arm64: allwinner: dts: add DTSI file for R329 SoC
-  arm64: allwinner: dts: r329: add DTSI file for Sipeed Maix IIA
-  arm64: allwinner: dts: r329: add support for Sipeed MaixSense
-
- .../devicetree/bindings/arm/sunxi.yaml        |   6 +
- .../clock/allwinner,sun4i-a10-ccu.yaml        |  62 +-
- .../bindings/mmc/allwinner,sun4i-a10-mmc.yaml |   1 +
- .../pinctrl/allwinner,sun4i-a10-pinctrl.yaml  |   4 +
- arch/arm64/boot/dts/allwinner/Makefile        |   1 +
- .../dts/allwinner/sun50i-r329-maix-iia.dtsi   |  34 +
- .../dts/allwinner/sun50i-r329-maixsense.dts   |  37 ++
- .../arm64/boot/dts/allwinner/sun50i-r329.dtsi | 275 ++++++++
- drivers/clk/sunxi-ng/Kconfig                  |  10 +
- drivers/clk/sunxi-ng/Makefile                 |   4 +
- drivers/clk/sunxi-ng/ccu-sun50i-r329-r.c      | 401 ++++++++++++
- drivers/clk/sunxi-ng/ccu-sun50i-r329-r.h      |  25 +
- drivers/clk/sunxi-ng/ccu-sun50i-r329.c        | 587 ++++++++++++++++++
- drivers/clk/sunxi-ng/ccu-sun50i-r329.h        |  32 +
- drivers/mmc/host/sunxi-mmc.c                  |  10 +
- drivers/pinctrl/sunxi/Kconfig                 |  10 +
- drivers/pinctrl/sunxi/Makefile                |   2 +
- drivers/pinctrl/sunxi/pinctrl-sun50i-r329-r.c | 292 +++++++++
- drivers/pinctrl/sunxi/pinctrl-sun50i-r329.c   | 410 ++++++++++++
- drivers/rtc/rtc-sun6i.c                       |   2 +
- include/dt-bindings/clock/sun50i-r329-ccu.h   |  73 +++
- include/dt-bindings/clock/sun50i-r329-r-ccu.h |  45 ++
- include/dt-bindings/reset/sun50i-r329-ccu.h   |  45 ++
- include/dt-bindings/reset/sun50i-r329-r-ccu.h |  24 +
- 24 files changed, 2384 insertions(+), 8 deletions(-)
- create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-r329-maix-iia.dtsi
- create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-r329-maixsense.dts
- create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-r329.dtsi
- create mode 100644 drivers/clk/sunxi-ng/ccu-sun50i-r329-r.c
- create mode 100644 drivers/clk/sunxi-ng/ccu-sun50i-r329-r.h
- create mode 100644 drivers/clk/sunxi-ng/ccu-sun50i-r329.c
- create mode 100644 drivers/clk/sunxi-ng/ccu-sun50i-r329.h
- create mode 100644 drivers/pinctrl/sunxi/pinctrl-sun50i-r329-r.c
- create mode 100644 drivers/pinctrl/sunxi/pinctrl-sun50i-r329.c
- create mode 100644 include/dt-bindings/clock/sun50i-r329-ccu.h
- create mode 100644 include/dt-bindings/clock/sun50i-r329-r-ccu.h
- create mode 100644 include/dt-bindings/reset/sun50i-r329-ccu.h
- create mode 100644 include/dt-bindings/reset/sun50i-r329-r-ccu.h
-
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index 72e6a6c..8503bd1 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -20,6 +20,14 @@
+ 		serial1 = &uart7;
+ 	};
+ 
++	max98360a: audio-codec-0 {
++		compatible = "maxim,max98360a";
++		pinctrl-names = "default";
++		pinctrl-0 = <&amp_en>;
++		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
++		#sound-dai-cells = <0>;
++	};
++
+ 	wcd9385: audio-codec-1 {
+ 		compatible = "qcom,wcd9385-codec";
+ 		pinctrl-names = "default", "sleep";
+@@ -624,6 +632,12 @@
+ };
+ 
+ &tlmm {
++	amp_en: amp-en {
++		pins = "gpio63";
++		bias-pull-down;
++		drive-strength = <2>;
++	};
++
+ 	bt_en: bt-en {
+ 		pins = "gpio85";
+ 		function = "gpio";
 -- 
-2.35.1
+2.7.4
 
