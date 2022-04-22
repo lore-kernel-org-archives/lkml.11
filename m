@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64682C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF46DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445263AbiDVQ2n (ORCPT
+        id S1445278AbiDVQ2q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56350 "EHLO
+        Fri, 22 Apr 2022 12:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387885AbiDVQ1l (ORCPT
+        with ESMTP id S1389635AbiDVQ1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:27:41 -0400
+        Fri, 22 Apr 2022 12:27:47 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC7A5E15B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:24:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2E4C5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:24:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650644686; x=1682180686;
+  t=1650644692; x=1682180692;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Vt1k0LQ7FZrACCG80zbmslw1bj5E6h5aWaZBqnwMCLU=;
-  b=KTqeMHwLwQyY0RmIsyrXB+I6EazsUC1oy5pj637Wz6bOygG0dISN20wQ
-   7k8i0uxPVN03ut5RXdqjZs2yI824iMYnmieWUjexEr/8TXVDAxiAd0A9g
-   DoE0BV7fL3aHo+CyHWvc3qeQYjmHyjIuzWGgdkW3TxsSqjzpJJNLn5D+F
-   RQmXv99ANyRUzG5aWScWkCLntKp5eq16qg8uQ46V2bLAo/xnp4aZhmVnh
-   e/9MHJrH58L/hait/JDBzRODrdzU+le6BFJdn3FIQ0TDWQIqsR1CE5l4T
-   L7sGus2H8S6/lJkbntghbGiV750rifggjb/hJVDKfPnIN761FCpGb56pn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264885925"
+  bh=L3ZSVX63/s5yaZQxGEWHbqwz2MM9wxr6WnJ4e9be/eY=;
+  b=LMKjjSOxZn40p8IC+WmW8t7/1UruEK7K1J7cONdyFMmFtSl1ey3oSrML
+   0bBTzH4QLn45v+IGLA7nc/LwULt3IQ9/CUVIr7aG7ifmPuzYorUZS43WT
+   Wx3Bj/K3R7EJpgOcfsATVoe/TrknFmqe2QhVdnF7SVFYgtu7lUtm6gSVe
+   vrE1nxilnISuQBF2tJJF2OqqApZnN4p2tvP6lBMF6njhyaQtKdhQt4RXv
+   SlWGYSmyjY0++upASuPHSMRTv7W1g16pYUVO64HqImdzWrSvqgQKBMgrl
+   Rwt3beU2RHXTPvmxhvysF8NHZHENw/IjkWz6TayH3J2Mms3i6mZUJ6Yx1
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264885968"
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264885925"
+   d="scan'208";a="264885968"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:24:34 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:24:39 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="577978784"
+   d="scan'208";a="577978880"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga008.jf.intel.com with ESMTP; 22 Apr 2022 09:24:31 -0700
+  by orsmga008.jf.intel.com with ESMTP; 22 Apr 2022 09:24:37 -0700
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
         Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH RFC 10/21] perf auxctrace: Add mmap_needed to auxtrace_mmap_params
-Date:   Fri, 22 Apr 2022 19:23:51 +0300
-Message-Id: <20220422162402.147958-11-adrian.hunter@intel.com>
+Subject: [PATCH RFC 12/21] perf evlist: Factor out evlist__dummy_event()
+Date:   Fri, 22 Apr 2022 19:23:53 +0300
+Message-Id: <20220422162402.147958-13-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220422162402.147958-1-adrian.hunter@intel.com>
 References: <20220422162402.147958-1-adrian.hunter@intel.com>
@@ -58,119 +58,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mmap_needed to auxtrace_mmap_params.
-
-Currently an auxtrace mmap is always attempted even if the event is not an
-auxtrace event. That works because, when AUX area tracing, there is always
-an auxtrace event first for every mmap. Prepare for that not being the
-case, which it won't be when sideband tracking events are allowed on
-all CPUs even when auxtrace is limited to selected CPUs.
+Factor out evlist__dummy_event() so it can be reused.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/util/auxtrace.c | 10 ++++++++--
- tools/perf/util/auxtrace.h |  7 +++++--
- tools/perf/util/evlist.c   |  5 +++--
- tools/perf/util/mmap.c     |  1 +
- 4 files changed, 17 insertions(+), 6 deletions(-)
+ tools/perf/util/evlist.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
-index 2d015b0be549..9f01ce405971 100644
---- a/tools/perf/util/auxtrace.c
-+++ b/tools/perf/util/auxtrace.c
-@@ -125,7 +125,7 @@ int auxtrace_mmap__mmap(struct auxtrace_mmap *mm,
- 	mm->tid = mp->tid;
- 	mm->cpu = mp->cpu.cpu;
- 
--	if (!mp->len) {
-+	if (!mp->len || !mp->mmap_needed) {
- 		mm->base = NULL;
- 		return 0;
- 	}
-@@ -168,9 +168,15 @@ void auxtrace_mmap_params__init(struct auxtrace_mmap_params *mp,
- }
- 
- void auxtrace_mmap_params__set_idx(struct auxtrace_mmap_params *mp,
--				   struct evlist *evlist, int idx,
-+				   struct evlist *evlist,
-+				   struct evsel *evsel, int idx,
- 				   bool per_cpu)
- {
-+	mp->mmap_needed = evsel->needs_auxtrace_mmap;
-+
-+	if (!mp->mmap_needed)
-+		return;
-+
- 	mp->idx = idx;
- 
- 	if (per_cpu) {
-diff --git a/tools/perf/util/auxtrace.h b/tools/perf/util/auxtrace.h
-index dc38b6f57232..4e715e2d9291 100644
---- a/tools/perf/util/auxtrace.h
-+++ b/tools/perf/util/auxtrace.h
-@@ -353,6 +353,7 @@ struct auxtrace_mmap_params {
- 	int		prot;
- 	int		idx;
- 	pid_t		tid;
-+	bool		mmap_needed;
- 	struct perf_cpu	cpu;
- };
- 
-@@ -490,7 +491,8 @@ void auxtrace_mmap_params__init(struct auxtrace_mmap_params *mp,
- 				unsigned int auxtrace_pages,
- 				bool auxtrace_overwrite);
- void auxtrace_mmap_params__set_idx(struct auxtrace_mmap_params *mp,
--				   struct evlist *evlist, int idx,
-+				   struct evlist *evlist,
-+				   struct evsel *evsel, int idx,
- 				   bool per_cpu);
- 
- typedef int (*process_auxtrace_t)(struct perf_tool *tool,
-@@ -863,7 +865,8 @@ void auxtrace_mmap_params__init(struct auxtrace_mmap_params *mp,
- 				unsigned int auxtrace_pages,
- 				bool auxtrace_overwrite);
- void auxtrace_mmap_params__set_idx(struct auxtrace_mmap_params *mp,
--				   struct evlist *evlist, int idx,
-+				   struct evlist *evlist,
-+				   struct evsel *evsel, int idx,
- 				   bool per_cpu);
- 
- #define ITRACE_HELP ""
 diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 7ae56b062f44..996bdc203616 100644
+index 25eae096bdac..78c47cbafbc2 100644
 --- a/tools/perf/util/evlist.c
 +++ b/tools/perf/util/evlist.c
-@@ -747,15 +747,16 @@ static struct mmap *evlist__alloc_mmap(struct evlist *evlist,
- 
- static void
- perf_evlist__mmap_cb_idx(struct perf_evlist *_evlist,
--			 struct perf_evsel *_evsel __maybe_unused,
-+			 struct perf_evsel *_evsel,
- 			 struct perf_mmap_param *_mp,
- 			 int idx)
- {
- 	struct evlist *evlist = container_of(_evlist, struct evlist, core);
- 	struct mmap_params *mp = container_of(_mp, struct mmap_params, core);
- 	bool per_cpu = !perf_cpu_map__empty(_evlist->user_requested_cpus);
-+	struct evsel *evsel = container_of(_evsel, struct evsel, core);
- 
--	auxtrace_mmap_params__set_idx(&mp->auxtrace_mp, evlist, idx, per_cpu);
-+	auxtrace_mmap_params__set_idx(&mp->auxtrace_mp, evlist, evsel, idx, per_cpu);
+@@ -242,14 +242,20 @@ int __evlist__add_default(struct evlist *evlist, bool precise)
+ 	return 0;
  }
  
- static struct perf_mmap*
-diff --git a/tools/perf/util/mmap.c b/tools/perf/util/mmap.c
-index 50502b4a7ca4..de59c4da852b 100644
---- a/tools/perf/util/mmap.c
-+++ b/tools/perf/util/mmap.c
-@@ -62,6 +62,7 @@ void __weak auxtrace_mmap_params__init(struct auxtrace_mmap_params *mp __maybe_u
- 
- void __weak auxtrace_mmap_params__set_idx(struct auxtrace_mmap_params *mp __maybe_unused,
- 					  struct evlist *evlist __maybe_unused,
-+					  struct evsel *evsel __maybe_unused,
- 					  int idx __maybe_unused,
- 					  bool per_cpu __maybe_unused)
+-int evlist__add_dummy(struct evlist *evlist)
++static struct evsel *evlist__dummy_event(struct evlist *evlist)
  {
+ 	struct perf_event_attr attr = {
+ 		.type	= PERF_TYPE_SOFTWARE,
+ 		.config = PERF_COUNT_SW_DUMMY,
+ 		.size	= sizeof(attr), /* to capture ABI version */
+ 	};
+-	struct evsel *evsel = evsel__new_idx(&attr, evlist->core.nr_entries);
++
++	return evsel__new_idx(&attr, evlist->core.nr_entries);
++}
++
++int evlist__add_dummy(struct evlist *evlist)
++{
++	struct evsel *evsel = evlist__dummy_event(evlist);
+ 
+ 	if (evsel == NULL)
+ 		return -ENOMEM;
 -- 
 2.25.1
 
