@@ -2,84 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A889C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiDVX1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45932 "EHLO
+        id S230255AbiDVX23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiDVX0v (ORCPT
+        with ESMTP id S230233AbiDVX1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:26:51 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49F99D4C41;
-        Fri, 22 Apr 2022 16:05:37 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.218:52490.1277573903
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 6D9872800C3;
-        Sat, 23 Apr 2022 07:05:33 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 0147b354fd014b6db670a427d3c9b8e5 for wim@linux-watchdog.org;
-        Sat, 23 Apr 2022 07:05:35 CST
-X-Transaction-ID: 0147b354fd014b6db670a427d3c9b8e5
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     wim@linux-watchdog.org, linux@roeck-us.net, groeck7@gmail.com
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH 1/3] watchdog: wdat_wdg: Checking the module parameter timeout
-Date:   Sat, 23 Apr 2022 07:05:16 +0800
-Message-Id: <1650668718-13626-1-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Fri, 22 Apr 2022 19:27:30 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C6A606F6;
+        Fri, 22 Apr 2022 16:06:44 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 16:06:35 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650668803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ri4NEas9lbSjiAnr8PAym/AzE+VftrHE7yoNfH/LAm4=;
+        b=LdkihvAFvgmGJkuRJSFvZ0tR5C5W9JQk7UPT7Vi3g9kBw83Agk5s5sugSpdqB2Mot3XgXV
+        V38mWZJ/VkZDbrGHj5ydXhO5pexoi/psWeYyFix0qZR515bKTXVFuhtXB8Z/2IBmvmB4tS
+        YPD+7R9Yhaa2bMt3H2v5OKLQuxeAQuw=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     David Vernet <void@manifault.com>
+Cc:     akpm@linux-foundation.org, tj@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com
+Subject: Re: [PATCH 2/5] cgroup: Account for memory_recursiveprot in
+ test_memcg_low()
+Message-ID: <YmM0+/P0ro9pPzMf@carbon>
+References: <20220422155728.3055914-1-void@manifault.com>
+ <20220422155728.3055914-3-void@manifault.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422155728.3055914-3-void@manifault.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setting up min_time, and determine if the timeout value is invalid
-using the function watchdog_timeout_invalid.
+On Fri, Apr 22, 2022 at 08:57:26AM -0700, David Vernet wrote:
+> The test_memcg_low() testcase in test_memcontrol.c verifies the expected
+> behavior of groups using the memory.low knob. Part of the testcase verifies
+> that a group with memory.low that experiences reclaim due to memory
+> pressure elsewhere in the system, observes memory.events.low events as a
+> result of that reclaim.
+> 
+> In commit 8a931f801340 ("mm: memcontrol: recursive memory.low protection"),
+> the memory controller was updated to propagate memory.low and memory.min
+> protection from a parent group to its children via a configurable
+> memory_recursiveprot mount option. This unfortunately broke the memcg
+> tests, which asserts that a sibling that experienced reclaim but had a
+> memory.low value of 0, would not observe any memory.low events. This patch
+> updates test_memcg_low() to account for the new behavior introduced by
+> memory_recursiveprot.
+> 
+> So as to make the test resilient to multiple configurations, the patch also
+> adds a new proc_mount_contains() helper that checks for a string in
+> /proc/mounts, and is used to toggle behavior based on whether the default
+> memory_recursiveprot was present.
+> 
+> Signed-off-by: David Vernet <void@manifault.com>
+> ---
+>  tools/testing/selftests/cgroup/cgroup_util.c     | 12 ++++++++++++
+>  tools/testing/selftests/cgroup/cgroup_util.h     |  1 +
+>  tools/testing/selftests/cgroup/test_memcontrol.c | 16 +++++++++++++---
+>  3 files changed, 26 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/cgroup/cgroup_util.c b/tools/testing/selftests/cgroup/cgroup_util.c
+> index dbaa7aabbb4a..e5d8d727bdcf 100644
+> --- a/tools/testing/selftests/cgroup/cgroup_util.c
+> +++ b/tools/testing/selftests/cgroup/cgroup_util.c
+> @@ -535,6 +535,18 @@ int set_oom_adj_score(int pid, int score)
+>  	return 0;
+>  }
+>  
+> +int proc_mount_contains(const char *option)
+> +{
+> +	char buf[4 * PAGE_SIZE];
+> +	ssize_t read;
+> +
+> +	read = read_text("/proc/mounts", buf, sizeof(buf));
+> +	if (read < 0)
+> +		return read;
+> +
+> +	return strstr(buf, option) != NULL;
+> +}
+> +
+>  ssize_t proc_read_text(int pid, bool thread, const char *item, char *buf, size_t size)
+>  {
+>  	char path[PATH_MAX];
+> diff --git a/tools/testing/selftests/cgroup/cgroup_util.h b/tools/testing/selftests/cgroup/cgroup_util.h
+> index 628738532ac9..756f76052b44 100644
+> --- a/tools/testing/selftests/cgroup/cgroup_util.h
+> +++ b/tools/testing/selftests/cgroup/cgroup_util.h
+> @@ -48,6 +48,7 @@ extern int is_swap_enabled(void);
+>  extern int set_oom_adj_score(int pid, int score);
+>  extern int cg_wait_for_proc_count(const char *cgroup, int count);
+>  extern int cg_killall(const char *cgroup);
+> +int proc_mount_contains(const char *option);
+>  extern ssize_t proc_read_text(int pid, bool thread, const char *item, char *buf, size_t size);
+>  extern int proc_read_strstr(int pid, bool thread, const char *item, const char *needle);
+>  extern pid_t clone_into_cgroup(int cgroup_fd);
+> diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
+> index aa50eaa8b157..ea2fd27e52df 100644
+> --- a/tools/testing/selftests/cgroup/test_memcontrol.c
+> +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
+> @@ -21,6 +21,8 @@
+>  #include "../kselftest.h"
+>  #include "cgroup_util.h"
+>  
+> +static bool has_recursiveprot;
+> +
+>  /*
+>   * This test creates two nested cgroups with and without enabling
+>   * the memory controller.
+> @@ -521,15 +523,18 @@ static int test_memcg_low(const char *root)
+>  	}
+>  
+>  	for (i = 0; i < ARRAY_SIZE(children); i++) {
+> +		int no_low_events_index = has_recursiveprot ? 2 : 1;
+> +
+>  		oom = cg_read_key_long(children[i], "memory.events", "oom ");
+>  		low = cg_read_key_long(children[i], "memory.events", "low ");
+>  
+>  		if (oom)
+>  			goto cleanup;
+> -		if (i < 2 && low <= 0)
+> +		if (i <= no_low_events_index && low <= 0)
+>  			goto cleanup;
+> -		if (i >= 2 && low)
+> +		if (i > no_low_events_index && low)
+>  			goto cleanup;
+> +
+>  	}
+>  
+>  	ret = KSFT_PASS;
+> @@ -1272,7 +1277,7 @@ struct memcg_test {
+>  int main(int argc, char **argv)
+>  {
+>  	char root[PATH_MAX];
+> -	int i, ret = EXIT_SUCCESS;
+> +	int i, proc_status, ret = EXIT_SUCCESS;
+>  
+>  	if (cg_find_unified_root(root, sizeof(root)))
+>  		ksft_exit_skip("cgroup v2 isn't mounted\n");
+> @@ -1288,6 +1293,11 @@ int main(int argc, char **argv)
+>  		if (cg_write(root, "cgroup.subtree_control", "+memory"))
+>  			ksft_exit_skip("Failed to set memory controller\n");
+>  
+> +	proc_status = proc_mount_contains("memory_recursiveprot");
+> +	if (proc_status < 0)
+> +		ksft_exit_skip("Failed to query cgroup mount option\n");
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
----
- drivers/watchdog/wdat_wdt.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Hopefully no one has a mountpoint with the memory_recursiveprot name :)
 
-diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-index 195c8c004b69..3040a0554055 100644
---- a/drivers/watchdog/wdat_wdt.c
-+++ b/drivers/watchdog/wdat_wdt.c
-@@ -14,6 +14,7 @@
- #include <linux/watchdog.h>
- 
- #define MAX_WDAT_ACTIONS ACPI_WDAT_ACTION_RESERVED
-+#define WDAT_TIMEOUT_MIN     1
- 
- /**
-  * struct wdat_instruction - Single ACPI WDAT instruction
-@@ -344,6 +345,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 	wdat->period = tbl->timer_period;
- 	wdat->wdd.min_hw_heartbeat_ms = wdat->period * tbl->min_count;
- 	wdat->wdd.max_hw_heartbeat_ms = wdat->period * tbl->max_count;
-+	wdat->wdd.min_timeout = WDAT_TIMEOUT_MIN;
- 	wdat->stopped_in_sleep = tbl->flags & ACPI_WDAT_STOPPED;
- 	wdat->wdd.info = &wdat_wdt_info;
- 	wdat->wdd.ops = &wdat_wdt_ops;
-@@ -450,8 +452,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 	 * watchdog properly after it has opened the device. In some cases
- 	 * the BIOS default is too short and causes immediate reboot.
- 	 */
--	if (timeout * 1000 < wdat->wdd.min_hw_heartbeat_ms ||
--	    timeout * 1000 > wdat->wdd.max_hw_heartbeat_ms) {
-+	if (watchdog_timeout_invalid(&wdat->wdd, timeout)) {
- 		dev_warn(dev, "Invalid timeout %d given, using %d\n",
- 			 timeout, WDAT_DEFAULT_TIMEOUT);
- 		timeout = WDAT_DEFAULT_TIMEOUT;
--- 
-2.23.0
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
+Thanks!
