@@ -2,90 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6B5C4167D
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiDVSBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
+        id S237958AbiDVSIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234598AbiDVR6p (ORCPT
+        with ESMTP id S234265AbiDVSF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:58:45 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E331DC0E64
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:55:50 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id q3so12470981plg.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:55:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zkV/KkmvPXk9nBt/BfjOyF4XLkm4qQ9lxtBnEnf4+f0=;
-        b=hIpdI6m7KYiT+YLhMOXs/GeJmagRHZC7P6KFsC2ZbbMvZ7uIXs9n5/gbdbDPAJO1By
-         8nljEr3QV2ZLyyVN6oYfzPIEBmfGC3nYpfLqRMeYB9ZFBmnLs0aS9vA/joaQ34uueM3z
-         kKbi7OvoEioSopjHQMfLmIyewYgPgKvBM0tAA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zkV/KkmvPXk9nBt/BfjOyF4XLkm4qQ9lxtBnEnf4+f0=;
-        b=z7KCT2kdgdXWlTo3g91vgZwKd0LANFHeFodfxhrXKT87XiLCxosOI5EHJShpR3jBWl
-         6jkMauEHVGPYd3KwjiqpqKhCiEi83zrUVZFFvvcxfWso6viHrrKrrItdO7RRYnCQB/4s
-         ezlakk35zwS8xiTVmPdxawmSvN4vteknLf7LDsP7pkZ9QcC0OZ9ZTc0Pt3aEz1xfKbu7
-         FfjIKO+L7ARUrv6zWorkfepvoi8hSnrCIp4L+Lb+CYod79QI6PRdLDjzLOgY3I3TxYf3
-         xxeJj7aFdNRcmgPVeDSsVJ4Nzo99Hj3DbNqU5SkeGVWi1vYDANmFPQ6VCRh7D7V+pjpB
-         pg9Q==
-X-Gm-Message-State: AOAM531xAVG95GqiEwN3KMV4UFak56gTIpivL8MKsu+ey9X/OqGpAo3Y
-        nszGiLxu7yVQJ50lSK4Kkw62BQ==
-X-Google-Smtp-Source: ABdhPJzioSF24BZDx+BvJ1ATXa2ju3lBpsYKRtrbjIfPcjtPvPgIzsmYuZa9dbnJM8onG7hozWRd4g==
-X-Received: by 2002:a17:90a:58f:b0:1ca:7a28:273f with SMTP id i15-20020a17090a058f00b001ca7a28273fmr6698824pji.62.1650650050404;
-        Fri, 22 Apr 2022 10:54:10 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c5-20020a62f845000000b0050ceac49c1dsm3194395pfm.125.2022.04.22.10.54.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 10:54:09 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:54:09 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] s390: disable -Warray-bounds
-Message-ID: <202204221052.85D0C427@keescook>
-References: <20220422134308.1613610-1-svens@linux.ibm.com>
+        Fri, 22 Apr 2022 14:05:59 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A921183B0;
+        Fri, 22 Apr 2022 11:02:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1650650029; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=36SBTaNp7dcTwurtvjqe7McQ+kB/vBW59yh6tlX/7i8=;
+        b=BPNDxQt/o50fWYfoDGVkwMu81csPM+9pmWJwPV3spGu9npSLkECl3pJuHungufYWLRFOC7
+        5Nrr0lLYcWZUeG4e+7vJR9j1YAGDLBrQ9UG1WEGQiiMjBhUN7BGGOEV/cwIpPYvSAXhIZV
+        CQWPYwr4aCSh1qE2gE3q4eszxbJPM8Y=
+Date:   Fri, 22 Apr 2022 18:53:39 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 2/2] mips: dts: ingenic: x1000: Add PWM device tree
+ node
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>, robh+dt@kernel.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Message-Id: <FP5RAR.CXCRD56PL7G72@crapouillou.net>
+In-Reply-To: <YmLT1VA8ZL57CQkO@orome>
+References: <20220224234133.15708-1-aidanmacdonald.0x0@gmail.com>
+        <20220224234133.15708-2-aidanmacdonald.0x0@gmail.com>
+        <YmLT1VA8ZL57CQkO@orome>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422134308.1613610-1-svens@linux.ibm.com>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 03:43:08PM +0200, Sven Schnelle wrote:
-> gcc-12 shows a lot of array bound warnings on s390. This is caused
-> by our S390_lowcore macro:
-> 
-> which uses an hardcoded address of 0. Wrapping that with
-> absolute_pointer() works, but gcc no longer knows that a 12 bit
-> instruction is sufficient to access lowcore. So it emits instructions
-> like 'lghi %r1,0; l %rx,xxx(%r1)' instead of a single load/store
-> instruction. As s390 stores variables often read/written in lowcore,
-> this is considered problematic. Therefore disable -Warray-bounds on
-> s390 for now until there is a better real solution.
-> 
-> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Hi Thierry,
 
-It looks like the source of this problem (the literal-values-treated-as-NULL)
-is gcc-12 specific. From the discussions, it sounded like Jacob was
-going to fix this "correctly" in gcc-13. It might be a good idea to make
-this version-checked? (i.e. only disable on gcc-12)
+Le ven., avril 22 2022 at 18:12:05 +0200, Thierry Reding=20
+<thierry.reding@gmail.com> a =E9crit :
+> On Thu, Feb 24, 2022 at 11:41:34PM +0000, Aidan MacDonald wrote:
+>>  Copied from the jz4740 devicetree and trimmed to 5 timers, which
+>>  is what the hardware supports.
+>>=20
+>>  Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+>>  ---
+>>   arch/mips/boot/dts/ingenic/x1000.dtsi | 13 +++++++++++++
+>>   1 file changed, 13 insertions(+)
+>=20
+> However I don't see this upstream yet, neither in Linus' tree nor in
+> linux-next. Paul, do you still have this on your radar?
 
-Either way:
+I don't have a tree so that would be a patch for Thomas (Cc'd) to go=20
+through the linux-mips tree.
+(Note to Thomas: patch 1 is already applied in the pwm tree)
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+The changes look good though, so:
 
--- 
-Kees Cook
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+>=20
+> Thierry
+>=20
+>>=20
+>>  diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi=20
+>> b/arch/mips/boot/dts/ingenic/x1000.dtsi
+>>  index 8bd27edef216..0dcf37527c8e 100644
+>>  --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
+>>  +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+>>  @@ -127,6 +127,19 @@ wdt: watchdog@0 {
+>>   			clocks =3D <&tcu TCU_CLK_WDT>;
+>>   			clock-names =3D "wdt";
+>>   		};
+>>  +
+>>  +		pwm: pwm@40 {
+>>  +			compatible =3D "ingenic,x1000-pwm";
+>>  +			reg =3D <0x40 0x80>;
+>>  +
+>>  +			#pwm-cells =3D <3>;
+>>  +
+>>  +			clocks =3D <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>,
+>>  +				 <&tcu TCU_CLK_TIMER2>, <&tcu TCU_CLK_TIMER3>,
+>>  +				 <&tcu TCU_CLK_TIMER4>;
+>>  +			clock-names =3D "timer0", "timer1", "timer2",
+>>  +				      "timer3", "timer4";
+>>  +		};
+>>   	};
+>>=20
+>>   	rtc: rtc@10003000 {
+>>  --
+>>  2.34.1
+>>=20
+
+
