@@ -2,76 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbiDVXxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
+        id S231432AbiDVXxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbiDVXxJ (ORCPT
+        with ESMTP id S230373AbiDVXx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:53:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8662165D3B;
-        Fri, 22 Apr 2022 16:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C956B832CC;
-        Fri, 22 Apr 2022 23:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DCA75C385AB;
-        Fri, 22 Apr 2022 23:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650671411;
-        bh=v0GEU8f647aDfOnHe6rDl7vHYkHF6lZNOzX+vulSejc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZLyF9wJO22xY+HTgq4Dq1U4B2rnf5qXQjtXjiZ/rwPuRrf/tgQjT3FzhYDJIhnNps
-         nxy0o7mvz13I07cUA0NPjU0jY6JTWuk9+037dtWRxhxEaeSVYFSKcFBp7rswINhc5M
-         xvULwHGqk0VNFeaRRbrWFKnT28PUKdNIg9Ban6aL+0RVYJsO74lMqL/xjp+NSliWvr
-         E9oevqUpnsQqMyrW1SPEJBGxrZl7PZQMsz9y50RERyP8Rn5olC1g17AWotPI7prwW1
-         CCgBIxCwJAkzBZ+yRv+owLUZG+/8Bjk6fcppulpDXFLTZ0oIa23xLksKICTU5j019W
-         V+Lt8VqRxWZfQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C1825F0383D;
-        Fri, 22 Apr 2022 23:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 22 Apr 2022 19:53:27 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612521384AC;
+        Fri, 22 Apr 2022 16:50:19 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 16:50:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650671417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YMfzDL5JA0cUmzPiRnDBwSelMHWpmqS+/mHuZZauqFM=;
+        b=a+wi3HYiqinXhmAX1F9VwZBpjFQJL0pEqfkuYWeOMEbit0scO0zBp35fOMYk8PD20VerZ5
+        lumIWn3vCbVEP5N/z551GXFlgE+D5hka3VN93XUFQK1IT3xwVd6YYdtf7IuZbb095kD4Mu
+        j4o406/OQtOcmMxu4SB1znE57WD+Apk=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     David Vernet <void@manifault.com>
+Cc:     akpm@linux-foundation.org, tj@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com
+Subject: Re: [PATCH 4/5] cgroup: Removing racy check in test_memcg_sock()
+Message-ID: <YmM/NCX9FwUY/GvB@carbon>
+References: <20220422155728.3055914-1-void@manifault.com>
+ <20220422155728.3055914-5-void@manifault.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] tsnep: Remove useless null check before call of_node_put()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165067141178.16286.5355771409782373166.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Apr 2022 23:50:11 +0000
-References: <1650509283-26168-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1650509283-26168-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422155728.3055914-5-void@manifault.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 21 Apr 2022 10:48:03 +0800 you wrote:
-> No need to add null check before call of_node_put(), since the
-> implementation of of_node_put() has done it.
+On Fri, Apr 22, 2022 at 08:57:28AM -0700, David Vernet wrote:
+> test_memcg_sock() in the cgroup memcg tests, verifies expected memory
+> accounting for sockets. The test forks a process which functions as a TCP
+> server, and sends large buffers back and forth between itself (as the TCP
+> client) and the forked TCP server. While doing so, it verifies that
+> memory.current and memory.stat.sock look correct.
 > 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->  drivers/net/ethernet/engleder/tsnep_main.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> There is currently a check in tcp_client() which asserts memory.current >=
+> memory.stat.sock. This check is racy, as between memory.current and
+> memory.stat.sock being queried, a packet could come in which causes
+> mem_cgroup_charge_skmem() to be invoked. This could cause memory.stat.sock
+> to exceed memory.current. Reversing the order of querying doesn't address
+> the problem either, as memory may be reclaimed between the two calls.
 
-Here is the summary with links:
-  - tsnep: Remove useless null check before call of_node_put()
-    https://git.kernel.org/netdev/net-next/c/f28c47bb9fd3
+But just curious, does it fix the flakiness (assuming there is no memory
+pressure)?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Instead, this patch just removes that assertion altogether, and instead
+> relies on the values_close() check that follows to validate the expected
+> accounting.
 
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
