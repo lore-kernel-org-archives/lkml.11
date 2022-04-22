@@ -2,122 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D341C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3134C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444444AbiDVGg7 (ORCPT
+        id S1444443AbiDVGhQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42586 "EHLO
+        Fri, 22 Apr 2022 02:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444432AbiDVGgw (ORCPT
+        with ESMTP id S1444263AbiDVGhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:36:52 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83FE50B37
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:33:57 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id hmrXnzwe5YnCyhmrXn2WbY; Fri, 22 Apr 2022 08:33:54 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 22 Apr 2022 08:33:54 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <26efc808-acd7-cff3-82e7-66561314f8ca@wanadoo.fr>
-Date:   Fri, 22 Apr 2022 08:33:50 +0200
+        Fri, 22 Apr 2022 02:37:13 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81EE50B2A;
+        Thu, 21 Apr 2022 23:34:19 -0700 (PDT)
+X-UUID: 080a3a59124e4111a49cb3aebd64e83e-20220422
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:826afedb-0e01-4c8c-a794-bbc0fb17599f,OB:0,LO
+        B:0,IP:0,URL:8,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-12
+X-CID-META: VersionHash:faefae9,CLOUDID:4e8294f0-da02-41b4-b6df-58f4ccd36682,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 080a3a59124e4111a49cb3aebd64e83e-20220422
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1629514691; Fri, 22 Apr 2022 14:34:15 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 22 Apr 2022 14:33:59 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 22 Apr 2022 14:33:56 +0800
+Message-ID: <32f5308e629cef3692c57c4c55442b0f2f25634f.camel@mediatek.com>
+Subject: Re: [PATCH v2] PCI: mediatek-gen3: Print LTSSM state when PCIe link
+ down
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Ryder Lee <ryder.lee@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Date:   Fri, 22 Apr 2022 14:33:56 +0800
+In-Reply-To: <20220329030715.7975-1-jianjun.wang@mediatek.com>
+References: <20220329030715.7975-1-jianjun.wang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] fsi: Fix error handling in fsi_master_register() and its
- callers
-Content-Language: en-US
-To:     Jeremy Kerr <jk@ozlabs.org>, Joel Stanley <joel@jms.id.au>,
-        Alistar Popple <alistair@popple.id.au>,
-        Eddie James <eajames@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-fsi@lists.ozlabs.org
-Newsgroups: gmane.linux.kernel,gmane.linux.kernel.janitors
-References: <f37bfdccfcf8a8d1bdcbf668b802df13253ed3fe.1650556911.git.christophe.jaillet@wanadoo.fr>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <f37bfdccfcf8a8d1bdcbf668b802df13253ed3fe.1650556911.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 21/04/2022 à 18:02, Christophe JAILLET a écrit :
-> fsi_master_register() calls device_register().
-> When device_register() fails, put_device() still needs to be called.
+Hi Maintainers,
+
+Just gentle ping for this patch, if there is anything I can do to get
+this patch merged, please let me know.
+
+Thanks.
+
+On Tue, 2022-03-29 at 11:07 +0800, Jianjun Wang wrote:
+> Print current LTSSM state when PCIe link down instead of the register
+> value, make it easier to get the link status.
 > 
-> Up to now, there is no put_device() in fsi_master_register().
-> Some callers of fsi_master_register() have it, some have not.
->   - fsi_master_acf_probe() call put_device() if fsi_master_register() fails
->   - fsi_master_gpio_probe() call put_device() if fsi_master_register() fails
->   - fsi_master_aspeed_probe() doesn't
->   - hub_master_probe() doesn't
-> 
-> In order to fix it and be consistent with the different callers, add the
-> missing put_device() in the error handling path of fsi_master_register()
-> and remove it from 2 callers that were handling it by themselves.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
 > ---
-> This patch is speculative and compile tested only.
-> Review with care.
-> 
-> Another alternative would be to add the put_device() call in
-> fsi_master_aspeed_probe() and hub_master_probe() if it makes more sense.
-> 
-> Having one or more Fixes tag is a bit hard because of the relations and
-> log history of the 5 files involved in this bug fix.
+> Changes in v2:
+> Print both of the register value and the LTSSM state.
 > ---
->   drivers/fsi/fsi-core.c          | 1 +
->   drivers/fsi/fsi-master-ast-cf.c | 1 -
->   drivers/fsi/fsi-master-gpio.c   | 1 -
->   3 files changed, 1 insertion(+), 2 deletions(-)
+>  drivers/pci/controller/pcie-mediatek-gen3.c | 41
+> ++++++++++++++++++++-
+>  1 file changed, 40 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/fsi/fsi-core.c b/drivers/fsi/fsi-core.c
-> index 3a7b78e36701..640692e5400f 100644
-> --- a/drivers/fsi/fsi-core.c
-> +++ b/drivers/fsi/fsi-core.c
-> @@ -1319,6 +1319,7 @@ int fsi_master_register(struct fsi_master *master)
->   
->   	rc = device_register(&master->dev);
->   	if (rc) {
-> +		put_device(&master->dev);
->   		ida_simple_remove(&master_ida, master->idx);
->   		return rc;
->   	}
-> diff --git a/drivers/fsi/fsi-master-ast-cf.c b/drivers/fsi/fsi-master-ast-cf.c
-> index 24292acdbaf8..dde63d703ea1 100644
-> --- a/drivers/fsi/fsi-master-ast-cf.c
-> +++ b/drivers/fsi/fsi-master-ast-cf.c
-> @@ -1395,7 +1395,6 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
->   		return 0;
->   
->   	device_remove_file(master->dev, &dev_attr_external_mode);
-> -	put_device(&master->master.dev);
->   	return rc;
->   
->    stop_copro:
-> diff --git a/drivers/fsi/fsi-master-gpio.c b/drivers/fsi/fsi-master-gpio.c
-> index 7d5f29b4b595..1ae3c164d7fd 100644
-> --- a/drivers/fsi/fsi-master-gpio.c
-> +++ b/drivers/fsi/fsi-master-gpio.c
-> @@ -856,7 +856,6 @@ static int fsi_master_gpio_probe(struct platform_device *pdev)
->   	rc = fsi_master_register(&master->master);
->   	if (rc) {
->   		device_remove_file(&pdev->dev, &dev_attr_external_mode);
-> -		put_device(&master->master.dev);
->   		return rc;
->   	}
->   	return 0;
+> diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c
+> b/drivers/pci/controller/pcie-mediatek-gen3.c
+> index 6745076a02b9..c24e03c198b7 100644
+> --- a/drivers/pci/controller/pcie-mediatek-gen3.c
+> +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+> @@ -153,6 +153,37 @@ struct mtk_gen3_pcie {
+>  	DECLARE_BITMAP(msi_irq_in_use, PCIE_MSI_IRQS_NUM);
+>  };
+>  
+> +/* LTSSM state in PCIE_LTSSM_STATUS_REG bit[28:24] */
+> +static const char *const ltssm_str[] = {
+> +	"detect.quiet",			/* 0x00 */
+> +	"detect.active",		/* 0x01 */
+> +	"polling.active",		/* 0x02 */
+> +	"polling.compliance",		/* 0x03 */
+> +	"polling.configuration",	/* 0x04 */
+> +	"config.linkwidthstart",	/* 0x05 */
+> +	"config.linkwidthaccept",	/* 0x06 */
+> +	"config.lanenumwait",		/* 0x07 */
+> +	"config.lanenumaccept",		/* 0x08 */
+> +	"config.complete",		/* 0x09 */
+> +	"config.idle",			/* 0x0A */
+> +	"recovery.receiverlock",	/* 0x0B */
+> +	"recovery.equalization",	/* 0x0C */
+> +	"recovery.speed",		/* 0x0D */
+> +	"recovery.receiverconfig",	/* 0x0E */
+> +	"recovery.idle",		/* 0x0F */
+> +	"L0",				/* 0x10 */
+> +	"L0s",				/* 0x11 */
+> +	"L1.entry",			/* 0x12 */
+> +	"L1.idle",			/* 0x13 */
+> +	"L2.idle",			/* 0x14 */
+> +	"L2.transmitwake",		/* 0x15 */
+> +	"disable",			/* 0x16 */
+> +	"loopback.entry",		/* 0x17 */
+> +	"loopback.active",		/* 0x18 */
+> +	"loopback.exit",		/* 0x19 */
+> +	"hotreset",			/* 0x1A */
+> +};
+> +
+>  /**
+>   * mtk_pcie_config_tlp_header() - Configure a configuration TLP
+> header
+>   * @bus: PCI bus to query
+> @@ -327,8 +358,16 @@ static int mtk_pcie_startup_port(struct
+> mtk_gen3_pcie *pcie)
+>  				 !!(val & PCIE_PORT_LINKUP), 20,
+>  				 PCI_PM_D3COLD_WAIT * USEC_PER_MSEC);
+>  	if (err) {
+> +		const char *ltssm_state;
+> +		int ltssm_index;
+> +
+>  		val = readl_relaxed(pcie->base +
+> PCIE_LTSSM_STATUS_REG);
+> -		dev_err(pcie->dev, "PCIe link down, ltssm reg val:
+> %#x\n", val);
+> +		ltssm_index = PCIE_LTSSM_STATE(val);
+> +		ltssm_state = ltssm_index >= ARRAY_SIZE(ltssm_str) ?
+> +			      "Unknown state" : ltssm_str[ltssm_index];
+> +		dev_err(pcie->dev,
+> +			"PCIe link down, current ltssm state: %s
+> (%#x)\n",
+> +			ltssm_state, val);
+>  		return err;
+>  	}
+>  
 
-NACK
-
-After additional reading of the code, it looks good to me as-is.
-Usage in fsi_master_aspeed_probe() and hub_master_probe() seem to have 
-no release function.
-
-CJ
