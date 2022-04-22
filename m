@@ -2,215 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56836C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC9BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbiDVFlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 01:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
+        id S232540AbiDVFlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 01:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444173AbiDVFhC (ORCPT
+        with ESMTP id S232259AbiDVF0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 01:37:02 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617384F445;
-        Thu, 21 Apr 2022 22:34:10 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id t12so8501183pll.7;
-        Thu, 21 Apr 2022 22:34:10 -0700 (PDT)
+        Fri, 22 Apr 2022 01:26:08 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E194F442
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:23:14 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id x191so6490910pgd.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:23:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G5bMd3EZKPtSk/LlVpFY7y+BRjO9pioZ19YkfHn+mvI=;
-        b=WBLAbPZKUQi9ZgV2hCFU/S/aOyaHcoxwMWeYgoL9BLhrNE2qGrPb69TGpB8BP3Le5Z
-         CT8/HKaERwuz/5nNo59SY2TOpDTeA6J/Gpbx2Lc2EWLXzoduGLEHQp5QIFWtwqswioBC
-         lNuwJvBoypAl08VAkDhJ8mBLF/+RHoKZBpgxRTFvcqs73F2Kt+QsNb40FuhNsOTDEbVg
-         kO7O7MBTYtWtlXwIzuDBvY3z7OTS/0JCXPmPvBMYcRQPsXPMZs1yHV0rxA+XNlCdBLsA
-         2+4F1Wz7dbvbkV9OkiNzgJQW+h8WKYOTV8l/SO+1IbvAXdJooMcS8qj6drdi70EM9zmp
-         RDBQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qs8TzJaMMRdlcgPCr158FHr4muxROdIwIKSMdWLHkHo=;
+        b=G/BsrDbXacV0SZ9Ne77oXKsQiEopiKSGAiAaqGYk4H47zX958UCh8d3h3fFf0mau//
+         MbXqvOB66RzNwCOaZyNP4nEsHtnwdkNJyeQgbU5sculwgSThov+D1pKikSKCetXMO262
+         ly67chsgg+6zDuX8kxXbJXJsM8vcXDnYmnl9QxhveSX5SgDKMtjFnsuQn0iuvI5xsc9j
+         yZHAOh1JlYWxiC8XEu5CIy1vrTrauwUA/V/xI8L4EFalIBpwfuRCuMVn6XSLY6sPj80a
+         iRHpIbGzVp89absSi+vJ3vna/H+s3JJdcIcKsKzqb+1fbLbZD42wIsiHagNaDg9+Jm37
+         KPhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=G5bMd3EZKPtSk/LlVpFY7y+BRjO9pioZ19YkfHn+mvI=;
-        b=4DIcfVHR4AL3m7i3WcuZvQjMZ3MemqPX/XEFWZ4uTRaXaIDW/csMlmSU2oGhqt00yJ
-         Mnd9Hil0u4Vg3dzBkVL8AeDQfmZ9GeokZZiu/rUe7CWb/Dj7pr0t1QoVbCHIw5BRr4ht
-         wN6v8PS2DTipz2eZc/t5IzWdrxujamdHMo84aS5nYBVEX9PuCZ+7wwefZdiNATH9FLeb
-         Iu0OvskF8F88fPAk9P0X20Xc8skX2xNDdmLAJMiu3STeHzP2sMMk76Was9i1ldDimR+5
-         S4idhJa+xGhS+I+P3fIk0/Pd88CEmvuja09TzCoH6FicBvIqUoBn08k8wMCV8jj9G7Nv
-         Qevg==
-X-Gm-Message-State: AOAM532dc5tjIb6zyn/d2kEgH48ik27yImU8lV30Ed4+UaQV0D7fJFc2
-        wQHGTA1vrGS1Zbom5r1H4NM=
-X-Google-Smtp-Source: ABdhPJwLc4FzlEoCuD5URWbioHefbgZfrShmSLUhNUgKFAik7IRzv1TbY3Yjd5ryQ4rB6Oo4zgnUFQ==
-X-Received: by 2002:a17:90b:4b05:b0:1d2:3d1e:fbfb with SMTP id lx5-20020a17090b4b0500b001d23d1efbfbmr14430682pjb.33.1650605649848;
-        Thu, 21 Apr 2022 22:34:09 -0700 (PDT)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:4f00:3590:32e3:a023:46c1:80cd])
-        by smtp.gmail.com with ESMTPSA id 204-20020a6302d5000000b00385f29b02b2sm886519pgc.50.2022.04.21.22.34.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 22:34:09 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Blake Jones <blakejones@google.com>
-Subject: [PATCH 4/4] perf record: Handle argument change in sched_switch
-Date:   Thu, 21 Apr 2022 22:34:01 -0700
-Message-Id: <20220422053401.208207-5-namhyung@kernel.org>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-In-Reply-To: <20220422053401.208207-1-namhyung@kernel.org>
-References: <20220422053401.208207-1-namhyung@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qs8TzJaMMRdlcgPCr158FHr4muxROdIwIKSMdWLHkHo=;
+        b=aFYeUxAONmAvCSueRIwkt5EXhdzzZbcII1LQ3O93naU9T/MDoWJ4EXxL/nf30ODduk
+         oLc8i20Kjnh1iFH9zGlTAbWcjhmqZYm2ZpeXrX+ZmFiY+5bECyHg0cJMiXAXmDtgnV5G
+         NUSF2c1uwqnMnBjFzOX24bogtUhuO78vNEfcDiAdDZZRRCD91BXoFylWREBijUPh0g/J
+         uXAB57iMOOx7H4FdGsh5cgTzu7slJajH8rBV85ifaVPj25Vf4emXokr0Gmqd6GYvjB3G
+         arRZK2kBG8t5D9lBDVC3xZvvfCaWRbWDafyKH+6iyFpBvTrFkcjnLt6sShAUuDxFJNRV
+         5gig==
+X-Gm-Message-State: AOAM5335MGVTuNucmEA9pVTwkJD4aavCRfgHUvmPON7eqs274Zn3yYYy
+        dWRBhcHsYLdtRpxc0wNdNjgB4+k+QgrWWSxASpc=
+X-Google-Smtp-Source: ABdhPJxGskIJDKnYp4O7Zl7AraYPDKiRG6aG0jNJsiX2fxEPmngjRzXg5dlvN+nBrUVDoTsMOaf4Dqsi7enIghU44k4=
+X-Received: by 2002:a65:5b4b:0:b0:3a3:d8fb:6926 with SMTP id
+ y11-20020a655b4b000000b003a3d8fb6926mr2507143pgr.76.1650604994231; Thu, 21
+ Apr 2022 22:23:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220420073717.GD16310@xsang-OptiPlex-9020> <CAHk-=wi6pJhsWLd7t9wEtq5tWh_2O61cSLk-wCgLwFrjW6+jbw@mail.gmail.com>
+ <CANaxB-yVLCSHAi3QKMYzsSDRYC5Wz05iWx8yrb57cbiJ__5ThA@mail.gmail.com>
+ <CAHk-=wgSW3gB1=rf3atv=3Xvn0pNBtKUKJ2VF81ue-xagS7F4w@mail.gmail.com> <CAHk-=wjdCtgtQPZPTigMMniZaoMA_tHDu3EMBVM3w1GH5X+cOw@mail.gmail.com>
+In-Reply-To: <CAHk-=wjdCtgtQPZPTigMMniZaoMA_tHDu3EMBVM3w1GH5X+cOw@mail.gmail.com>
+From:   Andrei Vagin <avagin@gmail.com>
+Date:   Thu, 21 Apr 2022 22:23:02 -0700
+Message-ID: <CANaxB-zDKVtGTRrqh4SpPKS96Ux6s01BL3BdAe-ZY_9HWSX9dw@mail.gmail.com>
+Subject: Re: [fs/pipe] 5a519c8fe4: WARNING:at_mm/page_alloc.c:#__alloc_pages
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        kernel test robot <lkp@intel.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Pavel Emelyanov <ovzxemul@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recently sched_switch tracepoint added a new argument for prev_state,
-but it's hard to handle the change in a BPF program.  Instead, we can
-check the function prototype in BTF before loading the program.
+On Thu, Apr 21, 2022 at 12:28 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Thu, Apr 21, 2022 at 9:30 AM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > The pipe part sounds like a horrible hacky thing.
+> >
+> > I also assume you already tried that, and hit some performance issues.
+> > But it does sound like the better interface, more directly what you
+> > want.
+> >
+> > So what are the problems with using process_vm_readv?
 
-Thus I make two copies of the tracepoint handler and select one based
-on the BTF info.
+The big advantage of vmsplice is that it can attach real user pages into
+a pipe and then any following changes of these pages by the process
+don't trigger any allocations and extra copies of data. vmsplice in this
+case is fast. After splicing pages to pipes, we resume a process and
+splice pages from pipes to a socket or a file.  The whole process of
+dumping process pages is zero-copy.
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- tools/perf/util/bpf_off_cpu.c          | 32 +++++++++++++++
- tools/perf/util/bpf_skel/off_cpu.bpf.c | 55 ++++++++++++++++++++------
- 2 files changed, 76 insertions(+), 11 deletions(-)
+>
+> Actually, I take that back.
+>
+> Don't use pipes.
+>
+> Don't use process_vm_readv().
+>
+> Use the system call we already have for "snapshot the current VM".
+>
+> It's called "fork()". It's cheap, it's efficient, and it snapshots the
+> whole VM in one go. No stupid extra buffers in pipes, no crazy things
+> like that.
+>
+> So just make your pre-dump code do a simple fork(), let the parent
+> continue, and then do the dumping in the child at whatever pace you
+> want.
+>
+> In fact, you might just leave the child process alone, and let it _be_
+> that pre-dump.
+>
+> You can create a new snapshot every once in a while, and kill the
+> previous snapshot, if you want to keep the snapshot close to the
+> target, and then use the memory tracking to track what has changed
+> since.
+>
+> And you might not want to use plain "fork()", but instead some kind of
+> "clone()" variant. You might want to use CLONE_PARENT and some
+> non-SIGCHLD exit signal to basically hide the snapshot image from the
+> thing you are snapshotting.
+>
+> Anyway, the "use vmsplice to a pipe to create a snapshot" sounds just
+> insane when you have a very traditional system call that is all about
+> snapshotting the process.
+>
+> Maybe a new CLONE_xyz flag could be added to make that memory tracking
+> integrate better or whatever.
+>
+> Any showstoppers?
 
-diff --git a/tools/perf/util/bpf_off_cpu.c b/tools/perf/util/bpf_off_cpu.c
-index 89f36229041d..38aeb13d3d25 100644
---- a/tools/perf/util/bpf_off_cpu.c
-+++ b/tools/perf/util/bpf_off_cpu.c
-@@ -86,6 +86,37 @@ static void off_cpu_finish(void *arg __maybe_unused)
- 	off_cpu_bpf__destroy(skel);
- }
- 
-+/* recent kernel added prev_state arg, so it needs to call the proper function */
-+static void check_sched_switch_args(void)
-+{
-+	const struct btf *btf = bpf_object__btf(skel->obj);
-+	const struct btf_type *t1, *t2, *t3;
-+	u32 type_id;
-+
-+	type_id = btf__find_by_name_kind(btf, "bpf_trace_sched_switch",
-+					 BTF_KIND_TYPEDEF);
-+	if ((s32)type_id < 0)
-+		goto old_format;
-+
-+	t1 = btf__type_by_id(btf, type_id);
-+	if (t1 == NULL)
-+		goto old_format;
-+
-+	t2 = btf__type_by_id(btf, t1->type);
-+	if (t2 == NULL || !btf_is_ptr(t2))
-+		goto old_format;
-+
-+	t3 = btf__type_by_id(btf, t2->type);
-+	if (t3 && btf_is_func_proto(t3) && btf_vlen(t3) == 4) {
-+		/* new format: disable old functions */
-+		bpf_program__set_autoload(skel->progs.on_switch3, false);
-+		return;
-+	}
-+
-+old_format:
-+	bpf_program__set_autoload(skel->progs.on_switch4, false);
-+}
-+
- int off_cpu_prepare(struct evlist *evlist, struct target *target)
- {
- 	int err, fd, i;
-@@ -114,6 +145,7 @@ int off_cpu_prepare(struct evlist *evlist, struct target *target)
- 	}
- 
- 	set_max_rlimit();
-+	check_sched_switch_args();
- 
- 	err = off_cpu_bpf__load(skel);
- 	if (err) {
-diff --git a/tools/perf/util/bpf_skel/off_cpu.bpf.c b/tools/perf/util/bpf_skel/off_cpu.bpf.c
-index 27425fe361e2..e11e198af86f 100644
---- a/tools/perf/util/bpf_skel/off_cpu.bpf.c
-+++ b/tools/perf/util/bpf_skel/off_cpu.bpf.c
-@@ -121,22 +121,13 @@ static inline int can_record(struct task_struct *t, int state)
- 	return 1;
- }
- 
--SEC("tp_btf/sched_switch")
--int on_switch(u64 *ctx)
-+static int on_switch(u64 *ctx, struct task_struct *prev,
-+		     struct task_struct *next, int state)
- {
- 	__u64 ts;
--	int state;
- 	__u32 pid, stack_id;
--	struct task_struct *prev, *next;
- 	struct tstamp_data elem, *pelem;
- 
--	if (!enabled)
--		return 0;
--
--	prev = (struct task_struct *)ctx[1];
--	next = (struct task_struct *)ctx[2];
--	state = get_task_state(prev);
--
- 	ts = bpf_ktime_get_ns();
- 
- 	if (!can_record(prev, state))
-@@ -178,4 +169,46 @@ int on_switch(u64 *ctx)
- 	return 0;
- }
- 
-+SEC("tp_btf/sched_switch")
-+int on_switch3(u64 *ctx)
-+{
-+	struct task_struct *prev, *next;
-+	int state;
-+
-+	if (!enabled)
-+		return 0;
-+
-+	/*
-+	 * TP_PROTO(bool preempt, struct task_struct *prev,
-+	 *          struct task_struct *next)
-+	 */
-+	prev = (struct task_struct *)ctx[1];
-+	next = (struct task_struct *)ctx[2];
-+
-+	state = get_task_state(prev);
-+
-+	return on_switch(ctx, prev, next, state);
-+}
-+
-+SEC("tp_btf/sched_switch")
-+int on_switch4(u64 *ctx)
-+{
-+	struct task_struct *prev, *next;
-+	int prev_state;
-+
-+	if (!enabled)
-+		return 0;
-+
-+	/*
-+	 * TP_PROTO(bool preempt, int prev_state,
-+	 *          struct task_struct *prev,
-+	 *          struct task_struct *next)
-+	 */
-+	prev = (struct task_struct *)ctx[2];
-+	next = (struct task_struct *)ctx[3];
-+	prev_state = (int)ctx[1];
-+
-+	return on_switch(ctx, prev, next, prev_state);
-+}
-+
- char LICENSE[] SEC("license") = "Dual BSD/GPL";
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+We considered this approach. CRIU dumps a tree of processes. In many
+cases, it's a container with its pid namespace. In such cases, it isn't
+possible to fork helper processes without affecting the behavior of
+dumped processes. First, helper processes will be visible for dumped
+processes. Second, waitid with __WALL will wait for our helpers and a
+dumped process can be very surprised to find a child that it hasn't
+created. For the pre-dump, we don't need a true memory snapshot, we
+don't care about changed pages. But if we fork a process in the wrong
+moment, we can double its memory consumption and as this is happening in
+a dumped process context, we can hit its resource limits or trigger OOM
+in a dumped container.
+Forking a helper itself can hit resource limits such as rlimits or
+cgroup limits.
 
+Thanks,
+Andrei
