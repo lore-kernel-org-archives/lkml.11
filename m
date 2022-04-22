@@ -2,116 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A26C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA07C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbiDVRdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 13:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
+        id S232298AbiDVRiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 13:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiDVRds (ORCPT
+        with ESMTP id S235472AbiDVRiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:33:48 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9DAE2B2F
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:30:48 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 21so11251657edv.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:30:48 -0700 (PDT)
+        Fri, 22 Apr 2022 13:38:16 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D525E016
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:35:18 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id y14so7855354pfe.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:35:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HNZdGuTlB4ZyqdNx0zZ57VA5IMyL05uRbRN7pIK/unU=;
-        b=Cpl1dt70H22hHb3a2k1F/gZybtWw8PyK4eyMjsQQl0/ADKOTqNg2NeU3zNTfbl72Mi
-         RFz6P9DN+6K2ISa+Al6MARv2R6WgSTO+ScXPKeDRNEzeGHrSIVYBdykS//l8W8Jmld75
-         xX20GzzptN1Wq7caPyUSIX2LosdIWn3JaaXt/SzsrV23qvimMx90F6gaQiY6wd6Y4789
-         TFkVxrJEEublyn1TvmLSC/WmlH2eVPq9Ynp4dQ36X6QRA7AbFbh8GhiwkqrTCif1WXAO
-         QFBkGmWaozknYFoz1garLCKHmerRkgk5+voQnFGvZlkziiZpjMhHZ04gYNP+JVt21KNT
-         t7wg==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bTx9j6um++bDvPzngdWfztBTWMSm5Y4kGTKyaYCvWJA=;
+        b=GawO1yJAJrxBdODI2xKPb6ONjN181mj1BvSw15s51XVSw+bHIkn6QEWm4FY7vQ8BSf
+         KUGpARxzDIm6O0PIGm9sk0jFAEFcC9gCkD0w3XoD3bEvtljZ0NHT9DHP1a6Z9nCKwK2s
+         eNSpY7SBmV3WGCAyKJmYxT02DDLgNtWDUB8CHeBMbQqnCpc8HUWwYDSQBsRs4eXIiPE3
+         V/J7IR3NDraoYA2LVarFTf2Tf0EwFnTDxSGJ357fl8YZsyuEOOo1p3XNqvHQCK6tcTO0
+         BEPCriGAGadBvtg0+uRoRckN8aAk85fCdz0Yvcahz0qaZGgRXYBXbni3tt7TwLeie+yZ
+         pVeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HNZdGuTlB4ZyqdNx0zZ57VA5IMyL05uRbRN7pIK/unU=;
-        b=hgfNCWOQaYpB7k/jpFtZb7ixN9Ad7nbJerA6l43VB3PjjZk/twTxGyHYlcsZox7/oD
-         19LD0hL5tAFoukhSd+eUC2fpJVYAOXQWaW9vODs6AZe7ZjNeUXhZsM94+WiEi5sIHx8P
-         zVbOgOCCEHvCMgWn2EtHGG+TRYjDHkcbgokuPgbLvRdGaqWIW0cRU6V6eOh57GAqJAlA
-         mrj+zxuavtJmfuT9PKmxRcXCY9DyVFycJj79lYKLqFJ5oa7gZE8PWUrzs2t8RXJQ+zoz
-         7QcYPYcdItEQha0MiBfIca56YDW33+nSDnP6ACi3aBsZMxX56pE6yWM9DjwXDctT03ll
-         Ftsw==
-X-Gm-Message-State: AOAM533I1Z8pXASB3KllQrVJuDlLRNBM5ceWE5jU4pldDXihwMEBEiiD
-        LuwTElCctvBL2xC3L3fPZG2Paw==
-X-Google-Smtp-Source: ABdhPJwuFz3R4GDMR+B6w7XF06kzjDOus8Sj9fbqhs9sCpzbm0EvLdbLOHqYo8h0m41JFU4Qqn4CYg==
-X-Received: by 2002:a05:6402:90c:b0:415:d340:4ae2 with SMTP id g12-20020a056402090c00b00415d3404ae2mr6053079edz.331.1650648402270;
-        Fri, 22 Apr 2022 10:26:42 -0700 (PDT)
-Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h7-20020a1709066d8700b006d4b4d137fbsm944012ejt.50.2022.04.22.10.26.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 10:26:41 -0700 (PDT)
-Message-ID: <f2e5a34b-ed02-91a1-bc7b-fecaa95e227e@linaro.org>
-Date:   Fri, 22 Apr 2022 19:26:40 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bTx9j6um++bDvPzngdWfztBTWMSm5Y4kGTKyaYCvWJA=;
+        b=AOgJ+L6NU2Sk7KLy1KU+gLWKy/uIBQ4fGgvswsKRziRFo17gBtHy8wfgsi5Rgxu8H3
+         XvlQSFOP0+EE2w2/HwYbXu+sdPAGTaXVyOXIUHAJGBAJ0l4+Hry3EYC3GIaXEPB0WEub
+         xwa7JDetkaunoiGa0RqjD5MeR4JiROcHNCA51jFkpmA8fzW1b/eCLiO5EnzpF0uXE06X
+         au6ff93Flj3w1LcepVqRNQUc+xODENf9ueuIPsi4px0cTxjrky8OAxMrI9L3Lk/OqJF3
+         WEFWAMx9SK4bh7paBuvhF5tjk0X82j4+0WHYcHsuHGwhcqGwaBbXajP3GIff+tBWahX8
+         8vPA==
+X-Gm-Message-State: AOAM531wae0JeUX+mIHQ7RobDRvOd6jost733MeDjVfnCog2qWcM6gd9
+        tfkpWLqd793jpD+cLNBjAWPqWi26PwM5FvbtUN0=
+X-Google-Smtp-Source: ABdhPJwt2+2ZOpnouIOeQ4yI8QwOAwZ0wMwJHawmc2MnYo2JfXzrJf207yutiEaSFTqpBg4LFWhL2K55GE2rsvJxEXw=
+X-Received: by 2002:a05:6a00:bd1:b0:505:79c7:75f6 with SMTP id
+ x17-20020a056a000bd100b0050579c775f6mr5889282pfu.23.1650648728728; Fri, 22
+ Apr 2022 10:32:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V4 01/14] dt-bindings: cpufreq: mediatek: Add MediaTek CCI
- property
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
-        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com
-Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
-        hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
- <20220422075239.16437-2-rex-bc.chen@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220422075239.16437-2-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220416053902.68517-1-dave@stgolabs.net> <20220416053902.68517-6-dave@stgolabs.net>
+In-Reply-To: <20220416053902.68517-6-dave@stgolabs.net>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Fri, 22 Apr 2022 10:31:56 -0700
+Message-ID: <CAHbLzkruFaKF_92w2qsZz4sH24C-TARXaL-byT6doVVe6VQ4Zg@mail.gmail.com>
+Subject: Re: [PATCH 5/6] mm/migration: export demotion_path of a node via sysfs
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org,
+        rientjes@google.com, yosryahmed@google.com, hannes@cmpxchg.org,
+        shakeelb@google.com, dave.hansen@linux.intel.com,
+        tim.c.chen@linux.intel.com, roman.gushchin@linux.dev,
+        gthelen@google.com, a.manzanares@samsung.com,
+        heekwon.p@samsung.com, gim.jongmin@samsung.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 09:52, Rex-BC Chen wrote:
-> MediaTek Cache Coherent Interconnect (CCI) uses software devfreq module
-> for scaling clock frequency and adjust voltage.
-> The phandle could be linked between CPU and MediaTek CCI for some
-> MediaTek SoCs, like MT8183 and MT8186.
-> Therefore, we add this property in cpufreq-mediatek.txt.
-> 
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+On Fri, Apr 15, 2022 at 10:39 PM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>
+> Add a /sys/devices/system/node/nodeX/demotion_path file
+> to export the possible target(s) in node_demotion[node].
+
+I'm not sure if you noticed that Jagdish Gediya is working on the
+similar patch, please see
+https://lore.kernel.org/linux-mm/20220413092206.73974-1-jvgediya@linux.ibm.com/
+
+It would be better to combine the two to avoid duplicate effort.
+
+>
+> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
 > ---
->  .../devicetree/bindings/cpufreq/cpufreq-mediatek.txt         | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.txt b/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.txt
-> index b8233ec91d3d..3387e1e2a2df 100644
-> --- a/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.txt
-> +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek.txt
-> @@ -20,6 +20,11 @@ Optional properties:
->  	       Vsram to fit SoC specific needs. When absent, the voltage scaling
->  	       flow is handled by hardware, hence no software "voltage tracking" is
->  	       needed.
-> +- mediatek,cci:
-> +	MediaTek Cache Coherent Interconnect (CCI) uses the software devfreq module to
-> +	scale the clock frequency and adjust the voltage.
-
-Devfreq is a SW mechanism, it should not be part of bindings description.
-
-> +	For details, please refer to
-> +	Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
-
-Since the file does not exist, I have troubles reviewing it. First of
-all, you already have "mediatek,cci-control" property in DT, so why
-using different name?
-
-Second, it looks like you want to put devfreq into bindings instead of
-using proper interconnect bindings.
-
-Best regards,
-Krzysztof
+>  Documentation/ABI/stable/sysfs-devices-node |  6 ++++
+>  drivers/base/node.c                         | 39 +++++++++++++++++++++
+>  include/linux/migrate.h                     | 15 ++++++++
+>  mm/migrate.c                                | 15 +-------
+>  4 files changed, 61 insertions(+), 14 deletions(-)
+>
+> diff --git a/Documentation/ABI/stable/sysfs-devices-node b/Documentation/ABI/stable/sysfs-devices-node
+> index 3c935e1334f7..f620c6ae013c 100644
+> --- a/Documentation/ABI/stable/sysfs-devices-node
+> +++ b/Documentation/ABI/stable/sysfs-devices-node
+> @@ -192,3 +192,9 @@ Description:
+>                 When it completes successfully, the specified amount or more memory
+>                 will have been reclaimed, and -EAGAIN if less bytes are reclaimed
+>                 than the specified amount.
+> +
+> +What:          /sys/devices/system/node/nodeX/demotion_path
+> +Date:          April 2022
+> +Contact:       Davidlohr Bueso <dave@stgolabs.net>
+> +Description:
+> +               Shows nodes within the next tier of slower memory below this node.
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index d80c478e2a6e..ab4bae777535 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/nodemask.h>
+>  #include <linux/cpu.h>
+>  #include <linux/device.h>
+> +#include <linux/migrate.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/swap.h>
+>  #include <linux/slab.h>
+> @@ -560,11 +561,49 @@ static ssize_t node_read_distance(struct device *dev,
+>  }
+>  static DEVICE_ATTR(distance, 0444, node_read_distance, NULL);
+>
+> +static ssize_t node_read_demotion_path(struct device *dev,
+> +                                      struct device_attribute *attr, char *buf)
+> +{
+> +       int nid = dev->id;
+> +       int len = 0;
+> +       int i;
+> +       struct demotion_nodes *nd;
+> +
+> +       /*
+> +        * buf is currently PAGE_SIZE in length and each node needs 4 chars
+> +        * at the most (target + space or newline).
+> +        */
+> +       BUILD_BUG_ON(MAX_NUMNODES * 4 > PAGE_SIZE);
+> +
+> +       if (!node_demotion) {
+> +               len += sysfs_emit_at(buf, len, "%d", NUMA_NO_NODE);
+> +               goto done;
+> +       }
+> +
+> +       nd = &node_demotion[nid];
+> +
+> +       rcu_read_lock();
+> +       if (nd->nr == 0)
+> +               len += sysfs_emit_at(buf, len, "%d", NUMA_NO_NODE);
+> +       else {
+> +               for (i = 0; i < nd->nr; i++) {
+> +                       len += sysfs_emit_at(buf, len, "%s%d",
+> +                                            i ? " " : "", nd->nodes[i]);
+> +               }
+> +       }
+> +       rcu_read_unlock();
+> +done:
+> +       len += sysfs_emit_at(buf, len, "\n");
+> +       return len;
+> +}
+> +static DEVICE_ATTR(demotion_path, 0444, node_read_demotion_path, NULL);
+> +
+>  static struct attribute *node_dev_attrs[] = {
+>         &dev_attr_meminfo.attr,
+>         &dev_attr_numastat.attr,
+>         &dev_attr_distance.attr,
+>         &dev_attr_vmstat.attr,
+> +       &dev_attr_demotion_path.attr,
+>         NULL
+>  };
+>
+> diff --git a/include/linux/migrate.h b/include/linux/migrate.h
+> index 90e75d5a54d6..b0ac6a717e44 100644
+> --- a/include/linux/migrate.h
+> +++ b/include/linux/migrate.h
+> @@ -111,6 +111,21 @@ static inline int migrate_misplaced_page(struct page *page,
+>  }
+>  #endif /* CONFIG_NUMA_BALANCING */
+>
+> +#define DEFAULT_DEMOTION_TARGET_NODES 15
+> +
+> +#if MAX_NUMNODES < DEFAULT_DEMOTION_TARGET_NODES
+> +#define DEMOTION_TARGET_NODES  (MAX_NUMNODES - 1)
+> +#else
+> +#define DEMOTION_TARGET_NODES  DEFAULT_DEMOTION_TARGET_NODES
+> +#endif
+> +
+> +struct demotion_nodes {
+> +       unsigned short nr;
+> +       short nodes[DEMOTION_TARGET_NODES];
+> +};
+> +
+> +extern struct demotion_nodes *node_demotion __read_mostly;
+> +
+>  #ifdef CONFIG_MIGRATION
+>
+>  /*
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 6c31ee1e1c9b..e47ea25fcfe8 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -2172,20 +2172,7 @@ int migrate_misplaced_page(struct page *page, struct vm_area_struct *vma,
+>   * must be held over all reads to ensure that no cycles are
+>   * observed.
+>   */
+> -#define DEFAULT_DEMOTION_TARGET_NODES 15
+> -
+> -#if MAX_NUMNODES < DEFAULT_DEMOTION_TARGET_NODES
+> -#define DEMOTION_TARGET_NODES  (MAX_NUMNODES - 1)
+> -#else
+> -#define DEMOTION_TARGET_NODES  DEFAULT_DEMOTION_TARGET_NODES
+> -#endif
+> -
+> -struct demotion_nodes {
+> -       unsigned short nr;
+> -       short nodes[DEMOTION_TARGET_NODES];
+> -};
+> -
+> -static struct demotion_nodes *node_demotion __read_mostly;
+> +struct demotion_nodes *node_demotion __read_mostly;
+>
+>  /**
+>   * next_demotion_node() - Get the next node in the demotion path
+> --
+> 2.26.2
+>
+>
