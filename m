@@ -2,123 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 168E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445467AbiDVIGt (ORCPT
+        id S1445471AbiDVIJE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
+        Fri, 22 Apr 2022 04:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445460AbiDVIGp (ORCPT
+        with ESMTP id S1445626AbiDVII0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:06:45 -0400
-X-Greylist: delayed 491 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 01:03:52 PDT
-Received: from dvalin.narfation.org (dvalin.narfation.org [213.160.73.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FAA52E41;
-        Fri, 22 Apr 2022 01:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1650614137;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=FFj6+/K+6ijDBVy6GU0k6XitYfz7fo/RaeEwRuAByJ4=;
-        b=hwcVhN6601PAIDsZN+Ji0A/wlk+AnYcRg99FBkeGflffJA7MRpJJgwXAv8suOG7bouq4K0
-        pL595d9LsgxwqoOjOYTvVHg6XYmZXkMebHu9/9s5cfjPJ3u65hzjqU8iZuA31FuX89AXil
-        n5/E5ypdRCuFHd0KoeVVR29oAT4NX2g=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     yuzhe@nfschina.com
-Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, kernel-janitors@vger.kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, pabeni@redhat.com, sven@narfation.org,
-        sw@simonwunderlich.de
-Subject: Re: [PATCH] batman-adv: remove unnecessary type castings
-Date:   Fri, 22 Apr 2022 09:55:34 +0200
-Message-ID: <3537486.13E77TLkhO@ripper>
-In-Reply-To: <20220421154829.9775-1-yuzhe@nfschina.com>
+        Fri, 22 Apr 2022 04:08:26 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5962F17A96;
+        Fri, 22 Apr 2022 01:05:33 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id CE16F1F463D7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650614731;
+        bh=sHB37B0oMJ/C17KoCmMigrMeNcB1ACVW2i8oQKoWjj4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=H/GeFT34AQfYdzuEjWZd8uXuy1NfJ+KDwaxSjx8lRTiajFcmyy1FxDu1PBuZoRwwF
+         XKpihwqRG2aYlv31Gbie6PyJu7oXGoPoYP0jRu4ayYRdiv5bmPX1EFLuyykARgVzx7
+         S3Pp19UgbNQtEkKkL7PojrqFruuBCfhxvr8jev0olV/Z1GOb1bRPbVhknsscDQCOwt
+         euPfJIsomTkLng1en9VmO5gVy9VaC5OKhwME3QSj6psNLU+oxUA4xMx0Axb6dn0I3T
+         jvWhh4G+atYgBTRo95BsY/00VN0wXv3Hl5iK8eZ0anzP6e07MMkPLJpIIKoq6tvT+y
+         plp5uidDJEP9A==
+Message-ID: <b77612aa-8dfa-a8fb-722f-79d21ddffe30@collabora.com>
+Date:   Fri, 22 Apr 2022 10:05:27 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart3059673.4202UCAtWU"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v6 1/2] dt-bindings: phy: mediatek: Add YAML schema for
+ PCIe PHY
+Content-Language: en-US
+To:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Wei-Shun Chang <weishunc@google.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, randy.wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+References: <20220422041125.12732-1-jianjun.wang@mediatek.com>
+ <20220422041125.12732-2-jianjun.wang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220422041125.12732-2-jianjun.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---nextPart3059673.4202UCAtWU
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: yuzhe@nfschina.com
-Cc: a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org, davem@davemloft.net, kernel-janitors@vger.kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org, liqiong@nfschina.com, mareklindner@neomailbox.ch, netdev@vger.kernel.org, pabeni@redhat.com, sven@narfation.org, sw@simonwunderlich.de
-Subject: Re: [PATCH] batman-adv: remove unnecessary type castings
-Date: Fri, 22 Apr 2022 09:55:34 +0200
-Message-ID: <3537486.13E77TLkhO@ripper>
-In-Reply-To: <20220421154829.9775-1-yuzhe@nfschina.com>
+Il 22/04/22 06:11, Jianjun Wang ha scritto:
+> Add YAML schema documentation for PCIe PHY on MediaTek chipsets.
+> 
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Hi,
-
-we neither received your mail via the mailing list nor our private mail 
-servers. It seems your mail setup is broken:
-
-    Apr 21 15:48:37 dvalin postfix/smtpd[10256]: NOQUEUE: reject: RCPT from unknown[2400:dd01:100f:2:72e2:84ff:fe10:5f45]: 450 4.7.1 <ha.nfschina.com>: Helo command rejected: Host not found; from=<yuzhe@nfschina.com> to=<sven@narfation.org> proto=ESMTP helo=<ha.nfschina.co>
-
-
-And when I test it myself, it is also not working:
-
-    $ dig @8.8.8.8 ha.nfschina.com
-
-    ; <<>> DiG 9.16.27-Debian <<>> @8.8.8.8 ha.nfschina.com
-    ; (1 server found)
-    ;; global options: +cmd
-    ;; Got answer:
-    ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 39639
-    ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
-    
-    ;; OPT PSEUDOSECTION:
-    ; EDNS: version: 0, flags:; udp: 512
-    ;; QUESTION SECTION:
-    ;ha.nfschina.com.               IN      A
-    
-    ;; AUTHORITY SECTION:
-    nfschina.com.           600     IN      SOA     dns11.hichina.com. hostmaster.hichina.com. 2022011002 3600 1200 86400 600
-
-    ;; Query time: 328 msec
-    ;; SERVER: 8.8.8.8#53(8.8.8.8)
-    ;; WHEN: Fri Apr 22 09:51:56 CEST 2022
-    ;; MSG SIZE  rcvd: 105
-
-
-Please fix this before sending patches out.
-
-
-But the kernel test bot already demonstrated why this patch is not a good 
-idea. You can improve it and resent it but I will not accept it in this form.
-
-
-Kind regards,
-	Sven
---nextPart3059673.4202UCAtWU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmJiX3YACgkQXYcKB8Em
-e0Y0dQ/+NFnsxqJsaMC0zYzt5WK1JDVmpYneRZuoEf62CIsbpN+AtGouyHyqpRQA
-UBOK4KaKDKL/iUTAz9m6kJ7k65RxnE9/WnwJaEbY1JNzn0V7mhxJOEarZrjjcz1J
-R4MVT/l/vQHDhcGWwX0l4YHkXiUDjtmT1SripHZGouhOoxW/yCg7MPGDsIHNCWBw
-Nj3kqClxRhwp+MExsKxmylX6EnIlOxO3Z5gtk848BaDgvpatjJkAxRDmpuxvDFn/
-QTm70eQ5mLV/B2E5aZSH1IfYB77n9upt9PGp/r3FSwaUJaCBMPTyK6iDGG7fiwym
-GlJhzoagbtr2zy8GlFWTFJKcTFt6uwhl1yRqQ37BTWVB86oFEp9pB2d+1J14m3gK
-1+MjhWhfVN5Q8SALqpIZl5ms9grA+R1+SAW95mvdRitYgIqSpQt5+aLuelHiJMu0
-fKgHOBQPabaFdTv973KAZP24lQTTOnkXQGPSbKRFzXperFql1sy7Rm+ZxUi4HmbS
-HbUm9dApMdPpv+h/km0LKOnyca4c5ZPXXrY7iI9Y/lSevPSgQD8M8YtcV64kkAn7
-s73LFpzveIGz/ITKycpOhGeWVJQRDKndJiZIQLJTfAGiy8P9SUeo+2I3fYT69lkb
-y+z5SmMz1RBBXRmLhy6OiCe6xajWe/gQ82SN74O0uRthjQIX8dQ=
-=yYih
------END PGP SIGNATURE-----
-
---nextPart3059673.4202UCAtWU--
-
-
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
