@@ -2,118 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5291C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbiDVXS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
+        id S229646AbiDVXVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233656AbiDVXRi (ORCPT
+        with ESMTP id S230215AbiDVXVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:17:38 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272B3133E60
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:52:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650667943; x=1682203943;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3ZvQFbp4k30eVgkzTG7NKho9OkhYNJu6NRiznVhTZe4=;
-  b=GAb2pIBuhaD9jcMairry+sfJ3yN899lUdO/oiTi0p0RK4AEceYzGnfra
-   zctlX6kEmEgK+fm6a6HBMynxpJuvfvvaWeZjZwdpb/HK0lms2DNaqn38P
-   w8iWWidV3faCxDpfKZ/9R9vaM6ZWm7IJa3R+/gv/oA9ilx3xwt2DKukZJ
-   9TzjiH2RM67GE07Y/Ubsc0rWbgLfyuvGYX+UuSG5oC0L53TyqIo9KnhYh
-   9sIY6/VEv7ZKKVj4AeU5AeHuyI1TRrIZPOP2xi0j9UGZwy2Uy7MLyKer0
-   R0vuDt9oSPR8yTZ9i93ym55qS9jfaDdFx3a5mTx8tO07L0cHwzF9Pq81B
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264583197"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264583197"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 15:52:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="594345364"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 22 Apr 2022 15:52:21 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni28S-000Adi-Oy;
-        Fri, 22 Apr 2022 22:52:20 +0000
-Date:   Sat, 23 Apr 2022 06:51:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Isaku Yamahata <isaku.yamahata@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [intel-tdx:kvm-upstream-workaround 190/293]
- arch/x86/virt/vmx/tdx/tdx_debug.c:38:6: warning: variable 'ret' is used
- uninitialized whenever 'if' condition is false
-Message-ID: <202204230602.MCSINBa4-lkp@intel.com>
+        Fri, 22 Apr 2022 19:21:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43CB1BA7BE;
+        Fri, 22 Apr 2022 15:57:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46C69B832E2;
+        Fri, 22 Apr 2022 22:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AF74C385A0;
+        Fri, 22 Apr 2022 22:57:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650668246;
+        bh=eHLSXrt72i6TaH/+If0ihwqLZQ/LBVXgDxHiWMQEzuo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iXFl9zY2I5UHRGR7OaF1h6qlAK5mPZxdv+O0/pAngV8myikt1Swc/85KxvGyNVcfO
+         c+CJWtfaiXl8iS4eDwm1tYLL7mlGL2OJEbQRIyx9Oxnmwt2nYscDdw9pUFUKju5Rc3
+         8Smqu72LB7YDpmuwjcwdikHO/+HwAQLvXA/jK7PevxaApA0vXIIT+xAvp6YNrYwW6z
+         q1/aUsGP3jl+P0ELlTWntjHg6xRI0iccI6aJTjuD8V03kr63SrpkSJD23r6yezDvk8
+         TT4cjRbKMoXPFsOx4c8XKhYFXss7sxjKe8fuaZ2qJtOjsu9QfpIkpihlggl0InOGdM
+         4UfcD6bK0Sc2g==
+Date:   Fri, 22 Apr 2022 15:57:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     akpm@linux-foundation.org, x86@kernel.org,
+        linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: unexport csum_and_copy_{from,to}_user
+Message-ID: <20220422155725.5347ca6f@kernel.org>
+In-Reply-To: <20220421070440.1282704-1-hch@lst.de>
+References: <20220421070440.1282704-1-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   d32e9a403c5c4f16dc577cbe92148e5b80f79d59
-commit: eed43994431837da508aed7b50717777818c1837 [190/293] [REVERTME] debugfs to operation on TDX debug op
-config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20220423/202204230602.MCSINBa4-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/eed43994431837da508aed7b50717777818c1837
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout eed43994431837da508aed7b50717777818c1837
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Thu, 21 Apr 2022 09:04:40 +0200 Christoph Hellwig wrote:
+> csum_and_copy_from_user and csum_and_copy_to_user are exported by
+> a few architectures, but not actually used in modular code.  Drop
+> the exports.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Judging by the To: I presume the intention is for Andrew to take this
+one, so FWIW:
 
-All warnings (new ones prefixed by >>):
-
->> arch/x86/virt/vmx/tdx/tdx_debug.c:38:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (debugconfig_supported) {
-               ^~~~~~~~~~~~~~~~~~~~~
-   arch/x86/virt/vmx/tdx/tdx_debug.c:46:10: note: uninitialized use occurs here
-           return  ret;
-                   ^~~
-   arch/x86/virt/vmx/tdx/tdx_debug.c:38:2: note: remove the 'if' if its condition is always true
-           if (debugconfig_supported) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/virt/vmx/tdx/tdx_debug.c:36:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   1 warning generated.
-
-
-vim +38 arch/x86/virt/vmx/tdx/tdx_debug.c
-
-    32	
-    33	static inline u64 tddebugconfig(u64 subleaf, u64 param1, u64 param2)
-    34	{
-    35		static bool debugconfig_supported = true;
-    36		int ret;
-    37	
-  > 38		if (debugconfig_supported) {
-    39			ret = __seamcall(SEAMCALL_TDDEBUGCONFIG, subleaf, param1, param2, 0, NULL);
-    40			if (ret) {
-    41				pr_info("DEBUGCONFIG SEAMCALL isn't supported.\n");
-    42				debugconfig_supported = false;
-    43			}
-    44		}
-    45	
-    46		return  ret;
-    47	}
-    48	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Acked-by: Jakub Kicinski <kuba@kernel.org>
