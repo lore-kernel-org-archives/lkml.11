@@ -2,112 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99410C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D77C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449469AbiDVPfj (ORCPT
+        id S1449109AbiDVPnT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        Fri, 22 Apr 2022 11:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385481AbiDVPff (ORCPT
+        with ESMTP id S1449479AbiDVPln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:35:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91A3E5D1B4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:32:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650641561;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Fri, 22 Apr 2022 11:41:43 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247DC5AECC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:38:49 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id CF9391F745;
+        Fri, 22 Apr 2022 15:38:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650641927; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=+o3QI2qLDiKgmdGnQtt8Rgfs8/7qkV8vtGRNkkMknPA=;
-        b=MFz6kixn944XwDDgqIqNHIlF64t0EDflp+ANaHBLMQatNv2rHjwUw98IKSfcqx8cnDNcU3
-        +SDJKFvl0I77cMntjb5j/43uqAtnKoVdn3aR25hVzR6r1GxSBRPIlhBjvyOpD8f/eF7uc9
-        oBzVBKBeESurfv7TkptZNv9fUOpoILQ=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-29MUbUyqOYOEB2-K-fcdJg-1; Fri, 22 Apr 2022 11:32:39 -0400
-X-MC-Unique: 29MUbUyqOYOEB2-K-fcdJg-1
-Received: by mail-qt1-f198.google.com with SMTP id w18-20020ac857d2000000b002f1fa23a40eso5230468qta.14
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:32:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=+o3QI2qLDiKgmdGnQtt8Rgfs8/7qkV8vtGRNkkMknPA=;
-        b=mBTaRMfyAq/Jbf87/6GepRrl8t9PWcXEx/yWOpGvKP6m4N7EqOyzSN7vW9Z8CiP+lM
-         rXj+DoVW1YcDl7Z3Hm7mzXW81H5Vjmznz2OWfYdD8h/V7TttR7EpFtNk+SaN4fFJ2wPU
-         7J7Jy1kht1CjWxq0shnkYxWDNPhtU2Z9myYFTn2G/DEqBNaSxIkA+xHW03UyCyo6cJCf
-         hOwNJRAUO1LMJMdLVenpfnW4+gPoDfmNN7B3glOUEk5tmGjxPmaHV6dMIb/PEgksGeNq
-         5tPX8COm7KnSwX0JIKumFwuU1OKiIbubbQAHOFcOc5YGahitKzM6gLOROI/GO9wtwFD/
-         RgqA==
-X-Gm-Message-State: AOAM530jvX7gNGN45HLXxSLOlbGsYePJW/EtAlZ548dcWRkfpR3A3GNu
-        bK0jD9koSvh/7JYWZOx4ZhxFdms8Cm/vgykfDw4JvaQDaNIuVTX3e7EXaY8C6ddjtIimmveCpVx
-        deduHXGnA5hQPL1s/oUEczTVImCdqm3r+sc4psMQ1x+Ji5zWX0iSFnTeOpOKRChOSONw4U44=
-X-Received: by 2002:a37:8d44:0:b0:69a:224a:dc27 with SMTP id p65-20020a378d44000000b0069a224adc27mr2989685qkd.563.1650641559145;
-        Fri, 22 Apr 2022 08:32:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzyw3Fqo3Nt15GFg/eHVhsKryB84/WiPdXDZP8hr3iO7fiPjDzNqt+7pAsJpGw+YTIzbAezHA==
-X-Received: by 2002:a37:8d44:0:b0:69a:224a:dc27 with SMTP id p65-20020a378d44000000b0069a224adc27mr2989647qkd.563.1650641558767;
-        Fri, 22 Apr 2022 08:32:38 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id v3-20020a05622a188300b002f201623acasm1364883qtc.50.2022.04.22.08.32.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 08:32:38 -0700 (PDT)
-Subject: Re: [PATCH] staging: vchiq_arm: change vchiq_platform_init from
- global to static
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        gregkh@linuxfoundation.org, stefan.wahren@i2se.com,
-        gascoar@gmail.com, ojaswin98@gmail.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220418164356.3532969-1-trix@redhat.com>
- <20220422144423.GI2462@kadam>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <4594e273-caae-686c-4a4e-875a7bd70e0c@redhat.com>
-Date:   Fri, 22 Apr 2022 08:32:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        bh=QWBm9KSaL64G4heSBDY5StN85oWFBXv4LEjPALb3118=;
+        b=Pr3jiyHC7XSbaiUzSjGuFFjBeUkubKp5yAodSeHJX8dVABn45GJSEnV8B3CD25gtIAWEWY
+        2thQgsVC45m8/e+bXE2tBPhmBntM76EwI8dr4mRd9DdbTGrQPD4uzz0CAyL9FBrYC2+CqA
+        aJsURDkmtyYs7bbSfeiHdSuoLSKBa70=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 83B022C141;
+        Fri, 22 Apr 2022 15:38:47 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 17:38:44 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Nico Pache <npache@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        David Rientjes <rientjes@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: Re: [RFC 3/3] exit: Check for MMF_OOM_SKIP in exit_mmap
+Message-ID: <YmLMBDkHmcjf9Nem@dhcp22.suse.cz>
+References: <20220421190533.1601879-1-npache@redhat.com>
+ <20220421190533.1601879-4-npache@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20220422144423.GI2462@kadam>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421190533.1601879-4-npache@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu 21-04-22 15:05:33, Nico Pache wrote:
+> The MMF_OOM_SKIP bit is used to indicate weather a mm_struct can not be
+> invalided or has already been invalided. exit_mmap currently calls
+> __oom_reap_task_mm unconditionally despite the fact that the oom reaper
+> may have already called this.
+> 
+> Add a check for the MMF_OOM_SKIP bit being set in exit_mmap to avoid
+> unnessary calls to the invalidate code.
 
-On 4/22/22 7:44 AM, Dan Carpenter wrote:
-> On Mon, Apr 18, 2022 at 12:43:56PM -0400, Tom Rix wrote:
->> Smatch reports this issue
->> vchiq_arm.c:466:5: warning: symbol 'vchiq_platform_init'
->>    was not declared. Should it be static?
-> This is a Sparse warning, not Smatch.
+Why do we care about this?
+ 
+> A slight race can occur on the MMF_OOM_SKIP bit that will still allow
+> this to run twice. My testing has shown an ~66% decrease in double calls
+> to _oom_reap_task_mm.
+> 
+> Fixes: 27ae357fa82b ("mm, oom: fix concurrent munlock and oom reaper unmap, v3")
 
-Yes, this is correct.
+I do not see this would be fixing anything.
 
-Though I am using
+> Cc: David Rientjes <rientjes@google.com>
+> Cc: Michal Hocko <mhocko@suse.com>
+> Cc: Andrea Arcangeli <aarcange@redhat.com>
+> Signed-off-by: Nico Pache <npache@redhat.com>
+> ---
+>  mm/mmap.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index a2968669fd4e..b867f408dacd 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -3113,7 +3113,8 @@ void exit_mmap(struct mm_struct *mm)
+>  	/* mm's last user has gone, and its about to be pulled down */
+>  	mmu_notifier_release(mm);
+>  
+> -	if (unlikely(mm_is_oom_victim(mm))) {
+> +	if (unlikely(mm_is_oom_victim(mm)) &&
+> +			!test_bit(MMF_OOM_SKIP, &mm->flags)) {
+>  		/*
+>  		 * Manually reap the mm to free as much memory as possible.
+>  		 * Then, as the oom reaper does, set MMF_OOM_SKIP to disregard
+> -- 
+> 2.35.1
 
-make CC=cgcc
-
-And forgot which one I had installed last.
-
-Tom
-
->
-> Use this command for Smatch
-> ~/smatch/smatch_scripts/kchecker drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
->
-> And this command for Sparse
-> ~/smatch/smatch_scripts/kchecker --sparse drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
->
-> regards,
-> dan carpenter
->
-
+-- 
+Michal Hocko
+SUSE Labs
