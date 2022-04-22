@@ -2,121 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B80C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60094C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378978AbiDVQU0 (ORCPT
+        id S1379973AbiDVQUb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        Fri, 22 Apr 2022 12:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378335AbiDVQUX (ORCPT
+        with ESMTP id S1378340AbiDVQUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 12:20:23 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0705DA53;
-        Fri, 22 Apr 2022 09:17:28 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MGHCcm121089;
-        Fri, 22 Apr 2022 11:17:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650644232;
-        bh=iYC92yO0nVNTBrV4ZcAROnLEimDhVCylf0MCz4FDpg8=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=XxG5mI0ikG5jZo4MowM6zesP/gy4T+x3jrUd68nqr/HcbxXAG7jpFJnwWTpjidPJ+
-         C3NI1cG10RFpY1ZaY+aujncHqwwFUL9xKCHsWPbWhdQIzKLVfsYnm/nbHhbZkHxFLU
-         f571unjgjXI5Qz+xdaA/G4TGYXrLum1bgX3hm8FA=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MGHCXr059334
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 11:17:12 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 11:17:11 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 11:17:11 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MGHBxn019241;
-        Fri, 22 Apr 2022 11:17:11 -0500
-Date:   Fri, 22 Apr 2022 11:17:11 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Rahul T R <r-ravikumar@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>, <kristo@kernel.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>
-Subject: Re: [PATCH v3 0/2] DSS: Add support for DisplayPort
-Message-ID: <20220422161711.jkderbw5r4wxwgjf@crudeness>
-References: <20220406165852.13026-1-r-ravikumar@ti.com>
- <ed64bf63-95c6-94ae-4c4f-a206250f44a9@ti.com>
- <20220422141637.4hz5nrlpjapmqezw@uda0490373>
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B8D5DE60;
+        Fri, 22 Apr 2022 09:17:29 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 17-20020a05600c021100b00393a19f8f98so2631510wmi.4;
+        Fri, 22 Apr 2022 09:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rIncxmhDUFubuTPIbfUUmhnyD3x3kFknV3aR1PwAHSU=;
+        b=quLHBak67ilJ7XMk5cWh59WRxF7B6IHMYoaeosRq419Hmg1wM8lhRiwbfpOVrbNYn0
+         WMiZVqrmL8JCp034/D4u5h7itqTpq0O4jXNIdvsTFMbyOtwHh4lYHysD866BVOkLQ5La
+         17cwTCAS0a+ifbRTJrZnJi2TtYjBCXluT8noIq65EDNP302VMEHrYyaDNy7iPltS3C0h
+         QYNRlQKMAtzMPfFSW+nSUN85N9Kw4j2ZxezhZyV11lMxgWoCm43IPGBT7ItE409Sj4vu
+         aYhAWHrVL7/bzht5d/TY0KaOk4EPEtGuEBwfy6RafkhzBmxZxXLzCcSZMbhMAoTzf81O
+         u6fQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rIncxmhDUFubuTPIbfUUmhnyD3x3kFknV3aR1PwAHSU=;
+        b=GGzAwcTyLWQaN3PM6ThV9gYlgx0GlbgiBbl+pZDmoyZXY+6lXrs53KP7RrVjQEoyCM
+         CAmwVTzSSQFgJcAHALCJSv8xqK17fGElW+duCHqZtWII0LQ2iqvznx+cLf+a+zJb4Non
+         UoxY01iZYfU5X5kvDxd5EWBtpeYb/K1iU0jz4VY0dXEZci7STcDUcWL1PJLbhlSfxrj5
+         yjUaUzDrSQfKx5u2gVjaqoq2a9qeNCpDuDqFEAuRXke9qHF017zUqClVsTgLKonhqkVh
+         tFzZ3rwUxeRsYDsnqHfqlQr0YjtzOxNhCahOEb4Yv17SoqCURhCystGLsS4mWVSnod6o
+         g5Iw==
+X-Gm-Message-State: AOAM533PkkFsOJoHFRshNL3aEV43t/HTzlMOy8akspaUEreoByeMl5hH
+        ZLq1PF2ztQo0rxJ7LTCZ3qdDNgwF7exqCA==
+X-Google-Smtp-Source: ABdhPJy7KeEOprOPRKSsTs4cY5EYO9wXLB8zfkM0gOMvToggZOXNlBAOI4qobW464wC53PUnuMbrgA==
+X-Received: by 2002:a05:600c:350f:b0:392:90d0:6b12 with SMTP id h15-20020a05600c350f00b0039290d06b12mr4851402wmq.180.1650644247720;
+        Fri, 22 Apr 2022 09:17:27 -0700 (PDT)
+Received: from localhost.localdomain ([94.73.37.128])
+        by smtp.gmail.com with ESMTPSA id 20-20020a05600c22d400b0038c8dbdc1a3sm1927029wmg.38.2022.04.22.09.17.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 09:17:27 -0700 (PDT)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     hadess@hadess.net
+Cc:     hdegoede@redhat.com, dmitry.torokhov@gmail.com,
+        rydberg@bitmath.org, lains@riseup.net, jikos@kernel.org,
+        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH 2/3] HID: logitech-hidpp: Fix double free on managed resource
+Date:   Fri, 22 Apr 2022 18:17:08 +0200
+Message-Id: <20220422161709.30198-2-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220422161709.30198-1-jose.exposito89@gmail.com>
+References: <20220422161709.30198-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220422141637.4hz5nrlpjapmqezw@uda0490373>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19:46-20220422, Rahul T R wrote:
-> On 12:51-20220415, Vignesh Raghavendra wrote:
-> > 
-> > 
-> > On 06/04/22 10:28 pm, Rahul T R wrote:
-> > > The following series of patches enables DisplayPort on
-> > > j721e-evm
-> > > 
-> > > Tomi Valkeinen (2):
-> > >   arm64: dts: ti: k3-j721e-main: add DP & DP PHY
-> > >   arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
-> > > 
-> > > v2:
-> > >    - use phandle with a parameter to refer clocks insted of
-> > >      sub nodes in serdes_wiz node
-> > >    - move phy link node to board DTS file
-> > > 
-> > > v3:
-> > >    - Fix the regulator node name as per the DT spec
-> > >    - Use Macro for GPIO type
-> > > 
-> > > boot logs:
-> > >    https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
-> > > 
-> > > kernel patch verify report:
-> > >    https://gist.githubusercontent.com/ravi-rahul/a982fef3fae03ec0dbdd5cb475a4cb25/raw/c8230370746e9878daf9527c3aa9d82eed7aa33c/report-kernel-patch-verify.txt
-> > 
-> > Hmm, With dtbs_check I see (on v5.18-rc1 tag)
-> > 
-> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@0' is a required property
-> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@4' is a required property
-> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phys' is a required property
-> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phy-names' is a required property
-> > 
-> > This goes away with 2/2 although adds:
-> > +<stdout>: Warning (graph_child_address): /bus@100000/dss@4a00000/ports: graph node has single child node 'port@0', #address-cells/#size-cells are not necessary
-> > 
-> > 
-> > Do we need to have empty ports node in j721e-main.dtsi for dp-bridge?   And something similar wrt phys as well?
-> > 
-> > Regards
-> > Vignesh
-> 
-> Hi Vignesh,
-> 
-> Thanks for the review!
-> Not sure why kernel patch verify did not catch this
+As described in the documentation for devm_input_allocate_device():
 
-if you are'nt able to install all the required packages and version of
-packages, then use the kpv wrapper script for docker container that
-already packages things.
+  Managed input devices do not need to be explicitly unregistered or
+  freed as it will be done automatically when owner device unbinds from
+  its driver (or binding fails).
+
+However this driver was explicitly freeing the input device, allocated
+using devm_input_allocate_device() through hidpp_allocate_input().
+
+Remove the call to input_free_device() to avoid a possible double free
+error.
+
+Fixes: c39e3d5fc9dd3 ("HID: logitech-hidpp: late bind the input device on wireless connection")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+---
+ drivers/hid/hid-logitech-hidpp.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
+index 81de88ab2ecc..9c00a781ab57 100644
+--- a/drivers/hid/hid-logitech-hidpp.c
++++ b/drivers/hid/hid-logitech-hidpp.c
+@@ -3957,11 +3957,7 @@ static void hidpp_connect_event(struct hidpp_device *hidpp)
+ 	}
+ 
+ 	hidpp_populate_input(hidpp, input);
+-
+-	ret = input_register_device(input);
+-	if (ret)
+-		input_free_device(input);
+-
++	input_register_device(input);
+ 	hidpp->delayed_input = input;
+ }
+ 
 -- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+2.25.1
+
