@@ -2,168 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1310C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448022AbiDVNcT (ORCPT
+        id S1447873AbiDVNgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
+        Fri, 22 Apr 2022 09:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447993AbiDVNcF (ORCPT
+        with ESMTP id S233941AbiDVNgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:32:05 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30382583BD;
-        Fri, 22 Apr 2022 06:29:11 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23MBiYYQ028312;
-        Fri, 22 Apr 2022 13:29:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-transfer-encoding
- : mime-version; s=pp1; bh=9RJixS4WeRJM0mGb+47v6hlLi3zfcIYx/lFEH2QI33c=;
- b=LQK4L9nqxBCNrkjJXoKarB1mFqKz8zGlMUH+fgKWlteI9gfWSvv6M07uaTl6ts6udq/W
- CUh4WYt6787UFnMQCzR+b/kcVe+oYcEU4caDATa9NBUVbYMU46BznVtolWJOOOTrFryZ
- nn7+8FW4mO38R9AoYcHxT2g0f/SxslfU27bj3iAGkpSKTaoN2KYKaTMMgIXDjwuOSKzF
- uRlMXSEae/LCHAT1R4oUUTx94fYborRU66+QztP6KdM5KC/Hogs+HjMxfD1tcIJbILlf
- z/3tkkkPBs2pIDYgO9nFaioXfBNC+e2HHfHJBgxfcF70BSFxXZzd/QJuLUYJNCeRYTuy Og== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjff4cpcg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 13:29:05 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23MD0q00024469;
-        Fri, 22 Apr 2022 13:29:05 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjff4cpbw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 13:29:04 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23MDJM9p011085;
-        Fri, 22 Apr 2022 13:29:02 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3ffne97g9s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 13:29:02 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23MDTB1h55837132
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 22 Apr 2022 13:29:11 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5C2654203F;
-        Fri, 22 Apr 2022 13:28:59 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 15DC042042;
-        Fri, 22 Apr 2022 13:28:59 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 22 Apr 2022 13:28:59 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: [PATCH v4 2/4] PCI: Move jailhouse's isolated function handling to pci_scan_slot()
-Date:   Fri, 22 Apr 2022 15:28:56 +0200
-Message-Id: <20220422132858.1213022-3-schnelle@linux.ibm.com>
+        Fri, 22 Apr 2022 09:36:01 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B272D546A7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:33:08 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id w27-20020a056830061b00b00604cde931a0so5489850oti.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5XP4fJ6AI9bNtZNyc3f8poAVuF7t5smExe4sN8IlP+I=;
+        b=Rkg4hoiOhuFqWTTCStiFTfQZS2ZqqSJIUkCGJlCDV1Io5sEqb/b6zLPkmAQZ3iuWid
+         F8czCNbNfCoKOz0I+fJvMvZeiPWMFAY1jE78+GY2AjRQg9OWMu2f577mAxJf7i/mbN3S
+         5SJb2SRhBbBN+HvNt4Jlr+fthzkx9ktF4pF4gix2v1CYw6SGs+b0LeeUERyk2FYlhkg9
+         qB73exR4oOoAe1N2Cvma1fN49iAxMxXVhhGr/vzRrR1LfON0g8/m4lPrh8Zd6pzzr/Dd
+         RaDtYwzeH+4fWeww0QsCCzJ3Khr3h40SwlxOGrGler8G/8vGiuns0Be9uamuija60ou0
+         ShGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5XP4fJ6AI9bNtZNyc3f8poAVuF7t5smExe4sN8IlP+I=;
+        b=Jd2TtwA1PsPcUtuUOojRX2AjwrNg7SzZ7QDcaROBGAg5i1B/kIFxkiFvqJ3WigiN+a
+         +lX40ckAIPWZ5w+zvGHqRY7clodZopHDJyogn/3ssVnoGlLHu8QtjLAQfSvSfS+AJk85
+         1FWudJUAtIwIZ6FFt3cUH3cuIzxWN0GSJobB1IV8bwAOVbnWP+G5B89ghhPQ66aWl6Mk
+         dBjjLKLIn40HvpydjXzmSXkD9AkH0Uw+ApGwo0/A8X5CKPkY/EGGxTvQ3s9ozC8JX7nz
+         Zbi5pAmoMhUO155AlkMy1GQuwoGNHfZjy8xFhhbj7GqC8nTWWyrXDjvQhQaLZQ7QoN7Y
+         u8ag==
+X-Gm-Message-State: AOAM533C2uxIKvyEvbxP/zb8rTmWz/qjtQvb5SiLtkVIAUnQ6tp12QHk
+        vBaakwI13uOkSFMniEkCjhM=
+X-Google-Smtp-Source: ABdhPJztLlSzomtYdfFbLW3oDBC/unlSEQKTz3dw36/NxDDn5+baM+dCdhTam+rTk5K18i5tWDwfcw==
+X-Received: by 2002:a9d:738d:0:b0:601:7f05:a729 with SMTP id j13-20020a9d738d000000b006017f05a729mr1666882otk.39.1650634388090;
+        Fri, 22 Apr 2022 06:33:08 -0700 (PDT)
+Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
+        by smtp.gmail.com with ESMTPSA id j5-20020a4a9445000000b00329dab1a07fsm771915ooi.17.2022.04.22.06.33.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 06:33:07 -0700 (PDT)
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Rebecca Mckeever <remckee0@gmail.com>
+Subject: [PATCH v3 0/5] memblock tests: update style of comments
+Date:   Fri, 22 Apr 2022 08:32:57 -0500
+Message-Id: <cover.1650633253.git.remckee0@gmail.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220422132858.1213022-1-schnelle@linux.ibm.com>
-References: <20220422132858.1213022-1-schnelle@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: p2W33-X5_R8Fb5CTEgxtN1SQoDrwbEpH
-X-Proofpoint-ORIG-GUID: fydxqy7U7KgU1xA-vjVb6FI3l_X-5X1C
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-22_03,2022-04-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- mlxlogscore=999 adultscore=0 clxscore=1015 lowpriorityscore=0
- malwarescore=0 bulkscore=0 phishscore=0 suspectscore=0 priorityscore=1501
- mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204220058
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The special case of the jailhouse hypervisor passing through individual
-PCI functions handles scanning for PCI functions even if function 0 does
-not exist. Currently this is done with an extra loop duplicating the one
-in pci_scan_slot(). By incorporating the check for jailhouse_paravirt()
-into pci_scan_slot() we can instead do this as part of the normal
-slot scan. Note that with the assignment of dev->multifunction gated by
-fn > 0 we set dev->multifunction unconditionally for all functions if
-function 0 is missing just as in the existing jailhouse loop.
+These patches update the style of comments for memblock_add_*(),
+memblock_reserve_*(), memblock_remove_*(), and memblock_free_*() 
+functions to match the style of comments in tests/alloc_*.c and 
+remove extra spaces in those comments to conform to Linux kernel
+coding style. This completes an item from the TODO list.
 
-The only functional change is that we now call
-pcie_aspm_init_link_state() for these functions but this already
-happened if function 0 was passed through and should not be a problem.
+Rebecca Mckeever (5):
+  memblock tests: update style of comments for memblock_add_*()
+    functions
+  memblock tests: update style of comments for memblock_reserve_*()
+    functions
+  memblock tests: update style of comments for memblock_remove_*()
+    functions
+  memblock tests: update style of comments for memblock_free_*()
+    functions
+  memblock tests: remove completed TODO item
 
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/linux-pci/20220408224514.GA353445@bhelgaas/
-Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+ tools/testing/memblock/TODO              |   3 -
+ tools/testing/memblock/tests/basic_api.c | 350 +++++++++++++++++------
+ 2 files changed, 256 insertions(+), 97 deletions(-)
+
 ---
- drivers/pci/probe.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+Changes
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 2000e9858f12..ce4e41a7d358 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -2659,8 +2659,13 @@ int pci_scan_slot(struct pci_bus *bus, int devfn)
- 			if (fn > 0)
- 				dev->multifunction = 1;
- 		} else if (fn == 0) {
--			/* function 0 is required */
--			break;
-+			/*
-+			 * function 0 is required unless we are running on
-+			 * a hypervisor which passes through individual PCI
-+			 * functions.
-+			 */
-+			if (!jailhouse_paravirt())
-+				break;
- 		}
- 		fn = next_fn(bus, dev, fn);
- 	} while (fn >= 0);
-@@ -2859,29 +2864,14 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
- {
- 	unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
- 	unsigned int start = bus->busn_res.start;
--	unsigned int devfn, fn, cmax, max = start;
-+	unsigned int devfn, cmax, max = start;
- 	struct pci_dev *dev;
--	int nr_devs;
- 
- 	dev_dbg(&bus->dev, "scanning bus\n");
- 
- 	/* Go find them, Rover! */
--	for (devfn = 0; devfn < 256; devfn += 8) {
--		nr_devs = pci_scan_slot(bus, devfn);
--
--		/*
--		 * The Jailhouse hypervisor may pass individual functions of a
--		 * multi-function device to a guest without passing function 0.
--		 * Look for them as well.
--		 */
--		if (jailhouse_paravirt() && nr_devs == 0) {
--			for (fn = 1; fn < 8; fn++) {
--				dev = pci_scan_single_device(bus, devfn + fn);
--				if (dev)
--					dev->multifunction = 1;
--			}
--		}
--	}
-+	for (devfn = 0; devfn < 256; devfn += 8)
-+		pci_scan_slot(bus, devfn);
- 
- 	/* Reserve buses for SR-IOV capability */
- 	used_buses = pci_iov_bus_range(bus);
+v1 -> v2
+Add a comma in PATCH 1
+Move separator outside block name in PATCH 1
+Squash whitespace edit into PATCH 2
+Add a colon before memory block visuals in PATCH 1 and PATCH 2
+Add PATCH 3 and PATCH 4
+
+v2 -> v3
+Add TODO edit (PATCH 5)
+Add changes summary
+
+
+---
 -- 
 2.32.0
 
