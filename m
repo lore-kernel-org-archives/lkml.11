@@ -2,129 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA36EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F62C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447643AbiDVMtO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
+        id S233944AbiDVM5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 08:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbiDVMtM (ORCPT
+        with ESMTP id S233098AbiDVM4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:49:12 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D5D56770
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:46:19 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id u15so7228704ple.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:46:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TssqWSCUtM99yB2weekRLelNZn0id75Zrkx5XljmNCI=;
-        b=eVpFjhxnWCXhGc3aru33nXNQWFa6GTAqYVyc6IL5o/roTdkaNcRWwywMzg0sU+Xqvv
-         MtfvBoi02hXEOAxFTLa03aWu2H+EgKWcIi03Ag4IHYkNB5LMJlSVVm7IfezA2ghumVNu
-         4jNkfTWQ0gcv/Tuk8/PljVFEuRRanMh66N18ff9HYFxeO3MhuG2oc5vZW2AwsODGW4hc
-         0KM+tuF0Qiuuysh8VlwQo/3eYQJUoZYLf5QY/b6TV4wKfuSJJBaE5NAIG+5ZrtHuZaNY
-         wj9dLa4+q/PvFSwWvollKWUBn1JFgAkvsrroMdLmoWQrirGlH3tspFUxK0vF1m555U4H
-         Uu6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TssqWSCUtM99yB2weekRLelNZn0id75Zrkx5XljmNCI=;
-        b=XcAs28oHv3yRtA3azasxu4iqtPCQ6ECD9xt6MuO6Vnk5UX2XWCXjUSBGPWoIDu37cq
-         ZFY3H9o2GNiTIs10qXkDb3tH8ITFXS6DvF1tX6MYbK2QwDrjTOEsiPvRBMK799L2PgEf
-         XxSLtqN71U3UXWJTy4g0JfYqLTtH9yVXUQoi+dL7zu09yeOsyYoT1gOc8vOL6s9r7e8+
-         t+q4WOhBGFf1w5WWGntIroxmVpWlmh0di5ZcVb0MDqsAlGVNNpb6XpC54zhYtbnHnIrI
-         k+ywKmsOh9Bd9zqP/9r9mPTugyM/jeFFEnC6X11R/OQJ2KB9ZiTag2VG/vacySlsOgzV
-         277w==
-X-Gm-Message-State: AOAM531oeLLSygE7pQ4Mhm48kvM6a6IkIx4BjkQYk+bCW3Bvi2KP07vu
-        5a/p480/JvAS77V79K+70CY=
-X-Google-Smtp-Source: ABdhPJwnD1YpVhikvRlyFh1pkAgpkFdAnSUzqAOuVn9vieZ74AFaTxJAMMVlsE5U9ZgsCb+pIdYt4w==
-X-Received: by 2002:a17:902:9041:b0:159:e08:5f4b with SMTP id w1-20020a170902904100b001590e085f4bmr4395515plz.33.1650631578618;
-        Fri, 22 Apr 2022 05:46:18 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id v16-20020a62a510000000b0050759c9a891sm2538866pfm.6.2022.04.22.05.46.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 05:46:16 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 21:46:09 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     linux-mm@kvack.org, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Fri, 22 Apr 2022 08:56:46 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A328B527F5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:53:53 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-Bd_z2wt5MJGVJ2gBpQCfPQ-1; Fri, 22 Apr 2022 08:53:49 -0400
+X-MC-Unique: Bd_z2wt5MJGVJ2gBpQCfPQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 53F1A38337E2;
+        Fri, 22 Apr 2022 12:53:48 +0000 (UTC)
+Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BC8A3C28107;
+        Fri, 22 Apr 2022 12:53:45 +0000 (UTC)
+From:   Alexey Gladkov <legion@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 08/15] mm/sl[auo]b: cleanup kmalloc()
-Message-ID: <YmKjkU2mFrZsle4M@hyeyoo>
-References: <20220308114142.1744229-1-42.hyeyoo@gmail.com>
- <20220308114142.1744229-9-42.hyeyoo@gmail.com>
- <d35ce303-c72d-2c7f-8785-4aee7237d05e@suse.cz>
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Daniel Walsh <dwalsh@redhat.com>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Linux Containers <containers@lists.linux.dev>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH v1 0/4] ipc: Remove extra1 field abuse to pass ipc namespace
+Date:   Fri, 22 Apr 2022 14:53:36 +0200
+Message-Id: <cover.1650631347.git.legion@kernel.org>
+In-Reply-To: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
+References: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d35ce303-c72d-2c7f-8785-4aee7237d05e@suse.cz>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 06:46:34PM +0100, Vlastimil Babka wrote:
-> On 3/8/22 12:41, Hyeonggon Yoo wrote:
-> > Now that kmalloc() and kmalloc_node() do same job, make kmalloc()
-> > wrapper of kmalloc_node().
-> > 
-> > Remove kmalloc_trace() that is now unused. This patch makes slab
-> > allocator use kmalloc_node tracepoints in kmalloc().
-> > 
-> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> 
-> Actually there are more things to fix than the commit log.
-> 
-> > +#ifndef CONFIG_SLOB
-> > +static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
-> > +{
-> > +	if (__builtin_constant_p(size)) {
-> > +		unsigned int index;
-> > +
-> > +		if (size > KMALLOC_MAX_CACHE_SIZE)
-> > +			return kmalloc_large(size, flags);
-> 
-> Should use kmalloc_large_node().
-> 
-> > +
-> > +		index = kmalloc_index(size);
-> > +
-> > +		if (!index)
-> > +			return ZERO_SIZE_PTR;
-> > +
-> > +		return kmem_cache_alloc_node_trace(
-> > +				kmalloc_caches[kmalloc_type(flags)][index],
-> > +						flags, node, size);
-> > +	}
-> > +	return __kmalloc_node(size, flags, node);
-> > +}
-> > +#else
-> > +static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
-> > +{
-> > +	if (__builtin_constant_p(size) && size > KMALLOC_MAX_CACHE_SIZE)
-> > +		return kmalloc_large(size, flags);
-> 
-> And here.
-> 
+These patches are made on top of branch:
 
-Sorry for the mistake. did it in v2. thanks!
+git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git per-namespace-ipc-sysctls-for-v5.18
 
-> > +
-> > +	return __kmalloc_node(size, flags, node);
-> > +}
-> > +#endif
+After discussion, I took into account Eric Biederman's fixes. With these
+changes, the hacks of passing namespace through .extra1 are not required.
+
+With the current design of sysctl dynamic memory allocation is
+necessary.
+
+Yes, Linus, these changes are not the refactoring you were talking
+about, but I plan to try to do such a refactoring in the my next
+patchset.
+
+--
+
+Alexey Gladkov (4):
+  ipc: Remove extra1 field abuse to pass ipc namespace
+  ipc: Use proper ipc namespace
+  ipc: Check permissions for checkpoint_restart sysctls at open time
+  ipc: Remove extra braces
+
+ ipc/ipc_sysctl.c | 108 +++++++++++++++++++++--------------------------
+ 1 file changed, 49 insertions(+), 59 deletions(-)
 
 -- 
-Thanks,
-Hyeonggon
+2.33.2
+
