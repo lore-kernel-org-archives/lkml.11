@@ -2,135 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3E7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232336AbiDVWPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
+        id S232239AbiDVWPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232321AbiDVWPO (ORCPT
+        with ESMTP id S232204AbiDVWPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:15:14 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B7F23E3F2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:05:05 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so6034864wmn.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:05:05 -0700 (PDT)
+        Fri, 22 Apr 2022 18:15:16 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD3323668D;
+        Fri, 22 Apr 2022 14:05:18 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id b17so6961114qvp.6;
+        Fri, 22 Apr 2022 14:05:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gmRkt5N52LVAcW5jIpeF1Nn5yhhAyoF29FUFsd01Fns=;
-        b=brYIpV1+gbZnACdgtobiaHYB0nSPaEQY0ScB0C1CEeIsPotvLvC9d7oCAEPCZgA89C
-         uxr4XWWt08JrUjRW2taPLwIBI0l08LIQ+tdBDD3Dcvl2N+LHeNiiWLLSiJ/2nAXSmxbW
-         5V6Qt8AQIHi92IOyOLysC7CDhQRUu7lZDi7hKcHVobTK+mt9yg3GXLl1gnF6CUN511k8
-         2dACgkZB0zdoeD223DTUdfjYRFediBrQ/WkFCx20AwAddSmuDegIlAyVpQMaA+YkJeVl
-         i9/jYTuvmZKVUkEHz5l8/VZdcoi46D7lI/zvaAmJgrcM3qXnC1vMcqvjxQtND51sdUpm
-         7npA==
+        bh=DpzKp6GQylN2DVn3Q8F44AaoMz54tuxDB2xUboNmmNk=;
+        b=pzvr3/UvSftncfosMfmgiWOYhMYbYHuIZTCgY5hDDTvmyy0dEedr9JVfuEeVSTpSm5
+         Wod5E9A0cF7e6X5SdVy8UQacTpGtFKdz/js8K/09qJ95ej2UAw2PGlDkrsu+YG2dXUGA
+         p/jEJQdqi+LBuQNomKnUI+S9NQyVkZ2ZnEbNnNiPIsX8T4w6VzABtzJx/TXysyHMCVQ+
+         ScUWgjAh3cPwFtBgN8jKf/CoS7zoCpT0JVr0YNB0YwEC8YxElSpInoxiPR7dP6Gy9x+x
+         Z2XHiikQMiTNKC8bErgRGi2i/cEQhRjtXly2a1DC44EwlTnp4zUihn+XzrUyE57MfFZT
+         LYeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gmRkt5N52LVAcW5jIpeF1Nn5yhhAyoF29FUFsd01Fns=;
-        b=Mv9TphPu+oSFPk1fFbitWobXuhyUXSDdtoyZHkv1SnMimvK90ilUOHDON/sDvijY25
-         MR7qNBSzKG2mT7f0p0XdrRsvdYDGfRPgLFwkf4UDGKw9P+9MjUVRcfmIybBgLas0/aZ3
-         Qfwuk02nXuBlUFS9WfOd7jCPyZAgWjh8mn5ixF+h0l4w3ciHEK1slVzFZZkecB0+HQVr
-         sQ9dssKWAEEKNF+bg7MWICfY+EQZbSOzll7rOn0MNAkn9Bs6QiEp8nj3+BP971pKWlX3
-         2ddNflF+xovKHTUjZTr0C+m70imqHeD9doPe8/YH+20gts2tlYvQQgwf32s89cxyOiKx
-         M0IQ==
-X-Gm-Message-State: AOAM533A/lBUhU3DFiOzReSyVCwV7CmkQ3qTM0SDlWCdfNk//PdTnCGs
-        n6FkLFvzwIuVZgG30uRcKdnFHWLx9/vO5Wr+u9o=
-X-Google-Smtp-Source: ABdhPJwKs/6J6K59SHxPCUJVmRs3c/Et02MftfleiTfkZ7qpvT/EN+91VaTZjZn+ojcG4yAIgaCF1NrTLKUqpfpuOBY=
-X-Received: by 2002:a05:600c:3011:b0:38e:ba57:8b79 with SMTP id
- j17-20020a05600c301100b0038eba578b79mr14709846wmh.26.1650661503393; Fri, 22
- Apr 2022 14:05:03 -0700 (PDT)
+        bh=DpzKp6GQylN2DVn3Q8F44AaoMz54tuxDB2xUboNmmNk=;
+        b=N+dern6iTZrA/2UvQsr6Y52jn8zymardWbbx95HxpdlyZEHU0GjMAhiSiuBcWU6ygK
+         JvfCgYSLuYmROy/fJwQDjacL8Z26faSRt/7q+beB70rfc12J3+jrUYoa3of+uVgVOn8r
+         E0I3Cha8DP6onWwoH6uDGhYrXN0tjv0lYjfsOL/h4s6rAHmkmMnRct/kEU5pURDnwn+u
+         jLIR9LJuEdROgHTQH9jEsbxMhgu77xSQKO3yBuhhcTCkBSyEq0t6vd7LJxhqOmp1tFVj
+         /fsF/Urs+Z1Da7L6xRV5AHESN3hbjFZCoDcZ475N18TUP89AJOhbCYU+21J3cifOSl/X
+         tnWQ==
+X-Gm-Message-State: AOAM533V03zKTB0KHH5xciSahmWiExG0lVdxqoqtnCrR4CoYYoVLgztQ
+        L0rfaX+MxMSzwBqpHdHMyvbxV359xb7uLrvxjhSuX17I
+X-Google-Smtp-Source: ABdhPJyDTdfYVPmGi9JCDZSwQ3dGVcvDeC8/OPyjPu7IjhwDECkrHzuq3quIB48TTMhTBLoEclHmpE49GOqp3rGJBbM=
+X-Received: by 2002:ad4:5943:0:b0:446:5c3e:2c2a with SMTP id
+ eo3-20020ad45943000000b004465c3e2c2amr4554955qvb.75.1650653101635; Fri, 22
+ Apr 2022 11:45:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220405173918.1000846-1-robdclark@gmail.com> <CAPaKu7Tur-_Kf3Lb9U=98Yr_08onxPHNKTPh2anHU6zLPhr5ZQ@mail.gmail.com>
-In-Reply-To: <CAPaKu7Tur-_Kf3Lb9U=98Yr_08onxPHNKTPh2anHU6zLPhr5ZQ@mail.gmail.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Fri, 22 Apr 2022 14:06:08 -0700
-Message-ID: <CAF6AEGsUVDbqYOeDBXBOySfs+7ftVf5_86CiFGOLfY9fmQuEVQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/virtio: Add execbuf flag to request no fence-event
-To:     Chia-I Wu <olvaffe@gmail.com>
-Cc:     ML dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "open list:VIRTIO GPU DRIVER" 
-        <virtualization@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <BYAPR20MB24721F9954252BECBEF486ACBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+In-Reply-To: <BYAPR20MB24721F9954252BECBEF486ACBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+From:   Vasily Khoruzhick <anarsoul@gmail.com>
+Date:   Fri, 22 Apr 2022 11:44:35 -0700
+Message-ID: <CA+E=qVfMm=8aQOM_HW_3EeqqLi-Fgn1Ex3h6kor89FQ0KfTvRw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: thermal: sun8i-thermal: add binding for
+ R329 THS
+To:     icenowy@outlook.com
+Cc:     Yangtao Li <tiny.windzz@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-linux <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Icenowy Zheng <icenowy@aosc.io>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 10:57 AM Chia-I Wu <olvaffe@gmail.com> wrote:
+On Fri, Apr 22, 2022 at 9:12 AM <icenowy@outlook.com> wrote:
 >
-> On Tue, Apr 5, 2022 at 10:38 AM Rob Clark <robdclark@gmail.com> wrote:
-> >
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > It would have been cleaner to have a flag to *request* the fence event.
-> > But that ship has sailed.  So add a flag so that userspace which doesn't
-> > care about the events can opt-out.
-> >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
+> From: Icenowy Zheng <icenowy@aosc.io>
 >
-> Might want to wait for Gurchetan to chime in as he added the mechanism.
+> R329 has a thermal sensor controller that has only one sensor, and the
+> structure of it is like the H6 one.
+>
+> Add device tree binding for it.
+>
+> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> ---
+>  .../devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml  | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+> index 6e0b110153b0..87b4103e0a5f 100644
+> --- a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+> +++ b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+> @@ -20,6 +20,7 @@ properties:
+>        - allwinner,sun50i-a100-ths
+>        - allwinner,sun50i-h5-ths
+>        - allwinner,sun50i-h6-ths
+> +      - allwinner,sun50i-r329-ths
+>
+>    clocks:
+>      minItems: 1
+> @@ -63,6 +64,7 @@ allOf:
+>              enum:
+>                - allwinner,sun50i-a100-ths
+>                - allwinner,sun50i-h6-ths
+> +              - allwinner,sun50i-r329-ths
+>
+>      then:
+>        properties:
+> @@ -85,6 +87,7 @@ allOf:
+>          compatible:
+>            contains:
+>              const: allwinner,sun8i-h3-ths
+> +            const: allwinner,sun8i-r329-ths
+>
+>      then:
+>        properties:
 
-It turns out this patch is unnecessary.. I can simply not set
-VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK instead
+There's also a check at line #99 that requires clock, clock-names and
+resets properties for thermal sensors in other Allwinner SoCs. Are
+these not required for r329?
 
-so self-nak for this patch ;-)
+Also are you planning to add a node for thermal sensor to r329 dtsi?
 
-BR,
--R
 
-> > ---
-> >  drivers/gpu/drm/virtio/virtgpu_ioctl.c | 8 +++++---
-> >  include/uapi/drm/virtgpu_drm.h         | 2 ++
-> >  2 files changed, 7 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-> > index 3a8078f2ee27..09f1aa263f91 100644
-> > --- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-> > +++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-> > @@ -225,9 +225,11 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
-> >                 goto out_unresv;
-> >         }
-> >
-> > -       ret = virtio_gpu_fence_event_create(dev, file, out_fence, ring_idx);
-> > -       if (ret)
-> > -               goto out_unresv;
-> > +       if (!(exbuf->flags & VIRTGPU_EXECBUF_NO_EVENT)) {
-> > +               ret = virtio_gpu_fence_event_create(dev, file, out_fence, ring_idx);
-> > +               if (ret)
-> > +                       goto out_unresv;
-> > +       }
-> >
-> >         if (out_fence_fd >= 0) {
-> >                 sync_file = sync_file_create(&out_fence->f);
-> > diff --git a/include/uapi/drm/virtgpu_drm.h b/include/uapi/drm/virtgpu_drm.h
-> > index 0512fde5e697..d06cac3407cc 100644
-> > --- a/include/uapi/drm/virtgpu_drm.h
-> > +++ b/include/uapi/drm/virtgpu_drm.h
-> > @@ -52,10 +52,12 @@ extern "C" {
-> >  #define VIRTGPU_EXECBUF_FENCE_FD_IN    0x01
-> >  #define VIRTGPU_EXECBUF_FENCE_FD_OUT   0x02
-> >  #define VIRTGPU_EXECBUF_RING_IDX       0x04
-> > +#define VIRTGPU_EXECBUF_NO_EVENT       0x08
-> >  #define VIRTGPU_EXECBUF_FLAGS  (\
-> >                 VIRTGPU_EXECBUF_FENCE_FD_IN |\
-> >                 VIRTGPU_EXECBUF_FENCE_FD_OUT |\
-> >                 VIRTGPU_EXECBUF_RING_IDX |\
-> > +               VIRTGPU_EXECBUF_NO_EVENT |\
-> >                 0)
-> >
-> >  struct drm_virtgpu_map {
-> > --
-> > 2.35.1
-> >
+> --
+> 2.35.1
+>
