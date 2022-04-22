@@ -2,103 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D346C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27804C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448215AbiDVPPb (ORCPT
+        id S1449297AbiDVPQO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
+        Fri, 22 Apr 2022 11:16:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449332AbiDVPP0 (ORCPT
+        with ESMTP id S1355821AbiDVPQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:15:26 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CA95DA21
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:12:27 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso8166364wml.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:12:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RTXQxTUlDy/+XtQ3FRDbwb/fEP0/XOiKskHAERCJ+aA=;
-        b=Li35G7NpXuvuBIHaNfZEPJ/UkjIgIle1to/jslIte4pPT7SoHLW9heC5fTTcFJUiZX
-         Z+L2yRuLcsU4nH2o3sHramC8AjH2M7vYdn9NNa62cdZfDK6Myg5AcUjywaYGzhXsOff7
-         0mei52r8X848r3jjymXS7WJP+25/4BTUXDHet1DWXTcdTuFZL03XsyGj1tzE3rPcXs4e
-         9hCKEpO6xuyWagFlDEU96BvE/XX/XNvqLgGgKtoZ+OJ+4jt80aSCEVMJK+RizhJv+4Dg
-         3UxE+OzXPvh8hB0FdsLXh2chCOgrcdbPSgnS8ST8NzhVmnlnY/LGNyab+lPyFbve99/w
-         RODg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RTXQxTUlDy/+XtQ3FRDbwb/fEP0/XOiKskHAERCJ+aA=;
-        b=eG3TCoW6fIru3YUef7g9mCBG1KWwNw2e8kgu1Y+wr4vNWzTEknQi0I4ZdgUTiC2DUw
-         NlEdqBIHIDViRMhAm0jlgXvcF6Qc74Dd1XrLNhbKUmnIXF2EhKiLOnRjUulnIq+qKcLu
-         Mm7D0b60HAM0tIflhlazsRq5K0t/H4G650TuHA2gZljPcJY3kK6xMASIGdufL8Kg0kG8
-         c6lZVasxNCzgsa1diDs9YBa5z/DyM+8bKgX5lkSgH2BjENC+sXo7gzNz92p30JOgtX+H
-         ZI1BcJzu7FasytrWH7RWQiXtNNmKIzlzLKVnX1MZllnCeZWPkttX4uj2drS/DYN3wgH+
-         5xuw==
-X-Gm-Message-State: AOAM533uWWHGKoBo2Ue5nQjwQcEzR/0eBlaCN10JnZcZMB1YGD6a1mNK
-        YqavwN2yZzSTvHR5XcMO9oI=
-X-Google-Smtp-Source: ABdhPJx/9ozGt+podmI9X7yq2z0UtTmdQqvAQs7KH6K85Wh/0AMDUalJOhps+qXlZoJnjpD9AeZZEw==
-X-Received: by 2002:a05:600c:20c7:b0:38e:bf41:edef with SMTP id y7-20020a05600c20c700b0038ebf41edefmr13797138wmm.173.1650640346174;
-        Fri, 22 Apr 2022 08:12:26 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b0020aa790a258sm2031690wra.8.2022.04.22.08.12.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 08:12:25 -0700 (PDT)
-Message-ID: <8a341814-6165-df6c-e99f-afc38a46448e@gmail.com>
-Date:   Fri, 22 Apr 2022 17:12:24 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] arm: mediatek: select arch timer for mt7629
-Content-Language: en-US
-To:     Chuanhong Guo <gch981213@gmail.com>,
+        Fri, 22 Apr 2022 11:16:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985AE5D5E5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:13:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E63EB830D9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:13:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E4FC385A0;
+        Fri, 22 Apr 2022 15:13:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650640395;
+        bh=GSg4cKn8K7Kb7YLezUWWALENHN/BmeeuDFc8lszaIh4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QaMbMs6JoP5KhJZRh3Ctuhun2xY4R+R2Q5z295CSpRETPtM58rloMPd1zp2Kl3Mm7
+         DtQf1b+4KF/puxCxVEtniCviypLvQyqRCVt6mQcbyWyeZPwqHDrYZxU7Rn1g8z/iat
+         rtpH6X3Hb69cBqLmQ8GL8s4L+cAW+/PKwUYO1I5k=
+Date:   Fri, 22 Apr 2022 17:13:11 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Stefan Wahren <stefan.wahren@i2se.com>
+Cc:     Adrien Thierry <athierry@redhat.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Takashi Iwai <tiwai@suse.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220409091347.2473449-1-gch981213@gmail.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220409091347.2473449-1-gch981213@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] staging: bcm2835-audio: delete TODO
+Message-ID: <YmLGB8bhHs8cRFVM@kroah.com>
+References: <20220420174401.305964-1-athierry@redhat.com>
+ <YmK+aiaaVLtadGVT@kroah.com>
+ <97917592-6e11-dd82-3f41-893da6b15f6a@i2se.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <97917592-6e11-dd82-3f41-893da6b15f6a@i2se.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 09/04/2022 11:13, Chuanhong Guo wrote:
-> This chip has an armv7 arch timer according to the dts. Select it in
-> Kconfig to enforce the support for it.
-> Otherwise the system time is just completely wrong if user forget to
-> enable ARM_ARCH_TIMER in kernel config.
+On Fri, Apr 22, 2022 at 04:58:22PM +0200, Stefan Wahren wrote:
+> Hi Greg,
 > 
-> Fixes: a43379dddf1b ("arm: mediatek: add MT7629 smp bring up code")
-> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-
-Applied, thanks!
-
-> ---
->   arch/arm/mach-mediatek/Kconfig | 1 +
->   1 file changed, 1 insertion(+)
+> Am 22.04.22 um 16:40 schrieb Greg Kroah-Hartman:
+> > On Wed, Apr 20, 2022 at 01:44:00PM -0400, Adrien Thierry wrote:
+> > > Delete TODO since all tasks were completed:
+> > > 
+> > > 1 - fixed here:
+> > > https://lore.kernel.org/all/20220408150359.26661-1-athierry@redhat.com/
+> > > 
+> > > 2 - there are no remaining checkpatch.pl errors or warnings
+> > > 
+> > > Signed-off-by: Adrien Thierry <athierry@redhat.com>
+> > > ---
+> > >   drivers/staging/vc04_services/bcm2835-audio/TODO | 10 ----------
+> > >   1 file changed, 10 deletions(-)
+> > >   delete mode 100644 drivers/staging/vc04_services/bcm2835-audio/TODO
+> > > 
+> > > diff --git a/drivers/staging/vc04_services/bcm2835-audio/TODO b/drivers/staging/vc04_services/bcm2835-audio/TODO
+> > > deleted file mode 100644
+> > > index b85451255db0..000000000000
+> > > --- a/drivers/staging/vc04_services/bcm2835-audio/TODO
+> > > +++ /dev/null
+> > > @@ -1,10 +0,0 @@
+> > > -*****************************************************************************
+> > > -*                                                                           *
+> > > -*                           TODO: BCM2835-AUDIO                             *
+> > > -*                                                                           *
+> > > -*****************************************************************************
+> > > -
+> > > -1) Revisit multi-cards options and PCM route mixer control (as per comment
+> > > -https://lore.kernel.org/lkml/s5hd0to5598.wl-tiwai@suse.de)
+> > > -
+> > > -2) Fix the remaining checkpatch.pl errors and warnings.
+> > > -- 
+> > > 2.35.1
+> > > 
+> > > 
+> > Great, so now it can be merged to the real part of the kernel?  If not,
+> > what's left for that to happen?
 > 
-> diff --git a/arch/arm/mach-mediatek/Kconfig b/arch/arm/mach-mediatek/Kconfig
-> index 9e0f592d87d8..35a3430c7942 100644
-> --- a/arch/arm/mach-mediatek/Kconfig
-> +++ b/arch/arm/mach-mediatek/Kconfig
-> @@ -30,6 +30,7 @@ config MACH_MT7623
->   config MACH_MT7629
->   	bool "MediaTek MT7629 SoCs support"
->   	default ARCH_MEDIATEK
-> +	select HAVE_ARM_ARCH_TIMER
->   
->   config MACH_MT8127
->   	bool "MediaTek MT8127 SoCs support"
+> bcm2835-audio depends on interface/vchiq_arm in a parallel directory. Its
+> TODO list is a little bit longer.
+
+Ah, yeah, still more work to do :(
