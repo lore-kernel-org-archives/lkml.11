@@ -2,158 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F38C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2248CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448502AbiDVOOc (ORCPT
+        id S1448507AbiDVOPl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
+        Fri, 22 Apr 2022 10:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234200AbiDVOMa (ORCPT
+        with ESMTP id S1379901AbiDVOPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:12:30 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B805A587;
-        Fri, 22 Apr 2022 07:09:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650636577; x=1682172577;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=6akx0CiupvwXO1vtbAdVV4tYTT2zaMA+nYRJhmClGOY=;
-  b=J4LBNc+q10NSuH7ZgjCL393DMhNuVLzhphVZ/0924AeNna2SQ1sWBL2G
-   9Oy3VwPbOcOoqZZDd/VDkQ+0jgAB9zxVp06Nd56zBYzD1Dq53tWTvq040
-   8PlfpKLCjCZTN9gx7jlBe2lPorzNURh4gk4wXlBNWW1hNv/Ho/yBhEMsq
-   g=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 22 Apr 2022 07:09:37 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:09:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 07:09:36 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 07:09:31 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v10 08/12] arm64: dts: qcom: sc7280: Add lpass cpu node
-Date:   Fri, 22 Apr 2022 19:38:37 +0530
-Message-ID: <1650636521-18442-9-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
+        Fri, 22 Apr 2022 10:15:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82A635A5B9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:12:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650636762;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=icM2kJqBL5swedCTabkxjhxKVdLrnSGbQ92HmnIvSYg=;
+        b=JrzsHb+Ryd2jqDnZleS3a8VK8LWd3LU//8JpP716layoRB04j4JPrLJlQTFeGic+Q8xFEL
+        zP2PDLzBktCTN5unt2QymhBsnjTtQkfT+K8E3VwsIxuFsDcufQbuI/VPr8wqZPfX8lmjGg
+        LcHk7fb/NpjQEqavGnczhP+fHb6AfIw=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-lGz7hQExMPO6vA0oKna20g-1; Fri, 22 Apr 2022 10:12:41 -0400
+X-MC-Unique: lGz7hQExMPO6vA0oKna20g-1
+Received: by mail-qk1-f200.google.com with SMTP id j12-20020ae9c20c000000b0069e8ac6b244so5507055qkg.1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:12:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=icM2kJqBL5swedCTabkxjhxKVdLrnSGbQ92HmnIvSYg=;
+        b=H/0dL2vUxeyBZ7HyAqpRM8fVM1OUYgjPr+vG7tjnxAPTN7i5HHNJWCP1vieSqUraz5
+         Ul4Wq0nwXjWlh3CEFe+EK3FegdnCmtx0ERLpcphNRvC+XuyPHX8RX1UdcpvTQjOm/O77
+         HHo5fgqJ/C3pV/wuUD567CcZPWY+TkaCf6zTyvm+GNp2jXJA1HFbwHvhv9wPcPU0izWe
+         p2bfUrrGSN8UGVtXjp+RFo8aDHpW36HtvCsyB3KyfI4rqZebR6khZOw24nDio4DP+qga
+         y9Lfx/ijJfVKYQGa00M4NHiv/iGUgC6NIREJALWMpsvPzDvvlrHoGmpkaZlHC0mM9Vl7
+         /AMA==
+X-Gm-Message-State: AOAM531EYknAtEA2uVg4SmMSvyklYzgWQoTz5gMCPfl292p+MIqeQpMA
+        bad69unkWaVd7fAKzIyF6eXiH9ZtqF82X6dJVoLBWURSidRTWDy7NMiHPPxWbgcsdeIj6cA7Bot
+        Uoab0xLzSYsQrY7yXSBqeQwQA
+X-Received: by 2002:a37:6041:0:b0:680:f510:79c8 with SMTP id u62-20020a376041000000b00680f51079c8mr2887068qkb.570.1650636760936;
+        Fri, 22 Apr 2022 07:12:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxD2Cj3ZZhQfaByRYJjN4P7n/034MshjTtdGQjVPY/4hzMhBzbBnxIlHQURGCeoxRKwJndQlA==
+X-Received: by 2002:a37:6041:0:b0:680:f510:79c8 with SMTP id u62-20020a376041000000b00680f51079c8mr2887042qkb.570.1650636760699;
+        Fri, 22 Apr 2022 07:12:40 -0700 (PDT)
+Received: from ?IPV6:2600:1700:5610:6e80::41? ([2600:1700:5610:6e80::41])
+        by smtp.gmail.com with ESMTPSA id b126-20020a37b284000000b0069a11927e57sm935609qkf.101.2022.04.22.07.12.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 07:12:40 -0700 (PDT)
+Message-ID: <19b324a4-f69c-1624-fbc7-e178b7c31d81@redhat.com>
+Date:   Fri, 22 Apr 2022 10:12:39 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC 2/3] futex: exit: Print a warning when futex_cleanup fails
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
+        Arjan van de Ven <arjan@infradead.org>,
+        Ulrich Drepper <drepper@redhat.com>
+References: <20220421190533.1601879-1-npache@redhat.com>
+ <20220421190533.1601879-3-npache@redhat.com>
+ <YmGwzRIHFlKZk3Hm@casper.infradead.org>
+From:   Nico Pache <npache@redhat.com>
+In-Reply-To: <YmGwzRIHFlKZk3Hm@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add lpass cpu node for audio on sc7280 based platforms.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 62 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 9c46dc4..9b764c7 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -21,6 +21,7 @@
- #include <dt-bindings/reset/qcom,sdm845-aoss.h>
- #include <dt-bindings/reset/qcom,sdm845-pdc.h>
- #include <dt-bindings/soc/qcom,rpmh-rsc.h>
-+#include <dt-bindings/sound/qcom,lpass.h>
- #include <dt-bindings/thermal/thermal.h>
- 
- / {
-@@ -2195,6 +2196,67 @@
- 			#power-domain-cells = <1>;
- 		};
- 
-+		lpass_cpu: audio@3987000 {
-+			compatible = "qcom,sc7280-lpass-cpu";
-+
-+			reg = <0 0x03987000 0 0x68000>,
-+			      <0 0x03b00000 0 0x29000>,
-+			      <0 0x03260000 0 0xc000>,
-+			      <0 0x03280000 0 0x29000>,
-+			      <0 0x03340000 0 0x29000>,
-+			      <0 0x0336c000 0 0x3000>;
-+			reg-names = "lpass-hdmiif",
-+				    "lpass-lpaif",
-+				    "lpass-rxtx-cdc-dma-lpm",
-+				    "lpass-rxtx-lpaif",
-+				    "lpass-va-lpaif",
-+				    "lpass-va-cdc-dma-lpm";
-+
-+			iommus = <&apps_smmu 0x1820 0>,
-+				 <&apps_smmu 0x1821 0>,
-+				 <&apps_smmu 0x1832 0>;
-+
-+			power-domains =	<&rpmhpd SC7280_LCX>;
-+			power-domain-names = "lcx";
-+			required-opps = <&rpmhpd_opp_nom>;
-+
-+			clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_EXT_MCLK0_CLK>,
-+				 <&lpasscore LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
-+				 <&lpasscore LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
-+				 <&lpasscore LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
-+				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
-+				 <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
-+			clock-names = "aon_cc_audio_hm_h",
-+				      "audio_cc_ext_mclk0",
-+				      "core_cc_sysnoc_mport_core",
-+				      "core_cc_ext_if0_ibit",
-+				      "core_cc_ext_if1_ibit",
-+				      "audio_cc_codec_mem",
-+				      "audio_cc_codec_mem0",
-+				      "audio_cc_codec_mem1",
-+				      "audio_cc_codec_mem2",
-+				      "aon_cc_va_mem0";
-+
-+			#sound-dai-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "lpass-irq-lpaif",
-+					  "lpass-irq-hdmi",
-+					  "lpass-irq-vaif",
-+					  "lpass-irq-rxtxif";
-+
-+			status = "disabled";
-+		};
-+
- 		lpass_hm: clock-controller@3c00000 {
- 			compatible = "qcom,sc7280-lpasshm";
- 			reg = <0 0x3c00000 0 0x28>;
--- 
-2.7.4
+On 4/21/22 15:30, Matthew Wilcox wrote:
+> On Thu, Apr 21, 2022 at 03:05:32PM -0400, Nico Pache wrote:
+>> @@ -1007,13 +1013,15 @@ static inline void exit_pi_state_list(struct task_struct *curr) { }
+>>  static void futex_cleanup(struct task_struct *tsk)
+>>  {
+>>  	if (unlikely(tsk->robust_list)) {
+>> -		exit_robust_list(tsk);
+>> +		if (!exit_robust_list(tsk))
+>> +			pr_info("futex: exit_robust_list failed");
+> 
+> Doesn't this allow a malicious user process to spam the kernel logs
+> with messages?  There needs to be a ratelimit on this, at least.
+Fair point, we'd need a ratelimited print if we want to continue forward with
+this. Additionally we may want to limit this print to debug kernels, but thats
+just a thought.
+
+Thanks for the review :)
+-- Nico
 
