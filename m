@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B68BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447799AbiDVNRP (ORCPT
+        id S1447811AbiDVNR4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49662 "EHLO
+        Fri, 22 Apr 2022 09:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447805AbiDVNRN (ORCPT
+        with ESMTP id S1447845AbiDVNRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:17:13 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36415580EC
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:14:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650633259; x=1682169259;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7SBMJY2Qo5zlpc9kt8+bESQSdagf2RsT2Ca0UID8SSU=;
-  b=YqJxiqd+p2L4n8U8hbPPxqZ2izeksBHU3BRxbi0TXcYWh80aMsGXN8tz
-   Z9WPS25npO3NzjN9saA3X/HLp6WQdmeLypGRgUxaJB8S0bwy/drZSC8dX
-   4JKXN2ca54q/20i4g/fhpz/3/lTQ+ba8nZIyzxbuYki+RkWHR5UGPczjl
-   TQp0i8g5IMeOuP/YUYhErH5QkXQvc+b8tS7OwtrUfzT1xrK57dZuikKoF
-   ogtRdeteT7tobiaHpmvLnwaz+Cvok/0CYKheJ/eB9nkd/yBdv2MHUMV0C
-   riSqVifkQMWT30ddSaUrD+ivrmcaXlwuIYt4IB/sQ6YIIvrfQoLvj2xgb
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262269295"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="262269295"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:14:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="511569890"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 22 Apr 2022 06:14:17 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nht72-000A86-Di;
-        Fri, 22 Apr 2022 13:14:16 +0000
-Date:   Fri, 22 Apr 2022 21:13:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     YunQiang Su <yunqiang.su@cipunited.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: arch/mips/boot/compressed/../../lib/bswapdi.c:5:28: warning: no
- previous prototype for function '__bswapdi2'
-Message-ID: <202204222130.Bc3dL9dC-lkp@intel.com>
+        Fri, 22 Apr 2022 09:17:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05C2580CB;
+        Fri, 22 Apr 2022 06:14:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D404B82CC4;
+        Fri, 22 Apr 2022 13:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C385C385A0;
+        Fri, 22 Apr 2022 13:14:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650633285;
+        bh=ORwNkiby2RNyL2m/1KS8cO2QComBwAdtXIB1jK0vHTo=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=BaQ4NKv6TDZwLyR7t3vX6hDJSB/p1GExF2pBumfyITdm2Kiv/o2ngfY2Mj3Rqqi2F
+         2bKWHXhwvJRZW85sE14gnU2TQQYEO5MdrsuakCzD+xHbItXdshUykMBqnlHXw/5mco
+         svzTdCfQTwQ2HfXWGHCZoDgH3OuYz3uhZ6pUlDGxwOhrX9jUoW41I1FGrqw5j5+jYM
+         e4rT2InR2TptOavNtxj/EBYZ0lDmUgY+zfNjEcgkuSj8Ay74KowdpLVO56WhJFGz8+
+         +B4/P1jHkfj4SMQcP5vGh0Iog6jct8TSt32w1JjZz/80SVtuPVnmb9gYMHzbMmEzV5
+         QwXMD3d0CW8JQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-spi@vger.kernel.org, zhengyongjun3@huawei.com,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220422062641.10486-1-zhengyongjun3@huawei.com>
+References: <20220422062641.10486-1-zhengyongjun3@huawei.com>
+Subject: Re: [PATCH] spi: img-spfi: Fix pm_runtime_get_sync() error checking
+Message-Id: <165063328423.414237.5668240958783910154.b4-ty@kernel.org>
+Date:   Fri, 22 Apr 2022 14:14:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d569e86915b7f2f9795588591c8d5ea0b66481cb
-commit: 31b2f3dc851c65fee288612432c4fc956f1a264e MIPS: enable both vmlinux.gz.itb and vmlinuz for generic
-date:   4 months ago
-config: mips-randconfig-r003-20220422 (https://download.01.org/0day-ci/archive/20220422/202204222130.Bc3dL9dC-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=31b2f3dc851c65fee288612432c4fc956f1a264e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 31b2f3dc851c65fee288612432c4fc956f1a264e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+On Fri, 22 Apr 2022 06:26:41 +0000, Zheng Yongjun wrote:
+> If the device is already in a runtime PM enabled state
+> pm_runtime_get_sync() will return 1, so a test for negative
+> value should be used to check for errors.
+> 
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Applied to
 
-All warnings (new ones prefixed by >>):
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-   In file included from arch/mips/boot/compressed/bswapdi.c:2:
->> arch/mips/boot/compressed/../../lib/bswapdi.c:5:28: warning: no previous prototype for function '__bswapdi2' [-Wmissing-prototypes]
-   unsigned long long notrace __bswapdi2(unsigned long long u)
-                              ^
-   arch/mips/boot/compressed/../../lib/bswapdi.c:5:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   unsigned long long notrace __bswapdi2(unsigned long long u)
-   ^
-   static 
-   1 warning generated.
+Thanks!
 
+[1/1] spi: img-spfi: Fix pm_runtime_get_sync() error checking
+      commit: cc470d55343056d6b2a5c32e10e0aad06f324078
 
-vim +/__bswapdi2 +5 arch/mips/boot/compressed/../../lib/bswapdi.c
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-1ee3630a3e57f3 Ralf Baechle 2015-09-29   4  
-aedcfbe06558a9 Harvey Hunt  2016-05-25  @5  unsigned long long notrace __bswapdi2(unsigned long long u)
-1ee3630a3e57f3 Ralf Baechle 2015-09-29   6  {
-1ee3630a3e57f3 Ralf Baechle 2015-09-29   7  	return (((u) & 0xff00000000000000ull) >> 56) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29   8  	       (((u) & 0x00ff000000000000ull) >> 40) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29   9  	       (((u) & 0x0000ff0000000000ull) >> 24) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  10  	       (((u) & 0x000000ff00000000ull) >>  8) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  11  	       (((u) & 0x00000000ff000000ull) <<  8) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  12  	       (((u) & 0x0000000000ff0000ull) << 24) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  13  	       (((u) & 0x000000000000ff00ull) << 40) |
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  14  	       (((u) & 0x00000000000000ffull) << 56);
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  15  }
-1ee3630a3e57f3 Ralf Baechle 2015-09-29  16  
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-:::::: The code at line 5 was first introduced by commit
-:::::: aedcfbe06558a9f53002e82d5be64c6c94687726 MIPS: lib: Mark intrinsics notrace
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-:::::: TO: Harvey Hunt <harvey.hunt@imgtec.com>
-:::::: CC: Ralf Baechle <ralf@linux-mips.org>
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Mark
