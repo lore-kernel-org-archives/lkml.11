@@ -2,69 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83563C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 874B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445509AbiDVIYU (ORCPT
+        id S1389127AbiDVI1R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        Fri, 22 Apr 2022 04:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444942AbiDVIYC (ORCPT
+        with ESMTP id S1352963AbiDVI1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:24:02 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7397252B39;
-        Fri, 22 Apr 2022 01:21:10 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 1D3581F46407
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650615667;
-        bh=jZ1yUGjJxRjIsaAEZvgaDDyTcXgwZTtd20No3oqT2h4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=QwzsuzAQHVhSLW72Lj01+cKMVuyQIx3Is/+y9cGdlFITHgA70Ur02OemS6vpJWcZa
-         oZR47AvmRC9bunA8smuAQhvMjqrx0FkU4Oj854Esjxo0iqCact9xy8UGXq9DDYXS2n
-         BCfgVmNbovYyNRk6MyDiNhN+6xjGfOiO36vyhFIiPUaovRJtV75yyPl7Cu6MZoGfAX
-         vrbCeFqdPkurb7rgxTpCt/KoUHM7l+MGMSJ65TJm7S9WdYhxqzzsrJL4WiiUYMqvUp
-         m8TK15neG03v0oFuR4fOVIHyGG9/phd/kL/LNWVMHzQgO1txFhq+Z7Six/4tEiNbO4
-         3Xk0cBUTeQ6FA==
-Message-ID: <82731484-8269-786d-a01e-44a2ed960d5c@collabora.com>
-Date:   Fri, 22 Apr 2022 10:21:03 +0200
+        Fri, 22 Apr 2022 04:27:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A3F52E64;
+        Fri, 22 Apr 2022 01:24:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 999D161FDE;
+        Fri, 22 Apr 2022 08:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B304BC385A4;
+        Fri, 22 Apr 2022 08:24:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650615862;
+        bh=VZe04wi9Ke1WpooTFqZ15tO/MjgK1FO8qd/uJToj3Wc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jwwEHEHm2Ma97jStCDyTuowW/EJpEo2brMRPLwYkscX+vZ0y40ShSuC0xXJrlMZLa
+         xGdHODv60Vr4GH4JG7nMd9bk3D1pTOlXGyEvTFDf1QYD4qL/WAMD9sIc8FN1r+zneJ
+         mrXlAHE4xs7kzBye6xymR8SqS8XyXO8Wz0ZUUBgdHDNFdd8X2BcJu6DJRA9RuuKCnT
+         Nt94O5Y2oHiNFmXK1Ws+cejfKO9o2Hoii14u/I8Rs5nMU0nivYbc5jXXV0F2NZD6RE
+         xth+GpJBj1+wprn5x/k1gZHn0AzWiPa8vx7UAjg39037MaOd+BogTDYYtPD7hPcr3Z
+         1tPd+eydP2kOQ==
+Date:   Fri, 22 Apr 2022 11:24:14 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
+Message-ID: <YmJmLrS3hPR6gOaw@kernel.org>
+References: <20220421180200.16901-1-fmdefrancesco@gmail.com>
+ <20220421180200.16901-2-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V4 01/14] dt-bindings: cpufreq: mediatek: Add MediaTek CCI
- property
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
-        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com
-Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
-        hsinyi@google.com, khilman@baylibre.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
- <20220422075239.16437-2-rex-bc.chen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220422075239.16437-2-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421180200.16901-2-fmdefrancesco@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 22/04/22 09:52, Rex-BC Chen ha scritto:
-> MediaTek Cache Coherent Interconnect (CCI) uses software devfreq module
-> for scaling clock frequency and adjust voltage.
-> The phandle could be linked between CPU and MediaTek CCI for some
-> MediaTek SoCs, like MT8183 and MT8186.
-> Therefore, we add this property in cpufreq-mediatek.txt.
+On Thu, Apr 21, 2022 at 08:01:57PM +0200, Fabio M. De Francesco wrote:
+> `scripts/kernel-doc -v -none include/linux/highmem*` reports the following
+> warnings:
 > 
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> include/linux/highmem.h:160: warning: expecting prototype for kunmap_atomic(). Prototype was for nr_free_highpages() instead
+> include/linux/highmem.h:204: warning: No description found for return value of 'alloc_zeroed_user_highpage_movable'
+> include/linux/highmem-internal.h:256: warning: Function parameter or member '__addr' not described in 'kunmap_atomic'
+> include/linux/highmem-internal.h:256: warning: Excess function parameter 'addr' description in 'kunmap_atomic'
+> 
+> Fix these warnings by (1) moving the kernel-doc comments from highmem.h to
+> highmem-internal.h (which is the file were the kunmap_atomic() macro is
+> actually defined), (2) extending and merging it with the comment which was
+> already in highmem-internal.h, and (3) using correct parameter names.
+> 
+> Cc: Mike Rapoport <rppt@linux.ibm.com>
+> Cc: Ira Weiny <ira.weiny@intel.com>
+> Suggested-by: Matthew Wilcox <willy@infradead.org>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>  include/linux/highmem-internal.h | 14 +++++++++++---
+>  include/linux/highmem.h          | 15 +++------------
+>  2 files changed, 14 insertions(+), 15 deletions(-)
+> 
+> diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
+> index a77be5630209..b099a08e29d3 100644
+> --- a/include/linux/highmem-internal.h
+> +++ b/include/linux/highmem-internal.h
+> @@ -236,9 +236,17 @@ static inline unsigned long totalhigh_pages(void) { return 0UL; }
+>  
+>  #endif /* CONFIG_HIGHMEM */
+>  
+> -/*
+> - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
+> - * kunmap_atomic() should get the return value of kmap_atomic, not the page.
+> +/**
+> + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
+> + * @__addr:       Virtual address to be unmapped
+> + *
+> + * Unmap an address previously mapped by kmap_atomic() and re-enables
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Unmap ... and re-enable
 
+or 
+
+Unmaps ... and re-enables
+
+Other than that
+
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+
+> + * pagefaults and preemption. Mappings should be unmapped in the reverse
+> + * order that they were mapped. See kmap_local_page() for details.
+> + * @__addr can be any address within the mapped page, so there is no need
+> + * to subtract any offset that has been added. In contrast to kunmap(),
+> + * this function takes the address returned from kmap_atomic(), not the
+> + * page passed to it. The compiler will warn you if you pass the page.
+>   */
+>  #define kunmap_atomic(__addr)					\
+>  do {								\
+> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+> index 39bb9b47fa9c..c3d562b5f0c1 100644
+> --- a/include/linux/highmem.h
+> +++ b/include/linux/highmem.h
+> @@ -37,7 +37,7 @@ static inline void *kmap(struct page *page);
+>  
+>  /**
+>   * kunmap - Unmap the virtual address mapped by kmap()
+> - * @addr:	Virtual address to be unmapped
+> + * @page:	Virtual address to be unmapped
+>   *
+>   * Counterpart to kmap(). A NOOP for CONFIG_HIGHMEM=n and for mappings of
+>   * pages in the low memory area.
+> @@ -145,17 +145,6 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
+>   */
+>  static inline void *kmap_atomic(struct page *page);
+>  
+> -/**
+> - * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
+> - * @addr:	Virtual address to be unmapped
+> - *
+> - * Counterpart to kmap_atomic().
+> - *
+> - * Effectively a wrapper around kunmap_local() which additionally undoes
+> - * the side effects of kmap_atomic(), i.e. reenabling pagefaults and
+> - * preemption.
+> - */
+> -
+>  /* Highmem related interfaces for management code */
+>  static inline unsigned int nr_free_highpages(void);
+>  static inline unsigned long totalhigh_pages(void);
+> @@ -191,6 +180,8 @@ static inline void clear_user_highpage(struct page *page, unsigned long vaddr)
+>   * @vma: The VMA the page is to be allocated for
+>   * @vaddr: The virtual address the page will be inserted into
+>   *
+> + * Returns: The allocated and zeroed HIGHMEM page
+> + *
+>   * This function will allocate a page for a VMA that the caller knows will
+>   * be able to migrate in the future using move_pages() or reclaimed
+>   *
+> -- 
+> 2.34.1
+> 
+> 
+
+-- 
+Sincerely yours,
+Mike.
