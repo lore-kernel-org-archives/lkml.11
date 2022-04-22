@@ -2,99 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA674C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E93C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444891AbiDVHgN (ORCPT
+        id S1444900AbiDVHh5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        Fri, 22 Apr 2022 03:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444876AbiDVHgJ (ORCPT
+        with ESMTP id S1444876AbiDVHhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:36:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5741515BB;
-        Fri, 22 Apr 2022 00:33:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 22 Apr 2022 03:37:54 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AA1260F;
+        Fri, 22 Apr 2022 00:35:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9226E210F4;
+        Fri, 22 Apr 2022 07:34:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650612899; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CoKlO+fXUiau8VMVUQKx3k/6EuFzG9GIbfxFrogHx6w=;
+        b=dySGsqJdEmSJDYmSvOklfVpkuZHJ23u9g1XhRJDcQoLdKgRG5kmI1lpiTUWcSy7MtqR7zM
+        kXwCyLTlbnp+iE9neiu8jg1lhFPIDng+OjhqwbJ52cuWGbwwYU1o5p6p+n2i/KC3xGvKZl
+        0hE/7gJMEJKlgdQaF4sMg91/V0j/qiM=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 035EACE279A;
-        Fri, 22 Apr 2022 07:33:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD0CC385A4;
-        Fri, 22 Apr 2022 07:33:10 +0000 (UTC)
-Message-ID: <4f4c3348-4eae-f881-74e4-d39aeebf5356@xs4all.nl>
-Date:   Fri, 22 Apr 2022 09:33:09 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 6010B2C146;
+        Fri, 22 Apr 2022 07:34:59 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 09:34:57 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nathan Lynch <nathanl@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] drivers/base/memory: Fix a reference counting issue in
+ __add_memory_block()
+Message-ID: <YmJaoSam6g95yToH@dhcp22.suse.cz>
+References: <d44c63d78aafe844f920dc02ad6af25acc448fcf.1650611702.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 12/24] media: rkvdec: Stop overclocking the decoder
-Content-Language: en-US
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Boris Brezillon <boris.brezillon@collabora.com>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev
-References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
- <20220405204426.259074-13-nicolas.dufresne@collabora.com>
-From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
-In-Reply-To: <20220405204426.259074-13-nicolas.dufresne@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d44c63d78aafe844f920dc02ad6af25acc448fcf.1650611702.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/2022 22:44, Nicolas Dufresne wrote:
-> While this overclock hack seems to work on some implementations
-> (some ChromeBooks, RockPi4) it also causes instability on other
-> implementations (notably LibreComputer Renegade, but there were more
-> reports in the LibreELEC project, where this has been removed). While
-> performance is indeed affected (tested with GStreamer), 4K playback
-> still works as long as you don't operate in lock step and keep at
-> least 1 frame ahead of time in the decode queue.
+On Fri 22-04-22 09:15:21, Christophe JAILLET wrote:
+> There is no point in doing put_device()/device_unregister() on a
+> device that has just been registered a few lines above. This will lead to
+> a double reference decrement.
+
+This is a bit confusing. I would rephrase.
+"
+__add_memory_block calls both put_device and device_unregister when
+storing the memory block into the xarray. This is incorrect because
+xarray doesn't take an additional reference and device_unregister
+already calls put_device.
+"
+
+Btw. I do not think this failure path can be triggered, or is there a
+way to hit it?
+ 
+> I guess that this put_device()/device_unregister() is a cut'n'paste from
+> remove_memory_block() (i.e. unregister_memory() at the time being) which
+> does need it.
 > 
-> After discussion with ChromeOS members, it would seem that their
-> implementation indeed used to synchronously decode each frames, so
+> Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-frames -> frame
+Other than that looks good to me. With the changelog clarified,
+especially the part that evaluates whether this is a real or a
+theoretical problem, feel free to add
+Acked-by: Michal Hocko <mhocko@suse.com>
 
-Regards,
+Thanks!
 
-	Hans
-
-> this hack was simply compensating for their code being less
-> efficient. In my opinion, this hack should not have been included
-> upstream.
-> 
-> Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-> Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 > ---
->  drivers/staging/media/rkvdec/rkvdec.c | 6 ------
->  1 file changed, 6 deletions(-)
+>  drivers/base/memory.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-> index c0cf3488f970..2df8cf4883e2 100644
-> --- a/drivers/staging/media/rkvdec/rkvdec.c
-> +++ b/drivers/staging/media/rkvdec/rkvdec.c
-> @@ -1027,12 +1027,6 @@ static int rkvdec_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
+> diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+> index 7222ff9b5e05..084d67fd55cc 100644
+> --- a/drivers/base/memory.c
+> +++ b/drivers/base/memory.c
+> @@ -636,10 +636,9 @@ static int __add_memory_block(struct memory_block *memory)
+>  	}
+>  	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
+>  			      GFP_KERNEL));
+> -	if (ret) {
+> -		put_device(&memory->dev);
+> +	if (ret)
+>  		device_unregister(&memory->dev);
+> -	}
+> +
+>  	return ret;
+>  }
 >  
-> -	/*
-> -	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
-> -	 * When 4k video playback.
-> -	 */
-> -	clk_set_rate(rkvdec->clocks[0].clk, 500 * 1000 * 1000);
-> -
->  	rkvdec->regs = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(rkvdec->regs))
->  		return PTR_ERR(rkvdec->regs);
+> -- 
+> 2.32.0
 
+-- 
+Michal Hocko
+SUSE Labs
