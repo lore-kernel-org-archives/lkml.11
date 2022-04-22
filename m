@@ -2,111 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA88C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445919AbiDVJSq (ORCPT
+        id S1445992AbiDVJTY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        Fri, 22 Apr 2022 05:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445872AbiDVJMH (ORCPT
+        with ESMTP id S1445937AbiDVJTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:12:07 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A8851E6F
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:09:13 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id g13so15154725ejb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:09:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VlCaDBv0lI+bMbyzSUvp/QCQTyaZL5yq76P9L1bSzBQ=;
-        b=yfbh/IVH9TL8f6D91rmaiLtVr9a+9hMrhh0G0Ce08L9K7Ir1dXIUPQ51SjLXHOpw1o
-         ZKJSnXshJ1ypF5ZGGPvX816do88C79vYfxQMZg6DgJqELawooJjpeW2QK2uv+fdc5FCf
-         yCL0oCldP18VaJcrPVGoZr1F8EDKJNgGYoqLbcKM5iMose5+wIrRercEBRQM39vRLMky
-         aV2+I+HeSbmLhiTWdw/wQYu2BHqE0fA21yDnDw+fbfZJGebOxpOEKjYAFjOvy8ymgxma
-         7aWVrWOcPKUq9z6enLAO6rLWVz3/WVV/am3m8SBNn4wF++RtpxXXap4UdF8SsXF12NPB
-         JhnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VlCaDBv0lI+bMbyzSUvp/QCQTyaZL5yq76P9L1bSzBQ=;
-        b=S1KlYz/zYOdRPRwnVFpTElHBD1tLYjUKGQAGWOlyvLfqF+5jpEbDyXsBgBwf8RKEOA
-         /O1n0oLvRBWGoegLRYV033d0iPL7xlKhgvgSMMch+p8NDT/bIl6aDEH2qX58lBRCBWEE
-         R8IrIvz4RAlULdU9/eV2CHR4kL3LucA7SF5ITxKhp/PMrkP7VvLG6/UZZoW8YaPNzyXs
-         Qvb2s9m6wdP3eBm+MXPzvAd75/+0mrt0jfNnNtNTokhSH/2s5l2P3ulC0r8RBMrSDQcs
-         IsZy9X0S6pfHitJ52iHms7li10A7b11/Z8r4xMo1HhxB9FA7i9WVKzU1nLgW2s8rcoth
-         8REA==
-X-Gm-Message-State: AOAM531BGwY+5JhlXTsC3Dgv9LhbOqV/OcGjtfx/7UiGYrGLm4tcHqBy
-        Go8oRhsDKPyMKsaHbnTMnBmyhw==
-X-Google-Smtp-Source: ABdhPJyJ1gxk2RK2g2BtIkquk3vuHYv5yKKdtM9KZTp5q96PgxAHQPNrOLJ2bGTM3i+6i+rH4s/W7A==
-X-Received: by 2002:a17:906:9458:b0:6e8:86e5:5b8c with SMTP id z24-20020a170906945800b006e886e55b8cmr3230369ejx.325.1650618552021;
-        Fri, 22 Apr 2022 02:09:12 -0700 (PDT)
-Received: from [192.168.0.232] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id v22-20020a50a456000000b00422a4841c61sm660278edb.58.2022.04.22.02.09.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 02:09:11 -0700 (PDT)
-Message-ID: <601a1b5b-7189-cb9e-a945-6f2d49583633@linaro.org>
-Date:   Fri, 22 Apr 2022 11:09:10 +0200
+        Fri, 22 Apr 2022 05:19:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F272DD7;
+        Fri, 22 Apr 2022 02:14:57 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0ADBF1F37B;
+        Fri, 22 Apr 2022 09:14:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650618896; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m/Us7RSSwCeAHIIfY1ScQOueScZTDL2ahZa2WlmjXkQ=;
+        b=EY7t55bhLh/s6WPstIAtba0p2I4u5qaiE/BtrMeRYsZeogxp/XjuYBt/RLaphMNErAE/0e
+        tVjGhFe/HfAGzrdWH7sRVkJuQ6V0PQvtBh4TLmeFLVx1lSC3CaWMkotppGNpbTzHCG54+1
+        POTxsRQJsXjV4wL4JEfA/rJJrsh013I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650618896;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m/Us7RSSwCeAHIIfY1ScQOueScZTDL2ahZa2WlmjXkQ=;
+        b=AEYWSHTOVVsWQHvRtHFdzq1CBpQ5m7pmo2GPoAtrXvwK1B5GaOOgdraTZmXgvZ3PNtd+t9
+        oyy86Q926hzNgmAQ==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D4FDD2C14F;
+        Fri, 22 Apr 2022 09:14:55 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 16CDEA0620; Fri, 22 Apr 2022 11:14:55 +0200 (CEST)
+Date:   Fri, 22 Apr 2022 11:14:55 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     cuibixuan <cuibixuan@linux.alibaba.com>
+Cc:     Jan Kara <jack@suse.cz>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        rostedt <rostedt@goodmis.org>, mingo <mingo@redhat.com>,
+        "yi.zhang" <yi.zhang@huawei.com>, linux-ext4@vger.kernel.org,
+        Ted Tso <tytso@mit.edu>
+Subject: Re: =?utf-8?B?5Zue5aSN77yaW1BBVEM=?= =?utf-8?Q?H?= -next] jbd2: use
+ the correct print format
+Message-ID: <20220422091455.rzr265lcht46gub3@quack3.lan>
+References: <1647619000-17758-1-git-send-email-cuibixuan@linux.alibaba.com>
+ <20220321092503.liyi6eqrar52cc5n@quack3.lan>
+ <df9b8f54-274d-404c-a698-c88a18849810.cuibixuan@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/3] dt-bindings: Document ltrf216a light sensor
- bindings
-Content-Language: en-US
-To:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
-        krisman@collabora.com
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        alvaro.soliverez@collabora.com
-References: <20220421140133.354498-1-shreeya.patel@collabora.com>
- <20220421140133.354498-3-shreeya.patel@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220421140133.354498-3-shreeya.patel@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <df9b8f54-274d-404c-a698-c88a18849810.cuibixuan@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/04/2022 16:01, Shreeya Patel wrote:
+Hello,
 
-Thank you for your patch. There is something to discuss/improve.
+thanks for noticing. It is probably because this patch was not CCed neither
+to ext4 development mailing list, nor to the ext4 maintainer. Added now.
+Ted, can you please pick up this patch? Lore has it so b4, can pick it up
+just fine. Thanks!
 
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    i2c {
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        light-sensor@53 {
-> +                compatible = "liteon,ltrf216a";
+								Honza
 
-You have here unusual indentation - looks like 8 spaces, while the rest
-of example is properly indented with 4 spaces. Please use 4 spaces for
-entire DTS example.
-
-All rest looks good, so with indentation fixes:
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-> +                reg = <0x53>;
-> +                vdd-supply = <&vdd_regulator>;
-> +                interrupt-parent = <&gpio0>;
-> +                interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
-> +        };
-> +    };
-
-
-Best regards,
-Krzysztof
+On Fri 22-04-22 10:42:51, cuibixuan wrote:
+> Hi, 
+> This patch doesn't seem to be merged into the next branch.  :-)
+> 
+> Thanks,
+> Bixuan Cui
+> 
+> On Fri 18-03-22 23:56:40, Bixuan Cui wrote:
+> 
+> > The print format error was found when using ftrace event:
+> >     <...>-1406 [000] .... 23599442.895823: jbd2_end_commit: dev 252,8 transaction -1866216965 sync 0 head -1866217368
+> >     <...>-1406 [000] .... 23599442.896299: jbd2_start_commit: dev 252,8 transaction -1866216964 sync 0
+> > 
+> > Print transaction and head with the unsigned format "%u" instead.
+> > 
+> > Fixes: 879c5e6b7cb4 ('jbd2: convert instrumentation from markers to tracepoints')
+> > Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+> 
+> Makes sense. Thanks for the fix. Feel free to add:
+> 
+> Reviewed-by: Jan Kara <jack@suse.cz>
+> 
+>         Honza
+> 
+> > ---
+> >  include/trace/events/jbd2.h | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/include/trace/events/jbd2.h b/include/trace/events/jbd2.h
+> > index a4dfe005983d..5be1aa1691fb 100644
+> > --- a/include/trace/events/jbd2.h
+> > +++ b/include/trace/events/jbd2.h
+> > @@ -40,7 +40,7 @@ DECLARE_EVENT_CLASS(jbd2_commit,
+> >   TP_STRUCT__entry(
+> >    __field( dev_t, dev   )
+> >    __field( char, sync_commit    )
+> > -  __field( int, transaction    )
+> > +  __field( tid_t, transaction    )
+> >   ),
+> >  
+> >   TP_fast_assign(
+> > @@ -49,7 +49,7 @@ DECLARE_EVENT_CLASS(jbd2_commit,
+> >    __entry->transaction = commit_transaction->t_tid;
+> >   ),
+> >  
+> > - TP_printk("dev %d,%d transaction %d sync %d",
+> > + TP_printk("dev %d,%d transaction %u sync %d",
+> >      MAJOR(__entry->dev), MINOR(__entry->dev),
+> >      __entry->transaction, __entry->sync_commit)
+> >  );
+> > @@ -97,8 +97,8 @@ TRACE_EVENT(jbd2_end_commit,
+> >   TP_STRUCT__entry(
+> >    __field( dev_t, dev   )
+> >    __field( char, sync_commit    )
+> > -  __field( int, transaction    )
+> > -  __field( int, head       )
+> > +  __field( tid_t, transaction    )
+> > +  __field( tid_t, head       )
+> >   ),
+> >  
+> >   TP_fast_assign(
+> > @@ -108,7 +108,7 @@ TRACE_EVENT(jbd2_end_commit,
+> >    __entry->head  = journal->j_tail_sequence;
+> >   ),
+> >  
+> > - TP_printk("dev %d,%d transaction %d sync %d head %d",
+> > + TP_printk("dev %d,%d transaction %u sync %d head %u",
+> >      MAJOR(__entry->dev), MINOR(__entry->dev),
+> >      __entry->transaction, __entry->sync_commit, __entry->head)
+> >  );
+> > -- 
+> > 2.19.1.6.gb485710b
+> > 
+> -- 
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
