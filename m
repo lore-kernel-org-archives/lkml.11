@@ -2,96 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67784C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD730C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445772AbiDVJJD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        id S233614AbiDVJQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 05:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356741AbiDVJJB (ORCPT
+        with ESMTP id S1445900AbiDVJO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:09:01 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CD451E6F
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:06:04 -0700 (PDT)
-Received: from mail-wm1-f49.google.com ([209.85.128.49]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N1gac-1nsqjS1Ud6-0122Ki for <linux-kernel@vger.kernel.org>; Fri, 22 Apr
- 2022 11:06:02 +0200
-Received: by mail-wm1-f49.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso7508456wme.5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:06:02 -0700 (PDT)
-X-Gm-Message-State: AOAM532LFtIDIdVx+YIwRvHce/9bdOE1JicttUh8UOdob6HWiy0sWPK9
-        8xC4/XMebIbitilN0+gaJtXlbfpM+TICk5fVchY=
-X-Google-Smtp-Source: ABdhPJyBJy68LeWxoCtkZpxUNMy01/6v++E4fqe+8tuCDM/CbPdYU7ohbVixofosAP/W+Pe5EImxDo7fKgPauiW5gWg=
-X-Received: by 2002:a7b:ce15:0:b0:38e:b7b0:79be with SMTP id
- m21-20020a7bce15000000b0038eb7b079bemr3153470wmc.71.1650618361979; Fri, 22
- Apr 2022 02:06:01 -0700 (PDT)
+        Fri, 22 Apr 2022 05:14:59 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B0951E76
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:12:07 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id y19-20020a056e02119300b002c2d3ef05bfso4058155ili.18
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:12:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=vO2Cuxa4EB7u/Dij9OoFRHsqcLWpfFLkWXJuU8L5L9A=;
+        b=yqO8118SvfhmozOVyEmnVp5X2RyMK35kjNj1Mwd1lcmmr4ORSfKh1MhOOJqh56GR9u
+         oENZ1RvDavF8uFrZvwc77zlNS5dI7NTfRBteqgQ7G/sE3syeFVO5OKGh8x2wv1wcDLQZ
+         BpJjpqxpGiakeXaNufpFzm1aND/dK7boxxTXbxbrUxuO3hKwf6jawpZU8Hfu4fQJWsxm
+         bqIiyeRxnvrYyjm63Bq8gV2pacIfRJfnZ/JyYW5U2Q4N/IoYvQd5szE8fssmzp5DsI/z
+         N0B1YO4ZDnUFgVHr8QPkxE99ElgU5qpg8mT/tsJi4oCYky+fO3FJpNC6ozCXuhVpfHNH
+         qK7Q==
+X-Gm-Message-State: AOAM530aCe/aLi3Q8FrRMja/bpyj7Lx9e39QmTtLQ5W6v+7XpnL6n1MN
+        /SjS69Mw2kn+Ig+DNgJmCnM1Y5qaxKrNZs5Q/2khefUWbwB+
+X-Google-Smtp-Source: ABdhPJxxAfyF8/7WKDZQDWVL18t1Brcwf2NmDcgVC0u4SDyeW4RN0qI7twNUkMJ5dyhj4HZnVEJFKMz5mXoxDI2duJqVloj7G6NR
 MIME-Version: 1.0
-References: <20220204072234.304543-1-joel@jms.id.au> <20220204072234.304543-2-joel@jms.id.au>
- <YmJPRPhfA4Cki85S@kroah.com>
-In-Reply-To: <YmJPRPhfA4Cki85S@kroah.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 22 Apr 2022 11:05:46 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0G_xNQ6b2e71VXPVi+-j5L--SU37gFErwGYuh1QPrr1A@mail.gmail.com>
-Message-ID: <CAK8P3a0G_xNQ6b2e71VXPVi+-j5L--SU37gFErwGYuh1QPrr1A@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] firmware: Add boot information to sysfs
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Joel Stanley <joel@jms.id.au>, Arnd Bergmann <arnd@arndb.de>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>
+X-Received: by 2002:a92:da8e:0:b0:2cb:e08b:2b7b with SMTP id
+ u14-20020a92da8e000000b002cbe08b2b7bmr1467036iln.165.1650618726451; Fri, 22
+ Apr 2022 02:12:06 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 02:12:06 -0700
+In-Reply-To: <20220422070412.2714-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d995b605dd3a9e93@google.com>
+Subject: Re: [syzbot] kernel BUG in __filemap_get_folio
+From:   syzbot <syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:0NVKVjl/TQk0UtjI91jMgAun+WwfT1DDqE/TxRS4h2d4QQ1MpmQ
- GmWm5FrJXZ0wK43Pz2mfjim4nPccoAMv64WmBasQO60DUuk+1aM6wu+Mxz9lmBlOiDmOTAv
- W7/nkhmryjwBvnDJspjiemL/KTooyGeFcwcPPkN5cfnqsWdPoQF1K6FvSEpw/LjWiG/Hr9l
- qi01RKfbxJhJpOTiaBYjw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:AfU11mqt1Jo=:Z+5KKHD1eVOKYgWMLTlHq6
- pc3TIhIDl8pgFn6UFRad0zQ+kWFRZK8tMGCBh9eB0K/7amQBjPpeqi565U6jg68PYQ6qRDGpG
- LMaPrdTAS8EvwNvMt5c6F3tuMv2uAhFOBDvyhu19cpIjIj9cN7P8v1UqNAGCwSkL8kHpfm2gc
- +g08sQMl70GRVvWHDDFTnRRIUHfaqcZzyc2gWYI9zvE8elyJIxjtmd8xW4ApoJHFVf4vLyBo/
- AS4N93Uf/4TTWlzalAuZRScKNLiZqQGNBK8/v7ifLsmseT3mxLPqc9cs7JqHQH9qr9GyBAqf0
- rBcH0TKQuFuKMIxa1QSXRkMuhqFTedrDFjhqDWSleqUku9G1ZxjefZzL5oI0I2a6PTd4zvp6R
- GaLjZ9dNSqNF++YEE/OKEITUK4nOhmH62eM7KGmIKqDBBP7nVwZIo50rMR/MvHJlV0ePxTLnD
- geU8aWD4LGlmCBzULL1SQw2jZYXeDusshE3ddDoGmTmGLBb/kL35RDd3ycG5F8dkDVkFZcHXi
- edozaRPm3xTOBGHP7U9d/lL3PZhbE7LRuLIjzQ1ujujvPdTdKP4B7XYtTZQQzjDPlvtvDm3MP
- mIF2jhrD5bTQBCbabK2SUDkavbl1Qiwx481Htywqt+N3dJFmLAyQjlPrsfUudce3XNkf555v3
- g4u5yuxL/VNaUx/COQwXHqHDyLsT3N9S0m9PNztjgP92ht9oSUubba4cVAI5ZKxqXw/ERIgQV
- +4ERbufVgj2WtskkIAltE4c85+q/nCv3NQL4YSfvrJaH3XjU9J6Iab3yg6yh2/5byHclEPoDs
- 0yZPltDDap9mTKzwcxhzBPGqDM/ICQG79Pxp/7E+O6qyge4CNY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 8:46 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Fri, Feb 04, 2022 at 05:52:32PM +1030, Joel Stanley wrote:
-> > +What:                /sys/firmware/bootinfo/*
-> > +Date:                Jan 2022
->
-> It isn't January anymore :)
+Hello,
 
-The patch was sent on Feb 4, I would expect that to be close enough. Does this
-need to be the month of the kernel release it is merged into instead?
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+kernel BUG in __filemap_get_folio
 
-> > +Description:
-> > +             A system can expose information about how it was started in
-> > +             this directory.
->
-> I do not understand what you mean by "how it was started".
->
-> > +             This information is agnostic as to the firmware implementation.
->
-> How?  This should be very firmware specific.
+ free_contig_range+0xb1/0x180 mm/page_alloc.c:9418
+ destroy_args+0xa8/0x646 mm/debug_vm_pgtable.c:1018
+ debug_vm_pgtable+0x2a51/0x2ae3 mm/debug_vm_pgtable.c:1332
+ do_one_initcall+0x103/0x650 init/main.c:1298
+ do_initcall_level init/main.c:1371 [inline]
+ do_initcalls init/main.c:1387 [inline]
+ do_basic_setup init/main.c:1406 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1613
+ kernel_init+0x1a/0x1d0 init/main.c:1502
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+------------[ cut here ]------------
+kernel BUG at mm/filemap.c:1972!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 4282 Comm: syz-executor.1 Not tainted 5.18.0-rc3-syzkaller-00007-g559089e0a93d-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__filemap_get_folio+0xc65/0xf00 mm/filemap.c:1972
+Code: db 45 31 f6 e9 fd f5 ff ff 44 8b 6c 24 10 48 89 eb e9 f0 f5 ff ff e8 2a f2 d8 ff 48 c7 c6 80 d9 d5 89 48 89 df e8 6b 8d 0e 00 <0f> 0b e8 14 f2 d8 ff 48 89 df 31 db e8 4a af 03 00 e9 78 f7 ff ff
+RSP: 0018:ffffc900037b78b0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffea00017c8800 RCX: 0000000000000000
+RDX: ffff8880763fc140 RSI: ffffffff819f5bf5 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000018 R09: 00000000ffffffff
+R10: ffffffff891d5eec R11: 00000000ffffffff R12: 00000000000001c0
+R13: 0000000000000182 R14: 0000000000000000 R15: dffffc0000000000
+FS:  00007f807ec16700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd7f356c058 CR3: 0000000078894000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ pagecache_get_page+0x2e/0x290 mm/folio-compat.c:126
+ shmem_getpage_gfp+0x471/0x2370 mm/shmem.c:1812
+ shmem_getpage mm/shmem.c:149 [inline]
+ shmem_write_begin+0xff/0x1e0 mm/shmem.c:2446
+ generic_perform_write+0x249/0x560 mm/filemap.c:3788
+ __generic_file_write_iter+0x2aa/0x4d0 mm/filemap.c:3916
+ generic_file_write_iter+0xd7/0x220 mm/filemap.c:3948
+ call_write_iter include/linux/fs.h:2050 [inline]
+ new_sync_write+0x38a/0x560 fs/read_write.c:504
+ vfs_write+0x7c0/0xac0 fs/read_write.c:591
+ ksys_write+0x127/0x250 fs/read_write.c:644
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f807da890e9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f807ec16168 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f807db9bf60 RCX: 00007f807da890e9
+RDX: 000000000208e24b RSI: 0000000020000080 RDI: 0000000000000004
+RBP: 00007f807dae308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffcdf2c068f R14: 00007f807ec16300 R15: 0000000000022000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__filemap_get_folio+0xc65/0xf00 mm/filemap.c:1972
+Code: db 45 31 f6 e9 fd f5 ff ff 44 8b 6c 24 10 48 89 eb e9 f0 f5 ff ff e8 2a f2 d8 ff 48 c7 c6 80 d9 d5 89 48 89 df e8 6b 8d 0e 00 <0f> 0b e8 14 f2 d8 ff 48 89 df 31 db e8 4a af 03 00 e9 78 f7 ff ff
+RSP: 0018:ffffc900037b78b0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffea00017c8800 RCX: 0000000000000000
+RDX: ffff8880763fc140 RSI: ffffffff819f5bf5 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000018 R09: 00000000ffffffff
+R10: ffffffff891d5eec R11: 00000000ffffffff R12: 00000000000001c0
+R13: 0000000000000182 R14: 0000000000000000 R15: dffffc0000000000
+FS:  00007f807ec16700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1a16b6c058 CR3: 0000000078894000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-The original patch was specific to a particular SoC vendor. Since the
-information provided here is fairly generic in the end, I asked for
-the interface
-to be generalized to the point that it can be reused across multiple
-vendors and architectures.
 
-      Arnd
+Tested on:
+
+commit:         559089e0 vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLO..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=17b87e0cf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dd7c9a79dfcfa205
+dashboard link: https://syzkaller.appspot.com/bug?extid=cf4cf13056f85dec2c40
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=14add062f00000
+
