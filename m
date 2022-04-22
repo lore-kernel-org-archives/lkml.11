@@ -2,80 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C311DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C72C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:53:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449578AbiDVPze (ORCPT
+        id S1449585AbiDVP4S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        Fri, 22 Apr 2022 11:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355262AbiDVPzc (ORCPT
+        with ESMTP id S1355262AbiDVP4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:55:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D8D18388;
-        Fri, 22 Apr 2022 08:52:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03CE8B8311D;
-        Fri, 22 Apr 2022 15:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A07EBC385A0;
-        Fri, 22 Apr 2022 15:52:35 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 11:52:34 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     patrick wang <patrick.wang.shcn@gmail.com>
-Cc:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rcu: ftrace: avoid tracing a few functions executed in
- multi_cpu_stop()
-Message-ID: <20220422115234.613436e4@gandalf.local.home>
-In-Reply-To: <CAGcnep9Ez-S962vukR_a=otzcSxDRo5HUW2vG_YCBanCfURGXw@mail.gmail.com>
-References: <20220418043735.11441-1-patrick.wang.shcn@gmail.com>
-        <20220418143404.55c8fcab@gandalf.local.home>
-        <CAGcnep8bH4Nncbt3t+VRLff35ZyD8JyzHcEgkq-u6TEq47jqzQ@mail.gmail.com>
-        <CAGcnep_Gx+3KiUvDVronYKn_divU3OM-RQEOPZakv7MRYh4EJw@mail.gmail.com>
-        <20220420114454.69ab108c@gandalf.local.home>
-        <20220420122633.55d4ff6b@gandalf.local.home>
-        <CAGcnep86pd2trfTovU8_z1msOstx7gKCdndm=pHLDGTy+_K7=g@mail.gmail.com>
-        <20220421085047.2cb8edf9@gandalf.local.home>
-        <CAGcnep9Ez-S962vukR_a=otzcSxDRo5HUW2vG_YCBanCfURGXw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 22 Apr 2022 11:56:15 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B411CFEC;
+        Fri, 22 Apr 2022 08:53:22 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id k22so11686289wrd.2;
+        Fri, 22 Apr 2022 08:53:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=r7VFn3nngH4hNjFd5Mmo4mWEZGaDYjUWd1EsyxAItoo=;
+        b=DTP9DHNq5jUm2XHGh/m/MlF5ZHRM+6H84xoxglPZV5KB0b8Dxe02cU/kU8iMZVhGEA
+         XMl8T6DYI+31yC7qfkqTb2p8nihDO0fQQMWRDzwy86DOwMwHT8tbT9g0HU6cnla9n5ec
+         lYhSg0YT2G96BPHcq+hHnlsWtcFQIeNeNczMBVOluy0HSXBc+PydxuyN3nPcXmLSKuqC
+         puKlMJEIXxR+4KLNlT8z36Z7qIqzHlaISjgpskp+5iafoz74oqj14Vz4HVBFK1AhSs5z
+         qhrVhm6B5iWwh7gwktS2j1U7Y/7l8Yvl5l5Vv5mvvjWlvXqq3qMLaWN1wyhzanAmWWuO
+         4CFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r7VFn3nngH4hNjFd5Mmo4mWEZGaDYjUWd1EsyxAItoo=;
+        b=s0VF2+J48Rl7FwG+K9XT8fPY+P2S/yuE86cd2i7mS63KqNx4MQjAFcN1Qw+U8rm5tN
+         chsTnfIREVn+8rn4Yll2/ZmeAKC0EpSgbO8tmZztASahq4wAbmsrmePLivm+GjWTxs8R
+         kKd8P9D1parVq8y3+Tr6ulMxcxX0TqvTblGVLFOEk0vd20zfPy/apBSZy9PV6ZjU44/A
+         fht+p2IXUAhiNNWMxB+JcgDc8+JP7lzo6Z3iO3tX0J+0bxJNQFrEDrwuLTOlM3gBnf0P
+         sGdlYINSchq/XysduoIlDk5JhNg7KfOfFI+n69hh2l2ak2sSf7+26T4L22+T2tjburWS
+         bsww==
+X-Gm-Message-State: AOAM532UVIHX4kp4dsRrMHlws3XxTcnZNXHqcv1N+oBTIyji+m/92Rbf
+        98MF87/Ag9hmrFpGz6Y0bBI=
+X-Google-Smtp-Source: ABdhPJxoFu1IAbWDj7jx4O7GbR2IpYAyiPT7hQ5/DScUoGyOeD3rzzw5Cta6ExLlJ3lVrTakmnoufw==
+X-Received: by 2002:a5d:4e07:0:b0:207:9a41:842f with SMTP id p7-20020a5d4e07000000b002079a41842fmr4269077wrt.232.1650642800770;
+        Fri, 22 Apr 2022 08:53:20 -0700 (PDT)
+Received: from localhost (92.40.203.64.threembb.co.uk. [92.40.203.64])
+        by smtp.gmail.com with ESMTPSA id p3-20020adfaa03000000b00207a1db96cfsm2185493wrd.71.2022.04.22.08.53.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 08:53:20 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 16:54:10 +0100
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, mturquette@baylibre.com,
+        paul@crapouillou.net, paulburton@kernel.org,
+        tsbogend@alpha.franken.de
+Subject: Re: [RESEND PATCH 2/3] clk: ingenic: Mark critical clocks in Ingenic
+ SoCs
+Message-ID: <YmLPotnIBStYpapa@localhost>
+References: <20220411101441.17020-1-aidanmacdonald.0x0@gmail.com>
+ <20220411101441.17020-3-aidanmacdonald.0x0@gmail.com>
+ <20220422023359.87E8FC385A8@smtp.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422023359.87E8FC385A8@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 18:45:46 +0800
-patrick wang <patrick.wang.shcn@gmail.com> wrote:
-
-> Yes, and not just RISC-V. It's arch-independent. It's the internal change of
-> stop machine implementation.
+On Thu, Apr 21, 2022 at 07:33:57PM -0700, Stephen Boyd wrote:
+> Quoting Aidan MacDonald (2022-04-11 03:14:40)
+> > Consider the CPU, L2 cache, and memory as critical to ensure they
+> > are not disabled.
+> > 
+> > Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> > Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+> > ---
 > 
-> ----------------------------------------------------------------
-> Former stop machine wait loop:
-> do {
->     cpu_relax(); => macro
->     ...
-> } while (curstate != STOPMACHINE_EXIT);
-> -----------------------------------------------------------------
-> Current stop machine wait loop:
-> do {
->     stop_machine_yield(cpumask); => function (notraced)
->     ...
->     touch_nmi_watchdog(); => function (notraced, inside calls also notraced)
->     ...
->     rcu_momentary_dyntick_idle(); => function (notraced, inside calls traced)
-> } while (curstate != MULTI_STOP_EXIT);
-> ------------------------------------------------------------------
+> General comment, please add a comment around CLK_IS_CRITICAL usage if it
+> isn't very clear why such a clk shouldn't be turned off. Second, is
+> there any point in describing these clks in the kernel and using memory
+> to do that if they're just going to always be on? Wouldn't a dummy clk
+> returned from clk_get() work just as well if anything is grabbing a
+> reference with clk_get()?
 
-That makes much more sense. Can you add that to the change log.
+I'd guess they're there to keep track of which PLLs are in use, at least
+for SoCs that have more than one PLL. Using a dummy clock sounds like a
+bad idea since it won't represent that, and besides the clock configuration
+is something that can change at runtime so hardcoding it would be foolish.
 
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+I'll send a v2 with explanatory comments around CLK_IS_CRITICAL.
 
--- Steve
+Regards,
+Aidan
