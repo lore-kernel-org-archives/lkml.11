@@ -2,623 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0935CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448900AbiDVOrm (ORCPT
+        id S1448868AbiDVOsO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
+        Fri, 22 Apr 2022 10:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448867AbiDVOrX (ORCPT
+        with ESMTP id S1386242AbiDVOsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:47:23 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1CB5C347;
-        Fri, 22 Apr 2022 07:44:28 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id E9C931F469B3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650638666;
-        bh=S7v7iRjGJvkHPp/PEUQlaEWZhPa9NmoHIWkx0UzjDLs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=XH6SxRlgpELYa72iKSVS2mxFauMBkLkgNw8POnTk899OErh3ldIBta2MU44/fO0Iv
-         DEgHkC06MSlg35tsZl5V+z5hciatqFYvhEj7+kTZRUISZQdEkxR/sR9VCTPaChtebp
-         YGRtEAQ7jSrvxj4j/y8tXeaVmoTBGOMeovnCseqUcuRx/WA9McWyQ+8WB+bJpclF9E
-         qPQDMtc6wy6AJpI3IKXr4Y+yluRTtf8zGEcV6+Bu/rbu42zbu0clFdig4cLvReoN/q
-         2GVrsj7rBt/a5a9XOTzubB9m40e3r1B8gVMOPAwLx3LkDgh5j2TqQqt/xo2dTNB1sS
-         SwXeaaNjN6TpQ==
-Message-ID: <0df420cc2cf2f564260010c78c8307f83833e685.camel@collabora.com>
-Subject: Re: [PATCH v3 05/24] media: h264: Use v4l2_h264_reference for
- reflist
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev,
+        Fri, 22 Apr 2022 10:48:09 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBDA3B5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:45:15 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23MDpv5E009605;
+        Fri, 22 Apr 2022 14:44:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=G47ameR8mBAoTqyic+7jGAHRdB7W0Ee1ZauoQzYE5HM=;
+ b=nKopWAamsIJ8PTxR23MVSco3BFZ7AZR+1aHxWfaQKGWA4l6qUPrUsoE5nhnDzt/t4QBp
+ SzTrORWFML2i9zVJ+AWRhhYAynpU+begRLeUnQ4t4b4Vbdn5WZNMgILcgxUTlEesLaUN
+ Q8k928qjPCUcD0Gf3PtaqsLGvA/wbNmwAly4IgJRWMoZUfBoP525hMJvLDa617kN87T1
+ +hRO4BAtpTVcgX2z/rwhxSvJQg1Wz5EUWgSwGa7BbBpVXGPwnerz+1JDwXn9sKE/lRVU
+ Dj2L3i8KqR/q4e/c3acB3lDzxCWbb9U12bUizCpVmQNnxXguOLzz+OJhLjL8p4gVvVie 8g== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ffmk2xwhj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Apr 2022 14:44:49 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23MEa7vk028005;
+        Fri, 22 Apr 2022 14:44:48 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3ffm8as34q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Apr 2022 14:44:48 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PNdb4z6nDkXvZqnneEuCb/XKNJhzHUI2Eq9OyC45puGIqfx7lsKFXRsayzQ/n84bw6zRzlkgc9W66ExXrilWSRUa0P02Lj60AHiHL+nT/dxIvrdQExTXcL1CNYGtK4qNsJYGAqR+KMaBPKQesri3A6jFkmMzRUV6Lcc0gQgY5fLYja4GLOvhWEsB+qdJY4o1EN8aDZUKNSdpo1SEZ+0yH88cfhlGtZH/M11OobrgyFh89tYgYYiwMAF+87y7zrSQl4c2ZmU4GvD0VJWtdMgA1ooPEy8d7rYJBj4gbRoKm/R9NZX2u40qBawVNk5WskpNDU95KZEa2dXRIXbOoplkJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G47ameR8mBAoTqyic+7jGAHRdB7W0Ee1ZauoQzYE5HM=;
+ b=BdPqDJvW0+FgyPd/VgdYtWDlJHEtck6EqjM6njd3AnsRZgd9I0kTpVl1YDsKPLdAO8gzQ/TUyRZ8RWwjmguFEB4DaFrMda4JbSxYyQFRnnEOaECa3XSpsCATezbSCeEV3oJwUHWEjb3ObfR7yu7LFL391qbW0os0OX67bivpE/qlNpm2uoGmG3WYnoLQtkMo6uj3N2G9gXtg3SGmkcHbEnRs4ZRE7H8Ja1xkOtrc476QTxKv7dC4LNKnIf8sILGoa4gHWeaCvGjPEo+2Lb2cXMPPkGMmC0BRKbxhwfx9BzFC7jIvJE83Po1FsQYm0IgYJGCFbMvJK8DEoa1my4e5EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G47ameR8mBAoTqyic+7jGAHRdB7W0Ee1ZauoQzYE5HM=;
+ b=I/8f1JvxefR5KKKBcV67ctiZZ6euNxEG8QYZ4k+f73hmFqYxwW42bg/K6rZUhovE+9zq45Y5CGw4JhfA8Ui9rFqjqOLTzQ337OfWddc4ASFnumbNQyXvvS77TxlpRcK2YC04ZR6lI+iuMqRHMNzR17WHCLC+dRMrSzgUDdNNluw=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BYAPR10MB2533.namprd10.prod.outlook.com
+ (2603:10b6:a02:b4::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 22 Apr
+ 2022 14:44:46 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b5d5:7b39:ca2d:1b87]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b5d5:7b39:ca2d:1b87%5]) with mapi id 15.20.5164.025; Fri, 22 Apr 2022
+ 14:44:46 +0000
+Date:   Fri, 22 Apr 2022 17:44:23 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     nsaenz@kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        gregkh@linuxfoundation.org, stefan.wahren@i2se.com,
+        gascoar@gmail.com, ojaswin98@gmail.com,
+        linux-rpi-kernel@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Date:   Fri, 22 Apr 2022 10:44:15 -0400
-In-Reply-To: <0717023f-dffd-5891-53fd-e866dc319265@xs4all.nl>
-References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
-         <20220405204426.259074-6-nicolas.dufresne@collabora.com>
-         <0717023f-dffd-5891-53fd-e866dc319265@xs4all.nl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: vchiq_arm: change vchiq_platform_init from
+ global to static
+Message-ID: <20220422144423.GI2462@kadam>
+References: <20220418164356.3532969-1-trix@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418164356.3532969-1-trix@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JN2P275CA0024.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::36)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 016c8cf1-537f-47a4-fb75-08da246ea511
+X-MS-TrafficTypeDiagnostic: BYAPR10MB2533:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR10MB25330C7B4AB2D1CDDD0F19498EF79@BYAPR10MB2533.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +wSIunRZYpHmandtJ1Bes/0tY7Ux4BlTpna1mYvoUvH5YJqXmuJQcibV9ymGoeFO1G81UrToEav7o+dpn2/xxXO0S+QeGGxj5+OgYbAjjYF3fNu/WrcE4MbJkfNKnkRW7AeGWcdo7cZkXd2KeLoJkeNx41aF0B+bQmKiIKoNdCSqKPefc9+O05OuaReDTIUKScFeXdVS5R45kkW0uLcguHdme6SNn/spT9nn6DAHjXUa3V9qP9Nm6E2PydM6Aw5LpuITN9Hq7PtNCzRCIO2HnS5PYHWU3xFjMtQNkHrMY+f5Yl0QFtRBqpbVaLH3vZmQqwHfAlpbU1VUDs0IkrfEOeTrRFTocibEjSVA7WcO/z4q3H0WtY97fwMuTsNa+VFKqjh8jge+Bs8FiwHnognt/LTo8OgDW53AlxUyT6/8jWkbk4ybSJU4LH+q6pmBAEewR8ar3M1D/uM7zCjGUgkV2HCspNbISyRjYHldzuiNpmlk2zEGAN+OOaoqCYRRXqbd30khlx1vuXUeHnMVFsqp6F9XwuWVaAPDLoRfrrVHFdz4HRawUa7rnhHttyyqmBtvAg7Wy+qhjYvngzO6aXrDYz4ewH/MPvQYIsLVTaqG99AqGmkd9N1c23MJsVbGkozuM1WdncDg1k3LZvWP9CJn/2i+Qm6lIf3TFuzxkvVapSfzdIHpvfJX8Mh4mNQDO/cyZLi6UiVobIBZKvXUw6S2Xg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(44832011)(8936002)(7416002)(9686003)(4326008)(8676002)(86362001)(66556008)(26005)(316002)(38100700002)(38350700002)(4744005)(5660300002)(6486002)(2906002)(508600001)(33656002)(66476007)(6506007)(6512007)(6666004)(52116002)(66946007)(6916009)(1076003)(186003)(83380400001)(33716001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?V1PDrrr9LZHWUmHmGU5BfvkX6HbyT20OMmRZWZwfvrJW3nN58IxBLjejRBi1?=
+ =?us-ascii?Q?TGlncC/HIeAatrMmkn3swt2YbUtjnDvzDFi6AB1itI+eA54BdYR0a8bgzZj/?=
+ =?us-ascii?Q?rgDJ2JWlFLQcr70EyQYV8Jwp1tFWUvR7Iu9LhEYSjfESUPEEUxCGKf8gGQFk?=
+ =?us-ascii?Q?iJ5x6vZKzsEqOUSUPZzR9WMrjOSqoPzYgpHddZYXSqaEHcj2RoNLzoy0dDh6?=
+ =?us-ascii?Q?Lfuknb7xYLpUG6TiKWfqrOPTz3YkxtW5QiIjRXNzczwBR8mJwG5ZOjx/Hd61?=
+ =?us-ascii?Q?Xk3s8dR+wBiolM44ZrZ246BMonSg7q9x/Lb9K9zX6g227UjBo+7JQPu2AbNo?=
+ =?us-ascii?Q?h6IR6ccOl7zsZs3Nx1MZpTrqcXhEjUbHw3MdGwfPfWrR98et/uxZYCd3J5fo?=
+ =?us-ascii?Q?P0tCsAd0JL+vfx8OthFtml+7OXfj1rjtsCKRJPOBBR4+zc8/ZH5RaLhXMY+w?=
+ =?us-ascii?Q?E4qXuDfX54xCvmr3jXwDKiSM2aFBTnCTEWf4YssSOBb9bsquZ/DATR3m2tO5?=
+ =?us-ascii?Q?GW5brV+BVabez2S0lYx5TJ/Pom0cvBNbKHHq235518AGtar3C1VC6/PIELAf?=
+ =?us-ascii?Q?9QLwpr7DYR0rx0qM8yitMK/gKBxE7PsontNv9cmBFyrqc3mJz3WOfDrmrC5T?=
+ =?us-ascii?Q?T2q9RAVoIpL8N+wcMA7aBOTb6W3d4xNO5NeDjaCSrCTz1J+xsuI5antpVK8W?=
+ =?us-ascii?Q?sYrWNxywam4bGY1PFG19cpzSDYWr1WuQPCykayje4OSWqfSiu0V7ibHn8PF0?=
+ =?us-ascii?Q?ccJDgHK+0uuvoK8Wl+wPDAfcBec5No7moBExXAi7jOhIoqpccsEaRFWKlnNn?=
+ =?us-ascii?Q?G2dIumIDuHkhC3Zitgrhi9IfNx0dosJt7xenI1o5OSw5jSbZA2X1fLWcfE6k?=
+ =?us-ascii?Q?LXV/MycYgM79j4Ahw0Pl1gesfS2bMk7NfMkeeVzTxtpbRaSP5Ff1FIZGgqLP?=
+ =?us-ascii?Q?swiEDNRLK+Am62i3hXesiI132xG8uMN+kYE8/mQ3ZpBP8ay9oKg1q96idQkI?=
+ =?us-ascii?Q?B4jlMfXZPZYvbF70nj2L2mF2FKTkK2D+p8+2+MqzL3/vKZnRqYVzv+Dhql79?=
+ =?us-ascii?Q?xEjTBIxK+rdOPiv+QPF51+T6+FKqAJcxdorg/4BcJ+JcFbA+capRnzI+ydDP?=
+ =?us-ascii?Q?85XJ8dBIoe9dfSjfFYHwYbLlaTxDK15GJCK6OPmfThpmNtn/YXKvR559adqg?=
+ =?us-ascii?Q?Dyc7MMCYpf9XMsznhd5Ql6n20jZUu0tK4hUhiMfeGnXzCwwRUQD3y9hDx+Ox?=
+ =?us-ascii?Q?zIy3lBuT5PHClCGZRfVqOovIgMKIe3CqZWhF0kevq1dqYqoOcWEH0GpPOfRw?=
+ =?us-ascii?Q?ffb2ZHEroWNSfxyjuH7Wk6axkD/Jkv7g8C4mtqTR/RVNXRIrIeOYfSJ2IPjl?=
+ =?us-ascii?Q?5/WUQLyWUBfzdVnEnsIP/xL+Vr2UvZo6wND+Nl6jAG9d4K2YWHi0abb2x7IT?=
+ =?us-ascii?Q?ADHZ+YFmWGK2vu49+0Ao07deYWC78d29Z4BsUvh24Wrt8TuKH49mHsvqdmSE?=
+ =?us-ascii?Q?w82X3eko3l2AOk0sGsPyNlGrRajgtFZWqZHUjiTllo6Ww5njKk+9ixzOrNqe?=
+ =?us-ascii?Q?BkloCbcBTbTFFqQyVOEpO1Yzbjfh+RuZJqKfFbBGLZgQEvQt6QgJRyI4gIMZ?=
+ =?us-ascii?Q?+JRC8asqTIjOMPWUs/vTa0KVrv1fRTsdFG31mDSVm7AMf3pcMhBHWBGHFndn?=
+ =?us-ascii?Q?/73EL2QgCWTGfjSSHkaLrN78Uz/synaTRX1PhslFES6O9TKXX8yf/kZsWmnx?=
+ =?us-ascii?Q?nHs02Ea+dHxQcr1cwi6Y24KqyGqD50A=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 016c8cf1-537f-47a4-fb75-08da246ea511
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 14:44:46.4517
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Tz3niUgGhva9YECVf/fINe2Xa+acWuBMKJI1KhGKgjHaM5UeJvCAm0tb9lPR6O8rl/ffCRucygv6X5kb423N5cJ9U2upMSc1wV6vWPVVfhI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2533
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-22_04:2022-04-22,2022-04-22 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 malwarescore=0 mlxscore=0
+ adultscore=0 mlxlogscore=999 suspectscore=0 spamscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204220064
+X-Proofpoint-GUID: 8J7B2fZdws4GtmXUNoSQxBLtivwMvMzI
+X-Proofpoint-ORIG-GUID: 8J7B2fZdws4GtmXUNoSQxBLtivwMvMzI
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le vendredi 22 avril 2022 =C3=A0 08:59 +0200, Hans Verkuil a =C3=A9crit=C2=
-=A0:
-> On 05/04/2022 22:44, Nicolas Dufresne wrote:
-> > In preparation for adding field decoding support, convert the byte arra=
-ys
-> > for reflist into array of struct v4l2_h264_reference. That struct will
-> > allow us to mark which field of the reference picture is being referenc=
-ed.
-> >=20
-> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> > Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-> > ---
-> >  .../mediatek/vcodec/vdec/vdec_h264_req_if.c   | 17 +++-
-> >  drivers/media/v4l2-core/v4l2-h264.c           | 33 ++++---
-> >  .../staging/media/hantro/hantro_g1_h264_dec.c | 38 +++----
-> >  drivers/staging/media/hantro/hantro_hw.h      |  6 +-
-> >  .../media/hantro/rockchip_vpu2_hw_h264_dec.c  | 98 +++++++++----------
-> >  drivers/staging/media/rkvdec/rkvdec-h264.c    | 12 +--
-> >  include/media/v4l2-h264.h                     | 19 ++--
-> >  7 files changed, 116 insertions(+), 107 deletions(-)
-> >=20
-> > diff --git a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_=
-if.c b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
-> > index 43542de11e9c..72c599e05a47 100644
-> > --- a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
-> > +++ b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_if.c
-> > @@ -442,9 +442,16 @@ static void update_dpb(const struct v4l2_ctrl_h264=
-_decode_params *dec_param,
-> >  /*
-> >   * The firmware expects unused reflist entries to have the value 0x20.
-> >   */
-> > -static void fixup_ref_list(u8 *ref_list, size_t num_valid)
-> > +static void get_ref_list(u8 *ref_list, struct v4l2_h264_reflist_builde=
-r *b)
-> >  {
-> > -	memset(&ref_list[num_valid], 0x20, 32 - num_valid);
-> > +	u32 i;
-> > +
-> > +	/* FIXME mark the reference parity */
->=20
-> It's not clear how serious this FIXME is. Either it should be fixed (here=
- or
-> later in the series), or explain why this isn't fixed yet. Presumably bec=
-ause
-> it is not a problem now, but it might be later when some other feature is
-> enabled.
+On Mon, Apr 18, 2022 at 12:43:56PM -0400, Tom Rix wrote:
+> Smatch reports this issue
+> vchiq_arm.c:466:5: warning: symbol 'vchiq_platform_init'
+>   was not declared. Should it be static?
 
-I will improve this comment. I have spoken to Yunfei, and his firmware have=
- no
-interlacing support (despite the reference list size being 32 entry, so
-interlaced ready). Though he said this is something he'd like to work in th=
-e
-future, after this patchset have been merged of course. Sot he purpose of t=
-he
-FIXME was really to ease locating were the field parity information is bein=
-g
-lost.
+This is a Sparse warning, not Smatch.
 
->=20
-> > +	for (i =3D 0; i < b->num_valid; i++)
-> > +		ref_list[i] =3D b->index;
-> > +
-> > +	for (; i < 32; i++)
-> > +		ref_list[i] =3D 0x20;
->=20
-> How about:
->=20
-> 	for (i =3D 0; i < 32; i++)
-> 		ref_list[i] =3D i < b->num_valid ? b->index : 0x20;
->=20
-> Or:
->=20
-> 	memset(ref_list, b->index, b->num_valid);
-> 	memset(ref_list + b->num_valid, 0x20, 32 - b->num_valid);
->=20
-> Either approach is better IMHO than using two for-loops.
+Use this command for Smatch
+~/smatch/smatch_scripts/kchecker drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
 
-Thanks, I have no strong opinion, though I think I'll use the second, with =
-weak
-rationale that is looks more like the original style.
+And this command for Sparse
+~/smatch/smatch_scripts/kchecker --sparse drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
 
->=20
-> Regards,
->=20
-> 	Hans
->=20
-> >  }
-> > =20
-> >  static void get_vdec_decode_parameters(struct vdec_h264_slice_inst *in=
-st)
-> > @@ -478,9 +485,9 @@ static void get_vdec_decode_parameters(struct vdec_=
-h264_slice_inst *inst)
-> >  	v4l2_h264_build_p_ref_list(&reflist_builder, p0_reflist);
-> >  	v4l2_h264_build_b_ref_lists(&reflist_builder, b0_reflist, b1_reflist)=
-;
-> >  	/* Adapt the built lists to the firmware's expectations */
-> > -	fixup_ref_list(p0_reflist, reflist_builder.num_valid);
-> > -	fixup_ref_list(b0_reflist, reflist_builder.num_valid);
-> > -	fixup_ref_list(b1_reflist, reflist_builder.num_valid);
-> > +	get_ref_list(p0_reflist, reflist_builder);
-> > +	get_ref_list(b0_reflist, reflist_builder);
-> > +	get_ref_list(b1_reflist, reflist_builder);
-> > =20
-> >  	memcpy(&inst->vsi_ctx.h264_slice_params, slice_param,
-> >  	       sizeof(inst->vsi_ctx.h264_slice_params));
-> > diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-c=
-ore/v4l2-h264.c
-> > index ac47519a9fbe..afbfcf78efe4 100644
-> > --- a/drivers/media/v4l2-core/v4l2-h264.c
-> > +++ b/drivers/media/v4l2-core/v4l2-h264.c
-> > @@ -75,12 +75,12 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_ref=
-list_builder *b,
-> >  			pic_order_count =3D dpb[i].top_field_order_cnt;
-> > =20
-> >  		b->refs[i].pic_order_count =3D pic_order_count;
-> > -		b->unordered_reflist[b->num_valid] =3D i;
-> > +		b->unordered_reflist[b->num_valid].index =3D i;
-> >  		b->num_valid++;
-> >  	}
-> > =20
-> >  	for (i =3D b->num_valid; i < ARRAY_SIZE(b->unordered_reflist); i++)
-> > -		b->unordered_reflist[i] =3D i;
-> > +		b->unordered_reflist[i].index =3D i;
-> >  }
-> >  EXPORT_SYMBOL_GPL(v4l2_h264_init_reflist_builder);
-> > =20
-> > @@ -90,8 +90,8 @@ static int v4l2_h264_p_ref_list_cmp(const void *ptra,=
- const void *ptrb,
-> >  	const struct v4l2_h264_reflist_builder *builder =3D data;
-> >  	u8 idxa, idxb;
-> > =20
-> > -	idxa =3D *((u8 *)ptra);
-> > -	idxb =3D *((u8 *)ptrb);
-> > +	idxa =3D ((struct v4l2_h264_reference *)ptra)->index;
-> > +	idxb =3D ((struct v4l2_h264_reference *)ptrb)->index;
-> > =20
-> >  	if (WARN_ON(idxa >=3D V4L2_H264_NUM_DPB_ENTRIES ||
-> >  		    idxb >=3D V4L2_H264_NUM_DPB_ENTRIES))
-> > @@ -125,8 +125,8 @@ static int v4l2_h264_b0_ref_list_cmp(const void *pt=
-ra, const void *ptrb,
-> >  	s32 poca, pocb;
-> >  	u8 idxa, idxb;
-> > =20
-> > -	idxa =3D *((u8 *)ptra);
-> > -	idxb =3D *((u8 *)ptrb);
-> > +	idxa =3D ((struct v4l2_h264_reference *)ptra)->index;
-> > +	idxb =3D ((struct v4l2_h264_reference *)ptrb)->index;
-> > =20
-> >  	if (WARN_ON(idxa >=3D V4L2_H264_NUM_DPB_ENTRIES ||
-> >  		    idxb >=3D V4L2_H264_NUM_DPB_ENTRIES))
-> > @@ -170,8 +170,8 @@ static int v4l2_h264_b1_ref_list_cmp(const void *pt=
-ra, const void *ptrb,
-> >  	s32 poca, pocb;
-> >  	u8 idxa, idxb;
-> > =20
-> > -	idxa =3D *((u8 *)ptra);
-> > -	idxb =3D *((u8 *)ptrb);
-> > +	idxa =3D ((struct v4l2_h264_reference *)ptra)->index;
-> > +	idxb =3D ((struct v4l2_h264_reference *)ptrb)->index;
-> > =20
-> >  	if (WARN_ON(idxa >=3D V4L2_H264_NUM_DPB_ENTRIES ||
-> >  		    idxb >=3D V4L2_H264_NUM_DPB_ENTRIES))
-> > @@ -212,8 +212,8 @@ static int v4l2_h264_b1_ref_list_cmp(const void *pt=
-ra, const void *ptrb,
-> >   * v4l2_h264_build_p_ref_list() - Build the P reference list
-> >   *
-> >   * @builder: reference list builder context
-> > - * @reflist: 16-bytes array used to store the P reference list. Each e=
-ntry
-> > - *	     is an index in the DPB
-> > + * @reflist: 16 sized array used to store the P reference list. Each e=
-ntry
-> > + *	     is a v4l2_h264_reference structure
-> >   *
-> >   * This functions builds the P reference lists. This procedure is desc=
-ribe in
-> >   * section '8.2.4 Decoding process for reference picture lists constru=
-ction'
-> > @@ -222,7 +222,7 @@ static int v4l2_h264_b1_ref_list_cmp(const void *pt=
-ra, const void *ptrb,
-> >   */
-> >  void
-> >  v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *bui=
-lder,
-> > -			   u8 *reflist)
-> > +			   struct v4l2_h264_reference *reflist)
-> >  {
-> >  	memcpy(reflist, builder->unordered_reflist,
-> >  	       sizeof(builder->unordered_reflist[0]) * builder->num_valid);
-> > @@ -235,10 +235,10 @@ EXPORT_SYMBOL_GPL(v4l2_h264_build_p_ref_list);
-> >   * v4l2_h264_build_b_ref_lists() - Build the B0/B1 reference lists
-> >   *
-> >   * @builder: reference list builder context
-> > - * @b0_reflist: 16-bytes array used to store the B0 reference list. Ea=
-ch entry
-> > - *		is an index in the DPB
-> > - * @b1_reflist: 16-bytes array used to store the B1 reference list. Ea=
-ch entry
-> > - *		is an index in the DPB
-> > + * @b0_reflist: 16 sized array used to store the B0 reference list. Ea=
-ch entry
-> > + *		is a v4l2_h264_reference structure
-> > + * @b1_reflist: 16 sized array used to store the B1 reference list. Ea=
-ch entry
-> > + *		is a v4l2_h264_reference structure
-> >   *
-> >   * This functions builds the B0/B1 reference lists. This procedure is =
-described
-> >   * in section '8.2.4 Decoding process for reference picture lists cons=
-truction'
-> > @@ -247,7 +247,8 @@ EXPORT_SYMBOL_GPL(v4l2_h264_build_p_ref_list);
-> >   */
-> >  void
-> >  v4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *bu=
-ilder,
-> > -			    u8 *b0_reflist, u8 *b1_reflist)
-> > +			    struct v4l2_h264_reference *b0_reflist,
-> > +			    struct v4l2_h264_reference *b1_reflist)
-> >  {
-> >  	memcpy(b0_reflist, builder->unordered_reflist,
-> >  	       sizeof(builder->unordered_reflist[0]) * builder->num_valid);
-> > diff --git a/drivers/staging/media/hantro/hantro_g1_h264_dec.c b/driver=
-s/staging/media/hantro/hantro_g1_h264_dec.c
-> > index f49dbfb8a843..9de7f05eff2a 100644
-> > --- a/drivers/staging/media/hantro/hantro_g1_h264_dec.c
-> > +++ b/drivers/staging/media/hantro/hantro_g1_h264_dec.c
-> > @@ -126,7 +126,7 @@ static void set_params(struct hantro_ctx *ctx, stru=
-ct vb2_v4l2_buffer *src_buf)
-> > =20
-> >  static void set_ref(struct hantro_ctx *ctx)
-> >  {
-> > -	const u8 *b0_reflist, *b1_reflist, *p_reflist;
-> > +	const struct v4l2_h264_reference *b0_reflist, *b1_reflist, *p_reflist=
-;
-> >  	struct hantro_dev *vpu =3D ctx->dev;
-> >  	int reg_num;
-> >  	u32 reg;
-> > @@ -157,12 +157,12 @@ static void set_ref(struct hantro_ctx *ctx)
-> >  	 */
-> >  	reg_num =3D 0;
-> >  	for (i =3D 0; i < 15; i +=3D 3) {
-> > -		reg =3D G1_REG_BD_REF_PIC_BINIT_RLIST_F0(b0_reflist[i]) |
-> > -		      G1_REG_BD_REF_PIC_BINIT_RLIST_F1(b0_reflist[i + 1]) |
-> > -		      G1_REG_BD_REF_PIC_BINIT_RLIST_F2(b0_reflist[i + 2]) |
-> > -		      G1_REG_BD_REF_PIC_BINIT_RLIST_B0(b1_reflist[i]) |
-> > -		      G1_REG_BD_REF_PIC_BINIT_RLIST_B1(b1_reflist[i + 1]) |
-> > -		      G1_REG_BD_REF_PIC_BINIT_RLIST_B2(b1_reflist[i + 2]);
-> > +		reg =3D G1_REG_BD_REF_PIC_BINIT_RLIST_F0(b0_reflist[i].index) |
-> > +		      G1_REG_BD_REF_PIC_BINIT_RLIST_F1(b0_reflist[i + 1].index) |
-> > +		      G1_REG_BD_REF_PIC_BINIT_RLIST_F2(b0_reflist[i + 2].index) |
-> > +		      G1_REG_BD_REF_PIC_BINIT_RLIST_B0(b1_reflist[i].index) |
-> > +		      G1_REG_BD_REF_PIC_BINIT_RLIST_B1(b1_reflist[i + 1].index) |
-> > +		      G1_REG_BD_REF_PIC_BINIT_RLIST_B2(b1_reflist[i + 2].index);
-> >  		vdpu_write_relaxed(vpu, reg, G1_REG_BD_REF_PIC(reg_num++));
-> >  	}
-> > =20
-> > @@ -171,12 +171,12 @@ static void set_ref(struct hantro_ctx *ctx)
-> >  	 * of forward and backward reference picture lists and first 4 entrie=
-s
-> >  	 * of P forward picture list.
-> >  	 */
-> > -	reg =3D G1_REG_BD_P_REF_PIC_BINIT_RLIST_F15(b0_reflist[15]) |
-> > -	      G1_REG_BD_P_REF_PIC_BINIT_RLIST_B15(b1_reflist[15]) |
-> > -	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F0(p_reflist[0]) |
-> > -	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F1(p_reflist[1]) |
-> > -	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F2(p_reflist[2]) |
-> > -	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F3(p_reflist[3]);
-> > +	reg =3D G1_REG_BD_P_REF_PIC_BINIT_RLIST_F15(b0_reflist[15].index) |
-> > +	      G1_REG_BD_P_REF_PIC_BINIT_RLIST_B15(b1_reflist[15].index) |
-> > +	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F0(p_reflist[0].index) |
-> > +	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F1(p_reflist[1].index) |
-> > +	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F2(p_reflist[2].index) |
-> > +	      G1_REG_BD_P_REF_PIC_PINIT_RLIST_F3(p_reflist[3].index);
-> >  	vdpu_write_relaxed(vpu, reg, G1_REG_BD_P_REF_PIC);
-> > =20
-> >  	/*
-> > @@ -185,12 +185,12 @@ static void set_ref(struct hantro_ctx *ctx)
-> >  	 */
-> >  	reg_num =3D 0;
-> >  	for (i =3D 4; i < HANTRO_H264_DPB_SIZE; i +=3D 6) {
-> > -		reg =3D G1_REG_FWD_PIC_PINIT_RLIST_F0(p_reflist[i]) |
-> > -		      G1_REG_FWD_PIC_PINIT_RLIST_F1(p_reflist[i + 1]) |
-> > -		      G1_REG_FWD_PIC_PINIT_RLIST_F2(p_reflist[i + 2]) |
-> > -		      G1_REG_FWD_PIC_PINIT_RLIST_F3(p_reflist[i + 3]) |
-> > -		      G1_REG_FWD_PIC_PINIT_RLIST_F4(p_reflist[i + 4]) |
-> > -		      G1_REG_FWD_PIC_PINIT_RLIST_F5(p_reflist[i + 5]);
-> > +		reg =3D G1_REG_FWD_PIC_PINIT_RLIST_F0(p_reflist[i].index) |
-> > +		      G1_REG_FWD_PIC_PINIT_RLIST_F1(p_reflist[i + 1].index) |
-> > +		      G1_REG_FWD_PIC_PINIT_RLIST_F2(p_reflist[i + 2].index) |
-> > +		      G1_REG_FWD_PIC_PINIT_RLIST_F3(p_reflist[i + 3].index) |
-> > +		      G1_REG_FWD_PIC_PINIT_RLIST_F4(p_reflist[i + 4].index) |
-> > +		      G1_REG_FWD_PIC_PINIT_RLIST_F5(p_reflist[i + 5].index);
-> >  		vdpu_write_relaxed(vpu, reg, G1_REG_FWD_PIC(reg_num++));
-> >  	}
-> > =20
-> > diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging=
-/media/hantro/hantro_hw.h
-> > index ed018e293ba0..2bc6b8f088f5 100644
-> > --- a/drivers/staging/media/hantro/hantro_hw.h
-> > +++ b/drivers/staging/media/hantro/hantro_hw.h
-> > @@ -69,9 +69,9 @@ struct hantro_h264_dec_ctrls {
-> >   * @b1:		B1 reflist
-> >   */
-> >  struct hantro_h264_dec_reflists {
-> > -	u8 p[HANTRO_H264_DPB_SIZE];
-> > -	u8 b0[HANTRO_H264_DPB_SIZE];
-> > -	u8 b1[HANTRO_H264_DPB_SIZE];
-> > +	struct v4l2_h264_reference p[HANTRO_H264_DPB_SIZE];
-> > +	struct v4l2_h264_reference b0[HANTRO_H264_DPB_SIZE];
-> > +	struct v4l2_h264_reference b1[HANTRO_H264_DPB_SIZE];
-> >  };
-> > =20
-> >  /**
-> > diff --git a/drivers/staging/media/hantro/rockchip_vpu2_hw_h264_dec.c b=
-/drivers/staging/media/hantro/rockchip_vpu2_hw_h264_dec.c
-> > index 64a6330475eb..46c1a83bcc4e 100644
-> > --- a/drivers/staging/media/hantro/rockchip_vpu2_hw_h264_dec.c
-> > +++ b/drivers/staging/media/hantro/rockchip_vpu2_hw_h264_dec.c
-> > @@ -298,7 +298,7 @@ static void set_params(struct hantro_ctx *ctx, stru=
-ct vb2_v4l2_buffer *src_buf)
-> > =20
-> >  static void set_ref(struct hantro_ctx *ctx)
-> >  {
-> > -	const u8 *b0_reflist, *b1_reflist, *p_reflist;
-> > +	const struct v4l2_h264_reference *b0_reflist, *b1_reflist, *p_reflist=
-;
-> >  	struct hantro_dev *vpu =3D ctx->dev;
-> >  	u32 reg;
-> >  	int i;
-> > @@ -307,20 +307,20 @@ static void set_ref(struct hantro_ctx *ctx)
-> >  	b1_reflist =3D ctx->h264_dec.reflists.b1;
-> >  	p_reflist =3D ctx->h264_dec.reflists.p;
-> > =20
-> > -	reg =3D VDPU_REG_PINIT_RLIST_F9(p_reflist[9]) |
-> > -	      VDPU_REG_PINIT_RLIST_F8(p_reflist[8]) |
-> > -	      VDPU_REG_PINIT_RLIST_F7(p_reflist[7]) |
-> > -	      VDPU_REG_PINIT_RLIST_F6(p_reflist[6]) |
-> > -	      VDPU_REG_PINIT_RLIST_F5(p_reflist[5]) |
-> > -	      VDPU_REG_PINIT_RLIST_F4(p_reflist[4]);
-> > +	reg =3D VDPU_REG_PINIT_RLIST_F9(p_reflist[9].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F8(p_reflist[8].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F7(p_reflist[7].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F6(p_reflist[6].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F5(p_reflist[5].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F4(p_reflist[4].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(74));
-> > =20
-> > -	reg =3D VDPU_REG_PINIT_RLIST_F15(p_reflist[15]) |
-> > -	      VDPU_REG_PINIT_RLIST_F14(p_reflist[14]) |
-> > -	      VDPU_REG_PINIT_RLIST_F13(p_reflist[13]) |
-> > -	      VDPU_REG_PINIT_RLIST_F12(p_reflist[12]) |
-> > -	      VDPU_REG_PINIT_RLIST_F11(p_reflist[11]) |
-> > -	      VDPU_REG_PINIT_RLIST_F10(p_reflist[10]);
-> > +	reg =3D VDPU_REG_PINIT_RLIST_F15(p_reflist[15].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F14(p_reflist[14].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F13(p_reflist[13].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F12(p_reflist[12].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F11(p_reflist[11].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F10(p_reflist[10].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(75));
-> > =20
-> >  	reg =3D VDPU_REG_REFER1_NBR(hantro_h264_get_ref_nbr(ctx, 1)) |
-> > @@ -355,54 +355,54 @@ static void set_ref(struct hantro_ctx *ctx)
-> >  	      VDPU_REG_REFER14_NBR(hantro_h264_get_ref_nbr(ctx, 14));
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(83));
-> > =20
-> > -	reg =3D VDPU_REG_BINIT_RLIST_F5(b0_reflist[5]) |
-> > -	      VDPU_REG_BINIT_RLIST_F4(b0_reflist[4]) |
-> > -	      VDPU_REG_BINIT_RLIST_F3(b0_reflist[3]) |
-> > -	      VDPU_REG_BINIT_RLIST_F2(b0_reflist[2]) |
-> > -	      VDPU_REG_BINIT_RLIST_F1(b0_reflist[1]) |
-> > -	      VDPU_REG_BINIT_RLIST_F0(b0_reflist[0]);
-> > +	reg =3D VDPU_REG_BINIT_RLIST_F5(b0_reflist[5].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F4(b0_reflist[4].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F3(b0_reflist[3].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F2(b0_reflist[2].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F1(b0_reflist[1].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F0(b0_reflist[0].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(100));
-> > =20
-> > -	reg =3D VDPU_REG_BINIT_RLIST_F11(b0_reflist[11]) |
-> > -	      VDPU_REG_BINIT_RLIST_F10(b0_reflist[10]) |
-> > -	      VDPU_REG_BINIT_RLIST_F9(b0_reflist[9]) |
-> > -	      VDPU_REG_BINIT_RLIST_F8(b0_reflist[8]) |
-> > -	      VDPU_REG_BINIT_RLIST_F7(b0_reflist[7]) |
-> > -	      VDPU_REG_BINIT_RLIST_F6(b0_reflist[6]);
-> > +	reg =3D VDPU_REG_BINIT_RLIST_F11(b0_reflist[11].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F10(b0_reflist[10].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F9(b0_reflist[9].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F8(b0_reflist[8].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F7(b0_reflist[7].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F6(b0_reflist[6].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(101));
-> > =20
-> > -	reg =3D VDPU_REG_BINIT_RLIST_F15(b0_reflist[15]) |
-> > -	      VDPU_REG_BINIT_RLIST_F14(b0_reflist[14]) |
-> > -	      VDPU_REG_BINIT_RLIST_F13(b0_reflist[13]) |
-> > -	      VDPU_REG_BINIT_RLIST_F12(b0_reflist[12]);
-> > +	reg =3D VDPU_REG_BINIT_RLIST_F15(b0_reflist[15].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F14(b0_reflist[14].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F13(b0_reflist[13].index) |
-> > +	      VDPU_REG_BINIT_RLIST_F12(b0_reflist[12].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(102));
-> > =20
-> > -	reg =3D VDPU_REG_BINIT_RLIST_B5(b1_reflist[5]) |
-> > -	      VDPU_REG_BINIT_RLIST_B4(b1_reflist[4]) |
-> > -	      VDPU_REG_BINIT_RLIST_B3(b1_reflist[3]) |
-> > -	      VDPU_REG_BINIT_RLIST_B2(b1_reflist[2]) |
-> > -	      VDPU_REG_BINIT_RLIST_B1(b1_reflist[1]) |
-> > -	      VDPU_REG_BINIT_RLIST_B0(b1_reflist[0]);
-> > +	reg =3D VDPU_REG_BINIT_RLIST_B5(b1_reflist[5].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B4(b1_reflist[4].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B3(b1_reflist[3].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B2(b1_reflist[2].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B1(b1_reflist[1].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B0(b1_reflist[0].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(103));
-> > =20
-> > -	reg =3D VDPU_REG_BINIT_RLIST_B11(b1_reflist[11]) |
-> > -	      VDPU_REG_BINIT_RLIST_B10(b1_reflist[10]) |
-> > -	      VDPU_REG_BINIT_RLIST_B9(b1_reflist[9]) |
-> > -	      VDPU_REG_BINIT_RLIST_B8(b1_reflist[8]) |
-> > -	      VDPU_REG_BINIT_RLIST_B7(b1_reflist[7]) |
-> > -	      VDPU_REG_BINIT_RLIST_B6(b1_reflist[6]);
-> > +	reg =3D VDPU_REG_BINIT_RLIST_B11(b1_reflist[11].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B10(b1_reflist[10].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B9(b1_reflist[9].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B8(b1_reflist[8].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B7(b1_reflist[7].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B6(b1_reflist[6].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(104));
-> > =20
-> > -	reg =3D VDPU_REG_BINIT_RLIST_B15(b1_reflist[15]) |
-> > -	      VDPU_REG_BINIT_RLIST_B14(b1_reflist[14]) |
-> > -	      VDPU_REG_BINIT_RLIST_B13(b1_reflist[13]) |
-> > -	      VDPU_REG_BINIT_RLIST_B12(b1_reflist[12]);
-> > +	reg =3D VDPU_REG_BINIT_RLIST_B15(b1_reflist[15].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B14(b1_reflist[14].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B13(b1_reflist[13].index) |
-> > +	      VDPU_REG_BINIT_RLIST_B12(b1_reflist[12].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(105));
-> > =20
-> > -	reg =3D VDPU_REG_PINIT_RLIST_F3(p_reflist[3]) |
-> > -	      VDPU_REG_PINIT_RLIST_F2(p_reflist[2]) |
-> > -	      VDPU_REG_PINIT_RLIST_F1(p_reflist[1]) |
-> > -	      VDPU_REG_PINIT_RLIST_F0(p_reflist[0]);
-> > +	reg =3D VDPU_REG_PINIT_RLIST_F3(p_reflist[3].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F2(p_reflist[2].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F1(p_reflist[1].index) |
-> > +	      VDPU_REG_PINIT_RLIST_F0(p_reflist[0].index);
-> >  	vdpu_write_relaxed(vpu, reg, VDPU_SWREG(106));
-> > =20
-> >  	reg =3D VDPU_REG_REFER_LTERM_E(ctx->h264_dec.dpb_longterm);
-> > diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/stagi=
-ng/media/rkvdec/rkvdec-h264.c
-> > index 951e19231da2..3c7f3d87fab4 100644
-> > --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-> > +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-> > @@ -100,9 +100,9 @@ struct rkvdec_h264_priv_tbl {
-> >  #define RKVDEC_H264_DPB_SIZE 16
-> > =20
-> >  struct rkvdec_h264_reflists {
-> > -	u8 p[RKVDEC_H264_DPB_SIZE];
-> > -	u8 b0[RKVDEC_H264_DPB_SIZE];
-> > -	u8 b1[RKVDEC_H264_DPB_SIZE];
-> > +	struct v4l2_h264_reference p[RKVDEC_H264_DPB_SIZE];
-> > +	struct v4l2_h264_reference b0[RKVDEC_H264_DPB_SIZE];
-> > +	struct v4l2_h264_reference b1[RKVDEC_H264_DPB_SIZE];
-> >  	u8 num_valid;
-> >  };
-> > =20
-> > @@ -767,13 +767,13 @@ static void assemble_hw_rps(struct rkvdec_ctx *ct=
-x,
-> > =20
-> >  			switch (j) {
-> >  			case 0:
-> > -				idx =3D h264_ctx->reflists.p[i];
-> > +				idx =3D h264_ctx->reflists.p[i].index;
-> >  				break;
-> >  			case 1:
-> > -				idx =3D h264_ctx->reflists.b0[i];
-> > +				idx =3D h264_ctx->reflists.b0[i].index;
-> >  				break;
-> >  			case 2:
-> > -				idx =3D h264_ctx->reflists.b1[i];
-> > +				idx =3D h264_ctx->reflists.b1[i].index;
-> >  				break;
-> >  			}
-> > =20
-> > diff --git a/include/media/v4l2-h264.h b/include/media/v4l2-h264.h
-> > index 4b1c71c935e0..ef9a894e3c32 100644
-> > --- a/include/media/v4l2-h264.h
-> > +++ b/include/media/v4l2-h264.h
-> > @@ -37,7 +37,7 @@ struct v4l2_h264_reflist_builder {
-> >  		u16 longterm : 1;
-> >  	} refs[V4L2_H264_NUM_DPB_ENTRIES];
-> >  	s32 cur_pic_order_count;
-> > -	u8 unordered_reflist[V4L2_H264_NUM_DPB_ENTRIES];
-> > +	struct v4l2_h264_reference unordered_reflist[V4L2_H264_NUM_DPB_ENTRIE=
-S];
-> >  	u8 num_valid;
-> >  };
-> > =20
-> > @@ -51,10 +51,10 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_ref=
-list_builder *b,
-> >   * v4l2_h264_build_b_ref_lists() - Build the B0/B1 reference lists
-> >   *
-> >   * @builder: reference list builder context
-> > - * @b0_reflist: 16-bytes array used to store the B0 reference list. Ea=
-ch entry
-> > - *		is an index in the DPB
-> > - * @b1_reflist: 16-bytes array used to store the B1 reference list. Ea=
-ch entry
-> > - *		is an index in the DPB
-> > + * @b0_reflist: 16 sized array used to store the B0 reference list. Ea=
-ch entry
-> > + *		is a v4l2_h264_reference structure
-> > + * @b1_reflist: 16 sized array used to store the B1 reference list. Ea=
-ch entry
-> > + *		is a v4l2_h264_reference structure
-> >   *
-> >   * This functions builds the B0/B1 reference lists. This procedure is =
-described
-> >   * in section '8.2.4 Decoding process for reference picture lists cons=
-truction'
-> > @@ -63,14 +63,15 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_ref=
-list_builder *b,
-> >   */
-> >  void
-> >  v4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *bu=
-ilder,
-> > -			    u8 *b0_reflist, u8 *b1_reflist);
-> > +			    struct v4l2_h264_reference *b0_reflist,
-> > +			    struct v4l2_h264_reference *b1_reflist);
-> > =20
-> >  /**
-> >   * v4l2_h264_build_p_ref_list() - Build the P reference list
-> >   *
-> >   * @builder: reference list builder context
-> > - * @reflist: 16-bytes array used to store the P reference list. Each e=
-ntry
-> > - *	     is an index in the DPB
-> > + * @reflist: 16 sized array used to store the P reference list. Each e=
-ntry
-> > + *	     is a v4l2_h264_reference structure
-> >   *
-> >   * This functions builds the P reference lists. This procedure is desc=
-ribe in
-> >   * section '8.2.4 Decoding process for reference picture lists constru=
-ction'
-> > @@ -79,6 +80,6 @@ v4l2_h264_build_b_ref_lists(const struct v4l2_h264_re=
-flist_builder *builder,
-> >   */
-> >  void
-> >  v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *bui=
-lder,
-> > -			   u8 *reflist);
-> > +			   struct v4l2_h264_reference *reflist);
-> > =20
-> >  #endif /* _MEDIA_V4L2_H264_H */
->=20
+regards,
+dan carpenter
 
