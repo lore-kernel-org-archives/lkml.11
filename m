@@ -2,192 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38391C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C81C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234111AbiDVXEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        id S234252AbiDVXGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234181AbiDVXCZ (ORCPT
+        with ESMTP id S234150AbiDVXGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:02:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5138828541A;
-        Fri, 22 Apr 2022 15:26:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4C09B832CC;
-        Fri, 22 Apr 2022 22:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4466FC385AA;
-        Fri, 22 Apr 2022 22:26:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650666380;
-        bh=GFh7+tTJhr7oKxDbxi3obln6rfAvQhYnAR3sJDnZBVk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=ebOUwybgYq63kQqnwcRGspTt+kCkrv0ebZ/DP4anNXy7eMdy/19RwcBqE1J3c85r6
-         dEF9OnvnsmkRBLI/QLaF2o/xTi/FrHU23J8mZjqZ4pV3FXqXnoGNCOcmVzABLzFZiR
-         o923PwqTmM6MZjJgi7KizNhwqYKGIKC6r3IwfvdNVQMSAZZJd3X/93OWbW357qi6lb
-         MBUNJk+HQl5wYFL3hlIUbldLV6opaGwks53AKqb3gGnhHcadgEUJqWbKT6/5Psulhy
-         82lEhDjGQX6zrDSb/0VVodQ/PdDMTpfds7NfW44ZSTbwlCY+YlGtHLvYEZgVF2RZBI
-         AEp/ghnWCaWaw==
-Date:   Fri, 22 Apr 2022 17:26:18 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     bhelgaas@google.com, mika.westerberg@linux.intel.com,
-        koba.ko@canonical.com, baolu.lu@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        Russell Currey <ruscur@russell.cc>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Rajvi Jingar <rajvi.jingar@intel.com>,
-        david.e.box@linux.intel.com,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] PCI/AER: Disable AER service when link is in
- L2/L3 ready, L2 and L3 state
-Message-ID: <20220422222618.GA1523585@bhelgaas>
+        Fri, 22 Apr 2022 19:06:00 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B742B1971FA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:35:56 -0700 (PDT)
+X-UUID: cf57d261ad4a403688e2da312284f880-20220423
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:7e0e9f8f-9cbe-4c41-8c2a-c8b00d92214d,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:b822d2ef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: cf57d261ad4a403688e2da312284f880-20220423
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 703574240; Sat, 23 Apr 2022 06:35:52 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sat, 23 Apr 2022 06:35:52 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 23 Apr 2022 06:35:51 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Miles Chen <miles.chen@mediatek.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] iommu/mediatek: fix NULL pointer dereference when printing dev_name
+Date:   Sat, 23 Apr 2022 06:35:48 +0800
+Message-ID: <20220422223549.4173-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422222433.GA1464120@bhelgaas>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Rafael, linux-pm; sorry forgot this last time]
+When larbdev is NULL (in the case I hit, the node is incorrectly set
+iommus = <&iommu NUM>), it will cause device_link_add() fail and
+the kernel crashes when we try to print dev_name(larbdev).
 
-On Fri, Apr 22, 2022 at 05:24:36PM -0500, Bjorn Helgaas wrote:
-> On Fri, Apr 08, 2022 at 11:31:58PM +0800, Kai-Heng Feng wrote:
-> > On Intel Alder Lake platforms, Thunderbolt entering D3cold can cause
-> > some errors reported by AER:
-> > [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
-> > [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> > [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
-> > [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
-> > [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
-> > [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
-> > [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
-> > [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
-> > 
-> > So disable AER service to avoid the noises from turning power rails
-> > on/off when the device is in low power states (D3hot and D3cold), as
-> > PCIe Base Spec 5.0, section 5.2 "Link State Power Management" states
-> > that TLP and DLLP transmission is disabled for a Link in L2/L3 Ready
-> > (D3hot), L2 (D3cold with aux power) and L3 (D3cold).
-> 
-> Help me walk through what's happening here, because I'm never very
-> confident about how error reporting works.  I *think* the Unsupported
-> Request error means some request was in progress and was not
-> completed.  I don't think a link going down should by itself cause
-> an Unsupported Request error because there's no *request*.
-> 
-> I have a theory about what happened here.  Decoding the TLP Header
-> (from PCIe r6.0, sec 2.2.1.1, 2.2.8.10) gives:
-> 
->   34000000 (0011 0100 ...):
->     Fmt               001        4 DW header, no data
->     Type           1 0100        Msg, Local - Terminate at Receiver
-> 
->   08000052 (0800 ... 0101 0010)
->     Requester ID     0800        00:08.0
->     Message Code     0101 0010   PTM Request
-> 
-> From your lspci in bugzilla, 08:00 has PTM enabled.  So my theory is
-> that:
-> 
->   - 08:00.0 sent a PTM Request Message (a Posted Request)
->   - 00:1d.0 received the PTM Request Message
->   - The link transitioned to DL_Down
->   - Per sec 2.9.1, 00:1d.0 discarded the Request and reported an
->     Unsupported Request
->   - Or, per sec 6.21.3, if 00:1d.0 received a PTM Request when its
->     own PTM Enable was clear, it would also be treated as an
->     Unsupported Request
-> 
-> So I suspect we should disable PTM on 08:00.0 before putting it in a
-> low-power state.  If you manually disable PTM on 08:00.0, do these
-> errors stop happening?
-> 
-> David did something like this [1], but just for Root Ports.  That
-> looks wrong to me because sec 6.21.3 says we should not have PTM
-> enabled in an Upstream Port (i.e., in a downstream device like
-> 08:00.0) unless it is already enabled in the Downstream Port (i.e., in
-> the Root Port 00:1d.0).
-> 
-> Nit: can you remove the timestamps from the log?  They add clutter but
-> no useful information.
-> 
-> [1] https://git.kernel.org/linus/a697f072f5da
-> 
-> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215453
-> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> > v4:
-> >  - Explicitly states the spec version.
-> >  - Wording change. 
-> > 
-> > v3:
-> >  - Remove reference to ACS.
-> >  - Wording change.
-> > 
-> > v2:
-> >  - Wording change.
-> > 
-> >  drivers/pci/pcie/aer.c | 31 +++++++++++++++++++++++++------
-> >  1 file changed, 25 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-> > index 9fa1f97e5b270..e4e9d4a3098d7 100644
-> > --- a/drivers/pci/pcie/aer.c
-> > +++ b/drivers/pci/pcie/aer.c
-> > @@ -1367,6 +1367,22 @@ static int aer_probe(struct pcie_device *dev)
-> >  	return 0;
-> >  }
-> >  
-> > +static int aer_suspend(struct pcie_device *dev)
-> > +{
-> > +	struct aer_rpc *rpc = get_service_data(dev);
-> > +
-> > +	aer_disable_rootport(rpc);
-> > +	return 0;
-> > +}
-> > +
-> > +static int aer_resume(struct pcie_device *dev)
-> > +{
-> > +	struct aer_rpc *rpc = get_service_data(dev);
-> > +
-> > +	aer_enable_rootport(rpc);
-> > +	return 0;
-> > +}
-> > +
-> >  /**
-> >   * aer_root_reset - reset Root Port hierarchy, RCEC, or RCiEP
-> >   * @dev: pointer to Root Port, RCEC, or RCiEP
-> > @@ -1433,12 +1449,15 @@ static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
-> >  }
-> >  
-> >  static struct pcie_port_service_driver aerdriver = {
-> > -	.name		= "aer",
-> > -	.port_type	= PCIE_ANY_PORT,
-> > -	.service	= PCIE_PORT_SERVICE_AER,
-> > -
-> > -	.probe		= aer_probe,
-> > -	.remove		= aer_remove,
-> > +	.name			= "aer",
-> > +	.port_type		= PCIE_ANY_PORT,
-> > +	.service		= PCIE_PORT_SERVICE_AER,
-> > +	.probe			= aer_probe,
-> > +	.suspend		= aer_suspend,
-> > +	.resume			= aer_resume,
-> > +	.runtime_suspend	= aer_suspend,
-> > +	.runtime_resume		= aer_resume,
-> > +	.remove			= aer_remove,
-> >  };
-> >  
-> >  /**
-> > -- 
-> > 2.34.1
-> > 
+Fix it by adding a NULL pointer check before
+device_link_add/device_link_remove.
+
+It should work for normal correct setting and avoid the crash caused
+by my incorrect setting.
+
+Error log:
+[   18.189042][  T301] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000050
+[   18.190247][  T301] Mem abort info:
+[   18.190255][  T301]   ESR = 0x96000005
+[   18.190263][  T301]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   18.192142][  T301]   SET = 0, FnV = 0
+[   18.192151][  T301]   EA = 0, S1PTW = 0
+[   18.194710][  T301]   FSC = 0x05: level 1 translation fault
+[   18.195424][  T301] Data abort info:
+[   18.195888][  T301]   ISV = 0, ISS = 0x00000005
+[   18.196500][  T301]   CM = 0, WnR = 0
+[   18.196977][  T301] user pgtable: 4k pages, 39-bit VAs, pgdp=0000000104f9e000
+[   18.197889][  T301] [0000000000000050] pgd=0000000000000000, p4d=0000000000000000, pud=0000000000000000
+[   18.199220][  T301] Internal error: Oops: 96000005 [#1] PREEMPT SMP
+[   18.343152][  T301] Kernel Offset: 0x1444080000 from 0xffffffc008000000
+[   18.343988][  T301] PHYS_OFFSET: 0x40000000
+[   18.344519][  T301] pstate: a0400005 (NzCv daif +PAN -UAO)
+[   18.345213][  T301] pc : mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
+[   18.346050][  T301] lr : mtk_iommu_probe_device+0xd0/0x118 [mtk_iommu]
+[   18.346884][  T301] sp : ffffffc00a5635e0
+[   18.347392][  T301] x29: ffffffc00a5635e0 x28: ffffffd44a46c1d8
+[   18.348156][  T301] x27: ffffff80c39a8000 x26: ffffffd44a80cc38
+[   18.348917][  T301] x25: 0000000000000000 x24: ffffffd44a80cc38
+[   18.349677][  T301] x23: ffffffd44e4da4c6 x22: ffffffd44a80cc38
+[   18.350438][  T301] x21: ffffff80cecd1880 x20: 0000000000000000
+[   18.351198][  T301] x19: ffffff80c439f010 x18: ffffffc00a50d0c0
+[   18.351959][  T301] x17: ffffffffffffffff x16: 0000000000000004
+[   18.352719][  T301] x15: 0000000000000004 x14: ffffffd44eb5d420
+[   18.353480][  T301] x13: 0000000000000ad2 x12: 0000000000000003
+[   18.354241][  T301] x11: 00000000fffffad2 x10: c0000000fffffad2
+[   18.355003][  T301] x9 : a0d288d8d7142d00 x8 : a0d288d8d7142d00
+[   18.355763][  T301] x7 : ffffffd44c2bc640 x6 : 0000000000000000
+[   18.356524][  T301] x5 : 0000000000000080 x4 : 0000000000000001
+[   18.357284][  T301] x3 : 0000000000000000 x2 : 0000000000000005
+[   18.358045][  T301] x1 : 0000000000000000 x0 : 0000000000000000
+[   18.360208][  T301] Hardware name: MT6873 (DT)
+[   18.360771][  T301] Call trace:
+[   18.361168][  T301]  dump_backtrace+0xf8/0x1f0
+[   18.361737][  T301]  dump_stack_lvl+0xa8/0x11c
+[   18.362305][  T301]  dump_stack+0x1c/0x2c
+[   18.362816][  T301]  mrdump_common_die+0x184/0x40c [mrdump]
+[   18.363575][  T301]  ipanic_die+0x24/0x38 [mrdump]
+[   18.364230][  T301]  atomic_notifier_call_chain+0x128/0x2b8
+[   18.364937][  T301]  die+0x16c/0x568
+[   18.365394][  T301]  __do_kernel_fault+0x1e8/0x214
+[   18.365402][  T301]  do_page_fault+0xb8/0x678
+[   18.366934][  T301]  do_translation_fault+0x48/0x64
+[   18.368645][  T301]  do_mem_abort+0x68/0x148
+[   18.368652][  T301]  el1_abort+0x40/0x64
+[   18.368660][  T301]  el1h_64_sync_handler+0x54/0x88
+[   18.368668][  T301]  el1h_64_sync+0x68/0x6c
+[   18.368673][  T301]  mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
+[   18.369840][  T301]  __iommu_probe_device+0x12c/0x358
+[   18.370880][  T301]  iommu_probe_device+0x3c/0x31c
+[   18.372026][  T301]  of_iommu_configure+0x200/0x274
+[   18.373587][  T301]  of_dma_configure_id+0x1b8/0x230
+[   18.375200][  T301]  platform_dma_configure+0x24/0x3c
+[   18.376456][  T301]  really_probe+0x110/0x504
+[   18.376464][  T301]  __driver_probe_device+0xb4/0x188
+[   18.376472][  T301]  driver_probe_device+0x5c/0x2b8
+[   18.376481][  T301]  __driver_attach+0x338/0x42c
+[   18.377992][  T301]  bus_add_driver+0x218/0x4c8
+[   18.379389][  T301]  driver_register+0x84/0x17c
+[   18.380580][  T301]  __platform_driver_register+0x28/0x38
+...
+
+Fixes: 635319a4a744 ("media: iommu/mediatek: Add device_link between the consumer and the larb devices")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c    | 16 ++++++++++------
+ drivers/iommu/mtk_iommu_v1.c | 16 ++++++++++------
+ 2 files changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 6fd75a60abd6..1405502118ca 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -581,10 +581,12 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 		}
+ 	}
+ 	larbdev = data->larb_imu[larbid].dev;
+-	link = device_link_add(dev, larbdev,
+-			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+-	if (!link)
+-		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++	if (larbdev) {
++		link = device_link_add(dev, larbdev,
++				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++		if (!link)
++			dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++	}
+ 	return &data->iommu;
+ }
+ 
+@@ -600,8 +602,10 @@ static void mtk_iommu_release_device(struct device *dev)
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
+-	larbdev = data->larb_imu[larbid].dev;
+-	device_link_remove(dev, larbdev);
++	if (larbdev) {
++		larbdev = data->larb_imu[larbid].dev;
++		device_link_remove(dev, larbdev);
++	}
+ 
+ 	iommu_fwspec_free(dev);
+ }
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index ecff800656e6..d46b147afcf0 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -467,10 +467,12 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	}
+ 
+ 	larbdev = data->larb_imu[larbid].dev;
+-	link = device_link_add(dev, larbdev,
+-			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+-	if (!link)
+-		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++	if (larbdev) {
++		link = device_link_add(dev, larbdev,
++				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++		if (!link)
++			dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++	}
+ 
+ 	return &data->iommu;
+ }
+@@ -501,8 +503,10 @@ static void mtk_iommu_release_device(struct device *dev)
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
+-	larbdev = data->larb_imu[larbid].dev;
+-	device_link_remove(dev, larbdev);
++	if (larbdev) {
++		larbdev = data->larb_imu[larbid].dev;
++		device_link_remove(dev, larbdev);
++	}
+ 
+ 	iommu_fwspec_free(dev);
+ }
+-- 
+2.18.0
+
