@@ -2,254 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAAC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38391C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiDVXCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43086 "EHLO
+        id S234111AbiDVXEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiDVXCA (ORCPT
+        with ESMTP id S234181AbiDVXCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:02:00 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BA6D3AFF
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:30:24 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e68392d626so5004350fac.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:30:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kP//HR35fwPeoJIWDnQ9t8h/RUl4z3SobdBwAH82byo=;
-        b=ybkqhsmHD3HxtuOWkqnpe/v2PQw9y15Tztx37StdRZIiiTZ3qw4yUGVAYoNIDnU8yl
-         lt82cmiIAmJkZPgBWuvu3oejm10xJ1lQ2zufbBQeM9jbeYZUZHKHcmcum0NVVxrjsvsw
-         KwDxbfzsHQdHhg2MyHR5z6D6kwSmgMF5nZ42dGY/7A8LVTtEAeZ2FAdDV0ZksSYYET4M
-         o7EQ0XhsoC9nrwjvSQNxAi5At5h1RGTuFsnJL7ml3aC7XOgC2iBaggrQ1ggOU/S1SUPW
-         JVv+FmIVgHsfBfB61/CifJUbPEA/UtoO9ImOiU+CUvWNcLLd2JWp1X59DWKAPvlG4kPD
-         MZlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kP//HR35fwPeoJIWDnQ9t8h/RUl4z3SobdBwAH82byo=;
-        b=j6kCHdu8nlcvTJ2N8XVP2fSkguKMDrK4zeOl5x/N8pq1t8DtUokF4OyHP20CyF1rfj
-         YS7YB3geghuwajyyfcDFXG1XYqbDOuEXynrTiplv1AV0U/x45wCs5QLGXP/iV4CQxN10
-         T8HrCvnZpPapFY3HkqMe+K0acbhYxsX6B3twUD0DMYngVW2ViVFHa7LwcmUCXFVnrWsP
-         Q+EAfDTQuh7GIDwdfqlsR2jgcKctF0A/pgW3d4ceX47FoWXlTVE4O/xN1gqkfl26rr96
-         pnlcMDyCJN913FxG3JGipPDmnFexErJ0TJq5DpIQ3mfO6hTeMTA/I270YRMJ15cJRiXl
-         EQMw==
-X-Gm-Message-State: AOAM531/ZwcMQ4sPA5zj9ha8zaJCrnmnQI0DxU5eIVNlls7wpk5sXmao
-        pB49coxXetX6rOmHtPclttXYvA==
-X-Google-Smtp-Source: ABdhPJwPwgpoSu2iw9z7OvRsE1QdiYl3ZbHWQPjGz+2aLmYsNtphoB2DxOdIU8HCtyLAWCt0jGHV5A==
-X-Received: by 2002:a05:6870:e610:b0:e9:435:6910 with SMTP id q16-20020a056870e61000b000e904356910mr1872055oag.77.1650666623796;
-        Fri, 22 Apr 2022 15:30:23 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id a14-20020a544e0e000000b002f9c00dc626sm1218831oiy.28.2022.04.22.15.30.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 15:30:23 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-usb@vger.kernel.org
-Subject: [PATCH v3 1/2] drm: Add HPD state to drm_connector_oob_hotplug_event()
-Date:   Fri, 22 Apr 2022 15:32:24 -0700
-Message-Id: <20220422223225.1297434-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Fri, 22 Apr 2022 19:02:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5138828541A;
+        Fri, 22 Apr 2022 15:26:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4C09B832CC;
+        Fri, 22 Apr 2022 22:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4466FC385AA;
+        Fri, 22 Apr 2022 22:26:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650666380;
+        bh=GFh7+tTJhr7oKxDbxi3obln6rfAvQhYnAR3sJDnZBVk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=ebOUwybgYq63kQqnwcRGspTt+kCkrv0ebZ/DP4anNXy7eMdy/19RwcBqE1J3c85r6
+         dEF9OnvnsmkRBLI/QLaF2o/xTi/FrHU23J8mZjqZ4pV3FXqXnoGNCOcmVzABLzFZiR
+         o923PwqTmM6MZjJgi7KizNhwqYKGIKC6r3IwfvdNVQMSAZZJd3X/93OWbW357qi6lb
+         MBUNJk+HQl5wYFL3hlIUbldLV6opaGwks53AKqb3gGnhHcadgEUJqWbKT6/5Psulhy
+         82lEhDjGQX6zrDSb/0VVodQ/PdDMTpfds7NfW44ZSTbwlCY+YlGtHLvYEZgVF2RZBI
+         AEp/ghnWCaWaw==
+Date:   Fri, 22 Apr 2022 17:26:18 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     bhelgaas@google.com, mika.westerberg@linux.intel.com,
+        koba.ko@canonical.com, baolu.lu@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rajvi Jingar <rajvi.jingar@intel.com>,
+        david.e.box@linux.intel.com,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] PCI/AER: Disable AER service when link is in
+ L2/L3 ready, L2 and L3 state
+Message-ID: <20220422222618.GA1523585@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422222433.GA1464120@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some implementations, such as the Qualcomm platforms, the display
-driver has no way to query the current HPD state and as such it's
-impossible to distinguish between disconnect and attention events.
+[+cc Rafael, linux-pm; sorry forgot this last time]
 
-Add a parameter to drm_connector_oob_hotplug_event() to pass the HPD
-state.
-
-Also push the test for unchanged state in the displayport altmode driver
-into the i915 driver, to allow other drivers to act upon each update.
-
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
-
-Changs since v2:
-- The i915 cached hpd_state is tracked per encoder.
-
- drivers/gpu/drm/drm_connector.c          |  6 ++++--
- drivers/gpu/drm/i915/display/intel_dp.c  | 17 ++++++++++++++---
- drivers/gpu/drm/i915/i915_drv.h          |  3 +++
- drivers/usb/typec/altmodes/displayport.c | 10 +++-------
- include/drm/drm_connector.h              | 11 +++++++++--
- 5 files changed, 33 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index 76a8c707c34b..fff8c74d1ae6 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -2828,6 +2828,7 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
- /**
-  * drm_connector_oob_hotplug_event - Report out-of-band hotplug event to connector
-  * @connector_fwnode: fwnode_handle to report the event on
-+ * @hpd_state: hot plug detect logical state
-  *
-  * On some hardware a hotplug event notification may come from outside the display
-  * driver / device. An example of this is some USB Type-C setups where the hardware
-@@ -2837,7 +2838,8 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
-  * This function can be used to report these out-of-band events after obtaining
-  * a drm_connector reference through calling drm_connector_find_by_fwnode().
-  */
--void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
-+void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-+				     enum drm_connector_hpd_state hpd_state)
- {
- 	struct drm_connector *connector;
- 
-@@ -2846,7 +2848,7 @@ void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
- 		return;
- 
- 	if (connector->funcs->oob_hotplug_event)
--		connector->funcs->oob_hotplug_event(connector);
-+		connector->funcs->oob_hotplug_event(connector, hpd_state);
- 
- 	drm_connector_put(connector);
- }
-diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index d55acc4a028a..2907d8e1f80e 100644
---- a/drivers/gpu/drm/i915/display/intel_dp.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp.c
-@@ -4950,15 +4950,26 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
- 	return intel_modeset_synced_crtcs(state, conn);
- }
- 
--static void intel_dp_oob_hotplug_event(struct drm_connector *connector)
-+static void intel_dp_oob_hotplug_event(struct drm_connector *connector,
-+				       enum drm_connector_hpd_state hpd_state)
- {
- 	struct intel_encoder *encoder = intel_attached_encoder(to_intel_connector(connector));
- 	struct drm_i915_private *i915 = to_i915(connector->dev);
-+	bool hpd_high = hpd_state == DRM_CONNECTOR_HPD_HIGH;
-+	unsigned int hpd_pin = encoder->hpd_pin;
-+	bool need_work = false;
- 
- 	spin_lock_irq(&i915->irq_lock);
--	i915->hotplug.event_bits |= BIT(encoder->hpd_pin);
-+	if (hpd_high != test_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state)) {
-+		i915->hotplug.event_bits |= BIT(hpd_pin);
-+
-+		__assign_bit(hpd_pin, &i915->hotplug.oob_hotplug_last_state, hpd_high);
-+		need_work = true;
-+	}
- 	spin_unlock_irq(&i915->irq_lock);
--	queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
-+
-+	if (need_work)
-+		queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
- }
- 
- static const struct drm_connector_funcs intel_dp_connector_funcs = {
-diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 3711d618a372..71d0c7130ddd 100644
---- a/drivers/gpu/drm/i915/i915_drv.h
-+++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -134,6 +134,9 @@ struct i915_hotplug {
- 	/* Whether or not to count short HPD IRQs in HPD storms */
- 	u8 hpd_short_storm_enabled;
- 
-+	/* Last state reported by oob_hotplug_event for each encoder */
-+	unsigned long oob_hotplug_last_state;
-+
- 	/*
- 	 * if we get a HPD irq from DP and a HPD irq from non-DP
- 	 * the non-DP HPD could block the workqueue on a mode config
-diff --git a/drivers/usb/typec/altmodes/displayport.c b/drivers/usb/typec/altmodes/displayport.c
-index c1d8c23baa39..ea9cb1d71fd2 100644
---- a/drivers/usb/typec/altmodes/displayport.c
-+++ b/drivers/usb/typec/altmodes/displayport.c
-@@ -59,7 +59,6 @@ struct dp_altmode {
- 	struct typec_displayport_data data;
- 
- 	enum dp_state state;
--	bool hpd;
- 
- 	struct mutex lock; /* device lock */
- 	struct work_struct work;
-@@ -143,10 +142,8 @@ static int dp_altmode_status_update(struct dp_altmode *dp)
- 		if (!ret)
- 			dp->state = DP_STATE_CONFIGURE;
- 	} else {
--		if (dp->hpd != hpd) {
--			drm_connector_oob_hotplug_event(dp->connector_fwnode);
--			dp->hpd = hpd;
--		}
-+		drm_connector_oob_hotplug_event(dp->connector_fwnode,
-+						hpd ? DRM_CONNECTOR_HPD_HIGH : DRM_CONNECTOR_HPD_LOW);
- 	}
- 
- 	return ret;
-@@ -573,8 +570,7 @@ void dp_altmode_remove(struct typec_altmode *alt)
- 	cancel_work_sync(&dp->work);
- 
- 	if (dp->connector_fwnode) {
--		if (dp->hpd)
--			drm_connector_oob_hotplug_event(dp->connector_fwnode);
-+		drm_connector_oob_hotplug_event(dp->connector_fwnode, DRM_CONNECTOR_HPD_LOW);
- 
- 		fwnode_handle_put(dp->connector_fwnode);
- 	}
-diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-index 5166186146f4..3ccb5ecc9ea4 100644
---- a/include/drm/drm_connector.h
-+++ b/include/drm/drm_connector.h
-@@ -142,6 +142,11 @@ enum subpixel_order {
- 
- };
- 
-+enum drm_connector_hpd_state {
-+	DRM_CONNECTOR_HPD_LOW,
-+	DRM_CONNECTOR_HPD_HIGH
-+};
-+
- /**
-  * struct drm_scrambling: sink's scrambling support.
-  */
-@@ -1141,7 +1146,8 @@ struct drm_connector_funcs {
- 	 * This will get called when a hotplug-event for a drm-connector
- 	 * has been received from a source outside the display driver / device.
- 	 */
--	void (*oob_hotplug_event)(struct drm_connector *connector);
-+	void (*oob_hotplug_event)(struct drm_connector *connector,
-+				  enum drm_connector_hpd_state hpd_state);
- 
- 	/**
- 	 * @debugfs_init:
-@@ -1749,7 +1755,8 @@ drm_connector_is_unregistered(struct drm_connector *connector)
- 		DRM_CONNECTOR_UNREGISTERED;
- }
- 
--void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode);
-+void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-+				     enum drm_connector_hpd_state hpd_state);
- const char *drm_get_connector_type_name(unsigned int connector_type);
- const char *drm_get_connector_status_name(enum drm_connector_status status);
- const char *drm_get_subpixel_order_name(enum subpixel_order order);
--- 
-2.35.1
-
+On Fri, Apr 22, 2022 at 05:24:36PM -0500, Bjorn Helgaas wrote:
+> On Fri, Apr 08, 2022 at 11:31:58PM +0800, Kai-Heng Feng wrote:
+> > On Intel Alder Lake platforms, Thunderbolt entering D3cold can cause
+> > some errors reported by AER:
+> > [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+> > [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+> > [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+> > [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+> > [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+> > [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
+> > [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
+> > [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
+> > 
+> > So disable AER service to avoid the noises from turning power rails
+> > on/off when the device is in low power states (D3hot and D3cold), as
+> > PCIe Base Spec 5.0, section 5.2 "Link State Power Management" states
+> > that TLP and DLLP transmission is disabled for a Link in L2/L3 Ready
+> > (D3hot), L2 (D3cold with aux power) and L3 (D3cold).
+> 
+> Help me walk through what's happening here, because I'm never very
+> confident about how error reporting works.  I *think* the Unsupported
+> Request error means some request was in progress and was not
+> completed.  I don't think a link going down should by itself cause
+> an Unsupported Request error because there's no *request*.
+> 
+> I have a theory about what happened here.  Decoding the TLP Header
+> (from PCIe r6.0, sec 2.2.1.1, 2.2.8.10) gives:
+> 
+>   34000000 (0011 0100 ...):
+>     Fmt               001        4 DW header, no data
+>     Type           1 0100        Msg, Local - Terminate at Receiver
+> 
+>   08000052 (0800 ... 0101 0010)
+>     Requester ID     0800        00:08.0
+>     Message Code     0101 0010   PTM Request
+> 
+> From your lspci in bugzilla, 08:00 has PTM enabled.  So my theory is
+> that:
+> 
+>   - 08:00.0 sent a PTM Request Message (a Posted Request)
+>   - 00:1d.0 received the PTM Request Message
+>   - The link transitioned to DL_Down
+>   - Per sec 2.9.1, 00:1d.0 discarded the Request and reported an
+>     Unsupported Request
+>   - Or, per sec 6.21.3, if 00:1d.0 received a PTM Request when its
+>     own PTM Enable was clear, it would also be treated as an
+>     Unsupported Request
+> 
+> So I suspect we should disable PTM on 08:00.0 before putting it in a
+> low-power state.  If you manually disable PTM on 08:00.0, do these
+> errors stop happening?
+> 
+> David did something like this [1], but just for Root Ports.  That
+> looks wrong to me because sec 6.21.3 says we should not have PTM
+> enabled in an Upstream Port (i.e., in a downstream device like
+> 08:00.0) unless it is already enabled in the Downstream Port (i.e., in
+> the Root Port 00:1d.0).
+> 
+> Nit: can you remove the timestamps from the log?  They add clutter but
+> no useful information.
+> 
+> [1] https://git.kernel.org/linus/a697f072f5da
+> 
+> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215453
+> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > ---
+> > v4:
+> >  - Explicitly states the spec version.
+> >  - Wording change. 
+> > 
+> > v3:
+> >  - Remove reference to ACS.
+> >  - Wording change.
+> > 
+> > v2:
+> >  - Wording change.
+> > 
+> >  drivers/pci/pcie/aer.c | 31 +++++++++++++++++++++++++------
+> >  1 file changed, 25 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+> > index 9fa1f97e5b270..e4e9d4a3098d7 100644
+> > --- a/drivers/pci/pcie/aer.c
+> > +++ b/drivers/pci/pcie/aer.c
+> > @@ -1367,6 +1367,22 @@ static int aer_probe(struct pcie_device *dev)
+> >  	return 0;
+> >  }
+> >  
+> > +static int aer_suspend(struct pcie_device *dev)
+> > +{
+> > +	struct aer_rpc *rpc = get_service_data(dev);
+> > +
+> > +	aer_disable_rootport(rpc);
+> > +	return 0;
+> > +}
+> > +
+> > +static int aer_resume(struct pcie_device *dev)
+> > +{
+> > +	struct aer_rpc *rpc = get_service_data(dev);
+> > +
+> > +	aer_enable_rootport(rpc);
+> > +	return 0;
+> > +}
+> > +
+> >  /**
+> >   * aer_root_reset - reset Root Port hierarchy, RCEC, or RCiEP
+> >   * @dev: pointer to Root Port, RCEC, or RCiEP
+> > @@ -1433,12 +1449,15 @@ static pci_ers_result_t aer_root_reset(struct pci_dev *dev)
+> >  }
+> >  
+> >  static struct pcie_port_service_driver aerdriver = {
+> > -	.name		= "aer",
+> > -	.port_type	= PCIE_ANY_PORT,
+> > -	.service	= PCIE_PORT_SERVICE_AER,
+> > -
+> > -	.probe		= aer_probe,
+> > -	.remove		= aer_remove,
+> > +	.name			= "aer",
+> > +	.port_type		= PCIE_ANY_PORT,
+> > +	.service		= PCIE_PORT_SERVICE_AER,
+> > +	.probe			= aer_probe,
+> > +	.suspend		= aer_suspend,
+> > +	.resume			= aer_resume,
+> > +	.runtime_suspend	= aer_suspend,
+> > +	.runtime_resume		= aer_resume,
+> > +	.remove			= aer_remove,
+> >  };
+> >  
+> >  /**
+> > -- 
+> > 2.34.1
+> > 
