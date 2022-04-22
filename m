@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C21C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449833AbiDVQun (ORCPT
+        id S1449837AbiDVQv4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48932 "EHLO
+        Fri, 22 Apr 2022 12:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386269AbiDVQul (ORCPT
+        with ESMTP id S1386269AbiDVQvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:50:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B685F265;
-        Fri, 22 Apr 2022 09:47:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81FCB62117;
-        Fri, 22 Apr 2022 16:47:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7928BC385A0;
-        Fri, 22 Apr 2022 16:47:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650646066;
-        bh=w1qcxjgX+1d8NUij8QnC2gvBWuSGhmDYEIfSULLHp4Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Gezo8m3gEr5nx5XLkdGXI42ucp3Bepkhw4Oxz5QNc1duj2Uz86gVqCOF2l0Z1ICSA
-         k5/AXoBRPP2BT3IpoqC88gbJDQAE68D+rGlnyWWVjL2bMSUQmfMAiCeANXm54M6JMa
-         ctxWozcf59fUm1193SB4kKBF7mi3RK0wS8WD71wSxXIy7coP9BRTJKTJTeMao5IqLY
-         VTadPGYReNmekFi5o6RcNGM7IdM4vsyFFRM7I0J/gskPkRLmCTOyJ9KbfsOmOYMQ9f
-         nJpuI+bMIns67RdQhib9TTWWuuFHyuIlNXXdnjga+w2c2knL+JvRVH/kB2eFEtWVlQ
-         x1r2KzfrI4kaA==
-Date:   Fri, 22 Apr 2022 11:47:44 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH v3 3/8] PCI: rcar-gen2: Add RZ/N1 SOCs support
-Message-ID: <20220422164744.GA1460864@bhelgaas>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422120850.769480-4-herve.codina@bootlin.com>
+        Fri, 22 Apr 2022 12:51:54 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D444F5F8D1;
+        Fri, 22 Apr 2022 09:49:00 -0700 (PDT)
+Received: from smtpclient.apple (d66-183-91-182.bchsia.telus.net [66.183.91.182])
+        by linux.microsoft.com (Postfix) with ESMTPSA id A379620E65D6;
+        Fri, 22 Apr 2022 09:48:59 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A379620E65D6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1650646140;
+        bh=OLe0JPo5zoHc/exu12PHa4ag/S13XMhItTudk6eCymw=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=KJERGAV9DfTL+ebJU6/C40/SgLOm0dGzX8kKykGOu09kEq1+wVze2ZP6m9ZRTj69R
+         QDyg2fYM/zLHYbWeLyY8KoZjyrgECu5HC13wjXZxob4dIrZ8dRKc+GpPKZ/wCS0G2q
+         cJxQ/UdYg1qeE/btSvBGs+LmyEfGFuPP5AkYXE6w=
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+From:   Allen Pais <apais@linux.microsoft.com>
+In-Reply-To: <202204191929.B475B3426@keescook>
+Date:   Fri, 22 Apr 2022 09:48:58 -0700
+Cc:     olivier.dautricourt@orolia.com, sr@denx.de, vkoul@kernel.org,
+        linux-hardening@vger.kernel.org, ludovic.desroches@microchip.com,
+        tudor.ambarus@microchip.com, f.fainelli@gmail.com,
+        rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
+        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
+        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
+        andriy.shevchenko@linux.intel.com, leoyang.li@nxp.com,
+        zw@zh-kernel.org, wangzhou1@hisilicon.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, sean.wang@mediatek.com,
+        matthias.bgg@gmail.com, afaerber@suse.de, mani@kernel.org,
+        logang@deltatee.com, sanju.mehta@amd.com, daniel@zonque.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@linaro.org, green.wan@sifive.com,
+        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        patrice.chotard@foss.st.com, linus.walleij@linaro.org,
+        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <59CED9B1-03A4-4A71-9340-575F737037F5@linux.microsoft.com>
+References: <20220419211658.11403-1-apais@linux.microsoft.com>
+ <20220419211658.11403-2-apais@linux.microsoft.com>
+ <202204191929.B475B3426@keescook>
+To:     Kees Cook <keescook@chromium.org>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 02:08:45PM +0200, Herve Codina wrote:
-> Add Renesas RZ/N1 SOCs family support to the Renesas R-Car
-> gen2 PCI bridge driver.
-> The Renesas RZ/N1 SOCs internal PCI bridge is comptible with
-> the one available in the R-Car Gen2 family.
-> Tested with the RZ/N1D (R9A06G032) SOC.
 
-Nits (only address if you have some other reason to repost this
-series):
+>> The tasklet is an old API which will be deprecated, workqueue API
+>> cab be used instead of them.
+>>=20
+>> This patch replaces the tasklet usage in drivers/dma/* with a
+>> simple work.
+>=20
+> Thanks for working on this! Can you describe the process for the
+> replacement? For example, was it a 1:1 replacement from one set of
+> functions to another, or something more nuanced? Did you do this by =
+hand,
+> or with the help of something like Coccinelle?
 
-  - Subject claims this adds "support," which suggests that this adds
-    some piece of new functionality.  But it adds no new
-    functionality, it merely adds a new compatible string.  I would
-    say "Add RZ/N1 SOC compatible string"
+ For this series, I did the work manually as certain had the potential =
+to be improved.
+Also, there are drivers which use queue_work() instead of =
+schedule_work().=20
 
-  - Add blank lines between paragraphs
+> Including these details will help maintainers with review, and will =
+help
+> others do other conversions in the future.
+>=20
 
-  - Rewrap paragraphs to fill 75 characters
+ I will wait for a couple of more days and send out the rest of the =
+series with
+More details.
 
-  - s/comptible/compatible/
+Thanks.
 
-  - s/R-Car gen2/R-Car Gen2/ to write this consistently instead of
-    capitalizing "Gen2" sometimes but not others
+> Thanks!
+>=20
+> -Kees
+>=20
+> --=20
+> Kees Cook
 
-> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> ---
->  drivers/pci/controller/pci-rcar-gen2.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/pci/controller/pci-rcar-gen2.c b/drivers/pci/controller/pci-rcar-gen2.c
-> index 35804ea394fd..839695791757 100644
-> --- a/drivers/pci/controller/pci-rcar-gen2.c
-> +++ b/drivers/pci/controller/pci-rcar-gen2.c
-> @@ -328,6 +328,7 @@ static const struct of_device_id rcar_pci_of_match[] = {
->  	{ .compatible = "renesas,pci-r8a7791", },
->  	{ .compatible = "renesas,pci-r8a7794", },
->  	{ .compatible = "renesas,pci-rcar-gen2", },
-> +	{ .compatible = "renesas,pci-rzn1", },
->  	{ },
->  };
->  
-> -- 
-> 2.35.1
-> 
