@@ -2,142 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F94BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449313AbiDVPQt (ORCPT
+        id S1449314AbiDVPRT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
+        Fri, 22 Apr 2022 11:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448890AbiDVPQq (ORCPT
+        with ESMTP id S1449320AbiDVPRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:16:46 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441785D674;
-        Fri, 22 Apr 2022 08:13:51 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 036e7665410539f2; Fri, 22 Apr 2022 17:13:49 +0200
-Received: from kreacher.localnet (unknown [213.134.161.204])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id F381766BFEB;
-        Fri, 22 Apr 2022 17:13:48 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: [PATCH] ACPI: bus: Avoid non-ACPI device objects in walks over children
-Date:   Fri, 22 Apr 2022 17:13:48 +0200
-Message-ID: <11974495.O9o76ZdvQC@kreacher>
+        Fri, 22 Apr 2022 11:17:16 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39375DA01
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:14:21 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 23:14:58 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650640460;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+CdXSQ8TwyT27irzS0Uas8QgJTdWTejo8X7ExtkpCB8=;
+        b=b9b8FOXqU3HsITX4epha6H3gjGUMSlWrUqCAOwx9V6i6OQw8vo54yWnxNtcbr/ceEoJj3y
+        zccQy27UdGS3Co71vD0oNSEgkGN4rcpSl51YYJyGJQWdmOqd0Yu6X2u1Xqds74VKM90Q9W
+        q904cjP6ba0UOcSkxdHvxW/RA80YwjY=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Donnefort <vincent.donnefort@arm.com>,
+        Tao Zhou <tao.zhou@linux.dev>
+Cc:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
+        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        morten.rasmussen@arm.com, chris.redpath@arm.com, qperret@google.com
+Subject: Re: [PATCH v4 2/7] sched/fair: Decay task PELT values during wakeup
+ migration
+Message-ID: <YmLGcnD15PhXpNo8@geo.homenetwork>
+References: <20220412134220.1588482-1-vincent.donnefort@arm.com>
+ <20220412134220.1588482-3-vincent.donnefort@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.161.204
-X-CLIENT-HOSTNAME: 213.134.161.204
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrtdeggdekfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeegfffhudejlefhtdegffekteduhfethffhieettefhkeevgfdvgfefieekiefgheenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedvudefrddufeegrdduiedurddvtdegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeiuddrvddtgedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohephedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohephhgv
- lhhgrggrsheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412134220.1588482-3-vincent.donnefort@arm.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+On Tue, Apr 12, 2022 at 02:42:15PM +0100, Vincent Donnefort wrote:
+> Before being migrated to a new CPU, a task sees its PELT values
+> synchronized with rq last_update_time. Once done, that same task will also
+> have its sched_avg last_update_time reset. This means the time between
+> the migration and the last clock update (B) will not be accounted for in
+> util_avg and a discontinuity will appear. This issue is amplified by the
+> PELT clock scaling. If the clock hasn't been updated while the CPU is
+> idle, clock_pelt will not be aligned with clock_task and that time (A)
+> will be also lost.
+> 
+>    ---------|----- A -----|-----------|------- B -----|>
+>         clock_pelt   clock_task     clock            now
+> 
+> This is especially problematic for asymmetric CPU capacity systems which
+> need stable util_avg signals for task placement and energy estimation.
+> 
+> Ideally, this problem would be solved by updating the runqueue clocks
+> before the migration. But that would require taking the runqueue lock
+> which is quite expensive [1]. Instead estimate the missing time and update
+> the task util_avg with that value:
+> 
+>   A + B = clock_task - clock_pelt + sched_clock_cpu() - clock
+> 
+> Neither clock_task, clock_pelt nor clock can be accessed without the
+> runqueue lock. The new cfs_rq last_update_lag is therefore created and
+> contains those three values when the last_update_time value for that very
+> same cfs_rq is updated.
+> 
+>   last_update_lag = clock - clock_task + clock_pelt
+> 
+> And we can then write the missing time as follow:
+> 
+>   A + B = sched_clock_cpu() - last_update_lag
+> 
+> The B. part of the missing time is however an estimation that doesn't take
+> into account IRQ and Paravirt time.
+> 
+> Now we have an estimation for A + B, we can create an estimator for the
+> PELT value at the time of the migration. We need for this purpose to
+> inject last_update_time which is a combination of both clock_pelt and
+> lost_idle_time. The latter is a time value which is completely lost from a
+> PELT point of view and must be ignored. And finally, we can write:
+> 
+>   now = last_update_time + A + B
+>       = last_update_time + sched_clock_cpu() - last_update_lag
+> 
+> This estimation has a cost, mostly due to sched_clock_cpu(). Limit the
+> usage to the case where the source CPU is idle as we know this is when the
+> clock is having the biggest risk of being outdated.
+> 
+> [1] https://lore.kernel.org/all/20190709115759.10451-1-chris.redpath@arm.com/
+> 
+> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> 
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 5dd38c9df0cc..e234d015657f 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3694,6 +3694,57 @@ static inline void add_tg_cfs_propagate(struct cfs_rq *cfs_rq, long runnable_sum
+>  
+>  #endif /* CONFIG_FAIR_GROUP_SCHED */
+>  
+> +#ifdef CONFIG_NO_HZ_COMMON
+> +static inline void update_cfs_rq_lag(struct cfs_rq *cfs_rq)
+> +{
+> +	struct rq *rq = rq_of(cfs_rq);
+> +
+> +	u64_u32_store(cfs_rq->last_update_lag,
+> +#ifdef CONFIG_CFS_BANDWIDTH
+> +		      /* Timer stopped by throttling */
+> +		      unlikely(cfs_rq->throttle_count) ? U64_MAX :
+> +#endif
+> +		      rq->clock - rq->clock_task + rq->clock_pelt);
+> +}
+> +
+> +static inline void migrate_se_pelt_lag(struct sched_entity *se)
+> +{
+> +	u64 now, last_update_lag;
+> +	struct cfs_rq *cfs_rq;
+> +	struct rq *rq;
+> +	bool is_idle;
+> +
+> +	cfs_rq = cfs_rq_of(se);
+> +	rq = rq_of(cfs_rq);
+> +
+> +	rcu_read_lock();
+> +	is_idle = is_idle_task(rcu_dereference(rq->curr));
+> +	rcu_read_unlock();
+> +
+> +	/*
+> +	 * The lag estimation comes with a cost we don't want to pay all the
+> +	 * time. Hence, limiting to the case where the source CPU is idle and
+> +	 * we know we are at the greatest risk to have an outdated clock.
+> +	 */
+> +	if (!is_idle)
+> +		return;
+> +
+> +	last_update_lag = u64_u32_load(cfs_rq->last_update_lag);
 
-When walking the children of an ACPI device, take extra care to avoid
-using to_acpi_device() on the ones that are not ACPI devices, because
-that may lead to out-of-bounds access and memory corruption.
+If CPU is idle, clock_pelt is equal to clock_task, A part is
+disappeared.
 
-While at it, make the function passed to acpi_dev_for_each_child()
-take a struct acpi_device pointer argument (instead of a struct device
-one), so it is more straightforward to use.
-
-Fixes: b7dd6298db81 ("ACPI: PM: Introduce acpi_dev_power_up_children_with_adr()")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-BugLink: https://lore.kernel.org/lkml/20220420064725.GB16310@xsang-OptiPlex-9020/
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
-
-The commit being fixed is present in linux-next.
-
----
- drivers/acpi/bus.c       |   24 ++++++++++++++++++++++--
- drivers/acpi/device_pm.c |    5 +----
- include/acpi/acpi_bus.h  |    2 +-
- 3 files changed, 24 insertions(+), 7 deletions(-)
-
-Index: linux-pm/drivers/acpi/bus.c
-===================================================================
---- linux-pm.orig/drivers/acpi/bus.c
-+++ linux-pm/drivers/acpi/bus.c
-@@ -1070,10 +1070,30 @@ int acpi_bus_for_each_dev(int (*fn)(stru
- }
- EXPORT_SYMBOL_GPL(acpi_bus_for_each_dev);
- 
-+struct acpi_dev_walk_context {
-+	int (*fn)(struct acpi_device *, void *);
-+	void *data;
-+};
-+
-+static int acpi_dev_for_one_check(struct device *dev, void *context)
-+{
-+	struct acpi_dev_walk_context *adwc = context;
-+
-+	if (dev->bus != &acpi_bus_type)
-+		return 0;
-+
-+	return adwc->fn(to_acpi_device(dev), adwc->data);
-+}
-+
- int acpi_dev_for_each_child(struct acpi_device *adev,
--			    int (*fn)(struct device *, void *), void *data)
-+			    int (*fn)(struct acpi_device *, void *), void *data)
- {
--	return device_for_each_child(&adev->dev, data, fn);
-+	struct acpi_dev_walk_context adwc = {
-+		.fn = fn,
-+		.data = data,
-+	};
-+
-+	return device_for_each_child(&adev->dev, &adwc, acpi_dev_for_one_check);
- }
- 
- /* --------------------------------------------------------------------------
-Index: linux-pm/include/acpi/acpi_bus.h
-===================================================================
---- linux-pm.orig/include/acpi/acpi_bus.h
-+++ linux-pm/include/acpi/acpi_bus.h
-@@ -482,7 +482,7 @@ extern struct bus_type acpi_bus_type;
- 
- int acpi_bus_for_each_dev(int (*fn)(struct device *, void *), void *data);
- int acpi_dev_for_each_child(struct acpi_device *adev,
--			    int (*fn)(struct device *, void *), void *data);
-+			    int (*fn)(struct acpi_device *, void *), void *data);
- 
- /*
-  * Events
-Index: linux-pm/drivers/acpi/device_pm.c
-===================================================================
---- linux-pm.orig/drivers/acpi/device_pm.c
-+++ linux-pm/drivers/acpi/device_pm.c
-@@ -429,11 +429,8 @@ bool acpi_bus_power_manageable(acpi_hand
- }
- EXPORT_SYMBOL(acpi_bus_power_manageable);
- 
--static int acpi_power_up_if_adr_present(struct device *dev, void *not_used)
-+static int acpi_power_up_if_adr_present(struct acpi_device *adev, void *not_used)
- {
--	struct acpi_device *adev;
--
--	adev = to_acpi_device(dev);
- 	if (!(adev->flags.power_manageable && adev->pnp.type.bus_address))
- 		return 0;
- 
-
-
-
+> +	/* The clock has been stopped for throttling */
+> +	if (last_update_lag == U64_MAX)
+> +		return;
+> +
+> +	now = se->avg.last_update_time - last_update_lag +
+> +	      sched_clock_cpu(cpu_of(rq));
+> +
+> +	__update_load_avg_blocked_se(now, se);
+> +}
+> +#else
+> +static void update_cfs_rq_lag(struct cfs_rq *cfs_rq) {}
+> +static void migrate_se_pelt_lag(struct sched_entity *se) {}
+> +#endif
+> +
+>  /**
+>   * update_cfs_rq_load_avg - update the cfs_rq's load/util averages
+>   * @now: current time, as per cfs_rq_clock_pelt()
+> @@ -3774,6 +3825,7 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+>  			   cfs_rq->last_update_time_copy,
+>  			   sa->last_update_time);
+>  #endif
+> +	update_cfs_rq_lag(cfs_rq);
+>  
+>  	return decayed;
+>  }
+> @@ -6946,6 +6998,8 @@ static void detach_entity_cfs_rq(struct sched_entity *se);
+>   */
+>  static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  {
+> +	struct sched_entity *se = &p->se;
+> +
+>  	/*
+>  	 * As blocked tasks retain absolute vruntime the migration needs to
+>  	 * deal with this by subtracting the old and adding the new
+> @@ -6953,7 +7007,6 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  	 * the task on the new runqueue.
+>  	 */
+>  	if (READ_ONCE(p->__state) == TASK_WAKING) {
+> -		struct sched_entity *se = &p->se;
+>  		struct cfs_rq *cfs_rq = cfs_rq_of(se);
+>  
+>  		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
+> @@ -6965,25 +7018,28 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  		 * rq->lock and can modify state directly.
+>  		 */
+>  		lockdep_assert_rq_held(task_rq(p));
+> -		detach_entity_cfs_rq(&p->se);
+> +		detach_entity_cfs_rq(se);
+>  
+>  	} else {
+> +		remove_entity_load_avg(se);
+> +
+>  		/*
+> -		 * We are supposed to update the task to "current" time, then
+> -		 * its up to date and ready to go to new CPU/cfs_rq. But we
+> -		 * have difficulty in getting what current time is, so simply
+> -		 * throw away the out-of-date time. This will result in the
+> -		 * wakee task is less decayed, but giving the wakee more load
+> -		 * sounds not bad.
+> +		 * Here, the task's PELT values have been updated according to
+> +		 * the current rq's clock. But if that clock hasn't been
+> +		 * updated in a while, a substantial idle time will be missed,
+> +		 * leading to an inflation after wake-up on the new rq.
+> +		 *
+> +		 * Estimate the missing time from the rq clock and update
+> +		 * sched_avg to improve the PELT continuity after migration.
+>  		 */
+> -		remove_entity_load_avg(&p->se);
+> +		migrate_se_pelt_lag(se);
+>  	}
+>  
+>  	/* Tell new CPU we are migrated */
+> -	p->se.avg.last_update_time = 0;
+> +	se->avg.last_update_time = 0;
+>  
+>  	/* We have migrated, no longer consider this task hot */
+> -	p->se.exec_start = 0;
+> +	se->exec_start = 0;
+>  
+>  	update_scan_period(p, new_cpu);
+>  }
+> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> index e2cf6e48b165..2f6446295e7d 100644
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -593,6 +593,12 @@ struct cfs_rq {
+>  	struct sched_avg	avg;
+>  #ifndef CONFIG_64BIT
+>  	u64			last_update_time_copy;
+> +#endif
+> +#ifdef CONFIG_NO_HZ_COMMON
+> +	u64			last_update_lag;
+> +#ifndef CONFIG_64BIT
+> +	u64                     last_update_lag_copy;
+> +#endif
+>  #endif
+>  	struct {
+>  		raw_spinlock_t	lock ____cacheline_aligned;
+> -- 
+> 2.25.1
+> 
