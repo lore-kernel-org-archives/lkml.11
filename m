@@ -2,138 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7904C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231886AbiDVWNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
+        id S232171AbiDVWNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiDVWNF (ORCPT
+        with ESMTP id S232902AbiDVWNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 18:13:05 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CF020E3BC;
-        Fri, 22 Apr 2022 14:00:43 -0700 (PDT)
-Received: from relay4-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::224])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 5F921C6661;
-        Fri, 22 Apr 2022 19:37:43 +0000 (UTC)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B2CAEE0003;
-        Fri, 22 Apr 2022 19:37:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650656223;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xEfZcA39m5S9yD0fiH+ykU7GDg99hDzHx1O9tp4Ow2M=;
-        b=BzQSzp3u9K4ucupEsK4/XLhEm7hdXJOdS5okj18TvD9MkdsJ8qUbak9Cde2Wtx1ARNJSI8
-        xFPqsW+Unb7kxkC10v17qyUA5vYDJTQVz914siOYH2krxt1uchm8P0TzWCciz7v58FQBP7
-        f+GjimnxkFcLulPtJY6OQc/p3YhMq9vVEwV5jua9HAoi25tUS+T45ncZ7yubxOWmrCIjUL
-        qQHG1M/xDnCHL0xCadWQ7guMhKjjFtTV+OXAbrNGNAWV1JTEtWmaeSTL5qgL0QARxAAkHc
-        YZPcIBFZOuBgy/+fzn2qb4LFaj074E8ey6L/v7eDcLapZeaYdfD4OHeF0LaNgQ==
-Date:   Fri, 22 Apr 2022 21:37:01 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: i3c: Convert snps,dw-i3c-master to DT schema
-Message-ID: <YmMD3RPXfPdiYXyg@mail.local>
-References: <20220422192236.2594577-1-robh@kernel.org>
- <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAEEB30A430
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:00:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D2B21FB;
+        Fri, 22 Apr 2022 12:02:21 -0700 (PDT)
+Received: from [10.57.80.98] (unknown [10.57.80.98])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6CDF43F73B;
+        Fri, 22 Apr 2022 12:02:18 -0700 (PDT)
+Message-ID: <9da468bc-e6fd-1d7c-a6ce-69be87a7472a@arm.com>
+Date:   Fri, 22 Apr 2022 20:02:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 02/13] iommu: Move bus setup to IOMMU device registration
+Content-Language: en-GB
+To:     Krishna Reddy <vdumpa@nvidia.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>
+Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "sven@svenpeter.dev" <sven@svenpeter.dev>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+        "yong.wu@mediatek.com" <yong.wu@mediatek.com>,
+        "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+        "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
+        "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1649935679.git.robin.murphy@arm.com>
+ <e607a32be8e84c56d65160902f4bd3fb434ee9d3.1649935679.git.robin.murphy@arm.com>
+ <PH0PR12MB56475FAF4A2E7DB0AE1C1217B3F79@PH0PR12MB5647.namprd12.prod.outlook.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <PH0PR12MB56475FAF4A2E7DB0AE1C1217B3F79@PH0PR12MB5647.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 14:28:53-0500, Rob Herring wrote:
-> On Fri, Apr 22, 2022 at 2:22 PM Rob Herring <robh@kernel.org> wrote:
-> >
-> > Convert the Synopsys Designware I3C master to DT schema format.
-> >
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../bindings/i3c/snps,dw-i3c-master.txt       | 41 ---------------
-> >  .../bindings/i3c/snps,dw-i3c-master.yaml      | 52 +++++++++++++++++++
-> >  2 files changed, 52 insertions(+), 41 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-> >  create mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-> > deleted file mode 100644
-> > index 07f35f36085d..000000000000
-> > --- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-> > +++ /dev/null
-> > @@ -1,41 +0,0 @@
-> > -Bindings for Synopsys DesignWare I3C master block
-> > -=================================================
-> > -
-> > -Required properties:
-> > ---------------------
-> > -- compatible: shall be "snps,dw-i3c-master-1.00a"
-> > -- clocks: shall reference the core_clk
-> > -- interrupts: the interrupt line connected to this I3C master
-> > -- reg: Offset and length of I3C master registers
-> > -
-> > -Mandatory properties defined by the generic binding (see
-> > -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
-> > -
-> > -- #address-cells: shall be set to 3
-> > -- #size-cells: shall be set to 0
-> > -
-> > -Optional properties defined by the generic binding (see
-> > -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
-> > -
-> > -- i2c-scl-hz
-> > -- i3c-scl-hz
-> > -
-> > -I3C device connected on the bus follow the generic description (see
-> > -Documentation/devicetree/bindings/i3c/i3c.yaml for more details).
-> > -
-> > -Example:
-> > -
-> > -       i3c-master@2000 {
-> > -               compatible = "snps,dw-i3c-master-1.00a";
-> > -               #address-cells = <3>;
-> > -               #size-cells = <0>;
-> > -               reg = <0x02000 0x1000>;
-> > -               interrupts = <0>;
-> > -               clocks = <&i3cclk>;
-> > -
-> > -               eeprom@57{
-> > -                       compatible = "atmel,24c01";
-> > -                       reg = <0x57 0x0 0x10>;
-> > -                       pagesize = <0x8>;
-> > -               };
-> > -       };
-> > diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-> > new file mode 100644
-> > index 000000000000..5b8b43e6f1e4
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-> > @@ -0,0 +1,52 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/i3c/snps,dw-i3c-master.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Synopsys DesignWare I3C master block
-> > +
-> > +maintainers:
-> > +  - Vitor Soares <vitor.soares@synopsys.com>
+On 2022-04-22 19:37, Krishna Reddy wrote:
+> Good effort to isolate bus config from smmu drivers.
+> Reviewed-By: Krishna Reddy <vdumpa@nvidia.com>
+
+Thanks!
+
+> I have an orthogonal question here.
+> Can the following code handle the case, where different buses have different type of SMMU instances(like one bus has SMMUv2 and another bus has SMMUv3)?
+> If it need to handle the above case, can the smmu device bus be matched with specific bus here and ops set only for that bus?
+
+Not yet, but that is one of the end goals that this is all working 
+towards. I think the stuff that I've added to the dev branch[1] today 
+should have reached the point where that becomes viable, but I'll need 
+to rig up a system to test it next week.
+
+Intermediate solutions aren't worth it because in practice you 
+inevitably end up needing both IOMMU drivers to share the platform "bus" 
+anyway.
+
+Cheers,
+Robin.
+
+[1] https://gitlab.arm.com/linux-arm/linux-rm/-/commits/iommu/bus
+
 > 
-> And it bounces. Someone else want it?
 > 
-
-Probably no one but me.
-
-
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+>> +       for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
+>> +               struct bus_type *bus = iommu_buses[i];
+>> +               const struct iommu_ops *bus_ops = bus->iommu_ops;
+>> +               int err;
+>> +
+>> +               WARN_ON(bus_ops && bus_ops != ops);
+>> +               bus->iommu_ops = ops;
+>> +               err = bus_iommu_probe(bus);
+>> +               if (err) {
+>> +                       bus_for_each_dev(bus, NULL, iommu,
+>> remove_iommu_group);
+>> +                       bus->iommu_ops = bus_ops;
+>> +                       return err;
+>> +               }
+>> +       }
+> 
+> 
+> -KR
