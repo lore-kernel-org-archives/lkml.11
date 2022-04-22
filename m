@@ -2,135 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD730C43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbiDVJQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60776 "EHLO
+        id S1445856AbiDVJRA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 05:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445900AbiDVJO7 (ORCPT
+        with ESMTP id S1445894AbiDVJOc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:14:59 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B0951E76
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:12:07 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id y19-20020a056e02119300b002c2d3ef05bfso4058155ili.18
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:12:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vO2Cuxa4EB7u/Dij9OoFRHsqcLWpfFLkWXJuU8L5L9A=;
-        b=yqO8118SvfhmozOVyEmnVp5X2RyMK35kjNj1Mwd1lcmmr4ORSfKh1MhOOJqh56GR9u
-         oENZ1RvDavF8uFrZvwc77zlNS5dI7NTfRBteqgQ7G/sE3syeFVO5OKGh8x2wv1wcDLQZ
-         BpJjpqxpGiakeXaNufpFzm1aND/dK7boxxTXbxbrUxuO3hKwf6jawpZU8Hfu4fQJWsxm
-         bqIiyeRxnvrYyjm63Bq8gV2pacIfRJfnZ/JyYW5U2Q4N/IoYvQd5szE8fssmzp5DsI/z
-         N0B1YO4ZDnUFgVHr8QPkxE99ElgU5qpg8mT/tsJi4oCYky+fO3FJpNC6ozCXuhVpfHNH
-         qK7Q==
-X-Gm-Message-State: AOAM530aCe/aLi3Q8FrRMja/bpyj7Lx9e39QmTtLQ5W6v+7XpnL6n1MN
-        /SjS69Mw2kn+Ig+DNgJmCnM1Y5qaxKrNZs5Q/2khefUWbwB+
-X-Google-Smtp-Source: ABdhPJxxAfyF8/7WKDZQDWVL18t1Brcwf2NmDcgVC0u4SDyeW4RN0qI7twNUkMJ5dyhj4HZnVEJFKMz5mXoxDI2duJqVloj7G6NR
+        Fri, 22 Apr 2022 05:14:32 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6BC51E73;
+        Fri, 22 Apr 2022 02:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650618700; x=1682154700;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=9gs0y43nboKo8GGuh5maolOZQqjDS1SJ89N8KaW1Seo=;
+  b=GGV+neFc8PW22LA6mo8bELQRCCJ/UaS/PaTwGwrIMfsZhP0WY3pwHrIx
+   RbafBiAxpklTwjvvRY/R+Es6otvakEzN74R8ZOWlc9+MB6SqZKs5TQgmc
+   L5QwEY8Px2XCMIP70JjS5HBZIZupwmWHvVQtmdHyTgIkKPluDJEsuYz06
+   M=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Apr 2022 02:11:40 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:11:39 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 02:11:39 -0700
+Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 02:11:32 -0700
+From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        <robdclark@gmail.com>, <seanpaul@chromium.org>,
+        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
+        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
+        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
+        <quic_aravindh@quicinc.com>, <steev@kali.org>
+Subject: [PATCH v9 2/4] drm/msm/dp: Support only IRQ_HPD and REPLUG interrupts for eDP
+Date:   Fri, 22 Apr 2022 14:41:04 +0530
+Message-ID: <1650618666-15342-3-git-send-email-quic_sbillaka@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
+References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:da8e:0:b0:2cb:e08b:2b7b with SMTP id
- u14-20020a92da8e000000b002cbe08b2b7bmr1467036iln.165.1650618726451; Fri, 22
- Apr 2022 02:12:06 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 02:12:06 -0700
-In-Reply-To: <20220422070412.2714-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d995b605dd3a9e93@google.com>
-Subject: Re: [syzbot] kernel BUG in __filemap_get_folio
-From:   syzbot <syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The panel-edp enables the eDP panel power during probe, get_modes
+and pre-enable. The eDP connect and disconnect interrupts for the eDP/DP
+controller are directly dependent on panel power. As eDP display can be
+assumed as always connected, the controller driver can skip the eDP
+connect and disconnect interrupts. Any disruption in the link status
+will be indicated via the IRQ_HPD interrupts.
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-kernel BUG in __filemap_get_folio
+So, the eDP controller driver can just enable the IRQ_HPD and replug
+interrupts. The DP controller driver still needs to enable all the
+interrupts.
 
- free_contig_range+0xb1/0x180 mm/page_alloc.c:9418
- destroy_args+0xa8/0x646 mm/debug_vm_pgtable.c:1018
- debug_vm_pgtable+0x2a51/0x2ae3 mm/debug_vm_pgtable.c:1332
- do_one_initcall+0x103/0x650 init/main.c:1298
- do_initcall_level init/main.c:1371 [inline]
- do_initcalls init/main.c:1387 [inline]
- do_basic_setup init/main.c:1406 [inline]
- kernel_init_freeable+0x6b1/0x73a init/main.c:1613
- kernel_init+0x1a/0x1d0 init/main.c:1502
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
-------------[ cut here ]------------
-kernel BUG at mm/filemap.c:1972!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 4282 Comm: syz-executor.1 Not tainted 5.18.0-rc3-syzkaller-00007-g559089e0a93d-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__filemap_get_folio+0xc65/0xf00 mm/filemap.c:1972
-Code: db 45 31 f6 e9 fd f5 ff ff 44 8b 6c 24 10 48 89 eb e9 f0 f5 ff ff e8 2a f2 d8 ff 48 c7 c6 80 d9 d5 89 48 89 df e8 6b 8d 0e 00 <0f> 0b e8 14 f2 d8 ff 48 89 df 31 db e8 4a af 03 00 e9 78 f7 ff ff
-RSP: 0018:ffffc900037b78b0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffea00017c8800 RCX: 0000000000000000
-RDX: ffff8880763fc140 RSI: ffffffff819f5bf5 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000018 R09: 00000000ffffffff
-R10: ffffffff891d5eec R11: 00000000ffffffff R12: 00000000000001c0
-R13: 0000000000000182 R14: 0000000000000000 R15: dffffc0000000000
-FS:  00007f807ec16700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd7f356c058 CR3: 0000000078894000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- pagecache_get_page+0x2e/0x290 mm/folio-compat.c:126
- shmem_getpage_gfp+0x471/0x2370 mm/shmem.c:1812
- shmem_getpage mm/shmem.c:149 [inline]
- shmem_write_begin+0xff/0x1e0 mm/shmem.c:2446
- generic_perform_write+0x249/0x560 mm/filemap.c:3788
- __generic_file_write_iter+0x2aa/0x4d0 mm/filemap.c:3916
- generic_file_write_iter+0xd7/0x220 mm/filemap.c:3948
- call_write_iter include/linux/fs.h:2050 [inline]
- new_sync_write+0x38a/0x560 fs/read_write.c:504
- vfs_write+0x7c0/0xac0 fs/read_write.c:591
- ksys_write+0x127/0x250 fs/read_write.c:644
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f807da890e9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f807ec16168 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007f807db9bf60 RCX: 00007f807da890e9
-RDX: 000000000208e24b RSI: 0000000020000080 RDI: 0000000000000004
-RBP: 00007f807dae308d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffcdf2c068f R14: 00007f807ec16300 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__filemap_get_folio+0xc65/0xf00 mm/filemap.c:1972
-Code: db 45 31 f6 e9 fd f5 ff ff 44 8b 6c 24 10 48 89 eb e9 f0 f5 ff ff e8 2a f2 d8 ff 48 c7 c6 80 d9 d5 89 48 89 df e8 6b 8d 0e 00 <0f> 0b e8 14 f2 d8 ff 48 89 df 31 db e8 4a af 03 00 e9 78 f7 ff ff
-RSP: 0018:ffffc900037b78b0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffea00017c8800 RCX: 0000000000000000
-RDX: ffff8880763fc140 RSI: ffffffff819f5bf5 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000018 R09: 00000000ffffffff
-R10: ffffffff891d5eec R11: 00000000ffffffff R12: 00000000000001c0
-R13: 0000000000000182 R14: 0000000000000000 R15: dffffc0000000000
-FS:  00007f807ec16700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1a16b6c058 CR3: 0000000078894000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+---
+Changes in v9:
+  - add comment explaining the interrupt status register
 
+Changes in v8:
+  - add comment explaining the interrupt status return
 
-Tested on:
+Changes in v7:
+  - reordered the patch in the series
+  - modified the return statement for isr
+  - connector check modified to just check for eDP
 
-commit:         559089e0 vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLO..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-console output: https://syzkaller.appspot.com/x/log.txt?x=17b87e0cf00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dd7c9a79dfcfa205
-dashboard link: https://syzkaller.appspot.com/bug?extid=cf4cf13056f85dec2c40
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=14add062f00000
+ drivers/gpu/drm/msm/dp/dp_catalog.c | 16 ++++++++++------
+ drivers/gpu/drm/msm/dp/dp_display.c | 22 +++++++++++++++++++++-
+ 2 files changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+index fac815f..df9670d 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.c
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+@@ -569,10 +569,6 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
+ 
+ 	u32 reftimer = dp_read_aux(catalog, REG_DP_DP_HPD_REFTIMER);
+ 
+-	/* enable HPD plug and unplug interrupts */
+-	dp_catalog_hpd_config_intr(dp_catalog,
+-		DP_DP_HPD_PLUG_INT_MASK | DP_DP_HPD_UNPLUG_INT_MASK, true);
+-
+ 	/* Configure REFTIMER and enable it */
+ 	reftimer |= DP_DP_HPD_REFTIMER_ENABLE;
+ 	dp_write_aux(catalog, REG_DP_DP_HPD_REFTIMER, reftimer);
+@@ -599,13 +595,21 @@ u32 dp_catalog_hpd_get_intr_status(struct dp_catalog *dp_catalog)
+ {
+ 	struct dp_catalog_private *catalog = container_of(dp_catalog,
+ 				struct dp_catalog_private, dp_catalog);
+-	int isr = 0;
++	int isr, mask;
+ 
+ 	isr = dp_read_aux(catalog, REG_DP_DP_HPD_INT_STATUS);
+ 	dp_write_aux(catalog, REG_DP_DP_HPD_INT_ACK,
+ 				 (isr & DP_DP_HPD_INT_MASK));
++	mask = dp_read_aux(catalog, REG_DP_DP_HPD_INT_MASK);
+ 
+-	return isr;
++	/*
++	 * We only want to return interrupts that are unmasked to the caller.
++	 * However, the interrupt status field also contains other
++	 * informational bits about the HPD state status, so we only mask
++	 * out the part of the register that tells us about which interrupts
++	 * are pending.
++	 */
++	return isr & (mask | ~DP_DP_HPD_INT_MASK);
+ }
+ 
+ int dp_catalog_ctrl_get_interrupt(struct dp_catalog *dp_catalog)
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 055681a..dea4de9 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -683,7 +683,8 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+ 	dp_display_handle_plugged_change(&dp->dp_display, false);
+ 
+ 	/* enable HDP plug interrupt to prepare for next plugin */
+-	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
++	if (!dp->dp_display.is_edp)
++		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
+ 
+ 	DRM_DEBUG_DP("After, type=%d hpd_state=%d\n",
+ 			dp->dp_display.connector_type, state);
+@@ -1096,6 +1097,13 @@ static void dp_display_config_hpd(struct dp_display_private *dp)
+ 	dp_display_host_init(dp);
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
++	/* Enable plug and unplug interrupts only for external DisplayPort */
++	if (!dp->dp_display.is_edp)
++		dp_catalog_hpd_config_intr(dp->catalog,
++				DP_DP_HPD_PLUG_INT_MASK |
++				DP_DP_HPD_UNPLUG_INT_MASK,
++				true);
++
+ 	/* Enable interrupt first time
+ 	 * we are leaving dp clocks on during disconnect
+ 	 * and never disable interrupt
+@@ -1381,6 +1389,12 @@ static int dp_pm_resume(struct device *dev)
+ 	dp_catalog_ctrl_hpd_config(dp->catalog);
+ 
+ 
++	if (!dp->dp_display.is_edp)
++		dp_catalog_hpd_config_intr(dp->catalog,
++				DP_DP_HPD_PLUG_INT_MASK |
++				DP_DP_HPD_UNPLUG_INT_MASK,
++				true);
++
+ 	if (dp_catalog_link_is_connected(dp->catalog)) {
+ 		/*
+ 		 * set sink to normal operation mode -- D0
+@@ -1659,6 +1673,9 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
+ 		return;
+ 	}
+ 
++	if (dp->is_edp)
++		dp_hpd_plug_handle(dp_display, 0);
++
+ 	mutex_lock(&dp_display->event_mutex);
+ 
+ 	/* stop sentinel checking */
+@@ -1723,6 +1740,9 @@ void dp_bridge_post_disable(struct drm_bridge *drm_bridge)
+ 
+ 	dp_display = container_of(dp, struct dp_display_private, dp_display);
+ 
++	if (dp->is_edp)
++		dp_hpd_unplug_handle(dp_display, 0);
++
+ 	mutex_lock(&dp_display->event_mutex);
+ 
+ 	/* stop sentinel checking */
+-- 
+2.7.4
 
