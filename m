@@ -2,95 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49257C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbiDVSiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        id S229610AbiDVSoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiDVSiK (ORCPT
+        with ESMTP id S229500AbiDVSn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:38:10 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6E91A393
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:35:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1+/SezKGzMa2gnYmR8YMQNvrpOnLCVM89OTXqKWDzhs=; b=oEro949fGP54rYhWze+ktQj1CX
-        1wqxWAPrnzs46IEeO3i+tVzFM0JRFFIhE1Fr+L+ed+mIJsv7HIxh1E5cTbQLso4bRrfHGvyBC53ej
-        q+4RdtSq7bCh1amvKXP2z9oOgxevFB6X6pcg9FhXxqtAy4s/WfnA9N5qZzGvurSNuKSHCDzA47Jv4
-        J8Owl4cxZQNk3qXKIqEJiGD1a335I2hIPiEqua0FLPueUATY37Yqf6PFo71ZcmpVcY8Ou8juVAMfR
-        Rrit/51iOsUP0QsW0aXt9wxbPTYIqIpxV+0FRaeghfsx3MyEGpQHytlu7EDCwDyRWgW8vZNM1SYuc
-        rKz4IDSA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhy2h-006Ja9-Q8; Fri, 22 Apr 2022 18:30:07 +0000
-Date:   Fri, 22 Apr 2022 19:30:07 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     syzbot <syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, dhowells@redhat.com, hughd@google.com,
-        kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
-        vbabka@suse.cz, william.kucharski@oracle.com
-Subject: Re: [syzbot] kernel BUG in __filemap_get_folio
-Message-ID: <YmL0L7nhdJTMI9QU@casper.infradead.org>
-References: <000000000000625fa705dd1802e3@google.com>
- <YmG8zoWKu93EiWb8@casper.infradead.org>
+        Fri, 22 Apr 2022 14:43:58 -0400
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845A528E3D;
+        Fri, 22 Apr 2022 11:39:56 -0700 (PDT)
+Received: by mail-ed1-f51.google.com with SMTP id e30so7907012eda.0;
+        Fri, 22 Apr 2022 11:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bPNNWfLorKQdlTFIcjMKIT2TFnHa6NCO/tOM3FpNRzI=;
+        b=pP6MZqf6ePvtfF8C835aDJIPBvIV4lDmCDZhjumIvJCQVxJtJREqUoC0VxvW6c78CI
+         W1Db4zEr+1RPlTjOQCGM2twHKDnpTZHL4FYuvzjhHG0ZblJmKqye31fbrgxc3NKypZ1I
+         Ug3HvhkTfBISMUd/Jrb4wumZvYE1Z6LFM5tuRsWGOKsfJRunnWB1fLbjGce/CsMUYyo3
+         JMdpCSzshEeL2Q+5usL2vPWhlKRzLHKvxcK1dGqVPO0b7or2wMsySbttMus3R4kVqv1l
+         BRRLX+sMN8v3A4fxeTVpW8gtLjWSnxUPPqgkpZtNjsvsa7VSqCun6TQhFpUATMUeg8Q8
+         mlig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bPNNWfLorKQdlTFIcjMKIT2TFnHa6NCO/tOM3FpNRzI=;
+        b=cPrpl+IQ1PS1qREDOo0BcziXavDqAPCtiBNTW+h/xpfoS/4doseyAtinKFa11Liztx
+         lrlIsvAF/ykT2PEh+tv4q0Dj1m0sAijNW+Fd0yrNYTETw62LE73f1KvHpdIwB8JaG5pX
+         EvmdNWs2UmuWXNWbxSvhis29ts6mur5lzUFvD1jeyt2LtNlxgG84Zd5n3wFGJlE0lH8j
+         bCwOxoD6fImHacX9HA9ofhErqTiwEbgcPpSG941oh45/Tlge4kc2p/d2K09am0a82r2h
+         X6Hvy4vyiJupG1oTsUE25wyXoDa9jm55GoB4w0Z9kaUH/GgfsN8EUFtVQBsfUYVxBOzz
+         i98A==
+X-Gm-Message-State: AOAM531L+Q3ZS3k+IgP4ZZRd4+AmX7RXvVDGxBiJvF/ts2M1pwcvGG/N
+        f1blcohI5synUsRJoUW/N4FivV/291agsupulIo=
+X-Google-Smtp-Source: ABdhPJwE2DVZWKHijzJDzimQ+LsCESxc4MQeRHdyFiQT+g0Dn0dBzdTwYzWmusdEEtXivLVlXKGE0ciNAZff560gHD8=
+X-Received: by 2002:a50:bae3:0:b0:425:b2b5:6248 with SMTP id
+ x90-20020a50bae3000000b00425b2b56248mr6239060ede.281.1650652404409; Fri, 22
+ Apr 2022 11:33:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmG8zoWKu93EiWb8@casper.infradead.org>
+References: <20220419160058.9998-1-markuss.broks@gmail.com> <20220419160058.9998-2-markuss.broks@gmail.com>
+In-Reply-To: <20220419160058.9998-2-markuss.broks@gmail.com>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+Date:   Fri, 22 Apr 2022 21:33:13 +0300
+Message-ID: <CANhJrGMe0Vxt_KxzMX_9oGyaFeMi5hmNCYje99a8DB-tHZKuYg@mail.gmail.com>
+Subject: Re: [PATCH v4 1/4] dt-bindings: regulator: Add bindings for Silicon
+ Mitus SM5703 regulators
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 09:21:34PM +0100, Matthew Wilcox wrote:
-> I wish I knew which 'index' we were looking up.  I'll try reproducing it
-> locally so I can print that out too.
+On Fri, Apr 22, 2022 at 8:36 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+>
+> This patch adds device-tree bindings for regulators on Silicon Mitus
+> SM5703 MFD.
+>
+> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> ---
+>  .../siliconmitus,sm5703-regulator.yaml        | 52 +++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+> new file mode 100644
+> index 000000000000..a8ffd3ecf3a5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/regulator/siliconmitus,sm5703-regulator.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Silicon Mitus SM5703 multi function device regulators
+> +
+> +maintainers:
+> +  - Markuss Broks <markuss.broks@gmail.com>
+> +
+> +description: |
+> +  SM5703 regulators node should be a sub node of the SM5703 MFD node. See SM5703 MFD
+> +  bindings at Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+> +  Regulator nodes should be named as USBLDO_<number>, BUCK, VBUS, LDO_<number>.
+> +  The definition for each of these nodes is defined using the standard
+> +  binding for regulators at Documentation/devicetree/bindings/regulator/regulator.txt.
 
-I can't reproduce it locally because the OOM killer says I don't have
-enough RAM.  That's with giving 4GB to the VM.  If I give more than 4GB
-to the VM, my laptop is insufficiently studly, and the host OOM killer
-takes out qemu instead ;-P
+Maybe It'd be better to nowadays refer to the regulators.yaml
 
-> My suspicion is that there's a race where the folio is split during the
-> lookup, and the bug is really in mapping_get_entry().  The folio->index
-> is weird though; if this was the explanation, I'd expect it to find a
-> page at a multiple of 512 or at least a multiple of 64.
-
-I think I have an explanation (from thinking really hard, rather than
-testing).  Before we call xas_split(), the tree looks like this:
-
-node (shift=6)
- -> page (index 0)
- -> sibling of 0
- -> sibling of 0
- -> sibling of 0
- -> sibling of 0
- -> sibling of 0
- -> sibling of 0
- -> sibling of 0
- -> page (index 0x200)
- -> sibling of 8
- -> sibling of 8
- -> sibling of 8
- -> sibling of 8
- -> sibling of 8
- -> sibling of 8
- -> sibling of 8
- -> sibling of 8
-
-Then we split the page at index 0x200.  Simultaneously, we try to load
-the page at index 0x274 (or 2b4 or 2f4 or ... 3f4).  The load picks
-up the sibling entry at offset 9 (0x274 >> 6), which says to refer to
-the entry at offset 8.  But by the time it gets the entry at offset 8,
-the split has replaced the compound page at index 0x200 with a node that
-points to pages at indices 0x200-0x23f.
-
-Solving it on the split side is possible, but I think it's easier to
-solve on the load side.  I have a patch, it seems to work; let's see
-what syzbot thinks of it:
-
-#syz test: git://git.infradead.org/users/willy/xarray.git main
+Best Regards
+-- Matti Vaittinen
