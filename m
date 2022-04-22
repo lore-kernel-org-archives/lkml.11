@@ -2,136 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A71F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiDVV0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
+        id S229801AbiDVVh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiDVV0F (ORCPT
+        with ESMTP id S229771AbiDVVhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:26:05 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3444825CA09;
-        Fri, 22 Apr 2022 13:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=IJ9Mu/aUYM3vuD5oQcui/J0/WhPDdyFZPtdQU+Ga/QI=; b=T1tOkSyynfaYwEC/xaB+p6az3Z
-        XtQ2o1NqRu4SayBGALcPLXyZykVvU5An2x8p6KxswgnsA7y9ZqXOckyg10qAdYaxD1v/tTnx308tr
-        3W0frA8HsyBxGGYZJ3dC1060Ed0pognN1wfkuOy5+1/JWKY9TF19h+gO4BQyUbykPAwM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nhzkl-00H2Uf-Si; Fri, 22 Apr 2022 22:19:43 +0200
-Date:   Fri, 22 Apr 2022 22:19:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next 1/5] net: ipqess: introduce the Qualcomm IPQESS
- driver
-Message-ID: <YmMN37VjQNwhLDuX@lunn.ch>
-References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
- <20220422180305.301882-2-maxime.chevallier@bootlin.com>
+        Fri, 22 Apr 2022 17:37:23 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012333FE7EB;
+        Fri, 22 Apr 2022 13:38:03 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-e5ca5c580fso9817569fac.3;
+        Fri, 22 Apr 2022 13:38:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kkCuqc4lk8yEfR89vQV9qFVj6wArnvFzUiFZKzKZjrc=;
+        b=iXtxvrsf8iVjOHl0ej3x+QTE3vMlJkiXBBLikQb4fM2UlPpdO9nIac3bkYbbSfkO3D
+         DrI1X8vSyzNLn2j7c7k4qFRN/l5vonnxzZD8if3aa2vfl9+tN+oNKHJWT966w9BjTKAC
+         4M4zucWvOKgKbHaYnC+gun0njTMdn0qL5Ug/BuhO7yMkvLYgFnPmqOIwwcieXEamubrw
+         b1iOLW86DAXliAkdSHZ5nj21A0SnudyymcscArPFmp8PP5S/MpqjMx7ESf9FEn0IzlGv
+         MjOtg3vZGD5AyaXNHjSNKJ4bC6UIJXO/1IjeSJJLz80U6KdfsTEBvFkqMr/LDY0Rcd05
+         1gCw==
+X-Gm-Message-State: AOAM530PU5/xWU2vVG5xP66nIbKniPxuo9DJQBh/qJWciFZHpO8evTdx
+        yhWDZT5LNumadtMaE33NZfhI3XaTrw==
+X-Google-Smtp-Source: ABdhPJxrncT4pRUKPew2OPpm8vR0ZDSQQ568OrOABzj1bnXewh83dqFsNF56FDzodHorYpfjmdi2dA==
+X-Received: by 2002:a05:6808:2102:b0:322:7e22:da6 with SMTP id r2-20020a056808210200b003227e220da6mr7154736oiw.92.1650655367417;
+        Fri, 22 Apr 2022 12:22:47 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id h186-20020acab7c3000000b002ef5106248asm1069591oif.45.2022.04.22.12.22.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:22:47 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Vitor Soares <vitor.soares@synopsys.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: i3c: Convert snps,dw-i3c-master to DT schema
+Date:   Fri, 22 Apr 2022 14:22:36 -0500
+Message-Id: <20220422192236.2594577-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422180305.301882-2-maxime.chevallier@bootlin.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int ipqess_axi_probe(struct platform_device *pdev)
-> +{
-> +	struct device_node *np = pdev->dev.of_node;
-> +	struct net_device *netdev;
-> +	phy_interface_t phy_mode;
-> +	struct resource *res;
-> +	struct ipqess *ess;
-> +	int i, err = 0;
-> +
-> +	netdev = devm_alloc_etherdev_mqs(&pdev->dev, sizeof(struct ipqess),
-> +					 IPQESS_NETDEV_QUEUES,
-> +					 IPQESS_NETDEV_QUEUES);
-> +	if (!netdev)
-> +		return -ENOMEM;
-> +
-> +	ess = netdev_priv(netdev);
-> +	ess->netdev = netdev;
-> +	ess->pdev = pdev;
-> +	spin_lock_init(&ess->stats_lock);
-> +	SET_NETDEV_DEV(netdev, &pdev->dev);
-> +	platform_set_drvdata(pdev, netdev);
+Convert the Synopsys Designware I3C master to DT schema format.
 
-....
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/i3c/snps,dw-i3c-master.txt       | 41 ---------------
+ .../bindings/i3c/snps,dw-i3c-master.yaml      | 52 +++++++++++++++++++
+ 2 files changed, 52 insertions(+), 41 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+ create mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
 
-> +
-> +	ipqess_set_ethtool_ops(netdev);
-> +
-> +	err = register_netdev(netdev);
-> +	if (err)
-> +		goto err_out;
+diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+deleted file mode 100644
+index 07f35f36085d..000000000000
+--- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
++++ /dev/null
+@@ -1,41 +0,0 @@
+-Bindings for Synopsys DesignWare I3C master block
+-=================================================
+-
+-Required properties:
+---------------------
+-- compatible: shall be "snps,dw-i3c-master-1.00a"
+-- clocks: shall reference the core_clk
+-- interrupts: the interrupt line connected to this I3C master
+-- reg: Offset and length of I3C master registers
+-
+-Mandatory properties defined by the generic binding (see
+-Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
+-
+-- #address-cells: shall be set to 3
+-- #size-cells: shall be set to 0
+-
+-Optional properties defined by the generic binding (see
+-Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
+-
+-- i2c-scl-hz
+-- i3c-scl-hz
+-
+-I3C device connected on the bus follow the generic description (see
+-Documentation/devicetree/bindings/i3c/i3c.yaml for more details).
+-
+-Example:
+-
+-	i3c-master@2000 {
+-		compatible = "snps,dw-i3c-master-1.00a";
+-		#address-cells = <3>;
+-		#size-cells = <0>;
+-		reg = <0x02000 0x1000>;
+-		interrupts = <0>;
+-		clocks = <&i3cclk>;
+-
+-		eeprom@57{
+-			compatible = "atmel,24c01";
+-			reg = <0x57 0x0 0x10>;
+-			pagesize = <0x8>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+new file mode 100644
+index 000000000000..5b8b43e6f1e4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/i3c/snps,dw-i3c-master.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Synopsys DesignWare I3C master block
++
++maintainers:
++  - Vitor Soares <vitor.soares@synopsys.com>
++
++allOf:
++  - $ref: i3c.yaml#
++
++properties:
++  compatible:
++    const: snps,dw-i3c-master-1.00a
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    i3c-master@2000 {
++        compatible = "snps,dw-i3c-master-1.00a";
++        #address-cells = <3>;
++        #size-cells = <0>;
++        reg = <0x02000 0x1000>;
++        interrupts = <0>;
++        clocks = <&i3cclk>;
++
++        eeprom@57{
++            compatible = "atmel,24c01";
++            reg = <0x57 0x0 0x10>;
++            pagesize = <0x8>;
++        };
++    };
++...
+-- 
+2.32.0
 
-Before register_netdev() even returns, your devices can be in use, the
-open callback called and packets sent. This is particularly true for
-NFS root. Which means any setup done after this is probably wrong.
-
-> +
-> +	err = ipqess_hw_init(ess);
-> +	if (err)
-> +		goto err_out;
-> +
-> +	for (i = 0; i < IPQESS_NETDEV_QUEUES; i++) {
-> +		int qid;
-> +
-> +		netif_tx_napi_add(netdev, &ess->tx_ring[i].napi_tx,
-> +				  ipqess_tx_napi, 64);
-> +		netif_napi_add(netdev,
-> +			       &ess->rx_ring[i].napi_rx,
-> +			       ipqess_rx_napi, 64);
-> +
-> +		qid = ess->tx_ring[i].idx;
-> +		err = devm_request_irq(&ess->netdev->dev, ess->tx_irq[qid],
-> +				       ipqess_interrupt_tx, 0,
-> +				       ess->tx_irq_names[qid],
-> +				       &ess->tx_ring[i]);
-> +		if (err)
-> +			goto err_out;
-> +
-> +		qid = ess->rx_ring[i].idx;
-> +		err = devm_request_irq(&ess->netdev->dev, ess->rx_irq[qid],
-> +				       ipqess_interrupt_rx, 0,
-> +				       ess->rx_irq_names[qid],
-> +				       &ess->rx_ring[i]);
-> +		if (err)
-> +			goto err_out;
-> +	}
-
-All this should probably go before netdev_register().
-
-> +static int ipqess_get_strset_count(struct net_device *netdev, int sset)
-> +{
-> +	switch (sset) {
-> +	case ETH_SS_STATS:
-> +		return ARRAY_SIZE(ipqess_stats);
-> +	default:
-> +		netdev_dbg(netdev, "%s: Invalid string set", __func__);
-
-Unsupported would be better than invalid.
-
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-
-  Andrew
