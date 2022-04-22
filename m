@@ -2,68 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C18C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCB7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444411AbiDVGdt (ORCPT
+        id S1444415AbiDVGev (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
+        Fri, 22 Apr 2022 02:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444416AbiDVGdq (ORCPT
+        with ESMTP id S1349067AbiDVGes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:33:46 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CF350B1F;
-        Thu, 21 Apr 2022 23:30:51 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kl4KV5FGMzhY39;
-        Fri, 22 Apr 2022 14:30:38 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 22 Apr
- 2022 14:30:49 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>
-Subject: [PATCH] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
-Date:   Fri, 22 Apr 2022 06:26:52 +0000
-Message-ID: <20220422062652.10575-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 22 Apr 2022 02:34:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0779B50B2A;
+        Thu, 21 Apr 2022 23:31:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8488DB82936;
+        Fri, 22 Apr 2022 06:31:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CDA1C385A0;
+        Fri, 22 Apr 2022 06:31:52 +0000 (UTC)
+Message-ID: <59750798-300a-9b90-f257-3a97bcd4bfb5@xs4all.nl>
+Date:   Fri, 22 Apr 2022 08:31:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 01/24] media: doc: Document dual use of H.264
+ pic_num/frame_num
+Content-Language: en-US
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-media@vger.kernel.org
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+ <20220405204426.259074-2-nicolas.dufresne@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220405204426.259074-2-nicolas.dufresne@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+On 05/04/2022 22:44, Nicolas Dufresne wrote:
+> These two fields need documentation as they have dual meaning. It is also
+> confusing since pic_num is a derived value from frame_num, so this should
+> help application developers. If we ever need to make a V2 of this API, I
+> would suggest to remove pic_num entirely.
+> 
+> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+> ---
+>  .../media/v4l/ext-ctrls-codec-stateless.rst            | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
+> index 6541e4c32b26..49f89b702068 100644
+> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
+> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
+> @@ -649,10 +649,16 @@ Stateless Codec Control ID
+>          :c:type:`timeval` in struct :c:type:`v4l2_buffer` to a __u64.
+>      * - __u32
+>        - ``pic_num``
+> -      -
+> +      - For short term references, this should match the derived value PicNum
 
-Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/usb/dwc3/dwc3-pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+shouldn't 'should' be 'must'? Same elsewhere below.
 
-diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index 33f657d83246..491b5b05d196 100644
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -286,7 +286,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
- 	int ret;
- 
- 	ret = pm_runtime_get_sync(&dwc3->dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
- 		return;
- 	}
--- 
-2.17.1
+> +	(8-28) and for long term references it should match the derived value
+> +	LongTermPicNum (8-29). Note that pic_num is the same as FrameNumWrap
+> +	for frame decoding.
 
+I think this last sentence is a bit confusing. How about:
+
+"When decoding frames (as opposed to fields) pic_num is the same as FrameNumWrap."
+
+>      * - __u16
+>        - ``frame_num``
+> -      -
+> +      - For short term references, this should match the frame_num value from
+> +	the slice header syntax (the driver will wrap the value if neeeded). For
+
+neeeded -> needed
+
+> +	long term references, this should be set to the value of
+> +	long_term_frame_idx described in the dec_ref_pic_marking() syntax.
+>      * - __u8
+>        - ``fields``
+>        - Specifies how the DPB entry is referenced. See :ref:`Reference Fields <h264_ref_fields>`
+
+Regards,
+
+	Hans
