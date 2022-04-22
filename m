@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF0AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232412AbiDVRtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 13:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56780 "EHLO
+        id S233408AbiDVRtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 13:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231547AbiDVRsa (ORCPT
+        with ESMTP id S231362AbiDVRsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:48:30 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A3E4CD46
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:45:17 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id b188so9777512oia.13
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:45:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Nr2dHmWfiNPPrGPgPCaM1uOSlB4d/YNPDX461LAtgB8=;
-        b=LQaiOYQpAliM0d9+oDbPUjhZcr5YhYhYhJjLJzQqcDyc3/r8G4CoKBR2Cg0QE9I7mO
-         hat8Tg2yJPa7jo2Sv3+uwgiDIurI6pYh+1T0R8uTYc61ttH5Z6o4owOliAOaq0ciUHgi
-         JdLhFCcTci5eC3s/5LdfXhf9MbKvxiLYbPKp+hG1ba3wAhkXTQzjbQ/7Odq510IYNURx
-         iRK91dpBbsCeyt/zDj1BdElOESE/FxrK4eb4VDideQKoF57bf3Oh/DxzTUhkZ+1Y+OA2
-         AwErendhnh45Do8iHSD1YX6TDpnEQSO0Ec8o79h+Xm8nGlZRQRsKKIdkcFXCBcCIgxOy
-         eB3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Nr2dHmWfiNPPrGPgPCaM1uOSlB4d/YNPDX461LAtgB8=;
-        b=7qwom7yU9RlFsW851kyrnn8o5Q0cERxNHvCxn0TOlGVgXFqg1I2b/q3R90raJ37X9s
-         S93L2q9TjxhnWSERiDlpo0GrqIUOQNxi9KCZq06D1xhRMYmqDsPz6mKCxjwtBr7qmvWu
-         lhCCJ6pY12xibZUANVM8kDpBXm7svkHe/OW/2tWMMOwXVyvqarpA8pTIliEjmFEoFYQk
-         Wa+vHmi1Oe9L2sArc33MT9IWB2mpcCZBh46QxXqL3rAiO8QIzpxpE7GgSIL4jZTH0rXe
-         xH+GC/UfL2vofhvAn8IkuTHTHyEYg7lpTvKwfaeOK6utjRNXUZWhRGH4Dnq3sYUNEbhI
-         4Kdw==
-X-Gm-Message-State: AOAM532OFwu55w7EXo1qKODKmYumYcCCo+XsEqei4z43+nADGlyuLHKa
-        trfDJSb05sg4Jv8C79Q/HZD4rg==
-X-Google-Smtp-Source: ABdhPJwiTQjcOmeurwc6R+Gx9T5404cqLZmOEizI5ZBPUFKo8ZFoHVx4xFsOsrLwiWUvW9+vx5hOUw==
-X-Received: by 2002:a05:6808:17a3:b0:324:fcbf:3142 with SMTP id bg35-20020a05680817a300b00324fcbf3142mr523793oib.5.1650649370137;
-        Fri, 22 Apr 2022 10:42:50 -0700 (PDT)
-Received: from eze-laptop ([190.190.187.68])
-        by smtp.gmail.com with ESMTPSA id q11-20020a05683033cb00b005e686fd52d6sm965139ott.17.2022.04.22.10.42.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 10:42:48 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 14:42:43 -0300
-From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-To:     Christopher Obbard <chris.obbard@collabora.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Alex Bee <knaerzche@gmail.com>,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH 2/3] arm64: dts: rockchip: Rename vdec_mmu node for RK3328
-Message-ID: <YmLpE+AfZ4UYmn9O@eze-laptop>
-References: <20220422133803.989256-1-chris.obbard@collabora.com>
- <20220422133803.989256-3-chris.obbard@collabora.com>
+        Fri, 22 Apr 2022 13:48:53 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3FB2B270;
+        Fri, 22 Apr 2022 10:45:18 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 19:43:18 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650649400;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r35IzhDbN3FW/BuR5UEyJUUkP1Dog8UZeCh3xRNziMg=;
+        b=o7hPQh1ekabXuESidnVM7vcbehFyiWRLFfN4L9HXX6h7DshXLvAfWCCeACLXfpeWcjuuYV
+        haAr6oP01wZcB63goOW2UE3Sup5+qV9YHlu+jX4cvh+MCRSTSmasbLP1l9Xl/yFb29Ptnz
+        d7o3gRtW+svZf+m8ehZghlfIgUHnrUNe7RT8dNJIOCiBHVFeYs+RlP6lGAyiBowVsHLh3a
+        ZTuuLhrFFrKTV/hCSs0NQRvJ8gMm0Wzb0qN+U5QTm/J0RRdla7GyS4AGL6pXFm1Fqcx1YN
+        6Zn17Bfx7k8kNlGYiQNKrUTI37Zcv6o0rfp+SaXh0B+AKWoxPDqOrmoEcJdeMA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650649400;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r35IzhDbN3FW/BuR5UEyJUUkP1Dog8UZeCh3xRNziMg=;
+        b=HnnVKkPms88wJwa/dhy+NNgkI7KZgDrhI59dCGrQ+kdQdKtLIaKSlNQxkMaIpL1Coh3TuO
+        8FQ7v37KOyfh30Cg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, ebiederm@xmission.com,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        tj@kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2 0/5] ptrace-vs-PREEMPT_RT and freezer rewrite
+Message-ID: <YmLpNhXD8+EzF9/D@linutronix.de>
+References: <20220421150248.667412396@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220422133803.989256-3-chris.obbard@collabora.com>
+In-Reply-To: <20220421150248.667412396@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 02:38:02PM +0100, Christopher Obbard wrote:
-> All other rockchip devices which have vdec nodes do not
-> have an rk prefix. Remove the prefix from the (currently
-> unused) rkvdec_mmu node for consistency with other
-> devices.
+On 2022-04-21 17:02:48 [+0200], Peter Zijlstra wrote:
+> Find here a new posting of the ptrace and freezer patches :-)
 > 
-> Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
+> The majority of the changes are in patch 2, which with much feedback from Oleg
+> and Eric has changed lots.
+> 
+> I'm hoping we're converging on something agreeable.
 
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+I tested this under RT (had to remove the preempt-disable section in
+ptrace_stop()) with ssdd [0]. It forks a few tasks and then
+PTRACE_SINGLESTEPs them for a few iterations.
 
-> ---
->  arch/arm64/boot/dts/rockchip/rk3328.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> index b822533dc7f1..f8ef149fedad 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> @@ -660,7 +660,7 @@ vpu_mmu: iommu@ff350800 {
->  		power-domains = <&power RK3328_PD_VPU>;
->  	};
->  
-> -	rkvdec_mmu: iommu@ff360480 {
-> +	vdec_mmu: iommu@ff360480 {
->  		compatible = "rockchip,iommu";
->  		reg = <0x0 0xff360480 0x0 0x40>, <0x0 0xff3604c0 0x0 0x40>;
->  		interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
-> -- 
-> 2.34.1
-> 
+The following failures were reported by that tool:
+| forktest#27/3790: EXITING, ERROR: wait on PTRACE_ATTACH saw a SIGCHLD count of 0, should be 1
+| forktest#225/40029: EXITING, ERROR: wait on PTRACE_SINGLESTEP #22241: no SIGCHLD seen (signal count == 0), signo 5
+
+very rarely. Then I managed to figure out that the latter error triggers
+if I compile something large with a RT priority. Sadly it also happens
+with my old ptrace hack (but I just noticed it). It didn't happen with
+without RT (just the 5 patches applied).
+
+I also managed to trigger this backtrace with RT:
+|WARNING: CPU: 1 PID: 3748 at kernel/signal.c:2237 ptrace_stop+0x356/0x370
+|Modules linked in:
+|CPU: 1 PID: 3748 Comm: ssdd Not tainted 5.18.0-rc3-rt1+ #1
+|Hardware name: Intel Corporation S2600CP/S2600CP, BIOS SE5C600.86B.02.03.0003.041920141333 04/19/2014
+|RIP: 0010:ptrace_stop+0x356/0x370
+|RSP: 0000:ffffc9000d277d98 EFLAGS: 00010246
+|RAX: ffff888116d1e100 RBX: ffff888116d1e100 RCX: 0000000000000001
+|RDX: 0000000000000001 RSI: 000000000000002e RDI: ffffffff822bdcc3
+|RBP: ffff888116d1e100 R08: ffff88811ca99870 R09: 0000000000000001
+|R10: ffff88811ca99910 R11: ffff88852ade2680 R12: ffffc9000d277e90
+|R13: 0000000000000004 R14: ffff888116d1ed48 R15: 0000000000000000
+|FS:  00007f0afdad4580(0000) GS:ffff88852aa40000(0000) knlGS:0000000000000000
+|CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+|CR2: 00007f0afdad4508 CR3: 0000000558198006 CR4: 00000000000606e0
+|Call Trace:
+| <TASK>
+| get_signal+0x553/0x870
+| arch_do_signal_or_restart+0x31/0x7b0
+| exit_to_user_mode_prepare+0xe4/0x110
+| irqentry_exit_to_user_mode+0x5/0x20
+| noist_exc_debug+0xe0/0x120
+| asm_exc_debug+0x2b/0x30
+|RSP: 002b:00007fffae964b70 EFLAGS: 00000346
+|RAX: 0000000000000000 RBX: 00000000000000fc RCX: 00007f0afd9c0d35
+|RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000001
+|RBP: 00007fffae964e38 R08: 0000000000000000 R09: 00007fffae962a82
+|R10: 00007f0afdad4850 R11: 0000000000000246 R12: 0000000000000000
+|R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+| </TASK>
+
+which is the WARN_ON_ONCE() in clear_traced_quiesce().
+
+[0] https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/tree/src/ssdd/ssdd.c
+
+Sebastian
