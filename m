@@ -2,109 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40208C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiDVVRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
+        id S229823AbiDVVRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbiDVVRd (ORCPT
+        with ESMTP id S229776AbiDVVRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:17:33 -0400
-Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0C9387369
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:07 -0700 (PDT)
-Received: by mail-vk1-xa30.google.com with SMTP id bi49so4342217vkb.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:07 -0700 (PDT)
+        Fri, 22 Apr 2022 17:17:32 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2799623955B
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:03 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id u15so9774634ple.4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oe1v+8HKmPN5xE9lG49dcb7rjaDAxWTXKsNw822YQmM=;
-        b=n5x2XicX6wPW74Dksn/JJcGTef6fmb3LZJfmWfIbNW6DANox9qPcP5MqfpuwQlpCDf
-         KoTnuASNxeNpGEBOVFUMkGBeuh4jeVYPYDzN84oEq4VvPT6xIZHiulL2k4kfJ5KT/UUw
-         RtDonsGeZSdT3trKWIsDJsVrHud1ugjNH+esPOLHkaO+4fQ748BaNghTc9SBPi+QZ+O+
-         8Cdf5JsCnp5fC2/h2avY6ZdmwpgzaTRq5W8xXWXQhomPayl33tegCZuIw1zaupfoFIGM
-         iQds3OVOa4vEkMuPzPDLe+Y58XOuY+lA6JQ7y5NiDNXMaPu7wD/sFme4jtws1QPJXkxa
-         VyHQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IoveYgPzkVQxQlEHYjiT25fHGi8jPmqGfk3V2Lj3tG0=;
+        b=p0+mBZk4Xc8pDoDk7SDXGalwSRX0py90m6dqVle4PP72Tn684vhS4UbdpKP/r96uic
+         QggE8UqQZ9YOhfUPTqUM6wurtooEqpVGGKOYdIYTTBFda7K1kCjkhPPRlTSwJEI7/bQx
+         RF8co3a7PaaO39iScZ0+oV7TUYl6pz+xzKjT+4QZHmO1jDscbZe6kzeD0fARclZ+NwH/
+         bKagFH67K0/tJHT5i1YovY93R9hD/rOmbK+w3MhphPxW+8uIviqRF+DZnDi0iYH8DJnc
+         ABPx4/Pzv1/pvnwxCI29X+reSydFwhJtAXkp71IPj9v8G6yylW7NDFQD8PClhukWhS/L
+         jOVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oe1v+8HKmPN5xE9lG49dcb7rjaDAxWTXKsNw822YQmM=;
-        b=gaDED0M3frzv9utpaqUPz5fng4VkurxAa0WbIZgJyufBuLH4nnxP/IDthTnsTpvNSt
-         esjdPdheNHaUtIhKXfU0eWcpN56EEf7iiiEARLupERNg3kA/8c1A4gCXtYXuFYGB2iyy
-         hLtBHjKWl09qfxHEkEx1AHj2pUNLLdrdnP6o4IW/HWSNZhPv7gtsPfabIJ5GzqSAnMvd
-         0ApEFGfzVAmwTK5PL/JZXUOn29tn8Tb+V0w/vN5Zi3yuSPSFJthn0xoidb5Qf2JEDVfr
-         XJKaCVvp0c2Sp85LeFapOpkocmweH8qXbAln+tzTU+fzsB1Ll/FLKbIBPJI2SGIL0vCH
-         0hFg==
-X-Gm-Message-State: AOAM531PmnZwJ1OKu3wkxnk/BUfeRANA7n2ZjbQ6qOfnwGQYfxzLPg7+
-        l/yfmfa8h03Eg3v6cZiKaq0srC5RIVVcBmfxr/EeZQ==
-X-Google-Smtp-Source: ABdhPJwnyBvl4lVolT8r8TO68OfMOMxgYxm+vCBlAU7uPN5abEv9TLKrIlxLB6z0kTpYjkPB8fzzxj6x+DqKb9Y2+IU=
-X-Received: by 2002:ac5:c899:0:b0:349:33e8:d676 with SMTP id
- n25-20020ac5c899000000b0034933e8d676mr2382122vkl.0.1650658111910; Fri, 22 Apr
- 2022 13:08:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IoveYgPzkVQxQlEHYjiT25fHGi8jPmqGfk3V2Lj3tG0=;
+        b=lGDPHJxm0+g9UyvBcK/nyiXrDsB7c7I6zLlRe7D3yZbzgJW00Mg1cy5M9WSR2u3pyP
+         grlwbDdI3oFqZzG3R0wNRML15dvW2XoyL9TstEqD+M9MwrDKnfmlmfm2zFw0tUlLhFtl
+         ZpsL4DoyaLEOlXqv/fLukMrIu01vdNddlVDSxEnkmR/VKxVnRlDBQNOtB/FysyUHgI7Z
+         R/UcMAgmPtXEvqLpTIm3EsLp181aIOAunz011uxLoTa+nr4qWu2fhoa9ny4wk4uZq+SD
+         EOoNRocpyEnPlLXpMba4jZuk6kIZKtGocCR7zeq94S4aUJhvDc0hvSRZcO5a7wsm+VFl
+         HOnA==
+X-Gm-Message-State: AOAM5313ja7VxEqpcVp+eeCT33vHDjjkDiVtL9q6sZQ9PjtcJAvWC4yJ
+        0WJZTRgCkjxpBmwAlVP2FgmbYBtINk8VaQ==
+X-Google-Smtp-Source: ABdhPJxLh3K98aNfOR6TCroIxTuAyj+Djkxy+F5QWbVMM7iEsJq/MJRfBO/lMAOzuPWZcmyKGXrAzQ==
+X-Received: by 2002:a17:902:b692:b0:14c:935b:2b03 with SMTP id c18-20020a170902b69200b0014c935b2b03mr6057316pls.81.1650655978393;
+        Fri, 22 Apr 2022 12:32:58 -0700 (PDT)
+Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:32:58 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH v3 7/7] staging: r8188eu: drop unnecessary wrapper _rtw_dequeue_cmd
+Date:   Sat, 23 Apr 2022 01:02:23 +0530
+Message-Id: <20220422193223.11948-8-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
+References: <20220422193223.11948-1-makvihas@gmail.com>
 MIME-Version: 1.0
-References: <20220421211549.3884453-1-pcc@google.com> <YmLt0s/KdSJlSSPk@arm.com>
-In-Reply-To: <YmLt0s/KdSJlSSPk@arm.com>
-From:   Peter Collingbourne <pcc@google.com>
-Date:   Fri, 22 Apr 2022 13:08:20 -0700
-Message-ID: <CAMn1gO77+Smgezkx0o5t+MnLJK9KUNpEb+xiJ3Pkoj4pFD1JfQ@mail.gmail.com>
-Subject: Re: [PATCH v2] mm: make minimum slab alignment a runtime property
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Pekka Enberg <penberg@kernel.org>, roman.gushchin@linux.dev,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 11:03 AM Catalin Marinas
-<catalin.marinas@arm.com> wrote:
->
-> On Thu, Apr 21, 2022 at 02:15:48PM -0700, Peter Collingbourne wrote:
-> > diff --git a/include/linux/slab.h b/include/linux/slab.h
-> > index 373b3ef99f4e..80e517593372 100644
-> > --- a/include/linux/slab.h
-> > +++ b/include/linux/slab.h
-> > @@ -201,21 +201,33 @@ void kmem_dump_obj(void *object);
-> >  #endif
-> >
-> >  /*
-> > - * Setting ARCH_SLAB_MINALIGN in arch headers allows a different alignment.
-> > + * Setting ARCH_SLAB_MIN_MINALIGN in arch headers allows a different alignment.
-> >   * Intended for arches that get misalignment faults even for 64 bit integer
-> >   * aligned buffers.
-> >   */
-> > -#ifndef ARCH_SLAB_MINALIGN
-> > -#define ARCH_SLAB_MINALIGN __alignof__(unsigned long long)
-> > +#ifndef ARCH_SLAB_MIN_MINALIGN
-> > +#define ARCH_SLAB_MIN_MINALIGN __alignof__(unsigned long long)
-> > +#endif
->
-> Sorry, only a drive-by comment, I'll look at the arm64 parts next week.
-> I've seen it mentioned in the first version, what's the point of MIN_MIN
-> and not just MIN?
+Drop unnecessary wrapper _rtw_dequeue_cmd and move its logic to
+rtw_dequeue_cmd.
 
-I tried to explain it here:
-https://lore.kernel.org/all/CAMn1gO5xHZvFSSsW5sTVaUBN_gS-cYYNMG3PnpgCmh7kk_Zx7Q@mail.gmail.com/
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_cmd.c | 34 ++++++++++----------------
+ 1 file changed, 13 insertions(+), 21 deletions(-)
 
-In the end I decided to go back to MIN so this is moot.
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index ab462eb40..06881a871 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -56,24 +56,6 @@ static int _rtw_enqueue_cmd(struct __queue *queue, struct cmd_obj *obj)
+ 	return _SUCCESS;
+ }
+ 
+-static struct cmd_obj *_rtw_dequeue_cmd(struct __queue *queue)
+-{
+-	struct cmd_obj *obj;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&queue->lock, flags);
+-	if (list_empty(&queue->queue)) {
+-		obj = NULL;
+-	} else {
+-		obj = container_of((&queue->queue)->next, struct cmd_obj, list);
+-		list_del_init(&obj->list);
+-	}
+-
+-	spin_unlock_irqrestore(&queue->lock, flags);
+-
+-	return obj;
+-}
+-
+ u32	rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ {
+ 	u32 res = _SUCCESS;
+@@ -180,11 +162,21 @@ u32 rtw_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj)
+ 
+ struct	cmd_obj	*rtw_dequeue_cmd(struct cmd_priv *pcmdpriv)
+ {
+-	struct cmd_obj *cmd_obj;
++	struct cmd_obj *obj;
++	struct __queue *queue = &pcmdpriv->cmd_queue;
++	unsigned long flags;
++
++	spin_lock_irqsave(&queue->lock, flags);
++	if (list_empty(&queue->queue)) {
++		obj = NULL;
++	} else {
++		obj = container_of((&queue->queue)->next, struct cmd_obj, list);
++		list_del_init(&obj->list);
++	}
+ 
+-	cmd_obj = _rtw_dequeue_cmd(&pcmdpriv->cmd_queue);
++	spin_unlock_irqrestore(&queue->lock, flags);
+ 
+-	return cmd_obj;
++	return obj;
+ }
+ 
+ void rtw_free_cmd_obj(struct cmd_obj *pcmd)
+-- 
+2.30.2
 
-Peter
