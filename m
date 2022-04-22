@@ -2,122 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C81CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C47E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378664AbiDVKOb (ORCPT
+        id S1446439AbiDVKOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
+        Fri, 22 Apr 2022 06:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377723AbiDVKOa (ORCPT
+        with ESMTP id S1377723AbiDVKOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:14:30 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7D5506E7;
-        Fri, 22 Apr 2022 03:11:37 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id r13so15429152ejd.5;
-        Fri, 22 Apr 2022 03:11:37 -0700 (PDT)
+        Fri, 22 Apr 2022 06:14:42 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BC6506E7;
+        Fri, 22 Apr 2022 03:11:49 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id k23so15458529ejd.3;
+        Fri, 22 Apr 2022 03:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/5jFIllHJ5gNhVb9UGODyKx/Qa32vuqS5VMBQo+3n8s=;
-        b=cU5sTb2IGwQuvzP/JShkIB3U7TZ3eteKDNGGlPUluCEbu5FoP95ibrNSC4SNWpKvHv
-         onI6hGSIyTdveM/RFpT0xSVMIAbUOfBvgIWLPoyyfmo8v1jnb3vk1X4USaDRRAsN0/1N
-         A1R4VBo3T6kcXEYu5XHyTLnM9Bsu7n7eva/+8Lhmfeqh0tpvQzGrBVR6LZp7GUvYk55x
-         1lX0qvSoh4yX5aJa7Ktk4VVubRFVUs51gdzzy9Txr3E+lZvHP2dG3ylK9sUvxok679I5
-         LHMXpqqwJFjT+6XSINmkRDR3OQjrI5XbWuIVlIyQxhtUiSRFxySjHldkbmeoy4JDKxJ9
-         JY7Q==
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xesg0AXR4SVizI2s21m60p1BFH5JwHKKCprTxCBAOZ0=;
+        b=Ri00KQO0hd6LSntka2TZ6PirwuyYrkyAMVgRFbuJV8d57Zv6pFabFzdPDqERK8yv9v
+         MvoKwnj1uyAIrhz6zUGu5TL5I5eiU+ts7ed6boJEUDszFoyYeFEGDxRv1Qi81hzU/dd8
+         BaHcN9soDcTXrh3RiMqEYggPfvrBXx5bUJDww76BoCVQDo/eM63IK9PyPozd/48w0wAo
+         8p79QC3/+/qlhC9Zb7qwcV2175hkSJK4R9N7DJltZS+IJXT6Yh87A+jtMYIs2gRVF7S4
+         xFZYhFa5RSpT72IdZZLi4gCNjwL7xyTztPZew0q/Q25hIWJBJhbepaYHiou7RDDTeVLm
+         SHrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/5jFIllHJ5gNhVb9UGODyKx/Qa32vuqS5VMBQo+3n8s=;
-        b=UuZ+90tqO6qvHr1vJKD6XurhAFLQgcOCIUyhzU2HFEX4s8J1X2k/Afs30cqXIoMwkL
-         re+0wZBkmSnXHKFrwq98xfMbRyadKZYDDlZp0EE/ANBcHJzVOIGqoxyjzPDUBtrLI2Sf
-         7nD3BneKQZ2dhVYd8O5kEKqVtnNfzx/ljG/DVoGaC6o89TblfGVDHRp1GeHXLk/g4FPP
-         //Zt2EEuI18KnMeWkf+S+Sg812KOGuG5uHA515Ml1hjHpDerKgZWwBs395Z80zidAb0p
-         0y8TjjAHvd9fzMaAeAj8Ctt0sy/PumDrOxZjxmFwHxQ4VKh2XwjGTu1EVffBIWKpGuQz
-         Ak9A==
-X-Gm-Message-State: AOAM533prTGt5/HkWogc1ZpD3l7m5M+KBz0hDYJn3WlNZV2wi3XpKAjt
-        jTKTMJbZ98QYFlZQGjifCg0=
-X-Google-Smtp-Source: ABdhPJxVCmYEiDhhqtAiMHUNIsfX58xYW7NI7ILUW2z5cMlN76p7A6glGcq+J/WvvCTtsFxlIfCzvA==
-X-Received: by 2002:a17:906:7304:b0:6da:9243:865 with SMTP id di4-20020a170906730400b006da92430865mr3317761ejc.665.1650622295880;
-        Fri, 22 Apr 2022 03:11:35 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id y19-20020a056402359300b00423e51be1cesm707069edc.64.2022.04.22.03.11.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 03:11:35 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 12:11:32 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Blake Jones <blakejones@google.com>
-Subject: Re: [RFC 0/4] perf record: Implement off-cpu profiling with BPF (v1)
-Message-ID: <YmJ/VAt2yblZC9HN@krava>
-References: <20220422053401.208207-1-namhyung@kernel.org>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xesg0AXR4SVizI2s21m60p1BFH5JwHKKCprTxCBAOZ0=;
+        b=FFU0DLORU6RHDtNpcx9+tkLKF7RBF/t68YQiTCmddhvuT4wobx2UksuFs9w1BZw/v/
+         S5MdsaGG0oFaUjJ7muhAHCHaToAA7Ie+CGBVCxysiqnHnZJCabZkItQZsSmmvw5yLtma
+         FVSqJ/xNcdY8yNgudW6gcd9D00x4SGJcR4RRVNtaZLp+I8E52RO+kaXeUwN9JURTLlgh
+         eEFDCTfG9Z7VHZFamDV7n6d6V03TZqxZIFouqhEog8/E0DinWuExABrUmiB1wiiAmFv1
+         BW1wkIDFx1HwLa8PV2iLnbBQykZANU7qQ+A10GcmGwWyWoOkQevS3MpHCB42ugzH7VW8
+         1MTA==
+X-Gm-Message-State: AOAM533ca3BvFfcfXefIWd1aNKsOP3ISid56Ae47gHYPcPMQmHQguk9W
+        y/o77RDr5GrvLdJ0zNSD/5U=
+X-Google-Smtp-Source: ABdhPJzY+ORSQNuSHjVhlOYjZ3FQLp74rSUzg7lTJukBuAyD/T3nkDrbZ+GWtHO9t6eHguq2+1LYXA==
+X-Received: by 2002:a17:906:6a11:b0:6e8:d248:f8ea with SMTP id qw17-20020a1709066a1100b006e8d248f8eamr3358974ejc.500.1650622308164;
+        Fri, 22 Apr 2022 03:11:48 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id s12-20020a1709062ecc00b006e8558c9a5csm600431eji.94.2022.04.22.03.11.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 03:11:47 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <1c13abb3-cd9e-c9ca-3bd8-406bcc6965b4@redhat.com>
+Date:   Fri, 22 Apr 2022 12:11:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422053401.208207-1-namhyung@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/4] KVM: x86: always initialize system_event.ndata
+Content-Language: en-US
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org, will@kernel.org,
+        apatel@ventanamicro.com, atishp@rivosinc.com, seanjc@google.com,
+        pgonda@google.com
+References: <20220421180443.1465634-1-pbonzini@redhat.com>
+ <20220421180443.1465634-2-pbonzini@redhat.com> <87bkwta1p4.wl-maz@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <87bkwta1p4.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 10:33:57PM -0700, Namhyung Kim wrote:
+On 4/22/22 11:48, Marc Zyngier wrote:
+> On Thu, 21 Apr 2022 19:04:40 +0100,
+> Paolo Bonzini <pbonzini@redhat.com> wrote:
+>>
+>> The KVM_SYSTEM_EVENT_NDATA_VALID mechanism that was introduced
+>> contextually with KVM_SYSTEM_EVENT_SEV_TERM is not a good match
+>> for ARM and RISC-V, which want to communicate information even
+>> for existing KVM_SYSTEM_EVENT_* constants.  Userspace is not ready
+>> to filter out bit 31 of type, and fails to process the
+>> KVM_EXIT_SYSTEM_EVENT exit.
+>>
+>> Therefore, tie the availability of ndata to a system capability
+>> (which will be added once all architectures are on board).
+>> Userspace written for released versions of Linux has no reason to
+>> check flags, since it was never written, so it is okay to replace
+>> it with ndata and data[0] (on 32-bit kernels) or with data[0]
+>> (on 64-bit kernels).
+> 
+> How is it going to work for new userspace on old kernels, for which
+> the ndata field is left uninitialised?
 
-SNIP
+New userspace needs to check the capability before accessing ndata.
 
-> The perf bench sched messaging created 400 processes to send/receive
-> messages through unix sockets.  It spent a large portion of cpu cycles
-> for audit filter and read/copy the messages while most of the
-> offcpu-time was in read and write calls.
-> 
-> You can get the code from 'perf/offcpu-v1' branch in my tree at
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
-> 
-> Enjoy! :)
+If it is desirable for Android, crosvm can "quirk" that ARM always has 
+valid data[0] even in the absence of the capability.
 
-  CC      builtin-record.o
-builtin-record.c:52:10: fatal error: util/off_cpu.h: No such file or directory
-   52 | #include "util/off_cpu.h"
+> Cat we please get a #define that aliases data[0] to flags? At the next
+> merge of the KVM headers into their respective trees, all the existing
+> VMM are going to break if they have a reference to this field (CrosVM
+> definitely does today -- yes, we're ahead of time).
 
-forgot to add util/off_cpu.h ?
+That would be a union rather than a define but yes, I can do it.
 
-jirka
-
-> 
-> Thanks,
-> Namhyung
-> 
-> 
-> Namhyung Kim (4):
->   perf report: Do not extend sample type of bpf-output event
->   perf record: Enable off-cpu analysis with BPF
->   perf record: Implement basic filtering for off-cpu
->   perf record: Handle argument change in sched_switch
-> 
->  tools/perf/Makefile.perf               |   1 +
->  tools/perf/builtin-record.c            |  21 ++
->  tools/perf/util/Build                  |   1 +
->  tools/perf/util/bpf_off_cpu.c          | 301 +++++++++++++++++++++++++
->  tools/perf/util/bpf_skel/off_cpu.bpf.c | 214 ++++++++++++++++++
->  tools/perf/util/evsel.c                |   4 +-
->  6 files changed, 540 insertions(+), 2 deletions(-)
->  create mode 100644 tools/perf/util/bpf_off_cpu.c
->  create mode 100644 tools/perf/util/bpf_skel/off_cpu.bpf.c
-> 
-> 
-> base-commit: 41204da4c16071be9090940b18f566832d46becc
-> -- 
-> 2.36.0.rc2.479.g8af0fa9b8e-goog
-> 
+Paolo
