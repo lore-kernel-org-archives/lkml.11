@@ -2,81 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB97C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04652C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiDVVFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
+        id S229660AbiDVVKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiDVVFm (ORCPT
+        with ESMTP id S229514AbiDVVJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:05:42 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A23134FEDD;
-        Fri, 22 Apr 2022 13:00:55 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-e9027efe6aso2408225fac.10;
-        Fri, 22 Apr 2022 13:00:55 -0700 (PDT)
+        Fri, 22 Apr 2022 17:09:57 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9512465FB
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:06:02 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id y32so16110495lfa.6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:06:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uID8iZcNLBme4rZdpwP2elgnitNvjR/PYrEFPkEMrt4=;
+        b=K87wFhFCqh3RUSfcjyHWaJ/5OlWIaCtbKiOBy/+lg00oDsHo00dI9Rz913ownD+DBL
+         47j/1FQaoHEzvRGxNbrxGsgl7+D50V85YT1FdoRMTvK7qMkmsNqF9izOyRDx+dPlVcrN
+         PuU5VqnxQaMP1XvJIEFREriWuLui4ThOlm6RCIy09TlUR3zrwFtmnqN//0XUrW33aZyh
+         HKhKRwmvqOV03Ak4cj8WgBUbW7mMsZ2Dg0uMMOqoASX+5BJ0q9R/08Zvy/VmFiAMWiAq
+         NlhqszFUOsK5gPC6/k2K5W00Ot+1S6YmXD7AVIwsTs2LI83qY3/jotSduWfGx+K0rKII
+         rUQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=FR8aJOPIeHvshKuc9ODiumRNCDqF45G5wAtHKeVcQHA=;
-        b=QZFbyAyAvFTggEvqbM0116Vi8/qdnScktU4iDHiobDR+6E5+7Fw8E2XTDJGrfdHq3m
-         YlE2Bm6Ozixxka7OptCwZRESA+Alhb82UR7AI2W/jDCuzrvwtwUD4pP1nEcsZS8gouer
-         Ob6DZq4zKmAkMX3RF0XDli2xx9c86v3dRWZHKyvG9YXQNrKxFlUbI5JiY9rHl8ShQLqU
-         l9DBbG5JXgvxLJffzZ6IGCq56ATLieWXecyOfQ1Tf8u3Xydl6jHgNbWT4xCy7ohVhljg
-         y/R+JsjURrzvhHt6UrphnnMUh0eJkRxQyhl3o5PLtl4tj40M80gzWBRi1lAvdgNXFJxH
-         9NNw==
-X-Gm-Message-State: AOAM532Q2F/Ow6gvgfMDhIhY0EaKf1hRa+0Kg4nQamlVa42DJnYbdS9f
-        hxCo4K3hJbrAFGmLQo0IJVl9BLuXeQ==
-X-Google-Smtp-Source: ABdhPJy7XbnKUkR+qePjsQY9tdrSqlwteMXQrSIzrqWe73gqEIx9SIlsBZFBGeAym6PEHaps/tqkaQ==
-X-Received: by 2002:a05:6871:20c:b0:e6:8475:947e with SMTP id t12-20020a056871020c00b000e68475947emr2902602oad.239.1650655446947;
-        Fri, 22 Apr 2022 12:24:06 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id ed22-20020a056870b79600b000da32eab691sm937370oab.23.2022.04.22.12.24.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:24:06 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: eeprom/at24: Add samsung,s524ad0xd1 compatible
-Date:   Fri, 22 Apr 2022 14:23:55 -0500
-Message-Id: <20220422192355.2597523-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        bh=uID8iZcNLBme4rZdpwP2elgnitNvjR/PYrEFPkEMrt4=;
+        b=igwoHmaJ8zrp+2xO1NFGdQKVk5IyskCUB732bXa5HZKo+oevyoYtNojRIjw4/wfR0N
+         GrgWLQjU46mzrjwtYpqLm56i3lBnp4kSp7mvs3PLRHUm1NmFloKPufdRF/Pxy28idDVP
+         iBcIeClNJYD54elYAElEg/5Uf5Z2vW9FlCzPt3Ki9ID1/6MiifZtV8a1twbQ+lfuuJls
+         voCuuS4ailzrRW7ltYBOslyMI6Zg/1Yb7gjKlHeBVAHSHWTbdechThrObCP9QD8Jxiqu
+         WI1bkWWgOwFGq8L0OtL8pYtT7Qt+oowMkn1vwO4eGP+jW3FQieT4BPWKGUDx77n122di
+         xJJg==
+X-Gm-Message-State: AOAM531zGkk3ZelgXBAw4jMAnDKPrpgkztOMcD4rwO6+63BpLZh/D3nX
+        aqgDMEaJWFT6TyNogvhMd16tCQ==
+X-Google-Smtp-Source: ABdhPJxKLv+z6Br2tuUL+prEzz5FUlfWTCd6C3ag34B5uJ22tX+4eTJVuOo3jnoNg0E6Y/cSpI48ww==
+X-Received: by 2002:a05:6512:228d:b0:471:a5b8:d51a with SMTP id f13-20020a056512228d00b00471a5b8d51amr4118108lfu.411.1650657674555;
+        Fri, 22 Apr 2022 13:01:14 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id e5-20020ac25ca5000000b004705dbcc329sm332547lfq.222.2022.04.22.13.01.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 13:01:14 -0700 (PDT)
+Message-ID: <964ae72a-0484-67de-8143-a9a2d492a520@openvz.org>
+Date:   Fri, 22 Apr 2022 23:01:12 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH memcg RFC] net: set proper memcg for net_init hooks
+ allocations
+Content-Language: en-US
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
+ <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org>
+ <CALvZod47PARcupR4P41p5XJRfCaTqSuy-cfXs7Ky9=-aJQuoFA@mail.gmail.com>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <CALvZod47PARcupR4P41p5XJRfCaTqSuy-cfXs7Ky9=-aJQuoFA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The samsung,s524ad0xd1 compatible is in use, but not documented. According
-to arch/arm/mach-s3c/mach-smdk6410.c, the samsung,s524ad0xd1 is compatible
-with the 24c128.
+On 4/21/22 18:56, Shakeel Butt wrote:
+> On Sat, Apr 16, 2022 at 11:39 PM Vasily Averin <vvs@openvz.org> wrote:
+>> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
+>>                  * setup_net() and cleanup_net() are not possible.
+>>                  */
+>>                 for_each_net(net) {
+>> +                       struct mem_cgroup *old, *memcg = NULL;
+>> +#ifdef CONFIG_MEMCG
+>> +                       memcg = (net == &init_net) ? root_mem_cgroup : mem_cgroup_from_obj(net);
+> 
+> memcg from obj is unstable, so you need a reference on memcg. You can
+> introduce get_mem_cgroup_from_kmem() which works for both
+> MEMCG_DATA_OBJCGS and MEMCG_DATA_KMEM. For uncharged objects (like
+> init_net) it should return NULL.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/eeprom/at24.yaml | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Could you please elaborate with more details?
+It seems to me mem_cgroup_from_obj() does everything exactly as you say:
+- for slab objects it returns memcg taken from according slab->memcg_data
+- for ex-slab objects (i.e. page->memcg_data & MEMCG_DATA_OBJCGS)
+    page_memcg_check() returns NULL
+- for kmem objects (i.e. page->memcg_data & MEMCG_DATA_KMEM) 
+    page_memcg_check() returns objcg->memcg
+- in another cases
+    page_memcg_check() returns page->memcg_data,
+    so for uncharged objects like init_net NULL should be returned.
 
-diff --git a/Documentation/devicetree/bindings/eeprom/at24.yaml b/Documentation/devicetree/bindings/eeprom/at24.yaml
-index 6b61a8cf6137..d14e0accbda8 100644
---- a/Documentation/devicetree/bindings/eeprom/at24.yaml
-+++ b/Documentation/devicetree/bindings/eeprom/at24.yaml
-@@ -120,7 +120,9 @@ properties:
-           - const: giantec,gt24c32a
-           - const: atmel,24c32
-       - items:
--          - const: renesas,r1ex24128
-+          - enum:
-+              - renesas,r1ex24128
-+              - samsung,s524ad0xd1
-           - const: atmel,24c128
+I can introduce exported get_mem_cgroup_from_kmem(), however it should only
+call mem_cgroup_from_obj(), perhaps under read_rcu_lock/unlock.
+
+Do you mean something like this?
+
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -1768,4 +1768,14 @@ static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
  
-   label:
--- 
-2.32.0
-
+ #endif /* CONFIG_MEMCG_KMEM */
+ 
++static inline struct mem_cgroup *get_mem_cgroup_from_kmem(void *p)
++{
++	struct mem_cgroup *memcg;
++
++	rcu_read_lock();
++	memcg = mem_cgroup_from_obj(p);
++	rcu_read_unlock();
++
++	return memcg;
++}
+ #endif /* _LINUX_MEMCONTROL_H */
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index a5b5bb99c644..4003c47965c9 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -26,6 +26,7 @@
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
+ 
++#include <linux/sched/mm.h>
+ /*
+  *	Our network namespace constructor/destructor lists
+  */
+@@ -1147,7 +1148,14 @@ static int __register_pernet_operations(struct list_head *list,
+ 		 * setup_net() and cleanup_net() are not possible.
+ 		 */
+ 		for_each_net(net) {
++			struct mem_cgroup *old, *memcg;
++
++			memcg = get_mem_cgroup_from_kmem(net);
++			if (memcg == NULL)
++				memcg = root_mem_cgroup;
++			old = set_active_memcg(memcg);
+ 			error = ops_init(ops, net);
++			set_active_memcg(old);
+ 			if (error)
+ 				goto out_undo;
+ 			list_add_tail(&net->exit_list, &net_exit_list);
