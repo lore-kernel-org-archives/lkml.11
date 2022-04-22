@@ -2,211 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D36C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbiDVSwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
+        id S230049AbiDVSxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbiDVSwT (ORCPT
+        with ESMTP id S230239AbiDVSxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:52:19 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF27FAF5B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:45:21 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id t15so10007364oie.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:45:21 -0700 (PDT)
+        Fri, 22 Apr 2022 14:53:21 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A595D1FA51
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:46:20 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id bq30so15794357lfb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xe89oBvqonfmG8L8+DamcfoD7ftIM3wziDNzG2pEI6I=;
-        b=c63hAyLk48GG0rINSSBO4k6xl5x6A/8uiMRKV5sjDsEGoui8TKNpkXGbO2lnTuktqp
-         H8wHklzwQzsQUfCKNkIbtK+2/oHShKYtFWfp4WrsVfy3ALydPTXybbX/MHqpLXp2ULaL
-         4GsS1BRP5Jo1k9GOwH5ooxl9R/atHcm/4UvXAr5YNj1b088FST3afGnb5SGyzOeZ+nEG
-         LmIIV2uiYeHsInsHEP3vwnN6l83tvkyTgwnHI1DvxBclq7ctkC0VX/9TWO7dwhK/w7ZM
-         Dwj5YFovBUr08isjYc/3eYFsPnJrqlyGYAAkRHMQZTeYyJP5aMhQYP+C5Vhi886gxXCv
-         Musg==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gs1lyGDE7+A7xavqOFG1B5XF/uB9DkKS+4Zz/DRp/RQ=;
+        b=f9blmSpiCrZ4zmBvGGeHGSBZF8lDA69+NXIVkqHeg2EPAQqUP5e2SrYel1SNJ6vkKy
+         vLazn76N9iNNnAv9WWOSz8+OHiQptaq8UdnhYq170F2u6zqQg2U5ElQxjd85O7Nb9gE2
+         SFLmyIFXXkFiNRNJEED8FrI0b5Cn2ToNPw9UU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=xe89oBvqonfmG8L8+DamcfoD7ftIM3wziDNzG2pEI6I=;
-        b=qBwL/NXNI+Ds5/5qRJSuJcs0Ex0q2oBO9GAdSryBnQU3FleqsO2cgUuOxKCKJlVXYY
-         WTH6Z+EmUdCd7bhwIebpkhnuoysH28Emt2Z9sG6dJA7n6ZI9eB7NWVX8oUGxXd8bRk7+
-         edTy6f6LCjazltkTqcgx2WQLKqGr5KIzhmo1nfX5o55blR0Fwli1FhKlUAvDV/VhPTV+
-         ALmEW7a3Ph7rpH/ekyZZNUIxnq/oaQT9WlXJVCPAW+8RUI3YBX5U/yu572PTCM1UAmaE
-         RaFeg91ukSyUSmOJrEeNCkI89FmKErnLPmtj581p7Nx/Iy+JMZN3Vrz8PwfZiAqD0+cT
-         azLg==
-X-Gm-Message-State: AOAM53141rKXaH18K2bnqiCO/msDkVRn8odhmRVvmF0PDyl+eU4jaKlt
-        TWyGzq/FNDzTuQ3n0RSSkpvTRuCbckM=
-X-Google-Smtp-Source: ABdhPJwvU0C8IZgjSDjzDtzYXVIpTFsXRpxosHpqcV37V2LpiK2ovmWIc2GKCF3CtNKf+ewMz/VB6w==
-X-Received: by 2002:a17:90b:1d11:b0:1d2:aa8f:f65b with SMTP id on17-20020a17090b1d1100b001d2aa8ff65bmr6938818pjb.96.1650652065105;
-        Fri, 22 Apr 2022 11:27:45 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:2194:db4:85a8:b0df])
-        by smtp.gmail.com with ESMTPSA id u9-20020a17090a4bc900b001d26f134e43sm7045869pjl.51.2022.04.22.11.27.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 11:27:44 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Fri, 22 Apr 2022 11:27:42 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Jirka Hladky <jhladky@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        regressions@lists.linux.dev,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Justin Forbes <jforbes@fedoraproject.org>
-Subject: Re: PANIC: "Oops: 0000 [#1] PREEMPT SMP PTI" starting from 5.17 on
- dual socket Intel Xeon Gold servers
-Message-ID: <YmLznjFdpblHzZiM@google.com>
-References: <CAE4VaGBZk2NL6Tn2fGxmGMR-n8KFNqgPOktY_sQ1vjViLDNhhg@mail.gmail.com>
- <CAE4VaGB4=aCd8iDb4EduR+-5QTSgVWd5sxrnBA4e3g9dPrnuBg@mail.gmail.com>
- <YkTxox8ZQIDtojfU@google.com>
- <CAFxkdAq6r2WnwML-pPfdZiajaYZCEcUU3GrXW=+wsA7CxGnJdQ@mail.gmail.com>
- <CAE4VaGBchOMWeHQ8GKiGFv_aCaNGLEvSdLWXZTpE+qC=0bgM3A@mail.gmail.com>
- <YkY6W1NS+1RTw0VB@google.com>
- <CAE4VaGDAMZqjwumyvbityzEiK30=5a5vuDMjaS+UHM39R-oPRw@mail.gmail.com>
- <YkstxbC3OfzYnSRw@google.com>
- <CAE4VaGAQZcQzN8D+iwcBnP5vY=Ctmbh+oTikvONHir6JjTgpsw@mail.gmail.com>
- <YmGKrd1BR9HSEy6q@slm.duckdns.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gs1lyGDE7+A7xavqOFG1B5XF/uB9DkKS+4Zz/DRp/RQ=;
+        b=TbrGRcyXIBfUxJETEwLWYkRe92Q1/11T+psxP5q9JRF8qVxPYytRAWOFWgQdEelWf2
+         p1XI9NfkFkWpvSKYkBRdeIYxFHI0LZGMLSB9mft5OrtBHZ9IZzM7mje3wzuAz96PKGTt
+         ajmsYDtUefTJ2vNxlWuNBV4gualC9ym/d75QMjFoE5cl9WrxUVuw1/vcEZT2TPM+9HHj
+         P1HH7XtgYlDG9iKy/vG45Sx56huPBbv86apSmsmxzLN1cr6QzRB4ve8lZE8DhgoHeW0t
+         DreWhqnHuSA1sa71Sz2pxF+34VHb+xapA4q+S+pn82QUY/D227k34G30sfCIbYgwWBCs
+         6Ncw==
+X-Gm-Message-State: AOAM5300Th8QKKFXYmRUmWc5nn4G/Tz0ycFH2Yzf7DiCSL71SEfUC457
+        G0Wr+8TZhfBuEylcAvkWhETxXI71oi45wXqrUPA=
+X-Google-Smtp-Source: ABdhPJyucUXXq3XL6Sdx0YACaZcoL+jwg63Y/8ITyKpl9U+1U/ocZ41yJheVF7kaBsEKZ+6KAtIXNA==
+X-Received: by 2002:ac2:52b4:0:b0:445:ba75:7513 with SMTP id r20-20020ac252b4000000b00445ba757513mr4029213lfm.248.1650652917186;
+        Fri, 22 Apr 2022 11:41:57 -0700 (PDT)
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
+        by smtp.gmail.com with ESMTPSA id 22-20020a05651c009600b0024db88fff1asm301409ljq.83.2022.04.22.11.41.54
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 11:41:55 -0700 (PDT)
+Received: by mail-lj1-f169.google.com with SMTP id bn33so10684110ljb.6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:41:54 -0700 (PDT)
+X-Received: by 2002:a2e:9d46:0:b0:24c:7f1d:73cc with SMTP id
+ y6-20020a2e9d46000000b0024c7f1d73ccmr3579356ljj.358.1650652914703; Fri, 22
+ Apr 2022 11:41:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmGKrd1BR9HSEy6q@slm.duckdns.org>
+References: <20220422060107.781512-1-npiggin@gmail.com> <20220422060107.781512-3-npiggin@gmail.com>
+ <CAHk-=wgFoWLCV9aPHkHe1Mpu0XqxYWaPkKLpe_hcsTS_Vx3aRA@mail.gmail.com>
+In-Reply-To: <CAHk-=wgFoWLCV9aPHkHe1Mpu0XqxYWaPkKLpe_hcsTS_Vx3aRA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 22 Apr 2022 11:41:38 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whao=iosX1s5Z4SF-ZGa-ebAukJoAdUJFk5SPwnofV+Vg@mail.gmail.com>
+Message-ID: <CAHk-=whao=iosX1s5Z4SF-ZGa-ebAukJoAdUJFk5SPwnofV+Vg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] Revert "vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP"
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: multipart/mixed; boundary="000000000000a114e105dd429420"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 06:47:41AM -1000, Tejun Heo wrote:
-> Sorry about late reply.
-> 
-> On Wed, Apr 20, 2022 at 10:02:20AM +0200, Jirka Hladky wrote:
-> > > Based on your report, kernel was crashed due to kn_mondata was NULL
-> > >
-> > >   rdt_kill_sb
-> > >     rmdir_all_sub
-> > >       ..
-> > >       kernfs_remove(kn_mondata);
-> > >         struct kernfs_root *root = kernfs_root(kn); <-- crashed
-> > >
-> > >
-> > > Before the my patch[1], it worked like this.
-> > >
-> > >   rdt_kill_sb
-> > >     rmdir_all_sub
-> > >       ..
-> > >       kernfs_remove(kn_mondata);
-> > >         down_write(&kernfs_rwsem);
-> > >           if (!kn)
-> > >             return;
-> > >         up_write(&kernfs_rwsem);
-> > >
-> > > IOW, before, kernfs_remove worked with NULL argument via just bailing
-> > > but with the my patch[1], it doesn't work any longer.
-> > >
-> > > It makes me have questions for kernfs maintainers:
-> > >
-> > > Should kernfs_remove API support NULL parameter? If so, can we support
-> > > it atomically without old global kernfs_rwsem?
-> > >
-> > > [1] 393c3714081a, kernfs: switch global kernfs_rwsem lock to per-fs lock
-> 
-> Yes, I mean, kernfs_remove() used to support NULL arg, so it should do the
-> same after the locking change too. Can you send a patch?
+--000000000000a114e105dd429420
+Content-Type: text/plain; charset="UTF-8"
 
-Thanks for checking, Tejun.
+On Fri, Apr 22, 2022 at 10:08 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Just opt-in with the mappings that matter.
 
-Jirka, Could you test the patch? Once it's confirmed, I need to resend
-it with Ccing stable.
+Actually, we could automatically opt-in a few common cases that we
+know are fundamentally ok, because they already can't play protection
+games.
 
-Thanks.
+In particular, kvmalloc().
 
-From c7441bc659d2869f2d751b43f27356156e028513 Mon Sep 17 00:00:00 2001
-From: Minchan Kim <minchan@kernel.org>
-Date: Fri, 22 Apr 2022 11:16:45 -0700
-Subject: [PATCH] kernfs: fix NULL dereferencing in kernfs_remove
+So I think something like this patch - along with Song's patch to
+enable it for alloc_large_system_hash() - would be fairly safe, and
+avoid any nasty cases.
 
-kernfs_remove supported NULL kernfs_node param to bail out but revent
-per-fs lock change introduced regression that dereferencing the
-param without NULL check so kernel goes crash.
+And probably catch quite a lot of the cases that matter that can grow large.
 
-This patch checks the NULL kernfs_node in kernfs_remove and if so,
-just return.
+               Linus
 
-Quote from bug report by Jirka
+--000000000000a114e105dd429420
+Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
+Content-Disposition: attachment; filename="patch.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l2ary56k0>
+X-Attachment-Id: f_l2ary56k0
 
-```
-The bug is triggered by running NAS Parallel benchmark suite on
-SuperMicro servers with 2x Xeon(R) Gold 6126 CPU. Here is the error
-log:
-
-[  247.035564] BUG: kernel NULL pointer dereference, address: 0000000000000008
-[  247.036009] #PF: supervisor read access in kernel mode
-[  247.036009] #PF: error_code(0x0000) - not-present page
-[  247.036009] PGD 0 P4D 0
-[  247.036009] Oops: 0000 [#1] PREEMPT SMP PTI
-[  247.058060] CPU: 1 PID: 6546 Comm: umount Not tainted
-5.16.0393c3714081a53795bbff0e985d24146def6f57f+ #16
-[  247.058060] Hardware name: Supermicro Super Server/X11DDW-L, BIOS
-2.0b 03/07/2018
-[  247.058060] RIP: 0010:kernfs_remove+0x8/0x50
-[  247.058060] Code: 4c 89 e0 5b 5d 41 5c 41 5d 41 5e c3 49 c7 c4 f4
-ff ff ff eb b2 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f 1f 44 00 00
-41 54 55 <48> 8b 47 08 48 89 fd 48 85 c0 48 0f 44 c7 4c 8b 60 50 49 83
-c4 60
-[  247.058060] RSP: 0018:ffffbbfa48a27e48 EFLAGS: 00010246
-[  247.058060] RAX: 0000000000000001 RBX: ffffffff89e31f98 RCX: 0000000080200018
-[  247.058060] RDX: 0000000080200019 RSI: fffff6760786c900 RDI: 0000000000000000
-[  247.058060] RBP: ffffffff89e31f98 R08: ffff926b61b24d00 R09: 0000000080200018
-[  247.122048] R10: ffff926b61b24d00 R11: ffff926a8040c000 R12: ffff927bd09a2000
-[  247.122048] R13: ffffffff89e31fa0 R14: dead000000000122 R15: dead000000000100
-[  247.122048] FS:  00007f01be0a8c40(0000) GS:ffff926fa8e40000(0000)
-knlGS:0000000000000000
-[  247.122048] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  247.122048] CR2: 0000000000000008 CR3: 00000001145c6003 CR4: 00000000007706e0
-[  247.122048] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  247.122048] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  247.122048] PKRU: 55555554
-[  247.122048] Call Trace:
-[  247.122048]  <TASK>
-[  247.122048]  rdt_kill_sb+0x29d/0x350
-[  247.122048]  deactivate_locked_super+0x36/0xa0
-[  247.122048]  cleanup_mnt+0x131/0x190
-[  247.122048]  task_work_run+0x5c/0x90
-[  247.122048]  exit_to_user_mode_prepare+0x229/0x230
-[  247.122048]  syscall_exit_to_user_mode+0x18/0x40
-[  247.122048]  do_syscall_64+0x48/0x90
-[  247.122048]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  247.122048] RIP: 0033:0x7f01be2d735b
-```
-
-Fixes: 393c3714081a (kernfs: switch global kernfs_rwsem lock to per-fs lock)
-Reported-by: Jirka Hladky <jhladky@redhat.com>
-Signed-off-by: Minchan Kim <minchan@kernel.org>
----
- fs/kernfs/dir.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index 61a8edc4ba8b..e205fde7163a 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -1406,7 +1406,12 @@ static void __kernfs_remove(struct kernfs_node *kn)
-  */
- void kernfs_remove(struct kernfs_node *kn)
- {
--	struct kernfs_root *root = kernfs_root(kn);
-+	struct kernfs_root *root;
-+
-+	if (!kn)
-+		return;
-+
-+	root = kernfs_root(kn);
- 
- 	down_write(&root->kernfs_rwsem);
- 	__kernfs_remove(kn);
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
-
+IG1tL3V0aWwuYyB8IDExICsrKysrKysrKy0tCiAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25z
+KCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL21tL3V0aWwuYyBiL21tL3V0aWwuYwpp
+bmRleCA1NGU1ZTc2MWE5YTkuLjM0OTJhOWU4MWFhMyAxMDA2NDQKLS0tIGEvbW0vdXRpbC5jCisr
+KyBiL21tL3V0aWwuYwpAQCAtNTkyLDggKzU5MiwxNSBAQCB2b2lkICprdm1hbGxvY19ub2RlKHNp
+emVfdCBzaXplLCBnZnBfdCBmbGFncywgaW50IG5vZGUpCiAJCXJldHVybiBOVUxMOwogCX0KIAot
+CXJldHVybiBfX3ZtYWxsb2Nfbm9kZShzaXplLCAxLCBmbGFncywgbm9kZSwKLQkJCV9fYnVpbHRp
+bl9yZXR1cm5fYWRkcmVzcygwKSk7CisJLyoKKwkgKiBrdm1hbGxvYygpIGNhbiBhbHdheXMgdXNl
+IFZNX0FMTE9XX0hVR0VfVk1BUCwKKwkgKiBzaW5jZSB0aGUgY2FsbGVycyBhbHJlYWR5IGNhbm5v
+dCBhc3N1bWUgYW55dGhpbmcKKwkgKiBhYm91dCB0aGUgcmVzdWx0aW5nIHBvaW50ZXIsIGFuZCBj
+YW5ub3QgcGxheQorCSAqIHByb3RlY3Rpb24gZ2FtZXMuCisJICovCisJcmV0dXJuIF9fdm1hbGxv
+Y19ub2RlX3JhbmdlKHNpemUsIDEsIFZNQUxMT0NfU1RBUlQsIFZNQUxMT0NfRU5ELAorCQkJZmxh
+Z3MsIFBBR0VfS0VSTkVMLCBWTV9BTExPV19IVUdFX1ZNQVAsCisJCQlub2RlLCBfX2J1aWx0aW5f
+cmV0dXJuX2FkZHJlc3MoMCkpOwogfQogRVhQT1JUX1NZTUJPTChrdm1hbGxvY19ub2RlKTsKIAo=
+--000000000000a114e105dd429420--
