@@ -2,109 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F22C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbiDVVho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        id S229798AbiDVVhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiDVVhh (ORCPT
+        with ESMTP id S229991AbiDVVhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:37:37 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4DD108418;
-        Fri, 22 Apr 2022 13:38:37 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e5e433d66dso9826008fac.5;
-        Fri, 22 Apr 2022 13:38:37 -0700 (PDT)
+        Fri, 22 Apr 2022 17:37:40 -0400
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDF6400EDA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:40 -0700 (PDT)
+Received: by mail-oi1-f169.google.com with SMTP id r85so10313081oie.7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2FeuhW6y4os5v9CoDi1x5cL69WTrNP7orQRjD5u2f2Q=;
+        b=SWA5JCifyGGgXC8kg9oqcVEfzGpcJyubvgXISY/tkiQ4LkAnBvdJQ4x+SDJdCcN5r5
+         l/D5Xwmleml/wGOTyuQey0sip6/0Tgoq+rQ7CHZro/fqIgNVa0LsvarIkgGhhvY5j1sF
+         LMm1oOI3X0eDdolQ9LpFcFBcvkgDAo4IEFQp7an7GZ4F5A6E9vw8lZlu+PJZ8/F/XeaE
+         2XrN/+haQevXPxaL9uHcm3fCWmwsIiDq4XpsMffkJ/1dAHzee/+nBWc5FxrRuv2Yv75v
+         ot9Gi+ioqe4rUavjZ2Ml02hMsz+UFQFITKvVGI/dulXXz+ZeW0uqaldMetwuQxNGpPe6
+         t/zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0gc9s0Nu7Dy/f5W0uxa+JhgkFQnmycRULJWoNHmae7s=;
-        b=ncaO34IJogP1mgaQ3nbV7FVqEO7jjCRXrmDhouJnUUMJ5xrYuIsHu9zYvqM7e/lANx
-         iS+uucK5ze7WiIbHNESTa4E9spsA9psXg9Fha/98LujYvOA16QMKQ72W8QxRypmskmO+
-         Wuqb3gvfEexyzBXkXMFK5ptt8rgrgMo3G3WcSr171pV0jrYtW8BmYqrpXEe6CRT4Tue4
-         uOYlDzVVtG5tPBt44LAIMjzTtsn4585YyhnvTMk+w1zYrgVyVP7HuGGWPAXpCurodvAz
-         Mp5MAj5nObUACMBTEMtWUsVz6uIl/wBewjHeXNsE+laRPn6djRfga01Hblwi4ullI19N
-         Wl+g==
-X-Gm-Message-State: AOAM531kviFrfwDo/qYgA5HV3m+Yqbi42K5OgrzeMVxpQFTf6psizYrf
-        DE/e3ofm487Y6skRkbF+ONRu/P28Jg==
-X-Google-Smtp-Source: ABdhPJy1+14fIkK9Z0u5jvsEPpFvTFjZbVR5xwcjkuW3Qq+dGls5tB9qudMev6OqfOIz/ed6iA+g2g==
-X-Received: by 2002:a05:6870:6196:b0:e1:e1a2:5c65 with SMTP id a22-20020a056870619600b000e1e1a25c65mr2782990oah.190.1650655278243;
-        Fri, 22 Apr 2022 12:21:18 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id bd32-20020a056870d7a000b000d43d4d2de1sm937317oab.5.2022.04.22.12.21.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:21:17 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] dt-bindings: iommu: Drop client node in examples
-Date:   Fri, 22 Apr 2022 14:21:03 -0500
-Message-Id: <20220422192104.2591462-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2FeuhW6y4os5v9CoDi1x5cL69WTrNP7orQRjD5u2f2Q=;
+        b=4MlbXWArR+Cz5opcS7HSSeCoGSQj45gUh9z4EzJW5/GXYFRuDmhtJfbZ402RTEc05t
+         i0b6351yxsOWMwyxD5wkySPv9CfaRgMXOOoctl7RUdLnQmUgYw/xhT3jDpJKSsrghD/H
+         5w+UBBT8UyvuCMFUelxWKA4W92W8yH1nFYsGR/Rxu4g5TeUA679jqJGNEjARqOd5iycp
+         5uHBn7KcQU+XBQ8GvZc8qdE1sYMRcVXd2gDIk+2Ws42GXzF4ZNGYH4LuUWSyUBr80gyu
+         lzV2Ovm+ORFWNdw6VozdZrX+TXy9uBH+rl+CzpZBYv//BsdzlZaAwheHwzGLiO1ekxJ5
+         RyyQ==
+X-Gm-Message-State: AOAM531LqcwCdunnjzn1vPzpPhBhFfIFupUIL0mBd0l8F8glU6+Ih2x0
+        2kONGQVbLKO9hZMCVS4y/ZTsRWRApapG5NaDL7cgve41SRg=
+X-Google-Smtp-Source: ABdhPJxCip4JkFs0bch4l1aLRcJlX/rZIBmOxuo46xJlHa8tYFRtgabnDRNRUlP/nwaE4268Bz4NxqEBLVaSJWXdjEQ=
+X-Received: by 2002:a17:90b:1d84:b0:1d0:6472:e0a3 with SMTP id
+ pf4-20020a17090b1d8400b001d06472e0a3mr18058060pjb.207.1650658963307; Fri, 22
+ Apr 2022 13:22:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
+ <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org> <CALvZod47PARcupR4P41p5XJRfCaTqSuy-cfXs7Ky9=-aJQuoFA@mail.gmail.com>
+ <964ae72a-0484-67de-8143-a9a2d492a520@openvz.org> <e9cd84f2-d2e9-33a8-d74e-edcf60d35236@openvz.org>
+In-Reply-To: <e9cd84f2-d2e9-33a8-d74e-edcf60d35236@openvz.org>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Fri, 22 Apr 2022 13:22:32 -0700
+Message-ID: <CALvZod7ys1SNrQhbweCoCKVyfN1itE16jhC97TqjWtHDFh1RpQ@mail.gmail.com>
+Subject: Re: [PATCH memcg RFC] net: set proper memcg for net_init hooks allocations
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's no need to show consumer side in provider examples. The ones
-used here are undocumented or undocumented in schemas which results in
-warnings.
+On Fri, Apr 22, 2022 at 1:09 PM Vasily Averin <vvs@openvz.org> wrote:
+>
+> On 4/22/22 23:01, Vasily Averin wrote:
+> > On 4/21/22 18:56, Shakeel Butt wrote:
+> >> On Sat, Apr 16, 2022 at 11:39 PM Vasily Averin <vvs@openvz.org> wrote:
+> >>> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
+> >>>                  * setup_net() and cleanup_net() are not possible.
+> >>>                  */
+> >>>                 for_each_net(net) {
+> >>> +                       struct mem_cgroup *old, *memcg = NULL;
+> >>> +#ifdef CONFIG_MEMCG
+> >>> +                       memcg = (net == &init_net) ? root_mem_cgroup : mem_cgroup_from_obj(net);
+> >>
+> >> memcg from obj is unstable, so you need a reference on memcg. You can
+> >> introduce get_mem_cgroup_from_kmem() which works for both
+> >> MEMCG_DATA_OBJCGS and MEMCG_DATA_KMEM. For uncharged objects (like
+> >> init_net) it should return NULL.
+> >
+> > Could you please elaborate with more details?
+> > It seems to me mem_cgroup_from_obj() does everything exactly as you say:
+> > - for slab objects it returns memcg taken from according slab->memcg_data
+> > - for ex-slab objects (i.e. page->memcg_data & MEMCG_DATA_OBJCGS)
+> >     page_memcg_check() returns NULL
+> > - for kmem objects (i.e. page->memcg_data & MEMCG_DATA_KMEM)
+> >     page_memcg_check() returns objcg->memcg
+> > - in another cases
+> >     page_memcg_check() returns page->memcg_data,
+> >     so for uncharged objects like init_net NULL should be returned.
+> >
+> > I can introduce exported get_mem_cgroup_from_kmem(), however it should only
+> > call mem_cgroup_from_obj(), perhaps under read_rcu_lock/unlock.
+>
+> I think I finally got your point:
+> Do you mean I should use css_tryget(&memcg->css) for found memcg,
+> like get_mem_cgroup_from_mm() does?
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/iommu/mediatek,iommu.yaml      | 10 ----------
- .../devicetree/bindings/iommu/samsung,sysmmu.yaml      | 10 ----------
- 2 files changed, 20 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index 97e8c471a5e8..e0389539194f 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -173,13 +173,3 @@ examples:
-                              <&larb3>, <&larb4>, <&larb5>;
-             #iommu-cells = <1>;
-     };
--
--  - |
--    #include <dt-bindings/memory/mt8173-larb-port.h>
--
--    /* Example for a client device */
--    display {
--           compatible = "mediatek,mt8173-disp";
--           iommus = <&iommu M4U_PORT_DISP_OVL0>,
--                    <&iommu M4U_PORT_DISP_RDMA0>;
--     };
-diff --git a/Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml b/Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml
-index 783c6b37c9f0..672a0beea600 100644
---- a/Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml
-@@ -86,16 +86,6 @@ examples:
-   - |
-     #include <dt-bindings/clock/exynos5250.h>
- 
--    gsc_0: scaler@13e00000 {
--      compatible = "samsung,exynos5-gsc";
--      reg = <0x13e00000 0x1000>;
--      interrupts = <0 85 0>;
--      power-domains = <&pd_gsc>;
--      clocks = <&clock CLK_GSCL0>;
--      clock-names = "gscl";
--      iommus = <&sysmmu_gsc0>;
--    };
--
-     sysmmu_gsc0: iommu@13e80000 {
-       compatible = "samsung,exynos-sysmmu";
-       reg = <0x13E80000 0x1000>;
--- 
-2.32.0
-
+Yes.
