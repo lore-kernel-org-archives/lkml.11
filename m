@@ -2,160 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9559C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40208C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbiDVVPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32884 "EHLO
+        id S229781AbiDVVRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiDVVPL (ORCPT
+        with ESMTP id S229799AbiDVVRd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:15:11 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68C8F25C667;
-        Fri, 22 Apr 2022 13:10:47 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E7F041063;
-        Fri, 22 Apr 2022 12:41:16 -0700 (PDT)
-Received: from [10.57.80.98] (unknown [10.57.80.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 822023F73B;
-        Fri, 22 Apr 2022 12:41:13 -0700 (PDT)
-Message-ID: <a9e09125-c61b-4a2a-f87e-1ba8147f659f@arm.com>
-Date:   Fri, 22 Apr 2022 20:41:07 +0100
+        Fri, 22 Apr 2022 17:17:33 -0400
+Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0C9387369
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:07 -0700 (PDT)
+Received: by mail-vk1-xa30.google.com with SMTP id bi49so4342217vkb.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oe1v+8HKmPN5xE9lG49dcb7rjaDAxWTXKsNw822YQmM=;
+        b=n5x2XicX6wPW74Dksn/JJcGTef6fmb3LZJfmWfIbNW6DANox9qPcP5MqfpuwQlpCDf
+         KoTnuASNxeNpGEBOVFUMkGBeuh4jeVYPYDzN84oEq4VvPT6xIZHiulL2k4kfJ5KT/UUw
+         RtDonsGeZSdT3trKWIsDJsVrHud1ugjNH+esPOLHkaO+4fQ748BaNghTc9SBPi+QZ+O+
+         8Cdf5JsCnp5fC2/h2avY6ZdmwpgzaTRq5W8xXWXQhomPayl33tegCZuIw1zaupfoFIGM
+         iQds3OVOa4vEkMuPzPDLe+Y58XOuY+lA6JQ7y5NiDNXMaPu7wD/sFme4jtws1QPJXkxa
+         VyHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oe1v+8HKmPN5xE9lG49dcb7rjaDAxWTXKsNw822YQmM=;
+        b=gaDED0M3frzv9utpaqUPz5fng4VkurxAa0WbIZgJyufBuLH4nnxP/IDthTnsTpvNSt
+         esjdPdheNHaUtIhKXfU0eWcpN56EEf7iiiEARLupERNg3kA/8c1A4gCXtYXuFYGB2iyy
+         hLtBHjKWl09qfxHEkEx1AHj2pUNLLdrdnP6o4IW/HWSNZhPv7gtsPfabIJ5GzqSAnMvd
+         0ApEFGfzVAmwTK5PL/JZXUOn29tn8Tb+V0w/vN5Zi3yuSPSFJthn0xoidb5Qf2JEDVfr
+         XJKaCVvp0c2Sp85LeFapOpkocmweH8qXbAln+tzTU+fzsB1Ll/FLKbIBPJI2SGIL0vCH
+         0hFg==
+X-Gm-Message-State: AOAM531PmnZwJ1OKu3wkxnk/BUfeRANA7n2ZjbQ6qOfnwGQYfxzLPg7+
+        l/yfmfa8h03Eg3v6cZiKaq0srC5RIVVcBmfxr/EeZQ==
+X-Google-Smtp-Source: ABdhPJwnyBvl4lVolT8r8TO68OfMOMxgYxm+vCBlAU7uPN5abEv9TLKrIlxLB6z0kTpYjkPB8fzzxj6x+DqKb9Y2+IU=
+X-Received: by 2002:ac5:c899:0:b0:349:33e8:d676 with SMTP id
+ n25-20020ac5c899000000b0034933e8d676mr2382122vkl.0.1650658111910; Fri, 22 Apr
+ 2022 13:08:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4] Documentation: x86: rework IOMMU documentation
-Content-Language: en-GB
-To:     Alex Deucher <alexander.deucher@amd.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        corbet@lwn.net, hpa@zytor.com, x86@kernel.org,
-        dave.hansen@linux.intel.com, bp@alien8.de, mingo@redhat.com,
-        tglx@linutronix.de, joro@8bytes.org, Suravee.Suthikulpanit@amd.com,
-        will@kernel.org, iommu@lists.linux-foundation.org,
-        Vasant.Hegde@amd.com
-References: <20220422175423.44491-1-alexander.deucher@amd.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220422175423.44491-1-alexander.deucher@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220421211549.3884453-1-pcc@google.com> <YmLt0s/KdSJlSSPk@arm.com>
+In-Reply-To: <YmLt0s/KdSJlSSPk@arm.com>
+From:   Peter Collingbourne <pcc@google.com>
+Date:   Fri, 22 Apr 2022 13:08:20 -0700
+Message-ID: <CAMn1gO77+Smgezkx0o5t+MnLJK9KUNpEb+xiJ3Pkoj4pFD1JfQ@mail.gmail.com>
+Subject: Re: [PATCH v2] mm: make minimum slab alignment a runtime property
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Pekka Enberg <penberg@kernel.org>, roman.gushchin@linux.dev,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-22 18:54, Alex Deucher wrote:
-[...]
-> +Intel Specific Notes
-> +--------------------
-> +
-> +Graphics Problems?
-> +^^^^^^^^^^^^^^^^^^
-> +
-> +If you encounter issues with graphics devices, you can try adding
-> +option intel_iommu=igfx_off to turn off the integrated graphics engine.
-> +If this fixes anything, please ensure you file a bug reporting the problem.
-> +
-> +Some exceptions to IOVA
-> +^^^^^^^^^^^^^^^^^^^^^^^
-> +
-> +Interrupt ranges are not address translated, (0xfee00000 - 0xfeefffff).
-> +The same is true for peer to peer transactions. Hence we reserve the
-> +address from PCI MMIO ranges so they are not allocated for IOVA addresses.
+On Fri, Apr 22, 2022 at 11:03 AM Catalin Marinas
+<catalin.marinas@arm.com> wrote:
+>
+> On Thu, Apr 21, 2022 at 02:15:48PM -0700, Peter Collingbourne wrote:
+> > diff --git a/include/linux/slab.h b/include/linux/slab.h
+> > index 373b3ef99f4e..80e517593372 100644
+> > --- a/include/linux/slab.h
+> > +++ b/include/linux/slab.h
+> > @@ -201,21 +201,33 @@ void kmem_dump_obj(void *object);
+> >  #endif
+> >
+> >  /*
+> > - * Setting ARCH_SLAB_MINALIGN in arch headers allows a different alignment.
+> > + * Setting ARCH_SLAB_MIN_MINALIGN in arch headers allows a different alignment.
+> >   * Intended for arches that get misalignment faults even for 64 bit integer
+> >   * aligned buffers.
+> >   */
+> > -#ifndef ARCH_SLAB_MINALIGN
+> > -#define ARCH_SLAB_MINALIGN __alignof__(unsigned long long)
+> > +#ifndef ARCH_SLAB_MIN_MINALIGN
+> > +#define ARCH_SLAB_MIN_MINALIGN __alignof__(unsigned long long)
+> > +#endif
+>
+> Sorry, only a drive-by comment, I'll look at the arm64 parts next week.
+> I've seen it mentioned in the first version, what's the point of MIN_MIN
+> and not just MIN?
 
-Note that this should be true for both drivers.
+I tried to explain it here:
+https://lore.kernel.org/all/CAMn1gO5xHZvFSSsW5sTVaUBN_gS-cYYNMG3PnpgCmh7kk_Zx7Q@mail.gmail.com/
 
-> +
-> +AMD Specific Notes
-> +------------------
-> +
-> +Graphics Problems?
-> +^^^^^^^^^^^^^^^^^^
-> +
-> +If you encounter issues with integrated graphics devices, you can try adding
-> +option iommu=pt to the kernel command line use a 1:1 mapping for the IOMMU.  If
-> +this fixes anything, please ensure you file a bug reporting the problem.
+In the end I decided to go back to MIN so this is moot.
 
-And indeed this is a generic option. I reckon we could simply merge 
-these two sections together, with the first paragraph being something like:
-
-If you encounter issues with integrated graphics devices, you can try 
-adding the option "iommu.passthrough=1", or the equivalent "iommu=pt", 
-to the kernel command line to use a 1:1 mapping for the IOMMU in 
-general.  On Intel you can also try "intel_iommu=igfx_off" to turn off 
-translation specifically for the integrated graphics engine only.  If 
-this fixes anything, please ensure you file a bug reporting the problem.
-
-> +
-> +Fault reporting
-> +---------------
-> +When errors are reported, the IOMMU signals via an interrupt. The fault
-> +reason and device that caused it is printed on the console.
-> +
-> +
-> +Kernel Log Samples
-> +------------------
-> +
-> +Intel Boot Messages
-> +^^^^^^^^^^^^^^^^^^^
-> +
-> +Something like this gets printed indicating presence of DMAR tables
-> +in ACPI.
-> +
-> +::
-> +
-> +	ACPI: DMAR (v001 A M I  OEMDMAR  0x00000001 MSFT 0x00000097) @ 0x000000007f5b5ef0
-> +
-> +When DMAR is being processed and initialized by ACPI, prints DMAR locations
-> +and any RMRR's processed
-> +
-> +::
-> +
-> +	ACPI DMAR:Host address width 36
-> +	ACPI DMAR:DRHD (flags: 0x00000000)base: 0x00000000fed90000
-> +	ACPI DMAR:DRHD (flags: 0x00000000)base: 0x00000000fed91000
-> +	ACPI DMAR:DRHD (flags: 0x00000001)base: 0x00000000fed93000
-> +	ACPI DMAR:RMRR base: 0x00000000000ed000 end: 0x00000000000effff
-> +	ACPI DMAR:RMRR base: 0x000000007f600000 end: 0x000000007fffffff
-> +
-> +When DMAR is enabled for use, you will notice
-> +
-> +::
-> +
-> +	PCI-DMA: Using DMAR IOMMU
-> +
-> +Intel Fault reporting
-> +^^^^^^^^^^^^^^^^^^^^^
-> +
-> +::
-> +
-> +	DMAR:[DMA Write] Request device [00:02.0] fault addr 6df084000
-> +	DMAR:[fault reason 05] PTE Write access is not set
-> +	DMAR:[DMA Write] Request device [00:02.0] fault addr 6df084000
-> +	DMAR:[fault reason 05] PTE Write access is not set
-> +
-> +AMD Boot Messages
-> +^^^^^^^^^^^^^^^^^
-> +
-> +Something like this gets printed indicating presence of the IOMMU.
-> +
-> +::
-> +
-> +	iommu: Default domain type: Translated
-> +	iommu: DMA domain TLB invalidation policy: lazy mode
-
-Similarly, that's common IOMMU API reporting which will be seen on all 
-architectures (let alone IOMMU drivers). Maybe some of the messages from 
-print_iommu_info() might be better AMD-specific examples?
-
-Cheers,
-Robin.
-
-> +
-> +AMD Fault reporting
-> +^^^^^^^^^^^^^^^^^^^
-> +
-> +::
-> +
-> +	AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0007 address=0xffffc02000 flags=0x0000]
-> +	AMD-Vi: Event logged [IO_PAGE_FAULT device=07:00.0 domain=0x0007 address=0xffffc02000 flags=0x0000]
+Peter
