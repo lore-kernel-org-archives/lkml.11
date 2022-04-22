@@ -2,90 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB845C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbiDVVjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
+        id S230166AbiDVVjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiDVVjl (ORCPT
+        with ESMTP id S230104AbiDVVjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:39:41 -0400
-Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24ED84179C0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:10 -0700 (PDT)
-Received: by mail-ua1-x930.google.com with SMTP id az19so3131812uab.13
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0JRCh/BqOi4YkLGUiJfecYURU86aNbte4r9osUN03Ek=;
-        b=CBGTb4d3eS7HJsTVlLbQoizdcgj00FRfmsbMjOINCCIgO/lh/nw8HFb5PtXjHizyAi
-         BYZ+XVlLA6yn5KwojjjMps9Uw9kqcWQDjdEkeaNPwRettOULYGjgSkpIY7XNeOVgjp4A
-         FIE3gEgnj+PkohreuAOunK9gW7Al2WCCKjSjTUSlVHG/1U5fxBJSxNvMJGAczW6PjXoh
-         y4AV9yCqVYPPG6eAHwjn1K7OVRJaWNnRZmQ5k+B+yQJzKfxtyAomy7dOiJ4j6TfHe3jQ
-         knLd0SPuH892Kmh/jfFnbYPiifqBIPHRECqY5lA5x4ux6cXe213gkYziWEoSlo2BOORF
-         LlXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0JRCh/BqOi4YkLGUiJfecYURU86aNbte4r9osUN03Ek=;
-        b=aVCmuO2UzaxgBChV7oscAMSpcHUyugRoV9W/yPcLK/yt8SqX21UUbJZjf4C/Rtdl5Z
-         OpinoCPfb06/3zACHjGRuP3Zo6fVwwMHSA5ONrtFanBURYm1bwKI0cA6w1w0GBlSGK8C
-         1/hWBd52g3eWPJGGevWywO/xDiFMaC4cL5kelaeRBHfZevh4WYVwo5W4P1wVIgdhg6ms
-         h9Waj0zYf9obax3YH8V9FKTYOSraFNdaplV8pWKNVlZ8KjylL20+t7ibIumsHnSyjQMT
-         aJkHiKzNJMY0ovgkOB880vpYePrFH+pOdQKuqc1VJ7rI/Dj1ytuzn0gcWalRYUdz5NPz
-         ustQ==
-X-Gm-Message-State: AOAM533nG5gXZlI1dJ1sy3tFfQYRRT1Fc1QLGni3szYLMraSyZ0TTb9K
-        ohAEGHGGsO+fWhImntxfDU6g40/LdvQunx8P02UsD/txihY=
-X-Google-Smtp-Source: ABdhPJw9gNNFIjL44oXwYR0XZt26gSCXKZ91nXCIwqis42lHTyFg4ODQiziVUiiGspHnYemb6VnQASFqhnYF8zKxMxw=
-X-Received: by 2002:a0d:f0c3:0:b0:2f4:d291:9dde with SMTP id
- z186-20020a0df0c3000000b002f4d2919ddemr6790754ywe.437.1650659758236; Fri, 22
- Apr 2022 13:35:58 -0700 (PDT)
+        Fri, 22 Apr 2022 17:39:43 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C934179C3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:12 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23MIwSSP017070;
+        Fri, 22 Apr 2022 19:55:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=4X2QURIlgZAv9adJmpQNjH+Rxhc/IoUAl9LWBytqM5A=;
+ b=cSsN4Bqg5QdTDSh5z+pM1k1bytAuEMcbVQuYYoPu5OCWQCZcvZoKTcisFl1GZbwDsGeN
+ bpLy/NaXp5b5b5kroh3liym+anJCX5hedx3AEArxuU5yox2LensXy2ysXFI+XBUyiHhj
+ sY8n1e5XVNheuYeX11hnCK3xDE4IXGLas9qTIX7WiK9XHzI93HdUPzt2zZ1Pm76Y0e1q
+ jS+zK/dBOGq9Q2bZ6pKcJnxKHPXezw6xr7WRgHUFYHeyjkXDWMBD+3HaMfC2JqeKfGYA
+ Rxhlvp+4axlRQqJ8tPUIaTc4W9YQXgyjNILslmJJLc2U0pUYKzcB712dEqj9HQGNhaza GA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjm2jyxr2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Apr 2022 19:55:49 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23MJogII012415;
+        Fri, 22 Apr 2022 19:55:49 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjm2jyxqn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Apr 2022 19:55:48 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23MJiZqd005844;
+        Fri, 22 Apr 2022 19:55:46 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03fra.de.ibm.com with ESMTP id 3ffne97td3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Apr 2022 19:55:46 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23MJgoKO35127788
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Apr 2022 19:42:50 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5580711C04A;
+        Fri, 22 Apr 2022 19:55:43 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3E17311C04C;
+        Fri, 22 Apr 2022 19:55:40 +0000 (GMT)
+Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com.com (unknown [9.43.112.230])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 22 Apr 2022 19:55:39 +0000 (GMT)
+From:   Jagdish Gediya <jvgediya@linux.ibm.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org
+Cc:     baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
+        ying.huang@intel.com, aneesh.kumar@linux.ibm.com,
+        shy828301@gmail.com, weixugc@google.com, gthelen@google.com,
+        dan.j.williams@intel.com, Jagdish Gediya <jvgediya@linux.ibm.com>
+Subject: [PATCH v3 4/7] device-dax/kmem: Set node state as N_DEMOTION_TARGETS
+Date:   Sat, 23 Apr 2022 01:25:13 +0530
+Message-Id: <20220422195516.10769-5-jvgediya@linux.ibm.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422195516.10769-1-jvgediya@linux.ibm.com>
+References: <20220422195516.10769-1-jvgediya@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220422170920.401914-1-sebastian.reichel@collabora.com> <20220422170920.401914-15-sebastian.reichel@collabora.com>
-In-Reply-To: <20220422170920.401914-15-sebastian.reichel@collabora.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 22 Apr 2022 22:35:47 +0200
-Message-ID: <CACRpkda-yLgH7mC6GkMgh5e3+c+4cBrRc9Ryist+zYJh2z9_Sw@mail.gmail.com>
-Subject: Re: [PATCHv1 14/19] gpio: rockchip: add support for rk3588
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
-        Jianqun Xu <jay.xu@rock-chips.com>, kernel@collabora.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: WYHc5m7ZLWuDYh8gE8WUbhlGSGAIMlTY
+X-Proofpoint-ORIG-GUID: bZ4xj7Y8DyommoyUhUEXDMw8rSd5AuDn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-22_06,2022-04-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=999 spamscore=0 bulkscore=0 phishscore=0
+ malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204220083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 7:09 PM Sebastian Reichel
-<sebastian.reichel@collabora.com> wrote:
+Set dax-device node as N_DEMOTION_TARGETS so that it
+can be used as demotion target.
 
-> From: Jianqun Xu <jay.xu@rock-chips.com>
->
-> Add V2.1 rockchip gpio controller type, which is part of the
-> RK3588 SoC.
->
-> Signed-off-by: Jianqun Xu <jay.xu@rock-chips.com>
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+In future, support should be added to distinguish the
+dax-devices which are not preferred as demotion target
+e.g. HBM, for such devices, node shouldn't be set to
+N_DEMOTION_TARGETS.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+---
+ drivers/dax/kmem.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-This looks like something that can just be merged to Bartosz
-tree as there are no dependencies on the other patches.
+diff --git a/drivers/dax/kmem.c b/drivers/dax/kmem.c
+index a37622060fff..f42ab9d04bdf 100644
+--- a/drivers/dax/kmem.c
++++ b/drivers/dax/kmem.c
+@@ -147,6 +147,8 @@ static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
+ 
+ 	dev_set_drvdata(dev, data);
+ 
++	node_set_state(numa_node, N_DEMOTION_TARGETS);
++
+ 	return 0;
+ 
+ err_request_mem:
+-- 
+2.35.1
 
-Yours,
-Linus Walleij
