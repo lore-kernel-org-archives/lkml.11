@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B878BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A500C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbiDVWAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        id S231182AbiDVWAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiDVWAV (ORCPT
+        with ESMTP id S230270AbiDVWAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:00:21 -0400
+        Fri, 22 Apr 2022 18:00:48 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C93781DB2EA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E90540E324
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650660181;
+        s=mimecast20190719; t=1650660224;
         h=from:from:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HiNB6iLIf8FsYqufDVUIiSknSL5xFdrV7f9Mrot/NEI=;
-        b=RtV2dqHHfAA8lqHzyEU+z4rnHrqEzFMqpfCibA3G2W84Kfmx0d/LxDJ1L4UqOjSn57fxij
-        14BoLIYlA/teWZQEImMs0JEZau3+xxtL07rEoNc+knx6RVO7JZgFdPtijorNm+Uxn/tqqg
-        T5kYbhGkViRD+BXcdWX6io/MpeNftnI=
+        bh=pMzuMDxaR82bA08AUYBM8L/3Nbbe4qVN82u5tqpAsE0=;
+        b=ILmuC5MV9in6zgcRCJcVS0poJNKO/laxbEPKN7vlAWi7Oud5XW5o77C7XGTL+NVdLqSPCR
+        d8bdJfwyOZuE8vKM/CKjcPtmCwPXUacvoGhWEAmR6gzH5jkHpAaeZSIgCHtZDC06T5Cv2Y
+        llir4rOKG4JnqogfexFlt/okgLNpbFk=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-452-In9Z-SzxPrCriq2YgYhQ6A-1; Fri, 22 Apr 2022 16:00:58 -0400
-X-MC-Unique: In9Z-SzxPrCriq2YgYhQ6A-1
+ us-mta-653-Gi2tyG9uPz6_9lH891fnsw-1; Fri, 22 Apr 2022 16:00:57 -0400
+X-MC-Unique: Gi2tyG9uPz6_9lH891fnsw-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F0C7B8339B7;
-        Fri, 22 Apr 2022 20:00:51 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3A3BE8339A9;
+        Fri, 22 Apr 2022 20:00:47 +0000 (UTC)
 Received: from dqiao.bos.com (unknown [10.22.19.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8573FC44B0B;
-        Fri, 22 Apr 2022 20:00:51 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D82DFC27DB9;
+        Fri, 22 Apr 2022 20:00:46 +0000 (UTC)
 From:   Donghai Qiao <dqiao@redhat.com>
 To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         peterz@infradead.org, heying24@huawei.com,
@@ -45,9 +45,9 @@ To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
 Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
         Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v2 03/11] smp: eliminate SCF_WAIT and SCF_RUN_LOCAL
-Date:   Fri, 22 Apr 2022 16:00:32 -0400
-Message-Id: <20220422200040.93813-4-dqiao@redhat.com>
+Subject: [PATCH v2 01/11] smp: consolidate the structure definitions to smp.h
+Date:   Fri, 22 Apr 2022 16:00:30 -0400
+Message-Id: <20220422200040.93813-2-dqiao@redhat.com>
 In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
 References: <20220422200040.93813-1-dqiao@redhat.com>
 Reply-To: dqiao@redhat.com
@@ -58,115 +58,346 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit a32a4d8a815c ("smp: Run functions concurrently in
-smp_call_function_many_cond()") was to improve the concurrent
-of the cross call execution between local and remote. The change
-in smp_call_function_many_cond() did what was intended, but the
-new macro SCF_WAIT and SCF_RUN_LOCAL and the code around them
-to handle local call were not unnecessary because the modified
-function smp_call_function_many() was able to handle the local
-cross call. So these two macros can be eliminated and the code
-implemented around that can be removed as well.
+Move the structure definitions from kernel/smp.c to
+include/linux/smp.h
 
-Also this patch fixed a issue of a comparison between an integer
-and a unsigned integer in smp_call_function_many_cond().
-
-The changes with this patch and the changes made in subsequent
-patches will eventually help eliminate the set of on_each_cpu*
-functions.
+Move the structure definitions from include/linux/smp_types.h
+to include/linux/smp.h and delete smp_types.h
 
 Signed-off-by: Donghai Qiao <dqiao@redhat.com>
 ---
-v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
+ include/linux/irq_work.h  |   2 +-
+ include/linux/smp.h       | 131 ++++++++++++++++++++++++++++++++++++--
+ include/linux/smp_types.h |  69 --------------------
+ kernel/smp.c              |  65 -------------------
+ 4 files changed, 128 insertions(+), 139 deletions(-)
+ delete mode 100644 include/linux/smp_types.h
 
- kernel/smp.c | 32 +++++++-------------------------
- 1 file changed, 7 insertions(+), 25 deletions(-)
-
+diff --git a/include/linux/irq_work.h b/include/linux/irq_work.h
+index 8cd11a223260..145af67b1cd3 100644
+--- a/include/linux/irq_work.h
++++ b/include/linux/irq_work.h
+@@ -2,7 +2,7 @@
+ #ifndef _LINUX_IRQ_WORK_H
+ #define _LINUX_IRQ_WORK_H
+ 
+-#include <linux/smp_types.h>
++#include <linux/smp.h>
+ #include <linux/rcuwait.h>
+ 
+ /*
+diff --git a/include/linux/smp.h b/include/linux/smp.h
+index a80ab58ae3f1..31811da856a3 100644
+--- a/include/linux/smp.h
++++ b/include/linux/smp.h
+@@ -10,13 +10,74 @@
+ #include <linux/errno.h>
+ #include <linux/types.h>
+ #include <linux/list.h>
++#include <linux/llist.h>
+ #include <linux/cpumask.h>
+ #include <linux/init.h>
+-#include <linux/smp_types.h>
+ 
+ typedef void (*smp_call_func_t)(void *info);
+ typedef bool (*smp_cond_func_t)(int cpu, void *info);
+ 
++enum {
++	CSD_FLAG_LOCK		= 0x01,
++
++	IRQ_WORK_PENDING	= 0x01,
++	IRQ_WORK_BUSY		= 0x02,
++	IRQ_WORK_LAZY		= 0x04, /* No IPI, wait for tick */
++	IRQ_WORK_HARD_IRQ	= 0x08, /* IRQ context on PREEMPT_RT */
++
++	IRQ_WORK_CLAIMED	= (IRQ_WORK_PENDING | IRQ_WORK_BUSY),
++
++	CSD_TYPE_ASYNC		= 0x00,
++	CSD_TYPE_SYNC		= 0x10,
++	CSD_TYPE_IRQ_WORK	= 0x20,
++	CSD_TYPE_TTWU		= 0x30,
++
++	CSD_FLAG_TYPE_MASK	= 0xF0,
++};
++
++/*
++ * struct __call_single_node is the primary type on
++ * smp.c:call_single_queue.
++ *
++ * flush_smp_call_function_queue() only reads the type from
++ * __call_single_node::u_flags as a regular load, the above
++ * (anonymous) enum defines all the bits of this word.
++ *
++ * Other bits are not modified until the type is known.
++ *
++ * CSD_TYPE_SYNC/ASYNC:
++ *	struct {
++ *		struct llist_node node;
++ *		unsigned int flags;
++ *		smp_call_func_t func;
++ *		void *info;
++ *	};
++ *
++ * CSD_TYPE_IRQ_WORK:
++ *	struct {
++ *		struct llist_node node;
++ *		atomic_t flags;
++ *		void (*func)(struct irq_work *);
++ *	};
++ *
++ * CSD_TYPE_TTWU:
++ *	struct {
++ *		struct llist_node node;
++ *		unsigned int flags;
++ *	};
++ *
++ */
++struct __call_single_node {
++	struct llist_node	llist;
++	union {
++		unsigned int	u_flags;
++		atomic_t	a_flags;
++	};
++#ifdef CONFIG_64BIT
++	u16 src, dst;
++#endif
++};
++
+ /*
+  * structure shares (partial) layout with struct irq_work
+  */
+@@ -26,13 +87,75 @@ struct __call_single_data {
+ 	void *info;
+ };
+ 
+-#define CSD_INIT(_func, _info) \
+-	(struct __call_single_data){ .func = (_func), .info = (_info), }
+-
+ /* Use __aligned() to avoid to use 2 cache lines for 1 csd */
+ typedef struct __call_single_data call_single_data_t
+ 	__aligned(sizeof(struct __call_single_data));
+ 
++struct cfd_percpu {
++	call_single_data_t	csd;
++#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
++	u64	seq_queue;
++	u64	seq_ipi;
++	u64	seq_noipi;
++#endif
++};
++
++struct call_function_data {
++	struct cfd_percpu	__percpu *pcpu;
++	cpumask_var_t		cpumask;
++	cpumask_var_t		cpumask_ipi;
++};
++
++#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
++union cfd_seq_cnt {
++	u64		val;
++	struct {
++		u64	src:16;
++		u64	dst:16;
++#define CFD_SEQ_NOCPU	0xffff
++		u64	type:4;
++#define CFD_SEQ_QUEUE	0
++#define CFD_SEQ_IPI	1
++#define CFD_SEQ_NOIPI	2
++#define CFD_SEQ_PING	3
++#define CFD_SEQ_PINGED	4
++#define CFD_SEQ_HANDLE	5
++#define CFD_SEQ_DEQUEUE	6
++#define CFD_SEQ_IDLE	7
++#define CFD_SEQ_GOTIPI	8
++#define CFD_SEQ_HDLEND	9
++		u64	cnt:28;
++	}		u;
++};
++
++static char *seq_type[] = {
++	[CFD_SEQ_QUEUE]		= "queue",
++	[CFD_SEQ_IPI]		= "ipi",
++	[CFD_SEQ_NOIPI]		= "noipi",
++	[CFD_SEQ_PING]		= "ping",
++	[CFD_SEQ_PINGED]	= "pinged",
++	[CFD_SEQ_HANDLE]	= "handle",
++	[CFD_SEQ_DEQUEUE]	= "dequeue (src CPU 0 == empty)",
++	[CFD_SEQ_IDLE]		= "idle",
++	[CFD_SEQ_GOTIPI]	= "gotipi",
++	[CFD_SEQ_HDLEND]	= "hdlend (src CPU 0 == early)",
++};
++
++struct cfd_seq_local {
++	u64	ping;
++	u64	pinged;
++	u64	handle;
++	u64	dequeue;
++	u64	idle;
++	u64	gotipi;
++	u64	hdlend;
++};
++#endif
++
++#define CSD_TYPE(_csd)	((_csd)->node.u_flags & CSD_FLAG_TYPE_MASK)
++#define CSD_INIT(_func, _info) \
++	((struct __call_single_data){ .func = (_func), .info = (_info), })
++
+ #define INIT_CSD(_csd, _func, _info)		\
+ do {						\
+ 	*(_csd) = CSD_INIT((_func), (_info));	\
+diff --git a/include/linux/smp_types.h b/include/linux/smp_types.h
+deleted file mode 100644
+index 2e8461af8df6..000000000000
+--- a/include/linux/smp_types.h
++++ /dev/null
+@@ -1,69 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __LINUX_SMP_TYPES_H
+-#define __LINUX_SMP_TYPES_H
+-
+-#include <linux/llist.h>
+-
+-enum {
+-	CSD_FLAG_LOCK		= 0x01,
+-
+-	IRQ_WORK_PENDING	= 0x01,
+-	IRQ_WORK_BUSY		= 0x02,
+-	IRQ_WORK_LAZY		= 0x04, /* No IPI, wait for tick */
+-	IRQ_WORK_HARD_IRQ	= 0x08, /* IRQ context on PREEMPT_RT */
+-
+-	IRQ_WORK_CLAIMED	= (IRQ_WORK_PENDING | IRQ_WORK_BUSY),
+-
+-	CSD_TYPE_ASYNC		= 0x00,
+-	CSD_TYPE_SYNC		= 0x10,
+-	CSD_TYPE_IRQ_WORK	= 0x20,
+-	CSD_TYPE_TTWU		= 0x30,
+-
+-	CSD_FLAG_TYPE_MASK	= 0xF0,
+-};
+-
+-/*
+- * struct __call_single_node is the primary type on
+- * smp.c:call_single_queue.
+- *
+- * flush_smp_call_function_queue() only reads the type from
+- * __call_single_node::u_flags as a regular load, the above
+- * (anonymous) enum defines all the bits of this word.
+- *
+- * Other bits are not modified until the type is known.
+- *
+- * CSD_TYPE_SYNC/ASYNC:
+- *	struct {
+- *		struct llist_node node;
+- *		unsigned int flags;
+- *		smp_call_func_t func;
+- *		void *info;
+- *	};
+- *
+- * CSD_TYPE_IRQ_WORK:
+- *	struct {
+- *		struct llist_node node;
+- *		atomic_t flags;
+- *		void (*func)(struct irq_work *);
+- *	};
+- *
+- * CSD_TYPE_TTWU:
+- *	struct {
+- *		struct llist_node node;
+- *		unsigned int flags;
+- *	};
+- *
+- */
+-
+-struct __call_single_node {
+-	struct llist_node	llist;
+-	union {
+-		unsigned int	u_flags;
+-		atomic_t	a_flags;
+-	};
+-#ifdef CONFIG_64BIT
+-	u16 src, dst;
+-#endif
+-};
+-
+-#endif /* __LINUX_SMP_TYPES_H */
 diff --git a/kernel/smp.c b/kernel/smp.c
-index b1e6a8f77a9e..22e8f2bd770b 100644
+index 01a7c1706a58..b2b3878f0330 100644
 --- a/kernel/smp.c
 +++ b/kernel/smp.c
-@@ -787,23 +787,13 @@ int smp_call_function_any(const struct cpumask *mask,
- }
- EXPORT_SYMBOL_GPL(smp_call_function_any);
+@@ -29,73 +29,8 @@
+ #include "smpboot.h"
+ #include "sched/smp.h"
  
--/*
-- * Flags to be used as scf_flags argument of smp_call_function_many_cond().
-- *
-- * %SCF_WAIT:		Wait until function execution is completed
-- * %SCF_RUN_LOCAL:	Run also locally if local cpu is set in cpumask
-- */
--#define SCF_WAIT	(1U << 0)
--#define SCF_RUN_LOCAL	(1U << 1)
+-#define CSD_TYPE(_csd)	((_csd)->node.u_flags & CSD_FLAG_TYPE_MASK)
 -
- static void smp_call_function_many_cond(const struct cpumask *mask,
- 					smp_call_func_t func, void *info,
--					unsigned int scf_flags,
-+					bool wait,
- 					smp_cond_func_t cond_func)
- {
- 	int cpu, last_cpu, this_cpu = smp_processor_id();
- 	struct call_function_data *cfd;
--	bool wait = scf_flags & SCF_WAIT;
- 	bool run_remote = false;
- 	bool run_local = false;
- 	int nr_cpus = 0;
-@@ -829,14 +819,14 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
- 	WARN_ON_ONCE(!in_task());
- 
- 	/* Check if we need local execution. */
--	if ((scf_flags & SCF_RUN_LOCAL) && cpumask_test_cpu(this_cpu, mask))
-+	if (cpumask_test_cpu(this_cpu, mask))
- 		run_local = true;
- 
- 	/* Check if we need remote execution, i.e., any CPU excluding this one. */
- 	cpu = cpumask_first_and(mask, cpu_online_mask);
- 	if (cpu == this_cpu)
- 		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
--	if (cpu < nr_cpu_ids)
-+	if ((unsigned int)cpu < nr_cpu_ids)
- 		run_remote = true;
- 
- 	if (run_remote) {
-@@ -911,12 +901,8 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
-  * @mask: The set of cpus to run on (only runs on online subset).
-  * @func: The function to run. This must be fast and non-blocking.
-  * @info: An arbitrary pointer to pass to the function.
-- * @wait: Bitmask that controls the operation. If %SCF_WAIT is set, wait
-- *        (atomically) until function has completed on other CPUs. If
-- *        %SCF_RUN_LOCAL is set, the function will also be run locally
-- *        if the local CPU is set in the @cpumask.
-- *
-- * If @wait is true, then returns once @func has returned.
-+ * @wait: If wait is true, the call will not return until func()
-+ *        has completed on other CPUs.
-  *
-  * You must not call this function with disabled interrupts or from a
-  * hardware interrupt handler or from a bottom half handler. Preemption
-@@ -925,7 +911,7 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
- void smp_call_function_many(const struct cpumask *mask,
- 			    smp_call_func_t func, void *info, bool wait)
- {
--	smp_call_function_many_cond(mask, func, info, wait * SCF_WAIT, NULL);
-+	smp_call_function_many_cond(mask, func, info, wait, NULL);
- }
- EXPORT_SYMBOL(smp_call_function_many);
- 
-@@ -1061,13 +1047,9 @@ void __init smp_init(void)
- void on_each_cpu_cond_mask(smp_cond_func_t cond_func, smp_call_func_t func,
- 			   void *info, bool wait, const struct cpumask *mask)
- {
--	unsigned int scf_flags = SCF_RUN_LOCAL;
+-#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
+-union cfd_seq_cnt {
+-	u64		val;
+-	struct {
+-		u64	src:16;
+-		u64	dst:16;
+-#define CFD_SEQ_NOCPU	0xffff
+-		u64	type:4;
+-#define CFD_SEQ_QUEUE	0
+-#define CFD_SEQ_IPI	1
+-#define CFD_SEQ_NOIPI	2
+-#define CFD_SEQ_PING	3
+-#define CFD_SEQ_PINGED	4
+-#define CFD_SEQ_HANDLE	5
+-#define CFD_SEQ_DEQUEUE	6
+-#define CFD_SEQ_IDLE	7
+-#define CFD_SEQ_GOTIPI	8
+-#define CFD_SEQ_HDLEND	9
+-		u64	cnt:28;
+-	}		u;
+-};
 -
--	if (wait)
--		scf_flags |= SCF_WAIT;
+-static char *seq_type[] = {
+-	[CFD_SEQ_QUEUE]		= "queue",
+-	[CFD_SEQ_IPI]		= "ipi",
+-	[CFD_SEQ_NOIPI]		= "noipi",
+-	[CFD_SEQ_PING]		= "ping",
+-	[CFD_SEQ_PINGED]	= "pinged",
+-	[CFD_SEQ_HANDLE]	= "handle",
+-	[CFD_SEQ_DEQUEUE]	= "dequeue (src CPU 0 == empty)",
+-	[CFD_SEQ_IDLE]		= "idle",
+-	[CFD_SEQ_GOTIPI]	= "gotipi",
+-	[CFD_SEQ_HDLEND]	= "hdlend (src CPU 0 == early)",
+-};
+-
+-struct cfd_seq_local {
+-	u64	ping;
+-	u64	pinged;
+-	u64	handle;
+-	u64	dequeue;
+-	u64	idle;
+-	u64	gotipi;
+-	u64	hdlend;
+-};
+-#endif
+-
+-struct cfd_percpu {
+-	call_single_data_t	csd;
+-#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
+-	u64	seq_queue;
+-	u64	seq_ipi;
+-	u64	seq_noipi;
+-#endif
+-};
+-
+-struct call_function_data {
+-	struct cfd_percpu	__percpu *pcpu;
+-	cpumask_var_t		cpumask;
+-	cpumask_var_t		cpumask_ipi;
+-};
+-
+ static DEFINE_PER_CPU_ALIGNED(struct call_function_data, cfd_data);
+-
+ static DEFINE_PER_CPU_SHARED_ALIGNED(struct llist_head, call_single_queue);
+-
+ static void flush_smp_call_function_queue(bool warn_cpu_offline);
  
- 	preempt_disable();
--	smp_call_function_many_cond(mask, func, info, scf_flags, cond_func);
-+	smp_call_function_many_cond(mask, func, info, wait, cond_func);
- 	preempt_enable();
- }
- EXPORT_SYMBOL(on_each_cpu_cond_mask);
+ int smpcfd_prepare_cpu(unsigned int cpu)
 -- 
 2.27.0
 
