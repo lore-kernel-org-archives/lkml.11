@@ -2,97 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87711C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444415AbiDVGev (ORCPT
+        id S1444429AbiDVGfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41198 "EHLO
+        Fri, 22 Apr 2022 02:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349067AbiDVGes (ORCPT
+        with ESMTP id S1444424AbiDVGfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:34:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0779B50B2A;
-        Thu, 21 Apr 2022 23:31:55 -0700 (PDT)
+        Fri, 22 Apr 2022 02:35:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9C050B34;
+        Thu, 21 Apr 2022 23:32:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8488DB82936;
-        Fri, 22 Apr 2022 06:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CDA1C385A0;
-        Fri, 22 Apr 2022 06:31:52 +0000 (UTC)
-Message-ID: <59750798-300a-9b90-f257-3a97bcd4bfb5@xs4all.nl>
-Date:   Fri, 22 Apr 2022 08:31:50 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0DEF61E83;
+        Fri, 22 Apr 2022 06:32:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3234EC385A0;
+        Fri, 22 Apr 2022 06:32:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650609160;
+        bh=lalQc1VEKRTVWs2GqXvLF+tWm/dV5uDBEwlrHFlqQHI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ld45dnmTVZo0eb4k7APe18gDMPOweSZ2XajmngIReqeR7S1JMRkdLzt9lYf2lvXeG
+         EgSewXuh+9KSDejcyBx8jGdgQffdnaGGLs4/imyRkHZUnKKw3HWNo/tdVhO+YErdUr
+         rsgotDoVqIThJkBvmqV9zwKDZUZEP6/Tgpb+i7zlavB5y3ndhcXUu3OQS/0xb13iE1
+         w91gJ+5Ei7pFdJuWBuNQa1WnLERfMkCmYsPgnDTpdLcU8FeDfq3OMBBmHPOwlTHqKj
+         4WfI7R+4YqJW7atrO9azvzMroJlbv74yeKLR4K/hibSoukh6E75cV3lgAnfR0jyC5z
+         dWNarfE0MMpsg==
+Date:   Thu, 21 Apr 2022 23:32:38 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Theodore Ts'o <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the random tree with the jc_docs tree
+Message-ID: <YmJMBnBV8wO4aco9@sol.localdomain>
+References: <20220422135927.7fa82fa4@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 01/24] media: doc: Document dual use of H.264
- pic_num/frame_num
-Content-Language: en-US
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org
-References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
- <20220405204426.259074-2-nicolas.dufresne@collabora.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220405204426.259074-2-nicolas.dufresne@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422135927.7fa82fa4@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/04/2022 22:44, Nicolas Dufresne wrote:
-> These two fields need documentation as they have dual meaning. It is also
-> confusing since pic_num is a derived value from frame_num, so this should
-> help application developers. If we ever need to make a V2 of this API, I
-> would suggest to remove pic_num entirely.
+On Fri, Apr 22, 2022 at 01:59:27PM +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-> ---
->  .../media/v4l/ext-ctrls-codec-stateless.rst            | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
+> Today's linux-next merge of the random tree got a conflict in:
 > 
-> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
-> index 6541e4c32b26..49f89b702068 100644
-> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
-> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec-stateless.rst
-> @@ -649,10 +649,16 @@ Stateless Codec Control ID
->          :c:type:`timeval` in struct :c:type:`v4l2_buffer` to a __u64.
->      * - __u32
->        - ``pic_num``
-> -      -
-> +      - For short term references, this should match the derived value PicNum
+>   Documentation/security/siphash.rst
+> 
+> between commits:
+> 
+>   dc701cfc5b26 ("Documentation: siphash: convert danger note to warning for HalfSipHash")
+>   561fb3cd5ec2 ("Documentation: siphash: enclose HalfSipHash usage example in the literal block")
+> 
+> from the jc_docs tree and commit:
+> 
+>   91afe794c070 ("siphash: update the hsiphash documentation")
+> 
+> from the random tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc Documentation/security/siphash.rst
+> index 06d793e68086,79ac8101406c..000000000000
+> --- a/Documentation/security/siphash.rst
+> +++ b/Documentation/security/siphash.rst
+> @@@ -121,15 -121,23 +121,25 @@@ even scarier, uses an easily brute-forc
+>   instead of SipHash's 128-bit key. However, this may appeal to some
+>   high-performance `jhash` users.
+>   
+> + HalfSipHash support is provided through the "hsiphash" family of functions.
+> + 
+>  -**Danger!** Do not ever use the hsiphash functions except for as a hashtable key
+>  -function, and only then when you can be absolutely certain that the outputs will
+>  -never be transmitted out of the kernel. This is only remotely useful over
+>  -`jhash` as a means of mitigating hashtable flooding denial of service attacks.
+>  +.. warning::
+>  +   Do not ever use HalfSipHash except for as a hashtable key function, and
+>  +   only then when you can be absolutely certain that the outputs will never
+>  +   be transmitted out of the kernel. This is only remotely useful over
+>  +   `jhash` as a means of mitigating hashtable flooding denial of service
+>  +   attacks.
 
-shouldn't 'should' be 'must'? Same elsewhere below.
+That's not exactly the correct resolution, since it dropped the change to the
+text of this paragraph that my patch made ("HalfSipHash" => "the hsiphash
+functions").
 
-> +	(8-28) and for long term references it should match the derived value
-> +	LongTermPicNum (8-29). Note that pic_num is the same as FrameNumWrap
-> +	for frame decoding.
+We should get the updates to this file to go through one tree.  Jason, probably
+you'd want it to be yours?
 
-I think this last sentence is a bit confusing. How about:
-
-"When decoding frames (as opposed to fields) pic_num is the same as FrameNumWrap."
-
->      * - __u16
->        - ``frame_num``
-> -      -
-> +      - For short term references, this should match the frame_num value from
-> +	the slice header syntax (the driver will wrap the value if neeeded). For
-
-neeeded -> needed
-
-> +	long term references, this should be set to the value of
-> +	long_term_frame_idx described in the dec_ref_pic_marking() syntax.
->      * - __u8
->        - ``fields``
->        - Specifies how the DPB entry is referenced. See :ref:`Reference Fields <h264_ref_fields>`
-
-Regards,
-
-	Hans
+- Eric
