@@ -2,107 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49257C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA2FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229610AbiDVSoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
+        id S229499AbiDVSqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiDVSn6 (ORCPT
+        with ESMTP id S229710AbiDVSqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:43:58 -0400
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845A528E3D;
-        Fri, 22 Apr 2022 11:39:56 -0700 (PDT)
-Received: by mail-ed1-f51.google.com with SMTP id e30so7907012eda.0;
-        Fri, 22 Apr 2022 11:39:56 -0700 (PDT)
+        Fri, 22 Apr 2022 14:46:14 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FD2F2A1D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:41:26 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-e5ca5c580fso9512395fac.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:41:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bPNNWfLorKQdlTFIcjMKIT2TFnHa6NCO/tOM3FpNRzI=;
-        b=pP6MZqf6ePvtfF8C835aDJIPBvIV4lDmCDZhjumIvJCQVxJtJREqUoC0VxvW6c78CI
-         W1Db4zEr+1RPlTjOQCGM2twHKDnpTZHL4FYuvzjhHG0ZblJmKqye31fbrgxc3NKypZ1I
-         Ug3HvhkTfBISMUd/Jrb4wumZvYE1Z6LFM5tuRsWGOKsfJRunnWB1fLbjGce/CsMUYyo3
-         JMdpCSzshEeL2Q+5usL2vPWhlKRzLHKvxcK1dGqVPO0b7or2wMsySbttMus3R4kVqv1l
-         BRRLX+sMN8v3A4fxeTVpW8gtLjWSnxUPPqgkpZtNjsvsa7VSqCun6TQhFpUATMUeg8Q8
-         mlig==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=6gjAV10Iy0bb8vJ2mOVMB0SZrY0b5n77L6j1RU8VdXM=;
+        b=UQLEZxu3Gnefj4+OtaImRrfZBjyDsrGOwqT3L4D8+PELfmRybKg6N+U9kwXbBNec8B
+         qKpVkU06TkaCo4dktwV6f4nhGtJIzV103OXK13R6QipAYixnIGfC1U+WJMelXl3+cQ94
+         IIkClZnxp2vThBevLk9Vg09fFu4m+FnV5PonI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bPNNWfLorKQdlTFIcjMKIT2TFnHa6NCO/tOM3FpNRzI=;
-        b=cPrpl+IQ1PS1qREDOo0BcziXavDqAPCtiBNTW+h/xpfoS/4doseyAtinKFa11Liztx
-         lrlIsvAF/ykT2PEh+tv4q0Dj1m0sAijNW+Fd0yrNYTETw62LE73f1KvHpdIwB8JaG5pX
-         EvmdNWs2UmuWXNWbxSvhis29ts6mur5lzUFvD1jeyt2LtNlxgG84Zd5n3wFGJlE0lH8j
-         bCwOxoD6fImHacX9HA9ofhErqTiwEbgcPpSG941oh45/Tlge4kc2p/d2K09am0a82r2h
-         X6Hvy4vyiJupG1oTsUE25wyXoDa9jm55GoB4w0Z9kaUH/GgfsN8EUFtVQBsfUYVxBOzz
-         i98A==
-X-Gm-Message-State: AOAM531L+Q3ZS3k+IgP4ZZRd4+AmX7RXvVDGxBiJvF/ts2M1pwcvGG/N
-        f1blcohI5synUsRJoUW/N4FivV/291agsupulIo=
-X-Google-Smtp-Source: ABdhPJwE2DVZWKHijzJDzimQ+LsCESxc4MQeRHdyFiQT+g0Dn0dBzdTwYzWmusdEEtXivLVlXKGE0ciNAZff560gHD8=
-X-Received: by 2002:a50:bae3:0:b0:425:b2b5:6248 with SMTP id
- x90-20020a50bae3000000b00425b2b56248mr6239060ede.281.1650652404409; Fri, 22
- Apr 2022 11:33:24 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=6gjAV10Iy0bb8vJ2mOVMB0SZrY0b5n77L6j1RU8VdXM=;
+        b=u1pGpT/q2Y8LedLmd8krTqK0kZqOelQkSEWocveYKJeEniBy3/QLoVIR7ZWPeYD6Z2
+         PuYwu7fgNIhMfpML2FBYVyebPI0Dg1NIEJUjE430aiD/5xQqxOSKuVr2eezHTMBaSCrm
+         VfM8NQx4rDHTwYbPE39NzKlx+AhgVg4yRHiAbGFdvwftzJQI1JZSgfc/+FIVnUF5oLN6
+         RC8xTC344v1fNK2w5s1rp5+r/YUAvn1AZMCtGxO5/5/TGiKe15IXyWpoa3pHXdP9ia7o
+         g6SGLLV9vZ7HXbFGK6ezefBIM68PuRdbs/wWihH9eznTqdRdwoeLrBJqFSuy2GKlx8nN
+         Yr8g==
+X-Gm-Message-State: AOAM533V0wrf6ZVmlmMZcLExd9lLbN4ph++/cjfy/qWnGvm2fvcuagXr
+        A1mmjfY8NbNmUzoImMtrAExC2/GX8QAcXUAz9w+zXw==
+X-Google-Smtp-Source: ABdhPJxjCR1tRv5Vi4Nt0QWTz2GZsD8/5wZBQ5hBZZW11jMP7uvutfanuEQOvf2fWtfAZz7mqXvfI8Y23sNg2MX1b3Q=
+X-Received: by 2002:a05:6870:15ca:b0:e9:551:6d1c with SMTP id
+ k10-20020a05687015ca00b000e905516d1cmr1291139oad.193.1650652758892; Fri, 22
+ Apr 2022 11:39:18 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 22 Apr 2022 11:39:18 -0700
 MIME-Version: 1.0
-References: <20220419160058.9998-1-markuss.broks@gmail.com> <20220419160058.9998-2-markuss.broks@gmail.com>
-In-Reply-To: <20220419160058.9998-2-markuss.broks@gmail.com>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Date:   Fri, 22 Apr 2022 21:33:13 +0300
-Message-ID: <CANhJrGMe0Vxt_KxzMX_9oGyaFeMi5hmNCYje99a8DB-tHZKuYg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: regulator: Add bindings for Silicon
- Mitus SM5703 regulators
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
+In-Reply-To: <20220422084951.2776123-1-lv.ruyi@zte.com.cn>
+References: <20220422084951.2776123-1-lv.ruyi@zte.com.cn>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 22 Apr 2022 11:39:18 -0700
+Message-ID: <CAE-0n52nFSUA-3CWa81mE-WUFW8pjOwYsFp-eGOkzupg2cZ9Yg@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/dp: fix error check return value of irq_of_parse_and_map()
+To:     cgel.zte@gmail.com, quic_abhinavk@quicinc.com, robdclark@gmail.com,
+        sean@poorly.run
+Cc:     airlied@linux.ie, daniel@ffwll.ch, dmitry.baryshkov@linaro.org,
+        quic_khsieh@quicinc.com, bjorn.andersson@linaro.org,
+        linux@roeck-us.net, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 8:36 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+Quoting cgel.zte@gmail.com (2022-04-22 01:49:51)
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
 >
-> This patch adds device-tree bindings for regulators on Silicon Mitus
-> SM5703 MFD.
+> The irq_of_parse_and_map() function returns 0 on failure, and does not
+> return an negative value.
 >
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> Fixes:  8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 > ---
->  .../siliconmitus,sm5703-regulator.yaml        | 52 +++++++++++++++++++
->  1 file changed, 52 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+>  drivers/gpu/drm/msm/dp/dp_display.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
-> new file mode 100644
-> index 000000000000..a8ffd3ecf3a5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/regulator/siliconmitus,sm5703-regulator.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Silicon Mitus SM5703 multi function device regulators
-> +
-> +maintainers:
-> +  - Markuss Broks <markuss.broks@gmail.com>
-> +
-> +description: |
-> +  SM5703 regulators node should be a sub node of the SM5703 MFD node. See SM5703 MFD
-> +  bindings at Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
-> +  Regulator nodes should be named as USBLDO_<number>, BUCK, VBUS, LDO_<number>.
-> +  The definition for each of these nodes is defined using the standard
-> +  binding for regulators at Documentation/devicetree/bindings/regulator/regulator.txt.
+> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> index a42732b67349..3926d2ac107d 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+> @@ -1239,7 +1239,7 @@ int dp_display_request_irq(struct msm_dp *dp_display)
+>         dp = container_of(dp_display, struct dp_display_private, dp_display);
+>
+>         dp->irq = irq_of_parse_and_map(dp->pdev->dev.of_node, 0);
 
-Maybe It'd be better to nowadays refer to the regulators.yaml
+Why can't platform_get_irq() be used?
 
-Best Regards
--- Matti Vaittinen
+> -       if (dp->irq < 0) {
+> +       if (!dp->irq) {
+>                 rc = dp->irq;
+
+zero as an error return value is an error?
+
+>                 DRM_ERROR("failed to get irq: %d\n", rc);
+>                 return rc;
