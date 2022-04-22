@@ -2,129 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 23:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbiDVXdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 19:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
+        id S229960AbiDVXed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 19:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbiDVXdA (ORCPT
+        with ESMTP id S230038AbiDVXch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 19:33:00 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA500210C3A;
-        Fri, 22 Apr 2022 16:14:56 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 16:14:49 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650669295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qj54Vyot11RQURjSDei20EVpyRPh4pQqH20/VoPb/oY=;
-        b=WWhuDxynQAO8T0s74G33tChZVeFVDym7JxNZ5avEQ2CPZNMh9wqOtfLPt/wrG1+5WwfSTu
-        7yjlJ2fQ+56QPdJsoOiM/ZahjDyqpieegEXLu4PcOhG+OOBZx8RlLBwzKpDN9ekV7CSFx2
-        fXn8qs8BVdRh/bFx1bRkHLItH8xTB6w=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     David Vernet <void@manifault.com>
-Cc:     akpm@linux-foundation.org, tj@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
-        shakeelb@google.com, kernel-team@fb.com
-Subject: Re: [PATCH 3/5] cgroup: Account for memory_localevents in
- test_memcg_oom_group_leaf_events()
-Message-ID: <YmM26XBZxWy4Widc@carbon>
-References: <20220422155728.3055914-1-void@manifault.com>
- <20220422155728.3055914-4-void@manifault.com>
+        Fri, 22 Apr 2022 19:32:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF172FBEAB;
+        Fri, 22 Apr 2022 16:13:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88C14B832E2;
+        Fri, 22 Apr 2022 23:13:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6C92C385A4;
+        Fri, 22 Apr 2022 23:13:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650669187;
+        bh=+bWM4jQypuRyr9hdKzZtZVpK4pbUaBz3lqN1cR1DhB8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=P5i/KXST6+gJT5ZfDGVugr7Int5LslybQ+LA5Y423xAob3GEEbTrpjG4Scy5apKiU
+         VzlApQfZTOxLn3Eh1I+2e0ju6n+FjR0TdtINFA5G1TgnolFVadUn+A+/vAtPUOZJdv
+         gCndAdbB6IS+Nsi1QQBcwUtplGWCTIz7g+NOWVs8ovnti/ZKLDa2SKM18705TseOJ+
+         bTUXK6IkOH2+y6LtcezSVPHIHS296RIEt4Xkaz5pR+guagb8EsrmBYFiNu1MPKGxwp
+         k/39+oLydarfoUvS2gBtDOCADixi7qdslTe0JScnUA0fB55U5avKMquosjzzNarhs+
+         he5UlgArKbjSg==
+Date:   Fri, 22 Apr 2022 16:13:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Vincent Cuissard <cuissard@marvell.com>,
+        Samuel Ortiz <sameo@linux.intel.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nfc: nfcmrvl: spi: Fix irq_of_parse_and_map() return
+ value
+Message-ID: <20220422161305.59e0be38@kernel.org>
+In-Reply-To: <20220422104758.64039-1-krzysztof.kozlowski@linaro.org>
+References: <20220422104758.64039-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422155728.3055914-4-void@manifault.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 08:57:27AM -0700, David Vernet wrote:
-> The test_memcg_oom_group_leaf_events() testcase in the cgroup memcg tests
-> validates that processes in a group that perform allocations exceeding
-> memory.oom.group are killed. It also validates that the
-> memory.events.oom_kill events are properly propagated in this case.  Commit
-> 06e11c907ea4 ("kselftests: memcg: update the oom group leaf events test")
-> fixed test_memcg_oom_group_leaf_events() to account for the fact that the
-> memory.events.oom_kill events in a child cgroup is propagated up to its
-> parent. This behavior can actually be configured by the memory_localevents
-> mount option, so this patch updates the testcase to properly account for
-> the possible presence of this mount option.
+On Fri, 22 Apr 2022 12:47:58 +0200 Krzysztof Kozlowski wrote:
+> The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 > 
-> Signed-off-by: David Vernet <void@manifault.com>
+> Fixes: caf6e49bf6d0 ("NFC: nfcmrvl: add spi driver")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  .../testing/selftests/cgroup/test_memcontrol.c  | 17 ++++++++++++++++-
->  1 file changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
-> index ea2fd27e52df..d88e0ca3f3d1 100644
-> --- a/tools/testing/selftests/cgroup/test_memcontrol.c
-> +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
-> @@ -21,6 +21,7 @@
->  #include "../kselftest.h"
->  #include "cgroup_util.h"
->  
-> +static bool has_localevents;
->  static bool has_recursiveprot;
->  
->  /*
-> @@ -1091,6 +1092,7 @@ static int test_memcg_oom_group_leaf_events(const char *root)
->  {
->  	int ret = KSFT_FAIL;
->  	char *parent, *child;
-> +	long parent_oom_events;
->  
->  	parent = cg_name(root, "memcg_test_0");
->  	child = cg_name(root, "memcg_test_0/memcg_test_1");
-> @@ -1128,7 +1130,15 @@ static int test_memcg_oom_group_leaf_events(const char *root)
->  	if (cg_read_key_long(child, "memory.events", "oom_kill ") <= 0)
->  		goto cleanup;
->  
-> -	if (cg_read_key_long(parent, "memory.events", "oom_kill ") <= 0)
-> +	parent_oom_events = cg_read_key_long(
-> +			parent, "memory.events", "oom_kill ");
-> +	// If memory_localevents is not enabled (the default), the parent should
-> +	// count OOM events in its children groups. Otherwise, it should not
-> +	// have observed any events.
+> This is another issue to https://lore.kernel.org/all/20220422084605.2775542-1-lv.ruyi@zte.com.cn/
 
-Please, use /* */ style comments, it's a generic kernel style.
+Maybe send one patch that fixes both and also fixes the usage of ret?
 
-> +	if (has_localevents) {
-> +		if (parent_oom_events != 0)
-> +			goto cleanup;
-> +	} else if (parent_oom_events <= 0)
->  		goto cleanup;
-
-How about something like this? IMO a bit more clear what's going on.
-	if ((has_local_events && parent_oom_events == 0) ||
-	    parent_oom_events > 0)
-		ret = KSFT_PASS;
-
-Anyway, looks good to me.
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-
+> diff --git a/drivers/nfc/nfcmrvl/spi.c b/drivers/nfc/nfcmrvl/spi.c
+> index a38e2fcdfd39..01f0a08a381c 100644
+> --- a/drivers/nfc/nfcmrvl/spi.c
+> +++ b/drivers/nfc/nfcmrvl/spi.c
+> @@ -115,7 +115,7 @@ static int nfcmrvl_spi_parse_dt(struct device_node *node,
+>  	}
 >  
->  	ret = KSFT_PASS;
-> @@ -1298,6 +1308,11 @@ int main(int argc, char **argv)
->  		ksft_exit_skip("Failed to query cgroup mount option\n");
->  	has_recursiveprot = proc_status;
->  
-> +	proc_status = proc_mount_contains("memory_localevents");
-> +	if (proc_status < 0)
-> +		ksft_exit_skip("Failed to query cgroup mount option\n");
-> +	has_localevents = proc_status;
-> +
->  	for (i = 0; i < ARRAY_SIZE(tests); i++) {
->  		switch (tests[i].fn(root)) {
->  		case KSFT_PASS:
-> -- 
-> 2.30.2
-> 
+>  	ret = irq_of_parse_and_map(node, 0);
+> -	if (ret < 0) {
+> +	if (!ret) {
+>  		pr_err("Unable to get irq, error: %d\n", ret);
+>  		return ret;
+>  	}
