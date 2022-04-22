@@ -2,134 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0135C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233318AbiDVWnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
+        id S233479AbiDVWnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiDVWm4 (ORCPT
+        with ESMTP id S234262AbiDVWnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:42:56 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C35214124;
-        Fri, 22 Apr 2022 14:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1650663739;
-        bh=FASJJR2Tx4uF4/s/WY7/LWoW20ycDshiMItQZbSs9bU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=MrF6gSUstM2zHBTkft9N0k3blkosRvqMDcnr9VfSgB9oE0Tk7dlp6H/3X/WJoySuP
-         jjWEmtDakDxs0kIm/6IuW+ednbCRxCMKR6wxsa/M97RWFFNtorI/+SlFDXCCmTUPux
-         jd/Xl67fKHd4mFmM315ulL76Men47npBl1g4TnZE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([87.78.190.74]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mlw3N-1o7vEZ2TLf-00izyL; Fri, 22
- Apr 2022 20:31:44 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 0/7] Nuvoton WPCM450 clock and reset driver
-Date:   Fri, 22 Apr 2022 20:30:05 +0200
-Message-Id: <20220422183012.444674-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
+        Fri, 22 Apr 2022 18:43:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12ABA178F41
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:43:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C789CB8327E
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 21:43:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78106C385AA;
+        Fri, 22 Apr 2022 21:43:00 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 17:42:58 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Cc:     <mingo@redhat.com>, <matthias.bgg@gmail.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <yj.chiang@mediatek.com>
+Subject: Re: [PATCH v3 1/2] tracing: Avoid adding tracer option before
+ update_tracer_options
+Message-ID: <20220422174258.1f41777a@gandalf.local.home>
+In-Reply-To: <20220323152257.7871-2-mark-pk.tsai@mediatek.com>
+References: <20220323152257.7871-1-mark-pk.tsai@mediatek.com>
+        <20220323152257.7871-2-mark-pk.tsai@mediatek.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:lUBjNycijZc1q4is3LS9ZHsMWEXwBBLNpAxLeKbzlS/j8Due5p2
- ljr6755Dqs0uo5UTwhnk2Ib3iRRxTbS5Smc24rInSA9LcKoMsBxfM3ZWZ/dVZ/wSUBKXWr6
- Xf+kT3a3SsjJBWESluVcRlWa6VD3IcYWQm9jGqM/0ZPIcNQa3SScSfnxtrXoqY6l8IdVyb3
- x7/RLynriNGKabyGwlBCA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IHcu07vI+r0=:ftzINHBaRsiwNBb4Ii7qFZ
- e6loVkQcZ1CYeY9+XTmcU1I3B3ksH6S0td2DzoUrYlGnRoVu+DUhaLaM+j4Li0zxoIcTpplDl
- R+XqCEUZ53w0Ee0HpuOgzq4bhxKj7P/osSSH/TKnOL/mEgSIJjvEC0QhamiZXgpPZ3mWvqMKR
- C3n8S5esU/xYPPxfuLE9ccIBeJeVgZcJzGwAIZSlx0Z5fz89ijugK065K4wP90Fi84XmhI6Fo
- DwNd2NylDyoSMufFth+1JBzjfG6kpVVOPZCdU4Il9bTMOFMIQ9ESoYQ95GJyBOLbh6DZ0Vjvi
- GcGFR7hqbMk7kq5PThv1r44UlQ6P1DqGlU6VTsgZ9QuAqeYk/DVQa1NUNGE7oI+9UR2Wpo9w1
- Ixs/Y7M/vXhG00vMcAvH5opd+kw07thxRhA2I6hX0XSX7MI6Ikjxf5zpTaA7G/xRHUtfT959V
- f3dMH+iMCEXQVHo8wsWHUV3vHmQkuo4GHEyjNAy9uCLko2V0ZCvMFOrzeMSRcQuq9pmkLTCyh
- mCJmyCsO0Q3TyVxSdxev9RLlNiV9UE77NhcfrGtFXlwv1Wk6daYIhTAzYYxz6x6jhtPoIaaq8
- NWl/6MdZOIiDumAmDMEDvk796WCMr/j+K3YSueC+pz8k3sXtgBUNlcbMVU+EaSHT8uCiomZ0T
- JKqL9qM2eTQA2sV/ze0IYAblIYcw1p4ZLtqs7Jm2wGq8SP2D1ok6qzJrKPVCaUmASLz7niRtW
- hYfHAjLZGd0rSEur92CG79sm0v0EqOlT+bG7uimDaX7nfF5IOI8EQ/TFLvpA02OusfKVvU6qW
- B+fMHHpWsNQXr9+9yYFnbNsCS8VDeDMyxwwBvwBuLNlZCcDcPRbWW2xI68cwq0Yjr5tNN6kWr
- nRQxNO7bfijbecvStWMHXz9JhnimyTIH2IoZbLhxAk7SDk8X5huW8a12eT88J9ybgvvzzT29L
- A2MzGdyvkCP8WKSPEZLjlnxTSsjt1wGZ12qx+FnXx4S+lZ9KJ03gZ42TNb6VwL6+qndS28Tyo
- Qkc1o9rt6op8eurWjqszM8dZvxNEE5IgVesnczDGjWU3YAZxHJpMuWj70z8iI5kuep6aR9uHa
- oB3Xi3d5P4WNmU=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for the clock and reset controller in the Nuvoton
-WPCM450 SoC. This means that the clock rates for peripherals will be calcu=
-lated
-automatically based on the clock tree as it was preconfigured by the bootl=
-oader.
-The 24 MHz dummy clock, that is currently in the devicetree, is no longer =
-needed.
-Somewhat unfortunately, this also means that there is a breaking change on=
-ce
-the devicetree starts relying on the clock driver, but I find it acceptabl=
-e in
-this case, because WPCM450 is still at a somewhat early stage.
+On Wed, 23 Mar 2022 23:22:56 +0800
+Mark-PK Tsai <mark-pk.tsai@mediatek.com> wrote:
+
+> To prepare for support asynchronous tracer_init_tracefs initcall,
+> avoid calling create_trace_option_files before __update_tracer_options.
+> Otherwise, create_trace_option_files will show warning because
+> some tracers in trace_types list are already in tr->topts.
+> 
+> For example, hwlat_tracer call register_tracer in late_initcall,
+> and global_trace.dir is already created in tracing_init_dentry,
+> hwlat_tracer will be put into tr->topts.
+> Then if the __update_tracer_options is executed after hwlat_tracer
+> registered, create_trace_option_files find that hwlat_tracer is
+> already in tr->topts.
+> 
+> Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+
+Before this patch:
+
+ # ls /sys/kernel/tracing/options
+annotate	   funcgraph-duration  hex		stacktrace
+bin		   funcgraph-irqs      irq-info		sym-addr
+blk_cgname	   funcgraph-overhead  latency-format	sym-offset
+blk_cgroup	   funcgraph-overrun   markers		sym-userobj
+blk_classic	   funcgraph-proc      overwrite	test_nop_accept
+block		   funcgraph-tail      pause-on-trace	test_nop_refuse
+context-info	   func-no-repeats     printk-msg-only	trace_printk
+disable_on_free    func_stack_trace    print-parent	userstacktrace
+display-graph	   function-fork       raw		verbose
+event-fork	   function-trace      record-cmd
+funcgraph-abstime  graph-time	       record-tgid
+funcgraph-cpu	   hash-ptr	       sleep-time
 
 
-Upstreaming plan (although other suggestions are welcome):
+After this patch:
 
-Once reviewed,
+ # ls /sys/kernel/tracing/options
+annotate      disable_on_free  irq-info         raw          trace_printk
+bin           display-graph    latency-format   record-cmd   userstacktrace
+blk_cgname    event-fork       markers          record-tgid  verbose
+blk_cgroup    function-fork    overwrite        stacktrace
+blk_classic   function-trace   pause-on-trace   sym-addr
+block         hash-ptr         printk-msg-only  sym-offset
+context-info  hex              print-parent     sym-userobj
 
-- The ARM/dts changes should go through Joel Stanley's bmc tree
-- The clocksource/timer changes should probably go via Daniel Lezcano and =
-TIP
-- The watchdog patch should go via the watchdog tree
-- The clock controller bindings and driver should go through the clk tree
-- It might make sense to delay the final ARM/dts patch ("ARM: dts: wpcm450=
-:
-  Switch clocks to clock controller") until next cycle to make sure it is
-  merged after the clock driver.
+Not good.
 
-Jonathan Neusch=C3=A4fer (7):
-  dt-bindings: timer: nuvoton,npcm7xx-timer: Allow specifying all clocks
-  clocksource: timer-npcm7xx: Enable timer 1 clock before use
-  watchdog: npcm: Enable clock if provided
-  dt-bindings: clock: Add Nuvoton WPCM450 clock/reset controller
-  ARM: dts: wpcm450: Add clock controller node
-  clk: wpcm450: Add Nuvoton WPCM450 clock/reset controller driver
-  ARM: dts: wpcm450: Switch clocks to clock controller
+> ---
+>  kernel/trace/trace.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+> index eb44418574f9..85ec758c4455 100644
+> --- a/kernel/trace/trace.c
+> +++ b/kernel/trace/trace.c
+> @@ -6317,12 +6317,18 @@ static void tracing_set_nop(struct trace_array *tr)
+>  	tr->current_trace = &nop_trace;
+>  }
+>  
+> +static bool tracer_options_updated;
+> +
+>  static void add_tracer_options(struct trace_array *tr, struct tracer *t)
+>  {
+>  	/* Only enable if the directory has been created already. */
+>  	if (!tr->dir)
+>  		return;
+>  
+> +	/* Only create trace option files after update_tracer_options finish */
+> +	if (!tracer_options_updated)
+> +		return;
+> +
+>  	create_trace_option_files(tr, t);
+>  }
+>  
+> @@ -9133,6 +9139,7 @@ static void update_tracer_options(struct trace_array *tr)
+>  {
+>  	mutex_lock(&trace_types_lock);
+>  	__update_tracer_options(tr);
+> +	tracer_options_updated = true;
 
- .../bindings/clock/nuvoton,wpcm450-clk.yaml   |  74 ++++
- .../bindings/timer/nuvoton,npcm7xx-timer.yaml |   8 +-
- arch/arm/boot/dts/nuvoton-wpcm450.dtsi        |  29 +-
- drivers/clk/Makefile                          |   1 +
- drivers/clk/clk-wpcm450.c                     | 378 ++++++++++++++++++
- drivers/clocksource/timer-npcm7xx.c           |  14 +-
- drivers/reset/Kconfig                         |   2 +-
- drivers/watchdog/npcm_wdt.c                   |   9 +
- .../dt-bindings/clock/nuvoton,wpcm450-clk.h   |  67 ++++
- 9 files changed, 572 insertions(+), 10 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,wpcm45=
-0-clk.yaml
- create mode 100644 drivers/clk/clk-wpcm450.c
- create mode 100644 include/dt-bindings/clock/nuvoton,wpcm450-clk.h
+I think you want to set this before the __update, as doing it after just
+makes the update a nop.
 
-=2D-
-2.35.1
+-- Steve
+
+
+>  	mutex_unlock(&trace_types_lock);
+>  }
+>  
 
