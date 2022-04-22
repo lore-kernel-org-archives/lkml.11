@@ -2,96 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B20C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F8C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446054AbiDVJgp (ORCPT
+        id S1446073AbiDVJhL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
+        Fri, 22 Apr 2022 05:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbiDVJgn (ORCPT
+        with ESMTP id S1352701AbiDVJhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:36:43 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3689527EE
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:33:48 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id y129so5417447qkb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:33:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3xbbjiZS8IMvesATR7m3IJgMWlJJ++cnKlBqL7PtE/I=;
-        b=n7kmRouItCvMnCGn6VeOCe2T+bA1ptgIMVX71sn+XusUp7H0uZbo1pW5riTC2DxdLC
-         bpBYIP8FzAx5VzLIgG8/kY0VbsQe3k7KRW9Gj45OHWpd88Y5GSpvJVwA/bGBNTDl4TTI
-         RmKa5X2mUYqXB78ErZpCCpu7dBtCjBLjivhwCtZJmCTPdFebYhWQEtPu9tZ/7mblW/D2
-         uJeUlst4D6hgXxzaUNpMTcNeikWAP+7BvACNOzQ2nA0OFCjgiwwVVWGi52xVtv2iJhlj
-         XieyXScIBMMdiqgXdIbKN4379kCRd1a+guzeR5HdeRKeomWGmXvQspBkteULPBD9ECl8
-         l8wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3xbbjiZS8IMvesATR7m3IJgMWlJJ++cnKlBqL7PtE/I=;
-        b=VPhSij2kbIg9xq5UsTyx8TcPMUReOKheVmszBWVfe8yJHus65pZSUugfRa4vn9iqfh
-         +YUqDy36fC3Zpy2EoZkVV1/XinC/S4dL3apDpGKWwiUgElTpVHt4Kn1hdbsJOL+249jv
-         GgtDUa1KOaSTajweK3rasLupgUjHz0cgjG1DiyBYJYcyL7qp8jSFpmvWdBt3iQ1w/T/P
-         TDTZOMrFlMYARIMDK0mLLSH0SAKlpnyKdZD2xJJunuG87sz/0xS48xCtDoRIq0EXVh/M
-         KyRppQpY6ZEiAMIU0Ibtg1tbw6c8vsjLjDH0XyqYG3P+n9Niem9IFMG0TOiRQMnObeiW
-         HcAw==
-X-Gm-Message-State: AOAM532++FHYHkpeLtV+HRgpe+uK27zdPFMDnQHWg6qwxf6ScZVY8mGl
-        0dpeKisCUjAc0UmAMbsd5m8=
-X-Google-Smtp-Source: ABdhPJxDccAT2Zd8xDVtpcRKTH5g1sNeZ1fwrl9KbrT1B10LwO0eIjROMwJYlGpRQzF591ZbCsFoAg==
-X-Received: by 2002:a37:9f96:0:b0:69e:abd9:f68b with SMTP id i144-20020a379f96000000b0069eabd9f68bmr1985315qke.773.1650620028121;
-        Fri, 22 Apr 2022 02:33:48 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id c136-20020a379a8e000000b0069e5df9d953sm687610qke.34.2022.04.22.02.33.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 02:33:47 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ran.jianping@zte.com.cn
-To:     nsaenz@kernel.org
-Cc:     bcm-kernel-feedback-list@broadcom.com, gregkh@linuxfoundation.org,
-        dan.carpenter@oracle.com, dave.stevenson@raspberrypi.com,
-        gascoar@gmail.com, ran.jianping@zte.com.cn,
-        xkernel.wang@foxmail.com, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] staging: vchiq:remove unneeded flush_workqueue
-Date:   Fri, 22 Apr 2022 09:33:40 +0000
-Message-Id: <20220422093340.2781311-1-ran.jianping@zte.com.cn>
+        Fri, 22 Apr 2022 05:37:09 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E463527EE
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:34:16 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kl8P74l4kzhY7q;
+        Fri, 22 Apr 2022 17:34:03 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 22 Apr 2022 17:34:14 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 22 Apr 2022 17:34:14 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] mm: rework calculation of bdi_min_ratio in bdi_set_min_ratio
+Date:   Fri, 22 Apr 2022 17:51:59 +0800
+Message-ID: <20220422095159.2858305-1-chenwandun@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ran jianping <ran.jianping@zte.com.cn>
+In function bdi_set_min_ratio, min_ratio is unsigned int, it will
+result underflow when setting min_ratio below bdi->min_ratio, it
+is confusing. Rework it, no functional change.
 
-All work currently pending will be done first by calling destroy_workqueue,
-so there is no need to flush it explicitly.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ran jianping <ran.jianping@zte.com.cn>
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
 ---
- drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c | 1 -
- 1 file changed, 1 deletion(-)
+ mm/page-writeback.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
-index 70c9d5544b56..249dd3e30c2f 100644
---- a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
-+++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
-@@ -1841,7 +1841,6 @@ int vchiq_mmal_finalise(struct vchiq_mmal_instance *instance)
- 	mutex_unlock(&instance->vchiq_mutex);
+diff --git a/mm/page-writeback.c b/mm/page-writeback.c
+index 438762173a59..d4291de77097 100644
+--- a/mm/page-writeback.c
++++ b/mm/page-writeback.c
+@@ -655,18 +655,25 @@ static unsigned int bdi_min_ratio;
  
- 	vchiq_shutdown(instance->vchiq_instance);
--	flush_workqueue(instance->bulk_wq);
- 	destroy_workqueue(instance->bulk_wq);
+ int bdi_set_min_ratio(struct backing_dev_info *bdi, unsigned int min_ratio)
+ {
++	unsigned int delta;
+ 	int ret = 0;
  
- 	idr_destroy(&instance->context_map);
+ 	spin_lock_bh(&bdi_lock);
+ 	if (min_ratio > bdi->max_ratio) {
+ 		ret = -EINVAL;
+ 	} else {
+-		min_ratio -= bdi->min_ratio;
+-		if (bdi_min_ratio + min_ratio < 100) {
+-			bdi_min_ratio += min_ratio;
+-			bdi->min_ratio += min_ratio;
++		if (min_ratio < bdi->min_ratio) {
++			delta = bdi->min_ratio - min_ratio;
++			bdi_min_ratio -= delta;
++			bdi->min_ratio = min_ratio;
+ 		} else {
+-			ret = -EINVAL;
++			delta = min_ratio - bdi->min_ratio;
++			if (bdi_min_ratio + delta < 100) {
++				bdi_min_ratio += delta;
++				bdi->min_ratio = min_ratio;
++			} else {
++				ret = -EINVAL;
++			}
+ 		}
+ 	}
+ 	spin_unlock_bh(&bdi_lock);
 -- 
 2.25.1
 
