@@ -2,86 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC92C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B68BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447797AbiDVNQh (ORCPT
+        id S1447799AbiDVNRP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        Fri, 22 Apr 2022 09:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447787AbiDVNQg (ORCPT
+        with ESMTP id S1447805AbiDVNRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:16:36 -0400
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEACC580DD;
-        Fri, 22 Apr 2022 06:13:40 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id D72BCC021; Fri, 22 Apr 2022 15:13:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1650633218; bh=arZcP3kJHlJ8SEpr6WdbTpaE0DnsvTOiOitkCJZmFdY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nOdC2T5Dhqaut2J004hiQt31EBBwPVxp4oWg4Uo09BZPaGDl5pAvDUOHBeTPD4PaD
-         ZiCWYJaQ6I3B6Jv0ZwE6JPtgwdtMZ0S265i0vpasipmMAF2trBzKDSQYmxfwhDGV5d
-         /0ZKJvj7jKnjJMTGPAsGdcvS/7GsX0yZ2DuO3EfVDJNTnXqawzTzOOtcLvhYHSgJFC
-         so7Z2+Y8TooRFvk/rHEFBlBweOH/Bvszu1Zs5CGl3vfNcfzstMDz82WFWOUSeddUbi
-         uueLLONEzLBvrbEXS2Gatke6dbOwF4Y7t879vjSFa2j7mISxG8PU0eW3R7iMoLSaUd
-         SlFVGxz/hzOBw==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id CC236C009;
-        Fri, 22 Apr 2022 15:13:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1650633218; bh=arZcP3kJHlJ8SEpr6WdbTpaE0DnsvTOiOitkCJZmFdY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nOdC2T5Dhqaut2J004hiQt31EBBwPVxp4oWg4Uo09BZPaGDl5pAvDUOHBeTPD4PaD
-         ZiCWYJaQ6I3B6Jv0ZwE6JPtgwdtMZ0S265i0vpasipmMAF2trBzKDSQYmxfwhDGV5d
-         /0ZKJvj7jKnjJMTGPAsGdcvS/7GsX0yZ2DuO3EfVDJNTnXqawzTzOOtcLvhYHSgJFC
-         so7Z2+Y8TooRFvk/rHEFBlBweOH/Bvszu1Zs5CGl3vfNcfzstMDz82WFWOUSeddUbi
-         uueLLONEzLBvrbEXS2Gatke6dbOwF4Y7t879vjSFa2j7mISxG8PU0eW3R7iMoLSaUd
-         SlFVGxz/hzOBw==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 9bea8e61;
-        Fri, 22 Apr 2022 13:13:30 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 22:13:15 +0900
-From:   asmadeus@codewreck.org
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark
- (was: 9p fscache Duplicate cookie detected))
-Message-ID: <YmKp68xvZEjBFell@codewreck.org>
-References: <YlySEa6QGmIHlrdG@codewreck.org>
- <YlyFEuTY7tASl8aY@codewreck.org>
- <1050016.1650537372@warthog.procyon.org.uk>
- <1817268.LulUJvKFVv@silver>
+        Fri, 22 Apr 2022 09:17:13 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36415580EC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:14:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650633259; x=1682169259;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7SBMJY2Qo5zlpc9kt8+bESQSdagf2RsT2Ca0UID8SSU=;
+  b=YqJxiqd+p2L4n8U8hbPPxqZ2izeksBHU3BRxbi0TXcYWh80aMsGXN8tz
+   Z9WPS25npO3NzjN9saA3X/HLp6WQdmeLypGRgUxaJB8S0bwy/drZSC8dX
+   4JKXN2ca54q/20i4g/fhpz/3/lTQ+ba8nZIyzxbuYki+RkWHR5UGPczjl
+   TQp0i8g5IMeOuP/YUYhErH5QkXQvc+b8tS7OwtrUfzT1xrK57dZuikKoF
+   ogtRdeteT7tobiaHpmvLnwaz+Cvok/0CYKheJ/eB9nkd/yBdv2MHUMV0C
+   riSqVifkQMWT30ddSaUrD+ivrmcaXlwuIYt4IB/sQ6YIIvrfQoLvj2xgb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262269295"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="262269295"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:14:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="511569890"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Apr 2022 06:14:17 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nht72-000A86-Di;
+        Fri, 22 Apr 2022 13:14:16 +0000
+Date:   Fri, 22 Apr 2022 21:13:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     YunQiang Su <yunqiang.su@cipunited.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: arch/mips/boot/compressed/../../lib/bswapdi.c:5:28: warning: no
+ previous prototype for function '__bswapdi2'
+Message-ID: <202204222130.Bc3dL9dC-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1817268.LulUJvKFVv@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christian Schoenebeck wrote on Thu, Apr 21, 2022 at 01:36:14PM +0200:
-> I hope this does not sound harsh, wouldn't it make sense to revert 
-> eb497943fa215897f2f60fd28aa6fe52da27ca6c for now until those issues are sorted 
-> out? My concern is that it might take a long time to address them, and these 
-> are not minor issues.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d569e86915b7f2f9795588591c8d5ea0b66481cb
+commit: 31b2f3dc851c65fee288612432c4fc956f1a264e MIPS: enable both vmlinux.gz.itb and vmlinuz for generic
+date:   4 months ago
+config: mips-randconfig-r003-20220422 (https://download.01.org/0day-ci/archive/20220422/202204222130.Bc3dL9dC-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=31b2f3dc851c65fee288612432c4fc956f1a264e
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 31b2f3dc851c65fee288612432c4fc956f1a264e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-I'm not sure that's possible at all, the related old fscache code has
-been ripped out since and just reverting won't work.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I'm also curious why that behavior changed though, I don't think the
-old code had any special handling of partially written pages either...
-Understanding that might give a key to a small quick fix.
+All warnings (new ones prefixed by >>):
+
+   In file included from arch/mips/boot/compressed/bswapdi.c:2:
+>> arch/mips/boot/compressed/../../lib/bswapdi.c:5:28: warning: no previous prototype for function '__bswapdi2' [-Wmissing-prototypes]
+   unsigned long long notrace __bswapdi2(unsigned long long u)
+                              ^
+   arch/mips/boot/compressed/../../lib/bswapdi.c:5:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   unsigned long long notrace __bswapdi2(unsigned long long u)
+   ^
+   static 
+   1 warning generated.
 
 
-It is quite a bad bug though and really wish I could give it the
-attention it deserves, early next month has a few holidays here
-hopefully I'll be able to look at it closer then :/
+vim +/__bswapdi2 +5 arch/mips/boot/compressed/../../lib/bswapdi.c
+
+1ee3630a3e57f3 Ralf Baechle 2015-09-29   4  
+aedcfbe06558a9 Harvey Hunt  2016-05-25  @5  unsigned long long notrace __bswapdi2(unsigned long long u)
+1ee3630a3e57f3 Ralf Baechle 2015-09-29   6  {
+1ee3630a3e57f3 Ralf Baechle 2015-09-29   7  	return (((u) & 0xff00000000000000ull) >> 56) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29   8  	       (((u) & 0x00ff000000000000ull) >> 40) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29   9  	       (((u) & 0x0000ff0000000000ull) >> 24) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  10  	       (((u) & 0x000000ff00000000ull) >>  8) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  11  	       (((u) & 0x00000000ff000000ull) <<  8) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  12  	       (((u) & 0x0000000000ff0000ull) << 24) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  13  	       (((u) & 0x000000000000ff00ull) << 40) |
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  14  	       (((u) & 0x00000000000000ffull) << 56);
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  15  }
+1ee3630a3e57f3 Ralf Baechle 2015-09-29  16  
+
+:::::: The code at line 5 was first introduced by commit
+:::::: aedcfbe06558a9f53002e82d5be64c6c94687726 MIPS: lib: Mark intrinsics notrace
+
+:::::: TO: Harvey Hunt <harvey.hunt@imgtec.com>
+:::::: CC: Ralf Baechle <ralf@linux-mips.org>
 
 -- 
-Dominique
+0-DAY CI Kernel Test Service
+https://01.org/lkp
