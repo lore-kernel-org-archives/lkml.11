@@ -2,292 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0261C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445546AbiDVIja (ORCPT
+        id S1445551AbiDVIji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39610 "EHLO
+        Fri, 22 Apr 2022 04:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbiDVIjY (ORCPT
+        with ESMTP id S232080AbiDVIjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:39:24 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556454925D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 01:36:31 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d15so9343670pll.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 01:36:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2ZaF+7x5j8EGvfZR/hPJBSSFpx+zcdUd34wqFnAI3iY=;
-        b=ucLp03ZekVES5pEcDMCxraT9TPuUq7R2oEVpMoIUWh6/+793pL+TrNflIJUbnI8UIu
-         tlDRDTXScif4ivk2JdkQvfdGtavOIDD/Zih09FBsu83DDO83LFziejuhUnJ40W1Q825b
-         oiCa0Omb364J8rMS96Et8ckM9yIQ5ik2AVokH0wpV5099iPETLKftnZmUog6XewuF1Lb
-         KYo2repqF1JT7Qx5iIPEZfPARwkTew5B9MmBPpr3kwzpgSPHhTSCrYTncbjwZD9dUYs5
-         GDA3ay7dXu4j5maDdkPCDyCCLwc8YfQal4w6V0g8TdojxsRwKtz4rUkze3K1meZNq9vB
-         g1uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2ZaF+7x5j8EGvfZR/hPJBSSFpx+zcdUd34wqFnAI3iY=;
-        b=WpdvNxOXwNyjfAfDerGSgTdyzq1TKjZoxspYnckgJTScjQ2D0rcUsNz8/J1cMzA8YS
-         FuB1d7n/TaUSS50ikxqO90uc0jAl5JkspcjUmLD7V82YfF0baSkcUWT9f1QJ0iTJtCvV
-         NavCRvZvmzlblUKLD5LLuwP0CwHu8jIIGfjUDud4i9u5l+5VILumNdTyGl4JINQ3AYoB
-         vL6JG2L8wywqsCwR6ZhRZPpn0omiuzI2CxFN9FfcfKwQgSS0hjZu4LPKhLCKY016mL7c
-         SeqUwvwLi08QtFT3A/H5Rfr4ijaLGN4FwZVNYKIgs+/M3BH9Kb02+K/6b5sGZLOqhrRa
-         b34Q==
-X-Gm-Message-State: AOAM531UvZkkPc2GShhx2nSCMcFPNxdbre1dOB00BiUBflEeo2ft18su
-        +knhMuCcYSDzOnQtHTE0uZcA4g==
-X-Google-Smtp-Source: ABdhPJxQLmaE8ktG45aZc7K3QwdXs61JjeSeX95gRatX5MpKUH7CX/ljXEirzTbLsYZ/Bb9JD10qcQ==
-X-Received: by 2002:a17:902:ef46:b0:153:81f7:7fc2 with SMTP id e6-20020a170902ef4600b0015381f77fc2mr3551999plx.26.1650616590806;
-        Fri, 22 Apr 2022 01:36:30 -0700 (PDT)
-Received: from [10.76.15.169] ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6664d26eesm1830537pfk.88.2022.04.22.01.36.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 01:36:30 -0700 (PDT)
-Message-ID: <67690268-0bd9-688e-8bf1-8df28351682e@bytedance.com>
-Date:   Fri, 22 Apr 2022 16:32:40 +0800
+        Fri, 22 Apr 2022 04:39:32 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546AB4927A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 01:36:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650616600; x=1682152600;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/jbnvAae4Y9tcP4ajJpbuxHnYYy09Lw/NhQP4GbUQcU=;
+  b=fiUYCRp4HoV1EFonJSwasuDiU2YJf7McLqZgQ+WGJyY/vwQUCiLPqtrr
+   QuD9o4Q7IDzCIUVoKnavY3l78C0PWTvNhAG7LoIHVI7R5uVYXRqbi1EwB
+   3eHD16SphkYnS7nDVIMWfGwAwXt96NFMmc8B26gyuXXtZ2OlWr/rXDx3f
+   T9QcMzlsw7RwnQo5gw8SFhARrDrC4sMOC+6l6jrt5dqrf7AbTSBRdJVx9
+   tiKtS8wNCrZYU+VqwUIxARq9ArI0sd9ococI6lrZJbawzSYLUxzvmAjve
+   8SuK9M+g9w/Hxl/8RnMDn2RCV7LiFPRXTc/1MY3DlJ2szqVYnusKJI648
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="351059033"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="351059033"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 01:36:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="671849670"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 22 Apr 2022 01:36:36 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhomK-0009vo-7G;
+        Fri, 22 Apr 2022 08:36:36 +0000
+Date:   Fri, 22 Apr 2022 16:35:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: drivers/net/wireless/ath/wcn36xx/smd.c:2921
+ wcn36xx_smd_gtk_offload_get_info_rsp() warn: inconsistent indenting
+Message-ID: <202204221657.8wmjvLQj-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Re: [PATCH v3 2/5] virtio-crypto: wait ctrl queue instead of busy
- polling
-Content-Language: en-US
-To:     Jason Wang <jasowang@redhat.com>, arei.gonglei@huawei.com,
-        mst@redhat.com
-Cc:     herbert@gondor.apana.org.au, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, helei.sig11@bytedance.com,
-        davem@davemloft.net
-References: <20220421104016.453458-1-pizhenwei@bytedance.com>
- <20220421104016.453458-3-pizhenwei@bytedance.com>
- <0cac99a6-8479-394b-4a0e-32df7c8af8d7@redhat.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <0cac99a6-8479-394b-4a0e-32df7c8af8d7@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/22/22 15:46, Jason Wang wrote:
-> 
-> 在 2022/4/21 18:40, zhenwei pi 写道:
->> Originally, after submitting request into virtio crypto control
->> queue, the guest side polls the result from the virt queue. This
->> works like following:
->>      CPU0   CPU1               ...             CPUx  CPUy
->>       |      |                                  |     |
->>       \      \                                  /     /
->>        \--------spin_lock(&vcrypto->ctrl_lock)-------/
->>                             |
->>                   virtqueue add & kick
->>                             |
->>                    busy poll virtqueue
->>                             |
->>                spin_unlock(&vcrypto->ctrl_lock)
->>                            ...
->>
->> There are two problems:
->> 1, The queue depth is always 1, the performance of a virtio crypto
->>     device gets limited. Multi user processes share a single control
->>     queue, and hit spin lock race from control queue. Test on Intel
->>     Platinum 8260, a single worker gets ~35K/s create/close session
->>     operations, and 8 workers get ~40K/s operations with 800% CPU
->>     utilization.
->> 2, The control request is supposed to get handled immediately, but
->>     in the current implementation of QEMU(v6.2), the vCPU thread kicks
->>     another thread to do this work, the latency also gets unstable.
->>     Tracking latency of virtio_crypto_alg_akcipher_close_session in 5s:
->>          usecs               : count     distribution
->>           0 -> 1          : 0        |                        |
->>           2 -> 3          : 7        |                        |
->>           4 -> 7          : 72       |                        |
->>           8 -> 15         : 186485   |************************|
->>          16 -> 31         : 687      |                        |
->>          32 -> 63         : 5        |                        |
->>          64 -> 127        : 3        |                        |
->>         128 -> 255        : 1        |                        |
->>         256 -> 511        : 0        |                        |
->>         512 -> 1023       : 0        |                        |
->>        1024 -> 2047       : 0        |                        |
->>        2048 -> 4095       : 0        |                        |
->>        4096 -> 8191       : 0        |                        |
->>        8192 -> 16383      : 2        |                        |
->>     This means that a CPU may hold vcrypto->ctrl_lock as long as 
->> 8192~16383us.
->>
->> To improve the performance of control queue, a request on control 
->> queue waits
->> completion instead of busy polling to reduce lock racing, and gets 
->> completed by
->> control queue callback.
->>      CPU0   CPU1               ...             CPUx  CPUy
->>       |      |                                  |     |
->>       \      \                                  /     /
->>        \--------spin_lock(&vcrypto->ctrl_lock)-------/
->>                             |
->>                   virtqueue add & kick
->>                             |
->>        ---------spin_unlock(&vcrypto->ctrl_lock)------
->>       /      /                                  \     \
->>       |      |                                  |     |
->>      wait   wait                               wait  wait
->>
->> Test this patch, the guest side get ~200K/s operations with 300% CPU
->> utilization.
->>
->> Cc: Michael S. Tsirkin <mst@redhat.com>
->> Cc: Jason Wang <jasowang@redhat.com>
->> Cc: Gonglei <arei.gonglei@huawei.com>
->> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
->> ---
->>   drivers/crypto/virtio/virtio_crypto_common.c | 42 +++++++++++++++-----
->>   drivers/crypto/virtio/virtio_crypto_common.h |  8 ++++
->>   drivers/crypto/virtio/virtio_crypto_core.c   |  2 +-
->>   3 files changed, 41 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/crypto/virtio/virtio_crypto_common.c 
->> b/drivers/crypto/virtio/virtio_crypto_common.c
->> index e65125a74db2..93df73c40dd3 100644
->> --- a/drivers/crypto/virtio/virtio_crypto_common.c
->> +++ b/drivers/crypto/virtio/virtio_crypto_common.c
->> @@ -8,14 +8,21 @@
->>   #include "virtio_crypto_common.h"
->> +static void virtio_crypto_ctrlq_callback(struct 
->> virtio_crypto_ctrl_request *vc_ctrl_req)
->> +{
->> +    complete(&vc_ctrl_req->compl);
->> +}
->> +
->>   int virtio_crypto_ctrl_vq_request(struct virtio_crypto *vcrypto, 
->> struct scatterlist *sgs[],
->>                     unsigned int out_sgs, unsigned int in_sgs,
->>                     struct virtio_crypto_ctrl_request *vc_ctrl_req)
->>   {
->>       int err;
->> -    unsigned int inlen;
->>       unsigned long flags;
->> +    init_completion(&vc_ctrl_req->compl);
->> +    vc_ctrl_req->ctrl_cb =  virtio_crypto_ctrlq_callback;
-> 
-> 
-> Is there a chance that the cb would not be virtio_crypto_ctrlq_callback()?
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d569e86915b7f2f9795588591c8d5ea0b66481cb
+commit: bedf1169bcae2f762b37d40dc9db648fe7ad1952 wcn36xx: Add GTK offload info to WoWLAN resume
+date:   10 months ago
+config: x86_64-randconfig-m001-20220418 (https://download.01.org/0day-ci/archive/20220422/202204221657.8wmjvLQj-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
 
-Yes, it's the only callback function used for control queue, removing 
-this and calling virtio_crypto_ctrlq_callback directly in 
-virtcrypto_ctrlq_callback seems better. I'll fix this in the next version.
-> 
->> +
->>       spin_lock_irqsave(&vcrypto->ctrl_lock, flags);
->>       err = virtqueue_add_sgs(vcrypto->ctrl_vq, sgs, out_sgs, in_sgs, 
->> vc_ctrl_req, GFP_ATOMIC);
->>       if (err < 0) {
->> @@ -24,16 +31,31 @@ int virtio_crypto_ctrl_vq_request(struct 
->> virtio_crypto *vcrypto, struct scatterl
->>       }
->>       virtqueue_kick(vcrypto->ctrl_vq);
->> -
->> -    /*
->> -     * Trapping into the hypervisor, so the request should be
->> -     * handled immediately.
->> -     */
->> -    while (!virtqueue_get_buf(vcrypto->ctrl_vq, &inlen) &&
->> -        !virtqueue_is_broken(vcrypto->ctrl_vq))
->> -        cpu_relax();
->> -
->>       spin_unlock_irqrestore(&vcrypto->ctrl_lock, flags);
->> +    wait_for_completion(&vc_ctrl_req->compl);
->> +
->>       return 0;
->>   }
->> +
->> +void virtcrypto_ctrlq_callback(struct virtqueue *vq)
->> +{
->> +    struct virtio_crypto *vcrypto = vq->vdev->priv;
->> +    struct virtio_crypto_ctrl_request *vc_ctrl_req;
->> +    unsigned long flags;
->> +    unsigned int len;
->> +
->> +    spin_lock_irqsave(&vcrypto->ctrl_lock, flags);
->> +    do {
->> +        virtqueue_disable_cb(vq);
->> +        while ((vc_ctrl_req = virtqueue_get_buf(vq, &len)) != NULL) {
->> +            spin_unlock_irqrestore(&vcrypto->ctrl_lock, flags);
->> +            if (vc_ctrl_req->ctrl_cb)
->> +                vc_ctrl_req->ctrl_cb(vc_ctrl_req);
->> +            spin_lock_irqsave(&vcrypto->ctrl_lock, flags);
->> +        }
->> +        if (unlikely(virtqueue_is_broken(vq)))
->> +            break;
->> +    } while (!virtqueue_enable_cb(vq));
->> +    spin_unlock_irqrestore(&vcrypto->ctrl_lock, flags);
->> +}
->> diff --git a/drivers/crypto/virtio/virtio_crypto_common.h 
->> b/drivers/crypto/virtio/virtio_crypto_common.h
->> index d2a20fe6e13e..25b4f22e8605 100644
->> --- a/drivers/crypto/virtio/virtio_crypto_common.h
->> +++ b/drivers/crypto/virtio/virtio_crypto_common.h
->> @@ -81,6 +81,10 @@ struct virtio_crypto_sym_session_info {
->>       __u64 session_id;
->>   };
->> +struct virtio_crypto_ctrl_request;
->> +typedef void (*virtio_crypto_ctrl_callback)
->> +        (struct virtio_crypto_ctrl_request *vc_ctrl_req);
->> +
->>   /*
->>    * Note: there are padding fields in request, clear them to zero 
->> before sending to host,
->>    * Ex, 
->> virtio_crypto_ctrl_request::ctrl::u::destroy_session::padding[48]
->> @@ -89,6 +93,8 @@ struct virtio_crypto_ctrl_request {
->>       struct virtio_crypto_op_ctrl_req ctrl;
->>       struct virtio_crypto_session_input input;
->>       struct virtio_crypto_inhdr ctrl_status;
->> +    virtio_crypto_ctrl_callback ctrl_cb;
->> +    struct completion compl;
->>   };
->>   struct virtio_crypto_request;
->> @@ -141,7 +147,9 @@ void virtio_crypto_skcipher_algs_unregister(struct 
->> virtio_crypto *vcrypto);
->>   int virtio_crypto_akcipher_algs_register(struct virtio_crypto 
->> *vcrypto);
->>   void virtio_crypto_akcipher_algs_unregister(struct virtio_crypto 
->> *vcrypto);
->> +void virtcrypto_ctrlq_callback(struct virtqueue *vq);
->>   int virtio_crypto_ctrl_vq_request(struct virtio_crypto *vcrypto, 
->> struct scatterlist *sgs[],
->>                     unsigned int out_sgs, unsigned int in_sgs,
->>                     struct virtio_crypto_ctrl_request *vc_ctrl_req);
->> +
-> 
-> 
-> Unnecessary changes.
-> 
-> Thanks
-> 
-> 
->>   #endif /* _VIRTIO_CRYPTO_COMMON_H */
->> diff --git a/drivers/crypto/virtio/virtio_crypto_core.c 
->> b/drivers/crypto/virtio/virtio_crypto_core.c
->> index c6f482db0bc0..e668d4b1bc6a 100644
->> --- a/drivers/crypto/virtio/virtio_crypto_core.c
->> +++ b/drivers/crypto/virtio/virtio_crypto_core.c
->> @@ -73,7 +73,7 @@ static int virtcrypto_find_vqs(struct virtio_crypto 
->> *vi)
->>           goto err_names;
->>       /* Parameters for control virtqueue */
->> -    callbacks[total_vqs - 1] = NULL;
->> +    callbacks[total_vqs - 1] = virtcrypto_ctrlq_callback;
->>       names[total_vqs - 1] = "controlq";
->>       /* Allocate/initialize parameters for data virtqueues */
-> 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+New smatch warnings:
+drivers/net/wireless/ath/wcn36xx/smd.c:2921 wcn36xx_smd_gtk_offload_get_info_rsp() warn: inconsistent indenting
+
+Old smatch warnings:
+drivers/net/wireless/ath/wcn36xx/smd.c:525 wcn36xx_smd_load_nv() error: we previously assumed 'wcn->nv' could be null (see line 516)
+drivers/net/wireless/ath/wcn36xx/smd.c:1908 wcn36xx_smd_send_beacon() warn: potential spectre issue 'msg_body.beacon' [w]
+
+vim +2921 drivers/net/wireless/ath/wcn36xx/smd.c
+
+  2896	
+  2897	static int wcn36xx_smd_gtk_offload_get_info_rsp(struct wcn36xx *wcn,
+  2898							struct ieee80211_vif *vif)
+  2899	{
+  2900		struct wcn36xx_vif *vif_priv = wcn36xx_vif_to_priv(vif);
+  2901		struct wcn36xx_hal_gtk_offload_get_info_rsp_msg *rsp;
+  2902		__be64 replay_ctr;
+  2903	
+  2904		if (wcn36xx_smd_rsp_status_check(wcn->hal_buf, wcn->hal_rsp_len))
+  2905			return -EIO;
+  2906	
+  2907		rsp = (struct wcn36xx_hal_gtk_offload_get_info_rsp_msg *)wcn->hal_buf;
+  2908	
+  2909		if (rsp->bss_index != vif_priv->bss_index) {
+  2910			wcn36xx_err("gtk_offload_info invalid response bss index %d\n",
+  2911				    rsp->bss_index);
+  2912			return -ENOENT;
+  2913		}
+  2914	
+  2915		if (vif_priv->rekey_data.replay_ctr != cpu_to_le64(rsp->key_replay_counter)) {
+  2916			replay_ctr = cpu_to_be64(rsp->key_replay_counter);
+  2917			vif_priv->rekey_data.replay_ctr =
+  2918				cpu_to_le64(rsp->key_replay_counter);
+  2919			ieee80211_gtk_rekey_notify(vif, vif->bss_conf.bssid,
+  2920						   (void *)&replay_ctr, GFP_KERNEL);
+> 2921			 wcn36xx_dbg(WCN36XX_DBG_HAL,
+  2922				     "GTK replay counter increment %llu\n",
+  2923				     rsp->key_replay_counter);
+  2924		}
+  2925	
+  2926		wcn36xx_dbg(WCN36XX_DBG_HAL,
+  2927			    "gtk offload info status %d last_rekey_status %d "
+  2928			    "replay_counter %llu total_rekey_count %d gtk_rekey_count %d "
+  2929			    "igtk_rekey_count %d bss_index %d\n",
+  2930			    rsp->status, rsp->last_rekey_status,
+  2931			    rsp->key_replay_counter, rsp->total_rekey_count,
+  2932			    rsp->gtk_rekey_count, rsp->igtk_rekey_count,
+  2933			    rsp->bss_index);
+  2934	
+  2935		return 0;
+  2936	}
+  2937	
 
 -- 
-zhenwei pi
+0-DAY CI Kernel Test Service
+https://01.org/lkp
