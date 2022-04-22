@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC253C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387183AbiDVKiQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
+        id S233903AbiDVKi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 06:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446693AbiDVKh5 (ORCPT
+        with ESMTP id S1446721AbiDVKiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:37:57 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF2AFFE;
-        Fri, 22 Apr 2022 03:35:04 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:35:01 -0000
+        Fri, 22 Apr 2022 06:38:04 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1943DFFE;
+        Fri, 22 Apr 2022 03:35:12 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 10:35:09 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650623702;
+        s=2020; t=1650623710;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vtPY+McC2X3GmLxhfhh8W+7jnWnYDzaFOqZql0H3+eA=;
-        b=eO8EEaGILApUtwdRUHubkYvE2AdP+YGg0nIcQUgtbvkL3syh8oxU+XNE1vBfbUGN2o0xbG
-        miEOpNfECjQxBKu79M0wwuq37/75Xgy/yhETjav5m8dWr16joW4HkjBQv0g8x8mdMHXjZo
-        IdLZADMd2YvDLRPOOxlPxz1D5hw1mvesSqDqOQuKkXWmON+Nctv37D8XzYzDXnPOOJbZSX
-        hmMYQ6s+H5GxgnE3yXDQnrG0V1NiFUfuqSFTow1vSj1npiKqDEGGIkxY5U85ywKa9bawLS
-        AKOCL79Gptl612ptXHGmEkydhiVuh28hlSayz8fF9JRwpa5IGDUJzP7ml5na7A==
+        bh=NOFSd7rbHEQFd/HFnNhB9bHsxoqiRUzgDAeYs8Oe4o4=;
+        b=0RTFvP0/kvxiZFMVn2E7Uj53VePk+/OJ3mRZ/1z4S7ZDPPFxSv0HNll4/BOAus986tQVRf
+        w6w2TA6m3REctsS8eHm/z68BTOkTA1mBkETJYDAOSx/20mrisD//gGbQc6XRJDvwji122s
+        EownN0mUwfwqGLIfeMW03ef7/n4lq83YuiMrKCfNO/o5H98fW0/aIEhK7Ju94tH3LEnmaH
+        dmF8SuIGTOAafGP8+JtSvsLQx4iQPk1i+1EXpRSD7ecVK537lHbBPQzeHtNbwpkykI9ZQi
+        f8+/Dirf7bn4A19WF5VCQ/KMlYi9C6nXtPwCH0exbCmb0d5BLIIFS3SBJiPpGA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650623702;
+        s=2020e; t=1650623710;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vtPY+McC2X3GmLxhfhh8W+7jnWnYDzaFOqZql0H3+eA=;
-        b=/mj8qvJ/TfIb3vNB1InQ9bFYg6I5l8i5yMp1yUcJ5Cs1JelT7jGk3FYFbiU2/rTpaktBTH
-        BI4UilKf6Gh1HKBg==
+        bh=NOFSd7rbHEQFd/HFnNhB9bHsxoqiRUzgDAeYs8Oe4o4=;
+        b=s/1GUisZBSplbmENbEGu6Fj8tBbHEObpEGdlAKB2nxVOkAbs2qWDcrQh9sX4uHK9V6lvyk
+        S1g2yEpdWCPPSTBQ==
 From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: objtool/core] objtool: Make stack validation frame-pointer-specific
+Subject: [tip: objtool/core] libsubcmd: Fix OPTION_GROUP sorting
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Miroslav Benes <mbenes@suse.cz>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <f563fa064b3b63d528de250c72012d49e14742a3.1650300597.git.jpoimboe@redhat.com>
-References: <f563fa064b3b63d528de250c72012d49e14742a3.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <e167ea3a11e2a9800eb062c1fd0f13e9cd05140c.1650300597.git.jpoimboe@redhat.com>
+References: <e167ea3a11e2a9800eb062c1fd0f13e9cd05140c.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165062370171.4207.2165496648398690010.tip-bot2@tip-bot2>
+Message-ID: <165062370967.4207.4014236875289539210.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,110 +62,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the objtool/core branch of tip:
 
-Commit-ID:     72064474964724c59ddff58a581a31b1ede75cf9
-Gitweb:        https://git.kernel.org/tip/72064474964724c59ddff58a581a31b1ede75cf9
+Commit-ID:     aa3d60e050112ef1373d7216eabe0ee966615527
+Gitweb:        https://git.kernel.org/tip/aa3d60e050112ef1373d7216eabe0ee966615527
 Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:37 -07:00
+AuthorDate:    Mon, 18 Apr 2022 09:50:21 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 22 Apr 2022 12:32:03 +02:00
+CommitterDate: Fri, 22 Apr 2022 12:32:01 +02:00
 
-objtool: Make stack validation frame-pointer-specific
+libsubcmd: Fix OPTION_GROUP sorting
 
-Now that CONFIG_STACK_VALIDATION is frame-pointer specific, do the same
-for the '--stackval' option.  Now the '--no-fp' option is redundant and
-can be removed.
+The OPTION_GROUP option type is a way of grouping certain options
+together in the printed usage text.  It happens to be completely broken,
+thanks to the fact that the subcmd option sorting just sorts everything,
+without regard for grouping.  Luckily, nobody uses this option anyway,
+though that will change shortly.
+
+Fix it by sorting each group individually.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/f563fa064b3b63d528de250c72012d49e14742a3.1650300597.git.jpoimboe@redhat.com
+Link: https://lkml.kernel.org/r/e167ea3a11e2a9800eb062c1fd0f13e9cd05140c.1650300597.git.jpoimboe@redhat.com
 ---
- scripts/Makefile.build                  | 1 -
- scripts/link-vmlinux.sh                 | 4 ----
- tools/objtool/builtin-check.c           | 3 +--
- tools/objtool/check.c                   | 4 ++--
- tools/objtool/include/objtool/builtin.h | 1 -
- 5 files changed, 3 insertions(+), 10 deletions(-)
+ tools/lib/subcmd/parse-options.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 0f73e02..6eb99cb 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -235,7 +235,6 @@ objtool_args =								\
- 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
- 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
- 	$(if $(part-of-module), --module)				\
--	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
- 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
+diff --git a/tools/lib/subcmd/parse-options.c b/tools/lib/subcmd/parse-options.c
+index 39ebf61..9fa7594 100644
+--- a/tools/lib/subcmd/parse-options.c
++++ b/tools/lib/subcmd/parse-options.c
+@@ -806,9 +806,9 @@ static int option__cmp(const void *va, const void *vb)
  
- cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 5101a7f..1be0116 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -155,10 +155,6 @@ objtool_link()
+ static struct option *options__order(const struct option *opts)
+ {
+-	int nr_opts = 0, len;
++	int nr_opts = 0, nr_group = 0, len;
+ 	const struct option *o = opts;
+-	struct option *ordered;
++	struct option *opt, *ordered, *group;
  
- 	if [ -n "${objtoolopt}" ]; then
+ 	for (o = opts; o->type != OPTION_END; o++)
+ 		++nr_opts;
+@@ -819,7 +819,18 @@ static struct option *options__order(const struct option *opts)
+ 		goto out;
+ 	memcpy(ordered, opts, len);
  
--		if ! is_enabled CONFIG_FRAME_POINTER; then
--			objtoolopt="${objtoolopt} --no-fp"
--		fi
--
- 		if is_enabled CONFIG_GCOV_KERNEL; then
- 			objtoolopt="${objtoolopt} --no-unreachable"
- 		fi
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index d4e6930..30971cc 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -39,7 +39,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN('o', "orc", &opts.orc, "generate ORC metadata"),
- 	OPT_BOOLEAN('r', "retpoline", &opts.retpoline, "validate and annotate retpoline usage"),
- 	OPT_BOOLEAN('l', "sls", &opts.sls, "validate straight-line-speculation mitigations"),
--	OPT_BOOLEAN('s', "stackval", &opts.stackval, "validate stack unwinding rules"),
-+	OPT_BOOLEAN('s', "stackval", &opts.stackval, "validate frame pointer rules"),
- 	OPT_BOOLEAN('u', "uaccess", &opts.uaccess, "validate uaccess rules for SMAP"),
- 	OPT_CALLBACK_OPTARG(0, "dump", NULL, NULL, "orc", "dump metadata", parse_dump),
- 
-@@ -49,7 +49,6 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN(0, "dry-run", &opts.dryrun, "don't write modifications"),
- 	OPT_BOOLEAN(0, "lto", &opts.lto, "whole-archive like runs"),
- 	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
--	OPT_BOOLEAN(0, "no-fp", &opts.no_fp, "skip frame pointer validation"),
- 	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
- 	OPT_BOOLEAN(0, "sec-address", &opts.sec_address, "print section addresses in warnings"),
- 	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 27126ff..3e02126 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2806,7 +2806,7 @@ static int update_cfi_state(struct instruction *insn,
- 		}
- 
- 		/* detect when asm code uses rbp as a scratch register */
--		if (!opts.no_fp && insn->func && op->src.reg == CFI_BP &&
-+		if (opts.stackval && insn->func && op->src.reg == CFI_BP &&
- 		    cfa->base != CFI_BP)
- 			cfi->bp_scratch = true;
- 		break;
-@@ -3279,7 +3279,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 			if (ret)
- 				return ret;
- 
--			if (!opts.no_fp && func && !is_fentry_call(insn) &&
-+			if (opts.stackval && func && !is_fentry_call(insn) &&
- 			    !has_valid_stack_frame(&state)) {
- 				WARN_FUNC("call without frame pointer save/setup",
- 					  sec, insn->offset);
-diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 8618585..24a7ff4 100644
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -27,7 +27,6 @@ struct opts {
- 	bool dryrun;
- 	bool lto;
- 	bool module;
--	bool no_fp;
- 	bool no_unreachable;
- 	bool sec_address;
- 	bool stats;
+-	qsort(ordered, nr_opts, sizeof(*o), option__cmp);
++	/* sort each option group individually */
++	for (opt = group = ordered; opt->type != OPTION_END; opt++) {
++		if (opt->type == OPTION_GROUP) {
++			qsort(group, nr_group, sizeof(*opt), option__cmp);
++			group = opt + 1;
++			nr_group = 0;
++			continue;
++		}
++		nr_group++;
++	}
++	qsort(group, nr_group, sizeof(*opt), option__cmp);
++
+ out:
+ 	return ordered;
+ }
