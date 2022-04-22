@@ -2,213 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4569C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbiDVF7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 01:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40532 "EHLO
+        id S232895AbiDVGAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 02:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbiDVF7l (ORCPT
+        with ESMTP id S232867AbiDVGAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 01:59:41 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0634F9CC
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:56:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YL+1MVBao09sISNnlJENAIM+BosBamZqmvJrA5sETc9u/QTj3s2EfPxQM+aiX8gZI5GALTHlQ9twGJZqOuanyU0G4AucIg/fsx0bT02V5JiZwOri3aCZLT2AcBtJC7+jIi/PxsWb3DPdahzqOjxCs1lyEu0qtXoX3Z9DFvJyXt08/Q33S2rd4nmHSIkR9e9KlwO2il7YznhYEXaN6FpEZf0SWLwgxdZOIhX7NqyHxExLFcbevHHrGu/oN4ySN8CdKtKTQOn+xaEMJAJtPDk4880Ekm3Gp1B3nOezo+768tZ5UPSqB6FSxpaKD8HZovLr/Op1TJ07JUc5Xkih+om3Eg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rpZcvwAuknmWY6JauQ6sNBC0ZbTS5OQb+1lSzSQg9Bs=;
- b=R/mZtUMVboRKUhR2Ybsz+ImmNKP2Pf0XTe8Dtn+FsPV3pHvMFUvJrfPI09bLqqD4kD1RgcGOnAyjW/2OocNFn+ugwzwooMYpXM2e0udnbQ2qDhg8YREtI9rUr45n8taNS+D+NSo5HCVj/i8qhQr2NomPOsX6YS/bclSQqbZ+0OXTaWZuO73akEalIOPDU13fsMnI1Gfy1m+AbD4T7bfwyHcfBPuqOGf/D9oRpUDYFm1fX7pXioYqyY7ePuHi2pwUsYzoTPFKTrbnwL24CXYhLc5VKMQOMjc6IE+3b3/ek4HUNt6eTJSaxgwfCDbg3/y1dPuPCuUF2OiJ/4X8jLp9Vg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kvack.org smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rpZcvwAuknmWY6JauQ6sNBC0ZbTS5OQb+1lSzSQg9Bs=;
- b=QF0WU3XQ6vuk2U7yKieyHAk+iQLTZYjV0+8b/cvLjIG+EIYwvySh2IQ5gWAgSutho1BoOZcOcnbgUWEbufPKPIj6zH72bUsS9SAM2vIzKEvdey5Ahug8c/8DjDBfddyUsG9gfOHcd6wZsdRLmqJ8X/AO3Pqd8eBo5BFSSuR+6n5a5+zYP/mjoMUaCCphUG3G2FiIasPl8XWe3jFHzjIjSAEF0hkM2RD7SCR+yeD8lsrO8W9PGkOC5jG7YxFXE30/cPgW8lVljyyqyfNbApklu1ft71kMpyWYPYASFpfYi6YvxApiJjcO+cxAiPaL2dHPK0lOpSz6jqgSRvEyZu2T1w==
-Received: from DM6PR03CA0066.namprd03.prod.outlook.com (2603:10b6:5:100::43)
- by DM4PR12MB6301.namprd12.prod.outlook.com (2603:10b6:8:a5::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Fri, 22 Apr
- 2022 05:56:47 +0000
-Received: from DM6NAM11FT004.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:100:cafe::64) by DM6PR03CA0066.outlook.office365.com
- (2603:10b6:5:100::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15 via Frontend
- Transport; Fri, 22 Apr 2022 05:56:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- DM6NAM11FT004.mail.protection.outlook.com (10.13.172.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5186.14 via Frontend Transport; Fri, 22 Apr 2022 05:56:46 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 22 Apr
- 2022 05:56:46 +0000
-Received: from [10.110.48.28] (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 21 Apr
- 2022 22:56:45 -0700
-Message-ID: <398cae59-b4c7-19d5-af67-6f36546fce01@nvidia.com>
-Date:   Thu, 21 Apr 2022 22:56:59 -0700
+        Fri, 22 Apr 2022 02:00:18 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7657F4F9D3
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:57:21 -0700 (PDT)
+X-UUID: a9986424912d4c1f949925f5bc60b0ea-20220422
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:e6c3c661-54aa-4302-901a-34cec739af94,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:7ae4bcef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: a9986424912d4c1f949925f5bc60b0ea-20220422
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2032270726; Fri, 22 Apr 2022 13:57:16 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 22 Apr 2022 13:57:15 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 22 Apr 2022 13:57:15 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        YC Hung <yc.hung@mediatek.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        <sound-open-firmware@alsa-project.org>,
+        <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v1 2/4] ASoC: SOF: mediatek: Add mt8186 sof fw loader and dsp ops
+Date:   Fri, 22 Apr 2022 13:56:57 +0800
+Message-ID: <20220422055659.8738-3-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.15.GIT
+In-Reply-To: <20220422055659.8738-1-tinghan.shen@mediatek.com>
+References: <20220422055659.8738-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] mm/gup: fix comments to pin_user_pages_*()
-Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Minchan Kim <minchan@kernel.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220422015839.1274328-1-yury.norov@gmail.com>
-From:   John Hubbard <jhubbard@nvidia.com>
-In-Reply-To: <20220422015839.1274328-1-yury.norov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fccc2cf2-a6fd-420b-cf1f-08da2424e2f0
-X-MS-TrafficTypeDiagnostic: DM4PR12MB6301:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB6301766963980C8103DC51D4A8F79@DM4PR12MB6301.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V+6Rmvg5VS4FhuKIGDZ6pW+CIQrL945Yni9bUGJK2A1r+jWC6Hwa9FRc+R+K6gXMR+lZ+3Kn1m7g6OyQvvTBzpdWDx1abFGa+/sf0queY0U9GbquWVnYV100B3ZPn2az4HoradbPw5RW+y7tJfIdIIndgLkZWdbIllR/7TgoWIPjx0sRM67qe8quOlSTNbEfjZzPA0lyohKXeXi6zyboSWKkeRYZU3SxadW/+NzqMUAVc3rFA9Cqbeb/dyA/ifABRe1ngxyT12eszFlLcBW55QuCnBD21Bdk3mBOvXOLobnBIZY3sWgtkz0m9AZTEO0/1LDhuGCKQoYtIapPai7bn37UGa2vnWLVxG5qFOqucE+Q1wW8rOeNqfv+4r76hLLp/zI0EQ7DuT6K4rjhoLPqghdt0PxYdhq1YgQwp8ey59kLYhv/EkRp+gE7kz2glBc0lkgJQAiaBCLQrAugKVxg7wmv+JkfMELopRyQIdep30xAJv0aO/+F7oMGvRTJ6jS9LaJVaTWPG0KLd8N2nu54xaAcNILO57ic23QH6YMGNs1i9GSehcxRTpUjJGxnBJ1rkn7FUDoeZfsJZHaZ7XWzg1dOXzHQ2r/XFwRLKwfKPbuu09zY6Suewkd3mqOeehWaS2YRRl9rm39IgNp0EDpvtXivybdtiU7IPI8xXwUj1k6+TgsQ355lJlNfQhLlgMmeZbHzsrb3G131ayn07cD+/G0MI5xZ1y7fvSRcOmihVNCA6qgTzD4fKmMRSzDbDGNoKRXQC0JQ6/S+b6sZjZ0SVPpyoYvXsQNlhKn+y/UO3MiBmc84hpdwWtuqpClne90n1CzHLHFTxBmeLix4JgExxO7bGs4EOFkr36oZ/eVRG6gFdvtjl7GGSz+pu/6k6Jr9/kJWi1aS2lVsyg/Egffejw==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(26005)(31696002)(966005)(86362001)(53546011)(6666004)(508600001)(2906002)(36860700001)(356005)(5660300002)(81166007)(8936002)(83380400001)(2616005)(40460700003)(70206006)(16526019)(186003)(336012)(47076005)(426003)(316002)(70586007)(110136005)(31686004)(82310400005)(8676002)(36756003)(16576012)(36900700001)(2101003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 05:56:46.9951
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fccc2cf2-a6fd-420b-cf1f-08da2424e2f0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT004.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6301
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/21/22 18:58, Yury Norov wrote:
-> pin_user_pages API forces FOLL_PIN in gup_flags, which means that the
-> API requires struct page **pages to be provided (not NULL). However, the
-> comment to pin_user_pages() clearly allows for passing in a NULL @pages
-> argument.
-> 
-> Remove the incorrect comments, and add WARN_ON_ONCE(!pages) calls to
-> enforce the API.
-> 
-> It has been independently spotted by Minchan Kim and confirmed with
-> John Hubbard:
-> 
-> https://lore.kernel.org/all/YgWA0ghrrzHONehH@google.com/
-> 
-> CC: Minchan Kim <minchan@kernel.org>
-> CC: John Hubbard <jhubbard@nvidia.com>
-> Signed-off-by: Yury Norov (NVIDIA) <yury.norov@gmail.com>
-> ---
+Add mt8186-loader module with ops callback to load and run firmware
+on mt8186 SoC.
 
-Looks good. Please feel free to add:
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Yaochun Hung <yc.hung@mediatek.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+---
+ sound/soc/sof/mediatek/mt8186/Makefile        |  2 +-
+ sound/soc/sof/mediatek/mt8186/mt8186-loader.c | 53 +++++++++++++++++++
+ sound/soc/sof/mediatek/mt8186/mt8186.c        | 18 +++++++
+ sound/soc/sof/mediatek/mt8186/mt8186.h        |  3 ++
+ 4 files changed, 75 insertions(+), 1 deletion(-)
+ create mode 100644 sound/soc/sof/mediatek/mt8186/mt8186-loader.c
 
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-
-
-thanks,
+diff --git a/sound/soc/sof/mediatek/mt8186/Makefile b/sound/soc/sof/mediatek/mt8186/Makefile
+index e0e971c17d5e..03a12f2096f9 100644
+--- a/sound/soc/sof/mediatek/mt8186/Makefile
++++ b/sound/soc/sof/mediatek/mt8186/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+-snd-sof-mt8186-objs := mt8186.o
++snd-sof-mt8186-objs := mt8186.o mt8186-loader.o
+ obj-$(CONFIG_SND_SOC_SOF_MT8186) += snd-sof-mt8186.o
+ 
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-loader.c b/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
+new file mode 100644
+index 000000000000..6ab4921b1010
+--- /dev/null
++++ b/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
+@@ -0,0 +1,53 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
++//
++// Copyright (c) 2022 Mediatek Corporation. All rights reserved.
++//
++// Author: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
++//         Tinghan Shen <tinghan.shen@mediatek.com>
++//
++// Hardware interface for mt8186 DSP code loader
++
++#include <sound/sof.h>
++#include "mt8186.h"
++#include "../../ops.h"
++
++void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
++{
++	/* set RUNSTALL to stop core */
++	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
++				RUNSTALL, RUNSTALL);
++
++	/* set core boot address */
++	snd_sof_dsp_write(sdev, DSP_SECREG_BAR, ADSP_ALTVEC_C0, boot_addr);
++	snd_sof_dsp_write(sdev, DSP_SECREG_BAR, ADSP_ALTVECSEL, ADSP_ALTVECSEL_C0);
++
++	/* assert core reset */
++	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_CFGREG_SW_RSTN,
++				SW_RSTN_C0 | SW_DBG_RSTN_C0,
++				SW_RSTN_C0 | SW_DBG_RSTN_C0);
++
++	/* hardware requirement */
++	udelay(1);
++
++	/* release core reset */
++	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_CFGREG_SW_RSTN,
++				SW_RSTN_C0 | SW_DBG_RSTN_C0,
++				0);
++
++	/* clear RUNSTALL (bit31) to start core */
++	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
++				RUNSTALL, 0);
++}
++
++void sof_hifixdsp_shutdown(struct snd_sof_dev *sdev)
++{
++	/* set RUNSTALL to stop core */
++	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
++				RUNSTALL, RUNSTALL);
++
++	/* assert core reset */
++	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_CFGREG_SW_RSTN,
++				SW_RSTN_C0 | SW_DBG_RSTN_C0,
++				SW_RSTN_C0 | SW_DBG_RSTN_C0);
++}
++
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.c b/sound/soc/sof/mediatek/mt8186/mt8186.c
+index 60021195e0b5..892cd7d79994 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.c
+@@ -204,6 +204,17 @@ static int adsp_shared_base_ioremap(struct platform_device *pdev, void *data)
+ 	return 0;
+ }
+ 
++static int mt8186_run(struct snd_sof_dev *sdev)
++{
++	u32 adsp_bootup_addr;
++
++	adsp_bootup_addr = SRAM_PHYS_BASE_FROM_DSP_VIEW;
++	dev_dbg(sdev->dev, "HIFIxDSP boot from base : 0x%08X\n", adsp_bootup_addr);
++	sof_hifixdsp_boot_sequence(sdev, adsp_bootup_addr);
++
++	return 0;
++}
++
+ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
+ {
+ 	struct platform_device *pdev = container_of(sdev->dev, struct platform_device, dev);
+@@ -272,6 +283,7 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
+ 
+ static int mt8186_dsp_remove(struct snd_sof_dev *sdev)
+ {
++	sof_hifixdsp_shutdown(sdev);
+ 	adsp_sram_power_off(sdev);
+ 
+ 	return 0;
+@@ -289,6 +301,9 @@ static struct snd_sof_dsp_ops sof_mt8186_ops = {
+ 	.probe		= mt8186_dsp_probe,
+ 	.remove		= mt8186_dsp_remove,
+ 
++	/* DSP core boot */
++	.run		= mt8186_run,
++
+ 	/* Block IO */
+ 	.block_read	= sof_block_read,
+ 	.block_write	= sof_block_write,
+@@ -302,6 +317,9 @@ static struct snd_sof_dsp_ops sof_mt8186_ops = {
+ 	/* misc */
+ 	.get_bar_index	= mt8186_get_bar_index,
+ 
++	/* firmware loading */
++	.load_firmware	= snd_sof_load_firmware_memcpy,
++
+ 	/* Firmware ops */
+ 	.dsp_arch_ops = &sof_xtensa_arch_ops,
+ 
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.h b/sound/soc/sof/mediatek/mt8186/mt8186.h
+index 40ea7cb9295b..df52ae9659e4 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.h
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.h
+@@ -10,6 +10,7 @@
+ #define __MT8186_H
+ 
+ struct mtk_adsp_chip_info;
++struct snd_sof_dev;
+ 
+ #define DSP_REG_BAR			4
+ #define DSP_SECREG_BAR			5
+@@ -74,4 +75,6 @@ struct mtk_adsp_chip_info;
+ #define SIZE_SHARED_DRAM_UL			0x40000 /*Shared buffer for Uplink*/
+ #define TOTAL_SIZE_SHARED_DRAM_FROM_TAIL	(SIZE_SHARED_DRAM_DL + SIZE_SHARED_DRAM_UL)
+ 
++void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr);
++void sof_hifixdsp_shutdown(struct snd_sof_dev *sdev);
+ #endif
 -- 
-John Hubbard
-NVIDIA
-
-> 
-> v1: https://lore.kernel.org/linux-mm/92a2715c-3c98-251d-9195-872d1cf01f9d@nvidia.com/#t
-> v2: Remove comment for WARN_ON_ONCE() and reword commit message.
->    
->   mm/gup.c | 21 +++++++++++++++++----
->   1 file changed, 17 insertions(+), 4 deletions(-)
-> 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index f598a037eb04..b1e96b6192de 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -2871,6 +2871,9 @@ int pin_user_pages_fast(unsigned long start, int nr_pages,
->   	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
->   		return -EINVAL;
->   
-> +	if (WARN_ON_ONCE(!pages))
-> +		return -EINVAL;
-> +
->   	gup_flags |= FOLL_PIN;
->   	return internal_get_user_pages_fast(start, nr_pages, gup_flags, pages);
->   }
-> @@ -2893,6 +2896,9 @@ int pin_user_pages_fast_only(unsigned long start, int nr_pages,
->   	 */
->   	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
->   		return 0;
-> +
-> +	if (WARN_ON_ONCE(!pages))
-> +		return 0;
->   	/*
->   	 * FOLL_FAST_ONLY is required in order to match the API description of
->   	 * this routine: no fall back to regular ("slow") GUP.
-> @@ -2920,8 +2926,7 @@ EXPORT_SYMBOL_GPL(pin_user_pages_fast_only);
->    * @nr_pages:	number of pages from start to pin
->    * @gup_flags:	flags modifying lookup behaviour
->    * @pages:	array that receives pointers to the pages pinned.
-> - *		Should be at least nr_pages long. Or NULL, if caller
-> - *		only intends to ensure the pages are faulted in.
-> + *		Should be at least nr_pages long.
->    * @vmas:	array of pointers to vmas corresponding to each page.
->    *		Or NULL if the caller does not require them.
->    * @locked:	pointer to lock flag indicating whether lock is held and
-> @@ -2944,6 +2949,9 @@ long pin_user_pages_remote(struct mm_struct *mm,
->   	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
->   		return -EINVAL;
->   
-> +	if (WARN_ON_ONCE(!pages))
-> +		return -EINVAL;
-> +
->   	gup_flags |= FOLL_PIN;
->   	return __get_user_pages_remote(mm, start, nr_pages, gup_flags,
->   				       pages, vmas, locked);
-> @@ -2957,8 +2965,7 @@ EXPORT_SYMBOL(pin_user_pages_remote);
->    * @nr_pages:	number of pages from start to pin
->    * @gup_flags:	flags modifying lookup behaviour
->    * @pages:	array that receives pointers to the pages pinned.
-> - *		Should be at least nr_pages long. Or NULL, if caller
-> - *		only intends to ensure the pages are faulted in.
-> + *		Should be at least nr_pages long.
->    * @vmas:	array of pointers to vmas corresponding to each page.
->    *		Or NULL if the caller does not require them.
->    *
-> @@ -2976,6 +2983,9 @@ long pin_user_pages(unsigned long start, unsigned long nr_pages,
->   	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
->   		return -EINVAL;
->   
-> +	if (WARN_ON_ONCE(!pages))
-> +		return -EINVAL;
-> +
->   	gup_flags |= FOLL_PIN;
->   	return __gup_longterm_locked(current->mm, start, nr_pages,
->   				     pages, vmas, gup_flags);
-> @@ -2994,6 +3004,9 @@ long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
->   	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
->   		return -EINVAL;
->   
-> +	if (WARN_ON_ONCE(!pages))
-> +		return -EINVAL;
-> +
->   	gup_flags |= FOLL_PIN;
->   	return get_user_pages_unlocked(start, nr_pages, pages, gup_flags);
->   }
+2.18.0
 
