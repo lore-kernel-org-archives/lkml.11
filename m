@@ -2,132 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448779AbiDVOla (ORCPT
+        id S1448774AbiDVOnl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
+        Fri, 22 Apr 2022 10:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444460AbiDVOl2 (ORCPT
+        with ESMTP id S233505AbiDVOnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:41:28 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621015BE45;
-        Fri, 22 Apr 2022 07:38:35 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ebf4b91212so87470967b3.8;
-        Fri, 22 Apr 2022 07:38:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y0Vftok5Nvg9cisIqL5OFcU6eRNBtw4NVj7c2gCi/PY=;
-        b=xNBx5ixEw9m0VQD0QmEuq2v1scW9Rdq/IViSkIFqkLsJar+psOm4l6VvlQBBxwcLpr
-         7+DFFbeTKP9czNVSKLIN4s19UZLhT+UYrMonc15/sZlAanQ9fyGsQ1zzraTxW4sy3GsK
-         55SteBudpS4QhrE+0JmmKnOAm2V6mXhxsmhNa/CxtDi5jeGG/NLR5dlEJzoVl6kY5E9J
-         9z/Ljl4686uxpjInGdB8hq1ycrlABYSjnD8lLFVdUG4jeXk3vbGmhdRz5aKi5ysxik6W
-         xJw2y9jDLwSGRt2NaMqqxVlkjEMpNaN5+GGj3EYwQpxLf16lU6KEaaDdbhbamm+PCvPA
-         RGAg==
-X-Gm-Message-State: AOAM533HaJOUdnJnFr4ieV8VBbJPbnBcfIYzgIJFauL1K480X63eO4ff
-        KpUdN8GYJsC5+NV0Ftc+e7R2JdsTV+8oO2JYNm8=
-X-Google-Smtp-Source: ABdhPJwtcD+GP67nrddpykrQMidPY41LYes/g/zoTRBXgWrqje6WF7feM6ueQL6pY/H9+15vshyAMAKhw+xg5vCnPAw=
-X-Received: by 2002:a81:1096:0:b0:2ec:4a46:7e5a with SMTP id
- 144-20020a811096000000b002ec4a467e5amr5328668ywq.196.1650638314653; Fri, 22
- Apr 2022 07:38:34 -0700 (PDT)
+        Fri, 22 Apr 2022 10:43:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD135BE58
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:40:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5147604EF
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:40:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66EDC385A4;
+        Fri, 22 Apr 2022 14:40:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650638445;
+        bh=MYOgwWbfG5bkafDdMryKHBx4bZzP6zWaU7pqVa4fSeU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2cqtaxk446CcosqemMNM2QZCQrAWhOe4SetSJj8PSVEekW2A6l/qwYlHo0Og+hrcR
+         GjzpEwIs6WT4jzG2l/owuBWRsgqvxIvwC0e/TFmdhDocTI8pyMeDt5Vz3NetqOcxdl
+         FGgyCm/rddtlLUpAlPoBhRcHU1NZAgk693ADHsbk=
+Date:   Fri, 22 Apr 2022 16:40:42 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Adrien Thierry <athierry@redhat.com>
+Cc:     Maxime Ripard <mripard@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] staging: bcm2835-audio: delete TODO
+Message-ID: <YmK+aiaaVLtadGVT@kroah.com>
+References: <20220420174401.305964-1-athierry@redhat.com>
 MIME-Version: 1.0
-References: <20220420191541.99528-1-schspa@gmail.com>
-In-Reply-To: <20220420191541.99528-1-schspa@gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 22 Apr 2022 16:38:23 +0200
-Message-ID: <CAJZ5v0guPiGx-ZnC0RcqVgDEp0bh4DcKC7QYjjO0PF_3kHdVGg@mail.gmail.com>
-Subject: Re: [PATCH] cpufreq: fix race on cpufreq online
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220420174401.305964-1-athierry@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 9:16 PM Schspa Shi <schspa@gmail.com> wrote:
->
-> When cpufreq online failed, policy->cpus are not empty while
-> cpufreq sysfs file available, we may access some data freed.
->
-> Take policy->clk as an example:
->
-> static int cpufreq_online(unsigned int cpu)
-> {
->   ...
->   // policy->cpus != 0 at this time
->   down_write(&policy->rwsem);
->   ret = cpufreq_add_dev_interface(policy);
->   up_write(&policy->rwsem);
->
->   return 0;
->
-> out_destroy_policy:
->         for_each_cpu(j, policy->real_cpus)
->                 remove_cpu_dev_symlink(policy, get_cpu_device(j));
->     up_write(&policy->rwsem);
-> ...
-> out_exit_policy:
->   if (cpufreq_driver->exit)
->     cpufreq_driver->exit(policy);
->       clk_put(policy->clk);
->       // policy->clk is a wild pointer
-> ...
->                                     ^
->                                     |
->                             Another process access
->                             __cpufreq_get
->                               cpufreq_verify_current_freq
->                                 cpufreq_generic_get
->                                   // acces wild pointer of policy->clk;
->                                     |
->                                     |
-> out_offline_policy:                 |
->   cpufreq_policy_free(policy);      |
->     // deleted here, and will wait for no body reference
->     cpufreq_policy_put_kobj(policy);
-> }
->
-> Signed-off-by: Schspa Shi <schspa@gmail.com>
+On Wed, Apr 20, 2022 at 01:44:00PM -0400, Adrien Thierry wrote:
+> Delete TODO since all tasks were completed:
+> 
+> 1 - fixed here:
+> https://lore.kernel.org/all/20220408150359.26661-1-athierry@redhat.com/
+> 
+> 2 - there are no remaining checkpatch.pl errors or warnings
+> 
+> Signed-off-by: Adrien Thierry <athierry@redhat.com>
 > ---
->  drivers/cpufreq/cpufreq.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> index 80f535cc8a75..0d58b0f8f3af 100644
-> --- a/drivers/cpufreq/cpufreq.c
-> +++ b/drivers/cpufreq/cpufreq.c
-> @@ -1533,8 +1533,6 @@ static int cpufreq_online(unsigned int cpu)
->         for_each_cpu(j, policy->real_cpus)
->                 remove_cpu_dev_symlink(policy, get_cpu_device(j));
->
-> -       up_write(&policy->rwsem);
+>  drivers/staging/vc04_services/bcm2835-audio/TODO | 10 ----------
+>  1 file changed, 10 deletions(-)
+>  delete mode 100644 drivers/staging/vc04_services/bcm2835-audio/TODO
+> 
+> diff --git a/drivers/staging/vc04_services/bcm2835-audio/TODO b/drivers/staging/vc04_services/bcm2835-audio/TODO
+> deleted file mode 100644
+> index b85451255db0..000000000000
+> --- a/drivers/staging/vc04_services/bcm2835-audio/TODO
+> +++ /dev/null
+> @@ -1,10 +0,0 @@
+> -*****************************************************************************
+> -*                                                                           *
+> -*                           TODO: BCM2835-AUDIO                             *
+> -*                                                                           *
+> -*****************************************************************************
 > -
->  out_offline_policy:
->         if (cpufreq_driver->offline)
->                 cpufreq_driver->offline(policy);
-> @@ -1543,6 +1541,9 @@ static int cpufreq_online(unsigned int cpu)
->         if (cpufreq_driver->exit)
->                 cpufreq_driver->exit(policy);
->
-> +       cpumask_clear(policy->cpus);
-> +       up_write(&policy->rwsem);
+> -1) Revisit multi-cards options and PCM route mixer control (as per comment
+> -https://lore.kernel.org/lkml/s5hd0to5598.wl-tiwai@suse.de)
+> -
+> -2) Fix the remaining checkpatch.pl errors and warnings.
+> -- 
+> 2.35.1
+> 
+> 
 
-This change is correct AFAICS, but it doesn't really fix the race,
-because show_cpuinfo_cur_freq() uses __cpufreq_get() directly without
-locking.
+Great, so now it can be merged to the real part of the kernel?  If not,
+what's left for that to happen?
 
-It should use cpufreq_get() instead.
+thanks,
 
-> +
->  out_free_policy:
->         cpufreq_policy_free(policy);
->         return ret;
-> --
+greg k-h
