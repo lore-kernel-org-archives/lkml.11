@@ -2,148 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75270C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01A0C43219
 	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232545AbiDVSB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
+        id S233888AbiDVSBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236634AbiDVR7f (ORCPT
+        with ESMTP id S237150AbiDVR7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:59:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AC15106DFE
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650650124;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qS1z2/5qHncMhjCwTTUMd4XpJC28UxMysCRYKxl364Y=;
-        b=J66E4tkcIy/Abi3Y04N9oV4oZAyKTzJ/bWugg29obP9HJtmhCGlPMlanMWTUTBTM0l84bf
-        Mtusob3fwEmGroAi3WnvPuWel8FNdSioU+4zGCylaiLrF8hyKXiFapcxsRvRV4jSgtR4N0
-        We/yGHgETiWjWIYnOZktq2Fi0ZHaz5w=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-348-P8-jhN5nNM-Q7Ua_XHxdiw-1; Fri, 22 Apr 2022 13:41:40 -0400
-X-MC-Unique: P8-jhN5nNM-Q7Ua_XHxdiw-1
-Received: by mail-wm1-f70.google.com with SMTP id h65-20020a1c2144000000b0038e9ce3b29cso6316908wmh.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:41:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=qS1z2/5qHncMhjCwTTUMd4XpJC28UxMysCRYKxl364Y=;
-        b=wqbvmbGtFxWreAZL97c5WwEimzvbiey/qvq5HVGP2ZAfslBDAopVgjphowsBAQDzKN
-         CfcvsmB0YuhyXCz+nWg+Oc2y0Q6M9uAxBD5Zsx4tcZ9JiWvVlaupRQ/530lzaCtxB6h7
-         dSgC/7vnMzx1SAG+72yRMb5lih+hsLksIhkYzalgvuAcc1xjwCUJ0pBLls2AHt+Ke6Dl
-         Yj4U4GPJUn+FZontZWGnK8XMXGRlOsVYQF+48aAAwqwxY17EUMR2i0C+qOnTJL7hwx6S
-         LmHDqSDnGdyaw8M63focQemE6zOXZll7LUBFriktC6Y2uD7lbVPv31NtsCYlYlK/3BG1
-         GciQ==
-X-Gm-Message-State: AOAM530SKq1yPjL81KnayeUlf1e9BHtnbUQMrDz9nFjatm6ih4LxKU8/
-        1YucS+1TXvpgIAcgAQpcx3PZKJJtYgOql9XSX48RTPyv2f5u2UbuvF3xHLqXYw2VJUQ3mnGeH3b
-        OBwkdsJ398pzeQeWC68KnWZ1C
-X-Received: by 2002:a7b:c205:0:b0:38e:b6b4:ed90 with SMTP id x5-20020a7bc205000000b0038eb6b4ed90mr5289991wmi.51.1650649298833;
-        Fri, 22 Apr 2022 10:41:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwt73hO3Dy97LGUolcZvHHAxZgmOvXPUbuwOME5mBJ6jfcifPO0j4OjUm4GxUQAhhZyN0MblA==
-X-Received: by 2002:a7b:c205:0:b0:38e:b6b4:ed90 with SMTP id x5-20020a7bc205000000b0038eb6b4ed90mr5289976wmi.51.1650649298584;
-        Fri, 22 Apr 2022 10:41:38 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c702:dd00:745e:20b7:bfa4:2e5f? (p200300cbc702dd00745e20b7bfa42e5f.dip0.t-ipconnect.de. [2003:cb:c702:dd00:745e:20b7:bfa4:2e5f])
-        by smtp.gmail.com with ESMTPSA id u5-20020adfed45000000b00207a480e6aasm2161989wro.116.2022.04.22.10.41.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 10:41:38 -0700 (PDT)
-Message-ID: <8aafe4ad-81a6-31a5-c95a-ce2943bf0525@redhat.com>
-Date:   Fri, 22 Apr 2022 19:41:37 +0200
+        Fri, 22 Apr 2022 13:59:54 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41EDE7897;
+        Fri, 22 Apr 2022 10:56:58 -0700 (PDT)
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 23MHuSvD011330;
+        Sat, 23 Apr 2022 02:56:29 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 23MHuSvD011330
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1650650189;
+        bh=gk07vilBCiMI29TG7qTdTVlHsDhJg3HiwHT6cJ72G38=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=fAg5O2gdGVHY4nbbdUmmUdG5mXC8/4MQCXmNdC4ja0d+hmwZe3CxVp1hxdFqxdHhs
+         Me4a4s6iWqATyZAlMExpIyN//XKR0Bg9vmUG2oztwirNLCmM8ITY6CWFUlx64FLxZo
+         CTOoB8dXGkBaFnTfl8TIY/op63JtE8k5r/+MDmWGDTBJvEYg22dcrmHe/rP5HvN2u/
+         m9Qu0biYqE4GYO+t57YzwIjfcQaQVYi6hSJckJDJRlyiNALH0oKKwvaZLxOEuShuP8
+         FQNvQWxvt0Flh4w+ATPSy9Ml2rebSkjvv0YdOWdJbfPdyPGNrrmk3jB/fhNGlJqSsj
+         rGxwAlRpFl54Q==
+X-Nifty-SrcIP: [209.85.210.178]
+Received: by mail-pf1-f178.google.com with SMTP id c1so2136975pfo.0;
+        Fri, 22 Apr 2022 10:56:29 -0700 (PDT)
+X-Gm-Message-State: AOAM5318QQehN3KDLA2mAGZksmGa4z3CPi+aADeHBtggp/NsmmApZ6BT
+        64GN1oF2z3sSzVayocyehyj7Dc55QOkIWN+awTs=
+X-Google-Smtp-Source: ABdhPJwd35httsCgLSN0X0xVey2bXAULqz0Uhk5NAIucoZobWBuOO55vYgY7fw+tZaguODtqvHUQz0wbbT9VmbGyrYU=
+X-Received: by 2002:a05:6a00:a02:b0:4fd:f9dd:5494 with SMTP id
+ p2-20020a056a000a0200b004fdf9dd5494mr6119706pfh.68.1650650188191; Fri, 22 Apr
+ 2022 10:56:28 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH RFC 2/4] mm, personality: Implement
- memory-deny-write-execute as a personality flag
-Content-Language: en-US
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Lennart Poettering <lennart@poettering.net>,
-        =?UTF-8?Q?Zbigniew_J=c4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Szabolcs Nagy <Szabolcs.Nagy@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jeremy Linton <Jeremy.Linton@arm.com>,
-        Topi Miettinen <toiwoton@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-abi-devel@lists.sourceforge.net" 
-        <linux-abi-devel@lists.sourceforge.net>
-References: <20220413134946.2732468-1-catalin.marinas@arm.com>
- <20220413134946.2732468-3-catalin.marinas@arm.com>
- <443d978a-7092-b5b1-22f3-ae3a997080ad@redhat.com> <YmKDaEaOpOaKl7m9@arm.com>
- <59401856-0e45-0ee6-1e45-667c8e00cf21@redhat.com> <YmKptQoIw2mkGdic@arm.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YmKptQoIw2mkGdic@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220422090505.551472-1-ldewangan@nvidia.com>
+In-Reply-To: <20220422090505.551472-1-ldewangan@nvidia.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sat, 23 Apr 2022 02:55:28 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARLFQdm+2Ka=0U1sX9LXyqCRb3ohzjPmg3Lpfs-ZEbz7A@mail.gmail.com>
+Message-ID: <CAK7LNARLFQdm+2Ka=0U1sX9LXyqCRb3ohzjPmg3Lpfs-ZEbz7A@mail.gmail.com>
+Subject: Re: [PATCH V1 1/1] scripts/Kbuild: Add path of fixeddep script
+To:     Laxman Dewangan <ldewangan@nvidia.com>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22.04.22 15:12, Catalin Marinas wrote:
-> On Fri, Apr 22, 2022 at 01:04:31PM +0200, David Hildenbrand wrote:
->> On 22.04.22 12:28, Catalin Marinas wrote:
->>> On Thu, Apr 21, 2022 at 06:37:49PM +0100, David Hildenbrand wrote:
->>>> Note that in the (FOLL_WRITE|FOLL_FORCE) we only require VM_MAYWRITE on
->>>> the vma and trigger a write fault. As the VMA is not VM_WRITE, we won't
->>>> actually map the PTE writable, but set it dirty. GUP will retry, find a
->>>> R/O pte that is dirty and where it knows that it broke COW and will
->>>> allow the read access, although the PTE is R/O.
->>>>
->>>> That mechanism is required to e.g., set breakpoints in R/O MAP_PRIVATE
->>>> kernel sections, but it's used elsewhere for page pinning as well.
->>>>
->>>> My gut feeling is that GUP(FOLL_WRITE|FOLL_FORCE) could be used right
->>>> now to bypass that mechanism, I might be wrong.
->>>
->>> GUP can be used to bypass this. But if an attacker can trigger such GUP
->>> paths via a syscall (e.g. ptrace(PTRACE_POKEDATA)), I think we need the
->>> checks on those paths (and reject the syscall) rather than on
->>> mmap/mprotect(). This would be covered by something like CAP_SYS_PTRACE.
->>
->> I was told that RDMA uses FOLL_FORCE|FOLL_WRITE and is available to
->> unprivileged users.
-> 
-> Ah, do they really need this? At a quick search, ib_umem_get() for
-> example:
-> 
-> 	unsigned int gup_flags = FOLL_WRITE;
-> 	...
-> 	if (!umem->writable)
-> 		gup_flags |= FOLL_FORCE;
-> 
-> I guess with a new MDWE flag we can make the GUP code ignore FOLL_FORCE
-> if VM_EXEC.
-> 
+On Fri, Apr 22, 2022 at 6:05 PM Laxman Dewangan <ldewangan@nvidia.com> wrote:
+>
+> Add path of the fixdep script from the object tree.
+> This will make the path of script absolute rather than
+> relative and execute the command from makefile from any
+> location.
 
-It's, for example, required when you have a MAP_PRIVATE but PROT_READ
-mapping and want to take a reliable R/O (!) pin. Without
-FOLL_FORCE|FOLL_WRITE you'd be pinning a (shared zeropage, pagecache)
-page that will get replaced by an anonymous page in the COW handler,
-after mprotect(PROT_READ|PROT_WRITE) followed by a write access. That
-was an issue for RDMA in the past, that's why we have that handling in
-place IIRC.
 
-Yes, it's ugly.
+
+Why is this necessary?
+
+Also, this patch does not make anything.
+$(objtree)/ is still a relative path.
+See the top Makefile.
+
+
+
+>
+> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+> ---
+>  scripts/Kbuild.include | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
+> index cdec22088423e..e07e9265829f8 100644
+> --- a/scripts/Kbuild.include
+> +++ b/scripts/Kbuild.include
+> @@ -147,7 +147,7 @@ if_changed_dep = $(if $(if-changed-cond),$(cmd_and_fixdep),@:)
+>
+>  cmd_and_fixdep =                                                             \
+>         $(cmd);                                                              \
+> -       scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
+> +       $(objtree)/scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
+>         rm -f $(depfile)
+>
+>  # Usage: $(call if_changed_rule,foo)
+> --
+> 2.17.1
+>
+
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Best Regards
+Masahiro Yamada
