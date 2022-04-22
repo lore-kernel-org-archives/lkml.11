@@ -2,212 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39AEAC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239278AbiDVM7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        id S1385908AbiDVM7N (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 08:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233935AbiDVM6w (ORCPT
+        with ESMTP id S234011AbiDVM7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:58:52 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB8B40E60
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:55:58 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id w194so8900239oiw.11
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:55:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tNoQl+sfpyAeueHKt3p64baur4SRIlT3Mj6rERAMI1U=;
-        b=ji65TxCA3tmlfdVknwpKYywGb2HaRNRxSvUyvFDLl9DdADHkKFKtq/axLT5OWcQLXR
-         VBbUdCpfytKzdayozh+lb3fjIFUqs9q1pmdG6fgRgGyXB9haX4xZcM42qJmEIy3ZKCa5
-         pJQUR/2S8ratEbnuZSzo65Oc7Nu9AgV3JKJYRTigF/y98eSK03Z4VJuX/Z5OQjlONBtl
-         FSp8g+0TY/bxP/AicBw7hgDrSSYCY/k4SBA9IKGPAaFX5METAsqmej7aLmAhkkQkTwQV
-         Ng+GESGZ0bmX2vj3jiBKYh+ZsnkuivOFECYqCgXhnQN53JahE35kNOtRUSMSVLoOyhdj
-         HnEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tNoQl+sfpyAeueHKt3p64baur4SRIlT3Mj6rERAMI1U=;
-        b=PHaAReFwOH0TCrNqz0Lu1HMMRipcAd/FppqzvwVxnazb1IWKb2291YEyWV74IcMUSY
-         aDirXECKRjU2gseb5knijlyAARfAqq8HROQX+3qN5Li6M432BtWlujdvUWRb5rqQk1a5
-         LS4GCJIWcO0rlHT/1rT7PTMSIu6gow46l8fvReS0ETM6ulSMGNRKbYiWJ0Z7cbGrTeno
-         2TxhZn9TipzYtG+BR1p9OdYtvxtGrQsoFWNh4eJNVbOK2SPukMj3Lf+mfKPp1T2tJWCM
-         MKwVtXNAOv6e5EBbExkpaMvbSNDXc/h+RIJpgjEI56ITRVzrmeAYQVFSmyKpZTC9Mheb
-         WHbA==
-X-Gm-Message-State: AOAM533jpgemCFIio8kVYwu2z+l7xVMSJqAtJHrLtPC9TPeftmzY9lca
-        lXV+IzJe37fASgtg9dKF1zE=
-X-Google-Smtp-Source: ABdhPJyJrr0CiATpo13Emrrr6nQwwKUUt71Wrui52IDGpgAulqrm9p4NhEldrtfJveTtJYcerJqKGQ==
-X-Received: by 2002:aca:a907:0:b0:322:6cd9:2533 with SMTP id s7-20020acaa907000000b003226cd92533mr6447627oie.74.1650632158209;
-        Fri, 22 Apr 2022 05:55:58 -0700 (PDT)
-Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id e47-20020a9d01b2000000b006058d31851esm339289ote.77.2022.04.22.05.55.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 05:55:57 -0700 (PDT)
-From:   Rebecca Mckeever <remckee0@gmail.com>
-To:     outreachy@lists.linux.dev
-Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Rebecca Mckeever <remckee0@gmail.com>
-Subject: [PATCH v2 4/4] memblock tests: update style of comments for memblock_free_*() functions
-Date:   Fri, 22 Apr 2022 07:55:38 -0500
-Message-Id: <4952e3dce1147685a7ad0ae41287348e9e3f7f68.1650631746.git.remckee0@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1650631746.git.remckee0@gmail.com>
-References: <cover.1650631746.git.remckee0@gmail.com>
+        Fri, 22 Apr 2022 08:59:06 -0400
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 05:56:11 PDT
+Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DB45FE3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:56:10 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 9660 invoked from network); 22 Apr 2022 14:49:28 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1650631768; bh=FzlZWuqpqT4dYFKX9UTFhTlZBNM1KD7eyT6+7FMZ7dE=;
+          h=From:To:Cc:Subject;
+          b=LX5BduKUebu3hJxINq1D1+qf6qLFbjcnrYFczjeHyWDF21d4ZNp3KMtgh/ZO59IuW
+           176w9+1k6cc3bY3PnD0nfiFiQidj2elSJVZ1gPG49qhwkrp3Hsni6a56uNDGC0iBii
+           vi71ZUiwj/gEayxBxzHj38pEctRjyTe2f1jKp4fU=
+Received: from unknown (HELO kicinski-fedora-PC1C0HJN) (kubakici@wp.pl@[163.114.132.6])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <kvalo@kernel.org>; 22 Apr 2022 14:49:28 +0200
+Date:   Fri, 22 Apr 2022 05:49:19 -0700
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Bernard Zhao <zhaojunkui2008@126.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bernard@vivo.com
+Subject: Re: [PATCH] mediatek/mt7601u: add debugfs exit function
+Message-ID: <20220422054919.6f056300@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <87k0bhmuh6.fsf@kernel.org>
+References: <20220422070325.465918-1-zhaojunkui2008@126.com>
+        <87k0bhmuh6.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: cfadbedbb822125ed36bbc0826aae61a
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000A [4eNk]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update comments in memblock_free_*() functions to match the style used
-in tests/alloc_*.c by rewording to make the expected outcome more apparent
-and, if more than one memblock is involved, adding a visual of the
-memory blocks.
+On Fri, 22 Apr 2022 10:45:57 +0300 Kalle Valo wrote:
+> > When mt7601u loaded, there are two cases:
+> > First when mt7601u is loaded, in function mt7601u_probe, if
+> > function mt7601u_probe run into error lable err_hw,
+> > mt7601u_cleanup didn`t cleanup the debugfs node.
+> > Second when the module disconnect, in function mt7601u_disconnect,
+> > mt7601u_cleanup didn`t cleanup the debugfs node.
+> > This patch add debugfs exit function and try to cleanup debugfs
+> > node when mt7601u loaded fail or unloaded.
 
-If the comment has an extra column of spaces, remove the extra space at
-the beginning of each line for consistency and to conform to Linux kernel
-coding style.
+Is this actually needed?  Looks like wireless has a wiphy debugfs dir
+now, so the entire thing should get removed recursively when probe
+fails. The driver is not doing anything special.
 
-Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
----
- tools/testing/memblock/tests/basic_api.c | 90 ++++++++++++++++++------
- 1 file changed, 69 insertions(+), 21 deletions(-)
-
-diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-index 08847dc5065e..f646350d370e 100644
---- a/tools/testing/memblock/tests/basic_api.c
-+++ b/tools/testing/memblock/tests/basic_api.c
-@@ -806,10 +806,17 @@ static int memblock_remove_checks(void)
- /*
-  * A simple test that tries to free a memory block that was marked earlier
-  * as reserved. By "freeing" a region we mean overwriting it with the next
-- * entry in memblock.reserved. To check this is the case, the test reserves
-- * two memory regions and verifies that the value of the latter was used to
-- * erase r1 region.
-- * The test also checks if the region counter and total size were updated.
-+ * entry in memblock.reserved:
-+ *
-+ *  |              ......           +----+ |
-+ *  |              : r1 :           | r2 | |
-+ *  +--------------+----+-----------+----+-+
-+ *                                  ^
-+ *                                  |
-+ *                                  rgn.base
-+ *
-+ * Expect to reserve two memory regions and then erase r1 region with the
-+ * value of r2. The region counter and total size are updated.
-  */
- static int memblock_free_simple_check(void)
- {
-@@ -840,11 +847,22 @@ static int memblock_free_simple_check(void)
- 	return 0;
- }
- 
-- /*
--  * A test that tries to free a region that was not marked as reserved
--  * (i.e. has no corresponding entry in memblock.reserved). It verifies
--  * that array, regions counter and total size were not modified.
--  */
-+/*
-+ * A test that tries to free a region that was not marked as reserved
-+ * (i.e. has no corresponding entry in memblock.reserved):
-+ *
-+ *                     +----------------+
-+ *                     |       r2       |
-+ *                     +----------------+
-+ *  |  +----+                              |
-+ *  |  | r1 |                              |
-+ *  +--+----+------------------------------+
-+ *     ^
-+ *     |
-+ *     rgn.base
-+ *
-+ * The array, regions counter and total size are not modified.
-+ */
- static int memblock_free_absent_check(void)
- {
- 	struct memblock_region *rgn;
-@@ -875,10 +893,22 @@ static int memblock_free_absent_check(void)
- 
- /*
-  * A test that tries to free a region which overlaps with the beginning of
-- * the already existing entry r1 (that is r1.base < r2.base + r2.size). It
-- * checks if only the intersection of both regions is freed. The test also
-- * checks if the regions counter and total size are updated to expected
-- * values.
-+ * the already existing entry r1 (that is r1.base < r2.base + r2.size):
-+ *
-+ *     +----+
-+ *     | r2 |
-+ *     +----+
-+ *  |    ...+--------------+               |
-+ *  |    :  |    r1        |               |
-+ *  +----+--+--------------+---------------+
-+ *       ^  ^
-+ *       |  |
-+ *       |  rgn.base
-+ *       |
-+ *       r1.base
-+ *
-+ * Expect that only the intersection of both regions is freed. The
-+ * regions counter and total size are updated.
-  */
- static int memblock_free_overlap_top_check(void)
- {
-@@ -913,9 +943,17 @@ static int memblock_free_overlap_top_check(void)
- 
- /*
-  * A test that tries to free a region which overlaps with the end of the
-- * first entry (that is r2.base < r1.base + r1.size). It checks if only the
-- * intersection of both regions is freed. The test also checks if the
-- * regions counter and total size are updated to expected values.
-+ * first entry (that is r2.base < r1.base + r1.size):
-+ *
-+ *                   +----------------+
-+ *                   |       r2       |
-+ *                   +----------------+
-+ *  |    +-----------+.....                |
-+ *  |    |       r1  |    :                |
-+ *  +----+-----------+----+----------------+
-+ *
-+ * Expect that only the intersection of both regions is freed. The
-+ * regions counter and total size are updated.
-  */
- static int memblock_free_overlap_bottom_check(void)
- {
-@@ -951,11 +989,21 @@ static int memblock_free_overlap_bottom_check(void)
- /*
-  * A test that tries to free a region which is within the range of the
-  * already existing entry (that is
-- * (r1.base < r2.base) && (r2.base + r2.size < r1.base + r1.size)).
-- * It checks if the region is split into two - one that ends at r2.base and
-- * second that starts at r2.base + size, with appropriate sizes. It is
-- * expected that the region counter and total size fields were updated t
-- * reflect that change.
-+ * (r1.base < r2.base) && (r2.base + r2.size < r1.base + r1.size)):
-+ *
-+ *                    +----+
-+ *                    | r2 |
-+ *                    +----+
-+ *  |    +------------+....+---------------+
-+ *  |    |    rgn1    | r1 |     rgn2      |
-+ *  +----+------------+----+---------------+
-+ *       ^
-+ *       |
-+ *       r1.base
-+ *
-+ * Expect that the region is split into two - one that ends at r2.base and
-+ * another that starts at r2.base + size, with appropriate sizes. The
-+ * region counter and total size fields are updated.
-  */
- static int memblock_free_within_check(void)
- {
--- 
-2.32.0
-
+> > diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> > index 20669eacb66e..1ae3d75d3c9b 100644
+> > --- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> > +++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> > @@ -124,17 +124,22 @@ DEFINE_SHOW_ATTRIBUTE(mt7601u_eeprom_param);
+> >  
+> >  void mt7601u_init_debugfs(struct mt7601u_dev *dev)
+> >  {
+> > -	struct dentry *dir;
+> > -
+> > -	dir = debugfs_create_dir("mt7601u", dev->hw->wiphy->debugfsdir);
+> > -	if (!dir)
+> > +	dev->root_dir = debugfs_create_dir("mt7601u", dev->hw->wiphy->debugfsdir);
+> > +	if (!dev->root_dir)
+> >  		return;
