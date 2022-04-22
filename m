@@ -2,114 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3861CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448477AbiDVONO (ORCPT
+        id S1448480AbiDVONQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
+        Fri, 22 Apr 2022 10:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448398AbiDVOM1 (ORCPT
+        with ESMTP id S1448408AbiDVOMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:12:27 -0400
-Received: from relay-us1.mymailcheap.com (relay-us1.mymailcheap.com [51.81.35.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2D55A595
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:09:34 -0700 (PDT)
-Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.248.207])
-        by relay-us1.mymailcheap.com (Postfix) with ESMTPS id A673421130;
-        Fri, 22 Apr 2022 14:09:33 +0000 (UTC)
-Received: from relay4.mymailcheap.com (relay4.mymailcheap.com [137.74.80.154])
-        by relay5.mymailcheap.com (Postfix) with ESMTPS id 4959F267CE;
-        Fri, 22 Apr 2022 14:09:31 +0000 (UTC)
-Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
-        by relay4.mymailcheap.com (Postfix) with ESMTPS id A9B822000D;
-        Fri, 22 Apr 2022 14:09:28 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-        by filter1.mymailcheap.com (Postfix) with ESMTP id E9A782A389;
-        Fri, 22 Apr 2022 14:09:27 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
-Received: from filter1.mymailcheap.com ([127.0.0.1])
-        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id liAEvKaL7d5P; Fri, 22 Apr 2022 14:09:27 +0000 (UTC)
-Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by filter1.mymailcheap.com (Postfix) with ESMTPS;
-        Fri, 22 Apr 2022 14:09:27 +0000 (UTC)
-Received: from petra.. (unknown [113.67.11.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 646C240645;
-        Fri, 22 Apr 2022 14:09:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
-        t=1650636566; bh=EGPX2hZjigm45jxdQRkqHwlnDLdYXc0XAIoGchu2uro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K6JeP14+TpDyNgY+szUNQrXCQ+6kYyUJP467nyPIDfBSr9u86jY3FHh+g8mk0E34a
-         tLIyyVh1C6lwSvIv3RmrWtKPy9tMPx+sGLIOIsJJUuJspo0WlY4aq5kLr1KmDqNfhb
-         /ss22DZead45B34VP8aOd7yIOXsg0jfHzbBcbEdQ=
-From:   Icenowy Zheng <icenowy@aosc.io>
-To:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Icenowy Zheng <icenowy@aosc.io>
-Subject: [PATCH 01/12] dt-bindings: pinctrl: document Allwinner R329 PIO and R-PIO
-Date:   Fri, 22 Apr 2022 22:08:51 +0800
-Message-Id: <20220422140902.1058101-2-icenowy@aosc.io>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422140902.1058101-1-icenowy@aosc.io>
-References: <20220422140902.1058101-1-icenowy@aosc.io>
+        Fri, 22 Apr 2022 10:12:34 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455865A587;
+        Fri, 22 Apr 2022 07:09:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650636581; x=1682172581;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=8Q2zRfX639FkAtRji4yE9VeRiqlzGzjTysVT5hVPtU0=;
+  b=RvgUfYFeyZhDCf8Zb8NKXp4EvQF2VswB0+7UKa0lCFr9DgmjqUGVqDJo
+   ld6MKKGFjquEV7FIhWIhPyx2GoRUmmbd/2hNsvrKR4frZ2hnk/2MPaaQd
+   FfFsGq5gPnTkamG+xXxot1pAtc3DJWJ3OaYgL6YRAkyCogGinzZ6UnpdI
+   8=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Apr 2022 07:09:41 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:09:40 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:40 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:36 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v10 09/12] arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 1.0/2.0 and IDP boards.
+Date:   Fri, 22 Apr 2022 19:38:38 +0530
+Message-ID: <1650636521-18442-10-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allwinner R329 have two pin controllers similar to previous Allwinner
-SoCs, PIO and R-PIO.
+Enable lpass cpu node and add pin control and dai-links for audio on sc7280
+based platforms of revision 3, 4 (aka CRD 1.0 and 2.0) and IDP boards.
 
-Add compatible strings for them.
-
-Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
- .../bindings/pinctrl/allwinner,sun4i-a10-pinctrl.yaml         | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/allwinner,sun4i-a10-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/allwinner,sun4i-a10-pinctrl.yaml
-index bfce850c2035..3fa7891381e7 100644
---- a/Documentation/devicetree/bindings/pinctrl/allwinner,sun4i-a10-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/allwinner,sun4i-a10-pinctrl.yaml
-@@ -55,6 +55,8 @@ properties:
-       - allwinner,sun50i-h6-r-pinctrl
-       - allwinner,sun50i-h616-pinctrl
-       - allwinner,sun50i-h616-r-pinctrl
-+      - allwinner,sun50i-r329-pinctrl
-+      - allwinner,sun50i-r329-r-pinctrl
-       - allwinner,suniv-f1c100s-pinctrl
-       - nextthing,gr8-pinctrl
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index 8503bd1..c09a17d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -274,6 +274,34 @@
+ 	modem-init;
+ };
  
-@@ -190,6 +192,7 @@ allOf:
-             - allwinner,sun6i-a31-pinctrl
-             - allwinner,sun6i-a31s-pinctrl
-             - allwinner,sun50i-h6-pinctrl
-+            - allwinner,sun50i-r329-pinctrl
- 
-     then:
-       properties:
-@@ -205,6 +208,7 @@ allOf:
-             - allwinner,sun8i-a83t-pinctrl
-             - allwinner,sun50i-a64-pinctrl
-             - allwinner,sun50i-h5-pinctrl
-+            - allwinner,sun50i-r329-r-pinctrl
-             - allwinner,suniv-f1c100s-pinctrl
- 
-     then:
++&lpass_cpu {
++	status = "okay";
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&mi2s1_data0>, <&mi2s1_sclk>, <&mi2s1_ws>;
++
++	dai-link@1 {
++		reg = <MI2S_SECONDARY>;
++		qcom,playback-sd-lines = <0>;
++	};
++
++	dai-link@5 {
++		reg = <LPASS_DP_RX>;
++	};
++
++	dai-link@6 {
++		reg = <LPASS_CDC_DMA_RX0>;
++	};
++
++	dai-link@19 {
++		reg = <LPASS_CDC_DMA_TX3>;
++	};
++
++	dai-link@25 {
++		reg = <LPASS_CDC_DMA_VA_TX0>;
++	};
++};
++
+ &lpass_rx_macro {
+ 	status = "okay";
+ };
 -- 
-2.35.1
+2.7.4
 
