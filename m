@@ -2,173 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7741EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444089AbiDVFKs (ORCPT
+        id S1444099AbiDVFKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 01:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
+        Fri, 22 Apr 2022 01:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444078AbiDVFKl (ORCPT
+        with ESMTP id S1444081AbiDVFKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 01:10:41 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256444B412;
-        Thu, 21 Apr 2022 22:07:47 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23M57IgX013026;
-        Fri, 22 Apr 2022 00:07:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650604038;
-        bh=1jhdjBmYmmhMCJsX/t+vd/T+6pDWrDfmxcBUmfGeFc8=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=pINIU37VyQZP4ww7xdYXgLgr9rzw+kXTjnyxkADXvkE9bhDKex6s/y3F+I3dWz1kj
-         MueRQ/ZscMGRgkS+9RE9D+MSzvmpiyrhzzgeuETwi6FQbB7rRa5kCUDJ6/sgqIwzpK
-         QAAKs3h1HJP7nqejF6IaiL5KU840Yp+b726D1GNw=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23M57Doo016351
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 00:07:18 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 00:07:17 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 00:07:17 -0500
-Received: from [10.24.69.236] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23M57Cdu059389;
-        Fri, 22 Apr 2022 00:07:13 -0500
-Message-ID: <c1de4293-a058-5e25-9be2-b61ac39f43a3@ti.com>
-Date:   Fri, 22 Apr 2022 10:37:12 +0530
+        Fri, 22 Apr 2022 01:10:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB534EF7D;
+        Thu, 21 Apr 2022 22:07:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92E5F61D5C;
+        Fri, 22 Apr 2022 05:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C4E4C385A0;
+        Fri, 22 Apr 2022 05:07:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650604073;
+        bh=vzfRtV+6HmzAXkT9LkEyK6PRF7OjBvpXGEf/vM7UJSY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GAHDADhNIu3VnJP6g4TTNtQ0FfdlnND7LMl7VptMN7R2INA3nx+7WA3NECywDHWfz
+         9xRCC1kbenIolxN8xv5PXbDuDllk5jVcic/bI0v57FQ2gD1ke30Pv26tm4A1632yzY
+         EotT7UrnlRuw81WHUt0RlJ3vSyFl4RvWfdpXq/+g=
+Date:   Fri, 22 Apr 2022 07:07:47 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hongyu Xie <xy521521@gmail.com>
+Cc:     johan@kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        stable@vger.kernel.org, "sheng . huang" <sheng.huang@ecastech.com>,
+        wangqi@kylinos.cn, xiongxin@kylinos.cn
+Subject: Re: [RESEND PATCH -next] USB: serial: pl2303: implement reset_resume
+ member
+Message-ID: <YmI4I9MCLBheMyvr@kroah.com>
+References: <20220419065408.2461091-1-xy521521@gmail.com>
+ <YmGKL05dnA+q/HAM@kroah.com>
+ <f3f6ea7d-2051-7a7f-61e0-8a5bba8ca8f2@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] dt-bindings: usb: tps6598x: Make the interrupts
- property optional
-Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Hector Martin <marcan@marcan.st>,
-        Martin Kepplinger <martink@posteo.de>,
-        "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220414083120.22535-1-a-govindraju@ti.com>
- <20220414083120.22535-2-a-govindraju@ti.com>
- <be8ab691-98f1-5fb9-fec8-7213a2288d07@kernel.org>
- <56c72151-af5f-366b-b17f-24b9fb6264da@ti.com>
- <ae54dbb1-2b02-cba2-5de2-cf3d9a4e35f5@kernel.org>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-In-Reply-To: <ae54dbb1-2b02-cba2-5de2-cf3d9a4e35f5@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f3f6ea7d-2051-7a7f-61e0-8a5bba8ca8f2@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Roger,
-
-On 21/04/22 00:46, Roger Quadros wrote:
-> Hi,
+On Fri, Apr 22, 2022 at 10:35:59AM +0800, Hongyu Xie wrote:
 > 
-> On 18/04/2022 08:19, Aswath Govindraju wrote:
->> Hi Roger,
->>
->> On 14/04/22 23:40, Roger Quadros wrote:
->>> Hi,
->>>
->>> On 14/04/2022 11:31, Aswath Govindraju wrote:
->>>> Support for polling has been added in the driver, which will be used by
->>>> default if interrupts property is not populated. Therefore, remove
->>>> interrupts and interrupt-names from the required properties and add a note
->>>> under interrupts property describing the above support in driver.
->>>>
->>>> Suggested-by: Roger Quadros <rogerq@kernel.org>
->>>
->>> I did not suggest to make interrupts optional by default.
->>>
->>> What I suggested was that if a DT property exists to explicitly
->>> indicate polling mode then interrupts are not required.
->>>
->>
->> ohh okay, got it. However, may I know if adding a dt property to
->> indicate polling for aiding the driver, is the correct approach to model it?
->>
->> In terms of modelling hardware, as interrupts are not connected we are
->> not populating the interrupts property. Shouldn't that be all. If we are
->> adding a property explicitly to indicate polling that can be used by
->> driver, wouldn't that be a software aid being added in the device tree?
-> 
-> The hardware (tps6598x chip) has an interrupt pin and is expected to be used
-> in normal case.
-> 
-> Some buggy boards might have forgot to connect it. We are adding polling mode only for these buggy boards. ;)
-> So polling mode is an exception.
-> 
+> Hi greg,
+> On 2022/4/22 00:45, Greg KH wrote:
+> > On Tue, Apr 19, 2022 at 02:54:08PM +0800, Hongyu Xie wrote:
+> > > From: Hongyu Xie <xiehongyu1@kylinos.cn>
+> > > 
+> > > pl2303.c doesn't have reset_resume for hibernation.
+> > > So needs_binding will be set to 1 duiring hibernation.
+> > > usb_forced_unbind_intf will be called, and the port minor
+> > > will be released (x in ttyUSBx).
+> > 
+> > Please use the full 72 columns that you are allowed in a changelog text.
+> > 
+> > 
+> > > It works fine if you have only one USB-to-serial device.
+> > > Assume you have 2 USB-to-serial device, nameing A and B.
+> > > A gets a smaller minor(ttyUSB0), B gets a bigger one.
+> > > And start to hibernate. When your PC is in hibernation,
+> > > unplug device A. Then wake up your PC by pressing the
+> > > power button. After waking up the whole system, device
+> > > B gets ttyUSB0. This will casuse a problem if you were
+> > > using those to ports(like opened two minicom process)
+> > > before hibernation.
+> > > So member reset_resume is needed in usb_serial_driver
+> > > pl2303_device.
+> > 
+> > If you want persistent device naming, use the symlinks that udev creates
+> > for your for all your serial devices.  Never rely on the number of a USB
+> > to serial device.
+> Let me put it this way. Assume you need to record messages output from two
+> machines using 2 USB-to-serial devices(naming A and B, and A is on
+> USB1-port3, B is on USB1-port4) opened by two minicom process.
+> The setting for A in minicom would be like:
+> 	"A -    Serial Device      : /dev/ttyUSB0"
+> The setting for B in minicom would be like:
+> 	"A -    Serial Device      : /dev/ttyUSB1"
+> Then start to hibernate on your computer. When your PC is in
+> hibernation, unplug A. After waking up your computer, "/dev/ttyUSB0"
+> would be released first, then allocated to B. The minicom process used
+> to record outputs from A is now recording B's outputs. The minicom
+> process used to record outputs from B is now recording nothing, because
+> "/dev/ttyUSB1" is not exist anymore. That's the problem I've been
+> talking about. And I don't think using symlinks will solve this problem.
 
-Yes as you mentioned the interrupt line is expected to connected but
-there could be cases where there are not enough pins on the SoC and
-polling is used intentionally. In these cases this would be a feature
-rather than a bug.
+Yes, symlinks will solve the issue, that is what they are there for.
+Look in /dev/serial/ for a persistent name for them that allows you to
+uniquely open the correct device if they can be described.  Using
+/dev/ttyUSBX is almost never the correct thing to do.
 
-Also, I feel like not adding interrupts property in the dt nodes will
-indicate polling. My question is why are we adding an extra property
-(which is being used only as an aid in the driver) when this feature can
-be modeled by making interrupts property optional.
+> > > Codes in pl2303_reset_resume are borrowed from pl2303_open.
+> > > 
+> > > As a matter of fact, all driver under drivers/usb/serial
+> > > has the same problem except ch341.c.
+> > > 
+> > > Cc: stable@vger.kernel.org
+> > 
+> > How does this meet the stable kernel rule requirements?  It would be a
+> > new feature if it were accepted, right?
+> It's not a new feature at all. struct usb_serial_driver already has a
+> member name reset_resume, there is no implementation in pl2303.c yet.
+> And ch341.c has one(ch341_reset_resume()), that why I said "all driver
+> under drivers/usb/serial has the same problem except ch341.c"
 
-Thanks,
-Aswath
+Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for what is valid stable kernel changes.
 
-> cheers,
-> -roger
-> 
->>
->> Thanks,
->> Aswath
->>
->>>> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
->>>> ---
->>>>  Documentation/devicetree/bindings/usb/ti,tps6598x.yaml | 4 ++--
->>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml b/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml
->>>> index a4c53b1f1af3..1c4b8c6233e5 100644
->>>> --- a/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml
->>>> +++ b/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml
->>>> @@ -25,6 +25,8 @@ properties:
->>>>  
->>>>    interrupts:
->>>>      maxItems: 1
->>>> +    description:
->>>> +      If interrupts are not populated then by default polling will be used.
->>>>  
->>>>    interrupt-names:
->>>>      items:
->>>> @@ -33,8 +35,6 @@ properties:
->>>>  required:
->>>>    - compatible
->>>>    - reg
->>>> -  - interrupts
->>>> -  - interrupt-names
->>>>  
->>>>  additionalProperties: true
->>>>  
->>>
->>> cheers,
->>> -roger
+thanks,
 
-
--- 
-Thanks,
-Aswath
+greg k-h
