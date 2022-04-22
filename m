@@ -2,89 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAD6C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75270C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233740AbiDVSBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
+        id S232545AbiDVSB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236621AbiDVR7e (ORCPT
+        with ESMTP id S236634AbiDVR7f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:59:34 -0400
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2274107834;
-        Fri, 22 Apr 2022 10:56:40 -0700 (PDT)
-Received: by mail-vs1-xe36.google.com with SMTP id t202so8134591vst.8;
-        Fri, 22 Apr 2022 10:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XxZBZ3stUkdhVW/utSJpsv4jrMoNhjVNY7NCi5QPbWU=;
-        b=EeMR2o3WC1it+xKaAE3UcnjfygI28wLy1fn4KUlwq5rUdHXA3ogqmv0vTwBr0/yoz6
-         cDJzg1rfj241iv+2uzC/BYGGmTQnKA/47HSG40F4e3rn8DO/sTGjGLJRZKBNYcdc4SkJ
-         VkxKM+/h5DcmnfD6wJ5B5PusUoozoXv2HxITbZos6wYa396jYdGaTuZm1sAUBzw7DwuF
-         Vdb4koyAer9x2qkiNcMLqPOqC1r2BHVTFWFhhbVE4d70XYAPKDtci9NNSWGC9H/laxad
-         B6pBvpciftuPkCUfsnr9UwtkqOowG6+yMOVvJAiLds17XVWjt2On7Tg7vNK/gpJ5LN5I
-         UWqA==
+        Fri, 22 Apr 2022 13:59:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AC15106DFE
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:56:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650650124;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qS1z2/5qHncMhjCwTTUMd4XpJC28UxMysCRYKxl364Y=;
+        b=J66E4tkcIy/Abi3Y04N9oV4oZAyKTzJ/bWugg29obP9HJtmhCGlPMlanMWTUTBTM0l84bf
+        Mtusob3fwEmGroAi3WnvPuWel8FNdSioU+4zGCylaiLrF8hyKXiFapcxsRvRV4jSgtR4N0
+        We/yGHgETiWjWIYnOZktq2Fi0ZHaz5w=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-348-P8-jhN5nNM-Q7Ua_XHxdiw-1; Fri, 22 Apr 2022 13:41:40 -0400
+X-MC-Unique: P8-jhN5nNM-Q7Ua_XHxdiw-1
+Received: by mail-wm1-f70.google.com with SMTP id h65-20020a1c2144000000b0038e9ce3b29cso6316908wmh.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:41:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=XxZBZ3stUkdhVW/utSJpsv4jrMoNhjVNY7NCi5QPbWU=;
-        b=aVXQ8yM1rBzkIVZ9Ky8Lnso/IHhpxBsMw5VqZsdJrgiIc8HB0CSc1ioYp8RpA8bRW8
-         YCyzf2VElRrwN/ECc1OYr8NmxCjuUlp6TlaZZqjnumf7/OShAJTZkugZpjgr6qhembjC
-         YH0t3GbQl6gSjr6t5a9Wm+PMJkmE1UUTpwt8XHQ1wc9DefL2M/cep1T6oLtkGSj08Pt0
-         6/JzbSgcNT3jIfz36nn7fLFEmdvXtaRfXt5K8CYebOXETNFOxahNMzi4dcouqvgtzLFq
-         Ih7+rYmVv+X5sXQYbdfli8/XBXeTcvHerieVjMXADmiU21B+oeqV2T+rzHewLY+UhQ2L
-         xFeA==
-X-Gm-Message-State: AOAM532PfPjb0rboW2yAG4cpEZgEX6QiqgBGEAQyUO2OfB++ryq7jKtx
-        49QSlG15ygTrqcyqnoMnqvtvtCS/wWA=
-X-Google-Smtp-Source: ABdhPJyo1Iq8/URCKrCCXfDfGEQSCogorOh8Sewv54X7ETtbR5vNrqWaSBhLNZmp149jqYMLD9zdlA==
-X-Received: by 2002:a05:6a00:2405:b0:4e1:5008:adcc with SMTP id z5-20020a056a00240500b004e15008adccmr6135265pfh.35.1650649719093;
-        Fri, 22 Apr 2022 10:48:39 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:b5ae])
-        by smtp.gmail.com with ESMTPSA id x71-20020a62864a000000b0050ad2c24a39sm3358336pfd.205.2022.04.22.10.48.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 10:48:38 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 22 Apr 2022 07:48:36 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     David Vernet <void@manifault.com>
-Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org,
-        cgroups@vger.kernel.org, peterz@infradead.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH 0/4] cgroup: Introduce cpu controller test suite
-Message-ID: <YmLqdIiXdpQqcPTd@slm.duckdns.org>
-References: <20220422173349.3394844-1-void@manifault.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=qS1z2/5qHncMhjCwTTUMd4XpJC28UxMysCRYKxl364Y=;
+        b=wqbvmbGtFxWreAZL97c5WwEimzvbiey/qvq5HVGP2ZAfslBDAopVgjphowsBAQDzKN
+         CfcvsmB0YuhyXCz+nWg+Oc2y0Q6M9uAxBD5Zsx4tcZ9JiWvVlaupRQ/530lzaCtxB6h7
+         dSgC/7vnMzx1SAG+72yRMb5lih+hsLksIhkYzalgvuAcc1xjwCUJ0pBLls2AHt+Ke6Dl
+         Yj4U4GPJUn+FZontZWGnK8XMXGRlOsVYQF+48aAAwqwxY17EUMR2i0C+qOnTJL7hwx6S
+         LmHDqSDnGdyaw8M63focQemE6zOXZll7LUBFriktC6Y2uD7lbVPv31NtsCYlYlK/3BG1
+         GciQ==
+X-Gm-Message-State: AOAM530SKq1yPjL81KnayeUlf1e9BHtnbUQMrDz9nFjatm6ih4LxKU8/
+        1YucS+1TXvpgIAcgAQpcx3PZKJJtYgOql9XSX48RTPyv2f5u2UbuvF3xHLqXYw2VJUQ3mnGeH3b
+        OBwkdsJ398pzeQeWC68KnWZ1C
+X-Received: by 2002:a7b:c205:0:b0:38e:b6b4:ed90 with SMTP id x5-20020a7bc205000000b0038eb6b4ed90mr5289991wmi.51.1650649298833;
+        Fri, 22 Apr 2022 10:41:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwt73hO3Dy97LGUolcZvHHAxZgmOvXPUbuwOME5mBJ6jfcifPO0j4OjUm4GxUQAhhZyN0MblA==
+X-Received: by 2002:a7b:c205:0:b0:38e:b6b4:ed90 with SMTP id x5-20020a7bc205000000b0038eb6b4ed90mr5289976wmi.51.1650649298584;
+        Fri, 22 Apr 2022 10:41:38 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c702:dd00:745e:20b7:bfa4:2e5f? (p200300cbc702dd00745e20b7bfa42e5f.dip0.t-ipconnect.de. [2003:cb:c702:dd00:745e:20b7:bfa4:2e5f])
+        by smtp.gmail.com with ESMTPSA id u5-20020adfed45000000b00207a480e6aasm2161989wro.116.2022.04.22.10.41.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 10:41:38 -0700 (PDT)
+Message-ID: <8aafe4ad-81a6-31a5-c95a-ce2943bf0525@redhat.com>
+Date:   Fri, 22 Apr 2022 19:41:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422173349.3394844-1-void@manifault.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH RFC 2/4] mm, personality: Implement
+ memory-deny-write-execute as a personality flag
+Content-Language: en-US
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lennart Poettering <lennart@poettering.net>,
+        =?UTF-8?Q?Zbigniew_J=c4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>,
+        Szabolcs Nagy <Szabolcs.Nagy@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jeremy Linton <Jeremy.Linton@arm.com>,
+        Topi Miettinen <toiwoton@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-abi-devel@lists.sourceforge.net" 
+        <linux-abi-devel@lists.sourceforge.net>
+References: <20220413134946.2732468-1-catalin.marinas@arm.com>
+ <20220413134946.2732468-3-catalin.marinas@arm.com>
+ <443d978a-7092-b5b1-22f3-ae3a997080ad@redhat.com> <YmKDaEaOpOaKl7m9@arm.com>
+ <59401856-0e45-0ee6-1e45-667c8e00cf21@redhat.com> <YmKptQoIw2mkGdic@arm.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YmKptQoIw2mkGdic@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, David.
-
-On Fri, Apr 22, 2022 at 10:33:47AM -0700, David Vernet wrote:
-> This patchset introduces a new test_cpu.c test suite as part of
-> tools/testing/selftests/cgroup. test_cpu.c will contain testcases that
-> validate the cgroup v2 cpu controller.
+On 22.04.22 15:12, Catalin Marinas wrote:
+> On Fri, Apr 22, 2022 at 01:04:31PM +0200, David Hildenbrand wrote:
+>> On 22.04.22 12:28, Catalin Marinas wrote:
+>>> On Thu, Apr 21, 2022 at 06:37:49PM +0100, David Hildenbrand wrote:
+>>>> Note that in the (FOLL_WRITE|FOLL_FORCE) we only require VM_MAYWRITE on
+>>>> the vma and trigger a write fault. As the VMA is not VM_WRITE, we won't
+>>>> actually map the PTE writable, but set it dirty. GUP will retry, find a
+>>>> R/O pte that is dirty and where it knows that it broke COW and will
+>>>> allow the read access, although the PTE is R/O.
+>>>>
+>>>> That mechanism is required to e.g., set breakpoints in R/O MAP_PRIVATE
+>>>> kernel sections, but it's used elsewhere for page pinning as well.
+>>>>
+>>>> My gut feeling is that GUP(FOLL_WRITE|FOLL_FORCE) could be used right
+>>>> now to bypass that mechanism, I might be wrong.
+>>>
+>>> GUP can be used to bypass this. But if an attacker can trigger such GUP
+>>> paths via a syscall (e.g. ptrace(PTRACE_POKEDATA)), I think we need the
+>>> checks on those paths (and reject the syscall) rather than on
+>>> mmap/mprotect(). This would be covered by something like CAP_SYS_PTRACE.
+>>
+>> I was told that RDMA uses FOLL_FORCE|FOLL_WRITE and is available to
+>> unprivileged users.
 > 
-> This patchset only contains testcases that validate cpu.stat and
-> cpu.weight, but I'm expecting to send further patchsets after this that
-> also include testcases that validate other knobs such as cpu.max.
+> Ah, do they really need this? At a quick search, ib_umem_get() for
+> example:
 > 
-> Note that checkpatch complains about a missing MAINTAINERS file entry for
-> [PATCH 1/4], but Roman Gushchin added that entry in a separate patchset:
-> https://lore.kernel.org/all/20220415000133.3955987-4-roman.gushchin@linux.dev/.
+> 	unsigned int gup_flags = FOLL_WRITE;
+> 	...
+> 	if (!umem->writable)
+> 		gup_flags |= FOLL_FORCE;
+> 
+> I guess with a new MDWE flag we can make the GUP code ignore FOLL_FORCE
+> if VM_EXEC.
+> 
 
-Looks great to me. Thanks for adding the much needed selftests. Peter, if
-you're okay with it, imma route it through the cgroup tree.
+It's, for example, required when you have a MAP_PRIVATE but PROT_READ
+mapping and want to take a reliable R/O (!) pin. Without
+FOLL_FORCE|FOLL_WRITE you'd be pinning a (shared zeropage, pagecache)
+page that will get replaced by an anonymous page in the COW handler,
+after mprotect(PROT_READ|PROT_WRITE) followed by a write access. That
+was an issue for RDMA in the past, that's why we have that handling in
+place IIRC.
 
-Thanks.
+Yes, it's ugly.
 
 -- 
-tejun
+Thanks,
+
+David / dhildenb
+
