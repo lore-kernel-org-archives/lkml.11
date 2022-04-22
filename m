@@ -2,91 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED36C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22BDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445868AbiDVJS3 (ORCPT
+        id S1351173AbiDVJSd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
+        Fri, 22 Apr 2022 05:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445881AbiDVJNH (ORCPT
+        with ESMTP id S1445882AbiDVJNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:13:07 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36D9DEFD
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:14 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.197.31])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 8420A3F837;
-        Fri, 22 Apr 2022 09:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1650618613;
-        bh=/E9SGn6QJgH+NHwgtXxPKQshs3hDtmq0c5DDynNF6PQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=RYosJOUSpgkcwps8nnJJ575JV7WwPWX3ySczbHKSwZdiQNnHk9NdkkFyLoZVImHWU
-         HbV7hzdEYVXdAyT1wuiYk3aQptE+GW4B1DVxtSc/nqy8SXJMBUGDXhyvVxnzhk2V1I
-         gsvErOoYbigolruv+KrxwcpfYOVXSPA4UnK6GZMjbb34zeNiVyVbpElR8VNNcbPO52
-         YMHDXfDc9v5l5bhLcswWGkpZcVMLFgi4NP9rA1YKz9QnfJKOvDEz+5hVSeWpFqRVXQ
-         PgHoukHeMiQ6txjg+Gro712MaoZ340VjypfziP9Fkg/Q9uVHf9fPgeiRRDanTM9yW0
-         +sUPw9BEJ0EOg==
-From:   Andy Chi <andy.chi@canonical.com>
-Cc:     andy.chi@canonical.com, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: hda/realtek: Enable mute/micmute LEDs support for HP Laptops
-Date:   Fri, 22 Apr 2022 17:08:43 +0800
-Message-Id: <20220422090845.230071-1-andy.chi@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Apr 2022 05:13:11 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A24BB847
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:19 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id s17so9510190plg.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:10:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=G8S0f1fxh4tyjKf+IoZyuPgywpYwOEgpWk257TfqhQI=;
+        b=d4wk5OPV0Zah6tt7VlyuF11yJsiCW6MgsfsalPD7a7HYycnmRNy+tjvAvkYU7EyWo/
+         bDu5pyb6bQA6X3p99ngSNjMDWTgXp/lpLH7EWvt9tdmfoUjn4cfdEtHvrpBUkgIcWAZ8
+         HXcUY3BC0ze5Xagu/AioHT5xTu3HQPMrjGb7k6GYzUiEuQcvJlQNvJUJ1RBrVX3Rmr2V
+         8u7yzfDpOyJxwWplB2iFYmqElYyvNxqZao1xapDmF3Ry8sqKiSZ59RdIqfRqIhIP63LH
+         JX1bADYycSryyEhwT3GWRP+WWA+Cx/lhWRV2QN8eCHqBHbx9vuM7gzlObJnWpV3wA+k7
+         Kxsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=G8S0f1fxh4tyjKf+IoZyuPgywpYwOEgpWk257TfqhQI=;
+        b=AZz5hDzgD7367EaPQFtdVT/Z8E9tgmFoIyRMuxS7Byk3sOG9+E9gXorGWo3PTi/eOR
+         xIDe1HL1TEoPXxZ5zvw45G6CrIourHspj6jf5GjHLtZdBBttlHxhFm6HZhR8kNMmgctr
+         DggwwYxCuX0eu03XajOvGauZPYOEc2KTdgOf1YqWoTunfwDRreZcDTKv99xFsmCIBXdF
+         bgLdTclPcc+X/LQvfhFbSJJpWqjUKxz4GardZQOgQhxZotARaoPD5F9Uzkdt5MUTfquF
+         yklkulGRMcbgR/KHvTUAfcU6wvaZ1XtyO4xwUHaMVTu7HNbDMq4z8HWy0OrXTvws9Bqz
+         1aZA==
+X-Gm-Message-State: AOAM531lBFqMbtYpKp1jIYKx9wdYiVubqO5rpuNtsUE89898naQ35WCR
+        oKeY2GLIAdPG/rsUbYzWppeQjA==
+X-Google-Smtp-Source: ABdhPJz+j6iCMBbmMv2F+PtTyVy2Vkfyw2jgwAOMpNg1dazx/7ebgmLR9gHVessAIIG2LBvr3jIYLw==
+X-Received: by 2002:a17:903:290:b0:15c:1c87:e66c with SMTP id j16-20020a170903029000b0015c1c87e66cmr1803213plr.61.1650618619137;
+        Fri, 22 Apr 2022 02:10:19 -0700 (PDT)
+Received: from C02G87K0MD6R.bytedance.net ([139.177.225.244])
+        by smtp.gmail.com with ESMTPSA id oe7-20020a17090b394700b001d8995368a9sm559239pjb.35.2022.04.22.02.10.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 02:10:18 -0700 (PDT)
+From:   Hao Jia <jiahao.os@bytedance.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Hao Jia <jiahao.os@bytedance.com>
+Subject: [PATCH v2 2/2] sched/dl: Remove some comments and adjust code in push_dl_task
+Date:   Fri, 22 Apr 2022 17:09:44 +0800
+Message-Id: <20220422090944.52618-3-jiahao.os@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220422090944.52618-1-jiahao.os@bytedance.com>
+References: <20220422090944.52618-1-jiahao.os@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On HP Laptops, requires the same ALC285_FIXUP_HP_GPIO_LED quirk to
-make its audio LEDs work.
+The change to call update_rq_clock() before activate_task()
+commit 840d719604b0 ("sched/deadline: Update rq_clock of later_rq
+when pushing a task") is no longer needed since commit f4904815f97a
+("sched/deadline: Fix double accounting of rq/running bw in push & pull")
+removed the add_running_bw() before the activate_task().
 
-So apply the quirk, and make it the last one since it's an LED quirk.
+So we remove some comments that are no longer needed and update
+rq clock in activate_task().
 
-Signed-off-by: Andy Chi <andy.chi@canonical.com>
+Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
 ---
- sound/pci/hda/patch_realtek.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ kernel/sched/deadline.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 0cba2f19a772..29de8d7959c7 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9023,12 +9023,12 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x8896, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8898, "HP EliteBook 845 G8 Notebook PC", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
- 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
--	SND_PCI_QUIRK(0x103c, 0x896e, "HP EliteBook x360 830 G9", ALC245_FIXUP_CS35L41_SPI_2),
--	SND_PCI_QUIRK(0x103c, 0x8971, "HP EliteBook 830 G9", ALC245_FIXUP_CS35L41_SPI_2),
--	SND_PCI_QUIRK(0x103c, 0x8972, "HP EliteBook 840 G9", ALC245_FIXUP_CS35L41_SPI_2),
--	SND_PCI_QUIRK(0x103c, 0x8973, "HP EliteBook 860 G9", ALC245_FIXUP_CS35L41_SPI_2),
--	SND_PCI_QUIRK(0x103c, 0x8974, "HP EliteBook 840 Aero G9", ALC245_FIXUP_CS35L41_SPI_2),
--	SND_PCI_QUIRK(0x103c, 0x8975, "HP EliteBook x360 840 Aero G9", ALC245_FIXUP_CS35L41_SPI_2),
-+	SND_PCI_QUIRK(0x103c, 0x896e, "HP EliteBook x360 830 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8971, "HP EliteBook 830 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8972, "HP EliteBook 840 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8973, "HP EliteBook 860 G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8974, "HP EliteBook 840 Aero G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8975, "HP EliteBook x360 840 Aero G9", ALC245_FIXUP_CS35L41_SPI_2_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8981, "HP Elite Dragonfly G3", ALC245_FIXUP_CS35L41_SPI_4),
- 	SND_PCI_QUIRK(0x103c, 0x898e, "HP EliteBook 835 G9", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x103c, 0x898f, "HP EliteBook 835 G9", ALC287_FIXUP_CS35L41_I2C_2),
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index fb4255ae0b2c..8eb694ed7ac1 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2319,13 +2319,7 @@ static int push_dl_task(struct rq *rq)
+ 
+ 	deactivate_task(rq, next_task, 0);
+ 	set_task_cpu(next_task, later_rq->cpu);
+-
+-	/*
+-	 * Update the later_rq clock here, because the clock is used
+-	 * by the cpufreq_update_util() inside __add_running_bw().
+-	 */
+-	update_rq_clock(later_rq);
+-	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
++	activate_task(later_rq, next_task, 0);
+ 	ret = 1;
+ 
+ 	resched_curr(later_rq);
 -- 
-2.25.1
+2.32.0
 
