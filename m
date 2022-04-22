@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B238C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232373AbiDVWQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
+        id S232345AbiDVWT2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231777AbiDVWPT (ORCPT
+        with ESMTP id S233939AbiDVWTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:15:19 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E34418EA24;
-        Fri, 22 Apr 2022 14:05:30 -0700 (PDT)
-Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 906AAC26D9;
-        Fri, 22 Apr 2022 19:38:45 +0000 (UTC)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1B567C0004;
-        Fri, 22 Apr 2022 19:37:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650656245;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VfEQnMLQBp5gcbCjnS1m2KT836fiq6O/cfzcdERxXCI=;
-        b=j5G6WCpisDyJMaBpdGq55laQYL2EYP0G8+ANfLVS7NbBP95B21QouzhNo7XBFTikfKY9G7
-        pG5U9eT+63blfEGRcBnxyDC49YB76QFwN013Lt36pxExh2ArQGEKKUAxGgh4S5/b5uSn4T
-        Ni1kN/GIjW44LAlb3UaSN/T2cBZe20+S7bJD7ePfvcYk+7r5gyM2WkL1UDZGzXR0MxXdbX
-        6131WBe9v+3LMj6Z7TTzQvXKYbcTRuQrlAnVJv7aY9advLLz69eZsri4By7UxlXW4IOvia
-        62rV3xCO013hZLwwY9lhuJE5ovFI5RRxOuQVhY29287MMh0fmfMI36ce/4BkuA==
-Date:   Fri, 22 Apr 2022 21:37:23 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop empty and unreferenced binding .txt
- files
-Message-ID: <YmMD84TNCqhkH+Hw@mail.local>
-References: <20220422191958.2589318-1-robh@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422191958.2589318-1-robh@kernel.org>
+        Fri, 22 Apr 2022 18:19:00 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8F319F40A;
+        Fri, 22 Apr 2022 14:10:55 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e2afb80550so9927047fac.1;
+        Fri, 22 Apr 2022 14:10:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=TRqLMDnSfOMMJvwbNg5ERReNlJdUDaY3MArVueheMwI=;
+        b=GhYHRpqBvKKO9sr47sI+pTi77FehE9JxaYfyE+nY+wkkIBiiaGJYndwZn6XVLPyIGx
+         3RM8ASxcoZk6LGSw6OOI9z6pFToV9OJ+IOA+TAVMyJ6DO2DpCexJxCXtetgHGjgG/P/P
+         ZPw/a59OIdcf9K6BDyamVGSImjbzk3CZrBNFXx9pkamXFwEKAFNBIf40x8Va/34gOlzw
+         VrBCvQ0G4+V+VZJYCHaezLR09DCHmHNBhdI6NO+Bbu5mXqVK6DxfHblbPDIzw5hckn9P
+         dFlzguZErABcuryRHr5ws7cYDNv0uWpwzhHKW0NP2kcb0o881Xttz9YjjgreVm4TtKQH
+         HgUw==
+X-Gm-Message-State: AOAM530HqPZqGxoAUpuVc7SY9HBPFaxvLs/EeUULLB5KOTT+3Rqd3oJb
+        GVbdO6DsobKLBAoLUWj+gg==
+X-Google-Smtp-Source: ABdhPJwCauAsquMdMwIxtueLYrwWVUnabgWI6OXGiVbx2Y27f+yF57TQi+4z5TpOQRa/HCe7vuQsXw==
+X-Received: by 2002:a05:6870:79a:b0:e9:109a:1391 with SMTP id en26-20020a056870079a00b000e9109a1391mr800216oab.105.1650661855024;
+        Fri, 22 Apr 2022 14:10:55 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bf26-20020a056808191a00b00324f4d15aa1sm667603oib.12.2022.04.22.14.10.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 14:10:54 -0700 (PDT)
+Received: (nullmailer pid 2784286 invoked by uid 1000);
+        Fri, 22 Apr 2022 21:10:47 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     icenowy@outlook.com
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-input@vger.kernel.org, Icenowy Zheng <icenowy@sipeed.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-kernel@vger.kernel.org
+In-Reply-To:  <BYAPR20MB2472D625C876D97E95CB6078BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+References:  <BYAPR20MB2472D625C876D97E95CB6078BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+Subject: Re: [PATCH 1/2] dt-bindings: input: sun4i-lradc-keys: add R329 LRADC binding
+Date:   Fri, 22 Apr 2022 16:10:47 -0500
+Message-Id: <1650661847.262817.2784285.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 14:19:57-0500, Rob Herring wrote:
-> Drop a couple of old, empty .txt binding files which are no longer
-> referenced.
+On Sat, 23 Apr 2022 00:07:43 +0800, icenowy@outlook.com wrote:
+> From: Icenowy Zheng <icenowy@sipeed.com>
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-
+> R329 has similar LRADC with previous Allwinner SoCs, but with bus clock
+> and reset.
+> 
+> Add binding for it.
+> 
+> Signed-off-by: Icenowy Zheng <icenowy@sipeed.com>
 > ---
->  Documentation/devicetree/bindings/eeprom/at24.txt | 1 -
->  Documentation/devicetree/bindings/mtd/common.txt  | 1 -
->  Documentation/devicetree/bindings/rtc/rtc.txt     | 1 -
->  3 files changed, 3 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/eeprom/at24.txt
->  delete mode 100644 Documentation/devicetree/bindings/mtd/common.txt
->  delete mode 100644 Documentation/devicetree/bindings/rtc/rtc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/eeprom/at24.txt b/Documentation/devicetree/bindings/eeprom/at24.txt
-> deleted file mode 100644
-> index c94acbb8cb0c..000000000000
-> --- a/Documentation/devicetree/bindings/eeprom/at24.txt
-> +++ /dev/null
-> @@ -1 +0,0 @@
-> -This file has been moved to at24.yaml.
-> diff --git a/Documentation/devicetree/bindings/mtd/common.txt b/Documentation/devicetree/bindings/mtd/common.txt
-> deleted file mode 100644
-> index ae16f9ea8606..000000000000
-> --- a/Documentation/devicetree/bindings/mtd/common.txt
-> +++ /dev/null
-> @@ -1 +0,0 @@
-> -This file has been moved to mtd.yaml.
-> diff --git a/Documentation/devicetree/bindings/rtc/rtc.txt b/Documentation/devicetree/bindings/rtc/rtc.txt
-> deleted file mode 100644
-> index b8d36fce5e2d..000000000000
-> --- a/Documentation/devicetree/bindings/rtc/rtc.txt
-> +++ /dev/null
-> @@ -1 +0,0 @@
-> -This file has been moved to rtc.yaml.
-> -- 
-> 2.32.0
+>  .../input/allwinner,sun4i-a10-lradc-keys.yaml | 21 +++++++++++++++++++
+>  1 file changed, 21 insertions(+)
 > 
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml: then:properties:required: ['clocks', 'resets'] is not of type 'object', 'boolean'
+	from schema $id: http://json-schema.org/draft-07/schema#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.yaml: ignoring, error in schema: then: properties: required
+Documentation/devicetree/bindings/input/allwinner,sun4i-a10-lradc-keys.example.dtb:0:0: /example-0/lradc@1c22800: failed to match any schema with compatible: ['allwinner,sun4i-a10-lradc-keys']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
