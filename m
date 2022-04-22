@@ -2,104 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 584F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbiDVV5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
+        id S230482AbiDVV5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231137AbiDVV4w (ORCPT
+        with ESMTP id S230350AbiDVV5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:56:52 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BDF407ED4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:42:03 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MIeMoG033941;
-        Fri, 22 Apr 2022 13:40:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650652822;
-        bh=jL5+JwCMsTSzM2LVGeKWU46/zHtkF+EJ8LNwJy/lJNM=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=cTkH6TMEhd/jT7YSK904kjPRxu962l78xyt8Dhv0/OvVn4MNtq/9sVLnVXfg3bmux
-         ZlMAVyn3QwcyX3x4EpL9+HQPUuwV/4cG6jOjKSb4llGQIA0iJLT9Q0EjMO0R3dMVIq
-         j+/8wotR7NnktIST0hxWIh5h62OXE5zdZXr3kwjY=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MIeMAp011441
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 13:40:22 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 13:40:21 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 13:40:21 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MIeL4o078154;
-        Fri, 22 Apr 2022 13:40:21 -0500
-Date:   Fri, 22 Apr 2022 13:40:21 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     <cgel.zte@gmail.com>, <tony@atomide.com>
-CC:     <ssantosh@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] soc: ti: pm33xx: using pm_runtime_resume_and_get instead
- of pm_runtime_get_sync
-Message-ID: <20220422184021.v2w55kbvllu3flar@daughter>
-References: <20220418063059.2558074-1-chi.minghao@zte.com.cn>
+        Fri, 22 Apr 2022 17:57:03 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A157169E68;
+        Fri, 22 Apr 2022 13:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650659994; x=1682195994;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bf6kesfiGQW5FTsQbo0yY/hK5dAOEbAhAQZQcC1Uv1E=;
+  b=EbEYr5fkfhrPtbisIHny/e0c2oCYiHESVOJvzmQH7qXUR+WuFGOTESfA
+   p10snCFGQAN7/3rTZjJ/XKM0yWLBP/oerV0gIgWqGNVoJVk4XPwjxQh3W
+   DtOS7O/puL3hGH1hEy0XTkydMN2Rqt6oVWscqiPx8rfEL/QZ224nkJ+DZ
+   vz/P2QQkq8ZfmrQ8HgakTfGTkb2wNLGPeWLQz5aVnEd7ak0+58XNAuKee
+   Hm26N1v1zC6G7s80I0piLWnhBQ1jhAhPSLVHb2d6el2il8QYtGU/GBQ5I
+   SQxWH7CtE1DedChRzHytlAxE+UkX2WwB9XdWw1PncVJ643gfSgWBhOmhZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="325200937"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="325200937"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 11:09:29 -0700
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="867993856"
+Received: from hltravis-mobl1.amr.corp.intel.com (HELO localhost) ([10.213.166.215])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 11:09:28 -0700
+Date:   Fri, 22 Apr 2022 11:09:28 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 2/4] Documentation/vm: Include kdocs from highmem*.h into
+ highmem.rst
+Message-ID: <YmLvWE7vUduaXZVY@iweiny-desk3>
+References: <20220421180200.16901-1-fmdefrancesco@gmail.com>
+ <20220421180200.16901-3-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220418063059.2558074-1-chi.minghao@zte.com.cn>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220421180200.16901-3-fmdefrancesco@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06:30-20220418, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+On Thu, Apr 21, 2022 at 08:01:58PM +0200, Fabio M. De Francesco wrote:
+> kernel-docs that are in include/linux/highmem.h and in
+> include/linux/highmem-internal.h should be included in highmem.rst.
 > 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
+> Use kdocs directives to include the above-mentioned comments into
+> highmem.rst.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ira Weiny <ira.weiny@intel.com>
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-Tony: Could you check?
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 
 > ---
->  drivers/soc/ti/pm33xx.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  Documentation/vm/highmem.rst | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> diff --git a/drivers/soc/ti/pm33xx.c b/drivers/soc/ti/pm33xx.c
-> index 7bab4bbaf02d..ce09c42eaed2 100644
-> --- a/drivers/soc/ti/pm33xx.c
-> +++ b/drivers/soc/ti/pm33xx.c
-> @@ -555,11 +555,9 @@ static int am33xx_pm_probe(struct platform_device *pdev)
->  #endif /* CONFIG_SUSPEND */
->  
->  	pm_runtime_enable(dev);
-> -	ret = pm_runtime_get_sync(dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(dev);
-> +	ret = pm_runtime_resume_and_get(dev);
-> +	if (ret < 0)
->  		goto err_pm_runtime_disable;
-> -	}
->  
->  	ret = pm_ops->init(am33xx_do_sram_idle);
->  	if (ret) {
+> diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
+> index 0f69a9fec34d..ccff08a8211d 100644
+> --- a/Documentation/vm/highmem.rst
+> +++ b/Documentation/vm/highmem.rst
+> @@ -145,3 +145,10 @@ The general recommendation is that you don't use more than 8GiB on a 32-bit
+>  machine - although more might work for you and your workload, you're pretty
+>  much on your own - don't expect kernel developers to really care much if things
+>  come apart.
+> +
+> +
+> +Functions
+> +=========
+> +
+> +.. kernel-doc:: include/linux/highmem.h
+> +.. kernel-doc:: include/linux/highmem-internal.h
 > -- 
-> 2.25.1
+> 2.34.1
 > 
-> 
-
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
