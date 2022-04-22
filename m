@@ -2,523 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB92C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiDVWG6 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
+        id S231571AbiDVWHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbiDVWGt (ORCPT
+        with ESMTP id S231448AbiDVWGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 18:06:49 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457A1207141;
-        Fri, 22 Apr 2022 13:51:04 -0700 (PDT)
-Received: from [83.135.33.162] (helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1ni0Er-0006iV-Q4; Fri, 22 Apr 2022 22:50:49 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45848208225;
+        Fri, 22 Apr 2022 13:51:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650660663;
+        bh=Cymelfm0dfRc/xEvMKwoybWU1kDdiYfz3b2fHT5KUdI=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=HwCRogHH7SWrMLArbABWdkNz9fT6p7rcGoBcLx+u0005kKgylL4dxLQGgWTo1Iacv
+         dRBl4e6l4+Wf4aFTLFHnE0rBn2/WY6x4yukN5yrbSoGO6sI05HEbW7VuiVmC1TBKIX
+         E4htHAAfiFIpafJYnSc4LXiIirwpyR4fE0cwIzNc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([87.78.190.74]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MaJ3t-1nNDlX1HTp-00WIyP; Fri, 22
+ Apr 2022 20:31:54 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        kernel@collabora.com
-Subject: Re: [PATCHv1 12/19] pinctrl/rockchip: add error handling for pull/drive register getters
-Date:   Fri, 22 Apr 2022 22:50:47 +0200
-Message-ID: <4833995.GXAFRqVoOG@phil>
-In-Reply-To: <20220422170920.401914-13-sebastian.reichel@collabora.com>
-References: <20220422170920.401914-1-sebastian.reichel@collabora.com> <20220422170920.401914-13-sebastian.reichel@collabora.com>
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 4/7] dt-bindings: clock: Add Nuvoton WPCM450 clock/reset controller
+Date:   Fri, 22 Apr 2022 20:30:09 +0200
+Message-Id: <20220422183012.444674-5-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:vVjrm1cK8AXlnpuGK08RSnmA6OQJ45C2q8UnLt+ebe9CliGV0GN
+ Ti2LnJqA3CI0GUJriFLVzIgrC/GGhXhNMKKv5axP3W5W5BC44FV5INXkhXh9NVzreAFDXxf
+ hYXaumjri/r402YVm6eqffixmakJCzbvAgc+taVHDAyxrjDdf0CQZBv5XXpMOXqvZrkmJI7
+ 35zbHFwBeKYBTxHW9dkrg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AQbNhO89mNA=:MLaOVMQJPve9D6gl13SY/6
+ x8dcmv0TrOwv0Dt9s/OHQeDH+TS4WpahFEojBRnVKjA0QTtUw9/5BS1Q+9M8eB+kl2Sjpwr91
+ WfjgcDxVlCnoqeH8gdoSLC5spPNpj0y+6rlPXXRgd6aXGPCkWA2bxhs3H9UrGBEKJ3BZ02k6f
+ t0fIT6LypHwcmRM/wU/N3mTMXDAGQ/KKmp8ndmWYnn2a4khJTds02H4xTy/3ELG6FVo2OaAI2
+ DPMoqgGiRuURMcpM3zAAmbG6LslC0SZSikMZQeLBWxvdLG5cMWBKl9X82oaaeKvgJJd2/3qjs
+ HeegIG4YCVpyVZ0B1SAAYWSE1OHspveo+GFscRINf5Mm5Y1w+INy6Sr8r8syauCif31k2ekI9
+ 8YUn1zACpgCsrfLfiIn6xVI+rXKtuxEyZdgUufWw+mSIO74TBzcap3W2hH5CVEU4D5duvcQOW
+ fI2mqGEvWAzfAvy+Mdf/Yyl+8NvQ6jLI51cYWGVSHwdkARttm2IOR7QZg1CQRYXQSmVEFPdDh
+ wDsCYwMQCrYW77UTgwE/acBO0rqBSJpf4NuY0QOKb1sjV5v+V3uM2k5Votzjcy8n2U5WMtHNf
+ H/kJhGOCDr0y8Ab8k9HfW6dIWxBhUYqcfudxkAQUlrzPCdzT6oPXrK7YeXhTKON67TbUoKg3f
+ u35H//9VxDbAzjxbESXvZzSWdDtp3o2excOpCWvEqFfXR8OHIudXDSgTTp5ViIevS0qbf8r1Z
+ Q638FC4SAjmNt+Ulv8gWs/xPCmsiFpWKrOWtx8bXgWbWlM3LiBRza3kSAXy5jA/nPElUIe43G
+ RTC3mgFDpwfOF2inXuLNEIhFw1FEe1+9nq3LycJFFrutTjSOiuOlpc1KWCl0QixV11MgkdZKs
+ wJEOHUHFPnU1VhOkKE1bJH2g9fPfyV/xa+2zW2U1UAnHfOwPeQf9CsPeKHcrO+lNtXB58mGyc
+ NqZ2XX7y72Twtb0TtY0P8/71imq+/JAUlwhzh4a2EWxlNEEx7jPLKL/cXtGAATPBI8gjVzszw
+ xCbS8HIhZVYaGHjKRI0/g0XvN1iD2AaO8pOj1iOu8SQjOQNC0TdEJzR9IFHZRZwAtu/zH5K4m
+ SCxdsoE7MH07PM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, 22. April 2022, 19:09:13 CEST schrieb Sebastian Reichel:
-> Add error handling for the pull and driver register getters in preparation
-> for RK3588 support.
-> 
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+The Nuvoton WPCM450 SoC has a combined clock and reset controller.
+Add a devicetree binding for it, as well as definitions for the bit
+numbers used by it.
 
-Reviewed-by: Heiko Stübner <heiko@sntech.de>
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
+ .../bindings/clock/nuvoton,wpcm450-clk.yaml   | 74 +++++++++++++++++++
+ .../dt-bindings/clock/nuvoton,wpcm450-clk.h   | 67 +++++++++++++++++
+ 2 files changed, 141 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,wpcm45=
+0-clk.yaml
+ create mode 100644 include/dt-bindings/clock/nuvoton,wpcm450-clk.h
 
-> ---
->  drivers/pinctrl/pinctrl-rockchip.c | 168 ++++++++++++++++++-----------
->  drivers/pinctrl/pinctrl-rockchip.h |   4 +-
->  2 files changed, 109 insertions(+), 63 deletions(-)
-> 
-> diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-> index a1b598b86aa9..012cd2f0d85b 100644
-> --- a/drivers/pinctrl/pinctrl-rockchip.c
-> +++ b/drivers/pinctrl/pinctrl-rockchip.c
-> @@ -986,9 +986,9 @@ static int rockchip_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
->  #define PX30_PULL_PINS_PER_REG		8
->  #define PX30_PULL_BANK_STRIDE		16
->  
-> -static void px30_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				       int pin_num, struct regmap **regmap,
-> -				       int *reg, u8 *bit)
-> +static int px30_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				      int pin_num, struct regmap **regmap,
-> +				      int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1008,6 +1008,8 @@ static void px30_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  	*reg += ((pin_num / PX30_PULL_PINS_PER_REG) * 4);
->  	*bit = (pin_num % PX30_PULL_PINS_PER_REG);
->  	*bit *= PX30_PULL_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define PX30_DRV_PMU_OFFSET		0x20
-> @@ -1016,9 +1018,9 @@ static void px30_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define PX30_DRV_PINS_PER_REG		8
->  #define PX30_DRV_BANK_STRIDE		16
->  
-> -static void px30_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				      int pin_num, struct regmap **regmap,
-> -				      int *reg, u8 *bit)
-> +static int px30_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				     int pin_num, struct regmap **regmap,
-> +				     int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1038,6 +1040,8 @@ static void px30_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  	*reg += ((pin_num / PX30_DRV_PINS_PER_REG) * 4);
->  	*bit = (pin_num % PX30_DRV_PINS_PER_REG);
->  	*bit *= PX30_DRV_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define PX30_SCHMITT_PMU_OFFSET			0x38
-> @@ -1077,9 +1081,9 @@ static int px30_calc_schmitt_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RV1108_PULL_BITS_PER_PIN	2
->  #define RV1108_PULL_BANK_STRIDE		16
->  
-> -static void rv1108_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					 int pin_num, struct regmap **regmap,
-> -					 int *reg, u8 *bit)
-> +static int rv1108_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1098,6 +1102,8 @@ static void rv1108_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  	*reg += ((pin_num / RV1108_PULL_PINS_PER_REG) * 4);
->  	*bit = (pin_num % RV1108_PULL_PINS_PER_REG);
->  	*bit *= RV1108_PULL_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define RV1108_DRV_PMU_OFFSET		0x20
-> @@ -1106,9 +1112,9 @@ static void rv1108_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RV1108_DRV_PINS_PER_REG		8
->  #define RV1108_DRV_BANK_STRIDE		16
->  
-> -static void rv1108_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					int pin_num, struct regmap **regmap,
-> -					int *reg, u8 *bit)
-> +static int rv1108_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1128,6 +1134,8 @@ static void rv1108_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  	*reg += ((pin_num / RV1108_DRV_PINS_PER_REG) * 4);
->  	*bit = pin_num % RV1108_DRV_PINS_PER_REG;
->  	*bit *= RV1108_DRV_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define RV1108_SCHMITT_PMU_OFFSET		0x30
-> @@ -1184,9 +1192,9 @@ static int rk3308_calc_schmitt_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RK2928_PULL_PINS_PER_REG	16
->  #define RK2928_PULL_BANK_STRIDE		8
->  
-> -static void rk2928_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk2928_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1196,13 +1204,15 @@ static void rk2928_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  	*reg += (pin_num / RK2928_PULL_PINS_PER_REG) * 4;
->  
->  	*bit = pin_num % RK2928_PULL_PINS_PER_REG;
-> +
-> +	return 0;
->  };
->  
->  #define RK3128_PULL_OFFSET	0x118
->  
-> -static void rk3128_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					 int pin_num, struct regmap **regmap,
-> -					 int *reg, u8 *bit)
-> +static int rk3128_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1212,6 +1222,8 @@ static void rk3128_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  	*reg += ((pin_num / RK2928_PULL_PINS_PER_REG) * 4);
->  
->  	*bit = pin_num % RK2928_PULL_PINS_PER_REG;
-> +
-> +	return 0;
->  }
->  
->  #define RK3188_PULL_OFFSET		0x164
-> @@ -1220,9 +1232,9 @@ static void rk3128_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RK3188_PULL_BANK_STRIDE		16
->  #define RK3188_PULL_PMU_OFFSET		0x64
->  
-> -static void rk3188_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3188_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1252,12 +1264,14 @@ static void rk3188_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = 7 - (pin_num % RK3188_PULL_PINS_PER_REG);
->  		*bit *= RK3188_PULL_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  #define RK3288_PULL_OFFSET		0x140
-> -static void rk3288_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3288_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1281,6 +1295,8 @@ static void rk3288_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3188_PULL_PINS_PER_REG);
->  		*bit *= RK3188_PULL_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  #define RK3288_DRV_PMU_OFFSET		0x70
-> @@ -1289,9 +1305,9 @@ static void rk3288_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RK3288_DRV_PINS_PER_REG		8
->  #define RK3288_DRV_BANK_STRIDE		16
->  
-> -static void rk3288_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3288_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1315,13 +1331,15 @@ static void rk3288_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3288_DRV_PINS_PER_REG);
->  		*bit *= RK3288_DRV_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  #define RK3228_PULL_OFFSET		0x100
->  
-> -static void rk3228_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3228_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1332,13 +1350,15 @@ static void rk3228_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  
->  	*bit = (pin_num % RK3188_PULL_PINS_PER_REG);
->  	*bit *= RK3188_PULL_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define RK3228_DRV_GRF_OFFSET		0x200
->  
-> -static void rk3228_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3228_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1349,13 +1369,15 @@ static void rk3228_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  
->  	*bit = (pin_num % RK3288_DRV_PINS_PER_REG);
->  	*bit *= RK3288_DRV_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define RK3308_PULL_OFFSET		0xa0
->  
-> -static void rk3308_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3308_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1366,13 +1388,15 @@ static void rk3308_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  
->  	*bit = (pin_num % RK3188_PULL_PINS_PER_REG);
->  	*bit *= RK3188_PULL_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define RK3308_DRV_GRF_OFFSET		0x100
->  
-> -static void rk3308_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3308_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1383,14 +1407,16 @@ static void rk3308_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  
->  	*bit = (pin_num % RK3288_DRV_PINS_PER_REG);
->  	*bit *= RK3288_DRV_BITS_PER_PIN;
-> +
-> +	return 0;
->  }
->  
->  #define RK3368_PULL_GRF_OFFSET		0x100
->  #define RK3368_PULL_PMU_OFFSET		0x10
->  
-> -static void rk3368_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3368_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1414,14 +1440,16 @@ static void rk3368_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3188_PULL_PINS_PER_REG);
->  		*bit *= RK3188_PULL_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  #define RK3368_DRV_PMU_OFFSET		0x20
->  #define RK3368_DRV_GRF_OFFSET		0x200
->  
-> -static void rk3368_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -				    int pin_num, struct regmap **regmap,
-> -				    int *reg, u8 *bit)
-> +static int rk3368_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1445,15 +1473,17 @@ static void rk3368_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3288_DRV_PINS_PER_REG);
->  		*bit *= RK3288_DRV_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  #define RK3399_PULL_GRF_OFFSET		0xe040
->  #define RK3399_PULL_PMU_OFFSET		0x40
->  #define RK3399_DRV_3BITS_PER_PIN	3
->  
-> -static void rk3399_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					 int pin_num, struct regmap **regmap,
-> -					 int *reg, u8 *bit)
-> +static int rk3399_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1479,11 +1509,13 @@ static void rk3399_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3188_PULL_PINS_PER_REG);
->  		*bit *= RK3188_PULL_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
-> -static void rk3399_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					int pin_num, struct regmap **regmap,
-> -					int *reg, u8 *bit)
-> +static int rk3399_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  	int drv_num = (pin_num / 8);
-> @@ -1500,6 +1532,8 @@ static void rk3399_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % 8) * 3;
->  	else
->  		*bit = (pin_num % 8) * 2;
-> +
-> +	return 0;
->  }
->  
->  #define RK3568_PULL_PMU_OFFSET		0x20
-> @@ -1508,9 +1542,9 @@ static void rk3399_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RK3568_PULL_PINS_PER_REG	8
->  #define RK3568_PULL_BANK_STRIDE		0x10
->  
-> -static void rk3568_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					 int pin_num, struct regmap **regmap,
-> -					 int *reg, u8 *bit)
-> +static int rk3568_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
-> +					int pin_num, struct regmap **regmap,
-> +					int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1531,6 +1565,8 @@ static void rk3568_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3568_PULL_PINS_PER_REG);
->  		*bit *= RK3568_PULL_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  #define RK3568_DRV_PMU_OFFSET		0x70
-> @@ -1539,9 +1575,9 @@ static void rk3568_calc_pull_reg_and_bit(struct rockchip_pin_bank *bank,
->  #define RK3568_DRV_PINS_PER_REG		2
->  #define RK3568_DRV_BANK_STRIDE		0x40
->  
-> -static void rk3568_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> -					int pin_num, struct regmap **regmap,
-> -					int *reg, u8 *bit)
-> +static int rk3568_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
-> +				       int pin_num, struct regmap **regmap,
-> +				       int *reg, u8 *bit)
->  {
->  	struct rockchip_pinctrl *info = bank->drvdata;
->  
-> @@ -1562,6 +1598,8 @@ static void rk3568_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
->  		*bit = (pin_num % RK3568_DRV_PINS_PER_REG);
->  		*bit *= RK3568_DRV_BITS_PER_PIN;
->  	}
-> +
-> +	return 0;
->  }
->  
->  static int rockchip_perpin_drv_list[DRV_TYPE_MAX][8] = {
-> @@ -1584,7 +1622,9 @@ static int rockchip_get_drive_perpin(struct rockchip_pin_bank *bank,
->  	u8 bit;
->  	int drv_type = bank->drv[pin_num / 8].drv_type;
->  
-> -	ctrl->drv_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	ret = ctrl->drv_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	if (ret)
-> +		return ret;
->  
->  	switch (drv_type) {
->  	case DRV_TYPE_IO_1V8_3V0_AUTO:
-> @@ -1664,7 +1704,9 @@ static int rockchip_set_drive_perpin(struct rockchip_pin_bank *bank,
->  	dev_dbg(dev, "setting drive of GPIO%d-%d to %d\n",
->  		bank->bank_num, pin_num, strength);
->  
-> -	ctrl->drv_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	ret = ctrl->drv_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	if (ret)
-> +		return ret;
->  	if (ctrl->type == RK3568) {
->  		rmask_bits = RK3568_DRV_BITS_PER_PIN;
->  		ret = (1 << (strength + 1)) - 1;
-> @@ -1777,7 +1819,9 @@ static int rockchip_get_pull(struct rockchip_pin_bank *bank, int pin_num)
->  	if (ctrl->type == RK3066B)
->  		return PIN_CONFIG_BIAS_DISABLE;
->  
-> -	ctrl->pull_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	ret = ctrl->pull_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	if (ret)
-> +		return ret;
->  
->  	ret = regmap_read(regmap, reg, &data);
->  	if (ret)
-> @@ -1824,7 +1868,9 @@ static int rockchip_set_pull(struct rockchip_pin_bank *bank,
->  	if (ctrl->type == RK3066B)
->  		return pull ? -EINVAL : 0;
->  
-> -	ctrl->pull_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	ret = ctrl->pull_calc_reg(bank, pin_num, &regmap, &reg, &bit);
-> +	if (ret)
-> +		return ret;
->  
->  	switch (ctrl->type) {
->  	case RK2928:
-> diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-> index 91f10279d084..4992a048acbc 100644
-> --- a/drivers/pinctrl/pinctrl-rockchip.h
-> +++ b/drivers/pinctrl/pinctrl-rockchip.h
-> @@ -230,10 +230,10 @@ struct rockchip_pin_ctrl {
->  	struct rockchip_mux_route_data *iomux_routes;
->  	u32				niomux_routes;
->  
-> -	void	(*pull_calc_reg)(struct rockchip_pin_bank *bank,
-> +	int	(*pull_calc_reg)(struct rockchip_pin_bank *bank,
->  				    int pin_num, struct regmap **regmap,
->  				    int *reg, u8 *bit);
-> -	void	(*drv_calc_reg)(struct rockchip_pin_bank *bank,
-> +	int	(*drv_calc_reg)(struct rockchip_pin_bank *bank,
->  				    int pin_num, struct regmap **regmap,
->  				    int *reg, u8 *bit);
->  	int	(*schmitt_calc_reg)(struct rockchip_pin_bank *bank,
-> 
-
-
-
+diff --git a/Documentation/devicetree/bindings/clock/nuvoton,wpcm450-clk.y=
+aml b/Documentation/devicetree/bindings/clock/nuvoton,wpcm450-clk.yaml
+new file mode 100644
+index 0000000000000..0fffa8a68dee4
+=2D-- /dev/null
++++ b/Documentation/devicetree/bindings/clock/nuvoton,wpcm450-clk.yaml
+@@ -0,0 +1,74 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/nuvoton,wpcm450-clk.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Nuvoton WPCM450 clock controller binding
++
++maintainers:
++  - Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
++
++description:
++  This binding describes the clock controller of the Nuvoton WPCM450 SoC,=
+ which
++  supplies clocks and resets to the rest of the chip.
++
++properties:
++  compatible:
++    const: nuvoton,wpcm450-clk
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Reference clock oscillator (should be 48 MHz)
++
++  clock-names:
++    items:
++      - const: refclk
++
++  '#clock-cells':
++    const: 1
++
++  '#reset-cells':
++    const: 1
++
++additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - '#clock-cells'
++
++examples:
++  - |
++    #include <dt-bindings/clock/nuvoton,wpcm450-clk.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    refclk: clock-48mhz {
++      /* 48 MHz reference oscillator */
++      compatible =3D "fixed-clock";
++      clock-output-names =3D "refclk";
++      clock-frequency =3D <48000000>;
++      #clock-cells =3D <0>;
++    };
++
++    clk: clock-controller@b0000200 {
++      reg =3D <0xb0000200 0x100>;
++      compatible =3D "nuvoton,wpcm450-clk";
++      clocks =3D <&refclk>;
++      clock-names =3D "refclk";
++      #clock-cells =3D <1>;
++      #reset-cells =3D <1>;
++    };
++
++    serial@b8000000 {
++      compatible =3D "nuvoton,wpcm450-uart";
++      reg =3D <0xb8000000 0x20>;
++      reg-shift =3D <2>;
++      interrupts =3D <7 IRQ_TYPE_LEVEL_HIGH>;
++      clocks =3D <&clk WPCM450_CLK_UART0>;
++    };
+diff --git a/include/dt-bindings/clock/nuvoton,wpcm450-clk.h b/include/dt-=
+bindings/clock/nuvoton,wpcm450-clk.h
+new file mode 100644
+index 0000000000000..86e1c895921b7
+=2D-- /dev/null
++++ b/include/dt-bindings/clock/nuvoton,wpcm450-clk.h
+@@ -0,0 +1,67 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef _DT_BINDINGS_CLOCK_NUVOTON_WPCM450_CLK_H
++#define _DT_BINDINGS_CLOCK_NUVOTON_WPCM450_CLK_H
++
++/* Clocks based on CLKEN bits */
++#define WPCM450_CLK_FIU            0
++#define WPCM450_CLK_XBUS           1
++#define WPCM450_CLK_KCS            2
++#define WPCM450_CLK_SHM            4
++#define WPCM450_CLK_USB1           5
++#define WPCM450_CLK_EMC0           6
++#define WPCM450_CLK_EMC1           7
++#define WPCM450_CLK_USB0           8
++#define WPCM450_CLK_PECI           9
++#define WPCM450_CLK_AES           10
++#define WPCM450_CLK_UART0         11
++#define WPCM450_CLK_UART1         12
++#define WPCM450_CLK_SMB2          13
++#define WPCM450_CLK_SMB3          14
++#define WPCM450_CLK_SMB4          15
++#define WPCM450_CLK_SMB5          16
++#define WPCM450_CLK_HUART         17
++#define WPCM450_CLK_PWM           18
++#define WPCM450_CLK_TIMER0        19
++#define WPCM450_CLK_TIMER1        20
++#define WPCM450_CLK_TIMER2        21
++#define WPCM450_CLK_TIMER3        22
++#define WPCM450_CLK_TIMER4        23
++#define WPCM450_CLK_MFT0          24
++#define WPCM450_CLK_MFT1          25
++#define WPCM450_CLK_WDT           26
++#define WPCM450_CLK_ADC           27
++#define WPCM450_CLK_SDIO          28
++#define WPCM450_CLK_SSPI          29
++#define WPCM450_CLK_SMB0          30
++#define WPCM450_CLK_SMB1          31
++
++/* Other clocks */
++#define WPCM450_CLK_USBPHY        32
++
++#define WPCM450_NUM_CLKS          33
++
++/* Resets based on IPSRST bits */
++#define WPCM450_RESET_FIU          0
++#define WPCM450_RESET_EMC0         6
++#define WPCM450_RESET_EMC1         7
++#define WPCM450_RESET_USB0         8
++#define WPCM450_RESET_USB1         9
++#define WPCM450_RESET_AES_PECI    10
++#define WPCM450_RESET_UART        11
++#define WPCM450_RESET_MC          12
++#define WPCM450_RESET_SMB2        13
++#define WPCM450_RESET_SMB3        14
++#define WPCM450_RESET_SMB4        15
++#define WPCM450_RESET_SMB5        16
++#define WPCM450_RESET_PWM         18
++#define WPCM450_RESET_TIMER       19
++#define WPCM450_RESET_ADC         27
++#define WPCM450_RESET_SDIO        28
++#define WPCM450_RESET_SSPI        29
++#define WPCM450_RESET_SMB0        30
++#define WPCM450_RESET_SMB1        31
++
++#define WPCM450_NUM_RESETS        32
++
++#endif /* _DT_BINDINGS_CLOCK_NUVOTON_WPCM450_CLK_H */
+=2D-
+2.35.1
 
