@@ -2,138 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB67C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 04:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C47C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 04:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443871AbiDVERq (ORCPT
+        id S1443886AbiDVESd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 00:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
+        Fri, 22 Apr 2022 00:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbiDVERj (ORCPT
+        with ESMTP id S230232AbiDVESb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 00:17:39 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4494EA0F
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 21:14:47 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2edbd522c21so72847597b3.13
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 21:14:47 -0700 (PDT)
+        Fri, 22 Apr 2022 00:18:31 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFE54EA30;
+        Thu, 21 Apr 2022 21:15:39 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id t13so6375788pgn.8;
+        Thu, 21 Apr 2022 21:15:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R7jGqyYJMUVo08fKH+szIIQUXUxBVoUo95cPDD/inJ4=;
-        b=I9zUiMzdx0x2AlBPle+xfx0YbHSjxYYQzMOxKnLzS5AN60wHrUGdTUNXRzRKZNWmRB
-         9/3o8X4D7FM5xD5BeHyIcf8ZQ9PSZkS6eg6Sku3+6xyQH3NVx54VTYCYGsVZsyq3yAZz
-         vrLRrZwZGIuU8vS6PrH96FzJkh+IepxJW45pY=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=5YJXRXKYyui83xwMrCC37m5Rl3T1JJQZ+KXGrBA8Vtc=;
+        b=ZlP9pMqZq1Mvui/C0vp/IAbEynvnrfeyx6/seFgc/jk815XaWNqNoReFUWFMfSMFdV
+         eQy+7nUvuq/sb96nuT4AKtojdZZylm4281EsVRv5CWH/VUt67kYhSfqKQ0rPPw+YnezU
+         LDXLViFOor/8hua9eCH4Xwg9KETh94Fgtn95064hfd4D1zPs/cAw7jqGLKkB4h1t3tS5
+         +LJmNAeEqFFbFy2qiY/uoUQSyEaAPFkMEU1CL0z+F0MLLdBoGvWOEyHxPUHT1EM+ImZ7
+         8w0BThi4z0seLDa424CyOpKs8cs7oDKSn/Lv5rvUNRgQcn7cufSd527ScsfRkmPkkD13
+         deNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R7jGqyYJMUVo08fKH+szIIQUXUxBVoUo95cPDD/inJ4=;
-        b=utaqEMvv4KYV6For2gZnpews5Iuq+e9eV+M/yDCzLERbxkz22XkSbwrLIDm4J3i24d
-         Fyx3AV9HrOCThcJA9/6Rg0Tv9xH3UNZ++N5G/cNh3VL8YlYiehFLSdux+d/EL2gHfwas
-         Y/JmBYP5HKFzOlcaj7vtHEkRUG+3bkyOQrS2sRzGrnaND9QiZ5gQcPXGwYldmqRirnca
-         g1RVWizBO1tSgykyTUdx4Pc9+hB4xJMoSMdEe0lpYW3Hid7dw5AArOVjbqowNzo8Smjr
-         utIiPqMSTOh75qJJGMGOE7e2Cko5hvEaDNLK6lEnAfzmQZwTEeoxtRO7kEfwHsbnJt5k
-         yEHA==
-X-Gm-Message-State: AOAM530GQFO9THdGtIEAmdw4KMrQ5dmLiuDkpgPJ7wrZxX4S2OU8H7LJ
-        JQ1G7niPGhZBEXl4MjlqQWZdJKdKpwQY2BzIFI1b/g==
-X-Google-Smtp-Source: ABdhPJzT2Ffgf1KZKr2ZKeMbm0T2FTTmEEP6KdtEZrJKSquU8IPPEsmgOIJHitJbSdrl7JmX2J8oRdgb7gZjDarf8wc=
-X-Received: by 2002:a81:ad1f:0:b0:2f4:da5b:5133 with SMTP id
- l31-20020a81ad1f000000b002f4da5b5133mr3074648ywh.105.1650600887150; Thu, 21
- Apr 2022 21:14:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220419081246.2546159-1-wenst@chromium.org> <3591fcc1-d34a-b40a-4e78-edcf9d2ddf08@collabora.com>
- <CAGXv+5HhcQbdGLQFtgPnvzVbSKaQ5GQGvmjwPVOVxjrYnMh1dg@mail.gmail.com>
- <ca8048f4-2e75-a49b-6c54-9f6abba6ead3@collabora.com> <CAGXv+5G2Uyq5fdMUnhr5wOm6O8M3dHNKGaSP2L_Vv1o28mXmOQ@mail.gmail.com>
- <20220422014044.16530C385A7@smtp.kernel.org>
-In-Reply-To: <20220422014044.16530C385A7@smtp.kernel.org>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Fri, 22 Apr 2022 12:14:36 +0800
-Message-ID: <CAGXv+5HJ2EmxH49L4a3t-gGcQpNLwgi74=uZ1iB1fNzSFz7Gbw@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/7] clk: mediatek: Move to struct clk_hw provider APIs
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-clk@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5YJXRXKYyui83xwMrCC37m5Rl3T1JJQZ+KXGrBA8Vtc=;
+        b=0KFVEF/RNgRXVhnkolxVrp30kb9LcXb/n0bu8b6BV+Kd1umW3oH1h0tUbFj22p94yw
+         Z/gjirydJt430I4Pu6MH44uSedp57+cmWHkL3sPPuqWuh0AjHw/M9E/FsfVGoPmoekrT
+         Xw5l7658hv0Yq9t5defjikoe9L/rIVOoNxP1AWOmJTG/fwSMcN2bhL/zCvoqpA+MDGvI
+         9V+ElzS4V4quOiCBzwLvF6QxhySO+q/Y63nksodvXBhDGfqHhhljnkhIY7IRNT5rGT2M
+         IRZOw/Pwrv05boAEBL+h7eX2dFSD3rQac19rQNP9ga2L+Ud7Gr0LGWghHnQ78WTuvaTP
+         JA5Q==
+X-Gm-Message-State: AOAM533wSWflz6cGwXhhyklDBZSR45xMkj34UPiuIxth/Bj2Tr2puP8/
+        V2T7i0e1kg+EVoyj0xKLznjk5/s+TuYHbQ==
+X-Google-Smtp-Source: ABdhPJyS3Cg+dEknuTLni4hDLcz+iQOgtwXxn4TsnOQeLPcTd+7RVDLEHGAKyY8L6o2hzsANZGetAw==
+X-Received: by 2002:a63:e307:0:b0:39c:ce49:f1ae with SMTP id f7-20020a63e307000000b0039cce49f1aemr2395200pgh.174.1650600938751;
+        Thu, 21 Apr 2022 21:15:38 -0700 (PDT)
+Received: from Negi ([68.181.16.40])
+        by smtp.gmail.com with ESMTPSA id qa16-20020a17090b4fd000b001d25dfb9d39sm4103256pjb.14.2022.04.21.21.15.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 21:15:38 -0700 (PDT)
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Soumya Negi <soumya.negi97@gmail.com>, linux-pm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Documentation: thermal: Include ReST markup standard definition file
+Date:   Thu, 21 Apr 2022 21:14:27 -0700
+Message-Id: <20220422041427.32585-1-soumya.negi97@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 9:40 AM Stephen Boyd <sboyd@kernel.org> wrote:
->
-> Quoting Chen-Yu Tsai (2022-04-20 23:05:10)
-> >
-> > Not exactly. All the clocks in the MTK drivers are allocated at runtime,
-> > so we can't use clk_parent_data to point to not-yet-allocated clk_hw-s.
-> > Instead we'll need to have
-> >
-> >     struct mtk_clk_parent_data {
-> >         unsigned int clk_id; /* Match CLK_XXX_YYY from dt-binding headers */
-> >         ... /* remaining fields same as mtk_clk_parent_data */
-> >     };
-> >
-> > and create the actual clk_parent_data at runtime by looking up clk_id in
-> > the set of already registered clks:
-> >
-> >     int mtk_clk_register_XXX(..., struct mtk_clk_parent_data *pdata,
-> >                              struct clk_hw_onecell_data *clk_data) {
-> >         struct clk_parent_data data = {
-> >             .hw = clk_data[pdata->clk_id],
-> >             /* copy other fields verbatim */
-> >         };
-> >         ...
-> >     }
-> >
-> > Obviously this forces some ordering of how the clks are registered.
-> > I believe the order is already correct, and if it isn't, it would be
-> > easy to detect, and we can reorder things to fix it.
->
-> If this is a common problem, we may need to come up with a generic
-> solution that either adds a new clk registration API that fills in the
-> clk_parent_data hw pointer or add another member to struct
-> clk_parent_data that says "index into this other array of clk_hw
-> pointers".
+Fixes the documentation compile error given below:
 
-Looking through the large clk drivers, at least Rockchip and MediaTek
-drivers would benefit from this. And maybe the Tegra ones as well, though
-I'm not familiar with them.
+ERROR: Undefined substitution referenced: "copy".
 
-Meson, Qcom, and sunxi-ng all use the static clk_hw scheme, so they're
-unaffected.
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+---
+ Documentation/driver-api/thermal/intel_dptf.rst | 1 +
+ 1 file changed, 1 insertion(+)
 
-I can think of a couple ways to tackle this:
+diff --git a/Documentation/driver-api/thermal/intel_dptf.rst b/Documentation/driver-api/thermal/intel_dptf.rst
+index 96668dca753a..e3c41d96d63a 100644
+--- a/Documentation/driver-api/thermal/intel_dptf.rst
++++ b/Documentation/driver-api/thermal/intel_dptf.rst
+@@ -1,4 +1,5 @@
+ .. SPDX-License-Identifier: GPL-2.0
++.. include:: <isonum.txt>
+ 
+ ===============================================================
+ Intel(R) Dynamic Platform and Thermal Framework Sysfs Interface
+-- 
+2.17.1
 
-A. Add a new data structure as I showed above, and a helper to fill in
-   |struct clk_parent_data| from said data structure. This basically moves
-   what I planned to do for the MediaTek clk driver to the clk provider
-   API. This is the least intrusive option.
-
-B. Add the |clk_id| field to |struct clk_parent_data|, and a |struct clk_hw *|
-   field to |struct clk_init_data| for the array. Lookup would be done at
-   clk registration time in clk_core_populate_parent_map(). This still
-   forces checking of the clk_hw pointer and proper ordering of clk
-   registration though. And it also bloats the data structures for folks
-   not using the feature.
-
-C. Same as B, but keep the pointer to the array around (in clk_core?), and
-   move the lookup into clk_core_fill_parent_index(). This provides similar
-   behavior to using global clk name or static |struct clk_hw *| values in
-   that clk registration order is not restricted.
-
-All the above options are designed around the desire to be able to make
-either the new data structure or |struct clk_parent_data| constant.
-
-Thoughts?
-
-
-Regards
-ChenYu
