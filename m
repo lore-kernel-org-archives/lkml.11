@@ -2,79 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF39C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445911AbiDVJUl (ORCPT
+        id S1445967AbiDVJVK convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
+        Fri, 22 Apr 2022 05:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445872AbiDVJU3 (ORCPT
+        with ESMTP id S1445974AbiDVJUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:20:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAC256426;
-        Fri, 22 Apr 2022 02:16:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D192B82B0E;
-        Fri, 22 Apr 2022 09:16:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16259C385A4;
-        Fri, 22 Apr 2022 09:16:16 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Nm35tUwo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1650618974;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZxKZTmMR0fxvcFScAWIaAotfvQtArVbDqcf74lzw3NE=;
-        b=Nm35tUwoqwGaX4PWGNhSbkqbvHA/Xlpceq0dE1nWgqDo7fN3XzQzHAH1QOC8tZ5w53v9B9
-        2MYqo9N6xgtiPiDGPceLI+57N94NmaQ620Aj/xLZngBfI17mVAmEzma+dlWXx+swKeQxxe
-        4HphdveCQ/wwWOXKZOEL2rJ2EmsYqJI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 69716d1a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 22 Apr 2022 09:16:14 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 11:16:12 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Eric Biggers <ebiggers@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the random tree with the jc_docs tree
-Message-ID: <YmJyXEg6O5vxKYFO@zx2c4.com>
-References: <20220422135927.7fa82fa4@canb.auug.org.au>
- <YmJMBnBV8wO4aco9@sol.localdomain>
- <87wnfhzip7.fsf@meer.lwn.net>
- <YmJvKZcYMsypQRZJ@zx2c4.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmJvKZcYMsypQRZJ@zx2c4.com>
+        Fri, 22 Apr 2022 05:20:51 -0400
+X-Greylist: delayed 66 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 02:17:12 PDT
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0E1D53B73;
+        Fri, 22 Apr 2022 02:17:12 -0700 (PDT)
+Received: from smtpclient.apple (p4fefc32f.dip0.t-ipconnect.de [79.239.195.47])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 661B5CECD4;
+        Fri, 22 Apr 2022 11:17:11 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v1] Bluetooth: btusb: Set
+ HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <1650012368-13505-1-git-send-email-quic_zijuhu@quicinc.com>
+Date:   Fri, 22 Apr 2022 11:17:11 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, c-hbandi@codeaurora.org,
+        hemantg@codeaurora.org, rjliao@codeaurora.org,
+        zijuhu@codeaurora.org, tjiang@codeaurora.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <1D02DBF7-9368-43D5-9062-96CC73E22B57@holtmann.org>
+References: <1650012368-13505-1-git-send-email-quic_zijuhu@quicinc.com>
+To:     Zijun Hu <quic_zijuhu@quicinc.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey again,
+Hi Zijun,
 
-On Fri, Apr 22, 2022 at 11:02:33AM +0200, Jason A. Donenfeld wrote:
-> > Meanwhile, Jason, if you want to pick up the offending patches directly,
-> > I can drop them from docs-next.
+> Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
+> they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
+> "UNKNOWN HCI COMMAND" as shown below:
 > 
-> Ah, I hadn't seen that other patch because it wasn't CC'd to me, but
-> that makes sense since it was mostly a docs fix rather than a
-> substantive technical change. Since we've now got both going on at once,
-> I'll just take the docs one to make the conflict easier, so sure, drop
-> it from your tree, and I'll apply it to mine.
+> [  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
+> [  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
+> 
+> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> ---
+> drivers/bluetooth/btusb.c | 2 ++
+> 1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> index 06a854a2507e..a33f8705f147 100644
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@ -3340,6 +3340,8 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+> 	 */
+> 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
+> 
+> +	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+> +
+> 	return 0;
+> }
 
-Done, with the build conflicts fixed up. These are now in my tree:
+please include the supported commands output from btmon that indicates that this hardware declares support for this command.
 
-- 3608cbde2518 ("Documentation: siphash: convert danger note to warning for HalfSipHash")
-- 3addb633c82f ("Documentation: siphash: enclose HalfSipHash usage example in the literal block")
-- 1ed2075e7202 ("Documentation: siphash: disambiguate HalfSipHash algorithm from hsiphash functions")
+Regards
 
-Jason
+Marcel
+
