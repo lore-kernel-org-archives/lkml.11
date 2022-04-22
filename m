@@ -2,220 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CD2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447758AbiDVNQN (ORCPT
+        id S1447776AbiDVNQT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48312 "EHLO
+        Fri, 22 Apr 2022 09:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447710AbiDVNQM (ORCPT
+        with ESMTP id S1447762AbiDVNQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:16:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F48580C6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:13:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23358B82CF7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C6B0C385A0;
-        Fri, 22 Apr 2022 13:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650633195;
-        bh=emSGr4+smQ98ALXdYO2qBhavUsM1G8UzwvYEe66FXYY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DBIfDx2g3yT0vWfX7yO4UKb/fA43qc9EBaBk3ZXlRDfWqHRCLxFDZNGZEHMwXN1i5
-         3Dh3UX5kaNLEiednFqrhZHbA/RTQOAGBIOpM4rWkwAOCnN1BoM17PkKZLvtPN/61bp
-         VEcgImBC4Yt91sIIr/PEbsFddW/G7oik7nn3OOuFxa7I4NnDviWVXDYv6yqAcn3BDk
-         jaOZuRQvRT/820hc6CxL//c1UyuxVeqKlW0CusVuFGlzExjlZzEAHQ6E+JSJoZNfQL
-         BMJ54cKeC173br5lBGmRimsvsMMsTJHTXm1MBwXD2hZMGAKYlu+UGKT2ryJTPodoDL
-         PlInoSK+N4zMA==
-Date:   Fri, 22 Apr 2022 22:13:12 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: Re: [linux-stable-rc:queue/4.19 3886/9999]
- arch/ia64/kernel/kprobes.c:414:24: error: implicit declaration of function
- '__kretprobe_trampoline_handler'; did you mean 'kretprobe_trampoline'?
-Message-Id: <20220422221312.f1bc4222cd2eb871ff066e24@kernel.org>
-In-Reply-To: <202204130102.JZPa6KCQ-lkp@intel.com>
-References: <202204130102.JZPa6KCQ-lkp@intel.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 22 Apr 2022 09:16:17 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12491580CC;
+        Fri, 22 Apr 2022 06:13:23 -0700 (PDT)
+X-UUID: 6138ec2611544777a7e3d64ad49c2697-20220422
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:79621356-7dff-4807-ab2b-182c4c366ad6,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:75
+X-CID-INFO: VERSION:1.1.4,REQID:79621356-7dff-4807-ab2b-182c4c366ad6,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:75
+X-CID-META: VersionHash:faefae9,CLOUDID:b9bbcaef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:9f9ef6ce3947,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
+        le:nil,QS:0,BEC:nil
+X-UUID: 6138ec2611544777a7e3d64ad49c2697-20220422
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1977651601; Fri, 22 Apr 2022 21:13:20 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 22 Apr 2022 21:13:19 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 22 Apr 2022 21:13:18 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH 0/1] dt-bindings: timer: mediatek: Convert binding to YAML
+Date:   Fri, 22 Apr 2022 21:13:16 +0800
+Message-ID: <20220422131317.25410-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Based on tag: next-20220422, linux-next/master + [1],
 
-Can you revert/drop this patch from 4.19 stable tree?
-This patch is a part of bigger series, which introduces a generic
-arch-independent kretprobe trampoline handler, but that is not for the
-stable tree.
+In [1], mt8186 compatible should be applied, but I don't find this.
+I convert binding to YAML base on [1].
 
-Also, the commit f5f96e3643dc33d6117cf7047e73512046e4858b is in the 4.19
-stable tree, which fixes this commit. Thus that must be removed too.
+[1] https://lore.kernel.org/all/98be733a-62b0-4cf6-ab27-992ea49da5b1@linaro.org/$
 
-Thank you,
+Allen-KH Cheng (1):
+  dt-bindings: timer: mediatek: Convert binding to YAML
 
-On Wed, 13 Apr 2022 01:59:56 +0800
-kernel test robot <lkp@intel.com> wrote:
-
-> Hi Masami,
-> 
-> FYI, the error/warning still remains.
-> 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/4.19
-> head:   bdfbd5df0daf1748bef4501ce255ce594ee8d55f
-> commit: d3380de483d55d904fb94a241406b34ed2fada7d [3886/9999] ia64: kprobes: Use generic kretprobe trampoline handler
-> config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20220413/202204130102.JZPa6KCQ-lkp@intel.com/config)
-> compiler: ia64-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=d3380de483d55d904fb94a241406b34ed2fada7d
->         git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
->         git fetch --no-tags linux-stable-rc queue/4.19
->         git checkout d3380de483d55d904fb94a241406b34ed2fada7d
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->    arch/ia64/kernel/kprobes.c: In function 'get_kprobe_inst':
->    arch/ia64/kernel/kprobes.c:338:22: warning: variable 'template' set but not used [-Wunused-but-set-variable]
->      338 |         unsigned int template;
->          |                      ^~~~~~~~
->    arch/ia64/kernel/kprobes.c: At top level:
->    arch/ia64/kernel/kprobes.c:412:15: warning: no previous prototype for 'trampoline_probe_handler' [-Wmissing-prototypes]
->      412 | int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
->          |               ^~~~~~~~~~~~~~~~~~~~~~~~
->    arch/ia64/kernel/kprobes.c: In function 'trampoline_probe_handler':
-> >> arch/ia64/kernel/kprobes.c:414:24: error: implicit declaration of function '__kretprobe_trampoline_handler'; did you mean 'kretprobe_trampoline'? [-Werror=implicit-function-declaration]
->      414 |         regs->cr_iip = __kretprobe_trampoline_handler(regs, kretprobe_trampoline, NULL);
->          |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->          |                        kretprobe_trampoline
->    At top level:
->    arch/ia64/kernel/kprobes.c:928:13: warning: 'ia64_get_bsp_cfm' defined but not used [-Wunused-function]
->      928 | static void ia64_get_bsp_cfm(struct unw_frame_info *info, void *arg)
->          |             ^~~~~~~~~~~~~~~~
->    cc1: some warnings being treated as errors
-> 
-> Kconfig warnings: (for reference only)
->    WARNING: unmet direct dependencies detected for FRAME_POINTER
->    Depends on DEBUG_KERNEL && (M68K || UML || SUPERH) || ARCH_WANT_FRAME_POINTERS
->    Selected by
->    - FAULT_INJECTION_STACKTRACE_FILTER && FAULT_INJECTION_DEBUG_FS && STACKTRACE_SUPPORT && !X86_64 && !MIPS && !PPC && !S390 && !MICROBLAZE && !ARM_UNWIND && !ARC && !X86
-> 
-> 
-> vim +414 arch/ia64/kernel/kprobes.c
-> 
->    333	
->    334	static void __kprobes get_kprobe_inst(bundle_t *bundle, uint slot,
->    335		       	unsigned long *kprobe_inst, uint *major_opcode)
->    336	{
->    337		unsigned long kprobe_inst_p0, kprobe_inst_p1;
->  > 338		unsigned int template;
->    339	
->    340		template = bundle->quad0.template;
->    341	
->    342		switch (slot) {
->    343		  case 0:
->    344			*major_opcode = (bundle->quad0.slot0 >> SLOT0_OPCODE_SHIFT);
->    345			*kprobe_inst = bundle->quad0.slot0;
->    346			  break;
->    347		  case 1:
->    348			*major_opcode = (bundle->quad1.slot1_p1 >> SLOT1_p1_OPCODE_SHIFT);
->    349			kprobe_inst_p0 = bundle->quad0.slot1_p0;
->    350			kprobe_inst_p1 = bundle->quad1.slot1_p1;
->    351			*kprobe_inst = kprobe_inst_p0 | (kprobe_inst_p1 << (64-46));
->    352			break;
->    353		  case 2:
->    354			*major_opcode = (bundle->quad1.slot2 >> SLOT2_OPCODE_SHIFT);
->    355			*kprobe_inst = bundle->quad1.slot2;
->    356			break;
->    357		}
->    358	}
->    359	
->    360	/* Returns non-zero if the addr is in the Interrupt Vector Table */
->    361	static int __kprobes in_ivt_functions(unsigned long addr)
->    362	{
->    363		return (addr >= (unsigned long)__start_ivt_text
->    364			&& addr < (unsigned long)__end_ivt_text);
->    365	}
->    366	
->    367	static int __kprobes valid_kprobe_addr(int template, int slot,
->    368					       unsigned long addr)
->    369	{
->    370		if ((slot > 2) || ((bundle_encoding[template][1] == L) && slot > 1)) {
->    371			printk(KERN_WARNING "Attempting to insert unaligned kprobe "
->    372					"at 0x%lx\n", addr);
->    373			return -EINVAL;
->    374		}
->    375	
->    376		if (in_ivt_functions(addr)) {
->    377			printk(KERN_WARNING "Kprobes can't be inserted inside "
->    378					"IVT functions at 0x%lx\n", addr);
->    379			return -EINVAL;
->    380		}
->    381	
->    382		return 0;
->    383	}
->    384	
->    385	static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
->    386	{
->    387		unsigned int i;
->    388		i = atomic_add_return(1, &kcb->prev_kprobe_index);
->    389		kcb->prev_kprobe[i-1].kp = kprobe_running();
->    390		kcb->prev_kprobe[i-1].status = kcb->kprobe_status;
->    391	}
->    392	
->    393	static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
->    394	{
->    395		unsigned int i;
->    396		i = atomic_read(&kcb->prev_kprobe_index);
->    397		__this_cpu_write(current_kprobe, kcb->prev_kprobe[i-1].kp);
->    398		kcb->kprobe_status = kcb->prev_kprobe[i-1].status;
->    399		atomic_sub(1, &kcb->prev_kprobe_index);
->    400	}
->    401	
->    402	static void __kprobes set_current_kprobe(struct kprobe *p,
->    403				struct kprobe_ctlblk *kcb)
->    404	{
->    405		__this_cpu_write(current_kprobe, p);
->    406	}
->    407	
->    408	static void kretprobe_trampoline(void)
->    409	{
->    410	}
->    411	
->    412	int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
->    413	{
->  > 414		regs->cr_iip = __kretprobe_trampoline_handler(regs, kretprobe_trampoline, NULL);
->    415		/*
->    416		 * By returning a non-zero value, we are telling
->    417		 * kprobe_handler() that we don't want the post_handler
->    418		 * to run (and have re-enabled preemption)
->    419		 */
->    420		return 1;
->    421	}
->    422	
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
-
+ .../bindings/timer/mediatek,mtk-timer.txt     | 42 ----------
+ .../bindings/timer/mediatek,mtk-timer.yaml    | 79 +++++++++++++++++++
+ 2 files changed, 79 insertions(+), 42 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/mediatek,mtk-timer.yaml
 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.18.0
+
