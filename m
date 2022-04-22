@@ -2,124 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2005DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0250EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbiDVRmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 13:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54920 "EHLO
+        id S230177AbiDVRoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 13:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbiDVRmI (ORCPT
+        with ESMTP id S229489AbiDVRoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:42:08 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FF7E7F43;
-        Fri, 22 Apr 2022 10:39:08 -0700 (PDT)
+        Fri, 22 Apr 2022 13:44:44 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3162511481A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:41:45 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id bg9so7856937pgb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:41:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650649148; x=1682185148;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0fpFqQYd/Wbv3V4oC9q2pZUt7Qc5kv653iWEvAomgFI=;
-  b=ZuOLpuMQZNe3m4hwMlM6YJDxrTrvA4No229fI8Wj6+VtHUtlX/v6LHj6
-   dFK4pXs+qSKOxMFm+LNejCvXgLWodhvYGTVedSCg5bMbh3BnC/S+3Kvct
-   uWGvDElzSfkbn6kJ0K6ucyB7ANX8x79HYBdYMnbR+Y6fmHEZpqwZ3jN0c
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Apr 2022 10:35:21 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 10:35:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 10:35:18 -0700
-Received: from [10.111.175.210] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 22 Apr
- 2022 10:35:15 -0700
-Message-ID: <c68e92ea-ee92-6aeb-1d51-5e265052ef43@quicinc.com>
-Date:   Fri, 22 Apr 2022 10:35:13 -0700
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=OZTgMPH9Pxi3nCqnIacIQrfeG7gnS/pKi1r4Mc7HcDs=;
+        b=fjjvrmTdM9nn7GZ2f47W0XnahdAqPMYF645kNo0dHqor07t5HOJrx+xy4RBWf+He4x
+         v1DVWg+2UoGFcgRunb+/wSx4FLdf3eD62Ao8J4t0mScnpTxiy3mjZWy0QD4pa5lHnNJs
+         mL3otI21RYGUksjcY5+m2py0xBTzboASdb9sP80hXMWwWKAzJ8svXz11UIpNcDqqzsbQ
+         ZNmGc3oQe7SLc5N2y2WQVMuOoOhJ5gZip36Ppcb24hPXNSOv8SeA0wNmKMa6g+hFk/pK
+         V+xUWh6Nj6ZWRCSwJnwAMpTR1W/tV2uqiEXgm5jjZkoGH4fGwDSb0gY6IFvuDVgGfh+6
+         daxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=OZTgMPH9Pxi3nCqnIacIQrfeG7gnS/pKi1r4Mc7HcDs=;
+        b=CvYksoLLPbqZf1Yf0Z4r4rDAhOtwngedkb7oXY9Svdl21HtLcrochW250drc5Tn3p1
+         CAJ3qO9Ih/sWTkwNoY1Hh4IB/gSEepRwIEwwECuXqhmFD4rAzkZcovT+SrL9KxYX5F/F
+         GVIbHnke0W0HWyHxVDQ097+7rYswjaoH0U90tepbJoaxMzZdDp3CuNA7mapZBaCAdgKf
+         DRsjLrBgZ5N6jM07AuLP/4mLRElQSUSXXjd1gKpvZ58Ex7maSMqV//ah96KTxgldCHrv
+         We87YNqS8eQJrUGy5xREjQzBpS1LNOGgYosg8+oBR/Mb0zRO5W18lnlTFHKrpsSbXUnC
+         X2pA==
+X-Gm-Message-State: AOAM531kVRGk78QQzDRnHFVwqxQODPQpPDOq70hYGOEB9jiRhpGqQWo5
+        tf21WFhxNLjpdGZjj0nGW/0rT9KmDuEufNVPtRU=
+X-Google-Smtp-Source: ABdhPJwcty+geLkVBerxwWZAwgWuRj+bwlAp3XZHyWx/9WdIbvLqVAmvr1abK4wNU/x8a40h2nNdKPB43lTYeGeJhow=
+X-Received: by 2002:a62:e518:0:b0:4fa:9333:ddbd with SMTP id
+ n24-20020a62e518000000b004fa9333ddbdmr6140985pff.11.1650649034742; Fri, 22
+ Apr 2022 10:37:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v9 2/4] drm/msm/dp: Support only IRQ_HPD and REPLUG
- interrupts for eDP
-Content-Language: en-US
-To:     Doug Anderson <dianders@chromium.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sean Paul <sean@poorly.run>, Sean Paul <seanpaul@chromium.org>,
-        Steev Klimaszewski <steev@kali.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>
-References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
- <1650618666-15342-3-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=WWa8n0MJB8ks7bgrSj1Qop1Z5hvfEAOWtFcmsz38eR_w@mail.gmail.com>
- <83129bad-44a9-bec7-f931-8067ef1b9d4d@quicinc.com>
- <CAD=FV=Vu_0vxb_D+8n3qhNZ66nRXBp5vxshChmOM-ToPJxk=aA@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAD=FV=Vu_0vxb_D+8n3qhNZ66nRXBp5vxshChmOM-ToPJxk=aA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220416053902.68517-1-dave@stgolabs.net> <20220417034932.jborenmvfbqrfhlj@offworld>
+In-Reply-To: <20220417034932.jborenmvfbqrfhlj@offworld>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Fri, 22 Apr 2022 10:37:00 -0700
+Message-ID: <CAHbLzkpNBRdhBewviYWke+dgERjKi_nhEdTU5V75Sr92yp2K3w@mail.gmail.com>
+Subject: Re: [PATCH 6/6] mm/migrate: export whether or not node is toptier in sysf
+To:     linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org,
+        rientjes@google.com, yosryahmed@google.com, hannes@cmpxchg.org,
+        shakeelb@google.com, dave.hansen@linux.intel.com,
+        tim.c.chen@linux.intel.com, roman.gushchin@linux.dev,
+        gthelen@google.com, a.manzanares@samsung.com,
+        heekwon.p@samsung.com, gim.jongmin@samsung.com,
+        linux-kernel@vger.kernel.org, jvgediya@linux.ibm.com,
+        ying.huang@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug
+On Sat, Apr 16, 2022 at 8:49 PM Davidlohr Bueso <dave@stgolabs.net> wrote:
+>
+>
+>
+> This allows userspace to know if the node is considered fast
+> memory (with CPUs attached to it). While this can be already
+> derived without a new file, this helps further encapsulate the
+> concept.
+>
+> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+> ---
+> Resending, just noticed this oatch was never posted.
+>
+>   Documentation/ABI/stable/sysfs-devices-node |  6 ++++++
+>   drivers/base/node.c                         | 13 +++++++++++++
+>   2 files changed, 19 insertions(+)
+>
+> diff --git a/Documentation/ABI/stable/sysfs-devices-node b/Documentation/ABI/stable/sysfs-devices-node
+> index f620c6ae013c..1c21c3985535 100644
+> --- a/Documentation/ABI/stable/sysfs-devices-node
+> +++ b/Documentation/ABI/stable/sysfs-devices-node
+> @@ -198,3 +198,9 @@ Date:               April 2022
+>   Contact:      Davidlohr Bueso <dave@stgolabs.net>
+>   Description:
+>                 Shows nodes within the next tier of slower memory below this node.
+> +
+> +What:          /sys/devices/system/node/nodeX/memory_toptier
+> +Date:          April 2022
+> +Contact:       Davidlohr Bueso <dave@stgolabs.net>
+> +Description:
+> +               Node is attached to fast memory or not.
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index ab4bae777535..b9de5b0360f2 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -598,12 +598,25 @@ static ssize_t node_read_demotion_path(struct device *dev,
+>   }
+>   static DEVICE_ATTR(demotion_path, 0444, node_read_demotion_path, NULL);
+>
+> +static ssize_t node_read_memory_toptier(struct device *dev,
+> +                                    struct device_attribute *attr, char *buf)
+> +{
+> +       int nid = dev->id;
+> +       int len = 0;
+> +
+> +       len += sysfs_emit_at(buf, len, "%d\n", !!node_is_toptier(nid));
 
-On 4/22/2022 9:10 AM, Doug Anderson wrote:
-> Hi,
-> 
-> On Fri, Apr 22, 2022 at 9:05 AM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
->>
->> Hi Doug
->>
->> For the lockdep error, the splat looks similar to what kuogee fixed
->> recently.
->>
->> Can you please check if below patch is present in your tree?
->>
->> https://patchwork.freedesktop.org/patch/481396/
-> 
-> Indeed I did have that in my tree already, but the lockdep splat is
-> still there. I think the problem is that we're now calling
-> dp_hpd_plug_handle() directly in dp_bridge_enable()
-> 
-> -Doug
+It is not guaranteed. Some hardware configurations have cpuless DRAM
+nodes, but they should be treated as top tier nodes IMHO. Please see
+https://lore.kernel.org/linux-mm/20220413092206.73974-1-jvgediya@linux.ibm.com/
 
-Yes, now i understood this particular issue better and not sure how this 
-wasn't caught. Perhaps some difference in the USE flags. Sankeerth didnt 
-have lockdebug and thats why didnt hit this.
-
-I have discussed with kuogee about why this change is needed and why 
-this wasnt being done in get_modes().
-
-It seems like originally, this was done for a quirk in the DP compliance 
-equipment that it did not publish the fail safe mode ( even though some 
-other modes were present ). Typically, any sink (as long as EDID read 
-went through ) adds the 640x480 fail safe mode.
-
-We could have done it in get_modes() even earlier but not sure how it 
-was missed or was there some other reason.
-
-Nonetheless, kuogee will post the change to move this to get_modes() 
-shortly.
-
-Thanks
-
-Abhinav
+> +
+> +       return len;
+> +}
+> +static DEVICE_ATTR(memory_toptier, 0444, node_read_memory_toptier, NULL);
+> +
+>   static struct attribute *node_dev_attrs[] = {
+>         &dev_attr_meminfo.attr,
+>         &dev_attr_numastat.attr,
+>         &dev_attr_distance.attr,
+>         &dev_attr_vmstat.attr,
+>         &dev_attr_demotion_path.attr,
+> +       &dev_attr_memory_toptier.attr,
+>         NULL
+>   };
+>
+> --
+> 2.26.2
+>
