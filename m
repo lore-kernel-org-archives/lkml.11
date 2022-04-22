@@ -2,98 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C42C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EF9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356127AbiDVQGV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
+        id S232195AbiDVQI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 12:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357065AbiDVQGO (ORCPT
+        with ESMTP id S1381781AbiDVQIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:06:14 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E475E149
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:03:20 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id j8so11778036pll.11
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:03:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UGK3iOLOSq8b+uW93AKentNVyqK1drmrSS6mX3tmCK4=;
-        b=jREOmp2tBNoX9/1JSC70rEEUVIFeaV48CD7qYFaDgDafU4SAaf9LhxP1k+Rn6vpleM
-         cskZCEoTYLEONhvD7sDXgIeb2ay/1zuHkkkpPeZNSbjJTGucqwNKlNwqA3EhplbzG7G4
-         ZRoCWXpI8nSjzPsLjVHRNaL+ul/CBEs/833AqNI7BftoMXQzaXCNU4ereRAdqn5K6AEO
-         CvAsxDdmuZRoKIGuKOonyNOEGdtlIoLyBKZgaXs6SPBR9VyJuo+AOSSuKZi47KF9WFdf
-         7t6riDyt8vTj76MOUivasvnNMNXEqA2dE0lteUO1dl08saMJWervfiaLvH+0A6JLnbHP
-         UiUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=UGK3iOLOSq8b+uW93AKentNVyqK1drmrSS6mX3tmCK4=;
-        b=cNxj8Mqfq7xRwOmFLdnjuMK4jUpg0ppzDCeCKGjdg1hJidNFEjcw9wR1V4V6uBvX30
-         w3VgmWeQpaz1zjqMuemkjyxQp9EQT7bdrW/P5zLFvz24mNBgWdzC0uMpILZpS+VE+NWv
-         wfsViJkyZUaZnmLD/C0T1qeNtcmdLNC2Zqaag1yRm+Iftg0phEhdqdrh3KDIWD33Q9G8
-         PRzDvwXNvsHzT9gc9IJgMXcvgrrRaDABD/4EMok1Ywi/x6vGyLRPEJ3j+jbDvmgGE6nD
-         Rr4I49z5ee+vPZXZYtju3NiqrO8UQ9mXk9LA+lHYCYe/Jm5+DcvMVNCDMrHZebpTW9Vq
-         iV7Q==
-X-Gm-Message-State: AOAM531IV5zMtv8Ao626kIYEbPUZzKJMIBsYGfOvIw8aK+mfzUAe+QVt
-        5DuPHjC1SRwW1wrLLz8PBsg=
-X-Google-Smtp-Source: ABdhPJx5XKcoaoRaemeTrLmz3cPHtWUeo+5F4Miz7i1lYIRFTpqzShSr3m+CgLrJ9DV3A/AMZs5J+g==
-X-Received: by 2002:a17:902:c9d2:b0:15b:e021:8bcc with SMTP id q18-20020a170902c9d200b0015be0218bccmr4149894pld.40.1650643399714;
-        Fri, 22 Apr 2022 09:03:19 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:b5ae])
-        by smtp.gmail.com with ESMTPSA id g17-20020a625211000000b005056a6313a7sm2927881pfb.87.2022.04.22.09.03.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 09:03:19 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 22 Apr 2022 06:03:17 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        ebiederm@xmission.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 01/10] kernfs: Remove reference counting for
- kernfs_open_node.
-Message-ID: <YmLRxWUnF/zflEO2@slm.duckdns.org>
-References: <20220410023719.1752460-1-imran.f.khan@oracle.com>
- <20220410023719.1752460-2-imran.f.khan@oracle.com>
+        Fri, 22 Apr 2022 12:08:17 -0400
+X-Greylist: delayed 6962 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 09:05:22 PDT
+Received: from relay2.mymailcheap.com (relay2.mymailcheap.com [217.182.66.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC82F366AC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:05:22 -0700 (PDT)
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay2.mymailcheap.com (Postfix) with ESMTPS id 75D77401F1;
+        Fri, 22 Apr 2022 18:05:20 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id CF2632A2AE;
+        Fri, 22 Apr 2022 16:05:19 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id JWSIRcwiyJko; Fri, 22 Apr 2022 16:05:18 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Fri, 22 Apr 2022 16:05:18 +0000 (UTC)
+Received: from [172.16.2.1] (unknown [121.33.113.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 2BD37401C2;
+        Fri, 22 Apr 2022 16:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1650643518; bh=eSCJW22OL39yu1fNYYsjsin+Of6eOz171PLc8jDmgmc=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=pOh9wMbrjj3DZf5iJcy4UlxJwlXf6AewbaBHOM91h1M4yHOcMDj3BH5zD4prUYnjJ
+         n9ak1lxM2xvVr094vVga2zQou5uJeW31zezwdL3RgMwgG0oRwc9tGm2qnlqXnn7Njc
+         ScBdQHwwE5N+qfhzCbkXA4hu/JKVuvc0L2bxpX+c=
+Message-ID: <07133d7ded3a9059f89d668f14e923b3d1bddd43.camel@aosc.io>
+Subject: Re: [PATCH 0/3] btrtl: try to use OF machine compatible as config
+ postfix
+From:   Icenowy Zheng <icenowy@aosc.io>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Date:   Sat, 23 Apr 2022 00:05:09 +0800
+In-Reply-To: <BYAPR20MB2472590CD7F6385C0E002763BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+References: <BYAPR20MB2472590CD7F6385C0E002763BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220410023719.1752460-2-imran.f.khan@oracle.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 12:37:10PM +1000, Imran Khan wrote:
-> @@ -768,15 +765,15 @@ void kernfs_drain_open_files(struct kernfs_node *kn)
->  	if (!(kn->flags & (KERNFS_HAS_MMAP | KERNFS_HAS_RELEASE)))
->  		return;
->  
-> -	spin_lock_irq(&kernfs_open_node_lock);
->  	on = kn->attr.open;
-> -	if (on)
-> -		atomic_inc(&on->refcnt);
-> -	spin_unlock_irq(&kernfs_open_node_lock);
->  	if (!on)
->  		return;
->
->  	mutex_lock(&kernfs_open_file_mutex);
-> +	if (!kn->attr.open) {
-> +		mutex_unlock(&kernfs_open_file_mutex);
-> +		return;
-> +	}
+在 2022-04-23星期六的 00:02 +0800，icenowy@outlook.com写道：
+> From: Icenowy Zheng <icenowy@aosc.io>
+> 
 
-What if @on got freed and new one got allocated between the lockless check
-and the locked check? Is there a reason to keep the lockless check at all?
+Sorry, but the original commiter email of patches inside this patchset
+is no longer accessible.
 
->  	list_for_each_entry(of, &on->files, list) {
->  		struct inode *inode = file_inode(of->file);
+If possible, please send reviews to this aosc.io address.
 
-Thanks.
+> Currently for OF machines there's no way to specify a machine-
+> specific
+> btrtl config file.
+> 
+> Try to use OF machine compatible string as config postfix, in a
+> similar
+> manner with brcmfmac driver (which needs machine-specific config
+> files
+> too).
+> 
+> Icenowy Zheng (3):
+>   Bluetooth: btrtl: try config w/o postfix if postfixed one failed to
+>     load
+>   Bluetooth: btrtl: use board DT compatible string as config postfix
+>   Bluetooth: btrtl: allow longer config file name
+> 
+>  drivers/bluetooth/btrtl.c  |  8 +++++++-
+>  drivers/bluetooth/hci_h5.c | 27 +++++++++++++++++++++++++++
+>  2 files changed, 34 insertions(+), 1 deletion(-)
+> 
 
--- 
-tejun
+
