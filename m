@@ -2,138 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2464C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445888AbiDVJRz (ORCPT
+        id S1388247AbiDVJSE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
+        Fri, 22 Apr 2022 05:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445889AbiDVJOD (ORCPT
+        with ESMTP id S233622AbiDVJO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:14:03 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C3B51E73
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:11:10 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id w1so13185777lfa.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 02:11:10 -0700 (PDT)
+        Fri, 22 Apr 2022 05:14:26 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563F451E73;
+        Fri, 22 Apr 2022 02:11:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rfgkrfURJKwhnI2/O7vdqPyYaGN5+mF6L9gQd890Ir0=;
-        b=kdqGeyrRYGT3n4ywR9Tojfe9wJIKYW3OZQoxPqApj85B56My8aN7tsB5C87A/kD2xO
-         o8oxqlkGI0Jl5s35e1uvwGpbUnBS0QF4iVgqe2E58vRGe7nNGdBTf6oKrqa6HuBD/z5z
-         80UB3Lr0/v2kbHxykgw4rph62BrOWDrG2jivAOXdyKrUI357N2kYPhPA4vzHsOJXnTHa
-         tZYsj+QEcfK6apJTGlL0gJ0MNTCtmKO1wwsGby+HpW71FlyG3HrWjdIj3O20GSAtkoWX
-         9dvokVBex3F4Q7TVkBhcOCeKSJ+n9glUBDi0LINhpkDXs9T6E3N0S87B1gc6SNBBznMS
-         niDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rfgkrfURJKwhnI2/O7vdqPyYaGN5+mF6L9gQd890Ir0=;
-        b=x79m1ZEQEDiK7ylqAk97xVjWD4zF9SPV33H1wK+MZSqrEX6CMeXSZegXCT9g5tEj5g
-         e7jfByHfB+OEOs/dbnWjwfLK5VBr40cgCpUw4rsE2EAhU/n0qKFya7txDM5YR/V2SR7X
-         upt1nMZWdQgpRjD3mxHXh6duF5mw+FvVcLOFc8ym6lFnQPO3BLdOwod6x0uJF8fIEusy
-         9R7Um+5Zbqf11/LQkW6YmlAruYOfOywUJn8tP/AB3tdzj8KwnelhaTomn/HGwxYA9C6X
-         MY9VkUqyCaw+0OtBVa8lRg7IoLFF5oUWjE/IH7Uh5sgF6I6uA3Ff2q15jkGbBpnEojTc
-         ldSg==
-X-Gm-Message-State: AOAM530JIx1q55NDH2As89poel4wApOABNSd/VLMOgGKdaFQvovDy7rk
-        utAz6msvCrEpaqFuwMiHt9SN5+ebDTK0vnEfxzFoOA==
-X-Google-Smtp-Source: ABdhPJyRJGWde6pW3x5AhbWnlvDZuG+mM35K5paxOFe+8Xdj01CyYDkCOg6E/xYU08VmG2hIu2QHAFIgIpZGVV+S4C8=
-X-Received: by 2002:a05:6512:c12:b0:471:a932:cfe1 with SMTP id
- z18-20020a0565120c1200b00471a932cfe1mr2449495lfu.358.1650618668972; Fri, 22
- Apr 2022 02:11:08 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650618693; x=1682154693;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=dAc0bN9EPlpLPDu9xqyFfEOlexQVyIuI3uZhE98Uo1s=;
+  b=ncgzvJFiuAZJ1NwR3xv3fkSn8I+8bQshnHcqxHHqAM7mSW/9JaGeTD9m
+   fEXrhrLsDVHEb1R4CvtGcSPzrq+D9qF8lG4El7nj4ZHVS8rNd2fWjCUQq
+   HxZYC+mATlp+n/jwmVEUoJZueOin7WtJbgbTX0C+PlwPyKZaa4jCric9o
+   4=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 22 Apr 2022 02:11:33 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:11:30 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 02:11:31 -0700
+Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 02:11:25 -0700
+From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        <robdclark@gmail.com>, <seanpaul@chromium.org>,
+        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
+        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
+        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
+        <quic_aravindh@quicinc.com>, <steev@kali.org>
+Subject: [PATCH v9 1/4] drm/msm/dp: Add eDP support via aux_bus
+Date:   Fri, 22 Apr 2022 14:41:03 +0530
+Message-ID: <1650618666-15342-2-git-send-email-quic_sbillaka@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
+References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
 MIME-Version: 1.0
-References: <20220422002318.3587413-1-briannorris@chromium.org>
-In-Reply-To: <20220422002318.3587413-1-briannorris@chromium.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 22 Apr 2022 11:10:32 +0200
-Message-ID: <CAPDyKFqhqNn1ZDQxshRidN=Odv6sTEcRz54=radQhknfx60Ovw@mail.gmail.com>
-Subject: Re: [PATCH v2] mmc: core: Don't set HS200 clock rate prematurely
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Shawn Lin <shawn.lin@rock-chips.com>, linux-mmc@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Luca Weiss <luca@z3ntu.xyz>, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 at 02:23, Brian Norris <briannorris@chromium.org> wrote:
->
-> Commit 1c7ec586fe55 ("mmc: core: Set HS clock speed before sending HS
-> CMD13") fixes problems with certain eMMC, but introduced new ones with
-> others:
->
->   qcom-msm8974-fairphone-fp2:
->
->   [    1.868608] mmc0: SDHCI controller on f9824900.sdhci [f9824900.sdhci] using ADMA 64-bit
->   [    1.925220] mmc0: mmc_select_hs200 failed, error -110
->   [    1.925285] mmc0: error -110 whilst initialising MMC card
->
-> It appears we've overshot the acceptable clock rate here; while JESD84
-> suggests that we can bump to 52 MHz before switching (CMD6) to HS400, it
-> does *not* say we can switch to 200 MHz before switching to HS200 (see
-> page 45 / table 28). Use the HS bounds (typically 52 MHz) instead of the
-> HS200 bounds (which are only applicable after we successfully switch).
->
-> Link: https://lore.kernel.org/lkml/11962455.O9o76ZdvQC@g550jk/
-> Fixes: 1c7ec586fe55 ("mmc: core: Set HS clock speed before sending HS CMD13")
-> Reported-by: Luca Weiss <luca@z3ntu.xyz>
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+This patch adds support for generic eDP sink through aux_bus. The eDP/DP
+controller driver should support aux transactions originating from the
+panel-edp driver and hence should be initialized and ready.
 
-Rather than applying this incremental patch, I decided to drop the
-offending commit from my branch. Please submit a new version of that
-patch and make sure to incorporate credits and information provided by
-Luca, as a part of the new commit message.
+The panel bridge supporting the panel should be ready before the bridge
+connector is initialized. The generic panel probe needs the controller
+resources to be enabled to support the aux transactions originating from
+the panel probe.
 
-The main reason for this step is that I think we want a clean patch
-that we can use for stable kernels too.
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+---
+Changes in v9:
+  - add comments for panel probe
+  - modify the error handling checks
 
-Moreover, this also means you can drop the changes in mmc_set_clock()
-that was introduced in 1c7ec586fe55().
+Changes in v8:
+  - handle corner cases
+  - add comment for the bridge ops
 
-Kind regards
-Uffe
+Changes in v7:
+  - aux_bus is mandatory for eDP
+  - connector type check modified to just check for eDP
 
-> ---
-> Apologies for the quick resend; I fumbled the commit/send, even though I
-> had already updated the comments...
->
-> Changes in v2:
->  * Updated comments
->
->  drivers/mmc/core/mmc.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
-> index 9ab915b5737a..82ca62c8669c 100644
-> --- a/drivers/mmc/core/mmc.c
-> +++ b/drivers/mmc/core/mmc.c
-> @@ -1485,13 +1485,15 @@ static int mmc_select_hs200(struct mmc_card *card)
->                         goto err;
->
->                 /*
-> -                * Bump to HS200 timing and frequency. Some cards don't
-> -                * handle SEND_STATUS reliably at the initial frequency.
-> +                * Bump to HS timing and frequency. Some cards don't handle
-> +                * SEND_STATUS reliably at the initial frequency.
-> +                * NB: We can't move to full (HS200) speeds until after we've
-> +                * successfully switched over.
->                  */
->                 old_timing = host->ios.timing;
->                 old_clock = host->ios.clock;
->                 mmc_set_timing(host, MMC_TIMING_MMC_HS200);
-> -               mmc_set_bus_speed(card);
-> +               mmc_set_clock(card->host, card->ext_csd.hs_max_dtr);
->
->                 /*
->                  * For HS200, CRC errors are not a reliable way to know the
-> --
-> 2.36.0.rc2.479.g8af0fa9b8e-goog
->
+Changes in v6:
+  - Remove initialization
+  - Fix aux_bus node leak
+  - Split the patches
+
+ drivers/gpu/drm/msm/dp/dp_display.c | 73 +++++++++++++++++++++++++++++++++++--
+ drivers/gpu/drm/msm/dp/dp_display.h |  1 +
+ drivers/gpu/drm/msm/dp/dp_drm.c     | 21 +++++++++--
+ drivers/gpu/drm/msm/dp/dp_parser.c  | 23 +-----------
+ drivers/gpu/drm/msm/dp/dp_parser.h  | 13 ++++++-
+ 5 files changed, 101 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index d7a19d6..055681a 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -10,6 +10,7 @@
+ #include <linux/component.h>
+ #include <linux/of_irq.h>
+ #include <linux/delay.h>
++#include <drm/dp/drm_dp_aux_bus.h>
+ 
+ #include "msm_drv.h"
+ #include "msm_kms.h"
+@@ -259,14 +260,12 @@ static int dp_display_bind(struct device *dev, struct device *master,
+ 	dp->dp_display.drm_dev = drm;
+ 	priv->dp[dp->id] = &dp->dp_display;
+ 
+-	rc = dp->parser->parse(dp->parser, dp->dp_display.connector_type);
++	rc = dp->parser->parse(dp->parser);
+ 	if (rc) {
+ 		DRM_ERROR("device tree parsing failed\n");
+ 		goto end;
+ 	}
+ 
+-	dp->dp_display.next_bridge = dp->parser->next_bridge;
+-
+ 	dp->aux->drm_dev = drm;
+ 	rc = dp_aux_register(dp->aux);
+ 	if (rc) {
+@@ -1319,6 +1318,8 @@ static int dp_display_probe(struct platform_device *pdev)
+ 	dp->pdev = pdev;
+ 	dp->name = "drm_dp";
+ 	dp->dp_display.connector_type = desc->connector_type;
++	dp->dp_display.is_edp =
++		(dp->dp_display.connector_type == DRM_MODE_CONNECTOR_eDP);
+ 
+ 	rc = dp_init_sub_modules(dp);
+ 	if (rc) {
+@@ -1508,7 +1509,8 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
+ 
+ 	dp_hpd_event_setup(dp);
+ 
+-	dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
++	if (!dp_display->is_edp)
++		dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
+ }
+ 
+ void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
+@@ -1530,6 +1532,65 @@ void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
+ 	}
+ }
+ 
++static int dp_display_get_next_bridge(struct msm_dp *dp)
++{
++	int rc;
++	struct dp_display_private *dp_priv;
++	struct device_node *aux_bus;
++	struct device *dev;
++
++	dp_priv = container_of(dp, struct dp_display_private, dp_display);
++	dev = &dp_priv->pdev->dev;
++	aux_bus = of_get_child_by_name(dev->of_node, "aux-bus");
++
++	if (aux_bus && dp->is_edp) {
++		dp_display_host_init(dp_priv);
++		dp_catalog_ctrl_hpd_config(dp_priv->catalog);
++		dp_display_host_phy_init(dp_priv);
++		enable_irq(dp_priv->irq);
++
++		/*
++		 * The code below assumes that the panel will finish probing
++		 * by the time devm_of_dp_aux_populate_ep_devices() returns.
++		 * This isn't a great assumption since it will fail if the
++		 * panel driver is probed asynchronously but is the best we
++		 * can do without a bigger driver reorganization.
++		 */
++		rc = devm_of_dp_aux_populate_ep_devices(dp_priv->aux);
++		of_node_put(aux_bus);
++		if (rc)
++			goto error;
++	} else if (dp->is_edp) {
++		DRM_ERROR("eDP aux_bus not found\n");
++		return -ENODEV;
++	}
++
++	/*
++	 * External bridges are mandatory for eDP interfaces: one has to
++	 * provide at least an eDP panel (which gets wrapped into panel-bridge).
++	 *
++	 * For DisplayPort interfaces external bridges are optional, so
++	 * silently ignore an error if one is not present (-ENODEV).
++	 */
++	rc = dp_parser_find_next_bridge(dp_priv->parser);
++	if (!dp->is_edp && rc == -ENODEV)
++		return 0;
++	else if (rc)
++		goto error;
++
++	dp->next_bridge = dp_priv->parser->next_bridge;
++
++	return 0;
++
++error:
++	if (dp->is_edp) {
++		disable_irq(dp_priv->irq);
++		dp_display_host_phy_exit(dp_priv);
++		dp_display_host_deinit(dp_priv);
++	}
++	return rc;
++}
++
+ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
+ 			struct drm_encoder *encoder)
+ {
+@@ -1553,6 +1614,10 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
+ 
+ 	dp_display->encoder = encoder;
+ 
++	ret = dp_display_get_next_bridge(dp_display);
++	if (ret)
++		return ret;
++
+ 	dp_display->bridge = dp_bridge_init(dp_display, dev, encoder);
+ 	if (IS_ERR(dp_display->bridge)) {
+ 		ret = PTR_ERR(dp_display->bridge);
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.h b/drivers/gpu/drm/msm/dp/dp_display.h
+index 49a1d89..1377cc3 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.h
++++ b/drivers/gpu/drm/msm/dp/dp_display.h
+@@ -21,6 +21,7 @@ struct msm_dp {
+ 	bool audio_enabled;
+ 	bool power_on;
+ 	unsigned int connector_type;
++	bool is_edp;
+ 
+ 	hdmi_codec_plugged_cb plugged_cb;
+ 
+diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
+index 7ce1aca..8a75c55 100644
+--- a/drivers/gpu/drm/msm/dp/dp_drm.c
++++ b/drivers/gpu/drm/msm/dp/dp_drm.c
+@@ -114,10 +114,23 @@ struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *
+ 	bridge->funcs = &dp_bridge_ops;
+ 	bridge->type = dp_display->connector_type;
+ 
+-	bridge->ops =
+-		DRM_BRIDGE_OP_DETECT |
+-		DRM_BRIDGE_OP_HPD |
+-		DRM_BRIDGE_OP_MODES;
++	/*
++	 * Many ops only make sense for DP. Why?
++	 * - Detect/HPD are used by DRM to know if a display is _physically_
++	 *   there, not whether the display is powered on / finished initting.
++	 *   On eDP we assume the display is always there because you can't
++	 *   know until power is applied. If we don't implement the ops DRM will
++	 *   assume our display is always there.
++	 * - Currently eDP mode reading is driven by the panel driver. This
++	 *   allows the panel driver to properly power itself on to read the
++	 *   modes.
++	 */
++	if (!dp_display->is_edp) {
++		bridge->ops =
++			DRM_BRIDGE_OP_DETECT |
++			DRM_BRIDGE_OP_HPD |
++			DRM_BRIDGE_OP_MODES;
++	}
+ 
+ 	rc = drm_bridge_attach(encoder, bridge, NULL, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
+ 	if (rc) {
+diff --git a/drivers/gpu/drm/msm/dp/dp_parser.c b/drivers/gpu/drm/msm/dp/dp_parser.c
+index 1056b8d..4bdbf91 100644
+--- a/drivers/gpu/drm/msm/dp/dp_parser.c
++++ b/drivers/gpu/drm/msm/dp/dp_parser.c
+@@ -265,7 +265,7 @@ static int dp_parser_clock(struct dp_parser *parser)
+ 	return 0;
+ }
+ 
+-static int dp_parser_find_next_bridge(struct dp_parser *parser)
++int dp_parser_find_next_bridge(struct dp_parser *parser)
+ {
+ 	struct device *dev = &parser->pdev->dev;
+ 	struct drm_bridge *bridge;
+@@ -279,7 +279,7 @@ static int dp_parser_find_next_bridge(struct dp_parser *parser)
+ 	return 0;
+ }
+ 
+-static int dp_parser_parse(struct dp_parser *parser, int connector_type)
++static int dp_parser_parse(struct dp_parser *parser)
+ {
+ 	int rc = 0;
+ 
+@@ -300,25 +300,6 @@ static int dp_parser_parse(struct dp_parser *parser, int connector_type)
+ 	if (rc)
+ 		return rc;
+ 
+-	/*
+-	 * External bridges are mandatory for eDP interfaces: one has to
+-	 * provide at least an eDP panel (which gets wrapped into panel-bridge).
+-	 *
+-	 * For DisplayPort interfaces external bridges are optional, so
+-	 * silently ignore an error if one is not present (-ENODEV).
+-	 */
+-	rc = dp_parser_find_next_bridge(parser);
+-	if (rc == -ENODEV) {
+-		if (connector_type == DRM_MODE_CONNECTOR_eDP) {
+-			DRM_ERROR("eDP: next bridge is not present\n");
+-			return rc;
+-		}
+-	} else if (rc) {
+-		if (rc != -EPROBE_DEFER)
+-			DRM_ERROR("DP: error parsing next bridge: %d\n", rc);
+-		return rc;
+-	}
+-
+ 	/* Map the corresponding regulator information according to
+ 	 * version. Currently, since we only have one supported platform,
+ 	 * mapping the regulator directly.
+diff --git a/drivers/gpu/drm/msm/dp/dp_parser.h b/drivers/gpu/drm/msm/dp/dp_parser.h
+index d371bae..950416c 100644
+--- a/drivers/gpu/drm/msm/dp/dp_parser.h
++++ b/drivers/gpu/drm/msm/dp/dp_parser.h
+@@ -125,7 +125,7 @@ struct dp_parser {
+ 	u32 max_dp_lanes;
+ 	struct drm_bridge *next_bridge;
+ 
+-	int (*parse)(struct dp_parser *parser, int connector_type);
++	int (*parse)(struct dp_parser *parser);
+ };
+ 
+ /**
+@@ -141,4 +141,15 @@ struct dp_parser {
+  */
+ struct dp_parser *dp_parser_get(struct platform_device *pdev);
+ 
++/**
++ * dp_parser_find_next_bridge() - find an additional bridge to DP
++ *
++ * @parser: dp_parser data from client
++ * return: 0 if able to get the bridge else return an error code
++ *
++ * This function is used to find any additional bridge attached to
++ * the DP controller. The eDP interface requires a panel bridge.
++ */
++int dp_parser_find_next_bridge(struct dp_parser *parser);
++
+ #endif
+-- 
+2.7.4
+
