@@ -2,321 +2,434 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448263AbiDVOA2 (ORCPT
+        id S1448272AbiDVOAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
+        Fri, 22 Apr 2022 10:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448260AbiDVOA0 (ORCPT
+        with ESMTP id S1344513AbiDVOAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:00:26 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2059.outbound.protection.outlook.com [40.107.94.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B996C5A091
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:57:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NGdHU8thuiPPHGvOxsi+05y1WtPsKdmzhD1sPlpAqsuwfgCdIUYJxuugG8MRkHn2yp/oufbZGhnLChNCen7FmY8GxGnpeXcj6BXDc9+KfNvtblLnt6iKZBsCdw4fHtWtwlMVyHgiqI6dmSzip7looXAF9XjFvvj7et2OltpIizEqmj42kwInAkv1D+IiJ2GlCUc7Bgon8qkvoadsIc4cz7esQd9cPW8ZYjcjUhGdPJkohdwtXQbeb63jT1BqA6vtPuYUd0hRTZ6sSGlxxSI7KwFM8wc+5mkSIvpvT/I7jSXoYDbMp2l0AziS+//7c/UDUTIGR/mbnMJGJzmDuemm1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ydcJf4WaUjoucqhxVp6oCuP4pT7lfq1bTMSlUyejUSc=;
- b=dWfRwcVq/fkYEF5Fswe0n1McNerWRywtqGSbvUnTUjiVcsSbHo0q5PJnbVEN5M5JvkPC0jdxnUXmdvOGJfwthz6swZJpF0UxJR+4HZEI7rAuLs5mYGwePtNz+h5cJtJsgfP4stjuv5Wyb0z8aVMTXrnW5Jn39pfXTxwgB/acQ11S8zlszdkXLJJISYZqcKo8eAM/YAtDNyowQxuj48oWy39z5oBQF6JTXkQWN51EYJD3et1aneyR2eAwGHNYSgsOVXFWt2bUbLydmGpD9M8d7i+8gU3Jh1s6DJPOlMQijxmkWq/j72PGIXOT+JnnN8tKHDTAndza/yMJntuHTlP1TA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ydcJf4WaUjoucqhxVp6oCuP4pT7lfq1bTMSlUyejUSc=;
- b=IdBivRv8p/k4IVEqWEJOrJAbXIBpRudcCwwBcIiZ6DS6LEamSqVT5EivRLNZ4mtquVRCGjPtVUTH6an9q6MC2DpGe2g4OC2ZxmCgmVdzoRpC9EF2yf7QEeJdLvBVdxxjGlE4tZAVCT+4oZ6oifAU/w9l0KdJZSUZwqUq2IZTRbk=
-Received: from DM6PR06CA0092.namprd06.prod.outlook.com (2603:10b6:5:336::25)
- by DM6PR12MB3850.namprd12.prod.outlook.com (2603:10b6:5:1c3::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Fri, 22 Apr
- 2022 13:57:30 +0000
-Received: from DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:336:cafe::84) by DM6PR06CA0092.outlook.office365.com
- (2603:10b6:5:336::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15 via Frontend
- Transport; Fri, 22 Apr 2022 13:57:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT052.mail.protection.outlook.com (10.13.172.111) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5186.14 via Frontend Transport; Fri, 22 Apr 2022 13:57:30 +0000
-Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 22 Apr
- 2022 08:57:29 -0500
-From:   Michael Roth <michael.roth@amd.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Venu Busireddy <venu.busireddy@oracle.com>,
-        "Joerg Roedel" <jroedel@suse.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "Brijesh Singh" <brijesh.singh@amd.com>
-Subject: [PATCH v3 2/2] x86/sev: Get the AP jump table address from secrets page
-Date:   Fri, 22 Apr 2022 08:56:24 -0500
-Message-ID: <20220422135624.114172-3-michael.roth@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220422135624.114172-1-michael.roth@amd.com>
-References: <20220422135624.114172-1-michael.roth@amd.com>
+        Fri, 22 Apr 2022 10:00:48 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6AF5A0BF;
+        Fri, 22 Apr 2022 06:57:54 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id g14-20020a4ab80e000000b0035ce300c25aso747292oop.3;
+        Fri, 22 Apr 2022 06:57:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RCHHVWzObGtq+WDQ1kPAXbKZ4QJHaAe17egPgYIAZWA=;
+        b=JrbHJ090563hUWhe+YACdUeKhGZQ9sUuW4UhgGarpPw3JGhxn1wCLz5rWo0pVP5nmk
+         Hkhq2F/aRqHpz60TRBx1jm9T1dotQv7PNwqAQvLdATuWRlDRzzHdqCkgRe9ZUXiBnDP/
+         J4uS4CdED4htinz8Oyb6crQR+GlRbmhkXl2FrH+zYNWewf9ooMYxeaux2oRJV6WEmr2l
+         1Eflc7EEQPeN+Vmuk6K0+fHsJr47hfBDRX0kntRySTgAx9V8Ul4YkhIRDkNkKbgGN9Qp
+         8H1Q00b9c4lckiR91R5rssimdFsMe+bNiP6ngSXBG4SC5P9iGCxvlDUzKJ9csHx/A1jp
+         eOIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RCHHVWzObGtq+WDQ1kPAXbKZ4QJHaAe17egPgYIAZWA=;
+        b=VD+OxoTsPOKWMexcRVWjn9/uk6+PkACU3/YUObw+b+L0ThOUW7PeKx0hkf+/Yn0rvW
+         BBmFAwZEEOAvr9T60Z7bLl++1DQ7MYj3qLMfWxIGMTpWmX3RguED6gdol04kJa+MdOMU
+         7hKe0EkxJ5ZXRO+97tfc9AGHc7OWP77QWTftWGadSk0fgKAtYIjao+T3Orcib3g67VEp
+         m1kxVHPkwYUvAa+bt+m0fxJTR02ZwyOs5qk4lQCvUR25KMYhXS8sLZrWGCVmlr6H6xPP
+         GoYpGU8V05f/7Jxrsefxq/un0vo7WF/Lh00NgaZQ5VMyOZ7RYx7j2gnyiKDUkB2H+H3P
+         miUQ==
+X-Gm-Message-State: AOAM532C/ldHvdjn3ydtmw0ejGbWVfpwWdEC44MxCr36WC8VY54yTZKj
+        N6yFS6ourDvzUGoMSAPRBtM=
+X-Google-Smtp-Source: ABdhPJzCRVzWoaU8N5YdgHCixeDOESbM3TvK1Z1U1iiXMZ5UccEQoTTIOZzxF8QL2qTEhLz//bFUfg==
+X-Received: by 2002:a4a:5553:0:b0:335:659d:bc with SMTP id e80-20020a4a5553000000b00335659d00bcmr1616194oob.48.1650635873824;
+        Fri, 22 Apr 2022 06:57:53 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id r35-20020a056870582300b000df0dc42ff5sm666899oap.0.2022.04.22.06.57.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 06:57:53 -0700 (PDT)
+Message-ID: <37746933-0477-931f-b0ac-31e08f7c4b06@gmail.com>
+Date:   Fri, 22 Apr 2022 15:57:48 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 637c9e5b-bcbd-4fea-942e-08da24680ab6
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3850:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3850B39AD733FDFE4A34E8B095F79@DM6PR12MB3850.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YpY23ufUlXD+fuz6y9lJQbMvYDVcR9K6KSg6z+PUQjcxDInuS3jaxdsI9OKJN9/EFnvjJlHgnlQQ8I5CS7HTaP0G80eGz+7PoGB1sbIryio64vWwMm6A6MlKnIiVhvp8yhukkhZMLBMTBvIJ1IDNdTCP/hoBc5yrJc6jXIc+dBBrNBUeX/735FFp80Rd7CA2WVBrWI77d235wkNIArm3ObgOxQi3aVXmKvwOSSjN5S5wlzCVJz+nj1ME+f6MtRsyKgJ/0iuGRls64nC7/eZg5WfhzHZa0ZK1Ei/DqIc1kmfZlzqR+1Re7PSI8rTCr8l5PosXAvRI3DNYLCPbcc79Y6UVrEatRCNi/HcuOuoikIZ3Wk1EIJF58biD8AbKQNb0vcW5g+CmNtoON9WxKbzKK1XvnYMcyQtNIopO87wT32Bp01NTPPoK7FZ/7hpCOj5vFUbOGebyGYEHUnSoahOLZhkdz/G4sdYDuC91bvtyhUmrecNeJHQ2FX0gsQFArrOTvGLmNg8bKEVOpPt16mIm4BHE9GzdvaUpfdcrgCywNgZyeDRHAbUN8VHHmAXw5fLCNIuqfQsHxvC/c/Uv6/PfWSLhJhgnXdQC/O8UE4ZWJIqfOFfVxpCqJe4Y+lRItvedoPRE7k4pRHTIAS2OjixBrEC7pqrRlful1+ICB0XHCBdHowsWqBT5nm24kDUo4nLxWAPWg8UzIVtwT9O2ONHZVE7vP2e88wwdvN44DDxvno0=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(81166007)(1076003)(2616005)(426003)(336012)(2906002)(186003)(47076005)(16526019)(316002)(54906003)(44832011)(7416002)(36860700001)(356005)(6916009)(8936002)(83380400001)(40460700003)(86362001)(82310400005)(26005)(6666004)(8676002)(508600001)(5660300002)(4326008)(36756003)(70206006)(70586007)(15583001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 13:57:30.0345
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 637c9e5b-bcbd-4fea-942e-08da24680ab6
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3850
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 1/1] arm64: dts: mt6359: add PMIC MT6359 related nodes
+Content-Language: en-US
+To:     Hui-Liu Liu <hui.liu@mediatek.com>, lee.jones@linaro.org,
+        robh+dt@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+        eddie.huang@mediatek.com, a.zummo@towertech.it,
+        alexandre.belloni@bootlin.com, fshao@chromium.org
+Cc:     srv_heupstream@mediatek.com, zhiyong.tao@mediatek.com,
+        hsin-hsiung.wang@mediatek.com, sean.wang@mediatek.com,
+        macpaul.lin@mediatek.com, yuchen.huang@mediatek.com,
+        wen.su@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220421012623.3446-1-hui.liu@mediatek.com>
+ <20220421012623.3446-2-hui.liu@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220421012623.3446-2-hui.liu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brijesh Singh <brijesh.singh@amd.com>
 
-The GHCB specification section 2.7 states that when SEV-SNP is enabled,
-a hypervisor must provide the AP jump table physical address through
-the SNP secrets pages.
 
-Fixes: 0afb6b660a6b ("x86/sev: Use SEV-SNP AP creation to start secondary CPUs")
-Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-[ mroth: improve error handling when ioremap()/memremap() return NULL ]
-[ mroth: don't mix function calls with declarations ]
-[ mroth: add missing __init ]
-Signed-off-by: Michael Roth <michael.roth@amd.com>
----
- arch/x86/include/asm/sev.h              | 35 ++++++++++++
- arch/x86/kernel/sev.c                   | 76 +++++++++++++++++--------
- drivers/virt/coco/sev-guest/sev-guest.h | 35 ------------
- 3 files changed, 87 insertions(+), 59 deletions(-)
+On 21/04/2022 03:26, Hui-Liu Liu wrote:
+> From: Hui Liu <hui.liu@mediatek.com>
+> 
+> MT6359 is the primary PMIC for MT8192.
+> Add PMIC MT6359 related node which is used for MT8192 platform.
+> 
+> Signed-off-by: Hui Liu <hui.liu@mediatek.com>
 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 6e3dda4f82b5..19514524f0f8 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -99,6 +99,41 @@ struct sev_guest_platform_data {
- 	u64 secrets_gpa;
- };
- 
-+/*
-+ * The secrets page contains 96-bytes of reserved field that can be used by
-+ * the guest OS. The guest OS uses the area to save the message sequence
-+ * number for each VMPCK.
-+ *
-+ * See the GHCB spec section Secret page layout for the format for this area.
-+ */
-+struct secrets_os_area {
-+	u32 msg_seqno_0;
-+	u32 msg_seqno_1;
-+	u32 msg_seqno_2;
-+	u32 msg_seqno_3;
-+	u64 ap_jump_table_pa;
-+	u8 rsvd[40];
-+	u8 guest_usage[32];
-+} __packed;
-+
-+#define VMPCK_KEY_LEN		32
-+
-+/* See the SNP spec version 0.9 for secrets page format */
-+struct snp_secrets_page_layout {
-+	u32 version;
-+	u32 imien	: 1,
-+	    rsvd1	: 31;
-+	u32 fms;
-+	u32 rsvd2;
-+	u8 gosvw[16];
-+	u8 vmpck0[VMPCK_KEY_LEN];
-+	u8 vmpck1[VMPCK_KEY_LEN];
-+	u8 vmpck2[VMPCK_KEY_LEN];
-+	u8 vmpck3[VMPCK_KEY_LEN];
-+	struct secrets_os_area os_area;
-+	u8 rsvd3[3840];
-+} __packed;
-+
- #ifdef CONFIG_AMD_MEM_ENCRYPT
- extern struct static_key_false sev_es_enable_key;
- extern void __sev_es_ist_enter(struct pt_regs *regs);
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index b7fd1915560d..166375084b1f 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -558,6 +558,55 @@ void noinstr __sev_es_nmi_complete(void)
- 	__sev_put_ghcb(&state);
- }
- 
-+static u64 __init get_secrets_page(void)
-+{
-+	u64 pa_data = boot_params.cc_blob_address;
-+	struct cc_blob_sev_info info;
-+	void *map;
-+
-+	/*
-+	 * The CC blob contains the address of the secrets page, check if the
-+	 * blob is present.
-+	 */
-+	if (!pa_data)
-+		return 0;
-+
-+	map = early_memremap(pa_data, sizeof(info));
-+	if (!map) {
-+		pr_err("Unable to locate SNP secrets page: failed to map the Confidential Computing blob.\n");
-+		return 0;
-+	}
-+	memcpy(&info, map, sizeof(info));
-+	early_memunmap(map, sizeof(info));
-+
-+	/* smoke-test the secrets page passed */
-+	if (!info.secrets_phys || info.secrets_len != PAGE_SIZE)
-+		return 0;
-+
-+	return info.secrets_phys;
-+}
-+
-+static u64 __init get_snp_jump_table_addr(void)
-+{
-+	struct snp_secrets_page_layout *layout;
-+	u64 pa, addr;
-+
-+	pa = get_secrets_page();
-+	if (!pa)
-+		return 0;
-+
-+	layout = (__force void *)ioremap_encrypted(pa, PAGE_SIZE);
-+	if (!layout) {
-+		pr_err("Unable to locate AP jump table address: failed to map the SNP secrets page.\n");
-+		return 0;
-+	}
-+
-+	addr = layout->os_area.ap_jump_table_pa;
-+	iounmap(layout);
-+
-+	return addr;
-+}
-+
- static u64 __init get_jump_table_addr(void)
- {
- 	struct ghcb_state state;
-@@ -565,6 +614,9 @@ static u64 __init get_jump_table_addr(void)
- 	struct ghcb *ghcb;
- 	u64 ret = 0;
- 
-+	if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
-+		return get_snp_jump_table_addr();
-+
- 	local_irq_save(flags);
- 
- 	ghcb = __sev_get_ghcb(&state);
-@@ -2171,30 +2223,6 @@ static struct platform_device sev_guest_device = {
- 	.id		= -1,
- };
- 
--static u64 __init get_secrets_page(void)
--{
--	u64 pa_data = boot_params.cc_blob_address;
--	struct cc_blob_sev_info info;
--	void *map;
--
--	/*
--	 * The CC blob contains the address of the secrets page, check if the
--	 * blob is present.
--	 */
--	if (!pa_data)
--		return 0;
--
--	map = early_memremap(pa_data, sizeof(info));
--	memcpy(&info, map, sizeof(info));
--	early_memunmap(map, sizeof(info));
--
--	/* smoke-test the secrets page passed */
--	if (!info.secrets_phys || info.secrets_len != PAGE_SIZE)
--		return 0;
--
--	return info.secrets_phys;
--}
--
- static int __init snp_init_platform_device(void)
- {
- 	struct sev_guest_platform_data data;
-diff --git a/drivers/virt/coco/sev-guest/sev-guest.h b/drivers/virt/coco/sev-guest/sev-guest.h
-index d39bdd013765..21bda26fdb95 100644
---- a/drivers/virt/coco/sev-guest/sev-guest.h
-+++ b/drivers/virt/coco/sev-guest/sev-guest.h
-@@ -60,39 +60,4 @@ struct snp_guest_msg {
- 	u8 payload[4000];
- } __packed;
- 
--/*
-- * The secrets page contains 96-bytes of reserved field that can be used by
-- * the guest OS. The guest OS uses the area to save the message sequence
-- * number for each VMPCK.
-- *
-- * See the GHCB spec section Secret page layout for the format for this area.
-- */
--struct secrets_os_area {
--	u32 msg_seqno_0;
--	u32 msg_seqno_1;
--	u32 msg_seqno_2;
--	u32 msg_seqno_3;
--	u64 ap_jump_table_pa;
--	u8 rsvd[40];
--	u8 guest_usage[32];
--} __packed;
--
--#define VMPCK_KEY_LEN		32
--
--/* See the SNP spec version 0.9 for secrets page format */
--struct snp_secrets_page_layout {
--	u32 version;
--	u32 imien	: 1,
--	    rsvd1	: 31;
--	u32 fms;
--	u32 rsvd2;
--	u8 gosvw[16];
--	u8 vmpck0[VMPCK_KEY_LEN];
--	u8 vmpck1[VMPCK_KEY_LEN];
--	u8 vmpck2[VMPCK_KEY_LEN];
--	u8 vmpck3[VMPCK_KEY_LEN];
--	struct secrets_os_area os_area;
--	u8 rsvd3[3840];
--} __packed;
--
- #endif /* __VIRT_SEVGUEST_H__ */
--- 
-2.25.1
+You forgot to take over the tags provided by Nicolas. I added them manually now 
+and applied the patch.
 
+Thanks a lot!
+
+Matthias
+
+> ---
+>   arch/arm64/boot/dts/mediatek/mt6359.dtsi    | 298 ++++++++++++++++++++
+>   arch/arm64/boot/dts/mediatek/mt8192-evb.dts |   1 +
+>   2 files changed, 299 insertions(+)
+>   create mode 100644 arch/arm64/boot/dts/mediatek/mt6359.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt6359.dtsi b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
+> new file mode 100644
+> index 000000000000..df3e822232d3
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
+> @@ -0,0 +1,298 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * Copyright (C) 2022 MediaTek Inc.
+> + */
+> +
+> +&pwrap {
+> +	pmic: pmic {
+> +		compatible = "mediatek,mt6359";
+> +		interrupt-controller;
+> +		#interrupt-cells = <2>;
+> +
+> +		mt6359codec: mt6359codec {
+> +		};
+> +
+> +		regulators {
+> +			mt6359_vs1_buck_reg: buck_vs1 {
+> +				regulator-name = "vs1";
+> +				regulator-min-microvolt = <800000>;
+> +				regulator-max-microvolt = <2200000>;
+> +				regulator-enable-ramp-delay = <0>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vgpu11_buck_reg: buck_vgpu11 {
+> +				regulator-name = "vgpu11";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1193750>;
+> +				regulator-ramp-delay = <5000>;
+> +				regulator-enable-ramp-delay = <200>;
+> +				regulator-allowed-modes = <0 1 2>;
+> +			};
+> +			mt6359_vmodem_buck_reg: buck_vmodem {
+> +				regulator-name = "vmodem";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1100000>;
+> +				regulator-ramp-delay = <10760>;
+> +				regulator-enable-ramp-delay = <200>;
+> +			};
+> +			mt6359_vpu_buck_reg: buck_vpu {
+> +				regulator-name = "vpu";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1193750>;
+> +				regulator-ramp-delay = <5000>;
+> +				regulator-enable-ramp-delay = <200>;
+> +				regulator-allowed-modes = <0 1 2>;
+> +			};
+> +			mt6359_vcore_buck_reg: buck_vcore {
+> +				regulator-name = "vcore";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1300000>;
+> +				regulator-ramp-delay = <5000>;
+> +				regulator-enable-ramp-delay = <200>;
+> +				regulator-allowed-modes = <0 1 2>;
+> +			};
+> +			mt6359_vs2_buck_reg: buck_vs2 {
+> +				regulator-name = "vs2";
+> +				regulator-min-microvolt = <800000>;
+> +				regulator-max-microvolt = <1600000>;
+> +				regulator-enable-ramp-delay = <0>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vpa_buck_reg: buck_vpa {
+> +				regulator-name = "vpa";
+> +				regulator-min-microvolt = <500000>;
+> +				regulator-max-microvolt = <3650000>;
+> +				regulator-enable-ramp-delay = <300>;
+> +			};
+> +			mt6359_vproc2_buck_reg: buck_vproc2 {
+> +				regulator-name = "vproc2";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1193750>;
+> +				regulator-ramp-delay = <7500>;
+> +				regulator-enable-ramp-delay = <200>;
+> +				regulator-allowed-modes = <0 1 2>;
+> +			};
+> +			mt6359_vproc1_buck_reg: buck_vproc1 {
+> +				regulator-name = "vproc1";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1193750>;
+> +				regulator-ramp-delay = <7500>;
+> +				regulator-enable-ramp-delay = <200>;
+> +				regulator-allowed-modes = <0 1 2>;
+> +			};
+> +			mt6359_vcore_sshub_buck_reg: buck_vcore_sshub {
+> +				regulator-name = "vcore_sshub";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1193750>;
+> +			};
+> +			mt6359_vgpu11_sshub_buck_reg: buck_vgpu11_sshub {
+> +				regulator-name = "vgpu11_sshub";
+> +				regulator-min-microvolt = <400000>;
+> +				regulator-max-microvolt = <1193750>;
+> +			};
+> +			mt6359_vaud18_ldo_reg: ldo_vaud18 {
+> +				regulator-name = "vaud18";
+> +				regulator-min-microvolt = <1800000>;
+> +				regulator-max-microvolt = <1800000>;
+> +				regulator-enable-ramp-delay = <240>;
+> +			};
+> +			mt6359_vsim1_ldo_reg: ldo_vsim1 {
+> +				regulator-name = "vsim1";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <3100000>;
+> +			};
+> +			mt6359_vibr_ldo_reg: ldo_vibr {
+> +				regulator-name = "vibr";
+> +				regulator-min-microvolt = <1200000>;
+> +				regulator-max-microvolt = <3300000>;
+> +			};
+> +			mt6359_vrf12_ldo_reg: ldo_vrf12 {
+> +				regulator-name = "vrf12";
+> +				regulator-min-microvolt = <1100000>;
+> +				regulator-max-microvolt = <1300000>;
+> +			};
+> +			mt6359_vusb_ldo_reg: ldo_vusb {
+> +				regulator-name = "vusb";
+> +				regulator-min-microvolt = <3000000>;
+> +				regulator-max-microvolt = <3000000>;
+> +				regulator-enable-ramp-delay = <960>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vsram_proc2_ldo_reg: ldo_vsram_proc2 {
+> +				regulator-name = "vsram_proc2";
+> +				regulator-min-microvolt = <500000>;
+> +				regulator-max-microvolt = <1293750>;
+> +				regulator-ramp-delay = <7500>;
+> +				regulator-enable-ramp-delay = <240>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vio18_ldo_reg: ldo_vio18 {
+> +				regulator-name = "vio18";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <1900000>;
+> +				regulator-enable-ramp-delay = <960>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vcamio_ldo_reg: ldo_vcamio {
+> +				regulator-name = "vcamio";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <1900000>;
+> +			};
+> +			mt6359_vcn18_ldo_reg: ldo_vcn18 {
+> +				regulator-name = "vcn18";
+> +				regulator-min-microvolt = <1800000>;
+> +				regulator-max-microvolt = <1800000>;
+> +				regulator-enable-ramp-delay = <240>;
+> +			};
+> +			mt6359_vfe28_ldo_reg: ldo_vfe28 {
+> +				regulator-name = "vfe28";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <2800000>;
+> +				regulator-enable-ramp-delay = <120>;
+> +			};
+> +			mt6359_vcn13_ldo_reg: ldo_vcn13 {
+> +				regulator-name = "vcn13";
+> +				regulator-min-microvolt = <900000>;
+> +				regulator-max-microvolt = <1300000>;
+> +			};
+> +			mt6359_vcn33_1_bt_ldo_reg: ldo_vcn33_1_bt {
+> +				regulator-name = "vcn33_1_bt";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <3500000>;
+> +			};
+> +			mt6359_vcn33_1_wifi_ldo_reg: ldo_vcn33_1_wifi {
+> +				regulator-name = "vcn33_1_wifi";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <3500000>;
+> +			};
+> +			mt6359_vaux18_ldo_reg: ldo_vaux18 {
+> +				regulator-name = "vaux18";
+> +				regulator-min-microvolt = <1800000>;
+> +				regulator-max-microvolt = <1800000>;
+> +				regulator-enable-ramp-delay = <240>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vsram_others_ldo_reg: ldo_vsram_others {
+> +				regulator-name = "vsram_others";
+> +				regulator-min-microvolt = <500000>;
+> +				regulator-max-microvolt = <1293750>;
+> +				regulator-ramp-delay = <5000>;
+> +				regulator-enable-ramp-delay = <240>;
+> +			};
+> +			mt6359_vefuse_ldo_reg: ldo_vefuse {
+> +				regulator-name = "vefuse";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <2000000>;
+> +			};
+> +			mt6359_vxo22_ldo_reg: ldo_vxo22 {
+> +				regulator-name = "vxo22";
+> +				regulator-min-microvolt = <1800000>;
+> +				regulator-max-microvolt = <2200000>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vrfck_ldo_reg: ldo_vrfck {
+> +				regulator-name = "vrfck";
+> +				regulator-min-microvolt = <1500000>;
+> +				regulator-max-microvolt = <1700000>;
+> +			};
+> +			mt6359_vrfck_1_ldo_reg: ldo_vrfck_1 {
+> +				regulator-name = "vrfck";
+> +				regulator-min-microvolt = <1240000>;
+> +				regulator-max-microvolt = <1600000>;
+> +			};
+> +			mt6359_vbif28_ldo_reg: ldo_vbif28 {
+> +				regulator-name = "vbif28";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <2800000>;
+> +				regulator-enable-ramp-delay = <240>;
+> +			};
+> +			mt6359_vio28_ldo_reg: ldo_vio28 {
+> +				regulator-name = "vio28";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <3300000>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vemc_ldo_reg: ldo_vemc {
+> +				regulator-name = "vemc";
+> +				regulator-min-microvolt = <2900000>;
+> +				regulator-max-microvolt = <3300000>;
+> +			};
+> +			mt6359_vemc_1_ldo_reg: ldo_vemc_1 {
+> +				regulator-name = "vemc";
+> +				regulator-min-microvolt = <2500000>;
+> +				regulator-max-microvolt = <3300000>;
+> +			};
+> +			mt6359_vcn33_2_bt_ldo_reg: ldo_vcn33_2_bt {
+> +				regulator-name = "vcn33_2_bt";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <3500000>;
+> +			};
+> +			mt6359_vcn33_2_wifi_ldo_reg: ldo_vcn33_2_wifi {
+> +				regulator-name = "vcn33_2_wifi";
+> +				regulator-min-microvolt = <2800000>;
+> +				regulator-max-microvolt = <3500000>;
+> +			};
+> +			mt6359_va12_ldo_reg: ldo_va12 {
+> +				regulator-name = "va12";
+> +				regulator-min-microvolt = <1200000>;
+> +				regulator-max-microvolt = <1300000>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_va09_ldo_reg: ldo_va09 {
+> +				regulator-name = "va09";
+> +				regulator-min-microvolt = <800000>;
+> +				regulator-max-microvolt = <1200000>;
+> +			};
+> +			mt6359_vrf18_ldo_reg: ldo_vrf18 {
+> +				regulator-name = "vrf18";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <1810000>;
+> +			};
+> +			mt6359_vsram_md_ldo_reg: ldo_vsram_md {
+> +				regulator-name = "vsram_md";
+> +				regulator-min-microvolt = <500000>;
+> +				regulator-max-microvolt = <1293750>;
+> +				regulator-ramp-delay = <10760>;
+> +				regulator-enable-ramp-delay = <240>;
+> +			};
+> +			mt6359_vufs_ldo_reg: ldo_vufs {
+> +				regulator-name = "vufs";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <1900000>;
+> +			};
+> +			mt6359_vm18_ldo_reg: ldo_vm18 {
+> +				regulator-name = "vm18";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <1900000>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vbbck_ldo_reg: ldo_vbbck {
+> +				regulator-name = "vbbck";
+> +				regulator-min-microvolt = <1100000>;
+> +				regulator-max-microvolt = <1200000>;
+> +			};
+> +			mt6359_vsram_proc1_ldo_reg: ldo_vsram_proc1 {
+> +				regulator-name = "vsram_proc1";
+> +				regulator-min-microvolt = <500000>;
+> +				regulator-max-microvolt = <1293750>;
+> +				regulator-ramp-delay = <7500>;
+> +				regulator-enable-ramp-delay = <240>;
+> +				regulator-always-on;
+> +			};
+> +			mt6359_vsim2_ldo_reg: ldo_vsim2 {
+> +				regulator-name = "vsim2";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <3100000>;
+> +			};
+> +			mt6359_vsram_others_sshub_ldo: ldo_vsram_others_sshub {
+> +				regulator-name = "vsram_others_sshub";
+> +				regulator-min-microvolt = <500000>;
+> +				regulator-max-microvolt = <1293750>;
+> +			};
+> +		};
+> +
+> +		mt6359rtc: mt6359rtc {
+> +			compatible = "mediatek,mt6358-rtc";
+> +		};
+> +	};
+> +};
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192-evb.dts b/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
+> index 0205837fa698..808be492e970 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
+> @@ -5,6 +5,7 @@
+>    */
+>   /dts-v1/;
+>   #include "mt8192.dtsi"
+> +#include "mt6359.dtsi"
+>   
+>   / {
+>   	model = "MediaTek MT8192 evaluation board";
+> -- 
+> 2.25.1
+> 
+> ************* MEDIATEK Confidentiality Notice ********************
+> The information contained in this e-mail message (including any
+> attachments) may be confidential, proprietary, privileged, or otherwise
+> exempt from disclosure under applicable laws. It is intended to be
+> conveyed only to the designated recipient(s). Any use, dissemination,
+> distribution, printing, retaining or copying of this e-mail (including its
+> attachments) by unintended recipient(s) is strictly prohibited and may
+> be unlawful. If you are not an intended recipient of this e-mail, or believe
+> that you have received this e-mail in error, please notify the sender
+> immediately (by replying to this e-mail), delete any and all copies of
+> this e-mail (including any attachments) from your system, and do not
+> disclose the content of this e-mail to any other person. Thank you!
