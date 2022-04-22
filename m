@@ -2,97 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB80C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbiDVWcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
+        id S232909AbiDVWcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232994AbiDVWcF (ORCPT
+        with ESMTP id S232944AbiDVWcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:32:05 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514971DBD52
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:25:13 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650662711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7Nz88wgU3oEnXcxHypupvVLH2XmQE+DRfM6SBgqkIg8=;
-        b=tOqDYgO/0zB7wbhGQHdu9ur1jcQH0zrZjCp64dCqn7ROOmkoWTGzgkFaMpggCPWFZJEMhr
-        BEMvc/FIRbna3AY0CTn0WWU1iC59ELC7VpdTXO5uWBFxFYML8m9bd6d4j3znl9Gxez/1dH
-        dBpxKGxeL70cjmem0V7NLYlzbinmSA/Z1OVtFfPrLom/B63V1vhVSoXK2Ofx3s+8i/zAcV
-        iKyEj0acamQWun9DQ0eWO0ZPbVqXHxKNl4uk8lkrYl3laLc5v5VHuSbBYm6KowZeAuRcLU
-        ikJ11ryklnmiGEEusSFaD5HcevK5Y74ZW0P6WCjWPGShLoFqm5lAo0QYsztFfA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650662711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7Nz88wgU3oEnXcxHypupvVLH2XmQE+DRfM6SBgqkIg8=;
-        b=puiQvk6IAPo8P/C5l0aLEDFXpDfziwVcdZrHgjtN3TvUD2Zmseqtk6/1rWUHcpBpVVASse
-        rBT9WrSujlWmK4Dw==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v3 14/15] printk: extend console_lock for proper
- kthread support
-In-Reply-To: <YmLGfuSV5u7xp5BZ@alley>
-References: <20220419234637.357112-1-john.ogness@linutronix.de>
- <20220419234637.357112-15-john.ogness@linutronix.de>
- <20220421124119.GB11747@pathway.suse.cz>
- <875yn2h5ku.fsf@jogness.linutronix.de> <YmKnp3Ccu7laW3E4@alley>
- <87o80tp5lv.fsf@jogness.linutronix.de> <YmLGfuSV5u7xp5BZ@alley>
-Date:   Fri, 22 Apr 2022 23:31:11 +0206
-Message-ID: <877d7gu7yg.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Fri, 22 Apr 2022 18:32:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3F0324C79;
+        Fri, 22 Apr 2022 14:54:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FBCFB832C3;
+        Fri, 22 Apr 2022 21:54:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4A48C385A4;
+        Fri, 22 Apr 2022 21:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1650664497;
+        bh=BHXV0YOJHr2WM2YchlEQurnNcQ9G+9t5xI2geAAdRgY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iGGqtTPs/Shjsut4v8AhxTjmcP0yty7k0GpImOSyAPTRxxD261KW9ru192wle1d/g
+         adYtTm/zXG/dElLaOgX66EwhRPAZb0wlWlW9e0weRuVHMTfsNlfjyoW0DybS5Q4tol
+         pXMW/S6T5UanpnUXjYtXemKFzxfpHNEHTX/b0vV4=
+Date:   Fri, 22 Apr 2022 14:54:56 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     Shuah Khan <shuah@kernel.org>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] selftests: vm: refactor run_vmtests.sh to reduce
+ boilerplate
+Message-Id: <20220422145456.1e9f22220b1ad502aa56628d@linux-foundation.org>
+In-Reply-To: <20220421224928.1848230-1-axelrasmussen@google.com>
+References: <20220421224928.1848230-1-axelrasmussen@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-22, Petr Mladek <pmladek@suse.com> wrote:
-> Another problem is that the ordering is not stable. The console
-> might come and go.
+On Thu, 21 Apr 2022 15:49:27 -0700 Axel Rasmussen <axelrasmussen@google.com> wrote:
 
-The console list is protected by @console_sem, so it wouldn't be an
-actual problem. The real issue is that lockdep would not like it. A new
-lockdep class would need to be setup for each register_console().
+> Previously, each test printed out its own header, dealt with its own
+> return code, etc. By just putting this standard stuff in a function, we
+> can delete > 300 lines from the script.
+> 
+> This also makes adding future tests easier. And, it gets rid of various
+> inconsistencies that already exist:
+> 
+> - Some tests correctly deal with ksft_skip, but others don't.
+> - Some tests just print the executable name, others print arguments, and
+>   yet others print some comment in the header.
+> - Most tests print out a header with two separator lines, but not the
+>   HMM smoke test or the memfd_secret test, which only print one.
+> - We had a redundant "exit" at the end, with all the boilerplate it's an
+>   easy oversight.
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
+>  tools/testing/selftests/vm/run_vmtests.sh | 459 +++-------------------
+>  1 file changed, 64 insertions(+), 395 deletions(-)
 
->> Anyway, I will first look into the nested locking solution. That
->> seems more promising to me and it would go a long way to simplify the
->> locking hierarchy.
->
-> Please, do not spend too much time on this. The solution must be
-> simple in principle. If it gets complicated than it will likely
-> be worse than the current code.
+Well that's nice.
 
-Sure. The goal is to simplify. The only complexity will be doing in a
-way that allow lockdep to understand it.
+There were a bunch of changes already pending in this file but I think
+with this patch, they become unneeded.  So I just reverted them all. 
+please double check?
 
-> Alternative solution would be to reduce the number of variables
-> affected by the race. I mean:
->
->    + replace CON_THB_BLOCKED flag with con->blocked to avoid
->      the needed of READ_ONCE()/WRITE_ONCE().
->
->    + check con->blocked right after taking con->lock in
->      printk_kthread_func() so that all the other accesses are
->      safe.
 
-Honestly, I would prefer this to what v4 is doing. The only reason
-CON_THD_BLOCKED is a flag is to save space. But we are only talking
-about a few bytes being saved. There aren't that many consoles.
+--- a/tools/testing/selftests/vm/run_vmtests.sh~revert-1
++++ a/tools/testing/selftests/vm/run_vmtests.sh
+@@ -162,32 +162,22 @@ echo "----------------------------------
+ echo "running: gup_test -u # get_user_pages_fast() benchmark"
+ echo "------------------------------------------------------"
+ ./gup_test -u
+-ret_val=$?
+-
+-if [ $ret_val -eq 0 ]; then
+-	echo "[PASS]"
+-elif [ $ret_val -eq $ksft_skip ]; then
+-	 echo "[SKIP]"
+-	 exitcode=$ksft_skip
+-else
++if [ $? -ne 0 ]; then
+ 	echo "[FAIL]"
+ 	exitcode=1
++else
++	echo "[PASS]"
+ fi
+ 
+ echo "------------------------------------------------------"
+ echo "running: gup_test -a # pin_user_pages_fast() benchmark"
+ echo "------------------------------------------------------"
+ ./gup_test -a
+-ret_val=$?
+-
+-if [ $ret_val -eq 0 ]; then
+-	echo "[PASS]"
+-elif [ $ret_val -eq $ksft_skip ]; then
+-	 echo "[SKIP]"
+-	 exitcode=$ksft_skip
+-else
++if [ $? -ne 0 ]; then
+ 	echo "[FAIL]"
+ 	exitcode=1
++else
++	echo "[PASS]"
+ fi
+ 
+ echo "------------------------------------------------------------"
+@@ -195,16 +185,11 @@ echo "# Dump pages 0, 19, and 4096, usin
+ echo "running: gup_test -ct -F 0x1 0 19 0x1000 # dump_page() test"
+ echo "------------------------------------------------------------"
+ ./gup_test -ct -F 0x1 0 19 0x1000
+-ret_val=$?
+-
+-if [ $ret_val -eq 0 ]; then
+-	echo "[PASS]"
+-elif [ $ret_val -eq $ksft_skip ]; then
+-	 echo "[SKIP]"
+-	 exitcode=$ksft_skip
+-else
++if [ $? -ne 0 ]; then
+ 	echo "[FAIL]"
+ 	exitcode=1
++else
++	echo "[PASS]"
+ fi
+ 
+ echo "-------------------"
+@@ -306,16 +291,11 @@ echo "-------------------"
+ echo "running mremap_test"
+ echo "-------------------"
+ ./mremap_test
+-ret_val=$?
+-
+-if [ $ret_val -eq 0 ]; then
+-	echo "[PASS]"
+-elif [ $ret_val -eq $ksft_skip ]; then
+-	 echo "[SKIP]"
+-	 exitcode=$ksft_skip
+-else
++if [ $? -ne 0 ]; then
+ 	echo "[FAIL]"
+ 	exitcode=1
++else
++	echo "[PASS]"
+ fi
+ 
+ echo "-----------------"
+_
 
-It would be a very simple change. Literally just replacing the 3 lines
-that set/clear CON_THD_BLOCKED and replacing/reordering the 2 lines that
-check the flag. Then all the READ_ONCE/WRITE_ONCE to @flags could be
-removed.
-
-John
