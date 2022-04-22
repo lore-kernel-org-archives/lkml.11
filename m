@@ -2,77 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88ACDC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447302AbiDVMJl (ORCPT
+        id S1447309AbiDVMLA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
+        Fri, 22 Apr 2022 08:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447139AbiDVMJj (ORCPT
+        with ESMTP id S1384839AbiDVMK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:09:39 -0400
-Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2AF8A53B76
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:06:46 -0700 (PDT)
-Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
-        by mail.parknet.co.jp (Postfix) with ESMTPSA id 5466115F93A;
-        Fri, 22 Apr 2022 21:06:44 +0900 (JST)
-Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
-        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-3) with ESMTPS id 23MC6hP3060896
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 21:06:44 +0900
-Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
-        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-3) with ESMTPS id 23MC6goo151196
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 21:06:43 +0900
-Received: (from hirofumi@localhost)
-        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 23MC6gPe151195;
-        Fri, 22 Apr 2022 21:06:42 +0900
-From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-To:     Chung-Chiang Cheng <shepjeng@gmail.com>
-Cc:     Chung-Chiang Cheng <cccheng@synology.com>,
-        linux-kernel@vger.kernel.org, kernel@cccheng.net
-Subject: Re: [PATCH v3 3/3] fat: report creation time in statx
-References: <20220415094518.380543-1-cccheng@synology.com>
-        <20220415094518.380543-3-cccheng@synology.com>
-        <87h76utrj2.fsf@mail.parknet.co.jp>
-        <CAHuHWt=xYOBhRp_KJrSF5-xDBW+x_O4gnQSsX2M5u2D8zSXwTg@mail.gmail.com>
-Date:   Fri, 22 Apr 2022 21:06:42 +0900
-In-Reply-To: <CAHuHWt=xYOBhRp_KJrSF5-xDBW+x_O4gnQSsX2M5u2D8zSXwTg@mail.gmail.com>
-        (Chung-Chiang Cheng's message of "Fri, 22 Apr 2022 16:20:06 +0800")
-Message-ID: <87o80tpbjh.fsf@mail.parknet.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
+        Fri, 22 Apr 2022 08:10:58 -0400
+X-Greylist: delayed 467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 05:08:03 PDT
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A0C56435;
+        Fri, 22 Apr 2022 05:08:03 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 36B415FD02;
+        Fri, 22 Apr 2022 15:00:13 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1650628813;
+        bh=WGcfw8+jkSEDAp7PzGBXGL+KYgoLrJlmcpYGAiTjh9c=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=mWKkDqU9zd+6jMn6LF34ds5F5QWus3BbqYxRfe++y7ule4ejyYTRNq1Zsq3rIguMn
+         uum8aHOz75sbkv2eU1+w7t8IIFScyB3urtkSkeaxpKhYSvG5jumJHtGhdgJOujBF0z
+         zvufrnkAmB1A9qxtFzjL7QyQtdeJ2h7mY/JU2+QIWrDD+W6c+xyL+XGoaCdSh57nRw
+         Sw6EcfbCtAUD7cm0uu8o0wy/W0ep607QASvT3HtndHd5Rw8WEB6jPIemFOua/Dy76t
+         iA6mGyepFswjQhpJBlF1Wa/xwufbfzEAEuehOu8bwAKYInvr3nnMBKHGiiqtwPVwad
+         x7eadFKcsfqqg==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri, 22 Apr 2022 15:00:12 +0300 (MSK)
+From:   Alexey Romanov <avromanov@sberdevices.ru>
+To:     <minchan@kernel.org>, <ngupta@vflare.org>,
+        <senozhatsky@chromium.org>, <linux-block@vger.kernel.org>
+CC:     <axboe@chromium.org>, <kernel@sberdevices.ru>,
+        <linux-kernel@vger.kernel.org>, <mnitenko@gmail.com>,
+        Alexey Romanov <avromanov@sberdevices.ru>,
+        Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Subject: [PATCH v1] zram: don't retry compress incompressible page
+Date:   Fri, 22 Apr 2022 14:59:59 +0300
+Message-ID: <20220422115959.3313-1-avromanov@sberdevices.ru>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/04/22 06:12:00 #19330442
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chung-Chiang Cheng <shepjeng@gmail.com> writes:
+It doesn't make sense for us to retry to compress an uncompressible
+page (comp_len == PAGE_SIZE) in zsmalloc slowpath, because we will
+be storing it uncompressed anyway. We can avoid wasting time on
+another compression attempt. It is enough to take lock
+(zcomp_stream_get) and execute the code below.
 
->
-> I also have a question. If msdos doesn't support create-time, why does the
-> original fat_truncate_time() truncate it to a 2-sec granularity?
->
-> if (flags & S_CTIME) {
->         if (sbi->options.isvfat)
->                 inode->i_ctime = fat_timespec64_trunc_10ms(*now);
->         else
->                 inode->i_ctime = fat_timespec64_trunc_2secs(*now);
-> }
->
-> This logic was introduced in 6bb885ecd746 (fat: add functions to update
-> and truncate timestamps appropriately"), and seems not for change-time.
-> Should I remove it?
+Signed-off-by: Alexey Romanov <avromanov@sberdevices.ru>
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+---
+ drivers/block/zram/zram_drv.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-Hm, not sure.
-
-However, ctime/atime is not stored into backing storage in
-__fat_write_inode() and loaded if !isvfat (if I'm not missing
-something).  So I think we don't need it for creation time.
-
-Thanks.
+diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
+index cb253d80d72b..bb9dd8b64176 100644
+--- a/drivers/block/zram/zram_drv.c
++++ b/drivers/block/zram/zram_drv.c
+@@ -1413,9 +1413,20 @@ static int __zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
+ 		handle = zs_malloc(zram->mem_pool, comp_len,
+ 				GFP_NOIO | __GFP_HIGHMEM |
+ 				__GFP_MOVABLE);
+-		if (handle)
++		if (!handle)
++			return -ENOMEM;
++
++		if (comp_len != PAGE_SIZE)
+ 			goto compress_again;
+-		return -ENOMEM;
++
++		/*
++		 * If the page is not compressible, you need to acquire the lock and
++		 * execute the code below. The zcomp_stream_get() call is needed to
++		 * disable the cpu hotplug and grab the zstrm buffer back.
++		 * It is necessary that the dereferencing of the zstrm variable below
++		 * occurs correctly.
++		 */
++		zstrm = zcomp_stream_get(zram->comp);
+ 	}
+ 
+ 	alloced_pages = zs_get_total_pages(zram->mem_pool);
 -- 
-OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+2.30.1
+
