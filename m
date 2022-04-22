@@ -2,68 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4085DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA72C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbiDVWHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
+        id S231460AbiDVWHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231518AbiDVWGw (ORCPT
+        with ESMTP id S231637AbiDVWHE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:06:52 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A804D1FB8A7;
-        Fri, 22 Apr 2022 13:51:39 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MJ2KjN024036;
-        Fri, 22 Apr 2022 14:02:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650654140;
-        bh=NCM8mzjQH8QiT4AT02wOLT4awLcH+bAUoX5oBTbp0nU=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=u46vFj9mgkxJ4kojRRWfpdLSGkE5WzS0UpENurVyP13TL1Prbq1ehfXLKC2JsrgZI
-         CN8yGCDZMsDo9Q5MDoiT+CccPcK/wfsOeq5y/C9H3J7PIGxWROzdRA+vF8ZU9RgfxS
-         ehcheVKVEuuRwfQ5Ifz1in/sGX8rYTtR/BNAUUdQ=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MJ2Kit005174
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 14:02:20 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 14:02:20 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 14:02:20 -0500
-Received: from [10.249.34.110] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MJ2Jlc051088;
-        Fri, 22 Apr 2022 14:02:19 -0500
-Message-ID: <ad47db06-7f5c-399f-0ad0-81f720e6f035@ti.com>
-Date:   Fri, 22 Apr 2022 14:02:19 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/6] dt-bindings: ti,sci: Add ti,ctx-memory-region
- property
-Content-Language: en-US
-To:     Dave Gerlach <d-gerlach@ti.com>, Rob Herring <robh+dt@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
+        Fri, 22 Apr 2022 18:07:04 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE1F31DDC;
+        Fri, 22 Apr 2022 13:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650660721;
+        bh=nH5nbmzHe/xRwz0pWDdjzn30b813GPDvATKACfo4I6g=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=eyIq38Ti8Xyoy7E0KkA29w0DkaRlW8dP8h5wyY9BNqYn3J9bSSzUP+PiTaibG9SWW
+         ub/Uupa1SinGBG1AycTDetvFx9E3NVW1btY5UCZ0+WtMgR2lprvv76u7jqnf9PXAlo
+         APJT4bkv9v2gXLwuJ7IC7ZKkhZzyEIufDZb39CVI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([87.78.190.74]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MGQnF-1nh6473Djx-00GnuC; Fri, 22
+ Apr 2022 20:31:46 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Tero Kristo <kristo@kernel.org>, Nishanth Menon <nm@ti.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-References: <20220421203659.27853-1-d-gerlach@ti.com>
- <20220421203659.27853-2-d-gerlach@ti.com>
-From:   Andrew Davis <afd@ti.com>
-In-Reply-To: <20220421203659.27853-2-d-gerlach@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 1/7] dt-bindings: timer: nuvoton,npcm7xx-timer: Allow specifying all clocks
+Date:   Fri, 22 Apr 2022 20:30:06 +0200
+Message-Id: <20220422183012.444674-2-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:lnBh/Tpvgmu7+wHhf+H5KmdyA2JGqflwIdExxJyori80ywRZSGg
+ flOvQpXx/6FTotPushCAlRjkrTtc6+4Al0ktSv+PUZ0hpSYy2O5QKr8ZpiSt5c26UcjQFfW
+ MAWFL4Hz8F9vQWjXrGC1jMgB2bGBiqgY4p203hrVJHH/jNtRhzgk4N0vl6J4PqBB2kLE79S
+ VYINyKnXBIFnjHKOVSF+g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:GH6IMDgDjVk=:zwNWdBjXT58bbmqMOK1ZyH
+ eKVkZYuRPsrGXFJR11x2HGexmFcrG5npjb3hw1G81xS9+G68DLMvyuSJV4bJk3zuLcYVJqa1M
+ JWCQfcfDk5UKkQ1rlenE34gpA7hztwRAbHJ3iV6js3KyzuDVsz7Xo8zK/L+L4Yi0F085xgL+o
+ PCIGn+niJIKUgnUVAwQKaQOF7iMw9eTwkXwpmnLbOjTqD5eJ5aG1UDFcRwINNWUvcvI5O4cda
+ FQUNnGTdL7ujQZfXVbbM0ZBbIDcDFeIdagpMtfYnq0h+zFg8PJZCOlhXMwVdT6ULcVnprY1UJ
+ n9mFbqmetOirWzDWemHEOkTuSHZQn2h6rEShW8mtcEW/nVfKJPcy4FF5BtIidgV33NM6mm8A+
+ HWaHmQUaszJdqIepItfxN51b9DovnEQJd8AU8r4F2m9W8TQYAMToGJq0RoC/wG+Qi+iq0q/8E
+ 7L+7jniWOs5WQJj1+KSh+kuXBI8o60eik0JBj2P/bYnPGx6z7TzbU3u5mD1m0eknZ7YbQKvRX
+ s6Qq7qwu3VdY3zwYawvsipVz9/hbIhNvnDjTHZIKK9021lvFY89Y3dXQ25/yJzSUyP/h6vqAC
+ mLWNBcsefhfoCOf9EMY7Y1iHQRXaNOLMcDomv1Gyb2d+IzEBcAXNewrk7kZA4RPMlnF+ydcF0
+ uH9kNHGGrDq+QvsnKHjBZWQxvezef3FAaaap6IRxvIKEeoDaNWDkMUCY/5bQPd5gF45Q9Nxtq
+ bTPPVTzxFfMC5IkLZt3dGT+Vk5g6/FZ6r2Md5bslCrwrI9K6x5mQVeWdZVfnfEaGf/iLPNVuq
+ FHTow+h+Ja7faVEPIx8RBs0/dP7YTJttdutvqRV1pNbPZp2FRYYC8g4Yv11aWbFNKS8X82J/F
+ AbdPHOZSjmZ2I6JKMpkNbmZ8BIU3SisXUpxy2UqgVlrc3oVBR+87o8v+DQAX2Fv2QenHhXDu3
+ QdDCeqGp3hOCaon8nS6Fx4843UHajRwjuzgvPIqr5Atg1Hgt07zD4FqllQMD+y/9T0Rmf/6Y0
+ k5EC7jZo/XUQXoyyEyQ+Mpit8AG9G6ArfHdlYaDKkfSa5ZtaKLXdUEMTQY/i3vNI1kTulkD9T
+ DSKFokWsM0Uosw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The timer module contains multiple timers. In the WPCM450 SoC, each timer
+runs off a clock can be gated individually. To model this correctly, the
+timer node in the devicetree needs to take multiple clock inputs.
+
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
+ .../devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml  | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer=
+.yaml b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+index 0cbc26a721514..023c999113c38 100644
+=2D-- a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+@@ -23,7 +23,13 @@ properties:
+       - description: The timer interrupt of timer 0
+
+   clocks:
+-    maxItems: 1
++    items:
++      - description: The reference clock for timer 0
++      - description: The reference clock for timer 1
++      - description: The reference clock for timer 2
++      - description: The reference clock for timer 3
++      - description: The reference clock for timer 4
++    minItems: 1
+
+ required:
+   - compatible
+=2D-
+2.35.1
 
