@@ -2,172 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EE6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiDVVh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
+        id S229993AbiDVVhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiDVVhX (ORCPT
+        with ESMTP id S229728AbiDVVhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:37:23 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012333FE7EB;
-        Fri, 22 Apr 2022 13:38:03 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-e5ca5c580fso9817569fac.3;
-        Fri, 22 Apr 2022 13:38:03 -0700 (PDT)
+        Fri, 22 Apr 2022 17:37:36 -0400
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA02EC138
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:36 -0700 (PDT)
+Received: by mail-ua1-f51.google.com with SMTP id g22so3410657uam.12
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z7l1siJ5Z2fXTsLPc04ivVbBuS3c9PMnxxuVpF86Xzs=;
+        b=IIo57g2PIuT0TvD4bSVMcYrJl+6VE3sP8KhJktIn+xmBDyQuNInfkEWId6ES9YYH/2
+         wUd/ofdCTjanaKSZW7IxdjZcO03qfDhbio9LnGBAKEd3/kt4cVXZ8y+l9qx89zQHAkA+
+         Z7D7NSyj0670eg9sdw8/y638r/O+DRZSVNCsVTEK2n0iAcJ9RaOs8SkxU29Lj+DgTIUt
+         h55VNvhWwv/iXNB06BL8q3GnU5rgWacC1pamJA6tOPHyGog9wh+y66fANtiSw/p3i548
+         0GX3wn3gBgdUAIY/0HgbGHzvIISAtuYePXflkG8S7dkrvVX/4HAJyiq/nzCOoVMcc9qj
+         4fzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kkCuqc4lk8yEfR89vQV9qFVj6wArnvFzUiFZKzKZjrc=;
-        b=iXtxvrsf8iVjOHl0ej3x+QTE3vMlJkiXBBLikQb4fM2UlPpdO9nIac3bkYbbSfkO3D
-         DrI1X8vSyzNLn2j7c7k4qFRN/l5vonnxzZD8if3aa2vfl9+tN+oNKHJWT966w9BjTKAC
-         4M4zucWvOKgKbHaYnC+gun0njTMdn0qL5Ug/BuhO7yMkvLYgFnPmqOIwwcieXEamubrw
-         b1iOLW86DAXliAkdSHZ5nj21A0SnudyymcscArPFmp8PP5S/MpqjMx7ESf9FEn0IzlGv
-         MjOtg3vZGD5AyaXNHjSNKJ4bC6UIJXO/1IjeSJJLz80U6KdfsTEBvFkqMr/LDY0Rcd05
-         1gCw==
-X-Gm-Message-State: AOAM530PU5/xWU2vVG5xP66nIbKniPxuo9DJQBh/qJWciFZHpO8evTdx
-        yhWDZT5LNumadtMaE33NZfhI3XaTrw==
-X-Google-Smtp-Source: ABdhPJxrncT4pRUKPew2OPpm8vR0ZDSQQ568OrOABzj1bnXewh83dqFsNF56FDzodHorYpfjmdi2dA==
-X-Received: by 2002:a05:6808:2102:b0:322:7e22:da6 with SMTP id r2-20020a056808210200b003227e220da6mr7154736oiw.92.1650655367417;
-        Fri, 22 Apr 2022 12:22:47 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id h186-20020acab7c3000000b002ef5106248asm1069591oif.45.2022.04.22.12.22.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:22:47 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Vitor Soares <vitor.soares@synopsys.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: i3c: Convert snps,dw-i3c-master to DT schema
-Date:   Fri, 22 Apr 2022 14:22:36 -0500
-Message-Id: <20220422192236.2594577-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z7l1siJ5Z2fXTsLPc04ivVbBuS3c9PMnxxuVpF86Xzs=;
+        b=EpTKVIzq+5dbwXz2g8tNtBmRIQ9KBw4890pt5+rhIHojVbnwSu0OIc42VQxovffe3g
+         CoJGvDO10yQduZmWO0b2F5+S7P85+rU9kAigJu8KctYXKFgzMvXqsYPrY/S6hcKgxGmy
+         +d/nZRUrToOAJ9QIHm6JbGpm3sy8RqJZraDlNCqpp/alFRuOTduBxXmWakqwZqiYiLQm
+         S2skP0nJzJUchF4Ecs6r67XAqzoBUSQTGbqI/smfKZHJNfgfG1rWk6J7BNdoZKwoStyY
+         n5rk/M8Z5d4mSyVTHx6cQrWJq4wJyt1rBinFgmdVKC066SYnj2s+ZzhPZqeEtC/zBn27
+         3y6w==
+X-Gm-Message-State: AOAM530zvZ2gwCIMH8oUfD5ctZopZGgiX6pY7e4I7a1EuxpNK1Ur46mM
+        sVHVXeH4BF2XAMRsaqqtSaOOJdUvcl1OLjY/yOoRyQ==
+X-Google-Smtp-Source: ABdhPJxVykdcIn3WVbtHm5IZKYZ2b7ht5iGQlarXHMqHwHtAYcGofKLyCRwTcQILqNllL8yPFcHqRJ/ct594Gx94lpU=
+X-Received: by 2002:a9f:356c:0:b0:359:5bee:d1f8 with SMTP id
+ o99-20020a9f356c000000b003595beed1f8mr2372276uao.60.1650659560491; Fri, 22
+ Apr 2022 13:32:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220422195516.10769-1-jvgediya@linux.ibm.com> <20220422195516.10769-4-jvgediya@linux.ibm.com>
+In-Reply-To: <20220422195516.10769-4-jvgediya@linux.ibm.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Fri, 22 Apr 2022 13:32:29 -0700
+Message-ID: <CAAPL-u8+LUrw-k_WKs2VESvFMzhNOFrG8X=E58Gvfw4FKvny9w@mail.gmail.com>
+Subject: Re: [PATCH v3 3/7] drivers/base/node: Add support to write
+ node_states[] via sysfs
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
+        dave.hansen@linux.intel.com, ying.huang@intel.com,
+        aneesh.kumar@linux.ibm.com, shy828301@gmail.com,
+        gthelen@google.com, dan.j.williams@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Synopsys Designware I3C master to DT schema format.
+On Fri, Apr 22, 2022 at 12:55 PM Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
+>
+> Current /sys/devices/system/node/* interface doesn't support
+> to write node_states[], however write support is needed in case
+> users want to set them manually e.g. when user want to override
+> default N_DEMOTION_TARGETS found by the kernel.
+>
+> Rename existing _NODE_ATTR to _NODE_ATTR_RO and introduce new
+> _NODE_ATTR_RW which can be used for node_states[] which can
+> be written from sysfs.
+>
+> It may be necessary to validate written values and take action
+> based on them in a state specific way so a callback 'write' is
+> introduced in 'struct node_attr'.
+>
+> A new function demotion_targets_write() is added to validate
+> the input nodes for N_DEMOTION_TARGETS which should be subset
+> of N_MEMORY and to build new demotion list based on new nodes.
+>
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../bindings/i3c/snps,dw-i3c-master.txt       | 41 ---------------
- .../bindings/i3c/snps,dw-i3c-master.yaml      | 52 +++++++++++++++++++
- 2 files changed, 52 insertions(+), 41 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
- create mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+Acked-by: Wei Xu <weixugc@google.com>
 
-diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-deleted file mode 100644
-index 07f35f36085d..000000000000
---- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
-+++ /dev/null
-@@ -1,41 +0,0 @@
--Bindings for Synopsys DesignWare I3C master block
--=================================================
--
--Required properties:
----------------------
--- compatible: shall be "snps,dw-i3c-master-1.00a"
--- clocks: shall reference the core_clk
--- interrupts: the interrupt line connected to this I3C master
--- reg: Offset and length of I3C master registers
--
--Mandatory properties defined by the generic binding (see
--Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
--
--- #address-cells: shall be set to 3
--- #size-cells: shall be set to 0
--
--Optional properties defined by the generic binding (see
--Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
--
--- i2c-scl-hz
--- i3c-scl-hz
--
--I3C device connected on the bus follow the generic description (see
--Documentation/devicetree/bindings/i3c/i3c.yaml for more details).
--
--Example:
--
--	i3c-master@2000 {
--		compatible = "snps,dw-i3c-master-1.00a";
--		#address-cells = <3>;
--		#size-cells = <0>;
--		reg = <0x02000 0x1000>;
--		interrupts = <0>;
--		clocks = <&i3cclk>;
--
--		eeprom@57{
--			compatible = "atmel,24c01";
--			reg = <0x57 0x0 0x10>;
--			pagesize = <0x8>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-new file mode 100644
-index 000000000000..5b8b43e6f1e4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/i3c/snps,dw-i3c-master.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Synopsys DesignWare I3C master block
-+
-+maintainers:
-+  - Vitor Soares <vitor.soares@synopsys.com>
-+
-+allOf:
-+  - $ref: i3c.yaml#
-+
-+properties:
-+  compatible:
-+    const: snps,dw-i3c-master-1.00a
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    i3c-master@2000 {
-+        compatible = "snps,dw-i3c-master-1.00a";
-+        #address-cells = <3>;
-+        #size-cells = <0>;
-+        reg = <0x02000 0x1000>;
-+        interrupts = <0>;
-+        clocks = <&i3cclk>;
-+
-+        eeprom@57{
-+            compatible = "atmel,24c01";
-+            reg = <0x57 0x0 0x10>;
-+            pagesize = <0x8>;
-+        };
-+    };
-+...
--- 
-2.32.0
-
+> ---
+>  drivers/base/node.c | 62 +++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 49 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index 6eef22e6413e..e03eedbc421b 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/swap.h>
+>  #include <linux/slab.h>
+> +#include <linux/migrate.h>
+>
+>  static struct bus_type node_subsys = {
+>         .name = "node",
+> @@ -1013,6 +1014,7 @@ void unregister_one_node(int nid)
+>  struct node_attr {
+>         struct device_attribute attr;
+>         enum node_states state;
+> +       int (*write)(nodemask_t nodes);
+>  };
+>
+>  static ssize_t show_node_state(struct device *dev,
+> @@ -1024,23 +1026,57 @@ static ssize_t show_node_state(struct device *dev,
+>                           nodemask_pr_args(&node_states[na->state]));
+>  }
+>
+> -#define _NODE_ATTR(name, state) \
+> -       { __ATTR(name, 0444, show_node_state, NULL), state }
+> +static ssize_t store_node_state(struct device *s,
+> +                               struct device_attribute *attr,
+> +                               const char *buf, size_t count)
+> +{
+> +       nodemask_t nodes;
+> +       struct node_attr *na = container_of(attr, struct node_attr, attr);
+> +
+> +       if (nodelist_parse(buf, nodes))
+> +               return -EINVAL;
+> +
+> +       if (na->write) {
+> +               if (na->write(nodes))
+> +                       return -EINVAL;
+> +       } else {
+> +               node_states[na->state] = nodes;
+> +       }
+> +
+> +       return count;
+> +}
+> +
+> +static int demotion_targets_write(nodemask_t nodes)
+> +{
+> +       if (nodes_subset(nodes, node_states[N_MEMORY])) {
+> +               node_states[N_DEMOTION_TARGETS] = nodes;
+> +               set_migration_target_nodes();
+> +               return 0;
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +#define _NODE_ATTR_RO(name, state) \
+> +       { __ATTR(name, 0444, show_node_state, NULL), state, NULL }
+> +
+> +#define _NODE_ATTR_RW(name, state, write_fn) \
+> +       { __ATTR(name, 0644, show_node_state, store_node_state), state, write_fn }
+>
+>  static struct node_attr node_state_attr[] = {
+> -       [N_POSSIBLE] = _NODE_ATTR(possible, N_POSSIBLE),
+> -       [N_ONLINE] = _NODE_ATTR(online, N_ONLINE),
+> -       [N_NORMAL_MEMORY] = _NODE_ATTR(has_normal_memory, N_NORMAL_MEMORY),
+> +       [N_POSSIBLE] = _NODE_ATTR_RO(possible, N_POSSIBLE),
+> +       [N_ONLINE] = _NODE_ATTR_RO(online, N_ONLINE),
+> +       [N_NORMAL_MEMORY] = _NODE_ATTR_RO(has_normal_memory, N_NORMAL_MEMORY),
+>  #ifdef CONFIG_HIGHMEM
+> -       [N_HIGH_MEMORY] = _NODE_ATTR(has_high_memory, N_HIGH_MEMORY),
+> +       [N_HIGH_MEMORY] = _NODE_ATTR_RO(has_high_memory, N_HIGH_MEMORY),
+>  #endif
+> -       [N_MEMORY] = _NODE_ATTR(has_memory, N_MEMORY),
+> -       [N_CPU] = _NODE_ATTR(has_cpu, N_CPU),
+> -       [N_GENERIC_INITIATOR] = _NODE_ATTR(has_generic_initiator,
+> -                                          N_GENERIC_INITIATOR),
+> -       [N_DEMOTION_TARGETS] = _NODE_ATTR(demotion_targets,
+> -                                         N_DEMOTION_TARGETS),
+> -
+> +       [N_MEMORY] = _NODE_ATTR_RO(has_memory, N_MEMORY),
+> +       [N_CPU] = _NODE_ATTR_RO(has_cpu, N_CPU),
+> +       [N_GENERIC_INITIATOR] = _NODE_ATTR_RO(has_generic_initiator,
+> +                                             N_GENERIC_INITIATOR),
+> +       [N_DEMOTION_TARGETS] = _NODE_ATTR_RW(demotion_targets,
+> +                                            N_DEMOTION_TARGETS,
+> +                                            demotion_targets_write),
+>  };
+>
+>  static struct attribute *node_state_attrs[] = {
+> --
+> 2.35.1
+>
