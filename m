@@ -2,128 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB15C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444715AbiDVHOt (ORCPT
+        id S1444721AbiDVHQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
+        Fri, 22 Apr 2022 03:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444672AbiDVHOg (ORCPT
+        with ESMTP id S1444672AbiDVHQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:14:36 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 00:11:43 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AEE51323
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:11:42 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202204220710375252303e7d3f2d72cb
-        for <linux-kernel@vger.kernel.org>;
-        Fri, 22 Apr 2022 09:10:38 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=HCoAqgrHQKyCuVz/FqZ9uH/p1/IK2zii6dkkGwez/mU=;
- b=jPKcKXwf8hiVr35oLisxodp1qoe/LaKPPpj/UjYmsBbD7UwO/ufEw7tC1YCot34buHWQDO
- TKMfWrG1O/EjKNw76/rTa8/yW4u+8qu5H916AjeoaAPrxfulpbw3rjmmZQXv3AAoNS9Erxk+
- /8valCbdXUMmYoJkAjA78VIe3bsT0=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 3/3] tty: n_gsm: fix software flow control handling
-Date:   Fri, 22 Apr 2022 00:10:25 -0700
-Message-Id: <20220422071025.5490-3-daniel.starke@siemens.com>
-In-Reply-To: <20220422071025.5490-1-daniel.starke@siemens.com>
-References: <20220422071025.5490-1-daniel.starke@siemens.com>
+        Fri, 22 Apr 2022 03:16:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CAF51328;
+        Fri, 22 Apr 2022 00:13:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BD5DB82A97;
+        Fri, 22 Apr 2022 07:13:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0732C385A0;
+        Fri, 22 Apr 2022 07:13:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650611610;
+        bh=2eP5N2am4/TObX0OiEiogWXKWvfr8XKlaOBXPQ079Jg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=ZKi7veBzeQJLN31agqjva9zjBCjEydINToeZWCJvlJZ1ivwGPyMAhDztg8spzo+iO
+         kI4s9RHZuEqg4FceSlNiEnfh0sT8jFX8FgLDYsQbLks5Pp+VTBAN/mY5sbxXQaibwy
+         diTKXcZxTM5Tc+Y2ohQG3O7LDwEQhMVJ4A5VN03Gspm8zEGHWQe4Fzx1Cd3QZMEz3c
+         VwvPq77RwGFkRDgvbrf1+/ZbUdYQG0MKyvNWEIUZBCkxwGGoZTQFHrrUwoaUvmQz+g
+         cT2A4a/KAegxLhPkN6QdUiJfuFL0/I0RZgJrZ+JnYMRc/Sigc/637GAF4mkYj7ItNG
+         yvtnf+XY4cAog==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     yunbo yu <yuyunbo519@gmail.com>
+Cc:     nbd@nbd.name, lorenzo@kernel.org, ryder.lee@mediatek.com,
+        shayne.chen@mediatek.com, sean.wang@mediatek.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] =?utf-8?B?bXQ3Nu+8mm10NzYwM++8mg==?= move
+ spin_lock_bh() to spin_lock()
+References: <20220422060723.424862-1-yuyunbo519@gmail.com>
+        <87y1zxmysz.fsf@kernel.org>
+        <CAD55h6Z0GfEMu25_1PXavRA9SGJ2zZC4-y=6Bo5+Fz=99J6_mg@mail.gmail.com>
+Date:   Fri, 22 Apr 2022 10:13:24 +0300
+In-Reply-To: <CAD55h6Z0GfEMu25_1PXavRA9SGJ2zZC4-y=6Bo5+Fz=99J6_mg@mail.gmail.com>
+        (yunbo yu's message of "Fri, 22 Apr 2022 14:27:22 +0800")
+Message-ID: <87o80tmvzf.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+yunbo yu <yuyunbo519@gmail.com> writes:
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.8.1 states that XON/XOFF characters
-shall be used instead of Fcon/Fcoff command in advanced option mode to
-handle flow control. Chapter 5.4.8.2 describes how XON/XOFF characters
-shall be handled. Basic option mode only used Fcon/Fcoff commands and no
-XON/XOFF characters. These are treated as data bytes here.
-The current implementation uses the gsm_mux field 'constipated' to handle
-flow control from the remote peer and the gsm_dlci field 'constipated' to
-handle flow control from each DLCI. The later is unrelated to this patch.
-The gsm_mux field is correctly set for Fcon/Fcoff commands in
-gsm_control_message(). However, the same is not true for XON/XOFF
-characters in gsm1_receive().
-Disable software flow control handling in the tty to allow explicit
-handling by n_gsm.
-Add the missing handling in advanced option mode for gsm_mux in
-gsm1_receive() to comply with the standard.
+> Thanks for the tip! I will make the patch v2
 
-This patch depends on the following commit:
-Commit 8838b2af23ca ("tty: n_gsm: fix SW flow control encoding/handling")
+Another tip for you, please don't use HTML :)
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#do_not_send_html_mail
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 570f0b8b7576..8652308c187f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -232,6 +232,7 @@ struct gsm_mux {
- 	int initiator;			/* Did we initiate connection */
- 	bool dead;			/* Has the mux been shut down */
- 	struct gsm_dlci *dlci[NUM_DLCI];
-+	int old_c_iflag;		/* termios c_iflag value before attach */
- 	bool constipated;		/* Asked by remote to shut up */
- 
- 	spinlock_t tx_lock;
-@@ -2022,6 +2023,16 @@ static void gsm0_receive(struct gsm_mux *gsm, unsigned char c)
- 
- static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
- {
-+	/* handle XON/XOFF */
-+	if ((c & ISO_IEC_646_MASK) == XON) {
-+		gsm->constipated = true;
-+		return;
-+	} else if ((c & ISO_IEC_646_MASK) == XOFF) {
-+		gsm->constipated = false;
-+		/* Kick the link in case it is idling */
-+		gsm_data_kick(gsm, NULL);
-+		return;
-+	}
- 	if (c == GSM1_SOF) {
- 		/* EOF is only valid in frame if we have got to the data state */
- 		if (gsm->state == GSM_DATA) {
-@@ -2449,6 +2460,9 @@ static int gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- 	int ret, i;
- 
- 	gsm->tty = tty_kref_get(tty);
-+	/* Turn off tty XON/XOFF handling to handle it explicitly. */
-+	gsm->old_c_iflag = tty->termios.c_iflag;
-+	tty->termios.c_iflag &= (IXON | IXOFF);
- 	ret =  gsm_activate_mux(gsm);
- 	if (ret != 0)
- 		tty_kref_put(gsm->tty);
-@@ -2489,6 +2503,8 @@ static void gsmld_detach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- 	WARN_ON(tty != gsm->tty);
- 	for (i = 1; i < NUM_DLCI; i++)
- 		tty_unregister_device(gsm_tty_driver, base + i);
-+	/* Restore tty XON/XOFF handling. */
-+	gsm->tty->termios.c_iflag = gsm->old_c_iflag;
- 	tty_kref_put(gsm->tty);
- 	gsm->tty = NULL;
- }
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
