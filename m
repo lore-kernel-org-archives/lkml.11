@@ -2,172 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF42C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B36C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449049AbiDVO5j (ORCPT
+        id S1449042AbiDVO7c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        Fri, 22 Apr 2022 10:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449023AbiDVO5d (ORCPT
+        with ESMTP id S1449080AbiDVO70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:57:33 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10088.outbound.protection.outlook.com [40.107.1.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097B35C663;
-        Fri, 22 Apr 2022 07:54:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MqOaI6+S18VYi8M0I5s8gLpaHPiyZK3u2p5GtuAxi/M8n79E2poQBI4JCDEMa/ugrkNdTVJRl8LAkqXMlmxOj6Tk8s0gbDTO8MrhOVTSHzfTiUQbVQw1qdeguZSbW12lS+u8BAdczjqsuJmW674TO9X+CWf3yylbHmxw5WxxzwH8SWWhwDImhJb0JWY51hZmeyQd/Dr3DfZi2NZv/K0j2ge0eHuj4pZiwFhsdi5PH9Xj/fHuPWAdtOBfc1WjDwmMCMzichMCYuFBK5Y2wAQsBu3U2KgiIlAJV8+iWe8EH92uIoVE65twz4jTuf+GWDnHYAxpZ1Ompi151JSjqaGL0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=g/Tj791zH32q26vxCWN/fRNY39uW8ZergoHZPJHI5tU=;
- b=FRs4Xeca3L3qRttZmkS4rNHSYZa5FdOjAUhpb2HJUGCqYII1SHDQFDDmQ0OVrgnKl13AqdT+gzqb3vAhR495Xh1Xvl6Rov7KYxsC3WsDP0ytpgjYc8ASZKWfQzcP6jwVxedTxtQ1ostCzrGExWUZyck82/yFz7m0cKroYJ2klUYJD3fuZHahoa9gPOtHRWUnaQ93egj5XCLSOJ5KLjzTzrjqnDGhdCtz4yoMruWy8kLwH2rVUasIhcLr9tn8J8F0bDv9c0HWlsMbcFvbN7DwEVD1fIUGZBd1L79halsMPjZJ5yK2AjwPGc9Kh0X7tszB0XoBFZzVL8bWGwj0cEZbqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g/Tj791zH32q26vxCWN/fRNY39uW8ZergoHZPJHI5tU=;
- b=PTylPiYwPYCzfWyIBxZ0sM3NrPVFVeX0Mz7xW248+VOsIeOPAXYBt0grQBqJ6r4OeqzYUlf+zPo/Si6AK3h1UKSgDiGgqU9ohM4enHRUKKkyBsagWyTHJbeD4bZQEEBTb4uUZzxgvUsf6M7NznO5P6bJhMdkUuhYWLzf1OWYfXng7AqWZqkqUPX2m9tw5A7wAq+L5tjcnADmf5jxSQvSPQ0wMOoG+iYk/ahsMUTkEoKAp42gtnb1sT2XYKpCbln9fFSjqVY8JXz0nJyyBMpe836L/SNxwU1nSgiRHFKNZyeOmoHgIoAjPdxkUaQBGtw3qjnbbiYrs3OY/VIQrNz/vA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by HE1PR0302MB2652.eurprd03.prod.outlook.com (2603:10a6:3:e9::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Fri, 22 Apr
- 2022 14:54:34 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::714d:2b6:a995:51bd]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::714d:2b6:a995:51bd%4]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
- 14:54:34 +0000
-Subject: Re: [PATCH v2 0/9] nvmem: sfp: binding updates and additions
-To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, Michael Walle <michael@walle.cc>
-References: <20220422145147.2210587-1-sean.anderson@seco.com>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <9ec1e889-178f-9b99-c73a-9f31c6c99563@seco.com>
-Date:   Fri, 22 Apr 2022 10:54:28 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20220422145147.2210587-1-sean.anderson@seco.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0002.namprd13.prod.outlook.com
- (2603:10b6:208:256::7) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        Fri, 22 Apr 2022 10:59:26 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182CC5C87D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:56:28 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650639387;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yeO7DB/oOdZiE5YWbOfjg8Pxdhh85gWuIsOq1Wgec1w=;
+        b=yAkNhORuwRA0vCkGQ5lKnhlYDhJjnaqjPGowwq3uqTmK8KvetIzZWoXWNo5H4914SRrOXI
+        6Y67ttATBwOnFttY/DaIyaJw4VQghgL/kEQjfjEPfxePgSljVurZrWBM8zov5T4QALRDjd
+        9CtP7gmEzYXv7oU9El41VxogjuI/D52/QRv0T9zHIaMrt5nJK93pmAXkUufe8I6f7pA5+t
+        wGcfQ3HW+XmlACHBjESFr3qPyCvmFFibk/xbD5D55Gkwil37SzQQJzwbN+G71L2WCxsALV
+        dAZMR+OsWLc82wjDlNeB1cyx76ooxJb4zH26hOQqjTVkhfw1l9izIKqzDPxElA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650639387;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yeO7DB/oOdZiE5YWbOfjg8Pxdhh85gWuIsOq1Wgec1w=;
+        b=pbX00wnHWFBeWEQwToFkdzn2dZAsMpSlsXcZZWK42rB4fM0DI8EfoHH6HgWMhZHvTPgL2E
+        RsgBuCxAU7Fdw1Bw==
+To:     nick.hawkins@hpe.com, verdun@hpe.com, nick.hawkins@hpe.com,
+        joel@jms.id.au, arnd@arndb.de, openbmc@lists.ozlabs.org
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 04/11] clocksource/drivers: Add HPE GXP timer
+In-Reply-To: <20220421192132.109954-5-nick.hawkins@hpe.com>
+References: <20220421192132.109954-1-nick.hawkins@hpe.com>
+ <20220421192132.109954-5-nick.hawkins@hpe.com>
+Date:   Fri, 22 Apr 2022 16:56:26 +0200
+Message-ID: <87o80t5fqd.ffs@tglx>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3b4e1f5b-ce4c-480b-fbed-08da247003ab
-X-MS-TrafficTypeDiagnostic: HE1PR0302MB2652:EE_
-X-Microsoft-Antispam-PRVS: <HE1PR0302MB26527676B81EBB319430214A96F79@HE1PR0302MB2652.eurprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mHlkl6i/1tovWm3mfy3YMh0iNS4znx1c56FeWTbaJbhFUCAhB/QVFS4H/0CAn/tUTW9m6dRBcPq9WNZB/Mx/JYXaqgPdYq9Vq+HQCfrEiUdFQnnLSYI1834Brk3JpqR66T3CbPpeySGeOzfExUG1x4A4g7L6YjKnEJLrdfMhzd/9o5G0h14L3+w4dMZOoUgHKnKFEyaHxFcmktoC5VDZ5VdE19MEcfOBcnU2SK6OBHpvGrX4uvsYAkvck3CktVjD931OJjnF+AIKTz//aq4JajfyoL5/BxdRkgfPxXRp36K1kAtUXNXN+t1s4ClRKqQanrUP1eGV0msvWDG5iyUmDWmKWy1fSjys4jhyWB6tj7MloUu9mBOYzmg+kYHkKinXz0zliS6m8gLqpQLb05KCetpPRyN9Dxjmad56rsIipvV/q7JSub1NWdQ9QBvR94KNy2y6bzKstBScU+ZvQ1PVDJGjck47p4ENg7HJ0xoiYdTgFBIuS+IfwSO5ZMF49vTcziJ82HdVt8Ksyz9PJ9pgBjPxAvCJ80aQH9lwmzMh8xmTpIRJOu2I8PD1ADvty1lZPol3lvejRNz8//rE2qUn3aF8B4qlJJzAvKKaT6aTHaFqjKDhIe+ZOTxSASrpWrGbNIvEGjYaLl89F7JaJdkluOtP42Dfn/XU5yVP1ohfXBISU+Sk0oMvA8yhiIdQEioOi1xmEx8zSJMY8WOAl2ygNmeGv2xpoaNoq3WUsXtbxhZibio/Zf5WsLCe7OUDo0VLP/22tjQ/uM4k+gvba9MHbNj4ONSkwOTqFBxdVjsHLNPrrMI5kAnq3ZbiGkUL44RwxUBh0W1IpEGCaPV6bCPolxDli2/us/m0LZJ/Rg95uLM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(44832011)(36756003)(38350700002)(38100700002)(316002)(86362001)(4326008)(6486002)(508600001)(6666004)(8676002)(52116002)(7416002)(966005)(31686004)(8936002)(15650500001)(66946007)(66476007)(66556008)(5660300002)(6512007)(186003)(31696002)(6506007)(54906003)(53546011)(26005)(2616005)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WU9KclA3VEtaRVdQUldvYi95S1A2bUFZU2NZdVVQcE9lanNHSHZBTDZybHpk?=
- =?utf-8?B?NXZFZGVYMm9wS0FYcCtiWW1wQ05FZ0dMRmVQUVZxcEZWenZyZXI0cHl0STBC?=
- =?utf-8?B?OWdxUm1Wc0NHSnVwVVYyU2phVFNFaUpJNk01YUYwU05TcDdnNWp6R2Q2SzNG?=
- =?utf-8?B?S2NCU0FoNk9nbk5JM05BR3ZvSDFGbC91ZDNTa1pBTnhNZEhTeGV4U0ZaeFQx?=
- =?utf-8?B?bnlNbEpWZitKTnBCOElRdWt3ZEg4TWF3aGVidjVKSWdkN3dMbWJ0aXhaVVlR?=
- =?utf-8?B?VEZuYjlkSkhBcUhOWksrSmYyeFM2VHdpUGhGQTN3K2JOMVY3MHVyUFp0RFZj?=
- =?utf-8?B?UlN4YUcxY1hCZXlFd3VSay9rR0Q3RnR2R0QzcXJlNVNIT09YNUpGVlVST1VK?=
- =?utf-8?B?U2FqMVprWWxMR3ViM09UclROOEhFQ2NMRi9IeFRNQjhaUkdyb0psekhQVlR4?=
- =?utf-8?B?dHhRYWJyaW51dklid2lJTUtIZm93M201K0pFb25UVzJMNnl5a25jSHpicjlm?=
- =?utf-8?B?MXpGVE9EUm1ZS3NaWXZ3MGsrYi8wMHZxOEVqbGxYbEVUMGtUSm5pc2JLZ0lD?=
- =?utf-8?B?TVE2NGd0eG9YdFk1Z2NjVGpGWmppdTEzTzJYTkhQcHZWc205WUo3K2VmYitU?=
- =?utf-8?B?bEVXc0hoY1dGa2xYb21nVFFGS1hjQVBxSGZBREIrWXRqdnArbGtVOEVHd1A0?=
- =?utf-8?B?WEdUeXpVZlRJRnBBSTc1ZnhoV0IzdFY3NGcrdXh1R2MxS0tHNkNidm5oRFQ0?=
- =?utf-8?B?ZEd5NEZoRVZCMEU5cURDMTNySXFUWUNjQzFkSHBGWFFhcDZwZmZVUlB3amlR?=
- =?utf-8?B?TURGemxtenV5VEViTHFnakovQTNJZlZVSTBjTldYdGYvOFRxQVQwVUxGbENQ?=
- =?utf-8?B?ZjNPUjFsZEJpU2VwTTRwNys3V2UwMFNzMitNV3lXblZrZC8zaWZvVTFtS3l2?=
- =?utf-8?B?L0RoR0J1VmdYRzZKM01nSC9TczhFSEx1RHFtcjZOK201NkZ4ZytwRTY3SkR0?=
- =?utf-8?B?ZWZQek5pZkFWMVg1ejBaLytrZ01xZElNMkZMWGpuTFlydGpzZnUxL3VGQy95?=
- =?utf-8?B?aU9zMDRNSFJvN2hlMVdJS1hTWGl5VzBvUFRpRjdqanh4SzNJTzhVYitFOWt4?=
- =?utf-8?B?emVxb0hlVVdUQzFrbFRTMGlCeHlHTkpTZUxjR3hwb3oxK1JqYnZLVW5uNDYy?=
- =?utf-8?B?UzRkZmNaWXdycVNEQWtzdzhDb01Eb1pGVFNlYml3cmF3WEEzRlY3YXpENGRE?=
- =?utf-8?B?OW13Vmo4NHVPTkJzdWhjSDhBcUhLemV0OEZZakNlNXpxSzc5UFBjc2ZFOEJr?=
- =?utf-8?B?M2FobW5JTGdEOGk3QTFSS3FuT0RPZlRjbXFhV2ZrNjlOV24wL2J1eTJxSjRK?=
- =?utf-8?B?aWk1eTdpYmFzakM3YTNwQ1N4ZGtBb3lIUUhla1owWlFwWmFLUUJBdVRJdlEy?=
- =?utf-8?B?ZUtFZjgyOE9YTzA4UTZJZ21xeHVlaTJUUDJYYy9iS1VuVkM5YVljWTVldVdk?=
- =?utf-8?B?dnIrR2lMMUhIOGNkbFo3VFJKT01HV2wxZ0daUjAzWkpQdk5scC9LekVLQ2RK?=
- =?utf-8?B?TmZyeS9zUnloUmpMSjNnd2NWeElod2RwblVHbUd6MGw0OGxoOWVKRzJMUXNE?=
- =?utf-8?B?VnJTTzVEZXF2Si9xY2Q0VnFOcFUvUDFYR0RjakdwUWdMVnMwSDRGTzJJcE9B?=
- =?utf-8?B?VER1S0xGSlo2L1BRbTlPOUxHTzEwa3QyL1BQbjRkSXFvb0VIU3RvR0paWlFY?=
- =?utf-8?B?LzhXK2dlOHA2Vy9LR0ZEaVMvdXorVk55REVkbjRmYmlkVzBkUTh1dEdPYkVR?=
- =?utf-8?B?ODNwNW50emljOGYzamxZOGZyZlFoWThrdUFESnNDNlVMTXhxODFUSkFrQjZj?=
- =?utf-8?B?NlNZZktSNXFSOEhMREQxRFBDZmE4aVloYXh3cXVTbktKcGFWSnZpaVJLcFhG?=
- =?utf-8?B?Z2tjT1JBMGdmUlNZeDFnVllLZWRKUDVKTkhyR0dsZm96bmhmMEw2clQxWXZP?=
- =?utf-8?B?bzJya2M1QTloTlpJemdrS01udUk3Z0ZWbmRQOXhMaTREODQzTjFIeGVwQzUx?=
- =?utf-8?B?WU5iS3ZyQUVHOVdNeENuaFd5NVhJUkdRTkRWelArM3lSYVQwOTlRbElCMnBG?=
- =?utf-8?B?MkFtY2tFT3oxUjFoYjdDd1BkY3BSR1VEdDZxT3ZBUXlxb0F1V3dsMFhtRUg4?=
- =?utf-8?B?ZnFIUVQzcUdoVkpmNzZOMG5wcjZTREhoSnp0QjhPZnBzTncveW9xeU4wUS9k?=
- =?utf-8?B?NDI1QzM3QitNMkExNVNEK1M5Q3pHUVlId1ZoR0Z1ZHFOR2R6c1dQVm9sNVR4?=
- =?utf-8?B?U2M1ZFozUWtQa0xRZllBYUlsSy9RZ0VLOFlTTk1nRkhKVVFPcnR2VjlFU3JN?=
- =?utf-8?Q?kr2VaUL5clqw64PM=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b4e1f5b-ce4c-480b-fbed-08da247003ab
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 14:54:34.4605
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A/u9KD8BLuCxl1QeuyN6/OiDx1hRlwtXdc+usRICZAJY6Db94a1ijolO/WFCDXEc5jBCtAV8MDxJ3ooZJyTxHw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0302MB2652
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 21 2022 at 14:21, nick hawkins wrote:
+> +
+> +static struct gxp_timer *local_gxp_timer;
 
+What is local about that time?
 
-On 4/22/22 10:51 AM, Sean Anderson wrote:
-> This adds several properties to the Layerscape Security Fuse Processor
-> (SFP) necessary for writing. Although the Linux driver does not use
-> these bindings, I plan to use them in U-Boot [1]. It also adds a new
-> compatibles for Trust Architecture (TA) 2.1 devices. In addition, it
-> also adds an SFP binding for all TA 2.1 and 3.0 devices.
-> 
-> [1] https://lore.kernel.org/u-boot/7c8e206a-cd40-2a77-6282-7f4bead2b13a@seco.com/T/#m591f8425b6f096ab3d54e6f7bd258e41cfa4c43b
-> 
-> Changes in v2:
-> - Mention "regulator" in the description for ta-prog-sfp-supply
-> - Convert sfp driver to use regmap
-> - Fix various typos in commit messages
-> 
-> Sean Anderson (9):
->   dt-bindings: nvmem: sfp: Fix typo
->   dt-bindings: nvmem: sfp: Add clock properties
->   dt-bindings: nvmem: sfp: Add TA_PROG_SFP supply
->   dt-bindings: nvmem: sfp: Add compatible binding for TA 2.1 SFPs
->   arm64: dts: ls1028a: Update SFP binding to include clock
->   ARM: dts: layerscape: Add SFP binding for TA 2.1 devices
->   ARM: dts: Add SFP binding for TA 3.0 devices
->   nvmem: sfp: Use regmap
->   nvmem: sfp: Add support for TA 2.1 devices
-> 
->  .../bindings/nvmem/fsl,layerscape-sfp.yaml    | 30 ++++++++++++++--
->  arch/arm/boot/dts/ls1021a.dtsi                |  7 ++++
->  .../arm64/boot/dts/freescale/fsl-ls1012a.dtsi |  8 +++++
->  .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  5 ++-
->  .../arm64/boot/dts/freescale/fsl-ls1043a.dtsi |  8 +++++
->  .../arm64/boot/dts/freescale/fsl-ls1046a.dtsi |  8 +++++
->  .../arm64/boot/dts/freescale/fsl-ls1088a.dtsi |  8 +++++
->  .../arm64/boot/dts/freescale/fsl-ls208xa.dtsi |  8 +++++
->  .../arm64/boot/dts/freescale/fsl-lx2160a.dtsi |  8 +++++
->  drivers/nvmem/Kconfig                         |  1 +
->  drivers/nvmem/layerscape-sfp.c                | 36 ++++++++++++++-----
->  11 files changed, 115 insertions(+), 12 deletions(-)
-> 
+> +static void __iomem *system_clock __read_mostly;
 
-I forgot to pick up Reviewed-bys from v1. I can resend this or add them for v3.
+__ro_after_init perhaps?
 
---Sean
+> +static inline struct gxp_timer *to_gxp_timer(struct clock_event_device *evt_dev)
+> +{
+> +	return container_of(evt_dev, struct gxp_timer, evt);
+> +}
+> +
+> +static u64 notrace gxp_sched_read(void)
+> +{
+> +	return readl_relaxed(system_clock);
+> +}
+> +
+> +static int gxp_time_set_next_event(unsigned long event,	struct clock_event_device *evt_dev)
+
+Stray TAB in arguments
+
+> +static int __init gxp_timer_init(struct device_node *node)
+> +{
+> +	void __iomem *base;
+> +	struct clk *clk;
+> +	u32 freq;
+> +	int ret, irq;
+> +	struct gxp_timer *gxp_timer;
+> +
+> +	base = of_iomap(node, 0);
+> +	if (!base) {
+> +		pr_err("Can't remap timer base register");
+> +		ret = -ENXIO;
+> +		return ret;
+> +	}
+> +
+> +	/*Set the offset to the clock register*/
+> +	system_clock = base + GXP_TIMESTAMP_OFS;
+> +
+> +	clk = of_clk_get(node, 0);
+> +	if (IS_ERR(clk)) {
+> +		pr_err("%pOFn clock not found: %d\n", node, (int)PTR_ERR(clk));
+> +		ret = -EIO;
+> +		goto err_iounmap;
+> +	}
+> +
+> +	ret = clk_prepare_enable(clk);
+> +
+> +	freq = clk_get_rate(clk);
+> +
+> +	sched_clock_register(gxp_sched_read, 32, freq);
+> +	clocksource_mmio_init(system_clock, node->name, freq,
+> +			      300, 32, clocksource_mmio_readl_up);
+
+So this registers sched clock and clocksource and if one of the
+following fails....
+
+> +	irq = irq_of_parse_and_map(node, 0);
+> +	if (irq <= 0) {
+> +		ret = -EINVAL;
+> +		pr_err("GXP Timer Can't parse IRQ %d", irq);
+> +		goto err_iounmap;
+
+... the error path unmaps 'system_clock'
+
+> +	}
+> +
+> +	gxp_timer = kzalloc(sizeof(*gxp_timer), GFP_KERNEL);
+> +	if (!gxp_timer) {
+> +		ret = -ENOMEM;
+> +		goto err_iounmap;
+> +	}
+> +
+> +	gxp_timer->counter = base + GXP_TIMER_CNT_OFS;
+> +	gxp_timer->control = base + GXP_TIMER_CTRL_OFS;
+> +	gxp_timer->evt.name = node->name;
+> +	gxp_timer->evt.rating = 300;
+> +	gxp_timer->evt.features = CLOCK_EVT_FEAT_ONESHOT;
+> +	gxp_timer->evt.set_next_event = gxp_time_set_next_event;
+> +	gxp_timer->evt.cpumask = cpumask_of(0);
+> +
+> +	local_gxp_timer = gxp_timer;
+> +
+> +	ret = request_irq(irq, gxp_timer_interrupt, IRQF_TIMER | IRQF_SHARED,
+> +			  node->name, gxp_timer);
+> +	if (ret) {
+> +		pr_err("%s: request_irq() failed %pe\n", "GXP Timer Tick", ERR_PTR(ret));
+> +		goto err_iounmap;
+
+... and here as a bonus leaks gxp_timer.
+
+> +	}
+> +
+> +	clockevents_config_and_register(&gxp_timer->evt, TIMER0_FREQ,
+> +					0xf, 0xffffffff);
+> +
+> +	pr_debug("gxp: system timer (irq = %d)\n", irq);
+> +	return 0;
+> +
+> +err_iounmap:
+> +	iounmap(system_clock);
+> +	iounmap(base);
+> +	return ret;
+> +}
+
+Thanks,
+
+        tglx
