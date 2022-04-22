@@ -2,117 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbiDVUTW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 16:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33034 "EHLO
+        id S229676AbiDVUbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 16:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiDVUTM (ORCPT
+        with ESMTP id S229615AbiDVUa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 16:19:12 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35921132F4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:38 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id w1so16137878lfa.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=B9p0FoMPwzRixWYKVWEjx56sWOvt3enSLFG849SajN4=;
-        b=i1xRqM/AQD7+zHlviCXpKPZZPH+NCey1cLY0YH9FoGiR73p/X6PTLSYWksAgy2XKmM
-         ksiRnL7gx+oyU+FNTO7SF58wlUemyiGD7RFZqO8+RoT1p8NIqoBwjr6bNOASrAsJ1UPa
-         YEjor8or6jM8yb19a+Jv4wMbSUGBGFj1fsk8zUp+BhH4KT4geUPppJf+2cvULcwK594C
-         Ify1KqH7eFxQGny0PELELVDTWBxzSbVh/a4r+fXHN5VQ7XPgWdPBC0veaqgeUbtBqSrI
-         TFb6ms3NcP0CuGTa6PRcEB1utLkbyV3aUe24o+fgprm8x3rB5dwmvLiOnq5fX0atxqYg
-         xUkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=B9p0FoMPwzRixWYKVWEjx56sWOvt3enSLFG849SajN4=;
-        b=PWTwnuQZJhXGu87hZhI3ZnvkqQkEIfXG05oJQry0TvR/OXR4hNf8Lx5vnMYXwe9LPz
-         qR3m4WCXZ7RJSMIyhOc1mjKo7VgyjA7LiVjubhUiTE2jcM3Ck9qQq6MM8ZOt6sloLmAm
-         VAS7F0NluTrVYpt654xNb1/wsoOhB2OEvqUMZIWDCn68iqMYnb9tvDMqm2MSUbiHPL0R
-         zhP9LhzPtCCpKtA0LPsliMyONtD6Y7auTN23eImNHg265S04HEg0TMeVb17WEzzgsMC2
-         l0PSDY+t3A6yILmV3bUVIZ7bmfVMmjOpjYtqReHL1zohsNLw2YMSYbNwf3Gsd7en4JwD
-         AnWw==
-X-Gm-Message-State: AOAM532BKTEY8fll3p7LjPwXbsErov6iGtqWmR3GJYCzPEIszSjsmIKU
-        7ZntKoyfvyl0H/WC6HajD7JXvQ==
-X-Google-Smtp-Source: ABdhPJz/mlC+Za21idKmy1zP+GP4v28p+hBhHjrN0L2KdLEv46MDpRrVxcDXms2OUW+ufgEbuzzWAQ==
-X-Received: by 2002:a19:6759:0:b0:46b:b99f:a7ac with SMTP id e25-20020a196759000000b0046bb99fa7acmr4160108lfj.312.1650658143962;
-        Fri, 22 Apr 2022 13:09:03 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id a12-20020a19fc0c000000b00471c63ea0fcsm336510lfi.6.2022.04.22.13.09.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 13:09:03 -0700 (PDT)
-Message-ID: <e9cd84f2-d2e9-33a8-d74e-edcf60d35236@openvz.org>
-Date:   Fri, 22 Apr 2022 23:09:01 +0300
+        Fri, 22 Apr 2022 16:30:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5017F1DB6AF;
+        Fri, 22 Apr 2022 12:30:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE87761772;
+        Fri, 22 Apr 2022 19:29:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21775C385A4;
+        Fri, 22 Apr 2022 19:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650655746;
+        bh=Q2oAR+pSfdpnOBCupA59IimF354aWuPdLpUkV0r+X1A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZvjM2zXZNGfKDW8ftXFFNoXIwEvm5WhFhLPcuq0WeOn/Wc5VbY7BejIgkSjw0cXFB
+         L18uYBL10WbBPVTaC4xEkDzTFqHVtlo+EDNUEaZGheXDoWYQqtosgvej0l0HaZW0Xf
+         74yCeEqFG9ntlORINJHnA0nrWgH3J18Yz9DdPQR4cjEtJEJydNOo7ukDGZudtE5Cwz
+         rz4y8O7cDWaB1la6qX5Pu1e3QcfLEZL9VyHcvSj1n1CNXxTo6Oyw7F7RvJ6jDH1Axz
+         sbefZf/fdN1/HKcjs3CpdYvJL8EK8sLNVaFv4G02+L1+RAzwQmJ/cUUGTDPQq0Se58
+         iLEFj1sk11ung==
+Received: by mail-pg1-f179.google.com with SMTP id k29so8076090pgm.12;
+        Fri, 22 Apr 2022 12:29:06 -0700 (PDT)
+X-Gm-Message-State: AOAM531D2bR0asDdkufMUBs3DAdRYL0+9BqkwCyofJNPOmcym6+FdHiq
+        JU0pmQAVwt8qM+pbzGd26o+E4u+quMS5bh507Q==
+X-Google-Smtp-Source: ABdhPJx2H3o/WsbUI+/ohovExKxoIZvN4GlgB9qk/tHaMKzI7NBb/FMjxKMgczTCxdm77K8O6FLeLWIUwvQFjbz5U0M=
+X-Received: by 2002:aa7:8893:0:b0:4fb:10e1:8976 with SMTP id
+ z19-20020aa78893000000b004fb10e18976mr6457659pfe.36.1650655745568; Fri, 22
+ Apr 2022 12:29:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH memcg RFC] net: set proper memcg for net_init hooks
- allocations
-Content-Language: en-US
-From:   Vasily Averin <vvs@openvz.org>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
- <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org>
- <CALvZod47PARcupR4P41p5XJRfCaTqSuy-cfXs7Ky9=-aJQuoFA@mail.gmail.com>
- <964ae72a-0484-67de-8143-a9a2d492a520@openvz.org>
-In-Reply-To: <964ae72a-0484-67de-8143-a9a2d492a520@openvz.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220422192236.2594577-1-robh@kernel.org>
+In-Reply-To: <20220422192236.2594577-1-robh@kernel.org>
+From:   Rob Herring <robh@kernel.org>
+Date:   Fri, 22 Apr 2022 14:28:53 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
+Message-ID: <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: i3c: Convert snps,dw-i3c-master to DT schema
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/22/22 23:01, Vasily Averin wrote:
-> On 4/21/22 18:56, Shakeel Butt wrote:
->> On Sat, Apr 16, 2022 at 11:39 PM Vasily Averin <vvs@openvz.org> wrote:
->>> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
->>>                  * setup_net() and cleanup_net() are not possible.
->>>                  */
->>>                 for_each_net(net) {
->>> +                       struct mem_cgroup *old, *memcg = NULL;
->>> +#ifdef CONFIG_MEMCG
->>> +                       memcg = (net == &init_net) ? root_mem_cgroup : mem_cgroup_from_obj(net);
->>
->> memcg from obj is unstable, so you need a reference on memcg. You can
->> introduce get_mem_cgroup_from_kmem() which works for both
->> MEMCG_DATA_OBJCGS and MEMCG_DATA_KMEM. For uncharged objects (like
->> init_net) it should return NULL.
-> 
-> Could you please elaborate with more details?
-> It seems to me mem_cgroup_from_obj() does everything exactly as you say:
-> - for slab objects it returns memcg taken from according slab->memcg_data
-> - for ex-slab objects (i.e. page->memcg_data & MEMCG_DATA_OBJCGS)
->     page_memcg_check() returns NULL
-> - for kmem objects (i.e. page->memcg_data & MEMCG_DATA_KMEM) 
->     page_memcg_check() returns objcg->memcg
-> - in another cases
->     page_memcg_check() returns page->memcg_data,
->     so for uncharged objects like init_net NULL should be returned.
-> 
-> I can introduce exported get_mem_cgroup_from_kmem(), however it should only
-> call mem_cgroup_from_obj(), perhaps under read_rcu_lock/unlock.
+On Fri, Apr 22, 2022 at 2:22 PM Rob Herring <robh@kernel.org> wrote:
+>
+> Convert the Synopsys Designware I3C master to DT schema format.
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/i3c/snps,dw-i3c-master.txt       | 41 ---------------
+>  .../bindings/i3c/snps,dw-i3c-master.yaml      | 52 +++++++++++++++++++
+>  2 files changed, 52 insertions(+), 41 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+>  create mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+> deleted file mode 100644
+> index 07f35f36085d..000000000000
+> --- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+> +++ /dev/null
+> @@ -1,41 +0,0 @@
+> -Bindings for Synopsys DesignWare I3C master block
+> -=================================================
+> -
+> -Required properties:
+> ---------------------
+> -- compatible: shall be "snps,dw-i3c-master-1.00a"
+> -- clocks: shall reference the core_clk
+> -- interrupts: the interrupt line connected to this I3C master
+> -- reg: Offset and length of I3C master registers
+> -
+> -Mandatory properties defined by the generic binding (see
+> -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
+> -
+> -- #address-cells: shall be set to 3
+> -- #size-cells: shall be set to 0
+> -
+> -Optional properties defined by the generic binding (see
+> -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
+> -
+> -- i2c-scl-hz
+> -- i3c-scl-hz
+> -
+> -I3C device connected on the bus follow the generic description (see
+> -Documentation/devicetree/bindings/i3c/i3c.yaml for more details).
+> -
+> -Example:
+> -
+> -       i3c-master@2000 {
+> -               compatible = "snps,dw-i3c-master-1.00a";
+> -               #address-cells = <3>;
+> -               #size-cells = <0>;
+> -               reg = <0x02000 0x1000>;
+> -               interrupts = <0>;
+> -               clocks = <&i3cclk>;
+> -
+> -               eeprom@57{
+> -                       compatible = "atmel,24c01";
+> -                       reg = <0x57 0x0 0x10>;
+> -                       pagesize = <0x8>;
+> -               };
+> -       };
+> diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+> new file mode 100644
+> index 000000000000..5b8b43e6f1e4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/i3c/snps,dw-i3c-master.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Synopsys DesignWare I3C master block
+> +
+> +maintainers:
+> +  - Vitor Soares <vitor.soares@synopsys.com>
 
-I think I finally got your point:
-Do you mean I should use css_tryget(&memcg->css) for found memcg,
-like get_mem_cgroup_from_mm() does?
+And it bounces. Someone else want it?
 
-Thank you,
-	Vasily Averin
+Rob
