@@ -2,103 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00004C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48380C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233302AbiDVWhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S232915AbiDVWh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233252AbiDVWgn (ORCPT
+        with ESMTP id S233271AbiDVWhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:36:43 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CB130851B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:51:03 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2eba37104a2so99294547b3.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:51:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I6IucAW2vKmMlZoXu5E0+/gmEChaQTXcva9X1hww8Y4=;
-        b=SGmEdvPf+mBAPoT9mdL6g4e+foKc3ZF0arakcfTnLOFRfmr9f+Mvu1BE/2iclcIlFc
-         OXlCjRiiYgeivc6aYfz8pF50HM04OOwjOBMmqArl9wtTwzQ1L9mURCWZIw+Bb/Y7B1HP
-         mtiI8WM2tM2hlMMnEoLRVQsVqsCT5YLY53HAKikQ11NiQ3Uz3dv+pUxQRnByLKmQ+wMQ
-         q4/0IL8asW9p44fpkXSpm2x/c7a0B3a17mQLQHx4Ws74JuEJqASLf+D7YJlXQTlIr38g
-         FbkdvszCD3YRDBn+bnTj9Fei8itEt3HdcH94tj/R6pn6zH+33Z+KfOHHwbjFdjqJ/sa5
-         e44w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I6IucAW2vKmMlZoXu5E0+/gmEChaQTXcva9X1hww8Y4=;
-        b=cVzZi2U/E7cllsLy5QRh/iziYQokdgE24zbDa7x0UoZRsaIL5aLCGd0O6/t61BSLD5
-         0p7o+NNDQftPojKAd7w0pSH40NeQuiadxVHfdNriZe/u9cHoOb3Ws9UKj7GCJidy6PWg
-         XOm/ZzckSRIkpMi6WMbih+PZfEdRJEDzcV/DXIbAdAT7Myeeb5tiF8U/e59sq2pkyRa9
-         rYBLErSLWky8Gh7O7DON316hqOEQw2Om/q5SsTf3WJ8UnQlgLzerPTzCsC48mpsk95iY
-         h2uGUdSRAWpSnao1h/Nh2tC5K7qhf3fg9eUGj6XvlM6dUmu82sMKqhMxB05yCG16sGRY
-         fuTw==
-X-Gm-Message-State: AOAM532sk9baRzyw3/9YtnrJVDybb557pUPMC64lqQMk7VSPyZX/vFJ2
-        Bf1Tup5pWAEOdASgyyEuaKtrFcyGewSiFOo0y18mHA==
-X-Google-Smtp-Source: ABdhPJylKvNNvBwB+dFLvzQwhIDFpcwup6UmBKab4gJdVcRTbFZkzvRJostPnnffKRpr78h+kGA1q6K6XyEYwMdnxww=
-X-Received: by 2002:a0d:c4c2:0:b0:2f1:6c00:9eb4 with SMTP id
- g185-20020a0dc4c2000000b002f16c009eb4mr7127206ywd.448.1650664263007; Fri, 22
- Apr 2022 14:51:03 -0700 (PDT)
+        Fri, 22 Apr 2022 18:37:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A754024766C;
+        Fri, 22 Apr 2022 14:49:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7235EB831F5;
+        Fri, 22 Apr 2022 19:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 059E8C385A0;
+        Fri, 22 Apr 2022 19:04:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650654261;
+        bh=/hQTHTPZ+8EMV0t0+BWR+cNB6HkAVNSrcB0f4XxB0uo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e7W3PV+GoD7Ha2W0fT29yk3eI7sObxvOyea9pB3TA1nfeWcqBP30+4EL8qO0cddDL
+         1naoJHDmxy8N+1iTy+DK01hyZyG7fz0Pfl8lyLTvmXcJ5P6WtI/pXOrx6M2NqEUNW6
+         Nf7Rt5g13AQ71tnz7xlxL7k/vLzfMc6qetAcK1+7xVHwqYUcVsKHGe3ezcwCpn4j/1
+         2jvX2cOBgJ/tot0Yee12YrzrbowKIv+JPWSFbV55/P3oJqt/a69YITOULv1f7WtRGT
+         jJYEqX/oSDbivZ6hFmiZpsMCUeM8iRAkEAgWNRPpYvftLAIgEALjYJb9yzvv/mnck1
+         K+eT13/x+c1TA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id CACD9400B1; Fri, 22 Apr 2022 16:04:18 -0300 (-03)
+Date:   Fri, 22 Apr 2022 16:04:18 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Milian Wolff <milian.wolff@kdab.com>, Jiri Olsa <jolsa@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
+        bpf <bpf@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Blake Jones <blakejones@google.com>
+Subject: Re: [RFC 0/4] perf record: Implement off-cpu profiling with BPF (v1)
+Message-ID: <YmL8MlTX12zHtzbd@kernel.org>
+References: <20220422053401.208207-1-namhyung@kernel.org>
+ <35121321.B44TWeBT9p@milian-workstation>
+ <CAM9d7cjU6RGMStG4YOW5D50Sx4PRia2dfzcPKxb4JLh5Q668mw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220414214337.311880-1-linus.walleij@linaro.org> <f4deb182-ec18-6744-2c4c-adaed4ef7a33@collabora.com>
-In-Reply-To: <f4deb182-ec18-6744-2c4c-adaed4ef7a33@collabora.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 22 Apr 2022 23:50:51 +0200
-Message-ID: <CACRpkdbZnWJgkS2a0xXs_WG40jz6+aTSPt743Zigd0KZ8R=yww@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: gnss: Add Broacom BCM4751 family bindings
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     Johan Hovold <johan@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        David Heidelberg <david.heidelberg@collabora.com>,
-        Svyatoslav Ryhel <clamor95@gmail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM9d7cjU6RGMStG4YOW5D50Sx4PRia2dfzcPKxb4JLh5Q668mw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 1:19 PM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
+Em Fri, Apr 22, 2022 at 08:01:15AM -0700, Namhyung Kim escreveu:
+> Hi Milian,
+ 
+> On Fri, Apr 22, 2022 at 3:21 AM Milian Wolff <milian.wolff@kdab.com> wrote:
+> > On Freitag, 22. April 2022 07:33:57 CEST Namhyung Kim wrote:
+> > > This is the first version of off-cpu profiling support.  Together with
+> > > (PMU-based) cpu profiling, it can show holistic view of the performance
+> > > characteristics of your application or system.
 
-> What are the chances of seeing the kernel driver for BCM4751+?
+> > Hey Namhyung,
 
-The kernel does not normally drive the GPS. The kernel has a small driver
-dealing with hardware power on/off of the GPS and exposing
-/dev/gnss0 to userspace.
+> > this is awesome news! In hotspot, I've long done off-cpu profiling manually by
+> > looking at the time between --switch-events. The downside is that we also need
+> > to track the sched:sched_switch event to get a call stack. But this approach
+> > also works with dwarf based unwinding, and also includes kernel stacks.
+> 
+> Thanks, I've also briefly thought about the switch event based off-cpu
+> profiling as it doesn't require root.  But collecting call stacks is hard and
+> I'd like to do it in kernel/bpf to reduce the overhead.
 
-See Johans lecture at:
-https://events19.linuxfoundation.org/wp-content/uploads/2017/12/The-GNSS-Subsystem-Johan-Hovold-Hovold-Consulting-AB.pdf
+It would be great to have both in perf. Right now since we have one in
+hotspot that is working, perfecting the other method, Namhyung's, using
+BPF to reduce the amount of data to postprocess in userspace, looks
+great.
+ 
+> > > With BPF, it can aggregate scheduling stats for interested tasks
+> > > and/or states and convert the data into a form of perf sample records.
+> > > I chose the bpf-output event which is a software event supposed to be
+> > > consumed by BPF programs and renamed it as "offcpu-time".  So it
+> > > requires no change on the perf report side except for setting sample
+> > > types of bpf-output event.
+> > >
+> > > Basically it collects userspace callstack for tasks as it's what users
+> > > want mostly.  Maybe we can add support for the kernel stacks but I'm
+> > > afraid that it'd cause more overhead.  So the offcpu-time event will
+> > > always have callchains regardless of the command line option, and it
+> > > enables the children mode in perf report by default.
+> >
+> > Has anything changed wrt perf/bpf and user applications not compiled with `-
+> > fno-omit-frame-pointer`? I.e. does this new utility only work for specially
+> > compiled applications, or do we also get backtraces for "normal" binaries that
+> > we can install through package managers?
+> 
+> I am not aware of such changes, it still needs a frame pointer to get
+> backtraces.
 
->  There are
-> myriads of Android devices using that GPS chip. Previously the
-> proprietary firmware interface of BCM4751 was an obstacle for addition
-> of the driver to upstream kernel, did anything change?
+I see this as an initial limitation, one that we can lift later?
 
-Actually there is nothing stopping us from anyway merging device tree
-bindings, even if no driver is on the horizon for Linux. The DT bindings
-are not a Linux kernel thing. Actually we merged bindings like that in
-the past. It makes it possible to create complete device trees, which
-is nice. A driver for Linux can be slotted in at a later point.
-
-Anyway, that is the boring answer.
-
-Many if not all GPS:es (as all Wireless chips) have proprietary firmware
-interfaces. This is normal. GPS:es are special since by tradition the
-stack using them is in userspace. There exist free software userspace
-stacks for misc GPS:es.
-
-gpsd is the most common userspace daemon for GPS.
-gpsd will then talk to /dev/gnss0 as any other TTY IIUC.
-
-Replicant has a free implementation of the "MEIF" API for this GPS,
-I think what is needed is really for someone to pick up, polish and
-contribute that to gpsd
-https://git.replicant.us/contrib/PaulK/bcm4751/
-
-Yours,
-Linus Walleij
+- Arnaldo
