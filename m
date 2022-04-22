@@ -2,134 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B0EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C60C43219
 	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232292AbiDVSII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S237852AbiDVSIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235710AbiDVSGL (ORCPT
+        with ESMTP id S234713AbiDVSCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:06:11 -0400
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75E71183B2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:03:11 -0700 (PDT)
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 7522D1220AA;
-        Fri, 22 Apr 2022 17:50:25 +0000 (UTC)
-Received: from pdx1-sub0-mail-a254.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id A0737122051;
-        Fri, 22 Apr 2022 17:50:24 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650649825; a=rsa-sha256;
-        cv=none;
-        b=8I9cGt7utp0qYudqtrlv3l7xktwIfc6yyOB2IV/h872022P2XqRJrTQOLbaAWzKLBPIUOw
-        UoeicfTChG7xeH/dEsZB1cY0nLKvvXvrn9C+x0IXTWjP+vhZNvKWykk3T3xosa8GMO2bUi
-        KVvApk1JvDwhIresFQEt7lFaEIwNdv4UeEl8aZTsDmo5MzHM1hjmlAsML1FHgn/E8hDJtD
-        ur2mkzHcc+P51KoVmtrbBGvCwxLZ6OTxXVNqMl73G1DNP7Se94iAv5oIk64DqMm1/QPRNs
-        R7HUGvFynvuCAzmhnA5OdrLms8WoldXXDHAycnFxX5SccdDZ8TG4/FN4nrlkgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1650649825;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=RHwqhjzw9kY1izQs5LW3PnhhQu2A406gGRiwnqGFZvs=;
-        b=rHi3lHfrKtkw0lZ2onlfsuDrW5tVUPfMfBZHKx2D9XzdUurDtTdTUWb5UvTNbqueip+0D8
-        fv3pEqggv4JGFoqQnLAW70LNB2lA8tnPfxgQ4vTCHJXs3lC92LnA223DDqA4H1yYvzWnoe
-        i/irepkK/xd4xbNIXl4IZAp6U/m9EKI2sIlfjTDKHeak9B6IABlqDjKikOmJs0ux2+VqjF
-        sNLzm+M58e/KuXej+6deEASYDxkywcsVMJA2vrnhd6eyL8zprGX9KQ0nK3MeJtT6M/BYiP
-        Zp3S75BtHtlFqivn6qlwNfdz8tOCdgcni+35zp/iSIZLX8sqw5CDCv1EF6Hgpw==
-ARC-Authentication-Results: i=1;
-        rspamd-67b64f579b-z8ctt;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Shelf-Gusty: 25050b6960b79646_1650649825247_3516390020
-X-MC-Loop-Signature: 1650649825247:984435976
-X-MC-Ingress-Time: 1650649825247
-Received: from pdx1-sub0-mail-a254.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.120.38.149 (trex/6.7.1);
-        Fri, 22 Apr 2022 17:50:25 +0000
-Received: from offworld (unknown [104.36.29.107])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a254.dreamhost.com (Postfix) with ESMTPSA id 4KlMPp6fCCz29;
-        Fri, 22 Apr 2022 10:50:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1650649824;
-        bh=RHwqhjzw9kY1izQs5LW3PnhhQu2A406gGRiwnqGFZvs=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=YaHDEWSULS/cT2SSarbSX8MPl2aqFaMXnfW6jCS8H4GsOmyJ2d0zeuPoe5L3mDSsM
-         c3/1IgCORa1jHkINI2jRKgt5HPnedwWQRNEfTyWkzav2DDY1Uqmo49msmd1nZkrQr0
-         +TniIOUhbLqPYUJmurz7U5lNZ/B6v4w5987yfPsHltKfntXecYHw7DZb+x3rCfWcz3
-         gdKkXd9/NS0F4lJ2bPk0J0vrIJNUu4NvEUPAZ/vXN+W8Eui7nU5eqU4pdRO4oNtglV
-         lyv/Y1RwM3mMON3bBHwbpWMD3VYXNITNaOsf7aMlkKCPpfCu0AoaZ0vnicCbfz9CMx
-         8f4nnS18GZPKg==
-Date:   Fri, 22 Apr 2022 10:50:20 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     jvgediya@linux.ibm.com, ying.huang@intel.com, weixugc@google.com,
-        linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org,
-        rientjes@google.com, yosryahmed@google.com, hannes@cmpxchg.org,
-        shakeelb@google.com, dave.hansen@linux.intel.com,
-        tim.c.chen@linux.intel.com, roman.gushchin@linux.dev,
-        gthelen@google.com, a.manzanares@samsung.com,
-        heekwon.p@samsung.com, gim.jongmin@samsung.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/6] mm/migration: export demotion_path of a node via
- sysfs
-Message-ID: <20220422175020.lm2xqbg7lm2tr25r@offworld>
-Mail-Followup-To: Yang Shi <shy828301@gmail.com>, jvgediya@linux.ibm.com,
-        ying.huang@intel.com, weixugc@google.com, linux-mm@kvack.org,
-        mhocko@kernel.org, akpm@linux-foundation.org, rientjes@google.com,
-        yosryahmed@google.com, hannes@cmpxchg.org, shakeelb@google.com,
-        dave.hansen@linux.intel.com, tim.c.chen@linux.intel.com,
-        roman.gushchin@linux.dev, gthelen@google.com,
-        a.manzanares@samsung.com, heekwon.p@samsung.com,
-        gim.jongmin@samsung.com, linux-kernel@vger.kernel.org
-References: <20220416053902.68517-1-dave@stgolabs.net>
- <20220416053902.68517-6-dave@stgolabs.net>
- <CAHbLzkruFaKF_92w2qsZz4sH24C-TARXaL-byT6doVVe6VQ4Zg@mail.gmail.com>
- <CAHbLzkr4w-20H11uNrf-9ZJd=oHGTXTatd5OJ0JAO1KwojySdA@mail.gmail.com>
+        Fri, 22 Apr 2022 14:02:10 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF15610FB43
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:59:15 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id p62so9450572iod.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:59:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PvYO7bo8SW1Y4ZSBFDfeF93l7A3erH7xTOKbq6F1GXw=;
+        b=DvuwE7lFq4nlwhDZJKEgwLV17hmwV7Skel1e4+I34Cth3Krw4NZ61wmOvoCCnRReZC
+         l2rV8MSmu9YodSSz1sMXtrHdz0CPmSuN9x7O1iuHt/sJpKpos+oeQCGtMEiLUeIqk0AV
+         C9A1w2lQ7zSCd/5X7sqmI4iqBM0gPv5UlWPrd8o4WUrmBlydJkAZcxOjjND5ma4uXPRJ
+         A5YoyGMZW4lmeclSiha1SeF6c+wUXK9/3NxD072mKsH+Ncp29cXL6Oxia9ObDhHGk10I
+         I5DqTIWIimUTaWzzDpXvg4wsXIT+4Ftb6KLRRggges3bmjjZyxcXjdteoE+OKHCkYw5g
+         7P2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PvYO7bo8SW1Y4ZSBFDfeF93l7A3erH7xTOKbq6F1GXw=;
+        b=vA+DnQCxQd1uEcj4/RFrarf3XF2Om1vXsjuHaZ44emyaK/6nhMwZfd9SYxJ8u4/bdy
+         gE0aYmErMegKsGiJpt58fzQMjKVqp3DljHXdURIn3QJJ8EtwIX+yfVHYA04B+LNjv51Y
+         8nXZE6yeJDMg3IwMVCuagc1DXu+BD4LeW/PZHFGKSP6P2NPINIKA2X1W24ImYF+/cUb7
+         51X6mEMiY3vGEf8It+g8KF51Gmccqi/AtV0SU9yx3qygVgWnDU9yGyZqDmX5lXyHZKip
+         dZqa+y2rlXrm7Lw2jAxOoIYnN5NDK49nPB5VUUHdh8hXnh/9E5GqGRTk82+fqUyhEk6E
+         5mzA==
+X-Gm-Message-State: AOAM5322BN50DdYtbdq8sc+qrXBc/LHEIfQJpeP97CEBnN78z81KBGjL
+        /ULc4eQluhPuDqQQsFeudHoYLB8bL06bpQ==
+X-Google-Smtp-Source: ABdhPJz8wfhINFssvIsT0Zvy7AA5wPuZkh2tzpWPxtGot8eLDBt3NrS/v8VN+/Kyj1Mis3VNtO1hEA==
+X-Received: by 2002:a6b:f405:0:b0:640:a963:2c24 with SMTP id i5-20020a6bf405000000b00640a9632c24mr2574692iog.110.1650650353924;
+        Fri, 22 Apr 2022 10:59:13 -0700 (PDT)
+Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
+        by smtp.gmail.com with ESMTPSA id q13-20020a056e020c2d00b002caa365b43bsm1771133ilg.76.2022.04.22.10.59.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 10:59:11 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 17:59:06 +0000
+From:   Oliver Upton <oupton@google.com>
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+        eauger@redhat.com, Jonathan.Cameron@huawei.com,
+        vkuznets@redhat.com, will@kernel.org, shannon.zhaosl@gmail.com,
+        james.morse@arm.com, mark.rutland@arm.com, maz@kernel.org,
+        pbonzini@redhat.com, shan.gavin@gmail.com
+Subject: Re: [PATCH v6 02/18] KVM: arm64: Route hypercalls based on their
+ owner
+Message-ID: <YmLs6t8iUn+BH6mo@google.com>
+References: <20220403153911.12332-1-gshan@redhat.com>
+ <20220403153911.12332-3-gshan@redhat.com>
+ <YmETmWvPPQvHpQwP@google.com>
+ <2519e2fa-4d6a-a5f8-1057-6b1820853036@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHbLzkr4w-20H11uNrf-9ZJd=oHGTXTatd5OJ0JAO1KwojySdA@mail.gmail.com>
-User-Agent: NeoMutt/20201120
+In-Reply-To: <2519e2fa-4d6a-a5f8-1057-6b1820853036@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022, Yang Shi wrote:
+On Fri, Apr 22, 2022 at 08:20:50PM +0800, Gavin Shan wrote:
+> Hi Oliver,
+> 
+> On 4/21/22 4:19 PM, Oliver Upton wrote:
+> > On Sun, Apr 03, 2022 at 11:38:55PM +0800, Gavin Shan wrote:
+> > > kvm_hvc_call_handler() directly handles the incoming hypercall, or
+> > > and routes it based on its (function) ID. kvm_psci_call() becomes
+> > > the gate keeper to handle the hypercall that can't be handled by
+> > > any one else. It makes kvm_hvc_call_handler() a bit messy.
+> > > 
+> > > This reorgnizes the code to route the hypercall to the corresponding
+> > > handler based on its owner.
+> > 
+> > nit: write changelogs in the imperative:
+> > 
+> > Reorganize the code to ...
+> > 
+> 
+> Thanks again for your review. It will be corrected in next respin.
+> By the way, could you help to review the rest when you have free
+> cycles? :)
 
->On Fri, Apr 22, 2022 at 10:31 AM Yang Shi <shy828301@gmail.com> wrote:
->>
->> On Fri, Apr 15, 2022 at 10:39 PM Davidlohr Bueso <dave@stgolabs.net> wrote:
->> >
->> > Add a /sys/devices/system/node/nodeX/demotion_path file
->> > to export the possible target(s) in node_demotion[node].
->>
->> I'm not sure if you noticed that Jagdish Gediya is working on the
->> similar patch, please see
->> https://lore.kernel.org/linux-mm/20220413092206.73974-1-jvgediya@linux.ibm.com/
->
->Loop in Jagdish Gediya, Ying Huang and Wei Xu.
->
+Yup, I've been thinking on the rest of the series just to make sure the
+feedback I give is sane.
 
-Hmm I had missed this thread, I'll go have a look.
+> > > The hypercall may be handled directly
+> > > in the handler or routed further to the corresponding functionality.
+> > > The (function) ID is always verified before it's routed to the
+> > > corresponding functionality. By the way, @func_id is repalced by
+> > > @func, to be consistent with by smccc_get_function().
+> > > 
+> > > PSCI is the only exception, those hypercalls defined by 0.2 or
+> > > beyond are routed to the handler for Standard Secure Service, but
+> > > those defined in 0.1 are routed to the handler for Standard
+> > > Hypervisor Service.
+> > > 
+> > > Suggested-by: Oliver Upton <oupton@google.com>
+> > > Signed-off-by: Gavin Shan <gshan@redhat.com>
+> > > ---
+> > >   arch/arm64/kvm/hypercalls.c | 199 +++++++++++++++++++++++-------------
+> > >   1 file changed, 127 insertions(+), 72 deletions(-)
+> > > 
+> > > diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+> > > index 8438fd79e3f0..b659387d8919 100644
+> > > --- a/arch/arm64/kvm/hypercalls.c
+> > > +++ b/arch/arm64/kvm/hypercalls.c
+> > 
+> > [...]
+> > 
+> > > +static int kvm_hvc_standard(struct kvm_vcpu *vcpu, u32 func)
+> > > +{
+> > > +	u64 val = SMCCC_RET_NOT_SUPPORTED;
+> > > +
+> > > +	switch (func) {
+> > > +	case ARM_SMCCC_TRNG_VERSION ... ARM_SMCCC_TRNG_RND32:
+> > > +	case ARM_SMCCC_TRNG_RND64:
+> > > +		return kvm_trng_call(vcpu);
+> > > +	case PSCI_0_2_FN_PSCI_VERSION ... PSCI_0_2_FN_SYSTEM_RESET:
+> > > +	case PSCI_0_2_FN64_CPU_SUSPEND ... PSCI_0_2_FN64_MIGRATE_INFO_UP_CPU:
+> > > +	case PSCI_1_0_FN_PSCI_FEATURES ... PSCI_1_0_FN_SET_SUSPEND_MODE:
+> > > +	case PSCI_1_0_FN64_SYSTEM_SUSPEND:
+> > > +	case PSCI_1_1_FN_SYSTEM_RESET2:
+> > > +	case PSCI_1_1_FN64_SYSTEM_RESET2:
+> > 
+> > Isn't it known from the SMCCC what range of hypercall numbers PSCI and
+> > TRNG fall under, respectively?
+> > 
+> > https://developer.arm.com/documentation/den0028/e/
+> > 
+> > See sections 6.3 and 6.4.
+> > 
+> 
+> Bit#30 of the function ID is the call convention indication, which is
+> either 32 or 64-bits. For TRNG's function IDs, its 32-bits and 64-bits
+> variants are discrete. Besides, the spec reserves more functions IDs
+> than what range we're using. It means we don't have symbols to match
+> the reserved ranges. So it looks good to me for TRNG cases.
+> 
+> For PSCI, it can be simplified as below, according to the defination
+> in include/uapi/linux/psci.h:
+> 
+>     case PSCI_0_2_FN_PSCI_VERSION ...
+>          PSCI_1_1_FN_SYSTEM_RESET2:     /* 32-bits */
+>     case PSCI_0_2_FN64_CPU_SUSPEND ...
+>          PSCI_1_1_FN64_SYSTEM_RESET2:   /* 64-bits */
 
->>
->> It would be better to combine the two to avoid duplicate effort.
+Right, but this still requires that we go back and update this switch
+statement every time we add a new PSCI call, which is exactly what I was
+hoping we could avoid. Doing this based exactly on the spec reduces the
+burden for future changes, and keeps all relevant context in a single
+spot.
 
-Indeed - and even more reason for lsfmm discussions defining the
-future ABI for tiering.
+  #define SMCCC_STD_PSCI_RANGE_START	0x0000
+  #define SMCCC_STD_PSCI_RANGE_END	0x001f
+  #define SMCCC_STD_TRNG_RANGE_START	0x0050
+  #define SMCCC_STD_TRNG_RANGE_END	0x005f
 
+  switch (ARM_SMCCC_FUNC_NUM(function_id)) {
+          case SMCCC_STD_PSCI_RANGE_START ... SMCCC_STD_PSCI_RANGE_END:
+	          return kvm_psci_call(vcpu);
+          case SMCCC_STD_TRNG_RANGE_START ... SMCCC_STD_TRNG_RANGE_END:
+	  	  return kvm_trng_call(vcpu);
+
+	 ...
+  }
+
+[...]
+
+> > > +	case KVM_PSCI_FN_CPU_SUSPEND ... KVM_PSCI_FN_MIGRATE:
+> > > +		return kvm_psci_call(vcpu);
+> > 
+> > You might want to handle these from the main call handler with a giant
+> > disclaimer that these values predate SMCCC and therefore collide with
+> > the standard hypervisor service range.
+> > 
+> > [...]
+> > 
+> 
+> I probably just keep it as it is to follow the rule: to route
+> based on the owner strictly. Besides, there are 3 levels to
+> handle SMCCCs after this patch is applied, which corresponds
+> to 3 handlers as main/owner/function. It sounds more natural
+> for reader to follow the implementation in this way.
+
+I think this makes it much more confusing for the reader, as you'd be
+hard pressed to find these function IDs in the SMCCC spec. Since their
+values are outside of the specification, it is confusing to only address
+them after these switch statements have decided that they belong to a
+particular service owner as they do not.
+
+--
 Thanks,
-Davidlohr
+Oliver
