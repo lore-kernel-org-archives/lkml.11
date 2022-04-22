@@ -2,116 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C64CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B80C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378310AbiDVQUT (ORCPT
+        id S1378978AbiDVQU0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51084 "EHLO
+        Fri, 22 Apr 2022 12:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351477AbiDVQUR (ORCPT
+        with ESMTP id S1378335AbiDVQUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:20:17 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59F35C861;
-        Fri, 22 Apr 2022 09:17:23 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id w4so11734283wrg.12;
-        Fri, 22 Apr 2022 09:17:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tsTMShhOunXxsSfDe94cDR9nLWccacVm3HSfzZBOByg=;
-        b=nKvgMY2IWH2PEHEZ+cl7OGmxw5xlhk3x5mrd/sdrjE03WJ0A4/iMINxWKaze7/4z1D
-         EaZgcXfpsI07TuM7B7xC1eAjB4SiZR6YP8B5CaRzMStCvqaY2VNc7Otw68D+6PvDTYIb
-         SW86CV3hpfJUOYU4waQJ4eOzLLoqdiz/BXlLtY9AstrlCmKu1LxEYJ4mkGe0ezZs+Wih
-         AMRs6V6OMn0Jq8aCiE91ildQzfNoAbTBifdfnxJ3CYqmqb8ERjQ/JufqKQJpRCyOw2ih
-         +1VAm6TrSldcATLGDX+RMHq5ZAoCbQlRcnvqppWUNLDjsyQtn3QYYfGo+fbx4dMXkLIf
-         dWhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tsTMShhOunXxsSfDe94cDR9nLWccacVm3HSfzZBOByg=;
-        b=v/yMXmQRruIZPwpdLGCh0aeqxfPmVM1NHfeQazEoddEAgmI4rRRY+V/hTUvXsSucBg
-         7CwviGNqa7RxBQUn5kLxFy69kWtPtyVUJxf5B9VoNCdEUUcK3/YosQJB0pEbYZyL427f
-         kVR+AerdSue9VZal7mUPEzilVxP/20E4J+ar7TnGXsld75r27qA5PFUuB7hd7FXx+Ukl
-         uDu0E+8f7DlHrqPGpae4yrqqVPXkKopN12Ds8x7+S1azeRoUcqEJ2V8DXVAm59C8JamE
-         uPLPiqKKggYwbwS7ogvRuD729A+E3n/OZAgXrM+Efv/fdEtt2iTeapWnDduxYRkg9Zyc
-         oMug==
-X-Gm-Message-State: AOAM532fBGFWxXGIMWT88z4XomMjsQejEewnKMFBhwid52wnI/9kn6Bm
-        J+FF/N71ok7GaXmT25+3r/I=
-X-Google-Smtp-Source: ABdhPJx/muX49NvkIJ81aOJD11FvjLIeaod4BAQfzC8mIBwV/3b+XFa47AyKcGsqSoyl5DnvnisimQ==
-X-Received: by 2002:a05:6000:16c1:b0:20a:b1c5:d7db with SMTP id h1-20020a05600016c100b0020ab1c5d7dbmr4457798wrf.64.1650644242311;
-        Fri, 22 Apr 2022 09:17:22 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.37.128])
-        by smtp.gmail.com with ESMTPSA id 20-20020a05600c22d400b0038c8dbdc1a3sm1927029wmg.38.2022.04.22.09.17.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 09:17:22 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     hadess@hadess.net
-Cc:     hdegoede@redhat.com, dmitry.torokhov@gmail.com,
-        rydberg@bitmath.org, lains@riseup.net, jikos@kernel.org,
-        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH 1/3] Input: goodix - Fix double free on managed resource
-Date:   Fri, 22 Apr 2022 18:17:07 +0200
-Message-Id: <20220422161709.30198-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Apr 2022 12:20:23 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0705DA53;
+        Fri, 22 Apr 2022 09:17:28 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MGHCcm121089;
+        Fri, 22 Apr 2022 11:17:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650644232;
+        bh=iYC92yO0nVNTBrV4ZcAROnLEimDhVCylf0MCz4FDpg8=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=XxG5mI0ikG5jZo4MowM6zesP/gy4T+x3jrUd68nqr/HcbxXAG7jpFJnwWTpjidPJ+
+         C3NI1cG10RFpY1ZaY+aujncHqwwFUL9xKCHsWPbWhdQIzKLVfsYnm/nbHhbZkHxFLU
+         f571unjgjXI5Qz+xdaA/G4TGYXrLum1bgX3hm8FA=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MGHCXr059334
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 22 Apr 2022 11:17:12 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
+ Apr 2022 11:17:11 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 22 Apr 2022 11:17:11 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MGHBxn019241;
+        Fri, 22 Apr 2022 11:17:11 -0500
+Date:   Fri, 22 Apr 2022 11:17:11 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Rahul T R <r-ravikumar@ti.com>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>, <kristo@kernel.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>
+Subject: Re: [PATCH v3 0/2] DSS: Add support for DisplayPort
+Message-ID: <20220422161711.jkderbw5r4wxwgjf@crudeness>
+References: <20220406165852.13026-1-r-ravikumar@ti.com>
+ <ed64bf63-95c6-94ae-4c4f-a206250f44a9@ti.com>
+ <20220422141637.4hz5nrlpjapmqezw@uda0490373>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220422141637.4hz5nrlpjapmqezw@uda0490373>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As described in the documentation for devm_input_allocate_device():
+On 19:46-20220422, Rahul T R wrote:
+> On 12:51-20220415, Vignesh Raghavendra wrote:
+> > 
+> > 
+> > On 06/04/22 10:28 pm, Rahul T R wrote:
+> > > The following series of patches enables DisplayPort on
+> > > j721e-evm
+> > > 
+> > > Tomi Valkeinen (2):
+> > >   arm64: dts: ti: k3-j721e-main: add DP & DP PHY
+> > >   arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
+> > > 
+> > > v2:
+> > >    - use phandle with a parameter to refer clocks insted of
+> > >      sub nodes in serdes_wiz node
+> > >    - move phy link node to board DTS file
+> > > 
+> > > v3:
+> > >    - Fix the regulator node name as per the DT spec
+> > >    - Use Macro for GPIO type
+> > > 
+> > > boot logs:
+> > >    https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
+> > > 
+> > > kernel patch verify report:
+> > >    https://gist.githubusercontent.com/ravi-rahul/a982fef3fae03ec0dbdd5cb475a4cb25/raw/c8230370746e9878daf9527c3aa9d82eed7aa33c/report-kernel-patch-verify.txt
+> > 
+> > Hmm, With dtbs_check I see (on v5.18-rc1 tag)
+> > 
+> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@0' is a required property
+> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@4' is a required property
+> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phys' is a required property
+> > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phy-names' is a required property
+> > 
+> > This goes away with 2/2 although adds:
+> > +<stdout>: Warning (graph_child_address): /bus@100000/dss@4a00000/ports: graph node has single child node 'port@0', #address-cells/#size-cells are not necessary
+> > 
+> > 
+> > Do we need to have empty ports node in j721e-main.dtsi for dp-bridge?   And something similar wrt phys as well?
+> > 
+> > Regards
+> > Vignesh
+> 
+> Hi Vignesh,
+> 
+> Thanks for the review!
+> Not sure why kernel patch verify did not catch this
 
-  Managed input devices do not need to be explicitly unregistered or
-  freed as it will be done automatically when owner device unbinds from
-  its driver (or binding fails).
-
-However this driver was explicitly freeing the input device.
-
-Remove the calls to input_free_device() to avoid a possible double free
-error.
-
-Fixes: 5ede7f0cfb93f ("Input: goodix - add pen support")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/input/touchscreen/goodix.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
-index 752e8ba4fecb..61eb69f3a259 100644
---- a/drivers/input/touchscreen/goodix.c
-+++ b/drivers/input/touchscreen/goodix.c
-@@ -308,10 +308,8 @@ static struct input_dev *goodix_create_pen_input(struct goodix_ts_data *ts)
- 		return NULL;
- 
- 	input_alloc_absinfo(input);
--	if (!input->absinfo) {
--		input_free_device(input);
-+	if (!input->absinfo)
- 		return NULL;
--	}
- 
- 	input->absinfo[ABS_X] = ts->input_dev->absinfo[ABS_MT_POSITION_X];
- 	input->absinfo[ABS_Y] = ts->input_dev->absinfo[ABS_MT_POSITION_Y];
-@@ -340,10 +338,8 @@ static struct input_dev *goodix_create_pen_input(struct goodix_ts_data *ts)
- 		input->id.product = 0x1001;
- 	input->id.version = ts->version;
- 
--	if (input_register_device(input) != 0) {
--		input_free_device(input);
-+	if (input_register_device(input) != 0)
- 		return NULL;
--	}
- 
- 	return input;
- }
+if you are'nt able to install all the required packages and version of
+packages, then use the kpv wrapper script for docker container that
+already packages things.
 -- 
-2.25.1
-
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
