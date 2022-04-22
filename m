@@ -2,129 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FB2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 670BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiDVWnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        id S233874AbiDVWox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiDVWna (ORCPT
+        with ESMTP id S233556AbiDVWon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:43:30 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F4B1765EC;
-        Fri, 22 Apr 2022 14:41:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1650663703;
-        bh=8RE6J/48SaezMLYOSRQdb+dos/63a0S80cGWNaaY89M=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=bXqN0HxN/QQTsPVdZP4VwcyzjGY8iA92O8TmXTtJqtf628Jb9RnNaDSWWlVJSamfu
-         LVrCT6xfdBwD0xHIJEtlOP+Jv7Ydwi4wxzEv/Ky+/7G3hfhkjTD4AnuF7vo6+Y4nSz
-         pw514YWPfkzdRJHC9a/hcVUqM5zCjTCqXE6GfHq8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([87.78.190.74]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MaJ3t-1nNDlI3YKj-00WIp0; Fri, 22
- Apr 2022 20:31:49 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 3/7] watchdog: npcm: Enable clock if provided
-Date:   Fri, 22 Apr 2022 20:30:08 +0200
-Message-Id: <20220422183012.444674-4-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422183012.444674-1-j.neuschaefer@gmx.net>
-References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+        Fri, 22 Apr 2022 18:44:43 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96AE30D85A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:39:40 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MI1eGT108778;
+        Fri, 22 Apr 2022 13:01:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650650501;
+        bh=Kl1JWrgUFz6ayHAKznd+Y3h+PX7n0DydW4VC03n7x2c=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=ku76huh2hYibqAGm5CepUCDs/h2s/RpwGQJL5gCcP8AYURREUG4CGEo/Vttt489aK
+         5uVlU9T5aBPNrn+Q1w4uUDhjOkwj6GqDyirtmEpRvDu03w77akpzvWyTILlGVS1mCU
+         saoZ4R/JZcSMGP1zYqNMVshzHBKgA+uaqiM3Ki6g=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MI1eww117540
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 22 Apr 2022 13:01:40 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
+ Apr 2022 13:01:40 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 22 Apr 2022 13:01:40 -0500
+Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MI1dso125884;
+        Fri, 22 Apr 2022 13:01:40 -0500
+From:   Andrew Davis <afd@ti.com>
+To:     Jens Wiklander <jens.wiklander@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        <op-tee@lists.trustedfirmware.org>, <linux-kernel@vger.kernel.org>
+CC:     Andrew Davis <afd@ti.com>
+Subject: [PATCH 2/2] tee: remove flags TEE_IOCTL_SHM_MAPPED and TEE_IOCTL_SHM_DMA_BUF
+Date:   Fri, 22 Apr 2022 13:01:39 -0500
+Message-ID: <20220422180139.13447-2-afd@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220422180139.13447-1-afd@ti.com>
+References: <20220422180139.13447-1-afd@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:DzdlIpOpxoHVmzoWSwK/nL5QieYQdzPf0cfyielup2/bHsKDAwQ
- N2kbPBEm068bJ2qlsUpy1PuMDBxL0Al4q+6mC29jVCwWJ/ZDGDodyr0gOx42IbCkPI7CSfx
- IoV+Hxjssgj5OQwTO2pN9A2e91iagZFyoIx2I3C0VnPPyceNuz2gFz1TMWf3aXtkNj8+Rde
- HcSt22thU4XWdRXPBq43A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CBOfWkKmFVM=:FRw7nNLWbQ3bNBPv90sVik
- qODJZKuinuG5QGsuYOs/jvHQDVAwkxAhbrVKGyHAfejM02F1o6pXo6Y53EgqoqL+f20r/hEBO
- VHTj8XfmXgX0C1S8IleVp2m2obNr9mee52dRf6O88DoMm2X7FBtOo0Pbcjimat1k92swzUkZX
- nMRDluyneiJgxhQ2oHIpStiY8+Y8+T0JA3Hp9QNpwkrlilL9Eb1k2H6GvOslXWCtsa0Ywha6E
- oeBd2tfshMcuis970o4dXC6i1DSaLkmVy7b4NfUqok0BRcKmBZ4G1dLqHITq3EnmlKT4hKcOe
- xuSfm2VI5SKq6uJuWVMNXymlkbfSCf85jtPqgCgpyJcYZ8nGGBfcwzscooefR9lXFD3X4ia/t
- IXdiwBDm0SsHb8N7E1LLRHyQb8RxgfhwsRAinHUVfskP/AtdwOO2/cUqE9JdbEHVz3JioBkul
- Vu9x2vN/THEL2RPnVTgm/ZhxBtuI7kcRsL7BAmeL0fstcrpTqhSHrQa3YdPts2oJM7YHaah0O
- vqCYCffcjZtKuJvTcAlqOEhRBXvMSAdx9Ls/THjGaLt8uvKCAVk6tnJaILFfYmk52RxJUW26U
- sZ2hopESgei/M5uelSeRHdEx2nxxed56Mo5JNT0EdX3HogPkRJ+64+1ZmfbcjNBm3TTCtJ1pk
- zwSCtgn0dhhD4GEKUNiv1ruTHBAEIaS3JJYdhTHb85UYpg/CKck+bLvS1FZaZzHzEWnL78sGp
- XamLpO/CUQMLD4lUf71TWCNinLhqAqxRuUa2evW3aiXBlMhIuKmSXcsceXDhUzHCdCWmDQYJs
- 5Z8i1m+r+M0wPWu8yaRSyJ2G25MzlyuWozFVNwAVgOs7KR37f+ElSo9McLk7Z0rlbIJYB4qRh
- lK6tFnJS9P/S6q2p9q1vDnx2P2qwU7ijdI7Kb3ibOf5YFr6pc6EwTm6inHkK5RxgxOPfyybaP
- M78QedtmEKiLOJQdYwr58JVKfKkuu1kC+xgjXbjq6ZJRNg/TeMfo/O8i9o5EJ1ckbkb74RYaO
- RElyBVxbk3HOApjbdJHAVPnB28rD6nTZDNl5mmiFTCAFu/0R/1Y4G+teLqb8r0FJWOIoJQFoh
- CvWx+XXBm1Xaw0=
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On the Nuvoton WPCM450 SoC, with its upcoming clock driver, peripheral
-clocks are individually gated and ungated. Therefore, the watchdog
-driver must be able to ungate the watchdog clock.
+These look to be leftover from an early edition of this driver. Userspace
+does not need this information. Checking all users of this that I have
+access to I have verified no one is using them.
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- drivers/watchdog/npcm_wdt.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+They leak internal use flags out to userspace. Even more they are not
+correct anymore after a45ea4efa358. Lets drop these flags before
+someone does try to use them for something and they become ABI.
 
-diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
-index 28a24caa2627c..6d27f0e16188e 100644
-=2D-- a/drivers/watchdog/npcm_wdt.c
-+++ b/drivers/watchdog/npcm_wdt.c
-@@ -3,6 +3,7 @@
- // Copyright (c) 2018 IBM Corp.
+Signed-off-by: Andrew Davis <afd@ti.com>
+---
+ drivers/tee/tee_core.c   | 1 -
+ include/uapi/linux/tee.h | 4 ----
+ 2 files changed, 5 deletions(-)
 
- #include <linux/bitops.h>
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
-@@ -180,6 +181,7 @@ static int npcm_wdt_probe(struct platform_device *pdev=
-)
- {
- 	struct device *dev =3D &pdev->dev;
- 	struct npcm_wdt *wdt;
-+	struct clk *clk;
- 	int irq;
- 	int ret;
-
-@@ -191,6 +193,13 @@ static int npcm_wdt_probe(struct platform_device *pde=
-v)
- 	if (IS_ERR(wdt->reg))
- 		return PTR_ERR(wdt->reg);
-
-+	clk =3D devm_clk_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	if (clk)
-+		clk_prepare_enable(clk);
-+
- 	irq =3D platform_get_irq(pdev, 0);
- 	if (irq < 0)
- 		return irq;
-=2D-
-2.35.1
+diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+index 8aa1a4836b92f..650dd87a38e77 100644
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -339,7 +339,6 @@ tee_ioctl_shm_register(struct tee_context *ctx,
+ 		return PTR_ERR(shm);
+ 
+ 	data.id = shm->id;
+-	data.flags = shm->flags;
+ 	data.length = shm->size;
+ 
+ 	if (copy_to_user(udata, &data, sizeof(data)))
+diff --git a/include/uapi/linux/tee.h b/include/uapi/linux/tee.h
+index 25a6c534beb1b..23e57164693c4 100644
+--- a/include/uapi/linux/tee.h
++++ b/include/uapi/linux/tee.h
+@@ -42,10 +42,6 @@
+ #define TEE_IOC_MAGIC	0xa4
+ #define TEE_IOC_BASE	0
+ 
+-/* Flags relating to shared memory */
+-#define TEE_IOCTL_SHM_MAPPED	0x1	/* memory mapped in normal world */
+-#define TEE_IOCTL_SHM_DMA_BUF	0x2	/* dma-buf handle on shared memory */
+-
+ #define TEE_MAX_ARG_SIZE	1024
+ 
+ #define TEE_GEN_CAP_GP		(1 << 0)/* GlobalPlatform compliant TEE */
+-- 
+2.17.1
 
