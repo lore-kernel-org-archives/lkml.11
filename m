@@ -2,771 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4678C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C37EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444697AbiDVHNv (ORCPT
+        id S1444683AbiDVHOj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36594 "EHLO
+        Fri, 22 Apr 2022 03:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444683AbiDVHNj (ORCPT
+        with ESMTP id S1345890AbiDVHOf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:13:39 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D965131A
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:10:44 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nhnR8-0005P6-2o; Fri, 22 Apr 2022 09:10:38 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nhnR8-004Vvu-QB; Fri, 22 Apr 2022 09:10:37 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nhnR6-00C5oI-84; Fri, 22 Apr 2022 09:10:36 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 2/2] ARM: dts: stm32: add support for Protonic PRTT1x boards
-Date:   Fri, 22 Apr 2022 09:10:34 +0200
-Message-Id: <20220422071034.2882199-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220422071034.2882199-1-o.rempel@pengutronix.de>
-References: <20220422071034.2882199-1-o.rempel@pengutronix.de>
+        Fri, 22 Apr 2022 03:14:35 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 00:11:43 PDT
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136465131E
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:11:41 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202204220710374730a04c63206925d3
+        for <linux-kernel@vger.kernel.org>;
+        Fri, 22 Apr 2022 09:10:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=6TYWz5NM2Ayh/wAaSx/ZruxeD4HMnQKe81wQRU87fBM=;
+ b=VybX2RKuTM9/fnm3XwYiVizce4MpI0CMeQ2pXYxRFKB+n4Ek6w7wRF8Ti0Fq6Vt5lJHBgS
+ 45ynA2nYKsJCldVpP0QZCOjSzQiD1N2krxZ1TIOKfNs2vu/TL+Vgh5o0B56mW4vfHdESsQD9
+ GeQWvB1BqRVh8Nvau8ETIIWep2Vsc=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 2/3] tty: n_gsm: fix invalid use of MSC in advanced option
+Date:   Fri, 22 Apr 2022 00:10:24 -0700
+Message-Id: <20220422071025.5490-2-daniel.starke@siemens.com>
+In-Reply-To: <20220422071025.5490-1-daniel.starke@siemens.com>
+References: <20220422071025.5490-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This boards are based on STM32MP151AAD3 and use 10BaseT1L for communication.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-- PRTT1C - 10BaseT1L switch
-- PRTT1S - 10BaseT1L CO2 sensor board
-- PRTT1A - 10BaseT1L multi functional controller
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.7 states that the Modem Status
+Command (MSC) shall only be used if the basic option was chosen.
+The current implementation uses MSC frames even if advanced option was
+chosen to inform the peer about modem line state updates. A standard
+conform peer may choose to discard these frames in advanced option mode.
+Furthermore, gsmtty_modem_update() is not part of the 'tty_operations'
+functions despite its name.
+Rename gsmtty_modem_update() to gsm_modem_update() to clarify this. Split
+its function into gsm_modem_upd_via_data() and gsm_modem_upd_via_msc()
+depending on the encoding and adaption. Introduce gsm_dlci_modem_output()
+as adaption of gsm_dlci_data_output() to encode and queue empty frames in
+advanced option mode. Use it in gsm_modem_upd_via_data().
+gsm_modem_upd_via_msc() is based on the initial gsmtty_modem_update()
+function which used only MSC frames to update modem states.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- arch/arm/boot/dts/Makefile                |   4 +
- arch/arm/boot/dts/stm32mp151a-prtt1a.dts  |  52 ++++
- arch/arm/boot/dts/stm32mp151a-prtt1c.dts  | 321 ++++++++++++++++++++++
- arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi | 213 ++++++++++++++
- arch/arm/boot/dts/stm32mp151a-prtt1s.dts  |  63 +++++
- 5 files changed, 653 insertions(+)
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1a.dts
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1c.dts
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1s.dts
+ drivers/tty/n_gsm.c | 125 +++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 117 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 7c16f8a2b738..ec5b2307e85a 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -1156,6 +1156,9 @@ dtb-$(CONFIG_ARCH_STM32) += \
- 	stm32h743i-disco.dtb \
- 	stm32h750i-art-pi.dtb \
- 	stm32mp135f-dk.dtb \
-+	stm32mp151a-prtt1a.dtb \
-+	stm32mp151a-prtt1c.dtb \
-+	stm32mp151a-prtt1s.dtb \
- 	stm32mp153c-dhcom-drc02.dtb \
- 	stm32mp157a-avenger96.dtb \
- 	stm32mp157a-dhcor-avenger96.dtb \
-@@ -1175,6 +1178,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
- 	stm32mp157c-ev1.dtb \
- 	stm32mp157c-lxa-mc1.dtb \
- 	stm32mp157c-odyssey.dtb
-+
- dtb-$(CONFIG_MACH_SUN4I) += \
- 	sun4i-a10-a1000.dtb \
- 	sun4i-a10-ba10-tvbox.dtb \
-diff --git a/arch/arm/boot/dts/stm32mp151a-prtt1a.dts b/arch/arm/boot/dts/stm32mp151a-prtt1a.dts
-new file mode 100644
-index 000000000000..75874eafde11
---- /dev/null
-+++ b/arch/arm/boot/dts/stm32mp151a-prtt1a.dts
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ * Copyright (C) Protonic Holland
-+ * Author: David Jander <david@protonic.nl>
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 99fe54247a87..570f0b8b7576 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -366,7 +366,7 @@ static const u8 gsm_fcs8[256] = {
+ #define GOOD_FCS	0xCF
+ 
+ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
+-static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
++static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
+ 
+ /**
+  *	gsm_fcs_add	-	update FCS
+@@ -914,6 +914,63 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
+ 	return size;
+ }
+ 
++/**
++ *	gsm_dlci_modem_output	-	try and push modem status out of a DLCI
++ *	@gsm: mux
++ *	@dlci: the DLCI to pull modem status from
++ *	@brk: break signal
++ *
++ *	Push an empty frame in to the transmit queue to update the modem status
++ *	bits and to transmit an optional break.
++ *
++ *	Caller must hold the tx_lock of the mux.
 + */
-+/dts-v1/;
 +
-+#include "stm32mp151a-prtt1l.dtsi"
++static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
++				 u8 brk)
++{
++	u8 *dp = NULL;
++	struct gsm_msg *msg;
++	int size;
 +
-+/ {
-+	model = "Protonic PRTT1A";
-+	compatible = "prt,prtt1a", "st,stm32mp151";
-+};
++	/* for modem bits without break data */
++	if (dlci->adaption == 1) {
++		size = 0;
++	} else if (dlci->adaption == 2) {
++		size = 1;
++		if (brk > 0)
++			size++;
++	} else {
++		pr_err("%s: unsupported adaption %d\n", __func__,
++		       dlci->adaption);
++	}
 +
-+&ethernet0 {
-+	phy-handle = <&phy0>;
-+};
++	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
++	if (!msg) {
++		pr_err("%s: gsm_data_alloc error", __func__);
++		return -ENOMEM;
++	}
++	dp = msg->data;
++	switch (dlci->adaption) {
++	case 1: /* Unstructured */
++		break;
++	case 2: /* Unstructured with modem bits. */
++		if (brk == 0) {
++			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
++		} else {
++			*dp++ = gsm_encode_modem(dlci) << 1;
++			*dp++ = (brk << 4) | 2 | EA; /* Length, Break, EA */
++		}
++		break;
++	default:
++		/* Handled above */
++		break;
++	}
 +
-+&mdio0 {
-+	/* TI DP83TD510E */
-+	phy0: ethernet-phy@0 {
-+		compatible = "ethernet-phy-id2000.0181";
-+		reg = <0>;
-+		interrupts-extended = <&gpioa 4 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&gpioa 3 GPIO_ACTIVE_LOW>;
-+		reset-assert-us = <10>;
-+		reset-deassert-us = <35>;
-+	};
-+};
++	__gsm_data_queue(dlci, msg);
++	return size;
++}
 +
-+&pwm5_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('A', 0, AF2)>; /* TIM5_CH1 */
-+	};
-+};
-+
-+&pwm5_sleep_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('A', 0, ANALOG)>; /* TIM5_CH1 */
-+	};
-+};
-+
-+&timers5 {
-+	status = "okay";
-+
-+	pwm {
-+		pinctrl-0 = <&pwm5_pins_a>;
-+		pinctrl-1 = <&pwm5_sleep_pins_a>;
-+		pinctrl-names = "default", "sleep";
-+		status = "okay";
-+	};
-+};
-diff --git a/arch/arm/boot/dts/stm32mp151a-prtt1c.dts b/arch/arm/boot/dts/stm32mp151a-prtt1c.dts
-new file mode 100644
-index 000000000000..18b7e05088b5
---- /dev/null
-+++ b/arch/arm/boot/dts/stm32mp151a-prtt1c.dts
-@@ -0,0 +1,321 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ * Copyright (C) Protonic Holland
-+ * Author: David Jander <david@protonic.nl>
+ /**
+  *	gsm_dlci_data_sweep		-	look for data to send
+  *	@gsm: the GSM mux
+@@ -1464,7 +1521,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	/* Send current modem state */
+ 	if (dlci->addr)
+-		gsmtty_modem_update(dlci, 0);
++		gsm_modem_update(dlci, 0);
+ 	wake_up(&dlci->gsm->event);
+ }
+ 
+@@ -2897,12 +2954,43 @@ static struct tty_ldisc_ops tty_ldisc_packet = {
+ 
+ #define TX_SIZE		512
+ 
+-static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
++/**
++ *	gsm_modem_upd_via_data	-	send modem bits via convergence layer
++ *	@dlci: channel
++ *	@brk: break signal
++ *
++ *	Send an empty frame to signal mobile state changes and to transmit the
++ *	break signal for adaption 2.
 + */
-+/dts-v1/;
 +
-+#include "stm32mp151a-prtt1l.dtsi"
++static void gsm_modem_upd_via_data(struct gsm_dlci *dlci, u8 brk)
++{
++	struct gsm_mux *gsm = dlci->gsm;
++	unsigned long flags;
 +
-+/ {
-+	model = "Protonic PRTT1C";
-+	compatible = "prt,prtt1c", "st,stm32mp151";
++	if (dlci->state != DLCI_OPEN || dlci->adaption != 2)
++		return;
 +
-+	clock_ksz9031: clock-ksz9031 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <25000000>;
-+	};
++	spin_lock_irqsave(&gsm->tx_lock, flags);
++	gsm_dlci_modem_output(gsm, dlci, brk);
++	spin_unlock_irqrestore(&gsm->tx_lock, flags);
++}
 +
-+	clock_sja1105: clock-sja1105 {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <25000000>;
-+	};
-+
-+	mdio0: mdio {
-+		compatible = "virtual,mdio-gpio";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		gpios = <&gpioc 1 GPIO_ACTIVE_HIGH
-+			 &gpioa 2 GPIO_ACTIVE_HIGH>;
-+
-+	};
-+
-+	wifi_pwrseq: wifi-pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		reset-gpios = <&gpiod 8 GPIO_ACTIVE_LOW>;
-+	};
-+};
-+
-+&ethernet0 {
-+	fixed-link {
-+		speed = <100>;
-+		full-duplex;
-+	};
-+};
-+
-+&gpioa {
-+	gpio-line-names =
-+		"", "", "", "PHY0_nRESET", "PHY0_nINT", "", "", "",
-+		"", "", "", "", "", "", "", "SPI1_nSS";
-+};
-+
-+&gpiod {
-+	gpio-line-names =
-+		"", "", "", "", "", "", "", "",
-+		"WFM_RESET", "", "", "", "", "", "", "";
-+};
-+
-+&gpioe {
-+	gpio-line-names =
-+		"SDMMC2_nRESET", "", "", "", "", "", "SPI1_nRESET", "",
-+		"", "", "", "", "WFM_nIRQ", "", "", "";
-+};
-+
-+&gpiog {
-+	gpio-line-names =
-+		"", "", "", "", "", "", "", "PHY3_nINT",
-+		"PHY1_nINT", "PHY3_nRESET", "PHY2_nINT", "PHY2_nRESET",
-+		"PHY1_nRESET", "SPE1_PWR", "SPE0_PWR", "";
-+};
-+
-+&mdio0 {
-+	/* All this DP83TD510E PHYs can't be probed before switch@0 is
-+	 * probed so we need to use compatible with PHYid
-+	 */
-+	/* TI DP83TD510E */
-+	t1l0_phy: ethernet-phy@6 {
-+		compatible = "ethernet-phy-id2000.0181";
-+		reg = <6>;
-+		interrupts-extended = <&gpioa 4 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&gpioa 3 GPIO_ACTIVE_LOW>;
-+		reset-assert-us = <10>;
-+		reset-deassert-us = <35>;
-+	};
-+
-+	/* TI DP83TD510E */
-+	t1l1_phy: ethernet-phy@7 {
-+		compatible = "ethernet-phy-id2000.0181";
-+		reg = <7>;
-+		interrupts-extended = <&gpiog 8 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&gpiog 12 GPIO_ACTIVE_LOW>;
-+		reset-assert-us = <10>;
-+		reset-deassert-us = <35>;
-+	};
-+
-+	/* TI DP83TD510E */
-+	t1l2_phy: ethernet-phy@10 {
-+		compatible = "ethernet-phy-id2000.0181";
-+		reg = <10>;
-+		interrupts-extended = <&gpiog 10 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&gpiog 11 GPIO_ACTIVE_LOW>;
-+		reset-assert-us = <10>;
-+		reset-deassert-us = <35>;
-+	};
-+
-+	/* Micrel KSZ9031 */
-+	rj45_phy: ethernet-phy@2 {
-+		reg = <2>;
-+		interrupts-extended = <&gpiog 7 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&gpiog 9 GPIO_ACTIVE_LOW>;
-+		reset-assert-us = <10000>;
-+		reset-deassert-us = <1000>;
-+
-+		clocks = <&clock_ksz9031>;
-+	};
-+};
-+
-+&qspi {
-+	status = "disabled";
-+};
-+
-+&sdmmc2 {
-+	pinctrl-names = "default", "opendrain", "sleep";
-+	pinctrl-0 = <&sdmmc2_b4_pins_a &sdmmc2_d47_pins_a>;
-+	pinctrl-1 = <&sdmmc2_b4_od_pins_a &sdmmc2_d47_pins_a>;
-+	pinctrl-2 = <&sdmmc2_b4_sleep_pins_a &sdmmc2_d47_sleep_pins_a>;
-+	non-removable;
-+	no-sd;
-+	no-sdio;
-+	no-1-8-v;
-+	st,neg-edge;
-+	bus-width = <8>;
-+	vmmc-supply = <&reg_3v3>;
-+	vqmmc-supply = <&reg_3v3>;
-+	status = "okay";
-+};
-+
-+&sdmmc2_b4_od_pins_a {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('B', 14, AF9)>, /* SDMMC2_D0 */
-+			 <STM32_PINMUX('B', 7, AF10)>, /* SDMMC2_D1 */
-+			 <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
-+			 <STM32_PINMUX('B', 4, AF9)>; /* SDMMC2_D3 */
-+	};
-+};
-+
-+&sdmmc2_b4_pins_a {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('B', 14, AF9)>, /* SDMMC2_D0 */
-+			 <STM32_PINMUX('B', 7, AF10)>, /* SDMMC2_D1 */
-+			 <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
-+			 <STM32_PINMUX('B', 4, AF9)>, /* SDMMC2_D3 */
-+			 <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
-+	};
-+};
-+
-+&sdmmc2_b4_sleep_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
-+			 <STM32_PINMUX('B', 7, ANALOG)>, /* SDMMC2_D1 */
-+			 <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
-+			 <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
-+			 <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
-+			 <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
-+	};
-+};
-+
-+&sdmmc2_d47_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('A', 8, AF9)>, /* SDMMC2_D4 */
-+			 <STM32_PINMUX('A', 9, AF10)>, /* SDMMC2_D5 */
-+			 <STM32_PINMUX('C', 6, AF10)>, /* SDMMC2_D6 */
-+			 <STM32_PINMUX('C', 7, AF10)>; /* SDMMC2_D7 */
-+	};
-+};
-+
-+&sdmmc2_d47_sleep_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('A', 8, ANALOG)>, /* SDMMC2_D4 */
-+			 <STM32_PINMUX('A', 9, ANALOG)>, /* SDMMC2_D5 */
-+			 <STM32_PINMUX('C', 6, ANALOG)>, /* SDMMC2_D6 */
-+			 <STM32_PINMUX('D', 3, ANALOG)>; /* SDMMC2_D7 */
-+	};
-+};
-+
-+&sdmmc3 {
-+	pinctrl-names = "default", "opendrain", "sleep";
-+	pinctrl-0 = <&sdmmc3_b4_pins_b>;
-+	pinctrl-1 = <&sdmmc3_b4_od_pins_b>;
-+	pinctrl-2 = <&sdmmc3_b4_sleep_pins_b>;
-+	non-removable;
-+	no-1-8-v;
-+	st,neg-edge;
-+	bus-width = <4>;
-+	vmmc-supply = <&reg_3v3>;
-+	vqmmc-supply = <&reg_3v3>;
-+        mmc-pwrseq = <&wifi_pwrseq>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	status = "okay";
-+
-+	mmc@1 {
-+		compatible = "silabs,wf200";
-+		reg = <1>;
-+	};
-+};
-+
-+&sdmmc3_b4_od_pins_b {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('D', 1, AF10)>, /* SDMMC3_D0 */
-+			 <STM32_PINMUX('D', 4, AF10)>, /* SDMMC3_D1 */
-+			 <STM32_PINMUX('D', 5, AF10)>, /* SDMMC3_D2 */
-+			 <STM32_PINMUX('D', 7, AF10)>; /* SDMMC3_D3 */
-+	};
-+};
-+
-+&sdmmc3_b4_pins_b {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('D', 1, AF10)>, /* SDMMC3_D0 */
-+			 <STM32_PINMUX('D', 4, AF10)>, /* SDMMC3_D1 */
-+			 <STM32_PINMUX('D', 5, AF10)>, /* SDMMC3_D2 */
-+			 <STM32_PINMUX('D', 7, AF10)>, /* SDMMC3_D3 */
-+			 <STM32_PINMUX('D', 0, AF10)>; /* SDMMC3_CMD */
-+	};
-+};
-+
-+&sdmmc3_b4_sleep_pins_b {
-+	pins {
-+		pinmux = <STM32_PINMUX('D', 1, ANALOG)>, /* SDMMC3_D0 */
-+			 <STM32_PINMUX('D', 4, ANALOG)>, /* SDMMC3_D1 */
-+			 <STM32_PINMUX('D', 5, ANALOG)>, /* SDMMC3_D2 */
-+			 <STM32_PINMUX('D', 7, ANALOG)>, /* SDMMC3_D3 */
-+			 <STM32_PINMUX('G', 15, ANALOG)>, /* SDMMC3_CK */
-+			 <STM32_PINMUX('D', 0, ANALOG)>; /* SDMMC3_CMD */
-+	};
-+};
-+
-+&spi1 {
-+	pinctrl-0 = <&spi1_pins_a1>;
-+	pinctrl-names = "default";
-+	cs-gpios = <&gpioa 15 GPIO_ACTIVE_LOW>;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+	status = "okay";
-+
-+	switch@0 {
-+		compatible = "nxp,sja1105q";
-+		reg = <0>;
-+		spi-max-frequency = <4000000>;
-+		spi-rx-delay-us = <1>;
-+		spi-tx-delay-us = <1>;
-+		spi-cpha;
-+
-+		reset-gpios = <&gpioe 6 GPIO_ACTIVE_LOW>;
-+
-+		clocks = <&clock_sja1105>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+				label = "t1l0";
-+				phy-mode = "rmii";
-+				phy-handle = <&t1l0_phy>;
-+			};
-+
-+			port@1 {
-+				reg = <1>;
-+				label = "t1l1";
-+				phy-mode = "rmii";
-+				phy-handle = <&t1l1_phy>;
-+			};
-+
-+			port@2 {
-+				reg = <2>;
-+				label = "t1l2";
-+				phy-mode = "rmii";
-+				phy-handle = <&t1l2_phy>;
-+			};
-+
-+			port@3 {
-+				reg = <3>;
-+				label = "rj45";
-+				phy-handle = <&rj45_phy>;
-+				phy-mode = "rgmii-id";
-+			};
-+
-+			port@4 {
-+				reg = <4>;
-+				label = "cpu";
-+				ethernet = <&ethernet0>;
-+				phy-mode = "rmii";
-+
-+				fixed-link {
-+					speed = <100>;
-+					full-duplex;
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+&pinctrl {
-+	spi1_pins_a1: spi1-0 {
-+		pins1 {
-+			pinmux = <STM32_PINMUX('A', 5, AF5)>, /* SPI1_SCK */
-+				 <STM32_PINMUX('B', 5, AF5)>; /* SPI1_MOSI */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <1>;
-+		};
-+
-+		pins2 {
-+			pinmux = <STM32_PINMUX('A', 6, AF5)>; /* SPI1_MISO */
-+			bias-disable;
-+		};
-+	};
-+};
-diff --git a/arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi b/arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi
-new file mode 100644
-index 000000000000..a942a34cad5c
---- /dev/null
-+++ b/arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi
-@@ -0,0 +1,213 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ * Copyright (C) Protonic Holland
-+ * Author: David Jander <david@protonic.nl>
++/**
++ *	gsm_modem_upd_via_msc	-	send modem bits via control frame
++ *	@dlci: channel
++ *	@brk: break signal
 + */
-+/dts-v1/;
 +
-+#include "stm32mp151.dtsi"
-+#include "stm32mp15-pinctrl.dtsi"
-+#include "stm32mp15xxad-pinctrl.dtsi"
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
++static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
+ {
+ 	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+ 	int len = 2;
+ 
++	if (dlci->gsm->encoding != 0)
++		return 0;
 +
-+/ {
-+	aliases {
-+		ethernet0 = &ethernet0;
-+		mdio-gpio0 = &mdio0;
-+		serial0 = &uart4;
-+	};
-+
-+	led-controller-0 {
-+		compatible = "gpio-leds";
-+
-+		led-0 {
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_INDICATOR;
-+			gpios = <&gpioa 13 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		led-1 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			gpios = <&gpioa 14 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "heartbeat";
-+		};
-+	};
-+
-+
-+	/* DP83TD510E PHYs have max MDC rate of 1.75MHz. Since we can't reduce
-+	 * stmmac MDC clock without reducing system bus rate, we need to use
-+	 * gpio based MDIO bus.
-+	 */
-+	mdio0: mdio {
-+		compatible = "virtual,mdio-gpio";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		gpios = <&gpioc 1 GPIO_ACTIVE_HIGH
-+			 &gpioa 2 GPIO_ACTIVE_HIGH>;
-+	};
-+
-+	reg_3v3: regulator-3v3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "3v3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+	};
-+};
-+
-+&ethernet0 {
-+	pinctrl-0 = <&ethernet0_rmii_pins_a>;
-+	pinctrl-1 = <&ethernet0_rmii_sleep_pins_a>;
-+	pinctrl-names = "default", "sleep";
-+	phy-mode = "rmii";
-+	status = "okay";
-+};
-+
-+&ethernet0_rmii_pins_a {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('B', 12, AF11)>, /* ETH1_RMII_TXD0 */
-+			 <STM32_PINMUX('B', 13, AF11)>, /* ETH1_RMII_TXD1 */
-+			 <STM32_PINMUX('B', 11, AF11)>; /* ETH1_RMII_TX_EN */
-+	};
-+	pins2 {
-+		pinmux = <STM32_PINMUX('C', 4, AF11)>,  /* ETH1_RMII_RXD0 */
-+			 <STM32_PINMUX('C', 5, AF11)>,  /* ETH1_RMII_RXD1 */
-+			 <STM32_PINMUX('A', 1, AF11)>,  /* ETH1_RMII_REF_CLK input */
-+			 <STM32_PINMUX('A', 7, AF11)>;  /* ETH1_RMII_CRS_DV */
-+	};
-+};
-+
-+&ethernet0_rmii_sleep_pins_a {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('B', 12, ANALOG)>, /* ETH1_RMII_TXD0 */
-+			 <STM32_PINMUX('B', 13, ANALOG)>, /* ETH1_RMII_TXD1 */
-+			 <STM32_PINMUX('B', 11, ANALOG)>, /* ETH1_RMII_TX_EN */
-+			 <STM32_PINMUX('C', 4, ANALOG)>,  /* ETH1_RMII_RXD0 */
-+			 <STM32_PINMUX('C', 5, ANALOG)>,  /* ETH1_RMII_RXD1 */
-+			 <STM32_PINMUX('A', 1, ANALOG)>,  /* ETH1_RMII_REF_CLK */
-+			 <STM32_PINMUX('A', 7, ANALOG)>;  /* ETH1_RMII_CRS_DV */
-+	};
-+};
-+
-+&qspi {
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&qspi_clk_pins_a &qspi_bk1_pins_a>;
-+	pinctrl-1 = <&qspi_clk_sleep_pins_a &qspi_bk1_sleep_pins_a>;
-+	reg = <0x58003000 0x1000>, <0x70000000 0x4000000>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	status = "okay";
-+
-+	flash@0 {
-+		compatible = "spi-nand";
-+		reg = <0>;
-+		spi-rx-bus-width = <4>;
-+		spi-max-frequency = <104000000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+	};
-+};
-+
-+&qspi_bk1_pins_a {
-+	pins1 {
-+		bias-pull-up;
-+		drive-push-pull;
-+		slew-rate = <1>;
-+	};
-+};
-+
-+&sdmmc1 {
-+	pinctrl-names = "default", "opendrain", "sleep";
-+	pinctrl-0 = <&sdmmc1_b4_pins_a>;
-+	pinctrl-1 = <&sdmmc1_b4_od_pins_a>;
-+	pinctrl-2 = <&sdmmc1_b4_sleep_pins_a>;
-+	broken-cd;
-+	st,neg-edge;
-+	bus-width = <4>;
-+	vmmc-supply = <&reg_3v3>;
-+	vqmmc-supply = <&reg_3v3>;
-+	status = "okay";
-+};
-+
-+&sdmmc1_b4_od_pins_a {
-+	pins1 {
-+		bias-pull-up;
-+	};
-+	pins2 {
-+		bias-pull-up;
-+	};
-+};
-+
-+&sdmmc1_b4_pins_a {
-+	pins1 {
-+		bias-pull-up;
-+	};
-+	pins2 {
-+		bias-pull-up;
-+	};
-+};
-+
-+&uart4 {
-+	pinctrl-names = "default", "sleep", "idle";
-+	pinctrl-0 = <&uart4_pins_a>;
-+	pinctrl-1 = <&uart4_sleep_pins_a>;
-+	pinctrl-2 = <&uart4_idle_pins_a>;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+	status = "okay";
-+};
-+
-+&uart4_idle_pins_a {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('B', 9, ANALOG)>; /* UART4_TX */
-+	};
-+	pins2 {
-+		pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
-+		bias-pull-up;
-+	};
-+};
-+
-+&uart4_pins_a {
-+	pins1 {
-+		pinmux = <STM32_PINMUX('B', 9, AF8)>; /* UART4_TX */
-+		bias-disable;
-+		drive-push-pull;
-+		slew-rate = <0>;
-+	};
-+	pins2 {
-+		pinmux = <STM32_PINMUX('B', 2, AF8)>; /* UART4_RX */
-+		bias-pull-up;
-+	};
-+};
-+
-+&uart4_sleep_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('B', 9, ANALOG)>, /* UART4_TX */
-+			<STM32_PINMUX('B', 2, ANALOG)>; /* UART4_RX */
-+	};
-+};
-+
-+&usbh_ehci {
-+	phys = <&usbphyc_port0>;
-+	phy-names = "usb";
-+	status = "okay";
-+};
-+
-+&usbotg_hs {
-+	dr_mode = "host";
-+	pinctrl-0 = <&usbotg_hs_pins_a>;
-+	pinctrl-names = "default";
-+	phys = <&usbphyc_port1 0>;
-+	phy-names = "usb2-phy";
-+	status = "okay";
-+};
-+
-+&usbphyc {
-+	status = "okay";
-+};
-+
-+&usbphyc_port1 {
-+	phy-supply = <&reg_3v3>;
-+};
-diff --git a/arch/arm/boot/dts/stm32mp151a-prtt1s.dts b/arch/arm/boot/dts/stm32mp151a-prtt1s.dts
-new file mode 100644
-index 000000000000..ad25929e64e6
---- /dev/null
-+++ b/arch/arm/boot/dts/stm32mp151a-prtt1s.dts
-@@ -0,0 +1,63 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ * Copyright (C) Protonic Holland
-+ * Author: David Jander <david@protonic.nl>
+ 	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
+ 	if (!brk) {
+ 		modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
+@@ -2917,6 +3005,27 @@ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
+ 	return gsm_control_wait(dlci->gsm, ctrl);
+ }
+ 
++/**
++ *	gsm_modem_update	-	send modem status line state
++ *	@dlci: channel
++ *	@brk: break signal
 + */
-+/dts-v1/;
 +
-+#include "stm32mp151a-prtt1l.dtsi"
++static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
++{
++	if (dlci->adaption == 2) {
++		/* Send convergence layer type 2 empty data frame. */
++		gsm_modem_upd_via_data(dlci, brk);
++		return 0;
++	} else if (dlci->gsm->encoding == 0) {
++		/* Send as MSC control message. */
++		return gsm_modem_upd_via_msc(dlci, brk);
++	}
 +
-+/ {
-+	model = "Protonic PRTT1S";
-+	compatible = "prt,prtt1s", "st,stm32mp151";
-+};
++	/* Modem status lines are not supported. */
++	return -EPROTONOSUPPORT;
++}
 +
-+&ethernet0 {
-+	phy-handle = <&phy0>;
-+};
-+
-+&i2c1 {
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&i2c1_pins_a>;
-+	pinctrl-1 = <&i2c1_sleep_pins_a>;
-+	clock-frequency = <100000>;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+	status = "okay";
-+
-+	humidity-sensor@40 {
-+		compatible = "ti,hdc1080";
-+		reg = <0x40>;
-+	};
-+
-+	co2-sensor@62 {
-+		compatible = "sensirion,scd41";
-+		reg = <0x62>;
-+	};
-+};
-+
-+&i2c1_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('D', 12, AF5)>, /* I2C1_SCL */
-+			 <STM32_PINMUX('D', 13, AF5)>; /* I2C1_SDA */
-+	};
-+};
-+
-+&i2c1_sleep_pins_a {
-+	pins {
-+		pinmux = <STM32_PINMUX('D', 12, ANALOG)>, /* I2C1_SCL */
-+			 <STM32_PINMUX('D', 13, ANALOG)>; /* I2C1_SDA */
-+	};
-+};
-+
-+&mdio0 {
-+	/* TI DP83TD510E */
-+	phy0: ethernet-phy@0 {
-+		compatible = "ethernet-phy-id2000.0181";
-+		reg = <0>;
-+		interrupts-extended = <&gpioa 4 IRQ_TYPE_LEVEL_LOW>;
-+		reset-gpios = <&gpioa 3 GPIO_ACTIVE_LOW>;
-+		reset-assert-us = <10>;
-+		reset-deassert-us = <35>;
-+	};
-+};
+ static int gsm_carrier_raised(struct tty_port *port)
+ {
+ 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
+@@ -2949,7 +3058,7 @@ static void gsm_dtr_rts(struct tty_port *port, int onoff)
+ 		modem_tx &= ~(TIOCM_DTR | TIOCM_RTS);
+ 	if (modem_tx != dlci->modem_tx) {
+ 		dlci->modem_tx = modem_tx;
+-		gsmtty_modem_update(dlci, 0);
++		gsm_modem_update(dlci, 0);
+ 	}
+ }
+ 
+@@ -3140,7 +3249,7 @@ static int gsmtty_tiocmset(struct tty_struct *tty,
+ 
+ 	if (modem_tx != dlci->modem_tx) {
+ 		dlci->modem_tx = modem_tx;
+-		return gsmtty_modem_update(dlci, 0);
++		return gsm_modem_update(dlci, 0);
+ 	}
+ 	return 0;
+ }
+@@ -3201,7 +3310,7 @@ static void gsmtty_throttle(struct tty_struct *tty)
+ 		dlci->modem_tx &= ~TIOCM_RTS;
+ 	dlci->throttled = true;
+ 	/* Send an MSC with RTS cleared */
+-	gsmtty_modem_update(dlci, 0);
++	gsm_modem_update(dlci, 0);
+ }
+ 
+ static void gsmtty_unthrottle(struct tty_struct *tty)
+@@ -3213,7 +3322,7 @@ static void gsmtty_unthrottle(struct tty_struct *tty)
+ 		dlci->modem_tx |= TIOCM_RTS;
+ 	dlci->throttled = false;
+ 	/* Send an MSC with RTS set */
+-	gsmtty_modem_update(dlci, 0);
++	gsm_modem_update(dlci, 0);
+ }
+ 
+ static int gsmtty_break_ctl(struct tty_struct *tty, int state)
+@@ -3231,7 +3340,7 @@ static int gsmtty_break_ctl(struct tty_struct *tty, int state)
+ 		if (encode > 0x0F)
+ 			encode = 0x0F;	/* Best effort */
+ 	}
+-	return gsmtty_modem_update(dlci, encode);
++	return gsm_modem_update(dlci, encode);
+ }
+ 
+ static void gsmtty_cleanup(struct tty_struct *tty)
 -- 
-2.30.2
+2.25.1
 
