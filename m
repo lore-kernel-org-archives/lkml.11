@@ -2,76 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8989C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0117BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbiDVWFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        id S231476AbiDVWFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiDVWFG (ORCPT
+        with ESMTP id S231432AbiDVWFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:05:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB91E41D1F0;
-        Fri, 22 Apr 2022 13:47:47 -0700 (PDT)
+        Fri, 22 Apr 2022 18:05:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C20541D1F3;
+        Fri, 22 Apr 2022 13:47:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20A4061E06;
-        Fri, 22 Apr 2022 20:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26FDAC385AA;
-        Fri, 22 Apr 2022 20:36:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650659808;
-        bh=a+XR4UoEGJUvtEOaoDDXPDz++it2F/wJ7l1aRxdt+0A=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=U1C6BKzOQuYL/nfuZoLkjlUF20h2YUwLxJY1jSCzxIVnBUp4EdJZVs73O1Pn6Utof
-         mjCRxX9TNkmFvZRFKUp56ZToSf4XCNw3aT2W7Bb3Wj1WnU12GEiA8K4+pF9M/zJgab
-         Izb9tqF2ccr987MY+dxr3hXiq9qVIVBJ5f2n2B6Jbyvz1tasMZIf9LgX+MYnKR/xjG
-         E7WDSqaSUS+UtgaJCSFEciax2GbqTfgDORciTT4qkV5m2axVo/H+60yclotNZx8AJ0
-         da1zxk6XQKfI87Sn8gDX/QDKt5eLqEfHH35itwJbVBrcOOqKMbhg2APRBh3695gRXT
-         MN2pwmL/0NspQ==
-Date:   Fri, 22 Apr 2022 13:36:47 -0700 (PDT)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-cc:     Juergen Gross <jgross@suse.com>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Xen Devel <xen-devel@lists.xenproject.org>,
-        Stefano Stabellini <stefano.stabellini@xilinx.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Signed-off-by missing for commit in the xen-tip
- tree
-In-Reply-To: <20220422111438.3946dbae@canb.auug.org.au>
-Message-ID: <alpine.DEB.2.22.394.2204221336170.915916@ubuntu-linux-20-04-desktop>
-References: <20220422111438.3946dbae@canb.auug.org.au>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38147B83260;
+        Fri, 22 Apr 2022 20:47:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB5EFC385A4;
+        Fri, 22 Apr 2022 20:47:45 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 16:47:44 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        hannes@cmpxchg.org, akpm@linux-foundation.org,
+        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-input@vger.kernel.org, roman.gushchin@linux.dev
+Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
+ heap-allocated strings
+Message-ID: <20220422164744.6500ca06@gandalf.local.home>
+In-Reply-To: <20220422203057.iscsmurtrmwkpwnq@moria.home.lan>
+References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
+        <20220421234837.3629927-7-kent.overstreet@gmail.com>
+        <20220422042017.GA9946@lst.de>
+        <YmI5yA1LrYrTg8pB@moria.home.lan>
+        <20220422052208.GA10745@lst.de>
+        <YmI/v35IvxhOZpXJ@moria.home.lan>
+        <20220422113736.460058cc@gandalf.local.home>
+        <20220422193015.2rs2wvqwdlczreh3@moria.home.lan>
+        <20220422153916.7ebf20c3@gandalf.local.home>
+        <20220422203057.iscsmurtrmwkpwnq@moria.home.lan>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Juergen, Boris,
+On Fri, 22 Apr 2022 16:30:57 -0400
+Kent Overstreet <kent.overstreet@gmail.com> wrote:
 
-I forced-pushed the linux-next and for-linus-5.18 branches to solve the
-issue
+> So here's the story of how I got from where seq_buf is now to where printbuf is
+> now:
+> 
+>  - Printbuf started out as almost an exact duplicate of seq_buf (like I said,
+>    not intentionally), with an external buffer typically allocated on the stack.
 
+Basically seq_buf is designed to be used as an underlining infrastructure.
+That's why it does not allocate any buffer and leaves that to the user
+cases. Hence, trace_seq() allocates a page for use, and I even use seq_buf
+in user space to dynamically allocate when needed.
 
-On Fri, 22 Apr 2022, Stephen Rothwell wrote:
-> Hi all,
 > 
-> Commit
+>  - As error/log messages got to be bigger and more structured, stack usage
+>    eventually became an issue, so eventually I added the heap allocations. 
+
+Which is something you could do on top of seq_buf. Point being, you do not
+need to re-implement printbuf, and I have not looked at the code, but
+instead, implement printbuf on top of seq_buf, and extend seq_buf where
+needed. Like trace_seq does, and the patches I have for seq_file would do.
+It would leave the string processing and buffer space management to
+seq_buf, as there's ways to see "oh, we need more space, let's allocate
+more" and then increase the heap.
+
 > 
->   b12d41716e32 ("arm/xen: Fix some refcount leaks")
+>  - This made them a lot more convenient to use, and made possible entirely new
+>    ways of using them - so I started using them more, and converting everything
+>    that outputted to strings to them.
 > 
-> is missing a Signed-off-by from its committer.
+>  - This lead to the realization that when pretty-printers are easy and
+>    convenient to write, that leads to writing pretty-printers for _more_ stuff,
+>    which makes it easy to stay in the habit of adding anything relevant to
+>    sysfs/debugfs - and log/error messages got a _whole_ lot better when I
+>    realized instead of writing format strings for every basic C type I can just
+>    use the .to_text() methods of the high level objects I'm working with.
 > 
-> -- 
-> Cheers,
-> Stephen Rothwell
+> Basically, my debugging life has gotten _drastically_ easier because of this
+> change in process and approach - deadlocks that I used to have to attach a
+> debugger for are now trivial because all the relevant state is in debugfs and
+> greppable, and filesystem inconsistencies that used to suck to debug I now just
+> take what's in the error message and grep through the journal for.
 > 
+> I can't understate how invaluable all this stuff has been, and I'm excited to
+> take the lessons I've learned and apply them to the wider kernel and make other
+> people's lives easier too.
+> 
+> The shrinkers-OOM-reporting patch was an obvious starting point because
+>  - shrinkers have internal state that's definitely worth reporting on
+>  - we shouldn't just be logging this on OOM, we should also make this available
+>    in sysfs or debugfs.
+> 
+> Feature wise, printbufs have:
+>  - heap allocation
+>  - extra state for formatting: indent level, tabstops, and a way of specifying
+>    units.
+> 
+> That's basically it. Heap allocation adds very little code and eliminates a
+> _lot_ of headaches in playing the "how much do I need to/can I put on the stack"
+> game, and you'll want the formatting options as soon as you start formatting
+> multi line output and writing pretty printers that call other pretty printers.
+
+I would be more willing to accept a printbuf, if it was built on top of
+seq_buf. That is, you don't need to change all your user cases, you just
+need to make printbuf an extension of seq_buf by using it underneath, like
+trace_seq does. Then it would not be re-inventing the wheel, but just
+building on top of it.
+
+-- Steve
+
