@@ -2,87 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8662DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349639AbiDVOVT (ORCPT
+        id S1448588AbiDVOV2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
+        Fri, 22 Apr 2022 10:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448624AbiDVOUy (ORCPT
+        with ESMTP id S1392400AbiDVOUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:20:54 -0400
-Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CCE5B3F9
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:17:31 -0700 (PDT)
-Received: from pop-os.home ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id hu64nHsTWXeonhu64nsPbR; Fri, 22 Apr 2022 16:17:25 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 22 Apr 2022 16:17:25 +0200
-X-ME-IP: 86.243.180.246
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tarun Kanti DebBarma <tarun.kanti@ti.com>,
-        Thara Gopinath <thara@ti.com>,
-        "Cousson, Benoit" <b-cousson@ti.com>,
-        Santosh Shilimkar <santosh.shilimkar@ti.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] ARM: OMAP1: Fix error handling path in omap1_dm_timer_init()
-Date:   Fri, 22 Apr 2022 16:17:18 +0200
-Message-Id: <89cad160be5b186d8f6fd79bdb6ba3fa5e4bb53b.1650637013.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Fri, 22 Apr 2022 10:20:53 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5C75AEF6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:17:50 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id h83so8706816iof.8
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gCYmIndiH4QxBgXp0gYdbitZyC6hIsjEz2mk+1J/x88=;
+        b=Y77Bc1EtquV6mceoyBGGUgk2RZvTpo1zObncU2ykZciej+fymYF3lDlrnPbHYCxlFZ
+         6rjbX/BHyTv9yDf+MwF2jhOOgqT2ISMT8S9ROsGZooIds5gwqz3Bhd4reQFKBoNWash9
+         pzI4tvgbj3Kg+qT7xw9NJx4Dl0fhK0OBIwa77dpx42U4qnU3yPqrR8cx81HtNzD2/kdr
+         2CPAh7xPvKR+KOYkiqonrMDaxgjhRn4as9PaladacmX1h07hAIL3SrM4NZ0Ryg0H+0JG
+         hNLw7DM+tpXSfhb3c1vTpqQWOpDIdBI/I9IpNTWWk0j/sPXCoVLbtvTtZYCTc8ubn0J0
+         lNAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gCYmIndiH4QxBgXp0gYdbitZyC6hIsjEz2mk+1J/x88=;
+        b=ceWTmiLddGcCRWg4Re35AJMQB+kBlo9kku2UgHDh9MaTj0PKjVD6MCLGZHWyNTQCdV
+         qvlfxGWxJwrrkyrisrCO6SDzcvCHnoqkPfCevhGtK/z/vOw8wUXRSS5HVcvMOO0SKHjo
+         LjHSLhGlJRLS4GmoY9uHIaIiZQCA5OLAY9TGGgSxAH7E14y+o+JmdIlP8CBcHnzynESW
+         MakgLuYiwCIejNTNiUgcZetib2mN4vpZf1KQ/evFr4FoTM9SoY8ppKHh0CEd0mnJ//ip
+         oHm78lUyLZA43zYQIxBBjjqXnOOx+GAkGQXaEd4hE+rE7HtspnMTrN76t+mwLOUGR5WS
+         NNUA==
+X-Gm-Message-State: AOAM532tP9O/pk3eu50/RY6HqEuRBhgToE9oWOySL0Vw8CgkN5oc/j4u
+        1R2Dj6FEcVAbCdM3rWAIt3U6zv5rNTRnlay11t4=
+X-Google-Smtp-Source: ABdhPJyjZv0dxpP1TfDVnbplbLdekOcaH7HP+KZsVInf57gAiqNBECWUMJr212f9vCu+fh6ehZ0A+ZOTxNBSzc0JrY0=
+X-Received: by 2002:a05:6638:dd6:b0:32a:9ba8:22e4 with SMTP id
+ m22-20020a0566380dd600b0032a9ba822e4mr2335457jaj.264.1650637069552; Fri, 22
+ Apr 2022 07:17:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220419205158.28088-1-cmirabil@redhat.com>
+In-Reply-To: <20220419205158.28088-1-cmirabil@redhat.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Fri, 22 Apr 2022 16:17:38 +0200
+Message-ID: <CANiq72n1gBE+tv3oAF4wjdK2jEJJmU4V=Y1CTZ1PpCEeqLbo9g@mail.gmail.com>
+Subject: Re: [PATCH v9 0/6] Raspberry Pi Sense HAT driver
+To:     Charles Mirabile <cmirabil@redhat.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        fedora-rpi@googlegroups.com, Daniel Bauman <dbauman@redhat.com>,
+        Mwesigwa Guma <mguma@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-platform_device_put() should be called instead of
-platform_device_unregister() in the error handling path because, at this
-point, no successful platform_device_add() has been called.
+On Fri, Apr 22, 2022 at 1:02 AM Charles Mirabile <cmirabil@redhat.com> wrote:
+>
+> This patch series adds a set of drivers for operating the Sense HAT
+> peripheral device. This board is an add on for the Raspberry Pi that is
+> designed to connect using the GPIO connector and communicate via I2C.
 
-While at it, change the goto label if kzalloc() fails. It is harmless to
-call 'kfree(NULL)', but it is also pointless.
+Is there any feedback left to address? Which tree should take this?
 
-Fixes: 97933d6ced60 ("ARM: OMAP1: dmtimer: conversion to platform devices")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-This is a speculative patch, not even compile tested because of lack of
-cross-compiler.
-So review with care.
----
- arch/arm/mach-omap1/timer.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks for your work upstreaming this!
 
-diff --git a/arch/arm/mach-omap1/timer.c b/arch/arm/mach-omap1/timer.c
-index 0411d5508d63..f91ba2353345 100644
---- a/arch/arm/mach-omap1/timer.c
-+++ b/arch/arm/mach-omap1/timer.c
-@@ -135,7 +135,7 @@ static int __init omap1_dm_timer_init(void)
- 		pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
- 		if (!pdata) {
- 			ret = -ENOMEM;
--			goto err_free_pdata;
-+			goto err_free_pdev;
- 		}
- 
- 		pdata->set_timer_src = omap1_dm_timer_set_src;
-@@ -165,7 +165,7 @@ static int __init omap1_dm_timer_init(void)
- 	kfree(pdata);
- 
- err_free_pdev:
--	platform_device_unregister(pdev);
-+	platform_device_put(pdev);
- 
- 	return ret;
- }
--- 
-2.32.0
-
+Cheers,
+Miguel
