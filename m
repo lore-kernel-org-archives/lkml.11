@@ -2,172 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:40:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD44C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444967AbiDVHnd (ORCPT
+        id S1444966AbiDVHnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54742 "EHLO
+        Fri, 22 Apr 2022 03:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444962AbiDVHmg (ORCPT
+        with ESMTP id S1444960AbiDVHmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:42:36 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E417517CB;
-        Fri, 22 Apr 2022 00:39:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650613184; x=1682149184;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nEPLMdPCwdmEFgscrfAJ4fkH252LE7MCcUu/Flr5Wyo=;
-  b=KRL6b1c08o3WhP49iFpvxZvh/oo27ktqvdonf1eDV7zNspTgrycVHkYi
-   jeW3/ddCNkBNaglWiceu0c8WcNHPJ77iOCul4gAzOFJ30Gbd2IEYLGyVF
-   svfkDSyUm37olkbPG7N3svStxqbjrkbTGJ7mTHSXtKjE5afP/gWpXlDVv
-   hvV9YvUmEWzJSLwHstq5z+hnhUwl1kcBx+E+byaHPbyqhPYKiAVTnEyPS
-   JgDUkUBapDcbh7Jtl+48bu+l/eFQslDfMTrVbzfHqUJH3ISWKyvGeWVPT
-   /l8e+DHyg7uguixFjsfKcomWBNofITErHRNtZsTRDMtHd1e4sVqTjJUNB
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245180248"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="245180248"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:39:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="648516353"
-Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 00:39:39 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next 4/4] stmmac: intel: introduce platform data phyless setting for Ericsson system
-Date:   Fri, 22 Apr 2022 15:35:05 +0800
-Message-Id: <20220422073505.810084-5-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220422073505.810084-1-boon.leong.ong@intel.com>
-References: <20220422073505.810084-1-boon.leong.ong@intel.com>
+        Fri, 22 Apr 2022 03:42:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A19D2517CD
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650613181;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OTSUiueHwVf/dbd1QJxPKAiv9Tb89ujDYdY/eBNq3Fo=;
+        b=jIe9EPEPC6WZ5+Q7sIfraeaaaHxR3AOw6iv3jkMeZEBgsbw0lCjZiFQTLVDZJeVLnqjFJe
+        ity3e7gclepPU0r/2epl4ISSLaFQM5YjChjodpwWOpfQ88LSyWdY3yVzRIV/YzxaPQFYBV
+        Z19nN8rgTPoIfjfuuh7fsKKJl1f1ZGc=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-82-8uu1ty6IPLSBeB9F24UHJg-1; Fri, 22 Apr 2022 03:39:40 -0400
+X-MC-Unique: 8uu1ty6IPLSBeB9F24UHJg-1
+Received: by mail-wm1-f70.google.com with SMTP id h127-20020a1c2185000000b0038ff033b654so867173wmh.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:39:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=OTSUiueHwVf/dbd1QJxPKAiv9Tb89ujDYdY/eBNq3Fo=;
+        b=cbg7vKzp3P8JcmdPXJR3h/sVprGKWD0gXqnvHuk8UyMutsoDLIuA9ks+KdMQalk86+
+         NZlY9UUTi9x1bb6cX+E/gYpNeC6Av0EdH2cCazo4gmwzV9LchCWwpi6WU/32o1TakBSw
+         ks47gOgJ0tXhoSMvrqiN6k+JVlTNcwWP8NGBQMvCgf3xUMfkvHJeZA31ZfGNaZHVpxfe
+         RAHQhjqmuue9RdWtBySecI5sU5puUjNDhh3hkok9FKLGQipSt/AXCbdSyMpLClGA7AgS
+         PRjEHNbBIU/DPu313bcUAbLqc28FA1RLQ9IAZWOo1wvJ0tPrHJ4cskG2xUjpho5QMWHg
+         OPmQ==
+X-Gm-Message-State: AOAM532FNkA07XTJewGyjX0YIMKIw/2h0d08UmOxf+pEz2UYTvkF2Heu
+        UmJV/Ge3J/8xoMwbjzE2xSTLlBNdimE3KSi7APuhPPM7pC6dRmZ2uDtIzOREUu1nXVCohRL+/kV
+        7XejCD50Nun+HQMJh9gt3TDE/
+X-Received: by 2002:adf:ed4e:0:b0:20a:c805:1d62 with SMTP id u14-20020adfed4e000000b0020ac8051d62mr1787585wro.134.1650613179580;
+        Fri, 22 Apr 2022 00:39:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyEj/kZHw3Xd6aev6oueKi84P2Bo2sdX2NK9wAJbmPEGb3bCNVMi6gs3/pbgL2tcEKTtTxN8Q==
+X-Received: by 2002:adf:ed4e:0:b0:20a:c805:1d62 with SMTP id u14-20020adfed4e000000b0020ac8051d62mr1787567wro.134.1650613179292;
+        Fri, 22 Apr 2022 00:39:39 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c702:dd00:745e:20b7:bfa4:2e5f? (p200300cbc702dd00745e20b7bfa42e5f.dip0.t-ipconnect.de. [2003:cb:c702:dd00:745e:20b7:bfa4:2e5f])
+        by smtp.gmail.com with ESMTPSA id v11-20020a056000144b00b0020a9c02f60dsm1052532wrx.50.2022.04.22.00.39.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 00:39:38 -0700 (PDT)
+Message-ID: <3c218202-c4de-958c-8cf2-b0f24550d0d1@redhat.com>
+Date:   Fri, 22 Apr 2022 09:39:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drivers/base/memory: Fix a reference counting issue in
+ __add_memory_block()
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nathan Lynch <nathanl@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <d44c63d78aafe844f920dc02ad6af25acc448fcf.1650611702.git.christophe.jaillet@wanadoo.fr>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <d44c63d78aafe844f920dc02ad6af25acc448fcf.1650611702.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Certain platform wants specific GbE controller instance to be in PHY-less
-mode, i.e. to be used for 1000BASE-X connection for network switch.
+On 22.04.22 09:15, Christophe JAILLET wrote:
+> There is no point in doing put_device()/device_unregister() on a
+> device that has just been registered a few lines above. This will lead to
+> a double reference decrement.
+> 
+> I guess that this put_device()/device_unregister() is a cut'n'paste from
+> remove_memory_block() (i.e. unregister_memory() at the time being) which
+> does need it.
+> 
+> Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/base/memory.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+> index 7222ff9b5e05..084d67fd55cc 100644
+> --- a/drivers/base/memory.c
+> +++ b/drivers/base/memory.c
+> @@ -636,10 +636,9 @@ static int __add_memory_block(struct memory_block *memory)
+>  	}
+>  	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
+>  			      GFP_KERNEL));
+> -	if (ret) {
+> -		put_device(&memory->dev);
+> +	if (ret)
+>  		device_unregister(&memory->dev);
+> -	}
+> +
+>  	return ret;
+>  }
+>  
 
-Tested-by: Emilio Riva <emilio.riva@ericsson.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 64 +++++++++++++++++++
- 1 file changed, 64 insertions(+)
+Looks correct to me. I assume this will only happen once the stars
+align, but it's most certainly wrong I think.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 265d39acdd0..9c9577fc15d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -24,6 +24,8 @@ struct intel_priv_data {
- struct stmmac_pci_func_data {
- 	unsigned int func;
- 	int phy_addr;
-+	phy_interface_t phy_interface;
-+	unsigned int phyless;
- };
- 
- struct stmmac_pci_dmi_data {
-@@ -439,10 +441,65 @@ static void common_default_data(struct plat_stmmacenet_data *plat)
- 	plat->rx_queues_cfg[0].pkt_route = 0x0;
- }
- 
-+static const struct stmmac_pci_func_data ericsson_phyless_func_data[] = {
-+	{
-+		.func = 2,
-+		.phy_interface = PHY_INTERFACE_MODE_1000BASEX,
-+		.phyless = true,
-+	},
-+};
-+
-+static const struct stmmac_pci_dmi_data ericsson_phyless_dmi_data = {
-+	.func = ericsson_phyless_func_data,
-+	.nfuncs = ARRAY_SIZE(ericsson_phyless_func_data),
-+};
-+
-+static const struct dmi_system_id intel_mgbe_pci_dmi[] = {
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Ericsson"),
-+			DMI_MATCH(DMI_BOARD_NAME, "SMARC-SXEL"),
-+		},
-+		.driver_data = (void *)&ericsson_phyless_dmi_data,
-+	},
-+	{}
-+};
-+
-+static bool stmmac_pci_find_phyless(struct pci_dev *pdev,
-+				    const struct dmi_system_id *dmi_list,
-+				    phy_interface_t *phy_interface,
-+				    unsigned int *phyless)
-+{
-+	const struct stmmac_pci_func_data *func_data;
-+	const struct stmmac_pci_dmi_data *dmi_data;
-+	const struct dmi_system_id *dmi_id;
-+	int func = PCI_FUNC(pdev->devfn);
-+	size_t n;
-+
-+	dmi_id = dmi_first_match(dmi_list);
-+	if (!dmi_id)
-+		return false;
-+
-+	dmi_data = dmi_id->driver_data;
-+	func_data = dmi_data->func;
-+
-+	for (n = 0; n < dmi_data->nfuncs; n++, func_data++)
-+		if (func_data->func == func) {
-+			*phy_interface = func_data->phy_interface;
-+			*phyless = func_data->phyless;
-+			return true;
-+		}
-+
-+	return false;
-+}
-+
- static int intel_mgbe_common_data(struct pci_dev *pdev,
- 				  struct plat_stmmacenet_data *plat)
- {
-+	phy_interface_t phy_interface;
-+	unsigned int phyless;
- 	char clk_name[20];
-+	bool found;
- 	int ret;
- 	int i;
- 
-@@ -559,6 +616,13 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	/* Use the last Rx queue */
- 	plat->vlan_fail_q = plat->rx_queues_to_use - 1;
- 
-+	found = stmmac_pci_find_phyless(pdev, intel_mgbe_pci_dmi,
-+					&phy_interface, &phyless);
-+	if (found) {
-+		plat->mdio_bus_data->phyless = phyless;
-+		plat->phy_interface = phy_interface;
-+	}
-+
- 	/* Intel mgbe SGMII interface uses pcs-xcps */
- 	if (plat->phy_interface == PHY_INTERFACE_MODE_SGMII ||
- 	    plat->phy_interface == PHY_INTERFACE_MODE_1000BASEX) {
+Reviewed-by: David Hildenbrand <david@redhat.com>
+
 -- 
-2.25.1
+Thanks,
+
+David / dhildenb
 
