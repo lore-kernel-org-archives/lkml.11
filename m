@@ -2,178 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8511EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiDVWGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34814 "EHLO
+        id S231495AbiDVWGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbiDVWFw (ORCPT
+        with ESMTP id S231634AbiDVWGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:05:52 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F89156110
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:49:11 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23MHnjdp025864;
-        Fri, 22 Apr 2022 19:56:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=04STmEqe5u5BMaOs7DSkgySzGj61M92rE1OARfFQvtE=;
- b=G2MGAsS/y0h79mO20XiIlN3WLTv4vYWfnqSXUlZz8xzFAH1ADXqIytGZD1+djCU534DZ
- QlUjl4iVKSc3FneFqHocBmAhA/1qbVov9/GtgYC/G0u2FLQzciupNvMxDfSF3GFvLHma
- vcz9qFXa/5FYiHBlMgQRsyG69zIfWJsa3ERwBsvN8ROSFAqcIqqlyMFiIUDgiwCVFV2w
- sEgrpDh/ee0YXvbmCah4o0XuYoUxz62sG/PxZsVhIBuZMQ5iG3TiWO/5OaSczV/1lxjx
- xnpAo5n/9aHK0zS/g+0fpHpZ3efYt5ocCpmPIVaIiHMadhnhcde8AI3vlp79JZD23urX 7Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fkm5q9unv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 19:56:02 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23MJZHwP035931;
-        Fri, 22 Apr 2022 19:56:02 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fkm5q9unb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 19:56:01 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23MJjMko020138;
-        Fri, 22 Apr 2022 19:55:59 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3ffne99tgn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 19:55:59 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23MJtuBg37749180
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 22 Apr 2022 19:55:56 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 28D5F11C04C;
-        Fri, 22 Apr 2022 19:55:56 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F3C0811C04A;
-        Fri, 22 Apr 2022 19:55:52 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com.com (unknown [9.43.112.230])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 22 Apr 2022 19:55:52 +0000 (GMT)
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org
-Cc:     baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
-        ying.huang@intel.com, aneesh.kumar@linux.ibm.com,
-        shy828301@gmail.com, weixugc@google.com, gthelen@google.com,
-        dan.j.williams@intel.com, Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: [PATCH v3 7/7] docs: numa: Add documentation for demotion
-Date:   Sat, 23 Apr 2022 01:25:16 +0530
-Message-Id: <20220422195516.10769-8-jvgediya@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422195516.10769-1-jvgediya@linux.ibm.com>
-References: <20220422195516.10769-1-jvgediya@linux.ibm.com>
+        Fri, 22 Apr 2022 18:06:23 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B94178F7D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:50:21 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id n18so13380953plg.5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ad/QwBoaLcblV6YkIeWuUrZIToNy2PlGXIo1QCJ7d/Y=;
+        b=Ko/peBWKlgHk4Vd467FlMQoUcvpxF1aWq82G2L/42YwmW4UuMoiR4iUMku/8Yaax+i
+         nxBIngcvmr4Ce2URDbV9DC58RMvMJe+Tfqkz4yuHYCvprr6cARxxUSN0w0kRSDMaPA5P
+         bWEK1pFRBbswAtjyRQlC0qFZ8tZ5IIOUy6/EpfFLPS+3gtyaZBLwFog/CRYEvnm9P21P
+         ZeD/sUh2WVk0JvpvG1QQGEDQy0ZNb7OlpFGvJz8r4wUCJ82wanDwg8r3QzuUV3GcxbKr
+         o0rdK0taDvVPLS7mU9DMB47VQuBzwH0pFkOoQBEUrzJ6vpviggRL/Faldi6HSzowY99a
+         IP6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ad/QwBoaLcblV6YkIeWuUrZIToNy2PlGXIo1QCJ7d/Y=;
+        b=zDPt1ImZ2qQREm4tVBA5Fstxe5Ri2wHpAsbuKnxpUPMTiVyoSSPe9sY0775y1Ha9EZ
+         V1Pf5P1M9loK5EwI/Sb7DuKN1TS5RtXqG0OxRASPM0Grjr3EFiWnOvVbo7/QPDjQ7HM5
+         OuWOHuqftcY8X/Icg3DGBjZA6txUDtPpUeqc14xtgm4emQ20tgifz+1i3BX8taMKGJJI
+         amCfs3WQN4DUoIUKu7vad8RZZDZ0Z2iUAt9EjbSl8jh7e3rIj90QffxwM+hYK69TfTO2
+         GHagIzLv42b8iMf0P5aOMpAc4BtepcsAL5BMjW4YqlvMDRTut2Us2cZfBpTz/TZN/khK
+         0j4w==
+X-Gm-Message-State: AOAM530uFX/DJb+Tie/p1kHG93tVt2EdP+KwgsHhdh00TmUSxtEdT1LN
+        7m3nGXToR7/yTa90wLqGPNbXTYTZGQyOxg==
+X-Google-Smtp-Source: ABdhPJzM1tudRoIceKhOplJeE8VebcQReB+kqAwFMEijuKAIGHtFEYV6wYwz+TjzDIvKR44Q95rHDw==
+X-Received: by 2002:a17:902:e00c:b0:15a:3b4a:3e42 with SMTP id o12-20020a170902e00c00b0015a3b4a3e42mr6070926plo.10.1650655953960;
+        Fri, 22 Apr 2022 12:32:33 -0700 (PDT)
+Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:32:33 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH v3 0/7] staging: r8188eu: drop some unnecessary wrappers
+Date:   Sat, 23 Apr 2022 01:02:16 +0530
+Message-Id: <20220422193223.11948-1-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: eLaW0tlhh9_-kMbPEf1AAeNqm613K_JR
-X-Proofpoint-GUID: 8XX4G7vY-17mP6Mx995RZH3Xu56D4qqO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-22_06,2022-04-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- clxscore=1011 bulkscore=0 phishscore=0 priorityscore=1501
- lowpriorityscore=0 malwarescore=0 mlxscore=0 suspectscore=0
- mlxlogscore=987 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2204220083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation for demotion mentioning about why is it
-required and all the sysfs interfaces available related to
-demotion.
+Drop some unnecessary wrappers and update all the references
+accordingly.
+Tested on Comfast CF-WU810N RTL8188EUS wireless adapter.
 
-Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
----
- Documentation/admin-guide/mm/index.rst        |  1 +
- .../admin-guide/mm/numa_demotion.rst          | 57 +++++++++++++++++++
- 2 files changed, 58 insertions(+)
- create mode 100644 Documentation/admin-guide/mm/numa_demotion.rst
+v2 -> v3:
+Fixed subject line
 
-diff --git a/Documentation/admin-guide/mm/index.rst b/Documentation/admin-guide/mm/index.rst
-index c21b5823f126..4bd0ed3de9c5 100644
---- a/Documentation/admin-guide/mm/index.rst
-+++ b/Documentation/admin-guide/mm/index.rst
-@@ -34,6 +34,7 @@ the Linux memory management.
-    memory-hotplug
-    nommu-mmap
-    numa_memory_policy
-+   numa_demotion
-    numaperf
-    pagemap
-    soft-dirty
-diff --git a/Documentation/admin-guide/mm/numa_demotion.rst b/Documentation/admin-guide/mm/numa_demotion.rst
-new file mode 100644
-index 000000000000..252be9dc0517
---- /dev/null
-+++ b/Documentation/admin-guide/mm/numa_demotion.rst
-@@ -0,0 +1,57 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==================
-+NUMA Demotion
-+==================
-+
-+What is demotion required?
-+============================
-+
-+With the advent of various new memory types, Systems have multiple
-+types of memory, e.g. DRAM and PMEM (persistent memory).  The memory
-+subsystem of such systems can be called memory tiering system,
-+because the performance of the different types of memory are usually
-+different.
-+
-+In a  system with some DRAM and some persistent memory, once DRAM
-+fills up, reclaim will start and some of the DRAM contents will be
-+thrown out to swap even if there is space in persistent memory.
-+Allocations will, at some point, start falling over to the slower
-+persistent memory.
-+
-+Instead of page being discarded during reclaim, it can be moved to
-+persistent memory. Allowing page migration during reclaim enables
-+these systems to migrate pages from fast tiers to slow tiers when
-+the fast tier is under pressure.
-+
-+SYSFS interface
-+======================
-+
-+Enable/Disable demotion
-+------------------------
-+
-+By default demotion is disabled, it can be enabled/disabled using below
-+sysfs interface,
-+
-+echo 0/1 or false/true > /sys/kernel/mm/numa/demotion_enabled
-+
-+Read system demotion targets
-+-----------------------------
-+cat /sys/devices/system/node/demotion_targets
-+
-+Kernel shows node_states[N_DEMOTION_TARGETS] when this command
-+is run.
-+
-+Override default demotion targets
-+---------------------------------
-+echo <nodelist> > /sys/devices/system/node/demotion_targets
-+
-+If nodelist is valid and subset of N_MEMORY then
-+node_states[N_DEMOTION_TARGETS] is set to this new nodelist, and
-+kernel builds the new demotion list based on it.
-+
-+Read per node demotion targets
-+-------------------------------
-+cat /sys/devices/system/node/nodeX/demotion_targets
-+
-+It shows per node demotion targets configured by kernel.
+v1 -> v2:
+Drop the wrapper functions with underscores prefixed.
+
+Vihas Makwana (7):
+  staging: r8188eu: drop unnecessary wrapper _rtw_free_cmd_priv
+  staging: r8188eu: drop unnecessary wrapper _rtw_init_cmd_priv
+  staging: r8188eu: drop unnecessary wrapper _rtw_init_evt_priv
+  staging: r8188eu: drop unnecessary wrapper _rtw_init_mlme_priv
+  staging: r8188eu: drop unnecessary wrapper _rtw_free_mlme_priv
+  staging: r8188eu: drop unnecessary wrapper _rtw_alloc_network
+  staging: r8188eu: drop unnecessary wrapper _rtw_dequeue_cmd
+
+ drivers/staging/r8188eu/core/rtw_cmd.c     | 145 +++++++----------
+ drivers/staging/r8188eu/core/rtw_mlme.c    | 177 +++++++++------------
+ drivers/staging/r8188eu/include/rtw_mlme.h |   4 +-
+ 3 files changed, 134 insertions(+), 192 deletions(-)
+
 -- 
-2.35.1
+2.30.2
 
