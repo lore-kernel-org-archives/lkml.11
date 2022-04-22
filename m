@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48DDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:36:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D62EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446691AbiDVKjm (ORCPT
+        id S1446738AbiDVKjv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34890 "EHLO
+        Fri, 22 Apr 2022 06:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446697AbiDVKh6 (ORCPT
+        with ESMTP id S1446704AbiDVKiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:37:58 -0400
+        Fri, 22 Apr 2022 06:38:01 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30DF63AF;
-        Fri, 22 Apr 2022 03:35:05 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:35:03 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1C8FFE;
+        Fri, 22 Apr 2022 03:35:07 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 10:35:05 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650623704;
+        s=2020; t=1650623706;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bj7AWRAXuFzwqpcPEsf8RO/1aLjEBmc0xxFf/dCWvwA=;
-        b=k2jLfSI5hrcPei9s9vbpkNCC+51bQbR8xOukXMvMCzCOow/tyPmghrsju1GBOvs8Sxv+13
-        u6XCwHl6UOd6Vfbt7Kf+xgF3e5iNfqFt3Amsio5WvSN7NXbb3IM6XpJehKwa2nt3ofboi6
-        WGUiWt3BAUvXICFY0ZuDwmJqWbNYj2vlEqCJyQmmv7uvWvAYRpKWamd4POZ/k501h7fSGA
-        l/rMfU4/+DZupQGyGV9JHQoW2irN6y6aVkkZN2hw90kN5///ilsDm90+QDf+3WyNft7buF
-        vml8IMerrH0QvdL5e+NO+UMjbrUUpaQIspb9JGamTjg6/Hg6v1XLhwSbK/w19Q==
+        bh=Z14qlveAJgr2IpHOPg+W3PLgnKtqfhRVA1JAtSdReOc=;
+        b=p7+Esk+aNtvRWDgOuZAolcVFneeFxxUZIcgA3pw9gBXb4DVkgi67Tr0ysTYtLJuYVr90k5
+        q6RgaJIVjaQR6Agccu/Tp+tqG6thXdAxeal3UCbEyJxfVjmTCK1tFqMKELhhgw9KBUlNzB
+        4CCL0D01rMXOJvHIcyB6CUIxfCq/0rIM93MX9EBmJRRLFsW2SBlxanwwvYCj9srO35WiaE
+        20gZmFMOK4ydyEOyrjJ3VArPDu/LMJwjL9Et9SePNlj38Ehj8I7tkkiI8XJRW0q5GiPyN1
+        T4O47+rDBdVqMzSsfYPhRV5ywP0ylKuvJBdoWPvjVis99FJRq42CcWBeMxpIuQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650623704;
+        s=2020e; t=1650623706;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bj7AWRAXuFzwqpcPEsf8RO/1aLjEBmc0xxFf/dCWvwA=;
-        b=G7aAt52ZjP4iUHwQ10YuBET69iD8vCK19Rz08VNrx4AIOLuVgRtwuRyEihias45CbtrkVI
-        Mjr10Y87j+1gFtDQ==
+        bh=Z14qlveAJgr2IpHOPg+W3PLgnKtqfhRVA1JAtSdReOc=;
+        b=oDEFfl2weFqLT80gs2vOTXxcBLCAoFGrdSZbp+MrtNeJqquG2F0am45Ub68H/0nGueGisN
+        0vwkrMsbMaDAMRCg==
 From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: objtool/core] objtool: Extricate sls from stack validation
+Subject: [tip: objtool/core] objtool: Make stack validation optional
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Miroslav Benes <mbenes@suse.cz>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <2545c86ffa5f27497f0d0c542540ad4a4be3c5a5.1650300597.git.jpoimboe@redhat.com>
-References: <2545c86ffa5f27497f0d0c542540ad4a4be3c5a5.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <52da143699574d756e65ca4c9d4acaffe9b0fe5f.1650300597.git.jpoimboe@redhat.com>
+References: <52da143699574d756e65ca4c9d4acaffe9b0fe5f.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165062370345.4207.10679159280235685523.tip-bot2@tip-bot2>
+Message-ID: <165062370525.4207.1726961368974699514.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,118 +63,131 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the objtool/core branch of tip:
 
-Commit-ID:     c2bdd61c98d915ad2cc1f8cd4661fcda1f1e4c16
-Gitweb:        https://git.kernel.org/tip/c2bdd61c98d915ad2cc1f8cd4661fcda1f1e4c16
+Commit-ID:     7dce62041ac34b613a5ed1bd937117e492e06dc8
+Gitweb:        https://git.kernel.org/tip/7dce62041ac34b613a5ed1bd937117e492e06dc8
 Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:35 -07:00
+AuthorDate:    Mon, 18 Apr 2022 09:50:33 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 22 Apr 2022 12:32:03 +02:00
+CommitterDate: Fri, 22 Apr 2022 12:32:02 +02:00
 
-objtool: Extricate sls from stack validation
+objtool: Make stack validation optional
 
-Extricate sls functionality from validate_branch() so they can be
-executed (or ported) independently from each other.
+Make stack validation an explicit cmdline option so that individual
+objtool features can be enabled individually by other arches.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/2545c86ffa5f27497f0d0c542540ad4a4be3c5a5.1650300597.git.jpoimboe@redhat.com
+Link: https://lkml.kernel.org/r/52da143699574d756e65ca4c9d4acaffe9b0fe5f.1650300597.git.jpoimboe@redhat.com
 ---
- tools/objtool/check.c | 56 ++++++++++++++++++++++++++++++++----------
- 1 file changed, 43 insertions(+), 13 deletions(-)
+ scripts/Makefile.build                  |  1 +-
+ scripts/link-vmlinux.sh                 |  4 +++-
+ tools/objtool/builtin-check.c           |  2 ++-
+ tools/objtool/check.c                   | 28 ++++++++++++------------
+ tools/objtool/include/objtool/builtin.h |  1 +-
+ 5 files changed, 23 insertions(+), 13 deletions(-)
 
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 116c727..d5e15ae 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -232,6 +232,7 @@ objtool_args =								\
+ 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+ 	$(if $(CONFIG_SLS), --sls)					\
++	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
+ 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ 	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index f6db79b..0140bfa 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -126,6 +126,10 @@ objtool_link()
+ 			objtoolopt="${objtoolopt} --orc"
+ 		fi
+ 
++		if is_enabled CONFIG_STACK_VALIDATION; then
++			objtoolopt="${objtoolopt} --stackval"
++		fi
++
+ 		objtoolopt="${objtoolopt} --lto"
+ 	fi
+ 
+diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
+index 6acfebd..d4e6930 100644
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -39,6 +39,7 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN('o', "orc", &opts.orc, "generate ORC metadata"),
+ 	OPT_BOOLEAN('r', "retpoline", &opts.retpoline, "validate and annotate retpoline usage"),
+ 	OPT_BOOLEAN('l', "sls", &opts.sls, "validate straight-line-speculation mitigations"),
++	OPT_BOOLEAN('s', "stackval", &opts.stackval, "validate stack unwinding rules"),
+ 	OPT_BOOLEAN('u', "uaccess", &opts.uaccess, "validate uaccess rules for SMAP"),
+ 	OPT_CALLBACK_OPTARG(0, "dump", NULL, NULL, "orc", "dump metadata", parse_dump),
+ 
+@@ -92,6 +93,7 @@ static bool opts_valid(void)
+ 	    opts.orc		||
+ 	    opts.retpoline	||
+ 	    opts.sls		||
++	    opts.stackval	||
+ 	    opts.uaccess) {
+ 		if (opts.dump_orc) {
+ 			fprintf(stderr, "--dump can't be combined with other options\n");
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 85c2888..27126ff 100644
+index 16a6c4b..3456eb9 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -3271,11 +3271,6 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 		switch (insn->type) {
+@@ -3899,25 +3899,27 @@ int check(struct objtool_file *file)
+ 		warnings += ret;
+ 	}
  
- 		case INSN_RETURN:
--			if (opts.sls && !insn->retpoline_safe &&
--			    next_insn && next_insn->type != INSN_TRAP) {
--				WARN_FUNC("missing int3 after ret",
--					  insn->sec, insn->offset);
--			}
- 			return validate_return(func, insn, &state);
- 
- 		case INSN_CALL:
-@@ -3319,13 +3314,6 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 			break;
- 
- 		case INSN_JUMP_DYNAMIC:
--			if (opts.sls && !insn->retpoline_safe &&
--			    next_insn && next_insn->type != INSN_TRAP) {
--				WARN_FUNC("missing int3 after indirect jump",
--					  insn->sec, insn->offset);
--			}
+-	ret = validate_functions(file);
+-	if (ret < 0)
+-		goto out;
+-	warnings += ret;
 -
--			/* fallthrough */
- 		case INSN_JUMP_DYNAMIC_CONDITIONAL:
- 			if (is_sibling_call(insn)) {
- 				ret = validate_sibling_call(file, insn, &state);
-@@ -3845,6 +3833,41 @@ static int validate_ibt(struct objtool_file *file)
- 	return warnings;
- }
- 
-+static int validate_sls(struct objtool_file *file)
-+{
-+	struct instruction *insn, *next_insn;
-+	int warnings = 0;
-+
-+	for_each_insn(file, insn) {
-+		next_insn = next_insn_same_sec(file, insn);
-+
-+		if (insn->retpoline_safe)
-+			continue;
-+
-+		switch (insn->type) {
-+		case INSN_RETURN:
-+			if (!next_insn || next_insn->type != INSN_TRAP) {
-+				WARN_FUNC("missing int3 after ret",
-+					  insn->sec, insn->offset);
-+				warnings++;
-+			}
-+
-+			break;
-+		case INSN_JUMP_DYNAMIC:
-+			if (!next_insn || next_insn->type != INSN_TRAP) {
-+				WARN_FUNC("missing int3 after indirect jump",
-+					  insn->sec, insn->offset);
-+				warnings++;
-+			}
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+
-+	return warnings;
-+}
-+
- static int validate_reachable_instructions(struct objtool_file *file)
- {
- 	struct instruction *insn;
-@@ -3913,7 +3936,7 @@ int check(struct objtool_file *file)
- 		warnings += ret;
- 	}
- 
--	if (opts.stackval || opts.orc || opts.uaccess || opts.sls) {
-+	if (opts.stackval || opts.orc || opts.uaccess) {
- 		ret = validate_functions(file);
- 		if (ret < 0)
- 			goto out;
-@@ -3939,6 +3962,13 @@ int check(struct objtool_file *file)
- 		warnings += ret;
- 	}
- 
-+	if (opts.sls) {
-+		ret = validate_sls(file);
+-	ret = validate_unwind_hints(file, NULL);
+-	if (ret < 0)
+-		goto out;
+-	warnings += ret;
++	if (opts.stackval || opts.orc || opts.uaccess || opts.ibt || opts.sls) {
++		ret = validate_functions(file);
 +		if (ret < 0)
 +			goto out;
 +		warnings += ret;
-+	}
+ 
+-	if (opts.ibt) {
+-		ret = validate_ibt(file);
++		ret = validate_unwind_hints(file, NULL);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
 +
- 	ret = create_static_call_sections(file);
- 	if (ret < 0)
- 		goto out;
++		if (!warnings) {
++			ret = validate_reachable_instructions(file);
++			if (ret < 0)
++				goto out;
++			warnings += ret;
++		}
+ 	}
+ 
+-	if (!warnings) {
+-		ret = validate_reachable_instructions(file);
++	if (opts.ibt) {
++		ret = validate_ibt(file);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
+diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
+index e0972fb..8618585 100644
+--- a/tools/objtool/include/objtool/builtin.h
++++ b/tools/objtool/include/objtool/builtin.h
+@@ -18,6 +18,7 @@ struct opts {
+ 	bool orc;
+ 	bool retpoline;
+ 	bool sls;
++	bool stackval;
+ 	bool uaccess;
+ 
+ 	/* options: */
