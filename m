@@ -2,146 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB33C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A113BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449822AbiDVQrG (ORCPT
+        id S1449884AbiDVQr6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        Fri, 22 Apr 2022 12:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449800AbiDVQqp (ORCPT
+        with ESMTP id S1449849AbiDVQrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:46:45 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE53D5F8C1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:43:51 -0700 (PDT)
+        Fri, 22 Apr 2022 12:47:48 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069D63B0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650645831; x=1682181831;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iL7+aGwgJSlc39d1Ilbvm2KZhPW+6VwhKd3gr84pzSA=;
-  b=ehTVYULEQBodQu4HBDmIwzcfR2L2k+ejl1hIbQ3yzg1O6gFR263/5S66
-   h/M+XSkHbViIZYfNksd1gwtvJSHjyUXYqnHePbgil+3IbiG2c2mlL2u7w
-   IpThUb5TxMDmEY0N3BBCCIJXJ1NAXQfeXvDM3IfYiyE7hK/Ot7xPaxKmm
-   cScZydhtGQj7BAkANAqR4aJ3prNSl+DwtfRlzzssHLfxBgk/pxsIpSWKn
-   7bVAQiqQkbXTg7KBgLPGt4NJmfUEWcmlUVX9a5aajDMloeSEOiSb6nSml
-   Fsy7mhtiFqi49iTTnp1pfO3bW/+ulgcTlGY3EHhSUgM/zI33JCnf9K16h
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="289845481"
+  t=1650645893; x=1682181893;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zbjMmz4IPxc1dkPAAWlkk3z02hRug2vjYO3ePBmaF+4=;
+  b=ju/ddF6mF6mwUX6C958FHUceB30E97dYhHsmncgutqd59Ps82PYnmAIy
+   tUBnSYB+th4Vix2Hw+Gfm20IqkwwhKwnyWgyXG6u/bPd+oEPrYKmANcQN
+   xF940ekyMetAsMITKJ29Mku55pOEWMzNLVWv46CLUyMCApX4CcRsl7d42
+   Vd9d+v35Mdf9oviMc/xNLa7Ryn0hsZWm8bBa9gKPrzkLyz4+LDlq6qJ11
+   kYgE4L0p0QLpmGw2VE4xXUe5HdrWU7eM7G1pyfiigeO4OD4EQTFqOOOOw
+   aiKlHPrrIwvwlwxqOdLPQkRvOqkCTZiqIKfeGJQC/L/QfQhfJhFDAQbea
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246630496"
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="289845481"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:43:51 -0700
+   d="scan'208";a="246630496"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 09:44:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="530926235"
+   d="scan'208";a="659101622"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 Apr 2022 09:43:49 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 22 Apr 2022 09:44:50 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nhwNp-000ALg-8j;
-        Fri, 22 Apr 2022 16:43:49 +0000
-Date:   Sat, 23 Apr 2022 00:43:36 +0800
+        id 1nhwOn-000ALq-Aj;
+        Fri, 22 Apr 2022 16:44:49 +0000
+Date:   Sat, 23 Apr 2022 00:43:49 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 2431/2579]
- include/asm-generic/percpu.h:147:9: error: implicit declaration of function
- 'raw_local_irq_save'
-Message-ID: <202204230044.O7aOPfOO-lkp@intel.com>
+To:     Chenyang Li <lichenyang@loongson.cn>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Dan Carpenter <error27@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, devel@linuxdriverproject.org
+Cc:     kbuild-all@lists.01.org, Yi Li <liyi@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/4] drm/loongson: Add GPIO and I2C driver for
+ loongson drm.
+Message-ID: <202204230046.2fBNTJrK-lkp@intel.com>
+References: <20220422081459.682700-1-lichenyang@loongson.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220422081459.682700-1-lichenyang@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 518a4e5de1cbdbd028929db6ad968d6245b7e89a [2431/2579] headers/deps: rcu: Optimize <linux/rcupdate.h> dependencies
-config: i386-debian-10.3 (https://download.01.org/0day-ci/archive/20220423/202204230044.O7aOPfOO-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+Hi Chenyang,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on drm/drm-next]
+[also build test WARNING on v5.18-rc3 next-20220422]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Chenyang-Li/drm-loongson-Add-DRM-Driver-for-Loongson-7A1000-bridge-chip/20220422-161914
+base:   git://anongit.freedesktop.org/drm/drm drm-next
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220423/202204230046.2fBNTJrK-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=518a4e5de1cbdbd028929db6ad968d6245b7e89a
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 518a4e5de1cbdbd028929db6ad968d6245b7e89a
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/4a5b6ac99c37617e030a054ca431c5c9aab227b8
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Chenyang-Li/drm-loongson-Add-DRM-Driver-for-Loongson-7A1000-bridge-chip/20220422-161914
+        git checkout 4a5b6ac99c37617e030a054ca431c5c9aab227b8
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/gpu/drm/loongson/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   In file included from arch/x86/include/asm/percpu.h:393,
-                    from arch/x86/include/asm/current.h:6,
-                    from include/linux/preempt.h:10,
-                    from include/linux/bottom_half.h:7,
-                    from include/linux/rcupdate.h:26,
-                    from include/linux/bpf.h:9,
-                    from include/linux/bpf_verifier.h:7,
-                    from net/ipv4/bpf_tcp_ca.c:6:
-   include/linux/bpf.h: In function 'bpf_disable_instrumentation':
->> include/asm-generic/percpu.h:147:9: error: implicit declaration of function 'raw_local_irq_save' [-Werror=implicit-function-declaration]
-     147 |         raw_local_irq_save(__flags);                                    \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/percpu.h:355:41: note: in expansion of macro 'this_cpu_generic_to_op'
-     355 | #define this_cpu_add_8(pcp, val)        this_cpu_generic_to_op(pcp, val, +=)
-         |                                         ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/percpu-defs.h:380:25: note: in expansion of macro 'this_cpu_add_8'
-     380 |                 case 8: stem##8(variable, __VA_ARGS__);break;           \
-         |                         ^~~~
-   include/linux/percpu-defs.h:509:41: note: in expansion of macro '__pcpu_size_call'
-     509 | #define this_cpu_add(pcp, val)          __pcpu_size_call(this_cpu_add_, pcp, val)
-         |                                         ^~~~~~~~~~~~~~~~
-   include/linux/percpu-defs.h:520:41: note: in expansion of macro 'this_cpu_add'
-     520 | #define this_cpu_inc(pcp)               this_cpu_add(pcp, 1)
-         |                                         ^~~~~~~~~~~~
-   include/linux/bpf.h:1446:9: note: in expansion of macro 'this_cpu_inc'
-    1446 |         this_cpu_inc(bpf_prog_active);
-         |         ^~~~~~~~~~~~
->> include/asm-generic/percpu.h:149:9: error: implicit declaration of function 'raw_local_irq_restore' [-Werror=implicit-function-declaration]
-     149 |         raw_local_irq_restore(__flags);                                 \
-         |         ^~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/percpu.h:355:41: note: in expansion of macro 'this_cpu_generic_to_op'
-     355 | #define this_cpu_add_8(pcp, val)        this_cpu_generic_to_op(pcp, val, +=)
-         |                                         ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/percpu-defs.h:380:25: note: in expansion of macro 'this_cpu_add_8'
-     380 |                 case 8: stem##8(variable, __VA_ARGS__);break;           \
-         |                         ^~~~
-   include/linux/percpu-defs.h:509:41: note: in expansion of macro '__pcpu_size_call'
-     509 | #define this_cpu_add(pcp, val)          __pcpu_size_call(this_cpu_add_, pcp, val)
-         |                                         ^~~~~~~~~~~~~~~~
-   include/linux/percpu-defs.h:520:41: note: in expansion of macro 'this_cpu_add'
-     520 | #define this_cpu_inc(pcp)               this_cpu_add(pcp, 1)
-         |                                         ^~~~~~~~~~~~
-   include/linux/bpf.h:1446:9: note: in expansion of macro 'this_cpu_inc'
-    1446 |         this_cpu_inc(bpf_prog_active);
-         |         ^~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+>> drivers/gpu/drm/loongson/loongson_encoder.c:10:27: warning: no previous prototype for 'loongson_bridge_detect' [-Wmissing-prototypes]
+      10 | enum drm_connector_status loongson_bridge_detect(struct drm_bridge *bridge)
+         |                           ^~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/raw_local_irq_save +147 include/asm-generic/percpu.h
+vim +/loongson_bridge_detect +10 drivers/gpu/drm/loongson/loongson_encoder.c
 
-e88d62cd4b2f0b Mark Rutland    2017-09-26  143  
-eba117889ac444 Tejun Heo       2014-06-17  144  #define this_cpu_generic_to_op(pcp, val, op)				\
-9c28278a24c01c Tejun Heo       2014-06-17  145  do {									\
-eba117889ac444 Tejun Heo       2014-06-17  146  	unsigned long __flags;						\
-eba117889ac444 Tejun Heo       2014-06-17 @147  	raw_local_irq_save(__flags);					\
-1b5ca12127427c Nicholas Piggin 2016-09-22  148  	raw_cpu_generic_to_op(pcp, val, op);				\
-eba117889ac444 Tejun Heo       2014-06-17 @149  	raw_local_irq_restore(__flags);					\
-9c28278a24c01c Tejun Heo       2014-06-17  150  } while (0)
-9c28278a24c01c Tejun Heo       2014-06-17  151  
-1b5ca12127427c Nicholas Piggin 2016-09-22  152  
-
-:::::: The code at line 147 was first introduced by commit
-:::::: eba117889ac444bea6e8270049cbaeed48169889 percpu: preffity percpu header files
-
-:::::: TO: Tejun Heo <tj@kernel.org>
-:::::: CC: Tejun Heo <tj@kernel.org>
+     9	
+  > 10	enum drm_connector_status loongson_bridge_detect(struct drm_bridge *bridge)
+    11	{
+    12		unsigned char start = 0x0;
+    13		struct i2c_msg msgs = {
+    14			.addr = DDC_ADDR,
+    15			.flags = 0,
+    16			.len = 1,
+    17			.buf = &start,
+    18		};
+    19	
+    20		if (i2c_transfer(bridge->ddc, &msgs, 1) != 1)
+    21			return connector_status_disconnected;
+    22		else
+    23			return connector_status_connected;
+    24	}
+    25	
 
 -- 
 0-DAY CI Kernel Test Service
