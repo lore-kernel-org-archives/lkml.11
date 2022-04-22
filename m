@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB66C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444099AbiDVFKv (ORCPT
+        id S1444038AbiDVFMG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 01:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
+        Fri, 22 Apr 2022 01:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444081AbiDVFKq (ORCPT
+        with ESMTP id S1354690AbiDVFMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 01:10:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB534EF7D;
-        Thu, 21 Apr 2022 22:07:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92E5F61D5C;
-        Fri, 22 Apr 2022 05:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C4E4C385A0;
-        Fri, 22 Apr 2022 05:07:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650604073;
-        bh=vzfRtV+6HmzAXkT9LkEyK6PRF7OjBvpXGEf/vM7UJSY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GAHDADhNIu3VnJP6g4TTNtQ0FfdlnND7LMl7VptMN7R2INA3nx+7WA3NECywDHWfz
-         9xRCC1kbenIolxN8xv5PXbDuDllk5jVcic/bI0v57FQ2gD1ke30Pv26tm4A1632yzY
-         EotT7UrnlRuw81WHUt0RlJ3vSyFl4RvWfdpXq/+g=
-Date:   Fri, 22 Apr 2022 07:07:47 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hongyu Xie <xy521521@gmail.com>
-Cc:     johan@kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
-        stable@vger.kernel.org, "sheng . huang" <sheng.huang@ecastech.com>,
-        wangqi@kylinos.cn, xiongxin@kylinos.cn
-Subject: Re: [RESEND PATCH -next] USB: serial: pl2303: implement reset_resume
- member
-Message-ID: <YmI4I9MCLBheMyvr@kroah.com>
-References: <20220419065408.2461091-1-xy521521@gmail.com>
- <YmGKL05dnA+q/HAM@kroah.com>
- <f3f6ea7d-2051-7a7f-61e0-8a5bba8ca8f2@gmail.com>
+        Fri, 22 Apr 2022 01:12:00 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670AE4F442
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:09:07 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id g9so6447939pgc.10
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:09:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IxkWrK2BHkhEkKKlVUNG0OHecJx6kgtTQfmR8oiK8fY=;
+        b=lqpCouB++8hljbNrHceC1Qyuwuw+vCI2Fhh8ZFdRfXxhXpRkv6g2BA/tNxAPsxgvkr
+         u1w04SPrnfVYkE3mFoG48Ti9k/z8UT5WYiln4iNHoRm7Qifnv87ZE8YThHZXSPIBk33s
+         cgEeltKzihF2u7m2Rx9L52X77Ftym+qXjgfxCuWWrIicVaP5Jg2SgwIWdin/gaEyFEzu
+         Ext803WlCRXwXzZsLwuqtVS8NVNTVT8D2RbXIjdgnN1qqvJ94LfZ42ZuTXANLZ0OPeeR
+         uCoDCo74DxXysCvLAG+sDPte7QHEDlbnJ1EX97I3Lp3cztRaLWZL5JySGaZxqqrOs+bj
+         SaVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IxkWrK2BHkhEkKKlVUNG0OHecJx6kgtTQfmR8oiK8fY=;
+        b=vmnLC4FoJPqr57J0Ym7BosGUUqhykpHXQn7LTyw6YopwEYNIMO983Ic6xHi4b/GORv
+         wkEDR1DgjDqoC9PIVir+TOxl6eAltGgM5mcUrmHkWv5mIQIxllddXFearyXoVR+1riDI
+         T+rfIA4Xwd7Pk+P4C8hZQCos43Prph0+GxSzInT6UY29GWyUtI/Pnlp5DS85E02/8ODp
+         Y8xsnHaWMyOwzbRjGPfaWHR7SDdGCSnAc6TMmniNCjpqNdN6QG5vFXUYlx/J/uR6wwCx
+         500XIptMtBklvcMkPVjAbI50ymxeLyRqFKT2MsmkdSwELyWbJwsa15L1mdu93Tr9Rvww
+         yE/g==
+X-Gm-Message-State: AOAM533DAWR+ghprmHzm7Av2ZbEC8fRbDVxrTtG0EChTxUzio7CK+D23
+        4wd2S+iR+oGpF3gq7KvNx9ByTQ==
+X-Google-Smtp-Source: ABdhPJzee0DpsxJWDBhWAOgmHW7pXvMAFcHq9PAexcssqN/6IoJ0HKyEyTKjakiAzo82w81k4zugdA==
+X-Received: by 2002:a05:6a00:e0b:b0:4fa:a167:5b35 with SMTP id bq11-20020a056a000e0b00b004faa1675b35mr3121349pfb.69.1650604146814;
+        Thu, 21 Apr 2022 22:09:06 -0700 (PDT)
+Received: from x1 ([2601:1c2:1001:7090:dbb3:3d38:62d2:5de5])
+        by smtp.gmail.com with ESMTPSA id e126-20020a621e84000000b0050567191161sm854912pfe.210.2022.04.21.22.09.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 22:09:06 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 22:10:06 -0700
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Nishanth Menon <nm@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] soc: ti: wkup_m3_ipc: Add support for IO Isolation
+Message-ID: <YmI4rjkpX9krZAGn@x1>
+References: <20220414192722.2978837-1-dfustini@baylibre.com>
+ <YmEAA7kc4jNHSkGm@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f3f6ea7d-2051-7a7f-61e0-8a5bba8ca8f2@gmail.com>
+In-Reply-To: <YmEAA7kc4jNHSkGm@atomide.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 10:35:59AM +0800, Hongyu Xie wrote:
+On Thu, Apr 21, 2022 at 09:56:03AM +0300, Tony Lindgren wrote:
+> Hi,
 > 
-> Hi greg,
-> On 2022/4/22 00:45, Greg KH wrote:
-> > On Tue, Apr 19, 2022 at 02:54:08PM +0800, Hongyu Xie wrote:
-> > > From: Hongyu Xie <xiehongyu1@kylinos.cn>
-> > > 
-> > > pl2303.c doesn't have reset_resume for hibernation.
-> > > So needs_binding will be set to 1 duiring hibernation.
-> > > usb_forced_unbind_intf will be called, and the port minor
-> > > will be released (x in ttyUSBx).
-> > 
-> > Please use the full 72 columns that you are allowed in a changelog text.
-> > 
-> > 
-> > > It works fine if you have only one USB-to-serial device.
-> > > Assume you have 2 USB-to-serial device, nameing A and B.
-> > > A gets a smaller minor(ttyUSB0), B gets a bigger one.
-> > > And start to hibernate. When your PC is in hibernation,
-> > > unplug device A. Then wake up your PC by pressing the
-> > > power button. After waking up the whole system, device
-> > > B gets ttyUSB0. This will casuse a problem if you were
-> > > using those to ports(like opened two minicom process)
-> > > before hibernation.
-> > > So member reset_resume is needed in usb_serial_driver
-> > > pl2303_device.
-> > 
-> > If you want persistent device naming, use the symlinks that udev creates
-> > for your for all your serial devices.  Never rely on the number of a USB
-> > to serial device.
-> Let me put it this way. Assume you need to record messages output from two
-> machines using 2 USB-to-serial devices(naming A and B, and A is on
-> USB1-port3, B is on USB1-port4) opened by two minicom process.
-> The setting for A in minicom would be like:
-> 	"A -    Serial Device      : /dev/ttyUSB0"
-> The setting for B in minicom would be like:
-> 	"A -    Serial Device      : /dev/ttyUSB1"
-> Then start to hibernate on your computer. When your PC is in
-> hibernation, unplug A. After waking up your computer, "/dev/ttyUSB0"
-> would be released first, then allocated to B. The minicom process used
-> to record outputs from A is now recording B's outputs. The minicom
-> process used to record outputs from B is now recording nothing, because
-> "/dev/ttyUSB1" is not exist anymore. That's the problem I've been
-> talking about. And I don't think using symlinks will solve this problem.
+> * Drew Fustini <dfustini@baylibre.com> [220414 19:24]:
+> > TI AM437x SoCs support isolation of the IOs so that control is taken
+> > from the peripheral they are connected to and overridden by values
+> > present in the control register for that pad. This series documents a
+> > new property 'ti,set-io-isolation' and updates the wkup_m3_ipc driver to
+> > inform the CM3 firmware when that property is set.
+> 
+> Care to list what hardware and board revisions you're able to test deep
+> sleep with?
+> 
+> Seems like my am437x-evm is too old for this where the board layout
+> does not match the schematics for removing a resistor to enable this.
+> 
+> Just wondering if I can still enable tests for this somehow :)
+> 
+> Regards,
+> 
+> Tony
 
-Yes, symlinks will solve the issue, that is what they are there for.
-Look in /dev/serial/ for a persistent name for them that allows you to
-uniquely open the correct device if they can be described.  Using
-/dev/ttyUSBX is almost never the correct thing to do.
+Do you know what revision of the am437x-gp-evm that you have?
 
-> > > Codes in pl2303_reset_resume are borrowed from pl2303_open.
-> > > 
-> > > As a matter of fact, all driver under drivers/usb/serial
-> > > has the same problem except ch341.c.
-> > > 
-> > > Cc: stable@vger.kernel.org
-> > 
-> > How does this meet the stable kernel rule requirements?  It would be a
-> > new feature if it were accepted, right?
-> It's not a new feature at all. struct usb_serial_driver already has a
-> member name reset_resume, there is no implementation in pl2303.c yet.
-> And ch341.c has one(ch341_reset_resume()), that why I said "all driver
-> under drivers/usb/serial has the same problem except ch341.c"
+The AM437X_GP_EVM_3K0006_SCHEMATIC_REV1_5B schematic [1] for the
+AM437x-GP-EVM shows that the EN pin on the TPS51200 is connected to SoC
+ball N25 which is GPIO5_7.
 
-Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for what is valid stable kernel changes.
+Unfortunately, the only AM437x board that I have is the AM437x IDK [2]
+which unfortunately does not have the TSP51200 EN pin connected to the
+the SoC. In addition, the am437x-gp-evm is the only board that is
+allowed to enable off mode due to am43xx_check_off_mode_enable() in
+arch/arm/mach-omap2/pm33xx-core.c
 
-thanks,
+Thank you,
+Drew
 
-greg k-h
+[1] https://www.ti.com/lit/zip/tidrc79
+[2] https://www.ti.com/lit/zip/sprr396
