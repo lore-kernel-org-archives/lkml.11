@@ -2,83 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232792AbiDVIQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        id S1445571AbiDVISI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 04:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232689AbiDVIQs (ORCPT
+        with ESMTP id S232159AbiDVIRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:16:48 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B0F52B3C
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 01:13:55 -0700 (PDT)
-Received: from pop-os.home ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id hoQKn11J2YnCyhoQLn3306; Fri, 22 Apr 2022 10:13:53 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 22 Apr 2022 10:13:53 +0200
-X-ME-IP: 86.243.180.246
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH v2] drivers/base/memory: Fix an unlikely reference counting issue in __add_memory_block()
-Date:   Fri, 22 Apr 2022 10:13:48 +0200
-Message-Id: <d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Fri, 22 Apr 2022 04:17:30 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CED452E47;
+        Fri, 22 Apr 2022 01:14:38 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 5B8751F463D7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650615277;
+        bh=ybS44P9MMmakQWgzcRRe1GKjiCQ1Y7b4n1Sb0wQeP+U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VI1NBwBSfhyzngLnXnZOB7u77+EOStHd17W+lTDF8zVdfmZwJwba+cwmnvDf7yuUY
+         X1JE9FQn8FXfQOyUhhekOt5ABbngj4sEwnmstSMuk+XSfzpCGqDKcjUJ/XPBsUN4+9
+         luwRyVOtE738zh48axUJFbr32+pELyvoOchijHDcc0k09YfkZ/c7hiSyXyRESioYvL
+         popckrnmZX/F/JF8ktgtn/MOUf65IWeMPPXM5lCA3wwbKxUSZ0gFBYOSoYVPUTwYpU
+         CyVkMhZovNfISUmKOc9pCSqXjGR20nbgiiFGWBt0WxoAKIUHUTCl1UIWA+eCl3EbA7
+         S3Y/FOoKRGGRg==
+Message-ID: <612cb22e-7254-b19a-e6e4-6e737092a504@collabora.com>
+Date:   Fri, 22 Apr 2022 10:14:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] PCI: mediatek-gen3: Update entries to distinguish
+ MediaTek PCIe controller
+Content-Language: en-US
+To:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220422070908.14043-1-jianjun.wang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220422070908.14043-1-jianjun.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__add_memory_block() calls both put_device() and device_unregister() when
-storing the memory block into the xarray. This is incorrect because xarray
-doesn't take an additional reference and device_unregister() already calls
-put_device().
+Il 22/04/22 09:09, Jianjun Wang ha scritto:
+> Update driver entries in pcie-mediatek-gen3.c to distinguish the
+> MediaTek PCIe controllers.
+> 
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
 
-Triggering the issue looks really unlikely and its only effect should be to
-log a spurious warning about a ref counted issue.
-
-Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
----
-v2: Update Changelog
-    Add 'unlikely' in the title
-    Add Acked/Reviewed-by tags
----
- drivers/base/memory.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 7222ff9b5e05..084d67fd55cc 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -636,10 +636,9 @@ static int __add_memory_block(struct memory_block *memory)
- 	}
- 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
- 			      GFP_KERNEL));
--	if (ret) {
--		put_device(&memory->dev);
-+	if (ret)
- 		device_unregister(&memory->dev);
--	}
-+
- 	return ret;
- }
- 
--- 
-2.32.0
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
