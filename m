@@ -2,147 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 746FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A69FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443431AbiDVCko (ORCPT
+        id S1443437AbiDVClK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 22:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
+        Thu, 21 Apr 2022 22:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245153AbiDVCkn (ORCPT
+        with ESMTP id S245153AbiDVClJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 22:40:43 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2092.outbound.protection.outlook.com [40.107.255.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DC34B43C;
-        Thu, 21 Apr 2022 19:37:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CEPJQyGmeoCI8rPkBqvFfyB2id0b2H3xTPyuCRQfqA5HmIiM0R6lagnvarfNVGbz0DOKB7hNF+2BOR0fDPmmsVRBuAqs43PjUYKkAO6xOZQdj6MIYg/YcYle5p+KQHRj9fKfD8wkASoa41l001OcBB3jdwVcM5yqxzu2Khb98U99irmw+0uaDXajH7xOOL6wtZwHAZ9H/ii2IT5UCjlq3FmUg1sYoVkmCshQOJT3neVICRkJgMFglKso9L/eHKKCA34RD+/WnKoag9tD6otfhY17agdqg1kse5rjyUGxro7+2cgvj5kkKE6cd7Rpcdo2A5uOqCj+ENsmBUCpYPzabQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ch2oW9CXStX2NYswOXomEzSEMwJKWVqWtZ5mRZfXcoA=;
- b=Mn+8ze5DQquerwJj9sDYtsnlNQ4O3EigtOeg/AJc0jhftnFiLoKe33v/obbVA3xQ3DL8xnb/9dnhmXWHJBsav2DPJ2LAzXTlVEIBfOQRypU05RJvIh6/o9KxDOgwC4uQNObkC6PC0zDIX3qw3Rkm3H+POowtyU8Fe/WgZJna3GVQmb0SRx9n8ALjRk4HrSFOSToZxzBy+k0gfckH1pRq6SIEUaU98rhHcBIzAni2vrgjH7DMeLAE/xa2+FL0tuXugO2H2wwipV/2t8sQAPuKmQmfaE4Nn3DvIFI8YS6SRiKTLCT6OXn/ndZnaACDGX/0OQpuB+/R75MzboDHEdd5gg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ch2oW9CXStX2NYswOXomEzSEMwJKWVqWtZ5mRZfXcoA=;
- b=SF3sbkiYAvabPnOefqaOHE8mQUF8g9HjbsqyT6tJiuh2w3V1vCjvTqZk8Or49Und17H68+/g5csOqZwhsmW1szGIWKZxe+has1/U2MpwoeNrEyHJyLI8g6pwUHwj6wVapy8aXw11xwWuoechOefgBn5Kf8UcmfjrGL0xyda7eiU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- TY2PR06MB3375.apcprd06.prod.outlook.com (2603:1096:404:96::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5164.25; Fri, 22 Apr 2022 02:37:45 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::4591:4f3e:f951:6c8c]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::4591:4f3e:f951:6c8c%7]) with mapi id 15.20.5164.025; Fri, 22 Apr 2022
- 02:37:45 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] perf/x86/amd: Replace snprintf() with sysfs_emit()
-Date:   Fri, 22 Apr 2022 10:37:34 +0800
-Message-Id: <20220422023734.129114-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HKAPR04CA0015.apcprd04.prod.outlook.com
- (2603:1096:203:d0::25) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+        Thu, 21 Apr 2022 22:41:09 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3104B857
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:38:17 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id e30so5261308eda.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:38:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SXY8vM5gipgpM7Xccl9ZLsPXwuvlwZprON91blgLX0g=;
+        b=SHuGY33SCY7YguKUvgEG1+A1IUipTd1k1koT2htJ9P/On9R5tGcTGxcMT4d6PfouzG
+         QKx1bjmMcYClZerXPl5o9F4get9HAK/EKDkkAVbgwOsdhJ89By/t46O2k21cbxYy58Tb
+         5EsDmv65Gc3MTSJ4RKWX/wea8jAy1CewCz1Lw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SXY8vM5gipgpM7Xccl9ZLsPXwuvlwZprON91blgLX0g=;
+        b=pqLczyBUMu6qJkxSkTCIiGJr4us190AfjTPK2ykkC4CLv9tgY1597U2drde6uB8bJ2
+         OnDuWeuAJAp09qM15frfbeBw4iGGb+N5KBvkfMXuuiccME8eWFej8i9PWYxhc0fvsrf9
+         o76Amp5/WBfbA8Pm+nOkA+tH6h/RhunJcS5kafqwTbopD5tCVi7lyHEGr0Miqi41zEIO
+         y5eWPaIdoQ856C3xtJqRUuP26ILjDyZSnQi86C6MvX9s6WZyGT0vxMvtx764+ani2u0F
+         0ystImTIARQ6MuqJeGBG5Qg+kB2mHTZQzX+5SoRwZIFO18PzkL5ZSKJqpuwOJNfyTelL
+         OZPQ==
+X-Gm-Message-State: AOAM531zt9nELLmtAe4xsZzS3YdZUNIe+T6ZIgQzmzi+l7ioKrXUDV7y
+        4WlOusmm18C6NhCfw0P8kCM20sEq10I2bCMJSWI=
+X-Google-Smtp-Source: ABdhPJxHbmS06DD++Mc8ggkcuhaO2FlUV+XHZSA5mqWAF7MGTHLGr9bvQg/qFyIpQvrFNXvBJL0yJg==
+X-Received: by 2002:a50:d087:0:b0:41d:7ea6:462a with SMTP id v7-20020a50d087000000b0041d7ea6462amr2560150edd.355.1650595095587;
+        Thu, 21 Apr 2022 19:38:15 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id v2-20020a17090606c200b006a728f4a9bcsm268021ejb.148.2022.04.21.19.38.15
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 19:38:15 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id w18so749646wra.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:38:15 -0700 (PDT)
+X-Received: by 2002:a2e:91d9:0:b0:24d:c221:4941 with SMTP id
+ u25-20020a2e91d9000000b0024dc2214941mr1494670ljg.164.1650594682049; Thu, 21
+ Apr 2022 19:31:22 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 92935aa9-b484-47f1-838d-08da240914b3
-X-MS-TrafficTypeDiagnostic: TY2PR06MB3375:EE_
-X-Microsoft-Antispam-PRVS: <TY2PR06MB337522DFBAF843C71D780274ABF79@TY2PR06MB3375.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dIsgSkS7Ci7bqmhoRKy+Yp4rNRoIT946ZkQ1V8D4M7DWjZDO49XvKRx1NjGqUkRUs97YZ6eZBCdZ2mrA+ipQDxbsXnIaYtZ5xuDswEWguPKBfLx4vIdtNdJ8HVsSyVZOT/hKVavwvdYknu1TUCzkQFXtFh9v6AFA8W1WJlyBe+o/V7eIdgxQJPOVsLiPd42oyxMU1p6cwMo+aGmYGjQjOIL+7/HoQOzj4RnVrRxTISzMvzrd6zTwyN9/WkCLks4TqAf8uFCdPXMraL0g+MQ/UXAacoIYmwasvgHPjXH+nas/rYdHz7sf6KE2YVSJPat9mrIubhuNaPiTXDsAxOx0dIRWqxAq2v6VWoNm6BlVmF3kobD54aXbGlRLIlJH7iRZOlCCthfHGVwquRhPlVsIX5tbmnWUdR+57J42uPeR+X9bykRrwEu7hdoON7ylAApMcq4VkQuet6DCA+Bfn1YSW6BwJoW47V7rCZB7RBRgNl0oMRycTvPuR0f4ANE6PXorJn8WmpISjIg0JAiDORp9/P1tIa87myFvz61FhD8XNLHmLXXyXFystEHiasHIaIciC/T4j5RbHL4vxebN4TfEWVQaso6PSHubZhN89P/+0Owm40MOCv8jk5crUQiRNM0MXLwwQqJiitgTy+AEOGt8v1K4HW6zGhH7wdBq4BdTUoAORqM8nl+jsHp0ljAjQkRX4x9MzJoVLfY+3144/2hocxVrvboz9800j/Uw4U0vE04=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(52116002)(186003)(5660300002)(8936002)(1076003)(110136005)(316002)(6506007)(7416002)(2906002)(508600001)(6486002)(4326008)(8676002)(38100700002)(38350700002)(107886003)(66556008)(66476007)(66946007)(921005)(6666004)(2616005)(83380400001)(86362001)(4744005)(6512007)(26005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AKpmWHsIx3XBpNn0ZzjlwZpTf9RScAhLvFrAKt6alN9X3NqTWUsVe+okhFKq?=
- =?us-ascii?Q?2HJlestU+3ycvsaPrErNRtUbpm9hN5SJnG5vCDWy1ZC+ZrtBcbRCk43ACZrz?=
- =?us-ascii?Q?HYI35d2ozJrGQ113VdjrkabWrcmCARa+s6m09KX71Au6neAoQFRIM10qg8xP?=
- =?us-ascii?Q?l8Erp+uo34Wy8XvB/Q2XmlQFF7220Nn1AAt4WC+1STDiqgSEHImPEYhMjGSK?=
- =?us-ascii?Q?gKbQvsfZX30i31WOFS8KFsb/lPY7GfcipQx477KKjDbSIrDWWX9yrkDBvJst?=
- =?us-ascii?Q?G0u+tlNufq2BLLPTqdOCqX3j0FbdejPzezd5tRGT6Z/dq9iXJjVqGWcW8UkP?=
- =?us-ascii?Q?b0mTQ6/zTDN1vJcMkbfTgtSMPiFWTmK2IsHPtmspOkNZhReqNb8aFdYaWrgA?=
- =?us-ascii?Q?WlvhKsmdbCNQH5oYGoyotLbmuxLI9INaBBA00Q2uWNAEb5InJlqutb7dLFdO?=
- =?us-ascii?Q?Vm9L3mZeQSb0b+yPsgJXn/JUFCVR/FdctBHhVu5kG1Vukdlp6RlnmX+6u1kv?=
- =?us-ascii?Q?tS23LnPnmNyzF00Ih4BuPZGNFbbI8XIh/dSHKevcNXtWqQR2QWRcFxe44Obc?=
- =?us-ascii?Q?0Q64q86/+nuENwD/ed8VKBYtyJLfKXkqM684p/cPfUOXCYbXa/uO9OGNbi8p?=
- =?us-ascii?Q?c+fSzDYJVgxcBPXCVw2GYlS5499Fue4Mi1fmhi6oEMAPogRkAKSNXLWNOijh?=
- =?us-ascii?Q?epMHDpM9Fz4OlpYJplpRLtSr1xaNA/coUDVIXi0rKH/OgGcs7XjkGD59qr4j?=
- =?us-ascii?Q?TnB8H5x63T5ReT+TgLyrnjMDYk4MB0C/SJIAfMDJ73dCAed8TgdwPwyRa5Nj?=
- =?us-ascii?Q?SUiRGsmaoUIBfubNYpOICbvmp+wCM6U9CLUFdTwwsHQ9c6OzleQkrYyqpgxV?=
- =?us-ascii?Q?N1n+MHeJCXGcYtZSPCCGZ4sWLtYtdnX+MwxgFsSeF7v8x+sE/TncJEcNfM2I?=
- =?us-ascii?Q?n7FVCMH1Pg6L2FkKSWa/tGtDgxrm5iFwFfilExzX8Na83oWxvLUd0O8Y0YGf?=
- =?us-ascii?Q?ufUujUPUjuq7Mf9Hu/ocOKwCnwfKf9q3a5UvuOq18+n+d/496u8lB+NEYHH6?=
- =?us-ascii?Q?N6Oc8UGiMP71LJENiqaSsMvD3nkvyPumwddAhE/ba1CAE18kEFqbveCh8y3h?=
- =?us-ascii?Q?FcEg1hQBjE/pEgDVyj5w688R4hCOKbLUdOrLN08uWcY0JTEfZRYRNKHems4v?=
- =?us-ascii?Q?PvYIImili2DN5BP5Uwpd3gPAlQYKjzEMMiiwrXI/mLjo7SjaLgDfreT++7aO?=
- =?us-ascii?Q?lz5EGYqjOhoBUTeOv+yXRptLxWVcA7sqAf7GMFyYoz58lOQAkYB7gN+pz5p3?=
- =?us-ascii?Q?1gB8B3yLrpgokdEMvR6Vt2dq34NDwhiMULlBCIlDG6tdmpHw0pJ3iukvD1Yt?=
- =?us-ascii?Q?+mE3gwPqbTvqQWnD4TEtBYLlxcd7Wuj9dD9EcSXT0NQvOC01A7/QwMymldxH?=
- =?us-ascii?Q?Cx9JIvQGqYAujCatb8AWzqB8NdaOTrUy/096749OVBt9BBkUjaMa8CqU3GML?=
- =?us-ascii?Q?SvOJ8MBPVtV5yg8kW6q3x5h6W2XItUPq9Zmz8iu1tRjRNQwpdDMA9SHfXV5D?=
- =?us-ascii?Q?SLZSYxZcgyj9o0+5mH3rs9kOAvX2N/2H+giBNakpt7RGtmezWaMiJmHLOp3B?=
- =?us-ascii?Q?bzXvYd7/uklX3jZVoa5041WFV3IjtZv7Q3c8SrT2lm1BhIYT2YpRDb0zA/Em?=
- =?us-ascii?Q?CW1EQc/toYEqHjSZv2vJoDvx81YHD7hOgXhrveb0XdQ8tetHsADlSlhgEA/x?=
- =?us-ascii?Q?kM+QYsg1NQ=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 92935aa9-b484-47f1-838d-08da240914b3
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 02:37:44.9304
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sU7as4HSJHjq25Uhk7lGUEZHdOg0+3yq/SE0gWHxQ/74DZjGjV1BISypeJ7fjvVyrpcR5abm7AOBiJRsTgihJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR06MB3375
+References: <20220415164413.2727220-1-song@kernel.org> <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
+ <YlpPW9SdCbZnLVog@infradead.org> <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
+ <CAHk-=wiMCndbBvGSmRVvsuHFWC6BArv-OEG2Lcasih=B=7bFNQ@mail.gmail.com>
+ <B995F7EB-2019-4290-9C09-AE19C5BA3A70@fb.com> <Yl04LO/PfB3GocvU@kernel.org>
+ <Yl4F4w5NY3v0icfx@bombadil.infradead.org> <88eafc9220d134d72db9eb381114432e71903022.camel@intel.com>
+ <B20F8051-301C-4DE4-A646-8A714AF8450C@fb.com> <Yl8CicJGHpTrOK8m@kernel.org>
+ <CAHk-=wh6um5AFR6TObsYY0v+jUSZxReiZM_5Kh4gAMU8Z8-jVw@mail.gmail.com>
+ <1650511496.iys9nxdueb.astroid@bobo.none> <CAHk-=wiQ5=S3m2+xRbm-1H8fuQwWfQxnO7tHhKg8FjegxzdVaQ@mail.gmail.com>
+ <1650530694.evuxjgtju7.astroid@bobo.none> <CAHk-=wi_D0o7YLYDpW-m3HgD7HeHR45L7UYxWi2iYdc5n99P3A@mail.gmail.com>
+ <1650582120.hf4z0mkw8v.astroid@bobo.none> <CAHk-=wh_7npMESkkeJ0dZC=EDPhn8+iyg528rE_GjnKpsUkT=A@mail.gmail.com>
+ <1650590628.043zdepwk1.astroid@bobo.none>
+In-Reply-To: <1650590628.043zdepwk1.astroid@bobo.none>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 21 Apr 2022 19:31:05 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjiV5LHnbFs+ObSK-cDdCc7pEV+mMUJcZJPnj4RnOGd2Q@mail.gmail.com>
+Message-ID: <CAHk-=wjiV5LHnbFs+ObSK-cDdCc7pEV+mMUJcZJPnj4RnOGd2Q@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "ast@kernel.org" <ast@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "dborkman@redhat.com" <dborkman@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "song@kernel.org" <song@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
-arch/x86/events/amd/core.c:1127:8-16: WARNING: use scnprintf or sprintf.
+On Thu, Apr 21, 2022 at 6:51 PM Nicholas Piggin <npiggin@gmail.com> wrote:
+>
+> > See
+> >
+> >     https://lore.kernel.org/all/20220415164413.2727220-3-song@kernel.org/
+> >
+> > for [PATCH 2/4] in the series for this particular issue.
+>
+> I was being facetious. The problem is you can't do ^ because x86 is
+> buggy.
 
-Use sysfs_emit() instead of snprintf().
+No, we probably *can* do that PATCH 2/4. I suspect x86 really isn't
+that buggy. The bugs are elsewhere (including other vmalloc_huge()
+uses).
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- arch/x86/events/amd/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Really. Why can't you just admit that the major bug was in the
+hugepage code itself?
 
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 8e1e818f8195..c1ced265c824 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -1124,7 +1124,7 @@ static ssize_t branches_show(struct device *cdev,
- 			      struct device_attribute *attr,
- 			      char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%d\n", x86_pmu.lbr_nr);
-+	return sysfs_emit(buf, "%d\n", x86_pmu.lbr_nr);
- }
- 
- static DEVICE_ATTR_RO(branches);
--- 
-2.35.1
+You claim:
 
+> Because it can be transparent. The bug was (stupidly) using compound
+> pages when it should have just used split higher order pages.
+
+but we're in -rc3 for 5.18, and you seem to be entirely ignoring the
+fact that that stupid bug has been around for a *YEAR* now.
+
+Guess what? It was reported within *days* of the code having  been
+enabled on x86.
+
+But for about a year, youv'e been convinced that powerpc is fine,
+because nobody ever reported it.
+
+And you *still* try to make this about how it's some "x86 bug",
+despite that bug not having been x86-specific AT ALL.
+
+Nick, please take a long look at yourself in the mirror.
+
+And stop this whole mindless "it's x86".
+
+The *ONLY* thing x86-64 did was to show that the code that had been
+enabled on powerpc for a year had gotten almost no testing there.
+
+And don't bother mentioning s390. It got even less coverage there.
+
+So exactly *because* bugs were uncovered in days by x86 enabling this,
+I'm not rushing to re-enable it until I think it's gone through more
+thinking and testing.
+
+And in particular, I really *really* want to limit the fallout.
+
+For example, your "two-liner fix" is not at all obvious.
+
+That broken code case used to have a comment that remap_vmalloc_page()
+required compound pages, and you just removed that whole thing as if
+it didn't matter, and split the page.
+
+(I also think the comment meant 'vmap_pages_range()', but whatever).
+
+And the thing is, I'm not entirely convinced that comment was wrong
+and could just be ignored. The freeing code in __vunmap() will do
+
+                int i, step = 1U << page_order;
+
+                for (i = 0; i < area->nr_pages; i += step) {
+                        struct page *page = area->pages[i];
+
+                        BUG_ON(!page);
+                        mod_memcg_page_state(page, MEMCG_VMALLOC, -step);
+                        __free_pages(page, page_order);
+
+which now looks VERY VERY wrong.
+
+You've split the pages, they may be used as individual pages (possibly
+by other things), and then you now at freeing time treat them as a
+single compound page after all..
+
+So your "trivial two-liner" that tried to fix a bug that has been
+there for a year now, itself seems quite questionable.
+
+Maybe it works, maybe it doesn't. My bet is "it doesn't".
+
+And guess what? I bet it worked just fine in your testing on powerpc,
+because you probably didn't actually have any real huge-page vmalloc
+cases except for those filesystem big-hash cases that never get
+free'd.
+
+So that "this code was completely buggy for a year on powerpc" never
+seemed to teach you anything about the code.
+
+And again - none of this is at all x86-specific. NOT AT ALL.
+
+So how about you admit you were wrong to begin with.
+
+That hugepage code needs more care before we re-enable it.
+
+Your two-liner wasn't so obvious after all, was it?
+
+I really think we're much safer saying "hugepage mappings only matter
+for a couple of things, and those things will *not* do sub-page games,
+so it's simple and safe".
+
+.. and that requires that opt-in model.
+
+Because your "it's transparent" argument has never ever actually been
+true, now has it?
+
+           Linus
