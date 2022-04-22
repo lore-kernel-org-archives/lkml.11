@@ -2,129 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B65C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8836FC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445342AbiDVH7t (ORCPT
+        id S1445415AbiDVIAo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
+        Fri, 22 Apr 2022 04:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445243AbiDVH6a (ORCPT
+        with ESMTP id S1445412AbiDVIAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:58:30 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E2B35AAE;
-        Fri, 22 Apr 2022 00:55:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650614138; x=1682150138;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Wqzv7yOzXcuJoA9ejW7T72gCrhe17VkFj/UM+FpOATw=;
-  b=ifSCNfA54RZKwENgpkgK6Ezq59xND5Xzeu+QgBYnl+xhmfhXSGuj1JTG
-   210PMN1CKgIHg/ePKbsTl7hAyn1IsYnnSM0L/EoiEw84jVhcWPya+aCX0
-   jbTco0MhB0n/9JErrYGiGbr4vdO7PrjV7USKZAtWqAKaGCv+CThGDlnkQ
-   /znUd68QYRTwbgx2J68ObPStReo7FkAWZ75EBqfDdTspoS6UTs+W7tukO
-   TLNi81VVzJWorBVar4CUGoNP6ThM0wjIR6KWp0mVTRTJFzOcGxL8KYzEZ
-   jJV+suxRbjy0ip0yF1pa5MKyjUMYMilUFuGCOa+MqaXiDb94SpCsY/+rR
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264384839"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="264384839"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:55:30 -0700
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="577741374"
-Received: from embargo.jf.intel.com ([10.165.9.183])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:55:30 -0700
-From:   Yang Weijiang <weijiang.yang@intel.com>
-To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
-        like.xu.linux@gmail.com, vkuznets@redhat.com, wei.w.wang@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yang Weijiang <weijiang.yang@intel.com>,
-        Like Xu <like.xu@linux.intel.com>
-Subject: [PATCH v10 16/16] KVM: x86/cpuid: Advertise Arch LBR feature in CPUID
-Date:   Fri, 22 Apr 2022 03:55:09 -0400
-Message-Id: <20220422075509.353942-17-weijiang.yang@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220422075509.353942-1-weijiang.yang@intel.com>
-References: <20220422075509.353942-1-weijiang.yang@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 22 Apr 2022 04:00:01 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24247527FC;
+        Fri, 22 Apr 2022 00:56:30 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VAlrUeF_1650614188;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VAlrUeF_1650614188)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 22 Apr 2022 15:56:28 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net 2/2] net/smc: Fix slab-out-of-bounds issue in fallback
+Date:   Fri, 22 Apr 2022 15:56:19 +0800
+Message-Id: <1650614179-11529-3-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1650614179-11529-1-git-send-email-guwen@linux.alibaba.com>
+References: <1650614179-11529-1-git-send-email-guwen@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Arch LBR feature bit in CPU cap-mask to expose the feature.
-Only max LBR depth is supported for guest, and it's consistent
-with host Arch LBR settings.
+syzbot reported a slab-out-of-bounds/use-after-free issue,
+which was caused by accessing an already freed smc sock in
+fallback-specific callback functions of clcsock.
 
-Co-developed-by: Like Xu <like.xu@linux.intel.com>
-Signed-off-by: Like Xu <like.xu@linux.intel.com>
-Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+This patch fixes the issue by restoring fallback-specific
+callback functions to original ones and resetting clcsock
+sk_user_data to NULL before freeing smc sock.
+
+Meanwhile, this patch introduces sk_callback_lock to make
+the access and assignment to sk_user_data mutually exclusive.
+
+Reported-by: syzbot+b425899ed22c6943e00b@syzkaller.appspotmail.com
+Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
+Link: https://lore.kernel.org/r/00000000000013ca8105d7ae3ada@google.com/
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
 ---
- arch/x86/kvm/cpuid.c | 33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+ net/smc/af_smc.c    | 80 ++++++++++++++++++++++++++++++++++++++---------------
+ net/smc/smc_close.c |  2 ++
+ 2 files changed, 59 insertions(+), 23 deletions(-)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 3f3ec42c27d5..0f4afedf787e 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -102,6 +102,16 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
- 		if (vaddr_bits != 48 && vaddr_bits != 57 && vaddr_bits != 0)
- 			return -EINVAL;
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 7ee356f..6eb3421 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -243,11 +243,27 @@ struct proto smc_proto6 = {
+ };
+ EXPORT_SYMBOL_GPL(smc_proto6);
+ 
++static void smc_fback_restore_callbacks(struct smc_sock *smc)
++{
++	struct sock *clcsk = smc->clcsock->sk;
++
++	write_lock_bh(&clcsk->sk_callback_lock);
++	clcsk->sk_user_data = NULL;
++
++	smc_clcsock_restore_cb(&clcsk->sk_state_change, &smc->clcsk_state_change);
++	smc_clcsock_restore_cb(&clcsk->sk_data_ready, &smc->clcsk_data_ready);
++	smc_clcsock_restore_cb(&clcsk->sk_write_space, &smc->clcsk_write_space);
++	smc_clcsock_restore_cb(&clcsk->sk_error_report, &smc->clcsk_error_report);
++
++	write_unlock_bh(&clcsk->sk_callback_lock);
++}
++
+ static void smc_restore_fallback_changes(struct smc_sock *smc)
+ {
+ 	if (smc->clcsock->file) { /* non-accepted sockets have no file yet */
+ 		smc->clcsock->file->private_data = smc->sk.sk_socket;
+ 		smc->clcsock->file = NULL;
++		smc_fback_restore_callbacks(smc);
  	}
-+	best = cpuid_entry2_find(entries, nent, 0x1c, 0);
-+	if (best) {
-+		unsigned int eax, ebx, ecx, edx;
-+
-+		/* Reject user-space CPUID if depth is different from host's.*/
-+		cpuid_count(0x1c, 0, &eax, &ebx, &ecx, &edx);
-+
-+		if ((best->eax & 0xff) != BIT(fls(eax & 0xff) - 1))
-+			return -EINVAL;
-+	}
+ }
  
- 	/*
- 	 * Exposing dynamic xfeatures to the guest requires additional
-@@ -598,7 +608,7 @@ void kvm_set_cpu_caps(void)
- 		F(SPEC_CTRL_SSBD) | F(ARCH_CAPABILITIES) | F(INTEL_STIBP) |
- 		F(MD_CLEAR) | F(AVX512_VP2INTERSECT) | F(FSRM) |
- 		F(SERIALIZE) | F(TSXLDTRK) | F(AVX512_FP16) |
--		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16)
-+		F(AMX_TILE) | F(AMX_INT8) | F(AMX_BF16) | F(ARCH_LBR)
- 	);
+@@ -745,48 +761,57 @@ static void smc_fback_forward_wakeup(struct smc_sock *smc, struct sock *clcsk,
  
- 	/* TSC_ADJUST and ARCH_CAPABILITIES are emulated in software. */
-@@ -1044,6 +1054,27 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 				goto out;
+ static void smc_fback_state_change(struct sock *clcsk)
+ {
+-	struct smc_sock *smc =
+-		smc_clcsock_user_data(clcsk);
++	struct smc_sock *smc;
+ 
+-	if (!smc)
+-		return;
+-	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_state_change);
++	read_lock_bh(&clcsk->sk_callback_lock);
++	smc = smc_clcsock_user_data(clcsk);
++	if (smc)
++		smc_fback_forward_wakeup(smc, clcsk,
++					 smc->clcsk_state_change);
++	read_unlock_bh(&clcsk->sk_callback_lock);
+ }
+ 
+ static void smc_fback_data_ready(struct sock *clcsk)
+ {
+-	struct smc_sock *smc =
+-		smc_clcsock_user_data(clcsk);
++	struct smc_sock *smc;
+ 
+-	if (!smc)
+-		return;
+-	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_data_ready);
++	read_lock_bh(&clcsk->sk_callback_lock);
++	smc = smc_clcsock_user_data(clcsk);
++	if (smc)
++		smc_fback_forward_wakeup(smc, clcsk,
++					 smc->clcsk_data_ready);
++	read_unlock_bh(&clcsk->sk_callback_lock);
+ }
+ 
+ static void smc_fback_write_space(struct sock *clcsk)
+ {
+-	struct smc_sock *smc =
+-		smc_clcsock_user_data(clcsk);
++	struct smc_sock *smc;
+ 
+-	if (!smc)
+-		return;
+-	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_write_space);
++	read_lock_bh(&clcsk->sk_callback_lock);
++	smc = smc_clcsock_user_data(clcsk);
++	if (smc)
++		smc_fback_forward_wakeup(smc, clcsk,
++					 smc->clcsk_write_space);
++	read_unlock_bh(&clcsk->sk_callback_lock);
+ }
+ 
+ static void smc_fback_error_report(struct sock *clcsk)
+ {
+-	struct smc_sock *smc =
+-		smc_clcsock_user_data(clcsk);
++	struct smc_sock *smc;
+ 
+-	if (!smc)
+-		return;
+-	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_error_report);
++	read_lock_bh(&clcsk->sk_callback_lock);
++	smc = smc_clcsock_user_data(clcsk);
++	if (smc)
++		smc_fback_forward_wakeup(smc, clcsk,
++					 smc->clcsk_error_report);
++	read_unlock_bh(&clcsk->sk_callback_lock);
+ }
+ 
+ static void smc_fback_replace_callbacks(struct smc_sock *smc)
+ {
+ 	struct sock *clcsk = smc->clcsock->sk;
+ 
++	write_lock_bh(&clcsk->sk_callback_lock);
+ 	clcsk->sk_user_data = (void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
+ 
+ 	smc_clcsock_replace_cb(&clcsk->sk_state_change, smc_fback_state_change,
+@@ -797,6 +822,8 @@ static void smc_fback_replace_callbacks(struct smc_sock *smc)
+ 			       &smc->clcsk_write_space);
+ 	smc_clcsock_replace_cb(&clcsk->sk_error_report, smc_fback_error_report,
+ 			       &smc->clcsk_error_report);
++
++	write_unlock_bh(&clcsk->sk_callback_lock);
+ }
+ 
+ static int smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
+@@ -2368,17 +2395,20 @@ static void smc_tcp_listen_work(struct work_struct *work)
+ 
+ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
+ {
+-	struct smc_sock *lsmc =
+-		smc_clcsock_user_data(listen_clcsock);
++	struct smc_sock *lsmc;
+ 
++	read_lock_bh(&listen_clcsock->sk_callback_lock);
++	lsmc = smc_clcsock_user_data(listen_clcsock);
+ 	if (!lsmc)
+-		return;
++		goto out;
+ 	lsmc->clcsk_data_ready(listen_clcsock);
+ 	if (lsmc->sk.sk_state == SMC_LISTEN) {
+ 		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
+ 		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
+ 			sock_put(&lsmc->sk);
+ 	}
++out:
++	read_unlock_bh(&listen_clcsock->sk_callback_lock);
+ }
+ 
+ static int smc_listen(struct socket *sock, int backlog)
+@@ -2410,10 +2440,12 @@ static int smc_listen(struct socket *sock, int backlog)
+ 	/* save original sk_data_ready function and establish
+ 	 * smc-specific sk_data_ready function
+ 	 */
++	write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
+ 	smc->clcsock->sk->sk_user_data =
+ 		(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
+ 	smc_clcsock_replace_cb(&smc->clcsock->sk->sk_data_ready,
+ 			       smc_clcsock_data_ready, &smc->clcsk_data_ready);
++	write_unlock_bh(&smc->clcsock->sk->sk_callback_lock);
+ 
+ 	/* save original ops */
+ 	smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
+@@ -2428,9 +2460,11 @@ static int smc_listen(struct socket *sock, int backlog)
+ 
+ 	rc = kernel_listen(smc->clcsock, backlog);
+ 	if (rc) {
++		write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
+ 		smc_clcsock_restore_cb(&smc->clcsock->sk->sk_data_ready,
+ 				       &smc->clcsk_data_ready);
+ 		smc->clcsock->sk->sk_user_data = NULL;
++		write_unlock_bh(&smc->clcsock->sk->sk_callback_lock);
+ 		goto out;
+ 	}
+ 	sk->sk_max_ack_backlog = backlog;
+diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
+index 7bd1ef5..31db743 100644
+--- a/net/smc/smc_close.c
++++ b/net/smc/smc_close.c
+@@ -214,9 +214,11 @@ int smc_close_active(struct smc_sock *smc)
+ 		sk->sk_state = SMC_CLOSED;
+ 		sk->sk_state_change(sk); /* wake up accept */
+ 		if (smc->clcsock && smc->clcsock->sk) {
++			write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
+ 			smc_clcsock_restore_cb(&smc->clcsock->sk->sk_data_ready,
+ 					       &smc->clcsk_data_ready);
+ 			smc->clcsock->sk->sk_user_data = NULL;
++			write_unlock_bh(&smc->clcsock->sk->sk_callback_lock);
+ 			rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
  		}
- 		break;
-+	/* Architectural LBR */
-+	case 0x1c: {
-+		u32 lbr_depth_mask = entry->eax & 0xff;
-+
-+		if (!lbr_depth_mask ||
-+		    !kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR)) {
-+			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-+			break;
-+		}
-+		/*
-+		 * KVM only exposes the maximum supported depth, which is the
-+		 * fixed value used on the host side.
-+		 * KVM doesn't allow VMM userspace to adjust LBR depth because
-+		 * guest LBR emulation depends on the configuration of host LBR
-+		 * driver.
-+		 */
-+		lbr_depth_mask = BIT((fls(lbr_depth_mask) - 1));
-+		entry->eax &= ~0xff;
-+		entry->eax |= lbr_depth_mask;
-+		break;
-+	}
- 	/* Intel AMX TILE */
- 	case 0x1d:
- 		if (!kvm_cpu_cap_has(X86_FEATURE_AMX_TILE)) {
+ 		smc_close_cleanup_listen(sk);
 -- 
-2.27.0
+1.8.3.1
 
