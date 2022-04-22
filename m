@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A88C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A362C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233837AbiDVM5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
+        id S233950AbiDVM5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 08:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234030AbiDVM5C (ORCPT
+        with ESMTP id S233803AbiDVM4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:57:02 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C41B2527F5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:54:07 -0700 (PDT)
+        Fri, 22 Apr 2022 08:56:51 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D6C0527F5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:53:57 -0700 (PDT)
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-2bZdEIVWPhG6siyfIglrFQ-1; Fri, 22 Apr 2022 08:54:00 -0400
-X-MC-Unique: 2bZdEIVWPhG6siyfIglrFQ-1
+ us-mta-407-aAbXDRs3NLWNoZry2Z3Lxw-1; Fri, 22 Apr 2022 08:53:52 -0400
+X-MC-Unique: aAbXDRs3NLWNoZry2Z3Lxw-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE24F185A7B2;
-        Fri, 22 Apr 2022 12:53:59 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 36940101AA45;
+        Fri, 22 Apr 2022 12:53:51 +0000 (UTC)
 Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 571E0C44AE4;
-        Fri, 22 Apr 2022 12:53:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A2EFEC28107;
+        Fri, 22 Apr 2022 12:53:48 +0000 (UTC)
 From:   Alexey Gladkov <legion@kernel.org>
 To:     LKML <linux-kernel@vger.kernel.org>,
         "Eric W . Biederman" <ebiederm@xmission.com>,
@@ -43,9 +43,9 @@ Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
         Serge Hallyn <serge@hallyn.com>,
         Varad Gautam <varad.gautam@suse.com>,
         Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v1 4/4] ipc: Remove extra braces
-Date:   Fri, 22 Apr 2022 14:53:40 +0200
-Message-Id: <8f645e997ff805dcb410cfdd09df9e475c6c845e.1650631347.git.legion@kernel.org>
+Subject: [PATCH v1 1/4] ipc: Remove extra1 field abuse to pass ipc namespace
+Date:   Fri, 22 Apr 2022 14:53:37 +0200
+Message-Id: <e2c8df40672ca854b754cc3a412be2d6f684ac8b.1650631347.git.legion@kernel.org>
 In-Reply-To: <cover.1650631347.git.legion@kernel.org>
 References: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com> <cover.1650631347.git.legion@kernel.org>
 MIME-Version: 1.0
@@ -55,74 +55,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix coding style. In the previous commit, I added braces because,
-in addition to changing .data, .extra1 also changed. Now this is not
-needed.
+Eric Biederman pointed out that using .extra1 to pass ipc namespace
+looks like an ugly hack and there is a better solution.
 
+Link: https://lore.kernel.org/lkml/87czib9g38.fsf@email.froward.int.ebiederm.org/
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
 Signed-off-by: Alexey Gladkov <legion@kernel.org>
 ---
- ipc/ipc_sysctl.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ ipc/ipc_sysctl.c | 26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
 diff --git a/ipc/ipc_sysctl.c b/ipc/ipc_sysctl.c
-index 5a58598d48c8..ef313ecfb53a 100644
+index 15210ac47e9e..eb7ba8e0a355 100644
 --- a/ipc/ipc_sysctl.c
 +++ b/ipc/ipc_sysctl.c
-@@ -222,42 +222,41 @@ bool setup_ipc_sysctls(struct ipc_namespace *ns)
- 		int i;
+@@ -19,16 +19,11 @@
+ static int proc_ipc_dointvec_minmax_orphans(struct ctl_table *table, int write,
+ 		void *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	struct ipc_namespace *ns = table->extra1;
+-	struct ctl_table ipc_table;
++	struct ipc_namespace *ns =
++		container_of(table->data, struct ipc_namespace, shm_rmid_forced);
+ 	int err;
  
- 		for (i = 0; i < ARRAY_SIZE(ipc_sysctls); i++) {
--			if (tbl[i].data == &init_ipc_ns.shm_ctlmax) {
-+			if (tbl[i].data == &init_ipc_ns.shm_ctlmax)
- 				tbl[i].data = &ns->shm_ctlmax;
+-	memcpy(&ipc_table, table, sizeof(ipc_table));
+-
+-	ipc_table.extra1 = SYSCTL_ZERO;
+-	ipc_table.extra2 = SYSCTL_ONE;
+-
+-	err = proc_dointvec_minmax(&ipc_table, write, buffer, lenp, ppos);
++	err = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
  
--			} else if (tbl[i].data == &init_ipc_ns.shm_ctlall) {
-+			else if (tbl[i].data == &init_ipc_ns.shm_ctlall)
- 				tbl[i].data = &ns->shm_ctlall;
+ 	if (err < 0)
+ 		return err;
+@@ -55,20 +50,15 @@ static int proc_ipc_auto_msgmni(struct ctl_table *table, int write,
+ static int proc_ipc_sem_dointvec(struct ctl_table *table, int write,
+ 	void *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	struct ipc_namespace *ns = table->extra1;
+-	struct ctl_table ipc_table;
++	struct ipc_namespace *ns =
++		container_of(table->data, struct ipc_namespace, sem_ctls);
+ 	int ret, semmni;
  
--			} else if (tbl[i].data == &init_ipc_ns.shm_ctlmni) {
-+			else if (tbl[i].data == &init_ipc_ns.shm_ctlmni)
- 				tbl[i].data = &ns->shm_ctlmni;
+-	memcpy(&ipc_table, table, sizeof(ipc_table));
+-
+-	ipc_table.extra1 = NULL;
+-	ipc_table.extra2 = NULL;
+-
+ 	semmni = ns->sem_ctls[3];
+ 	ret = proc_dointvec(table, write, buffer, lenp, ppos);
  
--			} else if (tbl[i].data == &init_ipc_ns.shm_rmid_forced) {
-+			else if (tbl[i].data == &init_ipc_ns.shm_rmid_forced)
+ 	if (!ret)
+-		ret = sem_check_semmni(current->nsproxy->ipc_ns);
++		ret = sem_check_semmni(ns);
+ 
+ 	/*
+ 	 * Reset the semmni value if an error happens.
+@@ -131,6 +121,8 @@ static struct ctl_table ipc_sysctls[] = {
+ 		.maxlen		= sizeof(init_ipc_ns.shm_rmid_forced),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_ipc_dointvec_minmax_orphans,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
+ 	},
+ 	{
+ 		.procname	= "msgmax",
+@@ -237,7 +229,6 @@ bool setup_ipc_sysctls(struct ipc_namespace *ns)
+ 
+ 			} else if (tbl[i].data == &init_ipc_ns.shm_rmid_forced) {
  				tbl[i].data = &ns->shm_rmid_forced;
+-				tbl[i].extra1 = ns;
  
--			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmax) {
-+			else if (tbl[i].data == &init_ipc_ns.msg_ctlmax)
+ 			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmax) {
  				tbl[i].data = &ns->msg_ctlmax;
+@@ -250,7 +241,6 @@ bool setup_ipc_sysctls(struct ipc_namespace *ns)
  
--			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmni) {
-+			else if (tbl[i].data == &init_ipc_ns.msg_ctlmni)
- 				tbl[i].data = &ns->msg_ctlmni;
- 
--			} else if (tbl[i].data == &init_ipc_ns.msg_ctlmnb) {
-+			else if (tbl[i].data == &init_ipc_ns.msg_ctlmnb)
- 				tbl[i].data = &ns->msg_ctlmnb;
- 
--			} else if (tbl[i].data == &init_ipc_ns.sem_ctls) {
-+			else if (tbl[i].data == &init_ipc_ns.sem_ctls)
+ 			} else if (tbl[i].data == &init_ipc_ns.sem_ctls) {
  				tbl[i].data = &ns->sem_ctls;
+-				tbl[i].extra1 = ns;
  #ifdef CONFIG_CHECKPOINT_RESTORE
--			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SEM_IDS].next_id) {
-+			else if (tbl[i].data == &init_ipc_ns.ids[IPC_SEM_IDS].next_id)
+ 			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SEM_IDS].next_id) {
  				tbl[i].data = &ns->ids[IPC_SEM_IDS].next_id;
- 
--			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_MSG_IDS].next_id) {
-+			else if (tbl[i].data == &init_ipc_ns.ids[IPC_MSG_IDS].next_id)
- 				tbl[i].data = &ns->ids[IPC_MSG_IDS].next_id;
- 
--			} else if (tbl[i].data == &init_ipc_ns.ids[IPC_SHM_IDS].next_id) {
-+			else if (tbl[i].data == &init_ipc_ns.ids[IPC_SHM_IDS].next_id)
- 				tbl[i].data = &ns->ids[IPC_SHM_IDS].next_id;
- #endif
--			} else {
-+			else
- 				tbl[i].data = NULL;
--			}
- 		}
- 
- 		ns->ipc_sysctls = __register_sysctl_table(&ns->ipc_set, "kernel", tbl);
 -- 
 2.33.2
 
