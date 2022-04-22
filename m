@@ -2,198 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08783C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445856AbiDVJRA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
+        id S233176AbiDVJRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 05:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445894AbiDVJOc (ORCPT
+        with ESMTP id S1445853AbiDVJKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:14:32 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6BC51E73;
-        Fri, 22 Apr 2022 02:11:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650618700; x=1682154700;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=9gs0y43nboKo8GGuh5maolOZQqjDS1SJ89N8KaW1Seo=;
-  b=GGV+neFc8PW22LA6mo8bELQRCCJ/UaS/PaTwGwrIMfsZhP0WY3pwHrIx
-   RbafBiAxpklTwjvvRY/R+Es6otvakEzN74R8ZOWlc9+MB6SqZKs5TQgmc
-   L5QwEY8Px2XCMIP70JjS5HBZIZupwmWHvVQtmdHyTgIkKPluDJEsuYz06
-   M=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Apr 2022 02:11:40 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:11:39 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 02:11:39 -0700
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 02:11:32 -0700
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
-        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
-        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
-        <quic_aravindh@quicinc.com>, <steev@kali.org>
-Subject: [PATCH v9 2/4] drm/msm/dp: Support only IRQ_HPD and REPLUG interrupts for eDP
-Date:   Fri, 22 Apr 2022 14:41:04 +0530
-Message-ID: <1650618666-15342-3-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com>
+        Fri, 22 Apr 2022 05:10:36 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B4051E6E;
+        Fri, 22 Apr 2022 02:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650618464; x=1682154464;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jaQBEI9gtWcbNllBCZ+EzKEbzFVZLPK+E0m9hNofpRY=;
+  b=YR2X6rt1AQnleu6VY5mvgmY1lLrj7CKiDbwEguf4eqPq3zQjVXlGh/u4
+   6UUXAZoyTnLCtaD+fp8jEkc9P96jlM+uPTSa3lxbbV6RLmurP5tmHrYfG
+   PrWM/JupFv3dJRU6R7dM4WHK7rtIbCDi4ejcC8IeLu7cqXyuliD2H3Fr1
+   XeMV0CmeZRim28OEjk1A5bYOLi8981gm80uRVqy3/0ulB7EoIvRESd6hy
+   eYbBbsgE23SVox3E8tY/n2RtwIM8+Kn1cxnwI9VxYbWhgr1UbH1BIOv3g
+   UlBWnTXrWYIsDJlVAKzup8IBAt97md8IbB/BgoawJppqNE8Y+rx2mXTx/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="251953460"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="251953460"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:07:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="867315839"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 22 Apr 2022 02:07:38 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhpGL-0009xW-LC;
+        Fri, 22 Apr 2022 09:07:37 +0000
+Date:   Fri, 22 Apr 2022 17:06:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com, akpm@linux-foundation.org,
+        rick.p.edgecombe@intel.com, hch@infradead.org,
+        imbrenda@linux.ibm.com, mcgrof@kernel.org,
+        Song Liu <song@kernel.org>, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH bpf 2/4] page_alloc: use vmalloc_huge for large system
+ hash
+Message-ID: <202204221628.82Qczjsq-lkp@intel.com>
+References: <20220422051813.1989257-3-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422051813.1989257-3-song@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The panel-edp enables the eDP panel power during probe, get_modes
-and pre-enable. The eDP connect and disconnect interrupts for the eDP/DP
-controller are directly dependent on panel power. As eDP display can be
-assumed as always connected, the controller driver can skip the eDP
-connect and disconnect interrupts. Any disruption in the link status
-will be indicated via the IRQ_HPD interrupts.
+Hi Song,
 
-So, the eDP controller driver can just enable the IRQ_HPD and replug
-interrupts. The DP controller driver still needs to enable all the
-interrupts.
+I love your patch! Yet something to improve:
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
----
-Changes in v9:
-  - add comment explaining the interrupt status register
+[auto build test ERROR on bpf/master]
 
-Changes in v8:
-  - add comment explaining the interrupt status return
+url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/bpf_prog_pack-and-vmalloc-on-huge-page-fixes/20220422-133605
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
+config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220422/202204221628.82Qczjsq-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/239fb9ca743cf33db8d56df7957726e19aea87d5
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Song-Liu/bpf_prog_pack-and-vmalloc-on-huge-page-fixes/20220422-133605
+        git checkout 239fb9ca743cf33db8d56df7957726e19aea87d5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Changes in v7:
-  - reordered the patch in the series
-  - modified the return statement for isr
-  - connector check modified to just check for eDP
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
- drivers/gpu/drm/msm/dp/dp_catalog.c | 16 ++++++++++------
- drivers/gpu/drm/msm/dp/dp_display.c | 22 +++++++++++++++++++++-
- 2 files changed, 31 insertions(+), 7 deletions(-)
+All error/warnings (new ones prefixed by >>):
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
-index fac815f..df9670d 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.c
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
-@@ -569,10 +569,6 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
- 
- 	u32 reftimer = dp_read_aux(catalog, REG_DP_DP_HPD_REFTIMER);
- 
--	/* enable HPD plug and unplug interrupts */
--	dp_catalog_hpd_config_intr(dp_catalog,
--		DP_DP_HPD_PLUG_INT_MASK | DP_DP_HPD_UNPLUG_INT_MASK, true);
--
- 	/* Configure REFTIMER and enable it */
- 	reftimer |= DP_DP_HPD_REFTIMER_ENABLE;
- 	dp_write_aux(catalog, REG_DP_DP_HPD_REFTIMER, reftimer);
-@@ -599,13 +595,21 @@ u32 dp_catalog_hpd_get_intr_status(struct dp_catalog *dp_catalog)
- {
- 	struct dp_catalog_private *catalog = container_of(dp_catalog,
- 				struct dp_catalog_private, dp_catalog);
--	int isr = 0;
-+	int isr, mask;
- 
- 	isr = dp_read_aux(catalog, REG_DP_DP_HPD_INT_STATUS);
- 	dp_write_aux(catalog, REG_DP_DP_HPD_INT_ACK,
- 				 (isr & DP_DP_HPD_INT_MASK));
-+	mask = dp_read_aux(catalog, REG_DP_DP_HPD_INT_MASK);
- 
--	return isr;
-+	/*
-+	 * We only want to return interrupts that are unmasked to the caller.
-+	 * However, the interrupt status field also contains other
-+	 * informational bits about the HPD state status, so we only mask
-+	 * out the part of the register that tells us about which interrupts
-+	 * are pending.
-+	 */
-+	return isr & (mask | ~DP_DP_HPD_INT_MASK);
- }
- 
- int dp_catalog_ctrl_get_interrupt(struct dp_catalog *dp_catalog)
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 055681a..dea4de9 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -683,7 +683,8 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 	dp_display_handle_plugged_change(&dp->dp_display, false);
- 
- 	/* enable HDP plug interrupt to prepare for next plugin */
--	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
-+	if (!dp->dp_display.is_edp)
-+		dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, true);
- 
- 	DRM_DEBUG_DP("After, type=%d hpd_state=%d\n",
- 			dp->dp_display.connector_type, state);
-@@ -1096,6 +1097,13 @@ static void dp_display_config_hpd(struct dp_display_private *dp)
- 	dp_display_host_init(dp);
- 	dp_catalog_ctrl_hpd_config(dp->catalog);
- 
-+	/* Enable plug and unplug interrupts only for external DisplayPort */
-+	if (!dp->dp_display.is_edp)
-+		dp_catalog_hpd_config_intr(dp->catalog,
-+				DP_DP_HPD_PLUG_INT_MASK |
-+				DP_DP_HPD_UNPLUG_INT_MASK,
-+				true);
-+
- 	/* Enable interrupt first time
- 	 * we are leaving dp clocks on during disconnect
- 	 * and never disable interrupt
-@@ -1381,6 +1389,12 @@ static int dp_pm_resume(struct device *dev)
- 	dp_catalog_ctrl_hpd_config(dp->catalog);
- 
- 
-+	if (!dp->dp_display.is_edp)
-+		dp_catalog_hpd_config_intr(dp->catalog,
-+				DP_DP_HPD_PLUG_INT_MASK |
-+				DP_DP_HPD_UNPLUG_INT_MASK,
-+				true);
-+
- 	if (dp_catalog_link_is_connected(dp->catalog)) {
- 		/*
- 		 * set sink to normal operation mode -- D0
-@@ -1659,6 +1673,9 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
- 		return;
- 	}
- 
-+	if (dp->is_edp)
-+		dp_hpd_plug_handle(dp_display, 0);
-+
- 	mutex_lock(&dp_display->event_mutex);
- 
- 	/* stop sentinel checking */
-@@ -1723,6 +1740,9 @@ void dp_bridge_post_disable(struct drm_bridge *drm_bridge)
- 
- 	dp_display = container_of(dp, struct dp_display_private, dp_display);
- 
-+	if (dp->is_edp)
-+		dp_hpd_unplug_handle(dp_display, 0);
-+
- 	mutex_lock(&dp_display->event_mutex);
- 
- 	/* stop sentinel checking */
+   mm/page_alloc.c: In function 'alloc_large_system_hash':
+>> mm/page_alloc.c:8921:33: error: implicit declaration of function 'vmalloc_huge'; did you mean 'vmalloc_no_huge'? [-Werror=implicit-function-declaration]
+    8921 |                         table = vmalloc_huge(size, gfp_flags);
+         |                                 ^~~~~~~~~~~~
+         |                                 vmalloc_no_huge
+>> mm/page_alloc.c:8921:31: warning: assignment to 'void *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    8921 |                         table = vmalloc_huge(size, gfp_flags);
+         |                               ^
+   cc1: some warnings being treated as errors
+
+
+vim +8921 mm/page_alloc.c
+
+  8876	
+  8877			/* limit to 1 bucket per 2^scale bytes of low memory */
+  8878			if (scale > PAGE_SHIFT)
+  8879				numentries >>= (scale - PAGE_SHIFT);
+  8880			else
+  8881				numentries <<= (PAGE_SHIFT - scale);
+  8882	
+  8883			/* Make sure we've got at least a 0-order allocation.. */
+  8884			if (unlikely(flags & HASH_SMALL)) {
+  8885				/* Makes no sense without HASH_EARLY */
+  8886				WARN_ON(!(flags & HASH_EARLY));
+  8887				if (!(numentries >> *_hash_shift)) {
+  8888					numentries = 1UL << *_hash_shift;
+  8889					BUG_ON(!numentries);
+  8890				}
+  8891			} else if (unlikely((numentries * bucketsize) < PAGE_SIZE))
+  8892				numentries = PAGE_SIZE / bucketsize;
+  8893		}
+  8894		numentries = roundup_pow_of_two(numentries);
+  8895	
+  8896		/* limit allocation size to 1/16 total memory by default */
+  8897		if (max == 0) {
+  8898			max = ((unsigned long long)nr_all_pages << PAGE_SHIFT) >> 4;
+  8899			do_div(max, bucketsize);
+  8900		}
+  8901		max = min(max, 0x80000000ULL);
+  8902	
+  8903		if (numentries < low_limit)
+  8904			numentries = low_limit;
+  8905		if (numentries > max)
+  8906			numentries = max;
+  8907	
+  8908		log2qty = ilog2(numentries);
+  8909	
+  8910		gfp_flags = (flags & HASH_ZERO) ? GFP_ATOMIC | __GFP_ZERO : GFP_ATOMIC;
+  8911		do {
+  8912			virt = false;
+  8913			size = bucketsize << log2qty;
+  8914			if (flags & HASH_EARLY) {
+  8915				if (flags & HASH_ZERO)
+  8916					table = memblock_alloc(size, SMP_CACHE_BYTES);
+  8917				else
+  8918					table = memblock_alloc_raw(size,
+  8919								   SMP_CACHE_BYTES);
+  8920			} else if (get_order(size) >= MAX_ORDER || hashdist) {
+> 8921				table = vmalloc_huge(size, gfp_flags);
+  8922				virt = true;
+  8923				if (table)
+  8924					huge = is_vm_area_hugepages(table);
+  8925			} else {
+  8926				/*
+  8927				 * If bucketsize is not a power-of-two, we may free
+  8928				 * some pages at the end of hash table which
+  8929				 * alloc_pages_exact() automatically does
+  8930				 */
+  8931				table = alloc_pages_exact(size, gfp_flags);
+  8932				kmemleak_alloc(table, size, 1, gfp_flags);
+  8933			}
+  8934		} while (!table && size > PAGE_SIZE && --log2qty);
+  8935	
+  8936		if (!table)
+  8937			panic("Failed to allocate %s hash table\n", tablename);
+  8938	
+  8939		pr_info("%s hash table entries: %ld (order: %d, %lu bytes, %s)\n",
+  8940			tablename, 1UL << log2qty, ilog2(size) - PAGE_SHIFT, size,
+  8941			virt ? (huge ? "vmalloc hugepage" : "vmalloc") : "linear");
+  8942	
+  8943		if (_hash_shift)
+  8944			*_hash_shift = log2qty;
+  8945		if (_hash_mask)
+  8946			*_hash_mask = (1 << log2qty) - 1;
+  8947	
+  8948		return table;
+  8949	}
+  8950	
+
 -- 
-2.7.4
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
