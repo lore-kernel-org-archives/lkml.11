@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A500C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbiDVWAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S231174AbiDVWAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbiDVWAs (ORCPT
+        with ESMTP id S231243AbiDVWAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 18:00:48 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E90540E324
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 864A940E329
         for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1650660224;
@@ -21,23 +21,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pMzuMDxaR82bA08AUYBM8L/3Nbbe4qVN82u5tqpAsE0=;
-        b=ILmuC5MV9in6zgcRCJcVS0poJNKO/laxbEPKN7vlAWi7Oud5XW5o77C7XGTL+NVdLqSPCR
-        d8bdJfwyOZuE8vKM/CKjcPtmCwPXUacvoGhWEAmR6gzH5jkHpAaeZSIgCHtZDC06T5Cv2Y
-        llir4rOKG4JnqogfexFlt/okgLNpbFk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=yAh6HF4oclUNAmoKp6qIJ40bQfDLz8H5HJE2/XLu63Y=;
+        b=dRlMkPFtzS9d20NzskF+9r1O6Lg3KrAlpjNgjmddFWhsdGgLR1i6EuloqbbQAGVmHMPyq4
+        PKqg9CkdVhv8B7+ndlWkbw4NvcqFyowtRwvXxmeipsuUykAHvbIm6e7SEpnAvTOHFUeEPW
+        f6mLBHYUvLkdGmFSD6BweQn8k0ay7uA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-653-Gi2tyG9uPz6_9lH891fnsw-1; Fri, 22 Apr 2022 16:00:57 -0400
-X-MC-Unique: Gi2tyG9uPz6_9lH891fnsw-1
+ us-mta-588-DXAZYiwlPZ2gAYH_maiFDQ-1; Fri, 22 Apr 2022 16:01:01 -0400
+X-MC-Unique: DXAZYiwlPZ2gAYH_maiFDQ-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3A3BE8339A9;
-        Fri, 22 Apr 2022 20:00:47 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0B4463C0FEC9;
+        Fri, 22 Apr 2022 20:00:58 +0000 (UTC)
 Received: from dqiao.bos.com (unknown [10.22.19.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D82DFC27DB9;
-        Fri, 22 Apr 2022 20:00:46 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A85BDC2811D;
+        Fri, 22 Apr 2022 20:00:57 +0000 (UTC)
 From:   Donghai Qiao <dqiao@redhat.com>
 To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         peterz@infradead.org, heying24@huawei.com,
@@ -45,9 +45,9 @@ To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
 Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
         Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v2 01/11] smp: consolidate the structure definitions to smp.h
-Date:   Fri, 22 Apr 2022 16:00:30 -0400
-Message-Id: <20220422200040.93813-2-dqiao@redhat.com>
+Subject: [PATCH v2 06/11] smp: use smp_call_private() fron irq_work.c and core.c
+Date:   Fri, 22 Apr 2022 16:00:35 -0400
+Message-Id: <20220422200040.93813-7-dqiao@redhat.com>
 In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
 References: <20220422200040.93813-1-dqiao@redhat.com>
 Reply-To: dqiao@redhat.com
@@ -58,346 +58,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the structure definitions from kernel/smp.c to
-include/linux/smp.h
-
-Move the structure definitions from include/linux/smp_types.h
-to include/linux/smp.h and delete smp_types.h
+irq_work.c and core.c should use the cross interface rather than
+using a unpublished internal function __smp_call_single_queue.
 
 Signed-off-by: Donghai Qiao <dqiao@redhat.com>
 ---
- include/linux/irq_work.h  |   2 +-
- include/linux/smp.h       | 131 ++++++++++++++++++++++++++++++++++++--
- include/linux/smp_types.h |  69 --------------------
- kernel/smp.c              |  65 -------------------
- 4 files changed, 128 insertions(+), 139 deletions(-)
- delete mode 100644 include/linux/smp_types.h
+v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
 
-diff --git a/include/linux/irq_work.h b/include/linux/irq_work.h
-index 8cd11a223260..145af67b1cd3 100644
---- a/include/linux/irq_work.h
-+++ b/include/linux/irq_work.h
-@@ -2,7 +2,7 @@
- #ifndef _LINUX_IRQ_WORK_H
- #define _LINUX_IRQ_WORK_H
+ kernel/irq_work.c   | 4 ++--
+ kernel/sched/core.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/irq_work.c b/kernel/irq_work.c
+index f7df715ec28e..0d17c9d03d03 100644
+--- a/kernel/irq_work.c
++++ b/kernel/irq_work.c
+@@ -159,8 +159,8 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
+ 			if (!irq_work_claim(work))
+ 				goto out;
+ 		}
+-
+-		__smp_call_single_queue(cpu, &work->node.llist);
++		smp_call_private(cpu, (call_single_data_t *)&work->node.llist,
++					SMP_CALL_TYPE_IRQ_WORK);
+ 	} else {
+ 		__irq_work_queue_local(work);
+ 	}
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 51efaabac3e4..4fda3dfb887b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3780,7 +3780,7 @@ static void __ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags
+ 	p->sched_remote_wakeup = !!(wake_flags & WF_MIGRATED);
  
--#include <linux/smp_types.h>
-+#include <linux/smp.h>
- #include <linux/rcuwait.h>
+ 	WRITE_ONCE(rq->ttwu_pending, 1);
+-	__smp_call_single_queue(cpu, &p->wake_entry.llist);
++	smp_call_private(cpu, (call_single_data_t *)&p->wake_entry.llist, SMP_CALL_TYPE_TTWU);
+ }
  
- /*
-diff --git a/include/linux/smp.h b/include/linux/smp.h
-index a80ab58ae3f1..31811da856a3 100644
---- a/include/linux/smp.h
-+++ b/include/linux/smp.h
-@@ -10,13 +10,74 @@
- #include <linux/errno.h>
- #include <linux/types.h>
- #include <linux/list.h>
-+#include <linux/llist.h>
- #include <linux/cpumask.h>
- #include <linux/init.h>
--#include <linux/smp_types.h>
- 
- typedef void (*smp_call_func_t)(void *info);
- typedef bool (*smp_cond_func_t)(int cpu, void *info);
- 
-+enum {
-+	CSD_FLAG_LOCK		= 0x01,
-+
-+	IRQ_WORK_PENDING	= 0x01,
-+	IRQ_WORK_BUSY		= 0x02,
-+	IRQ_WORK_LAZY		= 0x04, /* No IPI, wait for tick */
-+	IRQ_WORK_HARD_IRQ	= 0x08, /* IRQ context on PREEMPT_RT */
-+
-+	IRQ_WORK_CLAIMED	= (IRQ_WORK_PENDING | IRQ_WORK_BUSY),
-+
-+	CSD_TYPE_ASYNC		= 0x00,
-+	CSD_TYPE_SYNC		= 0x10,
-+	CSD_TYPE_IRQ_WORK	= 0x20,
-+	CSD_TYPE_TTWU		= 0x30,
-+
-+	CSD_FLAG_TYPE_MASK	= 0xF0,
-+};
-+
-+/*
-+ * struct __call_single_node is the primary type on
-+ * smp.c:call_single_queue.
-+ *
-+ * flush_smp_call_function_queue() only reads the type from
-+ * __call_single_node::u_flags as a regular load, the above
-+ * (anonymous) enum defines all the bits of this word.
-+ *
-+ * Other bits are not modified until the type is known.
-+ *
-+ * CSD_TYPE_SYNC/ASYNC:
-+ *	struct {
-+ *		struct llist_node node;
-+ *		unsigned int flags;
-+ *		smp_call_func_t func;
-+ *		void *info;
-+ *	};
-+ *
-+ * CSD_TYPE_IRQ_WORK:
-+ *	struct {
-+ *		struct llist_node node;
-+ *		atomic_t flags;
-+ *		void (*func)(struct irq_work *);
-+ *	};
-+ *
-+ * CSD_TYPE_TTWU:
-+ *	struct {
-+ *		struct llist_node node;
-+ *		unsigned int flags;
-+ *	};
-+ *
-+ */
-+struct __call_single_node {
-+	struct llist_node	llist;
-+	union {
-+		unsigned int	u_flags;
-+		atomic_t	a_flags;
-+	};
-+#ifdef CONFIG_64BIT
-+	u16 src, dst;
-+#endif
-+};
-+
- /*
-  * structure shares (partial) layout with struct irq_work
-  */
-@@ -26,13 +87,75 @@ struct __call_single_data {
- 	void *info;
- };
- 
--#define CSD_INIT(_func, _info) \
--	(struct __call_single_data){ .func = (_func), .info = (_info), }
--
- /* Use __aligned() to avoid to use 2 cache lines for 1 csd */
- typedef struct __call_single_data call_single_data_t
- 	__aligned(sizeof(struct __call_single_data));
- 
-+struct cfd_percpu {
-+	call_single_data_t	csd;
-+#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
-+	u64	seq_queue;
-+	u64	seq_ipi;
-+	u64	seq_noipi;
-+#endif
-+};
-+
-+struct call_function_data {
-+	struct cfd_percpu	__percpu *pcpu;
-+	cpumask_var_t		cpumask;
-+	cpumask_var_t		cpumask_ipi;
-+};
-+
-+#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
-+union cfd_seq_cnt {
-+	u64		val;
-+	struct {
-+		u64	src:16;
-+		u64	dst:16;
-+#define CFD_SEQ_NOCPU	0xffff
-+		u64	type:4;
-+#define CFD_SEQ_QUEUE	0
-+#define CFD_SEQ_IPI	1
-+#define CFD_SEQ_NOIPI	2
-+#define CFD_SEQ_PING	3
-+#define CFD_SEQ_PINGED	4
-+#define CFD_SEQ_HANDLE	5
-+#define CFD_SEQ_DEQUEUE	6
-+#define CFD_SEQ_IDLE	7
-+#define CFD_SEQ_GOTIPI	8
-+#define CFD_SEQ_HDLEND	9
-+		u64	cnt:28;
-+	}		u;
-+};
-+
-+static char *seq_type[] = {
-+	[CFD_SEQ_QUEUE]		= "queue",
-+	[CFD_SEQ_IPI]		= "ipi",
-+	[CFD_SEQ_NOIPI]		= "noipi",
-+	[CFD_SEQ_PING]		= "ping",
-+	[CFD_SEQ_PINGED]	= "pinged",
-+	[CFD_SEQ_HANDLE]	= "handle",
-+	[CFD_SEQ_DEQUEUE]	= "dequeue (src CPU 0 == empty)",
-+	[CFD_SEQ_IDLE]		= "idle",
-+	[CFD_SEQ_GOTIPI]	= "gotipi",
-+	[CFD_SEQ_HDLEND]	= "hdlend (src CPU 0 == early)",
-+};
-+
-+struct cfd_seq_local {
-+	u64	ping;
-+	u64	pinged;
-+	u64	handle;
-+	u64	dequeue;
-+	u64	idle;
-+	u64	gotipi;
-+	u64	hdlend;
-+};
-+#endif
-+
-+#define CSD_TYPE(_csd)	((_csd)->node.u_flags & CSD_FLAG_TYPE_MASK)
-+#define CSD_INIT(_func, _info) \
-+	((struct __call_single_data){ .func = (_func), .info = (_info), })
-+
- #define INIT_CSD(_csd, _func, _info)		\
- do {						\
- 	*(_csd) = CSD_INIT((_func), (_info));	\
-diff --git a/include/linux/smp_types.h b/include/linux/smp_types.h
-deleted file mode 100644
-index 2e8461af8df6..000000000000
---- a/include/linux/smp_types.h
-+++ /dev/null
-@@ -1,69 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __LINUX_SMP_TYPES_H
--#define __LINUX_SMP_TYPES_H
--
--#include <linux/llist.h>
--
--enum {
--	CSD_FLAG_LOCK		= 0x01,
--
--	IRQ_WORK_PENDING	= 0x01,
--	IRQ_WORK_BUSY		= 0x02,
--	IRQ_WORK_LAZY		= 0x04, /* No IPI, wait for tick */
--	IRQ_WORK_HARD_IRQ	= 0x08, /* IRQ context on PREEMPT_RT */
--
--	IRQ_WORK_CLAIMED	= (IRQ_WORK_PENDING | IRQ_WORK_BUSY),
--
--	CSD_TYPE_ASYNC		= 0x00,
--	CSD_TYPE_SYNC		= 0x10,
--	CSD_TYPE_IRQ_WORK	= 0x20,
--	CSD_TYPE_TTWU		= 0x30,
--
--	CSD_FLAG_TYPE_MASK	= 0xF0,
--};
--
--/*
-- * struct __call_single_node is the primary type on
-- * smp.c:call_single_queue.
-- *
-- * flush_smp_call_function_queue() only reads the type from
-- * __call_single_node::u_flags as a regular load, the above
-- * (anonymous) enum defines all the bits of this word.
-- *
-- * Other bits are not modified until the type is known.
-- *
-- * CSD_TYPE_SYNC/ASYNC:
-- *	struct {
-- *		struct llist_node node;
-- *		unsigned int flags;
-- *		smp_call_func_t func;
-- *		void *info;
-- *	};
-- *
-- * CSD_TYPE_IRQ_WORK:
-- *	struct {
-- *		struct llist_node node;
-- *		atomic_t flags;
-- *		void (*func)(struct irq_work *);
-- *	};
-- *
-- * CSD_TYPE_TTWU:
-- *	struct {
-- *		struct llist_node node;
-- *		unsigned int flags;
-- *	};
-- *
-- */
--
--struct __call_single_node {
--	struct llist_node	llist;
--	union {
--		unsigned int	u_flags;
--		atomic_t	a_flags;
--	};
--#ifdef CONFIG_64BIT
--	u16 src, dst;
--#endif
--};
--
--#endif /* __LINUX_SMP_TYPES_H */
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 01a7c1706a58..b2b3878f0330 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -29,73 +29,8 @@
- #include "smpboot.h"
- #include "sched/smp.h"
- 
--#define CSD_TYPE(_csd)	((_csd)->node.u_flags & CSD_FLAG_TYPE_MASK)
--
--#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
--union cfd_seq_cnt {
--	u64		val;
--	struct {
--		u64	src:16;
--		u64	dst:16;
--#define CFD_SEQ_NOCPU	0xffff
--		u64	type:4;
--#define CFD_SEQ_QUEUE	0
--#define CFD_SEQ_IPI	1
--#define CFD_SEQ_NOIPI	2
--#define CFD_SEQ_PING	3
--#define CFD_SEQ_PINGED	4
--#define CFD_SEQ_HANDLE	5
--#define CFD_SEQ_DEQUEUE	6
--#define CFD_SEQ_IDLE	7
--#define CFD_SEQ_GOTIPI	8
--#define CFD_SEQ_HDLEND	9
--		u64	cnt:28;
--	}		u;
--};
--
--static char *seq_type[] = {
--	[CFD_SEQ_QUEUE]		= "queue",
--	[CFD_SEQ_IPI]		= "ipi",
--	[CFD_SEQ_NOIPI]		= "noipi",
--	[CFD_SEQ_PING]		= "ping",
--	[CFD_SEQ_PINGED]	= "pinged",
--	[CFD_SEQ_HANDLE]	= "handle",
--	[CFD_SEQ_DEQUEUE]	= "dequeue (src CPU 0 == empty)",
--	[CFD_SEQ_IDLE]		= "idle",
--	[CFD_SEQ_GOTIPI]	= "gotipi",
--	[CFD_SEQ_HDLEND]	= "hdlend (src CPU 0 == early)",
--};
--
--struct cfd_seq_local {
--	u64	ping;
--	u64	pinged;
--	u64	handle;
--	u64	dequeue;
--	u64	idle;
--	u64	gotipi;
--	u64	hdlend;
--};
--#endif
--
--struct cfd_percpu {
--	call_single_data_t	csd;
--#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
--	u64	seq_queue;
--	u64	seq_ipi;
--	u64	seq_noipi;
--#endif
--};
--
--struct call_function_data {
--	struct cfd_percpu	__percpu *pcpu;
--	cpumask_var_t		cpumask;
--	cpumask_var_t		cpumask_ipi;
--};
--
- static DEFINE_PER_CPU_ALIGNED(struct call_function_data, cfd_data);
--
- static DEFINE_PER_CPU_SHARED_ALIGNED(struct llist_head, call_single_queue);
--
- static void flush_smp_call_function_queue(bool warn_cpu_offline);
- 
- int smpcfd_prepare_cpu(unsigned int cpu)
+ void wake_up_if_idle(int cpu)
 -- 
 2.27.0
 
