@@ -2,140 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76143C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B14CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447889AbiDVNV3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
+        id S234087AbiDVNXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 09:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447683AbiDVNVY (ORCPT
+        with ESMTP id S234077AbiDVNXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:21:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92410580DD;
-        Fri, 22 Apr 2022 06:18:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FFC1B82D47;
-        Fri, 22 Apr 2022 13:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6977CC385A0;
-        Fri, 22 Apr 2022 13:18:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650633507;
-        bh=b3cLy4CKtqux3jqGHuSXvrfXhwmJTx37EbQCGlvn+AM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=oceIaNcjR2SdZ2Hwo0Ldz7l80qzNDIytljZHUBXyBxeBXYYVk/AtcfANR5yStwnzN
-         7udFzKNqeqOcVb8oDyTe3ax53OIKEP01Tc9poDXMDzS2AO0SBFuJsAHqeViLI7cJp7
-         ZAXeMNS5PTTH7LbXvOFmeIRxoNZqTKLI7DHqQkjdcYf2uxBEOHYKkrlIpG5V8XSOPs
-         Lt8uHINNI+fuNOsPqKJDh11p1MxgqDEf3JHY395iZhuwDdMmiLMTd9BiIn7RWcsvLH
-         X7p5FyBiPZcfOU5+F7E2QjXn9qzE6ylVsQwclh+tPQuRLrnc0IbYfeHBgIqOpoVcXp
-         wj/yF9vyItHoA==
-Message-ID: <9e8fffb8344323ce9a80adc733e9250a63cb68ee.camel@kernel.org>
-Subject: Re: [PATCH V4 00/31] x86/sgx and selftests/sgx: Support SGX2
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>, jethro@fortanix.com
-Cc:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Fri, 22 Apr 2022 16:17:11 +0300
-In-Reply-To: <YmJyYwp9UHRLWaTw@kernel.org>
-References: <cover.1649878359.git.reinette.chatre@intel.com>
-         <2f4338f37943c2b067db16ae65c9af665d3b51d9.camel@kernel.org>
-         <9fbf26c8-5808-20c5-8653-d4f36bf398a4@intel.com>
-         <42a52a6018e8dadb4c3eebefaae4dab31c0d5721.camel@kernel.org>
-         <DM8PR11MB5591BBA189BC4EA5CFE2C7EAF6EF9@DM8PR11MB5591.namprd11.prod.outlook.com>
-         <54f053d8bb6b72725b2351fc2016d20b65cebbf1.camel@kernel.org>
-         <DM8PR11MB559180D1BA05B0E77D354467F6F49@DM8PR11MB5591.namprd11.prod.outlook.com>
-         <a94e4098-f5c1-f9ff-fab0-c2e5210cf188@intel.com>
-         <YmJyYwp9UHRLWaTw@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 
+        Fri, 22 Apr 2022 09:23:25 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706C55675F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:20:28 -0700 (PDT)
+Received: from mail-wm1-f52.google.com ([209.85.128.52]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MDykM-1na9z52EGS-009w2s for <linux-kernel@vger.kernel.org>; Fri, 22 Apr
+ 2022 15:20:27 +0200
+Received: by mail-wm1-f52.google.com with SMTP id 17-20020a05600c021100b00393a19f8f98so2342709wmi.4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:20:27 -0700 (PDT)
+X-Gm-Message-State: AOAM532t0cXsi4jBUQKB+WLq9mN0ZqKTfwHv/4OVRDOecOkG+CVrReig
+        aNGeOmxuSc54arV/SetezmN5i3Dtc2Luek785rg=
+X-Google-Smtp-Source: ABdhPJzf/DWY7IjQmD9EMZpdSip3IO7TepL3hX4HNfMH3eMN5Wr1vB5Co+iKQNZfzMg9VSbLcZ66wrZAMeetcjbrF3c=
+X-Received: by 2002:a05:600c:4ed4:b0:392:90a5:b7e6 with SMTP id
+ g20-20020a05600c4ed400b0039290a5b7e6mr13716628wmq.33.1650633627153; Fri, 22
+ Apr 2022 06:20:27 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220421192132.109954-1-nick.hawkins@hpe.com> <20220421192132.109954-2-nick.hawkins@hpe.com>
+In-Reply-To: <20220421192132.109954-2-nick.hawkins@hpe.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 22 Apr 2022 15:20:11 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0E4=8Drn_x19MkauNL_WC4vEL6wqkDqrafbT-n8cZpDA@mail.gmail.com>
+Message-ID: <CAK8P3a0E4=8Drn_x19MkauNL_WC4vEL6wqkDqrafbT-n8cZpDA@mail.gmail.com>
+Subject: Re: [PATCH v5 01/11] archh: arm: mach-hpe: Introduce the HPE GXP architecture
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Joel Stanley <joel@jms.id.au>, Arnd Bergmann <arnd@arndb.de>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:HHZb/dSf2uI0vlbQ6e8ER49qDtomMK8A0heqJ1xj8Mbg3Oe9fpZ
+ umAbwrQddJkUHuLUVOyd6v3gs5WxGsfwQNIuJVWsIfZU/z7XTOJfZmzngWnCL+31DrPzOpq
+ xUeDzhY8V9Jbgk4IlJNin65q84t/st8l6AP0C7bnbWfa3MkkQanR73NOGG40neKkbcqiJ85
+ uCvyzTunC2mwgkq6AkOog==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZfFoGBGji6Q=:5rEyGioGbRetw+KE3HlOqf
+ 7593IfLxMaL4Jrn/qHDoJucyEFGdqVmiS8sWDr9BzWNWFGok+Qt1TMMj1sqSSp2URmzxbrwky
+ zu7TKoeCbGhMA6htqEzujRp4WqSO9ORbsxsaPNBP3Ms3lFTdhUhiu36pbkqBtIqP6kv7dtdg/
+ rt/201dVbSOCr2auhOEkyf0JzUI0gBXBcYLTWvKgJ3eVRTZH16OCnCPXqKSCZSofi2q0BILEu
+ ThcpFg0YXf2qQsE5eofJrkynXq+inUImxPthggst1sYBYtbc7nUNGy2YHmPFKaTSaY6HTU1be
+ F6H15DHJosyOGQXgxBUFBPhcggGhe1M+wgwTAgZ+/sm/OLHi7K0rlCXwG95xQaGGe74l2nJSi
+ 08mZXTQ3KKGyCDn4gMHo7YJ6vlYUa5EC9b9bXHT+LpLUmvOuuq6h6r5ZrTceVNn2EYUi1EykJ
+ tC0496DMOXeOuyJvpuGbTQo9V4TNdAAL7v6RoCXNEaJC7ThLPijzQo7f537QDHU3EG/Y/sSNZ
+ Q/TAz1QZpl0HnYNhPjhTsgOBXgaoMOYlpc+MQL99cPIX46ogwQCUhFbdC7nuGGeAbPz0FQJYB
+ UIpMH058USPoiEAUhsuOGzQwqTWJE9jZN5P/p2uwVfY3sYmSh/pFWd2XPfTXJsglSV09Jy2I0
+ ztxWmJs6Qmw+4JnIS7nq4eleyPB6fvrnJhBJQZJwqHSoL6n9+vrXQ/lK1/L/DzKVN+0DkbWsh
+ GfBKUDCKvO2gpfLYMKQlQXl+YEGiB2Uc1LlkrR6YwSo9EF3vrZ/7NDUB77B2jMg+k2QlPV6Jw
+ 1sBFMYwWRaS+8i9ibUCzf02WsE/NgJqV/gZpHr+eAldLMP5zm0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-22 at 12:16 +0300, Jarkko Sakkinen wrote:
-> On Thu, Apr 21, 2022 at 08:29:31PM -0700, Reinette Chatre wrote:
-> > Hi Vijay and Mark,
-> >=20
-> > On 4/21/2022 4:46 PM, Dhanraj, Vijay wrote:
-> > > Hi All,
-> > >=20
-> > > I evaluated V4 patch changes with Gramine and ran into an issue when =
-trying to set EPC page permission to PROT_NONE. It looks like with V3 patch=
- series a change was introduced which requires
-> > > kernel to have at least R permission when calling RESTRICT IOCTL. Thi=
-s change was done under the assumption that EPCM requires at least R permis=
-sion for EMODPE/EACCEPT to succeed. But when
-> > > testing with V2 version, EACCEPT worked fine with page permission set=
- to PROT_NONE.=20
-> > >=20
-> > > Thanks to @Shanahan, Mark for confirming that EPCM does not need to h=
-ave R value to allow EACCEPT or EMODPE. Given this, can we please revert th=
-is change?
-> > >=20
-> >=20
-> > Thank you very much for pointing this out. I can revert the change
-> > to what was done in V2 where the only check is to ensure that W require=
-s R.
-> > This is a requirement of EMODPR. Could you please check if this snippet
-> > results in things working for you again?
-> >=20
-> > ---8<---
-> > diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/=
-ioctl.c
-> > index 83674d054c13..7c7c8a61196e 100644
-> > --- a/arch/x86/kernel/cpu/sgx/ioctl.c
-> > +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
-> > @@ -855,12 +855,8 @@ static long sgx_ioc_enclave_restrict_permissions(s=
-truct sgx_encl *encl,
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (params.permissions =
-& ~SGX_SECINFO_PERMISSION_MASK)
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
-> > =C2=A0
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/*
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Read access is required f=
-or the enclave to be able to use the page.
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * SGX instructions like ENC=
-LU[EMODPE] and ENCLU[EACCEPT] require
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * read access.
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!(params.permissions & S=
-GX_SECINFO_R))
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if ((params.permissions & SG=
-X_SECINFO_W) &&
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !(params.=
-permissions & SGX_SECINFO_R))
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
-> > =C2=A0
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (params.result || pa=
-rams.count)
->=20
-> Just adding that it's fine for me to revert this.
+On Thu, Apr 21, 2022 at 9:21 PM <nick.hawkins@hpe.com> wrote:
+> +
+> +DT_MACHINE_START(GXP_DT, "HPE GXP")
+> +       .dt_compat      = gxp_board_dt_compat,
+> +       .l2c_aux_val = 0,
+> +       .l2c_aux_mask = 0,
+> +MACHINE_END
 
-Jethro, I thought it would be also good to get yor view on the current
-series. Is this something that your platform can live with?
+Ther l2c initialization looks wrong here, where  you are saying here is
+that all the bits of the aux register must be set to zero.
 
-BR, Jarkko
+I also see that you don't have a device node for the cache controller, so
+this is probably not actually used, but in general there should be one with
+the correct properties.
+
+        Arnd
