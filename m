@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94261C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448380AbiDVOMQ (ORCPT
+        id S1448389AbiDVOMT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
+        Fri, 22 Apr 2022 10:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448377AbiDVOMN (ORCPT
+        with ESMTP id S1448381AbiDVOMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:12:13 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92215A592;
-        Fri, 22 Apr 2022 07:09:19 -0700 (PDT)
+        Fri, 22 Apr 2022 10:12:16 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9861FA48;
+        Fri, 22 Apr 2022 07:09:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650636559; x=1682172559;
+  t=1650636564; x=1682172564;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=l+xLeakgW7ziMxQX4l2aegfmg4ejc/a2LdXr/5syte8=;
-  b=gtt3UtDPoEBaEgpQ/xAm+sXseOw15Hs1ZUe4iipewEdDKxKOe7Y8W9rh
-   Jx9VeMC6vCNJy7sbtWUifxeJOopvBndVyVJuOyu/9OiPUj2IZMt80hGYL
-   AKC872+lKg5JMgqazNu9s/j7OTqn4F3VBVogtFJuXTBRl+Mu5b6AapbHv
+  bh=NJpfdz7XQfHm8DJ7Tr1Q0XVStmza4X4vWe28LjUg9GE=;
+  b=rm7/mA9Zz68iLJMOl+FcyoiDNtubPBgxQ03CphwKw7HUagABCgNM4+Od
+   ZS2g1wpcYRncxSN9LWYI+f/KBemEvGEMmqAZ+K3BLwMmbyVRbLF1VbLu4
+   4zYP9Fy5+9zxRjNa911wb5g1oj/8p0Sb4QjB/nr/umpg6bbjDRosZwVUD
    Y=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Apr 2022 07:09:19 -0700
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 22 Apr 2022 07:09:24 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:09:19 -0700
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:09:23 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 07:09:18 -0700
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:22 -0700
 Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 07:09:14 -0700
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:18 -0700
 From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
@@ -48,9 +48,9 @@ To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <judyhsiao@chromium.org>
 CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v10 04/12] arm64: dts: qcom: sc7280: Add wcd9385 codec node for CRD 1.0/2.0 and IDP boards
-Date:   Fri, 22 Apr 2022 19:38:33 +0530
-Message-ID: <1650636521-18442-5-git-send-email-quic_srivasam@quicinc.com>
+Subject: [PATCH v10 05/12] arm64: dts: qcom: sc7280: Add wcd9385 codec node for CRD 3.0/3.1
+Date:   Fri, 22 Apr 2022 19:38:34 +0530
+Message-ID: <1650636521-18442-6-git-send-email-quic_srivasam@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
 References: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
@@ -63,63 +63,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add wcd9385 codec node for audio use case on sc7280 based platforms
-of revision 3, 4 (aka CRD 1.0 and 2.0) and IDP boards.
-Add tlmm gpio property for switching CTIA/OMTP Headset.
+Add wcd9385 codec node for audio use case on CRD rev5+ (aka CRD 3.0/3.1)
+boards. Add tlmm gpio property for switching CTIA/OMTP Headset.
 
 Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 ---
- arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts | 14 ++++++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi   | 43 ++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts |  4 ++
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi        | 53 +++++++++++++++++++++++
  2 files changed, 57 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-index 344338a..9c21207 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-@@ -87,6 +87,13 @@ ap_ts_pen_1v8: &i2c13 {
- 	pins = "gpio51";
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+index 9348728..46480b2 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+@@ -121,6 +121,10 @@ ap_ts_pen_1v8: &i2c13 {
+ 	status = "okay";
  };
  
 +&wcd9385 {
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&wcd_reset_n>, <&us_euro_hs_sel>;
-+	pinctrl-1 = <&wcd_reset_n_sleep>, <&us_euro_hs_sel>;
-+	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
++	status = "okay";
 +};
 +
- &tlmm {
- 	tp_int_odl: tp-int-odl {
- 		pins = "gpio7";
-@@ -105,4 +112,11 @@ ap_ts_pen_1v8: &i2c13 {
- 		function = "gpio";
- 		bias-disable;
- 	};
-+
-+	us_euro_hs_sel: us-euro-hs-sel {
-+		pins = "gpio81";
-+		function = "gpio";
-+		bias-pull-down;
-+		drive-strength = <2>;
-+	};
- };
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 6cb5fc4..72e6a6c 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -20,6 +20,34 @@
+ /* PINCTRL - BOARD-SPECIFIC */
+ 
+ /*
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index 11d37cb..a7f0b1f 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -29,6 +29,37 @@
+ 		serial0 = &uart5;
  		serial1 = &uart7;
  	};
- 
++
 +	wcd9385: audio-codec-1 {
 +		compatible = "qcom,wcd9385-codec";
 +		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&wcd_reset_n>;
-+		pinctrl-1 = <&wcd_reset_n_sleep>;
++		pinctrl-0 = <&wcd_reset_n>, <&us_euro_hs_sel>;
++		pinctrl-1 = <&wcd_reset_n_sleep>, <&us_euro_hs_sel>;
 +
 +		reset-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
++		us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
 +
 +		qcom,rx-device = <&wcd_rx>;
 +		qcom,tx-device = <&wcd_tx>;
@@ -139,15 +125,23 @@ index 6cb5fc4..72e6a6c 100644
 +		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
 +		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
 +		#sound-dai-cells = <1>;
-+	};
 +
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 		label = "gpio-keys";
-@@ -678,6 +706,21 @@
- 		function = "gpio";
- 		bias-pull-down;
++		status = "disabled";
++	};
+ };
+ 
+ &apps_rsc {
+@@ -566,4 +597,26 @@ mos_bt_uart: &uart7 {
+ 		bias-pull-up;
+ 		drive-strength = <2>;
  	};
++
++	us_euro_hs_sel: us-euro-hs-sel {
++		pins = "gpio81";
++		function = "gpio";
++		bias-pull-down;
++		drive-strength = <2>;
++	};
 +
 +	wcd_reset_n: wcd-reset-n {
 +		pins = "gpio83";
@@ -164,8 +158,6 @@ index 6cb5fc4..72e6a6c 100644
 +		output-low;
 +	};
  };
- 
- &remoteproc_wpss {
 -- 
 2.7.4
 
