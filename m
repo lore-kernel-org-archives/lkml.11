@@ -2,120 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C506C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 01:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C23D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 01:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443056AbiDVBcE (ORCPT
+        id S1443062AbiDVBdb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 21:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        Thu, 21 Apr 2022 21:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236892AbiDVBcB (ORCPT
+        with ESMTP id S236892AbiDVBdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 21:32:01 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C77E34991B
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 18:29:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=b328s
-        Yp84i/CvToFx9BMqGedw/IAbOAcUjUC3unR+0k=; b=go+2Bo+2qK87t7eB6c+oo
-        Atu+RHLiaYM/OoANhqq6GbeDToLyMNrYUptCdn7qpK9oLrgDIFezVn6kjgtMFVcv
-        CcYuKed7tcGSJoPhT3CHMieau6v5R+W6ICcVWTUlGTtf6ThywAY9KI3FpT5B3k26
-        FzpSgMdJUiKtg2teYzWIIU=
-Received: from ubuntu.localdomain (unknown [58.213.83.157])
-        by smtp1 (Coremail) with SMTP id C8mowABHTzfABGJiO8MNBA--.8225S4;
-        Fri, 22 Apr 2022 09:28:34 +0800 (CST)
-From:   Bernard Zhao <zhaojunkui2008@126.com>
-To:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     bernard@vivo.com, Bernard Zhao <zhaojunkui2008@126.com>
-Subject: [PATCH] net/wireless: add debugfs exit function
-Date:   Thu, 21 Apr 2022 18:28:30 -0700
-Message-Id: <20220422012830.342993-1-zhaojunkui2008@126.com>
-X-Mailer: git-send-email 2.33.1
+        Thu, 21 Apr 2022 21:33:25 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C03649687
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 18:30:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650591033; x=1682127033;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=oQbcdbZZOUCC2NC/bNLGQRnN+pkXa+YSnk7xuSuLn5c=;
+  b=ebg+ZMOUMnZay/vf6rNLy6Dcn6cYPmoMAo/+lUn0BB3IVo36BUMQAo8U
+   IjETVfJ+XVLca4UkYVEXTJU9d+L0ahRlngfzvqQNVue8Q48ApEJlFpIjF
+   mw9+D4R6UOQ59JCRN+QXia3CWSkJrDiIfQVj9nLt8VmS4q78HOU+3ITBc
+   1URoV3eBBX2zS2erBb83vmyFTlNhIj2wCZwtqA/JUbWDcU4JEiv5OKequ
+   I0ckvqfOP8/Lcxq7R5H8iBFrllEmkAOCzT4g/DsAKNon5PrAQtVVsVdZQ
+   CPaGag/9GcXpRskF18RyAblrYH3+y5ecA8VrsmjMXeTX4f9+TbPaSq3IQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="324982882"
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="324982882"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 18:30:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="615184753"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 21 Apr 2022 18:30:31 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhi7y-00094A-N1;
+        Fri, 22 Apr 2022 01:30:30 +0000
+Date:   Fri, 22 Apr 2022 09:29:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Subject: drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_apg.c:117:18:
+ warning: variable 'channels' set but not used
+Message-ID: <202204220950.PWka9oJf-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowABHTzfABGJiO8MNBA--.8225S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWryDur13Jw1kJr4rGr15Jwb_yoW5Gw1xpa
-        yUKa4Ykw18Zr1DJ3y8AF4UAFyrG3Zagry7GF90v34ru348Ar1Fq3W0qFW7Aa40qFWUCa45
-        tF4UtFnrGryIvFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zizBT7UUUUU=
-X-Originating-IP: [58.213.83.157]
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiYAPqqlpEG-QfMQAAs8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add exit debugfs function to mt7601u.
-Debugfs need to be cleanup when module is unloaded or load fail.
+Hi Fangzhi,
 
-Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
----
- drivers/net/wireless/mediatek/mt7601u/debugfs.c | 9 +++++++--
- drivers/net/wireless/mediatek/mt7601u/init.c    | 1 +
- drivers/net/wireless/mediatek/mt7601u/mt7601u.h | 1 +
- 3 files changed, 9 insertions(+), 2 deletions(-)
+FYI, the error/warning still remains.
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-index 20669eacb66e..5ae27aae685b 100644
---- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-@@ -9,6 +9,8 @@
- #include "mt7601u.h"
- #include "eeprom.h"
- 
-+static struct dentry *dir;
-+
- static int
- mt76_reg_set(void *data, u64 val)
- {
-@@ -124,8 +126,6 @@ DEFINE_SHOW_ATTRIBUTE(mt7601u_eeprom_param);
- 
- void mt7601u_init_debugfs(struct mt7601u_dev *dev)
- {
--	struct dentry *dir;
--
- 	dir = debugfs_create_dir("mt7601u", dev->hw->wiphy->debugfsdir);
- 	if (!dir)
- 		return;
-@@ -138,3 +138,8 @@ void mt7601u_init_debugfs(struct mt7601u_dev *dev)
- 	debugfs_create_file("ampdu_stat", 0400, dir, dev, &mt7601u_ampdu_stat_fops);
- 	debugfs_create_file("eeprom_param", 0400, dir, dev, &mt7601u_eeprom_param_fops);
- }
-+
-+void mt7601u_exit_debugfs(struct mt7601u_dev *dev)
-+{
-+	debugfs_remove(dir);
-+}
-diff --git a/drivers/net/wireless/mediatek/mt7601u/init.c b/drivers/net/wireless/mediatek/mt7601u/init.c
-index 5d9e952b2966..eacdd5785fa6 100644
---- a/drivers/net/wireless/mediatek/mt7601u/init.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/init.c
-@@ -427,6 +427,7 @@ void mt7601u_cleanup(struct mt7601u_dev *dev)
- 	mt7601u_stop_hardware(dev);
- 	mt7601u_dma_cleanup(dev);
- 	mt7601u_mcu_cmd_deinit(dev);
-+	mt7601u_exit_debugfs(dev);
- }
- 
- struct mt7601u_dev *mt7601u_alloc_device(struct device *pdev)
-diff --git a/drivers/net/wireless/mediatek/mt7601u/mt7601u.h b/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
-index a122f1dd38f6..a77bfef0d39f 100644
---- a/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
-+++ b/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
-@@ -279,6 +279,7 @@ struct mt7601u_rxwi;
- extern const struct ieee80211_ops mt7601u_ops;
- 
- void mt7601u_init_debugfs(struct mt7601u_dev *dev);
-+void mt7601u_exit_debugfs(struct mt7601u_dev *dev);
- 
- u32 mt7601u_rr(struct mt7601u_dev *dev, u32 offset);
- void mt7601u_wr(struct mt7601u_dev *dev, u32 offset, u32 val);
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b05a5683eba6e2d40eadd5eeef53c4864149a4fe
+commit: 61452908a79ec936660494fb4b9f2a35ee42e6e0 drm/amd/display: Add DP 2.0 Audio Package Generator
+date:   8 months ago
+config: powerpc64-randconfig-r033-20220420 (https://download.01.org/0day-ci/archive/20220422/202204220950.PWka9oJf-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=61452908a79ec936660494fb4b9f2a35ee42e6e0
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 61452908a79ec936660494fb4b9f2a35ee42e6e0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/gpu/drm/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_apg.c: In function 'apg31_se_audio_setup':
+>> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_apg.c:117:18: warning: variable 'channels' set but not used [-Wunused-but-set-variable]
+     117 |         uint32_t channels = 0;
+         |                  ^~~~~~~~
+>> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_apg.c:116:18: warning: variable 'speakers' set but not used [-Wunused-but-set-variable]
+     116 |         uint32_t speakers = 0;
+         |                  ^~~~~~~~
+
+
+vim +/channels +117 drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_apg.c
+
+   108	
+   109	static void apg31_se_audio_setup(
+   110		struct apg *apg,
+   111		unsigned int az_inst,
+   112		struct audio_info *audio_info)
+   113	{
+   114		struct dcn31_apg *apg31 = DCN31_APG_FROM_APG(apg);
+   115	
+ > 116		uint32_t speakers = 0;
+ > 117		uint32_t channels = 0;
+   118	
+   119		ASSERT(audio_info);
+   120		/* This should not happen.it does so we don't get BSOD*/
+   121		if (audio_info == NULL)
+   122			return;
+   123	
+   124		speakers = audio_info->flags.info.ALLSPEAKERS;
+   125		channels = speakers_to_channels(audio_info->flags.speaker_flags).all;
+   126	
+   127		/* DisplayPort only allows for one audio stream with stream ID 0 */
+   128		REG_UPDATE(APG_CONTROL2, APG_DP_AUDIO_STREAM_ID, 0);
+   129	
+   130		/* When running in "pair mode", pairs of audio channels have their own enable
+   131		 * this is for really old audio drivers */
+   132		REG_UPDATE(APG_DBG_GEN_CONTROL, APG_DBG_AUDIO_CHANNEL_ENABLE, 0xF);
+   133		// REG_UPDATE(APG_DBG_GEN_CONTROL, APG_DBG_AUDIO_CHANNEL_ENABLE, channels);
+   134	
+   135		/* Disable forced mem power off */
+   136		REG_UPDATE(APG_MEM_PWR, APG_MEM_PWR_FORCE, 0);
+   137	
+   138		apg31_enable(apg);
+   139	}
+   140	
+
 -- 
-2.33.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
