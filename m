@@ -2,140 +2,458 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C366C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC8F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449853AbiDVQyJ (ORCPT
+        id S1449883AbiDVQyX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        Fri, 22 Apr 2022 12:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444743AbiDVQyD (ORCPT
+        with ESMTP id S1449877AbiDVQyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:54:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E3755F276
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650646267;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RP65Uj7WP6EZyZBfeufvI+9bp/deJnrcdnu1tws0K2A=;
-        b=Sh+RI4qzipwvz36dpAQno5dGL6bHP5Q/1mVC/ZfMmAmGmFFbVM+TwpMa6S3KHgapEzTWt/
-        U5hnDs1CJWiJn/34X0jmA+GDFugOUrqST+39vRBnlAVea3TvdvXPN+buD8jdfEuqvCyGG2
-        mil2XxTZQ6Fak5AS5fxOFkF6vWJSHuo=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-639-VIR_kJDlMziqi_bD4qr2Lg-1; Fri, 22 Apr 2022 12:51:06 -0400
-X-MC-Unique: VIR_kJDlMziqi_bD4qr2Lg-1
-Received: by mail-qt1-f200.google.com with SMTP id r16-20020ac87950000000b002f34f162c75so3067048qtt.9
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:51:06 -0700 (PDT)
+        Fri, 22 Apr 2022 12:54:17 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5E35F8EC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:51:23 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id h11so10370669ljb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:51:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=pbGH0EJ6MfeeEzJEuzrpQca/NgV2qpOSu33pTptCq9E=;
+        b=l5FeG5KZgUw75VEghyNLWNSsq1XbGFuddkrMY/kSwoz/2B4wHM7gyCFzKfP0cNxyan
+         z8SPKUCXEVxkxcNsEP7gbZQiduwcfoLcBs5mjAIuC8gZBXbBnkxYjVVyDR8e2G7toS8R
+         69MktkPQK6iKJGYL2XZ1KzEiEOFe2wxAMQ16bBK3KsxpL7dlsloHnQalFGtfN0iIznvZ
+         hCeI/uWsOIc9VtBfZ7iFb0wv2jnA4qZqABUCEQC5EiWEg0ZznfO049sxLpj82IYG8GbF
+         dmcms/+GjyGaQlZtu02c65QMO8SMZcOn1ZRMAtPLfkyTPLTwgxLPNrIWnqPwU1TMwJCM
+         p6pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RP65Uj7WP6EZyZBfeufvI+9bp/deJnrcdnu1tws0K2A=;
-        b=UfuyrPRWxePWrShY1Ax3UJdMaL6BOiGZkk222PQQv7Mtb0T6VtCu0hIeQLd1BIHEsv
-         dAdrlZTB3HpbqadObBLiV6kVnhkYK3MEVe4uFMxWBKF31i0jzwAp43ZUUL/oAwNRyjIJ
-         WTGbUPdOJZLL21laizsu9Re6mQD+s7hy3rrkfckHuNZEq9YzYyIhLUXhu+xCVpyJsvxQ
-         8vDVcdJ9u2FqkyZ0vO92D9zSAPQOHZx/+DzDPX78rdttUK8ut0JQWCe4YIBHMm9SQjoe
-         uXH9Jb4ol7H5yaihUeIDfjOVqdStbPD7RHsRhbas80UAHttaR2dXdtgSrVatGsbz+Ba2
-         CS3A==
-X-Gm-Message-State: AOAM531gK04+RprRIyYhlaHWAsXSr6hDCOQSYPoDPeKNL8nxF2RZO9Rs
-        qdE8BlXwcz3lAwgz98Nz/cAJIHKGsPwx5GaT0hVqXA56bGWiYyheUlvld3iE2qb7ceX5sNCEnJ5
-        GcbzeTePXzp85aYNjUoI3jtnX
-X-Received: by 2002:a37:6181:0:b0:69e:7b8a:e72c with SMTP id v123-20020a376181000000b0069e7b8ae72cmr3255238qkb.388.1650646265968;
-        Fri, 22 Apr 2022 09:51:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzGjpvtzYiKxHawYsICXnZfMhkhwABbqQn0p9KPy6KU0/ydqClvRwXk3Olfd1QtTvoihYpO3g==
-X-Received: by 2002:a37:6181:0:b0:69e:7b8a:e72c with SMTP id v123-20020a376181000000b0069e7b8ae72cmr3255217qkb.388.1650646265599;
-        Fri, 22 Apr 2022 09:51:05 -0700 (PDT)
-Received: from halaneylaptop (068-184-200-203.res.spectrum.com. [68.184.200.203])
-        by smtp.gmail.com with ESMTPSA id e16-20020ac85990000000b002f33eb4523asm1542421qte.18.2022.04.22.09.51.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 09:51:04 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 11:51:01 -0500
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     martin.petersen@oracle.com, jejb@linux.ibm.com,
-        avri.altman@wdc.com, alim.akhtar@samsung.com,
-        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
-        quic_asutoshd@quicinc.com, quic_cang@quicinc.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] scsi: ufs: qcom: Simplify handling of devm_phy_get()
-Message-ID: <20220422165101.uy23jf3conuxr2iw@halaneylaptop>
-References: <20220422132140.313390-1-manivannan.sadhasivam@linaro.org>
- <20220422132140.313390-3-manivannan.sadhasivam@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422132140.313390-3-manivannan.sadhasivam@linaro.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=pbGH0EJ6MfeeEzJEuzrpQca/NgV2qpOSu33pTptCq9E=;
+        b=IVkBrK0bDGduOaVnTGYJ1laJawlO2vtItk9ohEeOQ+1hpVy8mpv8q0AwfKaAfS0fm6
+         HNDt9VedRudX058rCr+x7Bbpz5FQTbfBxL/F2HvpauVt9eX83Taxd03mQ5Dhdjon/yLx
+         +CdXr0XGBSTdVdmR4x9A8NMo+8i+3MvRKDTgcqybEkQMzMlcQtyb51gyTmgi9ncL4asq
+         iXPgUFJe7RN4PT8/KWpFWthfkuFKOtIDlPiyOmjROZqeF4b3DFYqWxJzYzbIX1MWn/Ft
+         i6lOhekado2eZMRXwovQucPF4dHniS90fcgjTqIsRoDKHbwY1y3mMFfvNYo49uNqRn3F
+         UnXA==
+X-Gm-Message-State: AOAM533WwNkepB/RSgEgBE8FJeMtZFfOoTgRHbzMFQrHq4KsOlzPgib5
+        Cs38b5adxvvw4ulEK3/W9GaSj68jVxY=
+X-Google-Smtp-Source: ABdhPJzXR1tqIb0yStMleNK7DtbOn2CfKFh2xfxXbFehkBHPpsyEBLUWQr+LG3hsAxYll2f+Op0pKA==
+X-Received: by 2002:a2e:a7d5:0:b0:24d:ba78:1d30 with SMTP id x21-20020a2ea7d5000000b0024dba781d30mr3375134ljp.285.1650646281488;
+        Fri, 22 Apr 2022 09:51:21 -0700 (PDT)
+Received: from otyshchenko.router ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id n2-20020a056512310200b0046e2f507a3asm279742lfb.167.2022.04.22.09.51.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Apr 2022 09:51:20 -0700 (PDT)
+From:   Oleksandr Tyshchenko <olekstysh@gmail.com>
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Julien Grall <julien@xen.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: [PATCH V1 2/6] xen/grants: support allocating consecutive grants
+Date:   Fri, 22 Apr 2022 19:50:59 +0300
+Message-Id: <1650646263-22047-3-git-send-email-olekstysh@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 06:51:37PM +0530, Manivannan Sadhasivam wrote:
-> There is no need to call devm_phy_get() if ACPI is used, so skip it.
-> The "host->generic_phy" pointer should already be NULL due to the kzalloc,
-> so no need to set it NULL again.
-> 
-> Also, don't print the error message in case of -EPROBE_DEFER and return
-> the error code directly.
-> 
-> While at it, also remove the comment that has no relationship with
-> devm_phy_get().
-> 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  drivers/scsi/ufs/ufs-qcom.c | 26 +++++---------------------
->  1 file changed, 5 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
-> index 5db0fd922062..5f0a8f646eb5 100644
-> --- a/drivers/scsi/ufs/ufs-qcom.c
-> +++ b/drivers/scsi/ufs/ufs-qcom.c
-> @@ -1022,28 +1022,12 @@ static int ufs_qcom_init(struct ufs_hba *hba)
->  		err = 0;
->  	}
->  
-> -	/*
-> -	 * voting/devoting device ref_clk source is time consuming hence
-> -	 * skip devoting it during aggressive clock gating. This clock
-> -	 * will still be gated off during runtime suspend.
-> -	 */
-> -	host->generic_phy = devm_phy_get(dev, "ufsphy");
-> -
-> -	if (host->generic_phy == ERR_PTR(-EPROBE_DEFER)) {
-> -		/*
-> -		 * UFS driver might be probed before the phy driver does.
-> -		 * In that case we would like to return EPROBE_DEFER code.
-> -		 */
-> -		err = -EPROBE_DEFER;
-> -		dev_warn(dev, "%s: required phy device. hasn't probed yet. err = %d\n",
-> -			__func__, err);
-> -		goto out_variant_clear;
-> -	} else if (IS_ERR(host->generic_phy)) {
-> -		if (has_acpi_companion(dev)) {
-> -			host->generic_phy = NULL;
-> -		} else {
-> +	if (!has_acpi_companion(dev)) {
-> +		host->generic_phy = devm_phy_get(dev, "ufsphy");
-> +		if (IS_ERR(host->generic_phy)) {
->  			err = PTR_ERR(host->generic_phy);
-> -			dev_err(dev, "%s: PHY get failed %d\n", __func__, err);
-> +			if (err != -EPROBE_DEFER)
-> +				dev_err(dev, "Failed to get PHY: %d\n", err);
+From: Juergen Gross <jgross@suse.com>
 
-Risking sounding like a bad broken record, but I think this too could
-use dev_err_probe().
+For support of virtio via grant mappings in rare cases larger mappings
+using consecutive grants are needed. Support those by adding a bitmap
+of free grants.
 
-Looks good to me otherwise!
+As consecutive grants will be needed only in very rare cases (e.g. when
+configuring a virtio device with a multi-page ring), optimize for the
+normal case of non-consecutive allocations.
 
->  			goto out_variant_clear;
->  		}
->  	}
-> -- 
-> 2.25.1
-> 
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+Changes RFC -> V1:
+   - no changes
+---
+ drivers/xen/grant-table.c | 238 +++++++++++++++++++++++++++++++++++++++-------
+ include/xen/grant_table.h |   4 +
+ 2 files changed, 210 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/xen/grant-table.c b/drivers/xen/grant-table.c
+index 8ccccac..1b458c0 100644
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -33,6 +33,7 @@
+ 
+ #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
+ 
++#include <linux/bitmap.h>
+ #include <linux/memblock.h>
+ #include <linux/sched.h>
+ #include <linux/mm.h>
+@@ -72,9 +73,32 @@
+ 
+ static grant_ref_t **gnttab_list;
+ static unsigned int nr_grant_frames;
++
++/*
++ * Handling of free grants:
++ *
++ * Free grants are in a simple list anchored in gnttab_free_head. They are
++ * linked by grant ref, the last element contains GNTTAB_LIST_END. The number
++ * of free entries is stored in gnttab_free_count.
++ * Additionally there is a bitmap of free entries anchored in
++ * gnttab_free_bitmap. This is being used for simplifying allocation of
++ * multiple consecutive grants, which is needed e.g. for support of virtio.
++ * gnttab_last_free is used to add free entries of new frames at the end of
++ * the free list.
++ * gnttab_free_tail_ptr specifies the variable which references the start
++ * of consecutive free grants ending with gnttab_last_free. This pointer is
++ * updated in a rather defensive way, in order to avoid performance hits in
++ * hot paths.
++ * All those variables are protected by gnttab_list_lock.
++ */
+ static int gnttab_free_count;
+-static grant_ref_t gnttab_free_head;
++static unsigned int gnttab_size;
++static grant_ref_t gnttab_free_head = GNTTAB_LIST_END;
++static grant_ref_t gnttab_last_free = GNTTAB_LIST_END;
++static grant_ref_t *gnttab_free_tail_ptr;
++static unsigned long *gnttab_free_bitmap;
+ static DEFINE_SPINLOCK(gnttab_list_lock);
++
+ struct grant_frames xen_auto_xlat_grant_frames;
+ static unsigned int xen_gnttab_version;
+ module_param_named(version, xen_gnttab_version, uint, 0);
+@@ -170,16 +194,111 @@ static int get_free_entries(unsigned count)
+ 
+ 	ref = head = gnttab_free_head;
+ 	gnttab_free_count -= count;
+-	while (count-- > 1)
+-		head = gnttab_entry(head);
++	while (count--) {
++		bitmap_clear(gnttab_free_bitmap, head, 1);
++		if (gnttab_free_tail_ptr == __gnttab_entry(head))
++			gnttab_free_tail_ptr = &gnttab_free_head;
++		if (count)
++			head = gnttab_entry(head);
++	}
+ 	gnttab_free_head = gnttab_entry(head);
+ 	gnttab_entry(head) = GNTTAB_LIST_END;
+ 
++	if (!gnttab_free_count) {
++		gnttab_last_free = GNTTAB_LIST_END;
++		gnttab_free_tail_ptr = NULL;
++	}
++
+ 	spin_unlock_irqrestore(&gnttab_list_lock, flags);
+ 
+ 	return ref;
+ }
+ 
++static int get_seq_entry_count(void)
++{
++	if (gnttab_last_free == GNTTAB_LIST_END || !gnttab_free_tail_ptr ||
++	    *gnttab_free_tail_ptr == GNTTAB_LIST_END)
++		return 0;
++
++	return gnttab_last_free - *gnttab_free_tail_ptr + 1;
++}
++
++/* Rebuilds the free grant list and tries to find count consecutive entries. */
++static int get_free_seq(unsigned int count)
++{
++	int ret = -ENOSPC;
++	unsigned int from, to;
++	grant_ref_t *last;
++
++	gnttab_free_tail_ptr = &gnttab_free_head;
++	last = &gnttab_free_head;
++
++	for (from = find_first_bit(gnttab_free_bitmap, gnttab_size);
++	     from < gnttab_size;
++	     from = find_next_bit(gnttab_free_bitmap, gnttab_size, to + 1)) {
++		to = find_next_zero_bit(gnttab_free_bitmap, gnttab_size,
++					from + 1);
++		if (ret < 0 && to - from >= count) {
++			ret = from;
++			bitmap_clear(gnttab_free_bitmap, ret, count);
++			from += count;
++			gnttab_free_count -= count;
++			if (from == to)
++				continue;
++		}
++
++		while (from < to) {
++			*last = from;
++			last = __gnttab_entry(from);
++			gnttab_last_free = from;
++			from++;
++		}
++		if (to < gnttab_size)
++			gnttab_free_tail_ptr = __gnttab_entry(to - 1);
++	}
++
++	*last = GNTTAB_LIST_END;
++	if (gnttab_last_free != gnttab_size - 1)
++		gnttab_free_tail_ptr = NULL;
++
++	return ret;
++}
++
++static int get_free_entries_seq(unsigned int count)
++{
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&gnttab_list_lock, flags);
++
++	if (gnttab_free_count < count) {
++		ret = gnttab_expand(count - gnttab_free_count);
++		if (ret < 0)
++			goto out;
++	}
++
++	if (get_seq_entry_count() < count) {
++		ret = get_free_seq(count);
++		if (ret >= 0)
++			goto out;
++		ret = gnttab_expand(count - get_seq_entry_count());
++		if (ret < 0)
++			goto out;
++	}
++
++	ret = *gnttab_free_tail_ptr;
++	*gnttab_free_tail_ptr = gnttab_entry(ret + count - 1);
++	gnttab_free_count -= count;
++	if (!gnttab_free_count)
++		gnttab_free_tail_ptr = NULL;
++	bitmap_clear(gnttab_free_bitmap, ret, count);
++
++ out:
++	spin_unlock_irqrestore(&gnttab_list_lock, flags);
++
++	return ret;
++}
++
+ static void do_free_callbacks(void)
+ {
+ 	struct gnttab_free_callback *callback, *next;
+@@ -206,17 +325,48 @@ static inline void check_free_callbacks(void)
+ 		do_free_callbacks();
+ }
+ 
+-static void put_free_entry(grant_ref_t ref)
++static void put_free_entry_locked(grant_ref_t ref)
+ {
+-	unsigned long flags;
+-	spin_lock_irqsave(&gnttab_list_lock, flags);
+ 	gnttab_entry(ref) = gnttab_free_head;
+ 	gnttab_free_head = ref;
++	if (!gnttab_free_count)
++		gnttab_last_free = ref;
++	if (gnttab_free_tail_ptr == &gnttab_free_head)
++		gnttab_free_tail_ptr = __gnttab_entry(ref);
+ 	gnttab_free_count++;
++	bitmap_set(gnttab_free_bitmap, ref, 1);
++}
++
++static void put_free_entry(grant_ref_t ref)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&gnttab_list_lock, flags);
++	put_free_entry_locked(ref);
+ 	check_free_callbacks();
+ 	spin_unlock_irqrestore(&gnttab_list_lock, flags);
+ }
+ 
++static void gnttab_set_free(unsigned int start, unsigned int n)
++{
++	unsigned int i;
++
++	for (i = start; i < start + n - 1; i++)
++		gnttab_entry(i) = i + 1;
++
++	gnttab_entry(i) = GNTTAB_LIST_END;
++	if (!gnttab_free_count) {
++		gnttab_free_head = start;
++		gnttab_free_tail_ptr = &gnttab_free_head;
++	} else {
++		gnttab_entry(gnttab_last_free) = start;
++	}
++	gnttab_free_count += n;
++	gnttab_last_free = i;
++
++	bitmap_set(gnttab_free_bitmap, start, n);
++}
++
+ /*
+  * Following applies to gnttab_update_entry_v1 and gnttab_update_entry_v2.
+  * Introducing a valid entry into the grant table:
+@@ -448,23 +598,31 @@ void gnttab_free_grant_references(grant_ref_t head)
+ {
+ 	grant_ref_t ref;
+ 	unsigned long flags;
+-	int count = 1;
+-	if (head == GNTTAB_LIST_END)
+-		return;
++
+ 	spin_lock_irqsave(&gnttab_list_lock, flags);
+-	ref = head;
+-	while (gnttab_entry(ref) != GNTTAB_LIST_END) {
+-		ref = gnttab_entry(ref);
+-		count++;
++	while (head != GNTTAB_LIST_END) {
++		ref = gnttab_entry(head);
++		put_free_entry_locked(head);
++		head = ref;
+ 	}
+-	gnttab_entry(ref) = gnttab_free_head;
+-	gnttab_free_head = head;
+-	gnttab_free_count += count;
+ 	check_free_callbacks();
+ 	spin_unlock_irqrestore(&gnttab_list_lock, flags);
+ }
+ EXPORT_SYMBOL_GPL(gnttab_free_grant_references);
+ 
++void gnttab_free_grant_reference_seq(grant_ref_t head, unsigned int count)
++{
++	unsigned long flags;
++	unsigned int i;
++
++	spin_lock_irqsave(&gnttab_list_lock, flags);
++	for (i = count; i > 0; i--)
++		put_free_entry_locked(head + i - 1);
++	check_free_callbacks();
++	spin_unlock_irqrestore(&gnttab_list_lock, flags);
++}
++EXPORT_SYMBOL_GPL(gnttab_free_grant_reference_seq);
++
+ int gnttab_alloc_grant_references(u16 count, grant_ref_t *head)
+ {
+ 	int h = get_free_entries(count);
+@@ -478,6 +636,24 @@ int gnttab_alloc_grant_references(u16 count, grant_ref_t *head)
+ }
+ EXPORT_SYMBOL_GPL(gnttab_alloc_grant_references);
+ 
++int gnttab_alloc_grant_reference_seq(unsigned int count, grant_ref_t *first)
++{
++	int h;
++
++	if (count == 1)
++		h = get_free_entries(1);
++	else
++		h = get_free_entries_seq(count);
++
++	if (h < 0)
++		return -ENOSPC;
++
++	*first = h;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(gnttab_alloc_grant_reference_seq);
++
+ int gnttab_empty_grant_references(const grant_ref_t *private_head)
+ {
+ 	return (*private_head == GNTTAB_LIST_END);
+@@ -570,16 +746,13 @@ static int grow_gnttab_list(unsigned int more_frames)
+ 			goto grow_nomem;
+ 	}
+ 
++	gnttab_set_free(gnttab_size, extra_entries);
+ 
+-	for (i = grefs_per_frame * nr_grant_frames;
+-	     i < grefs_per_frame * new_nr_grant_frames - 1; i++)
+-		gnttab_entry(i) = i + 1;
+-
+-	gnttab_entry(i) = gnttab_free_head;
+-	gnttab_free_head = grefs_per_frame * nr_grant_frames;
+-	gnttab_free_count += extra_entries;
++	if (!gnttab_free_tail_ptr)
++		gnttab_free_tail_ptr = __gnttab_entry(gnttab_size);
+ 
+ 	nr_grant_frames = new_nr_grant_frames;
++	gnttab_size += extra_entries;
+ 
+ 	check_free_callbacks();
+ 
+@@ -1424,7 +1597,6 @@ int gnttab_init(void)
+ 	int i;
+ 	unsigned long max_nr_grant_frames;
+ 	unsigned int max_nr_glist_frames, nr_glist_frames;
+-	unsigned int nr_init_grefs;
+ 	int ret;
+ 
+ 	gnttab_request_version();
+@@ -1452,6 +1624,13 @@ int gnttab_init(void)
+ 		}
+ 	}
+ 
++	i = gnttab_interface->grefs_per_grant_frame * max_nr_grant_frames;
++	gnttab_free_bitmap = bitmap_zalloc(i, GFP_KERNEL);
++	if (!gnttab_free_bitmap) {
++		ret = -ENOMEM;
++		goto ini_nomem;
++	}
++
+ 	ret = arch_gnttab_init(max_nr_grant_frames,
+ 			       nr_status_frames(max_nr_grant_frames));
+ 	if (ret < 0)
+@@ -1462,15 +1641,9 @@ int gnttab_init(void)
+ 		goto ini_nomem;
+ 	}
+ 
+-	nr_init_grefs = nr_grant_frames *
+-			gnttab_interface->grefs_per_grant_frame;
+-
+-	for (i = NR_RESERVED_ENTRIES; i < nr_init_grefs - 1; i++)
+-		gnttab_entry(i) = i + 1;
++	gnttab_size = nr_grant_frames * gnttab_interface->grefs_per_grant_frame;
+ 
+-	gnttab_entry(nr_init_grefs - 1) = GNTTAB_LIST_END;
+-	gnttab_free_count = nr_init_grefs - NR_RESERVED_ENTRIES;
+-	gnttab_free_head  = NR_RESERVED_ENTRIES;
++	gnttab_set_free(NR_RESERVED_ENTRIES, gnttab_size - NR_RESERVED_ENTRIES);
+ 
+ 	printk("Grant table initialized\n");
+ 	return 0;
+@@ -1479,6 +1652,7 @@ int gnttab_init(void)
+ 	for (i--; i >= 0; i--)
+ 		free_page((unsigned long)gnttab_list[i]);
+ 	kfree(gnttab_list);
++	bitmap_free(gnttab_free_bitmap);
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(gnttab_init);
+diff --git a/include/xen/grant_table.h b/include/xen/grant_table.h
+index dfd5bf3..d815e1d 100644
+--- a/include/xen/grant_table.h
++++ b/include/xen/grant_table.h
+@@ -129,10 +129,14 @@ int gnttab_try_end_foreign_access(grant_ref_t ref);
+  */
+ int gnttab_alloc_grant_references(u16 count, grant_ref_t *pprivate_head);
+ 
++int gnttab_alloc_grant_reference_seq(unsigned int count, grant_ref_t *first);
++
+ void gnttab_free_grant_reference(grant_ref_t ref);
+ 
+ void gnttab_free_grant_references(grant_ref_t head);
+ 
++void gnttab_free_grant_reference_seq(grant_ref_t head, unsigned int count);
++
+ int gnttab_empty_grant_references(const grant_ref_t *pprivate_head);
+ 
+ int gnttab_claim_grant_reference(grant_ref_t *pprivate_head);
+-- 
+2.7.4
 
