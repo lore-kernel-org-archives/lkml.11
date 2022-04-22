@@ -2,131 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406FAC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F17C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444049AbiDVFJT (ORCPT
+        id S1444077AbiDVFKk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 01:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        Fri, 22 Apr 2022 01:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiDVFJM (ORCPT
+        with ESMTP id S1444052AbiDVFKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 01:09:12 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299471BEA0;
-        Thu, 21 Apr 2022 22:06:18 -0700 (PDT)
-X-UUID: dc04ede448414c53a2c1d20c16f1f93f-20220422
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:61758deb-bd43-4fa3-8d57-eadb4d22b023,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:2,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:2
-X-CID-META: VersionHash:faefae9,CLOUDID:7bb290f0-da02-41b4-b6df-58f4ccd36682,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:4,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: dc04ede448414c53a2c1d20c16f1f93f-20220422
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1964622933; Fri, 22 Apr 2022 13:06:12 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 22 Apr 2022 13:06:11 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 13:06:11 +0800
-Message-ID: <59876cd509fed9348f3ec80a468409dd25ab5efe.camel@mediatek.com>
-Subject: Re: [PATCH V2 09/12] clk: mediatek: reset: Add support for input
- offset and bit from DT
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <p.zabel@pengutronix.de>,
-        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
-        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <allen-kh.cheng@mediatek.com>, <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Fri, 22 Apr 2022 13:06:11 +0800
-In-Reply-To: <b9839f51-fef1-c54a-3024-674209987f13@collabora.com>
-References: <20220420130527.23200-1-rex-bc.chen@mediatek.com>
-         <20220420130527.23200-10-rex-bc.chen@mediatek.com>
-         <b9839f51-fef1-c54a-3024-674209987f13@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Fri, 22 Apr 2022 01:10:37 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CB04BBB5;
+        Thu, 21 Apr 2022 22:07:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650604065; x=1682140065;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zLyK1VfPZcWeTRL84aSwetNS1RsgGB8NmLFyPkDWGM0=;
+  b=mV7rVfzCk9BXnOAUp3b2m/CMhmIUlNliOCRoB1z3Jf3c6BQ3tLfiRp2Q
+   y3IdEQCpb/xDfyxmSmeTBrFjcU1SWkDOiEZ+Yvu408c7npXe7FzLB3KzV
+   Eypmh4s6DxesIonV76hP0AeeZ5BRZbiMq06atU3yC9GjiwV3vwPOgt7vP
+   0WpWf9krisspuEFGkJkNEVdcjT2Ei4AYjDn4BMYlXChxAEtTwfe/9Jhpf
+   1HD5GFVqMZUTUe2EJPdJQwAkjrbGoa1J0jgQcsER9Kf8iaib7Y24sVPT9
+   hAByTJ8UXOknoMVIMAn3F10e6sNEBgdd85aqQ3EY4jwJao12NWxp2iPt+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244501170"
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="244501170"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 22:07:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="593989379"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 22:07:41 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhlW8-0009FA-Nd;
+        Fri, 22 Apr 2022 05:07:40 +0000
+Date:   Fri, 22 Apr 2022 13:07:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yu Zhe <yuzhe@nfschina.com>, mareklindner@neomailbox.ch,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     kbuild-all@lists.01.org, b.a.t.m.a.n@lists.open-mesh.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, kernel-janitors@vger.kernel.org,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: Re: [PATCH] batman-adv: remove unnecessary type castings
+Message-ID: <202204221227.5z0xsJa9-lkp@intel.com>
+References: <20220421154829.9775-1-yuzhe@nfschina.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421154829.9775-1-yuzhe@nfschina.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-21 at 11:07 +0200, AngeloGioacchino Del Regno wrote:
-> Il 20/04/22 15:05, Rex-BC Chen ha scritto:
-> > To use the clock reset function easier, we implement the of_xlate.
-> > This function is only adopted in version MTK_SET_CLR because of
-> > the method of id calculation.
-> > 
-> > There is no impact for original use. If the argument number is not
-> > larger than 1, it will return original id.
-> > 
-> > With this implementation if we want to set offset 0x120 and bit 16,
-> > we can just write something like "resets = <&infra_rst 0x120 16>;".
-> > 
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >   drivers/clk/mediatek/reset.c | 24 ++++++++++++++++++++++++
-> >   drivers/clk/mediatek/reset.h |  1 +
-> >   2 files changed, 25 insertions(+)
-> > 
-> > diff --git a/drivers/clk/mediatek/reset.c
-> > b/drivers/clk/mediatek/reset.c
-> > index 1173111af3ab..dbe812062bf5 100644
-> > --- a/drivers/clk/mediatek/reset.c
-> > +++ b/drivers/clk/mediatek/reset.c
-> > @@ -59,6 +59,20 @@ static const struct reset_control_ops
-> > mtk_reset_ops_set_clr = {
-> >   	.reset = mtk_reset_set_clr,
-> >   };
-> >   
-> > +static int reset_xlate(struct reset_controller_dev *rcdev,
-> > +		       const struct of_phandle_args *reset_spec)
-> > +{
-> > +	unsigned int offset, bit;
-> > +
-> > +	if (reset_spec->args_count <= 1)
-> > +		return reset_spec->args[0];
-> > +
-> > +	offset = reset_spec->args[0];
-> > +	bit = reset_spec->args[1];
-> > +
-> > +	return (offset >> 4) * 32 + bit;
-> > +}
-> > +
-> >   static const struct reset_control_ops *rst_op[MTK_RST_MAX] = {
-> >   	[MTK_RST_SIMPLE] = &reset_simple_ops,
-> >   	[MTK_RST_SET_CLR] = &mtk_reset_ops_set_clr,
-> > @@ -98,6 +112,11 @@ int mtk_clk_register_rst_ctrl(struct
-> > device_node *np,
-> >   	data->rcdev.ops = rst_op[desc->version];
-> >   	data->rcdev.of_node = np;
-> >   
-> > +	if (desc->version == MTK_RST_SET_CLR) {
-> 
-> ...following my previous advice to use switch(version), this would
-> fit in
-> just fine :-)
-> 
-> Everything else looks ok.
-> 
-> Cheers,
-> Angelo
+Hi Yu,
 
-Hello Angelo,
+Thank you for the patch! Perhaps something to improve:
 
-I will add this judgement in reset_xlate()
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.18-rc3 next-20220421]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-BRs,
-Rex
+url:    https://github.com/intel-lab-lkp/linux/commits/Yu-Zhe/batman-adv-remove-unnecessary-type-castings/20220421-235254
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git b253435746d9a4a701b5f09211b9c14d3370d0da
+config: parisc-randconfig-s031-20220421 (https://download.01.org/0day-ci/archive/20220422/202204221227.5z0xsJa9-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/2474b41c585e849d3546e0aba8f3c862735a04ff
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yu-Zhe/batman-adv-remove-unnecessary-type-castings/20220421-235254
+        git checkout 2474b41c585e849d3546e0aba8f3c862735a04ff
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash net/batman-adv/
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> net/batman-adv/bridge_loop_avoidance.c:68:42: sparse: sparse: incorrect type in initializer (different modifiers) @@     expected struct batadv_bla_claim *claim @@     got void const *data @@
+   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     expected struct batadv_bla_claim *claim
+   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     got void const *data
+>> net/batman-adv/bridge_loop_avoidance.c:68:42: sparse: sparse: incorrect type in initializer (different modifiers) @@     expected struct batadv_bla_claim *claim @@     got void const *data @@
+   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     expected struct batadv_bla_claim *claim
+   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     got void const *data
+--
+>> net/batman-adv/translation-table.c:109:12: sparse: sparse: incorrect type in assignment (different modifiers) @@     expected struct batadv_tt_common_entry *tt @@     got void const *data @@
+   net/batman-adv/translation-table.c:109:12: sparse:     expected struct batadv_tt_common_entry *tt
+   net/batman-adv/translation-table.c:109:12: sparse:     got void const *data
+>> net/batman-adv/translation-table.c:109:12: sparse: sparse: incorrect type in assignment (different modifiers) @@     expected struct batadv_tt_common_entry *tt @@     got void const *data @@
+   net/batman-adv/translation-table.c:109:12: sparse:     expected struct batadv_tt_common_entry *tt
+   net/batman-adv/translation-table.c:109:12: sparse:     got void const *data
+
+vim +68 net/batman-adv/bridge_loop_avoidance.c
+
+    53	
+    54	static void batadv_bla_periodic_work(struct work_struct *work);
+    55	static void
+    56	batadv_bla_send_announce(struct batadv_priv *bat_priv,
+    57				 struct batadv_bla_backbone_gw *backbone_gw);
+    58	
+    59	/**
+    60	 * batadv_choose_claim() - choose the right bucket for a claim.
+    61	 * @data: data to hash
+    62	 * @size: size of the hash table
+    63	 *
+    64	 * Return: the hash index of the claim
+    65	 */
+    66	static inline u32 batadv_choose_claim(const void *data, u32 size)
+    67	{
+  > 68		struct batadv_bla_claim *claim = data;
+    69		u32 hash = 0;
+    70	
+    71		hash = jhash(&claim->addr, sizeof(claim->addr), hash);
+    72		hash = jhash(&claim->vid, sizeof(claim->vid), hash);
+    73	
+    74		return hash % size;
+    75	}
+    76	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
