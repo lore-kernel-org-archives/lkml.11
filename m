@@ -2,151 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75569C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D949FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232803AbiDVW0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
+        id S232323AbiDVW0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbiDVWZu (ORCPT
+        with ESMTP id S232874AbiDVWZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:25:50 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64ECC11F96D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:17:40 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23MGXP4U010796;
-        Fri, 22 Apr 2022 19:55:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=lm2njEXu/VlZ5DeJu6voRE/R0+J9++pgff3IHSCKCDM=;
- b=c927QxCgv7cDkZ+YGo6jErhsk+SgqBQKN3DRra+el/MSSZulsjqqrl00WlLBXSB8WR+g
- W8XnLt8S2EEiZzJSuU/tZ8oXu2odLp5g0xRiOmaGrlNYYATtov5uUCB9rQx26u+FF+RK
- 5NXiY4j2pr55yHjFPheNA+gabyYE5yuFTjqnH5WD3rtHow0s066VDkZSPaSWDPNoSeYS
- tVRagGXmbvOrx/y2aPLcBbCZbspkf/eJfdQkk99uBiRWmzp43MCTJ7hRGcsS4Q2SO/ch
- sg+RJLJbi0OrZqNWyIFLeCfoE+fdzcRq2DQTkJ8PxHwrjOZxTpWGfbA6smB5ujIBL7eA 3g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjswfqu9j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 19:55:40 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23MJr1ZS032250;
-        Fri, 22 Apr 2022 19:55:40 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjswfqu8w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 19:55:40 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23MJisxq029302;
-        Fri, 22 Apr 2022 19:55:38 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3ffn2hyt11-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 19:55:38 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23MJtZtb49152346
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 22 Apr 2022 19:55:35 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E157411C052;
-        Fri, 22 Apr 2022 19:55:34 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A4CBA11C050;
-        Fri, 22 Apr 2022 19:55:31 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com.com (unknown [9.43.112.230])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 22 Apr 2022 19:55:31 +0000 (GMT)
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org
-Cc:     baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
-        ying.huang@intel.com, aneesh.kumar@linux.ibm.com,
-        shy828301@gmail.com, weixugc@google.com, gthelen@google.com,
-        dan.j.williams@intel.com, Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: [PATCH v3 2/7] mm: demotion: Add new node state N_DEMOTION_TARGETS
-Date:   Sat, 23 Apr 2022 01:25:11 +0530
-Message-Id: <20220422195516.10769-3-jvgediya@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422195516.10769-1-jvgediya@linux.ibm.com>
-References: <20220422195516.10769-1-jvgediya@linux.ibm.com>
+        Fri, 22 Apr 2022 18:25:53 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAA11D1182;
+        Fri, 22 Apr 2022 14:17:53 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-e68392d626so4843649fac.4;
+        Fri, 22 Apr 2022 14:17:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hyQzhiKlkaWZxWD1O6avqa7n3KAQtOMS3NT5kofLOHw=;
+        b=tCcmIFlmLN9+hSe7daLx7BP+txqBNnJumXNsF6FzK7pa7IPFIvbHQfVZbZzixorNzr
+         AcXUfTAPA8JBTB0UJL7K4Q7OTq5QSlb0EO3PXDR4GZXFWwTYCYntHWT4Ny0sz/89+nXX
+         4ZnY/7ZGeDlQVscrGclBKvBrrQieSGqGKQ+/rcdkB5QDi0OzNKYoH8MlFmYQCKBdrPqS
+         /qcfycI091Yk2fRvUBZig++v4qEw3UJKktYBmmkhWDmcV/UY6+CTyngAEYXXv5dmpfP7
+         ysc0BopdLJMqcNnE6W8MmqdZtk0MfbBEDA0uOChuoKiruqc/q4dG4t8MeWSzozONJTMt
+         e5qA==
+X-Gm-Message-State: AOAM531n3WjZUVX4LlfUhyWsRy0StT0duvMVIKHcATV+u3H54lJi3PZ/
+        KsFfSqaHehKh2mIEzSTEeFW5sJT5+g==
+X-Google-Smtp-Source: ABdhPJzraLj00H7QigmfLMJVZWg2j+VnUjRuG4VeBvp5ivyV/JjFzQ+GWydMwMXrzDgEtpfCtjpqcQ==
+X-Received: by 2002:a05:6871:893:b0:e5:bfed:cf08 with SMTP id r19-20020a056871089300b000e5bfedcf08mr6776760oaq.25.1650655260843;
+        Fri, 22 Apr 2022 12:21:00 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id i7-20020a9d68c7000000b006054aec0025sm1034946oto.69.2022.04.22.12.20.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:21:00 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: phy: marvell,armada-3700-utmi-host-phy: Fix incorrect compatible in example
+Date:   Fri, 22 Apr 2022 14:20:54 -0500
+Message-Id: <20220422192054.2591093-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: aRlckp_abbNY4VUdskj5kbYr-iDtmzuD
-X-Proofpoint-GUID: IKNXG7uKtK-7dawYm7TAlnVKvtqeozOA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-22_06,2022-04-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=780 spamscore=0 priorityscore=1501 malwarescore=0 bulkscore=0
- phishscore=0 suspectscore=0 adultscore=0 clxscore=1015 mlxscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204220083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some systems(e.g. PowerVM) have DRAM(fast memory) only NUMA node
-which are N_MEMORY as well as slow memory(persistent memory) only
-NUMA node which are also N_MEMORY. As the current demotion target
-finding algorithm works based on N_MEMORY and best distance, it can
-choose DRAM only NUMA node as demotion target instead of persistent
-memory node on such systems. If DRAM only NUMA node is filled with
-demoted pages then at some point new allocations can start falling
-to persistent memory, so basically cold pages are in fast memory
-(due to demotion) and new pages are in slow memory, this is why
-persistent memory nodes should be utilized for demotion and dram node
-should be avoided for demotion so that they can be used for new
-allocations.
+Fix the example using the incorrect compatible string.
 
-Add new state N_DEMOTION_TARGETS, node_states[N_DEMOTION_TARGETS]
-then can be used to hold the list of nodes which can be used
-as demotion targets, later patches in the series builds demotion
-targets based on nodes available in node_states[N_DEMOTION_TARGETS].
-
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/base/node.c      | 4 ++++
- include/linux/nodemask.h | 1 +
- 2 files changed, 5 insertions(+)
+ .../devicetree/bindings/phy/marvell,armada-3700-utmi-phy.yaml   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index ec8bb24a5a22..6eef22e6413e 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -1038,6 +1038,9 @@ static struct node_attr node_state_attr[] = {
- 	[N_CPU] = _NODE_ATTR(has_cpu, N_CPU),
- 	[N_GENERIC_INITIATOR] = _NODE_ATTR(has_generic_initiator,
- 					   N_GENERIC_INITIATOR),
-+	[N_DEMOTION_TARGETS] = _NODE_ATTR(demotion_targets,
-+					  N_DEMOTION_TARGETS),
-+
- };
- 
- static struct attribute *node_state_attrs[] = {
-@@ -1050,6 +1053,7 @@ static struct attribute *node_state_attrs[] = {
- 	&node_state_attr[N_MEMORY].attr.attr,
- 	&node_state_attr[N_CPU].attr.attr,
- 	&node_state_attr[N_GENERIC_INITIATOR].attr.attr,
-+	&node_state_attr[N_DEMOTION_TARGETS].attr.attr,
- 	NULL
- };
- 
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index 567c3ddba2c4..17844300fd57 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -400,6 +400,7 @@ enum node_states {
- 	N_MEMORY,		/* The node has memory(regular, high, movable) */
- 	N_CPU,		/* The node has one or more cpus */
- 	N_GENERIC_INITIATOR,	/* The node has one or more Generic Initiators */
-+	N_DEMOTION_TARGETS,	/* Nodes that should be considered as demotion targets */
- 	NR_NODE_STATES
- };
- 
+diff --git a/Documentation/devicetree/bindings/phy/marvell,armada-3700-utmi-phy.yaml b/Documentation/devicetree/bindings/phy/marvell,armada-3700-utmi-phy.yaml
+index 2437c3683326..632d61c07f40 100644
+--- a/Documentation/devicetree/bindings/phy/marvell,armada-3700-utmi-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/marvell,armada-3700-utmi-phy.yaml
+@@ -45,7 +45,7 @@ additionalProperties: false
+ examples:
+   - |
+     usb2_utmi_host_phy: phy@5f000 {
+-      compatible = "marvell,armada-3700-utmi-host-phy";
++      compatible = "marvell,a3700-utmi-host-phy";
+       reg = <0x5f000 0x800>;
+       marvell,usb-misc-reg = <&usb2_syscon>;
+       #phy-cells = <0>;
 -- 
-2.35.1
+2.32.0
 
