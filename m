@@ -2,183 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB75C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbiDVWtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        id S233721AbiDVWt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:49:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234589AbiDVWsR (ORCPT
+        with ESMTP id S234761AbiDVWs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:48:17 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1433E392116
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:07:46 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id 125so9998198iov.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:07:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YNHylfXe0yuI3nWPKEVPbWc3jAVoQ9y+hq0D/Seu+wY=;
-        b=lZeOnkWJfpNbpL47S03ry8Z3kSVOMOveo/jk2nJZUCVzPXBnjFkIA5qcm5wo/j9wal
-         dToQD7czP+VDPM078c7el16Q1aZe6nbNwzGDLS1XDXYwpVkpsNJqwJypOn7+to3xdWR8
-         3oKX/drZ7bmJalyV/wnad3jVhzCaQtJWOxf3Bm0ia6JFeq+CqiBT5j8Fw1M2JQ+4ETxm
-         QXwZMqup8qvcM15nXfDB1he5rvr4FY7BMBGzR2W4HvnyM4XtqFs6HzlCI7+q84UnMcKm
-         6XhvjRcKaCUidgoN7Z7ZOSeAKGYbwmIvKM8UEM2menTjD9cXKxT3sYopxGDu0HM62RIb
-         sEPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YNHylfXe0yuI3nWPKEVPbWc3jAVoQ9y+hq0D/Seu+wY=;
-        b=nqRxGYr+h5b6WVNDDHco9Sz1/oiOnqEiOWd+hedoyLXgmD1zZ5TI06NxtLej7W5bhx
-         7VwZtnWyLeTjIPlK9PDVnGUW1TlOTGqEk5pB3LiqWodPBFgp5E2+o4BV5BLHFoXdqJwJ
-         0DQRlgDzP9BYCr1mXPdw/4eRNq64SQwHgYnyQ9+rdVLDii3pkHhI0tB/4RMk+cg8ZOn+
-         QK2zMZV/BVuPSjkHOGvA9KaneZ6coigZRUr0g1wdZGc/Cx3s8Uomx6rqHXy7uGOgjKFa
-         JO+E1uOsRmlhUPrnfuD38Da8xWlFXC/BY2rYGqpNBD3jNSy5nNl/YG3avkUnSozAK6Lc
-         +lPA==
-X-Gm-Message-State: AOAM532NHiHlqNZOGdBC1C6xVUTINJn7e3/CkMbB+076ZbUbecKqKlQ+
-        pvZrAgi2SmZemajQKLneBHg2PhKmHXwGFernRghQAw==
-X-Google-Smtp-Source: ABdhPJwo+ze5pPYHakIgsi/peB9ZO2hJVC0Rs6hOgkZCZ+dBJmbZPicpRp+7K8Orccv9dtaFx0imB8ejZX4fb+fg/c8=
-X-Received: by 2002:a05:6638:12cb:b0:323:da89:2caa with SMTP id
- v11-20020a05663812cb00b00323da892caamr2971436jas.314.1650665246174; Fri, 22
- Apr 2022 15:07:26 -0700 (PDT)
+        Fri, 22 Apr 2022 18:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A65239A073
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:08:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97F8D6209A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 22:07:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D2E3C385AB;
+        Fri, 22 Apr 2022 22:07:36 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 18:07:34 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Cc:     <mingo@redhat.com>, <matthias.bgg@gmail.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <yj.chiang@mediatek.com>
+Subject: Re: [PATCH v3 2/2] tracing: make tracer_init_tracefs initcall
+ asynchronous
+Message-ID: <20220422180734.225718b7@gandalf.local.home>
+In-Reply-To: <20220323152257.7871-3-mark-pk.tsai@mediatek.com>
+References: <20220323152257.7871-1-mark-pk.tsai@mediatek.com>
+        <20220323152257.7871-3-mark-pk.tsai@mediatek.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220421224928.1848230-1-axelrasmussen@google.com> <20220422145456.1e9f22220b1ad502aa56628d@linux-foundation.org>
-In-Reply-To: <20220422145456.1e9f22220b1ad502aa56628d@linux-foundation.org>
-From:   Axel Rasmussen <axelrasmussen@google.com>
-Date:   Fri, 22 Apr 2022 15:06:49 -0700
-Message-ID: <CAJHvVciPBM7vRnruDZ3iuYMgwqapB2U6TBtD74s1P-40ZNRy6Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] selftests: vm: refactor run_vmtests.sh to reduce boilerplate
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Shuah Khan <shuah@kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Linuxkselftest <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since this is a revert, I guess the diff is "backwards" -- meaning,
-others were proposing *adding* $ksft_skip handling to some tests?
+On Wed, 23 Mar 2022 23:22:57 +0800
+Mark-PK Tsai <mark-pk.tsai@mediatek.com> wrote:
 
-if that's the case, then I agree none of those diffs are needed, my
-change should properly handle $ksft_skip for all tests now and in the
-future.
+> +static __init int tracer_init_tracefs(void)
+> +{
+> +	int ret;
+> +
+> +	trace_access_lock_init();
+> +
+> +	ret = tracing_init_dentry();
+> +	if (ret)
+> +		return 0;
+> +
+> +	INIT_WORK(&tracerfs_init_work, tracer_init_tracefs_work_func);
+> +	if (!eval_map_wq)
+> +		tracer_init_tracefs_work_func(&tracerfs_init_work);
 
-On Fri, Apr 22, 2022 at 2:55 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 21 Apr 2022 15:49:27 -0700 Axel Rasmussen <axelrasmussen@google.com> wrote:
->
-> > Previously, each test printed out its own header, dealt with its own
-> > return code, etc. By just putting this standard stuff in a function, we
-> > can delete > 300 lines from the script.
-> >
-> > This also makes adding future tests easier. And, it gets rid of various
-> > inconsistencies that already exist:
-> >
-> > - Some tests correctly deal with ksft_skip, but others don't.
-> > - Some tests just print the executable name, others print arguments, and
-> >   yet others print some comment in the header.
-> > - Most tests print out a header with two separator lines, but not the
-> >   HMM smoke test or the memfd_secret test, which only print one.
-> > - We had a redundant "exit" at the end, with all the boilerplate it's an
-> >   easy oversight.
-> >
-> > Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-> > ---
-> >  tools/testing/selftests/vm/run_vmtests.sh | 459 +++-------------------
-> >  1 file changed, 64 insertions(+), 395 deletions(-)
->
-> Well that's nice.
->
-> There were a bunch of changes already pending in this file but I think
-> with this patch, they become unneeded.  So I just reverted them all.
-> please double check?
->
->
-> --- a/tools/testing/selftests/vm/run_vmtests.sh~revert-1
-> +++ a/tools/testing/selftests/vm/run_vmtests.sh
-> @@ -162,32 +162,22 @@ echo "----------------------------------
->  echo "running: gup_test -u # get_user_pages_fast() benchmark"
->  echo "------------------------------------------------------"
->  ./gup_test -u
-> -ret_val=$?
-> -
-> -if [ $ret_val -eq 0 ]; then
-> -       echo "[PASS]"
-> -elif [ $ret_val -eq $ksft_skip ]; then
-> -        echo "[SKIP]"
-> -        exitcode=$ksft_skip
-> -else
-> +if [ $? -ne 0 ]; then
->         echo "[FAIL]"
->         exitcode=1
-> +else
-> +       echo "[PASS]"
->  fi
->
->  echo "------------------------------------------------------"
->  echo "running: gup_test -a # pin_user_pages_fast() benchmark"
->  echo "------------------------------------------------------"
->  ./gup_test -a
-> -ret_val=$?
-> -
-> -if [ $ret_val -eq 0 ]; then
-> -       echo "[PASS]"
-> -elif [ $ret_val -eq $ksft_skip ]; then
-> -        echo "[SKIP]"
-> -        exitcode=$ksft_skip
-> -else
-> +if [ $? -ne 0 ]; then
->         echo "[FAIL]"
->         exitcode=1
-> +else
-> +       echo "[PASS]"
->  fi
->
->  echo "------------------------------------------------------------"
-> @@ -195,16 +185,11 @@ echo "# Dump pages 0, 19, and 4096, usin
->  echo "running: gup_test -ct -F 0x1 0 19 0x1000 # dump_page() test"
->  echo "------------------------------------------------------------"
->  ./gup_test -ct -F 0x1 0 19 0x1000
-> -ret_val=$?
-> -
-> -if [ $ret_val -eq 0 ]; then
-> -       echo "[PASS]"
-> -elif [ $ret_val -eq $ksft_skip ]; then
-> -        echo "[SKIP]"
-> -        exitcode=$ksft_skip
-> -else
-> +if [ $? -ne 0 ]; then
->         echo "[FAIL]"
->         exitcode=1
-> +else
-> +       echo "[PASS]"
->  fi
->
->  echo "-------------------"
-> @@ -306,16 +291,11 @@ echo "-------------------"
->  echo "running mremap_test"
->  echo "-------------------"
->  ./mremap_test
-> -ret_val=$?
-> -
-> -if [ $ret_val -eq 0 ]; then
-> -       echo "[PASS]"
-> -elif [ $ret_val -eq $ksft_skip ]; then
-> -        echo "[SKIP]"
-> -        exitcode=$ksft_skip
-> -else
-> +if [ $? -ne 0 ]; then
->         echo "[FAIL]"
->         exitcode=1
-> +else
-> +       echo "[PASS]"
->  fi
->
->  echo "-----------------"
-> _
->
+Why go through the bother of doing the INIT_WORK if eval_map_wq is not
+created? Just do:
+
+	if (eval_map_wq) {
+		INIT_WORK(&tracerfs_init_work, tracer_init_tracefs_work_func);
+		queue_work(eval_map_wq, &tracerfs_init_work);
+	} else {
+		tracer_init_tracefs_work_func(NULL);
+	}
+
+But that's just a nit anyway.
+
+-- Steve
+
+
+
+> +	else
+> +		queue_work(eval_map_wq, &tracerfs_init_work);
+>  
+>  	return 0;
+>  }
