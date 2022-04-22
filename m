@@ -2,141 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE50AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 180EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445396AbiDVICa (ORCPT
+        id S1445437AbiDVIC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
+        Fri, 22 Apr 2022 04:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445384AbiDVICR (ORCPT
+        with ESMTP id S1445433AbiDVICd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:02:17 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FBF527C6;
-        Fri, 22 Apr 2022 00:59:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650614364; x=1682150364;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VNrOIsgR/2M+tjpgcaLOR6tT5XMMHe+vpYMTNT8yqJE=;
-  b=FQnx7c+5lFmkzTIpWm/qcVESF6Nk/PeTaPlLahcNnkDin+IEW2njl9gX
-   khJ85nsE4dX7LjZysRHd2pzWa4rrcbGHMpxJnuGV3ezsIrUHnTpvKG0dj
-   IHvS/3nZdmIgM2ydWeS3VLyGnWC7LxJNmj7b5gxo8B6s9vp7LVUVlF7m2
-   005SQlbnpEwKov3f6XSNyiTakVI6sj9EvWTa/zlsZmgHZ0L7zRB+yNii6
-   m6lG161OTEJ3XHNvwqIX5FkezT17RTkyvQcBa+DdeDae6/bTyxSWD309E
-   yX+9Ge9PCVA8N5dHsfIKn77z7KYg3tixmj0H24OVv2RqOzAdf11FE3MgT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264385685"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="264385685"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:59:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="648522037"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 00:59:19 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhoCF-0009uY-1P;
-        Fri, 22 Apr 2022 07:59:19 +0000
-Date:   Fri, 22 Apr 2022 15:58:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jianjun Wang <jianjun.wang@mediatek.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
+        Fri, 22 Apr 2022 04:02:33 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EDB522DB;
+        Fri, 22 Apr 2022 00:59:34 -0700 (PDT)
+X-UUID: 07d33d54a5f64cbca11cc0f602d23146-20220422
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:b6f8feab-30f0-4076-b9ad-efc5c60dbb00,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:faefae9,CLOUDID:f691c1ef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 07d33d54a5f64cbca11cc0f602d23146-20220422
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 938408934; Fri, 22 Apr 2022 15:59:26 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 22 Apr 2022 15:59:16 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 Apr
+ 2022 15:59:16 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 22 Apr 2022 15:59:16 +0800
+Message-ID: <177a0be5289045602fdbde295b1bd076bee9e854.camel@mediatek.com>
+Subject: Re: [PATCH v1] dt-bindings: dsp: mediatek: add mt8186 dsp document
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     kbuild-all@lists.01.org, Wei-Shun Chang <weishunc@google.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rex-bc.chen@mediatek.com, randy.wu@mediatek.com,
-        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
-        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
-Subject: Re: [PATCH v6 2/2] phy: mediatek: Add PCIe PHY driver
-Message-ID: <202204221513.SZZHW8dq-lkp@intel.com>
-References: <20220422041125.12732-3-jianjun.wang@mediatek.com>
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 22 Apr 2022 15:59:15 +0800
+In-Reply-To: <20220422071534.15653-1-tinghan.shen@mediatek.com>
+References: <20220422071534.15653-1-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422041125.12732-3-jianjun.wang@mediatek.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jianjun,
+On Fri, 2022-04-22 at 15:15 +0800, Tinghan Shen wrote:
+> This patch adds mt8186 dsp document. The dsp is used for Sound Open
+> Firmware driver node. It includes registers, clocks, memory regions,
+> and mailbox for dsp.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+> 
+> This patch depends on MT8186 clock bindings.
+> 
+https://lore.kernel.org/all/20220409132251.31725-2-chun-jie.chen@mediatek.com/
+> 
+> ---
+>  .../bindings/dsp/mediatek,mt8186-dsp.yaml     | 93
+> +++++++++++++++++++
+>  1 file changed, 93 insertions(+)
+>  create mode 100644
+> Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/dsp/mediatek,mt8186-
+> dsp.yaml b/Documentation/devicetree/bindings/dsp/mediatek,mt8186-
+> dsp.yaml
+> new file mode 100644
+> index 000000000000..00a79e880895
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> @@ -0,0 +1,93 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/dsp/mediatek,mt8186-dsp.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mediatek mt8186 DSP core
 
-I love your patch! Yet something to improve:
+Hello Tinghan,
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on linus/master v5.18-rc3 next-20220421]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Please use MediaTek.
+Thanks.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jianjun-Wang/phy-mediatek-Add-PCIe-PHY-driver/20220422-121407
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220422/202204221513.SZZHW8dq-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c2ea770ff29995df64bc82ad12ece5b671415a62
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jianjun-Wang/phy-mediatek-Add-PCIe-PHY-driver/20220422-121407
-        git checkout c2ea770ff29995df64bc82ad12ece5b671415a62
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+BRs,
+Rex
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +
+> +maintainers:
+> +  - Tinghan Shen <tinghan.shen@mediatek.com>
+> +
+> +description: |
+> +  MediaTek mt8186 SoC contains a DSP core used for
+> +  advanced pre- and post- audio processing.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt8186-dsp
+> +
+> +  reg:
+> +    items:
+> +      - description: Address and size of the DSP config registers
+> +      - description: Address and size of the DSP SRAM
+> +      - description: Address and size of the DSP secure registers
+> +      - description: Address and size of the DSP bus registers
+> +
+> +  reg-names:
+> +    items:
+> +      - const: cfg
+> +      - const: sram
+> +      - const: sec
+> +      - const: bus
+> +
+> +  clocks:
+> +    items:
+> +      - description: mux for audio dsp clock
+> +      - description: mux for audio dsp local bus
+> +
+> +  clock-names:
+> +    items:
+> +      - const: audiodsp_sel
+> +      - const: adsp_bus_sel
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  mboxes:
+> +    items:
+> +      - description: ipc reply between host and audio DSP.
+> +      - description: ipc request between host and audio DSP.
+> +
+> +  mbox-names:
+> +    items:
+> +      - const: mbox0
+> +      - const: mbox1
+> +
+> +  memory-region:
+> +    items:
+> +      - description: dma buffer between host and DSP.
+> +      - description: DSP system memory.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - clocks
+> +  - clock-names
+> +  - power-domains
+> +  - mbox-names
+> +  - mboxes
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/clock/mt8186-clk.h>
+> +    dsp@10680000 {
+> +        compatible = "mediatek,mt8186-dsp";
+> +        reg = <0x10680000 0x2000>,
+> +              <0x10800000 0x100000>,
+> +              <0x1068b000 0x100>,
+> +              <0x1068f000 0x1000>;
+> +        reg-names = "cfg", "sram", "sec", "bus";
+> +        clocks = <&topckgen CLK_TOP_AUDIODSP>,
+> +                 <&topckgen CLK_TOP_ADSP_BUS>;
+> +        clock-names = "audiodsp_sel",
+> +                      "adsp_bus_sel";
+> +        power-domains = <&spm 6>;
+> +        mbox-names = "mbox0", "mbox1";
+> +        mboxes = <&adsp_mailbox0>, <&adsp_mailbox1>;
+> +    };
 
-All errors (new ones prefixed by >>):
-
-   drivers/phy/mediatek/phy-mtk-pcie.c: In function 'mtk_pcie_efuse_set_lane':
->> drivers/phy/mediatek/phy-mtk-pcie.c:92:29: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
-      92 |                             FIELD_PREP(EFUSE_LN_TX_PMOS_SEL, data->tx_pmos));
-         |                             ^~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/FIELD_PREP +92 drivers/phy/mediatek/phy-mtk-pcie.c
-
-    78	
-    79	static void mtk_pcie_efuse_set_lane(struct mtk_pcie_phy *pcie_phy,
-    80					    unsigned int lane)
-    81	{
-    82		struct mtk_pcie_lane_efuse *data = &pcie_phy->efuse[lane];
-    83		void __iomem *addr;
-    84	
-    85		if (!data->lane_efuse_supported)
-    86			return;
-    87	
-    88		addr = pcie_phy->sif_base + PEXTP_ANA_LN0_TRX_REG +
-    89		       lane * PEXTP_ANA_LANE_OFFSET;
-    90	
-    91		mtk_phy_update_bits(addr + PEXTP_ANA_TX_REG, EFUSE_LN_TX_PMOS_SEL,
-  > 92				    FIELD_PREP(EFUSE_LN_TX_PMOS_SEL, data->tx_pmos));
-    93	
-    94		mtk_phy_update_bits(addr + PEXTP_ANA_TX_REG, EFUSE_LN_TX_NMOS_SEL,
-    95				    FIELD_PREP(EFUSE_LN_TX_NMOS_SEL, data->tx_nmos));
-    96	
-    97		mtk_phy_update_bits(addr + PEXTP_ANA_RX_REG, EFUSE_LN_RX_SEL,
-    98				    FIELD_PREP(EFUSE_LN_RX_SEL, data->rx_data));
-    99	}
-   100	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
