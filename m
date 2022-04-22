@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D77C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A74C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449109AbiDVPnT (ORCPT
+        id S1449202AbiDVPnV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        Fri, 22 Apr 2022 11:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449479AbiDVPln (ORCPT
+        with ESMTP id S1449169AbiDVPkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:41:43 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247DC5AECC
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:38:49 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id CF9391F745;
-        Fri, 22 Apr 2022 15:38:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650641927; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QWBm9KSaL64G4heSBDY5StN85oWFBXv4LEjPALb3118=;
-        b=Pr3jiyHC7XSbaiUzSjGuFFjBeUkubKp5yAodSeHJX8dVABn45GJSEnV8B3CD25gtIAWEWY
-        2thQgsVC45m8/e+bXE2tBPhmBntM76EwI8dr4mRd9DdbTGrQPD4uzz0CAyL9FBrYC2+CqA
-        aJsURDkmtyYs7bbSfeiHdSuoLSKBa70=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 83B022C141;
-        Fri, 22 Apr 2022 15:38:47 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 17:38:44 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Nico Pache <npache@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        David Rientjes <rientjes@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>
-Subject: Re: [RFC 3/3] exit: Check for MMF_OOM_SKIP in exit_mmap
-Message-ID: <YmLMBDkHmcjf9Nem@dhcp22.suse.cz>
-References: <20220421190533.1601879-1-npache@redhat.com>
- <20220421190533.1601879-4-npache@redhat.com>
+        Fri, 22 Apr 2022 11:40:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C355AECC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:37:28 -0700 (PDT)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1nhvLN-0000qE-AP; Fri, 22 Apr 2022 17:37:13 +0200
+Message-ID: <3d5969cc-2210-3c7c-01c8-3f5c3789e54b@pengutronix.de>
+Date:   Fri, 22 Apr 2022 17:37:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421190533.1601879-4-npache@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5/8] ARM: stm32: select OPTEE on MPU family
+Content-Language: en-US
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>, arnd@arndb.de,
+        robh+dt@kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        soc@kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        etienne.carriere@st.com,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+References: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
+ <20220422150952.20587-6-alexandre.torgue@foss.st.com>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+In-Reply-To: <20220422150952.20587-6-alexandre.torgue@foss.st.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 21-04-22 15:05:33, Nico Pache wrote:
-> The MMF_OOM_SKIP bit is used to indicate weather a mm_struct can not be
-> invalided or has already been invalided. exit_mmap currently calls
-> __oom_reap_task_mm unconditionally despite the fact that the oom reaper
-> may have already called this.
-> 
-> Add a check for the MMF_OOM_SKIP bit being set in exit_mmap to avoid
-> unnessary calls to the invalidate code.
+Hello Alex,
 
-Why do we care about this?
- 
-> A slight race can occur on the MMF_OOM_SKIP bit that will still allow
-> this to run twice. My testing has shown an ~66% decrease in double calls
-> to _oom_reap_task_mm.
+On 22.04.22 17:09, Alexandre Torgue wrote:
+> Select CONFIG_OPTEE for STM32MP15 and STM32MP13 by default. Final
+> activation will done thanks to device tree.
 > 
-> Fixes: 27ae357fa82b ("mm, oom: fix concurrent munlock and oom reaper unmap, v3")
-
-I do not see this would be fixing anything.
-
-> Cc: David Rientjes <rientjes@google.com>
-> Cc: Michal Hocko <mhocko@suse.com>
-> Cc: Andrea Arcangeli <aarcange@redhat.com>
-> Signed-off-by: Nico Pache <npache@redhat.com>
-> ---
->  mm/mmap.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 > 
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index a2968669fd4e..b867f408dacd 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -3113,7 +3113,8 @@ void exit_mmap(struct mm_struct *mm)
->  	/* mm's last user has gone, and its about to be pulled down */
->  	mmu_notifier_release(mm);
->  
-> -	if (unlikely(mm_is_oom_victim(mm))) {
-> +	if (unlikely(mm_is_oom_victim(mm)) &&
-> +			!test_bit(MMF_OOM_SKIP, &mm->flags)) {
->  		/*
->  		 * Manually reap the mm to free as much memory as possible.
->  		 * Then, as the oom reaper does, set MMF_OOM_SKIP to disregard
-> -- 
-> 2.35.1
+> diff --git a/arch/arm/mach-stm32/Kconfig b/arch/arm/mach-stm32/Kconfig
+> index 98145031586f..b322cf2a136f 100644
+> --- a/arch/arm/mach-stm32/Kconfig
+> +++ b/arch/arm/mach-stm32/Kconfig
+> @@ -6,6 +6,8 @@ menuconfig ARCH_STM32
+>  	select HAVE_ARM_ARCH_TIMER if ARCH_MULTI_V7
+>  	select ARM_GIC if ARCH_MULTI_V7
+>  	select ARM_PSCI if ARCH_MULTI_V7
+> +	select TEE if ARCH_MULTI_V7
+> +	select OPTEE if ARCH_MULTI_V7
+
+Users may want to use OPTEE as a module without it being a SCMI provider
+or not use OPTEE at all. I'd prefer you drop this patch and leave it
+to users to configure their kernel appropriately.
+
+Cheers,
+Ahmad
+
+
+>  	select ARM_AMBA
+>  	select ARCH_HAS_RESET_CONTROLLER
+>  	select CLKSRC_STM32
+
+
+
 
 -- 
-Michal Hocko
-SUSE Labs
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
