@@ -2,88 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4430FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444355AbiDVG34 (ORCPT
+        id S1444395AbiDVGaF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        Fri, 22 Apr 2022 02:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232680AbiDVG3u (ORCPT
+        with ESMTP id S1444348AbiDVG35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:29:50 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6196050B0E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:26:58 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id c23so8773544plo.0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:26:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=Y1YHaeXBfTbZfoBkSkWzaPdDe8ew5e9JhA6bfb6pRoE=;
-        b=fhDY+Gu1VdlyMnkVxX8ZSA+fulTIKGS1pUFJKkEwCBZfAXOAQ1b24SC36olqknBP/4
-         hQm8Fryq5s4n2AwOmTEchOXe3pHKJZttQq/3GGotS37ho3UsFMtVzOioJeqXB0HV03dK
-         rwkwQ/H/+5pF/+jJZHuUBmNTUlIAxK+vW8+7+VL6d2YbjUuyseKlrUWY0avncLbDZkLf
-         Qen3ZRACqL7ATPJ0jrTP4w/iMCfzHYIQryWsMTVfzSOAt2jHT4GsdDAC+IL82gl7CBP+
-         nRQV4jLpTtLFamcSHv/6iEfSqzZ0TU6eqUr65GROcBfS3HzskiOAK9g3KzUfZNoCJt4e
-         Gq8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Y1YHaeXBfTbZfoBkSkWzaPdDe8ew5e9JhA6bfb6pRoE=;
-        b=4mNMl/rJgy0fkOjDD0SUn/OXqQrwNVQflCbQ+EWKdHNZ2ehFl6EC/oVQVYR8apzF0p
-         I9m4HJbrgcFZL5EF217TEML5AcaIKa35D09xLFay4JHNY6uUjV3Fus+zAr1Zj393jtKn
-         JzZwn3ZbctK6EG558wt6GjJqbWDXj1mxep8CBPVsZGPPJ3Yg/scE6keXuZUdJnV1EegI
-         U1Ru2fXQh2um5Pd3qWVTzJOe6iQ6syh3JF9BEEgh4qJFD7aD/D064BagwZCJW8ExutuJ
-         oL3ih9iaydPr0HbXXp8q/mhTey75Ly5ExViIPCsdjZpoTOSfKRQy0+uCAVlqkVl1f4dt
-         xCmQ==
-X-Gm-Message-State: AOAM531QUTBFIZdl6dZVgNxzGkEu65ROZyIWtdtb3IU3tJZ3d9/Jo60O
-        GLaneJOV5C6LKYB6LemEKYQ=
-X-Google-Smtp-Source: ABdhPJxlKzf+MZG6ybuWwrjftcHjKzx28RfjZXreCxWvDH1j7z8ZhQAAp6VzX1pfWf/O1RTMUWYiHw==
-X-Received: by 2002:a17:902:d717:b0:156:20a9:d388 with SMTP id w23-20020a170902d71700b0015620a9d388mr3104594ply.19.1650608817581;
-        Thu, 21 Apr 2022 23:26:57 -0700 (PDT)
-Received: from localhost.localdomain ([2402:7500:477:11a5:b8c8:12d2:abba:7a5c])
-        by smtp.gmail.com with ESMTPSA id 76-20020a62194f000000b0050abaf80f99sm1159200pfz.114.2022.04.21.23.26.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Apr 2022 23:26:56 -0700 (PDT)
-From:   cy_huang <u0084500@gmail.com>
-To:     perex@perex.cz, tiwai@suse.com
-Cc:     oder_chiou@realtek.com, lgirdwood@gmail.com, broonie@kernel.org,
-        cy_huang@richtek.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: rt9120: Correct the reg 0x09 size to one byte
-Date:   Fri, 22 Apr 2022 14:26:50 +0800
-Message-Id: <1650608810-3829-1-git-send-email-u0084500@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 22 Apr 2022 02:29:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD65450B1F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:27:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 818C6B82A95
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:27:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6399C385A4;
+        Fri, 22 Apr 2022 06:27:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650608822;
+        bh=Jqe4X1wkd2fVgjl3MmWermpy5+W1eWq4Gx/npLUOsVY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=I+icmn8TWSM+B0iIk1J0+0SgVxGgu/Mv5TWGQfR+BdMVQFCFtepFaT5Bae2ZDWU9Y
+         mRyMJy7Nh7xZqsprG2Dl363X7I7MDwq4PSGSi/dnOjLyNhpi4x4YS0byIaQF73Aspf
+         Zx+yvbThxGfP6vdsZzrTbbJmscLMD3XOUmf1JCSU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH] topology: Fix up build warning in topology_is_visible()
+Date:   Fri, 22 Apr 2022 08:26:53 +0200
+Message-Id: <20220422062653.3899972-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1307; i=gregkh@linuxfoundation.org; h=from:subject; bh=Jqe4X1wkd2fVgjl3MmWermpy5+W1eWq4Gx/npLUOsVY=; b=owGbwMvMwCRo6H6F97bub03G02pJDElJXqvP3L65Yn7Qy92SPna6gqcNnm3bGdUrMT87X75/59n2 dEaPjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZhI5SSGeebrtj75zv4t1l9kxomIt9 8WvNTt62VYsOFNPcPMSxuqjivbxXyKM9yQ0LfrAgA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+Commit aa63a74d4535 ("topology/sysfs: Hide PPIN on systems that do not
+support it.") caused a build warning on some configurations:
 
-Correct the reg 0x09 size to one byte.
+drivers/base/topology.c: In function 'topology_is_visible':
+drivers/base/topology.c:158:24: warning: unused variable 'dev' [-Wunused-variable]
+  158 |         struct device *dev = kobj_to_dev(kobj);
 
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+Fix this up by getting rid of the variable entirely.
+
+Fixes: aa63a74d4535 ("topology/sysfs: Hide PPIN on systems that do not support it.")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Sorry, in the original datasheet, reg 0x09 size is marked as 2 bytes.
-But actually it's one byte RG size.
----
- sound/soc/codecs/rt9120.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/base/topology.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rt9120.c b/sound/soc/codecs/rt9120.c
-index 7aa1772..6e0d7cf 100644
---- a/sound/soc/codecs/rt9120.c
-+++ b/sound/soc/codecs/rt9120.c
-@@ -341,7 +341,6 @@ static int rt9120_get_reg_size(unsigned int reg)
+diff --git a/drivers/base/topology.c b/drivers/base/topology.c
+index 706dbf8bf249..ac6ad9ab67f9 100644
+--- a/drivers/base/topology.c
++++ b/drivers/base/topology.c
+@@ -155,9 +155,7 @@ static struct attribute *default_attrs[] = {
+ static umode_t topology_is_visible(struct kobject *kobj,
+ 				   struct attribute *attr, int unused)
  {
- 	switch (reg) {
- 	case 0x00:
--	case 0x09:
- 	case 0x20 ... 0x27:
- 		return 2;
- 	case 0x30 ... 0x3D:
+-	struct device *dev = kobj_to_dev(kobj);
+-
+-	if (attr == &dev_attr_ppin.attr && !topology_ppin(dev->id))
++	if (attr == &dev_attr_ppin.attr && !topology_ppin(kobj_to_dev(kobj)->id))
+ 		return 0;
+ 
+ 	return attr->mode;
 -- 
-2.7.4
+2.36.0
 
