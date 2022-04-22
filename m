@@ -2,74 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BC4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiDVTcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 15:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
+        id S230417AbiDVTcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 15:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiDVTcE (ORCPT
+        with ESMTP id S230023AbiDVTcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 15:32:04 -0400
-Received: from out28-123.mail.aliyun.com (out28-123.mail.aliyun.com [115.124.28.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0E3263CAF;
-        Fri, 22 Apr 2022 12:10:23 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.5166861|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00738068-0.00310186-0.989518;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047198;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.NVyzeo5_1650654598;
-Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NVyzeo5_1650654598)
-          by smtp.aliyun-inc.com(33.37.68.185);
-          Sat, 23 Apr 2022 03:09:59 +0800
-From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
-        <zhouyanjie@wanyeetech.com>
-To:     broonie@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, paul@crapouillou.net,
-        contact@artur-rojek.eu, dongsheng.qiu@ingenic.com,
-        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
-        sernia.zhou@foxmail.com, zhenwenjin@gmail.com, reimu@sudomaker.com
-Subject: [PATCH v2 2/3] dt-bindings: SPI: Add bindings for new Ingenic SoCs.
-Date:   Sat, 23 Apr 2022 03:09:42 +0800
-Message-Id: <1650654583-89933-3-git-send-email-zhouyanjie@wanyeetech.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650654583-89933-1-git-send-email-zhouyanjie@wanyeetech.com>
-References: <1650654583-89933-1-git-send-email-zhouyanjie@wanyeetech.com>
+        Fri, 22 Apr 2022 15:32:08 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1160921A674
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:10:10 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id b5so5663197ile.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rvKMiQM5BxmRRC7ajbQUzyS9sRzOBfLb0jjIwCaRIP8=;
+        b=pKZncDd/5eiUgfslYCwu3tEWPP063ruyoXjkcSv5TL48nBr3RJhhYsYKPjXTpJCSdi
+         PiqbG4yiv+A4ScSJHD4yr0oJk37m+CR9dqa1bgXCYI0IGIvlS0JcextYhtgEZtReQVU3
+         m4fg5q2gcIdBy9zau0hMnyvYLKpn96oL/t4H6e4258anB6CTpvNL0iRtVW8kLsnT2u5d
+         82+cCLl9pWNEdiMHQ9nLvAhbiszzCL8epAnWF+4klY/SaLYzaM+juCF2df+MMD2ZE2hr
+         66r6rfP3njCPNXcUzxVmGwM/a1x9DmY10eCTrv8hEO079moteOdVZ47cCpM9RiBIH+Lc
+         KYvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rvKMiQM5BxmRRC7ajbQUzyS9sRzOBfLb0jjIwCaRIP8=;
+        b=E7GPII9kBJW58ib28M9KkkcvNFvfr8y2TWkv0XBRVIYnJqinNaiZSwG2/Ins2A2Hkd
+         5oSb4H7H6GsCA2emm35g6luGOe7jxT7cJxdYGfE4/bOuvHjWU+hCSOl47IjgoVd/KF/1
+         rQz+5Z4WrOAToKP2HrRQorf1KhoWs021CZImcUXYs+Yjp/s66FWJM5muodVanR55aWy4
+         0Hew/cJIx7xozFvvzaqXV8tm4Xt9Ey1nRqOikGGWQlKEE314GeD3qNQ2V/SZYW/2S+3q
+         3PY1jQRl0oAQUanhROh1NiOhrJmcRwIvdzPxhABKzlAqsWyOmF+SAw20w8VpHh6hAlmY
+         Y5QA==
+X-Gm-Message-State: AOAM531H82MtbZmq0SAIDJwjmx+YGVrFJa2ZKtJaAJT0DyJjxaIM+LfB
+        pZx6Fbi69RvF4L/6gg8wzvmdOufEtzypIiubW8BNLFfEhV8=
+X-Google-Smtp-Source: ABdhPJzeNBbSMKYrm7MGzQ6qGhUOnjVtx8n1dn/Sds8JzghAxwR2gtytaG4V6r/JzHO/6o5NgW2JvKnP3utwlFfPe5k=
+X-Received: by 2002:a63:2b4f:0:b0:398:49ba:a268 with SMTP id
+ r76-20020a632b4f000000b0039849baa268mr4959451pgr.546.1650652223336; Fri, 22
+ Apr 2022 11:30:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220120162520.570782-1-valentin.schneider@arm.com>
+ <93a20759600c05b6d9e4359a1517c88e06b44834.camel@fb.com> <20220422110903.GW2731@worktop.programming.kicks-ass.net>
+ <056e9bb0d0e3fc20572d42db7386face1d0665d6.camel@fb.com>
+In-Reply-To: <056e9bb0d0e3fc20572d42db7386face1d0665d6.camel@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 22 Apr 2022 11:30:12 -0700
+Message-ID: <CAADnVQKsah4aka-LJ+X+5XHHESKbbw36D8fXTLqcYp2io3PN_w@mail.gmail.com>
+Subject: Re: [PATCH] sched/tracing: append prev_state to tp args instead
+To:     Delyan Kratunov <delyank@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     "peterz@infradead.org" <peterz@infradead.org>,
+        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "legion@kernel.org" <legion@kernel.org>,
+        "adharmap@quicinc.com" <adharmap@quicinc.com>,
+        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
+        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the SPI bindings for the JZ4775 SoC, the X1000 SoC,
-and the X2000 SoC from Ingenic.
+On Fri, Apr 22, 2022 at 10:22 AM Delyan Kratunov <delyank@fb.com> wrote:
+>
+> On Fri, 2022-04-22 at 13:09 +0200, Peter Zijlstra wrote:
+> > And on the other hand; those users need to be fixed anyway, right?
+> > Accessing prev->__state is equally broken.
+>
+> The users that access prev->__state would most likely have to be fixed, for sure.
+>
+> However, not all users access prev->__state. `offcputime` for example just takes a
+> stack trace and associates it with the switched out task. This kind of user
+> would continue working with the proposed patch.
+>
+> > If bpf wants to ride on them, it needs to suffer the pain of doing so.
+>
+> Sure, I'm just advocating for a fairly trivial patch to avoid some of the suffering,
+> hopefully without being a burden to development. If that's not the case, then it's a
+> clear no-go.
 
-Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Paul Cercueil <paul@crapouillou.net>
----
 
-Notes:
-    v1->v2:
-    No change.
+Namhyung just sent this patch set:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220422053401.208207-3-namhyung@kernel.org/
 
- Documentation/devicetree/bindings/spi/ingenic,spi.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+to add off-cpu profiling to perf.
+It also hooks into sched_switch tracepoint.
+Notice it deals with state->__state rename just fine.
+But it will have a hard time without this patch
+until we add all the extra CO-RE features to detect
+and automatically adjust bpf progs when tracepoint
+arguments order changed.
+We will do it eventually, of course.
+There will be additional work in llvm, libbpf, kernel, etc.
+But for now I think it would be good to land Delyan's patch
+to avoid unnecessary pain to all the users.
 
-diff --git a/Documentation/devicetree/bindings/spi/ingenic,spi.yaml b/Documentation/devicetree/bindings/spi/ingenic,spi.yaml
-index 5b1c7a2..360f76c 100644
---- a/Documentation/devicetree/bindings/spi/ingenic,spi.yaml
-+++ b/Documentation/devicetree/bindings/spi/ingenic,spi.yaml
-@@ -18,7 +18,10 @@ properties:
-     oneOf:
-       - enum:
-           - ingenic,jz4750-spi
-+          - ingenic,jz4775-spi
-           - ingenic,jz4780-spi
-+          - ingenic,x1000-spi
-+          - ingenic,x2000-spi
-       - items:
-           - enum:
-               - ingenic,jz4760-spi
--- 
-2.7.4
-
+Peter, do you mind?
