@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E84C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D08C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449550AbiDVPrl (ORCPT
+        id S1449549AbiDVPrr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
+        Fri, 22 Apr 2022 11:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449618AbiDVPr1 (ORCPT
+        with ESMTP id S1449561AbiDVPqk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:47:27 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12olkn2099.outbound.protection.outlook.com [40.92.22.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE3B5E174;
-        Fri, 22 Apr 2022 08:43:37 -0700 (PDT)
+        Fri, 22 Apr 2022 11:46:40 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12olkn2048.outbound.protection.outlook.com [40.92.22.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E33D5DE4F;
+        Fri, 22 Apr 2022 08:43:01 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X/RPXY4cZvQxP8fLExszzZZ1B/pq5BSQZFZ0d6aXXm34ty7AcpJofT84egDNCqoLsN51UKPgyiYUbR4lT+9LOJyd7/5CLOTMQKuT1emk8pJNQpygOQv8BJRTew1wjsoMk8JctD/6Re66bwStMAqFFb997aSm/npAPl4Nmkc4pwImXg7InKBq47eXvTWzP/gGV+ArO9eGW7TXacaMaYVGSMisYaSFKPiAwOubHDXEV9nv+fqkbp3LZtmlwoWDTJ9F8Ilgk9zsiOsje8lYtp9thHmko6uOjWIyx2nrW3AYTv22SPGCJhO7XXmtbNPgncipDcmFdlz30pInfDr01C3jZA==
+ b=cbgyaVazkYmMUFqN6uEtdextqshiu9sUvPXGvLArXq5J2hTNp63LkEKAdO4AB6J4o6jMlLSsKiEMIMmOW1wep8hfdOjaHoHsBPJLOme3uUTVsZe7RCorseiLcalmVGVskedAYrQo76O4nb1ETmljMBUhXF/M58nxaZE65Wh719R1qKj23QENAqlnwOdz4b6AlFnVAhQDXNwrsHjtjYmFgcJli0MeZoX3s8rcDswBJeVm0V6oL8bPQ4MNeKOR3gA6qUbt4WmRmEdnlEfSzEWyQWG7jUxO5NbDPhbqPZmZLKCU4eL2IRhlJxR3gbNHLeZRWWNZtO5C+53goeXfJ0ZbEg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t+bTY2ZVoe/uYb7D+uWnrBT52CTLm5pFsPRHeuvrRSc=;
- b=itczoN2K0+2YW2Xy6mS0/TSiEp4aQby0UKEXlIa8cjwKTurA5O4aaPhtmEdnZXSW3PLD8R14YK3u5ffc/Pgl9+qKqaRMsQKr57S7ZLmzLCyubx0d3nv4QHZm8yU/q82ZHtpmnDGrTTUnyUnlDsilOkI+ZWJueF0meu4cWLiW8B28Igt+0zf6lNvhV0J1HuYRZ63Acpj0EgHPXzugwr/R5QW6E95Qg1sPUbClLsecI/ewd5wdaDUU8DdZMCoV4OiozIy7yD0U8FhnD9IzHMRwQziHwTDJ7AV84BjUj8G6r/pHt58UlRiO5up/lh86GAJOYmdK5pGNfFl40gW6vXRAEg==
+ bh=BvJHw1ekFeQ/5or066Kmv/UA5wbK0ZQ6EoGiQ1Pdgc8=;
+ b=dVGwWGO9ircRdMrHTGZ0T7bZa4iHluaBMGqL01fhN79ydfwlf15aIPc93TRXxT4O01p/55pzz1rqySGuJFvuLnS8ZQtANS1GXBI2tCvUcuu32Xc0/F9anJdJRhTsfx1m5QWkRuEZTprtt5UKD+UWIMBzOnylcPIZ+oz1S3G2Qm8gpP1NqJEHK8F8CA1HV6jcT6CV150Fvf+ysLnWJBrtH4K09Ury7PLDwGbhQC3fhUXZnEfi92WmUoZ1jwsLKVVwEsBItFLEuPCxH4a1GqUw1/yUuFWsQhFaxK2VJ3yTaLZtbRMBXfeDJaJp7p0Lsjel2+O/vHaLkBfSsG9iVKGrJw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t+bTY2ZVoe/uYb7D+uWnrBT52CTLm5pFsPRHeuvrRSc=;
- b=fQ6NeQeYLR5H4Vgb/ubCAV/ErinZkvsQ8HjsuCMgNoUaIcJsb/WGaAYWCTSsH7mcEoJmC/qlqhTzdPxNLFx/EcUbMlm1yqQy541RG4ueylznKQR79/GJQXYdQISvx89GA4j3crR/J97pQOyY+Yulbw5nyU2so6BNCKnpCJen+Z/Dtu2dhVZfxcCI81/eHmhVnxFFPDPvWtHDUobWvWh4ijF2u8iZABonr0OX5bxMTa6VR/i8czxkMOMDmyL9KN8t4geKQ24gzcIIIWa5S1+VW1AzKQPMxzwNeJa3CZA3EoxM3vDCzxvQxJUHXq0qeypXFWnAOCjnIkZC9FdhT3EAsw==
+ bh=BvJHw1ekFeQ/5or066Kmv/UA5wbK0ZQ6EoGiQ1Pdgc8=;
+ b=XvoE/MsOC7rUNYr+2aox6Kw9gDSs+iCXecQwomDgP8d1CnaCMicR3VVTxLHBs49HNUps0d1aivYHv0m3bhvDJ3YbZYlphmKhQYe6PCjadR5dckL/9NM9BybL5j14xt0A9hD0iXNvMETmLwkgWq297hr1q2vOkmBeY9ieKA73Eoq9cqnoWgOYgsPz3HFi/jom4f8p98V/VaEVVRmUoVxTV91Xhu1XiMeKAJE2z8T5yOVuIyHa3NahZ1/GYLM7kxPMPTqFCGFcrUquU2TL9nHCUL5r8h2HxxMN2qHFsmFDBvgxLGF9FVnAxSY0NFerBKaCyVETCeUmpLZEIgLchdrEOw==
 Received: from BYAPR20MB2472.namprd20.prod.outlook.com (2603:10b6:a03:155::16)
  by DM5PR2001MB1836.namprd20.prod.outlook.com (2603:10b6:4:17::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Fri, 22 Apr
- 2022 15:43:35 +0000
+ 2022 15:42:57 +0000
 Received: from BYAPR20MB2472.namprd20.prod.outlook.com
  ([fe80::3480:160a:eb92:d6e3]) by BYAPR20MB2472.namprd20.prod.outlook.com
  ([fe80::3480:160a:eb92:d6e3%6]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
- 15:43:35 +0000
+ 15:42:57 +0000
 From:   icenowy@outlook.com
 To:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -49,57 +49,57 @@ To:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
         Icenowy Zheng <icenowy@aosc.io>
-Subject: [PATCH 12/12] arm64: allwinner: dts: r329: add support for Sipeed MaixSense
-Date:   Fri, 22 Apr 2022 23:41:15 +0800
-Message-ID: <BYAPR20MB247223406A5E8E97C9CEB3BBBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+Subject: [PATCH 10/12] arm64: allwinner: dts: add DTSI file for R329 SoC
+Date:   Fri, 22 Apr 2022 23:41:13 +0800
+Message-ID: <BYAPR20MB247209BA9B07425FADC82A84BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220422140902.1058101-1-icenowy@aosc.io>
 References: <20220422140902.1058101-1-icenowy@aosc.io>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-TMN:  [aelFEiau9+SgNya5lSH1eLWQorp9uU4l]
+X-TMN:  [rjxwSqcypWDq2tJfHZzDxqAz4veJeXTo]
 X-ClientProxiedBy: HK0PR03CA0116.apcprd03.prod.outlook.com
  (2603:1096:203:b0::32) To BYAPR20MB2472.namprd20.prod.outlook.com
  (2603:10b6:a03:155::16)
-X-Microsoft-Original-Message-ID: <20220422154115.1068642-10-icenowy@outlook.com>
+X-Microsoft-Original-Message-ID: <20220422154115.1068642-8-icenowy@outlook.com>
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b48b6c1d-f524-4925-ad14-08da2476dcdf
+X-MS-Office365-Filtering-Correlation-Id: 084024c5-ed35-4091-3685-08da2476c611
 X-MS-TrafficTypeDiagnostic: DM5PR2001MB1836:EE_
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GAaI8+cj1+02jsPbmH9NhjFPBwRdFMV9IDolRftLrJX/QENyzqH8XHA4lgbAdHRGozD5epUSAY5RNnapuKNJMp0o9k0EuQJ5aM6sXDHIJDFwrc0YfvkkLsTtMUuyXWnb6LzYvryJfLMeBWtAmdCkg7paMLfz5AgVVI2wK+3MOgEJbwgmGeAAJw/EoYlYIRDlrbvBjrp0fziNQg+njghZwHfR4/M9WHPv5I9KusgIaLZNKYqEpXvPynTaLvxsS7ug915fIifvDtxEsNvVzs2TJU55tBAxls0as7Uy/q4qa/2RkEE+ftnpvxFDij7tCfruo6mHCu1166gxL9Mw6ShtEIN8uWK/5kFoa2PtnhGrbRpC7QnKbq7e5hAuM4aJxF2KlKZByfiDJ3NSH4M13wiBphOj/4pcpTwthJVtXqERrX/FBr1M1wezJU5g/kN7PzCAwdNBs8fWj7wCKZ2QYsLoyCq1c/Y2ClqGNWpRF14pKwJ8ToEKP/FqbB1I0uCdXgOEtv+3sAUlaLAupbl2pDUQ96z7vjkmR2Y4IW9qvD63xgzSsDYweeAUJ6WDSD0E7lmVOyi5mxiRSO8MR4C6HJwMmQ==
+X-Microsoft-Antispam-Message-Info: kEKG/ir5JA4ISrkOT2cV5hT2YtoKA3LiA6ew66kNpmrgYjYeH6IMtTk9IoZjYdKTrWK8Qj6f6k/2mK4qDKF/yD1D11XAzgUmpsWY6Pq+mR4f7DeCZ0HaPZg2FrLJYNfkJEoG0x+ssfCUUXoSvi2002H3ZChD8YEuq/PLJWmkOBDRZGrTnFn84PyIVnQict8MQ/pamDQkU5IO0R2HfJxka8SkNhjCgqz36FyqDqPAIRGvZ/K9Gd3LNO67dIGLrKk/N58wOn47YC4eBXrXxubf5vbM5ciKdcFSf0nfqHSGWma6pd9ZmI8aoXTDBq5HYP6+lHzXswV31pbQZSU2yKusjmEp51Dq4Ht0BLaWq2jWn9QJMYW4xYqFrcH3c9/viOCHVDAXuy6usQOwa2FEKkXcHB8jVaewyphxge4dqUchp8oAosIGq52YoYq5eMp0H+yCe3H9ML2i95oe2919FGtmR8IDfxxQjTQ7e6vl/AVLP/75TeEeEYDtqnpkjtuQZ4dShVWHu521kmayB7hJB/EoehkrMCJRU0E38NQuYpqhAclGd1McYizdPCyaz02jU2S+oJrB4DseildyTTWrJH+jPA==
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kMMbtJ6dsQTBd3j7Z6gaaG5HUhffU+zYHNToyYCavladsYUdsmWrMe5RGixT?=
- =?us-ascii?Q?a0AYK2cw1PVpzjNPEguJ+ocoBFWmGgMJsdKcopQm6G2bYlMsY7QNoqnhTvdT?=
- =?us-ascii?Q?AwdyHztv67waCym+BS6GMEV0zDbqsCkJWWCs4lwX8NG5KGMx/1oMbXqutWEo?=
- =?us-ascii?Q?cY7iPny0Dlrhm3VmVEtjWTCS/ClzeKqGBoIU3nVeBunGGzfIus1QYBHUJ4ce?=
- =?us-ascii?Q?GodsQniKWMeVRG271JnzRl2xSKgdp8vwRiG7ABbJjsfwN92dwVyz/WaNkcpy?=
- =?us-ascii?Q?dzVHXcLOCQ3TmnvXhdmhidUaD5VJ2V6NzfPBVySyY8oIAmz63qv2JCHosH1z?=
- =?us-ascii?Q?ZW3CXmHQpZNqhgoGirvb4pvHaHQXicjZv2gIWprvihYYj6HwvUSfRxma/57n?=
- =?us-ascii?Q?CnmGuJimvuNFJfHzzJLKE0XJcfdPvvy8IcMKRSP2UhYVAmO7JQPBMK2AFQ0j?=
- =?us-ascii?Q?lI6H0LEgVJ0B5hl2BIie6PLoQjd6JrRw6RTD2pfob8YDBc3daEhlGRQdGfUy?=
- =?us-ascii?Q?k+A2o4sl+SiAQZE4lnjpefcFA8NAIVLQuVsgD2KtPTZIQkbbHyg+j5MQTOiy?=
- =?us-ascii?Q?basG7IaNwW58deOfVOe79Uv4bfOWCgKwtrZAObIWTyBTuCJfC0P/2vAPs3cv?=
- =?us-ascii?Q?3wqcsVRy2famyhiDB3KWklJYVKxaCjGU1eOy+5Dw9AHwEKAfDO2pktjra9WO?=
- =?us-ascii?Q?Ixg4agYXwvsIOvHhhXBQDtlAbXl/BLsSiGVbO49cAGWnipEHovB+CsTAaBQ3?=
- =?us-ascii?Q?tq89o/6AC/X5x0OOM0aUteiSmP0PfN001Da0vuhGeX5Tgb9dPQGuZDKxbh4f?=
- =?us-ascii?Q?X6I/QhlpthBHd5WKKpjFU4TkMnbTR4nDYQfSNraJFCTDxSj+LjMrNNimzExg?=
- =?us-ascii?Q?lBkq5Mn1qxlNXBJxR/JZQD+GRrlLsUgQnav9U15Urj7+Ag6S0kmI33HIA/Jh?=
- =?us-ascii?Q?ENDO02AsCBij6R8qvUAI6vxXAsTa3rzHG7mYsfKhoLoxAPUWRfukw8O1RDX3?=
- =?us-ascii?Q?+n6FInBRmg0nmDBnS/GulD7p3q8jj7QWWM00MobH1MCI5lFoap6gpG1fKx6Q?=
- =?us-ascii?Q?3BAgrhFPUYyycODyy96j1+49DrRvEN9lvXjdOYwurVLCBA5gE6GeEbtHgmBY?=
- =?us-ascii?Q?YKEiMisN42NnfPMAw6SCal1BfO5xKvWndu4RgCGZaMtce5CwxbVG73Zn1JXJ?=
- =?us-ascii?Q?GMkZGO1aAeHVW5L7a1ir4oJncgLMJZjMcoj+9o6FuR4u6UIicW/iQOxqk5Sg?=
- =?us-ascii?Q?HaIU+GvmyI2AxLFPwCybk7sgQ79pnHuyDKoOI5GpXBPCAj3135Lghsvg3Otu?=
- =?us-ascii?Q?UCnjDQD/4KPgjGAiEXxeHe3WJLRtVPq3/VYfY3w0sJn5J0ihBmaHCFnWw1Qa?=
- =?us-ascii?Q?xqYwqBgV/xIBEO0LaJbtcNnGTEd44H+KmzBaoJ7A1W6mU0Mz3N0syYlAqXmK?=
- =?us-ascii?Q?gUfORZ/NGh8=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jAWDShazPnZqnr7MisLUi3Ftm6JqP7HWD3sutbkk3xvIN4Qi2PJdJyuTCCQm?=
+ =?us-ascii?Q?LK8B7FXAlwpd2/9QYJFBMg9XHkgS7u3d0NO4HDzotZgreVKcmDJbZO27L/2z?=
+ =?us-ascii?Q?Q8uj7RK539PGDs4+PPWmQQhWHqwmfLeCdM1jTtWR4lo6wstSgo9/G8AJ/S0R?=
+ =?us-ascii?Q?uI2BnSfSDvKWvxluZzHLpkyTZXq/qEOoj+k9roHN6Zj20rPq70Vs6R/yyyU3?=
+ =?us-ascii?Q?qiR/D4BT9k+E9ZSMz3K5woosbjyCy4pRzc4W6sW8bKNsQih1z+IgXGFIZXKg?=
+ =?us-ascii?Q?AtLIg8p1s2qvwi2qCTeRktOPA0TtfKRJ49HYaVudun8/PmW71vEpYdibPCcw?=
+ =?us-ascii?Q?YO3i4tawbU1E68aW350uzuJYx0X2Y7a0laV5hJJJrgvceKPmhmzAk8+6H3GC?=
+ =?us-ascii?Q?2cNbvNrTfczr9yvhwj06mc2zRBjAJtzJ9Lt0M+w/OVw+NtN0QhwE7KSwpPWb?=
+ =?us-ascii?Q?YHdZZ3YcB1Urd/gvuk4lLjyy3bIWN46h/2H4pw4ktuLgyBOFeZ6+GABIXeez?=
+ =?us-ascii?Q?389GnG6gisiD4whRkgOOVeIT0s0sZLyFMdeya+DghB5bptCEQ4AQS7TSCwRc?=
+ =?us-ascii?Q?/R9PzuJOaU6W046vEKwSW8jcJh0xfxwzu9vMd/Twv8arPX1WSTCe7Av/18Ez?=
+ =?us-ascii?Q?f7bNk265o9V/PqaLlO/7Xvz6v5to84TFgvpjrJuxwBQKp3Q66O9kQZ7uUTHU?=
+ =?us-ascii?Q?MIBdPU9qdHmqSohrAWlnCAkxnpI0h/kzgicb/LsGMhtRGBi9bzjhq1KL0gvU?=
+ =?us-ascii?Q?YAcc+IgZR/odqndkCruwxd2LML1qaqbBrY7/BjrMG+2jB3CM9qNC9cNQxQ/U?=
+ =?us-ascii?Q?GUDBiRBfwgqShMEeDBh6UJYwqV4VgI7DYhKXkF18diU5FGr4RIHI14ICEnc9?=
+ =?us-ascii?Q?YlW1COaU0L7/RJ2WzrYtCq9lBShUPL2KCDIycQq0pycc5/wSYhZX4hQDQ8Or?=
+ =?us-ascii?Q?yDIoQhx5PmnfIwRbtHKH0dAkj6e/JrKRgK6OLUeIR8yn1E3ZL38el/8DXpxQ?=
+ =?us-ascii?Q?h/f5m/mZPAjL3YcgS9P1GNvdW2dhtZ3sL+PUs0iuKlaIhU1JnEt3i4J7bzpN?=
+ =?us-ascii?Q?ig18YcYbCMW8h4JDWpwQL/OEXdtGRdSzQnMPz3Wwqnt13maGm69aEkhi7h9y?=
+ =?us-ascii?Q?u3Wo+S/wx0mIwV774wte7/pAUPnkNI2bBJ1qSFQn9diwei9Px2m50jnrzZvt?=
+ =?us-ascii?Q?u8zBeguZrbsrTgMmOraKRvrSmOsj0b3kiKBuZK6NhWjg6/VDJZxE21WGenCj?=
+ =?us-ascii?Q?3sCfqePmcl2Qr/q+XHL8ThjCUjdctrtLmnO0Ti9UqkITihSHBFTFITvBW9zE?=
+ =?us-ascii?Q?L9yIVHQK6pHP88OB1xu4qRWeZsNHy7XIfuelUFeygVtY63g3H3p1sdbvSXGs?=
+ =?us-ascii?Q?oCZv0dwkfudUAmc1GNLzaeReauuMsXgIqZJBKqRRDAYxRupk4tFgewoQpBVD?=
+ =?us-ascii?Q?xBKOpKTLr1Y=3D?=
 X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b48b6c1d-f524-4925-ad14-08da2476dcdf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 084024c5-ed35-4091-3685-08da2476c611
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR20MB2472.namprd20.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 15:43:35.8764
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 15:42:57.6760
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -111,68 +111,296 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Icenowy Zheng <icenowy@aosc.io>
 
-Sipeed MaixSense is a R329 devkit based on Maix IIA SoM.
+Allwinner R329 is a new SoC focused on smart audio devices.
 
-Add support for it.
+Add a DTSI file for it.
 
 Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
 ---
- arch/arm64/boot/dts/allwinner/Makefile        |  1 +
- .../dts/allwinner/sun50i-r329-maixsense.dts   | 37 +++++++++++++++++++
- 2 files changed, 38 insertions(+)
- create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-r329-maixsense.dts
+ .../arm64/boot/dts/allwinner/sun50i-r329.dtsi | 275 ++++++++++++++++++
+ 1 file changed, 275 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-r329.dtsi
 
-diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
-index 8fa5c060a4fe..81fe954ba2ef 100644
---- a/arch/arm64/boot/dts/allwinner/Makefile
-+++ b/arch/arm64/boot/dts/allwinner/Makefile
-@@ -38,3 +38,4 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64.dtb
- dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-pine-h64-model-b.dtb
- dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6.dtb
- dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h6-tanix-tx6-mini.dtb
-+dtb-$(CONFIG_ARCH_SUNXI) += sun50i-r329-maixsense.dtb
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-r329-maixsense.dts b/arch/arm64/boot/dts/allwinner/sun50i-r329-maixsense.dts
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-r329.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-r329.dtsi
 new file mode 100644
-index 000000000000..1876b9d0b080
+index 000000000000..249ed9ff0c5c
 --- /dev/null
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-r329-maixsense.dts
-@@ -0,0 +1,37 @@
++++ b/arch/arm64/boot/dts/allwinner/sun50i-r329.dtsi
+@@ -0,0 +1,275 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +// Copyright (c) 2021 Sipeed
 +
-+/dts-v1/;
-+
-+#include "sun50i-r329-maix-iia.dtsi"
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/clock/sun6i-rtc.h>
++#include <dt-bindings/clock/sun50i-r329-ccu.h>
++#include <dt-bindings/reset/sun50i-r329-ccu.h>
++#include <dt-bindings/clock/sun50i-r329-r-ccu.h>
++#include <dt-bindings/reset/sun50i-r329-r-ccu.h>
 +
 +/ {
-+	model = "Sipeed MaixSense";
-+	compatible = "sipeed,maixsense", "sipeed,maix-iia",
-+		     "allwinner,sun50i-r329";
++	interrupt-parent = <&gic>;
++	#address-cells = <1>;
++	#size-cells = <1>;
 +
-+	aliases {
-+		serial0 = &uart0;
-+		mmc0 = &mmc0;
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu0: cpu@0 {
++			compatible = "arm,cortex-a53";
++			device_type = "cpu";
++			reg = <0>;
++			enable-method = "psci";
++		};
++
++		cpu1: cpu@1 {
++			compatible = "arm,cortex-a53";
++			device_type = "cpu";
++			reg = <1>;
++			enable-method = "psci";
++		};
 +	};
 +
-+	chosen {
-+		stdout-path = "serial0:115200n8";
++	osc24M: osc24M_clk {
++		#clock-cells = <0>;
++		compatible = "fixed-clock";
++		clock-frequency = <24000000>;
++		clock-output-names = "osc24M";
 +	};
-+};
 +
-+&mmc0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mmc0_pf_pins>;
++	psci {
++		compatible = "arm,psci-0.2";
++		method = "smc";
++	};
 +
-+	vmmc-supply = <&reg_vcc3v3>;
-+	bus-width = <4>;
-+	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
-+	status = "okay";
-+};
++	timer {
++		compatible = "arm,armv8-timer";
++		arm,no-tick-in-suspend;
++		interrupts = <GIC_PPI 13
++			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
++			     <GIC_PPI 14
++			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
++			     <GIC_PPI 11
++			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>,
++			     <GIC_PPI 10
++			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
++	};
 +
-+&uart0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart0_pb_pins>;
-+	status = "okay";
++	soc {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		watchdog: watchdog@20000a0 {
++			compatible = "allwinner,sun50i-r329-wdt-reset",
++				     "allwinner,sun50i-r329-wdt",
++				     "allwinner,sun6i-a31-wdt";
++			reg = <0x020000a0 0x20>;
++			interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&osc24M>;
++		};
++
++		pio: pinctrl@2000400 {
++			compatible = "allwinner,sun50i-r329-pinctrl";
++			reg = <0x02000400 0x400>;
++			interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_APB1>, <&osc24M>, <&rtc CLK_OSC32K>;
++			clock-names = "apb", "hosc", "losc";
++			gpio-controller;
++			#gpio-cells = <3>;
++			interrupt-controller;
++			#interrupt-cells = <3>;
++
++			uart0_pb_pins: uart0-pb-pins {
++				pins = "PB4", "PB5";
++				function = "uart0";
++			};
++
++			mmc0_pf_pins: mmc0-pf-pins {
++				pins = "PF0", "PF1", "PF2",
++				       "PF3", "PF4", "PF5";
++				function = "mmc0";
++			};
++
++			mmc1_clk_pg0: mmc1-clk-pg0 {
++				pins = "PG0";
++				function = "mmc1_clk";
++			};
++
++			mmc1_cmd_pg1: mmc1-clk-pg1 {
++				pins = "PG1";
++				function = "mmc1_cmd";
++			};
++
++			mmc1_d0_pg2: mmc1-clk-pg2 {
++				pins = "PG2";
++				function = "mmc1_d0";
++			};
++
++			mmc1_d1_pg3: mmc1-clk-pg3 {
++				pins = "PG3";
++				function = "mmc1_d1";
++			};
++
++			mmc1_d2_pg4: mmc1-clk-pg4 {
++				pins = "PG4";
++				function = "mmc1_d2";
++			};
++
++			mmc1_d3_pg5: mmc1-clk-pg5 {
++				pins = "PG5";
++				function = "mmc1_d3";
++			};
++		};
++
++		ccu: clock@2001000 {
++			compatible = "allwinner,sun50i-r329-ccu";
++			reg = <0x02001000 0x1000>;
++			clocks = <&osc24M>, <&rtc CLK_OSC32K>, <&rtc CLK_IOSC>,
++				 <&r_ccu CLK_PLL_CPUX>,
++				 <&r_ccu CLK_PLL_PERIPH>,
++				 <&r_ccu CLK_PLL_PERIPH_2X>,
++				 <&r_ccu CLK_PLL_PERIPH_800M>,
++				 <&r_ccu CLK_PLL_AUDIO0>,
++				 <&r_ccu CLK_PLL_AUDIO0_DIV2>,
++				 <&r_ccu CLK_PLL_AUDIO0_DIV5>,
++				 <&r_ccu CLK_PLL_AUDIO1>,
++				 <&r_ccu CLK_PLL_AUDIO1_2X>,
++				 <&r_ccu CLK_PLL_AUDIO1_4X>;
++			clock-names = "hosc", "losc", "iosc",
++				      "pll-cpux",
++				      "pll-periph",
++				      "pll-periph-2x",
++				      "pll-periph-800m",
++				      "pll-audio0",
++				      "pll-audio0-div2",
++				      "pll-audio0-div5",
++				      "pll-audio1",
++				      "pll-audio1-2x",
++				      "pll-audio1-4x";
++			#clock-cells = <1>;
++			#reset-cells = <1>;
++		};
++
++		uart0: serial@2500000 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x02500000 0x400>;
++			interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&ccu CLK_BUS_UART0>;
++			resets = <&ccu RST_BUS_UART0>;
++			status = "disabled";
++		};
++
++		uart1: serial@2500400 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x02500400 0x400>;
++			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&ccu CLK_BUS_UART1>;
++			resets = <&ccu RST_BUS_UART1>;
++			status = "disabled";
++		};
++
++		uart2: serial@2500800 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x02500800 0x400>;
++			interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&ccu CLK_BUS_UART2>;
++			resets = <&ccu RST_BUS_UART2>;
++			status = "disabled";
++		};
++
++		uart3: serial@2500c00 {
++			compatible = "snps,dw-apb-uart";
++			reg = <0x02500c00 0x400>;
++			interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
++			reg-shift = <2>;
++			reg-io-width = <4>;
++			clocks = <&ccu CLK_BUS_UART3>;
++			resets = <&ccu RST_BUS_UART3>;
++			status = "disabled";
++		};
++
++		gic: interrupt-controller@3021000 {
++			compatible = "arm,gic-400";
++			reg = <0x03021000 0x1000>,
++			      <0x03022000 0x2000>,
++			      <0x03024000 0x2000>,
++			      <0x03026000 0x2000>;
++			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
++			interrupt-controller;
++			#interrupt-cells = <3>;
++		};
++
++		mmc0: mmc@4020000 {
++			compatible = "allwinner,sun50i-r329-mmc";
++			reg = <0x04020000 0x1000>;
++			clocks = <&ccu CLK_BUS_MMC0>, <&ccu CLK_MMC0>;
++			clock-names = "ahb", "mmc";
++			resets = <&ccu RST_BUS_MMC0>;
++			reset-names = "ahb";
++			interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
++			max-frequency = <150000000>;
++			status = "disabled";
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		mmc1: mmc@4021000 {
++			compatible = "allwinner,sun50i-r329-mmc";
++			reg = <0x04021000 0x1000>;
++			clocks = <&ccu CLK_BUS_MMC1>, <&ccu CLK_MMC1>;
++			clock-names = "ahb", "mmc";
++			resets = <&ccu RST_BUS_MMC1>;
++			reset-names = "ahb";
++			interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
++			max-frequency = <150000000>;
++			status = "disabled";
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		r_ccu: clock@7010000 {
++			compatible = "allwinner,sun50i-r329-r-ccu";
++			reg = <0x07010000 0x10000>;
++			clocks = <&osc24M>, <&rtc CLK_OSC32K>, <&rtc CLK_IOSC>;
++			clock-names = "hosc", "losc", "iosc";
++			#clock-cells = <1>;
++			#reset-cells = <1>;
++		};
++
++		r_pio: pinctrl@7022000 {
++			compatible = "allwinner,sun50i-r329-r-pinctrl";
++			reg = <0x07022000 0x400>;
++			interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&r_ccu CLK_R_APB1>, <&osc24M>, <&rtc CLK_OSC32K>;
++			clock-names = "apb", "hosc", "losc";
++			gpio-controller;
++			#gpio-cells = <3>;
++			interrupt-controller;
++			#interrupt-cells = <3>;
++		};
++
++		rtc: rtc@7090000 {
++			compatible = "allwinner,sun50i-r329-rtc";
++			reg = <0x07090000 0x400>;
++			interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&r_ccu CLK_R_BUS_RTC>, <&osc24M>, <&r_ccu CLK_R_AHB>;
++			clock-names = "bus", "hosc", "ahb";
++			#clock-cells = <1>;
++		};
++	};
 +};
 -- 
 2.35.1
