@@ -2,109 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 315E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 081E1C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 08:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231397AbiDYOi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        id S1445675AbiDVJAk convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 05:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242465AbiDYOix (ORCPT
+        with ESMTP id S229975AbiDVJAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:38:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 993C813EA1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:35:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650897348;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=llh5N9erjou2WpvVGaytLaZbplT+rXm40NCMpXmjhzw=;
-        b=Sjad16SK/xLlTSrW7Eu1gbcfNFxJc4c3h17sYb3nE/Wu0GE/6eGY9mD8PkL+OjfmDewBmW
-        C0kmapgJhgVmYyi4ALP30bXU+8tMAn2mjjB+HFgErR7ohBpmizTHtDUEeIovH3rTqhLva3
-        4/nPOVURwizqcwAXNU2wTWZr40yuRGU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-253-vFNx0tuZPzW0a37m-9SEtg-1; Mon, 25 Apr 2022 10:35:44 -0400
-X-MC-Unique: vFNx0tuZPzW0a37m-9SEtg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84665811E84;
-        Mon, 25 Apr 2022 14:35:43 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.11])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 881D0400F8F6;
-        Mon, 25 Apr 2022 14:35:40 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Mon, 25 Apr 2022 16:35:41 +0200 (CEST)
-Date:   Mon, 25 Apr 2022 16:35:37 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     rjw@rjwysocki.net, mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        ebiederm@xmission.com, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        tj@kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] sched,ptrace: Fix ptrace_check_attach() vs
- PREEMPT_RT
-Message-ID: <20220425143537.GA12412@redhat.com>
-References: <20220421150248.667412396@infradead.org>
- <20220421150654.817117821@infradead.org>
+        Fri, 22 Apr 2022 05:00:37 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8320B532E8
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 01:57:44 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kl7X90KbtzFqfD;
+        Fri, 22 Apr 2022 16:55:05 +0800 (CST)
+Received: from dggpemm100007.china.huawei.com (7.185.36.116) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 22 Apr 2022 16:57:21 +0800
+Received: from dggpemm500022.china.huawei.com (7.185.36.162) by
+ dggpemm100007.china.huawei.com (7.185.36.116) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 22 Apr 2022 16:57:21 +0800
+Received: from dggpemm500022.china.huawei.com ([7.185.36.162]) by
+ dggpemm500022.china.huawei.com ([7.185.36.162]) with mapi id 15.01.2375.024;
+ Fri, 22 Apr 2022 16:57:21 +0800
+From:   liusongtang <liusongtang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nixiaoming <nixiaoming@huawei.com>,
+        "Liuyang (Young,C)" <young.liuyang@huawei.com>,
+        liusongtang <liusongtang@huawei.com>,
+        "mgorman@suse.de" <mgorman@suse.de>
+Subject: 
+Thread-Index: AdhWJvbUleEgbnxeQpScQoDlY7nhUA==
+Date:   Fri, 22 Apr 2022 08:57:21 +0000
+Message-ID: <388eaecb1ceb46bf8eb861055e64d399@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.67.110.243]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421150654.817117821@infradead.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/21, Peter Zijlstra wrote:
->
-> +static void clear_traced_quiesce(void)
-> +{
-> +	spin_lock_irq(&current->sighand->siglock);
-> +	WARN_ON_ONCE(!(current->jobctl & JOBCTL_TRACED_QUIESCE));
+From: liusongtang <liusongtang@huawei.com>
+Date: Thu, 21 Apr 2022 17:44:07 +0800
+Subject: [PATCH] mm: reduce Committed_AS if memory protection is changed to
+ PROT_NONE
 
-This WARN_ON_ONCE() doesn't look right, the task can be killed right
-after ptrace_stop() sets JOBCTL_TRACED | JOBCTL_TRACED_QUIESCE and
-drops siglock.
+If PROT_WRITE is set, the size of vm area will be added to Committed_AS.
+However, if memory protection is changed to PROT_NONE,
+the corresponding physical memory will not be used, but Committed_AS still
+count the size of the PROT_NONE memory.
 
-> @@ -2290,14 +2303,26 @@ static int ptrace_stop(int exit_code, in
->  		/*
->  		 * Don't want to allow preemption here, because
->  		 * sys_ptrace() needs this task to be inactive.
-> -		 *
-> -		 * XXX: implement read_unlock_no_resched().
->  		 */
->  		preempt_disable();
->  		read_unlock(&tasklist_lock);
-> -		cgroup_enter_frozen();
-> +		cgroup_enter_frozen(); // XXX broken on PREEMPT_RT !!!
-> +
-> +		/*
-> +		 * JOBCTL_TRACE_QUIESCE bridges the gap between
-> +		 * set_current_state(TASK_TRACED) above and schedule() below.
-> +		 * There must not be any blocking (specifically anything that
-> +		 * touched ->saved_state on PREEMPT_RT) between here and
-> +		 * schedule().
-> +		 *
-> +		 * ptrace_check_attach() relies on this with its
-> +		 * wait_task_inactive() usage.
-> +		 */
-> +		clear_traced_quiesce();
+This patch reduce Committed_AS and free the corresponding memory if
+memory protection is changed to PROT_NONE.
 
-Well, I think it should be called earlier under tasklist_lock,
-before preempt_disable() above.
+Signed-off-by: liusongtang <liusongtang@huawei.com>
+---
+ mm/mprotect.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-We need tasklist_lock to protect ->parent, debugger can be killed
-and go away right after read_unlock(&tasklist_lock).
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index b69ce7a..c3121e6 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -497,6 +497,12 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
+        }
 
-Still trying to convince myself everything is right with
-JOBCTL_STOPPED/TRACED ...
-
-Oleg.
-
+ success:
++       if ((newflags & (VM_READ | VM_WRITE | VM_EXEC | VM_LOCKED | VM_ACCOUNT)) == VM_ACCOUNT) {
++               zap_page_range(vma, start, end - start);
++               newflags &= ~VM_ACCOUNT;
++               vm_unacct_memory((end - start) >> PAGE_SHIFT);
++       }
++
+        /*
+         * vm_flags and vm_page_prot are protected by the mmap_lock
+         * held in write mode.
+--
+2.12.3
