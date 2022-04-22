@@ -2,84 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02319C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7904C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbiDVWM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
+        id S231886AbiDVWNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232315AbiDVWLG (ORCPT
+        with ESMTP id S232903AbiDVWNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:11:06 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4869C1EE1E0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:57:36 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2f16645872fso97807077b3.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:57:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=paM4ZFe32zXjEAEL1QAXaw+y9M+Olh2UYHZJ2Zmqcfs=;
-        b=HTWV2tbqF/Fw+AZQyOXGIaxL+oUNtWeKA2WgHADrKMCgGmoAO2bS4yhD4WlruS+xtt
-         WZcnxDLyzmyacrH8ibFjqvKG8s0aZH331a5erdvmxBb/KaG/+muiddh3LhB9wNZDARL+
-         EQTW8xj/Qcm5B5nu8ls3aR18PW+nNijbIVVWj4xzCZsivf0pwLJCDPNz26r1+JD63VIj
-         SIqKjPqDfN8k+dkfyPRdYgu+ngVJKFbw8crgP4KLF3e//j8Mg6j+gJDG7O/MUhccBokM
-         C7123BKlcDpKXT8EsybGogYe94lMxg+29/Qqzrtut+4sNTo9zy3KPf11g3l78Okk9EK9
-         XKeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=paM4ZFe32zXjEAEL1QAXaw+y9M+Olh2UYHZJ2Zmqcfs=;
-        b=hhdq4Z8aTi9O6VzAvaWkZBRBjIjuPwJ9mNDoEraRsOAp3k0MucJnlFfdLgIrQx54Py
-         QlHf7wIjtYLI71SPn//qgKycpAwzkxTRo9a9WL5cDk6TtY2o4UtEAOjcVSvQgnNpWq5N
-         eVxkZ5CtzrsarbfIugblR8aixBaHunaWKrEsMBpevo99TglEAXb1dsisniF9H8/1OLnh
-         ucWlTdtH6l3bRw+Fifz/q69REXWdyiUGVKdtxohPbbYLgEx684g2v7+UZ25vDCsz+/o8
-         W5IqYZEQr6yM4zGutE8kxTRRB0+EehSVdKogwFEDTw2ISEKFspdsI24/jlY1MttZJYoV
-         1/+A==
-X-Gm-Message-State: AOAM5315EtZI6NQ2W/mWAutbyAuxV0CIt+VmPnEjrR7VSaLN+9Nj5v1V
-        +Wo2awiD3hq68DWDUBp1+sek4EqefLysnK7fwWp45g==
-X-Google-Smtp-Source: ABdhPJzRA09Os35MxrURwq66GBXME7v/WCyxoVco5IwR5ofnF5p/aH09aiSipEl0/QBCGFZOsTOomcY7oAiNUhVH4IU=
-X-Received: by 2002:a81:b50d:0:b0:2e5:b653:7e97 with SMTP id
- t13-20020a81b50d000000b002e5b6537e97mr7403919ywh.140.1650661055368; Fri, 22
- Apr 2022 13:57:35 -0700 (PDT)
+        Fri, 22 Apr 2022 18:13:05 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CF020E3BC;
+        Fri, 22 Apr 2022 14:00:43 -0700 (PDT)
+Received: from relay4-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::224])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 5F921C6661;
+        Fri, 22 Apr 2022 19:37:43 +0000 (UTC)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B2CAEE0003;
+        Fri, 22 Apr 2022 19:37:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650656223;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xEfZcA39m5S9yD0fiH+ykU7GDg99hDzHx1O9tp4Ow2M=;
+        b=BzQSzp3u9K4ucupEsK4/XLhEm7hdXJOdS5okj18TvD9MkdsJ8qUbak9Cde2Wtx1ARNJSI8
+        xFPqsW+Unb7kxkC10v17qyUA5vYDJTQVz914siOYH2krxt1uchm8P0TzWCciz7v58FQBP7
+        f+GjimnxkFcLulPtJY6OQc/p3YhMq9vVEwV5jua9HAoi25tUS+T45ncZ7yubxOWmrCIjUL
+        qQHG1M/xDnCHL0xCadWQ7guMhKjjFtTV+OXAbrNGNAWV1JTEtWmaeSTL5qgL0QARxAAkHc
+        YZPcIBFZOuBgy/+fzn2qb4LFaj074E8ey6L/v7eDcLapZeaYdfD4OHeF0LaNgQ==
+Date:   Fri, 22 Apr 2022 21:37:01 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-i3c@lists.infradead.org, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: i3c: Convert snps,dw-i3c-master to DT schema
+Message-ID: <YmMD3RPXfPdiYXyg@mail.local>
+References: <20220422192236.2594577-1-robh@kernel.org>
+ <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220421091055.12d6465c@canb.auug.org.au>
-In-Reply-To: <20220421091055.12d6465c@canb.auug.org.au>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 22 Apr 2022 22:57:24 +0200
-Message-ID: <CACRpkdaD1G9J+jTJH4oGrcF_dinMjBjHCGMJqRZh8FC0dy+Xfw@mail.gmail.com>
-Subject: Re: linux-next: Fixes tags need some work in the pinctrl tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Caleb Connolly <kc@postmarketos.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_Jsq+t5e-Dr0z9Zd_+jaqwb1afEVx4SdjbQZA4bHpWf8a2jg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 1:11 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On 22/04/2022 14:28:53-0500, Rob Herring wrote:
+> On Fri, Apr 22, 2022 at 2:22 PM Rob Herring <robh@kernel.org> wrote:
+> >
+> > Convert the Synopsys Designware I3C master to DT schema format.
+> >
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  .../bindings/i3c/snps,dw-i3c-master.txt       | 41 ---------------
+> >  .../bindings/i3c/snps,dw-i3c-master.yaml      | 52 +++++++++++++++++++
+> >  2 files changed, 52 insertions(+), 41 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+> >  create mode 100644 Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+> > deleted file mode 100644
+> > index 07f35f36085d..000000000000
+> > --- a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.txt
+> > +++ /dev/null
+> > @@ -1,41 +0,0 @@
+> > -Bindings for Synopsys DesignWare I3C master block
+> > -=================================================
+> > -
+> > -Required properties:
+> > ---------------------
+> > -- compatible: shall be "snps,dw-i3c-master-1.00a"
+> > -- clocks: shall reference the core_clk
+> > -- interrupts: the interrupt line connected to this I3C master
+> > -- reg: Offset and length of I3C master registers
+> > -
+> > -Mandatory properties defined by the generic binding (see
+> > -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
+> > -
+> > -- #address-cells: shall be set to 3
+> > -- #size-cells: shall be set to 0
+> > -
+> > -Optional properties defined by the generic binding (see
+> > -Documentation/devicetree/bindings/i3c/i3c.yaml for more details):
+> > -
+> > -- i2c-scl-hz
+> > -- i3c-scl-hz
+> > -
+> > -I3C device connected on the bus follow the generic description (see
+> > -Documentation/devicetree/bindings/i3c/i3c.yaml for more details).
+> > -
+> > -Example:
+> > -
+> > -       i3c-master@2000 {
+> > -               compatible = "snps,dw-i3c-master-1.00a";
+> > -               #address-cells = <3>;
+> > -               #size-cells = <0>;
+> > -               reg = <0x02000 0x1000>;
+> > -               interrupts = <0>;
+> > -               clocks = <&i3cclk>;
+> > -
+> > -               eeprom@57{
+> > -                       compatible = "atmel,24c01";
+> > -                       reg = <0x57 0x0 0x10>;
+> > -                       pagesize = <0x8>;
+> > -               };
+> > -       };
+> > diff --git a/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+> > new file mode 100644
+> > index 000000000000..5b8b43e6f1e4
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/i3c/snps,dw-i3c-master.yaml
+> > @@ -0,0 +1,52 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/i3c/snps,dw-i3c-master.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Synopsys DesignWare I3C master block
+> > +
+> > +maintainers:
+> > +  - Vitor Soares <vitor.soares@synopsys.com>
+> 
+> And it bounces. Someone else want it?
+> 
 
-> In commit
->
->   6548c9dc711d ("pinctrl/rockchip: support deferring other gpio params")
->
-> Fixes tags
->
->   Fixes: e7165b1d ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
->   Fixes: 59dd178e ("gpio/rockchip: fetch deferred output settings on probe")
->
-> have these problem(s):
->
->   - SHA1 should be at least 12 digits long
->     This can be fixed for the future by setting core.abbrev to 12 (or
->     more) or (for git v2.11 or later) just making sure it is not set
->     (or set to "auto").
+Probably no one but me.
 
-Fixed it up by rebasing, thanks!
 
-Yours,
-Linus Walleij
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
