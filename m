@@ -2,38 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFD5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444138AbiDVGFb (ORCPT
+        id S1383476AbiDVGFj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        Fri, 22 Apr 2022 02:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354293AbiDVGE5 (ORCPT
+        with ESMTP id S1389279AbiDVGE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:04:57 -0400
+        Fri, 22 Apr 2022 02:04:59 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CEF4FC4C;
-        Thu, 21 Apr 2022 23:02:04 -0700 (PDT)
-X-UUID: c3c05d28d0ec4f0ab269d3ab66e6f058-20220422
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADA54F9F3;
+        Thu, 21 Apr 2022 23:02:06 -0700 (PDT)
+X-UUID: a9cd8343d3504aae8758b2e7aa70ec9b-20220422
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:1d8242e0-5437-4425-86b2-ab0d75e7ca90,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:ae1693f0-da02-41b4-b6df-58f4ccd36682,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: c3c05d28d0ec4f0ab269d3ab66e6f058-20220422
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.4,REQID:4d8b6d2a-1042-465c-95f3-9851d44e2a63,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:75
+X-CID-INFO: VERSION:1.1.4,REQID:4d8b6d2a-1042-465c-95f3-9851d44e2a63,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:75
+X-CID-META: VersionHash:faefae9,CLOUDID:f81593f0-da02-41b4-b6df-58f4ccd36682,C
+        OID:dd4204b71828,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
+        le:nil,QS:0,BEC:nil
+X-UUID: a9cd8343d3504aae8758b2e7aa70ec9b-20220422
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 251534462; Fri, 22 Apr 2022 14:02:01 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1130209543; Fri, 22 Apr 2022 14:01:59 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 22 Apr 2022 14:01:59 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 22 Apr 2022 14:01:57 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 14:01:59 +0800
+ Transport; Fri, 22 Apr 2022 14:01:57 +0800
 From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
 To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
         <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
@@ -47,9 +52,9 @@ CC:     <p.zabel@pengutronix.de>,
         <linux-mediatek@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V3 12/17] dt-binding: mt8192: Add infra_ao reset bit
-Date:   Fri, 22 Apr 2022 14:01:47 +0800
-Message-ID: <20220422060152.13534-13-rex-bc.chen@mediatek.com>
+Subject: [PATCH V3 07/17] clk: mediatek: reset: Add return for clock reset register function
+Date:   Fri, 22 Apr 2022 14:01:42 +0800
+Message-ID: <20220422060152.13534-8-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
 References: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
@@ -60,32 +65,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To support reset of infra_ao, add the bit definition for thermal/PCIe/SVS.
+To make error handling, we add return for mtk_clk_register_rst_ctrl().
 
 Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 ---
- include/dt-bindings/reset/mt8192-resets.h | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/clk/mediatek/reset.c | 15 +++++++++------
+ drivers/clk/mediatek/reset.h |  4 ++--
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/include/dt-bindings/reset/mt8192-resets.h b/include/dt-bindings/reset/mt8192-resets.h
-index be9a7ca245b9..d5f3433175c1 100644
---- a/include/dt-bindings/reset/mt8192-resets.h
-+++ b/include/dt-bindings/reset/mt8192-resets.h
-@@ -27,4 +27,14 @@
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index 587cf8e626de..03d865f3308e 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -97,8 +97,8 @@ static const struct reset_control_ops mtk_reset_ops_set_clr = {
+ 	.reset = mtk_reset_set_clr,
+ };
  
- #define MT8192_TOPRGU_SW_RST_NUM				23
+-void mtk_register_reset_controller(struct device_node *np,
+-				   const struct mtk_clk_rst_desc *desc)
++int mtk_register_reset_controller(struct device_node *np,
++				  const struct mtk_clk_rst_desc *desc)
+ {
+ 	struct regmap *regmap;
+ 	const struct reset_control_ops *rcops = NULL;
+@@ -107,7 +107,7 @@ void mtk_register_reset_controller(struct device_node *np,
  
-+/* INFRA RST0 */
-+#define MT8192_INFRA_RST0_LVTS_AP_RST				0
-+/* INFRA RST2 */
-+#define MT8192_INFRA_RST2_PCIE_PHY_RST				15
-+/* INFRA RST3 */
-+#define MT8192_INFRA_RST3_PTP_RST				5
-+/* INFRA RST4 */
-+#define MT8192_INFRA_RST4_LVTS_MCU				12
-+#define MT8192_INFRA_RST4_PCIE_TOP				1
+ 	if (!desc) {
+ 		pr_err("mtk clock reset desc is NULL\n");
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	switch (desc->version) {
+@@ -119,18 +119,18 @@ void mtk_register_reset_controller(struct device_node *np,
+ 		break;
+ 	default:
+ 		pr_err("Unknown reset version %d\n", desc->version);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	regmap = device_node_to_regmap(np);
+ 	if (IS_ERR(regmap)) {
+ 		pr_err("Cannot find regmap for %pOF: %pe\n", np, regmap);
+-		return;
++		return -EINVAL;
+ 	}
+ 
+ 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+-		return;
++		return -ENOMEM;
+ 
+ 	data->desc = desc;
+ 	data->regmap = regmap;
+@@ -143,7 +143,10 @@ void mtk_register_reset_controller(struct device_node *np,
+ 	if (ret) {
+ 		pr_err("could not register reset controller: %d\n", ret);
+ 		kfree(data);
++		return ret;
+ 	}
 +
- #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8192 */
++	return 0;
+ }
+ 
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/mediatek/reset.h b/drivers/clk/mediatek/reset.h
+index db558ea4a474..c3a2f2a4f486 100644
+--- a/drivers/clk/mediatek/reset.h
++++ b/drivers/clk/mediatek/reset.h
+@@ -27,7 +27,7 @@ struct mtk_clk_rst_data {
+ 	const struct mtk_clk_rst_desc *desc;
+ };
+ 
+-void mtk_register_reset_controller(struct device_node *np,
+-				   const struct mtk_clk_rst_desc *desc);
++int mtk_register_reset_controller(struct device_node *np,
++				  const struct mtk_clk_rst_desc *desc);
+ 
+ #endif /* __DRV_CLK_MTK_RESET_H */
 -- 
 2.18.0
 
