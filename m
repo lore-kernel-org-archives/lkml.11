@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF769C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445308AbiDVH6y (ORCPT
+        id S1445267AbiDVH66 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38124 "EHLO
+        Fri, 22 Apr 2022 03:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445192AbiDVH62 (ORCPT
+        with ESMTP id S1445191AbiDVH62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 03:58:28 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172A637AA1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A9237BF8;
         Fri, 22 Apr 2022 00:55:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1650614135; x=1682150135;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jFrqc5UcEsylDQP6ebLwaY8xYtycN2QaRC0TSCH2CSM=;
-  b=Er8Py8KwpeQD8ph5s6ie33OmWJ+bt6agilvaaogUqilJGmYL9XExKHmc
-   YgnOnuw4hEIquFZXA4SwB9+YCuI9ECE7qcN+sV9I6zl20fiZJxM8XQOuD
-   7Vwow4236UzQ0JYxBs98LvaBebJid9GWBqz6NWTwJ5EpCB5EfuTgnGYkj
-   G5FLugp7RTEYpUsgjW1vQszjyc9P92niOiTNPmH44VN2kfkrcAr/cfFAm
-   8we8zMU+nsBSbfGztI0vtehLXhxGxcefKsivMTnqka8s0VlDM0WtLCTQH
-   LgRFYb6DVSmhOuEagIWIlX3Cl6ZoQig/gUdoUT0sCPTKwv6vOXWLIMW+i
+  bh=EA6a6CyPC45YVCqPmIq4IBT07StS5s8kYmLcjF4Qrcc=;
+  b=G108q40Odd1QoRh5G3IQDOTcmGFGCmUuq9NPSpr+RupOtrJyo5Y+pX62
+   /0hM7aLmsZH614ERm6n0RevTTvWSNIrh+mK68M0aytu69mBrauNb53xdH
+   nt3c/xTaEyOtZFydXbfJ52YfXGkUec9koyyTiTTlrA3hwOQOsXROobvqv
+   jswGPUsU0Jzp2O/Og91SENt9l80b9kkFcc3VDdZ6TM2p46DCPz+iyLuKH
+   meTc3XPYbfVoIZRrcrRGkMbFxn5zIJq8XMhmevZtswYryxAgIrLUudDYI
+   5iDalraft+OBjC5S4oN5FIoSJdsA8vi/1qLv5BUsIm9xDz/bK2IfMYLvj
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264384830"
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264384832"
 X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="264384830"
+   d="scan'208";a="264384832"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:55:30 -0700
 X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="577741332"
+   d="scan'208";a="577741355"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 00:55:30 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, jmattson@google.com, seanjc@google.com,
         like.xu.linux@gmail.com, vkuznets@redhat.com, wei.w.wang@intel.com,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Like Xu <like.xu@linux.intel.com>,
-        Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH v10 06/16] KVM: vmx/pmu: Emulate MSR_ARCH_LBR_DEPTH for guest Arch LBR
-Date:   Fri, 22 Apr 2022 03:54:59 -0400
-Message-Id: <20220422075509.353942-7-weijiang.yang@intel.com>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>,
+        Like Xu <like.xu@linux.intel.com>
+Subject: [PATCH v10 11/16] KVM: x86/vmx: Check Arch LBR config when return perf capabilities
+Date:   Fri, 22 Apr 2022 03:55:04 -0400
+Message-Id: <20220422075509.353942-12-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220422075509.353942-1-weijiang.yang@intel.com>
 References: <20220422075509.353942-1-weijiang.yang@intel.com>
@@ -56,147 +56,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <like.xu@linux.intel.com>
+Two new bit fields(VM_EXIT_CLEAR_IA32_LBR_CTL, VM_ENTRY_LOAD_IA32_LBR_CTL)
+are added to support guest Arch LBR. These two bits should be set in order
+to make Arch LBR workable in both guest and host.
 
-The number of Arch LBR entries available is determined by the value
-in host MSR_ARCH_LBR_DEPTH.DEPTH. The supported LBR depth values are
-enumerated in CPUID.(EAX=01CH, ECX=0):EAX[7:0]. For each bit "n" set
-in this field, the MSR_ARCH_LBR_DEPTH.DEPTH value of "8*(n+1)" is
-supported. In the first generation of Arch LBR, max entry size is 32,
-host configures the max size and guest always honors the setting.
-
-Write to MSR_ARCH_LBR_DEPTH has side-effect, all LBR entries are reset
-to 0. Kernel PMU driver can leverage this effect to do fask reset to
-LBR record MSRs. KVM allows guest to achieve it when Arch LBR records
-MSRs are passed through to the guest.
-
+Co-developed-by: Like Xu <like.xu@linux.intel.com>
 Signed-off-by: Like Xu <like.xu@linux.intel.com>
-Co-developed-by: Yang Weijiang <weijiang.yang@intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/vmx/pmu_intel.c    | 48 ++++++++++++++++++++++++++++++++-
- 2 files changed, 50 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/vmx.h      |  2 ++
+ arch/x86/kvm/vmx/capabilities.h |  8 ++++++++
+ arch/x86/kvm/vmx/vmx.c          | 10 ++++++++--
+ 3 files changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index d23e80a56eb8..d067a382e914 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -534,6 +534,9 @@ struct kvm_pmu {
- 	 * redundant check before cleanup if guest don't use vPMU at all.
- 	 */
- 	u8 event_count;
-+
-+	/* Guest arch lbr depth supported by KVM. */
-+	u64 kvm_arch_lbr_depth;
- };
+diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
+index ea3be961cc8e..d9b1dffc4638 100644
+--- a/arch/x86/include/asm/vmx.h
++++ b/arch/x86/include/asm/vmx.h
+@@ -95,6 +95,7 @@
+ #define VM_EXIT_CLEAR_BNDCFGS                   0x00800000
+ #define VM_EXIT_PT_CONCEAL_PIP			0x01000000
+ #define VM_EXIT_CLEAR_IA32_RTIT_CTL		0x02000000
++#define VM_EXIT_CLEAR_IA32_LBR_CTL		0x04000000
  
- struct kvm_pmu_ops;
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index bc3f8512bb64..c8e6c1e1e00c 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -205,7 +205,7 @@ static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
- static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
- {
- 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
--	int ret;
-+	int ret = 0;
+ #define VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR	0x00036dff
  
- 	switch (msr) {
- 	case MSR_CORE_PERF_FIXED_CTR_CTRL:
-@@ -214,6 +214,10 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
- 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
- 		ret = pmu->version > 1;
- 		break;
-+	case MSR_ARCH_LBR_DEPTH:
-+		if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+			ret = guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR);
-+		break;
- 	default:
- 		ret = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0) ||
- 			get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0) ||
-@@ -342,10 +346,26 @@ static bool intel_pmu_handle_lbr_msrs_access(struct kvm_vcpu *vcpu,
- 	return true;
+@@ -108,6 +109,7 @@
+ #define VM_ENTRY_LOAD_BNDCFGS                   0x00010000
+ #define VM_ENTRY_PT_CONCEAL_PIP			0x00020000
+ #define VM_ENTRY_LOAD_IA32_RTIT_CTL		0x00040000
++#define VM_ENTRY_LOAD_IA32_LBR_CTL		0x00200000
+ 
+ #define VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR	0x000011ff
+ 
+diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
+index 3f430e218375..68fbb76ba439 100644
+--- a/arch/x86/kvm/vmx/capabilities.h
++++ b/arch/x86/kvm/vmx/capabilities.h
+@@ -385,6 +385,12 @@ static inline bool vmx_pt_mode_is_host_guest(void)
+ 	return pt_mode == PT_MODE_HOST_GUEST;
  }
  
-+/*
-+ * Check if the requested depth value the same as that of host.
-+ * When guest/host depth are different, the handling would be tricky,
-+ * so now only max depth is supported for both host and guest.
-+ */
-+static bool arch_lbr_depth_is_valid(struct kvm_vcpu *vcpu, u64 depth)
++static inline bool cpu_has_vmx_arch_lbr(void)
 +{
-+	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
-+
-+	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+		return false;
-+
-+	return (depth == pmu->kvm_arch_lbr_depth);
++	return (vmcs_config.vmexit_ctrl & VM_EXIT_CLEAR_IA32_LBR_CTL) &&
++		(vmcs_config.vmentry_ctrl & VM_ENTRY_LOAD_IA32_LBR_CTL);
 +}
 +
- static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ static inline u64 vmx_get_perf_capabilities(void)
  {
- 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
- 	struct kvm_pmc *pmc;
-+	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
- 	u32 msr = msr_info->index;
+ 	u64 perf_cap = 0;
+@@ -396,6 +402,8 @@ static inline u64 vmx_get_perf_capabilities(void)
+ 		rdmsrl(MSR_IA32_PERF_CAPABILITIES, perf_cap);
  
- 	switch (msr) {
-@@ -361,6 +381,9 @@ static int intel_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
- 		msr_info->data = 0;
- 		return 0;
-+	case MSR_ARCH_LBR_DEPTH:
-+		msr_info->data = lbr_desc->records.nr;
-+		return 0;
- 	default:
- 		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
- 		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
-@@ -387,6 +410,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- {
- 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
- 	struct kvm_pmc *pmc;
-+	struct lbr_desc *lbr_desc = vcpu_to_lbr_desc(vcpu);
- 	u32 msr = msr_info->index;
- 	u64 data = msr_info->data;
- 	u64 reserved_bits;
-@@ -421,6 +445,16 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 			return 0;
- 		}
- 		break;
-+	case MSR_ARCH_LBR_DEPTH:
-+		if (!arch_lbr_depth_is_valid(vcpu, data))
-+			return 1;
-+		lbr_desc->records.nr = data;
-+		/*
-+		 * Writing depth MSR from guest could either setting the
-+		 * MSR or resetting the LBR records with the side-effect.
-+		 */
-+		wrmsrl(MSR_ARCH_LBR_DEPTH, lbr_desc->records.nr);
-+		return 0;
- 	default:
- 		if ((pmc = get_gp_pmc(pmu, msr, MSR_IA32_PERFCTR0)) ||
- 		    (pmc = get_gp_pmc(pmu, msr, MSR_IA32_PMC0))) {
-@@ -559,6 +593,18 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	perf_cap &= PMU_CAP_LBR_FMT;
++	if (boot_cpu_has(X86_FEATURE_ARCH_LBR) && !cpu_has_vmx_arch_lbr())
++		perf_cap &= ~PMU_CAP_LBR_FMT;
  
- 	if (lbr_desc->records.nr)
- 		bitmap_set(pmu->all_valid_pmc_idx, INTEL_PMC_IDX_FIXED_VLBR, 1);
-+
-+	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+		return;
-+
-+	entry = kvm_find_cpuid_entry(vcpu, 28, 0);
-+	if (entry) {
-+		/*
-+		 * The depth mask in CPUID is fixed to host supported
-+		 * value when userspace sets guest CPUID.
-+		 */
-+		pmu->kvm_arch_lbr_depth = fls(entry->eax & 0xff) * 8;
-+	}
- }
- 
- static void intel_pmu_init(struct kvm_vcpu *vcpu)
+ 	/*
+ 	 * Since counters are virtualized, KVM would support full
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 60d92a459f4c..8962a8bab5eb 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2532,7 +2532,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 	      VM_EXIT_LOAD_IA32_EFER |
+ 	      VM_EXIT_CLEAR_BNDCFGS |
+ 	      VM_EXIT_PT_CONCEAL_PIP |
+-	      VM_EXIT_CLEAR_IA32_RTIT_CTL;
++	      VM_EXIT_CLEAR_IA32_RTIT_CTL |
++	      VM_EXIT_CLEAR_IA32_LBR_CTL;
+ 	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_EXIT_CTLS,
+ 				&_vmexit_control) < 0)
+ 		return -EIO;
+@@ -2556,7 +2557,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 	      VM_ENTRY_LOAD_IA32_EFER |
+ 	      VM_ENTRY_LOAD_BNDCFGS |
+ 	      VM_ENTRY_PT_CONCEAL_PIP |
+-	      VM_ENTRY_LOAD_IA32_RTIT_CTL;
++	      VM_ENTRY_LOAD_IA32_RTIT_CTL |
++	      VM_ENTRY_LOAD_IA32_LBR_CTL;
+ 	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_ENTRY_CTLS,
+ 				&_vmentry_control) < 0)
+ 		return -EIO;
+@@ -5925,6 +5927,10 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
+ 	    vmentry_ctl & VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ 		pr_err("PerfGlobCtl = 0x%016llx\n",
+ 		       vmcs_read64(GUEST_IA32_PERF_GLOBAL_CTRL));
++	if (kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) &&
++	    vmentry_ctl & VM_ENTRY_LOAD_IA32_LBR_CTL)
++		pr_err("ArchLBRCtl = 0x%016llx\n",
++		       vmcs_read64(GUEST_IA32_LBR_CTL));
+ 	if (vmentry_ctl & VM_ENTRY_LOAD_BNDCFGS)
+ 		pr_err("BndCfgS = 0x%016llx\n", vmcs_read64(GUEST_BNDCFGS));
+ 	pr_err("Interruptibility = %08x  ActivityState = %08x\n",
 -- 
 2.27.0
 
