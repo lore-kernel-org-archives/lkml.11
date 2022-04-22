@@ -2,106 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE858C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbiDVViY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
+        id S230027AbiDVVi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiDVViO (ORCPT
+        with ESMTP id S230118AbiDVViO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 17:38:14 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829A91E3DF3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:39:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650659989; x=1682195989;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CPrMsqPBc4d+/2ELT/59dZdNya95D7ohcRstQplIP1w=;
-  b=OmjFPCf3qyFFDC0Xb8AwCAHuogKUc2gXFX9OAsxP7fPDApkLy1BSxbBx
-   q1oQmYcUlgCAtsi7YMnG5WUqBcuwFatfnwESr+xomSWbxvbQr3STYAKCW
-   2BLUDcOniIxzNq1Cr4gMOgTOBz1EBB+qf4u1FSRu6ftcsqhV6ASzxC/oo
-   HZNWSDKM+HLoyIhahfOSQ8cX07eG6uTrHZ33xCr4MpgrTEcKOL4ZNO/dd
-   exrWncZUcdfZ6cHseAOVwXEQivE3F4SDVyQWenke9hUX22LgOeTYRpZ6l
-   KxyA3mtYnrMVFDYiUsjVAS1l5sqC3h2smqfP0GcDhi7WWnkEqWo5eXhQU
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="325188982"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="325188982"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 10:25:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="806077611"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Apr 2022 10:25:52 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhx2W-000AOU-7j;
-        Fri, 22 Apr 2022 17:25:52 +0000
-Date:   Sat, 23 Apr 2022 01:25:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matteo Croce <mcroce@microsoft.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive 2/54] mm/kasan/shadow.c:63:7: warning: no previous
- prototype for 'memcpy'
-Message-ID: <202204230129.dHHHV3FB-lkp@intel.com>
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53FC2A60A1;
+        Fri, 22 Apr 2022 13:39:32 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3F260215FF;
+        Fri, 22 Apr 2022 20:29:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650659358; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=DQC9EwCc1d1zwv7C55oUEIwJvP8u2qczlBIORadICHM=;
+        b=uYZv5hZrfXo2ih3eM61buBuIvSz6QOFFhD/teRRlFeYlIRGxdGRHYkRzeigC3ZoAYLJZy4
+        /xmA7IHpb9B0Z1fe2WOV2rI+8UjeTH2Ln4ZmlEcqiGNj5T7KgozDqEWusyu+VZwunc6EEX
+        6bVDIOlkieaPn/YgYHdJh5iL0s+JxrE=
+Received: from suse.cz (unknown [10.163.16.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D85F42C145;
+        Fri, 22 Apr 2022 20:29:16 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 22:29:16 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marco Elver <elver@google.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Corey Minyard <cminyard@mvista.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: Re: [PATCH printk v4 00/15] implement threaded console printing
+Message-ID: <YmMQHMaS0KwyN5hX@alley>
+References: <20220421212250.565456-1-john.ogness@linutronix.de>
+ <YmJ1fnc4trEOooZD@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <YmJ1fnc4trEOooZD@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   68fe13e37af4c8331cdd40841353c9725cb65925
-commit: 359a031f0505e46e0274570b6e015984f45da29b [2/54] riscv: optimized memcpy
-config: riscv-randconfig-c003-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230129.dHHHV3FB-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/359a031f0505e46e0274570b6e015984f45da29b
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 359a031f0505e46e0274570b6e015984f45da29b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
+On Fri 2022-04-22 11:39:59, Petr Mladek wrote:
+> On Thu 2022-04-21 23:28:35, John Ogness wrote:
+> > This is v4 of a series to implement a kthread for each registered
+> > console. v3 is here [0]. The kthreads locklessly retrieve the
+> > records from the printk ringbuffer and also do not cause any lock
+> > contention between each other. This allows consoles to run at full
+> > speed. For example, a netconsole is able to dump records much
+> > faster than a serial or vt console. Also, during normal operation,
+> > printk() callers are completely decoupled from console printing.
+> > 
+> > There are situations where kthread printing is not sufficient. For
+> > example, during panic situations, where the kthreads may not get a
+> > chance to schedule. In such cases, the current method of attempting
+> > to print directly within the printk() caller context is used. New
+> > functions printk_prefer_direct_enter() and
+> > printk_prefer_direct_exit() are made available to mark areas of the
+> > kernel where direct printing is preferred. (These should only be
+> > areas that do not occur during normal operation.)
+> > 
+> > This series also introduces pr_flush(): a might_sleep() function
+> > that will block until all active printing threads have caught up
+> > to the latest record at the time of the pr_flush() call. This
+> > function is useful, for example, to wait until pending records
+> > are flushed to consoles before suspending.
+> > 
+> > Note that this series does *not* increase the reliability of console
+> > printing. Rather it focuses on the non-interference aspect of
+> > printk() by decoupling printk() callers from printing (during normal
+> > operation). Nonetheless, the reliability aspect should not worsen
+> > due to this series.
+> 
+> This version looks good enough for linux-next. I do not see any
+> functional problem and it should work as designed. It is time to
+> see how it works in various "real life" work loads.
+> 
+> I am going to push it later today unless anyone (John) complains ;-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I have pushed the patchset into printk/linux.git, branch
+rework/kthreads. Also I merged it into for-next branch.
 
-All warnings (new ones prefixed by >>):
+We are still discussing better solution of the complicated locking
+scheme[0]. The main purpose is to make it easier and more safe to use.
+Anyway, the current code looks safe. Any potential improvements
+should not affect the behavior.
 
->> mm/kasan/shadow.c:63:7: warning: no previous prototype for 'memcpy' [-Wmissing-prototypes]
-      63 | void *memcpy(void *dest, const void *src, size_t len)
-         |       ^~~~~~
+So, it is time to test it in linux-next. Let's see how survives
+hammering of various robots and people testing on linux-next.
+I keep my fingers crossed.
 
-
-vim +/memcpy +63 mm/kasan/shadow.c
-
-bb359dbcb70085 Andrey Konovalov 2020-12-22  61  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  62  #undef memcpy
-bb359dbcb70085 Andrey Konovalov 2020-12-22 @63  void *memcpy(void *dest, const void *src, size_t len)
-bb359dbcb70085 Andrey Konovalov 2020-12-22  64  {
-f00748bfa0246c Andrey Konovalov 2021-02-24  65  	if (!kasan_check_range((unsigned long)src, len, false, _RET_IP_) ||
-f00748bfa0246c Andrey Konovalov 2021-02-24  66  	    !kasan_check_range((unsigned long)dest, len, true, _RET_IP_))
-bb359dbcb70085 Andrey Konovalov 2020-12-22  67  		return NULL;
-bb359dbcb70085 Andrey Konovalov 2020-12-22  68  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  69  	return __memcpy(dest, src, len);
-bb359dbcb70085 Andrey Konovalov 2020-12-22  70  }
-bb359dbcb70085 Andrey Konovalov 2020-12-22  71  
-
-:::::: The code at line 63 was first introduced by commit
-:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
-
-:::::: TO: Andrey Konovalov <andreyknvl@google.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best Regards,
+Petr
