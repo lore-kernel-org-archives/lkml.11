@@ -2,70 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9045FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiDVWES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59754 "EHLO
+        id S231411AbiDVWFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiDVWEE (ORCPT
+        with ESMTP id S231302AbiDVWEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:04:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FE541A282
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:46:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DA4361E6E
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BA4F4C385A4;
-        Fri, 22 Apr 2022 20:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650660405;
-        bh=2Zhc64dfvR+fjBhKV+w2NFx9BXui1sx0Vw/Nr+IrOj8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=VmdH1cmq1Zqo+KhPFDd7nH38wYyY96yzMmv3Sv7bsVrBwEK2sqOYu3790XaLjsAsj
-         7AsEE8zhwYat58K9LMh3ZRmiwR2z85KtZozQzSWLFYhMhKB7OyqVlvaamExrvrl6WU
-         93cFO0eWKr8A5LnA7fjOlSYZMHGMzNkpfSIHmKdr4pxjYqswwBk1Xf37eOksMPDsaY
-         BEOX9inE4R/oWHniy0iy4jYi3IRJTjxxh0fcWCc5qQOpOgPUsrh/DH0GDxMgWxjUvj
-         Bl6bbBson0CWkZF5+4uGWK9lBNfVxdWZMl2eEdWZZDoddsnbnSPO3VavX4epiN2FL4
-         5Eoq3AE2mq1Mw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6D33E6D402;
-        Fri, 22 Apr 2022 20:46:45 +0000 (UTC)
-Subject: Re: [GIT PULL] sound fixes for 5.18-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <s5hsfq5tydf.wl-tiwai@suse.de>
-References: <s5hsfq5tydf.wl-tiwai@suse.de>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <s5hsfq5tydf.wl-tiwai@suse.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.18-rc4
-X-PR-Tracked-Commit-Id: 86222af07abf1f5f07a5873cc399c29ab8a9b8b8
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2d230968ad0d15250af54c6ac70c5ae95db63c78
-Message-Id: <165066040567.3510.7573736498306317463.pr-tracker-bot@kernel.org>
-Date:   Fri, 22 Apr 2022 20:46:45 +0000
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Fri, 22 Apr 2022 18:04:49 -0400
+Received: from mx3.wp.pl (mx3.wp.pl [212.77.101.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22BA20BDF2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:47:15 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 29161 invoked from network); 22 Apr 2022 21:47:12 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1650656832; bh=xN2TT2giRziTYzxkSRV3HAksGNGWVBKa+uXJBNXkzg8=;
+          h=From:To:Cc:Subject;
+          b=OaGiXdxuDtJlr6gXKJMqvpfHpw99AKST0JhzfU229DzbMl/J+krQWmDL0JaMn3wZ+
+           nLYzvdrGHvHszYhPrBHs6aXhFXMAhayra5vhItjEqeLtXIx/Awutg9aHIuu0eIUDfd
+           DolY4LgU+nV3ARsdp1tJC43865542AEiY+9HqATk=
+Received: from unknown (HELO kicinski-fedora-PC1C0HJN) (kubakici@wp.pl@[163.114.132.6])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <zhaojunkui2008@126.com>; 22 Apr 2022 21:47:12 +0200
+Date:   Fri, 22 Apr 2022 12:47:04 -0700
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Bernard Zhao <zhaojunkui2008@126.com>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bernard@vivo.com
+Subject: Re: [PATCH v2] mediatek/mt7601u: add debugfs exit function
+Message-ID: <20220422124704.259244e7@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20220422080854.490379-1-zhaojunkui2008@126.com>
+References: <20220422080854.490379-1-zhaojunkui2008@126.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: 9321f50bc9e4db09d6c2149ef2c2edd3
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000A [UYOE]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 22 Apr 2022 08:39:56 +0200:
+On Fri, 22 Apr 2022 01:08:54 -0700 Bernard Zhao wrote:
+> When mt7601u loaded, there are two cases:
+> First when mt7601u is loaded, in function mt7601u_probe, if
+> function mt7601u_probe run into error lable err_hw,
+> mt7601u_cleanup didn`t cleanup the debugfs node.
+> Second when the module disconnect, in function mt7601u_disconnect,
+> mt7601u_cleanup didn`t cleanup the debugfs node.
+> This patch add debugfs exit function and try to cleanup debugfs
+> node when mt7601u loaded fail or unloaded.
+> 
+> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.18-rc4
+Ah, missed that there was a v2. My point stands, wiphy debugfs dir
+should do the cleanup.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2d230968ad0d15250af54c6ac70c5ae95db63c78
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Do you encounter problems in practice or are you sending this patches
+based on reading / static analysis of the code only.
