@@ -2,96 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F38C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448495AbiDVOOO (ORCPT
+        id S1448502AbiDVOOc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
+        Fri, 22 Apr 2022 10:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448447AbiDVON6 (ORCPT
+        with ESMTP id S234200AbiDVOMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:13:58 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF3B5AA5A
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:10:58 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id x3so5159969wmj.5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:10:58 -0700 (PDT)
+        Fri, 22 Apr 2022 10:12:30 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B805A587;
+        Fri, 22 Apr 2022 07:09:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PYeD7CphIZ5NH/umo7M0wjdcvUu12ITU6k0/hQvLpn4=;
-        b=ZALoyjG8zCeEignAj44ruQpeuReq8DfH1PQ77vyqmSCU6416JBsIknodyI9lNyoqVt
-         0lQ1f4NBwYJDpwMZ5QiWkdT5dcveL1rzIeSJn3bfuNMM8ltdQZWwc8wPeSP3usbealiB
-         Xvu6jN+bwjLIIgDp6D0CK03EOuT5rJxZ0XoukaPsM+C5PKSFVuloS3nTU4ICshUgxgCr
-         vL6vSqLI1bydjYbf4+xXByyC+gi7QxfIALHv2phJfVVbzBxLhrfCYR0dhLUH7BxM22MP
-         hQMCQUv48hKvYY247w1nv+GGvk9EciUifUWvlPJk3H0k814PutkwIDGmdV0CqWoGzcpV
-         /Xtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PYeD7CphIZ5NH/umo7M0wjdcvUu12ITU6k0/hQvLpn4=;
-        b=Uqjk3HbRVaYKZMa5zF+9Z3Yx+oJw2x3P1cA1JRavRmON+U0iKKhoYkSVVlyJ7cOWec
-         2b9s/61mPbL7htjfN/Zj2boXQMV91PtS732jt7GwHEbYfL8NDX3ymp1ikxGHYa+qBCZq
-         GZ4aBkM/SmucL+cPZM6N1dYKjxRqCrYlsKtiQMiHk7T1TzujrOq4Ztqr7cvtdBvLS6fN
-         o3Ou+nApazfHpsj962qRWL9x3LK/WhodGmUUCrOVGGxVn/q7MPGlvO2k2tzJVpi0JuvG
-         /P/B/DqkfMZA8XbyDdDxWisfc6ZtcRO9NmRJdjJNunOi0+vNaUG95mV9xxJD8d3a6qaf
-         tjlQ==
-X-Gm-Message-State: AOAM531ZJtb3kFeyEINn2EhAC0KfNe9tUpZ4/XtVqIiQoEy3jdS60+5g
-        GcLEyFPhKvWGDWE+ZwDIpey1tw==
-X-Google-Smtp-Source: ABdhPJw/DrTqoY84qNlsyOJcHJJoiMOi4jdHj0vLja2zZ+SWSQRqWgoDISxntvHncsYjySGdb9tGcQ==
-X-Received: by 2002:a05:600c:4e94:b0:392:8e2a:d794 with SMTP id f20-20020a05600c4e9400b003928e2ad794mr13888303wmq.107.1650636657065;
-        Fri, 22 Apr 2022 07:10:57 -0700 (PDT)
-Received: from localhost.localdomain (static-176-182-171-101.ncc.abo.bbox.fr. [176.182.171.101])
-        by smtp.gmail.com with ESMTPSA id f189-20020a1c38c6000000b0038ff83b9792sm4607430wma.43.2022.04.22.07.10.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 07:10:56 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org
-Cc:     srinivas.pandruvada@intel.com, rui.zhang@intel.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amit Kucheria <amitk@kernel.org>
-Subject: [PATCH 1/2] Revert "thermal/core: Deprecate changing cooling device state from userspace"
-Date:   Fri, 22 Apr 2022 16:10:28 +0200
-Message-Id: <20220422141029.968212-1-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.25.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650636577; x=1682172577;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=6akx0CiupvwXO1vtbAdVV4tYTT2zaMA+nYRJhmClGOY=;
+  b=J4LBNc+q10NSuH7ZgjCL393DMhNuVLzhphVZ/0924AeNna2SQ1sWBL2G
+   9Oy3VwPbOcOoqZZDd/VDkQ+0jgAB9zxVp06Nd56zBYzD1Dq53tWTvq040
+   8PlfpKLCjCZTN9gx7jlBe2lPorzNURh4gk4wXlBNWW1hNv/Ho/yBhEMsq
+   g=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 22 Apr 2022 07:09:37 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:09:36 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:36 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 22 Apr 2022 07:09:31 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v10 08/12] arm64: dts: qcom: sc7280: Add lpass cpu node
+Date:   Fri, 22 Apr 2022 19:38:37 +0530
+Message-ID: <1650636521-18442-9-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1650636521-18442-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit a67a46af4ad6342378e332b7420c1d1a2818c53f.
+Add lpass cpu node for audio on sc7280 based platforms.
 
-It has been reported the warning is annoying as the cooling device
-state is still needed on some production system.
-
-Meanwhile we provide a way to consolidate the thermal framework to
-prevent multiple actors acting on the cooling devices with conflicting
-decisions, let's revert this warning.
-
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
- drivers/thermal/thermal_sysfs.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 62 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
-index f154bada2906..1c4aac8464a7 100644
---- a/drivers/thermal/thermal_sysfs.c
-+++ b/drivers/thermal/thermal_sysfs.c
-@@ -610,9 +610,6 @@ cur_state_store(struct device *dev, struct device_attribute *attr,
- 	unsigned long state;
- 	int result;
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 9c46dc4..9b764c7 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -21,6 +21,7 @@
+ #include <dt-bindings/reset/qcom,sdm845-aoss.h>
+ #include <dt-bindings/reset/qcom,sdm845-pdc.h>
+ #include <dt-bindings/soc/qcom,rpmh-rsc.h>
++#include <dt-bindings/sound/qcom,lpass.h>
+ #include <dt-bindings/thermal/thermal.h>
  
--	dev_warn_once(&cdev->device,
--		      "Setting cooling device state is deprecated\n");
--	
- 	if (sscanf(buf, "%ld\n", &state) != 1)
- 		return -EINVAL;
+ / {
+@@ -2195,6 +2196,67 @@
+ 			#power-domain-cells = <1>;
+ 		};
  
++		lpass_cpu: audio@3987000 {
++			compatible = "qcom,sc7280-lpass-cpu";
++
++			reg = <0 0x03987000 0 0x68000>,
++			      <0 0x03b00000 0 0x29000>,
++			      <0 0x03260000 0 0xc000>,
++			      <0 0x03280000 0 0x29000>,
++			      <0 0x03340000 0 0x29000>,
++			      <0 0x0336c000 0 0x3000>;
++			reg-names = "lpass-hdmiif",
++				    "lpass-lpaif",
++				    "lpass-rxtx-cdc-dma-lpm",
++				    "lpass-rxtx-lpaif",
++				    "lpass-va-lpaif",
++				    "lpass-va-cdc-dma-lpm";
++
++			iommus = <&apps_smmu 0x1820 0>,
++				 <&apps_smmu 0x1821 0>,
++				 <&apps_smmu 0x1832 0>;
++
++			power-domains =	<&rpmhpd SC7280_LCX>;
++			power-domain-names = "lcx";
++			required-opps = <&rpmhpd_opp_nom>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_EXT_MCLK0_CLK>,
++				 <&lpasscore LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
++				 <&lpasscore LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
++				 <&lpasscore LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
++				 <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
++			clock-names = "aon_cc_audio_hm_h",
++				      "audio_cc_ext_mclk0",
++				      "core_cc_sysnoc_mport_core",
++				      "core_cc_ext_if0_ibit",
++				      "core_cc_ext_if1_ibit",
++				      "audio_cc_codec_mem",
++				      "audio_cc_codec_mem0",
++				      "audio_cc_codec_mem1",
++				      "audio_cc_codec_mem2",
++				      "aon_cc_va_mem0";
++
++			#sound-dai-cells = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "lpass-irq-lpaif",
++					  "lpass-irq-hdmi",
++					  "lpass-irq-vaif",
++					  "lpass-irq-rxtxif";
++
++			status = "disabled";
++		};
++
+ 		lpass_hm: clock-controller@3c00000 {
+ 			compatible = "qcom,sc7280-lpasshm";
+ 			reg = <0 0x3c00000 0 0x28>;
 -- 
-2.25.1
+2.7.4
 
