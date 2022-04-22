@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 751D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC51C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446734AbiDVKjS (ORCPT
+        id S1446742AbiDVKjc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
+        Fri, 22 Apr 2022 06:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446715AbiDVKiD (ORCPT
+        with ESMTP id S1446685AbiDVKhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:38:03 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC15FFE;
-        Fri, 22 Apr 2022 03:35:10 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:35:07 -0000
+        Fri, 22 Apr 2022 06:37:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7038C10C6;
+        Fri, 22 Apr 2022 03:35:01 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 10:34:58 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650623709;
+        s=2020; t=1650623700;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a9/14HRmxXu2/aEIwg3du1g5l4j1mNIEvgsjuXLX6k8=;
-        b=NWiKCGC+jVN6c3TRsZPDqxxdpOMNMfJgoOZpQF4aq3mTFr4NFEu8Ac2g+enSSgkdXDvs1K
-        9wNboqw47QYJILq6Ko5EMWdvoGCYc6n06xD+7onC3LC5iJk/hW7bjezGLoAzMb1C4hpgBC
-        Xv+jAgc8F9ej3HwJUimahy3Mm/LeoD0bxHgmL337CUFkzVWgFijN0c4llH3D4dHosoChNI
-        L8UBCDX64dYEfShnqWQ08Hko64i1dHxIAu12eShcpWWFDLtL7XKk6/H196S2cDkO8f88fq
-        T0gyqxXx4J5Kz31uVS79cQdono2Zyqswb8Ab1jEj4BII23psjXbsOMTT+nnU7g==
+        bh=ki5WHEZ13c1++Oy6X8lNBfXAF1P+ZU4XYe3IcWwTUgE=;
+        b=rrMtbhczJSHUYxLB6sfX6JRk3ibgo2ih5B8+wuzPG6TVKOAi7vDlBP1zqMuv+yLzFc1/ig
+        knGL17lkdjCSJdX6c3g1FjHqIyjDDyUwZhv00bqEtm4uwMe7acIAWLW0J/b3Hz92kRPGCS
+        0tdtDkIcwnjETU9CPp51spnTKVzF7Q46exKCFOYofw/Hs3yXjDuXCsnOGANj0veLwbBfXG
+        O22P1WqGNU9vSu31kjsREGGD2Q/bskqmBGFgSbSZS2E1nVt/O8MNk8lrZMw0/TwP6S+VmW
+        99TMRaJIpTI13kyKXvM4T9bxjv1K6OwLWFRxKWXRazz/0BqC5LwUyJu0Q2phFw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650623709;
+        s=2020e; t=1650623700;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a9/14HRmxXu2/aEIwg3du1g5l4j1mNIEvgsjuXLX6k8=;
-        b=cXaFS61LJMdVxD5GufUk6kb1+RsBCHrA/ZGMp2OobLVt8baMpfTRZQwQ1RU0oB7KdurOpJ
-        d003GtBmJPfQpmAw==
+        bh=ki5WHEZ13c1++Oy6X8lNBfXAF1P+ZU4XYe3IcWwTUgE=;
+        b=bv6tMQ58Di3oGzE7m1iwwAvD6Vu8Ilp89MCfg0twhskh8gSd7cVYhMcYtwmIKFStTbKJPo
+        B53nvMfZTqkH4QCg==
 From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: objtool/core] objtool: Ditch subcommands
+Subject: [tip: objtool/core] objtool: Make noinstr hacks optional
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Miroslav Benes <mbenes@suse.cz>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <5c61ebf805e90aefc5fa62bc63468ffae53b9df6.1650300597.git.jpoimboe@redhat.com>
-References: <5c61ebf805e90aefc5fa62bc63468ffae53b9df6.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <b326eeb9c33231b9dfbb925f194ed7ee40edcd7c.1650300597.git.jpoimboe@redhat.com>
+References: <b326eeb9c33231b9dfbb925f194ed7ee40edcd7c.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165062370792.4207.1976776419666677358.tip-bot2@tip-bot2>
+Message-ID: <165062369895.4207.331120687086403525.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,528 +63,176 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the objtool/core branch of tip:
 
-Commit-ID:     b51277eb9775ce916f9efd2c51533e481180c1e8
-Gitweb:        https://git.kernel.org/tip/b51277eb9775ce916f9efd2c51533e481180c1e8
+Commit-ID:     22102f4559beaabcea614b29ee090c6a214f002f
+Gitweb:        https://git.kernel.org/tip/22102f4559beaabcea614b29ee090c6a214f002f
 Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:27 -07:00
+AuthorDate:    Mon, 18 Apr 2022 09:50:40 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 22 Apr 2022 12:32:01 +02:00
+CommitterDate: Fri, 22 Apr 2022 12:32:04 +02:00
 
-objtool: Ditch subcommands
+objtool: Make noinstr hacks optional
 
-Objtool has a fairly singular focus.  It runs on object files and does
-validations and transformations which can be combined in various ways.
-The subcommand model has never been a good fit, making it awkward to
-combine and remove options.
-
-Remove the "check" and "orc" subcommands in favor of a more traditional
-cmdline option model.  This makes it much more flexible to use, and
-easier to port individual features to other arches.
+Objtool has some hacks in place to workaround toolchain limitations
+which otherwise would break no-instrumentation rules.  Make the hacks
+explicit (and optional for other arches) by turning it into a cmdline
+option and kernel config option.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/5c61ebf805e90aefc5fa62bc63468ffae53b9df6.1650300597.git.jpoimboe@redhat.com
+Link: https://lkml.kernel.org/r/b326eeb9c33231b9dfbb925f194ed7ee40edcd7c.1650300597.git.jpoimboe@redhat.com
 ---
- scripts/Makefile.build                  |  2 +-
- scripts/link-vmlinux.sh                 | 13 +--
- tools/objtool/Build                     | 12 +--
- tools/objtool/Makefile                  |  8 +--
- tools/objtool/builtin-check.c           | 56 +++++++++++---
- tools/objtool/builtin-orc.c             | 73 +------------------
- tools/objtool/check.c                   |  8 ++-
- tools/objtool/include/objtool/builtin.h |  5 +-
- tools/objtool/objtool.c                 | 97 +------------------------
- tools/objtool/weak.c                    |  9 +--
- 10 files changed, 72 insertions(+), 211 deletions(-)
- delete mode 100644 tools/objtool/builtin-orc.c
+ arch/Kconfig                            | 3 +++
+ arch/x86/Kconfig                        | 1 +
+ lib/Kconfig.debug                       | 4 ++--
+ lib/Kconfig.kcsan                       | 5 +++--
+ scripts/Makefile.build                  | 1 +
+ scripts/link-vmlinux.sh                 | 4 ++++
+ tools/objtool/builtin-check.c           | 8 +++++++-
+ tools/objtool/check.c                   | 2 +-
+ tools/objtool/include/objtool/builtin.h | 1 +
+ 9 files changed, 23 insertions(+), 6 deletions(-)
 
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 9dce6d6..6ba6e34 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1035,6 +1035,9 @@ config HAVE_OBJTOOL
+ config HAVE_JUMP_LABEL_HACK
+ 	bool
+ 
++config HAVE_NOINSTR_HACK
++	bool
++
+ config HAVE_STACK_VALIDATION
+ 	bool
+ 	help
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 26d012f..06e7cdd 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -231,6 +231,7 @@ config X86
+ 	select HAVE_MOD_ARCH_SPECIFIC
+ 	select HAVE_MOVE_PMD
+ 	select HAVE_MOVE_PUD
++	select HAVE_NOINSTR_HACK		if HAVE_OBJTOOL
+ 	select HAVE_NMI
+ 	select HAVE_OBJTOOL			if X86_64
+ 	select HAVE_OPTPROBES
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index c0e4e47..7d2bbc3 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2036,11 +2036,11 @@ config KCOV
+ 	bool "Code coverage for fuzzing"
+ 	depends on ARCH_HAS_KCOV
+ 	depends on CC_HAS_SANCOV_TRACE_PC || GCC_PLUGINS
+-	depends on !ARCH_WANTS_NO_INSTR || HAVE_OBJTOOL || \
++	depends on !ARCH_WANTS_NO_INSTR || HAVE_NOINSTR_HACK || \
+ 		   GCC_VERSION >= 120000 || CLANG_VERSION >= 130000
+ 	select DEBUG_FS
+ 	select GCC_PLUGIN_SANCOV if !CC_HAS_SANCOV_TRACE_PC
+-	select OBJTOOL if HAVE_OBJTOOL
++	select OBJTOOL if HAVE_NOINSTR_HACK
+ 	help
+ 	  KCOV exposes kernel code coverage information in a form suitable
+ 	  for coverage-guided fuzzing (randomized testing).
+diff --git a/lib/Kconfig.kcsan b/lib/Kconfig.kcsan
+index 901c3b5..47a693c 100644
+--- a/lib/Kconfig.kcsan
++++ b/lib/Kconfig.kcsan
+@@ -187,8 +187,9 @@ config KCSAN_WEAK_MEMORY
+ 	# We can either let objtool nop __tsan_func_{entry,exit}() and builtin
+ 	# atomics instrumentation in .noinstr.text, or use a compiler that can
+ 	# implement __no_kcsan to really remove all instrumentation.
+-	depends on HAVE_OBJTOOL || CC_IS_GCC || CLANG_VERSION >= 140000
+-	select OBJTOOL if HAVE_OBJTOOL
++	depends on !ARCH_WANTS_NO_INSTR || HAVE_NOINSTR_HACK || \
++		   CC_IS_GCC || CLANG_VERSION >= 140000
++	select OBJTOOL if HAVE_NOINSTR_HACK
+ 	help
+ 	  Enable support for modeling a subset of weak memory, which allows
+ 	  detecting a subset of data races due to missing memory barriers.
 diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index dd9d582..116c727 100644
+index f1d2c2e..6c206a1 100644
 --- a/scripts/Makefile.build
 +++ b/scripts/Makefile.build
-@@ -227,9 +227,9 @@ ifdef CONFIG_STACK_VALIDATION
- objtool := $(objtree)/tools/objtool/objtool
+@@ -228,6 +228,7 @@ objtool := $(objtree)/tools/objtool/objtool
  
  objtool_args =								\
--	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
+ 	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
++	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
  	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
  	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
-+	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
- 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
- 	$(if $(CONFIG_SLS), --sls)					\
- 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
 diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index c6e9fef..f6db79b 100755
+index fa1f168..90c9c4c 100755
 --- a/scripts/link-vmlinux.sh
 +++ b/scripts/link-vmlinux.sh
-@@ -113,9 +113,6 @@ objtool_link()
- 
- 		# Don't perform vmlinux validation unless explicitly requested,
- 		# but run objtool on vmlinux.o now that we have an object file.
--		if is_enabled CONFIG_UNWINDER_ORC; then
--			objtoolcmd="orc generate"
--		fi
- 
- 		if is_enabled CONFIG_X86_KERNEL_IBT; then
- 			objtoolopt="${objtoolopt} --ibt"
-@@ -125,6 +122,10 @@ objtool_link()
- 			objtoolopt="${objtoolopt} --mcount"
+@@ -121,6 +121,10 @@ objtool_link()
+ 			objtoolopt="${objtoolopt} --hacks=jump_label"
  		fi
  
-+		if is_enabled CONFIG_UNWINDER_ORC; then
-+			objtoolopt="${objtoolopt} --orc"
++		if is_enabled CONFIG_HAVE_NOINSTR_HACK; then
++			objtoolopt="${objtoolopt} --hacks=noinstr"
 +		fi
 +
- 		objtoolopt="${objtoolopt} --lto"
- 	fi
- 
-@@ -134,10 +135,6 @@ objtool_link()
- 
- 	if [ -n "${objtoolopt}" ]; then
- 
--		if [ -z "${objtoolcmd}" ]; then
--			objtoolcmd="check"
--		fi
--
- 		if is_enabled CONFIG_RETPOLINE; then
- 			objtoolopt="${objtoolopt} --retpoline"
+ 		if is_enabled CONFIG_X86_KERNEL_IBT; then
+ 			objtoolopt="${objtoolopt} --ibt"
  		fi
-@@ -161,7 +158,7 @@ objtool_link()
- 		objtoolopt="${objtoolopt} --vmlinux"
- 
- 		info OBJTOOL ${1}
--		tools/objtool/objtool ${objtoolcmd} ${objtoolopt} ${1}
-+		tools/objtool/objtool ${objtoolopt} ${1}
- 	fi
- }
- 
-diff --git a/tools/objtool/Build b/tools/objtool/Build
-index b7222d5..33f2ee5 100644
---- a/tools/objtool/Build
-+++ b/tools/objtool/Build
-@@ -2,17 +2,15 @@ objtool-y += arch/$(SRCARCH)/
- 
- objtool-y += weak.o
- 
--objtool-$(SUBCMD_CHECK) += check.o
--objtool-$(SUBCMD_CHECK) += special.o
--objtool-$(SUBCMD_ORC) += check.o
--objtool-$(SUBCMD_ORC) += orc_gen.o
--objtool-$(SUBCMD_ORC) += orc_dump.o
--
-+objtool-y += check.o
-+objtool-y += special.o
- objtool-y += builtin-check.o
--objtool-y += builtin-orc.o
- objtool-y += elf.o
- objtool-y += objtool.o
- 
-+objtool-$(BUILD_ORC) += orc_gen.o
-+objtool-$(BUILD_ORC) += orc_dump.o
-+
- objtool-y += libstring.o
- objtool-y += libctype.o
- objtool-y += str_error_r.o
-diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
-index 0dbd397..061cf1c 100644
---- a/tools/objtool/Makefile
-+++ b/tools/objtool/Makefile
-@@ -39,15 +39,13 @@ CFLAGS += $(if $(elfshdr),,-DLIBELF_USE_DEPRECATED)
- 
- AWK = awk
- 
--SUBCMD_CHECK := n
--SUBCMD_ORC := n
-+BUILD_ORC := n
- 
- ifeq ($(SRCARCH),x86)
--	SUBCMD_CHECK := y
--	SUBCMD_ORC := y
-+	BUILD_ORC := y
- endif
- 
--export SUBCMD_CHECK SUBCMD_ORC
-+export BUILD_ORC
- export srctree OUTPUT CFLAGS SRCARCH AWK
- include $(srctree)/tools/build/Makefile.include
- 
 diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index bc447b3..8c3eed5 100644
+index b2c626d..1803a63 100644
 --- a/tools/objtool/builtin-check.c
 +++ b/tools/objtool/builtin-check.c
-@@ -3,16 +3,6 @@
-  * Copyright (C) 2015-2017 Josh Poimboeuf <jpoimboe@redhat.com>
-  */
+@@ -47,12 +47,17 @@ static int parse_hacks(const struct option *opt, const char *str, int unset)
+ 		found = true;
+ 	}
  
--/*
-- * objtool check:
-- *
-- * This command analyzes every .o file and ensures the validity of its stack
-- * trace metadata.  It enforces a set of rules on asm code and C inline
-- * assembly code so that stack traces can be reliable.
-- *
-- * For more information, see tools/objtool/Documentation/stack-validation.txt.
-- */
--
- #include <subcmd/parse-options.h>
- #include <string.h>
- #include <stdlib.h>
-@@ -22,7 +12,7 @@
- struct opts opts;
- 
- static const char * const check_usage[] = {
--	"objtool check <actions> [<options>] file.o",
-+	"objtool <actions> [<options>] file.o",
- 	NULL,
- };
- 
-@@ -31,14 +21,26 @@ static const char * const env_usage[] = {
- 	NULL,
- };
- 
-+static int parse_dump(const struct option *opt, const char *str, int unset)
-+{
-+	if (!str || !strcmp(str, "orc")) {
-+		opts.dump_orc = true;
-+		return 0;
++	if (!str || strstr(str, "noinstr")) {
++		opts.hack_noinstr = true;
++		found = true;
 +	}
 +
-+	return -1;
-+}
-+
+ 	return found ? 0 : -1;
+ }
+ 
  const struct option check_options[] = {
  	OPT_GROUP("Actions:"),
+-	OPT_CALLBACK_OPTARG('h', "hacks", NULL, NULL, "jump_label", "patch toolchain bugs/limitations", parse_hacks),
++	OPT_CALLBACK_OPTARG('h', "hacks", NULL, NULL, "jump_label,noinstr", "patch toolchain bugs/limitations", parse_hacks),
  	OPT_BOOLEAN('i', "ibt", &opts.ibt, "validate and annotate IBT"),
  	OPT_BOOLEAN('m', "mcount", &opts.mcount, "annotate mcount/fentry calls for ftrace"),
  	OPT_BOOLEAN('n', "noinstr", &opts.noinstr, "validate noinstr rules"),
-+	OPT_BOOLEAN('o', "orc", &opts.orc, "generate ORC metadata"),
- 	OPT_BOOLEAN('r', "retpoline", &opts.retpoline, "validate and annotate retpoline usage"),
- 	OPT_BOOLEAN('l', "sls", &opts.sls, "validate straight-line-speculation mitigations"),
- 	OPT_BOOLEAN('u', "uaccess", &opts.uaccess, "validate uaccess rules for SMAP"),
-+	OPT_CALLBACK_OPTARG(0, "dump", NULL, NULL, "orc", "dump metadata", parse_dump),
- 
- 	OPT_GROUP("Options:"),
- 	OPT_BOOLEAN(0, "backtrace", &opts.backtrace, "unwind on error"),
-@@ -81,7 +83,31 @@ int cmd_parse_options(int argc, const char **argv, const char * const usage[])
- 	return argc;
- }
- 
--int cmd_check(int argc, const char **argv)
-+static bool opts_valid(void)
-+{
-+	if (opts.ibt		||
-+	    opts.mcount		||
-+	    opts.noinstr	||
-+	    opts.orc		||
-+	    opts.retpoline	||
-+	    opts.sls		||
-+	    opts.uaccess) {
-+		if (opts.dump_orc) {
-+			fprintf(stderr, "--dump can't be combined with other options\n");
-+			return false;
-+		}
-+
-+		return true;
-+	}
-+
-+	if (opts.dump_orc)
-+		return true;
-+
-+	fprintf(stderr, "At least one command required\n");
-+	return false;
-+}
-+
-+int objtool_run(int argc, const char **argv)
+@@ -108,6 +113,7 @@ int cmd_parse_options(int argc, const char **argv, const char * const usage[])
+ static bool opts_valid(void)
  {
- 	const char *objname;
- 	struct objtool_file *file;
-@@ -90,6 +116,12 @@ int cmd_check(int argc, const char **argv)
- 	argc = cmd_parse_options(argc, argv, check_usage);
- 	objname = argv[0];
- 
-+	if (!opts_valid())
-+		return 1;
-+
-+	if (opts.dump_orc)
-+		return orc_dump(objname);
-+
- 	file = objtool_open_read(objname);
- 	if (!file)
- 		return 1;
-diff --git a/tools/objtool/builtin-orc.c b/tools/objtool/builtin-orc.c
-deleted file mode 100644
-index 17f8b93..0000000
---- a/tools/objtool/builtin-orc.c
-+++ /dev/null
-@@ -1,73 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- * Copyright (C) 2017 Josh Poimboeuf <jpoimboe@redhat.com>
-- */
--
--/*
-- * objtool orc:
-- *
-- * This command analyzes a .o file and adds .orc_unwind and .orc_unwind_ip
-- * sections to it, which is used by the in-kernel ORC unwinder.
-- *
-- * This command is a superset of "objtool check".
-- */
--
--#include <string.h>
--#include <objtool/builtin.h>
--#include <objtool/objtool.h>
--
--static const char *orc_usage[] = {
--	"objtool orc generate [<options>] file.o",
--	"objtool orc dump file.o",
--	NULL,
--};
--
--int cmd_orc(int argc, const char **argv)
--{
--	const char *objname;
--
--	argc--; argv++;
--	if (argc <= 0)
--		usage_with_options(orc_usage, check_options);
--
--	if (!strncmp(argv[0], "gen", 3)) {
--		struct objtool_file *file;
--		int ret;
--
--		argc = cmd_parse_options(argc, argv, orc_usage);
--		objname = argv[0];
--
--		file = objtool_open_read(objname);
--		if (!file)
--			return 1;
--
--		ret = check(file);
--		if (ret)
--			return ret;
--
--		if (list_empty(&file->insn_list))
--			return 0;
--
--		ret = orc_create(file);
--		if (ret)
--			return ret;
--
--		if (!file->elf->changed)
--			return 0;
--
--		return elf_write(file->elf);
--	}
--
--	if (!strcmp(argv[0], "dump")) {
--		if (argc != 2)
--			usage_with_options(orc_usage, check_options);
--
--		objname = argv[1];
--
--		return orc_dump(objname);
--	}
--
--	usage_with_options(orc_usage, check_options);
--
--	return 0;
--}
+ 	if (opts.hack_jump_label	||
++	    opts.hack_noinstr		||
+ 	    opts.ibt			||
+ 	    opts.mcount			||
+ 	    opts.noinstr		||
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 3362cc3..16a6c4b 100644
+index d157978..30b24dc 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -3949,6 +3949,14 @@ int check(struct objtool_file *file)
- 		warnings += ret;
- 	}
- 
-+	if (opts.orc && !list_empty(&file->insn_list)) {
-+		ret = orc_create(file);
-+		if (ret < 0)
-+			goto out;
-+		warnings += ret;
-+	}
-+
-+
- 	if (opts.stats) {
- 		printf("nr_insns_visited: %ld\n", nr_insns_visited);
- 		printf("nr_cfi: %ld\n", nr_cfi);
+@@ -1144,7 +1144,7 @@ static void annotate_call_site(struct objtool_file *file,
+ 	 * attribute so they need a little help, NOP out any such calls from
+ 	 * noinstr text.
+ 	 */
+-	if (insn->sec->noinstr && sym->profiling_func) {
++	if (opts.hack_noinstr && insn->sec->noinstr && sym->profiling_func) {
+ 		if (reloc) {
+ 			reloc->type = R_NONE;
+ 			elf_write_reloc(file->elf, reloc);
 diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 87c1a73..44548e2 100644
+index c6acf05..f3a1a75 100644
 --- a/tools/objtool/include/objtool/builtin.h
 +++ b/tools/objtool/include/objtool/builtin.h
-@@ -11,9 +11,11 @@ extern const struct option check_options[];
- 
- struct opts {
+@@ -13,6 +13,7 @@ struct opts {
  	/* actions: */
-+	bool dump_orc;
+ 	bool dump_orc;
+ 	bool hack_jump_label;
++	bool hack_noinstr;
  	bool ibt;
  	bool mcount;
  	bool noinstr;
-+	bool orc;
- 	bool retpoline;
- 	bool sls;
- 	bool uaccess;
-@@ -34,7 +36,6 @@ extern struct opts opts;
- 
- extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
- 
--extern int cmd_check(int argc, const char **argv);
--extern int cmd_orc(int argc, const char **argv);
-+extern int objtool_run(int argc, const char **argv);
- 
- #endif /* _BUILTIN_H */
-diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
-index a0f3d3c..512669c 100644
---- a/tools/objtool/objtool.c
-+++ b/tools/objtool/objtool.c
-@@ -3,16 +3,6 @@
-  * Copyright (C) 2015 Josh Poimboeuf <jpoimboe@redhat.com>
-  */
- 
--/*
-- * objtool:
-- *
-- * The 'check' subcmd analyzes every .o file and ensures the validity of its
-- * stack trace metadata.  It enforces a set of rules on asm code and C inline
-- * assembly code so that stack traces can be reliable.
-- *
-- * For more information, see tools/objtool/Documentation/stack-validation.txt.
-- */
--
- #include <stdio.h>
- #include <stdbool.h>
- #include <string.h>
-@@ -26,20 +16,6 @@
- #include <objtool/objtool.h>
- #include <objtool/warn.h>
- 
--struct cmd_struct {
--	const char *name;
--	int (*fn)(int, const char **);
--	const char *help;
--};
--
--static const char objtool_usage_string[] =
--	"objtool COMMAND [ARGS]";
--
--static struct cmd_struct objtool_cmds[] = {
--	{"check",	cmd_check,	"Perform stack metadata validation on an object file" },
--	{"orc",		cmd_orc,	"Generate in-place ORC unwind tables for an object file" },
--};
--
- bool help;
- 
- const char *objname;
-@@ -161,70 +137,6 @@ void objtool_pv_add(struct objtool_file *f, int idx, struct symbol *func)
- 	f->pv_ops[idx].clean = false;
- }
- 
--static void cmd_usage(void)
--{
--	unsigned int i, longest = 0;
--
--	printf("\n usage: %s\n\n", objtool_usage_string);
--
--	for (i = 0; i < ARRAY_SIZE(objtool_cmds); i++) {
--		if (longest < strlen(objtool_cmds[i].name))
--			longest = strlen(objtool_cmds[i].name);
--	}
--
--	puts(" Commands:");
--	for (i = 0; i < ARRAY_SIZE(objtool_cmds); i++) {
--		printf("   %-*s   ", longest, objtool_cmds[i].name);
--		puts(objtool_cmds[i].help);
--	}
--
--	printf("\n");
--
--	if (!help)
--		exit(129);
--	exit(0);
--}
--
--static void handle_options(int *argc, const char ***argv)
--{
--	while (*argc > 0) {
--		const char *cmd = (*argv)[0];
--
--		if (cmd[0] != '-')
--			break;
--
--		if (!strcmp(cmd, "--help") || !strcmp(cmd, "-h")) {
--			help = true;
--			break;
--		} else {
--			fprintf(stderr, "Unknown option: %s\n", cmd);
--			cmd_usage();
--		}
--
--		(*argv)++;
--		(*argc)--;
--	}
--}
--
--static void handle_internal_command(int argc, const char **argv)
--{
--	const char *cmd = argv[0];
--	unsigned int i, ret;
--
--	for (i = 0; i < ARRAY_SIZE(objtool_cmds); i++) {
--		struct cmd_struct *p = objtool_cmds+i;
--
--		if (strcmp(p->name, cmd))
--			continue;
--
--		ret = p->fn(argc, argv);
--
--		exit(ret);
--	}
--
--	cmd_usage();
--}
--
- int main(int argc, const char **argv)
- {
- 	static const char *UNUSED = "OBJTOOL_NOT_IMPLEMENTED";
-@@ -233,14 +145,7 @@ int main(int argc, const char **argv)
- 	exec_cmd_init("objtool", UNUSED, UNUSED, UNUSED);
- 	pager_init(UNUSED);
- 
--	argv++;
--	argc--;
--	handle_options(&argc, &argv);
--
--	if (!argc || help)
--		cmd_usage();
--
--	handle_internal_command(argc, argv);
-+	objtool_run(argc, argv);
- 
- 	return 0;
- }
-diff --git a/tools/objtool/weak.c b/tools/objtool/weak.c
-index 8314e82..d83f607 100644
---- a/tools/objtool/weak.c
-+++ b/tools/objtool/weak.c
-@@ -15,17 +15,12 @@
- 	return ENOSYS;							\
- })
- 
--int __weak check(struct objtool_file *file)
--{
--	UNSUPPORTED("check subcommand");
--}
--
- int __weak orc_dump(const char *_objname)
- {
--	UNSUPPORTED("orc");
-+	UNSUPPORTED("ORC");
- }
- 
- int __weak orc_create(struct objtool_file *file)
- {
--	UNSUPPORTED("orc");
-+	UNSUPPORTED("ORC");
- }
