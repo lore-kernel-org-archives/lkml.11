@@ -2,135 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F94BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449306AbiDVPQS (ORCPT
+        id S1449313AbiDVPQt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
+        Fri, 22 Apr 2022 11:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449292AbiDVPQN (ORCPT
+        with ESMTP id S1448890AbiDVPQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:16:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC915D5F4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:13:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 22 Apr 2022 11:16:46 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441785D674;
+        Fri, 22 Apr 2022 08:13:51 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 036e7665410539f2; Fri, 22 Apr 2022 17:13:49 +0200
+Received: from kreacher.localnet (unknown [213.134.161.204])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68F24B830D7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 15:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 087C3C385A8;
-        Fri, 22 Apr 2022 15:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650640397;
-        bh=dlhnkGIAETkf0PM+DA9mEiVM6qZtwnjdx+JDhH9WBps=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p57lLgFnDbw+D3ySDZ70CYRAge4zheEOlHuaX4q4jENTDFH1xl3w7k888nfcZTAon
-         4/HRucBXiRebcis3ku61yB395F2HmY4Vra91RqTdz2fq9wO2COxonY0+tWtnEwao0Z
-         cesjM7VtwcyGfpqt4QFOE+z+plhD21byUPgYWPqs2wWn5FzoAZZJJZ2YgqkxZTi+Kx
-         n6hJ/dCmb2WXJcfsVNxC4IQp5GOOvaGXq/dBYkQFY/7/3i9HjgWnxV7AwdvLfEmSUm
-         n/RcBaQ26ZAOu+a0cWt3mKpx+ZFW7el2nFc9MG4qmmhrX88MHtfDks5unu7OpoTvWl
-         HYC2HP22HWbYA==
-Date:   Sat, 23 Apr 2022 00:13:11 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Cc:     mhiramat@kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        Tom Zanussi <zanussi@kernel.org>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>
-Subject: Re: [PATCH] tracing: Fix potential double free in create_var_ref()
-Message-Id: <20220423001311.31e2dff59708ddd3043e55af@kernel.org>
-In-Reply-To: <20220422060025.1436075-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
-References: <20220422060025.1436075-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by v370.home.net.pl (Postfix) with ESMTPSA id F381766BFEB;
+        Fri, 22 Apr 2022 17:13:48 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: [PATCH] ACPI: bus: Avoid non-ACPI device objects in walks over children
+Date:   Fri, 22 Apr 2022 17:13:48 +0200
+Message-ID: <11974495.O9o76ZdvQC@kreacher>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.161.204
+X-CLIENT-HOSTNAME: 213.134.161.204
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrtdeggdekfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeegfffhudejlefhtdegffekteduhfethffhieettefhkeevgfdvgfefieekiefgheenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedvudefrddufeegrdduiedurddvtdegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeiuddrvddtgedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohephedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohephhgv
+ lhhgrggrsheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Keita,
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-On Fri, 22 Apr 2022 06:00:25 +0000
-Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp> wrote:
+When walking the children of an ACPI device, take extra care to avoid
+using to_acpi_device() on the ones that are not ACPI devices, because
+that may lead to out-of-bounds access and memory corruption.
 
-> In create_var_ref(), init_var_ref() is called to initialize the fields
-> of variable ref_field, which is allocated in the previous function call
-> to create_hist_field(). Function init_var_ref() allocates the
-> corresponding fields such as ref_field->system, but frees these fields
-> when the function encounters an error. The caller later calls
-> destroy_hist_field() to conduct error handling, which frees the fields
-> and the variable itself. This results in double free of the fields which
-> are already freed in the previous function.
-> 
-> Fix this by storing NULL to the corresponding fields when they are freed
-> in init_var_ref().
-> 
+While at it, make the function passed to acpi_dev_for_each_child()
+take a struct acpi_device pointer argument (instead of a struct device
+one), so it is more straightforward to use.
 
-Good catch! this looks good to me.
+Fixes: b7dd6298db81 ("ACPI: PM: Introduce acpi_dev_power_up_children_with_adr()")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+BugLink: https://lore.kernel.org/lkml/20220420064725.GB16310@xsang-OptiPlex-9020/
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
 
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+The commit being fixed is present in linux-next.
+
+---
+ drivers/acpi/bus.c       |   24 ++++++++++++++++++++++--
+ drivers/acpi/device_pm.c |    5 +----
+ include/acpi/acpi_bus.h  |    2 +-
+ 3 files changed, 24 insertions(+), 7 deletions(-)
+
+Index: linux-pm/drivers/acpi/bus.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/bus.c
++++ linux-pm/drivers/acpi/bus.c
+@@ -1070,10 +1070,30 @@ int acpi_bus_for_each_dev(int (*fn)(stru
+ }
+ EXPORT_SYMBOL_GPL(acpi_bus_for_each_dev);
+ 
++struct acpi_dev_walk_context {
++	int (*fn)(struct acpi_device *, void *);
++	void *data;
++};
++
++static int acpi_dev_for_one_check(struct device *dev, void *context)
++{
++	struct acpi_dev_walk_context *adwc = context;
++
++	if (dev->bus != &acpi_bus_type)
++		return 0;
++
++	return adwc->fn(to_acpi_device(dev), adwc->data);
++}
++
+ int acpi_dev_for_each_child(struct acpi_device *adev,
+-			    int (*fn)(struct device *, void *), void *data)
++			    int (*fn)(struct acpi_device *, void *), void *data)
+ {
+-	return device_for_each_child(&adev->dev, data, fn);
++	struct acpi_dev_walk_context adwc = {
++		.fn = fn,
++		.data = data,
++	};
++
++	return device_for_each_child(&adev->dev, &adwc, acpi_dev_for_one_check);
+ }
+ 
+ /* --------------------------------------------------------------------------
+Index: linux-pm/include/acpi/acpi_bus.h
+===================================================================
+--- linux-pm.orig/include/acpi/acpi_bus.h
++++ linux-pm/include/acpi/acpi_bus.h
+@@ -482,7 +482,7 @@ extern struct bus_type acpi_bus_type;
+ 
+ int acpi_bus_for_each_dev(int (*fn)(struct device *, void *), void *data);
+ int acpi_dev_for_each_child(struct acpi_device *adev,
+-			    int (*fn)(struct device *, void *), void *data);
++			    int (*fn)(struct acpi_device *, void *), void *data);
+ 
+ /*
+  * Events
+Index: linux-pm/drivers/acpi/device_pm.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/device_pm.c
++++ linux-pm/drivers/acpi/device_pm.c
+@@ -429,11 +429,8 @@ bool acpi_bus_power_manageable(acpi_hand
+ }
+ EXPORT_SYMBOL(acpi_bus_power_manageable);
+ 
+-static int acpi_power_up_if_adr_present(struct device *dev, void *not_used)
++static int acpi_power_up_if_adr_present(struct acpi_device *adev, void *not_used)
+ {
+-	struct acpi_device *adev;
+-
+-	adev = to_acpi_device(dev);
+ 	if (!(adev->flags.power_manageable && adev->pnp.type.bus_address))
+ 		return 0;
+ 
 
 
-BTW, could you Cc the original code authoer and  if you fix a bug and
-add Fixes: tag? That will help the original author can check the bug and
-help stable kernel maintainers to pick the patch. :)
 
-To find the original commit, you can use the 'git blame'.
-
-$ git blame kernel/trace/trace_events_hist.c -L 2093,2100
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2093)      return err;
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2094)  free:
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2095)      kfree(ref_field->system);
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2096)      kfree(ref_field->event_name);
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2097)      kfree(ref_field->name);
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2098) 
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2099)      goto out;
-067fe038e70f6 (Tom Zanussi 2018-01-15 20:51:56 -0600 2100) }
-
-Then, git show will tell you the original author.
-$ git show 067fe038e70f6
-
-And get the format of the commit for Fixes tag.
-
-$ git --no-pager show -s --abbrev-commit --abbrev=12 --pretty=format:"%h (\"%s\")%n" 067fe038e70f6
-067fe038e70f ("tracing: Add variable reference handling to hist triggers")
-
-Then you can add lines like:
-
-Fixes: 067fe038e70f ("tracing: Add variable reference handling to hist triggers")
-Cc: stable@vger.kernel.org
-
-Thank you,
-
-> Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-> ---
->  kernel/trace/trace_events_hist.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-> index 44db5ba9cabb..a0e41906d9ce 100644
-> --- a/kernel/trace/trace_events_hist.c
-> +++ b/kernel/trace/trace_events_hist.c
-> @@ -2093,8 +2093,11 @@ static int init_var_ref(struct hist_field *ref_field,
->  	return err;
->   free:
->  	kfree(ref_field->system);
-> +	ref_field->system = NULL;
->  	kfree(ref_field->event_name);
-> +	ref_field->event_name = NULL;
->  	kfree(ref_field->name);
-> +	ref_field->name = NULL;
->  
->  	goto out;
->  }
-> -- 
-> 2.25.1
-> 
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
