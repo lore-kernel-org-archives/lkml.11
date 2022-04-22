@@ -2,110 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A66C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 19:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbiDVTfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 15:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
+        id S230132AbiDVTff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 15:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiDVTew (ORCPT
+        with ESMTP id S229446AbiDVTf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 15:34:52 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8196E26EDE6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:12:51 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e604f712ecso9573930fac.9
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 12:12:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=7NoOp29Q/dMR2v1xp8JyZRZZvoakgizrx1i7zKIJPJA=;
-        b=MvsU0Shq7Wl/izk/EJ6oMnzUpVSyo/bCeBwYPxWdAYO2/9ZUg6IRR1k16Uk4CzEWrL
-         Dx22WIhqhvchO4CtnhICqZcmbvTOQyBGtmNp/E7QHGclmkG9RfeVhmMZFOIqgY28zJbi
-         omzKxdl3vnnS3GlvrP2r4FCgkolfIn6+JQh7f9prIIUo0xYfo8rSs4DkN9dRK4ze3iSM
-         TyeuzwzOBNKEwqy8ugHn0TA1LD1NFbgFndeGaifUZ05vTM/qfZEfNAaZtNs9r18TuSqA
-         tW6u+2Uv84Ucz9Na8WgAb6cr1guTKv08Q0Vn0LTpV0wN7cXO46id9IUmfkkahe/mnrTG
-         gRJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=7NoOp29Q/dMR2v1xp8JyZRZZvoakgizrx1i7zKIJPJA=;
-        b=PwngxHWo9K5wLxN4/A07CXUt0JS6GIDL3kC8C1YSLe3ysCOcBK4mC3afgKE9oel+FS
-         m0UhzA97edWe+ClZ8dgN8rlgp4BUkNBUoKMXEINpg8BFAZr7nauAZrO4Abb9tzY9WVA1
-         KwwfM6XZVqVIbRpP4kqSrW6Ll3HH0ZmQk3tBiF3Vd62OCPWnD01P7WajrU30yUBQGQBg
-         H8WtyM0mV6poq7TzwflUtEgXvekCpGZZNAmGpW5wSSTkXj2+KJKSio4O4Wgl0y+JglHV
-         sOr2MDu7BI+WacpPg3TGjUYwyHuavhihPyy9Qn1ccD0+4EGRdokihwIZGEcwK/eqP1CV
-         c+qg==
-X-Gm-Message-State: AOAM532p2jL82eWHzP5VZiB8TVi3x7wBzhlmTtUCXYJkObxVPGx5Ll4i
-        wZhFD30kSoE8vT8gwo5hR31mmPqMPiM=
-X-Google-Smtp-Source: ABdhPJwjv/+yziYSWHN+C3vFIgOEab+gBtdfs3eHbbzKdOzoUHNJ/g1C7Vgz2La9Z6n6TR8SnVwYrg==
-X-Received: by 2002:a05:6808:138e:b0:322:2dcd:dc7d with SMTP id c14-20020a056808138e00b003222dcddc7dmr3025270oiw.159.1650652673572;
-        Fri, 22 Apr 2022 11:37:53 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id b188-20020aca34c5000000b002da579c994dsm1013602oia.31.2022.04.22.11.37.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 11:37:53 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Fri, 22 Apr 2022 11:37:51 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Heiko Stuebner <heiko@sntech.de>, Arnd Bergmann <arnd@arndb.de>,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] soc: rockchip: Fix compile-testing SoC drivers
-Message-ID: <20220422183751.GA2653014@roeck-us.net>
+        Fri, 22 Apr 2022 15:35:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A5A72715FB;
+        Fri, 22 Apr 2022 12:13:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAC5C61772;
+        Fri, 22 Apr 2022 19:01:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4CA2C385A0;
+        Fri, 22 Apr 2022 19:01:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650654077;
+        bh=IppT2R5TmZBgoejAuAjih5UgAJJvNanNsyybwMJzd5I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fi6U9+IDQcTBxm+CXXQsZtee8+hWCRJ2lBwOi/utPqHiwVoNC3jg+eFCDsDJh7SrC
+         I5rz7bKmFt8Fp/ieoYCYEMpUeWMPAWcgWGCdO48gckmz/EXAFO/AwaZvv9Pe1qYU23
+         in0x9QlG2A198XJKZY5G9pbZWIHWCbv4727wa6+LITX0p0VWkFD2UhMFomRuu+cq87
+         aIlADhdG9f1py1ctOiM1BYNW3ZaW08d8nWZ0bINTh02KuaLqj1cgqZ63So9WOaHwDe
+         1rUq0ZLBS7AC5YHvDMWMxAgTaw9IiToqwv6P0BpCXKOueNrvDHhk2yhXOohgxkTCQu
+         GovpyAwYd13DQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id AA394400B1; Fri, 22 Apr 2022 16:01:13 -0300 (-03)
+Date:   Fri, 22 Apr 2022 16:01:13 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Matt Turner <mattst88@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        linux-perf-users@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Jelle van der Waa <jvanderwaa@redhat.com>
+Subject: Re: [PATCH] tools: port perf ui from GTK 2 to GTK 3
+Message-ID: <YmL7eQBtPHQn0GcD@kernel.org>
+References: <20220415050003.3257645-1-mattst88@gmail.com>
+ <YmA+DyEZJr1Eb8TA@kernel.org>
+ <CAEdQ38Ec8mWkoy7hDE1ew6vEtXmEMSWp6u2HBzqdqtCBX3jTtA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEdQ38Ec8mWkoy7hDE1ew6vEtXmEMSWp6u2HBzqdqtCBX3jTtA@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 11:19:19AM -0700, Brian Norris wrote:
-> Similar to commit 7f94b69ece51 ("ARM: ixp4xx: fix compile-testing soc
-> drivers").
+Em Thu, Apr 21, 2022 at 02:02:49PM -0700, Matt Turner escreveu:
+> On Wed, Apr 20, 2022 at 10:08 AM Arnaldo Carvalho de Melo
+> <arnaldo.melo@gmail.com> wrote:
+> >
+> > Em Thu, Apr 14, 2022 at 10:00:03PM -0700, Matt Turner escreveu:
+> > > From: Jelle van der Waa <jvanderwaa@redhat.com>
+> > >
+> > > GTK 2 is a legacy API and the newer version is GTK 3 which changes a few
+> > > API functions. gtk_tree_view_set_rules_hint is no longer required since
+> > > theme's are now responsible to handle this, gtk_vbox_new is deprecated
+> > > and replaced by passing the orientation to gtk_box_new. Apart from these
+> > > changes the accessing of the screen changed in GTK which requires using
+> > > new functions for getting geometry. Lastly the GTK_STOCK_OK define is
+> > > deprecated in GTK 3.
+> > >
+> > > Signed-off-by: Jelle van der Waa <jvanderwaa@redhat.com>
+> > > Signed-off-by: Matt Turner <mattst88@gmail.com>
+> > > ---
+> > > Originally sent in 2019. I've rebased it and given it a test.
+> > >
+> > > One problem I've noticed is that C++ symbol names are often broken.
+> > > E.g.:
+> > >
+> > > (perf:3254940): Gtk-WARNING **: 21:47:46.663: Failed to set text from
+> > > markup due to error parsing markup: Error on line 1 char 95:
+> > > “std::char_traits<char” is not a valid name: “<”
+> > >
+> > > Presumably we need to call g_markup_escape_text() somewhere, but I
+> > > struggled to find the right place.
+> > >
+> > > Without the patch, the GTK-2 version repeatedly segfaults, so this is an
+> > > improvement regardless.
+> >
+> > I'm trying to test build this but failing:
+> >
+> > 1. uninstalled gtk2-devel, which removed several other packages
+> >
+> > 2. installed gtk3-devel, which installed several other packages
+> >
+> > 3.:
+> >
+> > Auto-detecting system features:
+> > ...                         dwarf: [ on  ]
+> > ...            dwarf_getlocations: [ on  ]
+> > ...                         glibc: [ on  ]
+> > ...                          gtk3: [ OFF ]
+> > ...                        libbfd: [ on  ]
+> > ...                libbfd-buildid: [ on  ]
+> >
+> > Looking at how that OFF is deduced:
+> >
+> > ⬢[acme@toolbox perf]$ cat /tmp/build/perf/feature/test-
+> > Display all 150 possibilities? (y or n)
+> > ⬢[acme@toolbox perf]$ cat /tmp/build/perf/feature/test-all.make.output
+> > In file included from test-all.c:74:
+> > test-gtk3.c:3:10: fatal error: gtk/gtk.h: No such file or directory
+> >     3 | #include <gtk/gtk.h>
+> >       |          ^~~~~~~~~~~
+> > compilation terminated.
+> > ⬢[acme@toolbox perf]$
+> >
+> > ⬢[acme@toolbox perf]$ find /usr/include -name gtk.h
+> > /usr/include/gtk-3.0/gtk/gtk.h
+> > ⬢[acme@toolbox perf]$ rpm -qf /usr/include/gtk-3.0/gtk/gtk.h
+> > gtk3-devel-3.24.31-2.fc35.x86_64
+> > ⬢[acme@toolbox perf]$
+> >
+> > And that pkg-config line produces:
+> >
+> > ⬢[acme@toolbox perf]$ pkg-config --libs --cflags gtk+-3.0
+> > -I/usr/include/gtk-3.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/sysprof-4 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/fribidi -I/usr/include/libxml2 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/gio-unix-2.0 -I/usr/include/cloudproviders -I/usr/include/atk-1.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/dbus-1.0 -I/usr/lib64/dbus-1.0/include -I/usr/include/at-spi-2.0 -pthread -lgtk-3 -lgdk-3 -lz -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0
+> > ⬢[acme@toolbox perf]$
+> >
+> > I'm testing this on fedora 35 silverblue, in a perf build container:
+> >
+> > ⬢[acme@toolbox perf]$ rpm -qa | grep gtk
+> > gtk-update-icon-cache-3.24.31-2.fc35.x86_64
+> > libcanberra-gtk3-0.30-27.fc35.x86_64
+> > gtk3-3.24.31-2.fc35.x86_64
+> > libcanberra-gtk2-0.30-27.fc35.x86_64
+> > gtk2-2.24.33-7.fc35.x86_64
+> > gtk3-devel-3.24.31-2.fc35.x86_64
+> > ⬢[acme@toolbox perf]$
+> >
+> > Ideas?
 > 
-> drivers/soc/rockchip/Kconfig makes plenty of provision for configuring
-> drivers either for ARCH_ROCKCHIP or for COMPILE_TEST. But
-> drivers/soc/Makefile pulls the rug out from under us, by refusing to
-> build anything if we specified COMPILE_TEST but not ARCH_ROCKCHIP.
-> 
-> Currently, I'm not aware of anything that breaks without this patch, but
-> it certainly makes for confusing builds (CONFIG_ROCKCHIP_PM_DOMAINS=y,
-> but we didn't actually compile the driver?) and leaves room for future
-> error (I have pending patches that break confusingly with COMPILE_TEST=y
-> even though their Kconfig dependencies seem correct [1]).
-> 
-> Defer to drivers/soc/rockchip/{Makefile,Kconfig} to do the right thing.
-> 
-> [1] e.g.,
-> https://lore.kernel.org/linux-rockchip/20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid/
-> [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
-> 
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> Just to be clear, are you building with 'GTK3=1 make'? Since commit
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+No, I'm not, as I first test without enabling it, and in that case
+test-all.c is now failing, since these lines were added there:
 
-> ---
-> 
->  drivers/soc/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-> index fd7717d597fc..4c91705a8bb3 100644
-> --- a/drivers/soc/Makefile
-> +++ b/drivers/soc/Makefile
-> @@ -23,7 +23,7 @@ obj-y				+= pxa/
->  obj-y				+= amlogic/
->  obj-y				+= qcom/
->  obj-y				+= renesas/
-> -obj-$(CONFIG_ARCH_ROCKCHIP)	+= rockchip/
-> +obj-y				+= rockchip/
->  obj-$(CONFIG_SOC_SAMSUNG)	+= samsung/
->  obj-$(CONFIG_SOC_SIFIVE)	+= sifive/
->  obj-y				+= sunxi/
-> -- 
-> 2.36.0.rc2.479.g8af0fa9b8e-goog
-> 
+diff --git a/tools/build/feature/test-all.c b/tools/build/feature/test-all.c
+index 5ffafb967b6e..5ec093498cfc 100644
+--- a/tools/build/feature/test-all.c
++++ b/tools/build/feature/test-all.c
+@@ -70,6 +70,14 @@
+ # include "test-libslang.c"
+ #undef main
+
++#define main main_test_gtk3
++# include "test-gtk3.c"
++#undef main
++
++#define main main_test_gtk3_infobar
++# include "test-gtk3-infobar.c"
++#undef main
++
+ #define main main_test_libbfd
+ # include "test-libbfd.c"
+ #undef main
+@@ -187,6 +195,8 @@ int main(int argc, char *argv[])
+        main_test_libelf_getshdrstrndx();
+        main_test_libunwind();
+        main_test_libslang();
++	main_test_gtk3(argc, argv);
++	main_test_gtk3_infobar(argc, argv);
+        main_test_libbfd();
+        main_test_libbfd_buildid();
+        main_test_backtrace();
+diff --git a/tools/build/feature/test-gtk2-infobar.c b/tools/build/feature/test-gtk3-infobar.c
+
+------------
+
+test-all.c is what we expect to be enabled in most places, i.e. that it
+will build successfully and we then don't have to test the features one
+by one, speeding up the process.
+
+So please don't add those entries in tools/build/feature/test-all.c.
+
+After the common case is tested and doesn't regress, we can move on to
+test with explicitely enabling the GTK code, ok?
+
+- Arnaldo
+
+
+> 4751bddd3f98 ("perf tools: Make GTK2 support opt-in") it's required to
+> enable GTK support explicitly. (IMO, leaving it disabled by default
+> makes sense to me, given some of the problems)
