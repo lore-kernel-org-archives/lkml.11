@@ -2,157 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7490C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8174C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449098AbiDVPE2 (ORCPT
+        id S1449115AbiDVPFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:04:28 -0400
+        Fri, 22 Apr 2022 11:05:34 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449136AbiDVPDp (ORCPT
+        with ESMTP id S1449200AbiDVPE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:03:45 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8135C84C;
-        Fri, 22 Apr 2022 08:00:46 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 08:00:39 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650639644;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d3IirLrwzfP+t0cf/Qt/pjPqRe913cYQABamRgMemA8=;
-        b=Lm54JO89yEThLSIOPkqiO6LOVwh/7ZwT7BCwz0zLcI/aXxl9HFRy2wt5mfdfSbbE+e+BYB
-        bQyb0q49de7JTreNY6cN9UX4H5WWDQWzNEHLbyyXbGLILRdK/dSOz1lUkEN4UbqazIhnP8
-        3DvXNVVjpOLYzc3+lxM/e73OuXDStK4=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-mm@kvack.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH] mm/memcg: Free percpu stats memory of dying memcg's
-Message-ID: <YmLDF58Mz3inl9Ev@carbon>
-References: <20220421145845.1044652-1-longman@redhat.com>
- <YmGHYNuAp8957ouq@carbon>
- <112a4d7f-bc53-6e59-7bb8-6fecb65d045d@redhat.com>
- <YmGbmrH/Hg1VJlUc@carbon>
- <58c41f14-356e-88dd-54aa-dc6873bf80ff@redhat.com>
- <YmIZ9Lpvx5pY3oTV@carbon>
- <YmKDCjJFYMmfa8sG@FVFYT0MHHV2J.usts.net>
+        Fri, 22 Apr 2022 11:04:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991005D641;
+        Fri, 22 Apr 2022 08:01:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=UG690mu+XmXKX5OxX9ukNb3ElQC+tja7iEXABIqW9kw=; b=k1GCpFT4ehH/96FkHpgz7X+T+T
+        p8QAbu5WWNbw9K8GoUog1IoEoN1MTQn4kKnG4sXEkb3tWsOfeSv45Yr/QqWlISj9Y+BBZMovZwCk+
+        uMDWXLL8L+w9sFRoDapB0pAAsLaQ47OepMalWR8m3lO4+UaaQ469KLgP7egenx+qg83k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nhumd-00Gzgm-Gz; Fri, 22 Apr 2022 17:01:19 +0200
+Date:   Fri, 22 Apr 2022 17:01:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>, Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v2 0/9] nvmem: sfp: binding updates and additions
+Message-ID: <YmLDPzOiD57ZTT09@lunn.ch>
+References: <20220422145147.2210587-1-sean.anderson@seco.com>
+ <9ec1e889-178f-9b99-c73a-9f31c6c99563@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmKDCjJFYMmfa8sG@FVFYT0MHHV2J.usts.net>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <9ec1e889-178f-9b99-c73a-9f31c6c99563@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 06:27:22PM +0800, Muchun Song wrote:
-> On Thu, Apr 21, 2022 at 07:59:00PM -0700, Roman Gushchin wrote:
-> > On Thu, Apr 21, 2022 at 02:46:00PM -0400, Waiman Long wrote:
-> > > On 4/21/22 13:59, Roman Gushchin wrote:
-> > > > On Thu, Apr 21, 2022 at 01:28:20PM -0400, Waiman Long wrote:
-> > > > > On 4/21/22 12:33, Roman Gushchin wrote:
-> > > > > > On Thu, Apr 21, 2022 at 10:58:45AM -0400, Waiman Long wrote:
-> > > > > > > For systems with large number of CPUs, the majority of the memory
-> > > > > > > consumed by the mem_cgroup structure is actually the percpu stats
-> > > > > > > memory. When a large number of memory cgroups are continuously created
-> > > > > > > and destroyed (like in a container host), it is possible that more
-> > > > > > > and more mem_cgroup structures remained in the dying state holding up
-> > > > > > > increasing amount of percpu memory.
-> > > > > > > 
-> > > > > > > We can't free up the memory of the dying mem_cgroup structure due to
-> > > > > > > active references in some other places. However, the percpu stats memory
-> > > > > > > allocated to that mem_cgroup is a different story.
-> > > > > > > 
-> > > > > > > This patch adds a new percpu_stats_disabled variable to keep track of
-> > > > > > > the state of the percpu stats memory. If the variable is set, percpu
-> > > > > > > stats update will be disabled for that particular memcg. All the stats
-> > > > > > > update will be forward to its parent instead. Reading of the its percpu
-> > > > > > > stats will return 0.
-> > > > > > > 
-> > > > > > > The flushing and freeing of the percpu stats memory is a multi-step
-> > > > > > > process. The percpu_stats_disabled variable is set when the memcg is
-> > > > > > > being set to offline state. After a grace period with the help of RCU,
-> > > > > > > the percpu stats data are flushed and then freed.
-> > > > > > > 
-> > > > > > > This will greatly reduce the amount of memory held up by dying memory
-> > > > > > > cgroups.
-> > > > > > > 
-> > > > > > > By running a simple management tool for container 2000 times per test
-> > > > > > > run, below are the results of increases of percpu memory (as reported
-> > > > > > > in /proc/meminfo) and nr_dying_descendants in root's cgroup.stat.
-> > > > > > Hi Waiman!
-> > > > > > 
-> > > > > > I've been proposing the same idea some time ago:
-> > > > > > https://lore.kernel.org/all/20190312223404.28665-7-guro@fb.com/T/ .
-> > > > > > 
-> > > > > > However I dropped it with the thinking that with many other fixes
-> > > > > > preventing the accumulation of the dying cgroups it's not worth the added
-> > > > > > complexity and a potential cpu overhead.
-> > > > > > 
-> > > > > > I think it ultimately comes to the number of dying cgroups. If it's low,
-> > > > > > memory savings are not worth the cpu overhead. If it's high, they are.
-> > > > > > I hope long-term to drive it down significantly (with lru-pages reparenting
-> > > > > > being the first major milestone), but it might take a while.
-> > > > > > 
-> > > > > > I don't have a strong opinion either way, just want to dump my thoughts
-> > > > > > on this.
-> > > > > I have quite a number of customer cases complaining about increasing percpu
-> > > > > memory usages. The number of dying memcg's can go to tens of thousands. From
-> > > > > my own investigation, I believe that those dying memcg's are not freed
-> > > > > because they are pinned down by references in the page structure. I am aware
-> > > > > that we support the use of objcg in the page structure which will allow easy
-> > > > > reparenting, but most pages don't do that and it is not easy to do this
-> > > > > conversion and it may take quite a while to do that.
-> > > > The big question is whether there is a memory pressure on those systems.
-> > > > If yes, and the number of dying cgroups is growing, it's worth investigating.
-> > > > It might be due to the sharing of pagecache pages and this will be ultimately
-> > > > fixed with implementing of the pagecache reparenting. But it also might be due
-> > > > to other bugs, which are fixable, so it would be great to understand.
-> > > 
-> > > 
-> > > Pagecache reparenting will probably fix the problem that I have seen. Is
-> > > someone working on this?
-> > 
-> > Some time ago Muchun posted patches based on the reusing of the obj_cgroup API.
-> >
-> 
-> Yep. It is here:
-> 
-> https://lore.kernel.org/all/20220216115132.52602-1-songmuchun@bytedance.com/.
->  
-> > I'm not strictly against this approach, but in my opinion it's not the best.
-> > I suggested to use lru vectors as an intermediate objects. In theory, it might
-> 
-> I remember this.
-> 
-> > allow to avoid bumping reference counters for all charged pages at all: live
-> > cgroups will be protected by being live, dying cgroups will only need
-> > a temporarily protection while lru vectors and associated pages are reparenting.
-> > 
-> > There are pros and cons:
-> > + cgroup reference counting becomes simpler and more debuggable
-> > + potential perf wins from fewer operations with live cgroups css refcounters
-> > = I hope to see code simplifications (but not guaranteed)
-> > - deleting cgroups becomes more expensive, but the cost can be spread to
-> >   asynchronous workers
-> > 
-> > Idk if Muchun tried to implement it. If not, I might try myself.
-> >
-> 
-> Yep. I have implemented a initial version recently. I'll do some stability tests
-> and send it out ASAP.
+> I forgot to pick up Reviewed-bys from v1. I can resend this or add
+> them for v3.
 
-Great! Looking forward to see it! And thank you for working on it!
+I suggest you wait a few days and see if you get any more comments,
+which require a v3.
+
+      Andrew
