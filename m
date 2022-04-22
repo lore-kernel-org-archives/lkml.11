@@ -2,117 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1558BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiDVSxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S230250AbiDVSxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiDVSxV (ORCPT
+        with ESMTP id S230087AbiDVSxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:53:21 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A595D1FA51
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:46:20 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id bq30so15794357lfb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:46:20 -0700 (PDT)
+        Fri, 22 Apr 2022 14:53:32 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986191FC1E2;
+        Fri, 22 Apr 2022 11:46:28 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id p21so9523789ioj.4;
+        Fri, 22 Apr 2022 11:46:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gs1lyGDE7+A7xavqOFG1B5XF/uB9DkKS+4Zz/DRp/RQ=;
-        b=f9blmSpiCrZ4zmBvGGeHGSBZF8lDA69+NXIVkqHeg2EPAQqUP5e2SrYel1SNJ6vkKy
-         vLazn76N9iNNnAv9WWOSz8+OHiQptaq8UdnhYq170F2u6zqQg2U5ElQxjd85O7Nb9gE2
-         SFLmyIFXXkFiNRNJEED8FrI0b5Cn2ToNPw9UU=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VZJZWU/RxygMbphG0Oj9zjd06v34ardwpbG1ITBoIDw=;
+        b=YZrWTzrqWk1rSABVylk7srJID3fDK9uMYJG42OPvae8wfCRKj7ksYtYZn7xN0yrP8i
+         e41Zp35cubbwqYSgd29HYOnVMmbr5qt6fEZ8X/yNW7wvKE6Of2E2X84vq2sbLpm0v1ft
+         7Yc10MU2AuvdmmQhwLN/afW/ybLHkuYWzff9R78t3w/+XyhG60uKEsY2w5UdcUX6Fu2J
+         LMy2HV3lFWnIFWErseiwxIAg5WQVCIyoHpY/usBPF0WEoB6IZcWuDlIdWhOUBNbbC3U9
+         o1RNHfw+J/BuziFmLiNgBRaa2DJDNESPnhnvUgumXYSBsoCUt6ByYC2DxaEy9zCJP3wE
+         T5/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gs1lyGDE7+A7xavqOFG1B5XF/uB9DkKS+4Zz/DRp/RQ=;
-        b=TbrGRcyXIBfUxJETEwLWYkRe92Q1/11T+psxP5q9JRF8qVxPYytRAWOFWgQdEelWf2
-         p1XI9NfkFkWpvSKYkBRdeIYxFHI0LZGMLSB9mft5OrtBHZ9IZzM7mje3wzuAz96PKGTt
-         ajmsYDtUefTJ2vNxlWuNBV4gualC9ym/d75QMjFoE5cl9WrxUVuw1/vcEZT2TPM+9HHj
-         P1HH7XtgYlDG9iKy/vG45Sx56huPBbv86apSmsmxzLN1cr6QzRB4ve8lZE8DhgoHeW0t
-         DreWhqnHuSA1sa71Sz2pxF+34VHb+xapA4q+S+pn82QUY/D227k34G30sfCIbYgwWBCs
-         6Ncw==
-X-Gm-Message-State: AOAM5300Th8QKKFXYmRUmWc5nn4G/Tz0ycFH2Yzf7DiCSL71SEfUC457
-        G0Wr+8TZhfBuEylcAvkWhETxXI71oi45wXqrUPA=
-X-Google-Smtp-Source: ABdhPJyucUXXq3XL6Sdx0YACaZcoL+jwg63Y/8ITyKpl9U+1U/ocZ41yJheVF7kaBsEKZ+6KAtIXNA==
-X-Received: by 2002:ac2:52b4:0:b0:445:ba75:7513 with SMTP id r20-20020ac252b4000000b00445ba757513mr4029213lfm.248.1650652917186;
-        Fri, 22 Apr 2022 11:41:57 -0700 (PDT)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id 22-20020a05651c009600b0024db88fff1asm301409ljq.83.2022.04.22.11.41.54
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VZJZWU/RxygMbphG0Oj9zjd06v34ardwpbG1ITBoIDw=;
+        b=kHZH3WGNLzMYnQKcX8w+DjR3WAXSQpLinbGqW5w6I+rEOnh/ZT64SWJeh7jkE1ri7j
+         /iwRNcrdmd97m71ku5XJFNqyrMxi6BVVW0jGxKaXVSnV2t/66ka04Vp2aLIlErHhVgnC
+         +OGvv8fw17i7m7UnCgvFD+rYGoa0L5jQWh1QsUVIZKmhT+BvANvGQQcij+xy6Orper7K
+         Hoaqy2IDoz/f2oXlF2a5CklBXkODa3cwecJP86EFBqxjZBptJ6DFmqGf2c8UORPPtNe0
+         dUeTaKqxyUz+Z5fYw8btueZwrfZzPwxp0xeb5xwicVl13DuW/pb/jgOjet2PpmGBtzu5
+         9sZQ==
+X-Gm-Message-State: AOAM532BUKYCl2ZIoeMNB2cEkA9lRvdRRPihzegTQz15+rknz0Fo4eYD
+        LjU777hxgeqezvjk64N+zI41Sghjp+I=
+X-Google-Smtp-Source: ABdhPJzt8+ULZ4U/JS1QogjvrFZ9RPxY2qsOw5RmC0oJk1pCiWYhJttEH2fg8OhbQGWlcVH7Xy1Pxw==
+X-Received: by 2002:a65:41c3:0:b0:363:5711:e234 with SMTP id b3-20020a6541c3000000b003635711e234mr5039062pgq.386.1650652113575;
+        Fri, 22 Apr 2022 11:28:33 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id b17-20020a056a000a9100b004e1b7cdb8fdsm3593300pfl.70.2022.04.22.11.28.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 11:41:55 -0700 (PDT)
-Received: by mail-lj1-f169.google.com with SMTP id bn33so10684110ljb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:41:54 -0700 (PDT)
-X-Received: by 2002:a2e:9d46:0:b0:24c:7f1d:73cc with SMTP id
- y6-20020a2e9d46000000b0024c7f1d73ccmr3579356ljj.358.1650652914703; Fri, 22
- Apr 2022 11:41:54 -0700 (PDT)
+        Fri, 22 Apr 2022 11:28:32 -0700 (PDT)
+Message-ID: <68c4710d-013e-85e0-154d-413f4e13b27e@gmail.com>
+Date:   Fri, 22 Apr 2022 11:28:30 -0700
 MIME-Version: 1.0
-References: <20220422060107.781512-1-npiggin@gmail.com> <20220422060107.781512-3-npiggin@gmail.com>
- <CAHk-=wgFoWLCV9aPHkHe1Mpu0XqxYWaPkKLpe_hcsTS_Vx3aRA@mail.gmail.com>
-In-Reply-To: <CAHk-=wgFoWLCV9aPHkHe1Mpu0XqxYWaPkKLpe_hcsTS_Vx3aRA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 22 Apr 2022 11:41:38 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whao=iosX1s5Z4SF-ZGa-ebAukJoAdUJFk5SPwnofV+Vg@mail.gmail.com>
-Message-ID: <CAHk-=whao=iosX1s5Z4SF-ZGa-ebAukJoAdUJFk5SPwnofV+Vg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP"
-To:     Nicholas Piggin <npiggin@gmail.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Content-Type: multipart/mixed; boundary="000000000000a114e105dd429420"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 2/5] net: dsa: add out-of-band tagging protocol
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
+ <20220422180305.301882-3-maxime.chevallier@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220422180305.301882-3-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000a114e105dd429420
-Content-Type: text/plain; charset="UTF-8"
+On 4/22/22 11:03, Maxime Chevallier wrote:
+> This tagging protocol is designed for the situation where the link
+> between the MAC and the Switch is designed such that the Destination
+> Port, which is usually embedded in some part of the Ethernet Header, is
+> sent out-of-band, and isn't present at all in the Ethernet frame.
+> 
+> This can happen when the MAC and Switch are tightly integrated on an
+> SoC, as is the case with the Qualcomm IPQ4019 for example, where the DSA
+> tag is inserted directly into the DMA descriptors. In that case,
+> the MAC driver is responsible for sending the tag to the switch using
+> the out-of-band medium. To do so, the MAC driver needs to have the
+> information of the destination port for that skb.
+> 
+> This tagging protocol relies on a new set of fields in skb->shinfo to
+> transmit the dsa tagging information to and from the MAC driver.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-On Fri, Apr 22, 2022 at 10:08 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Just opt-in with the mappings that matter.
+First off, I am not a big fan of expanding skb::shared_info because it 
+is sensitive to cache line sizes and is critical for performance at much 
+higher speeds, I would expect Eric and Jakub to not be terribly happy 
+about it.
 
-Actually, we could automatically opt-in a few common cases that we
-know are fundamentally ok, because they already can't play protection
-games.
+The Broadcom systemport (bcmsysport.c) has a mode where it can extract 
+the Broadcom tag and put it in front of the actual packet contents which 
+appears to be very similar here. From there on, you can have two strategies:
 
-In particular, kvmalloc().
+- have the Ethernet controller mangle the packet contents such that the 
+QCA tag is located in front of the actual Ethernet frame and create a 
+new tagging protocol variant for QCA, similar to the TAG_BRCM versus 
+TAG_BRCM_PREPEND
 
-So I think something like this patch - along with Song's patch to
-enable it for alloc_large_system_hash() - would be fairly safe, and
-avoid any nasty cases.
-
-And probably catch quite a lot of the cases that matter that can grow large.
-
-               Linus
-
---000000000000a114e105dd429420
-Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
-Content-Disposition: attachment; filename="patch.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l2ary56k0>
-X-Attachment-Id: f_l2ary56k0
-
-IG1tL3V0aWwuYyB8IDExICsrKysrKysrKy0tCiAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25z
-KCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL21tL3V0aWwuYyBiL21tL3V0aWwuYwpp
-bmRleCA1NGU1ZTc2MWE5YTkuLjM0OTJhOWU4MWFhMyAxMDA2NDQKLS0tIGEvbW0vdXRpbC5jCisr
-KyBiL21tL3V0aWwuYwpAQCAtNTkyLDggKzU5MiwxNSBAQCB2b2lkICprdm1hbGxvY19ub2RlKHNp
-emVfdCBzaXplLCBnZnBfdCBmbGFncywgaW50IG5vZGUpCiAJCXJldHVybiBOVUxMOwogCX0KIAot
-CXJldHVybiBfX3ZtYWxsb2Nfbm9kZShzaXplLCAxLCBmbGFncywgbm9kZSwKLQkJCV9fYnVpbHRp
-bl9yZXR1cm5fYWRkcmVzcygwKSk7CisJLyoKKwkgKiBrdm1hbGxvYygpIGNhbiBhbHdheXMgdXNl
-IFZNX0FMTE9XX0hVR0VfVk1BUCwKKwkgKiBzaW5jZSB0aGUgY2FsbGVycyBhbHJlYWR5IGNhbm5v
-dCBhc3N1bWUgYW55dGhpbmcKKwkgKiBhYm91dCB0aGUgcmVzdWx0aW5nIHBvaW50ZXIsIGFuZCBj
-YW5ub3QgcGxheQorCSAqIHByb3RlY3Rpb24gZ2FtZXMuCisJICovCisJcmV0dXJuIF9fdm1hbGxv
-Y19ub2RlX3JhbmdlKHNpemUsIDEsIFZNQUxMT0NfU1RBUlQsIFZNQUxMT0NfRU5ELAorCQkJZmxh
-Z3MsIFBBR0VfS0VSTkVMLCBWTV9BTExPV19IVUdFX1ZNQVAsCisJCQlub2RlLCBfX2J1aWx0aW5f
-cmV0dXJuX2FkZHJlc3MoMCkpOwogfQogRVhQT1JUX1NZTUJPTChrdm1hbGxvY19ub2RlKTsKIAo=
---000000000000a114e105dd429420--
+- provide the necessary information for the tagger to work using an out 
+of band mechanism, which is what you have done, in which case, maybe you 
+can use skb->cb[] instead of using skb::shared_info?
+-- 
+Florian
