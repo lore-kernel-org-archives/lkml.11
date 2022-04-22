@@ -2,112 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E93C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 407C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 07:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444900AbiDVHh5 (ORCPT
+        id S1444897AbiDVHjG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
+        Fri, 22 Apr 2022 03:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444876AbiDVHhy (ORCPT
+        with ESMTP id S1345405AbiDVHjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:37:54 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AA1260F;
-        Fri, 22 Apr 2022 00:35:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9226E210F4;
-        Fri, 22 Apr 2022 07:34:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650612899; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CoKlO+fXUiau8VMVUQKx3k/6EuFzG9GIbfxFrogHx6w=;
-        b=dySGsqJdEmSJDYmSvOklfVpkuZHJ23u9g1XhRJDcQoLdKgRG5kmI1lpiTUWcSy7MtqR7zM
-        kXwCyLTlbnp+iE9neiu8jg1lhFPIDng+OjhqwbJ52cuWGbwwYU1o5p6p+n2i/KC3xGvKZl
-        0hE/7gJMEJKlgdQaF4sMg91/V0j/qiM=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6010B2C146;
-        Fri, 22 Apr 2022 07:34:59 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 09:34:57 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] drivers/base/memory: Fix a reference counting issue in
- __add_memory_block()
-Message-ID: <YmJaoSam6g95yToH@dhcp22.suse.cz>
-References: <d44c63d78aafe844f920dc02ad6af25acc448fcf.1650611702.git.christophe.jaillet@wanadoo.fr>
+        Fri, 22 Apr 2022 03:39:01 -0400
+X-Greylist: delayed 1715 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 00:36:09 PDT
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C0C50B02
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 00:36:08 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost.localdomain)
+        by localhost.localdomain with esmtps (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <kunyu@nfschina.com>)
+        id 1nhnNr-0006Hd-Mq; Fri, 22 Apr 2022 15:07:15 +0800
+Received: (from root@localhost)
+        by localhost.localdomain (8.15.2/8.15.2/Submit) id 23M76wCn024156;
+        Fri, 22 Apr 2022 15:06:58 +0800
+Date:   Fri, 22 Apr 2022 15:06:58 +0800
+From:   Li kunyu <kunyu@nfschina.com>
+To:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] sched: Optimize unused integer return values
+Message-ID: <20220422070658.GA24149@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d44c63d78aafe844f920dc02ad6af25acc448fcf.1650611702.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 22-04-22 09:15:21, Christophe JAILLET wrote:
-> There is no point in doing put_device()/device_unregister() on a
-> device that has just been registered a few lines above. This will lead to
-> a double reference decrement.
+sched: Optimize unused integer return values
 
-This is a bit confusing. I would rephrase.
-"
-__add_memory_block calls both put_device and device_unregister when
-storing the memory block into the xarray. This is incorrect because
-xarray doesn't take an additional reference and device_unregister
-already calls put_device.
-"
+Signed-off-by: Li kunyu<kunyu@nfschina.com>
+---
+ kernel/sched/core.c  | 3 +--
+ kernel/sched/sched.h | 4 ++--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-Btw. I do not think this failure path can be triggered, or is there a
-way to hit it?
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 51efaabac3e4..a71d09d6bb75 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -5491,11 +5491,10 @@ static void sched_tick_stop(int cpu)
+ }
+ #endif /* CONFIG_HOTPLUG_CPU */
  
-> I guess that this put_device()/device_unregister() is a cut'n'paste from
-> remove_memory_block() (i.e. unregister_memory() at the time being) which
-> does need it.
-> 
-> Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-
-Other than that looks good to me. With the changelog clarified,
-especially the part that evaluates whether this is a real or a
-theoretical problem, feel free to add
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-Thanks!
-
-> ---
->  drivers/base/memory.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-> index 7222ff9b5e05..084d67fd55cc 100644
-> --- a/drivers/base/memory.c
-> +++ b/drivers/base/memory.c
-> @@ -636,10 +636,9 @@ static int __add_memory_block(struct memory_block *memory)
->  	}
->  	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
->  			      GFP_KERNEL));
-> -	if (ret) {
-> -		put_device(&memory->dev);
-> +	if (ret)
->  		device_unregister(&memory->dev);
-> -	}
-> +
->  	return ret;
->  }
->  
-> -- 
-> 2.32.0
-
+-int __init sched_tick_offload_init(void)
++void __init sched_tick_offload_init(void)
+ {
+ 	tick_work_cpu = alloc_percpu(struct tick_work);
+ 	BUG_ON(!tick_work_cpu);
+-	return 0;
+ }
+ 
+ #else /* !CONFIG_NO_HZ_FULL */
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 8dccb34eb190..850e25f7460d 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2326,7 +2326,7 @@ extern void post_init_entity_util_avg(struct task_struct *p);
+ 
+ #ifdef CONFIG_NO_HZ_FULL
+ extern bool sched_can_stop_tick(struct rq *rq);
+-extern int __init sched_tick_offload_init(void);
++extern void __init sched_tick_offload_init(void);
+ 
+ /*
+  * Tick may be needed by tasks in the runqueue depending on their policy and
+@@ -2346,7 +2346,7 @@ static inline void sched_update_tick_dependency(struct rq *rq)
+ 		tick_nohz_dep_set_cpu(cpu, TICK_DEP_BIT_SCHED);
+ }
+ #else
+-static inline int sched_tick_offload_init(void) { return 0; }
++static inline void sched_tick_offload_init(void) { }
+ static inline void sched_update_tick_dependency(struct rq *rq) { }
+ #endif
+ 
 -- 
-Michal Hocko
-SUSE Labs
+2.18.2
+
