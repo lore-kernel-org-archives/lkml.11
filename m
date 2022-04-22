@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C00C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4277FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230401AbiDVV4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
+        id S230368AbiDVV4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbiDVV4U (ORCPT
+        with ESMTP id S230360AbiDVV4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:56:20 -0400
+        Fri, 22 Apr 2022 17:56:25 -0400
 Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910DD2A6FFA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973EE401D0D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:56 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650659223;
+        t=1650659228;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YJ7iyWPMUBRHOLQYsDGfDGb0YRmFrOq96IBzMGKKov4=;
-        b=QViKBcw+Y9me8wTo9O4z/6ARWC0RmTqkrJWEJ2LMRfQ3Qrx5ozVcnOKyrHA5zyzle+u9xQ
-        00G2tNIT5roV/LpwrAldQRK1ODQiptW0RKq1uETU7v8wjtHp1XmlgoNT+7wjiylNM3KnBt
-        9FI2VIjhzM7nngbtUg5otkmzsXGjiEU=
+        bh=zzvvA3SXvofoJHZNbBulanDIE6i4rnzYjcD9jlw7cIA=;
+        b=GFmSUQ7JMC5moOfjvZm0NWOsGAlKDYtQtWqshJGzeO5UVZz/OWtiLdmHuNNDebpqnSOXYm
+        JOoiVw2QcazLuSKW9FD0nlqmQ4HT+ZQD442LkCfTe0gq8yoyD0HMdTxEx/UUP0mFvbXNOO
+        SZLLTJfrzNz19c293hDJ/ulc2MQOWhY=
 From:   Roman Gushchin <roman.gushchin@linux.dev>
 To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
 Cc:     Dave Chinner <dchinner@redhat.com>, linux-kernel@vger.kernel.org,
@@ -33,9 +33,9 @@ Cc:     Dave Chinner <dchinner@redhat.com>, linux-kernel@vger.kernel.org,
         Kent Overstreet <kent.overstreet@gmail.com>,
         Hillf Danton <hdanton@sina.com>,
         Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH v2 2/7] mm: memcontrol: introduce mem_cgroup_ino() and mem_cgroup_get_from_ino()
-Date:   Fri, 22 Apr 2022 13:26:39 -0700
-Message-Id: <20220422202644.799732-3-roman.gushchin@linux.dev>
+Subject: [PATCH v2 4/7] mm: introduce numa interfaces for shrinker debugfs
+Date:   Fri, 22 Apr 2022 13:26:41 -0700
+Message-Id: <20220422202644.799732-5-roman.gushchin@linux.dev>
 In-Reply-To: <20220422202644.799732-1-roman.gushchin@linux.dev>
 References: <20220422202644.799732-1-roman.gushchin@linux.dev>
 MIME-Version: 1.0
@@ -46,75 +46,257 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Shrinker debugfs requires a way to represent memory cgroups without
-using full paths, both for displaying information and getting input
-from a user.
+This commit introduces "count_node", "scan_node", "count_memcg_node"
+and "scan_memcg_node" interfaces for numa-aware and numa- and
+memcg-aware shrinkers.
 
-Cgroup inode number is a perfect way, already used by e.g. bpf.
+Usage examples:
+1) Get per-node and per-memcg per-node counts:
+  $ cat count_node
+    209 3
+  $ cat count_memcg_node
+    1 209 3
+    20 96 0
+    53 810 7
+    2297 2 0
+    218 13 0
+    581 30 0
+    911 124 0
+    <CUT>
 
-This commit adds a couple of helper functions which will be used to
-represent and interact with memcg-aware shrinkers.
+2) Scan individual node:
+  $ echo "1 200" > scan_node
+  $ cat scan_node
+    2
+
+3) Scan individual memcg and node:
+  $ echo "1868 0 500" > scan_memcg_node
+  $ cat scan_memcg_node
+    435
 
 Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
 ---
- include/linux/memcontrol.h |  9 +++++++++
- mm/memcontrol.c            | 23 +++++++++++++++++++++++
- 2 files changed, 32 insertions(+)
+ mm/shrinker_debug.c | 200 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 200 insertions(+)
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 89b14729d59f..27a91dd210c9 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -831,6 +831,15 @@ static inline unsigned short mem_cgroup_id(struct mem_cgroup *memcg)
- }
- struct mem_cgroup *mem_cgroup_from_id(unsigned short id);
+diff --git a/mm/shrinker_debug.c b/mm/shrinker_debug.c
+index 002d44d6ad56..81350b64bf01 100644
+--- a/mm/shrinker_debug.c
++++ b/mm/shrinker_debug.c
+@@ -222,6 +222,185 @@ static const struct file_operations shrinker_debugfs_scan_memcg_fops = {
+ };
+ #endif
  
-+#ifdef CONFIG_SHRINKER_DEBUG
-+static inline unsigned long mem_cgroup_ino(struct mem_cgroup *memcg)
++#ifdef CONFIG_NUMA
++static int shrinker_debugfs_count_node_show(struct seq_file *m, void *v)
 +{
-+	return cgroup_ino(memcg->css.cgroup);
++	struct shrinker *shrinker = (struct shrinker *)m->private;
++	unsigned long nr;
++	int ret, nid;
++
++	ret = down_read_killable(&shrinker_rwsem);
++	if (ret)
++		return ret;
++
++	for_each_node(nid) {
++		struct shrink_control sc = {
++			.gfp_mask = GFP_KERNEL,
++			.nid = nid,
++		};
++
++		nr = shrinker->count_objects(shrinker, &sc);
++		if (nr == SHRINK_EMPTY)
++			nr = 0;
++
++		seq_printf(m, "%s%lu", nid ? " " : "", nr);
++		cond_resched();
++	}
++	up_read(&shrinker_rwsem);
++	seq_puts(m, "\n");
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(shrinker_debugfs_count_node);
++
++static ssize_t shrinker_debugfs_scan_node_write(struct file *file,
++						const char __user *buf,
++						size_t size, loff_t *pos)
++{
++	struct shrinker *shrinker = (struct shrinker *)file->private_data;
++	unsigned long nr_to_scan = 0;
++	int nid;
++	struct shrink_control sc = {
++		.gfp_mask = GFP_KERNEL,
++	};
++	char kbuf[48];
++	int read_len = size < (sizeof(kbuf) - 1) ? size : (sizeof(kbuf) - 1);
++	ssize_t ret;
++
++	if (copy_from_user(kbuf, buf, read_len))
++		return -EFAULT;
++	kbuf[read_len] = '\0';
++
++	if (sscanf(kbuf, "%d %lu", &nid, &nr_to_scan) < 2)
++		return -EINVAL;
++
++	if (nid < 0 || nid >= nr_node_ids)
++		return -EINVAL;
++
++	ret = down_read_killable(&shrinker_rwsem);
++	if (ret)
++		return ret;
++
++	sc.nid = nid;
++	sc.nr_to_scan = nr_to_scan;
++	sc.nr_scanned = nr_to_scan;
++
++	shrinker->scan_objects(shrinker, &sc);
++
++	up_read(&shrinker_rwsem);
++
++	return ret ? ret : size;
 +}
 +
-+struct mem_cgroup *mem_cgroup_get_from_ino(unsigned long ino);
-+#endif
++static const struct file_operations shrinker_debugfs_scan_node_fops = {
++	.owner	 = THIS_MODULE,
++	.open	 = shrinker_debugfs_scan_open,
++	.write	 = shrinker_debugfs_scan_node_write,
++};
 +
- static inline struct mem_cgroup *mem_cgroup_from_seq(struct seq_file *m)
- {
- 	return mem_cgroup_from_css(seq_css(m));
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 08cbe23a8b94..a508979177a2 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -5022,6 +5022,29 @@ struct mem_cgroup *mem_cgroup_from_id(unsigned short id)
- 	return idr_find(&mem_cgroup_idr, id);
- }
- 
-+#ifdef CONFIG_SHRINKER_DEBUG
-+struct mem_cgroup *mem_cgroup_get_from_ino(unsigned long ino)
++#ifdef CONFIG_MEMCG
++static int shrinker_debugfs_count_memcg_node_show(struct seq_file *m, void *v)
 +{
-+	struct cgroup *cgrp;
-+	struct cgroup_subsys_state *css;
++	struct shrinker *shrinker = (struct shrinker *)m->private;
++	unsigned long *count_per_node = NULL;
 +	struct mem_cgroup *memcg;
++	unsigned long total;
++	int ret, nid;
 +
-+	cgrp = cgroup_get_from_id(ino);
-+	if (!cgrp)
-+		return ERR_PTR(-ENOENT);
++	count_per_node = kcalloc(nr_node_ids, sizeof(unsigned long), GFP_KERNEL);
++	if (!count_per_node)
++		return -ENOMEM;
 +
-+	css = cgroup_get_e_css(cgrp, &memory_cgrp_subsys);
-+	if (css)
-+		memcg = container_of(css, struct mem_cgroup, css);
-+	else
-+		memcg = ERR_PTR(-ENOENT);
++	ret = down_read_killable(&shrinker_rwsem);
++	if (ret) {
++		kfree(count_per_node);
++		return ret;
++	}
++	rcu_read_lock();
 +
-+	cgroup_put(cgrp);
++	memcg = mem_cgroup_iter(NULL, NULL, NULL);
++	do {
++		if (!mem_cgroup_online(memcg))
++			continue;
 +
-+	return memcg;
++		total = shrinker_count_objects(shrinker, memcg, count_per_node);
++		if (!total)
++			continue;
++
++		seq_printf(m, "%lu", mem_cgroup_ino(memcg));
++		for_each_node(nid)
++			seq_printf(m, " %lu", count_per_node[nid]);
++		seq_puts(m, "\n");
++	} while ((memcg = mem_cgroup_iter(NULL, memcg, NULL)) != NULL);
++
++	rcu_read_unlock();
++	up_read(&shrinker_rwsem);
++
++	kfree(count_per_node);
++	return ret;
 +}
-+#endif
++DEFINE_SHOW_ATTRIBUTE(shrinker_debugfs_count_memcg_node);
 +
- static int alloc_mem_cgroup_per_node_info(struct mem_cgroup *memcg, int node)
++static ssize_t shrinker_debugfs_scan_memcg_node_write(struct file *file,
++						      const char __user *buf,
++						      size_t size, loff_t *pos)
++{
++	struct shrinker *shrinker = (struct shrinker *)file->private_data;
++	unsigned long nr_to_scan = 0, ino;
++	struct shrink_control sc = {
++		.gfp_mask = GFP_KERNEL,
++	};
++	struct mem_cgroup *memcg;
++	int nid;
++	char kbuf[72];
++	int read_len = size < (sizeof(kbuf) - 1) ? size : (sizeof(kbuf) - 1);
++	ssize_t ret;
++
++	if (copy_from_user(kbuf, buf, read_len))
++		return -EFAULT;
++	kbuf[read_len] = '\0';
++
++	if (sscanf(kbuf, "%lu %d %lu", &ino, &nid, &nr_to_scan) < 2)
++		return -EINVAL;
++
++	if (nid < 0 || nid >= nr_node_ids)
++		return -EINVAL;
++
++	memcg = mem_cgroup_get_from_ino(ino);
++	if (!memcg || IS_ERR(memcg))
++		return -ENOENT;
++
++	if (!mem_cgroup_online(memcg)) {
++		mem_cgroup_put(memcg);
++		return -ENOENT;
++	}
++
++	ret = down_read_killable(&shrinker_rwsem);
++	if (ret) {
++		mem_cgroup_put(memcg);
++		return ret;
++	}
++
++	sc.nid = nid;
++	sc.memcg = memcg;
++	sc.nr_to_scan = nr_to_scan;
++	sc.nr_scanned = nr_to_scan;
++
++	shrinker->scan_objects(shrinker, &sc);
++
++	up_read(&shrinker_rwsem);
++	mem_cgroup_put(memcg);
++
++	return ret ? ret : size;
++}
++
++static const struct file_operations shrinker_debugfs_scan_memcg_node_fops = {
++	.owner	 = THIS_MODULE,
++	.open	 = shrinker_debugfs_scan_open,
++	.write	 = shrinker_debugfs_scan_memcg_node_write,
++};
++#endif /* CONFIG_MEMCG */
++#endif /* CONFIG_NUMA */
++
+ int shrinker_debugfs_add(struct shrinker *shrinker)
  {
- 	struct mem_cgroup_per_node *pn;
+ 	struct dentry *entry;
+@@ -265,6 +444,27 @@ int shrinker_debugfs_add(struct shrinker *shrinker)
+ 	}
+ #endif
+ 
++#ifdef CONFIG_NUMA
++	/* create numa and memcg/numa interfaces */
++	if ((shrinker->flags & SHRINKER_NUMA_AWARE) && nr_node_ids > 1) {
++		debugfs_create_file("count_node", 0220, entry, shrinker,
++				    &shrinker_debugfs_count_node_fops);
++		debugfs_create_file("scan_node", 0440, entry, shrinker,
++				    &shrinker_debugfs_scan_node_fops);
++
++#ifdef CONFIG_MEMCG
++		if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
++			debugfs_create_file("count_memcg_node", 0220, entry,
++					    shrinker,
++					    &shrinker_debugfs_count_memcg_node_fops);
++			debugfs_create_file("scan_memcg_node", 0440, entry,
++					    shrinker,
++					    &shrinker_debugfs_scan_memcg_node_fops);
++		}
++#endif /* CONFIG_MEMCG */
++	}
++#endif /* CONFIG_NUMA */
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
