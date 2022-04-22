@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3451C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6350CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231536AbiDVWLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
+        id S232221AbiDVWLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231882AbiDVWJQ (ORCPT
+        with ESMTP id S231981AbiDVWJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:09:16 -0400
+        Fri, 22 Apr 2022 18:09:35 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC411EE8C1;
-        Fri, 22 Apr 2022 13:56:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE932D823C;
+        Fri, 22 Apr 2022 13:56:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650660984; x=1682196984;
+  t=1650660986; x=1682196986;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=A6dNv5LFK6p7bFgwyLhJYzBDaYDAAu54LQrmr5ztsJ0=;
-  b=JXzhJtLrMLyNO/brCQ0e93YH16GAIQufHlXfMkw72SX/W/uJ+Ny/6Eeg
-   hbSKDir0oa6u/aQpB85CybRLxv+tdAwY06puYrP4tKB73CXrERbM5B2bR
-   R7cnAnzkGZKD1F1I53tni9m0MWq/J9+qUVEkSuK0g9QgeKXenpanHND8u
-   3P5HN5QvnUtIgOYJtjpeA9EIjyFqwoMmpT+dtYvIoa1lpl1GaG377JD16
-   8Q6FsdIgI/51Kmx0cY//qd9NpIh1HgJJTKx4I2fCfpkWHULuJ0fntbHci
-   uObdY30jlhVR0FnrWWnO8qYHROrwbf3fDIGNrEr/+cJOdCcfw/aXVJOMD
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="289897437"
+  bh=cwJd5e6aeRwgU9xPsGnRNV1wC06YL4Fz8JBExprqrBA=;
+  b=MzL1M7mrxG9O455ycAVFH0PzUG2znA0DkXqw9Wgm3CdpcZsN9QJq/ma7
+   cp2mIJuZGHVgCuclLckCx0PpqFLQlLNHY4YFNZoz3SEoIfbtDFvMoszUb
+   mH8zdtBxQspUqbCr8wUbhbBqRsy30JjXpJ5A0r7zPN7wUGHO0sVMM2avP
+   lMVfHcdhGXJODsQqWTjVz3o1/R3hw3KfEOeA04Cj1MyV1XojLQqhT5Jiv
+   n5p6rQ97Sh03sMCOc1Lo1AU6hY37B7ZkS/gvsSZXgy9scpKxzvIGyGrCZ
+   VdAftODcfUtZahnwW1I6CcESz8rVd/+XS/cVzcaoXS2Azkit7BP/pnpfL
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="289897476"
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="289897437"
+   d="scan'208";a="289897476"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:02:26 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:02:29 -0700
 X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="511719315"
+   d="scan'208";a="511719367"
 Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:02:25 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:02:29 -0700
 From:   Tony Luck <tony.luck@intel.com>
 To:     hdegoede@redhat.com, markgross@kernel.org
 Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -47,9 +47,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dan.j.williams@intel.com, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, platform-driver-x86@vger.kernel.org,
         patches@lists.linux.dev, ravi.v.shankar@intel.com
-Subject: [PATCH v4 01/10] x86/microcode/intel: Expose collect_cpu_info_early() for IFS
-Date:   Fri, 22 Apr 2022 13:02:10 -0700
-Message-Id: <20220422200219.2843823-2-tony.luck@intel.com>
+Subject: [PATCH v4 10/10] platform/x86/intel/ifs: add ABI documentation for IFS
+Date:   Fri, 22 Apr 2022 13:02:19 -0700
+Message-Id: <20220422200219.2843823-11-tony.luck@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220422200219.2843823-1-tony.luck@intel.com>
 References: <20220419163859.2228874-1-tony.luck@intel.com>
@@ -62,231 +62,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jithu Joseph <jithu.joseph@intel.com>
 
-IFS is a CPU feature that allows a binary blob, similar to microcode,
-to be loaded and consumed to perform low level validation of CPU
-circuitry. In fact, it carries the same Processor Signature
-(family/model/stepping) details that are contained in Intel microcode
-blobs.
-
-In support of an IFS driver to trigger loading, validation, and running
-of these tests blobs, make the functionality of cpu_signatures_match()
-and collect_cpu_info_early() available outside of the microcode driver.
-
-Add an "intel_" prefix and drop the "_early" suffix from
-collect_cpu_info_early() and EXPORT_SYMBOL_GPL() it. Add
-declaration to x86 <asm/cpu.h>
-
-Make cpu_signatures_match() an inline function in x86 <asm/cpu.h>,
-and also give it an "intel_" prefix.
-
-No functional change intended.
+Add the sysfs attributes in ABI/testing for In-Field Scan.
 
 Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
 Co-developed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Tony Luck <tony.luck@intel.com>
 ---
- arch/x86/include/asm/cpu.h            | 18 ++++++++
- arch/x86/kernel/cpu/intel.c           | 32 +++++++++++++++
- arch/x86/kernel/cpu/microcode/intel.c | 59 ++++-----------------------
- 3 files changed, 57 insertions(+), 52 deletions(-)
+ .../ABI/testing/sysfs-platform-intel-ifs      | 39 +++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-platform-intel-ifs
 
-diff --git a/arch/x86/include/asm/cpu.h b/arch/x86/include/asm/cpu.h
-index 86e5e4e26fcb..990167357c34 100644
---- a/arch/x86/include/asm/cpu.h
-+++ b/arch/x86/include/asm/cpu.h
-@@ -76,4 +76,22 @@ static inline void init_ia32_feat_ctl(struct cpuinfo_x86 *c) {}
- 
- extern __noendbr void cet_disable(void);
- 
-+struct ucode_cpu_info;
+diff --git a/Documentation/ABI/testing/sysfs-platform-intel-ifs b/Documentation/ABI/testing/sysfs-platform-intel-ifs
+new file mode 100644
+index 000000000000..486d6d2ff8a0
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-platform-intel-ifs
+@@ -0,0 +1,39 @@
++What:		/sys/devices/virtual/misc/intel_ifs_<N>/run_test
++Date:		April 21 2022
++KernelVersion:	5.19
++Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
++Description:	Write <cpu#> to trigger IFS test for one online core.
++		Note that the test is per core. The cpu# can be
++		for any thread on the core. Running on one thread
++		completes the test for the core containing that thread.
++		Example: to test the core containing cpu5: echo 5 >
++		/sys/devices/platform/intel_ifs.<N>/run_test
 +
-+int intel_cpu_collect_info(struct ucode_cpu_info *uci);
++What:		/sys/devices/virtual/misc/intel_ifs_<N>/status
++Date:		April 21 2022
++KernelVersion:	5.19
++Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
++Description:	The status of the last test. It can be one of "pass", "fail"
++		or "untested".
 +
-+static inline bool intel_cpu_signatures_match(unsigned int s1, unsigned int p1,
-+					      unsigned int s2, unsigned int p2)
-+{
-+	if (s1 != s2)
-+		return false;
++What:		/sys/devices/virtual/misc/intel_ifs_<N>/details
++Date:		April 21 2022
++KernelVersion:	5.19
++Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
++Description:	Additional information regarding the last test. The details file reports
++		the hex value of the SCAN_STATUS MSR. Note that the error_code field
++		may contain driver defined software code not defined in the Intel SDM.
 +
-+	/* Processor flags are either both 0 ... */
-+	if (!p1 && !p2)
-+		return true;
++What:		/sys/devices/virtual/misc/intel_ifs_<N>/image_version
++Date:		April 21 2022
++KernelVersion:	5.19
++Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
++Description:	Version (hexadecimal) of loaded IFS binary image. If no scan image
++		is loaded reports "none".
 +
-+	/* ... or they intersect. */
-+	return p1 & p2;
-+}
-+
- #endif /* _ASM_X86_CPU_H */
-diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
-index f7a5370a9b3b..94779146275d 100644
---- a/arch/x86/kernel/cpu/intel.c
-+++ b/arch/x86/kernel/cpu/intel.c
-@@ -181,6 +181,38 @@ static bool bad_spectre_microcode(struct cpuinfo_x86 *c)
- 	return false;
- }
- 
-+int intel_cpu_collect_info(struct ucode_cpu_info *uci)
-+{
-+	unsigned int val[2];
-+	unsigned int family, model;
-+	struct cpu_signature csig = { 0 };
-+	unsigned int eax, ebx, ecx, edx;
-+
-+	memset(uci, 0, sizeof(*uci));
-+
-+	eax = 0x00000001;
-+	ecx = 0;
-+	native_cpuid(&eax, &ebx, &ecx, &edx);
-+	csig.sig = eax;
-+
-+	family = x86_family(eax);
-+	model  = x86_model(eax);
-+
-+	if (model >= 5 || family > 6) {
-+		/* get processor flags from MSR 0x17 */
-+		native_rdmsr(MSR_IA32_PLATFORM_ID, val[0], val[1]);
-+		csig.pf = 1 << ((val[1] >> 18) & 7);
-+	}
-+
-+	csig.rev = intel_get_microcode_revision();
-+
-+	uci->cpu_sig = csig;
-+	uci->valid = 1;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(intel_cpu_collect_info);
-+
- static void early_init_intel(struct cpuinfo_x86 *c)
- {
- 	u64 misc_enable;
-diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
-index d28a9f8f3fec..025c8f0cd948 100644
---- a/arch/x86/kernel/cpu/microcode/intel.c
-+++ b/arch/x86/kernel/cpu/microcode/intel.c
-@@ -45,20 +45,6 @@ static struct microcode_intel *intel_ucode_patch;
- /* last level cache size per core */
- static int llc_size_per_core;
- 
--static inline bool cpu_signatures_match(unsigned int s1, unsigned int p1,
--					unsigned int s2, unsigned int p2)
--{
--	if (s1 != s2)
--		return false;
--
--	/* Processor flags are either both 0 ... */
--	if (!p1 && !p2)
--		return true;
--
--	/* ... or they intersect. */
--	return p1 & p2;
--}
--
- /*
-  * Returns 1 if update has been found, 0 otherwise.
-  */
-@@ -69,7 +55,7 @@ static int find_matching_signature(void *mc, unsigned int csig, int cpf)
- 	struct extended_signature *ext_sig;
- 	int i;
- 
--	if (cpu_signatures_match(csig, cpf, mc_hdr->sig, mc_hdr->pf))
-+	if (intel_cpu_signatures_match(csig, cpf, mc_hdr->sig, mc_hdr->pf))
- 		return 1;
- 
- 	/* Look for ext. headers: */
-@@ -80,7 +66,7 @@ static int find_matching_signature(void *mc, unsigned int csig, int cpf)
- 	ext_sig = (void *)ext_hdr + EXT_HEADER_SIZE;
- 
- 	for (i = 0; i < ext_hdr->count; i++) {
--		if (cpu_signatures_match(csig, cpf, ext_sig->sig, ext_sig->pf))
-+		if (intel_cpu_signatures_match(csig, cpf, ext_sig->sig, ext_sig->pf))
- 			return 1;
- 		ext_sig++;
- 	}
-@@ -342,37 +328,6 @@ scan_microcode(void *data, size_t size, struct ucode_cpu_info *uci, bool save)
- 	return patch;
- }
- 
--static int collect_cpu_info_early(struct ucode_cpu_info *uci)
--{
--	unsigned int val[2];
--	unsigned int family, model;
--	struct cpu_signature csig = { 0 };
--	unsigned int eax, ebx, ecx, edx;
--
--	memset(uci, 0, sizeof(*uci));
--
--	eax = 0x00000001;
--	ecx = 0;
--	native_cpuid(&eax, &ebx, &ecx, &edx);
--	csig.sig = eax;
--
--	family = x86_family(eax);
--	model  = x86_model(eax);
--
--	if ((model >= 5) || (family > 6)) {
--		/* get processor flags from MSR 0x17 */
--		native_rdmsr(MSR_IA32_PLATFORM_ID, val[0], val[1]);
--		csig.pf = 1 << ((val[1] >> 18) & 7);
--	}
--
--	csig.rev = intel_get_microcode_revision();
--
--	uci->cpu_sig = csig;
--	uci->valid = 1;
--
--	return 0;
--}
--
- static void show_saved_mc(void)
- {
- #ifdef DEBUG
-@@ -386,7 +341,7 @@ static void show_saved_mc(void)
- 		return;
- 	}
- 
--	collect_cpu_info_early(&uci);
-+	intel_cpu_collect_info(&uci);
- 
- 	sig	= uci.cpu_sig.sig;
- 	pf	= uci.cpu_sig.pf;
-@@ -502,7 +457,7 @@ void show_ucode_info_early(void)
- 	struct ucode_cpu_info uci;
- 
- 	if (delay_ucode_info) {
--		collect_cpu_info_early(&uci);
-+		intel_cpu_collect_info(&uci);
- 		print_ucode_info(&uci, current_mc_date);
- 		delay_ucode_info = 0;
- 	}
-@@ -604,7 +559,7 @@ int __init save_microcode_in_initrd_intel(void)
- 	if (!(cp.data && cp.size))
- 		return 0;
- 
--	collect_cpu_info_early(&uci);
-+	intel_cpu_collect_info(&uci);
- 
- 	scan_microcode(cp.data, cp.size, &uci, true);
- 
-@@ -637,7 +592,7 @@ static struct microcode_intel *__load_ucode_intel(struct ucode_cpu_info *uci)
- 	if (!(cp.data && cp.size))
- 		return NULL;
- 
--	collect_cpu_info_early(uci);
-+	intel_cpu_collect_info(uci);
- 
- 	return scan_microcode(cp.data, cp.size, uci, false);
- }
-@@ -712,7 +667,7 @@ void reload_ucode_intel(void)
- 	struct microcode_intel *p;
- 	struct ucode_cpu_info uci;
- 
--	collect_cpu_info_early(&uci);
-+	intel_cpu_collect_info(&uci);
- 
- 	p = find_patch(&uci);
- 	if (!p)
++What:		/sys/devices/virtual/misc/intel_ifs_<N>/reload
++Date:		April 21 2022
++KernelVersion:	5.19
++Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
++Description:	Write "1" (or "y" or "Y") to reload the IFS image from
++		/lib/firmware/intel/ifs/ff-mm-ss.scan.
 -- 
 2.35.1
 
