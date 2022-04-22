@@ -2,117 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F221C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 11:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F9CC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 11:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447104AbiDVLgX (ORCPT
+        id S1346437AbiDVLgw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 07:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
+        Fri, 22 Apr 2022 07:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232054AbiDVLgW (ORCPT
+        with ESMTP id S242181AbiDVLgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 07:36:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDD0F14;
-        Fri, 22 Apr 2022 04:33:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC77FB82C2E;
-        Fri, 22 Apr 2022 11:33:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4348C385A4;
-        Fri, 22 Apr 2022 11:33:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650627206;
-        bh=3jfuEAzvI+fireVbhLAA89FI7cLlXG2gLVIt5mnBIg8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N4xc6sPbo+yCUgMVCAfbmL9aaI0wq2uWC3lRyQp75hx9AB4KcChx7EvF3ADbYj3re
-         gjC5jcLuiV0rrYIRHI2hV1QJ9RN7Wef3noIirHog3grPtVx9m2FkUUx9dP+R0qYwNV
-         G6m1sInmZfIGXe5R3kzj6N0QL39ugPMBC63JxbP3xL0Zi5tcYr9i4g5MxxEInSG30o
-         VR5rygxQY/QCxUbIAi/iZxSHWejn0IhHm1atF2cWDlA3JlK077bU5reZv/HUHaFLZM
-         lOp9ohClb795LjV5CoLtPsIFEU/5EVPXXXFzitBgXBLis95T1yA32uKghxdnjcCuGH
-         P1lrjqCWbiDTQ==
-Date:   Fri, 22 Apr 2022 12:33:20 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik@cutebit.org>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: Re: [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
-Message-ID: <YmKSgHrbb/7koM36@sirena.org.uk>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <YkWfziQzprEsWL72@sirena.org.uk>
- <CCE4A06E-6D6F-457D-B3C5-C36209BF38D3@cutebit.org>
- <YkW4MPh8VWc8eSGg@sirena.org.uk>
- <6D199EAB-FE14-4030-96A7-2E0E89D25FAB@cutebit.org>
- <YkXKmxJ0R3qpUoH4@sirena.org.uk>
- <DB0255C3-C9EC-4EFA-A377-C4BB1073D9B3@cutebit.org>
- <YmKPQ6kLCPz+2XTJ@sirena.org.uk>
- <B68302F2-3D77-4065-8A16-A9CC690AE10B@cutebit.org>
+        Fri, 22 Apr 2022 07:36:50 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E04056404
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 04:33:56 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id k22so10647146wrd.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 04:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=uz+KcNIj+v9WSFSUjytskdEFRoZIQjG/EVCHIE7PoXA=;
+        b=gzbQuJCj0I2T04uY0UYnVWLijPTDjp9cU8gjljlQbHYCpA8RUc0SI+1iOS8JCVDX30
+         wHYpTjb2TVGttz0rLW8wUREcv0cSVao2eWrMuveVbBcuvb69FNpN1EiELHQyz7N6bS5c
+         3TUxO7P8UkMUTNvh+TLzQ0YBXD9IfwQPSNMvk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=uz+KcNIj+v9WSFSUjytskdEFRoZIQjG/EVCHIE7PoXA=;
+        b=HuBNXeH3jkqXSruZBi2KuG4vznjPGvTO8puPyilw9INZ9iI3ODZKALK86HVpaAEEg3
+         ETp5R7+5PoTQ3e7sE5cgAOiulUlaAElOT7yFC7OF85N5F+mSHvfKj1jO2896SjoFwRVU
+         qsKLSTyk1fx4vVkItne/wdWCzZ1Pmx/4w0qChYnhTcf/DoxwY1at86yk6rMvcdbqwVEv
+         n1InTVdzM+3Fc1Kle2HBgBV3sVGP5sRVWvhNJW4bo97Mni4wdlLiqY0w0cDJ5lrLgIUl
+         kSXbRd9trJcfUSM+hUPihUSUxx7h7pmzFioGwPNBekRbzSzQPWQ/z5lsGFBj8C1/4YfF
+         m8Og==
+X-Gm-Message-State: AOAM532XYgzPlQeIpRJnJrvlTNscR0F574bbIqbArHLJCQNvUf+pz8Bs
+        UU1gHx0OLJLuNa8q7vElNUYyeg==
+X-Google-Smtp-Source: ABdhPJytQeZpvy34ZOAAMQB7w6jF7X6Nf/OgCkIilBTulJnvg3gtBspcR68ouVwuJUzFMunZvSQqjw==
+X-Received: by 2002:a5d:4e08:0:b0:20a:8f9e:beef with SMTP id p8-20020a5d4e08000000b0020a8f9ebeefmr3571401wrt.8.1650627235044;
+        Fri, 22 Apr 2022 04:33:55 -0700 (PDT)
+Received: from cloudflare.com (79.184.126.143.ipv4.supernova.orange.pl. [79.184.126.143])
+        by smtp.gmail.com with ESMTPSA id r25-20020adfa159000000b0020ac9758f17sm1338619wrr.23.2022.04.22.04.33.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 04:33:54 -0700 (PDT)
+References: <20220414162220.1985095-1-xukuohai@huawei.com>
+ <20220414162220.1985095-5-xukuohai@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>, kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+Date:   Fri, 22 Apr 2022 12:54:02 +0200
+In-reply-to: <20220414162220.1985095-5-xukuohai@huawei.com>
+Message-ID: <87levxfj32.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="HUPCgzDyOfBhsa/5"
-Content-Disposition: inline
-In-Reply-To: <B68302F2-3D77-4065-8A16-A9CC690AE10B@cutebit.org>
-X-Cookie: Whoever dies with the most toys wins.
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Xu,
 
---HUPCgzDyOfBhsa/5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for working on this.
 
-On Fri, Apr 22, 2022 at 01:28:20PM +0200, Martin Povi=C5=A1er wrote:
-> > On 22. 4. 2022, at 13:19, Mark Brown <broonie@kernel.org> wrote:
-> > On Fri, Apr 22, 2022 at 12:43:30PM +0200, Martin Povi=C5=A1er wrote:
+We are also looking forward to using fentry hooks on arm64.
+In particular, attaching to entry/exit into/from XDP progs.
 
-> >> One final thought on the playback routing controls: On systems with >2
-> >> speakers, the codecs need to be assigned slots through set_tdm_slot.
-> >> The macaudio driver RFCed here assigns a single slot to each speaker,
-> >> making the effect of each speaker's routing control this:
+On Thu, Apr 14, 2022 at 12:22 PM -04, Xu Kuohai wrote:
+> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+> it to replace nop with jump, or replace jump with nop.
+>
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> ---
+>  arch/arm64/net/bpf_jit_comp.c | 52 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+>
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index 8ab4035dea27..1a1c3ea75ee2 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/bpf.h>
+> +#include <linux/memory.h>
+>  #include <linux/filter.h>
+>  #include <linux/printk.h>
+>  #include <linux/slab.h>
+> @@ -18,6 +19,7 @@
+>  #include <asm/cacheflush.h>
+>  #include <asm/debug-monitors.h>
+>  #include <asm/insn.h>
+> +#include <asm/patching.h>
+>  #include <asm/set_memory.h>
+>  
+>  #include "bpf_jit.h"
+> @@ -1529,3 +1531,53 @@ void bpf_jit_free_exec(void *addr)
+>  {
+>  	return vfree(addr);
+>  }
+> +
+> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+> +			     void *addr, u32 *insn)
+> +{
+> +	if (!addr)
+> +		*insn = aarch64_insn_gen_nop();
+> +	else
+> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+> +						    (unsigned long)addr,
+> +						    type);
+> +
+> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+> +}
+> +
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+> +		       void *old_addr, void *new_addr)
+> +{
+> +	int ret;
+> +	u32 old_insn;
+> +	u32 new_insn;
+> +	u32 replaced;
+> +	enum aarch64_insn_branch_type branch_type;
+> +
+> +	if (poke_type == BPF_MOD_CALL)
+> +		branch_type = AARCH64_INSN_BRANCH_LINK;
 
-=2E..
+This path, bpf_arch_text_poke(<ip>, BPF_MOD_CALL, ...), is what we hit
+when attaching a BPF program entry. It is exercised by selftest #232
+xdp_bpf2bpf.
 
-> > I don't quite grasp the difference between the arrangement you're
-> > proposing and assigning a single slot to each speaker?  Possibly it's
-> > just a reordering of the slots?
+However, with this patchset alone it will not work because we don't
+emit, yet, the ftrace patch (MOV X9, LR; NOP) as a part of BPF prog
+prologue, like ftrace_init_nop() does. So patching attempt will fail.
 
-> Ah, maybe what=E2=80=99s missing is the fact that the way the speaker amp=
- drivers
-> are written, if they are assigned two slots with a call to set_tdm_slot,
-> the first slot is considered 'left' and the second is 'right'.
+I think that is what you mentioned to in your reply to Hou [1]
 
-> So in the arrangement I am proposing the 'Left', 'Right' and 'LeftRight'
-> values of the routing control have the nominal effect (within the left-ri=
-ght
-> speaker pair), while in the other arrangement it is as I described above.
+So my question is - is support for attaching to BPF progs in scope for
+this patchset?
 
-So previously each speaker would get two slots but now it just gets one?
+If no, then perhaps it would be better for now to fail early with
+something like -EOPNOTSUPP when poke_type is BPF_MOD_CALL, rather then
+attempt to patch the code.
 
---HUPCgzDyOfBhsa/5
-Content-Type: application/pgp-signature; name="signature.asc"
+If you plan to enable it as a part of this patchset, then I've given it
+a quick try, and it seems that not a lot is needed get fentry to BPF
+attachment to work.
 
------BEGIN PGP SIGNATURE-----
+I'm including the diff for my quick and dirty attempt below. With that
+patch on top, the xdp_bpf2bpf tests pass:
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJikn8ACgkQJNaLcl1U
-h9Apfwf9FyqYZwZ2D2ZxnG/lVxGl4cjqMmJe5FgwZCDKQPzM3Y9o4137S0U7kLTz
-QM1Jf+3LJgVkdvJN/Hj3GaJPazdeXB6mMQ5o3p28PEe/ASqNKJCa6Z1UcQ5zdcaZ
-D89JCKjmGPoHjNWiZCSRE6k7kXhtJO5MyXxNCgXAf5bk7352nedgPmg/4PapUL82
-sEV/b496dYNV/EQ6HLGey/73P3cKc6w+urEcUQKaPcFlLWjK1J9ZP+TQuBdSxBNp
-MjkcoQoQSNrw0PJ/rQWd++JkLimYQDwFEkaNeLWmh+K/L3/vCdun88ZtIbdeM3NL
-VwJzyNbDoxmUu+IBEFgYIa+SP/YvUw==
-=k+NI
------END PGP SIGNATURE-----
+#232 xdp_bpf2bpf:OK
 
---HUPCgzDyOfBhsa/5--
+[1] https://lore.kernel.org/bpf/d8c4f1fb-a020-9457-44e2-dc63982a9213@huawei.com/
+
+> +	else
+> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	mutex_lock(&text_mutex);
+> +	if (aarch64_insn_read(ip, &replaced)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	if (replaced != old_insn) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	ret =  aarch64_insn_patch_text_nosync((void *)ip, new_insn);
+> +out:
+> +	mutex_unlock(&text_mutex);
+
+The body of this critical section is identical as ftrace_modify_code().
+Perhaps we could export it and reuse?
+
+> +	return ret;
+> +}
+
+---
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 5f6bd755050f..94d8251500ab 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -240,9 +240,9 @@ static bool is_lsi_offset(int offset, int scale)
+ /* Tail call offset to jump into */
+ #if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
+ 	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+-#define PROLOGUE_OFFSET 9
++#define PROLOGUE_OFFSET 11
+ #else
+-#define PROLOGUE_OFFSET 8
++#define PROLOGUE_OFFSET 10
+ #endif
+ 
+ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+@@ -281,6 +281,10 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+ 	 *
+ 	 */
+ 
++	/* Set up ftrace patch (initially in disabled state) */
++	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
++	emit(A64_NOP, ctx);
++
+ 	/* Sign lr */
+ 	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
+ 		emit(A64_PACIASP, ctx);
+@@ -1888,10 +1892,16 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+ 	u32 replaced;
+ 	enum aarch64_insn_branch_type branch_type;
+ 
+-	if (poke_type == BPF_MOD_CALL)
++	if (poke_type == BPF_MOD_CALL) {
+ 		branch_type = AARCH64_INSN_BRANCH_LINK;
+-	else
++		/*
++		 * Adjust addr to point at the BL in the callsite.
++		 * See ftrace_init_nop() for the callsite sequence.
++		 */
++		ip = (void *)((unsigned long)ip + AARCH64_INSN_SIZE);
++	} else {
+ 		branch_type = AARCH64_INSN_BRANCH_NOLINK;
++	}
+ 
+ 	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+ 		return -EFAULT;
