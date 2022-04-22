@@ -2,210 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA8AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 05:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7744C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 05:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233336AbiDWF2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 01:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53390 "EHLO
+        id S233396AbiDWFeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 01:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231922AbiDWF2q (ORCPT
+        with ESMTP id S231922AbiDWFeU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 01:28:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A076818744A;
-        Fri, 22 Apr 2022 22:25:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 23 Apr 2022 01:34:20 -0400
+Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.248.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998E72E5;
+        Fri, 22 Apr 2022 22:31:20 -0700 (PDT)
+Received: from relay3.mymailcheap.com (relay3.mymailcheap.com [217.182.119.155])
+        by relay5.mymailcheap.com (Postfix) with ESMTPS id 31B84267CE;
+        Sat, 23 Apr 2022 05:31:18 +0000 (UTC)
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay3.mymailcheap.com (Postfix) with ESMTPS id AED893F15F;
+        Sat, 23 Apr 2022 07:31:15 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id 0A7472A381;
+        Sat, 23 Apr 2022 05:31:15 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Cl0X8p721LZJ; Sat, 23 Apr 2022 05:31:14 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 588E0B801BA;
-        Sat, 23 Apr 2022 05:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BBF8C385A9;
-        Sat, 23 Apr 2022 05:25:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650691545;
-        bh=q6jqaY03g41hcsI0QCManqaNvGa5sGMYC6V39cLA0l8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bbR2UUPIqcJGuZZzm8nOgkWxo2ChtfrEfUBPvE4VPt8a+ThQn1tRffXiPDbxtsUIe
-         wqyz42+I92dr0a+15dlgb77MpJuS0Sa0ddLMcrQx3LXqtvoFNGG85vUu7Iln5vZb6C
-         uVX+RHbMhBTxVU9HJnmOsmQHYEOOIF8bQ+8+wY766NrkKrh9/vFVmPr39RVlumcCx0
-         Ocnm0a6GGnPzVuZ7//PbngCzH6HbvD/oSf/Qmzq2gamYr3e1iFFrCEGj0e6zG6kNFv
-         NvPe3BIgu3xBbxEeGUi5TceyAJ9GizKX0T0JwT5zhFaW/FuemcgYIDtr97YpNMwr9O
-         a0XgAFAuAYuvA==
-Received: by mail-yb1-f176.google.com with SMTP id b26so12362307ybj.13;
-        Fri, 22 Apr 2022 22:25:45 -0700 (PDT)
-X-Gm-Message-State: AOAM530LhD8aFr/mr+wnf+kf5PjmWAf2UNjPPZB31wC9/W5oZtkakfvw
-        CzvArl3ybCZ21VFJvPyUJsRDiJKwD8UDLdKJWf0=
-X-Google-Smtp-Source: ABdhPJxECgRV5ioL9K3lI8C1A9nSRRuKOZ108iWKeb3lc81+AwWwf2cxB3V44iK7qyJeRhTXiT++O1jnhjHju0z9HLs=
-X-Received: by 2002:a25:395:0:b0:645:8146:9a9e with SMTP id
- 143-20020a250395000000b0064581469a9emr7287113ybd.389.1650691544022; Fri, 22
- Apr 2022 22:25:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220421072212.608884-1-song@kernel.org> <CAHk-=wi3eu8mdKmXOCSPeTxABVbstbDg1q5Fkak+A9kVwF+fVw@mail.gmail.com>
- <CAADnVQKyDwXUMCfmdabbVE0vSGxdpqmWAwHRBqbPLW=LdCnHBQ@mail.gmail.com>
- <CAHk-=whFeBezdSrPy31iYv-UZNnNavymrhqrwCptE4uW8aeaHw@mail.gmail.com>
- <CAPhsuW7M6exGD3C1cPBGjhU0Y5efxtJ3=0BWNnbuH87TgQMzdg@mail.gmail.com>
- <CAHk-=wh1mO5HdrOMTq68WHM51-=jdmQS=KipVYxS+5u3uRc5rg@mail.gmail.com>
- <1A4FF473-0988-48BE-9993-0F5E9F0AAC95@fb.com> <CAHk-=wi62LDc5B3DOr5pyVtOUOuLkLzHvmZQApH9q=raqaGkUg@mail.gmail.com>
- <8F788446-899C-4BA3-8236-612A94D98582@fb.com> <20220422073118.GR2731@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220422073118.GR2731@worktop.programming.kicks-ass.net>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 22 Apr 2022 22:25:32 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW58Y2wOe68jHmqj9ZCUQO-4nMWZn82wU=5sA+n7LEkM=A@mail.gmail.com>
-Message-ID: <CAPhsuW58Y2wOe68jHmqj9ZCUQO-4nMWZn82wU=5sA+n7LEkM=A@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: invalidate unused part of bpf_prog_pack
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrii Nakryiko <andrii@kernel.org>
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Sat, 23 Apr 2022 05:31:14 +0000 (UTC)
+Received: from [172.16.34.145] (unknown [121.33.114.136])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 3E0644006D;
+        Sat, 23 Apr 2022 05:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1650691873; bh=w40/85VIv5BQZf+43/3bBfUU3+lju+R6jndNVZ1NoDo=;
+        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
+        b=s7mWDm4qE8QFgZ5iFz1SuzvyRKqdDicOrOnmOqccLA8xDTGTEUt3kIRvxKpwFnbjZ
+         oUh8/CivdVevTOY6GHkZvwlwHt+nhOqMbmkG3pXasQyqnxix0EbB8TJzi/MFYNhCvS
+         TEgMh7jrTC5+d3yFhjnGnrkepNXpj53Ceu0W3Ebg=
+Message-ID: <9525d336040d2fc89005d2923f0d8ee98597ac86.camel@aosc.io>
+Subject: Re: [PATCH 1/2] dt-bindings: thermal: sun8i-thermal: add binding
+ for R329 THS
+From:   Icenowy Zheng <icenowy@aosc.io>
+To:     Vasily Khoruzhick <anarsoul@gmail.com>
+Cc:     Yangtao Li <tiny.windzz@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-linux <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+In-Reply-To: <CA+E=qVfMm=8aQOM_HW_3EeqqLi-Fgn1Ex3h6kor89FQ0KfTvRw@mail.gmail.com>
+References: <BYAPR20MB24721F9954252BECBEF486ACBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+         <CA+E=qVfMm=8aQOM_HW_3EeqqLi-Fgn1Ex3h6kor89FQ0KfTvRw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Date:   Sat, 23 Apr 2022 07:51:54 +0800
+User-Agent: Evolution 3.40.4 
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:31 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> > > On Apr 21, 2022, at 3:30 PM, Linus Torvalds <torvalds@linux-foundation.org> wrote:
->
-> > > I actually think bpf_arch_text_copy() is another horribly badly done thing.
-> > >
-> > > It seems only implemented on x86 (I'm not sure how anything else is
-> > > supposed to work, I didn't go look), and there it is horribly badly
-> > > done, using __text_poke() that does all these magical things just to
-> > > make it atomic wrt concurrent code execution.
-> > >
-> > > None of which is *AT*ALL* relevant for this case, since concurrent
-> > > code execution simply isn't a thing (and if it were, you would already
-> > > have lost).
-> > >
-> > > And if that wasn't pointless enough, it does all that magic "map the
-> > > page writably at a different virtual address using poking_addr in
-> > > poking_mm" and a different address space entirely.
-> > >
-> > > All of that is required for REAL KERNEL CODE.
-> > >
-> > > But the thing is, for bpf_prog_pack, all of that is just completely
-> > > pointless and stupid complexity.
->
-> I think the point is that this hole will likely share a page with active
-> code, and as such there should not be a writable mapping mapping to it,
-> necessitating the whole __text_poke() mess.
->
-> That said; it does seem somewhat silly have a whole page worth of int3
-> around just for this.
->
-> Perhaps we can do something like the completely untested below?
+在 2022-04-22星期五的 11:44 -0700，Vasily Khoruzhick写道：
+> On Fri, Apr 22, 2022 at 9:12 AM <icenowy@outlook.com> wrote:
+> > 
+> > From: Icenowy Zheng <icenowy@aosc.io>
+> > 
+> > R329 has a thermal sensor controller that has only one sensor, and
+> > the
+> > structure of it is like the H6 one.
+> > 
+> > Add device tree binding for it.
+> > 
+> > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> > ---
+> >  .../devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml  | 3
+> > +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git
+> > a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-
+> > ths.yaml
+> > b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-
+> > ths.yaml
+> > index 6e0b110153b0..87b4103e0a5f 100644
+> > --- a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-
+> > a83t-ths.yaml
+> > +++ b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-
+> > a83t-ths.yaml
+> > @@ -20,6 +20,7 @@ properties:
+> >        - allwinner,sun50i-a100-ths
+> >        - allwinner,sun50i-h5-ths
+> >        - allwinner,sun50i-h6-ths
+> > +      - allwinner,sun50i-r329-ths
+> > 
+> >    clocks:
+> >      minItems: 1
+> > @@ -63,6 +64,7 @@ allOf:
+> >              enum:
+> >                - allwinner,sun50i-a100-ths
+> >                - allwinner,sun50i-h6-ths
+> > +              - allwinner,sun50i-r329-ths
+> > 
+> >      then:
+> >        properties:
+> > @@ -85,6 +87,7 @@ allOf:
+> >          compatible:
+> >            contains:
+> >              const: allwinner,sun8i-h3-ths
+> > +            const: allwinner,sun8i-r329-ths
+> > 
+> >      then:
+> >        properties:
+> 
+> There's also a check at line #99 that requires clock, clock-names and
+> resets properties for thermal sensors in other Allwinner SoCs. Are
+> these not required for r329?
 
-Yeah, this looks like a better approach. I will draft v2 based on this.
+Thanks for this tip, I will add R329 to this check in the next
+revision.
 
-Thanks,
-Song
+> 
+> Also are you planning to add a node for thermal sensor to r329 dtsi?
+> 
+> 
+> > --
+> > 2.35.1
+> > 
 
->
-> ---
->  arch/x86/kernel/alternative.c | 48 +++++++++++++++++++++++++++++++++++++------
->  1 file changed, 42 insertions(+), 6 deletions(-)
->
-> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-> index d374cb3cf024..60afa9105307 100644
-> --- a/arch/x86/kernel/alternative.c
-> +++ b/arch/x86/kernel/alternative.c
-> @@ -994,7 +994,20 @@ static inline void unuse_temporary_mm(temp_mm_state_t prev_state)
->  __ro_after_init struct mm_struct *poking_mm;
->  __ro_after_init unsigned long poking_addr;
->
-> -static void *__text_poke(void *addr, const void *opcode, size_t len)
-> +static void text_poke_memcpy(void *dst, const void *src, size_t len)
-> +{
-> +       memcpy(dst, src, len);
-> +}
-> +
-> +static void text_poke_memset(void *dst, const void *src, size_t len)
-> +{
-> +       int c = *(int *)src;
-> +       memset(dst, c, len);
-> +}
-> +
-> +typedef void text_poke_f(void *dst, const void *src, size_t len);
-> +
-> +static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t len)
->  {
->         bool cross_page_boundary = offset_in_page(addr) + len > PAGE_SIZE;
->         struct page *pages[2] = {NULL};
-> @@ -1059,7 +1072,7 @@ static void *__text_poke(void *addr, const void *opcode, size_t len)
->         prev = use_temporary_mm(poking_mm);
->
->         kasan_disable_current();
-> -       memcpy((u8 *)poking_addr + offset_in_page(addr), opcode, len);
-> +       func((void *)poking_addr + offset_in_page(addr), src, len);
->         kasan_enable_current();
->
->         /*
-> @@ -1091,7 +1104,8 @@ static void *__text_poke(void *addr, const void *opcode, size_t len)
->          * If the text does not match what we just wrote then something is
->          * fundamentally screwy; there's nothing we can really do about that.
->          */
-> -       BUG_ON(memcmp(addr, opcode, len));
-> +       if (func == text_poke_memcpy)
-> +               BUG_ON(memcmp(addr, src, len));
->
->         local_irq_restore(flags);
->         pte_unmap_unlock(ptep, ptl);
-> @@ -1118,7 +1132,7 @@ void *text_poke(void *addr, const void *opcode, size_t len)
->  {
->         lockdep_assert_held(&text_mutex);
->
-> -       return __text_poke(addr, opcode, len);
-> +       return __text_poke(text_poke_memcpy, addr, opcode, len);
->  }
->
->  /**
-> @@ -1137,7 +1151,7 @@ void *text_poke(void *addr, const void *opcode, size_t len)
->   */
->  void *text_poke_kgdb(void *addr, const void *opcode, size_t len)
->  {
-> -       return __text_poke(addr, opcode, len);
-> +       return __text_poke(text_poke_memcpy, addr, opcode, len);
->  }
->
->  /**
-> @@ -1167,7 +1181,29 @@ void *text_poke_copy(void *addr, const void *opcode, size_t len)
->
->                 s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
->
-> -               __text_poke((void *)ptr, opcode + patched, s);
-> +               __text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
-> +               patched += s;
-> +       }
-> +       mutex_unlock(&text_mutex);
-> +       return addr;
-> +}
-> +
-> +void *text_poke_set(void *addr, int c, size_t len)
-> +{
-> +       unsigned long start = (unsigned long)addr;
-> +       size_t patched = 0;
-> +
-> +       if (WARN_ON_ONCE(core_kernel_text(start)))
-> +               return NULL;
-> +
-> +       mutex_lock(&text_mutex);
-> +       while (patched < len) {
-> +               unsigned long ptr = start + patched;
-> +               size_t s;
-> +
-> +               s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
-> +
-> +               __text_poke(text_poke_memset, (void *)ptr, (void *)&c, s);
->                 patched += s;
->         }
->         mutex_unlock(&text_mutex);
+
