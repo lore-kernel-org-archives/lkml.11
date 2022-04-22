@@ -2,136 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0135C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233479AbiDVWnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S233815AbiDVWna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234262AbiDVWnC (ORCPT
+        with ESMTP id S234301AbiDVWnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:43:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12ABA178F41
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:43:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C789CB8327E
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 21:43:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78106C385AA;
-        Fri, 22 Apr 2022 21:43:00 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 17:42:58 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Cc:     <mingo@redhat.com>, <matthias.bgg@gmail.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <yj.chiang@mediatek.com>
-Subject: Re: [PATCH v3 1/2] tracing: Avoid adding tracer option before
- update_tracer_options
-Message-ID: <20220422174258.1f41777a@gandalf.local.home>
-In-Reply-To: <20220323152257.7871-2-mark-pk.tsai@mediatek.com>
-References: <20220323152257.7871-1-mark-pk.tsai@mediatek.com>
-        <20220323152257.7871-2-mark-pk.tsai@mediatek.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 22 Apr 2022 18:43:05 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1661773D8;
+        Fri, 22 Apr 2022 14:42:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650663731;
+        bh=XAbU/WwnBQTi9/OidcyFLjRJfgJl6FaI1cL4Ta59NpE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=F2yNof3X8y8hvi/Y8+FiTX2CnlA5T8zdkgbIAfDQXmoXufJ1VUZ41pI81mlXiMINO
+         4flm5ao9FuutFjMtZIDCH5n37U0YdMUGXRuI44iyVJFpJjwgQMTU3WlkAmf1ecp2mV
+         w9OV7B5Bl8yNmQaJmg3FrKvwvt+Xi3dV6OGkjmGo=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([87.78.190.74]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MxlzI-1o6V013bxO-00zIaz; Fri, 22
+ Apr 2022 20:31:47 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 2/7] clocksource: timer-npcm7xx: Enable timer 1 clock before use
+Date:   Fri, 22 Apr 2022 20:30:07 +0200
+Message-Id: <20220422183012.444674-3-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:uovlBSQszsD4TcZ6IjORpDv2zAitS8WCPXKi91TdybsXvyz7lqO
+ rC2FC41F/kJUCpFHd1VviHlqQLLBrFbdETf+eE8nbVimOfnWkBZ30HFJmtlAYF1Jwirim+1
+ uMWQPfc4mPu19lplwt6TaEE58ze9BYNz5EI1+XTE1tlzCw3t9XOIahvNn5e/tYf/l/wShmM
+ vpo+JqSHVFco1wj+MDB2Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:g0eDA97AGZw=:Ng7MfKtb6I8godEPVk0G2X
+ seOnAGfWoJs+65+HIlee2xyPeWz5f0C50jvK+jtsUd0ANNNqPIYae7byOZJzrhw/P55iv2A2F
+ P1Hr9je1/eAaBX1VPuCOTBA1kzRjTRs72oX2yTHFZYzEl2VFPkCCGuvkcqtfdcjF9sD/PyVl6
+ VvoxtkiaRH1IoBCthl603M32eWHgl3urURApkzqdAtLde37y6fFrqEdxaDtgRZsjrP64FxZ5M
+ fCepuoUdV1cuZgByc3FjkUXUkRVMjVgz38GbOtizIt7txRL7aaw9bFo7I/xNNYgulEK97c6tT
+ 11B13KqDQwIQmsSRuaVXMUkgcL2rY/W+gjpy5Dy8GQRhpkqbirxyCGMJMWn0Cs1lvOfXrznoX
+ f0RhFAE2ak78U9ga48bwQNGQB9tPzDzj74AC18tLfB5DHqZgHUBpyyef+ru96vlSVbDtErzkb
+ cuYvmDj7KLnj2QcaAEZKIQcLw8dg9/227oGn/S/ReCCUBYEh9G3fFLWVxKx5Os4wAsu3AKdt2
+ HGnX3Md10TYRJ/pujlic6Fvq2nRjbaY2kdA/u3WGTT3489sd3vUcfXN2Uy9A0r1FJCbmPan+a
+ P0cfQNBhbmTzNUzR40OjhhK45J50yU5ZsWV0efr8kNJjM9ITixrcrIviNHwRaWCUTBPJuCReX
+ Yz3oZ/O5Pt/ujDvI0qRz58POYsPx1rH12opNEPq+txF1b7ufi116464AFhaVHsv/3FpCmw1jf
+ Y3tU5O9FkcXEpfWuA1KqGT/dXKNo0+IHzFfCOWtY4CnRHKA9RMaXfbghDs8j6hZcDzvsahLFD
+ 7PM4V244nG7aLR5akwg+rkGBxz9NcKCyt0+OyOqz/fSAj/hsA5IYqm9INJTQNBm9waKiDPsmn
+ wvxXdyKCDt8Y4V+d51d1L4qQLPjUeSiibWIiYEMK2RoLqr6Vfk0hmXzCldxIhNISVwUhYRKEg
+ 9euzmV1wP09AFhbQTGmvGoozwj4u+nPxezt28YhzIDvcp/mnFifVrWaiHAcll7tQgIS7aKgyQ
+ D3PvycgMCJDuUa3fejgAUbFyqOxDH9nYkKw6GlvpbbP+PziKq4+xNS3NhGbo+3gSQt7I1GaAk
+ PxEk+FY3lJ//Mw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Mar 2022 23:22:56 +0800
-Mark-PK Tsai <mark-pk.tsai@mediatek.com> wrote:
+In the WPCM450 SoC, the clocks for each timer can be gated individually.
+To prevent the timer 1 clock from being gated, enable it explicitly.
 
-> To prepare for support asynchronous tracer_init_tracefs initcall,
-> avoid calling create_trace_option_files before __update_tracer_options.
-> Otherwise, create_trace_option_files will show warning because
-> some tracers in trace_types list are already in tr->topts.
-> 
-> For example, hwlat_tracer call register_tracer in late_initcall,
-> and global_trace.dir is already created in tracing_init_dentry,
-> hwlat_tracer will be put into tr->topts.
-> Then if the __update_tracer_options is executed after hwlat_tracer
-> registered, create_trace_option_files find that hwlat_tracer is
-> already in tr->topts.
-> 
-> Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
+ drivers/clocksource/timer-npcm7xx.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-Before this patch:
+diff --git a/drivers/clocksource/timer-npcm7xx.c b/drivers/clocksource/tim=
+er-npcm7xx.c
+index a00520cbb660a..974269b6b0c36 100644
+=2D-- a/drivers/clocksource/timer-npcm7xx.c
++++ b/drivers/clocksource/timer-npcm7xx.c
+@@ -188,17 +188,29 @@ static void __init npcm7xx_clocksource_init(void)
 
- # ls /sys/kernel/tracing/options
-annotate	   funcgraph-duration  hex		stacktrace
-bin		   funcgraph-irqs      irq-info		sym-addr
-blk_cgname	   funcgraph-overhead  latency-format	sym-offset
-blk_cgroup	   funcgraph-overrun   markers		sym-userobj
-blk_classic	   funcgraph-proc      overwrite	test_nop_accept
-block		   funcgraph-tail      pause-on-trace	test_nop_refuse
-context-info	   func-no-repeats     printk-msg-only	trace_printk
-disable_on_free    func_stack_trace    print-parent	userstacktrace
-display-graph	   function-fork       raw		verbose
-event-fork	   function-trace      record-cmd
-funcgraph-abstime  graph-time	       record-tgid
-funcgraph-cpu	   hash-ptr	       sleep-time
+ static int __init npcm7xx_timer_init(struct device_node *np)
+ {
++	struct clk *clk;
+ 	int ret;
 
+ 	ret =3D timer_of_init(np, &npcm7xx_to);
+-	if (ret)
++	if (ret) {
++		pr_warn("timer_of_init failed: %d\n", ret);
+ 		return ret;
++	}
 
-After this patch:
+ 	/* Clock input is divided by PRESCALE + 1 before it is fed */
+ 	/* to the counter */
+ 	npcm7xx_to.of_clk.rate =3D npcm7xx_to.of_clk.rate /
+ 		(NPCM7XX_Tx_MIN_PRESCALE + 1);
 
- # ls /sys/kernel/tracing/options
-annotate      disable_on_free  irq-info         raw          trace_printk
-bin           display-graph    latency-format   record-cmd   userstacktrace
-blk_cgname    event-fork       markers          record-tgid  verbose
-blk_cgroup    function-fork    overwrite        stacktrace
-blk_classic   function-trace   pause-on-trace   sym-addr
-block         hash-ptr         printk-msg-only  sym-offset
-context-info  hex              print-parent     sym-userobj
++	/* Enable the clock for timer1, if it exists */
++	clk =3D of_clk_get(np, 1);
++	if (clk) {
++		if (!IS_ERR(clk))
++			clk_prepare_enable(clk);
++		else
++			pr_warn("Failed to get clock for timer1: %pe", clk);
++	}
++
+ 	npcm7xx_clocksource_init();
+ 	npcm7xx_clockevents_init();
 
-Not good.
-
-> ---
->  kernel/trace/trace.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-> index eb44418574f9..85ec758c4455 100644
-> --- a/kernel/trace/trace.c
-> +++ b/kernel/trace/trace.c
-> @@ -6317,12 +6317,18 @@ static void tracing_set_nop(struct trace_array *tr)
->  	tr->current_trace = &nop_trace;
->  }
->  
-> +static bool tracer_options_updated;
-> +
->  static void add_tracer_options(struct trace_array *tr, struct tracer *t)
->  {
->  	/* Only enable if the directory has been created already. */
->  	if (!tr->dir)
->  		return;
->  
-> +	/* Only create trace option files after update_tracer_options finish */
-> +	if (!tracer_options_updated)
-> +		return;
-> +
->  	create_trace_option_files(tr, t);
->  }
->  
-> @@ -9133,6 +9139,7 @@ static void update_tracer_options(struct trace_array *tr)
->  {
->  	mutex_lock(&trace_types_lock);
->  	__update_tracer_options(tr);
-> +	tracer_options_updated = true;
-
-I think you want to set this before the __update, as doing it after just
-makes the update a nop.
-
--- Steve
-
-
->  	mutex_unlock(&trace_types_lock);
->  }
->  
+=2D-
+2.35.1
 
