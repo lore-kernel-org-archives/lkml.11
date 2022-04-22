@@ -2,87 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16522C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 05:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233054AbiDVGAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
+        id S233109AbiDVGAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 02:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233011AbiDVGAg (ORCPT
+        with ESMTP id S232920AbiDVGAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:00:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EB84F9D8;
-        Thu, 21 Apr 2022 22:57:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E480161D9D;
-        Fri, 22 Apr 2022 05:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A684C385A9;
-        Fri, 22 Apr 2022 05:57:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650607051;
-        bh=Rvf90UcwzPbS3F5AqAtneVu3nF9B07X7cwvF7nN8ENI=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=bBXFaJywcqTcX8KxDYflryjhANwgEc2Bam3efuHS/L8sddABY8ol1JI333xINwl/x
-         mkC4XgNcMUNV1ZyKxdgrMcIb67PF5i8sOG1mN5LY/P2TBErRJPCha8euLdDppa/YBT
-         hRZLeqNjkb59HQX8W1QqAa5GIOYRRtNjUE6AVdECGvddUCG+SoZw9GBIzhMLhYO1Cn
-         wttlxzGWVq4Ishol80XcTWBC87GvIb+BjnbvfgbpQTsL+l0Ev6Lrixyboso7u3R7Kk
-         wrG+pUgEDv85U3YCcrGtAOU/UVkdgxuNo8gKLGJbiGLi2h2R51VtJ0JhjRhBdIQL0U
-         5XtEbXYyKMPHA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Bernard Zhao <zhaojunkui2008@126.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
+        Fri, 22 Apr 2022 02:00:23 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0164F9EE
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 22:57:25 -0700 (PDT)
+X-UUID: a5f8ab1f86c24250a29536920915568b-20220422
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:d2152398-c1d3-4725-803b-95f4c2d56d51,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:e7d992f0-da02-41b4-b6df-58f4ccd36682,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: a5f8ab1f86c24250a29536920915568b-20220422
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 15665764; Fri, 22 Apr 2022 13:57:18 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 22 Apr 2022 13:57:17 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 Apr
+ 2022 13:57:15 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 22 Apr 2022 13:57:15 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bernard@vivo.com
-Subject: Re: [PATCH] net/wireless: add debugfs exit function
-In-Reply-To: <20220422012830.342993-1-zhaojunkui2008@126.com> (Bernard Zhao's
-        message of "Thu, 21 Apr 2022 18:28:30 -0700")
-References: <20220422012830.342993-1-zhaojunkui2008@126.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Fri, 22 Apr 2022 08:57:25 +0300
-Message-ID: <877d7hoe2i.fsf@kernel.org>
+        YC Hung <yc.hung@mediatek.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        <sound-open-firmware@alsa-project.org>,
+        <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v1 4/4] ASoC: SOF: mediatek: Add DSP system PM callback for mt8186
+Date:   Fri, 22 Apr 2022 13:56:59 +0800
+Message-ID: <20220422055659.8738-5-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.15.GIT
+In-Reply-To: <20220422055659.8738-1-tinghan.shen@mediatek.com>
+References: <20220422055659.8738-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bernard Zhao <zhaojunkui2008@126.com> writes:
+Add DSP system PM callback for suspend and resume
 
-> This patch add exit debugfs function to mt7601u.
-> Debugfs need to be cleanup when module is unloaded or load fail.
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Yaochun Hung <yc.hung@mediatek.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+---
+ sound/soc/sof/mediatek/mt8186/mt8186.c | 28 ++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-"load fail"? Please be more specific, are you saying that the second
-module load fails or what?
-
->  drivers/net/wireless/mediatek/mt7601u/debugfs.c | 9 +++++++--
->  drivers/net/wireless/mediatek/mt7601u/init.c    | 1 +
->  drivers/net/wireless/mediatek/mt7601u/mt7601u.h | 1 +
-
-The title should be:
-
-mt7601u: add debugfs exit function
-
-> --- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-> +++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-> @@ -9,6 +9,8 @@
->  #include "mt7601u.h"
->  #include "eeprom.h"
->  
-> +static struct dentry *dir;
-
-How will this work when there are multiple mt7601u devices? Because of
-that, avoid using non-const static variables.
-
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.c b/sound/soc/sof/mediatek/mt8186/mt8186.c
+index a04cea77bd4d..c8faa63497c6 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.c
+@@ -304,6 +304,30 @@ static int mt8186_dsp_remove(struct snd_sof_dev *sdev)
+ 	return 0;
+ }
+ 
++static int mt8186_dsp_suspend(struct snd_sof_dev *sdev, u32 target_state)
++{
++	sof_hifixdsp_shutdown(sdev);
++	adsp_sram_power_off(sdev);
++	adsp_clock_off(sdev);
++
++	return 0;
++}
++
++static int mt8186_dsp_resume(struct snd_sof_dev *sdev)
++{
++	int ret;
++
++	ret = adsp_clock_on(sdev);
++	if (ret) {
++		dev_err(sdev->dev, "adsp_clock_on fail!\n");
++		return ret;
++	}
++
++	adsp_sram_power_on(sdev);
++
++	return ret;
++}
++
+ /* on mt8186 there is 1 to 1 match between type and BAR idx */
+ static int mt8186_get_bar_index(struct snd_sof_dev *sdev, u32 type)
+ {
+@@ -338,6 +362,10 @@ static struct snd_sof_dsp_ops sof_mt8186_ops = {
+ 	/* Firmware ops */
+ 	.dsp_arch_ops = &sof_xtensa_arch_ops,
+ 
++	/* PM */
++	.suspend	= mt8186_dsp_suspend,
++	.resume		= mt8186_dsp_resume,
++
+ 	/* ALSA HW info flags */
+ 	.hw_info =	SNDRV_PCM_INFO_MMAP |
+ 			SNDRV_PCM_INFO_MMAP_VALID |
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.18.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
