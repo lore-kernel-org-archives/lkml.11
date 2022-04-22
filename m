@@ -2,189 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0020FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 16:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381145AbiDVQXA (ORCPT
+        id S1381091AbiDVQY3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 12:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
+        Fri, 22 Apr 2022 12:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381140AbiDVQWy (ORCPT
+        with ESMTP id S231357AbiDVQY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 12:22:54 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D1C38B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:20:00 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id q1so10711697plx.13
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 09:20:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rjjW4zQB7vN5AG68qTGDJtZghbNfzvjCEtyfJgY2xk0=;
-        b=prpGUJEyn8mdgtycpc0mzQF2T1UMGTvU6Ec6MORRJLGzNO3OgXp+DFVo0JWivKmczK
-         kuDVBFLNcZJGP0gUS5qLpbIgmK/SsKMWTVXrbGVWx68wSGny9Ec22z9V2sesXchEE76f
-         ylWHJTfjV8XqaLst8Ps3Y6++CxLUEjHYEiZMj40KZY37s2Ve9+bBlpJOeQcLahPImh1G
-         HGB4E0xsg8n3DlZXSZllMnHPrMe1tgFiY5YAco5ijSIR1j6XSfAlj42S+KQ1biCjBc5e
-         Lxjjpnc4L9Do1ZGd6AggxESmxuRv/Eq2+krTgi8emqgqJ7VDvNeGnye1tCWjiWD30t54
-         UIlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=rjjW4zQB7vN5AG68qTGDJtZghbNfzvjCEtyfJgY2xk0=;
-        b=J0GClb/zLHt22ff0eG2NQjx6CN6SP/zL+7oHsQbJZEWlEvxDDKsMnzjG2y2LK9XZn+
-         15pig0ZDqiqxjAoVtg/z2twQfFrPiz+eO31HPcsBLbShOiyW0BUNiM3nX8nPngyA3jLg
-         Ngb0N96lk/K9rMkVvnHBVkVO2TlPotH2PRXb8CtNcoWv5gsLi6IqvCjzDGyMos+tncdi
-         XxKOAc9Zv/PNbpYzTMWPfCtjNBA89GO246jRtoosSLFgxbxOIDFMQMZdFxvunu9mBRIv
-         GJM+UkECJJXt3+z5F21eEm1UEIVSt+p3wAPwLcc5AH4CsBFG1DfepvKOvlv1r2Lfw0UT
-         q4nA==
-X-Gm-Message-State: AOAM5336MIiwUXZZvLioZL65QCa/vSjStKAKwB7l1WklKkeIO3zdyAG6
-        bgYa4A3OqtsQe6bl2f1Qmcg=
-X-Google-Smtp-Source: ABdhPJydCtl/D5ID5Ixg+EuaOjMiK/UcmWJdz+W3/m6443mWuwdGxxCBYo5L6Y4XCKeTfRe3FDXZ5g==
-X-Received: by 2002:a17:902:9a8c:b0:15a:a21:b52a with SMTP id w12-20020a1709029a8c00b0015a0a21b52amr5172529plp.86.1650644399987;
-        Fri, 22 Apr 2022 09:19:59 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:b5ae])
-        by smtp.gmail.com with ESMTPSA id l2-20020a637c42000000b003644cfa0dd1sm2509576pgn.79.2022.04.22.09.19.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 09:19:59 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 22 Apr 2022 06:19:57 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        ebiederm@xmission.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 02/10] kernfs: make ->attr.open RCU protected.
-Message-ID: <YmLVrfI4UN8ajoUM@slm.duckdns.org>
-References: <20220410023719.1752460-1-imran.f.khan@oracle.com>
- <20220410023719.1752460-3-imran.f.khan@oracle.com>
+        Fri, 22 Apr 2022 12:24:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AD75AA48;
+        Fri, 22 Apr 2022 09:21:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 847FAB831AE;
+        Fri, 22 Apr 2022 16:21:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94321C385A4;
+        Fri, 22 Apr 2022 16:21:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650644490;
+        bh=etqmrdOWo9ppgctMHAaKf/sfoIrdAB76WJWQZwxQ2Gg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=A+6/RqeaXjNWl8zQqLBCX3hXYA+0YsyIWRltY82UNGQpLHI8QHudEkEJ4XjKigLSF
+         Oi/fcCZ3cniW0P4EcokdUA3CxbxJ5boJcItodWn6KARz+JfiY1aU79zTWcL7X2TfGh
+         r44U/1clREJMGFahvXWw/rriH9wO4EOWMwIhtnSLPBBFV8BdRUAswPqd0mUlRqA3P+
+         Vt5+MxosXyI8KqZkA3HbiIUk1a/3DuJ5RVue0DrFTbcEb9zbpEDWb52plrSqA1FVH2
+         /J8QcMM95G60eo+X7+Y8fBmu33+GCGmG8qKTmkNnTfwc52Q+hqrLLUY95qgc/0TDLn
+         EQBXZpjTn4iJQ==
+Date:   Fri, 22 Apr 2022 11:21:26 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jianjun Wang <jianjun.wang@mediatek.com>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] PCI: mediatek-gen3: Update entries to distinguish
+ MediaTek PCIe controller
+Message-ID: <20220422162126.GA1458908@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220410023719.1752460-3-imran.f.khan@oracle.com>
+In-Reply-To: <20220422070908.14043-1-jianjun.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 12:37:11PM +1000, Imran Khan wrote:
->  static int kernfs_seq_show(struct seq_file *sf, void *v)
->  {
->  	struct kernfs_open_file *of = sf->private;
-> +	struct kernfs_open_node *on = rcu_dereference_raw(of->kn->attr.open);
+On Fri, Apr 22, 2022 at 03:09:08PM +0800, Jianjun Wang wrote:
+> Update driver entries in pcie-mediatek-gen3.c to distinguish the
+> MediaTek PCIe controllers.
 
-I suppose raw deref is safe because @on can't go away while @of is alive,
-right? If that's the case, please factor out of -> on dereferencing into a
-helper and put a comment there explaining why the raw deref is safe.
+What's the reason for doing this?  I *think* it has something to do
+with the fact that we currently have two "mtk_pcie_driver"
+definitions: one in pcie-mediatek.c and the other in
+pcie-mediatek-gen3.c, and apparently we want to make them different.
 
-...
-> @@ -201,7 +203,8 @@ static ssize_t kernfs_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
->  		goto out_free;
->  	}
+I can buy that.  But there are many other symbols with the same names
+in the two drivers, e.g., mtk_pcie_probe(), mtk_pcie_remove().  Why is
+mtk_pcie_driver special?
+
+Maybe it's important that the of_device_id[] names be different?
+
+This change is fine; I'd just like the commit log to have a little
+more explanation of *why* it is useful.
+
+Nit: I don't think this distinguishes the *controllers*.  It looks
+like it distinguishes the *drivers*.
+
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> ---
+> Changes in v2:
+> Remove the changes in Kconfig description and update the commit message.
+> ---
+>  drivers/pci/controller/pcie-mediatek-gen3.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+> index 7705d61fba4c..6745076a02b9 100644
+> --- a/drivers/pci/controller/pcie-mediatek-gen3.c
+> +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+> @@ -1011,21 +1011,21 @@ static const struct dev_pm_ops mtk_pcie_pm_ops = {
+>  				      mtk_pcie_resume_noirq)
+>  };
 >  
-> -	of->event = atomic_read(&of->kn->attr.open->event);
-> +	on = rcu_dereference_raw(of->kn->attr.open);
-
-cuz we don't wanna sprinkle raw derefs in multiple places without
-explanation like this.
-
-...
->  /**
-> @@ -566,24 +567,30 @@ static int kernfs_get_open_node(struct kernfs_node *kn,
->  static void kernfs_put_open_node(struct kernfs_node *kn,
->  				 struct kernfs_open_file *of)
->  {
-> -	struct kernfs_open_node *on = kn->attr.open;
-> -	unsigned long flags;
-> +	struct kernfs_open_node *on;
-> +
-> +	/* ->attr.open NULL means there are no more open files */
-> +	if (rcu_dereference_raw(kn->attr.open) == NULL)
-> +		return;
-
-For pointer value check, what you want is rcu_access_pointer(). That said,
-tho, why is this being called if no one is linked on it? Before removing the
-refcnt, that'd be the same as trying to put a 0 ref. How does that happen?
-Also, can you please rename it to unlink or something of the sort? It's
-confusing to call it put when there's no refcnt.
-
+> -static const struct of_device_id mtk_pcie_of_match[] = {
+> +static const struct of_device_id mtk_pcie_gen3_of_match[] = {
+>  	{ .compatible = "mediatek,mt8192-pcie" },
+>  	{},
+>  };
+> -MODULE_DEVICE_TABLE(of, mtk_pcie_of_match);
+> +MODULE_DEVICE_TABLE(of, mtk_pcie_gen3_of_match);
 >  
->  	mutex_lock(&kernfs_open_file_mutex);
-> -	spin_lock_irqsave(&kernfs_open_node_lock, flags);
-> +
-> +	on = rcu_dereference_protected(kn->attr.open,
-> +				       lockdep_is_held(&kernfs_open_file_mutex));
-
-Again, a better way to do it would be defining a kn -> on accessor which
-encodes the safe way to deref and use it. The deref rule is tied to the
-deref itself not the callsite.
-
-> +
-> +	if (!on) {
-> +		mutex_unlock(&kernfs_open_file_mutex);
-> +		return;
-> +	}
+> -static struct platform_driver mtk_pcie_driver = {
+> +static struct platform_driver mtk_pcie_driver_gen3 = {
+>  	.probe = mtk_pcie_probe,
+>  	.remove = mtk_pcie_remove,
+>  	.driver = {
+> -		.name = "mtk-pcie",
+> -		.of_match_table = mtk_pcie_of_match,
+> +		.name = "mtk-pcie-gen3",
+> +		.of_match_table = mtk_pcie_gen3_of_match,
+>  		.pm = &mtk_pcie_pm_ops,
+>  	},
+>  };
 >  
->  	if (of)
->  		list_del(&of->list);
->  
-> -	if (list_empty(&on->files))
-> -		kn->attr.open = NULL;
-> -	else
-> -		on = NULL;
-> -
-> -	spin_unlock_irqrestore(&kernfs_open_node_lock, flags);
-> +	if (list_empty(&on->files)) {
-> +		rcu_assign_pointer(kn->attr.open, NULL);
-> +		kfree_rcu(on, rcu_head);
-> +	}
->  	mutex_unlock(&kernfs_open_file_mutex);
-> -
-> -	kfree(on);
->  }
->  
->  static int kernfs_fop_open(struct inode *inode, struct file *file)
-> @@ -765,12 +772,13 @@ void kernfs_drain_open_files(struct kernfs_node *kn)
->  	if (!(kn->flags & (KERNFS_HAS_MMAP | KERNFS_HAS_RELEASE)))
->  		return;
->  
-> -	on = kn->attr.open;
-> -	if (!on)
-> +	if (rcu_dereference_raw(kn->attr.open) == NULL)
->  		return;
-
-rcu_access_pointer again and you gotta explain why the lockless check is
-safe.
-
->  	mutex_lock(&kernfs_open_file_mutex);
-> -	if (!kn->attr.open) {
-> +	on = rcu_dereference_check(kn->attr.open,
-> +				   lockdep_is_held(&kernfs_open_file_mutex));
-> +	if (!on) {
->  		mutex_unlock(&kernfs_open_file_mutex);
->  		return;
->  	}
-...
-> @@ -912,14 +920,13 @@ void kernfs_notify(struct kernfs_node *kn)
->  		return;
->  
->  	/* kick poll immediately */
-> -	spin_lock_irqsave(&kernfs_open_node_lock, flags);
-> -	on = kn->attr.open;
-> +	rcu_read_lock();
-> +	on = rcu_dereference(kn->attr.open);
->  	if (on) {
->  		atomic_inc(&on->event);
->  		wake_up_interruptible(&on->poll);
->  	}
-> -	spin_unlock_irqrestore(&kernfs_open_node_lock, flags);
-> -
-> +	rcu_read_unlock();
-
-An explanation of why this is safe in terms of event ordering would be great
-here.
-
-Thanks.
-
--- 
-tejun
+> -module_platform_driver(mtk_pcie_driver);
+> +module_platform_driver(mtk_pcie_driver_gen3);
+>  MODULE_LICENSE("GPL v2");
+> -- 
+> 2.18.0
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
