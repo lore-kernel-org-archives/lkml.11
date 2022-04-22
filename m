@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbiDVV5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
+        id S230469AbiDVV5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230422AbiDVV4j (ORCPT
+        with ESMTP id S231137AbiDVV4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:56:39 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7351D2A4CB4;
-        Fri, 22 Apr 2022 13:39:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650659956; x=1682195956;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=itPL4SDhaJNbtUUlmV3x5Gcrnw+9kVzEXPvSZciorvU=;
-  b=I74K3tUGWZeqJjHA0axRe+ueDzJX78bVscWLOHcAiRPdZiM+QLk5DxNJ
-   3fEKdLX6V1/AIrF2FtXb5bX1C6Oxp+nrEML781rix6jDQMYOtJ/T0/1Ib
-   F0e/fyDcclhoKX3aXh6jcfUIYgbRx1BkWwAU4WVte64fV8bcVsXzwbmhs
-   v1l8vh5JFUa619PNZX2kRm4DEnI4GcPKTH71zBphEilGmsu5NhjchRlna
-   ayl7mHPxgJrDWzoVIPxsgPH4tRLTzjwl5N9F+963xkwDwcDLnqDYkIflx
-   TWVe8FgR7xwfubVnWn3zAXqiR5FDdMRjG1EqjDHWF9Efrlib/ROhN+LeI
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244699982"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="244699982"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:09:14 -0700
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="578075082"
-Received: from assenmac-mobl.ger.corp.intel.com ([10.251.216.136])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:09:10 -0700
-Date:   Fri, 22 Apr 2022 23:09:07 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v3 3/5] tty: Add lookahead param to receive_buf
-In-Reply-To: <YmK83NfVqEvGg8DW@kroah.com>
-Message-ID: <d496d544-fe59-5fa7-5d21-ab6ad025fa75@linux.intel.com>
-References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com> <20220411094859.10894-4-ilpo.jarvinen@linux.intel.com> <YmK83NfVqEvGg8DW@kroah.com>
+        Fri, 22 Apr 2022 17:56:52 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BDF407ED4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:42:03 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MIeMoG033941;
+        Fri, 22 Apr 2022 13:40:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650652822;
+        bh=jL5+JwCMsTSzM2LVGeKWU46/zHtkF+EJ8LNwJy/lJNM=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=cTkH6TMEhd/jT7YSK904kjPRxu962l78xyt8Dhv0/OvVn4MNtq/9sVLnVXfg3bmux
+         ZlMAVyn3QwcyX3x4EpL9+HQPUuwV/4cG6jOjKSb4llGQIA0iJLT9Q0EjMO0R3dMVIq
+         j+/8wotR7NnktIST0hxWIh5h62OXE5zdZXr3kwjY=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MIeMAp011441
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 22 Apr 2022 13:40:22 -0500
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
+ Apr 2022 13:40:21 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 22 Apr 2022 13:40:21 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MIeL4o078154;
+        Fri, 22 Apr 2022 13:40:21 -0500
+Date:   Fri, 22 Apr 2022 13:40:21 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     <cgel.zte@gmail.com>, <tony@atomide.com>
+CC:     <ssantosh@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] soc: ti: pm33xx: using pm_runtime_resume_and_get instead
+ of pm_runtime_get_sync
+Message-ID: <20220422184021.v2w55kbvllu3flar@daughter>
+References: <20220418063059.2558074-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220418063059.2558074-1-chi.minghao@zte.com.cn>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022, Greg KH wrote:
-
-> > diff --git a/drivers/accessibility/speakup/spk_ttyio.c b/drivers/accessibility/speakup/spk_ttyio.c
-> > index 08cf8a17754b..b33536eea1d3 100644
-> > --- a/drivers/accessibility/speakup/spk_ttyio.c
-> > +++ b/drivers/accessibility/speakup/spk_ttyio.c
-> > @@ -73,7 +73,7 @@ static void spk_ttyio_ldisc_close(struct tty_struct *tty)
-> >  
-> >  static int spk_ttyio_receive_buf2(struct tty_struct *tty,
-> >  				  const unsigned char *cp,
-> > -				  const char *fp, int count)
-> > +				  const char *fp, int count, unsigned int lookahead_count)
+On 06:30-20220418, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> Ick, adding yet-another-parameter to a function is a mess as it's hard
-> to know what to do with this and what it means just by looking at when
-> it is called.
-
-To be honest, I didn't like it either but just couldn't find another 
-way... That is, not until now that you pushed.
-
-I think I can add lookahead_count into n_tty_data, then both layers 
-(n_tty and tty_buffer) that depend on it will indepedently keep track of 
-it rather than passing it through the whole callchain.
-
-> >  /* Returns true if c is consumed as flow-control character */
-> > -static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> > +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c,
-> > +					 bool lookahead_done)
-> >  {
-> >  	if (!n_tty_is_char_flow_ctrl(tty, c))
-> >  		return false;
-> >  
-> > +	if (lookahead_done)
-> > +		return true;
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
 > 
-> Why would this function be called if this option was true?
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-Agreed, it makes sense to move the check before call (and then I also 
-don't need to reorganize this function anymore).
+Tony: Could you check?
 
-> the overall idea is good, this implementation isn't quite there yet.
-
-Thanks for taking a look.
-
+> ---
+>  drivers/soc/ti/pm33xx.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/soc/ti/pm33xx.c b/drivers/soc/ti/pm33xx.c
+> index 7bab4bbaf02d..ce09c42eaed2 100644
+> --- a/drivers/soc/ti/pm33xx.c
+> +++ b/drivers/soc/ti/pm33xx.c
+> @@ -555,11 +555,9 @@ static int am33xx_pm_probe(struct platform_device *pdev)
+>  #endif /* CONFIG_SUSPEND */
+>  
+>  	pm_runtime_enable(dev);
+> -	ret = pm_runtime_get_sync(dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+> +	if (ret < 0)
+>  		goto err_pm_runtime_disable;
+> -	}
+>  
+>  	ret = pm_ops->init(am33xx_do_sram_idle);
+>  	if (ret) {
+> -- 
+> 2.25.1
+> 
+> 
 
 -- 
- i.
-
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
