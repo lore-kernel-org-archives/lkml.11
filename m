@@ -2,145 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73BE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233279AbiDVWes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
+        id S232994AbiDVWfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233533AbiDVWco (ORCPT
+        with ESMTP id S233266AbiDVWeb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:32:44 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07001EADF7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:25:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650662759; x=1682198759;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=OLCb9ecnnTgMuvoPi+mVk0P5yobPJV4DqakG/hx24Tk=;
-  b=RU5UyBFBibO0pUYtu5Irkm/s/mmxmHRfX+Fs2rsno3euEwusHaX9KWmC
-   EnNQCEg9zyjtSUP9Q2pcZffNXM90WtqNdChU5lr/WKoy0UEUwndgte7PV
-   LPLjn20FQy0gIrz7adwXxwlxHVMUpojxYbcESLvkb76Euz2/ZoqDrMwka
-   A=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Apr 2022 12:03:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 12:03:52 -0700
-Received: from [10.110.72.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 22 Apr
- 2022 12:03:51 -0700
-Message-ID: <0e1e6441-7afa-888d-53fb-a93f4b6ee0a4@quicinc.com>
-Date:   Fri, 22 Apr 2022 12:03:50 -0700
+        Fri, 22 Apr 2022 18:34:31 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD7524A107
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:27:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650662834; x=1682198834;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=yvEmm3q5zs9POqKdsIu+eEbpwdiEBwUZG5UoQU3is80=;
+  b=Z7y3+V8yjuF/NYZZIVQnLz9w9ULXN7QcakQOWEdwcYZI9ueqjMW8FOcC
+   d5ud8A8Wy9w/keJO5oSuXkKYZFkyFQHi7/NrUucDh9Wxo6TJ2JYmoltcT
+   XkfK/EuKBg1vZ6eJMnsIwvkexlDRJyn/j1/h9CUCkCgAw4Ifi/VrfhFWF
+   erjEH9DFhTR0xpjAKLgcI+x04oFvgeVWBR4CdxF+FuBdy27rT0Tp8A7sJ
+   bRYwXl3CYYetzwV34Z74eYkllTgDzEYmJSJBesZ+6XXzZ8gxfIjUlupxE
+   QuV/Sq6BpNNOgHzMStetJMQ1JKiTfEzUYHuoE7p7uuzb17+g+PVp04yNV
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="246685903"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="246685903"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:39:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="511729153"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Apr 2022 13:39:12 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ni03c-000AZO-08;
+        Fri, 22 Apr 2022 20:39:12 +0000
+Date:   Sat, 23 Apr 2022 04:38:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matteo Croce <mcroce@microsoft.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [esmil:visionfive 4/54] mm/kasan/shadow.c:42:7: warning: no previous
+ prototype for function 'memset'
+Message-ID: <202204230424.eOU8iNAQ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] arm64: paravirt: Disable IRQs during
- stolen_time_cpu_down_prepare
-Content-Language: en-US
-To:     Will Deacon <will@kernel.org>, Juergen Gross <jgross@suse.com>
-CC:     "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Prakruthi Deepak Heragu" <quic_pheragu@quicinc.com>,
-        <virtualization@lists.linux-foundation.org>, <x86@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Murali Nalajala <quic_mnalajal@quicinc.com>
-References: <20220420204417.155194-1-quic_eberman@quicinc.com>
- <0737998d-3006-5866-5ea1-dcfef0cfeb32@suse.com>
- <20220421091011.GB8303@willie-the-truck>
-From:   Elliot Berman <quic_eberman@quicinc.com>
-In-Reply-To: <20220421091011.GB8303@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/esmil/linux visionfive
+head:   68fe13e37af4c8331cdd40841353c9725cb65925
+commit: 20157c7f08403f9a7cbaef427717ce571387416c [4/54] riscv: optimized memset
+config: riscv-randconfig-c006-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230424.eOU8iNAQ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/esmil/linux/commit/20157c7f08403f9a7cbaef427717ce571387416c
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 20157c7f08403f9a7cbaef427717ce571387416c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> mm/kasan/shadow.c:42:7: warning: no previous prototype for function 'memset' [-Wmissing-prototypes]
+   void *memset(void *addr, int c, size_t len)
+         ^
+   mm/kasan/shadow.c:42:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void *memset(void *addr, int c, size_t len)
+   ^
+   static 
+   mm/kasan/shadow.c:63:7: warning: no previous prototype for function 'memcpy' [-Wmissing-prototypes]
+   void *memcpy(void *dest, const void *src, size_t len)
+         ^
+   mm/kasan/shadow.c:63:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void *memcpy(void *dest, const void *src, size_t len)
+   ^
+   static 
+   2 warnings generated.
 
 
-On 4/21/2022 2:10 AM, Will Deacon wrote:
-> On Thu, Apr 21, 2022 at 09:44:28AM +0200, Juergen Gross wrote:
->> On 20.04.22 22:44, Elliot Berman wrote:
->>> From: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
->>>
->>> During hotplug, the stolen time data structure is unmapped and memset.
->>> There is a possibility of the timer IRQ being triggered before memset
->>> and stolen time is getting updated as part of this timer IRQ handler. This
->>> causes the below crash in timer handler -
->>>
->>>     [ 3457.473139][    C5] Unable to handle kernel paging request at virtual address ffffffc03df05148
->>>     ...
->>>     [ 3458.154398][    C5] Call trace:
->>>     [ 3458.157648][    C5]  para_steal_clock+0x30/0x50
->>>     [ 3458.162319][    C5]  irqtime_account_process_tick+0x30/0x194
->>>     [ 3458.168148][    C5]  account_process_tick+0x3c/0x280
->>>     [ 3458.173274][    C5]  update_process_times+0x5c/0xf4
->>>     [ 3458.178311][    C5]  tick_sched_timer+0x180/0x384
->>>     [ 3458.183164][    C5]  __run_hrtimer+0x160/0x57c
->>>     [ 3458.187744][    C5]  hrtimer_interrupt+0x258/0x684
->>>     [ 3458.192698][    C5]  arch_timer_handler_virt+0x5c/0xa0
->>>     [ 3458.198002][    C5]  handle_percpu_devid_irq+0xdc/0x414
->>>     [ 3458.203385][    C5]  handle_domain_irq+0xa8/0x168
->>>     [ 3458.208241][    C5]  gic_handle_irq.34493+0x54/0x244
->>>     [ 3458.213359][    C5]  call_on_irq_stack+0x40/0x70
->>>     [ 3458.218125][    C5]  do_interrupt_handler+0x60/0x9c
->>>     [ 3458.223156][    C5]  el1_interrupt+0x34/0x64
->>>     [ 3458.227560][    C5]  el1h_64_irq_handler+0x1c/0x2c
->>>     [ 3458.232503][    C5]  el1h_64_irq+0x7c/0x80
->>>     [ 3458.236736][    C5]  free_vmap_area_noflush+0x108/0x39c
->>>     [ 3458.242126][    C5]  remove_vm_area+0xbc/0x118
->>>     [ 3458.246714][    C5]  vm_remove_mappings+0x48/0x2a4
->>>     [ 3458.251656][    C5]  __vunmap+0x154/0x278
->>>     [ 3458.255796][    C5]  stolen_time_cpu_down_prepare+0xc0/0xd8
->>>     [ 3458.261542][    C5]  cpuhp_invoke_callback+0x248/0xc34
->>>     [ 3458.266842][    C5]  cpuhp_thread_fun+0x1c4/0x248
->>>     [ 3458.271696][    C5]  smpboot_thread_fn+0x1b0/0x400
->>>     [ 3458.276638][    C5]  kthread+0x17c/0x1e0
->>>     [ 3458.280691][    C5]  ret_from_fork+0x10/0x20
->>>
->>> As a fix, disable the IRQs during hotplug until we unmap and memset the
->>> stolen time structure.
->>
->> This will work for the call chain of your observed crash, but are
->> you sure that para_steal_clock() can't be called from another cpu
->> concurrently?
-> 
-> Agreed, this needs checking as update_rq_clock() is called from all over the
-> place.
-> 
->> In case you verified this can't happen, you can add my:
->>
->> Reviewed-by: Juergen Gross <jgross@suse.com>
->>
->> Otherwise you either need to use RCU for doing the memunmap(), or a
->> lock to protect stolen_time_region.
-> 
-> Yes, I think RCU would make a lot of sense here, deferring the memunmap
-> until there are no longer any readers. The reader is currently doing:
-> 
-> 	if (!reg->kaddr)
-> 		return 0;
-> 
-> 	return le64_to_cpu(READ_ONCE(reg->kaddr->stolen_time));
-> 
-> so we'd also want an rcu_dereference() on reg->kaddr to avoid reading it
-> twice.
-> 
-> Will
+vim +/memset +42 mm/kasan/shadow.c
 
+bb359dbcb70085 Andrey Konovalov 2020-12-22  40  
+bb359dbcb70085 Andrey Konovalov 2020-12-22  41  #undef memset
+bb359dbcb70085 Andrey Konovalov 2020-12-22 @42  void *memset(void *addr, int c, size_t len)
+bb359dbcb70085 Andrey Konovalov 2020-12-22  43  {
+f00748bfa0246c Andrey Konovalov 2021-02-24  44  	if (!kasan_check_range((unsigned long)addr, len, true, _RET_IP_))
+bb359dbcb70085 Andrey Konovalov 2020-12-22  45  		return NULL;
+bb359dbcb70085 Andrey Konovalov 2020-12-22  46  
+bb359dbcb70085 Andrey Konovalov 2020-12-22  47  	return __memset(addr, c, len);
+bb359dbcb70085 Andrey Konovalov 2020-12-22  48  }
+bb359dbcb70085 Andrey Konovalov 2020-12-22  49  
 
-We have seen this particular stack many times in our testing, but not 
-any other way. Will's comments are agreeable, I'll send out an updated 
-patch.
+:::::: The code at line 42 was first introduced by commit
+:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
 
-Thanks,
-Elliot
+:::::: TO: Andrey Konovalov <andreyknvl@google.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
