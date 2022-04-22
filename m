@@ -2,85 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC58C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C69BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383200AbiDVN6s (ORCPT
+        id S1448242AbiDVN7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        Fri, 22 Apr 2022 09:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234209AbiDVN6q (ORCPT
+        with ESMTP id S234209AbiDVN7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:58:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02E554F96
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:55:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AF3B61581
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D495C385A4;
-        Fri, 22 Apr 2022 13:55:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650635750;
-        bh=Cw6q6XIRXntiZeAmVFd85c4oCN4MbsMak9qkvLV97pQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aLH5z0AH0Rpw/AYwiZCrkzqzJE7GvU75wHdOH6i8qOmZ47DNw1RUhrXOignoEdaYB
-         RlcFOjKUo9rq2uPDWM3nPQRTlfMHkNZ1YKob8VaEVdRg13QDGkjdwYLtankYAWfGxI
-         kfeiPtvb5R4UUMkabPtTyABDyo98hyNufHmeioS0=
-Date:   Fri, 22 Apr 2022 15:55:48 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Mukesh Ojha <quic_mojha@quicinc.com>
-Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de, sboyd@kernel.org,
-        rafael@kernel.org, johannes@sipsolutions.net
-Subject: Re: [PATCH] devcoredump : Serialize devcd_del work
-Message-ID: <YmKz5OzW5IgJnX0r@kroah.com>
-References: <1650364077-22694-1-git-send-email-quic_mojha@quicinc.com>
- <11ff242b-195c-de75-d3d2-3e7b17a2ef3c@quicinc.com>
- <YmKb+xWkfNGiYBHD@kroah.com>
+        Fri, 22 Apr 2022 09:59:46 -0400
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A695A091;
+        Fri, 22 Apr 2022 06:56:51 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id r189so14625482ybr.6;
+        Fri, 22 Apr 2022 06:56:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iDPNffDsOVUBxUnp9TXoN3e3G+vjyNtpWrssmYmq2dA=;
+        b=Nm7Hob+qmw7s8XAKOE7ienQbCUXWM4WR2v4nAlSqPYSEBDPv9gLkq4dYi6KtcHSF/W
+         eqCLnlssVCLeTiRze8o/L55ofFqbV4AENpLkf6dYspMQEAWMahkBwTfHpMDfczSTBszU
+         XZ2/2gw7kw0QQCf5lZBEw3tekw8LZHeEeapoTDqzq3K4OuRp0M44P+0R0rjzY0cTo6MW
+         Uq4ZE31YRw5PF4EozkZUjJgj/r2tdo+gRmlkFkNWKUiPLHOcJc3LQ0Hqk3LMmJ6QWAsi
+         RRVQUcmVJKkVTZ6XvFsfMo1snnfBmxvawPwUFiTnYEXJ65yymkY+AgzUDHXQAryqjCez
+         UxFw==
+X-Gm-Message-State: AOAM530gCmIFZpjCECC+bJhPrLhGxBY5wVMk9tq9Xl+ddUmwdSsJY1yF
+        JUV5SWWcCkd9hZP5YWFKTg25+HQr9/dtTTGRUhk=
+X-Google-Smtp-Source: ABdhPJyBNPF8LeeZTlSD9oYDWJ2zTJMDFP27IcbyVgGUNGc+NtQbRO4eruB9oDz9d3dvsiS7Y5wo5ImNhWRgquJQDtY=
+X-Received: by 2002:a25:3cc3:0:b0:63e:6ee9:4840 with SMTP id
+ j186-20020a253cc3000000b0063e6ee94840mr4789222yba.153.1650635810900; Fri, 22
+ Apr 2022 06:56:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmKb+xWkfNGiYBHD@kroah.com>
+References: <20220418180814.1811136-1-trix@redhat.com>
+In-Reply-To: <20220418180814.1811136-1-trix@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 22 Apr 2022 15:56:40 +0200
+Message-ID: <CAJZ5v0ivfLtbEL2h1ivATmTTE0+AxWXeZnbCrfF8R=Y-7rfkcA@mail.gmail.com>
+Subject: Re: [PATCH] powercap/dtpm: move dtpm_subsys definition to dtpm.c
+To:     Tom Rix <trix@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 02:13:47PM +0200, Greg KH wrote:
-> 
-> A: http://en.wikipedia.org/wiki/Top_post
-> Q: Were do I find info about this thing called top-posting?
-> A: Because it messes up the order in which people normally read text.
-> Q: Why is top-posting such a bad thing?
-> A: Top-posting.
-> Q: What is the most annoying thing in e-mail?
-> 
-> A: No.
-> Q: Should I include quotations after my reply?
-> 
-> http://daringfireball.net/2007/07/on_top
-> 
-> On Fri, Apr 22, 2022 at 03:33:08PM +0530, Mukesh Ojha wrote:
-> > 
-> > Hi All,
-> > 
-> > Request you all the review comments on the fix of the described problem?
-> > 
-> > -Mukesh
-> > 
-> > 
-> > On 4/19/2022 3:57 PM, Mukesh Ojha wrote:
-> 
-> You sent this 3 days ago, please be realistic.
-> 
-> If you are concerned about the delay in patch reviews, please help us
-> out and review patches sent to the list.  Otherwise, don't start to
-> worry until at least after 2 weeks.
+On Mon, Apr 18, 2022 at 8:08 PM Tom Rix <trix@redhat.com> wrote:
+>
+> Smatch reports this issue
+> dtpm_devfreq.c:200:24: warning: symbol 'dtpm_devfreq_ops'
+>   was not declared. Should it be static?
+>
+> dtpm_devfreq_ops is declared in dtpm_subsys.h where it
+> is also used
+>
+> extern struct dtpm_subsys_ops dtpm_devfreq_ops;
+> struct dtpm_subsys_ops *dtpm_subsys[] = {
+> ...
+>         &dtpm_devfreq_ops,
+>
+> Global variables should not be defined in header files.
+> This only works because dtpm.c is the only includer
+> of dtpm_subsys.h and user of dtpm_susys[].
+>
+> Move the definition of dtpm_subsys[] to dtpm.c and change
+> the storage-class specifier to static.
+>
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-You also didn't even cc: me, so how could I see this at all?
+Daniel, any comments?
 
-So, nothing to review in my inbox, nice!
+Or do you want to pick it up yourself?
 
-{sigh}
+> ---
+>  drivers/powercap/dtpm.c        | 9 +++++++++
+>  drivers/powercap/dtpm_subsys.h | 9 ---------
+>  2 files changed, 9 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
+> index ce920f17f45f..827a2509bec7 100644
+> --- a/drivers/powercap/dtpm.c
+> +++ b/drivers/powercap/dtpm.c
+> @@ -29,6 +29,15 @@
+>
+>  #define DTPM_POWER_LIMIT_FLAG 0
+>
+> +static struct dtpm_subsys_ops *dtpm_subsys[] = {
+> +#ifdef CONFIG_DTPM_CPU
+> +       &dtpm_cpu_ops,
+> +#endif
+> +#ifdef CONFIG_DTPM_DEVFREQ
+> +       &dtpm_devfreq_ops,
+> +#endif
+> +};
+> +
+>  static const char *constraint_name[] = {
+>         "Instantaneous",
+>  };
+> diff --git a/drivers/powercap/dtpm_subsys.h b/drivers/powercap/dtpm_subsys.h
+> index db1712938a96..2db9a3efba93 100644
+> --- a/drivers/powercap/dtpm_subsys.h
+> +++ b/drivers/powercap/dtpm_subsys.h
+> @@ -10,13 +10,4 @@
+>  extern struct dtpm_subsys_ops dtpm_cpu_ops;
+>  extern struct dtpm_subsys_ops dtpm_devfreq_ops;
+>
+> -struct dtpm_subsys_ops *dtpm_subsys[] = {
+> -#ifdef CONFIG_DTPM_CPU
+> -       &dtpm_cpu_ops,
+> -#endif
+> -#ifdef CONFIG_DTPM_DEVFREQ
+> -       &dtpm_devfreq_ops,
+> -#endif
+> -};
+> -
+>  #endif
+> --
+> 2.27.0
+>
