@@ -2,84 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F62C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 365E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 12:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233944AbiDVM5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 08:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
+        id S229655AbiDVM5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 08:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiDVM4q (ORCPT
+        with ESMTP id S233872AbiDVM4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 08:56:46 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A328B527F5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 05:53:53 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-614-Bd_z2wt5MJGVJ2gBpQCfPQ-1; Fri, 22 Apr 2022 08:53:49 -0400
-X-MC-Unique: Bd_z2wt5MJGVJ2gBpQCfPQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 53F1A38337E2;
-        Fri, 22 Apr 2022 12:53:48 +0000 (UTC)
-Received: from comp-core-i7-2640m-0182e6.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BC8A3C28107;
-        Fri, 22 Apr 2022 12:53:45 +0000 (UTC)
-From:   Alexey Gladkov <legion@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Walsh <dwalsh@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Linux Containers <containers@lists.linux.dev>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v1 0/4] ipc: Remove extra1 field abuse to pass ipc namespace
-Date:   Fri, 22 Apr 2022 14:53:36 +0200
-Message-Id: <cover.1650631347.git.legion@kernel.org>
-In-Reply-To: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
-References: <CAHk-=wgBB8iPd0W=MQWnQJukMAPAqgsC0QX2wwiSvcct9zu_RA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+        Fri, 22 Apr 2022 08:56:52 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D72B52B00;
+        Fri, 22 Apr 2022 05:53:58 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1650632035; bh=Rr2b05NP3wGMyQRhBvV1IUry/zX4H2Dk7P7NRyvj4Tc=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=S2seNKR6yDu5lByMYBXtbttAJdb1b0jPUip8DgWFAkRfkxD3ictQ41YsHmflWx7Jt
+         ZD8Gqu1wZkLj4wbBUECqLWYLgwPXkly6M/+vFY+k4B81Erg0Fdt7CREtFGbIoACJlI
+         LHvoYzn8dmLlHQFq0Wf1Gr97+ZrFIpCXzoHBcxCs=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <YmKjL9bOtOmsFWTs@sirena.org.uk>
+Date:   Fri, 22 Apr 2022 14:53:54 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3CD969AD-7316-4D83-AD92-CC85ED817125@cutebit.org>
+References: <YkW4MPh8VWc8eSGg@sirena.org.uk>
+ <6D199EAB-FE14-4030-96A7-2E0E89D25FAB@cutebit.org>
+ <YkXKmxJ0R3qpUoH4@sirena.org.uk>
+ <DB0255C3-C9EC-4EFA-A377-C4BB1073D9B3@cutebit.org>
+ <YmKPQ6kLCPz+2XTJ@sirena.org.uk>
+ <B68302F2-3D77-4065-8A16-A9CC690AE10B@cutebit.org>
+ <YmKSgHrbb/7koM36@sirena.org.uk>
+ <A1574F30-62D2-467D-A40B-8FD7C6B8BCFA@cutebit.org>
+ <YmKeEKa0w2xLM9cL@sirena.org.uk>
+ <6F6130F3-381C-4AB7-B618-CDC4C4A37C9B@cutebit.org>
+ <YmKjL9bOtOmsFWTs@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These patches are made on top of branch:
 
-git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git per-namespace-ipc-sysctls-for-v5.18
 
-After discussion, I took into account Eric Biederman's fixes. With these
-changes, the hacks of passing namespace through .extra1 are not required.
+> On 22. 4. 2022, at 14:44, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Fri, Apr 22, 2022 at 02:36:03PM +0200, Martin Povi=C5=A1er wrote:
+>=20
+>>> Ah, I think the confusion here is that I'm using slot and channel
+>>> interchangably whereas you're saying that previously the driver =
+would
+>>> allocate two channels to each speaker with duplicate data?
+>=20
+>> I guess you could say that. Not that there=E2=80=99s duplicate data =
+on the I2S
+>> bus, but the speaker amp would previously be configured to look for =
+the
+>> left and right channel in the same TDM slot (see e.g. set_tdm_slot of
+>> tas2770 [0]).  (Each speaker amp drives a single speaker, but it =
+still
+>> has a notion of left and right channel.)
+>=20
+> Oh, I see - the speaker actually allows configuration of the slots
+> independently.  Usually the left/right thing on mono devices only does
+> something for I2S where the bus clocking enforces that there be both
+> left and right channels.  Either configuration is fine by me TBH, if =
+you
+> can do that then you could just keep them mapped to the same channel
+> then mark the control as disabled since it should have no effect.
 
-With the current design of sysctl dynamic memory allocation is
-necessary.
+Well but is there some established way to mark a control as disabled?
 
-Yes, Linus, these changes are not the refactoring you were talking
-about, but I plan to try to do such a refactoring in the my next
-patchset.
-
---
-
-Alexey Gladkov (4):
-  ipc: Remove extra1 field abuse to pass ipc namespace
-  ipc: Use proper ipc namespace
-  ipc: Check permissions for checkpoint_restart sysctls at open time
-  ipc: Remove extra braces
-
- ipc/ipc_sysctl.c | 108 +++++++++++++++++++++--------------------------
- 1 file changed, 49 insertions(+), 59 deletions(-)
-
--- 
-2.33.2
+Another issue here is that if I disable it I can=E2=80=99t leave the =
+routing
+control in it=E2=80=99s default value, which is =E2=80=98I2C Offset=E2=80=99=
+ and makes the speaker
+amp ignore the slot mapping.
 
