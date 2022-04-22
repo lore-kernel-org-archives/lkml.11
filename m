@@ -2,163 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A858C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiDVUnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 16:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57996 "EHLO
+        id S229562AbiDVUoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 16:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiDVUnf (ORCPT
+        with ESMTP id S229504AbiDVUn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 16:43:35 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03B72F2B0B;
-        Fri, 22 Apr 2022 12:41:06 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id j2so16339667ybu.0;
-        Fri, 22 Apr 2022 12:41:06 -0700 (PDT)
+        Fri, 22 Apr 2022 16:43:59 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF77B16C22E;
+        Fri, 22 Apr 2022 12:41:24 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id p12so10460805lfs.5;
+        Fri, 22 Apr 2022 12:41:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=lJJBFt56R7/LV6qOU2z7Q3rUmY3lVFuPnYXDX2dxxhQ=;
+        b=QD7uEPIwb+9FYvU/VPSEAmhebgEE43naJCLEPrC5G9+77tcWuN+k0klIL6fPlgTCRr
+         BnabyalhFNdtvUbr00s3UyHI44vteLSunmOZkZx146Z1ZD+XT/Cm/L6wYNVkacTB013W
+         pt6HuM+gnUyaNx3BJGqeFiGh5jQv7bhyBhtrHwGWf1TLOJdmZyY5cSZrYKnYhRon6AH3
+         MAebJ/mXFjLTm9lMs2oJkzNrregUaTpCqL+IISV8vHuehHeyF0zekxXeIYaDtV6pAbbx
+         g3IGVnzSNTzuxqzj9DWAY5TjrX+gG9XN+f6eL6qNS+Ucly1AupD/MnHhEPbxgeNtmbt1
+         Dj8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IOuZ8W1MJjibB6swPo2RkQCIeQZ1wridYdEDKveCnMw=;
-        b=75QeTDGw2CXuOQiRqR4x9mCo2fipdSQ2FnVmTTDAsV+ycc63HyxQgInkyz1UOUkcFO
-         TJNwp65NQMLbcUjWH9YGwdMzcc1UEvalFVCxlU9cqy4F18erT1Js5XhTM56JeCuwn0S3
-         40Ji+mVAmOQWRkQodiZc4Nf4z1FW9AzIsZ9UTwUV8tv70cHa652xQ1OAkeeGSA4qESsL
-         YqY5TUhEgXRUNLe1A0Z50wildXvhsuLWUinzz+qnDKe+cdRnwE5NdJkn0Jla24PwTgN+
-         y7xbMjDQcY0MhAoi//1J1Co0u5S3Q1UAZR9b6SD8YNnVL88f+bHtE9P7FA3j3bZ7Gb96
-         XaIA==
-X-Gm-Message-State: AOAM533NHaXEw+e1rmg8vLSJ9Q45NoCaXcNFd7lMbeVBS7It79fHpSFQ
-        lpYOZkHyZlme+NvaqQV4LDmLOqXsNA==
-X-Google-Smtp-Source: ABdhPJwYLw7ezcsEnAXRaBNaeuhKHOPAF+WazY3gcKcmVgQTsP9d3MdUusPnK8wJQL/5J1SzRjWOlw==
-X-Received: by 2002:a9d:3624:0:b0:5e9:5778:d0c6 with SMTP id w33-20020a9d3624000000b005e95778d0c6mr2399677otb.367.1650655308747;
-        Fri, 22 Apr 2022 12:21:48 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id x24-20020a056870a79800b000e2e53716fbsm1044094oao.31.2022.04.22.12.21.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:21:48 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Andrew Jeffery <andrew@aj.id.au>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>
-Cc:     linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: pinctrl: aspeed: Drop referenced nodes in examples
-Date:   Fri, 22 Apr 2022 14:21:38 -0500
-Message-Id: <20220422192139.2592632-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=lJJBFt56R7/LV6qOU2z7Q3rUmY3lVFuPnYXDX2dxxhQ=;
+        b=jrcDH70VlkK8Y01A0DRLbZXs1b38jO75zqzKqCTDPW6QKPmG+plmAITe8g+Gb4nexj
+         QqxSgG2SKpeETppGjHC3mAzpPCTnfRHnEDiWyXpa78FvfMkjpXA36uXX8bhbT4KXtK1l
+         q9K1RozJFdH/eTX+3j7aVXZfmqTyxkzrQl4CDXs4FpWWa7UvJw5H9JvzUANwiZMXni9O
+         YzBFBnfaPZMg4/NzWNYBcECIritvJTUEDmXqGf/KwifuvL0Wjerirt8Ck/pCbzOGMtPu
+         rYI40TbGPbimgoeo8VAp5dYpfyTG5o3i5RhWjfmDsbmMHj/bVtjMwBTv7WT5fK4VRKKr
+         83pg==
+X-Gm-Message-State: AOAM533B0AkZSpj/2St/db3lhtZo0W8Xd/SyCfK7p4jaeMBUxBQkXrHp
+        YwrBqH/iG92C0YYidPvyffaeDRSi/VF9qAzZPnyJVAez6D8=
+X-Google-Smtp-Source: ABdhPJwYdNw2jakv/CMKEnZj7tXyx7+mTqjFSQxLupjlpj+XaZSYkRknmFR+h7RjxdRd471uPqB/HqDXvqrT7Jke0VQ=
+X-Received: by 2002:a2e:878d:0:b0:24e:f3cb:ad74 with SMTP id
+ n13-20020a2e878d000000b0024ef3cbad74mr2751548lji.357.1650655541301; Fri, 22
+ Apr 2022 12:25:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ab2:6308:0:b0:138:fd0a:136c with HTTP; Fri, 22 Apr 2022
+ 12:25:40 -0700 (PDT)
+In-Reply-To: <CAMhUBjkWcg4+YYynsd90jX1A+zp95tUUcLgYrTPAqSmbxM7TJA@mail.gmail.com>
+References: <20220409062449.3752252-1-zheyuma97@gmail.com> <CA++WF2Np7Bk_qT68Uc3mrC38mN5p3fm9eVT7VA8NoX6=es2r2w@mail.gmail.com>
+ <CAMhUBjkWcg4+YYynsd90jX1A+zp95tUUcLgYrTPAqSmbxM7TJA@mail.gmail.com>
+From:   Stanislav Yakovlev <stas.yakovlev@gmail.com>
+Date:   Fri, 22 Apr 2022 22:25:40 +0300
+Message-ID: <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
+Subject: Re: [PATCH] wireless: ipw2x00: Refine the error handling of ipw2100_pci_init_one()
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The additional nodes in the example referenced from the pinctrl node
-'aspeed,external-nodes' properties are either incorrect (aspeed,ast2500-lpc)
-or not documented with a schema (aspeed,ast2500-gfx). There's no need to
-show these nodes as part of the pinctrl example, so just remove them.
+Hi Zheyu,
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../pinctrl/aspeed,ast2500-pinctrl.yaml       | 81 ++++---------------
- 1 file changed, 16 insertions(+), 65 deletions(-)
+On 18/04/2022, Zheyu Ma <zheyuma97@gmail.com> wrote:
+> On Thu, Apr 14, 2022 at 2:40 AM Stanislav Yakovlev
+> <stas.yakovlev@gmail.com> wrote:
+>>
+>> On Sat, 9 Apr 2022 at 02:25, Zheyu Ma <zheyuma97@gmail.com> wrote:
+>> >
+>> > The driver should release resources in reverse order, i.e., the
+>> > resources requested first should be released last, and the driver
+>> > should adjust the order of error handling code by this rule.
+>> >
+>> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+>> > ---
+>> >  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 34 +++++++++-----------
+>> >  1 file changed, 16 insertions(+), 18 deletions(-)
+>> >
+>> [Skipped]
+>>
+>> > @@ -6306,9 +6303,13 @@ static int ipw2100_pci_init_one(struct pci_dev
+>> > *pci_dev,
+>> >  out:
+>> >         return err;
+>> >
+>> > -      fail_unlock:
+>> > +fail_unlock:
+>> >         mutex_unlock(&priv->action_mutex);
+>> > -      fail:
+>> > +fail:
+>> > +       pci_release_regions(pci_dev);
+>> > +fail_disable:
+>> > +       pci_disable_device(pci_dev);
+>> We can't move these functions before the following block.
+>>
+>> > +fail_dev:
+>> >         if (dev) {
+>> >                 if (registered >= 2)
+>> >                         unregister_netdev(dev);
+>> This block continues with a function call to ipw2100_hw_stop_adapter
+>> which assumes that device is still accessible via pci bus.
+>
+> Thanks for your reminder, but the existing error handling does need to
+> be revised, I got the following warning when the probing fails at
+> pci_resource_flags():
+>
+> [   20.712160] WARNING: CPU: 1 PID: 462 at lib/iomap.c:44
+> pci_iounmap+0x40/0x50
+> [   20.716583] RIP: 0010:pci_iounmap+0x40/0x50
+> [   20.726342]  <TASK>
+> [   20.726550]  ipw2100_pci_init_one+0x101/0x1ee0 [ipw2100]
+>
+> Since I am not familiar with the ipw2100, could someone give me some
+> advice to fix this.
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-index 7c25c8d51116..9db904a528ee 100644
---- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml
-@@ -76,73 +76,24 @@ additionalProperties: false
- examples:
-   - |
-     #include <dt-bindings/clock/aspeed-clock.h>
--    apb {
--        compatible = "simple-bus";
--        #address-cells = <1>;
--        #size-cells = <1>;
--        ranges;
--
--        syscon: scu@1e6e2000 {
--            compatible = "aspeed,ast2500-scu", "syscon", "simple-mfd";
--            reg = <0x1e6e2000 0x1a8>;
--            #clock-cells = <1>;
--            #reset-cells = <1>;
--
--            pinctrl: pinctrl {
--                compatible = "aspeed,ast2500-pinctrl";
--                aspeed,external-nodes = <&gfx>, <&lhc>;
--
--                pinctrl_i2c3_default: i2c3_default {
--                    function = "I2C3";
--                    groups = "I2C3";
--                };
--
--                pinctrl_gpioh0_unbiased_default: gpioh0 {
--                    pins = "A18";
--                    bias-disable;
--                };
-+    scu@1e6e2000 {
-+        compatible = "aspeed,ast2500-scu", "syscon", "simple-mfd";
-+        reg = <0x1e6e2000 0x1a8>;
-+        #clock-cells = <1>;
-+        #reset-cells = <1>;
-+
-+        pinctrl: pinctrl {
-+            compatible = "aspeed,ast2500-pinctrl";
-+            aspeed,external-nodes = <&gfx>, <&lhc>;
-+
-+            pinctrl_i2c3_default: i2c3_default {
-+                function = "I2C3";
-+                groups = "I2C3";
-             };
--        };
--
--        gfx: display@1e6e6000 {
--            compatible = "aspeed,ast2500-gfx", "syscon";
--            reg = <0x1e6e6000 0x1000>;
--            reg-io-width = <4>;
--            clocks = <&syscon ASPEED_CLK_GATE_D1CLK>;
--            resets = <&syscon ASPEED_RESET_CRT1>;
--            interrupts = <0x19>;
--            syscon = <&syscon>;
--            memory-region = <&gfx_memory>;
--        };
--    };
--
--    lpc: lpc@1e789000 {
--        compatible = "aspeed,ast2500-lpc", "simple-mfd";
--        reg = <0x1e789000 0x1000>;
--
--        #address-cells = <1>;
--        #size-cells = <1>;
--        ranges = <0x0 0x1e789000 0x1000>;
--
--        lpc_host: lpc-host@80 {
--            compatible = "aspeed,ast2500-lpc-host", "simple-mfd", "syscon";
--            reg = <0x80 0x1e0>;
--            reg-io-width = <4>;
- 
--            #address-cells = <1>;
--            #size-cells = <1>;
--            ranges = <0x0 0x80 0x1e0>;
--
--            lhc: lhc@20 {
--                   compatible = "aspeed,ast2500-lhc";
--                   reg = <0x20 0x24>, <0x48 0x8>;
-+            pinctrl_gpioh0_unbiased_default: gpioh0 {
-+                pins = "A18";
-+                bias-disable;
-             };
-         };
-     };
--
--    gfx_memory: framebuffer {
--        size = <0x01000000>;
--        alignment = <0x01000000>;
--        compatible = "shared-dma-pool";
--        reusable;
--    };
--- 
-2.32.0
+Could you please rebuild the kernel with IPW2100_DEBUG config option
+enabled, rerun the test and post your results here? Also, please post
+the output of "lspci -v" here.
 
+Stanislav.
