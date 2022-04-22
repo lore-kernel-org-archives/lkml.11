@@ -2,297 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A890C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 639BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448517AbiDVOR2 (ORCPT
+        id S1448525AbiDVOSb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
+        Fri, 22 Apr 2022 10:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447935AbiDVORY (ORCPT
+        with ESMTP id S1448549AbiDVORt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:17:24 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AAE5AA5B;
-        Fri, 22 Apr 2022 07:14:30 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id 17-20020a05600c021100b00393a19f8f98so2430158wmi.4;
-        Fri, 22 Apr 2022 07:14:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Qr/0xq7JkvEGOL2jpks6S/YAZiRfs0hpQ9EKWnHgKuc=;
-        b=M5bKdpx9khC6KQ6QuQnT8RrSdAABKVInmDk2FO8jr71ln0R1mjQ7ovraqZUcqQz4JL
-         AQjjEni780wSaSMXQZtvrTaXXT8U0pmjAA0gd+1qXbyAH844QkR3pO7R9Z12pu/lpIEv
-         ZBOR84dZgYum60jhQES42YEx8ZeBpeR/BKjB3NXFi2XOd3rht81bSeNDhCKnjbYv017e
-         TVtPZ1b2RryYP0lebh6qzP8U0WW9Wmmqj32QMyQ/H5p1TqIAyxi4kby3TtbFUGKDdvdz
-         yR59YCQ39TUk2KQLpDYTJYkNFJFf8CQ9kWzxfNzbosFgwrhawZEa0KmzRYJU4hRzLIL/
-         Xa3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Qr/0xq7JkvEGOL2jpks6S/YAZiRfs0hpQ9EKWnHgKuc=;
-        b=TnenQojuK4Hi2ilK4K5kGcUUZN9XGQKE8vJDex1qvUTWm4gpZEOEL7XG8rms6zdszH
-         e4LKwekTYXmfQ0CAFy0nlXfVLBqWPe57uo9CZTd4H5tWht6/nA9RzDCziJR0PTMvvo2J
-         PPKkQ1nAvhtAlDXwGabkUoAskE+cm36qWdHzIP4jXR/toJo1NudbKStdMFkA1k4kD80m
-         txo8BC7uVphlYvKtDDkPcbGd+NCr75rdFFiMnvCYlTbQUqJRFIVLCLUWEUtdZ+SIsVhV
-         TJ9Qag+BhZmpL7/sAY+R/RUhMxAzCPnq0sbgjvKWmgMFVEbYt0Pag/OP5Gl9YORM1oFH
-         bufw==
-X-Gm-Message-State: AOAM531yvfhlh9L3Eq8YNVaBWalWBqH0Lr//XYhPgUcJGtF9449PwnYT
-        UczEB6cVKmklX9Rs+XmXjFA=
-X-Google-Smtp-Source: ABdhPJygTsZkr1+Nb2cftFWfh857s0vRfekbCg2qVqBhhQJKsd9jHma4OY01RZrNfrWSob9PiGtxcw==
-X-Received: by 2002:a7b:cb83:0:b0:37e:bc50:3c6b with SMTP id m3-20020a7bcb83000000b0037ebc503c6bmr13865542wmi.67.1650636869177;
-        Fri, 22 Apr 2022 07:14:29 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id q128-20020a1c4386000000b003915e19d47asm4632725wma.32.2022.04.22.07.14.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 07:14:28 -0700 (PDT)
-Message-ID: <427dda20-7e9a-499b-02f3-7f42a157e0d6@gmail.com>
-Date:   Fri, 22 Apr 2022 16:14:27 +0200
+        Fri, 22 Apr 2022 10:17:49 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2374AD6A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:14:54 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650636892;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ScEofcAngBttJUjbaPoFXsndGMP9kRPSbXXWkcBMELE=;
+        b=j9cbLFKiSXATNqfzi7t6cZ1fME371oGdgUJE1HLkwVmhO9CpkJsdPFnjR7rSu/brzPBbZq
+        kEiTh4izYnJVbOwpCdSE4NP9D3v4Fzy4s9bOcJW94fKuD9iPLbVgyZlODqe5JpO8xxnFUD
+        OH1uTwvuP0MVzNdXxUd4bEHWjaVlxQYTh4R3L1Oo8w81cctyruQnT1IH+jPJEulb8uYNo6
+        XVuXLfVXTRxMC9HfCBsOX0c0P0Sd1tCxagF3dwZ4pzUMUbOgGqlzu6zMx3bjtDlF3a0hF1
+        nvG4hwjGFgHAS89jpimtW2eZhTjmFpLObkHIdL+AaiPebxOOVVwR3Z9GZyIO3g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650636892;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ScEofcAngBttJUjbaPoFXsndGMP9kRPSbXXWkcBMELE=;
+        b=KNPltB/HTIIWTnI06jmo4X2QMsdankWZJ2nHLJ9R6TgD6svBNmf7cWKiI/lavwn/nXcK9c
+        IhglH9K6HbZsO+Ag==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v3 14/15] printk: extend console_lock for proper
+ kthread support
+In-Reply-To: <YmKnp3Ccu7laW3E4@alley>
+References: <20220419234637.357112-1-john.ogness@linutronix.de>
+ <20220419234637.357112-15-john.ogness@linutronix.de>
+ <20220421124119.GB11747@pathway.suse.cz>
+ <875yn2h5ku.fsf@jogness.linutronix.de> <YmKnp3Ccu7laW3E4@alley>
+Date:   Fri, 22 Apr 2022 16:20:52 +0206
+Message-ID: <87o80tp5lv.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] ASoC: dt-bindings: mediatek: mt8192: complete clocks
- and clock-names
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>
-References: <20220419025557.22262-1-allen-kh.cheng@mediatek.com>
- <20220419025557.22262-2-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220419025557.22262-2-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022-04-22, Petr Mladek <pmladek@suse.com> wrote:
+> IMHO, it is actually a generic problem of the complex locking scheme
+> when there are too many combinations of the protected data.
 
+Sure. We are in a delicate situation of continuing to support the old
+locking scheme while transitioning to a new one.
 
-On 19/04/2022 04:55, Allen-KH Cheng wrote:
-> From: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> 
-> Complete all clocks and clock-names be used for mt8192 SoC into dt-bindings.
-> 
-> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> In the current state, the problem seems to be only with CON_ENABLED
+> flag but there might be other hidden races in the future.
+>
+> IMHO, it would be much easier when there are the following rules:
+>
+>    + console_lock() blocks taking con->lock
+>    + con->lock blocks taking console_lock()
+>    + Different con->lock might be taken in parallel
+>
+> The result would be:
+>
+>    + global variables need to be guarded by the big console_lock()
+>    + con->lock should be enough to guard per-console variables
+>    + the big console_lock() would serialize also access to
+>      per-console variables.
 
-You missed to add Mark to the list. This patch should go through his branch. I 
-added him now to the thread.
+It looks like you are talking about nested locking. This was my original
+idea but I had problems relating to kthread stopping. However, the code
+has changed a lot since then and now when I look at it, it does not look
+like it would be a problem. Getting rid of CON_THD_BLOCKED would greatly
+simplify the relationship between console_lock and kthreads.
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+For this we would need the console list to become a list_head so that it
+is doubly linked (in order to unlock in reverse order). That probably
+would be a good idea anyway. It is a bit bizarre that printk implements
+its own linked list.
 
-Regards,
-Matthias
+> Of course, it is not that simple. I am not 100% that we could
+> even achieve this.
 
-> ---
->   .../bindings/sound/mt8192-afe-pcm.yaml        | 165 +++++++++++++++++-
->   1 file changed, 157 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml b/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
-> index 7a25bc9b8060..1b6b22a5732e 100644
-> --- a/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
-> +++ b/Documentation/devicetree/bindings/sound/mt8192-afe-pcm.yaml
-> @@ -39,20 +39,67 @@ properties:
->       maxItems: 1
->   
->     clocks:
-> -    items:
-> -      - description: AFE clock
-> -      - description: ADDA DAC clock
-> -      - description: ADDA DAC pre-distortion clock
-> -      - description: audio infra sys clock
-> -      - description: audio infra 26M clock
-> +    minItems: 56
-> +    maxItems: 56
->   
->     clock-names:
->       items:
->         - const: aud_afe_clk
->         - const: aud_dac_clk
->         - const: aud_dac_predis_clk
-> +      - const: aud_adc_clk
-> +      - const: aud_adda6_adc_clk
-> +      - const: aud_apll22m_clk
-> +      - const: aud_apll24m_clk
-> +      - const: aud_apll1_tuner_clk
-> +      - const: aud_apll2_tuner_clk
-> +      - const: aud_tdm_clk
-> +      - const: aud_tml_clk
-> +      - const: aud_nle
-> +      - const: aud_dac_hires_clk
-> +      - const: aud_adc_hires_clk
-> +      - const: aud_adc_hires_tml
-> +      - const: aud_adda6_adc_hires_clk
-> +      - const: aud_3rd_dac_clk
-> +      - const: aud_3rd_dac_predis_clk
-> +      - const: aud_3rd_dac_tml
-> +      - const: aud_3rd_dac_hires_clk
->         - const: aud_infra_clk
->         - const: aud_infra_26m_clk
-> +      - const: top_mux_audio
-> +      - const: top_mux_audio_int
-> +      - const: top_mainpll_d4_d4
-> +      - const: top_mux_aud_1
-> +      - const: top_apll1_ck
-> +      - const: top_mux_aud_2
-> +      - const: top_apll2_ck
-> +      - const: top_mux_aud_eng1
-> +      - const: top_apll1_d4
-> +      - const: top_mux_aud_eng2
-> +      - const: top_apll2_d4
-> +      - const: top_i2s0_m_sel
-> +      - const: top_i2s1_m_sel
-> +      - const: top_i2s2_m_sel
-> +      - const: top_i2s3_m_sel
-> +      - const: top_i2s4_m_sel
-> +      - const: top_i2s5_m_sel
-> +      - const: top_i2s6_m_sel
-> +      - const: top_i2s7_m_sel
-> +      - const: top_i2s8_m_sel
-> +      - const: top_i2s9_m_sel
-> +      - const: top_apll12_div0
-> +      - const: top_apll12_div1
-> +      - const: top_apll12_div2
-> +      - const: top_apll12_div3
-> +      - const: top_apll12_div4
-> +      - const: top_apll12_divb
-> +      - const: top_apll12_div5
-> +      - const: top_apll12_div6
-> +      - const: top_apll12_div7
-> +      - const: top_apll12_div8
-> +      - const: top_apll12_div9
-> +      - const: top_mux_audio_h
-> +      - const: top_clk26m_clk
->   
->   required:
->     - compatible
-> @@ -88,13 +135,115 @@ examples:
->           clocks = <&audsys CLK_AUD_AFE>,
->                    <&audsys CLK_AUD_DAC>,
->                    <&audsys CLK_AUD_DAC_PREDIS>,
-> +                 <&audsys CLK_AUD_ADC>,
-> +                 <&audsys CLK_AUD_ADDA6_ADC>,
-> +                 <&audsys CLK_AUD_22M>,
-> +                 <&audsys CLK_AUD_24M>,
-> +                 <&audsys CLK_AUD_APLL_TUNER>,
-> +                 <&audsys CLK_AUD_APLL2_TUNER>,
-> +                 <&audsys CLK_AUD_TDM>,
-> +                 <&audsys CLK_AUD_TML>,
-> +                 <&audsys CLK_AUD_NLE>,
-> +                 <&audsys CLK_AUD_DAC_HIRES>,
-> +                 <&audsys CLK_AUD_ADC_HIRES>,
-> +                 <&audsys CLK_AUD_ADC_HIRES_TML>,
-> +                 <&audsys CLK_AUD_ADDA6_ADC_HIRES>,
-> +                 <&audsys CLK_AUD_3RD_DAC>,
-> +                 <&audsys CLK_AUD_3RD_DAC_PREDIS>,
-> +                 <&audsys CLK_AUD_3RD_DAC_TML>,
-> +                 <&audsys CLK_AUD_3RD_DAC_HIRES>,
->                    <&infracfg CLK_INFRA_AUDIO>,
-> -                 <&infracfg CLK_INFRA_AUDIO_26M_B>;
-> +                 <&infracfg CLK_INFRA_AUDIO_26M_B>,
-> +                 <&topckgen CLK_TOP_AUDIO_SEL>,
-> +                 <&topckgen CLK_TOP_AUD_INTBUS_SEL>,
-> +                 <&topckgen CLK_TOP_MAINPLL_D4_D4>,
-> +                 <&topckgen CLK_TOP_AUD_1_SEL>,
-> +                 <&topckgen CLK_TOP_APLL1>,
-> +                 <&topckgen CLK_TOP_AUD_2_SEL>,
-> +                 <&topckgen CLK_TOP_APLL2>,
-> +                 <&topckgen CLK_TOP_AUD_ENGEN1_SEL>,
-> +                 <&topckgen CLK_TOP_APLL1_D4>,
-> +                 <&topckgen CLK_TOP_AUD_ENGEN2_SEL>,
-> +                 <&topckgen CLK_TOP_APLL2_D4>,
-> +                 <&topckgen CLK_TOP_APLL_I2S0_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S1_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S2_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S3_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S4_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S5_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S6_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S7_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S8_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL_I2S9_M_SEL>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV0>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV1>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV2>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV3>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV4>,
-> +                 <&topckgen CLK_TOP_APLL12_DIVB>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV5>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV6>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV7>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV8>,
-> +                 <&topckgen CLK_TOP_APLL12_DIV9>,
-> +                 <&topckgen CLK_TOP_AUDIO_H_SEL>,
-> +                 <&clk26m>;
->           clock-names = "aud_afe_clk",
->                         "aud_dac_clk",
->                         "aud_dac_predis_clk",
-> +                      "aud_adc_clk",
-> +                      "aud_adda6_adc_clk",
-> +                      "aud_apll22m_clk",
-> +                      "aud_apll24m_clk",
-> +                      "aud_apll1_tuner_clk",
-> +                      "aud_apll2_tuner_clk",
-> +                      "aud_tdm_clk",
-> +                      "aud_tml_clk",
-> +                      "aud_nle",
-> +                      "aud_dac_hires_clk",
-> +                      "aud_adc_hires_clk",
-> +                      "aud_adc_hires_tml",
-> +                      "aud_adda6_adc_hires_clk",
-> +                      "aud_3rd_dac_clk",
-> +                      "aud_3rd_dac_predis_clk",
-> +                      "aud_3rd_dac_tml",
-> +                      "aud_3rd_dac_hires_clk",
->                         "aud_infra_clk",
-> -                      "aud_infra_26m_clk";
-> +                      "aud_infra_26m_clk",
-> +                      "top_mux_audio",
-> +                      "top_mux_audio_int",
-> +                      "top_mainpll_d4_d4",
-> +                      "top_mux_aud_1",
-> +                      "top_apll1_ck",
-> +                      "top_mux_aud_2",
-> +                      "top_apll2_ck",
-> +                      "top_mux_aud_eng1",
-> +                      "top_apll1_d4",
-> +                      "top_mux_aud_eng2",
-> +                      "top_apll2_d4",
-> +                      "top_i2s0_m_sel",
-> +                      "top_i2s1_m_sel",
-> +                      "top_i2s2_m_sel",
-> +                      "top_i2s3_m_sel",
-> +                      "top_i2s4_m_sel",
-> +                      "top_i2s5_m_sel",
-> +                      "top_i2s6_m_sel",
-> +                      "top_i2s7_m_sel",
-> +                      "top_i2s8_m_sel",
-> +                      "top_i2s9_m_sel",
-> +                      "top_apll12_div0",
-> +                      "top_apll12_div1",
-> +                      "top_apll12_div2",
-> +                      "top_apll12_div3",
-> +                      "top_apll12_div4",
-> +                      "top_apll12_divb",
-> +                      "top_apll12_div5",
-> +                      "top_apll12_div6",
-> +                      "top_apll12_div7",
-> +                      "top_apll12_div8",
-> +                      "top_apll12_div9",
-> +                      "top_mux_audio_h",
-> +                      "top_clk26m_clk";
->       };
->   
->   ...
+It just might be that simple. I will explore it again.
+
+> Anyway, I think about the following wrapper:
+>
+> void single_console_lock(struct console *con)
+> {
+> 	for (;;) {
+> 		error = wait_event_interruptible(log_wait,
+> 					con->flags & CON_THB_BLOCKED);
+>
+> 		if (error)
+> 			continue;
+>
+> 		mutex_lock(&con->lock);
+>
+> 		if (!con->flags & CON_THB_BLOCKED)
+> 			break;
+>
+> 		mutex_unlock(&con->lock);
+> 	}
+> }
+>
+> void single_console_unlock(struct console *con)
+> {
+> 	mutex_unlock(&con->lock);
+> }
+>
+> We should use it everywhere instead of the simple mutex_lock(con->lock)
+> and mutex_lock(con->lock). And we could remove mutex_lock()/unlock()
+> from code called under the big console_lock().
+
+Hmmm. Waiting on @log_wait is not correct. A @log_wait wakeup with the
+kthread already in the blocked state is unusual. There would need to be
+a per-console waitqueue for when the kthread unlocks its mutex.
+
+Maybe something like:
+
+void single_console_lock(struct console *con)
+{
+	for (;;) {
+		error = wait_event_interruptible(con->lock_wait,
+				!(con->flags & CON_THB_BLOCKED));
+		if (error)
+			continue;
+
+		mutex_lock(&con->lock);
+
+		if (!(con->flags & CON_THB_BLOCKED))
+			break;
+
+		mutex_unlock(&con->lock);
+	}
+}
+
+And in printk_kthread_func(), after the kthread unlocks its con->lock,
+it calls:
+
+if (wq_has_sleeper(&con->lock_wait))
+	wake_up_interruptible_all(&con->lock_wait);
+
+But single_console_lock() would not be allowed to be called under
+console_lock(), so I don't see how it is useful. con->flags is always
+modified under @console_sem to make sure the console does not disappear.
+
+Anyway, I will first look into the nested locking solution. That seems
+more promising to me and it would go a long way to simplify the locking
+hierarchy.
+
+John
