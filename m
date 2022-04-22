@@ -2,92 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 188F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233199AbiDVGDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S233248AbiDVGDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 02:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiDVGDq (ORCPT
+        with ESMTP id S233197AbiDVGDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:03:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9A74F473;
-        Thu, 21 Apr 2022 23:00:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB45C61DD2;
-        Fri, 22 Apr 2022 06:00:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C478AC385A4;
-        Fri, 22 Apr 2022 06:00:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650607253;
-        bh=v2TxGMZrPNxa8ZwM6tRVDSf6me6r9YRH6FQSwHNBNZY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yTnTZFMzlJcPcamxBmW4YXvA35d6ZSHryqocxu3iwbSRjFQIa9szfGxjzwxAg6Tiv
-         LNtZFtTV1PwJwY2HVZlJi+rmFI7Wy+HMtbwirb+0P6pay7Y8+9YwuXq23necOncFGQ
-         cdjcv1K+1SRpXSzPXaumgP077bHTFR2CLipyA3JA=
-Date:   Fri, 22 Apr 2022 08:00:50 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Luck, Tony" <tony.luck@intel.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: [PATCH v2] topology/sysfs: Fix allnoconfig build breakage.
-Message-ID: <YmJEkoVGCnCXb5Ff@kroah.com>
-References: <20220421152645.3a849198@canb.auug.org.au>
- <YmD+geU9CmjoVnN9@kroah.com>
- <YmF8Hrq5kgDdfvtS@agluck-desk3.sc.intel.com>
- <YmF+FTxgu2U4/oPA@kroah.com>
- <YmGEL2klp4S97UiH@agluck-desk3.sc.intel.com>
- <20220422092247.5c638079@canb.auug.org.au>
- <90d0e2c9b4a74c92bcdd5fc4313a7629@intel.com>
- <20220422100054.74cadded@canb.auug.org.au>
- <YmIYFjI/B+33PQn+@agluck-desk3.sc.intel.com>
+        Fri, 22 Apr 2022 02:03:49 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EE54F473
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:00:57 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id b7so8624996plh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sIHHWuXCFhgIuVLEw6qrEOnv9syAmIvNW41hiA3znas=;
+        b=SOBh1fU+ek+mwjGri8dzq6pef9j78Zr2x/jT9SaI85A+HQkk8bA/T2JrdJj03jaz2/
+         fcNUQX4nKN+c2RYGvLoXSmG5HKZJOV6nxXnYYrWrG0E1AVaAJwD4k+jotH5A6UeMRhlY
+         aVp4sP43Hqgc0cCmT8f+J1Z2BHzjW7467I9ce0l81Buuj2PSru0HCasQKsrM5mq9PXKX
+         +uHpndlPMOycVEadM5NXsUqbzd8ROuMS3kixTlEw4Ir4JjvP/9AVvNU2yRsPYg4cUPwt
+         09qWlawywp74oZXGvT6TBnrCFpDTMTcTFyE2dZNFn9XmlL47RHvm8/heVC+99RyaYnB3
+         TRYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sIHHWuXCFhgIuVLEw6qrEOnv9syAmIvNW41hiA3znas=;
+        b=8MYNY/PAcrvKbtG4+lVWYArcOIb0bz2kkM+Nhyb7Wdx8O22UCpJXFfyANKhp6J1ijQ
+         9hn6BmCzs2YwoGIi3WSdGjduLPagc0a6usj+6jieeakig/liXbVEk8lFVwbqt8raLyqD
+         1Q1pb/2CrRPARd12td2uaY48tagnrOv2E83vMYESran/zdtwnlOFSpV9e15fnSyQhsVz
+         NIb7p2fY4YlHQZjaz64KrgQvPEimlihj0rDNurGlFDdUwrJayIU0nTJMoJsCaBWYtSp0
+         92YJ2Cesb3mqQMtc/u8NlYVUuuXs1Pkwa+rVgE13lPgd4vpVv0YHIIWc3/cAnqjWe2K1
+         1pVw==
+X-Gm-Message-State: AOAM531cRolpkQ+G/tT55MUKDGMlCiUOhQqYoeIBIhvdBXcFsl7bAsoE
+        QMkeYPokO239aAWRMbve3vtSlg==
+X-Google-Smtp-Source: ABdhPJxWgtwSeKPW/si2v9A21Ai8Ex0JgbDjAcJhrdIPLdEDJ5McfxSOMH64Ih+VY/b9HCxtO5ubSQ==
+X-Received: by 2002:a17:903:11d1:b0:151:9fb2:9858 with SMTP id q17-20020a17090311d100b001519fb29858mr2993208plh.136.1650607256188;
+        Thu, 21 Apr 2022 23:00:56 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id ck14-20020a056a00328e00b0050a3c5f415csm1029801pfb.23.2022.04.21.23.00.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 23:00:55 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     will@kernel.org, steven.price@arm.com, catalin.marinas@arm.com,
+        akpm@linux-foundation.org, anshuman.khandual@arm.com,
+        lengxujun2007@126.com, arnd@arndb.de, quic_qiancai@quicinc.com,
+        aneesh.kumar@linux.ibm.com
+Cc:     smuchun@gmail.com, duanxiongchun@bytedance.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v3] arm64: mm: fix p?d_leaf()
+Date:   Fri, 22 Apr 2022 14:00:33 +0800
+Message-Id: <20220422060033.48711-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmIYFjI/B+33PQn+@agluck-desk3.sc.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 07:51:02PM -0700, Luck, Tony wrote:
-> On Fri, Apr 22, 2022 at 10:00:54AM +1000, Stephen Rothwell wrote:
-> > I assume that there is some good reason that topology_ppin() is not
-> > implemented as a static inline function?
-> 
-> I don't think so. I just cut & pasted how all the other topology_*()
-> things were implemented.
-> 
-> Making it a static inline appears to fix this problem. But before
-> embarrassing myself with a third broken version I'll let zero day
-> crunch on:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/aegl/linux.git hide_ppin
-> 
-> to see if there is some subtle config or arch where the inline trick
-> doesn't work.
-> 
-> Thanks for the idea! :-)
+The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
+the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
+caused by this was reported by Qian Cai. Also fix pud_leaf().
 
-Why not just do the following, which passes my build tests here:
+Link: https://patchwork.kernel.org/comment/24798260/ [1]
+Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
+Reported-by: Qian Cai <quic_qiancai@quicinc.com>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+v3:
+ - Fix pud_leaf() as well.
+ - Rework pmd_leaf() as present && !table.
 
+ arch/arm64/include/asm/pgtable.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/topology.c b/drivers/base/topology.c
-index 706dbf8bf249..ac6ad9ab67f9 100644
---- a/drivers/base/topology.c
-+++ b/drivers/base/topology.c
-@@ -155,9 +155,7 @@ static struct attribute *default_attrs[] = {
- static umode_t topology_is_visible(struct kobject *kobj,
- 				   struct attribute *attr, int unused)
- {
--	struct device *dev = kobj_to_dev(kobj);
--
--	if (attr == &dev_attr_ppin.attr && !topology_ppin(dev->id))
-+	if (attr == &dev_attr_ppin.attr && !topology_ppin(kobj_to_dev(kobj)->id))
- 		return 0;
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 930077f7b572..9aae3773b6c4 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -551,7 +551,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+ 				 PMD_TYPE_TABLE)
+ #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
+ 				 PMD_TYPE_SECT)
+-#define pmd_leaf(pmd)		pmd_sect(pmd)
++#define pmd_leaf(pmd)		(pmd_present(pmd) && !pmd_table(pmd))
+ #define pmd_bad(pmd)		(!pmd_table(pmd))
  
- 	return attr->mode;
+ #define pmd_leaf_size(pmd)	(pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
+@@ -641,7 +641,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ #define pud_none(pud)		(!pud_val(pud))
+ #define pud_bad(pud)		(!pud_table(pud))
+ #define pud_present(pud)	pte_present(pud_pte(pud))
+-#define pud_leaf(pud)		pud_sect(pud)
++#define pud_leaf(pud)		(pud_present(pud) && !pud_table(pud))
+ #define pud_valid(pud)		pte_valid(pud_pte(pud))
+ 
+ static inline void set_pud(pud_t *pudp, pud_t pud)
+-- 
+2.11.0
+
