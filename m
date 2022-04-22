@@ -2,98 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA2FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E6AC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229499AbiDVSqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
+        id S229989AbiDVSq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiDVSqO (ORCPT
+        with ESMTP id S229845AbiDVSqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:46:14 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FD2F2A1D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:41:26 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-e5ca5c580fso9512395fac.3
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 11:41:26 -0700 (PDT)
+        Fri, 22 Apr 2022 14:46:24 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D02E12758B;
+        Fri, 22 Apr 2022 11:42:27 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id a10so9955294oif.9;
+        Fri, 22 Apr 2022 11:42:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=6gjAV10Iy0bb8vJ2mOVMB0SZrY0b5n77L6j1RU8VdXM=;
-        b=UQLEZxu3Gnefj4+OtaImRrfZBjyDsrGOwqT3L4D8+PELfmRybKg6N+U9kwXbBNec8B
-         qKpVkU06TkaCo4dktwV6f4nhGtJIzV103OXK13R6QipAYixnIGfC1U+WJMelXl3+cQ94
-         IIkClZnxp2vThBevLk9Vg09fFu4m+FnV5PonI=
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=hUAGJI7MZIzFGBlWW57hloz6jpEOZG9rptUBKkWEgMk=;
+        b=TVybQ9BGLyIfiMbQ8yLpEWT3buhFfnziUIlE3M+S7kswwHnSHyCXOYVWdTYkMoa2Hp
+         TjLBIFbXJ1L3liznezkxkj4G/lXpyCLk0M1OtcYMhd5FnA/1d4yn2/fBOpfrKsy5GGso
+         pjsxDdCIweB59jQDBnAJRPDmEfjt83ZQ72c182ocNXUK9jFOukuzxg1evZl5xBqcIBGJ
+         b2D9npXg69VFXjCXW1xQTsiAxIFqoH7PgLqGKIkWqv9whdskSrioK/1hgKwu8Ep36xZl
+         p5rUU6Zy44txzPKM2APsYISxbKYIwC8DmJtnav/QxRUAvlW/vmScJRtBYiESVTgBal0z
+         +/9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=6gjAV10Iy0bb8vJ2mOVMB0SZrY0b5n77L6j1RU8VdXM=;
-        b=u1pGpT/q2Y8LedLmd8krTqK0kZqOelQkSEWocveYKJeEniBy3/QLoVIR7ZWPeYD6Z2
-         PuYwu7fgNIhMfpML2FBYVyebPI0Dg1NIEJUjE430aiD/5xQqxOSKuVr2eezHTMBaSCrm
-         VfM8NQx4rDHTwYbPE39NzKlx+AhgVg4yRHiAbGFdvwftzJQI1JZSgfc/+FIVnUF5oLN6
-         RC8xTC344v1fNK2w5s1rp5+r/YUAvn1AZMCtGxO5/5/TGiKe15IXyWpoa3pHXdP9ia7o
-         g6SGLLV9vZ7HXbFGK6ezefBIM68PuRdbs/wWihH9eznTqdRdwoeLrBJqFSuy2GKlx8nN
-         Yr8g==
-X-Gm-Message-State: AOAM533V0wrf6ZVmlmMZcLExd9lLbN4ph++/cjfy/qWnGvm2fvcuagXr
-        A1mmjfY8NbNmUzoImMtrAExC2/GX8QAcXUAz9w+zXw==
-X-Google-Smtp-Source: ABdhPJxjCR1tRv5Vi4Nt0QWTz2GZsD8/5wZBQ5hBZZW11jMP7uvutfanuEQOvf2fWtfAZz7mqXvfI8Y23sNg2MX1b3Q=
-X-Received: by 2002:a05:6870:15ca:b0:e9:551:6d1c with SMTP id
- k10-20020a05687015ca00b000e905516d1cmr1291139oad.193.1650652758892; Fri, 22
- Apr 2022 11:39:18 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 22 Apr 2022 11:39:18 -0700
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=hUAGJI7MZIzFGBlWW57hloz6jpEOZG9rptUBKkWEgMk=;
+        b=0pa+WEyotZo02iCoQ5449qaljtmMwLntshQ6GzSg0FwTCSXhYjEOr0MdzU8++qeEPQ
+         aCGMpubYaLOG1qQJ5MKCXIfya+Qr16qfRXmKXNJWo5slqAIbF0cM0TvhLvbocIeDwcAL
+         UixHjCYliJfPott9F8V94OIxLQXykD4y1oM7I1itbMJEl/6eVWWBL++eiTY+DfqEiYeY
+         RmwK6obeBPUSkP1tsyHvby/ziFWmkaf0aLVM+zTuWbPZYtAZl343we6sfvrnjOnvbpHR
+         3nSeekWVmS8nT3u49EmIwUC50t7b8+jOZLKzcId+Y4+71z0nIACFZJqZ14VY5MrT7sow
+         kzBA==
+X-Gm-Message-State: AOAM531HodrqvWRNUpKK7/bMhP1L4/3RdWD8pdkKyVzw5yi7MX5tRNrj
+        FdrX8K7L4sDKK8XthpE3fIs=
+X-Google-Smtp-Source: ABdhPJxXTOlR3CyOaSls0W1PFuow9H3jq2A9kiQEbWk0nPfmXNkGykl0l6n5RNsWtUtRazUUrdDGNA==
+X-Received: by 2002:aca:5c44:0:b0:322:ed86:2c08 with SMTP id q65-20020aca5c44000000b00322ed862c08mr2831409oib.17.1650652459466;
+        Fri, 22 Apr 2022 11:34:19 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i16-20020a056870d41000b000e1a3a897basm953335oag.26.2022.04.22.11.34.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 11:34:18 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 22 Apr 2022 11:34:17 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>
+Cc:     linux-clk@vger.kernel.org, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+Subject: Re: [PATCH 3/7] watchdog: npcm: Enable clock if provided
+Message-ID: <20220422183417.GB2637654@roeck-us.net>
+References: <20220422183012.444674-1-j.neuschaefer@gmx.net>
+ <20220422183012.444674-4-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-In-Reply-To: <20220422084951.2776123-1-lv.ruyi@zte.com.cn>
-References: <20220422084951.2776123-1-lv.ruyi@zte.com.cn>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Fri, 22 Apr 2022 11:39:18 -0700
-Message-ID: <CAE-0n52nFSUA-3CWa81mE-WUFW8pjOwYsFp-eGOkzupg2cZ9Yg@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/dp: fix error check return value of irq_of_parse_and_map()
-To:     cgel.zte@gmail.com, quic_abhinavk@quicinc.com, robdclark@gmail.com,
-        sean@poorly.run
-Cc:     airlied@linux.ie, daniel@ffwll.ch, dmitry.baryshkov@linaro.org,
-        quic_khsieh@quicinc.com, bjorn.andersson@linaro.org,
-        linux@roeck-us.net, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220422183012.444674-4-j.neuschaefer@gmx.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting cgel.zte@gmail.com (2022-04-22 01:49:51)
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
->
-> The irq_of_parse_and_map() function returns 0 on failure, and does not
-> return an negative value.
->
-> Fixes:  8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Fri, Apr 22, 2022 at 08:30:08PM +0200, Jonathan Neuschäfer wrote:
+> On the Nuvoton WPCM450 SoC, with its upcoming clock driver, peripheral
+> clocks are individually gated and ungated. Therefore, the watchdog
+> driver must be able to ungate the watchdog clock.
+> 
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 > ---
->  drivers/gpu/drm/msm/dp/dp_display.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index a42732b67349..3926d2ac107d 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -1239,7 +1239,7 @@ int dp_display_request_irq(struct msm_dp *dp_display)
->         dp = container_of(dp_display, struct dp_display_private, dp_display);
->
->         dp->irq = irq_of_parse_and_map(dp->pdev->dev.of_node, 0);
+>  drivers/watchdog/npcm_wdt.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
+> index 28a24caa2627c..6d27f0e16188e 100644
+> --- a/drivers/watchdog/npcm_wdt.c
+> +++ b/drivers/watchdog/npcm_wdt.c
+> @@ -3,6 +3,7 @@
+>  // Copyright (c) 2018 IBM Corp.
+> 
+>  #include <linux/bitops.h>
+> +#include <linux/clk.h>
+>  #include <linux/delay.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+> @@ -180,6 +181,7 @@ static int npcm_wdt_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+>  	struct npcm_wdt *wdt;
+> +	struct clk *clk;
+>  	int irq;
+>  	int ret;
+> 
+> @@ -191,6 +193,13 @@ static int npcm_wdt_probe(struct platform_device *pdev)
+>  	if (IS_ERR(wdt->reg))
+>  		return PTR_ERR(wdt->reg);
+> 
+> +	clk = devm_clk_get_optional(&pdev->dev, NULL);
+> +	if (IS_ERR(clk))
+> +		return PTR_ERR(clk);
+> +
+> +	if (clk)
+> +		clk_prepare_enable(clk);
+> +
 
-Why can't platform_get_irq() be used?
+This needs a matching clk_disable_unprepare().
 
-> -       if (dp->irq < 0) {
-> +       if (!dp->irq) {
->                 rc = dp->irq;
-
-zero as an error return value is an error?
-
->                 DRM_ERROR("failed to get irq: %d\n", rc);
->                 return rc;
+Guenter
