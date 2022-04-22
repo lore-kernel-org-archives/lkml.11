@@ -2,104 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 00:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 00:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442929AbiDVAYU (ORCPT
+        id S1442936AbiDVA0d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 20:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
+        Thu, 21 Apr 2022 20:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiDVAYP (ORCPT
+        with ESMTP id S237771AbiDVA0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 20:24:15 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C08F4968A;
-        Thu, 21 Apr 2022 17:21:19 -0700 (PDT)
-X-UUID: 6bea87178aba4b2aa56d28a4144152af-20220422
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:735316ce-94ac-4ebd-b6e8-18a33047e259,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:8
-X-CID-META: VersionHash:faefae9,CLOUDID:1a2087f0-da02-41b4-b6df-58f4ccd36682,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 6bea87178aba4b2aa56d28a4144152af-20220422
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <qii.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 325809546; Fri, 22 Apr 2022 08:21:11 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 22 Apr 2022 08:21:10 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 08:21:10 +0800
-Message-ID: <c8d6f77aac432e8df33372a95c6242fcdbb35090.camel@mediatek.com>
-Subject: Re: [PATCH v2] i2c: mediatek: Optimize master_xfer() and avoid
- circular locking
-From:   Qii Wang <qii.wang@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-CC:     <matthias.bgg@gmail.com>, <linux-i2c@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <wsa@kernel.org>,
-        <nfraprado@collabora.com>, <kernel@collabora.com>
-Date:   Fri, 22 Apr 2022 08:21:09 +0800
-In-Reply-To: <20220411132107.136369-1-angelogioacchino.delregno@collabora.com>
-References: <20220411132107.136369-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 21 Apr 2022 20:26:30 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C8B4968F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 17:23:39 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id p8so6448346pfh.8
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 17:23:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+6isM9rPgnmUdLXF2PlckUisnk3OJXyXTwV1qms8h1g=;
+        b=JkjgNHqRJy5KbgBIvYEyVrAQfuO80ZGbKWjGP0AAoCINZl3bLn8bhvXCOJDpJlBEg8
+         NxDF/tX5kFkyv2So8OCMnsp6byZmGV0iLZyjfq2lySItBZdUFok0gz4ls+HHzO9x4G+V
+         HbJ1JqlETnEvoxCJLE4CudRot06gz5NBzz6Zo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+6isM9rPgnmUdLXF2PlckUisnk3OJXyXTwV1qms8h1g=;
+        b=cjkDcMArFjwY3zKBRUHjB/DHtoovOrtFPkdrevcZmHyE583K77w2IXTNiiV91Sxsna
+         7TKeIadRHnRFJWU29NMHy/qnwWiUAL88DoBLxfsWif7YDOsFXqiUEZjhuuuusM7HGBCK
+         DrkITR+2K6kKBHKrBe/zlf2TIIZ9PSgf7OtGH15rwQOOjbNBahDTJyUNyv0JTUuEdcL/
+         NJ3l7Ne4osWJQi+E8p6Zu23bWfVMvpcECTfWVD/n3qwkzxRDJ7tHsIFzEvza5rUvQryf
+         zyBwTOEycEs72/RMuFUDwu6H/tPfLeZ7lo1UUZ9Y/70tobIC3iydsBLyWZJB+Ncwp2hZ
+         FA5Q==
+X-Gm-Message-State: AOAM53053DkXfAY2zrDMVsHKdsXh3MIaCuohenSrEy6yzhJUWVwW/wmt
+        7nVBdOAak6iU96s0ELnQ0ef13A==
+X-Google-Smtp-Source: ABdhPJw9YS3CeCmSKEpGAhl/Z0uvcagcMQFn4lDU0jx2RRatzbW24NDaC/4y5Ff9r979x7OD/4s6Zw==
+X-Received: by 2002:a05:6a02:116:b0:39c:c779:b480 with SMTP id bg22-20020a056a02011600b0039cc779b480mr1655951pgb.311.1650587018436;
+        Thu, 21 Apr 2022 17:23:38 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:e283:652b:fb2e:829f])
+        by smtp.gmail.com with UTF8SMTPSA id k198-20020a633dcf000000b003aa9116ba17sm294393pga.35.2022.04.21.17.23.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 17:23:37 -0700 (PDT)
+From:   Brian Norris <briannorris@chromium.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Shawn Lin <shawn.lin@rock-chips.com>, linux-mmc@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Luca Weiss <luca@z3ntu.xyz>, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Brian Norris <briannorris@chromium.org>
+Subject: [PATCH v2] mmc: core: Don't set HS200 clock rate prematurely
+Date:   Thu, 21 Apr 2022 17:23:18 -0700
+Message-Id: <20220422002318.3587413-1-briannorris@chromium.org>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-11 at 15:21 +0200, AngeloGioacchino Del Regno wrote:
-> Especially (but not only) during probe, it may happen that multiple
-> devices are communicating via i2c (or multiple i2c busses) and
-> sometimes while others are probing asynchronously.
-> For example, a Cr50 TPM may be filling entropy (or userspace may be
-> reading random data) while the rt5682 (i2c) codec driver reads/sets
-> some registers, like while getting/setting a clock's rate, which
-> happens both during probe and during system operation.
-> 
-> In this driver, the mtk_i2c_transfer() function (which is the i2c
-> .master_xfer() callback) was granularly managing the clocks by
-> performing a clk_bulk_prepare_enable() to start them and its inverse.
-> This is not only creating possible circular locking dependencies in
-> the some cases (like former explanation), but it's also suboptimal,
-> as clk_core prepare/unprepare operations are using mutex locking,
-> which creates a bit of unwanted overhead (for example, i2c trackpads
-> will call master_xfer() every few milliseconds!).
-> 
-> With this commit, we avoid both the circular locking and additional
-> overhead by changing how we handle the clocks in this driver:
-> - Prepare the clocks during probe (and PM resume)
-> - Enable/disable clocks in mtk_i2c_transfer()
-> - Unprepare the clocks only for driver removal (and PM suspend)
-> 
-> For the sake of providing a full explanation: during probe, the
-> clocks are not only prepared but also enabled, as this is needed
-> for some hardware initialization but, after that, we are disabling
-> but not unpreparing them, leaving an expected state for the
-> aforementioned clock handling strategy.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Commit 1c7ec586fe55 ("mmc: core: Set HS clock speed before sending HS
+CMD13") fixes problems with certain eMMC, but introduced new ones with
+others:
 
-Reviewed-by: Qii Wang <qii.wang@mediatek.com>
+  qcom-msm8974-fairphone-fp2:
 
-> ---
-> 
-> v2: Fixed typos in commit description
-> 
->  drivers/i2c/busses/i2c-mt65xx.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> 
+  [    1.868608] mmc0: SDHCI controller on f9824900.sdhci [f9824900.sdhci] using ADMA 64-bit
+  [    1.925220] mmc0: mmc_select_hs200 failed, error -110
+  [    1.925285] mmc0: error -110 whilst initialising MMC card
+
+It appears we've overshot the acceptable clock rate here; while JESD84
+suggests that we can bump to 52 MHz before switching (CMD6) to HS400, it
+does *not* say we can switch to 200 MHz before switching to HS200 (see
+page 45 / table 28). Use the HS bounds (typically 52 MHz) instead of the
+HS200 bounds (which are only applicable after we successfully switch).
+
+Link: https://lore.kernel.org/lkml/11962455.O9o76ZdvQC@g550jk/
+Fixes: 1c7ec586fe55 ("mmc: core: Set HS clock speed before sending HS CMD13")
+Reported-by: Luca Weiss <luca@z3ntu.xyz>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+---
+Apologies for the quick resend; I fumbled the commit/send, even though I
+had already updated the comments...
+
+Changes in v2:
+ * Updated comments
+
+ drivers/mmc/core/mmc.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+index 9ab915b5737a..82ca62c8669c 100644
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -1485,13 +1485,15 @@ static int mmc_select_hs200(struct mmc_card *card)
+ 			goto err;
+ 
+ 		/*
+-		 * Bump to HS200 timing and frequency. Some cards don't
+-		 * handle SEND_STATUS reliably at the initial frequency.
++		 * Bump to HS timing and frequency. Some cards don't handle
++		 * SEND_STATUS reliably at the initial frequency.
++		 * NB: We can't move to full (HS200) speeds until after we've
++		 * successfully switched over.
+ 		 */
+ 		old_timing = host->ios.timing;
+ 		old_clock = host->ios.clock;
+ 		mmc_set_timing(host, MMC_TIMING_MMC_HS200);
+-		mmc_set_bus_speed(card);
++		mmc_set_clock(card->host, card->ext_csd.hs_max_dtr);
+ 
+ 		/*
+ 		 * For HS200, CRC errors are not a reliable way to know the
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
