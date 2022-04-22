@@ -2,114 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A35D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D346C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449282AbiDVPOn (ORCPT
+        id S1448215AbiDVPPb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        Fri, 22 Apr 2022 11:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449293AbiDVPOL (ORCPT
+        with ESMTP id S1449332AbiDVPP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:14:11 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED525D660;
-        Fri, 22 Apr 2022 08:11:15 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23MEpQ1B028200;
-        Fri, 22 Apr 2022 17:11:00 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=biv2CiCx22xakTMtFGlV8OZK5eeEjdPdtT+GUmPZKd0=;
- b=OBIuhDTXIGP9F5wbmZrPoVvQpwpR17h1o/ax0cSf+aHCJo9onD5qovyBooETKte+U7cF
- kkM+jyZ+NsBKlqGwnwBfOIHAMxuAe+QdE0KHJf7K1rHYlN9HdNgJ/S1wEXAwfuCup6Q9
- BXd5Y8pocf0jnerUv/NFMQm/+Nvvlss0zTWIDoYLqewmQro3/UXWS6GQJlE2Ko3LINpQ
- ahoySwqHzAL3+qWyPr9h8f0bG+mnSL5skfYfN5ebwW5p1J9U/YPjmuy75z4FDO5Pkmow
- 2p7ydx6VHx9VZDevu5GtL80i27rzzJPC2zaUSFUdr9xXN6GlkmJgmaV07WzT25dm0oDl 1g== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fkskgt1we-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 17:11:00 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 94FCF10002A;
-        Fri, 22 Apr 2022 17:10:58 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8E49A233C64;
-        Fri, 22 Apr 2022 17:10:58 +0200 (CEST)
-Received: from localhost (10.75.127.51) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 22 Apr
- 2022 17:10:58 +0200
-From:   Alexandre Torgue <alexandre.torgue@foss.st.com>
-To:     <arnd@arndb.de>, <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>, <soc@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        <etienne.carriere@st.com>
-Subject: [PATCH 7/8] dt-bindings: arm: stm32: Add SCMI version of STM32 boards (DK1/DK2/ED1/EV1)
-Date:   Fri, 22 Apr 2022 17:09:51 +0200
-Message-ID: <20220422150952.20587-8-alexandre.torgue@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
-References: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
+        Fri, 22 Apr 2022 11:15:26 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CA95DA21
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:12:27 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso8166364wml.1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:12:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RTXQxTUlDy/+XtQ3FRDbwb/fEP0/XOiKskHAERCJ+aA=;
+        b=Li35G7NpXuvuBIHaNfZEPJ/UkjIgIle1to/jslIte4pPT7SoHLW9heC5fTTcFJUiZX
+         Z+L2yRuLcsU4nH2o3sHramC8AjH2M7vYdn9NNa62cdZfDK6Myg5AcUjywaYGzhXsOff7
+         0mei52r8X848r3jjymXS7WJP+25/4BTUXDHet1DWXTcdTuFZL03XsyGj1tzE3rPcXs4e
+         9hCKEpO6xuyWagFlDEU96BvE/XX/XNvqLgGgKtoZ+OJ+4jt80aSCEVMJK+RizhJv+4Dg
+         3UxE+OzXPvh8hB0FdsLXh2chCOgrcdbPSgnS8ST8NzhVmnlnY/LGNyab+lPyFbve99/w
+         RODg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RTXQxTUlDy/+XtQ3FRDbwb/fEP0/XOiKskHAERCJ+aA=;
+        b=eG3TCoW6fIru3YUef7g9mCBG1KWwNw2e8kgu1Y+wr4vNWzTEknQi0I4ZdgUTiC2DUw
+         NlEdqBIHIDViRMhAm0jlgXvcF6Qc74Dd1XrLNhbKUmnIXF2EhKiLOnRjUulnIq+qKcLu
+         Mm7D0b60HAM0tIflhlazsRq5K0t/H4G650TuHA2gZljPcJY3kK6xMASIGdufL8Kg0kG8
+         c6lZVasxNCzgsa1diDs9YBa5z/DyM+8bKgX5lkSgH2BjENC+sXo7gzNz92p30JOgtX+H
+         ZI1BcJzu7FasytrWH7RWQiXtNNmKIzlzLKVnX1MZllnCeZWPkttX4uj2drS/DYN3wgH+
+         5xuw==
+X-Gm-Message-State: AOAM533uWWHGKoBo2Ue5nQjwQcEzR/0eBlaCN10JnZcZMB1YGD6a1mNK
+        YqavwN2yZzSTvHR5XcMO9oI=
+X-Google-Smtp-Source: ABdhPJx/9ozGt+podmI9X7yq2z0UtTmdQqvAQs7KH6K85Wh/0AMDUalJOhps+qXlZoJnjpD9AeZZEw==
+X-Received: by 2002:a05:600c:20c7:b0:38e:bf41:edef with SMTP id y7-20020a05600c20c700b0038ebf41edefmr13797138wmm.173.1650640346174;
+        Fri, 22 Apr 2022 08:12:26 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b0020aa790a258sm2031690wra.8.2022.04.22.08.12.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 08:12:25 -0700 (PDT)
+Message-ID: <8a341814-6165-df6c-e99f-afc38a46448e@gmail.com>
+Date:   Fri, 22 Apr 2022 17:12:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-22_04,2022-04-22_01,2022-02-23_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] arm: mediatek: select arch timer for mt7629
+Content-Language: en-US
+To:     Chuanhong Guo <gch981213@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220409091347.2473449-1-gch981213@gmail.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220409091347.2473449-1-gch981213@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a "secure" version based on SCMI of STM32 boards. Only boards
-provided by STMicroelectronics are concerned:
 
--STM32MP157A-DK1
--STM32MP157C-DK2
--STM32MP157C-ED1
--STM32MP157C-EV1
 
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+On 09/04/2022 11:13, Chuanhong Guo wrote:
+> This chip has an armv7 arch timer according to the dts. Select it in
+> Kconfig to enforce the support for it.
+> Otherwise the system time is just completely wrong if user forget to
+> enable ARM_ARCH_TIMER in kernel config.
+> 
+> Fixes: a43379dddf1b ("arm: mediatek: add MT7629 smp bring up code")
+> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
 
-diff --git a/Documentation/devicetree/bindings/arm/stm32/stm32.yaml b/Documentation/devicetree/bindings/arm/stm32/stm32.yaml
-index fa0a1b84122e..4a3d66da0f1c 100644
---- a/Documentation/devicetree/bindings/arm/stm32/stm32.yaml
-+++ b/Documentation/devicetree/bindings/arm/stm32/stm32.yaml
-@@ -75,6 +75,23 @@ properties:
- 
-           - const: st,stm32mp157
-       - items:
-+          - const: st,stm32mp157a-dk1-scmi
-+          - const: st,stm32mp157a-dk1
-+          - const: st,stm32mp157
-+      - items:
-+          - const: st,stm32mp157c-dk2-scmi
-+          - const: st,stm32mp157c-dk2
-+          - const: st,stm32mp157
-+      - items:
-+          - const: st,stm32mp157c-ed1-scmi
-+          - const: st,stm32mp157c-ed1
-+          - const: st,stm32mp157
-+      - items:
-+          - const: st,stm32mp157c-ev1
-+          - const: st,stm32mp157c-ed1
-+          - const: st,stm32mp157
-+      - items:
-+          - const: st,stm32mp157c-ev1-scmi
-           - const: st,stm32mp157c-ev1
-           - const: st,stm32mp157c-ed1
-           - const: st,stm32mp157
--- 
-2.17.1
+Applied, thanks!
 
+> ---
+>   arch/arm/mach-mediatek/Kconfig | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm/mach-mediatek/Kconfig b/arch/arm/mach-mediatek/Kconfig
+> index 9e0f592d87d8..35a3430c7942 100644
+> --- a/arch/arm/mach-mediatek/Kconfig
+> +++ b/arch/arm/mach-mediatek/Kconfig
+> @@ -30,6 +30,7 @@ config MACH_MT7623
+>   config MACH_MT7629
+>   	bool "MediaTek MT7629 SoCs support"
+>   	default ARCH_MEDIATEK
+> +	select HAVE_ARM_ARCH_TIMER
+>   
+>   config MACH_MT8127
+>   	bool "MediaTek MT8127 SoCs support"
