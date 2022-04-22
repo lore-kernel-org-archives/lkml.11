@@ -2,76 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6BE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A38C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234206AbiDVPn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
+        id S233156AbiDVPnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 11:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449473AbiDVPke (ORCPT
+        with ESMTP id S1449487AbiDVPnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:40:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DD55AED6;
-        Fri, 22 Apr 2022 08:37:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81C436193E;
-        Fri, 22 Apr 2022 15:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A80C5C385A4;
-        Fri, 22 Apr 2022 15:37:38 +0000 (UTC)
-Date:   Fri, 22 Apr 2022 11:37:36 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        hannes@cmpxchg.org, akpm@linux-foundation.org,
-        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-input@vger.kernel.org, roman.gushchin@linux.dev
-Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
- heap-allocated strings
-Message-ID: <20220422113736.460058cc@gandalf.local.home>
-In-Reply-To: <YmI/v35IvxhOZpXJ@moria.home.lan>
-References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
-        <20220421234837.3629927-7-kent.overstreet@gmail.com>
-        <20220422042017.GA9946@lst.de>
-        <YmI5yA1LrYrTg8pB@moria.home.lan>
-        <20220422052208.GA10745@lst.de>
-        <YmI/v35IvxhOZpXJ@moria.home.lan>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 22 Apr 2022 11:43:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4B493B3C5
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:40:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650642015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4QhChbQB9YDaMeenbkdMZZmXadlUdt0Dsk5a56hLZNI=;
+        b=XYdfAFuG1NzSXBAKLh2yLTzmz1IhGzPbo1YqjgfyjoNyaGt17srRv/gXNfqHHrfSWVGqhl
+        ae5s6IO5FBQGG/a9HMJ0DYI7EKP/mupLietzqB5ATguwZsHlpPXsrpHVyYNVAncTdm0UBH
+        pRx+WpkeLrYD41z29FpOf7X0HMazL00=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-296-h-fDd6n7NTmXLPZ89ZK3Cg-1; Fri, 22 Apr 2022 11:40:14 -0400
+X-MC-Unique: h-fDd6n7NTmXLPZ89ZK3Cg-1
+Received: by mail-qk1-f200.google.com with SMTP id o79-20020a374152000000b0069ee7515f53so4929158qka.14
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 08:40:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4QhChbQB9YDaMeenbkdMZZmXadlUdt0Dsk5a56hLZNI=;
+        b=Rm3976bWEUkNcii69hs/xDE1/2aAArLVCLkJBnFj+wK9pVhh3zHR/oM6VeRe3MrTv1
+         nZlkar33qKbD4h4GEeen9dNbiob6Nh+1+Q0FMlfM12UOhUidsB7Kj5AQhQvSIb9ZuERT
+         tptvpm1OkfO98YnNNBILMABh8Oiy5h+YCVWV9uFCbyjyDtDFZcZuTe0t+QPdHbdYNQHh
+         elF/UqwHOnyNu9v01ExwNPkPEGKHe3U5qgDP4r4MCBJSj2KO0r9OvKaDC7d3fljIWgKP
+         ZU97NrItdwapb/VoOBMxMDM7s2xfNKyLDUnRNO8z2FTQ07J6h9mgyz4DT9KpnyETMtGU
+         LAWQ==
+X-Gm-Message-State: AOAM531PXfi+1GuPtPRDOXW5nwatVoGBVncsH0ALeM2UUlJaqXKRlKfx
+        Wbz92L74nVNsug5vFTDmGz9tdd7kcWxVp3jidv2nZIFYD4M+rkFQrE8zKWGKVX0oLsfcgRjIUuT
+        DTyRI6ekex/nX5sYIgv4fE4MA
+X-Received: by 2002:a05:6214:262c:b0:446:3464:57cd with SMTP id gv12-20020a056214262c00b00446346457cdmr4194740qvb.89.1650642014107;
+        Fri, 22 Apr 2022 08:40:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzU/zrP23x+VGLwwKjYVd8GBF1zIofL+6BYuCYCGu72U6zgNGIJUYYLxnyojnu2QA1/y2aBZw==
+X-Received: by 2002:a05:6214:262c:b0:446:3464:57cd with SMTP id gv12-20020a056214262c00b00446346457cdmr4194730qvb.89.1650642013880;
+        Fri, 22 Apr 2022 08:40:13 -0700 (PDT)
+Received: from halaneylaptop (068-184-200-203.res.spectrum.com. [68.184.200.203])
+        by smtp.gmail.com with ESMTPSA id e126-20020a376984000000b0069c86b28524sm1113111qkc.19.2022.04.22.08.40.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 08:40:13 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 10:40:10 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     martin.petersen@oracle.com, jejb@linux.ibm.com,
+        avri.altman@wdc.com, alim.akhtar@samsung.com,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        quic_asutoshd@quicinc.com, quic_cang@quicinc.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] scsi: ufs: qcom: Fix acquiring the optional reset
+ control line
+Message-ID: <20220422154010.2cxk4qy5eikxujb2@halaneylaptop>
+References: <20220422132140.313390-1-manivannan.sadhasivam@linaro.org>
+ <20220422132140.313390-2-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422132140.313390-2-manivannan.sadhasivam@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 01:40:15 -0400
-Kent Overstreet <kent.overstreet@gmail.com> wrote:
-
-> So I'm honestly not super eager to start modifying tricky arch code that I can't
-> test, and digging into what looked like non trivial interactions between the way
-> the traceing code using seq_buf (naturally, given that's where it originates).
-
-Yes, seq_buf came from the tracing system but was to be used in a more
-broader way. I had originally pushed trace_seq into the lib directory, but
-Andrew Morton said it was too specific to tracing. Thus, I gutted the
-generic parts out of it and created seq_buf, which looks to be something
-that you could use. I had patches to convert seq_file to it, but ran out of
-time. I probably can pull them out of the closet and start that again.
-
+On Fri, Apr 22, 2022 at 06:51:36PM +0530, Manivannan Sadhasivam wrote:
+> On Qcom UFS platforms, the reset control line seems to be optional
+> (for SoCs like MSM8996 and probably for others too). The current logic
+> tries to mimic the `devm_reset_control_get_optional()` API but it also
+> continues the probe if there is an error with the declared reset line in
+> DT/ACPI.
 > 
-> Now yes, I _could_ do a wholesale conversion of seq_buf to printbuf and delete
-> that code, but doing that job right, to be confident that I'm not introducing
-> bugs, is going to take more time than I really want to invest right now. I
-> really don't like to play fast and loose with that stuff.
+> In an ideal case, if the reset line is not declared in DT/ACPI, the probe
+> should continue. But if there is problem in acquiring the declared reset
+> line (like EPROBE_DEFER) it should fail and return the appropriate error
+> code.
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  drivers/scsi/ufs/ufs-qcom.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
+> index 0d2e950d0865..5db0fd922062 100644
+> --- a/drivers/scsi/ufs/ufs-qcom.c
+> +++ b/drivers/scsi/ufs/ufs-qcom.c
+> @@ -1002,13 +1002,13 @@ static int ufs_qcom_init(struct ufs_hba *hba)
+>  	host->hba = hba;
+>  	ufshcd_set_variant(hba, host);
+>  
+> -	/* Setup the reset control of HCI */
+> -	host->core_reset = devm_reset_control_get(hba->dev, "rst");
+> +	/* Setup the optional reset control of HCI */
+> +	host->core_reset = devm_reset_control_get_optional(hba->dev, "rst");
+>  	if (IS_ERR(host->core_reset)) {
+>  		err = PTR_ERR(host->core_reset);
+> -		dev_warn(dev, "Failed to get reset control %d\n", err);
+> -		host->core_reset = NULL;
+> -		err = 0;
+> +		if (err != -EPROBE_DEFER)
+> +			dev_err(dev, "Failed to get reset control %d\n", err);
 
-I would be happy to work with you to convert to seq_buf. If there's
-something missing from it, I can help you change it so that it doesn't
-cause any regressions with the tracing subsystem.
+Could we use dev_err_probe() here?
 
-This is how open source programming is suppose to work ;-)
+Otherwise, looks good to me.
 
--- Steve
+> +		goto out_variant_clear;
+>  	}
+>  
+>  	/* Fire up the reset controller. Failure here is non-fatal. */
+> -- 
+> 2.25.1
+> 
+
