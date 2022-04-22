@@ -2,127 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2964C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbiDVWPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
+        id S232503AbiDVWQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232204AbiDVWPQ (ORCPT
+        with ESMTP id S232560AbiDVWPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:15:16 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD3323668D;
-        Fri, 22 Apr 2022 14:05:18 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id b17so6961114qvp.6;
-        Fri, 22 Apr 2022 14:05:18 -0700 (PDT)
+        Fri, 22 Apr 2022 18:15:42 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33DB31AAB4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:06:26 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id bg9so8267789pgb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:06:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DpzKp6GQylN2DVn3Q8F44AaoMz54tuxDB2xUboNmmNk=;
-        b=pzvr3/UvSftncfosMfmgiWOYhMYbYHuIZTCgY5hDDTvmyy0dEedr9JVfuEeVSTpSm5
-         Wod5E9A0cF7e6X5SdVy8UQacTpGtFKdz/js8K/09qJ95ej2UAw2PGlDkrsu+YG2dXUGA
-         p/jEJQdqi+LBuQNomKnUI+S9NQyVkZ2ZnEbNnNiPIsX8T4w6VzABtzJx/TXysyHMCVQ+
-         ScUWgjAh3cPwFtBgN8jKf/CoS7zoCpT0JVr0YNB0YwEC8YxElSpInoxiPR7dP6Gy9x+x
-         Z2XHiikQMiTNKC8bErgRGi2i/cEQhRjtXly2a1DC44EwlTnp4zUihn+XzrUyE57MfFZT
-         LYeg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6/iQfuLXFC8ki26IOGLQhuyEO0Ix/0UGaDfitMH3V8Y=;
+        b=Sr6SteOrCBE2XsI59QA6RWqy9vn4XJeeVQ0JpUmiAp5JFOl39N6gthheZHnkLUQJyv
+         /wAAAt+YizHnKAW5WByOLMPlJk+hXqqqpeoFmCovpahKNEl+R/UNWI7khiiXpxCnZZkH
+         KVI53yGcUPgiA5MVVytWJ4xA1nRJDw2b0o7OKSXafuXmWHGnfBYzk9dy80hICVlT7IXc
+         BVE96MwUO416MBd/IedjzPnKWPuWhq6a621gEi94/vCNTzzH4L4U0EmcJWWIRS7v8IVc
+         +qVPcjm2bjhvkGxMccktJnN+1guINiaR0Hj4zyIZ81jZTMMGKuecMnHU8BOcguJJqrEZ
+         QpPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DpzKp6GQylN2DVn3Q8F44AaoMz54tuxDB2xUboNmmNk=;
-        b=N+dern6iTZrA/2UvQsr6Y52jn8zymardWbbx95HxpdlyZEHU0GjMAhiSiuBcWU6ygK
-         JvfCgYSLuYmROy/fJwQDjacL8Z26faSRt/7q+beB70rfc12J3+jrUYoa3of+uVgVOn8r
-         E0I3Cha8DP6onWwoH6uDGhYrXN0tjv0lYjfsOL/h4s6rAHmkmMnRct/kEU5pURDnwn+u
-         jLIR9LJuEdROgHTQH9jEsbxMhgu77xSQKO3yBuhhcTCkBSyEq0t6vd7LJxhqOmp1tFVj
-         /fsF/Urs+Z1Da7L6xRV5AHESN3hbjFZCoDcZ475N18TUP89AJOhbCYU+21J3cifOSl/X
-         tnWQ==
-X-Gm-Message-State: AOAM533V03zKTB0KHH5xciSahmWiExG0lVdxqoqtnCrR4CoYYoVLgztQ
-        L0rfaX+MxMSzwBqpHdHMyvbxV359xb7uLrvxjhSuX17I
-X-Google-Smtp-Source: ABdhPJyDTdfYVPmGi9JCDZSwQ3dGVcvDeC8/OPyjPu7IjhwDECkrHzuq3quIB48TTMhTBLoEclHmpE49GOqp3rGJBbM=
-X-Received: by 2002:ad4:5943:0:b0:446:5c3e:2c2a with SMTP id
- eo3-20020ad45943000000b004465c3e2c2amr4554955qvb.75.1650653101635; Fri, 22
- Apr 2022 11:45:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6/iQfuLXFC8ki26IOGLQhuyEO0Ix/0UGaDfitMH3V8Y=;
+        b=OGJ7jlDpVthvXNthNbxN8B5C5HoCP0Qih0t/FDB7YUzSwYeinPHVBCLSX0/y6nIU4r
+         yKeryVvwzZagJ7IjWIw8JYtyNN174naSbP+oWFn+DlTYs6XQaCsLJ5jjsp6LecZmgnRo
+         d4X11ZigUcamMwBFKqYOViadNj13qcgj8w6N5BvPP+WDYILSNxMuCkxNkJInIXfW0q1W
+         GP5h3oggq0ERNup3+4PXBU/MWYk1T0eM73TcJCR4+UKcHd8k7vv+AGzKBYue/4B1ZNwI
+         u6uQfofHSDLV9ByfaqTJrMjEpQZn1i8SxrueiaoiyICOxMaa9DLg8ggSIuDmKBEGSlmR
+         zhdg==
+X-Gm-Message-State: AOAM533Cp60j9kwko+s48Ktdye8fu1QwgXjdxdJwZ0SkDo3su/fXdp9X
+        1LHe8MV6UZxRnm/HfFTaHl2XnQ==
+X-Google-Smtp-Source: ABdhPJyXVzSqZwF9kIf3hmhU+RIUMpb6UXowxQK44fBDY2TDf1w6fCJwplsnEe6IZrvXIUSK7+mZPg==
+X-Received: by 2002:a05:6a00:7d4:b0:50c:de96:a6e7 with SMTP id n20-20020a056a0007d400b0050cde96a6e7mr6923886pfu.45.1650661586373;
+        Fri, 22 Apr 2022 14:06:26 -0700 (PDT)
+Received: from localhost.localdomain ([223.233.64.97])
+        by smtp.gmail.com with ESMTPSA id lw3-20020a17090b180300b001cd4989fecesm7391641pjb.26.2022.04.22.14.06.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 14:06:25 -0700 (PDT)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org
+Subject: [PATCH 1/1] arm64: dts: qcom: sm8150: Fix iommu sid value for SDC2 controller
+Date:   Sat, 23 Apr 2022 02:36:11 +0530
+Message-Id: <20220422210611.173842-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <BYAPR20MB24721F9954252BECBEF486ACBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
-In-Reply-To: <BYAPR20MB24721F9954252BECBEF486ACBCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
-From:   Vasily Khoruzhick <anarsoul@gmail.com>
-Date:   Fri, 22 Apr 2022 11:44:35 -0700
-Message-ID: <CA+E=qVfMm=8aQOM_HW_3EeqqLi-Fgn1Ex3h6kor89FQ0KfTvRw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: thermal: sun8i-thermal: add binding for
- R329 THS
-To:     icenowy@outlook.com
-Cc:     Yangtao Li <tiny.windzz@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-linux <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Icenowy Zheng <icenowy@aosc.io>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 9:12 AM <icenowy@outlook.com> wrote:
->
-> From: Icenowy Zheng <icenowy@aosc.io>
->
-> R329 has a thermal sensor controller that has only one sensor, and the
-> structure of it is like the H6 one.
->
-> Add device tree binding for it.
->
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> ---
->  .../devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml  | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
-> index 6e0b110153b0..87b4103e0a5f 100644
-> --- a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
-> +++ b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
-> @@ -20,6 +20,7 @@ properties:
->        - allwinner,sun50i-a100-ths
->        - allwinner,sun50i-h5-ths
->        - allwinner,sun50i-h6-ths
-> +      - allwinner,sun50i-r329-ths
->
->    clocks:
->      minItems: 1
-> @@ -63,6 +64,7 @@ allOf:
->              enum:
->                - allwinner,sun50i-a100-ths
->                - allwinner,sun50i-h6-ths
-> +              - allwinner,sun50i-r329-ths
->
->      then:
->        properties:
-> @@ -85,6 +87,7 @@ allOf:
->          compatible:
->            contains:
->              const: allwinner,sun8i-h3-ths
-> +            const: allwinner,sun8i-r329-ths
->
->      then:
->        properties:
+Fix the IOMMU sid value for SDC2 controller, to ensure that no
+ADMA error is observed when the microSD card is detected on the
+SA8155p-ADP board.
 
-There's also a check at line #99 that requires clock, clock-names and
-resets properties for thermal sensors in other Allwinner SoCs. Are
-these not required for r329?
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/sm8150.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Also are you planning to add a node for thermal sensor to r329 dtsi?
+diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+index 2700a8145cb9..f70ae4c56762 100644
+--- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+@@ -3555,7 +3555,7 @@ sdhc_2: sdhci@8804000 {
+ 				 <&gcc GCC_SDCC2_APPS_CLK>,
+ 				 <&rpmhcc RPMH_CXO_CLK>;
+ 			clock-names = "iface", "core", "xo";
+-			iommus = <&apps_smmu 0x4a0 0x0>;
++			iommus = <&apps_smmu 0x6a0 0x0>;
+ 			qcom,dll-config = <0x0007642c>;
+ 			qcom,ddr-config = <0x80040868>;
+ 			power-domains = <&rpmhpd 0>;
+-- 
+2.35.1
 
-
-> --
-> 2.35.1
->
