@@ -2,130 +2,620 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA09EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF357C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 17:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbiDVRak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 13:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
+        id S232778AbiDVRcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 13:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiDVRai (ORCPT
+        with ESMTP id S232421AbiDVRcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:30:38 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BF9DEBB7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:27:38 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id r83so7856174pgr.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:27:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=bAHjx2LvQweg3IXQ+XUZ0847Fs7Oh/UmTS1DX0FwCP8=;
-        b=G6gNb7IE4Xovf0intE+OpbnpdmDJNrGDa5FZ0qU1/i9dlVv2S0SxzzGRedm7H7Bo9c
-         S5qPQ8wwE9+LoCPcGa46ZQ9MQrBWxbwKvTvz1KnauIw0DBnwWnlxB4dcAh5ykAIdfawx
-         wUa6E84YEaOO9gEylWkp3WxDKatXE8AHWJeTjY0SUCsZzLe9KiYfBtHi2BtjeGomCTLb
-         OFUZgjxKLBK/5fBGLHWCP3UUaP8K6AJuR27sFiTGefA67XdMDNf4xjod9uaWPHSobb8Q
-         4rLW640nqXcbwrdJcyZGn7VxIE2FCYPn9DnJe1mQ2XFJnPLaJfLfzcWzmFe7bc3UqW9K
-         p6bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bAHjx2LvQweg3IXQ+XUZ0847Fs7Oh/UmTS1DX0FwCP8=;
-        b=Ll+B3FOU9/Bim+/ntIW2GiI1xTYohKLYx4kF/Rp5o5ds+K+fef/gdzfV2aimCPAdwy
-         R3AIJMFCWNw8R9CmCQFReNO/o4Kr8eiGlwuYCFECN3saYTsHysflf7cg1Fs+GlPhaZrC
-         RQ4AdYaxj44Aa4yBuznAU5ttE3CpMo90o58u/GPI4bK2mhfTUcZhBbZUDhPTM+FC8egB
-         3zmvfJct+viRIlpQHGu4mqGjI/fQyvI2t8QBs2AaA/moSX61F5ow5fXAoaR553eAYC6C
-         locGFyo8QJT+Q2+GiyStHo/pjKF5UoNiIqV6Clix7rMHn7HgCcQkytNsJ/ujoRGhv5Fc
-         7Nww==
-X-Gm-Message-State: AOAM532PBUX/B6WIXcOVALzELsrXlCLsFOq4aWLgH7gnVxFGCKHF+XEy
-        2f1dqZV1Qj1OrRB4CY5i4s4=
-X-Google-Smtp-Source: ABdhPJw2LCGoc103LUCVqi3pR1A+6h16x21/qvm7I0rbHHgSlcLAZqZiYbjX96zWNoV3omUs5WJJow==
-X-Received: by 2002:a05:6a00:2181:b0:4f6:f1b1:1ba7 with SMTP id h1-20020a056a00218100b004f6f1b11ba7mr6012389pfi.73.1650648278972;
-        Fri, 22 Apr 2022 10:24:38 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t18-20020aa79472000000b0050ad180a4bbsm3227872pfq.1.2022.04.22.10.24.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 10:24:38 -0700 (PDT)
-Message-ID: <b8a5bb60-15d4-0b3b-9d96-758e5136fb46@gmail.com>
-Date:   Fri, 22 Apr 2022 10:24:35 -0700
+        Fri, 22 Apr 2022 13:32:19 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76865F3A72;
+        Fri, 22 Apr 2022 10:29:15 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 1B70A1F45B93
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650647691;
+        bh=mFcL/1JB0bpULDjPhR/pGffl1kiDtxIA7ZLnxgFeEPE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fGaYhOjgR+8cDjthNqexwZsfYvC1kjlw8Qdt2mTVd/pRntr0mry2C68LiLyLU0XHm
+         XA1ogeJDtcXqqUcJefTh1Beus7/7I9fhOAboaiTOrnQFP56rRPY5ewHTMSLY35wYsK
+         09ypu1qAkeA3ffKQVT6ZRzTO630OBO2yUQblMD3fXFdUJ+lD8WvMu+uVDS4QqQzr0U
+         fbo0mFzl8U04EZWzLEO9iqUu9z7tSLbwE89qvb1FpeO1qc8JbUmevbkCwmS45vvKmZ
+         h/cZHUHJjTM3X6v19THCgYPOsxsfqTdPtC8DUnMAUWwcHMkHMWqe19QVh1tpT7BfjP
+         x/fLCXtNTYUtA==
+Received: by jupiter.universe (Postfix, from userid 1000)
+        id ED9C1480C2B; Fri, 22 Apr 2022 19:09:32 +0200 (CEST)
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@lists.collabora.co.uk,
+        Kever Yang <kever.yang@rock-chips.com>, kernel@collabora.com,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        Sugar Zhang <sugar.zhang@rock-chips.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCHv1 18/19] arm64: dts: rockchip: Add base DT for rk3588 SoC
+Date:   Fri, 22 Apr 2022 19:09:19 +0200
+Message-Id: <20220422170920.401914-19-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220422170920.401914-1-sebastian.reichel@collabora.com>
+References: <20220422170920.401914-1-sebastian.reichel@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] MAINTAINERS: Broadcom internal lists aren't maintainers
-Content-Language: en-US
-To:     Joe Perches <joe@perches.com>,
-        William Zhang <william.zhang@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        LKML <linux-kernel@vger.kernel.org>
-References: <04eb301f5b3adbefdd78e76657eff0acb3e3d87f.camel@perches.com>
- <db4b9db9-fa02-4b92-3b9a-bd866fa0e73e@gmail.com>
- <b95d9b1058eed13489adba0bccdeb600950eb153.camel@perches.com>
- <dd97ffe3-3983-fc45-469b-703900077f2f@broadcom.com>
- <feff60ee8a6d10da7d10b421d18407a5d040680e.camel@perches.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <feff60ee8a6d10da7d10b421d18407a5d040680e.camel@perches.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/20/22 14:31, Joe Perches wrote:
-> On Wed, 2022-04-20 at 11:50 -0700, William Zhang wrote:
->>
->> On 4/19/22 16:11, Joe Perches wrote:
->>> On Tue, 2022-04-19 at 12:00 -0700, Florian Fainelli wrote:
->>>> On 4/12/2022 11:34 AM, Joe Perches wrote:
->>>>> Convert the broadcom internal list M: and L: entries to R: as
->>>>> exploder email addresses are neither maintainers nor mailing lists.
->>>>>
->>>>> Reorder the entries as necessary.
->>> []
->>>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> []
->>>>> @@ -3746,7 +3746,7 @@ F:	include/linux/platform_data/b53.h
->>>>>     
->>>>>     BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE
->>>>>     M:	Nicolas Saenz Julienne <nsaenz@kernel.org>
->>>>> -L:	bcm-kernel-feedback-list@broadcom.com
->>>>> +R:	Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>
->>>
->>>> There is not a "Broadcom Kernel Team", the description of R: appears to
->>>> require some kind of full name, hence the choice of L: instead of R:.
->>>
->>> If you don't like "Broadcom Kernel Team", perhaps
->>> "Broadcom Kernel Reviewers" might work for you.
->>>
->>> I think it doesn't matter much.
->>>
->> I can see that we shouldn't use M as maintainer for this Broadcom
->> mailing list email. But I honestly don't understand why we have to use
->> R. Just for the sake of full name?  Not everyone in this distribution
->> list is reviewer.  IMHO I would prefer to change all entries to L
->> without a full name.
-> 
-> I think "R:" is a better choice than "L:"
-> 
-> "L:" Mailing list entries have archives that are publicly searchable.
-> 
-> Are the broadcom bcm-kernel-feedback-list entries publicly archived?
+From: Kever Yang <kever.yang@rock-chips.com>
 
-They are not indeed.
+This initial version supports (single core) CPU, dma, interrupts, timers,
+UART and SDHCI. In short - everything necessary to boot Linux on this
+system on chip.
 
-> 
-> If not, these are one-way entries, so someone sends and hopes only.
-> Replies that are sent from these entries are not visible to the public.
+The DT is split into rk3588 and rk3588s, which is a reduced version
+(i.e. with less peripherals) of the former.
 
-OK, fair enough, I will change to:
+Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+Signed-off-by: Sugar Zhang <sugar.zhang@rock-chips.com>
+Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
+[rebase, squash and reword commit message]
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi  |   6 +
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 501 ++++++++++++++++++++++
+ include/dt-bindings/clock/rk3588-cru.h    |   1 +
+ 3 files changed, 508 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3588.dtsi
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 
-R: Broadcom internal kernel review list 
-<bcm-kernel-feedback-list@broadcom.com>
-
-If that works for everyone?
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588.dtsi b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
+new file mode 100644
+index 000000000000..ddb3ccff1299
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
+@@ -0,0 +1,6 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
++ */
++
++#include "rk3588s.dtsi"
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+new file mode 100644
+index 000000000000..f7d3ad4384b3
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -0,0 +1,501 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
++ */
++
++#include <dt-bindings/clock/rk3588-cru.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++
++/ {
++	compatible = "rockchip,rk3588";
++
++	interrupt-parent = <&gic>;
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++		serial2 = &uart2;
++		serial3 = &uart3;
++		serial4 = &uart4;
++		serial5 = &uart5;
++		serial6 = &uart6;
++		serial7 = &uart7;
++		serial8 = &uart8;
++		serial9 = &uart9;
++	};
++
++	clocks {
++		compatible = "simple-bus";
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		spll: spll {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <702000000>;
++			clock-output-names = "spll";
++		};
++
++		xin24m: xin24m {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <24000000>;
++			clock-output-names = "xin24m";
++		};
++
++		xin32k: xin32k {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <32768>;
++			clock-output-names = "xin32k";
++		};
++	};
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu-map {
++			cluster0 {
++				core0 {
++					cpu = <&cpu_l0>;
++				};
++			};
++		};
++
++		cpu_l0: cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0>;
++			enable-method = "psci";
++			capacity-dmips-mhz = <530>;
++			clocks = <&scmi_clk SCMI_CLK_CPUL>;
++			i-cache-size = <32768>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <128>;
++			d-cache-size = <32768>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>;
++			next-level-cache = <&l2_cache_l0>;
++			#cooling-cells = <2>;
++			dynamic-power-coefficient = <228>;
++		};
++
++		l2_cache_l0: l2-cache-l0 {
++			compatible = "cache";
++			cache-size = <131072>;
++			cache-line-size = <64>;
++			cache-sets = <512>;
++			next-level-cache = <&l3_cache>;
++		};
++
++		l3_cache: l3-cache {
++			compatible = "cache";
++			cache-size = <3145728>;
++			cache-line-size = <64>;
++			cache-sets = <4096>;
++		};
++	};
++
++	arm-pmu {
++		compatible = "arm,armv8-pmuv3";
++		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-affinity = <&cpu_l0>;
++	};
++
++	firmware {
++		optee: optee {
++			compatible = "linaro,optee-tz";
++			method = "smc";
++		};
++
++		scmi: scmi {
++			compatible = "arm,scmi-smc";
++			shmem = <&scmi_shmem>;
++			arm,smc-id = <0x82000010>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			scmi_clk: protocol@14 {
++				reg = <0x14>;
++				#clock-cells = <1>;
++
++				assigned-clocks = <&scmi_clk SCMI_SPLL>;
++				assigned-clock-rates = <700000000>;
++			};
++
++			scmi_reset: protocol@16 {
++				reg = <0x16>;
++				#reset-cells = <1>;
++			};
++		};
++
++		sdei: sdei {
++			compatible = "arm,sdei-1.0";
++			method = "smc";
++		};
++	};
++
++	psci {
++		compatible = "arm,psci-1.0";
++		method = "smc";
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
++			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
++			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
++			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
++	};
++
++	sram@10f000 {
++		compatible = "mmio-sram";
++		reg = <0x0 0x0010f000 0x0 0x100>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges = <0 0x0 0x0010f000 0x100>;
++
++		scmi_shmem: sram@0 {
++			compatible = "arm,scmi-shmem";
++			reg = <0x0 0x100>;
++		};
++	};
++
++	php_grf: syscon@fd5b0000 {
++		compatible = "rockchip,rk3588-php-grf", "syscon";
++		reg = <0x0 0xfd5b0000 0x0 0x1000>;
++	};
++
++	ioc: syscon@fd5f0000 {
++		compatible = "rockchip,rk3588-ioc", "syscon";
++		reg = <0x0 0xfd5f0000 0x0 0x10000>;
++	};
++
++	syssram: sram@fd600000 {
++		compatible = "mmio-sram";
++		reg = <0x0 0xfd600000 0x0 0x100000>;
++
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges = <0x0 0x0 0xfd600000 0x100000>;
++	};
++
++	cru: clock-controller@fd7c0000 {
++		compatible = "rockchip,rk3588-cru";
++		rockchip,grf = <&php_grf>;
++		reg = <0x0 0xfd7c0000 0x0 0x5c000>;
++		#clock-cells = <1>;
++		#reset-cells = <1>;
++
++		assigned-clocks =
++			<&cru PLL_PPLL>, <&cru PLL_AUPLL>,
++			<&cru PLL_NPLL>, <&cru PLL_GPLL>,
++			<&cru ACLK_CENTER_ROOT>,
++			<&cru HCLK_CENTER_ROOT>, <&cru ACLK_CENTER_LOW_ROOT>,
++			<&cru ACLK_TOP_ROOT>, <&cru PCLK_TOP_ROOT>,
++			<&cru ACLK_LOW_TOP_ROOT>, <&cru PCLK_PMU0_ROOT>,
++			<&cru HCLK_PMU_CM0_ROOT>, <&cru ACLK_VOP>,
++			<&cru ACLK_BUS_ROOT>, <&cru CLK_150M_SRC>,
++			<&cru CLK_GPU>;
++		assigned-clock-rates =
++			<100000000>, <786432000>,
++			<850000000>, <1188000000>,
++			<702000000>,
++			<400000000>, <500000000>,
++			<800000000>, <100000000>,
++			<400000000>, <100000000>,
++			<200000000>, <500000000>,
++			<375000000>, <150000000>,
++			<200000000>;
++	};
++
++	sdhci: mmc@fe2e0000 {
++		compatible = "rockchip,rk3588-dwcmshc", "snps,dwcmshc-sdhci";
++		reg = <0x0 0xfe2e0000 0x0 0x10000>;
++		interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
++		assigned-clocks = <&cru BCLK_EMMC>, <&cru TMCLK_EMMC>, <&cru CCLK_EMMC>;
++		assigned-clock-rates = <200000000>, <24000000>, <200000000>;
++		clocks = <&cru CCLK_EMMC>, <&cru HCLK_EMMC>,
++			 <&cru ACLK_EMMC>, <&cru BCLK_EMMC>,
++			 <&cru TMCLK_EMMC>;
++		clock-names = "core", "bus", "axi", "block", "timer";
++		resets = <&cru SRST_C_EMMC>, <&cru SRST_H_EMMC>,
++			 <&cru SRST_A_EMMC>, <&cru SRST_B_EMMC>,
++			 <&cru SRST_T_EMMC>;
++		reset-names = "core", "bus", "axi", "block", "timer";
++		max-frequency = <200000000>;
++		status = "disabled";
++	};
++
++	gic: interrupt-controller@fe600000 {
++		compatible = "arm,gic-v3";
++		reg = <0x0 0xfe600000 0 0x10000>, /* GICD */
++		      <0x0 0xfe680000 0 0x100000>; /* GICR */
++		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-controller;
++		#interrupt-cells = <3>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		its: interrupt-controller@fe640000 {
++			compatible = "arm,gic-v3-its";
++			msi-controller;
++			#msi-cells = <1>;
++			reg = <0x0 0xfe640000 0x0 0x20000>;
++		};
++	};
++
++	dmac0: dma-controller@fea10000 {
++		compatible = "arm,pl330", "arm,primecell";
++		reg = <0x0 0xfea10000 0x0 0x4000>;
++		interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru ACLK_DMAC0>;
++		clock-names = "apb_pclk";
++		#dma-cells = <1>;
++		arm,pl330-periph-burst;
++	};
++
++	dmac1: dma-controller@fea30000 {
++		compatible = "arm,pl330", "arm,primecell";
++		reg = <0x0 0xfea30000 0x0 0x4000>;
++		interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru ACLK_DMAC1>;
++		clock-names = "apb_pclk";
++		#dma-cells = <1>;
++		arm,pl330-periph-burst;
++	};
++
++	dmac2: dma-controller@fed10000 {
++		compatible = "arm,pl330", "arm,primecell";
++		reg = <0x0 0xfed10000 0x0 0x4000>;
++		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru ACLK_DMAC2>;
++		clock-names = "apb_pclk";
++		#dma-cells = <1>;
++		arm,pl330-periph-burst;
++	};
++
++	uart0: serial@fd890000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfd890000 0x0 0x100>;
++		interrupts = <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART0>, <&cru PCLK_UART0>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac0 6>, <&dmac0 7>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart0m1_xfer>;
++		status = "disabled";
++	};
++
++	uart1: serial@feb40000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeb40000 0x0 0x100>;
++		interrupts = <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART1>, <&cru PCLK_UART1>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac0 8>, <&dmac0 9>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart1m1_xfer>;
++		status = "disabled";
++	};
++
++	uart2: serial@feb50000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeb50000 0x0 0x100>;
++		interrupts = <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART2>, <&cru PCLK_UART2>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac0 10>, <&dmac0 11>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart2m1_xfer>;
++		status = "disabled";
++	};
++
++	uart3: serial@feb60000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeb60000 0x0 0x100>;
++		interrupts = <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART3>, <&cru PCLK_UART3>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac0 12>, <&dmac0 13>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart3m1_xfer>;
++		status = "disabled";
++	};
++
++	uart4: serial@feb70000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeb70000 0x0 0x100>;
++		interrupts = <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART4>, <&cru PCLK_UART4>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac1 9>, <&dmac1 10>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart4m1_xfer>;
++		status = "disabled";
++	};
++
++	uart5: serial@feb80000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeb80000 0x0 0x100>;
++		interrupts = <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART5>, <&cru PCLK_UART5>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac1 11>, <&dmac1 12>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart5m1_xfer>;
++		status = "disabled";
++	};
++
++	uart6: serial@feb90000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeb90000 0x0 0x100>;
++		interrupts = <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART6>, <&cru PCLK_UART6>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac1 13>, <&dmac1 14>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart6m1_xfer>;
++		status = "disabled";
++	};
++
++	uart7: serial@feba0000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfeba0000 0x0 0x100>;
++		interrupts = <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART7>, <&cru PCLK_UART7>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac2 7>, <&dmac2 8>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart7m1_xfer>;
++		status = "disabled";
++	};
++
++	uart8: serial@febb0000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfebb0000 0x0 0x100>;
++		interrupts = <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART8>, <&cru PCLK_UART8>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac2 9>, <&dmac2 10>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart8m1_xfer>;
++		status = "disabled";
++	};
++
++	uart9: serial@febc0000 {
++		compatible = "rockchip,rk3588-uart", "snps,dw-apb-uart";
++		reg = <0x0 0xfebc0000 0x0 0x100>;
++		interrupts = <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_UART9>, <&cru PCLK_UART9>;
++		clock-names = "baudclk", "apb_pclk";
++		reg-shift = <2>;
++		reg-io-width = <4>;
++		dmas = <&dmac2 11>, <&dmac2 12>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart9m1_xfer>;
++		status = "disabled";
++	};
++
++	pinctrl: pinctrl {
++		compatible = "rockchip,rk3588-pinctrl";
++		rockchip,grf = <&ioc>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		gpio0: gpio@fd8a0000 {
++			compatible = "rockchip,gpio-bank";
++			reg = <0x0 0xfd8a0000 0x0 0x100>;
++			interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cru PCLK_GPIO0>, <&cru DBCLK_GPIO0>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-ranges = <&pinctrl 0 0 32>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++
++		gpio1: gpio@fec20000 {
++			compatible = "rockchip,gpio-bank";
++			reg = <0x0 0xfec20000 0x0 0x100>;
++			interrupts = <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cru PCLK_GPIO1>, <&cru DBCLK_GPIO1>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-ranges = <&pinctrl 0 32 32>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++
++		gpio2: gpio@fec30000 {
++			compatible = "rockchip,gpio-bank";
++			reg = <0x0 0xfec30000 0x0 0x100>;
++			interrupts = <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cru PCLK_GPIO2>, <&cru DBCLK_GPIO2>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-ranges = <&pinctrl 0 64 32>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++
++		gpio3: gpio@fec40000 {
++			compatible = "rockchip,gpio-bank";
++			reg = <0x0 0xfec40000 0x0 0x100>;
++			interrupts = <GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cru PCLK_GPIO3>, <&cru DBCLK_GPIO3>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-ranges = <&pinctrl 0 96 32>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++
++		gpio4: gpio@fec50000 {
++			compatible = "rockchip,gpio-bank";
++			reg = <0x0 0xfec50000 0x0 0x100>;
++			interrupts = <GIC_SPI 281 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cru PCLK_GPIO4>, <&cru DBCLK_GPIO4>;
++
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-ranges = <&pinctrl 0 128 32>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++	};
++};
++
++#include "rk3588s-pinctrl.dtsi"
+diff --git a/include/dt-bindings/clock/rk3588-cru.h b/include/dt-bindings/clock/rk3588-cru.h
+index d51e6ed939b3..2f046f048a83 100644
+--- a/include/dt-bindings/clock/rk3588-cru.h
++++ b/include/dt-bindings/clock/rk3588-cru.h
+@@ -1451,6 +1451,7 @@
+ #define SCMI_CRYPTO_CORE		20
+ #define SCMI_CRYPTO_PKA			21
+ #define SCMI_SPLL			22
++#define SCMI_HCLK_SD			23
+ 
+ /********Name=SECURE_SOFTRST_CON00,Offset=0xA00********/
+ #define SRST_A_SECURE_NS_BIU		10
 -- 
-Florian
+2.35.1
+
