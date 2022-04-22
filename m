@@ -2,174 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78721C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F886C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446712AbiDVKjG (ORCPT
+        id S1446723AbiDVKjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
+        Fri, 22 Apr 2022 06:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446706AbiDVKiB (ORCPT
+        with ESMTP id S1446733AbiDVKiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:38:01 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953ED6448;
-        Fri, 22 Apr 2022 03:35:08 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:35:06 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650623707;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xT+qLAoOfAcr2C66HVds9bCNQKTB8i7lZ6JommGwPcY=;
-        b=KaMq2FtGcceS3TdX7M7AylXLvtUbtwZiRVcxZAFu4w2coEErr77ojB37kZa/jqc7WjmNg1
-        v7eubYu+raccdPwClnqsclmOhB+O13vQQcBcjaiZX4+BoS3sjZHzeCuocjjo44Nv3t668v
-        US+vCJNtndaUfI09FZx3mW9/1TbzgityWTlVWvjP0vkfluJIabYCShUhGVMkGybYZRTxc7
-        p47OFNcuQxxMtVdp4bH1uIbvioOZxsHWstQWR5uTlStSm5GyJ6gNB7tossjh0H+/pisT+R
-        tDak9Az8AWkNMegBndDRBQx8bDZQ9OoO0ij0Q/Do5lmXZf73aykkgaAi547h1g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650623707;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xT+qLAoOfAcr2C66HVds9bCNQKTB8i7lZ6JommGwPcY=;
-        b=6SXAVdMH2HSHJ8lW3obbdjsXamJEoaJqHGHVenkBw5R8lpeRIjQh5DvRTO+EfSq5H6O6gt
-        qnBG69BHjDnDKGDA==
-From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: objtool/core] objtool: Add option to print section addresses
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Miroslav Benes <mbenes@suse.cz>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <2cea4d5299d53d1a4c09212a6ad7820aa46fda7a.1650300597.git.jpoimboe@redhat.com>
-References: <2cea4d5299d53d1a4c09212a6ad7820aa46fda7a.1650300597.git.jpoimboe@redhat.com>
+        Fri, 22 Apr 2022 06:38:06 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D607674
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:35:13 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ec42eae76bso80688217b3.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:35:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W1a63l7xhBoRHTCuZlMrqgXMiCx76hX8oxGNJT4mvPY=;
+        b=ekebjoo5lFkQDlWsBX1ZfsGBvvIUYcZUfxvJmQEQbMM0fTiabYtP9ISWhJdPrrr7Um
+         dLL5/Jh0RXAWvXEemfUwz3kLVm7cJTgrdQeTIkK1SfGHT0piRfcBEbiMKGEFntYsx/sa
+         /eqM/p0SNUUflH8m8qW6ZFPAMApHOD4j2sL72S8lAKy5zmo6qcLpVpsbf3mMbxIueXoS
+         YoseYf1948P84Q+4Jlq4hD/1YZeBRGXZW5yIvAp/Y13UaSyT/ABCr5UF4DuNr7F6T2qS
+         NGOG5QffIPuKAwXK4QhuZF09NFhsZktNztcDFgGk5fx7qThwVWsU0vJZx7u9SFl6VFGd
+         KyIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W1a63l7xhBoRHTCuZlMrqgXMiCx76hX8oxGNJT4mvPY=;
+        b=f6gfb3uvYhor9i5aLPn5vQ7PxvbGDqESk/gKhW9cacpugYJeU13f9sySnZJYeSdCHn
+         YHUWuZuCuPddygYUt4JOISz+CaH8fL2tM+nz4y9XWqnR2EjlvQbld4ng6mE8MuoFNCGn
+         xjXgEX6+bCxAlqoo50LBq/qpeK4Fc6AowNPjWNIlH/iixmUYbIMjyZFaGI6/ZNg9JPyy
+         xvU1LxMSZqGyarYFGGkiVE+0M7FKIigY6SMsgQ8vz5vgc+nXTXJDJPlsbGIWZ8iQW8dI
+         idpKT/2MysV46jQpTqhVH617mpqxiRo0ihnaEpb28f9mRatRjqMA0mRoSDNiPIRAlq0Z
+         KD4A==
+X-Gm-Message-State: AOAM5327LwkCHiZBN3ECrrv5p3UOyspZ4t3w08QDG1/IPY9zJQpqtBTY
+        /yuGW4X94WLBr4uRhPRISUHsNZtrTYpx9u29LD1ZHA==
+X-Google-Smtp-Source: ABdhPJxff+t9e+dmQ4LGqXXOr+3yKds5iXTKx+5F5KSWKEjactT/K3yMRiQhJuXxmtEhHEybpyQdr0bwpbBEI5w7lzQ=
+X-Received: by 2002:a81:7405:0:b0:2eb:e280:63ec with SMTP id
+ p5-20020a817405000000b002ebe28063ecmr3982763ywc.278.1650623712258; Fri, 22
+ Apr 2022 03:35:12 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <165062370619.4207.17860193261058344743.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <20220421102041.17345-1-johan+linaro@kernel.org>
+ <20220421102041.17345-2-johan+linaro@kernel.org> <de4f9514-5132-f208-d43f-4c50afcda203@linaro.org>
+ <YmKBgGHtfDcO1Mkg@hovoldconsulting.com>
+In-Reply-To: <YmKBgGHtfDcO1Mkg@hovoldconsulting.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Fri, 22 Apr 2022 13:35:01 +0300
+Message-ID: <CAA8EJpqTzcwAtxk+XtAWdZaKEx2=VduPiVBp+CWj=_C-921YJg@mail.gmail.com>
+Subject: Re: [PATCH RFC 1/5] phy: qcom-qmp: add support for pipe clock muxing
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the objtool/core branch of tip:
+On Fri, 22 Apr 2022 at 13:20, Johan Hovold <johan@kernel.org> wrote:
+>
+> On Thu, Apr 21, 2022 at 02:08:27PM +0300, Dmitry Baryshkov wrote:
+> > On 21/04/2022 13:20, Johan Hovold wrote:
+> > > Some QMP PHYs need to remux to their pipe clock input to the pipe clock
+> > > output generated by the PHY before powering on the PHY and restore the
+> > > default source during power down.
+> > >
+> > > Add support for an optional pipe clock mux which will be reparented to
+> > > the generated pipe clock before powering on the PHY and restored to the
+> > > default reference source on power off.
+> > >
+> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > > ---
+> > >   drivers/phy/qualcomm/phy-qcom-qmp.c | 71 ++++++++++++++++++++++++++---
+> > >   1 file changed, 65 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > > index 7d2d1ab061f7..bc6db9670291 100644
+> > > --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > > +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > > @@ -3292,6 +3292,8 @@ struct qmp_phy_combo_cfg {
+> > >    * @rx2: iomapped memory space for second lane's rx (in dual lane PHYs)
+> > >    * @pcs_misc: iomapped memory space for lane's pcs_misc
+> > >    * @pipe_clk: pipe clock
+> > > + * @pipemux_clk: pipe clock source mux
+> > > + * @piperef_clk: pipe clock default reference source
+> > >    * @index: lane index
+> > >    * @qmp: QMP phy to which this lane belongs
+> > >    * @lane_rst: lane's reset controller
+> > > @@ -3311,6 +3313,8 @@ struct qmp_phy {
+> > >     void __iomem *rx2;
+> > >     void __iomem *pcs_misc;
+> > >     struct clk *pipe_clk;
+> > > +   struct clk *pipemux_clk;
+> > > +   struct clk *piperef_clk;
+> > >     unsigned int index;
+> > >     struct qcom_qmp *qmp;
+> > >     struct reset_control *lane_rst;
+> > > @@ -3346,6 +3350,7 @@ struct qcom_qmp {
+> > >     void __iomem *dp_com;
+> > >
+> > >     struct clk_bulk_data *clks;
+> > > +   struct clk *pipe_clksrc;
+> >
+> > Please move this to qmp_phy too.
+>
+> Ok.
+>
+> > > +   /* Get optional pipe clock mux and default reference source clock. */
+> > > +   qphy->pipemux_clk = of_clk_get_by_name(np, "mux");
+> > > +   if (IS_ERR(qphy->pipemux_clk)) {
+> > > +           ret = PTR_ERR(qphy->pipemux_clk);
+> > > +           if (ret == -EPROBE_DEFER)
+> > > +                   return ret;
+> > > +
+> > > +           qphy->pipemux_clk = NULL;
+> >
+> > This makes the driver ignore every possible erorr except -EPROBE_DEFER.
+> > However the driver should behave in quite the oppposite way. Please use
+> > devm_clk_get_optional() instead. It would do that in better way.
+>
+> We'd need to add an optional version of devm_get_clk_from_child() for
+> that due to the questionable "lane" child nodes this driver uses.
+>
+> The above works for an RFC, but testing for -EINVAL and -ENOENT handles
+> a few more theoretical errnos until an optional helper is in place.
+>
+> > Not to mention that this code leaks a refcount on the clock.
+>
+> True, just like the driver has been doing with the pipe clock and lane
+> reset since it was merged. I'll fix that up.
+>
+> > > +   } else {
+> > > +           qphy->piperef_clk = of_clk_get_by_name(np, "ref");
+> > > +           if (IS_ERR(qphy->piperef_clk)) {
+> > > +                   ret = PTR_ERR(qphy->piperef_clk);
+> > > +                   return dev_err_probe(dev, ret,
+> > > +                                        "failed to get lane%d piperef_clk\n",
+> > > +                                        id);
+> > > +           }
+> > > +   }
+> > > +
+> >
+> > As a second thought.
+> > This needs to be more explicit. If the chipset requires the pipe clock
+> > remuxing, we must fail if the clocks were not provided. So depending on
+> > the qmp instance/property the driver should either use devm_clk_get()
+> > (instead of _optional) or skip this block completely.
+>
+> No, the kernel is not a DT validator (and we have the YAML bindings for
+> that now).
 
-Commit-ID:     99c0beb547a3e0ec3a63edeba0960c6ddf2226b0
-Gitweb:        https://git.kernel.org/tip/99c0beb547a3e0ec3a63edeba0960c6ddf2226b0
-Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:31 -07:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 22 Apr 2022 12:32:02 +02:00
+It is not about DT validation. It is about passing a correct DT. The
+file can come up from the kernel. It can come from the older kernel.
+OR it can come from the vendor. Or it even might be being a part of
+firmware flashed into the device.
+So we can not assume that the DT is correct just because the in-kernel
+DT passes YAML validation.
 
-objtool: Add option to print section addresses
+So, as I wrote, the whole patchset needs much more care about compatibility.
 
-To help prevent objtool users from having to do math to convert function
-addresses to section addresses, and to help out with finding data
-addresses reported by IBT validation, add an option to print the section
-address in addition to the function address.
+> > But this will not work with earlier DTS files.
+>
+> So this is not a problem (but if we really wanted to have the driver
+> validate the DT it can be done by updating the compatible strings).
 
-Normal:
+We should not update compatible strings just because the driver
+changes. Compat strings describe the hardware, not the Linux point of
+view on it.
 
-  vmlinux.o: warning: objtool: fixup_exception()+0x2d1: unreachable instruction
-
-With '--sec-address':
-
-  vmlinux.o: warning: objtool: fixup_exception()+0x2d1 (.text+0x76c51): unreachable instruction
-
-Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/2cea4d5299d53d1a4c09212a6ad7820aa46fda7a.1650300597.git.jpoimboe@redhat.com
----
- tools/objtool/builtin-check.c           |  1 +-
- tools/objtool/include/objtool/builtin.h |  1 +-
- tools/objtool/include/objtool/warn.h    | 31 +++++++++++++-----------
- 3 files changed, 19 insertions(+), 14 deletions(-)
-
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index 8c3eed5..6acfebd 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -50,6 +50,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
- 	OPT_BOOLEAN(0, "no-fp", &opts.no_fp, "skip frame pointer validation"),
- 	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
-+	OPT_BOOLEAN(0, "sec-address", &opts.sec_address, "print section addresses in warnings"),
- 	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
- 	OPT_BOOLEAN(0, "vmlinux", &opts.vmlinux, "vmlinux.o validation"),
- 
-diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 44548e2..e0972fb 100644
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -28,6 +28,7 @@ struct opts {
- 	bool module;
- 	bool no_fp;
- 	bool no_unreachable;
-+	bool sec_address;
- 	bool stats;
- 	bool vmlinux;
- };
-diff --git a/tools/objtool/include/objtool/warn.h b/tools/objtool/include/objtool/warn.h
-index c4bde3e..a3e79ae 100644
---- a/tools/objtool/include/objtool/warn.h
-+++ b/tools/objtool/include/objtool/warn.h
-@@ -11,30 +11,33 @@
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <fcntl.h>
-+#include <objtool/builtin.h>
- #include <objtool/elf.h>
- 
- extern const char *objname;
- 
- static inline char *offstr(struct section *sec, unsigned long offset)
- {
--	struct symbol *func;
--	char *name, *str;
--	unsigned long name_off;
-+	bool is_text = (sec->sh.sh_flags & SHF_EXECINSTR);
-+	struct symbol *sym = NULL;
-+	char *str;
-+	int len;
- 
--	func = find_func_containing(sec, offset);
--	if (!func)
--		func = find_symbol_containing(sec, offset);
--	if (func) {
--		name = func->name;
--		name_off = offset - func->offset;
-+	if (is_text)
-+		sym = find_func_containing(sec, offset);
-+	if (!sym)
-+		sym = find_symbol_containing(sec, offset);
-+
-+	if (sym) {
-+		str = malloc(strlen(sym->name) + strlen(sec->name) + 40);
-+		len = sprintf(str, "%s+0x%lx", sym->name, offset - sym->offset);
-+		if (opts.sec_address)
-+			sprintf(str+len, " (%s+0x%lx)", sec->name, offset);
- 	} else {
--		name = sec->name;
--		name_off = offset;
-+		str = malloc(strlen(sec->name) + 20);
-+		sprintf(str, "%s+0x%lx", sec->name, offset);
- 	}
- 
--	str = malloc(strlen(name) + 20);
--	sprintf(str, "%s+0x%lx", name, name_off);
--
- 	return str;
- }
- 
+-- 
+With best wishes
+Dmitry
