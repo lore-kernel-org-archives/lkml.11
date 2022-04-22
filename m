@@ -2,97 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB404C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448983AbiDVO46 (ORCPT
+        id S1448984AbiDVO5D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
+        Fri, 22 Apr 2022 10:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbiDVO4y (ORCPT
+        with ESMTP id S1448987AbiDVO47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:56:54 -0400
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDC55C36E;
-        Fri, 22 Apr 2022 07:54:01 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2f18982c255so88009287b3.1;
-        Fri, 22 Apr 2022 07:54:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c5f9R41E0Bd290of4rCDhR29V/pdJsF5Vk0y2KIrqB0=;
-        b=LJ2pEI23WBoBu8CFL0F4+sRxxc1UY94NFFf2xjyi8Xb8escDvmcGmlYcCUwNGqG+p8
-         EjKorncusfN3leVGQ3jOZCCgnd/BzsV1QqSL1WVqIZGTDBw35mEw+SIv0t5xNQIUv4cr
-         BKL7UMwL+NP/6VxE0R5stOx9hEGU6APKv1VjDRvBKDZncTuJ4NLHVqMjGD01+946Bg33
-         bg/8NWtX2Cz7z99qIx5ERrYauGSvtO5EIpbrqUKaf74hc4tnmmxINhSvO/wjZ2abg+aH
-         pp90/vRPZoLQMMXeBddPEh0ysn6NO8j2Jg/Pyqv2hd+viMF5FcTK9PMVST52lQpnHxKq
-         lyDw==
-X-Gm-Message-State: AOAM533tWnF1mSE88km6ILWmkGjevpRy4KNidBcUN2Kq/PW+qB/sCUg/
-        R1qAqHHOg91jX4z2d9inQSHfUUtrx50EaK/kV34=
-X-Google-Smtp-Source: ABdhPJy1PiGkkd+MuQd6tHkZA93+e1SowzE8gJ+C/aSTwE9zvQcj8wPj2GuRRfxG6Y1k4OQlyMu0j44jBZlPRCoapvU=
-X-Received: by 2002:a81:1096:0:b0:2ec:4a46:7e5a with SMTP id
- 144-20020a811096000000b002ec4a467e5amr5400988ywq.196.1650639240745; Fri, 22
- Apr 2022 07:54:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220419211921.2230752-1-tony.luck@intel.com>
-In-Reply-To: <20220419211921.2230752-1-tony.luck@intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 22 Apr 2022 16:53:49 +0200
-Message-ID: <CAJZ5v0jd+OpnhijpH74B2+rr+52pcnZ3x05qccF7VU0Pa4L21w@mail.gmail.com>
-Subject: Re: [PATCH] ACPI, APEI, EINJ: Refuse to inject into the zero page
-To:     Tony Luck <tony.luck@intel.com>
+        Fri, 22 Apr 2022 10:56:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA78E5C36E;
+        Fri, 22 Apr 2022 07:54:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BE36614CB;
+        Fri, 22 Apr 2022 14:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DC7EC385AB;
+        Fri, 22 Apr 2022 14:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650639244;
+        bh=c/tlEA8ZlzdxmIQcMOOwVpEn66NWm3rRj8+jDgV6xxc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gqA0vzwFNzldjsjjRmYleh3zBQQsf2csoe8Klhv/3GjBm4DNaPy55KzSHN+92OUFG
+         m3GNyJl25wnUK7V/vD5eogrGZ+M/bqPHb977EwGlbc3JNLGzmYWVnypL9eTSt5TC+O
+         s80RQTbQw2OrYCwnCnsa3LtgR6qLawgvnYBRHp1Q=
+Date:   Fri, 22 Apr 2022 16:54:01 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+        Stuart Yoder <stuyoder@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v7 00/12] Fix broken usage of driver_override (and kfree
+ of static memory)
+Message-ID: <YmLBiQjyKhFZsPlG@kroah.com>
+References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
+ <529de1fd-7e98-1634-c61e-0e69ddcd9e73@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <529de1fd-7e98-1634-c61e-0e69ddcd9e73@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 11:19 PM Tony Luck <tony.luck@intel.com> wrote:
->
-> Some validation tests dynamically inject errors into memory used by
-> applications to check that the system can recover from a variety of
-> poison consumption sceenarios.
->
-> But sometimes the virtual address picked by these tests is mapped to
-> the zero page.
->
-> This causes additional unexpected machine checks as other processes that
-> map the zero page also consume the poison.
->
-> Disallow injection to the zero page.
->
-> Signed-off-by: Tony Luck <tony.luck@intel.com>
->
-> ---
-> I picked -EADDRINUSE as a somewhat descriptive error code distinct
-> fromm -EINVAL used elsewhere in EINJ, but I'm not strongly attached
-> to it. Any other non -EINVAL value would be as good an indicator to
-> the validation tests that they shouldn't inject to this address.
-> ---
->  drivers/acpi/apei/einj.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/acpi/apei/einj.c b/drivers/acpi/apei/einj.c
-> index 95cc2a9f3e05..d4326ec12d29 100644
-> --- a/drivers/acpi/apei/einj.c
-> +++ b/drivers/acpi/apei/einj.c
-> @@ -549,6 +549,9 @@ static int einj_error_inject(u32 type, u32 flags, u64 param1, u64 param2,
->              !arch_is_platform_page(base_addr)))
->                 return -EINVAL;
->
-> +       if (is_zero_pfn(base_addr >> PAGE_SHIFT))
-> +               return -EADDRINUSE;
-> +
->  inject:
->         mutex_lock(&einj_mutex);
->         rc = __einj_error_inject(type, flags, param1, param2, param3, param4);
-> --
+On Wed, Apr 20, 2022 at 11:20:06AM +0200, Krzysztof Kozlowski wrote:
+> On 19/04/2022 13:34, Krzysztof Kozlowski wrote:
+> 
+> Hi Greg, Rafael,
+> 
+> The patchset was for some time on the lists, got some reviews, some
+> changes/feedback which I hope I applied/responded.
+> 
+> Entire set depends on the driver core changes, so maybe you could pick
+> up everything via drivers core tree?
 
-Applied as 5.19 material, thanks!
+Ok, will do, thanks.
+
+greg k-h
