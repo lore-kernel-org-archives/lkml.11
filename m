@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6957FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 440C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444301AbiDVGRq (ORCPT
+        id S1444295AbiDVGUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
+        Fri, 22 Apr 2022 02:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442942AbiDVGRl (ORCPT
+        with ESMTP id S1444330AbiDVGUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:17:41 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF2750072;
-        Thu, 21 Apr 2022 23:14:48 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650608086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DjdOTui0POHi92i5Qf8axlO2tlre4sLJsGmaIO2yyyo=;
-        b=afLqpNepCA2qZ7NooyGZHehv1zWlhdfT5NU5maBIeanvB41X38R4km33gc0ch41vZd6KsK
-        ObUUWK+H1aCxj+0hhsc23IA1C+/1vmZjQ0QO36gQ+0DY6QyIZSm5ltORLtydd9cm2Vsdyr
-        wCryWK5pCihyGPjiVqfGoeK1CECqXy8=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next] arp: fix unused variable warnning when CONFIG_PROC_FS=n
-Date:   Fri, 22 Apr 2022 14:14:31 +0800
-Message-Id: <20220422061431.1905579-1-yajun.deng@linux.dev>
+        Fri, 22 Apr 2022 02:20:39 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79265506F3;
+        Thu, 21 Apr 2022 23:17:23 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 22 Apr
+ 2022 14:17:25 +0800
+Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 22 Apr
+ 2022 14:17:19 +0800
+Message-ID: <dc948948-5d69-e9b1-417b-7d6b8824782c@meizu.com>
+Date:   Fri, 22 Apr 2022 14:17:18 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] dmaengine: imx-sdma: Remove useless null check before
+ call of_node_put()
+To:     Vinod Koul <vkoul@kernel.org>
+CC:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        <dmaengine@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1650509390-26877-1-git-send-email-baihaowen@meizu.com>
+ <YmJGw84by8eczx/u@matsya>
+From:   baihaowen <baihaowen@meizu.com>
+In-Reply-To: <YmJGw84by8eczx/u@matsya>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops' [-Wunused-const-variable]
+在 4/22/22 2:10 PM, Vinod Koul 写道:
+> On 21-04-22, 10:49, Haowen Bai wrote:
+>> No need to add null check before call of_node_put(), since the
+>> implementation of of_node_put() has done it.
+>>
+>> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+>> ---
+>>  drivers/dma/imx-sdma.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+>> index 6196a7b3956b..b8a1299b93f0 100644
+>> --- a/drivers/dma/imx-sdma.c
+>> +++ b/drivers/dma/imx-sdma.c
+>> @@ -1933,8 +1933,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+>>  	}
+>>  
+>>  out:
+>> -	if (gpr_np)
+>> -		of_node_put(gpr_np);
+>> +	of_node_put(gpr_np);
+> this is incorrect as it is called on error case
+>
+>
+Even through it is called on error case, gpr_np=null, but  of_node_put
+did a null check.
+void of_node_put(struct device_node *node)
 
-Add #ifdef CONFIG_PROC_FS for 'arp_seq_ops'.
+{ if (node) kobject_put(&node->kobj); }
 
-Fixes: e968b1b3e9b8 ("arp: Remove #ifdef CONFIG_PROC_FS")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/ipv4/arp.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 2d0c05ca9c6f..ab4a5601c82a 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1304,9 +1304,9 @@ static struct packet_type arp_packet_type __read_mostly = {
- 	.func =	arp_rcv,
- };
- 
-+#ifdef CONFIG_PROC_FS
- #if IS_ENABLED(CONFIG_AX25)
- 
--/* ------------------------------------------------------------------------ */
- /*
-  *	ax25 -> ASCII conversion
-  */
-@@ -1412,16 +1412,13 @@ static void *arp_seq_start(struct seq_file *seq, loff_t *pos)
- 	return neigh_seq_start(seq, pos, &arp_tbl, NEIGH_SEQ_SKIP_NOARP);
- }
- 
--/* ------------------------------------------------------------------------ */
--
- static const struct seq_operations arp_seq_ops = {
- 	.start	= arp_seq_start,
- 	.next	= neigh_seq_next,
- 	.stop	= neigh_seq_stop,
- 	.show	= arp_seq_show,
- };
--
--/* ------------------------------------------------------------------------ */
-+#endif /* CONFIG_PROC_FS */
- 
- static int __net_init arp_net_init(struct net *net)
- {
 -- 
-2.25.1
+Haowen Bai
 
