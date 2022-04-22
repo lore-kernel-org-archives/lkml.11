@@ -2,87 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB404C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E12B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448984AbiDVO5D (ORCPT
+        id S1449029AbiDVO5G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
+        Fri, 22 Apr 2022 10:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448987AbiDVO47 (ORCPT
+        with ESMTP id S1449008AbiDVO5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:56:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA78E5C36E;
-        Fri, 22 Apr 2022 07:54:05 -0700 (PDT)
+        Fri, 22 Apr 2022 10:57:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEBA5C668
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:54:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BE36614CB;
-        Fri, 22 Apr 2022 14:54:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DC7EC385AB;
-        Fri, 22 Apr 2022 14:54:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650639244;
-        bh=c/tlEA8ZlzdxmIQcMOOwVpEn66NWm3rRj8+jDgV6xxc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gqA0vzwFNzldjsjjRmYleh3zBQQsf2csoe8Klhv/3GjBm4DNaPy55KzSHN+92OUFG
-         m3GNyJl25wnUK7V/vD5eogrGZ+M/bqPHb977EwGlbc3JNLGzmYWVnypL9eTSt5TC+O
-         s80RQTbQw2OrYCwnCnsa3LtgR6qLawgvnYBRHp1Q=
-Date:   Fri, 22 Apr 2022 16:54:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v7 00/12] Fix broken usage of driver_override (and kfree
- of static memory)
-Message-ID: <YmLBiQjyKhFZsPlG@kroah.com>
-References: <20220419113435.246203-1-krzysztof.kozlowski@linaro.org>
- <529de1fd-7e98-1634-c61e-0e69ddcd9e73@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <529de1fd-7e98-1634-c61e-0e69ddcd9e73@linaro.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 876BCB83030
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:54:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABECDC385A0;
+        Fri, 22 Apr 2022 14:54:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650639245;
+        bh=gazOv3DHwz5/g5JU36t4tIR2wD/+rqURHYT+c9grBjI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jdrTK4BP6WS6eTnapdtlekyzr2kPvRmHd4xjE6QmL9lvdgzoMPDSBsTndO/SPJSa1
+         fpvdhADnIXcgRe3oUjcjgahGJ8oNVN8qWj2GZg1VyMgtxq5J7CafT6nGvR9WMoRrKt
+         x/+2+dGmjArLMR7r9W08M/dm8suQPbYpJTHNUMxPHH2QkNk6EOocg1zFfn0S9IYxzk
+         uWQd5ZB7MXHVJoe0WWVkShKaVMCr83mtuBqGThDiyY54OuJ5XEIfumpJV3JQD2JoVX
+         XbaXttMeQce57NIMegC5F1HAniBSaMbWxZ4wAqg/yRqdD+Y1mvoANBGW5ACnQO7wiX
+         iT4KmxjIKiJ5w==
+Date:   Fri, 22 Apr 2022 23:54:01 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Adam Zabrocki <pi3@pi3.com.pl>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Solar Designer <solar@openwall.com>
+Subject: Re: [PATCH] x86/kprobes: Fix KRETPROBES when
+ CONFIG_KRETPROBE_ON_RETHOOK is set
+Message-Id: <20220422235401.a3ece3ed2b008dc790cdb6e2@kernel.org>
+In-Reply-To: <20220422094350.2397cd2d@gandalf.local.home>
+References: <20220415180723.GA13921@pi3.com.pl>
+        <20220415181006.GA14021@pi3.com.pl>
+        <20220422220523.bbad0538ef69b81cc7befe2a@kernel.org>
+        <20220422094350.2397cd2d@gandalf.local.home>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 11:20:06AM +0200, Krzysztof Kozlowski wrote:
-> On 19/04/2022 13:34, Krzysztof Kozlowski wrote:
-> 
-> Hi Greg, Rafael,
-> 
-> The patchset was for some time on the lists, got some reviews, some
-> changes/feedback which I hope I applied/responded.
-> 
-> Entire set depends on the driver core changes, so maybe you could pick
-> up everything via drivers core tree?
+On Fri, 22 Apr 2022 09:43:50 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Ok, will do, thanks.
+> On Fri, 22 Apr 2022 22:05:23 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> 
+> > Hi Steve,
+> > 
+> > Can you pick this fix to urgent branch? Or Should I ask bpf people?
+> 
+> It looks to fix a bug from a commit pulled in from the BPF folks. I would
+> have them take it.
 
-greg k-h
+OK, thanks!
+
+Adam, can you resend your patch with my Ack and modify the PATCH tag as
+"[PATCH bpf]", to "Alexei Starovoitov <ast@kernel.org>", "Andrii Nakryiko <andrii@kernel.org>",
+ and Cc: "bpf@vger.kernel.org" ? 
+
+Thank you,
+
+> 
+> Thanks,
+> 
+> -- Steve
+> > 
+> > > Fixes: 73f9b911faa7 ("kprobes: Use rethook for kretprobe if possible")
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
