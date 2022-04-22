@@ -2,149 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B19C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D46B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443632AbiDVC56 (ORCPT
+        id S1443680AbiDVC7P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 22:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        Thu, 21 Apr 2022 22:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbiDVC54 (ORCPT
+        with ESMTP id S1443635AbiDVC67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 22:57:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E912229E;
-        Thu, 21 Apr 2022 19:55:03 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KkzXZ0ZspzhXkY;
-        Fri, 22 Apr 2022 10:54:54 +0800 (CST)
-Received: from [10.67.110.176] (10.67.110.176) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 10:55:01 +0800
-Subject: Re: [PATCH -next] libbpf: Add additional null-pointer checking in
- make_parent_dir
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <gongruiqi1@huawei.com>, <wangweiyang2@huawei.com>
-References: <20220421130056.2510372-1-cuigaosheng1@huawei.com>
- <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com>
-From:   cuigaosheng <cuigaosheng1@huawei.com>
-Message-ID: <60b4e208-efed-c2fb-d1e0-125e5409c861@huawei.com>
-Date:   Fri, 22 Apr 2022 10:55:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Thu, 21 Apr 2022 22:58:59 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B12B4ECE0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:56:01 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g13so13721667ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ppxYJpilG8kq+TFq7q0/hAFZJS7FtFUQSQusR4SqlvA=;
+        b=Xctnh2iK5uByYnDTDm5OXbRfKcEVx4Xs78FxhxW87Sw/K0tponrZPQ+y9TipNokajo
+         yMZLfRCLO6Pr6DCynUM4uHbdbfAIEevQALChH2DhzRyAy3ocXyIrbT+tBuTUR1rxaypw
+         q+M9mSEDvFTqlaMTl/bftJ5L/6+6k0Tkc5roo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ppxYJpilG8kq+TFq7q0/hAFZJS7FtFUQSQusR4SqlvA=;
+        b=P+FbLw96mrsvPMsPxZWDh/+q09+z+tqSgwHDX3TLCLHlgNbnakvM7k2HYeTx5NCsrN
+         XJ/0RyerHIgkfjuRe7wajTn0Xd84fOAEgGLjF/JI8mRtQ4OAm84hH//anXCdy5VvJgyG
+         haLkDNclwTToZm3hswiRaJmHd2K4shlt/QfEzbYm7PuwQmNQNDWg4s3r3DPli8Ldd0dP
+         HYKvmv3PgLPC9YXbpEixBzkz1h/jmqP++LkNh73qcKzJFF5keoQAIbR0L8BpJMfJ3bFb
+         BGNI6lUlldYS6qjYJVVlHgXFM+4Osj63N08SidD2Mix6rd1s5CSO/KyE/JYpltEW2z8B
+         Kdgw==
+X-Gm-Message-State: AOAM533ocuBCbD3Nno0q5EPLmZty9px6EvRkLp6O2Nga2QH36vmDdo/e
+        VEBbTzx3ILBdzkJnqVp9q9uAYoyPlas+2pB+YKs=
+X-Google-Smtp-Source: ABdhPJzYo7AM9d3GKrfcway/wMVkIAuuyE5+5LtPAFI9XtEAI/38Jk7NZtrF6vj82tTIDwGggdeudw==
+X-Received: by 2002:a17:907:6d25:b0:6ef:5af5:f1d3 with SMTP id sa37-20020a1709076d2500b006ef5af5f1d3mr2064526ejc.315.1650596159627;
+        Thu, 21 Apr 2022 19:55:59 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id kx5-20020a170907774500b006e1382b8192sm279910ejc.147.2022.04.21.19.55.59
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 19:55:59 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id q7so1471010wrm.5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:55:59 -0700 (PDT)
+X-Received: by 2002:a05:6512:3c93:b0:44b:4ba:c334 with SMTP id
+ h19-20020a0565123c9300b0044b04bac334mr1630672lfv.27.1650595688485; Thu, 21
+ Apr 2022 19:48:08 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.176]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+References: <20220415164413.2727220-1-song@kernel.org> <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
+ <YlpPW9SdCbZnLVog@infradead.org> <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
+ <CAHk-=wiMCndbBvGSmRVvsuHFWC6BArv-OEG2Lcasih=B=7bFNQ@mail.gmail.com>
+ <B995F7EB-2019-4290-9C09-AE19C5BA3A70@fb.com> <Yl04LO/PfB3GocvU@kernel.org>
+ <Yl4F4w5NY3v0icfx@bombadil.infradead.org> <88eafc9220d134d72db9eb381114432e71903022.camel@intel.com>
+ <B20F8051-301C-4DE4-A646-8A714AF8450C@fb.com> <Yl8CicJGHpTrOK8m@kernel.org>
+ <CAHk-=wh6um5AFR6TObsYY0v+jUSZxReiZM_5Kh4gAMU8Z8-jVw@mail.gmail.com>
+ <1650511496.iys9nxdueb.astroid@bobo.none> <CAHk-=wiQ5=S3m2+xRbm-1H8fuQwWfQxnO7tHhKg8FjegxzdVaQ@mail.gmail.com>
+ <1650530694.evuxjgtju7.astroid@bobo.none> <25437eade8b2ecf52ff9666a7de9e36928b7d28f.camel@intel.com>
+ <CAHk-=wiQcg=7++Odg08=eZZgdX4NKcPqiqGKXHNXqesTtfkmmA@mail.gmail.com>
+ <1650584815.0dtcbd4qky.astroid@bobo.none> <310d562b80ad328e19a4959356600e4efe49cf4c.camel@intel.com>
+In-Reply-To: <310d562b80ad328e19a4959356600e4efe49cf4c.camel@intel.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 21 Apr 2022 19:47:52 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wg+xn7WbSEb1boSCj+AEUwwAGmXf5Hvb0822BHyBwRoDw@mail.gmail.com>
+Message-ID: <CAHk-=wg+xn7WbSEb1boSCj+AEUwwAGmXf5Hvb0822BHyBwRoDw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "npiggin@gmail.com" <npiggin@gmail.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "Kernel-team@fb.com" <Kernel-team@fb.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "song@kernel.org" <song@kernel.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "dborkman@redhat.com" <dborkman@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This email adjusts the code format.
-
-I don't understand why we don't check path for NULL, bpf_link__pin is an 
-external
-interface, It will be called by external functions and provide input 
-parameters,
-for example in samples/bpf/hbm.c:
-
-> 201         link = bpf_program__attach_cgroup(bpf_prog, cg1);
-> 202         if (libbpf_get_error(link)) {
-> 203                 fprintf(stderr, "ERROR: bpf_program__attach_cgroup 
-> failed\n");
-> 204                 goto err;
-> 205         }
-> 206
-> 207         sprintf(cg_pin_path, "/sys/fs/bpf/hbm%d", cg_id);
-> 208         rc = bpf_link__pin(link, cg_pin_path);
-> 209         if (rc < 0) {
-> 210                 printf("ERROR: bpf_link__pin failed: %d\n", rc);
-> 211                 goto err;
-> 212         }
-
-if cg_pin_path is NULL, strdup(NULL) will trigger a segmentation fault in
-make_parent_dir, I think we should avoid this and add null-pointer checking
-for path, just like check_path:
->  7673 static int check_path(const char *path)
->  7674 {
->  7675         char *cp, errmsg[STRERR_BUFSIZE];
->  7676         struct statfs st_fs;
->  7677         char *dname, *dir;
->  7678         int err = 0;
->  7679
->  7680         if (path == NULL)
->  7681                 return -EINVAL;
->  7682
->  7683         dname = strdup(path);
->  7684         if (dname == NULL)
->  7685                 return -ENOMEM;
->  7686
->  7687         dir = dirname(dname);
->  7688         if (statfs(dir, &st_fs)) {
->  7689                 cp = libbpf_strerror_r(errno, errmsg, 
-> sizeof(errmsg));
->  7690                 pr_warn("failed to statfs %s: %s\n", dir, cp);
->  7691                 err = -errno;
->  7692         }
->  7693         free(dname);
->  7694
->  7695         if (!err && st_fs.f_type != BPF_FS_MAGIC) {
->  7696                 pr_warn("specified path %s is not on BPF FS\n", 
-> path);
->  7697                 err = -EINVAL;
->  7698         }
->  7699
->  7700         return err;
->  7701 }
-
-Thanks.
-
-
-在 2022/4/22 0:55, Andrii Nakryiko 写道:
-> On Thu, Apr 21, 2022 at 6:01 AM Gaosheng Cui <cuigaosheng1@huawei.com> wrote:
->> The make_parent_dir is called without null-pointer checking for path,
->> such as bpf_link__pin. To ensure there is no null-pointer dereference
->> in make_parent_dir, so make_parent_dir requires additional null-pointer
->> checking for path.
->>
->> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
->> ---
->>   tools/lib/bpf/libbpf.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index b53e51884f9e..5786e6184bf5 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -7634,6 +7634,9 @@ static int make_parent_dir(const char *path)
->>          char *dname, *dir;
->>          int err = 0;
->>
->> +       if (path == NULL)
->> +               return -EINVAL;
->> +
-> API contract is that path shouldn't be NULL. Just like we don't check
-> link, obj, prog for NULL in every single API, I don't think we need to
-> do it here, unless I'm missing something?
+On Thu, Apr 21, 2022 at 7:29 PM Edgecombe, Rick P
+<rick.p.edgecombe@intel.com> wrote:
 >
->>          dname = strdup(path);
->>          if (dname == NULL)
->>                  return -ENOMEM;
->> --
->> 2.25.1
->>
-> .
+> FWIW, I like this direction. I think it needs to free them differently
+> though?
+
+Very much so.
+
+> Besides fixing the bisected issue (hopefully), it also more cleanly
+> separates the mapping from the backing allocation logic. And then since
+> all the pages are 4k (from the page allocator perspective), it would be
+> easier to support non-huge page aligned sizes. i.e. not use up a whole
+> additional 2MB page if you only need 4k more of allocation size.
+
+I don't disagree, but I think the real problem is that the whole "oen
+page_order per vmalloc() area" itself is a bit broken.
+
+For example, AMD already does this "automatic TLB size" thing for when
+you have multiple contiguous PTE entries (shades of the old alpha
+"page size hint" thing, except it's automatic and doesn't have
+explicit hints).
+
+And I'm hoping Intel will do something similar in the future.
+
+End result? It would actually be really good to just map contiguous
+pages, but it doesn't have anything to do with the 2MB PMD size.
+
+And there's no "fixed order" needed either. If you have mapping that
+is 17 pages in size, it would still be good to allocate them as a
+block of 16 pages ("page_order = 4") and as a single page, because
+just laying them out in the page tables that way will already allow
+AMD to use a 64kB TLB entry for that 16-page block.
+
+But it would also work to just do the allocations as a set of 8, 4, 4 and 1.
+
+But the whole "one page order for one vmalloc" means that doesn't work
+very well.
+
+Where I disagree (violently) with Nick is his contention that (a) this
+is x86-specific and (b) this is somehow trivial to fix.
+
+Let's face it - the current code is broken. I think the sub-page issue
+is not entirely trivial, and the current design isn't even very good
+for it.
+
+But the *easy* cases are the ones that simply don't care - the ones
+that powerpc has actually been testing.
+
+So for 5.18, I think it's quite likely reasonable to re-enable
+large-page vmalloc for the easy case (ie those big hash tables).
+
+Re-enabling it *all*, considering how broken it has been, and how
+little testing it has clearly gotten? And potentially not enabling it
+on x86 because x86 is so much better at showing issues? That's not
+what I want to do.
+
+If the code is so broken that it can't be used on x86, then it's too
+broken to be enabled on powerpc and s390 too. Never mind that those
+architectures might have so limited use that they never realized how
+broken they were..
+
+                 Linus
