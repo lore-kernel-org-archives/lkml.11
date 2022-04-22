@@ -2,742 +2,335 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7242C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbiDVV77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44458 "EHLO
+        id S230445AbiDVWAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbiDVV75 (ORCPT
+        with ESMTP id S230270AbiDVWAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:59:57 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B500B1A73EB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:42:49 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650659231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+        Fri, 22 Apr 2022 18:00:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB5341DB2FC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:43:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650660180;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BjB1/AymZRYkarlriHST/UpCt69iRBAfzx/2A3oXovc=;
-        b=AbatqqmF05ZzNTAbtv/sSXBIOKo5tKpv6nk5h9TcrwoF93EXOVll0QNCnclWPkDTXqjqAM
-        xEGpd2lb16gAGCaYcfhZk0yOaTCU2WKdptDX76NNHXVKP+mcIroQ+9GW8N8HhJQc3GLH2q
-        kwz+NJHsns1YbQzzzn1rr+ujXhpjEoc=
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     Dave Chinner <dchinner@redhat.com>, linux-kernel@vger.kernel.org,
-        Yang Shi <shy828301@gmail.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH v2 5/7] mm: provide shrinkers with names
-Date:   Fri, 22 Apr 2022 13:26:42 -0700
-Message-Id: <20220422202644.799732-6-roman.gushchin@linux.dev>
-In-Reply-To: <20220422202644.799732-1-roman.gushchin@linux.dev>
-References: <20220422202644.799732-1-roman.gushchin@linux.dev>
+        bh=9XZJU2fw0e7/ykJ50g6qgLPXXSEOlfoK3tt/aCOr/+c=;
+        b=jHH5QUWfZYT75lBrwc74CgETnvMAJtb68x94ECAdFkOHOGUSEU5Sn7J6Mg7+YlCkbivtWj
+        velDvQ05vpXg+WP1O99q2xOfbwTx5nAmvIzwrxK1dgnylZ3a4fITgjBh517kSmZhyqUWh7
+        NbgaiTWGtpLMKRte5z47Bx7qWSlV45U=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-363-Z9baH4P8PsqrEFSk-wD52A-1; Fri, 22 Apr 2022 16:01:01 -0400
+X-MC-Unique: Z9baH4P8PsqrEFSk-wD52A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0BDA58339B6;
+        Fri, 22 Apr 2022 20:01:00 +0000 (UTC)
+Received: from dqiao.bos.com (unknown [10.22.19.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A801DC27EB4;
+        Fri, 22 Apr 2022 20:00:59 +0000 (UTC)
+From:   Donghai Qiao <dqiao@redhat.com>
+To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
+        peterz@infradead.org, heying24@huawei.com,
+        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
+        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
+Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
+        Donghai Qiao <dqiao@redhat.com>
+Subject: [PATCH v2 07/11] smp: change smp_call_function_any() to smp_call_any()
+Date:   Fri, 22 Apr 2022 16:00:36 -0400
+Message-Id: <20220422200040.93813-8-dqiao@redhat.com>
+In-Reply-To: <20220422200040.93813-1-dqiao@redhat.com>
+References: <20220422200040.93813-1-dqiao@redhat.com>
+Reply-To: dqiao@redhat.com
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently shrinkers are anonymous objects. For debugging purposes they
-can be identified by count/scan function names, but it's not always
-useful: e.g. for superblock's shrinkers it's nice to have at least
-an idea of to which superblock the shrinker belongs.
+Rename smp_call_function_any() to smp_call_any() and also make
+the changes necessary.
 
-This commit adds names to shrinkers. register_shrinker() and
-prealloc_shrinker() functions are extended to take a format and
-arguments to master a name. If CONFIG_SHRINKER_DEBUG is on,
-the name is saved until the corresponding debugfs object is created,
-otherwise it's simple ignored.
+Replace all the invocations of smp_call_function_any() with
+smp_call_any() for all.
 
-After this change the shrinker debugfs directory looks like:
-  $ cd /sys/kernel/debug/shrinker/
-  $ ls
-    dqcache-16          sb-cgroup2-30    sb-hugetlbfs-33  sb-proc-41       sb-selinuxfs-22  sb-tmpfs-40    sb-zsmalloc-19
-    kfree_rcu-0         sb-configfs-23   sb-iomem-12      sb-proc-44       sb-sockfs-8      sb-tmpfs-42    shadow-18
-    sb-aio-20           sb-dax-11        sb-mqueue-21     sb-proc-45       sb-sysfs-26      sb-tmpfs-43    thp_deferred_split-10
-    sb-anon_inodefs-15  sb-debugfs-7     sb-nsfs-4        sb-proc-47       sb-tmpfs-1       sb-tmpfs-46    thp_zero-9
-    sb-bdev-3           sb-devpts-28     sb-pipefs-14     sb-pstore-31     sb-tmpfs-27      sb-tmpfs-49    xfs_buf-37
-    sb-bpf-32           sb-devtmpfs-5    sb-proc-25       sb-rootfs-2      sb-tmpfs-29      sb-tracefs-13  xfs_inodegc-38
-    sb-btrfs-24         sb-hugetlbfs-17  sb-proc-39       sb-securityfs-6  sb-tmpfs-35      sb-xfs-36      zspool-34
+Actually the kernel consumers can use smp_call() when they want
+to use smp_call_function_any(). The extra logics handled by
+smp_call_function_any() should be moved out of there and have the
+consumers choose the preferred CPU. Because there are quite a few
+of the cross call consumers need to run their functions on just
+one of the CPUs of a given CPU set, so there is some advantage to
+add smp_call_any() to the interface.
 
-Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+Signed-off-by: Donghai Qiao <dqiao@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c                        |  2 +-
- drivers/android/binder_alloc.c                |  2 +-
- drivers/gpu/drm/i915/gem/i915_gem_shrinker.c  |  3 +-
- drivers/gpu/drm/msm/msm_gem_shrinker.c        |  2 +-
- .../gpu/drm/panfrost/panfrost_gem_shrinker.c  |  2 +-
- drivers/gpu/drm/ttm/ttm_pool.c                |  2 +-
- drivers/md/bcache/btree.c                     |  2 +-
- drivers/md/dm-bufio.c                         |  2 +-
- drivers/md/dm-zoned-metadata.c                |  2 +-
- drivers/md/raid5.c                            |  2 +-
- drivers/misc/vmw_balloon.c                    |  2 +-
- drivers/virtio/virtio_balloon.c               |  2 +-
- drivers/xen/xenbus/xenbus_probe_backend.c     |  2 +-
- fs/erofs/utils.c                              |  2 +-
- fs/ext4/extents_status.c                      |  3 +-
- fs/f2fs/super.c                               |  2 +-
- fs/gfs2/glock.c                               |  2 +-
- fs/gfs2/main.c                                |  2 +-
- fs/jbd2/journal.c                             |  2 +-
- fs/mbcache.c                                  |  2 +-
- fs/nfs/nfs42xattr.c                           |  7 ++-
- fs/nfs/super.c                                |  2 +-
- fs/nfsd/filecache.c                           |  2 +-
- fs/nfsd/nfscache.c                            |  2 +-
- fs/quota/dquot.c                              |  2 +-
- fs/super.c                                    |  2 +-
- fs/ubifs/super.c                              |  2 +-
- fs/xfs/xfs_buf.c                              |  2 +-
- fs/xfs/xfs_icache.c                           |  2 +-
- fs/xfs/xfs_qm.c                               |  2 +-
- include/linux/shrinker.h                      |  5 +-
- kernel/rcu/tree.c                             |  2 +-
- mm/huge_memory.c                              |  4 +-
- mm/shrinker_debug.c                           |  7 ++-
- mm/vmscan.c                                   | 60 ++++++++++++++++++-
- mm/workingset.c                               |  2 +-
- mm/zsmalloc.c                                 |  2 +-
- net/sunrpc/auth.c                             |  2 +-
- 38 files changed, 106 insertions(+), 45 deletions(-)
+v1 -> v2: removed 'x' from the function names and change XCALL to SMP_CALL from the new macros
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index c623019929a7..8cfabdd63406 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -6283,7 +6283,7 @@ int kvm_mmu_vendor_module_init(void)
- 	if (percpu_counter_init(&kvm_total_used_mmu_pages, 0, GFP_KERNEL))
- 		goto out;
+ arch/arm/kernel/perf_event_v7.c           |  6 +-
+ arch/arm64/kernel/perf_event.c            |  6 +-
+ arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  2 +-
+ drivers/cpufreq/acpi-cpufreq.c            |  4 +-
+ drivers/cpufreq/powernv-cpufreq.c         | 12 ++--
+ drivers/perf/arm_spe_pmu.c                |  2 +-
+ include/linux/smp.h                       | 12 +---
+ kernel/smp.c                              | 78 ++++++++++-------------
+ 8 files changed, 53 insertions(+), 69 deletions(-)
+
+diff --git a/arch/arm/kernel/perf_event_v7.c b/arch/arm/kernel/perf_event_v7.c
+index eb2190477da1..ae008cba28c4 100644
+--- a/arch/arm/kernel/perf_event_v7.c
++++ b/arch/arm/kernel/perf_event_v7.c
+@@ -1192,9 +1192,9 @@ static void armv7_read_num_pmnc_events(void *info)
  
--	ret = register_shrinker(&mmu_shrinker);
-+	ret = register_shrinker(&mmu_shrinker, "mmu");
- 	if (ret)
- 		goto out;
- 
-diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
-index 2ac1008a5f39..951343c41ba8 100644
---- a/drivers/android/binder_alloc.c
-+++ b/drivers/android/binder_alloc.c
-@@ -1084,7 +1084,7 @@ int binder_alloc_shrinker_init(void)
- 	int ret = list_lru_init(&binder_alloc_lru);
- 
- 	if (ret == 0) {
--		ret = register_shrinker(&binder_shrinker);
-+		ret = register_shrinker(&binder_shrinker, "binder");
- 		if (ret)
- 			list_lru_destroy(&binder_alloc_lru);
- 	}
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shrinker.c b/drivers/gpu/drm/i915/gem/i915_gem_shrinker.c
-index 6a6ff98a8746..85524ef92ea4 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shrinker.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shrinker.c
-@@ -426,7 +426,8 @@ void i915_gem_driver_register__shrinker(struct drm_i915_private *i915)
- 	i915->mm.shrinker.count_objects = i915_gem_shrinker_count;
- 	i915->mm.shrinker.seeks = DEFAULT_SEEKS;
- 	i915->mm.shrinker.batch = 4096;
--	drm_WARN_ON(&i915->drm, register_shrinker(&i915->mm.shrinker));
-+	drm_WARN_ON(&i915->drm, register_shrinker(&i915->mm.shrinker,
-+						  "drm_i915_gem"));
- 
- 	i915->mm.oom_notifier.notifier_call = i915_gem_shrinker_oom;
- 	drm_WARN_ON(&i915->drm, register_oom_notifier(&i915->mm.oom_notifier));
-diff --git a/drivers/gpu/drm/msm/msm_gem_shrinker.c b/drivers/gpu/drm/msm/msm_gem_shrinker.c
-index 086dacf2f26a..2d3cf4f13dfd 100644
---- a/drivers/gpu/drm/msm/msm_gem_shrinker.c
-+++ b/drivers/gpu/drm/msm/msm_gem_shrinker.c
-@@ -221,7 +221,7 @@ void msm_gem_shrinker_init(struct drm_device *dev)
- 	priv->shrinker.count_objects = msm_gem_shrinker_count;
- 	priv->shrinker.scan_objects = msm_gem_shrinker_scan;
- 	priv->shrinker.seeks = DEFAULT_SEEKS;
--	WARN_ON(register_shrinker(&priv->shrinker));
-+	WARN_ON(register_shrinker(&priv->shrinker, "drm_msm_gem"));
- 
- 	priv->vmap_notifier.notifier_call = msm_gem_shrinker_vmap;
- 	WARN_ON(register_vmap_purge_notifier(&priv->vmap_notifier));
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c b/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c
-index 77e7cb6d1ae3..0d028266ee9e 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gem_shrinker.c
-@@ -103,7 +103,7 @@ void panfrost_gem_shrinker_init(struct drm_device *dev)
- 	pfdev->shrinker.count_objects = panfrost_gem_shrinker_count;
- 	pfdev->shrinker.scan_objects = panfrost_gem_shrinker_scan;
- 	pfdev->shrinker.seeks = DEFAULT_SEEKS;
--	WARN_ON(register_shrinker(&pfdev->shrinker));
-+	WARN_ON(register_shrinker(&pfdev->shrinker, "drm_panfrost"));
- }
- 
- /**
-diff --git a/drivers/gpu/drm/ttm/ttm_pool.c b/drivers/gpu/drm/ttm/ttm_pool.c
-index 1bba0a0ed3f9..b8b41d242197 100644
---- a/drivers/gpu/drm/ttm/ttm_pool.c
-+++ b/drivers/gpu/drm/ttm/ttm_pool.c
-@@ -722,7 +722,7 @@ int ttm_pool_mgr_init(unsigned long num_pages)
- 	mm_shrinker.count_objects = ttm_pool_shrinker_count;
- 	mm_shrinker.scan_objects = ttm_pool_shrinker_scan;
- 	mm_shrinker.seeks = 1;
--	return register_shrinker(&mm_shrinker);
-+	return register_shrinker(&mm_shrinker, "drm_ttm_pool");
- }
- 
- /**
-diff --git a/drivers/md/bcache/btree.c b/drivers/md/bcache/btree.c
-index ad9f16689419..c1f734ab86b3 100644
---- a/drivers/md/bcache/btree.c
-+++ b/drivers/md/bcache/btree.c
-@@ -812,7 +812,7 @@ int bch_btree_cache_alloc(struct cache_set *c)
- 	c->shrink.seeks = 4;
- 	c->shrink.batch = c->btree_pages * 2;
- 
--	if (register_shrinker(&c->shrink))
-+	if (register_shrinker(&c->shrink, "btree"))
- 		pr_warn("bcache: %s: could not register shrinker\n",
- 				__func__);
- 
-diff --git a/drivers/md/dm-bufio.c b/drivers/md/dm-bufio.c
-index 5ffa1dcf84cf..bcc95898c341 100644
---- a/drivers/md/dm-bufio.c
-+++ b/drivers/md/dm-bufio.c
-@@ -1806,7 +1806,7 @@ struct dm_bufio_client *dm_bufio_client_create(struct block_device *bdev, unsign
- 	c->shrinker.scan_objects = dm_bufio_shrink_scan;
- 	c->shrinker.seeks = 1;
- 	c->shrinker.batch = 0;
--	r = register_shrinker(&c->shrinker);
-+	r = register_shrinker(&c->shrinker, "dm_bufio");
- 	if (r)
- 		goto bad;
- 
-diff --git a/drivers/md/dm-zoned-metadata.c b/drivers/md/dm-zoned-metadata.c
-index d1ea66114d14..05f2fd12066b 100644
---- a/drivers/md/dm-zoned-metadata.c
-+++ b/drivers/md/dm-zoned-metadata.c
-@@ -2944,7 +2944,7 @@ int dmz_ctr_metadata(struct dmz_dev *dev, int num_dev,
- 	zmd->mblk_shrinker.seeks = DEFAULT_SEEKS;
- 
- 	/* Metadata cache shrinker */
--	ret = register_shrinker(&zmd->mblk_shrinker);
-+	ret = register_shrinker(&zmd->mblk_shrinker, "md_meta");
- 	if (ret) {
- 		dmz_zmd_err(zmd, "Register metadata cache shrinker failed");
- 		goto err;
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 59f91e392a2a..1b326b93155c 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -7383,7 +7383,7 @@ static struct r5conf *setup_conf(struct mddev *mddev)
- 	conf->shrinker.count_objects = raid5_cache_count;
- 	conf->shrinker.batch = 128;
- 	conf->shrinker.flags = 0;
--	if (register_shrinker(&conf->shrinker)) {
-+	if (register_shrinker(&conf->shrinker, "md")) {
- 		pr_warn("md/raid:%s: couldn't register shrinker.\n",
- 			mdname(mddev));
- 		goto abort;
-diff --git a/drivers/misc/vmw_balloon.c b/drivers/misc/vmw_balloon.c
-index f1d8ba6d4857..6c9ddf1187dd 100644
---- a/drivers/misc/vmw_balloon.c
-+++ b/drivers/misc/vmw_balloon.c
-@@ -1587,7 +1587,7 @@ static int vmballoon_register_shrinker(struct vmballoon *b)
- 	b->shrinker.count_objects = vmballoon_shrinker_count;
- 	b->shrinker.seeks = DEFAULT_SEEKS;
- 
--	r = register_shrinker(&b->shrinker);
-+	r = register_shrinker(&b->shrinker, "vmw_balloon");
- 
- 	if (r == 0)
- 		b->shrinker_registered = true;
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index f4c34a2a6b8e..093e06e19d0e 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -875,7 +875,7 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
- 	vb->shrinker.count_objects = virtio_balloon_shrinker_count;
- 	vb->shrinker.seeks = DEFAULT_SEEKS;
- 
--	return register_shrinker(&vb->shrinker);
-+	return register_shrinker(&vb->shrinker, "virtio_valloon");
- }
- 
- static int virtballoon_probe(struct virtio_device *vdev)
-diff --git a/drivers/xen/xenbus/xenbus_probe_backend.c b/drivers/xen/xenbus/xenbus_probe_backend.c
-index 5abded97e1a7..a6c5e344017d 100644
---- a/drivers/xen/xenbus/xenbus_probe_backend.c
-+++ b/drivers/xen/xenbus/xenbus_probe_backend.c
-@@ -305,7 +305,7 @@ static int __init xenbus_probe_backend_init(void)
- 
- 	register_xenstore_notifier(&xenstore_notifier);
- 
--	if (register_shrinker(&backend_memory_shrinker))
-+	if (register_shrinker(&backend_memory_shrinker, "xen_backend"))
- 		pr_warn("shrinker registration failed\n");
- 
- 	return 0;
-diff --git a/fs/erofs/utils.c b/fs/erofs/utils.c
-index ec9a1d780dc1..67eb64fadd4f 100644
---- a/fs/erofs/utils.c
-+++ b/fs/erofs/utils.c
-@@ -282,7 +282,7 @@ static struct shrinker erofs_shrinker_info = {
- 
- int __init erofs_init_shrinker(void)
+ static int armv7_probe_num_events(struct arm_pmu *arm_pmu)
  {
--	return register_shrinker(&erofs_shrinker_info);
-+	return register_shrinker(&erofs_shrinker_info, "erofs");
+-	return smp_call_function_any(&arm_pmu->supported_cpus,
+-				     armv7_read_num_pmnc_events,
+-				     &arm_pmu->num_events, 1);
++	return smp_call_any(&arm_pmu->supported_cpus,
++			     armv7_read_num_pmnc_events,
++			     &arm_pmu->num_events, SMP_CALL_TYPE_SYNC);
  }
  
- void erofs_exit_shrinker(void)
-diff --git a/fs/ext4/extents_status.c b/fs/ext4/extents_status.c
-index 9a3a8996aacf..a7aa79d580e5 100644
---- a/fs/ext4/extents_status.c
-+++ b/fs/ext4/extents_status.c
-@@ -1650,11 +1650,10 @@ int ext4_es_register_shrinker(struct ext4_sb_info *sbi)
- 	err = percpu_counter_init(&sbi->s_es_stats.es_stats_shk_cnt, 0, GFP_KERNEL);
- 	if (err)
- 		goto err3;
--
- 	sbi->s_es_shrinker.scan_objects = ext4_es_scan;
- 	sbi->s_es_shrinker.count_objects = ext4_es_count;
- 	sbi->s_es_shrinker.seeks = DEFAULT_SEEKS;
--	err = register_shrinker(&sbi->s_es_shrinker);
-+	err = register_shrinker(&sbi->s_es_shrinker, "ext4_es");
- 	if (err)
- 		goto err4;
+ static int armv7_a8_pmu_init(struct arm_pmu *cpu_pmu)
+diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
+index cb69ff1e6138..7326c7cc67de 100644
+--- a/arch/arm64/kernel/perf_event.c
++++ b/arch/arm64/kernel/perf_event.c
+@@ -1186,9 +1186,9 @@ static int armv8pmu_probe_pmu(struct arm_pmu *cpu_pmu)
+ 	};
+ 	int ret;
  
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index 4368f90571bd..2fc40a1635f3 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -4579,7 +4579,7 @@ static int __init init_f2fs_fs(void)
- 	err = f2fs_init_sysfs();
- 	if (err)
- 		goto free_garbage_collection_cache;
--	err = register_shrinker(&f2fs_shrinker_info);
-+	err = register_shrinker(&f2fs_shrinker_info, "f2fs");
- 	if (err)
- 		goto free_sysfs;
- 	err = register_filesystem(&f2fs_fs_type);
-diff --git a/fs/gfs2/glock.c b/fs/gfs2/glock.c
-index 26169cedcefc..791c23d9f7e7 100644
---- a/fs/gfs2/glock.c
-+++ b/fs/gfs2/glock.c
-@@ -2549,7 +2549,7 @@ int __init gfs2_glock_init(void)
- 		return -ENOMEM;
- 	}
- 
--	ret = register_shrinker(&glock_shrinker);
-+	ret = register_shrinker(&glock_shrinker, "gfs2_glock");
- 	if (ret) {
- 		destroy_workqueue(gfs2_delete_workqueue);
- 		destroy_workqueue(glock_workqueue);
-diff --git a/fs/gfs2/main.c b/fs/gfs2/main.c
-index 28d0eb23e18e..dde981b78488 100644
---- a/fs/gfs2/main.c
-+++ b/fs/gfs2/main.c
-@@ -150,7 +150,7 @@ static int __init init_gfs2_fs(void)
- 	if (!gfs2_trans_cachep)
- 		goto fail_cachep8;
- 
--	error = register_shrinker(&gfs2_qd_shrinker);
-+	error = register_shrinker(&gfs2_qd_shrinker, "gfs2_qd");
- 	if (error)
- 		goto fail_shrinker;
- 
-diff --git a/fs/jbd2/journal.c b/fs/jbd2/journal.c
-index c0cbeeaec2d1..e7786445ecc1 100644
---- a/fs/jbd2/journal.c
-+++ b/fs/jbd2/journal.c
-@@ -1418,7 +1418,7 @@ static journal_t *journal_init_common(struct block_device *bdev,
- 	if (percpu_counter_init(&journal->j_checkpoint_jh_count, 0, GFP_KERNEL))
- 		goto err_cleanup;
- 
--	if (register_shrinker(&journal->j_shrinker)) {
-+	if (register_shrinker(&journal->j_shrinker, "jbd2_journal")) {
- 		percpu_counter_destroy(&journal->j_checkpoint_jh_count);
- 		goto err_cleanup;
- 	}
-diff --git a/fs/mbcache.c b/fs/mbcache.c
-index 97c54d3a2227..379dc5b0b6ad 100644
---- a/fs/mbcache.c
-+++ b/fs/mbcache.c
-@@ -367,7 +367,7 @@ struct mb_cache *mb_cache_create(int bucket_bits)
- 	cache->c_shrink.count_objects = mb_cache_count;
- 	cache->c_shrink.scan_objects = mb_cache_scan;
- 	cache->c_shrink.seeks = DEFAULT_SEEKS;
--	if (register_shrinker(&cache->c_shrink)) {
-+	if (register_shrinker(&cache->c_shrink, "mb_cache")) {
- 		kfree(cache->c_hash);
- 		kfree(cache);
- 		goto err_out;
-diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
-index e7b34f7e0614..147b8a2f2dc6 100644
---- a/fs/nfs/nfs42xattr.c
-+++ b/fs/nfs/nfs42xattr.c
-@@ -1017,15 +1017,16 @@ int __init nfs4_xattr_cache_init(void)
+-	ret = smp_call_function_any(&cpu_pmu->supported_cpus,
+-				    __armv8pmu_probe_pmu,
+-				    &probe, 1);
++	ret = smp_call_any(&cpu_pmu->supported_cpus,
++			    __armv8pmu_probe_pmu,
++			    &probe, SMP_CALL_TYPE_SYNC);
  	if (ret)
- 		goto out2;
+ 		return ret;
  
--	ret = register_shrinker(&nfs4_xattr_cache_shrinker);
-+	ret = register_shrinker(&nfs4_xattr_cache_shrinker, "nfs_xattr_cache");
- 	if (ret)
- 		goto out1;
+diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
+index 87666275eed9..418c83c3c4b5 100644
+--- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
++++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
+@@ -512,7 +512,7 @@ void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
+ 	rr->val = 0;
+ 	rr->first = first;
  
--	ret = register_shrinker(&nfs4_xattr_entry_shrinker);
-+	ret = register_shrinker(&nfs4_xattr_entry_shrinker, "nfs_xattr_entry");
- 	if (ret)
- 		goto out;
- 
--	ret = register_shrinker(&nfs4_xattr_large_entry_shrinker);
-+	ret = register_shrinker(&nfs4_xattr_large_entry_shrinker,
-+				"nfs_xattr_large_entry");
- 	if (!ret)
- 		return 0;
- 
-diff --git a/fs/nfs/super.c b/fs/nfs/super.c
-index 6ab5eeb000dc..c7a2aef911f1 100644
---- a/fs/nfs/super.c
-+++ b/fs/nfs/super.c
-@@ -149,7 +149,7 @@ int __init register_nfs_fs(void)
- 	ret = nfs_register_sysctl();
- 	if (ret < 0)
- 		goto error_2;
--	ret = register_shrinker(&acl_shrinker);
-+	ret = register_shrinker(&acl_shrinker, "nfs_acl");
- 	if (ret < 0)
- 		goto error_3;
- #ifdef CONFIG_NFS_V4_2
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index 2c1b027774d4..9c2879a3c3c0 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -666,7 +666,7 @@ nfsd_file_cache_init(void)
- 		goto out_err;
- 	}
- 
--	ret = register_shrinker(&nfsd_file_shrinker);
-+	ret = register_shrinker(&nfsd_file_shrinker, "nfsd_filecache");
- 	if (ret) {
- 		pr_err("nfsd: failed to register nfsd_file_shrinker: %d\n", ret);
- 		goto out_lru;
-diff --git a/fs/nfsd/nfscache.c b/fs/nfsd/nfscache.c
-index 0b3f12aa37ff..f1cfb06d0be5 100644
---- a/fs/nfsd/nfscache.c
-+++ b/fs/nfsd/nfscache.c
-@@ -176,7 +176,7 @@ int nfsd_reply_cache_init(struct nfsd_net *nn)
- 	nn->nfsd_reply_cache_shrinker.scan_objects = nfsd_reply_cache_scan;
- 	nn->nfsd_reply_cache_shrinker.count_objects = nfsd_reply_cache_count;
- 	nn->nfsd_reply_cache_shrinker.seeks = 1;
--	status = register_shrinker(&nn->nfsd_reply_cache_shrinker);
-+	status = register_shrinker(&nn->nfsd_reply_cache_shrinker, "nfsd_reply");
- 	if (status)
- 		goto out_stats_destroy;
- 
-diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
-index a74aef99bd3d..854d2b1d0914 100644
---- a/fs/quota/dquot.c
-+++ b/fs/quota/dquot.c
-@@ -2985,7 +2985,7 @@ static int __init dquot_init(void)
- 	pr_info("VFS: Dquot-cache hash table entries: %ld (order %ld,"
- 		" %ld bytes)\n", nr_hash, order, (PAGE_SIZE << order));
- 
--	if (register_shrinker(&dqcache_shrinker))
-+	if (register_shrinker(&dqcache_shrinker, "dqcache"))
- 		panic("Cannot register dquot shrinker");
- 
- 	return 0;
-diff --git a/fs/super.c b/fs/super.c
-index 60f57c7bc0a6..5776a3dbaf10 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -265,7 +265,7 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags,
- 	s->s_shrink.count_objects = super_cache_count;
- 	s->s_shrink.batch = 1024;
- 	s->s_shrink.flags = SHRINKER_NUMA_AWARE | SHRINKER_MEMCG_AWARE;
--	if (prealloc_shrinker(&s->s_shrink))
-+	if (prealloc_shrinker(&s->s_shrink, "sb-%s", type->name))
- 		goto fail;
- 	if (list_lru_init_memcg(&s->s_dentry_lru, &s->s_shrink))
- 		goto fail;
-diff --git a/fs/ubifs/super.c b/fs/ubifs/super.c
-index bad67455215f..a3663d201f64 100644
---- a/fs/ubifs/super.c
-+++ b/fs/ubifs/super.c
-@@ -2430,7 +2430,7 @@ static int __init ubifs_init(void)
- 	if (!ubifs_inode_slab)
- 		return -ENOMEM;
- 
--	err = register_shrinker(&ubifs_shrinker_info);
-+	err = register_shrinker(&ubifs_shrinker_info, "ubifs");
- 	if (err)
- 		goto out_slab;
- 
-diff --git a/fs/xfs/xfs_buf.c b/fs/xfs/xfs_buf.c
-index e1afb9e503e1..5645e92df0c9 100644
---- a/fs/xfs/xfs_buf.c
-+++ b/fs/xfs/xfs_buf.c
-@@ -1986,7 +1986,7 @@ xfs_alloc_buftarg(
- 	btp->bt_shrinker.scan_objects = xfs_buftarg_shrink_scan;
- 	btp->bt_shrinker.seeks = DEFAULT_SEEKS;
- 	btp->bt_shrinker.flags = SHRINKER_NUMA_AWARE;
--	if (register_shrinker(&btp->bt_shrinker))
-+	if (register_shrinker(&btp->bt_shrinker, "xfs_buf"))
- 		goto error_pcpu;
- 	return btp;
- 
-diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
-index bffd6eb0b298..d0c4e74ff763 100644
---- a/fs/xfs/xfs_icache.c
-+++ b/fs/xfs/xfs_icache.c
-@@ -2198,5 +2198,5 @@ xfs_inodegc_register_shrinker(
- 	shrink->flags = SHRINKER_NONSLAB;
- 	shrink->batch = XFS_INODEGC_SHRINKER_BATCH;
- 
--	return register_shrinker(shrink);
-+	return register_shrinker(shrink, "xfs_inodegc");
- }
-diff --git a/fs/xfs/xfs_qm.c b/fs/xfs/xfs_qm.c
-index f165d1a3de1d..93ded9e81f49 100644
---- a/fs/xfs/xfs_qm.c
-+++ b/fs/xfs/xfs_qm.c
-@@ -686,7 +686,7 @@ xfs_qm_init_quotainfo(
- 	qinf->qi_shrinker.seeks = DEFAULT_SEEKS;
- 	qinf->qi_shrinker.flags = SHRINKER_NUMA_AWARE;
- 
--	error = register_shrinker(&qinf->qi_shrinker);
-+	error = register_shrinker(&qinf->qi_shrinker, "xfs_qm");
- 	if (error)
- 		goto out_free_inos;
- 
-diff --git a/include/linux/shrinker.h b/include/linux/shrinker.h
-index 17985a890887..8dffe56d6ad1 100644
---- a/include/linux/shrinker.h
-+++ b/include/linux/shrinker.h
-@@ -75,6 +75,7 @@ struct shrinker {
- #endif
- #ifdef CONFIG_SHRINKER_DEBUG
- 	int debugfs_id;
-+	char *name;
- 	struct dentry *debugfs_entry;
- #endif
- 	/* objs pending delete, per node */
-@@ -92,9 +93,9 @@ struct shrinker {
-  */
- #define SHRINKER_NONSLAB	(1 << 3)
- 
--extern int prealloc_shrinker(struct shrinker *shrinker);
-+extern int prealloc_shrinker(struct shrinker *shrinker, const char *fmt, ...);
- extern void register_shrinker_prepared(struct shrinker *shrinker);
--extern int register_shrinker(struct shrinker *shrinker);
-+extern int register_shrinker(struct shrinker *shrinker, const char *fmt, ...);
- extern void unregister_shrinker(struct shrinker *shrinker);
- extern void free_prealloced_shrinker(struct shrinker *shrinker);
- extern void synchronize_shrinkers(void);
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 5c587e00811c..b4c66916bea9 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -4978,7 +4978,7 @@ static void __init kfree_rcu_batch_init(void)
- 		INIT_DELAYED_WORK(&krcp->page_cache_work, fill_page_cache_func);
- 		krcp->initialized = true;
- 	}
--	if (register_shrinker(&kfree_rcu_shrinker))
-+	if (register_shrinker(&kfree_rcu_shrinker, "kfree_rcu"))
- 		pr_err("Failed to register kfree_rcu() shrinker!\n");
+-	smp_call_function_any(&d->cpu_mask, mon_event_count, rr, 1);
++	(void) smp_call_any(&d->cpu_mask, mon_event_count, rr, SMP_CALL_TYPE_SYNC);
  }
  
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 541c1eba072f..76086984347f 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -423,10 +423,10 @@ static int __init hugepage_init(void)
- 	if (err)
- 		goto err_slab;
- 
--	err = register_shrinker(&huge_zero_page_shrinker);
-+	err = register_shrinker(&huge_zero_page_shrinker, "thp_zero");
- 	if (err)
- 		goto err_hzp_shrinker;
--	err = register_shrinker(&deferred_split_shrinker);
-+	err = register_shrinker(&deferred_split_shrinker, "thp_deferred_split");
- 	if (err)
- 		goto err_split_shrinker;
- 
-diff --git a/mm/shrinker_debug.c b/mm/shrinker_debug.c
-index 81350b64bf01..e2f7ef5fecfc 100644
---- a/mm/shrinker_debug.c
-+++ b/mm/shrinker_debug.c
-@@ -418,7 +418,7 @@ int shrinker_debugfs_add(struct shrinker *shrinker)
- 		return id;
- 	shrinker->debugfs_id = id;
- 
--	snprintf(buf, sizeof(buf), "%d", id);
-+	snprintf(buf, sizeof(buf), "%s-%d", shrinker->name, id);
- 
- 	/* create debugfs entry */
- 	entry = debugfs_create_dir(buf, shrinker_debugfs_root);
-@@ -465,6 +465,10 @@ int shrinker_debugfs_add(struct shrinker *shrinker)
- 	}
- #endif /* CONFIG_NUMA */
- 
-+	/* shrinker->name is not needed anymore, free it */
-+	kfree(shrinker->name);
-+	shrinker->name = NULL;
-+
- 	return 0;
- }
- 
-@@ -477,6 +481,7 @@ void shrinker_debugfs_remove(struct shrinker *shrinker)
- 
- 	debugfs_remove_recursive(shrinker->debugfs_entry);
- 	ida_free(&shrinker_debugfs_ida, shrinker->debugfs_id);
-+	WARN_ON_ONCE(shrinker->name);
- }
- 
- static int __init shrinker_debugfs_init(void)
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 121a54a1602b..6025cfda4932 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -613,7 +613,7 @@ static unsigned long lruvec_lru_size(struct lruvec *lruvec, enum lru_list lru,
- /*
-  * Add a shrinker callback to be called from the vm.
-  */
--int prealloc_shrinker(struct shrinker *shrinker)
-+static int __prealloc_shrinker(struct shrinker *shrinker)
- {
- 	unsigned int size;
+ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
+diff --git a/drivers/cpufreq/acpi-cpufreq.c b/drivers/cpufreq/acpi-cpufreq.c
+index 3d514b82d055..e0c4b3c6575d 100644
+--- a/drivers/cpufreq/acpi-cpufreq.c
++++ b/drivers/cpufreq/acpi-cpufreq.c
+@@ -312,8 +312,8 @@ static u32 drv_read(struct acpi_cpufreq_data *data, const struct cpumask *mask)
+ 	};
  	int err;
-@@ -637,6 +637,34 @@ int prealloc_shrinker(struct shrinker *shrinker)
+ 
+-	err = smp_call_function_any(mask, do_drv_read, &cmd, 1);
+-	WARN_ON_ONCE(err);	/* smp_call_function_any() was buggy? */
++	err = smp_call_any(mask, do_drv_read, &cmd, SMP_CALL_TYPE_SYNC);
++	WARN_ON_ONCE(err);	/* smp_call_any() was buggy? */
+ 	return cmd.val;
+ }
+ 
+diff --git a/drivers/cpufreq/powernv-cpufreq.c b/drivers/cpufreq/powernv-cpufreq.c
+index fddbd1ea1635..d4f45bb9c419 100644
+--- a/drivers/cpufreq/powernv-cpufreq.c
++++ b/drivers/cpufreq/powernv-cpufreq.c
+@@ -507,8 +507,8 @@ static unsigned int powernv_cpufreq_get(unsigned int cpu)
+ {
+ 	struct powernv_smp_call_data freq_data;
+ 
+-	smp_call_function_any(cpu_sibling_mask(cpu), powernv_read_cpu_freq,
+-			&freq_data, 1);
++	(void) smp_call_any(cpu_sibling_mask(cpu), powernv_read_cpu_freq,
++			&freq_data, SMP_CALL_TYPE_SYNC);
+ 
+ 	return freq_data.freq;
+ }
+@@ -820,8 +820,10 @@ static int powernv_cpufreq_target_index(struct cpufreq_policy *policy,
+ 	 * Use smp_call_function to send IPI and execute the
+ 	 * mtspr on target CPU.  We could do that without IPI
+ 	 * if current CPU is within policy->cpus (core)
++	 *
++	 * Shouldn't return the value of smp_call_any() ?
+ 	 */
+-	smp_call_function_any(policy->cpus, set_pstate, &freq_data, 1);
++	(void) smp_call_any(policy->cpus, set_pstate, &freq_data, SMP_CALL_TYPE_SYNC);
  	return 0;
  }
  
-+#ifdef CONFIG_SHRINKER_DEBUG
-+int prealloc_shrinker(struct shrinker *shrinker, const char *fmt, ...)
-+{
-+	int err;
-+	char buf[64];
-+	va_list ap;
-+
-+	va_start(ap, fmt);
-+	vscnprintf(buf, sizeof(buf), fmt, ap);
-+	va_end(ap);
-+
-+	shrinker->name = kstrdup(buf, GFP_KERNEL);
-+	if (!shrinker->name)
-+		return -ENOMEM;
-+
-+	err = __prealloc_shrinker(shrinker);
-+	if (err)
-+		kfree(shrinker->name);
-+
-+	return err;
-+}
-+#else
-+int prealloc_shrinker(struct shrinker *shrinker, const char *fmt, ...)
-+{
-+	return __prealloc_shrinker(shrinker);
-+}
-+#endif
-+
- void free_prealloced_shrinker(struct shrinker *shrinker)
- {
- 	if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
-@@ -648,6 +676,9 @@ void free_prealloced_shrinker(struct shrinker *shrinker)
+@@ -921,8 +923,8 @@ static void powernv_cpufreq_work_fn(struct work_struct *work)
  
- 	kfree(shrinker->nr_deferred);
- 	shrinker->nr_deferred = NULL;
-+#ifdef CONFIG_SHRINKER_DEBUG
-+	kfree(shrinker->name);
-+#endif
- }
+ 	cpus_read_lock();
+ 	cpumask_and(&mask, &chip->mask, cpu_online_mask);
+-	smp_call_function_any(&mask,
+-			      powernv_cpufreq_throttle_check, NULL, 0);
++	(void) smp_call_any(&mask, powernv_cpufreq_throttle_check,
++			     NULL, SMP_CALL_TYPE_ASYNC);
  
- void register_shrinker_prepared(struct shrinker *shrinker)
-@@ -659,15 +690,38 @@ void register_shrinker_prepared(struct shrinker *shrinker)
- 	up_write(&shrinker_rwsem);
- }
+ 	if (!chip->restore)
+ 		goto out;
+diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
+index d44bcc29d99c..e1059c60feab 100644
+--- a/drivers/perf/arm_spe_pmu.c
++++ b/drivers/perf/arm_spe_pmu.c
+@@ -1108,7 +1108,7 @@ static int arm_spe_pmu_dev_init(struct arm_spe_pmu *spe_pmu)
+ 	cpumask_t *mask = &spe_pmu->supported_cpus;
  
--int register_shrinker(struct shrinker *shrinker)
-+static int __register_shrinker(struct shrinker *shrinker)
- {
--	int err = prealloc_shrinker(shrinker);
-+	int err = __prealloc_shrinker(shrinker);
+ 	/* Make sure we probe the hardware on a relevant CPU */
+-	ret = smp_call_function_any(mask,  __arm_spe_pmu_dev_probe, spe_pmu, 1);
++	ret = smp_call_any(mask,  __arm_spe_pmu_dev_probe, spe_pmu, SMP_CALL_TYPE_SYNC);
+ 	if (ret || !(spe_pmu->features & SPE_PMU_FEAT_DEV_PROBED))
+ 		return -ENXIO;
  
- 	if (err)
- 		return err;
- 	register_shrinker_prepared(shrinker);
- 	return 0;
- }
-+
-+#ifdef CONFIG_SHRINKER_DEBUG
-+int register_shrinker(struct shrinker *shrinker, const char *fmt, ...)
-+{
-+	char buf[64];
-+	va_list ap;
-+
-+	va_start(ap, fmt);
-+	vscnprintf(buf, sizeof(buf), fmt, ap);
-+	va_end(ap);
-+
-+	shrinker->name = kstrdup(buf, GFP_KERNEL);
-+	if (!shrinker->name)
-+		return -ENOMEM;
-+
-+	return __register_shrinker(shrinker);
-+}
-+#else
-+int register_shrinker(struct shrinker *shrinker, const char *fmt, ...)
-+{
-+	return __register_shrinker(shrinker);
-+}
-+#endif
- EXPORT_SYMBOL(register_shrinker);
+diff --git a/include/linux/smp.h b/include/linux/smp.h
+index 0301faf270bf..3a6663bce18f 100644
+--- a/include/linux/smp.h
++++ b/include/linux/smp.h
+@@ -161,6 +161,8 @@ do {						\
+ 	*(_csd) = CSD_INIT((_func), (_info));	\
+ } while (0)
+ 
++extern int smp_call_any(const struct cpumask *mask, smp_call_func_t func,
++			 void *info, unsigned int flags);
  
  /*
-diff --git a/mm/workingset.c b/mm/workingset.c
-index 592569a8974c..840986179cf3 100644
---- a/mm/workingset.c
-+++ b/mm/workingset.c
-@@ -625,7 +625,7 @@ static int __init workingset_init(void)
- 	pr_info("workingset: timestamp_bits=%d max_order=%d bucket_order=%u\n",
- 	       timestamp_bits, max_order, bucket_order);
+  * smp_call Interface.
+@@ -304,9 +306,6 @@ void smp_call_function(smp_call_func_t func, void *info, int wait);
+ void smp_call_function_many(const struct cpumask *mask,
+ 			    smp_call_func_t func, void *info, bool wait);
  
--	ret = prealloc_shrinker(&workingset_shadow_shrinker);
-+	ret = prealloc_shrinker(&workingset_shadow_shrinker, "shadow");
- 	if (ret)
- 		goto err;
- 	ret = __list_lru_init(&shadow_nodes, true, &shadow_nodes_key,
-diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
-index 9152fbde33b5..a19de176f604 100644
---- a/mm/zsmalloc.c
-+++ b/mm/zsmalloc.c
-@@ -2188,7 +2188,7 @@ static int zs_register_shrinker(struct zs_pool *pool)
- 	pool->shrinker.batch = 0;
- 	pool->shrinker.seeks = DEFAULT_SEEKS;
+-int smp_call_function_any(const struct cpumask *mask,
+-			  smp_call_func_t func, void *info, int wait);
+-
+ void kick_all_cpus_sync(void);
+ void wake_up_all_idle_cpus(void);
  
--	return register_shrinker(&pool->shrinker);
-+	return register_shrinker(&pool->shrinker, "zspool");
+@@ -355,13 +354,6 @@ static inline void smp_send_reschedule(int cpu) { }
+ 			(up_smp_call_function(func, info))
+ static inline void call_function_init(void) { }
+ 
+-static inline int
+-smp_call_function_any(const struct cpumask *mask, smp_call_func_t func,
+-		      void *info, int wait)
+-{
+-	return smp_call_function_single(0, func, info, wait);
+-}
+-
+ static inline void kick_all_cpus_sync(void) {  }
+ static inline void wake_up_all_idle_cpus(void) {  }
+ 
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 51715633b4f7..6a43ab165aee 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -626,49 +626,6 @@ int smp_call_function_single(int cpu, smp_call_func_t func, void *info,
  }
+ EXPORT_SYMBOL(smp_call_function_single);
  
- /**
-diff --git a/net/sunrpc/auth.c b/net/sunrpc/auth.c
-index 682fcd24bf43..a29742a9c3f1 100644
---- a/net/sunrpc/auth.c
-+++ b/net/sunrpc/auth.c
-@@ -874,7 +874,7 @@ int __init rpcauth_init_module(void)
- 	err = rpc_init_authunix();
- 	if (err < 0)
- 		goto out1;
--	err = register_shrinker(&rpc_cred_shrinker);
-+	err = register_shrinker(&rpc_cred_shrinker, "rpc_cred");
- 	if (err < 0)
- 		goto out2;
- 	return 0;
+-/*
+- * smp_call_function_any - Run a function on any of the given cpus
+- * @mask: The mask of cpus it can run on.
+- * @func: The function to run. This must be fast and non-blocking.
+- * @info: An arbitrary pointer to pass to the function.
+- * @wait: If true, wait until function has completed.
+- *
+- * Returns 0 on success, else a negative status code (if no cpus were online).
+- *
+- * Selection preference:
+- *	1) current cpu if in @mask
+- *	2) any cpu of current node if in @mask
+- *	3) any other online cpu in @mask
+- */
+-int smp_call_function_any(const struct cpumask *mask,
+-			  smp_call_func_t func, void *info, int wait)
+-{
+-	unsigned int cpu;
+-	const struct cpumask *nodemask;
+-	int ret;
+-
+-	/* Try for same CPU (cheapest) */
+-	cpu = get_cpu();
+-	if (cpumask_test_cpu(cpu, mask))
+-		goto call;
+-
+-	/* Try for same node. */
+-	nodemask = cpumask_of_node(cpu_to_node(cpu));
+-	for (cpu = cpumask_first_and(nodemask, mask); cpu < nr_cpu_ids;
+-	     cpu = cpumask_next_and(cpu, nodemask, mask)) {
+-		if (cpu_online(cpu))
+-			goto call;
+-	}
+-
+-	/* Any online will do: smp_call_function_single handles nr_cpu_ids. */
+-	cpu = cpumask_any_and(mask, cpu_online_mask);
+-call:
+-	ret = smp_call_function_single(cpu, func, info, wait);
+-	put_cpu();
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(smp_call_function_any);
+-
+ static void smp_call_function_many_cond(const struct cpumask *mask,
+ 					smp_call_func_t func, void *info,
+ 					bool wait,
+@@ -1276,6 +1233,39 @@ EXPORT_SYMBOL(smp_call_private);
+ int smp_call_any(const struct cpumask *mask, smp_call_func_t func,
+ 		void *info, unsigned int flags)
+ {
+-	return 0;
++	int cpu;
++        const struct cpumask *nodemask;
++
++	if (mask == NULL || func == NULL ||
++	    (flags != SMP_CALL_TYPE_SYNC && flags != SMP_CALL_TYPE_ASYNC))
++		return -EINVAL;
++
++        /* Try for same CPU (cheapest) */
++	preempt_disable();
++	cpu = smp_processor_id();
++
++        if (cpumask_test_cpu(cpu, mask))
++                goto call;
++
++        /* Try for same node. */
++        nodemask = cpumask_of_node(cpu_to_node(cpu));
++        for (cpu = cpumask_first_and(nodemask, mask); (unsigned int)cpu < nr_cpu_ids;
++             cpu = cpumask_next_and(cpu, nodemask, mask)) {
++                if (cpu_online(cpu))
++                        goto call;
++        }
++
++        /* Any online will do: smp_call_function_single handles nr_cpu_ids. */
++        cpu = cpumask_any_and(mask, cpu_online_mask);
++	if ((unsigned int)cpu >= nr_cpu_ids) {
++        	preempt_enable();
++		return -ENXIO;
++	}
++
++call:
++	(void) smp_call(cpu, func, info, flags);
++
++        preempt_enable();
++        return 0;
+ }
+ EXPORT_SYMBOL(smp_call_any);
 -- 
-2.35.1
+2.27.0
 
