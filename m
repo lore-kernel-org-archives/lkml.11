@@ -2,216 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 663A0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A20A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447781AbiDVNQZ (ORCPT
+        id S1447788AbiDVNQg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
+        Fri, 22 Apr 2022 09:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447760AbiDVNQU (ORCPT
+        with ESMTP id S1447789AbiDVNQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:16:20 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A52580CB;
-        Fri, 22 Apr 2022 06:13:26 -0700 (PDT)
-X-UUID: 943aafd14c3045c29dbbaee4aeacdc79-20220422
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:548edf70-8e70-4202-b73e-a00a03dd0d28,OB:20,L
-        OB:20,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:120
-X-CID-INFO: VERSION:1.1.4,REQID:548edf70-8e70-4202-b73e-a00a03dd0d28,OB:20,LOB
-        :20,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:120
-X-CID-META: VersionHash:faefae9,CLOUDID:2eaba0f0-da02-41b4-b6df-58f4ccd36682,C
-        OID:9f9ef6ce3947,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 943aafd14c3045c29dbbaee4aeacdc79-20220422
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1614880919; Fri, 22 Apr 2022 21:13:21 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 22 Apr 2022 21:13:20 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 Apr
- 2022 21:13:19 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 21:13:19 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH 1/1] dt-bindings: timer: mediatek: Convert binding to YAML
-Date:   Fri, 22 Apr 2022 21:13:17 +0800
-Message-ID: <20220422131317.25410-2-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220422131317.25410-1-allen-kh.cheng@mediatek.com>
-References: <20220422131317.25410-1-allen-kh.cheng@mediatek.com>
+        Fri, 22 Apr 2022 09:16:33 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68348580DA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650633220; x=1682169220;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tC39CcHCCAkxRGoLupvWWCwop7YOMFc9XUJ+TwGQPfg=;
+  b=DRS8dm3s5lCUGTfjsvIVHN0LLnFrFrDnWhnO5RJFDhl9ZFa0i6elxZGv
+   Dsw1XyykM49RhKv30EZ9G+N2cq90Y9EFU3xZBjvCnftN6vK+T+49sVQCD
+   i3p773RGIlRKQdOgVU0cojh/BtCIFCij/rKLSg+67+uE/Ds9oOU9FoIJ0
+   6iEraarXqoTgNnPUlMHxMh8NXHqf2GBbR1JMWHRUgkrCROoaEER7wXnrR
+   LZ4+eYMMZ/VrVsN5zBaBYlrJLhZCPosm/iif4SxNHhhqLug0aBybbQpri
+   tMS/EjDyZuIGPB+aG3NHV6IeKOF+rxjE4GGApRSyV/eXaZlkqynSlguup
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="351109961"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="351109961"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:13:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="556374272"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.236]) ([10.254.215.236])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:13:37 -0700
+Message-ID: <8440e43b-aa1f-2648-6b64-afc34aa97bc2@linux.intel.com>
+Date:   Fri, 22 Apr 2022 21:13:35 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     baolu.lu@linux.intel.com,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/4] iommu/vt-d: Set PGSNP bit in pasid table entry for
+ SVA binding
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>
+References: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
+ <20220421113558.3504874-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276EDDABE40B6A6A67A0F4E8CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276EDDABE40B6A6A67A0F4E8CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Mediatek timer devicetree binding to YAML.
+On 2022/4/22 11:05, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, April 21, 2022 7:36 PM
+>>
+>> This field make the requests snoop processor caches irrespective of
+>> other attributes in the request or other fields in paging structure
+>> entries used to translate the request.
+> 
+> I think you want to first point out the fact that SVA wants snoop
+> cache instead of just talking about the effect of PGSNP.
+> 
+> But thinking more I wonder why PGSNP is ever required. This is
+> similar to DMA API case. x86 is already cache coherent for normal
+> DMA (if not setting PCI no-snoop) and if the driver knows no-snoop
+> is incompatible to SVA API then it should avoid triggering no-snoop
+> traffic for SVA usage. In this case it is pointless for IOMMU driver
+> to enable force-snooping. Even in the future certain platform allows
+> no-snoop usage w/ SVA (I'm not sure how it works) this again should
+> be reflected by additional SVA APIs for driver to explicitly manage.
+> 
+> force-snoop should be enabled only in device assignment case IMHO,
+> orthogonal to whether vSVA is actually used.
+> 
+> Did I misunderstand the motivation here?
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- .../bindings/timer/mediatek,mtk-timer.txt     | 42 ----------
- .../bindings/timer/mediatek,mtk-timer.yaml    | 79 +++++++++++++++++++
- 2 files changed, 79 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
- create mode 100644 Documentation/devicetree/bindings/timer/mediatek,mtk-timer.yaml
+No, you didn't.
 
-diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-deleted file mode 100644
-index 6f1f9dba6e88..000000000000
---- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--MediaTek Timers
-----------------
--
--MediaTek SoCs have two different timers on different platforms,
--- GPT (General Purpose Timer)
--- SYST (System Timer)
--
--The proper timer will be selected automatically by driver.
--
--Required properties:
--- compatible should contain:
--	For those SoCs that use GPT
--	* "mediatek,mt2701-timer" for MT2701 compatible timers (GPT)
--	* "mediatek,mt6580-timer" for MT6580 compatible timers (GPT)
--	* "mediatek,mt6582-timer" for MT6582 compatible timers (GPT)
--	* "mediatek,mt6589-timer" for MT6589 compatible timers (GPT)
--	* "mediatek,mt7623-timer" for MT7623 compatible timers (GPT)
--	* "mediatek,mt8127-timer" for MT8127 compatible timers (GPT)
--	* "mediatek,mt8135-timer" for MT8135 compatible timers (GPT)
--	* "mediatek,mt8173-timer" for MT8173 compatible timers (GPT)
--	* "mediatek,mt8516-timer" for MT8516 compatible timers (GPT)
--	* "mediatek,mt6577-timer" for MT6577 and all above compatible timers (GPT)
--
--	For those SoCs that use SYST
--	* "mediatek,mt8183-timer" for MT8183 compatible timers (SYST)
--	* "mediatek,mt8186-timer" for MT8186 compatible timers (SYST)
--	* "mediatek,mt8192-timer" for MT8192 compatible timers (SYST)
--	* "mediatek,mt8195-timer" for MT8195 compatible timers (SYST)
--	* "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
--	* "mediatek,mt6765-timer" for MT6765 and all above compatible timers (SYST)
--
--- reg: Should contain location and length for timer register.
--- clocks: Should contain system clock.
--
--Examples:
--
--	timer@10008000 {
--		compatible = "mediatek,mt6577-timer";
--		reg = <0x10008000 0x80>;
--		interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&system_clk>;
--	};
-diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.yaml b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.yaml
-new file mode 100644
-index 000000000000..be7eb09275f9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/timer/mediatek,mtk-timer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek SoCs timers bindings
-+
-+description:
-+  MediaTek SoCs have two different timers on different platforms,
-+  - GPT (General Purpose Timer)
-+  - SYST (System Timer)
-+
-+maintainers:
-+  - Fengquan Chen <fengquan.chen@mediatek.com>
-+  - Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-+
-+properties:
-+  $nodename:
-+    pattern: '^timer@[a-f0-9]+$'
-+
-+  compatible:
-+    oneOf:
-+      - const: mediatek,mt6577-timer
-+      - const: mediatek,mt6765-timer
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-timer
-+              - mediatek,mt6580-timer
-+              - mediatek,mt6582-timer
-+              - mediatek,mt6589-timer
-+              - mediatek,mt7623-timer
-+              - mediatek,mt8127-timer
-+              - mediatek,mt8135-timer
-+              - mediatek,mt8173-timer
-+              - mediatek,mt8516-timer
-+          - const: mediatek,mt6577-timer
-+      - items:
-+          - enum:
-+              - mediatek,mt7629-timer
-+              - mediatek,mt8183-timer
-+              - mediatek,mt8186-timer
-+              - mediatek,mt8192-timer
-+              - mediatek,mt8195-timer
-+          - const: mediatek,mt6765-timer
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+    maxItems: 2
-+
-+  clock-names:
-+    minItems: 1
-+    items:
-+      - const: clk13m
-+      - const: bus
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    timer@10008000 {
-+        compatible = "mediatek,mt6577-timer";
-+        reg = <0xd4014000 0x100>;
-+        interrupts = <13>;
-+        clocks = <&coreclk 2>;
-+    };
-+
-+...
--- 
-2.18.0
+Let's talk with the arch guys for more details before move this patch
+ahead. Thanks for pointing this out.
 
+Best regards,
+baolu
+
+> 
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/svm.c | 9 ++++++---
+>>   1 file changed, 6 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+>> index 23a38763c1d1..c720d1be992d 100644
+>> --- a/drivers/iommu/intel/svm.c
+>> +++ b/drivers/iommu/intel/svm.c
+>> @@ -391,9 +391,12 @@ static struct iommu_sva
+>> *intel_svm_bind_mm(struct intel_iommu *iommu,
+>>   	}
+>>
+>>   	/* Setup the pasid table: */
+>> -	sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
+>> -			PASID_FLAG_SUPERVISOR_MODE : 0;
+>> -	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ?
+>> PASID_FLAG_FL5LP : 0;
+>> +	sflags = PASID_FLAG_PAGE_SNOOP;
+>> +	if (flags & SVM_FLAG_SUPERVISOR_MODE)
+>> +		sflags |= PASID_FLAG_SUPERVISOR_MODE;
+>> +	if (cpu_feature_enabled(X86_FEATURE_LA57))
+>> +		sflags |= PASID_FLAG_FL5LP;
+>> +
+>>   	spin_lock_irqsave(&iommu->lock, iflags);
+>>   	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm-
+>>> pasid,
+>>   					    FLPT_DEFAULT_DID, sflags);
+>> --
+>> 2.25.1
+> 
