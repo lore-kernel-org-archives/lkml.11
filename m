@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C53C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE79DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 13:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448036AbiDVNgY (ORCPT
+        id S1448038AbiDVNga (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
+        Fri, 22 Apr 2022 09:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448025AbiDVNgQ (ORCPT
+        with ESMTP id S1448034AbiDVNgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:36:16 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0E4583BA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:33:22 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id w194so9012557oiw.11
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:33:22 -0700 (PDT)
+        Fri, 22 Apr 2022 09:36:21 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D528258E4C
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:33:26 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id t15so9062885oie.1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:33:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vWWT9S1ut5UtdYn94rrDqYYPxhJGIa0Bw2tNIUfzycc=;
-        b=iSjgOmJph0wI9W9moIoXgUb4CbS77tWvK87utauHR+6Ec3lu9iCOjOKrPey6QWPLPS
-         6v4qa3wD3p7p2nja/OQAv5gz3LLVHJkfiP0D8EaZM0CXGfEljtRDWp2lQunorYflBFXI
-         YVL5+4kIGFtcHehI1OhtkZIx2JL9SKgyAlvdei/ZVfws25BxhpIJdLIA4iSNOjLtoCCG
-         Ltqy95QdlkdZ8M+hvBX4kYXIN9/ij1Q7nAJtoLaUMrhY2Tm+nhvinFwjFm1oumz/WxeZ
-         v3nVvZMdq6f3z5V14CVLHOylKKafekCo689D1U5wxl0ac6pFVhM6OkTuwq7ZMQHGCV96
-         DFjQ==
+        bh=de5cYv9udGhvYDO7mNwHuK98M+en+qgo8AFwYs9167Y=;
+        b=RcwvHmsLpebm7Ci3Xt0BAlj7oa76AW3bGWew8HCMNJxyK1SuDq2YGUAvG97nOq3Eo3
+         KsAn8/JRYLPyhgAEfU98ydLP9sr7+kVoFWqn567X8F77dqtAG7xTwe0fG43/CgCcvSuP
+         ehqXus3Ts+GejURjxBs5Rm6L9OZ9bIHh/rBLTGuif4ruJVxASyoKso1y87nxpfZkpIn2
+         LAZSVjygJ88KEQjUXkUJvF87yuqNLlVvmUojOVtqkzG4IC/X4ag3AvJLwn3n0CgzHZCR
+         qOT5f80Qii8tstUWxSnbyfRZFRdndFKnPHKpdJwn67x49JXv+qhogJjE1UhtR5aEXTSr
+         NyZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vWWT9S1ut5UtdYn94rrDqYYPxhJGIa0Bw2tNIUfzycc=;
-        b=saAtYb7HXuKrGVBQmyw9qqtnMlg0j5CWYY5vBRTptxwG/bsJ6ncV+r26dnZcx97P+H
-         a5HGBk80yZUg5TDXZ9AZAFY5f3CLmnKijnc2+JaefSQWuG/OAAozoLwxTBd/1IZoh2Me
-         uNHcdbupWyqNFi3/NPIMUzzs1cY+wxF1P3kbtz4kY59H1IauFtV0Bis7AcjimFHr3+5X
-         8g+EPg0EJsTSP1UpdU1IjoSokbf4QLLWtffl0Ynu8VknXwv6yUsfwYK4e3DoXM3IKasR
-         mIaBKNMOovX6Vz4x9TGD2vyjCR6P9IL5OhjX5/UcY8AzhyMK5k3tWGyFc58E1O3eNhgW
-         yqJA==
-X-Gm-Message-State: AOAM530AsuikDQ0ikuCsrnNx1UNju1guLU2jfgdSmdwCQfxkUnhsyMCe
-        j/X8TcF8m13zx6L7uc7PMNE=
-X-Google-Smtp-Source: ABdhPJw2WQ/OVm35pqkbglbSshfHt4oKxslDglb4Myr1bVgiekofd0Lj4FByZNNqa1B+FNWl24Fitw==
-X-Received: by 2002:a54:4719:0:b0:322:6ce1:6fa7 with SMTP id k25-20020a544719000000b003226ce16fa7mr2092564oik.105.1650634401866;
-        Fri, 22 Apr 2022 06:33:21 -0700 (PDT)
+        bh=de5cYv9udGhvYDO7mNwHuK98M+en+qgo8AFwYs9167Y=;
+        b=FF2FUCPKIuZ2+8nSn5QYYoEg8SMfP3vwYPo8UKie6F4AWPYIwlb9M/5Rj7vxe1ZJEJ
+         F22nrHjD+J852Jj07yaQm57OBPsoV3Hp7zQGN7HZws0mBPsC4NDGnu78QIOtrgRHd/5h
+         1Z0EAjXZB2sO98kmA2kK0//v9pqlQrY05Ke2CKlvypFGfEgaFrTtzpgcqQ047wmlxiSt
+         +oCivX4Vy97mvEVKFulBevW0I8nWiCwC9fSJ18n9qk3p8n+ums/5s9qazioiyLgLGq65
+         YnUdpYyzp0NfGjPiu//j4fD2NWGKpg+ZWyzUWaGSdTOgd5G/9/oyAkhWK7vlg+qrQn+8
+         RvDw==
+X-Gm-Message-State: AOAM532SuGD10jG6pv/a0NZGJu1el6g+OcU6bQK297uKxgnOFou1PWap
+        yX0iBZEukU83EYBPCtFj7d4=
+X-Google-Smtp-Source: ABdhPJzfVz3jSr2UPzaynpM2Jy1ECjorM1FHE4t1xa2lixCvgu3KZmnZ3G6+f6bpdTXu7Kccq4ASEw==
+X-Received: by 2002:a05:6808:e8d:b0:322:bac0:2943 with SMTP id k13-20020a0568080e8d00b00322bac02943mr2234162oil.126.1650634406199;
+        Fri, 22 Apr 2022 06:33:26 -0700 (PDT)
 Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id u3-20020a4a9703000000b0033336ab4909sm788777ooi.7.2022.04.22.06.33.21
+        by smtp.gmail.com with ESMTPSA id o2-20020a05687072c200b000d9ae3e1fabsm641007oak.12.2022.04.22.06.33.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 06:33:21 -0700 (PDT)
+        Fri, 22 Apr 2022 06:33:25 -0700 (PDT)
 From:   Rebecca Mckeever <remckee0@gmail.com>
 To:     outreachy@lists.linux.dev
 Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>,
         Rebecca Mckeever <remckee0@gmail.com>
-Subject: [PATCH v3 3/5] memblock tests: update style of comments for memblock_remove_*() functions
-Date:   Fri, 22 Apr 2022 08:33:00 -0500
-Message-Id: <3b83322c070bdd43a33c336d135f485244f107d3.1650633253.git.remckee0@gmail.com>
+Subject: [PATCH v3 5/5] memblock tests: remove completed TODO item
+Date:   Fri, 22 Apr 2022 08:33:02 -0500
+Message-Id: <201729cfd08cfe5a8681f815b4a423455263d03d.1650633253.git.remckee0@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1650633253.git.remckee0@gmail.com>
 References: <cover.1650633253.git.remckee0@gmail.com>
@@ -66,160 +66,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update comments in memblock_remove_*() functions to match the style used
-in tests/alloc_*.c by rewording to make the expected outcome more apparent
-and, if more than one memblock is involved, adding a visual of the
-memory blocks.
-
-If the comment has an extra column of spaces, remove the extra space at
-the beginning of each line for consistency and to conform to Linux kernel
-coding style.
+Remove completed item from TODO list.
 
 Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 ---
- tools/testing/memblock/tests/basic_api.c | 101 +++++++++++++++++------
- 1 file changed, 75 insertions(+), 26 deletions(-)
+ tools/testing/memblock/TODO | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-index 75cd7479ee54..08847dc5065e 100644
---- a/tools/testing/memblock/tests/basic_api.c
-+++ b/tools/testing/memblock/tests/basic_api.c
-@@ -550,14 +550,21 @@ static int memblock_reserve_checks(void)
- 	return 0;
- }
+diff --git a/tools/testing/memblock/TODO b/tools/testing/memblock/TODO
+index c25b2fdec45e..cd1a30d5acc9 100644
+--- a/tools/testing/memblock/TODO
++++ b/tools/testing/memblock/TODO
+@@ -23,6 +23,3 @@ TODO
  
-- /*
--  * A simple test that tries to remove the first entry of the array of
--  * available memory regions. By "removing" a region we mean overwriting it
--  * with the next region in memblock.memory. To check this is the case, the
--  * test adds two memory blocks and verifies that the value of the latter
--  * was used to erase r1 region.  It also checks if the region counter and
--  * total size were updated to expected values.
--  */
-+/*
-+ * A simple test that tries to remove the first entry of the array of
-+ * with the next region in memblock.memory:
-+ *
-+ *  |  ......          +----------------+  |
-+ *  |  : r1 :          |       r2       |  |
-+ *  +--+----+----------+----------------+--+
-+ *                     ^
-+ *                     |
-+ *                     rgn.base
-+ *
-+ * Expect to add two memory blocks r1 and r2 and then remove r1 region
-+ * so that r2 is the first available region. The region counter and
-+ * total size are updated.
-+ */
- static int memblock_remove_simple_check(void)
- {
- 	struct memblock_region *rgn;
-@@ -587,11 +594,22 @@ static int memblock_remove_simple_check(void)
- 	return 0;
- }
- 
-- /*
--  * A test that tries to remove a region that was not registered as available
--  * memory (i.e. has no corresponding entry in memblock.memory). It verifies
--  * that array, regions counter and total size were not modified.
--  */
-+/*
-+ * A test that tries to remove a region that was not registered as available
-+ * memory (i.e. has no corresponding entry in memblock.memory):
-+ *
-+ *                     +----------------+
-+ *                     |       r2       |
-+ *                     +----------------+
-+ *  |  +----+                              |
-+ *  |  | r1 |                              |
-+ *  +--+----+------------------------------+
-+ *     ^
-+ *     |
-+ *     rgn.base
-+ *
-+ * Expect the array, regions counter and total size to not be modified.
-+ */
- static int memblock_remove_absent_check(void)
- {
- 	struct memblock_region *rgn;
-@@ -622,10 +640,21 @@ static int memblock_remove_absent_check(void)
- 
- /*
-  * A test that tries to remove a region which overlaps with the beginning of
-- * the already existing entry r1 (that is r1.base < r2.base + r2.size). It
-- * checks if only the intersection of both regions is removed from the available
-- * memory pool. The test also checks if the regions counter and total size are
-- * updated to expected values.
-+ * the already existing entry r1 (that is r1.base < r2.base + r2.size):
-+ *
-+ *           +-----------------+
-+ *           |       r2        |
-+ *           +-----------------+
-+ *  |                 .........+--------+  |
-+ *  |                 :     r1 |  rgn   |  |
-+ *  +-----------------+--------+--------+--+
-+ *                    ^        ^
-+ *                    |        |
-+ *                    |        rgn.base
-+ *                    r1.base
-+ *
-+ * Expect that only the intersection of both regions is removed from the
-+ * available memory pool. The regions counter and total size are updated.
-  */
- static int memblock_remove_overlap_top_check(void)
- {
-@@ -662,10 +691,20 @@ static int memblock_remove_overlap_top_check(void)
- 
- /*
-  * A test that tries to remove a region which overlaps with the end of the
-- * first entry (that is r2.base < r1.base + r1.size). It checks if only the
-- * intersection of both regions is removed from the available memory pool.
-- * The test also checks if the regions counter and total size are updated to
-- * expected values.
-+ * first entry (that is r2.base < r1.base + r1.size):
-+ *
-+ *        +--------------------------------+
-+ *        |               r2               |
-+ *        +--------------------------------+
-+ *  | +---+.....                           |
-+ *  | |rgn| r1 :                           |
-+ *  +-+---+----+---------------------------+
-+ *    ^
-+ *    |
-+ *    r1.base
-+ *
-+ * Expect that only the intersection of both regions is removed from the
-+ * available memory pool. The regions counter and total size are updated.
-  */
- static int memblock_remove_overlap_bottom_check(void)
- {
-@@ -700,11 +739,21 @@ static int memblock_remove_overlap_bottom_check(void)
- /*
-  * A test that tries to remove a region which is within the range of the
-  * already existing entry (that is
-- * (r1.base < r2.base) && (r2.base + r2.size < r1.base + r1.size)).
-- * It checks if the region is split into two - one that ends at r2.base and
-- * second that starts at r2.base + size, with appropriate sizes. The test
-- * also checks if the region counter and total size were updated to
-- * expected values.
-+ * (r1.base < r2.base) && (r2.base + r2.size < r1.base + r1.size)):
-+ *
-+ *                  +----+
-+ *                  | r2 |
-+ *                  +----+
-+ *  | +-------------+....+---------------+ |
-+ *  | |     rgn1    | r1 |     rgn2      | |
-+ *  +-+-------------+----+---------------+-+
-+ *    ^
-+ *    |
-+ *    r1.base
-+ *
-+ * Expect that the region is split into two - one that ends at r2.base and
-+ * another that starts at r2.base + size, with appropriate sizes. The
-+ * region counter and total size are updated.
-  */
- static int memblock_remove_within_check(void)
- {
+ 5. Add tests for memblock_alloc_node() to check if the correct NUMA node is set
+    for the new region
+-
+-6. Update comments in tests/basic_api.c to match the style used in
+-   tests/alloc_*.c
 -- 
 2.32.0
 
