@@ -2,103 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A57C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 20:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB97C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiDVUtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 16:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
+        id S229556AbiDVVFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiDVUtj (ORCPT
+        with ESMTP id S229511AbiDVVFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 16:49:39 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CC9209F14;
-        Fri, 22 Apr 2022 12:46:47 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id r13so18310431ejd.5;
-        Fri, 22 Apr 2022 12:46:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=ZCXJRqepiMM/X9hpIQkod6J8jYQslsEZGb/W6+1iH/k=;
-        b=RH5YZrNy8Q1mztwF9P/pwiNXS6D591Ntr4cchSnhtXGAu64sjpjVUAMBw5lVeefIYw
-         HRXQ1kk4F38u8J59nALbQbIjDbQUlQJlxbpsTUm4/ExfB7pOas09F3qFiZyWhsK5//sl
-         D/kD1o0ZM7easuXgenJA6h1b+ERBHND7HPRat0YMVP9tudxi1IZrt4QlcoQdEM/dusLO
-         dps+IghE4w0K7533CPxfl6vvkxzD/3OWl1o8TcyoW3AaZyeVfUGuQKdiUM2FxLsmaOjT
-         jX0wkFGn/oLo62qOFod7ITzBPsy0159gqdCHObrfV0as4s4HplE5UR30AqaetWqo+tuX
-         CMag==
+        Fri, 22 Apr 2022 17:05:42 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A23134FEDD;
+        Fri, 22 Apr 2022 13:00:55 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-e9027efe6aso2408225fac.10;
+        Fri, 22 Apr 2022 13:00:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=ZCXJRqepiMM/X9hpIQkod6J8jYQslsEZGb/W6+1iH/k=;
-        b=gKYqiqfw3iVCQ95TovxjB5RWa+xm9pq5g5t+MSkE/+lrCxC3KJjM8jUD2yVdh+wvt0
-         c7485WgsKqRyFiQs2QLlP9ZJQVTm1FZOz28TfWKSgQ7zBpahd8fH6o223yfTzc0p3MtW
-         sh1uqSeeX2g36SxE27lRZiCZfp2GyrvS/ZVIYOwN6RP02wmfHHUJdz+5Avnr1Q57AxfH
-         qMO/7+4xdAwjlFXXAWj/HYB0lMr1uni+V3ribQrkIFwtlq2ixpHPLxVO0aMlL7BuAT1h
-         MRVwy4qYEoTwKFyhIng/wgZtgC7bUwkWO041V2g6m7EwsL4lscGyS7gvjSyeMuEg5waW
-         Iv/Q==
-X-Gm-Message-State: AOAM530Kanvj6oksPIRpKBAb7zZpbj+XH58gsdwXI2MFDOgUp5hznB7t
-        8KTLC9OsVznW12aOpV17/5s=
-X-Google-Smtp-Source: ABdhPJxUtMgv25FIn09RV/7NRmkZDcevxB8TMyX5SE3JHCN430+3rMGO2oaLb4bp0K7i4ZueYS3aUQ==
-X-Received: by 2002:a17:906:7f02:b0:6cf:86d8:c31c with SMTP id d2-20020a1709067f0200b006cf86d8c31cmr5794948ejr.518.1650656506654;
-        Fri, 22 Apr 2022 12:41:46 -0700 (PDT)
-Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.googlemail.com with ESMTPSA id r17-20020a1709067fd100b006e88d3eefe6sm1037735ejs.205.2022.04.22.12.41.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FR8aJOPIeHvshKuc9ODiumRNCDqF45G5wAtHKeVcQHA=;
+        b=QZFbyAyAvFTggEvqbM0116Vi8/qdnScktU4iDHiobDR+6E5+7Fw8E2XTDJGrfdHq3m
+         YlE2Bm6Ozixxka7OptCwZRESA+Alhb82UR7AI2W/jDCuzrvwtwUD4pP1nEcsZS8gouer
+         Ob6DZq4zKmAkMX3RF0XDli2xx9c86v3dRWZHKyvG9YXQNrKxFlUbI5JiY9rHl8ShQLqU
+         l9DBbG5JXgvxLJffzZ6IGCq56ATLieWXecyOfQ1Tf8u3Xydl6jHgNbWT4xCy7ohVhljg
+         y/R+JsjURrzvhHt6UrphnnMUh0eJkRxQyhl3o5PLtl4tj40M80gzWBRi1lAvdgNXFJxH
+         9NNw==
+X-Gm-Message-State: AOAM532Q2F/Ow6gvgfMDhIhY0EaKf1hRa+0Kg4nQamlVa42DJnYbdS9f
+        hxCo4K3hJbrAFGmLQo0IJVl9BLuXeQ==
+X-Google-Smtp-Source: ABdhPJy7XbnKUkR+qePjsQY9tdrSqlwteMXQrSIzrqWe73gqEIx9SIlsBZFBGeAym6PEHaps/tqkaQ==
+X-Received: by 2002:a05:6871:20c:b0:e6:8475:947e with SMTP id t12-20020a056871020c00b000e68475947emr2902602oad.239.1650655446947;
+        Fri, 22 Apr 2022 12:24:06 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id ed22-20020a056870b79600b000da32eab691sm937370oab.23.2022.04.22.12.24.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:41:46 -0700 (PDT)
-Message-ID: <c5f33892dbce61b267cc74dca50e0fae5d1270e9.camel@gmail.com>
-Subject: Re: [PATCH v2 RESENT] mmc-utils: Add General command CMD56 read
- support
-From:   Bean Huo <huobean@gmail.com>
-To:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
-        jakob.rossler@nokia.com, Avri.Altman@wdc.com
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bean Huo <beanhuo@micron.com>
-Date:   Fri, 22 Apr 2022 21:41:45 +0200
-In-Reply-To: <20220417111622.621650-1-huobean@gmail.com>
-References: <20220417111622.621650-1-huobean@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0-1 
+        Fri, 22 Apr 2022 12:24:06 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: eeprom/at24: Add samsung,s524ad0xd1 compatible
+Date:   Fri, 22 Apr 2022 14:23:55 -0500
+Message-Id: <20220422192355.2597523-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-04-17 at 13:16 +0200, Bean Huo wrote:
-> From: Bean Huo <beanhuo@micron.com>
->=20
-> We can use GEN_CMD (CMD56) to read a=C2=A0 data block with vendor-specifi=
-c
-> format and meaning, which is very helpful and useful for customers to
-> analyze device health. This patch is to add support for this command.
->=20
-> At the same time, in order to make CMD56 universal, let more users of
-> mmc-utils can benefit from this. We will allow the user to enter
-> [arg]
-> for special commands. Because some eMMC vendors provide an additional
-> set of commands beyond the GEN_CMD (CMD56) definition in the JEDEC
-> specification. These additional commands are implemented using
-> generic
-> CMD56 commands, and they return a wealth of useful information about
-> the
-> state of the NAND device. For these special purposes, the [31:1]stuff
-> bits in the CMD56 argument are used. You can refer to=C2=A0 Micron eMMC
-> "TN-FC-32: e=C2=B7MMC Device Health Report" as an example.
->=20
-> I didn't add data parsing, just print the raw data as it is vendor-
-> specific.
->=20
-> Signed-off-by: Bean Huo <beanhuo@micron.com>
-> Acked-by: Avri Altman <Avri.Altman@wdc.com>
-> Tested-by: Rossler Jakob (Nokia - DE/Ulm) <jakob.rossler@nokia.com>
-> ---
+The samsung,s524ad0xd1 compatible is in use, but not documented. According
+to arch/arm/mach-s3c/mach-smdk6410.c, the samsung,s524ad0xd1 is compatible
+with the 24c128.
 
-Hi Ullf,
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/eeprom/at24.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Would you be willing to merge this patch into your mmc-utils git repo?
+diff --git a/Documentation/devicetree/bindings/eeprom/at24.yaml b/Documentation/devicetree/bindings/eeprom/at24.yaml
+index 6b61a8cf6137..d14e0accbda8 100644
+--- a/Documentation/devicetree/bindings/eeprom/at24.yaml
++++ b/Documentation/devicetree/bindings/eeprom/at24.yaml
+@@ -120,7 +120,9 @@ properties:
+           - const: giantec,gt24c32a
+           - const: atmel,24c32
+       - items:
+-          - const: renesas,r1ex24128
++          - enum:
++              - renesas,r1ex24128
++              - samsung,s524ad0xd1
+           - const: atmel,24c128
+ 
+   label:
+-- 
+2.32.0
 
-Kind regards,
-Bean
