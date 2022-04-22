@@ -2,67 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96844C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 001F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442684AbiDVGLf (ORCPT
+        id S1444220AbiDVGNu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48928 "EHLO
+        Fri, 22 Apr 2022 02:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231698AbiDVGLd (ORCPT
+        with ESMTP id S1444341AbiDVGNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:11:33 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17AD250457;
-        Thu, 21 Apr 2022 23:08:36 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 22 Apr
- 2022 14:08:36 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 22 Apr
- 2022 14:08:34 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Haowen Bai <baihaowen@meizu.com>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net/mlx5: Remove useless kfree
-Date:   Fri, 22 Apr 2022 14:08:32 +0800
-Message-ID: <1650607713-23409-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 22 Apr 2022 02:13:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D844434A5
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:10:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7931B82A81
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 06:10:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C70C385A4;
+        Fri, 22 Apr 2022 06:10:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650607826;
+        bh=9TNW3wYfSuM9PlmQpT0Zdgu2dFVulayRiQeg+hNcdms=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=P/M/Zm/veiGwzAWnsYAbWZ3EsXL+XD8/eHzt08OYdJD29uDbKhsYtw+nFcn1MEwcI
+         b1gB7rkoz2VswVmnSSnxucsw/DrmoZXjxDvFdTmjNOejpfsCMyULCaPwAAhsE9vUuk
+         lCeX8xp9FxfYDOxIDW902QAVIHTwnPo+ucxrHk3o=
+Date:   Fri, 22 Apr 2022 08:10:23 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vihas Makwana <makvihas@gmail.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: Re: [PATCH v2 0/7] drop some unnecessary wrappers
+Message-ID: <YmJGzwA0kD+lFtfN@kroah.com>
+References: <20220411102136.14937-1-makvihas@gmail.com>
+ <3484215.R56niFO833@leap>
+ <20220412151529.GF3293@kadam>
+ <3134226.AJdgDx1Vlc@leap>
+ <20220413054252.GR12805@kadam>
+ <CAH1kMwT0gyQNB1-j62-2ntJD9Lobsmr8-5h6n6-SJ44wykMyHQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAH1kMwT0gyQNB1-j62-2ntJD9Lobsmr8-5h6n6-SJ44wykMyHQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After alloc fail, we do not need to kfree.
+On Fri, Apr 22, 2022 at 12:26:21AM +0530, Vihas Makwana wrote:
+> Did this patch series get lost?
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 1 -
- 1 file changed, 1 deletion(-)
+What series?  (hint, do not top post).
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index e49f51124c74..89aa0208b5d2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1812,7 +1812,6 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 
- 	ct_flow = kzalloc(sizeof(*ct_flow), GFP_KERNEL);
- 	if (!ct_flow) {
--		kfree(ct_flow);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
--- 
-2.7.4
+My queue of staging patches was empty as of a few days ago (it's filled
+up since then), so if they were not applied, please resend.
 
+thanks,
+
+greg k-h
